@@ -29,9 +29,6 @@ msgstr " 找到好內容固然很棒，但您也可以輕鬆忽略不喜歡的�
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " 選擇 Premium、Archive 或 Pro，然後結帳。"
 
-msgid " Customize days of unreads"
-msgstr " 自訂未讀天數"
-
 msgid " Gift for free (staff)"
 msgstr " 免費贈送（員工）"
 
@@ -49,34 +46,6 @@ msgstr " 閱讀時也能輕鬆訓練個別文章。"
 
 msgid " You get a full refund, automatically."
 msgstr " 您會自動獲得全額退款。"
-
-msgid " are stories you don't like"
-msgstr " 是你不喜歡的故事"
-
-msgid " are stories you have not yet rated"
-msgstr " 是尚未評分的文章"
-
-msgid " are stories you like"
-msgstr " 是您喜歡的文章"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr "最多 %(value_1)s 天"
-
-msgid " for up to 365 days"
-msgstr "，最多可保留 365 天"
-
-msgid " of the screen"
-msgstr "畫面"
-
-msgid " or "
-msgstr " 或 "
-
-msgid " second"
-msgstr " 秒"
-
-msgid " to change keyboard shortcuts."
-msgstr " 以變更鍵盤快速鍵。"
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -164,6 +133,15 @@ msgstr "每年 $99"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s 已中斷連線。"
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s 自訂未讀天數"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s 最多可使用 %(count)s 天"
 
 #, python-format
 msgid "%(category)s topics"
@@ -330,11 +308,6 @@ msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s 則回覆"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s 秒。"
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "已選取 %(count)s 個"
@@ -464,12 +437,28 @@ msgid_plural "%(count)sw ago"
 msgstr[0] "%(count)s 週前"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "已設定 %(feed_title)s 通知"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s 是你不喜歡的文章"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s 是你尚未評分的文章"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s 是你喜歡的文章"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -522,6 +511,10 @@ msgstr[0] "%(start)s 至 %(end)s 分鐘"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s 或 %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1081,8 +1074,10 @@ msgstr "正在新增網站…"
 msgid "Adding..."
 msgstr "正在新增…"
 
-msgid "After "
-msgstr "之後 "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s 秒後"
 
 msgid "After marking feed/folder read"
 msgstr "將動態／資料夾標記為已讀後"
@@ -1388,6 +1383,9 @@ msgstr "依排程自動產生摘要"
 msgid "Automatically play next item in queue"
 msgstr "自動播放佇列中的下一個項目"
 
+msgid "Back"
+msgstr "返回"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1678,6 +1676,9 @@ msgstr "選擇你的網站"
 msgid "Choose a story pattern"
 msgstr "選擇文章樣式"
 
+msgid "Choose another language"
+msgstr "選擇其他語言"
+
 msgid "Choose categories"
 msgstr "選擇分類"
 
@@ -1708,6 +1709,9 @@ msgstr "選擇要顯示在簡報中的區段"
 msgid "Choose your browser"
 msgstr "選擇您的瀏覽器"
 
+msgid "Choose your language"
+msgstr "選擇您的語言"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "選擇您偏好的 AI 模型：Claude、GPT、Gemini 或 Grok"
 
@@ -1717,8 +1721,9 @@ msgstr "選擇你的網站"
 msgid "Classifier filter scope"
 msgstr "分類器篩選範圍"
 
-msgid "Classifier scope requires "
-msgstr "分類器範圍需要 "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "分類器範圍需要 %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。您可以隨時切換。"
@@ -3156,8 +3161,9 @@ msgstr "Gmail 會引導您確認電子郵件地址。之後請返回 NewsBlur，
 msgid "Go Premium — $36/year"
 msgstr "升級至 Premium — 每年 36 美元"
 
-msgid "Go back to "
-msgstr "返回 "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "返回 %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "好讀"
@@ -3660,8 +3666,9 @@ msgstr "在 Stripe 管理帳單"
 msgid "Manage email settings"
 msgstr "管理電子郵件設定"
 
-msgid "Manually by hitting "
-msgstr "手動按下 "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "手動按下 %(first_key)s 或 %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "手動操作或點選文章時"
@@ -4034,6 +4041,10 @@ msgstr "NewsBlur會檢查是否有更新，並將新文章送到你的動態消�
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur 已連結至其他服務"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur 從您的瀏覽器偵測到 %(language)s。"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur 目前無法使用。<br> 請稍後再試。"
 
@@ -4312,8 +4323,9 @@ msgstr "通知"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "智慧分類器訓練通知"
 
-msgid "Notifications require "
-msgstr "通知需要 "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "通知需要 %(tier_link)s"
 
 msgid "Notify on"
 msgstr "通知條件"
@@ -4369,8 +4381,9 @@ msgstr "糟糕，擷取該網址時發生問題，而且無法確定原因。"
 msgid "Old password"
 msgstr "舊密碼"
 
-msgid "Older than: "
-msgstr "早於："
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "早於：%(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "較舊："
@@ -4586,8 +4599,9 @@ msgstr "頁面抓取"
 msgid "Page down"
 msgstr "下一頁"
 
-msgid "Page down by "
-msgstr "向下翻頁 "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "向下捲動螢幕 %(slider)s %(percent)s"
 
 msgid "Page up"
 msgstr "向上翻頁"
@@ -4649,6 +4663,9 @@ msgstr "個別資訊來源通知設定"
 
 msgid "Pick a tier & pay."
 msgstr "選擇方案並付款。"
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "選擇您希望 NewsBlur 使用的語言。您隨時可以在偏好設定中更改。"
 
 msgid "Places"
 msgstr "地點"
@@ -4906,8 +4923,9 @@ msgstr "引用"
 msgid "RSS Feed"
 msgstr "RSS 訂閱"
 
-msgid "RSS feeds for folders is a "
-msgstr "資料夾的 RSS 動態來源是 "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "資料夾的 RSS 摘要是 %(link_start)s進階功能%(link_end)s。"
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5064,8 +5082,9 @@ msgstr "重新產生簡報"
 msgid "Regex"
 msgstr "正規表示式"
 
-msgid "Regex requires "
-msgstr "正規表示式需要 "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "正規表示式需要 %(tier_link)s"
 
 msgid "Related"
 msgstr "相關"
@@ -5142,8 +5161,9 @@ msgstr "已要求"
 msgid "Requests to Follow You"
 msgstr "追蹤你的請求"
 
-msgid "Requires "
-msgstr "需要 "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "需要 %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "需要 Premium 封存"
@@ -5345,8 +5365,9 @@ msgstr "範圍分類器僅供 %(plan)s 訂閱者使用。"
 msgid "Scroll to comments"
 msgstr "捲動至留言"
 
-msgid "Scroll up/down in story by "
-msgstr "在文章中向上／下捲動 "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "在文章中向上／下捲動 %(slider)s %(pixels)spx。"
 
 msgid "Search"
 msgstr "搜尋"
@@ -6993,6 +7014,10 @@ msgstr "用量帳單記錄"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "自然語言分類器已啟用依用量計費。"
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "使用 %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "使用 12 小時制"
 
@@ -7343,6 +7368,9 @@ msgstr "你已取消訂閱所有 NewsBlur 電子郵件。請在下方選擇要�
 msgid "You can also filter out stories you don't want to read."
 msgstr "你也可以篩除不想閱讀的文章。"
 
+msgid "You can change this anytime in Preferences."
+msgstr "您隨時可以在偏好設定中更改。"
+
 msgid "You can change your opinions."
 msgstr "你可以改變自己的看法。"
 
@@ -7390,8 +7418,9 @@ msgstr "您必須追蹤 %(value_1)s 才能回覆"
 msgid "You must be logged in to send a story over email."
 msgstr "您必須登入才能透過電子郵件傳送文章。"
 
-msgid "You must have a "
-msgstr "你必須有一個 "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "你必須擁有 %(link_start)s進階帳戶%(link_end)s，才能變更鍵盤快速鍵。"
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7654,11 +7683,9 @@ msgstr "開放原始碼"
 msgid "optional, appears above the story"
 msgstr "選填，顯示於文章上方"
 
-msgid "or"
-msgstr "或"
-
-msgid "or subscribe with "
-msgstr "或訂閱"
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "或使用 %(paypal_button)s 訂閱"
 
 msgid "pending"
 msgstr "待處理"
@@ -7669,17 +7696,8 @@ msgstr "Podcast 產業"
 msgid "premium"
 msgstr "進階版"
 
-msgid "premium account"
-msgstr "進階帳戶"
-
-msgid "premium feature"
-msgstr "進階功能"
-
 msgid "public transit"
 msgstr "大眾運輸"
-
-msgid "px."
-msgstr "像素。"
 
 msgid "quantum computing"
 msgstr "量子運算"

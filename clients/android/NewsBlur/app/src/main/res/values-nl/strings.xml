@@ -174,25 +174,8 @@ om over de wereld te praten.</string>
     <string name="profile_ago">geleden</string>
     <string name="profile_recent_actvity">Activiteiten</string>
     <string name="profile_recent_interactions">Interacties</string>
-    <string name="profile_started_following">volgde</string>
-    <string name="profile_you">Jij</string>
-    <string name="profile_you_lower">jij</string>
-    <string name="profile_your">jouw</string>
-    <string name="profile_now_following">volgt nu %1$s</string>
-    <string name="profile_replied_to">Gereageerd op</string>
-    <string name="profile_replied_to_your">heeft gereageerd op %1$s</string>
-    <string name="profile_shared_story">gedeeld</string>
-    <string name="profile_comment">reactie</string>
-    <string name="profile_reply">reageren</string>
     <string name="profile_button_follow">Volgen</string>
     <string name="profile_button_unfollow">Niet meer volgen</string>
-    <string name="profile_subscribed_to">geabonneerd op</string>
-    <string name="profile_saved">bewaard</string>
-    <string name="profile_reshared">opnieuw gedeeld</string>
-    <string name="profile_favorited">als favoriet gemarkeerd</string>
-    <string name="profile_favorited_comments">heeft %1$s opmerkingen als favoriet gemarkeerd bij</string>
-    <string name="profile_signup">heeft zich geregistreerd bij Newsblur</string>
-    <string name="profile_comments_on">reageert op</string>
     <string name="profile_feed_not_available">Je bent niet langer geabonneerd op deze feed</string>
     <string name="profile_do_not_follow">Je volgt deze gebruiker niet</string>
     <string name="profile_no_interactions">Geen interacties</string>
@@ -1024,7 +1007,7 @@ om over de wereld te praten.</string>
         <item quantity="other">%1$d artikelen/maand</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Verouderd · laatste artikel %1$s</string>
-    <string name="add_site_url_or_search">https:// of zoeken</string>
+    <string name="add_site_url_or_search">%1$s of zoeken</string>
     <string name="add_site_choose_folder">Map kiezen</string>
     <string name="add_site_top_level">— Hoofdniveau —</string>
     <string name="add_site_adding_site">Site toevoegen</string>
@@ -1116,4 +1099,60 @@ om over de wereld te praten.</string>
         <item quantity="one">%d verhaal</item>
         <item quantity="other">%d artikelen</item>
     </plurals>
+    <string name="language_dialog_title">Kies je taal</string>
+    <string name="language_dialog_detected">NewsBlur heeft %1$s gedetecteerd op je apparaat.</string>
+    <string name="language_dialog_note">Je kunt dit altijd wijzigen in Voorkeuren.</string>
+    <string name="language_dialog_use">Gebruik %1$s</string>
+    <string name="language_dialog_choose_another">Kies een andere taal</string>
+    <string name="language_dialog_pick">Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.</string>
+    <string name="main_menu_import_feed_bundles">Importeer feeds en feedbundels</string>
+    <string name="main_menu_export_feeds">Feeds exporteren</string>
+    <string name="discover_open">Openen</string>
+    <string name="discover_folder_top_level">Hoofdniveau</string>
+    <string name="discover_add_to_folder">Toevoegen aan map</string>
+    <string name="add_site_shortcut_trending">Populair</string>
+    <string name="add_site_freshness_stale">Verouderde %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">%d min geleden</item>
+        <item quantity="other">%d min geleden</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">%d u geleden</item>
+        <item quantity="other">%d u geleden</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">%d d geleden</item>
+        <item quantity="other">%d d geleden</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">%d w geleden</item>
+        <item quantity="other">%d w geleden</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">%d mnd geleden</item>
+        <item quantity="other">%d mnd geleden</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Je hebt je geabonneerd op %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s heeft zich geabonneerd op %2$s</string>
+    <string name="profile_activity_you_saved">Je hebt %1$s opgeslagen</string>
+    <string name="profile_activity_user_saved">%1$s heeft %2$s opgeslagen</string>
+    <string name="profile_activity_you_signed_up">Je hebt je aangemeld voor Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s heeft zich aangemeld voor Newsblur</string>
+    <string name="profile_activity_you_followed">Je bent nu een volger van %1$s</string>
+    <string name="profile_activity_user_followed">%1$s is %2$s gaan volgen</string>
+    <string name="profile_activity_you_favorited_comments">Je hebt %1$s reacties op %2$s aan je favorieten toegevoegd</string>
+    <string name="profile_activity_user_favorited_comments">%1$s heeft %2$s reacties op %3$s als favoriet gemarkeerd</string>
+    <string name="profile_activity_you_replied">Je hebt gereageerd op %1$s</string>
+    <string name="profile_activity_user_replied">%1$s heeft op %2$s gereageerd</string>
+    <string name="profile_activity_you_shared">Je hebt %1$s gedeeld</string>
+    <string name="profile_activity_user_shared">%1$s heeft %2$s gedeeld</string>
+    <string name="profile_interaction_following_you">%1$s volgt je nu</string>
+    <string name="profile_interaction_following_user">%1$s volgt %2$s nu</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s heeft je reacties op %2$s als favoriet gemarkeerd</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s heeft de reacties van %2$s op %3$s als favoriet gemarkeerd</string>
+    <string name="profile_interaction_replied_your_comment">%1$s heeft op je reactie gereageerd</string>
+    <string name="profile_interaction_replied_your_reply">%1$s heeft op je reactie gereageerd</string>
+    <string name="profile_interaction_replied_user_comment">%1$s heeft gereageerd op de reactie van %2$s</string>
+    <string name="profile_interaction_replied_user_reply">%1$s heeft gereageerd op de reactie van %2$s</string>
+    <string name="profile_interaction_reshared">%1$s heeft %2$s opnieuw gedeeld</string>
 </resources>

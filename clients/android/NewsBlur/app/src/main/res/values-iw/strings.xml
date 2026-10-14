@@ -174,25 +174,8 @@
     <string name="profile_ago">לפני</string>
     <string name="profile_recent_actvity">פעילויות</string>
     <string name="profile_recent_interactions">אינטראקציות</string>
-    <string name="profile_started_following">התחיל לעקוב</string>
-    <string name="profile_you">את/ה</string>
-    <string name="profile_you_lower">את/ה</string>
-    <string name="profile_your">שלך</string>
-    <string name="profile_now_following">עוקב/ת עכשיו אחרי %1$s</string>
-    <string name="profile_replied_to">השיב/ה ל</string>
-    <string name="profile_replied_to_your">השיב/ה ל-%1$s</string>
-    <string name="profile_shared_story">משותף</string>
-    <string name="profile_comment">תגובה</string>
-    <string name="profile_reply">תגובה</string>
     <string name="profile_button_follow">עקוב</string>
     <string name="profile_button_unfollow">הפסקת מעקב</string>
-    <string name="profile_subscribed_to">נרשם אל</string>
-    <string name="profile_saved">נשמר</string>
-    <string name="profile_reshared">שיתף מחדש</string>
-    <string name="profile_favorited">סומן כמועדף</string>
-    <string name="profile_favorited_comments">סימן %1$s תגובות כמועדפות ב־</string>
-    <string name="profile_signup">נרשם ל-Newsblur</string>
-    <string name="profile_comments_on">תגובות על</string>
     <string name="profile_feed_not_available">אינך עוד מנוי לפיד הזה</string>
     <string name="profile_do_not_follow">אינך עוקב/ת אחרי המשתמש הזה</string>
     <string name="profile_no_interactions">אין אינטראקציות</string>
@@ -1036,7 +1019,7 @@
         <item quantity="two">%1$d כתבות בחודש</item>
     </plurals>
     <string name="setup_feed_stale_last_story">לא מעודכן · הסיפור האחרון %1$s</string>
-    <string name="add_site_url_or_search">https:// או חיפוש</string>
+    <string name="add_site_url_or_search">%1$s או חיפוש</string>
     <string name="add_site_choose_folder">בחירת תיקייה</string>
     <string name="add_site_top_level">— רמה עליונה —</string>
     <string name="add_site_adding_site">מוסיף אתר</string>
@@ -1130,4 +1113,65 @@
         <item quantity="other">%d כתבות</item>
         <item quantity="two">%d כתבות</item>
     </plurals>
+    <string name="language_dialog_title">בחרו את השפה שלכם</string>
+    <string name="language_dialog_detected">NewsBlur זיהה את %1$s במכשיר שלכם.</string>
+    <string name="language_dialog_note">אפשר לשנות זאת בכל עת בהעדפות.</string>
+    <string name="language_dialog_use">השתמשו ב־%1$s</string>
+    <string name="language_dialog_choose_another">בחרו שפה אחרת</string>
+    <string name="language_dialog_pick">בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בהעדפות.</string>
+    <string name="main_menu_import_feed_bundles">ייבוא וחבילות פידים</string>
+    <string name="main_menu_export_feeds">ייצוא הזנות</string>
+    <string name="discover_open">פתיחה</string>
+    <string name="discover_folder_top_level">הרמה העליונה</string>
+    <string name="discover_add_to_folder">הוספה לתיקייה</string>
+    <string name="add_site_shortcut_trending">במגמת עלייה</string>
+    <string name="add_site_freshness_stale">לא מעודכן: %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">לפני %d דק׳</item>
+        <item quantity="other">לפני %d דקות</item>
+        <item quantity="two">לפני %d דקות</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">לפני %d שעות</item>
+        <item quantity="other">לפני %d שעות</item>
+        <item quantity="two">לפני %d שעות</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">לפני %d ימים</item>
+        <item quantity="other">לפני %d ימים</item>
+        <item quantity="two">לפני %d ימים</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">לפני %d שבועות</item>
+        <item quantity="other">לפני %d שבועות</item>
+        <item quantity="two">לפני %d שבועות</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">לפני %d חודשים</item>
+        <item quantity="other">לפני %d חודשים</item>
+        <item quantity="two">לפני %d חודשים</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">נרשמת לקבלת עדכונים מ־%1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s נרשם/ה לקבלת עדכונים מ־%2$s</string>
+    <string name="profile_activity_you_saved">שמרת את %1$s</string>
+    <string name="profile_activity_user_saved">%1$s שמר/ה את %2$s</string>
+    <string name="profile_activity_you_signed_up">נרשמת ל-Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s נרשם/ה ל-Newsblur</string>
+    <string name="profile_activity_you_followed">התחלת לעקוב אחר %1$s</string>
+    <string name="profile_activity_user_followed">%1$s התחיל/ה לעקוב אחרי %2$s</string>
+    <string name="profile_activity_you_favorited_comments">הוספת למועדפים %1$s תגובות על %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s הוסיף/ה למועדפים %2$s תגובות על %3$s</string>
+    <string name="profile_activity_you_replied">השבת ל־%1$s</string>
+    <string name="profile_activity_user_replied">%1$s השיב/ה ל־%2$s</string>
+    <string name="profile_activity_you_shared">שיתפת את %1$s</string>
+    <string name="profile_activity_user_shared">%1$s שיתף/ה את %2$s</string>
+    <string name="profile_interaction_following_you">%1$s התחיל/ה לעקוב אחריך</string>
+    <string name="profile_interaction_following_user">%1$s התחיל/ה לעקוב אחרי %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s הוסיף/ה למועדפים את התגובות שלך על %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s הוסיף/ה למועדפים את התגובות של %2$s על %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s השיב/ה לתגובה שלך</string>
+    <string name="profile_interaction_replied_your_reply">%1$s השיב/ה לתשובה שלך</string>
+    <string name="profile_interaction_replied_user_comment">%1$s השיב/ה לתגובה של %2$s\'</string>
+    <string name="profile_interaction_replied_user_reply">%1$s השיב/ה לתשובה של %2$s</string>
+    <string name="profile_interaction_reshared">%1$s שיתף/ה מחדש את %2$s</string>
 </resources>

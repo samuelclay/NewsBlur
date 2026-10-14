@@ -174,25 +174,8 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="profile_ago">trước</string>
     <string name="profile_recent_actvity">Hoạt động</string>
     <string name="profile_recent_interactions">Tương tác</string>
-    <string name="profile_started_following">đã theo dõi</string>
-    <string name="profile_you">Bạn</string>
-    <string name="profile_you_lower">bạn</string>
-    <string name="profile_your">của bạn</string>
-    <string name="profile_now_following">hiện đang theo dõi %1$s</string>
-    <string name="profile_replied_to">Đã trả lời</string>
-    <string name="profile_replied_to_your">đã trả lời %1$s</string>
-    <string name="profile_shared_story">đã chia sẻ</string>
-    <string name="profile_comment">bình luận</string>
-    <string name="profile_reply">trả lời</string>
     <string name="profile_button_follow">Theo dõi</string>
     <string name="profile_button_unfollow">Bỏ theo dõi</string>
-    <string name="profile_subscribed_to">đã đăng ký theo dõi</string>
-    <string name="profile_saved">đã lưu</string>
-    <string name="profile_reshared">đã chia sẻ lại</string>
-    <string name="profile_favorited">đã yêu thích</string>
-    <string name="profile_favorited_comments">đã yêu thích %1$s bình luận trên</string>
-    <string name="profile_signup">đã đăng ký Newsblur</string>
-    <string name="profile_comments_on">bình luận về</string>
     <string name="profile_feed_not_available">Bạn không còn đăng ký theo dõi nguồn cấp dữ liệu này</string>
     <string name="profile_do_not_follow">Bạn không theo dõi người dùng này</string>
     <string name="profile_no_interactions">Không có tương tác nào</string>
@@ -1012,7 +995,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
         <item quantity="other">%1$d bài viết/tháng</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Lỗi thời · bài viết cuối cùng %1$s</string>
-    <string name="add_site_url_or_search">https:// hoặc tìm kiếm</string>
+    <string name="add_site_url_or_search">%1$s hoặc tìm kiếm</string>
     <string name="add_site_choose_folder">Chọn thư mục</string>
     <string name="add_site_top_level">— Cấp cao nhất —</string>
     <string name="add_site_adding_site">Đang thêm trang</string>
@@ -1102,4 +1085,55 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <plurals name="briefing_group_story_count">
         <item quantity="other">%d bài viết</item>
     </plurals>
+    <string name="language_dialog_title">Chọn ngôn ngữ của bạn</string>
+    <string name="language_dialog_detected">NewsBlur đã phát hiện %1$s từ thiết bị của bạn.</string>
+    <string name="language_dialog_note">Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.</string>
+    <string name="language_dialog_use">Dùng %1$s</string>
+    <string name="language_dialog_choose_another">Chọn ngôn ngữ khác</string>
+    <string name="language_dialog_pick">Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.</string>
+    <string name="main_menu_import_feed_bundles">Nhập và gói nguồn tin</string>
+    <string name="main_menu_export_feeds">Xuất nguồn tin</string>
+    <string name="discover_open">Mở</string>
+    <string name="discover_folder_top_level">Cấp cao nhất</string>
+    <string name="discover_add_to_folder">Thêm vào thư mục</string>
+    <string name="add_site_shortcut_trending">Xu hướng</string>
+    <string name="add_site_freshness_stale">%1$s đã cũ</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="other">%d phút trước</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="other">%d giờ trước</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="other">%d ngày trước</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="other">%d tuần trước</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="other">%d tháng trước</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Bạn đã đăng ký theo dõi %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s đã đăng ký theo dõi %2$s</string>
+    <string name="profile_activity_you_saved">Bạn đã lưu %1$s</string>
+    <string name="profile_activity_user_saved">%1$s đã lưu %2$s</string>
+    <string name="profile_activity_you_signed_up">Bạn đã đăng ký Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s đã đăng ký Newsblur</string>
+    <string name="profile_activity_you_followed">Bạn đã theo dõi %1$s</string>
+    <string name="profile_activity_user_followed">%1$s đã theo dõi %2$s</string>
+    <string name="profile_activity_you_favorited_comments">Bạn đã yêu thích %1$s bình luận trên %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s đã yêu thích bình luận của %2$s về %3$s</string>
+    <string name="profile_activity_you_replied">Bạn đã trả lời %1$s</string>
+    <string name="profile_activity_user_replied">%1$s đã trả lời %2$s</string>
+    <string name="profile_activity_you_shared">Bạn đã chia sẻ %1$s</string>
+    <string name="profile_activity_user_shared">%1$s đã chia sẻ %2$s</string>
+    <string name="profile_interaction_following_you">%1$s hiện đang theo dõi bạn</string>
+    <string name="profile_interaction_following_user">%1$s hiện đang theo dõi %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s đã yêu thích bình luận của bạn về %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s đã yêu thích các bình luận của %2$s về %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s đã trả lời bình luận của bạn</string>
+    <string name="profile_interaction_replied_your_reply">%1$s đã trả lời câu trả lời của bạn</string>
+    <string name="profile_interaction_replied_user_comment">%1$s đã trả lời bình luận của %2$s\'</string>
+    <string name="profile_interaction_replied_user_reply">%1$s đã trả lời phản hồi của %2$s\'</string>
+    <string name="profile_interaction_reshared">%1$s đã chia sẻ lại %2$s</string>
 </resources>

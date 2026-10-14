@@ -174,25 +174,8 @@
     <string name="profile_ago">тому</string>
     <string name="profile_recent_actvity">Активність</string>
     <string name="profile_recent_interactions">Взаємодії</string>
-    <string name="profile_started_following">почав стежити</string>
-    <string name="profile_you">Ви</string>
-    <string name="profile_you_lower">ви</string>
-    <string name="profile_your">ваш</string>
-    <string name="profile_now_following">тепер стежить за %1$s</string>
-    <string name="profile_replied_to">У відповідь на</string>
-    <string name="profile_replied_to_your">відповів(-ла) %1$s</string>
-    <string name="profile_shared_story">поширено</string>
-    <string name="profile_comment">коментар</string>
-    <string name="profile_reply">відповісти</string>
     <string name="profile_button_follow">Стежити</string>
     <string name="profile_button_unfollow">Відписатися</string>
-    <string name="profile_subscribed_to">підписався на</string>
-    <string name="profile_saved">збережено</string>
-    <string name="profile_reshared">поширено повторно</string>
-    <string name="profile_favorited">додано до вибраного</string>
-    <string name="profile_favorited_comments">вподобав коментарі %1$s</string>
-    <string name="profile_signup">зареєструвався в Newsblur</string>
-    <string name="profile_comments_on">коментарі до</string>
     <string name="profile_feed_not_available">Ви більше не підписані на цю стрічку</string>
     <string name="profile_do_not_follow">Ви не стежите за цим користувачем</string>
     <string name="profile_no_interactions">Немає взаємодій</string>
@@ -1048,7 +1031,7 @@
         <item quantity="other">%1$d історій/місяць</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Застаріла · остання новина %1$s</string>
-    <string name="add_site_url_or_search">https:// або пошук</string>
+    <string name="add_site_url_or_search">%1$s або пошук</string>
     <string name="add_site_choose_folder">Виберіть папку</string>
     <string name="add_site_top_level">— Верхній рівень —</string>
     <string name="add_site_adding_site">Додавання сайту</string>
@@ -1144,4 +1127,70 @@
         <item quantity="one">%d історія</item>
         <item quantity="other">%d матеріалів</item>
     </plurals>
+    <string name="language_dialog_title">Виберіть мову</string>
+    <string name="language_dialog_detected">NewsBlur визначив %1$s на вашому пристрої.</string>
+    <string name="language_dialog_note">Ви можете будь-коли змінити це в налаштуваннях.</string>
+    <string name="language_dialog_use">Використовувати %1$s</string>
+    <string name="language_dialog_choose_another">Вибрати іншу мову</string>
+    <string name="language_dialog_pick">Виберіть мову, якою має користуватися NewsBlur. Ви можете будь-коли змінити її в налаштуваннях.</string>
+    <string name="main_menu_import_feed_bundles">Імпорт і набори стрічок</string>
+    <string name="main_menu_export_feeds">Експортувати стрічки</string>
+    <string name="discover_open">Відкрити</string>
+    <string name="discover_folder_top_level">Верхній рівень</string>
+    <string name="discover_add_to_folder">Додати до папки</string>
+    <string name="add_site_shortcut_trending">У тренді</string>
+    <string name="add_site_freshness_stale">Застарілий %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="few">%d хв тому</item>
+        <item quantity="many">%d хв тому</item>
+        <item quantity="one">%d хв тому</item>
+        <item quantity="other">%d хв тому</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="few">%d год тому</item>
+        <item quantity="many">%d год тому</item>
+        <item quantity="one">%d год тому</item>
+        <item quantity="other">%d год тому</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="few">%d дн. тому</item>
+        <item quantity="many">%d дн тому</item>
+        <item quantity="one">%d день тому</item>
+        <item quantity="other">%d дн. тому</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="few">%d тиж. тому</item>
+        <item quantity="many">%d тиж. тому</item>
+        <item quantity="one">%d тиждень тому</item>
+        <item quantity="other">%d тиж. тому</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="few">%d міс. тому</item>
+        <item quantity="many">%d міс. тому</item>
+        <item quantity="one">%d міс. тому</item>
+        <item quantity="other">%d міс. тому</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Ви підписалися на %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s підписався на %2$s</string>
+    <string name="profile_activity_you_saved">Ви зберегли %1$s</string>
+    <string name="profile_activity_user_saved">%1$s зберіг(-ла) %2$s</string>
+    <string name="profile_activity_you_signed_up">Ви зареєструвалися в Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s зареєструвався(-лася) в Newsblur</string>
+    <string name="profile_activity_you_followed">Ви почали стежити за %1$s</string>
+    <string name="profile_activity_user_followed">%1$s підписався(-лася) на %2$s</string>
+    <string name="profile_activity_you_favorited_comments">Ви додали до обраного %1$s коментарів до %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s вподобав(-ла) коментарі %2$s до %3$s</string>
+    <string name="profile_activity_you_replied">Ви відповіли %1$s</string>
+    <string name="profile_activity_user_replied">%1$s відповів(-ла) %2$s</string>
+    <string name="profile_activity_you_shared">Ви поділилися %1$s</string>
+    <string name="profile_activity_user_shared">%1$s поділився %2$s</string>
+    <string name="profile_interaction_following_you">%1$s тепер стежить за вами</string>
+    <string name="profile_interaction_following_user">%1$s тепер стежить за %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s вподобав(-ла) ваші коментарі до %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s вподобав(-ла) коментарі %2$s до %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s відповів(-ла) на ваш коментар</string>
+    <string name="profile_interaction_replied_your_reply">%1$s відповів(-ла) на вашу відповідь</string>
+    <string name="profile_interaction_replied_user_comment">%1$s відповів(-ла) на коментар %2$s\'</string>
+    <string name="profile_interaction_replied_user_reply">%1$s відповів(-ла) на відповідь користувача %2$s\'а</string>
+    <string name="profile_interaction_reshared">%1$s повторно поділився(-лася) %2$s</string>
 </resources>

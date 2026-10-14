@@ -29,9 +29,6 @@ msgstr "แม้การค้นพบเนื้อหาดี ๆ จะ�
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " เลือก Premium, Archive หรือ Pro แล้วชำระเงิน"
 
-msgid " Customize days of unreads"
-msgstr " กำหนดจำนวนวันของเรื่องที่ยังไม่อ่าน"
-
 msgid " Gift for free (staff)"
 msgstr " ให้ฟรี (ทีมงาน)"
 
@@ -49,34 +46,6 @@ msgstr " คุณสามารถฝึกสอนเรื่องรา�
 
 msgid " You get a full refund, automatically."
 msgstr " คุณจะได้รับเงินคืนเต็มจำนวนโดยอัตโนมัติ"
-
-msgid " are stories you don't like"
-msgstr " คือเรื่องราวที่คุณไม่ชอบ"
-
-msgid " are stories you have not yet rated"
-msgstr " คือเรื่องที่คุณยังไม่ได้ให้คะแนน"
-
-msgid " are stories you like"
-msgstr " คือเรื่องที่คุณชอบ"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " เป็นเวลาสูงสุด %(value_1)s วัน"
-
-msgid " for up to 365 days"
-msgstr " นานสูงสุด 365 วัน"
-
-msgid " of the screen"
-msgstr "ของหน้าจอ"
-
-msgid " or "
-msgstr " หรือ "
-
-msgid " second"
-msgstr " วินาที"
-
-msgid " to change keyboard shortcuts."
-msgstr " เพื่อเปลี่ยนปุ่มลัดบนแป้นพิมพ์"
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -164,6 +133,15 @@ msgstr "$99/ปี"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s ขาดการเชื่อมต่อ"
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s ปรับแต่งจำนวนวันของรายการที่ยังไม่อ่าน"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s นานสูงสุด %(count)s วัน"
 
 #, python-format
 msgid "%(category)s topics"
@@ -330,11 +308,6 @@ msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s การตอบกลับ"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s วินาที"
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "เลือกแล้ว %(count)s รายการ"
@@ -464,12 +437,28 @@ msgid_plural "%(count)sw ago"
 msgstr[0] "%(count)s สัปดาห์ที่แล้ว"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "ตั้งค่าการแจ้งเตือน %(feed_title)s แล้ว"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s คือบทความที่คุณไม่ชอบ"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s คือบทความที่คุณยังไม่ได้ให้คะแนน"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s คือบทความที่คุณชอบ"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -522,6 +511,10 @@ msgstr[0] "%(start)s ถึง %(end)s นาที"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s หรือ %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1083,8 +1076,10 @@ msgstr "กำลังเพิ่มเว็บไซต์..."
 msgid "Adding..."
 msgstr "กำลังเพิ่ม..."
 
-msgid "After "
-msgstr "หลังจาก "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "หลังจาก %(slider)s %(count)s วินาที"
 
 msgid "After marking feed/folder read"
 msgstr "หลังจากทำเครื่องหมายว่าฟีด/โฟลเดอร์อ่านแล้ว"
@@ -1398,6 +1393,9 @@ msgstr "สร้างสรุปโดยอัตโนมัติตาม
 msgid "Automatically play next item in queue"
 msgstr "เล่นรายการถัดไปในคิวโดยอัตโนมัติ"
 
+msgid "Back"
+msgstr "กลับ"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1690,6 +1688,9 @@ msgstr "เลือกเว็บไซต์ของคุณ"
 msgid "Choose a story pattern"
 msgstr "เลือกรูปแบบเรื่องราว"
 
+msgid "Choose another language"
+msgstr "เลือกภาษาอื่น"
+
 msgid "Choose categories"
 msgstr "เลือกหมวดหมู่"
 
@@ -1720,6 +1721,9 @@ msgstr "เลือกส่วนที่จะแสดงในสรุป
 msgid "Choose your browser"
 msgstr "เลือกเบราว์เซอร์ของคุณ"
 
+msgid "Choose your language"
+msgstr "เลือกภาษาของคุณ"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "เลือกรุ่น AI ที่ต้องการ: Claude, GPT, Gemini หรือ Grok"
 
@@ -1729,8 +1733,9 @@ msgstr "เลือกเว็บไซต์ของคุณ"
 msgid "Classifier filter scope"
 msgstr "ขอบเขตตัวกรองตัวจำแนก"
 
-msgid "Classifier scope requires "
-msgstr "ขอบเขตตัวจำแนกต้องมี "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "ขอบเขตตัวจำแนกต้องมี %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) และ Grok (xAI) สลับใช้ได้ทุกเมื่อ"
@@ -3186,8 +3191,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "สมัคร Premium — $36/ปี"
 
-msgid "Go back to "
-msgstr "กลับไปที่ "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "กลับไปที่ %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "เรื่องน่าอ่าน"
@@ -3696,8 +3702,9 @@ msgstr "จัดการการเรียกเก็บเงินบน
 msgid "Manage email settings"
 msgstr "จัดการการตั้งค่าอีเมล"
 
-msgid "Manually by hitting "
-msgstr "ด้วยตนเองโดยกด "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "ดำเนินการด้วยตนเองโดยกด %(first_key)s หรือ %(second_key)s"
 
 msgid "Manually or by clicking in the story"
 msgstr "ด้วยตนเองหรือคลิกในเรื่อง"
@@ -4074,6 +4081,10 @@ msgstr "NewsBlur ตรวจหาการเปลี่ยนแปลงแ
 msgid "NewsBlur connected to other services"
 msgstr "บริการอื่นๆ ที่เชื่อมต่อกับ NewsBlur"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur ตรวจพบ %(language)s จากเบราว์เซอร์ของคุณ"
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "ขณะนี้ NewsBlur ใช้งานไม่ได้ <br> โปรดลองอีกครั้งในภายหลัง"
 
@@ -4352,8 +4363,9 @@ msgstr "การแจ้งเตือน"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "การแจ้งเตือนเกี่ยวกับตัวจำแนกความฉลาดที่ฝึกไว้"
 
-msgid "Notifications require "
-msgstr "การแจ้งเตือนต้องใช้ "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "การแจ้งเตือนต้องมี %(tier_link)s"
 
 msgid "Notify on"
 msgstr "แจ้งเตือนเมื่อ"
@@ -4409,8 +4421,9 @@ msgstr "โอ๊ะ เกิดปัญหาในการดึง URL น
 msgid "Old password"
 msgstr "รหัสผ่านเดิม"
 
-msgid "Older than: "
-msgstr "เก่ากว่า: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "เก่ากว่า: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "เก่ากว่า:"
@@ -4628,8 +4641,9 @@ msgstr "ดึงหน้าเว็บ"
 msgid "Page down"
 msgstr "เลื่อนหน้าลง"
 
-msgid "Page down by "
-msgstr "เลื่อนหน้าลงทีละ "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "เลื่อนหน้าลง %(slider)s %(percent)s ของหน้าจอ"
 
 msgid "Page up"
 msgstr "เลื่อนขึ้นหนึ่งหน้า"
@@ -4691,6 +4705,9 @@ msgstr "ตั้งค่าการแจ้งเตือนแยกตา
 
 msgid "Pick a tier & pay."
 msgstr "เลือกระดับและชำระเงิน"
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "เลือกภาษาที่ต้องการให้ NewsBlur ใช้ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า"
 
 msgid "Places"
 msgstr "สถานที่"
@@ -4950,8 +4967,9 @@ msgstr "อ้างอิง"
 msgid "RSS Feed"
 msgstr "ฟีด RSS"
 
-msgid "RSS feeds for folders is a "
-msgstr "ฟีด RSS สำหรับโฟลเดอร์เป็น "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "ฟีด RSS สำหรับโฟลเดอร์เป็นฟีเจอร์%(link_start)sพรีเมียม%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5110,8 +5128,9 @@ msgstr "สร้างบทสรุปใหม่"
 msgid "Regex"
 msgstr "Regex"
 
-msgid "Regex requires "
-msgstr "นิพจน์ปกติต้องมี "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "นิพจน์ทั่วไปต้องมี %(tier_link)s"
 
 msgid "Related"
 msgstr "เกี่ยวข้อง"
@@ -5188,8 +5207,9 @@ msgstr "ส่งคำขอแล้ว"
 msgid "Requests to Follow You"
 msgstr "คำขอติดตามคุณ"
 
-msgid "Requires "
-msgstr "ต้องใช้ "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "ต้องมี %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "ต้องใช้ Premium Archive"
@@ -5395,8 +5415,9 @@ msgstr "ตัวจัดประเภทแบบกำหนดขอบเ
 msgid "Scroll to comments"
 msgstr "เลื่อนไปยังความคิดเห็น"
 
-msgid "Scroll up/down in story by "
-msgstr "เลื่อนขึ้น/ลงในเรื่องทีละ "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "เลื่อนขึ้น/ลงในบทความทีละ %(slider)s %(pixels)spx"
 
 msgid "Search"
 msgstr "ค้นหา"
@@ -7071,6 +7092,10 @@ msgstr "ประวัติการเรียกเก็บเงินต
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว"
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "ใช้ %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "ใช้รูปแบบเวลา 12 ชั่วโมง"
 
@@ -7427,6 +7452,9 @@ msgstr "คุณยกเลิกรับอีเมลทั้งหมด
 msgid "You can also filter out stories you don't want to read."
 msgstr "คุณยังกรองเรื่องราวที่ไม่ต้องการอ่านออกได้"
 
+msgid "You can change this anytime in Preferences."
+msgstr "คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า"
+
 msgid "You can change your opinions."
 msgstr "คุณเปลี่ยนความคิดเห็นได้"
 
@@ -7474,8 +7502,9 @@ msgstr "คุณต้องติดตาม %(value_1)s จึงจะต�
 msgid "You must be logged in to send a story over email."
 msgstr "คุณต้องเข้าสู่ระบบก่อนจึงจะส่งเรื่องราวทางอีเมลได้"
 
-msgid "You must have a "
-msgstr "คุณต้องมี "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "คุณต้องมีบัญชี %(link_start)spremium account%(link_end)s เพื่อเปลี่ยนปุ่มลัดแป้นพิมพ์"
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7740,11 +7769,9 @@ msgstr "โอเพนซอร์ส"
 msgid "optional, appears above the story"
 msgstr "ไม่บังคับ แสดงเหนือเรื่องราว"
 
-msgid "or"
-msgstr "หรือ"
-
-msgid "or subscribe with "
-msgstr "หรือสมัครสมาชิกด้วย "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "หรือสมัครรับข้อมูลด้วย %(paypal_button)s"
 
 msgid "pending"
 msgstr "รอดำเนินการ"
@@ -7755,17 +7782,8 @@ msgstr "อุตสาหกรรมพอดแคสต์"
 msgid "premium"
 msgstr "พรีเมียม"
 
-msgid "premium account"
-msgstr "บัญชีพรีเมียม"
-
-msgid "premium feature"
-msgstr "ฟีเจอร์พรีเมียม"
-
 msgid "public transit"
 msgstr "ขนส่งสาธารณะ"
-
-msgid "px."
-msgstr "พิกเซล"
 
 msgid "quantum computing"
 msgstr "คอมพิวเตอร์ควอนตัม"

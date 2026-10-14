@@ -174,25 +174,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="profile_ago">yang lalu</string>
     <string name="profile_recent_actvity">Aktivitas</string>
     <string name="profile_recent_interactions">Interaksi</string>
-    <string name="profile_started_following">mengikuti</string>
-    <string name="profile_you">Anda</string>
-    <string name="profile_you_lower">Anda</string>
-    <string name="profile_your">Anda</string>
-    <string name="profile_now_following">kini mengikuti %1$s</string>
-    <string name="profile_replied_to">Membalas</string>
-    <string name="profile_replied_to_your">membalas %1$s</string>
-    <string name="profile_shared_story">dibagikan</string>
-    <string name="profile_comment">komentar</string>
-    <string name="profile_reply">balas</string>
     <string name="profile_button_follow">Ikuti</string>
     <string name="profile_button_unfollow">Berhenti mengikuti</string>
-    <string name="profile_subscribed_to">berlangganan</string>
-    <string name="profile_saved">disimpan</string>
-    <string name="profile_reshared">dibagikan ulang</string>
-    <string name="profile_favorited">difavoritkan</string>
-    <string name="profile_favorited_comments">menyukai %1$s komentar pada</string>
-    <string name="profile_signup">mendaftar ke Newsblur</string>
-    <string name="profile_comments_on">mengomentari</string>
     <string name="profile_feed_not_available">Anda tidak lagi berlangganan feed ini</string>
     <string name="profile_do_not_follow">Anda tidak mengikuti pengguna ini</string>
     <string name="profile_no_interactions">Tidak ada interaksi</string>
@@ -1012,7 +995,7 @@ orang-orang untuk membicarakan dunia.</string>
         <item quantity="other">%1$d artikel/bulan</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Usang · artikel terakhir %1$s</string>
-    <string name="add_site_url_or_search">https:// atau cari</string>
+    <string name="add_site_url_or_search">%1$s atau cari</string>
     <string name="add_site_choose_folder">Pilih folder</string>
     <string name="add_site_top_level">— Tingkat Teratas —</string>
     <string name="add_site_adding_site">Menambahkan situs</string>
@@ -1102,4 +1085,55 @@ orang-orang untuk membicarakan dunia.</string>
     <plurals name="briefing_group_story_count">
         <item quantity="other">%d cerita</item>
     </plurals>
+    <string name="language_dialog_title">Pilih bahasa Anda</string>
+    <string name="language_dialog_detected">NewsBlur mendeteksi %1$s dari perangkat Anda.</string>
+    <string name="language_dialog_note">Anda dapat mengubahnya kapan saja di Preferensi.</string>
+    <string name="language_dialog_use">Gunakan %1$s</string>
+    <string name="language_dialog_choose_another">Pilih bahasa lain</string>
+    <string name="language_dialog_pick">Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.</string>
+    <string name="main_menu_import_feed_bundles">Impor dan paket feed</string>
+    <string name="main_menu_export_feeds">Ekspor feed</string>
+    <string name="discover_open">Buka</string>
+    <string name="discover_folder_top_level">Tingkat Teratas</string>
+    <string name="discover_add_to_folder">Tambahkan ke folder</string>
+    <string name="add_site_shortcut_trending">Sedang tren</string>
+    <string name="add_site_freshness_stale">%1$s sudah lama</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="other">%d mnt lalu</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="other">%d jam lalu</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="other">%dh lalu</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="other">%dm lalu</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="other">%d bln lalu</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Anda berlangganan %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s berlangganan %2$s</string>
+    <string name="profile_activity_you_saved">Anda menyimpan %1$s</string>
+    <string name="profile_activity_user_saved">%1$s menyimpan %2$s</string>
+    <string name="profile_activity_you_signed_up">Anda mendaftar ke Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s mendaftar ke Newsblur</string>
+    <string name="profile_activity_you_followed">Anda mengikuti %1$s</string>
+    <string name="profile_activity_user_followed">%1$s mengikuti %2$s</string>
+    <string name="profile_activity_you_favorited_comments">Anda memfavoritkan %1$s komentar di %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s menyukai %2$s komentar di %3$s</string>
+    <string name="profile_activity_you_replied">Anda membalas %1$s</string>
+    <string name="profile_activity_user_replied">%1$s membalas %2$s</string>
+    <string name="profile_activity_you_shared">Anda membagikan %1$s</string>
+    <string name="profile_activity_user_shared">%1$s membagikan %2$s</string>
+    <string name="profile_interaction_following_you">%1$s kini mengikuti Anda</string>
+    <string name="profile_interaction_following_user">%1$s kini mengikuti %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s menyukai komentar Anda di %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s menyukai komentar %2$s di %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s membalas komentar Anda</string>
+    <string name="profile_interaction_replied_your_reply">%1$s membalas balasan Anda</string>
+    <string name="profile_interaction_replied_user_comment">%1$s membalas komentar %2$s\'s</string>
+    <string name="profile_interaction_replied_user_reply">%1$s membalas balasan %2$s\'s</string>
+    <string name="profile_interaction_reshared">%1$s membagikan ulang %2$s</string>
 </resources>

@@ -174,25 +174,8 @@
     <string name="profile_ago">назад</string>
     <string name="profile_recent_actvity">Активность</string>
     <string name="profile_recent_interactions">Взаимодействия</string>
-    <string name="profile_started_following">подписался</string>
-    <string name="profile_you">Вы</string>
-    <string name="profile_you_lower">вы</string>
-    <string name="profile_your">ваш</string>
-    <string name="profile_now_following">теперь подписан(а) на %1$s</string>
-    <string name="profile_replied_to">Ответил(а)</string>
-    <string name="profile_replied_to_your">ответил(а) %1$s</string>
-    <string name="profile_shared_story">поделился</string>
-    <string name="profile_comment">комментарий</string>
-    <string name="profile_reply">ответить</string>
     <string name="profile_button_follow">Подписаться</string>
     <string name="profile_button_unfollow">Отписаться</string>
-    <string name="profile_subscribed_to">подписан на</string>
-    <string name="profile_saved">сохранено</string>
-    <string name="profile_reshared">поделился повторно</string>
-    <string name="profile_favorited">добавлено в избранное</string>
-    <string name="profile_favorited_comments">добавил(а) в избранное %1$s комментариев к</string>
-    <string name="profile_signup">зарегистрировался в Newsblur</string>
-    <string name="profile_comments_on">комментариев к</string>
     <string name="profile_feed_not_available">Вы больше не подписаны на эту ленту</string>
     <string name="profile_do_not_follow">Вы не подписаны на этого пользователя</string>
     <string name="profile_no_interactions">Нет взаимодействий</string>
@@ -1048,7 +1031,7 @@
         <item quantity="other">%1$d публикаций в месяц</item>
     </plurals>
     <string name="setup_feed_stale_last_story">Не обновляется · последняя статья %1$s</string>
-    <string name="add_site_url_or_search">https:// или поиск</string>
+    <string name="add_site_url_or_search">%1$s или поиск</string>
     <string name="add_site_choose_folder">Выбрать папку</string>
     <string name="add_site_top_level">— Верхний уровень —</string>
     <string name="add_site_adding_site">Добавление сайта</string>
@@ -1144,4 +1127,70 @@
         <item quantity="one">%d история</item>
         <item quantity="other">%d материалов</item>
     </plurals>
+    <string name="language_dialog_title">Выберите язык</string>
+    <string name="language_dialog_detected">NewsBlur определил язык %1$s на вашем устройстве.</string>
+    <string name="language_dialog_note">Вы можете изменить это в любое время в настройках.</string>
+    <string name="language_dialog_use">Использовать %1$s</string>
+    <string name="language_dialog_choose_another">Выбрать другой язык</string>
+    <string name="language_dialog_pick">Выберите язык, который будет использовать NewsBlur. Вы можете изменить его в любое время в настройках.</string>
+    <string name="main_menu_import_feed_bundles">Импортировать подписки и наборы лент</string>
+    <string name="main_menu_export_feeds">Экспортировать ленты</string>
+    <string name="discover_open">Открыть</string>
+    <string name="discover_folder_top_level">Верхний уровень</string>
+    <string name="discover_add_to_folder">Добавить в папку</string>
+    <string name="add_site_shortcut_trending">В тренде</string>
+    <string name="add_site_freshness_stale">Устаревший %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="few">%d мин. назад</item>
+        <item quantity="many">%d мин. назад</item>
+        <item quantity="one">%d мин. назад</item>
+        <item quantity="other">%d мин. назад</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="few">%d ч назад</item>
+        <item quantity="many">%d ч. назад</item>
+        <item quantity="one">%d ч назад</item>
+        <item quantity="other">%d ч. назад</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="few">%d дн. назад</item>
+        <item quantity="many">%d дн. назад</item>
+        <item quantity="one">%d дн. назад</item>
+        <item quantity="other">%d дн. назад</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="few">%d нед. назад</item>
+        <item quantity="many">%d нед. назад</item>
+        <item quantity="one">%d нед. назад</item>
+        <item quantity="other">%d нед. назад</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="few">%d мес. назад</item>
+        <item quantity="many">%d мес. назад</item>
+        <item quantity="one">%d мес. назад</item>
+        <item quantity="other">%d мес. назад</item>
+    </plurals>
+    <string name="profile_activity_you_subscribed">Вы подписались на %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s подписался на %2$s</string>
+    <string name="profile_activity_you_saved">Вы сохранили %1$s</string>
+    <string name="profile_activity_user_saved">%1$s сохранил(-а) %2$s</string>
+    <string name="profile_activity_you_signed_up">Вы зарегистрировались в Newsblur</string>
+    <string name="profile_activity_user_signed_up">%1$s зарегистрировался(-ась) в Newsblur</string>
+    <string name="profile_activity_you_followed">Вы подписались на обновления %1$s</string>
+    <string name="profile_activity_user_followed">%1$s подписался(-ась) на %2$s</string>
+    <string name="profile_activity_you_favorited_comments">Вы добавили в избранное комментарии %1$s к записи %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s добавил(-а) в избранное комментарии к %3$s пользователя %2$s</string>
+    <string name="profile_activity_you_replied">Вы ответили %1$s</string>
+    <string name="profile_activity_user_replied">%1$s ответил(-а) %2$s</string>
+    <string name="profile_activity_you_shared">Вы поделились %1$s</string>
+    <string name="profile_activity_user_shared">%1$s поделился %2$s</string>
+    <string name="profile_interaction_following_you">%1$s теперь подписан(-а) на ваши обновления</string>
+    <string name="profile_interaction_following_user">%1$s теперь следит за %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s добавил(-а) в избранное ваши комментарии к %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s добавил(-а) в избранное комментарии пользователя %2$s к %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s ответил(-а) на ваш комментарий</string>
+    <string name="profile_interaction_replied_your_reply">%1$s ответил(-а) на ваш ответ</string>
+    <string name="profile_interaction_replied_user_comment">%1$s ответил(а) на комментарий %2$s\'</string>
+    <string name="profile_interaction_replied_user_reply">%1$s ответил(-а) на ответ пользователя %2$s</string>
+    <string name="profile_interaction_reshared">%1$s повторно поделился(-ась) %2$s</string>
 </resources>

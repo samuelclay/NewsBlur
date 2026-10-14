@@ -29,9 +29,6 @@ msgstr " İyi içerikler bulmak ne kadar güzel olsa da beğenmediğiniz yazıla
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Premium, Archive veya Pro'yu seçip ödeme adımına geçin."
 
-msgid " Customize days of unreads"
-msgstr " Okunmamışların gün sayısını özelleştir"
-
 msgid " Gift for free (staff)"
 msgstr " Ücretsiz hediye (personel)"
 
@@ -49,34 +46,6 @@ msgstr " Okudukça tek tek haberleri kolayca eğitebilirsiniz."
 
 msgid " You get a full refund, automatically."
 msgstr " Otomatik olarak tam para iadesi alırsınız."
-
-msgid " are stories you don't like"
-msgstr " beğenmediğiniz haberlerdir"
-
-msgid " are stories you have not yet rated"
-msgstr " henüz puan vermediğiniz hikâyelerdir"
-
-msgid " are stories you like"
-msgstr " beğendiğiniz hikâyelerdir"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " en fazla %(value_1)s gün boyunca"
-
-msgid " for up to 365 days"
-msgstr " 365 güne kadar"
-
-msgid " of the screen"
-msgstr " ekranın"
-
-msgid " or "
-msgstr " veya "
-
-msgid " second"
-msgstr " saniye"
-
-msgid " to change keyboard shortcuts."
-msgstr " klavye kısayollarını değiştirmek için."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -164,6 +133,15 @@ msgstr "99 $/yıl"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s bağlantısı kesildi."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s okunmamış gün sayısını özelleştir"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s, en fazla %(count)s gün boyunca"
 
 #, python-format
 msgid "%(category)s topics"
@@ -330,11 +308,6 @@ msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s yanıt"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s saniye."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s seçildi"
@@ -464,12 +437,28 @@ msgid_plural "%(count)sw ago"
 msgstr[0] "%(count)s hafta önce"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s bildirimleri ayarlandı"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s, beğenmediğiniz hikâyelerdir"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s, henüz puan vermediğiniz hikâyelerdir"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s, beğendiğiniz hikâyelerdir"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -524,6 +513,10 @@ msgstr[0] "%(start)s ila %(end)s dakika"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s veya %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1083,8 +1076,10 @@ msgstr "Site ekleniyor..."
 msgid "Adding..."
 msgstr "Ekleniyor..."
 
-msgid "After "
-msgstr "Sonra "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s saniye sonra."
 
 msgid "After marking feed/folder read"
 msgstr "Akışı/klasörü okundu olarak işaretledikten sonra"
@@ -1400,6 +1395,9 @@ msgstr "Planlı olarak otomatik özet oluştur"
 msgid "Automatically play next item in queue"
 msgstr "Kuyruktaki sonraki öğeyi otomatik oynat"
 
+msgid "Back"
+msgstr "Geri"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1692,6 +1690,9 @@ msgstr "Sitelerinizi seçin"
 msgid "Choose a story pattern"
 msgstr "Bir haber kalıbı seçin"
 
+msgid "Choose another language"
+msgstr "Başka bir dil seçin"
+
 msgid "Choose categories"
 msgstr "Kategorileri seçin"
 
@@ -1722,6 +1723,9 @@ msgstr "Özetinizde hangi bölümlerin görüneceğini seçin"
 msgid "Choose your browser"
 msgstr "Tarayıcınızı seçin"
 
+msgid "Choose your language"
+msgstr "Dilinizi seçin"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Tercih ettiğiniz yapay zekâ modelini seçin: Claude, GPT, Gemini veya Grok"
 
@@ -1731,8 +1735,9 @@ msgstr "Sitelerinizi seçin"
 msgid "Classifier filter scope"
 msgstr "Sınıflandırıcı filtresinin kapsamı"
 
-msgid "Classifier scope requires "
-msgstr "Sınıflandırıcı kapsamı şunu gerektirir: "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "Sınıflandırıcı kapsamı %(tier_link)s gerektirir"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (xAI). İstediğiniz zaman aralarında geçiş yapın."
@@ -3208,8 +3213,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Premium'a geç — yılda 36 $"
 
-msgid "Go back to "
-msgstr "Geri dön: "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "%(breadcrumb)s sayfasına geri dön"
 
 msgid "Good Reads"
 msgstr "İyi Okumalar"
@@ -3722,8 +3728,9 @@ msgstr "Stripe'ta faturalandırmayı yönet"
 msgid "Manage email settings"
 msgstr "E-posta ayarlarını yönet"
 
-msgid "Manually by hitting "
-msgstr "Şu tuşa basarak elle "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "%(first_key)s veya %(second_key)s tuşuna basarak elle"
 
 msgid "Manually or by clicking in the story"
 msgstr "Elle veya habere tıklayarak"
@@ -4102,6 +4109,10 @@ msgstr "NewsBlur değişiklikleri kontrol eder ve yeni haberleri akışınıza i
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur'ın diğer hizmetlerle bağlantıları"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur, tarayıcınızda %(language)s dilini algıladı."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur şu anda çalışmıyor. <br> Lütfen biraz sonra tekrar deneyin."
 
@@ -4380,8 +4391,9 @@ msgstr "Bildirimler"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Eğitilmiş akıllı içerik sınıflandırıcıları için bildirimler"
 
-msgid "Notifications require "
-msgstr "Bildirimler için "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Bildirimler için %(tier_link)s gerekir"
 
 msgid "Notify on"
 msgstr "Şununla ilgili bildirim gönder:"
@@ -4437,8 +4449,9 @@ msgstr "Eyvah, bu URL alınırken bir sorun oluştu ve ne olduğuna dair geçerl
 msgid "Old password"
 msgstr "Eski parola"
 
-msgid "Older than: "
-msgstr "Şundan daha eski: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Şundan daha eski: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Daha eski:"
@@ -4666,8 +4679,9 @@ msgstr "Sayfa Getirme"
 msgid "Page down"
 msgstr "Sayfa aşağı"
 
-msgid "Page down by "
-msgstr "Sayfayı şu kadar aşağı kaydır: "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Ekranın %(percent)s kadarını aşağı kaydır: %(slider)s"
 
 msgid "Page up"
 msgstr "Sayfayı yukarı kaydır"
@@ -4731,6 +4745,9 @@ msgstr "Akış bazında bildirim ayarları"
 
 msgid "Pick a tier & pay."
 msgstr "Bir paket seçin ve ödeme yapın."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz."
 
 msgid "Places"
 msgstr "Yerler"
@@ -4992,8 +5009,9 @@ msgstr "Alıntı"
 msgid "RSS Feed"
 msgstr "RSS Akışı"
 
-msgid "RSS feeds for folders is a "
-msgstr "Klasörler için RSS akışları "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "Klasörler için RSS akışları %(link_start)spremium özelliktir%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5152,8 +5170,9 @@ msgstr "Bilgilendirmeyi yeniden oluştur"
 msgid "Regex"
 msgstr "Regex"
 
-msgid "Regex requires "
-msgstr "Regex şunu gerektirir: "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "Regex için %(tier_link)s gerekir"
 
 msgid "Related"
 msgstr "İlgili"
@@ -5230,8 +5249,9 @@ msgstr "İstendi"
 msgid "Requests to Follow You"
 msgstr "Takip istekleri"
 
-msgid "Requires "
-msgstr "Gerektirir "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "%(tier_link)s gerektirir"
 
 msgid "Requires Premium Archive"
 msgstr "Premium Archive gerektirir"
@@ -5441,8 +5461,9 @@ msgstr "Kapsamlı sınıflandırıcılar yalnızca %(plan)s abonelerine sunulur.
 msgid "Scroll to comments"
 msgstr "Yorumlara kaydır"
 
-msgid "Scroll up/down in story by "
-msgstr "Hikâyede yukarı/aşağı kaydırma: "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Hikâyede %(slider)s %(pixels)spx yukarı/aşağı kaydır."
 
 msgid "Search"
 msgstr "Ara"
@@ -7133,6 +7154,10 @@ msgstr "Kullanım faturalandırma geçmişi"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Doğal dil sınıflandırıcıları için kullanıma dayalı faturalandırma etkin."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "%(language)s kullan"
+
 msgid "Use 12-hour clock"
 msgstr "12 saatlik saati kullan"
 
@@ -7499,6 +7524,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "Okumak istemediğiniz hikâyeleri de filtreleyebilirsiniz."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz."
+
 msgid "You can change your opinions."
 msgstr "Fikirlerinizi değiştirebilirsiniz."
 
@@ -7548,8 +7576,9 @@ msgstr "Yanıt vermek için %(value_1)s kişisini takip ediyor olmalısınız"
 msgid "You must be logged in to send a story over email."
 msgstr "Bir hikâyeyi e-postayla göndermek için oturum açmalısınız."
 
-msgid "You must have a "
-msgstr "Bir "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Klavye kısayollarını değiştirmek için %(link_start)spremium account%(link_end)s sahibi olmanız gerekir."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7816,11 +7845,9 @@ msgstr "açık kaynak"
 msgid "optional, appears above the story"
 msgstr "isteğe bağlı, haberin üstünde görünür"
 
-msgid "or"
-msgstr "veya"
-
-msgid "or subscribe with "
-msgstr "veya şu aboneliğe geçin: "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "veya %(paypal_button)s ile abone olun"
 
 msgid "pending"
 msgstr "beklemede"
@@ -7831,17 +7858,8 @@ msgstr "podcast sektörü"
 msgid "premium"
 msgstr "premium"
 
-msgid "premium account"
-msgstr "premium hesap"
-
-msgid "premium feature"
-msgstr "premium özellik"
-
 msgid "public transit"
 msgstr "toplu taşıma"
-
-msgid "px."
-msgstr "piksel."
 
 msgid "quantum computing"
 msgstr "kuantum bilişim"

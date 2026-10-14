@@ -29,9 +29,6 @@ msgstr " 좋은 콘텐츠를 찾는 것만큼이나 마음에 들지 않는 글�
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Premium, Archive 또는 Pro를 선택하고 결제를 진행하세요."
 
-msgid " Customize days of unreads"
-msgstr " 읽지 않은 항목의 날짜 범위 맞춤 설정"
-
 msgid " Gift for free (staff)"
 msgstr " 무료 선물(직원용)"
 
@@ -49,34 +46,6 @@ msgstr " 읽는 동안 개별 스토리를 쉽게 학습시킬 수 있습니다.
 
 msgid " You get a full refund, automatically."
 msgstr " 전액 자동 환불됩니다."
-
-msgid " are stories you don't like"
-msgstr " 좋아하지 않는 스토리입니다"
-
-msgid " are stories you have not yet rated"
-msgstr " 는 아직 평가하지 않은 스토리입니다"
-
-msgid " are stories you like"
-msgstr " 님이 좋아하는 스토리입니다"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " 최대 %(value_1)s일 동안"
-
-msgid " for up to 365 days"
-msgstr " 최대 365일 동안"
-
-msgid " of the screen"
-msgstr " 화면의"
-
-msgid " or "
-msgstr " 또는 "
-
-msgid " second"
-msgstr " 초"
-
-msgid " to change keyboard shortcuts."
-msgstr " 을 눌러 키보드 단축키를 변경하세요."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -164,6 +133,15 @@ msgstr "연 $99"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s 연결이 끊겼습니다."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s 안 읽은 항목 날짜 맞춤 설정"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "최대 %(count)s일 동안 %(badge)s"
 
 #, python-format
 msgid "%(category)s topics"
@@ -330,11 +308,6 @@ msgid_plural "%(count)s replies"
 msgstr[0] "답글 %(count)s개"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s초."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s개 선택됨"
@@ -464,12 +437,28 @@ msgid_plural "%(count)sw ago"
 msgstr[0] "%(count)s주 전"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s 알림이 설정되었습니다"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s은(는) 좋아하지 않는 스토리입니다"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s은(는) 아직 평가하지 않은 스토리입니다"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s은(는) 좋아하는 스토리입니다"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -522,6 +511,10 @@ msgstr[0] "%(start)s~%(end)s분"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s 또는 %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1081,8 +1074,10 @@ msgstr "사이트 추가 중..."
 msgid "Adding..."
 msgstr "추가 중..."
 
-msgid "After "
-msgstr "후 "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s초 후"
 
 msgid "After marking feed/folder read"
 msgstr "피드/폴더를 읽음으로 표시한 후"
@@ -1388,6 +1383,9 @@ msgstr "일정에 따라 브리핑 자동 생성"
 msgid "Automatically play next item in queue"
 msgstr "대기열의 다음 항목 자동 재생"
 
+msgid "Back"
+msgstr "뒤로"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1678,6 +1676,9 @@ msgstr "사이트 선택"
 msgid "Choose a story pattern"
 msgstr "스토리 패턴 선택"
 
+msgid "Choose another language"
+msgstr "다른 언어 선택"
+
 msgid "Choose categories"
 msgstr "카테고리 선택"
 
@@ -1708,6 +1709,9 @@ msgstr "브리핑에 표시할 섹션 선택"
 msgid "Choose your browser"
 msgstr "브라우저 선택"
 
+msgid "Choose your language"
+msgstr "언어 선택"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "선호하는 AI 모델을 선택하세요: Claude, GPT, Gemini 또는 Grok"
 
@@ -1717,8 +1721,9 @@ msgstr "사이트 선택"
 msgid "Classifier filter scope"
 msgstr "분류 필터 적용 범위"
 
-msgid "Classifier scope requires "
-msgstr "분류기 범위에 필요한 항목: "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "분류기 범위에는 %(tier_link)s이(가) 필요합니다"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude(Anthropic), GPT(OpenAI), Gemini(Google), Grok(xAI)을 지원합니다. 언제든지 모델을 전환할 수 있습니다."
@@ -3160,8 +3165,9 @@ msgstr "Gmail에서 이메일 주소 확인 절차를 안내합니다. NewsBlur�
 msgid "Go Premium — $36/year"
 msgstr "Premium 가입 — 연 $36"
 
-msgid "Go back to "
-msgstr "다음으로 돌아가기 "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "%(breadcrumb)s(으)로 돌아가기"
 
 msgid "Good Reads"
 msgstr "추천 콘텐츠"
@@ -3666,8 +3672,9 @@ msgstr "Stripe에서 결제 관리"
 msgid "Manage email settings"
 msgstr "이메일 설정 관리"
 
-msgid "Manually by hitting "
-msgstr "직접 누르기: "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "%(first_key)s 또는 %(second_key)s을 눌러 수동으로"
 
 msgid "Manually or by clicking in the story"
 msgstr "수동으로 또는 스토리에서 클릭하여"
@@ -4040,6 +4047,10 @@ msgstr "NewsBlur 변경 사항을 확인하고 새 스토리를 피드에 전달
 msgid "NewsBlur connected to other services"
 msgstr "다른 서비스와 연동된 NewsBlur"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur에서 브라우저 언어를 %(language)s로 감지했습니다."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur이(가) 현재 다운되었습니다. <br>잠시 후 다시 시도하세요."
 
@@ -4318,8 +4329,9 @@ msgstr "알림"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "학습된 지능형 분류기에 대한 알림"
 
-msgid "Notifications require "
-msgstr "알림을 사용하려면 "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "알림에는 %(tier_link)s이(가) 필요합니다"
 
 msgid "Notify on"
 msgstr "알림 켜기"
@@ -4375,8 +4387,9 @@ msgstr "이런, 해당 URL을 가져오는 중 문제가 발생했지만 원인�
 msgid "Old password"
 msgstr "이전 비밀번호"
 
-msgid "Older than: "
-msgstr "다음 날짜보다 오래된 항목: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "다음보다 오래됨: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "이전:"
@@ -4592,8 +4605,9 @@ msgstr "페이지 가져오기"
 msgid "Page down"
 msgstr "페이지 아래로"
 
-msgid "Page down by "
-msgstr "페이지 아래로 이동: "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "화면의 %(percent)s %(slider)s만큼 아래로 이동"
 
 msgid "Page up"
 msgstr "페이지 위로"
@@ -4655,6 +4669,9 @@ msgstr "피드별 알림 설정"
 
 msgid "Pick a tier & pay."
 msgstr "요금제를 선택하고 결제하세요."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다."
 
 msgid "Places"
 msgstr "장소"
@@ -4912,8 +4929,9 @@ msgstr "인용"
 msgid "RSS Feed"
 msgstr "RSS 피드"
 
-msgid "RSS feeds for folders is a "
-msgstr "폴더용 RSS 피드는 "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "폴더별 RSS 피드는 %(link_start)s프리미엄 기능%(link_end)s입니다."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5070,8 +5088,9 @@ msgstr "브리핑 다시 생성"
 msgid "Regex"
 msgstr "정규식"
 
-msgid "Regex requires "
-msgstr "정규식에는 다음이 필요합니다 "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "정규식에는 %(tier_link)s이(가) 필요합니다"
 
 msgid "Related"
 msgstr "관련 항목"
@@ -5148,8 +5167,9 @@ msgstr "요청됨"
 msgid "Requests to Follow You"
 msgstr "나를 팔로우하려는 요청"
 
-msgid "Requires "
-msgstr "필요: "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "%(tier_link)s 필요"
 
 msgid "Requires Premium Archive"
 msgstr "프리미엄 아카이브 필요"
@@ -5351,8 +5371,9 @@ msgstr "범위 지정 분류기는 %(plan)s 구독자만 사용할 수 있습니
 msgid "Scroll to comments"
 msgstr "댓글로 스크롤"
 
-msgid "Scroll up/down in story by "
-msgstr "스토리에서 위/아래로 스크롤 "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "스토리에서 %(slider)s %(pixels)spx 위/아래로 스크롤합니다."
 
 msgid "Search"
 msgstr "검색"
@@ -7003,6 +7024,10 @@ msgstr "사용 요금 청구 내역"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "자연어 분류기에 사용량 기반 요금제가 활성화되어 있습니다."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "%(language)s 사용"
+
 msgid "Use 12-hour clock"
 msgstr "12시간제 사용"
 
@@ -7353,6 +7378,9 @@ msgstr "NewsBlur의 모든 이메일 수신을 해제했습니다. 다시 구독
 msgid "You can also filter out stories you don't want to read."
 msgstr "읽고 싶지 않은 스토리를 필터링할 수도 있습니다."
 
+msgid "You can change this anytime in Preferences."
+msgstr "이 설정은 언제든지 환경설정에서 변경할 수 있습니다."
+
 msgid "You can change your opinions."
 msgstr "의견은 언제든 바꿀 수 있습니다."
 
@@ -7400,8 +7428,9 @@ msgstr "답글을 달려면 %(value_1)s님을 팔로우해야 합니다"
 msgid "You must be logged in to send a story over email."
 msgstr "스토리를 이메일로 보내려면 로그인해야 합니다."
 
-msgid "You must have a "
-msgstr "다음 항목이 있어야 합니다: "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "키보드 단축키를 변경하려면 %(link_start)s프리미엄 계정%(link_end)s이 필요합니다."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7664,11 +7693,9 @@ msgstr "오픈 소스"
 msgid "optional, appears above the story"
 msgstr "선택 사항이며 스토리 위에 표시됩니다"
 
-msgid "or"
-msgstr "또는"
-
-msgid "or subscribe with "
-msgstr "또는 다음으로 구독하기 "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "또는 %(paypal_button)s으로 구독"
 
 msgid "pending"
 msgstr "대기 중"
@@ -7679,17 +7706,8 @@ msgstr "팟캐스트 업계"
 msgid "premium"
 msgstr "프리미엄"
 
-msgid "premium account"
-msgstr "프리미엄 계정"
-
-msgid "premium feature"
-msgstr "프리미엄 기능"
-
 msgid "public transit"
 msgstr "대중교통"
-
-msgid "px."
-msgstr "픽셀."
 
 msgid "quantum computing"
 msgstr "양자 컴퓨팅"

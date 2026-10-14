@@ -103,6 +103,10 @@ msgstr[0] "hace %(count)d minuto"
 msgstr[1] "Hace %(count)d minutos"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d día"
@@ -1230,6 +1234,9 @@ msgid ""
 msgstr ""
 "Craig Hockenberry analiza en profundidad por qué las impresoras Canon aparecen constantemente como «Sin "
 "conexión» en Mac: un firmware de Bonjour/mDNS defectuoso &mdash;&mdash; y presenta una solución permanente."
+
+msgid "Create Account"
+msgstr "Crear cuenta"
 
 msgid "Create a new account instead"
 msgstr "Crear una cuenta nueva"
@@ -6033,9 +6040,6 @@ msgstr "por %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "Se requieren classifier_type y classifier_value"
 
-msgid "create account"
-msgstr "crear cuenta"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers debe ser una lista"
 
@@ -6079,9 +6083,6 @@ msgstr "un segundo"
 
 msgid "just now"
 msgstr "ahora mismo"
-
-msgid "log in"
-msgstr "iniciar sesión"
 
 msgid "logout"
 msgstr "cerrar sesión"

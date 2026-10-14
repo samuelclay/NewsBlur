@@ -109,6 +109,10 @@ msgstr[1] "%(count)d хвилини тому"
 msgstr[2] "%(count)d хвилин тому"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d день"
@@ -1242,6 +1246,9 @@ msgid ""
 msgstr ""
 "Крейг Гокенберрі детально розбирає, чому принтери Canon на Mac постійно переходять у стан «Не в мережі»: "
 "&mdash; несправна прошивка Bonjour/mDNS &mdash;, а також пропонує постійне рішення."
+
+msgid "Create Account"
+msgstr "Створити обліковий запис"
 
 msgid "Create a new account instead"
 msgstr "Натомість створити новий обліковий запис"
@@ -6030,9 +6037,6 @@ msgstr "від %(authors)s"
 msgid "classifier_type and classifier_value are required"
 msgstr "Потрібно вказати classifier_type і classifier_value"
 
-msgid "create account"
-msgstr "створити обліковий запис"
-
 msgid "dashboard_rivers must be a list"
 msgstr "dashboard_rivers має бути списком"
 
@@ -6076,9 +6080,6 @@ msgstr "секундочку"
 
 msgid "just now"
 msgstr "щойно"
-
-msgid "log in"
-msgstr "увійти"
 
 msgid "logout"
 msgstr "вийти"

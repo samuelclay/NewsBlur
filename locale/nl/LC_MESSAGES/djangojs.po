@@ -32,9 +32,6 @@ msgstr ""
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Kies Premium, Archive of Pro en rond de betaling af."
 
-msgid " Customize days of unreads"
-msgstr " Pas het aantal dagen met ongelezen artikelen aan"
-
 msgid " Gift for free (staff)"
 msgstr " Cadeau zonder kosten (medewerker)"
 
@@ -52,34 +49,6 @@ msgstr " Je kunt afzonderlijke verhalen eenvoudig trainen terwijl je leest."
 
 msgid " You get a full refund, automatically."
 msgstr " Je krijgt automatisch het volledige bedrag terug."
-
-msgid " are stories you don't like"
-msgstr " zijn artikelen die je niet leuk vindt"
-
-msgid " are stories you have not yet rated"
-msgstr " zijn artikelen die je nog niet hebt beoordeeld"
-
-msgid " are stories you like"
-msgstr " zijn artikelen die je leuk vindt"
-
-#, python-format
-msgid " for up to %(value_1)s days"
-msgstr " gedurende maximaal %(value_1)s dagen"
-
-msgid " for up to 365 days"
-msgstr " voor maximaal 365 dagen"
-
-msgid " of the screen"
-msgstr " van het scherm"
-
-msgid " or "
-msgstr " of "
-
-msgid " second"
-msgstr " seconde"
-
-msgid " to change keyboard shortcuts."
-msgstr " om sneltoetsen te wijzigen."
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -169,6 +138,16 @@ msgstr "$99/jaar"
 #, python-format
 msgid "%(account)s disconnected."
 msgstr "%(account)s verbinding verbroken."
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s Dagen met ongelezen berichten aanpassen"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s maximaal %(count)s dag"
+msgstr[1] "%(badge)s maximaal %(count)s dagen"
 
 #, python-format
 msgid "%(category)s topics"
@@ -363,12 +342,6 @@ msgstr[0] "%(count)s reactie"
 msgstr[1] "%(count)s reacties"
 
 #, python-format
-msgid "%(count)s second."
-msgid_plural "%(count)s seconds."
-msgstr[0] "%(count)s seconde."
-msgstr[1] "%(count)s seconden."
-
-#, python-format
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "%(count)s geselecteerd"
@@ -523,12 +496,28 @@ msgstr[0] "%(count)sw geleden"
 msgstr[1] "%(count)s w geleden"
 
 #, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s, %(time)s"
+
+#, python-format
 msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s-meldingen zijn ingesteld"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s zijn artikelen die je niet leuk vindt"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s zijn artikelen die je nog niet hebt beoordeeld"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s zijn artikelen die je leuk vindt"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -585,6 +574,10 @@ msgstr[1] "%(start)s tot %(end)s minuten"
 #, python-format
 msgid "%(start)s – %(end)s"
 msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s of %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
@@ -1150,8 +1143,11 @@ msgstr "Site toevoegen..."
 msgid "Adding..."
 msgstr "Toevoegen..."
 
-msgid "After "
-msgstr "Na "
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "Na %(slider)s %(count)s seconde."
+msgstr[1] "Na %(slider)s %(count)s seconden."
 
 msgid "After marking feed/folder read"
 msgstr "Na het markeren van een feed/map als gelezen"
@@ -1473,6 +1469,9 @@ msgstr "Automatisch overzichten volgens schema genereren"
 msgid "Automatically play next item in queue"
 msgstr "Volgend item in de wachtrij automatisch afspelen"
 
+msgid "Back"
+msgstr "Terug"
+
 #, python-format
 msgid "Back %(seconds)s second"
 msgid_plural "Back %(seconds)s seconds"
@@ -1769,6 +1768,9 @@ msgstr "Kies je sites"
 msgid "Choose a story pattern"
 msgstr "Kies een verhaalpatroon"
 
+msgid "Choose another language"
+msgstr "Kies een andere taal"
+
 msgid "Choose categories"
 msgstr "Categorieën kiezen"
 
@@ -1799,6 +1801,9 @@ msgstr "Kies welke secties in je briefing verschijnen"
 msgid "Choose your browser"
 msgstr "Kies je browser"
 
+msgid "Choose your language"
+msgstr "Kies je taal"
+
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Kies je favoriete AI-model: Claude, GPT, Gemini of Grok"
 
@@ -1808,8 +1813,9 @@ msgstr "Kies je sites"
 msgid "Classifier filter scope"
 msgstr "Filterbereik van de classificatie"
 
-msgid "Classifier scope requires "
-msgstr "Voor de reikwijdte van de classifier is vereist: "
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "De scope van de classificatie vereist %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -3281,8 +3287,9 @@ msgstr ""
 msgid "Go Premium — $36/year"
 msgstr "Neem Premium — $36/jaar"
 
-msgid "Go back to "
-msgstr "Ga terug naar "
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "Terug naar %(breadcrumb)s"
 
 msgid "Good Reads"
 msgstr "Goede artikelen"
@@ -3796,8 +3803,9 @@ msgstr "Facturering beheren via Stripe"
 msgid "Manage email settings"
 msgstr "E-mailinstellingen beheren"
 
-msgid "Manually by hitting "
-msgstr "Handmatig door op "
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "Handmatig door op %(first_key)s of %(second_key)s te drukken"
 
 msgid "Manually or by clicking in the story"
 msgstr "Handmatig of door op het artikel te klikken"
@@ -4184,6 +4192,10 @@ msgstr "NewsBlur controleert op wijzigingen en bezorgt nieuwe verhalen in je fee
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur gekoppeld aan andere diensten"
 
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur heeft %(language)s gedetecteerd in je browser."
+
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur is momenteel niet beschikbaar. <br> Probeer het straks opnieuw."
 
@@ -4465,8 +4477,9 @@ msgstr "Meldingen"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "Meldingen over getrainde intelligentieclassificaties"
 
-msgid "Notifications require "
-msgstr "Meldingen vereisen "
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "Meldingen vereisen %(tier_link)s"
 
 msgid "Notify on"
 msgstr "Melden bij"
@@ -4524,8 +4537,9 @@ msgstr ""
 msgid "Old password"
 msgstr "Oud wachtwoord"
 
-msgid "Older than: "
-msgstr "Ouder dan: "
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "Ouder dan: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
 msgstr "Ouder:"
@@ -4757,8 +4771,9 @@ msgstr "Pagina ophalen"
 msgid "Page down"
 msgstr "Pagina omlaag"
 
-msgid "Page down by "
-msgstr "Pagina omlaag met "
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "Een pagina omlaag, %(slider)s %(percent)s van het scherm"
 
 msgid "Page up"
 msgstr "Pagina omhoog"
@@ -4820,6 +4835,9 @@ msgstr "Meldingsinstellingen per feed"
 
 msgid "Pick a tier & pay."
 msgstr "Kies een abonnement en betaal."
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "Kies welke taal NewsBlur moet gebruiken. Je kunt dit op elk moment wijzigen in Voorkeuren."
 
 msgid "Places"
 msgstr "Plaatsen"
@@ -5090,8 +5108,9 @@ msgstr "Citaat"
 msgid "RSS Feed"
 msgstr "RSS-feed"
 
-msgid "RSS feeds for folders is a "
-msgstr "RSS-feeds voor mappen zijn een "
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "RSS-feeds voor mappen zijn een %(link_start)spremiumfunctie%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
@@ -5250,8 +5269,9 @@ msgstr "Briefing opnieuw genereren"
 msgid "Regex"
 msgstr "Regex"
 
-msgid "Regex requires "
-msgstr "Regex vereist "
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "Regex vereist %(tier_link)s"
 
 msgid "Related"
 msgstr "Verwant"
@@ -5329,8 +5349,9 @@ msgstr "Aangevraagd"
 msgid "Requests to Follow You"
 msgstr "Verzoeken om jou te volgen"
 
-msgid "Requires "
-msgstr "Vereist "
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "Vereist %(tier_link)s"
 
 msgid "Requires Premium Archive"
 msgstr "Vereist Premium Archive"
@@ -5542,8 +5563,9 @@ msgstr "Gerichte classifiers zijn alleen beschikbaar voor %(plan)s-abonnees."
 msgid "Scroll to comments"
 msgstr "Naar de reacties scrollen"
 
-msgid "Scroll up/down in story by "
-msgstr "Scroll omhoog/omlaag in het artikel met "
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "Scroll %(slider)s %(pixels)s px omhoog/omlaag in het artikel."
 
 msgid "Search"
 msgstr "Zoeken"
@@ -7251,6 +7273,10 @@ msgstr "Facturatiegeschiedenis"
 msgid "Usage-based billing is enabled for natural language classifiers."
 msgstr "Facturering op basis van gebruik is ingeschakeld voor classifiers voor natuurlijke taal."
 
+#, python-format
+msgid "Use %(language)s"
+msgstr "Gebruik %(language)s"
+
 msgid "Use 12-hour clock"
 msgstr "12-uursnotatie gebruiken"
 
@@ -7625,6 +7651,9 @@ msgstr ""
 msgid "You can also filter out stories you don't want to read."
 msgstr "Je kunt ook artikelen filteren die je niet wilt lezen."
 
+msgid "You can change this anytime in Preferences."
+msgstr "Je kunt dit op elk moment wijzigen in Voorkeuren."
+
 msgid "You can change your opinions."
 msgstr "Je kunt je mening aanpassen."
 
@@ -7673,8 +7702,9 @@ msgstr "Je moet %(value_1)s volgen om te kunnen reageren"
 msgid "You must be logged in to send a story over email."
 msgstr "Je moet ingelogd zijn om een artikel per e-mail te versturen."
 
-msgid "You must have a "
-msgstr "Je moet een "
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "Je hebt een %(link_start)spremiumaccount%(link_end)s nodig om sneltoetsen te wijzigen."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -7942,11 +7972,9 @@ msgstr "open source"
 msgid "optional, appears above the story"
 msgstr "optioneel, wordt boven het artikel weergegeven"
 
-msgid "or"
-msgstr "of"
-
-msgid "or subscribe with "
-msgstr "of abonneer je via "
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "of abonneer je met %(paypal_button)s"
 
 msgid "pending"
 msgstr "in behandeling"
@@ -7957,17 +7985,8 @@ msgstr "podcastindustrie"
 msgid "premium"
 msgstr "premium"
 
-msgid "premium account"
-msgstr "premiumaccount"
-
-msgid "premium feature"
-msgstr "premiumfunctie"
-
 msgid "public transit"
 msgstr "openbaar vervoer"
-
-msgid "px."
-msgstr "px."
 
 msgid "quantum computing"
 msgstr "kwantumcomputing"
