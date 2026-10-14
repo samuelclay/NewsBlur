@@ -17,6 +17,7 @@ import com.newsblur.domain.Story
 import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Log
 import com.newsblur.util.ReadFilter
@@ -93,7 +94,7 @@ class WidgetRemoteViewsFactory(
             rv.setTextViewText(R.id.story_item_content, story.shortContent)
             rv.setTextViewText(R.id.story_item_author, story.authors)
             rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle)
-            val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
+            val time: CharSequence = StoryUtils.formatShortDate(LanguageSettings.localizedContext(context), story.timestamp)
             rv.setTextViewText(R.id.story_item_date, time)
 
             // image dimensions same as R.layout.view_widget_story_item

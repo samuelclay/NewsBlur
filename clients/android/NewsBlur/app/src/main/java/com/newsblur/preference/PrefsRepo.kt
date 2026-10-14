@@ -31,6 +31,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FolderViewFilter
 import com.newsblur.util.Font
 import com.newsblur.util.GestureAction
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.ListOrderFilter
 import com.newsblur.util.MarkAllReadConfirmation
 import com.newsblur.util.MarkStoryReadBehavior
@@ -221,7 +222,7 @@ class PrefsRepo(
                 if (value is Boolean) putBoolean(key, value)
             }
         }
-        com.newsblur.util.LanguageSettings.select(context, "auto")
+        LanguageSettings.select(context, "auto")
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()

@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.compose.SettingsScreen
@@ -37,6 +38,7 @@ import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
 import com.newsblur.util.FeedUtils.Companion.triggerSync
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
@@ -113,16 +115,7 @@ class SettingsFragment : Fragment() {
                 ) {
                     SettingsScreen(
                         state = uiState,
-                        onLanguageSelected = { language ->
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                val saved = withContext(Dispatchers.IO) { userApi.setPreference("language", language) }
-                                if (saved) {
-                                    com.newsblur.util.LanguageSettings.select(requireContext(), language)
-                                } else {
-                                    Toast.makeText(requireContext(), R.string.language_save_failed, Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        },
+                        onLanguageSelected = ::updateLanguage,
                         onBooleanChanged = ::updateBooleanPreference,
                         onStringChanged = ::updateStringPreference,
                         onStoryClusteringEnabledChanged = ::updateStoryClusteringEnabled,
@@ -138,6 +131,21 @@ class SettingsFragment : Fragment() {
     private fun refreshUiState() {
         val context = context ?: return
         uiState = buildSettingsUiState(context, prefsRepo, sharedPreferences).copy(clusterMarkReadSaving = clusterMarkReadSaving)
+    }
+
+    private fun updateLanguage(language: String) {
+        val context = requireContext().applicationContext
+        // SettingsFragment.kt marks the choice pending before saving it, so a feed refresh already in flight
+        // cannot revert it. SyncService.kt clears the flag after its next refresh saves the same language.
+        LanguageSettings.select(context, language, pending = true)
+        // Switching languages recreates this screen, so the save outlives the fragment.
+        ProcessLifecycleOwner.get().lifecycleScope.launch {
+            val saved = withContext(Dispatchers.IO) { userApi.setPreference("language", language) }
+            if (!saved) {
+                val message = LanguageSettings.localizedContext(context).getString(R.string.language_save_failed)
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun updateBooleanPreference(

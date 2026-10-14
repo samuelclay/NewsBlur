@@ -1,6 +1,5 @@
 package com.newsblur.addsite
 
-import androidx.compose.ui.res.stringResource
 import android.widget.ImageView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -61,6 +60,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -137,7 +138,7 @@ fun AddSiteSheet(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     SiteInput(
                         value = state.query,
-                        placeholder = "https:// or search",
+                        placeholder = stringResource(R.string.add_site_url_or_search),
                         icon = Icons.Rounded.Public,
                         enabled = enabled,
                         colors = colors,
@@ -148,6 +149,7 @@ fun AddSiteSheet(
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.weight(1f)) {
+                            val chooseFolderLabel = stringResource(R.string.add_site_choose_folder)
                             Row(
                                 Modifier
                                     .fillMaxWidth()
@@ -158,7 +160,7 @@ fun AddSiteSheet(
                                     .clickable(
                                         enabled = enabled,
                                         role = Role.Button,
-                                        onClickLabel = "Choose folder",
+                                        onClickLabel = chooseFolderLabel,
                                         onClick = { choosingFolder = true },
                                     ).padding(horizontal = 10.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -166,7 +168,7 @@ fun AddSiteSheet(
                                 Icon(Icons.Rounded.Folder, null, Modifier.size(20.dp), colors.textSecondary)
                                 Spacer(Modifier.width(7.dp))
                                 Text(
-                                    if (state.parent == AppConstants.ROOT_FOLDER) "— Top Level —" else state.parent,
+                                    if (state.parent == AppConstants.ROOT_FOLDER) stringResource(R.string.add_site_top_level) else state.parent,
                                     Modifier.weight(1f, fill = false),
                                     color = colors.textPrimary,
                                     fontSize = 15.sp,
@@ -204,7 +206,7 @@ fun AddSiteSheet(
                                                 )
                                                 Spacer(Modifier.width(10.dp))
                                                 Text(
-                                                    if (folder.name == AppConstants.ROOT_FOLDER) "— Top Level —" else folder.name,
+                                                    if (folder.name == AppConstants.ROOT_FOLDER) stringResource(R.string.add_site_top_level) else folder.name,
                                                     color = colors.textPrimary,
                                                     fontWeight = FontWeight.Normal,
                                                     fontSize = 16.sp,
@@ -233,15 +235,23 @@ fun AddSiteSheet(
                             contentAlignment = Alignment.Center,
                         ) {
                             if (state.submitting) {
+                                val addingSite = stringResource(R.string.add_site_adding_site)
                                 CircularProgressIndicator(
-                                    Modifier.size(20.dp).semantics { contentDescription = "Adding site" },
+                                    Modifier.size(20.dp).semantics { contentDescription = addingSite },
                                     color = Color.White,
                                     strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text(if (folderOnly) "Add folder" else stringResource(R.string.i18n_add_site), color = Color.White, fontSize = 16.sp, lineHeight = 20.sp)
+                                Text(
+                                    stringResource(if (folderOnly) R.string.add_site_add_folder else R.string.i18n_add_site),
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.sp,
+                                )
                             }
                         }
+                        val newFolderDescription =
+                            stringResource(if (state.creatingFolder) R.string.add_site_cancel_new_folder else R.string.add_site_create_new_folder)
                         Box(
                             Modifier
                                 .size(44.dp)
@@ -249,7 +259,7 @@ fun AddSiteSheet(
                                 .background(colors.cardBackground)
                                 .border(1.dp, if (state.creatingFolder) colors.accent else colors.border, RoundedCornerShape(8.dp))
                                 .clickable(enabled = enabled, role = Role.Button, onClick = onToggleFolder)
-                                .semantics { contentDescription = if (state.creatingFolder) "Cancel new folder" else "Create new folder" },
+                                .semantics { contentDescription = newFolderDescription },
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
@@ -263,7 +273,7 @@ fun AddSiteSheet(
                     AnimatedVisibility(state.creatingFolder) {
                         SiteInput(
                             state.newFolder,
-                            "New folder name",
+                            stringResource(R.string.add_site_new_folder_name),
                             Icons.Rounded.Folder,
                             enabled,
                             colors,
@@ -413,9 +423,10 @@ private fun SiteInput(
             },
         )
         if (loading) {
+            val searchingSites = stringResource(R.string.add_site_searching_sites)
             CircularProgressIndicator(
                 Modifier.padding(start = 6.dp).size(18.dp).semantics {
-                    contentDescription = "Searching sites"
+                    contentDescription = searchingSites
                 },
                 color = colors.textSecondary,
                 strokeWidth = 2.dp,
@@ -470,7 +481,7 @@ private fun SiteResultRow(
         }
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                "$subscriberCount ${if (result.numberOfSubscriber == 1) "subscriber" else "subscribers"}",
+                pluralStringResource(R.plurals.discover_subscribers, result.numberOfSubscriber, subscriberCount),
                 color = colors.textSecondary,
                 fontSize = 11.sp,
                 lineHeight = 14.sp,

@@ -1,11 +1,14 @@
 package com.newsblur.onboarding
 
+import android.content.Context
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.newsblur.di.ApiOkHttpClient
 import com.newsblur.discover.number
 import com.newsblur.discover.string
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.LanguageSettings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -35,6 +38,7 @@ class OnboardingApi
     constructor(
         @ApiOkHttpClient client: OkHttpClient,
         private val prefs: PrefsRepo,
+        @ApplicationContext private val context: Context,
     ) {
         private val client = client.newBuilder().retryOnConnectionFailure(false).build()
 
@@ -67,6 +71,7 @@ class OnboardingApi
                         .url(url.build())
                         .header("User-Agent", "NewsBlur Android")
                         .header("Cache-Control", "no-cache")
+                LanguageSettings.addLanguageHeader(request, context)
                 account.cookie?.let { request.header("Cookie", it) }
                 if (post) request.post(body ?: FormBody.Builder().apply { values.forEach { (k, v) -> add(k, v) } }.build())
                 client.newCall(request.build()).execute().use { response ->

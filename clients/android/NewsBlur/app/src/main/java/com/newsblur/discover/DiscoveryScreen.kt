@@ -1,5 +1,6 @@
 package com.newsblur.discover
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,9 +24,9 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -66,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -98,7 +100,7 @@ fun DiscoveryScreen(
                 .imePadding(),
         ) {
             Row(Modifier.fillMaxWidth().padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") }
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.contact_back)) }
                 Text(
                     stringResource(R.string.i18n_add_discover_sites),
                     Modifier.weight(1f),
@@ -113,7 +115,7 @@ fun DiscoveryScreen(
                         Modifier.size(24.dp),
                     )
                 }
-                IconButton(onClick = onQuickAdd) { Icon(Icons.Rounded.Add, "Quick add site or folder") }
+                IconButton(onClick = onQuickAdd) { Icon(Icons.Rounded.Add, stringResource(R.string.discover_quick_add)) }
             }
             Row(
                 Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp),
@@ -131,7 +133,7 @@ fun DiscoveryScreen(
                         modifier = Modifier.bringIntoViewRequester(tabVisibility),
                         selected = state.tab == tab,
                         onClick = { model.selectTab(tab) },
-                        label = { Text(tab.title) },
+                        label = { Text(tabTitle(tab)) },
                         colors = chipColors(colors),
                     )
                 }
@@ -163,20 +165,22 @@ fun DiscoveryScreen(
                         else -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    DiscoveryInput(state.page.query, state.tab.hint, colors, model::queryChanged, model::retry)
+                                    DiscoveryInput(state.page.query, stringResource(tabHint(state.tab)), colors, model::queryChanged, model::retry)
                                     if (state.tab == DiscoveryTab.NEWSLETTERS && state.page.platforms.isNotEmpty()) {
+                                        val allPlatforms = stringResource(R.string.discover_all_platforms)
                                         DiscoveryChoice(
-                                            "Platform",
-                                            state.page.platform.ifBlank { "All" },
-                                            listOf("" to "All") + state.page.platforms.map { it to it.replaceFirstChar(Char::uppercase) },
+                                            stringResource(R.string.discover_platform),
+                                            state.page.platform.ifBlank { allPlatforms },
+                                            listOf("" to allPlatforms) + state.page.platforms.map { it to it.replaceFirstChar(Char::uppercase) },
                                             colors,
                                         ) { model.filter(platform = it) }
                                     }
                                     if (state.page.categories.isNotEmpty()) {
+                                        val allCategories = stringResource(R.string.discover_all_categories)
                                         DiscoveryChoice(
-                                            "Category",
-                                            state.page.category.ifBlank { "All categories" },
-                                            listOf("" to "All categories") + state.page.categories.map { it.name to it.name },
+                                            stringResource(R.string.discover_category),
+                                            state.page.category.ifBlank { allCategories },
+                                            listOf("" to allCategories) + state.page.categories.map { it.name to it.name },
                                             colors,
                                         ) { model.filter(category = it) }
                                         val subs =
@@ -185,10 +189,11 @@ fun DiscoveryScreen(
                                                 ?.subcategories
                                                 .orEmpty()
                                         if (subs.isNotEmpty()) {
+                                            val allTopics = stringResource(R.string.discover_all_topics)
                                             DiscoveryChoice(
-                                                "Topic",
-                                                state.page.subcategory.ifBlank { "All topics" },
-                                                listOf("" to "All topics") + subs.map { it to it },
+                                                stringResource(R.string.discover_topic),
+                                                state.page.subcategory.ifBlank { allTopics },
+                                                listOf("" to allTopics) + subs.map { it to it },
                                                 colors,
                                             ) { model.filter(subcategory = it) }
                                         }
@@ -197,17 +202,18 @@ fun DiscoveryScreen(
                                         if (state.tab == DiscoveryTab.SEARCH &&
                                             state.page.query.isBlank()
                                         ) {
-                                            "Trending this week"
+                                            stringResource(R.string.discover_trending_this_week)
                                         } else if (state.page.query.isNotBlank()) {
-                                            "Search results"
+                                            stringResource(R.string.discover_search_results)
                                         } else {
-                                            "Discover ${state.tab.title}"
+                                            stringResource(R.string.discover_tab_heading, tabTitle(state.tab))
                                         },
                                         style = MaterialTheme.typography.titleLarge,
                                     )
                                     if (state.tab == DiscoveryTab.SEARCH && DiscoveryViewModel.isAddress(state.page.query.trim())) {
                                         DiscoveryAddRow(state, model, colors) {
-                                            TextButton(modifier = Modifier.semantics { contentDescription = "Add this URL" }, enabled = !state.busy, onClick = {
+                                            val addUrlDescription = stringResource(R.string.discover_add_this_url)
+                                            TextButton(modifier = Modifier.semantics { contentDescription = addUrlDescription }, enabled = !state.busy, onClick = {
                                                 model.add(DiscoveryFeed(state.page.query.trim(), state.page.query.trim()))
                                             }) { Text(stringResource(R.string.i18n_add), color = colors.siteLink) }
                                         }
@@ -300,9 +306,14 @@ internal fun DiscoveryChoice(
                 }.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("$label: ", color = colors.textSecondary, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(R.string.discover_choice_label, label),
+                Modifier.padding(end = 4.dp),
+                color = colors.textSecondary,
+                style = MaterialTheme.typography.bodyMedium,
+            )
             Text(selected, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Icon(Icons.Rounded.ExpandMore, "Choose $label", Modifier.size(20.dp))
+            Icon(Icons.Rounded.ExpandMore, stringResource(R.string.discover_choose_option, label), Modifier.size(20.dp))
         }
         DropdownMenu(expanded, {
             expanded = false
@@ -327,6 +338,7 @@ internal fun DiscoveryInput(
     onSubmit: () -> Unit = {},
     enabled: Boolean = true,
 ) {
+    val clearDescription = stringResource(R.string.discover_clear_input, hint)
     OutlinedTextField(
         value,
         onChange,
@@ -335,7 +347,7 @@ internal fun DiscoveryInput(
         placeholder = { Text(hint) },
         singleLine = true,
         shape = RoundedCornerShape(10.dp),
-        trailingIcon = { if (value.isNotEmpty()) IconButton(onClick = { onChange("") }) { Icon(Icons.Rounded.Close, "Clear $hint") } },
+        trailingIcon = { if (value.isNotEmpty()) IconButton(onClick = { onChange("") }) { Icon(Icons.Rounded.Close, clearDescription) } },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
         colors =
@@ -374,8 +386,8 @@ private fun WebFeedForm(
             stringResource(R.string.i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive),
             color = colors.textSecondary,
         )
-        DiscoveryInput(web.url, "Web page URL", colors, { value -> model.webEdit { it.copy(url = value) } }, model::analyze, !state.busy)
-        DiscoveryInput(web.hint, "Which stories? (optional)", colors, { value ->
+        DiscoveryInput(web.url, stringResource(R.string.discover_web_page_url), colors, { value -> model.webEdit { it.copy(url = value) } }, model::analyze, !state.busy)
+        DiscoveryInput(web.hint, stringResource(R.string.discover_which_stories_optional), colors, { value ->
             model.webEdit {
                 it.copy(hint = value)
             }
@@ -385,19 +397,20 @@ private fun WebFeedForm(
             enabled = web.url.isNotBlank() && !web.loading && !state.busy,
             colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
         ) {
-            Text(if (web.variants.isEmpty()) "Analyze page" else "Refine analysis")
+            Text(stringResource(if (web.variants.isEmpty()) R.string.discover_analyze_page else R.string.discover_refine_analysis))
         }
         if (web.loading) CircularProgressIndicator(Modifier.size(28.dp), color = colors.accent)
         if (web.message.isNotBlank()) Text(web.message, color = colors.textSecondary)
         web.error?.let { Text(it, color = colors.stale) }
         if (web.detectedFeed.isNotBlank()) {
+            val addRssDescription = stringResource(R.string.discover_add_rss_feed)
             DiscoveryAddRow(state, model, colors) {
                 Button(
                     onClick = { model.add(DiscoveryFeed(web.detectedFeed, web.detectedFeed)) },
-                    modifier = Modifier.semantics { contentDescription = "Add RSS feed" },
+                    modifier = Modifier.semantics { contentDescription = addRssDescription },
                     enabled = !state.busy && web.detectedFeed !in state.added,
                     colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
-                ) { Text(if (web.detectedFeed in state.added) "Added" else stringResource(R.string.i18n_add)) }
+                ) { Text(stringResource(if (web.detectedFeed in state.added) R.string.discover_added else R.string.i18n_add)) }
             }
         }
         web.variants.forEachIndexed { index, variant ->
@@ -426,17 +439,17 @@ private fun WebFeedForm(
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(variant.label.ifBlank { "Pattern ${index + 1}" }, fontWeight = FontWeight.SemiBold)
+                Text(variant.label.ifBlank { stringResource(R.string.discover_web_pattern, index + 1) }, fontWeight = FontWeight.SemiBold)
                 variant.stories.take(5).forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }
         }
         if (web.variants.isNotEmpty()) {
-            DiscoveryInput(web.title, "Feed title", colors, { title -> model.webEdit { it.copy(title = title) } }, enabled = !state.busy)
+            DiscoveryInput(web.title, stringResource(R.string.discover_feed_title), colors, { title -> model.webEdit { it.copy(title = title) } }, enabled = !state.busy)
             DiscoveryChoice(
-                "Keep stories",
-                "${web.staleness} days",
+                stringResource(R.string.discover_keep_stories),
+                pluralStringResource(R.plurals.discover_keep_stories_days, web.staleness, web.staleness),
                 listOf(7, 14, 30, 60, 90, 365).map {
-                    "$it" to "$it days"
+                    "$it" to pluralStringResource(R.plurals.discover_keep_stories_days, it, it)
                 },
                 colors,
                 !state.busy,
@@ -445,14 +458,15 @@ private fun WebFeedForm(
                 Checkbox(web.markUnread, { checked -> model.webEdit { it.copy(markUnread = checked) } }, enabled = !state.busy)
                 Text(stringResource(R.string.i18n_mark_updated_stories_unread), Modifier.weight(1f))
             }
+            val createWebFeedDescription = stringResource(R.string.discover_create_web_feed)
             DiscoveryAddRow(state, model, colors) {
                 Button(
                     onClick = model::subscribeWeb,
-                    modifier = Modifier.semantics { contentDescription = "Create web feed" },
+                    modifier = Modifier.semantics { contentDescription = createWebFeedDescription },
                     enabled = !state.busy && "webfeed:${web.analyzedUrl}" !in state.added,
                     colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
                 ) {
-                    Text(if ("webfeed:${web.analyzedUrl}" in state.added) "Added" else stringResource(R.string.i18n_subscribe))
+                    Text(stringResource(if ("webfeed:${web.analyzedUrl}" in state.added) R.string.discover_added else R.string.i18n_subscribe))
                 }
             }
         }
@@ -469,24 +483,23 @@ private fun GoogleNewsForm(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.i18n_follow_news_that_matters_to_you), style = MaterialTheme.typography.headlineSmall)
         Text(stringResource(R.string.i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search), color = colors.textSecondary)
-        DiscoveryInput(state.newsQuery, "Search a news topic", colors, { model.news(query = it) }, model::addNews, !state.busy)
+        DiscoveryInput(state.newsQuery, stringResource(R.string.discover_search_news_topic), colors, { model.news(query = it) }, model::addNews, !state.busy)
+        val topics = googleNewsTopics.map { (topic, title) -> topic to stringResource(title) }
         DiscoveryChoice(
-            "Top stories",
-            state.newsTopic
-                .lowercase()
-                .replaceFirstChar(Char::uppercase)
-                .ifBlank { "Choose a topic" },
-            listOf("WORLD", "NATION", "BUSINESS", "TECHNOLOGY", "ENTERTAINMENT", "SPORTS", "SCIENCE", "HEALTH").map {
-                it to
-                    it.lowercase().replaceFirstChar(Char::uppercase)
-            },
+            stringResource(R.string.discover_top_stories),
+            topics.firstOrNull { it.first == state.newsTopic }?.second
+                ?: state.newsTopic
+                    .lowercase()
+                    .replaceFirstChar(Char::uppercase)
+                    .ifBlank { stringResource(R.string.discover_choose_a_topic) },
+            topics,
             colors,
             !state.busy,
         ) { model.news(query = "", topic = it, category = "") }
         DiscoveryChoice(
-            "Category",
+            stringResource(R.string.discover_category),
             category.ifBlank {
-                "Choose a category"
+                stringResource(R.string.discover_choose_a_category)
             },
             GoogleNewsCatalog.categories.keys.map { it to it },
             colors,
@@ -494,7 +507,7 @@ private fun GoogleNewsForm(
         ) { model.news(query = it, category = it) }
         if (category.isNotBlank()) {
             DiscoveryChoice(
-                "Topic",
+                stringResource(R.string.discover_topic),
                 state.newsQuery,
                 GoogleNewsCatalog.categories[category].orEmpty().map {
                     it to it
@@ -504,7 +517,7 @@ private fun GoogleNewsForm(
             ) { model.news(query = it) }
         }
         DiscoveryChoice(
-            "Language",
+            stringResource(R.string.language_title),
             GoogleNewsCatalog.languages
                 .firstOrNull {
                     it.first == state.language
@@ -518,10 +531,11 @@ private fun GoogleNewsForm(
                 language = it,
             )
         }
+        val addGoogleNewsDescription = stringResource(R.string.discover_add_google_news_feed)
         DiscoveryAddRow(state, model, colors) {
             Button(
                 onClick = model::addNews,
-                modifier = Modifier.semantics { contentDescription = "Add Google News feed" },
+                modifier = Modifier.semantics { contentDescription = addGoogleNewsDescription },
                 enabled = !state.busy && (state.newsQuery.isNotBlank() || state.newsTopic.isNotBlank()),
                 colors = ButtonDefaults.buttonColors(containerColor = colors.siteButton, contentColor = Color.White),
             ) {
@@ -530,3 +544,42 @@ private fun GoogleNewsForm(
         }
     }
 }
+
+// DiscoveryScreen.kt localizes tab labels here; DiscoveryTab keeps its English titles as stable identifiers.
+@Composable
+private fun tabTitle(tab: DiscoveryTab): String =
+    when (tab) {
+        DiscoveryTab.SEARCH -> stringResource(R.string.discover_tab_search)
+        DiscoveryTab.WEB -> stringResource(R.string.discover_tab_web_feed)
+        DiscoveryTab.POPULAR -> stringResource(R.string.discover_tab_popular)
+        DiscoveryTab.NEWSLETTERS -> stringResource(R.string.discover_tab_newsletters)
+        DiscoveryTab.PODCASTS -> stringResource(R.string.discover_tab_podcasts)
+        // YouTube, Reddit and Google News are product names.
+        DiscoveryTab.YOUTUBE, DiscoveryTab.REDDIT, DiscoveryTab.GOOGLE -> tab.title
+    }
+
+@StringRes
+private fun tabHint(tab: DiscoveryTab): Int =
+    when (tab) {
+        DiscoveryTab.SEARCH -> R.string.discover_hint_search
+        DiscoveryTab.WEB -> R.string.discover_web_page_url
+        DiscoveryTab.POPULAR -> R.string.discover_hint_popular
+        DiscoveryTab.YOUTUBE -> R.string.discover_hint_youtube
+        DiscoveryTab.REDDIT -> R.string.discover_hint_reddit
+        DiscoveryTab.NEWSLETTERS -> R.string.discover_hint_newsletters
+        DiscoveryTab.PODCASTS -> R.string.discover_hint_podcasts
+        DiscoveryTab.GOOGLE -> R.string.discover_search_news_topic
+    }
+
+// DiscoveryScreen.kt sends the Google News topic codes to the server and shows their translated names.
+private val googleNewsTopics =
+    listOf(
+        "WORLD" to R.string.discover_news_topic_world,
+        "NATION" to R.string.discover_news_topic_nation,
+        "BUSINESS" to R.string.discover_news_topic_business,
+        "TECHNOLOGY" to R.string.discover_news_topic_technology,
+        "ENTERTAINMENT" to R.string.discover_news_topic_entertainment,
+        "SPORTS" to R.string.discover_news_topic_sports,
+        "SCIENCE" to R.string.discover_news_topic_science,
+        "HEALTH" to R.string.discover_news_topic_health,
+    )

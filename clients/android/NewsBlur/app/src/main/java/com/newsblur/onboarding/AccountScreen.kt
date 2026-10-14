@@ -1,6 +1,5 @@
 package com.newsblur.onboarding
 
-import androidx.compose.ui.res.stringResource
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,10 +43,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -66,9 +66,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
 import com.newsblur.compose.AndroidShaderBackground
 import com.newsblur.compose.CustomServerDialog
-import com.newsblur.design.LoginAuthPalettes
+import com.newsblur.compose.LanguagePicker
 import com.newsblur.design.LoginAuthPalette
+import com.newsblur.design.LoginAuthPalettes
 import com.newsblur.design.toVariant
+import com.newsblur.util.LanguageSettings
 
 @Composable
 fun AccountScreen(
@@ -99,10 +101,10 @@ fun AccountScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
                 ) {
-                    com.newsblur.compose.LanguagePicker(contentColor = palette.link) { language ->
-                        com.newsblur.util.LanguageSettings.select(context, language, pending = true)
+                    LanguagePicker(contentColor = palette.link) { language ->
+                        LanguageSettings.select(context, language, pending = true)
                     }
-                    Image(painterResource(R.drawable.logo), "NewsBlur", Modifier.padding(top = 16.dp).size(120.dp))
+                    Image(painterResource(R.drawable.logo), stringResource(R.string.newsblur), Modifier.padding(top = 16.dp).size(120.dp))
                     Text(stringResource(R.string.newsblur), color = Color.White, fontFamily = heading, fontSize = 38.sp)
                     Text(stringResource(R.string.onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th),
                         color = gold,
@@ -123,11 +125,13 @@ fun AccountScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Text(
-                            when (state.continuation) {
-                                "link" -> "Connect your account"
-                                "username" -> "Choose your username"
-                                else -> if (state.signup) "Create an account" else "Welcome back"
-                            },
+                            stringResource(
+                                when (state.continuation) {
+                                    "link" -> R.string.onboarding_connect_your_account
+                                    "username" -> R.string.onboarding_choose_your_username
+                                    else -> if (state.signup) R.string.onboarding_create_an_account else R.string.onboarding_welcome_back
+                                },
+                            ),
                             color = Color.White,
                             fontFamily = heading,
                             fontSize = 24.sp,
@@ -135,6 +139,7 @@ fun AccountScreen(
                         if (state.continuation == null) {
                             listOf("apple", "google").forEach { provider ->
                                 val providerName = if (provider == "apple") "Apple" else "Google"
+                                val signingInDescription = stringResource(R.string.onboarding_signing_in_with_provider, providerName)
                                 val signingIn = state.busy && state.activeProvider == provider
                                 val providerAlpha = if (state.busy && !signingIn) .38f else 1f
                                 Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -148,7 +153,7 @@ fun AccountScreen(
                                                 50.dp,
                                             ).semantics {
                                                 liveRegion = LiveRegionMode.Polite
-                                                if (signingIn) stateDescription = "Signing in with $providerName"
+                                                if (signingIn) stateDescription = signingInDescription
                                             },
                                         colors =
                                             ButtonDefaults.buttonColors(
@@ -174,7 +179,11 @@ fun AccountScreen(
                                             alpha = providerAlpha,
                                         )
                                         Text(
-                                            if (signingIn) "Signing in…" else "Sign in with $providerName",
+                                            if (signingIn) {
+                                                stringResource(R.string.onboarding_signing_in)
+                                            } else {
+                                                stringResource(R.string.onboarding_sign_in_with_provider, providerName)
+                                            },
                                             Modifier.padding(start = 12.dp),
                                             fontSize = 17.sp,
                                             fontWeight = FontWeight.Medium,
@@ -202,7 +211,7 @@ fun AccountScreen(
                         if (state.signup &&
                             state.continuation == null
                         ) {
-                            AccountField("Email", email, { email = it }, !state.busy, palette, KeyboardType.Email)
+                            AccountField(stringResource(R.string.onboarding_email), email, { email = it }, !state.busy, palette, KeyboardType.Email)
                         }
                         if (state.continuation == "link") {
                             Text(stringResource(R.string.onboarding_enter_your_existing_newsblur_username_or_email_and_newsblur_passw),
@@ -214,9 +223,9 @@ fun AccountScreen(
                             if (state.continuation == "username" ||
                                 (state.signup && state.continuation == null)
                             ) {
-                                "Username"
+                                stringResource(R.string.onboarding_username)
                             } else {
-                                "Username or email"
+                                stringResource(R.string.onboarding_username_or_email)
                             },
                             state.username,
                             model::updateUsername,
@@ -226,7 +235,14 @@ fun AccountScreen(
                         if (state.continuation !=
                             "username"
                         ) {
-                            AccountField("Password", state.password, model::updatePassword, !state.busy, palette, KeyboardType.Password)
+                            AccountField(
+                                stringResource(R.string.onboarding_password),
+                                state.password,
+                                model::updatePassword,
+                                !state.busy,
+                                palette,
+                                KeyboardType.Password,
+                            )
                         }
                         if (state.continuation == null &&
                             state.lastUsed == "email"
@@ -258,11 +274,11 @@ fun AccountScreen(
                                 if (state.continuation !=
                                     null
                                 ) {
-                                    "Continue"
+                                    stringResource(R.string.onboarding_continue)
                                 } else if (state.signup) {
-                                    "Create account"
+                                    stringResource(R.string.onboarding_create_account)
                                 } else {
-                                    "Sign in"
+                                    stringResource(R.string.onboarding_sign_in)
                                 },
                                 fontFamily = heading,
                                 fontSize = 17.sp,
@@ -312,7 +328,13 @@ fun AccountScreen(
                     ) {
                         TextButton(onClick = model::mode, enabled = !state.busy) {
                             Text(
-                                if (state.signup) "Already have an account? Sign in" else "New to NewsBlur? Create an account",
+                                stringResource(
+                                    if (state.signup) {
+                                        R.string.onboarding_already_have_an_account_sign_in
+                                    } else {
+                                        R.string.onboarding_new_to_newsblur_create_an_account
+                                    },
+                                ),
                                 color = gold,
                                 textAlign = TextAlign.Center,
                             )
@@ -322,7 +344,7 @@ fun AccountScreen(
                         customServer = true
                     }, enabled = !state.busy) {
                         Text(
-                            if (model.customServer().isBlank()) "Use a custom server" else model.customServer(),
+                            model.customServer().ifBlank { stringResource(R.string.onboarding_use_a_custom_server) },
                             color = Color.White.copy(alpha = .7f),
                             fontSize = 12.sp,
                         )

@@ -1,12 +1,17 @@
 package com.newsblur.onboarding
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.LanguageSettings
+import com.newsblur.util.PrefConstants
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
@@ -15,17 +20,35 @@ import org.junit.Test
 import java.io.IOException
 
 class OnboardingApiTest {
-    private fun api(status: Int, body: String, contentType: String): OnboardingApi {
+    private fun api(
+        status: Int,
+        body: String,
+        contentType: String,
+        onRequest: (Request) -> Unit = {},
+    ): OnboardingApi {
         val prefs = mockk<PrefsRepo>()
         every { prefs.getCustomServer() } returns null
         every { prefs.getCookie() } returns null
         every { prefs.getUniqueLoginKey() } returns null
         val client = OkHttpClient.Builder().addInterceptor { chain ->
+            onRequest(chain.request())
             Response.Builder().request(chain.request()).protocol(Protocol.HTTP_1_1)
                 .code(status).message("Fixture")
                 .body(body.toResponseBody(contentType.toMediaType())).build()
         }.build()
-        return OnboardingApi(client, prefs)
+        val languagePrefs = mockk<SharedPreferences>()
+        every { languagePrefs.getString(LanguageSettings.KEY, "auto") } returns "fr"
+        val context = mockk<Context>()
+        every { context.getSharedPreferences(PrefConstants.PREFERENCES, 0) } returns languagePrefs
+        return OnboardingApi(client, prefs, context)
+    }
+
+    @Test fun requestsCarryTheAppLanguage() = runTest {
+        // OnboardingApiTest.kt checks that social sign-in and setup errors come back in the language the app shows.
+        var acceptLanguage: String? = null
+        api(200, """{"code":1}""", "application/json", onRequest = { acceptLanguage = it.header("Accept-Language") })
+            .request("/api/social/account")
+        assertEquals("fr", acceptLanguage)
     }
 
     @Test fun missingSocialEndpointExplainsThatSignInIsUnavailable() = runTest {

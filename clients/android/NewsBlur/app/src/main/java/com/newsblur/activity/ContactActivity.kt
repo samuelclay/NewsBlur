@@ -5,9 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.R
 import com.newsblur.compose.ContactScreen
 import com.newsblur.design.NewsBlurTheme
@@ -17,8 +17,9 @@ import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+// ContactActivity.kt extends AppCompatActivity so the in-app language applies before Android 13.
 @AndroidEntryPoint
-class ContactActivity : ComponentActivity() {
+class ContactActivity : AppCompatActivity() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
 

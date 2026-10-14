@@ -1,7 +1,5 @@
 package com.newsblur.onboarding
 
-import com.newsblur.R
-import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,11 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.PrefConstants.ThemeValue
 
@@ -112,7 +112,7 @@ fun AccountDeletionScreen(
                     Button(
                         onClick = { model.deleteAccount(confirmation, password) },
                         enabled =
-                            !state.busy && confirmation == "Delete" && (state.verified || password.isNotEmpty()),
+                            !state.busy && confirmation == confirmationWord && (state.verified || password.isNotEmpty()),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB74444)),
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text(stringResource(R.string.onboarding_permanently_delete_account)) }
@@ -121,7 +121,8 @@ fun AccountDeletionScreen(
                         OutlinedButton(onClick = {
                             model.social(provider)
                         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
-                            Text("Verify with ${if (provider == "apple") "Apple" else "Google"}", color = colors.textPrimary)
+                            val providerName = if (provider == "apple") "Apple" else "Google"
+                            Text(stringResource(R.string.onboarding_verify_with_provider, providerName), color = colors.textPrimary)
                         }
                     }
                 }

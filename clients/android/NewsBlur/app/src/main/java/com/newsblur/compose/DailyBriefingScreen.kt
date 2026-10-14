@@ -2,8 +2,6 @@
 
 package com.newsblur.compose
 
-import androidx.compose.ui.res.stringResource
-
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
@@ -55,11 +53,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,19 +69,19 @@ import com.newsblur.database.StoryViewAdapter
 import com.newsblur.design.LocalNbColors
 import com.newsblur.domain.Story
 import com.newsblur.network.domain.DailyBriefingModelOption
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.DailyBriefingPresentationState
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
+import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StoryListStyle
+import com.newsblur.view.ExpandedHeightRecyclerView
 import com.newsblur.viewModel.DailyBriefingDraft
 import com.newsblur.viewModel.DailyBriefingGroupUi
 import com.newsblur.viewModel.DailyBriefingSectionDefinition
 import com.newsblur.viewModel.DailyBriefingUiState
 import com.newsblur.viewModel.DailyBriefingViewModel
-import com.newsblur.preference.PrefsRepo
-import com.newsblur.view.ExpandedHeightRecyclerView
-import com.newsblur.util.PrefConstants.ThemeValue
 
 private data class DailyBriefingPalette(
     val screen: Color,
@@ -506,26 +506,26 @@ private fun DailyBriefingSettingsForm(
 
     val frequencyOptions =
         listOf(
-            BriefingChoiceOption("thrice_daily", "3x daily"),
-            BriefingChoiceOption("twice_daily", "2x daily"),
-            BriefingChoiceOption("daily", "Daily"),
-            BriefingChoiceOption("weekly", "Weekly"),
+            BriefingChoiceOption("thrice_daily", stringResource(R.string.briefing_frequency_thrice_daily)),
+            BriefingChoiceOption("twice_daily", stringResource(R.string.briefing_frequency_twice_daily)),
+            BriefingChoiceOption("daily", stringResource(R.string.briefing_frequency_daily)),
+            BriefingChoiceOption("weekly", stringResource(R.string.briefing_frequency_weekly)),
         )
     val timeOptions =
         listOf(
-            BriefingChoiceOption("morning", "Morning"),
-            BriefingChoiceOption("afternoon", "Afternoon"),
-            BriefingChoiceOption("evening", "Evening"),
+            BriefingChoiceOption("morning", stringResource(R.string.briefing_time_morning)),
+            BriefingChoiceOption("afternoon", stringResource(R.string.briefing_time_afternoon)),
+            BriefingChoiceOption("evening", stringResource(R.string.briefing_time_evening)),
         )
     val dayOptions =
         listOf(
-            BriefingChoiceOption("sun", "Sunday"),
-            BriefingChoiceOption("mon", "Monday"),
-            BriefingChoiceOption("tue", "Tuesday"),
-            BriefingChoiceOption("wed", "Wednesday"),
-            BriefingChoiceOption("thu", "Thursday"),
-            BriefingChoiceOption("fri", "Friday"),
-            BriefingChoiceOption("sat", "Saturday"),
+            BriefingChoiceOption("sun", stringResource(R.string.briefing_day_sunday)),
+            BriefingChoiceOption("mon", stringResource(R.string.briefing_day_monday)),
+            BriefingChoiceOption("tue", stringResource(R.string.briefing_day_tuesday)),
+            BriefingChoiceOption("wed", stringResource(R.string.briefing_day_wednesday)),
+            BriefingChoiceOption("thu", stringResource(R.string.briefing_day_thursday)),
+            BriefingChoiceOption("fri", stringResource(R.string.briefing_day_friday)),
+            BriefingChoiceOption("sat", stringResource(R.string.briefing_day_saturday)),
         )
     val storyCountOptions =
         listOf(
@@ -537,14 +537,14 @@ private fun DailyBriefingSettingsForm(
         )
     val summaryStyleOptions =
         listOf(
-            BriefingChoiceOption("bullets", "Bullets"),
-            BriefingChoiceOption("editorial", "Editorial"),
-            BriefingChoiceOption("headlines", "Headlines"),
+            BriefingChoiceOption("bullets", stringResource(R.string.briefing_style_bullets)),
+            BriefingChoiceOption("editorial", stringResource(R.string.briefing_style_editorial)),
+            BriefingChoiceOption("headlines", stringResource(R.string.briefing_style_headlines)),
         )
     val readFilterOptions =
         listOf(
-            BriefingChoiceOption("unread", "Unread"),
-            BriefingChoiceOption("focus", "Focus"),
+            BriefingChoiceOption("unread", stringResource(R.string.state_unread)),
+            BriefingChoiceOption("focus", stringResource(R.string.state_focus)),
         )
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -564,20 +564,20 @@ private fun DailyBriefingSettingsForm(
             subtitle = stringResource(com.newsblur.R.string.ui_80f7bcbc57b0),
         ) {
             ChoiceChipGroup(
-                label = "Frequency",
+                label = stringResource(R.string.briefing_frequency),
                 selectedValue = draft.frequency,
                 options = frequencyOptions,
                 onSelected = { onDraftChange(draft.copy(frequency = it)) },
             )
             ChoiceChipGroup(
-                label = "Preferred time",
+                label = stringResource(R.string.briefing_preferred_time),
                 selectedValue = draft.preferredTime,
                 options = timeOptions,
                 onSelected = { onDraftChange(draft.copy(preferredTime = it)) },
             )
             if (draft.frequency == "weekly") {
                 ChoiceChipGroup(
-                    label = "Preferred day",
+                    label = stringResource(R.string.briefing_preferred_day),
                     selectedValue = draft.preferredDay,
                     options = dayOptions,
                     onSelected = { onDraftChange(draft.copy(preferredDay = it)) },
@@ -590,13 +590,13 @@ private fun DailyBriefingSettingsForm(
             subtitle = stringResource(com.newsblur.R.string.ui_67d0be0dd546),
         ) {
             ChoiceChipGroup(
-                label = "Story count",
+                label = stringResource(R.string.briefing_story_count),
                 selectedValue = draft.storyCount,
                 options = storyCountOptions,
                 onSelected = { onDraftChange(draft.copy(storyCount = it)) },
             )
             ChoiceChipGroup(
-                label = "Writing style",
+                label = stringResource(R.string.briefing_writing_style),
                 selectedValue = draft.summaryStyle,
                 options = summaryStyleOptions,
                 onSelected = { onDraftChange(draft.copy(summaryStyle = it)) },
@@ -609,17 +609,17 @@ private fun DailyBriefingSettingsForm(
         ) {
             ChoiceDropdown(
                 title = stringResource(com.newsblur.R.string.ui_3af014d03229),
-                selectedLabel = draft.selectedFolder ?: "All Site Stories",
+                selectedLabel = draft.selectedFolder ?: stringResource(R.string.all_stories_title),
                 options =
                     listOf(
-                        BriefingChoiceOption<String?>(null, "All Site Stories"),
+                        BriefingChoiceOption<String?>(null, stringResource(R.string.all_stories_title)),
                     ) + draft.folders.map { folder ->
                         BriefingChoiceOption(folder, folder)
                     },
                 onSelected = { folder -> onDraftChange(draft.withSelectedFolder(folder)) },
             )
             ChoiceChipGroup(
-                label = "Filter",
+                label = stringResource(R.string.briefing_filter),
                 selectedValue = draft.readFilter,
                 options = readFilterOptions,
                 onSelected = { onDraftChange(draft.copy(readFilter = it)) },
@@ -657,7 +657,7 @@ private fun DailyBriefingSettingsForm(
             draft.customSectionPrompts.forEachIndexed { index, value ->
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     ToggleRow(
-                        title = "Keyword section ${index + 1}",
+                        title = stringResource(R.string.briefing_keyword_section, index + 1),
                         checked = draft.customSectionEnabled.getOrElse(index) { true },
                         onCheckedChange = { enabled ->
                             val updated = draft.customSectionEnabled.toMutableList()
@@ -666,7 +666,7 @@ private fun DailyBriefingSettingsForm(
                             }
                             onDraftChange(draft.copy(customSectionEnabled = updated))
                         },
-                        actionLabel = "Remove",
+                        actionLabel = stringResource(R.string.briefing_remove_keyword_section),
                         onAction = { onDraftChange(draft.removeKeywordSection(index)) },
                     )
                     OutlinedTextField(
@@ -694,9 +694,14 @@ private fun DailyBriefingSettingsForm(
             title = stringResource(com.newsblur.R.string.ui_753a22b2eb61),
             subtitle = stringResource(com.newsblur.R.string.ui_67a31d6fa581),
         ) {
-            listOf("email", "web", "ios", "android").forEach { option ->
+            listOf(
+                "email" to R.string.notification_email,
+                "web" to R.string.notification_web,
+                "ios" to R.string.notification_ios,
+                "android" to R.string.notification_android,
+            ).forEach { (option, title) ->
                 ToggleRow(
-                    title = option.replaceFirstChar { it.uppercase() },
+                    title = stringResource(title),
                     checked = draft.notificationTypes.contains(option),
                     onCheckedChange = { checked ->
                         onDraftChange(
@@ -751,14 +756,14 @@ private fun DailyBriefingSettingsForm(
                 enabled = !isSaving && !isGenerating,
                 onClick = { onSavePreferences(draft, true) },
             ) {
-                Text(if (showsSaveButton) "Generate Now" else "Generate Daily Briefing")
+                Text(stringResource(if (showsSaveButton) R.string.briefing_generate_now else com.newsblur.R.string.ui_d521ea8640b5))
             }
         }
 
         if (isSaving || isGenerating) {
             DailyBriefingMessageCard(
                 title = stringResource(com.newsblur.R.string.ui_13b7bfcac438),
-                message = progressMessage ?: "Saving Daily Briefing settings…",
+                message = progressMessage ?: stringResource(R.string.briefing_saving_settings),
                 isError = false,
             )
         }
@@ -811,7 +816,7 @@ private fun DailyBriefingGroupCard(
                 }
             }
             Text(
-                text = "${group.curatedCount} ${if (group.curatedCount == 1) "story" else "stories"}",
+                text = pluralStringResource(R.plurals.briefing_group_story_count, group.curatedCount, group.curatedCount),
                 style = MaterialTheme.typography.labelLarge,
                 color = sectionPalette.date,
             )
