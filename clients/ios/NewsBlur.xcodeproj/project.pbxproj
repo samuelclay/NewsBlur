@@ -1171,6 +1171,7 @@
 		D74E3909427F4B3AAF85A028 /* StoryFirstPageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */; };
 		D74E3909427F4B3AAF85A030 /* StoryFirstPageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */; };
 		D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */; };
+		E538880EAF9F00ED4667EC71 /* SimulatorTestTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */; };
 		D74E3909427F4B3AAF85A034 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
 		D74E3909427F4B3AAF85A035 /* StoryTextLayoutCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */; };
 		D74E3909427F4B3AAF85A037 /* StoryTextLayoutCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */; };
@@ -1264,6 +1265,7 @@
 		FF1A84E2306AA52A00D68616 /* StoryFaviconPrefetchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */; };
 		FF1A84E3306AA52A00D68616 /* StoryFirstPageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */; };
 		FF1A84E4306AA52A00D68616 /* StoryTextLayoutPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */; };
+		22305B510898CFFAC10C3CFD /* SimulatorTestTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */; };
 		FF1A84E5306AA52A00D68616 /* StoryTextLayoutCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */; };
 		FF1A84E6306AA52A00D68616 /* StoryTextLayoutEvictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */; };
 		FF1A84E7306AA52A00D68616 /* FeedIconColdScrollTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74E3909427F4B3AAF85A042 /* FeedIconColdScrollTests.swift */; };
@@ -2229,6 +2231,7 @@
 		D74E3909427F4B3AAF85A029 /* StoryFirstPageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCache.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryFirstPageCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutPerformanceTests.swift; sourceTree = "<group>"; };
+		5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTestTiming.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A036 /* StoryTextLayoutCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCache.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutCacheTests.swift; sourceTree = "<group>"; };
 		D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTextLayoutEvictionTests.swift; sourceTree = "<group>"; };
@@ -3992,6 +3995,7 @@
 				C1A3E5F7092B4D6F8192A002 /* StoryFaviconPrefetchTests.swift */,
 				D74E3909427F4B3AAF85A031 /* StoryFirstPageCacheTests.swift */,
 				D74E3909427F4B3AAF85A033 /* StoryTextLayoutPerformanceTests.swift */,
+				5720EF61DD447AB2E099451A /* SimulatorTestTiming.swift */,
 				D74E3909427F4B3AAF85A038 /* StoryTextLayoutCacheTests.swift */,
 				D74E3909427F4B3AAF85A040 /* StoryTextLayoutEvictionTests.swift */,
 				D74E3909427F4B3AAF85A042 /* FeedIconColdScrollTests.swift */,
@@ -6334,6 +6338,7 @@
 				D74E3909427F4B3AAF85A025 /* StoryDetailLoadingTests.swift in Sources */,
 				C1A3E5F7092B4D6F8192A001 /* StoryFaviconPrefetchTests.swift in Sources */,
 				D74E3909427F4B3AAF85A032 /* StoryTextLayoutPerformanceTests.swift in Sources */,
+				E538880EAF9F00ED4667EC71 /* SimulatorTestTiming.swift in Sources */,
 				D74E3909427F4B3AAF85A037 /* StoryTextLayoutCacheTests.swift in Sources */,
 				D74E3909427F4B3AAF85A039 /* StoryTextLayoutEvictionTests.swift in Sources */,
 				D74E3909427F4B3AAF85A041 /* FeedIconColdScrollTests.swift in Sources */,
@@ -6406,6 +6411,7 @@
 				FF1A84E2306AA52A00D68616 /* StoryFaviconPrefetchTests.swift in Sources */,
 				FF1A84E3306AA52A00D68616 /* StoryFirstPageCacheTests.swift in Sources */,
 				FF1A84E4306AA52A00D68616 /* StoryTextLayoutPerformanceTests.swift in Sources */,
+				22305B510898CFFAC10C3CFD /* SimulatorTestTiming.swift in Sources */,
 				FF1A84E5306AA52A00D68616 /* StoryTextLayoutCacheTests.swift in Sources */,
 				FF1A84E6306AA52A00D68616 /* StoryTextLayoutEvictionTests.swift in Sources */,
 				FF1A84E7306AA52A00D68616 /* FeedIconColdScrollTests.swift in Sources */,

@@ -93,6 +93,9 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = list(range(4))
 # text blobs, so no one of them may exceed 2MB. A multi-megabyte story is broken scraped
 # content and not an article, so cutting it down is safe. apps/rss_feeds/models.py
 MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
+# Feed.task_feeds marks and publishes feeds this many at a time, which caps how many feeds a
+# failed publish can leave counted as tasked without a fetch. apps/rss_feeds/models.py
+TASK_FEEDS_CHUNK_SIZE = 100
 
 
 def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
@@ -1024,16 +1027,21 @@ class Feed(models.Model):
         if isinstance(feeds, QuerySet):
             feeds = [f.pk for f in feeds]
 
-        r.srem("queued_feeds", *feeds)
-        now = datetime.datetime.now().strftime("%s")
-        p = r.pipeline()
-        for feed_id in feeds:
-            p.zadd("tasked_feeds", {feed_id: now})
-        p.execute()
-
-        # for feed_ids in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
-        for feed_id in feeds:
-            UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+        # A feed leaves queued_feeds only after its fetch task is published. Publishing gives up
+        # after about a second of broker connection errors (newsblur_web/settings.py
+        # CELERY_BROKER_TRANSPORT_OPTIONS), and the broker shares its Redis with these keys, so
+        # nothing could put an unpublished feed back. A feed taken off the queue without a fetch
+        # waited for TaskBrokenFeeds, every 6 hours, and enough of them stopped TaskFeeds tasking.
+        # Feeds are marked tasked before their fetches go out, so a fetch that finishes first
+        # can't have its tasked entry written back after it; chunks keep a failed publish to at
+        # most TASK_FEEDS_CHUNK_SIZE feeds counted as tasked, all still queued to be tasked again.
+        for start in range(0, len(feeds), TASK_FEEDS_CHUNK_SIZE):
+            chunk = feeds[start : start + TASK_FEEDS_CHUNK_SIZE]
+            now = datetime.datetime.now().strftime("%s")
+            r.zadd("tasked_feeds", {feed_id: now for feed_id in chunk})
+            for feed_id in chunk:
+                UpdateFeeds.apply_async(args=(feed_id,), queue="update_feeds")
+            r.srem("queued_feeds", *chunk)
 
     @classmethod
     def drain_task_feeds(cls):
@@ -1607,7 +1615,31 @@ class Feed(models.Model):
             )
             return before_story_count, before_story_count
 
-        self.update(archive_page=starting_page)
+        # One walk per feed at a time. Copies of the same walk that run together only fight over
+        # the feed's lock, wait on it, and queue the walk again (utils/feed_fetcher.py
+        # process_archive_page). The lock lasts as long as the backfill task's time limit, so a
+        # walk killed at that limit frees the feed for the next one.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        walk_lock = r.lock(
+            "archive_walk:%s" % self.pk,
+            timeout=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            blocking=False,
+        )
+        if not walk_lock.acquire():
+            logging.debug(
+                "   ---> [%-30s] ~FBNot filling out archive stories, another walk of this feed is running"
+                % (self.log_title[:30])
+            )
+            return before_story_count, before_story_count
+
+        try:
+            self.update(archive_page=starting_page)
+        finally:
+            try:
+                walk_lock.release()
+            except LockError:
+                # The walk outlasted the lock, which has already expired.
+                pass
 
         after_story_count = MStory.objects(story_feed_id=self.pk).count()
         logging.debug(
@@ -2358,9 +2390,16 @@ class Feed(models.Model):
     def story_cutoff(self):
         return self.number_of_stories_to_store()
 
-    def number_of_stories_to_store(self, pre_archive=False):
+    def number_of_stories_to_store(self, pre_archive=False, published_count=0):
+        cutoff, _ = self.story_retention(pre_archive=pre_archive, published_count=published_count)
+        return cutoff
+
+    def story_retention(self, pre_archive=False, published_count=0):
+        """How many stories this feed keeps, and whether the no-reads cap set that number.
+        published_count is the number of stories in the feed's current response.
+        apps/rss_feeds/models.py"""
         if self.archive_subscribers and self.archive_subscribers > 0 and not pre_archive:
-            return 10000
+            return 10000, False
 
         cutoff = 500
         if self.active_subscribers <= 0:
@@ -2400,9 +2439,14 @@ class Feed(models.Model):
             pipeline.get(feed_read_key)
         read_stories_per_week = pipeline.execute()
         read_stories_last_month = sum([int(rs) for rs in read_stories_per_week if rs])
+        unread_capped = False
         if not pre_archive and read_stories_last_month == 0:
+            unread_capped = True
             original_cutoff = cutoff
-            cutoff = min(cutoff, 10)
+            # apps/rss_feeds/models.py still keeps every story in the feed's current response, so a feed that
+            # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives, and
+            # stories it trimmed aren't re-added as new on every fetch.
+            cutoff = min(cutoff, max(10, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2424,13 +2468,21 @@ class Feed(models.Model):
         if getattr(settings, "OVERRIDE_STORY_COUNT_MAX", None):
             cutoff = settings.OVERRIDE_STORY_COUNT_MAX
 
-        return int(cutoff)
+        return int(cutoff), unread_capped
 
-    def trim_feed(self, verbose=False, cutoff=None):
+    def trim_feed(self, verbose=False, cutoff=None, fetched_story_hashes=None):
+        fetched_story_hashes = fetched_story_hashes or []
+        keep_story_hashes = None
         if not cutoff:
-            cutoff = self.story_cutoff
+            cutoff, unread_capped = self.story_retention(published_count=len(fetched_story_hashes))
+            if unread_capped:
+                # apps/rss_feeds/models.py ranks the current response first only under the no-reads cap;
+                # read and archive feeds keep trimming purely by date.
+                keep_story_hashes = fetched_story_hashes
 
-        stories_removed = MStory.trim_feed(feed=self, cutoff=cutoff, verbose=verbose)
+        stories_removed = MStory.trim_feed(
+            feed=self, cutoff=cutoff, verbose=verbose, keep_story_hashes=keep_story_hashes
+        )
 
         if not self.fs_size_bytes:
             self.count_fs_size_bytes()
@@ -4208,7 +4260,7 @@ class MStory(mongo.Document):
             pass
 
     @classmethod
-    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True):
+    def trim_feed(cls, cutoff, feed_id=None, feed=None, verbose=True, keep_story_hashes=None):
         extra_stories_count = 0
         cutoff = int(cutoff)
         if not feed_id and not feed:
@@ -4226,17 +4278,32 @@ class MStory(mongo.Document):
                 "   ---> [%-30s] ~FMFound %s stories. Trimming to ~SB%s~SN..."
                 % (str(feed)[:30], stories.count(), cutoff)
             )
-            try:
-                story_trim_date = stories[cutoff].story_date
-                if story_trim_date == stories[0].story_date:
-                    # Handle case where every story is the same time
-                    story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
-            except IndexError as e:
-                logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
-                return extra_stories_count
+            if keep_story_hashes:
+                # apps/rss_feeds/models.py ranks the stories in the feed's current response ahead of older stored
+                # ones, so an issue whose articles are dated before the previous issue survives the cutoff
+                # (forum #13884). Both date-ordered lookups load only the stories past the cutoff.
+                keep_story_hashes = list(set(keep_story_hashes))
+                current = cls.objects(story_feed_id=feed_id, story_hash__in=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                older = cls.objects(story_feed_id=feed_id, story_hash__nin=keep_story_hashes).order_by(
+                    "-story_date"
+                )
+                current_count = current.count()
+                extra_stories = list(current.skip(cutoff)) + list(older.skip(max(0, cutoff - current_count)))
+                extra_stories_count = len(extra_stories)
+            else:
+                try:
+                    story_trim_date = stories[cutoff].story_date
+                    if story_trim_date == stories[0].story_date:
+                        # Handle case where every story is the same time
+                        story_trim_date = story_trim_date - datetime.timedelta(seconds=1)
+                except IndexError as e:
+                    logging.debug(" ***> [%-30s] ~BRError trimming feed: %s" % (str(feed)[:30], e))
+                    return extra_stories_count
 
-            extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
-            extra_stories_count = extra_stories.count()
+                extra_stories = cls.objects(story_feed_id=feed_id, story_date__lte=story_trim_date)
+                extra_stories_count = extra_stories.count()
             shared_story_count = 0
             for story in extra_stories:
                 if story.share_count:
