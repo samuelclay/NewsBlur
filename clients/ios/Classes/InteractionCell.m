@@ -120,17 +120,17 @@
     if ([category isEqualToString:@"follow"]) {        
         txt = [NSString stringWithFormat:[NBLocalization text:@"%@ is now following you."], username];
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to your comment on %@:\n \n%@"], username, title, comment];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your comment on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to your reply on %@:\n \n%@"], username, title, comment];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your reply on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ re-shared %@."], username, title];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ re-shared %@:\n \n%@"], username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@:\n \n%3$@"], username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ favorited your comments on %@."], username, title];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ favorited your comments on %2$@."], username, title];
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];

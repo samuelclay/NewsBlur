@@ -42,6 +42,29 @@ import WebKit
         try assertLanguageAfterLogin(chosenOnLoginScreen: false)
     }
 
+    func test_accountLanguageSyncTranslatesTheFeedSearchPlaceholder() throws {
+        // AuthenticationResetTests.swift reproduces an account language arriving after the feed list was built,
+        // which left "Search feeds" in English until the next launch.
+        let fixture = AuthenticationFixture(compact: false)
+        defer {
+            fixture.close()
+            NBLocalization.configureDirection()
+            NotificationCenter.default.post(name: NBLocalization.changed, object: nil)
+        }
+        try fixture.configure()
+        // The fixture skips FeedsObjCViewController.m's viewDidLoad, so the test supplies its English search field
+        // and delivers the language notification that viewDidLoad subscribes to.
+        let searchField = UITextField()
+        searchField.placeholder = "Search feeds"
+        fixture.feeds.searchField = searchField
+        UserDefaults.standard.set(false, forKey: NBLocalization.pendingKey)
+        NBLocalization.syncProfile(["preferences": ["language": "es"]])
+        XCTAssertEqual(NBLocalization.language, "es")
+        fixture.feeds.perform(NSSelectorFromString("languageDidChange:"), with: nil)
+        XCTAssertEqual(searchField.placeholder, NBLocalization.text("Search feeds", language: "es"))
+        XCTAssertNotEqual(searchField.placeholder, "Search feeds")
+    }
+
     private func assertLanguageAfterLogin(chosenOnLoginScreen: Bool) throws {
         // AuthenticationResetTests.swift snapshots preferences before choosing a language, so close() restores the device's choice.
         let fixture = AuthenticationFixture(compact: false)

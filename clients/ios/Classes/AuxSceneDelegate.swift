@@ -38,6 +38,10 @@ class AuxSceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        // AuxSceneDelegate.swift mirrors original story windows like the main window.
+        if let windowScene = scene as? UIWindowScene {
+            NBLocalization.applyDirection(to: windowScene)
+        }
 #if targetEnvironment(macCatalyst)
         guard let windowScene = scene as? UIWindowScene, //let titlebar = windowScene.titlebar,
         let userInfo = connectionOptions.userActivities.first?.userInfo else {

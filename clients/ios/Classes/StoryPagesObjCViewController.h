@@ -156,6 +156,7 @@
 - (void)changedAutoscroll;
 - (void)changedScrollOrientation;
 - (void)updateStoriesTheme;
+- (void)updateStoriesDirection;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;

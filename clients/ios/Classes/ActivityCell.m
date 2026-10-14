@@ -147,18 +147,18 @@
     
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ followed %@."], username, withUserUsername];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ followed %2$@."], username, withUserUsername];
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ replied to %@: \n \n%@"], username, withUserUsername, comment];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to %2$@: \n \n%3$@"], username, withUserUsername, comment];
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ favorited %@'s comment on %@:\n \n%@"], username, withUserUsername, title, comment];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ favorited %2$@'s comment on %3$@:\n \n%4$@"], username, withUserUsername, title, comment];
     } else if ([category isEqualToString:@"sharedstory"]) {
         if ([content class] == [NSNull class] || [content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ shared %@."], username, title];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ shared %2$@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:[NBLocalization text:@"%@ shared %@:\n \n%@"], username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ shared %2$@:\n \n%3$@"], username, title, comment];
         }
         
     } else if ([category isEqualToString:@"star"]) {

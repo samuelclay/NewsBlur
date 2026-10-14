@@ -387,6 +387,11 @@ NSString * const MenuHandler = @"handler";
             if (image.size.width > 50) {
                 image = [Utilities imageWithImage:image convertToSize:CGSizeMake(16, 16)];
             }
+            if ([title hasPrefix:@"image_preview_"] && NBLocalization.isRightToLeft) {
+                // MenuViewController.m mirrors the thumbnail position icons along with FeedDetailTableCell.m's
+                // right-to-left rows, where a "left" thumbnail sits on the leading (right) side.
+                image = [image imageWithHorizontallyFlippedOrientation];
+            }
             
             [segmentedControl insertSegmentWithImage:image atIndex:idx animated:NO];
         } else {

@@ -59,8 +59,9 @@
     
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-    paragraphStyle.alignment = NSTextAlignmentLeft;
-    [self.title drawInRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize)
+    // FeedChooserTitleView.m mirrors the folder icon and title within the header for a right-to-left interface.
+    paragraphStyle.alignment = self.nb_leadingTextAlignment;
+    [self.title drawInRect:[self nb_directionalRect:CGRectMake(36.0, titleOffsetY, rect.size.width - 36 - 36, font.pointSize) within:rect]
      withAttributes:@{NSFontAttributeName: font,
                       NSForegroundColorAttributeName: textColor,
                       NSParagraphStyleAttributeName: paragraphStyle}];
@@ -94,7 +95,7 @@
         folderImageViewX = 7.0;
     }
 
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 8.0, 20.0, 20.0)];
+    [folderImage drawInRect:[self nb_directionalRect:CGRectMake(folderImageViewX, 8.0, 20.0, 20.0) within:rect]];
     
     [self addSubview:customView];
 }

@@ -289,6 +289,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [leftPaddingView addSubview:searchIcon];
     self.searchField.leftView = leftPaddingView;
     self.searchField.leftViewMode = UITextFieldViewModeAlways;
+    // FeedDetailObjCViewController.m keeps the magnifying glass on the leading edge (NBLocalization.swift).
+    [self.searchField nb_placeLeadingAccessoryForLanguage];
 
     [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
@@ -4626,6 +4628,21 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     [button addTarget:self action:@selector(didToggleDailyBriefingSection:) forControlEvents:UIControlEventTouchUpInside];
     [headerView addSubview:button];
 
+    // FeedDetailObjCViewController.m mirrors the briefing section header for a right-to-left interface: the title
+    // leads from the right and the date and disclosure arrow trail on the left.
+    if (NBLocalization.isRightToLeft) {
+        for (UIView *view in @[titleLabel, dateLabel, disclosureBorderView, disclosureView]) {
+            view.frame = [NBLocalization directionalRect:view.frame within:headerView.bounds rightToLeft:YES];
+            if (view.autoresizingMask & UIViewAutoresizingFlexibleLeftMargin) {
+                view.autoresizingMask = (view.autoresizingMask & ~UIViewAutoresizingFlexibleLeftMargin) | UIViewAutoresizingFlexibleRightMargin;
+            }
+        }
+        dateLabel.textAlignment = NSTextAlignmentLeft;
+        if (sectionInfo.isCollapsed) {
+            disclosureView.image = [disclosureView.image imageWithHorizontallyFlippedOrientation];
+        }
+    }
+
     return headerView;
 }
 
@@ -7425,7 +7442,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
     self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
-    UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
+    UIImageView *searchIcon = [(self.searchField.leftView ?: self.searchField.rightView) viewWithTag:101];
     searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
 
     // Story titles header pill bar (includes search container)

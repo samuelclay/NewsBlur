@@ -996,8 +996,8 @@
     self.verticalTextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Text view"] symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
     self.verticalSendButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Share story"] symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
     self.verticalProgressButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Reading progress"] symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
-    self.verticalPreviousButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Previous story"] symbol:horizontal ? @"chevron.left" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
-    self.verticalNextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Next unread story"] symbol:horizontal ? @"chevron.right" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
+    self.verticalPreviousButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Previous story"] symbol:horizontal ? @"chevron.backward" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
+    self.verticalNextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Next unread story"] symbol:horizontal ? @"chevron.forward" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
     self.verticalOriginalButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Show original story"] symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
     self.verticalSettingsButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Story settings"] symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
     self.verticalMarkReadButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Mark all as read"] symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
@@ -3386,7 +3386,7 @@
          [[appDelegate.readStories lastObject] isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]));
     [self.traverseBar updatePreviousEnabled:prevEnabled];
     self.verticalPreviousButton.enabled = prevEnabled;
-    self.verticalPreviousButton.image = [UIImage systemImageNamed:horizontal ? @"chevron.left" : @"chevron.up"];
+    self.verticalPreviousButton.image = [UIImage systemImageNamed:horizontal ? @"chevron.backward" : @"chevron.up"];
 
     // Next/Done button state
     buttonNext.enabled = YES;
@@ -3397,7 +3397,7 @@
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
     self.verticalNextButton.title = hasMoreUnread ? [NBLocalization text:@"Next unread story"] : [NBLocalization text:@"Done"];
     self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
-    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.right" : @"chevron.down") : @"checkmark"];
+    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.forward" : @"chevron.down") : @"checkmark"];
 
     // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
@@ -3733,6 +3733,12 @@
     [self.currentPage updateStoryTheme];
     [self.nextPage updateStoryTheme];
     [self.previousPage updateStoryTheme];
+}
+
+- (void)updateStoriesDirection {
+    [self.currentPage updateStoryDirection];
+    [self.nextPage updateStoryDirection];
+    [self.previousPage updateStoryDirection];
 }
 
 - (void)updateStatusBarTheme {

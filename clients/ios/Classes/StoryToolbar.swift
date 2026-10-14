@@ -72,7 +72,7 @@ class StoryToolbar: UIView {
 
         // Chevron
         let chevronConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
-        backChevron.image = UIImage(systemName: "chevron.left", withConfiguration: chevronConfig)
+        backChevron.image = UIImage(systemName: "chevron.backward", withConfiguration: chevronConfig)
         backChevron.translatesAutoresizingMaskIntoConstraints = false
         backChevron.contentMode = .scaleAspectFit
         backButton.addSubview(backChevron)

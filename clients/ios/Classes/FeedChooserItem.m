@@ -58,7 +58,7 @@
     NSString *title = self.info[@"feed_title"];
     
     if (self.search != nil) {
-        return [NSString stringWithFormat:[NBLocalization text:@"\"%@\" in %@"], self.search, title];
+        return [NSString stringWithFormat:[NBLocalization text:@"\"%1$@\" in %2$@"], self.search, title];
     }
     
     if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
