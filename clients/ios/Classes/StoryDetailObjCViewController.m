@@ -684,7 +684,7 @@
          "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
          "%@"
          "%@"
-         "<span class=\"NB-cluster-detail-title-text\">%@</span>"
+         "<span class=\"NB-cluster-detail-title-text\"%@>%@</span>"
          "%@"
          "%@"
          "<span class=\"NB-cluster-detail-date\">%@</span>"
@@ -699,6 +699,7 @@
          borderInner,
          sentimentHTML,
          faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
+         [self contentDirectionAttribute],
          storyTitle,
          tierBadgeHTML,
          imageHTML,
@@ -929,7 +930,7 @@
     
     NSString *htmlTop = [NSString stringWithFormat:@
                             "<!DOCTYPE html>\n"
-                            "<html>"
+                            "<html%@>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
                             "    <div class=\"%@\" id=\"NB-premium-check\">"
@@ -938,6 +939,7 @@
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
                             "        %@", // shareBar
+                            [self interfaceDirectionAttributes],
                             headerString,
                             contentWidthClass,
                             riverClass,
@@ -961,7 +963,7 @@
     
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
-                             "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
+                             "        <div id=\"NB-story\" class=\"NB-story%@\"%@>%@</div>"
                              "        <div id=\"NB-cluster-stories-container\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
@@ -972,6 +974,7 @@
                              "%@", // footer
                              htmlTop,
                              storyClassSuffix,
+                             [self contentDirectionAttribute],
                              storyContent,
                              clusterStoriesString,
                              premiumTextString,
@@ -1732,7 +1735,7 @@
                                                                   integerValue]];
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-title\">"
+                             "<div class=\"NB-story-title\"%@>"
                              "  %@"
                              "  <a href=\"%@\" class=\"NB-story-permalink\">%@</a>"
                              "</div>"
@@ -1744,6 +1747,7 @@
                              "%@"
                              "%@"
                              "</div></div>",
+                             [self contentDirectionAttribute],
                              storyUnread,
                              storyPermalink,
                              storyTitle,
@@ -1757,6 +1761,19 @@
     return storyHeader;
 }
 
+// StoryDetailObjCViewController.m mirrors the reader's own controls for an Arabic or Hebrew interface
+// (storyDetailView.css styles html[dir="rtl"]). A left-to-right interface keeps its markup unchanged.
+- (NSString *)interfaceDirectionAttributes {
+    if (!NBLocalization.isRightToLeft) return @"";
+    return [NSString stringWithFormat:@" dir=\"rtl\" lang=\"%@\"", NBLocalization.resolvedLanguage];
+}
+
+// StoryDetailObjCViewController.m lets story text, titles and comments inside a right-to-left interface take
+// their own direction, so an English story still reads left to right.
+- (NSString *)contentDirectionAttribute {
+    return NBLocalization.isRightToLeft ? @" dir=\"auto\"" : @"";
+}
+
 - (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
@@ -1764,13 +1781,18 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
 
-    NSString *askAIButton = showAskAI ? @
+    // StoryDetailObjCViewController.m translates the button labels and escapes them for the story document.
+    NSString *(^label)(NSString *) = ^NSString *(NSString *source) {
+        return [[NBLocalization text:source] stringByEncodingHTMLEntities];
+    };
+
+    NSString *askAIButton = showAskAI ? [NSString stringWithFormat:@
                              "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "      <span class=\"NB-sideoption-text\">%@</span>"
                              "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
-                             "  </div>" : @"";
+                             "  </div>", label(@"Ask AI")] : @"";
 
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
@@ -1778,7 +1800,7 @@
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                              "  <div class='NB-share-button NB-train-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                             "      <span class=\"NB-sideoption-text\">Train</span>"
+                             "      <span class=\"NB-sideoption-text\">%@</span>"
                              "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>"
@@ -1796,10 +1818,11 @@
                              "  </div>"
                              "%@"
                              "</div></div></div>",
+                             label(@"Train"),
                              isShared ? @"NB-button-active" : @"",
-                             isShared ? @"Shared" : @"Share",
+                             isShared ? label(@"Shared") : label(@"Share"),
                              isSaved ? @"NB-button-active" : @"",
-                             isSaved ? @"Saved" : @"Save",
+                             isSaved ? label(@"Saved") : label(@"Save"),
                              askAIButton
                              ];
 
@@ -2076,7 +2099,7 @@
                     "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                     "    <div class=\"NB-story-comment-likes\">%@</div>"
                     "</div>"
-                    "<div class=\"NB-story-comment-content\">%@</div>"
+                    "<div class=\"NB-story-comment-content\"%@>%@</div>"
                     "%@" // location
                     "<div class=\"NB-button-wrapper\">"
                     "    <div class=\"NB-story-comment-reply-button NB-button\">"
@@ -2097,6 +2120,7 @@
                     [user objectForKey:@"username"],
                     [commentDict objectForKey:@"shared_date"],
                     likingUsers,
+                    [self contentDirectionAttribute],
                     commentContent,
                     locationHtml,
                     [commentDict objectForKey:@"user_id"],
@@ -2119,7 +2143,7 @@
                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                    "    <div class=\"NB-story-comment-likes\">%@</div>"
                    "</div>"
-                   "<div class=\"NB-story-comment-content\">%@</div>"
+                   "<div class=\"NB-story-comment-content\"%@>%@</div>"
                    "%@" // location
                    "<div class=\"NB-button-wrapper\">"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
@@ -2140,6 +2164,7 @@
                    [user objectForKey:@"username"],
                    [commentDict objectForKey:@"shared_date"],
                    likingUsers,
+                   [self contentDirectionAttribute],
                    commentContent,
                    locationHtml,
                    [commentDict objectForKey:@"user_id"],
@@ -2201,7 +2226,7 @@
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                          "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "   <div class=\"NB-story-comment-reply-content\"%@>%@</div>"
                          "   %@" // location
                          "   <div class=\"NB-button-wrapper\">"
                          "       %@" // edit
@@ -2212,6 +2237,7 @@
                          [user objectForKey:@"photo_url"],
                          [user objectForKey:@"username"],
                          [replyDict objectForKey:@"publish_date"],
+                         [self contentDirectionAttribute],
                          replyContent,
                          locationHtml,
                          userEditButton];
@@ -2224,7 +2250,7 @@
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                          "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "   <div class=\"NB-story-comment-reply-content\"%@>%@</div>"
                          "   %@"
                          "   <div class=\"NB-button-wrapper\">"
                          "       %@" // edit
@@ -2235,6 +2261,7 @@
                          [user objectForKey:@"photo_url"],
                          [user objectForKey:@"username"],
                          [replyDict objectForKey:@"publish_date"],
+                         [self contentDirectionAttribute],
                          replyContent,
                          locationHtml,
                          userEditButton];
@@ -3346,6 +3373,25 @@
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-line-spacing').setAttribute('class', 'NB-line-spacing-%@')",
                           lineSpacing];
     
+    [self.webView evaluateJavaScript:jsString completionHandler:nil];
+}
+
+// StoryDetailObjCViewController.m applies an account language change to stories that are already open with the
+// same attributes drawStory writes, without reloading them.
+- (void)updateStoryDirection {
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    NSString *jsString = [NSString stringWithFormat:@
+                          "(function(rightToLeft, language) {"
+                          "  var html = document.documentElement;"
+                          "  if (rightToLeft) { html.setAttribute('dir', 'rtl'); html.setAttribute('lang', language); }"
+                          "  else { html.removeAttribute('dir'); html.removeAttribute('lang'); }"
+                          "  var content = document.querySelectorAll('#NB-story, .NB-story-title, .NB-cluster-detail-title-text, .NB-story-comment-content, .NB-story-comment-reply-content');"
+                          "  for (var i = 0; i < content.length; i++) {"
+                          "    if (rightToLeft) { content[i].setAttribute('dir', 'auto'); } else { content[i].removeAttribute('dir'); }"
+                          "  }"
+                          "})(%@, %@);",
+                          rightToLeft ? @"true" : @"false",
+                          [self javaScriptStringFromString:NBLocalization.resolvedLanguage]];
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 }
 

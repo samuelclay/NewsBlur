@@ -477,7 +477,8 @@ struct AddSiteView: View {
 
                 VStack(alignment: .trailing, spacing: 2) {
                     let subs = result.numSubscribers
-                    Text("\(formatNumber(subs)) subscriber\(subs == 1 ? "" : "s")")
+                    // AddSiteView.swift uses the language's plural rules instead of appending an English "s".
+                    Text(verbatim: NBLocalization.plural("%@ subscribers", groupedCount: subs))
                         .font(.system(size: 11))
                         .foregroundColor(AddSiteColors.textSecondary)
 
@@ -566,11 +567,5 @@ struct AddSiteView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(AddSiteColors.textSecondary)
         }
-    }
-
-    private func formatNumber(_ number: Int) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
     }
 }

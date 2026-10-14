@@ -311,6 +311,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [leftPaddingView addSubview:searchIcon];
     self.searchField.leftView = leftPaddingView;
     self.searchField.leftViewMode = UITextFieldViewModeAlways;
+    [self configureSearchFieldForLanguage];
 
     // Add target for text change events
     [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -2225,7 +2226,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     // Update search icon color
-    UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
+    // FeedsObjCViewController.m holds the icon as rightView in a right-to-left field (configureSearchFieldForLanguage).
+    UIImageView *searchIcon = [(self.searchField.leftView ?: self.searchField.rightView) viewWithTag:101];
     searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
 
     if ([ThemeManager themeManager].isDarkTheme) {
@@ -2283,15 +2285,27 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
 }
 
+// FeedsObjCViewController.m translates the search placeholder again after an account language sync and keeps the
+// magnifying glass on the leading edge (NBLocalization.swift).
+- (void)configureSearchFieldForLanguage {
+    self.searchField.placeholder = [NBLocalization text:@"Search feeds"];
+    [self.searchField nb_placeLeadingAccessoryForLanguage];
+}
+
 - (void)languageDidChange:(NSNotification *)notification {
     // FeedsObjCViewController.m refreshes already visible controls after an account language changes.
     // The cached vertical toolbar items carry their titles, so they are rebuilt.
+    [self configureSearchFieldForLanguage];
+    self.appDelegate.feedDetailViewController.searchField.placeholder = [NBLocalization text:@"Search stories"];
+    [self.appDelegate.feedDetailViewController.searchField nb_placeLeadingAccessoryForLanguage];
+    [self layoutHeaderCounts:UIInterfaceOrientationUnknown];
     self.verticalFeedToolbarItems = nil;
     self.verticalIntelligenceItems = nil;
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     [self configureFeedToolbarItemsForOrientation:self.view.window.windowScene.interfaceOrientation];
     [self reloadFeedTitlesTable];
     [self.appDelegate.feedDetailViewController reload];
+    [self.appDelegate.storyPagesViewController updateStoriesDirection];
 }
 
 - (void)settingDidChange:(NSNotification*)notification {
@@ -2639,11 +2653,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     [cell setupGestures];
     
     if (searchQuery != nil) {
-        cell.feedTitle = [NSString stringWithFormat:[NBLocalization text:@"\"%@\" in %@"], cell.searchQuery, cell.feedTitle];
+        cell.feedTitle = [NSString stringWithFormat:[NBLocalization text:@"\"%1$@\" in %2$@"], cell.searchQuery, cell.feedTitle];
         
         if (searchFolder != nil) {
             cell.feedFavicon = [appDelegate folderIcon:searchFolder];
-            cell.feedTitle = [NSString stringWithFormat:[NBLocalization text:@"\"%@\" in %@"], cell.searchQuery, [appDelegate folderTitle:searchFolder]];
+            cell.feedTitle = [NSString stringWithFormat:[NBLocalization text:@"\"%1$@\" in %2$@"], cell.searchQuery, [appDelegate folderTitle:searchFolder]];
         }
     }
     
@@ -2858,7 +2872,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         }
     }
     NSString *accessibilityLabel = neutralCount ?
-        [NSString stringWithFormat:[NBLocalization text:@"%@ feed, %@"], cell.feedTitle,
+        [NSString stringWithFormat:[NBLocalization text:@"%1$@ feed, %2$@"], cell.feedTitle,
          [NBLocalization plural:@"%@ unread stories" count:@(neutralCount)]] :
         [NSString stringWithFormat:[NBLocalization text:@"%@ feed"], cell.feedTitle];
     BOOL changed = cell.positiveCount != positiveCount || cell.neutralCount != neutralCount ||
@@ -4584,6 +4598,8 @@ heightForHeaderInSection:(NSInteger)section {
     userLabel.backgroundColor = [UIColor clearColor];
     userLabel.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"Logged in as %@"], appDelegate.activeUsername];
     [userLabel sizeToFit];
+    [self placeHeaderView:userAvatarButton frame:userAvatarButton.frame];
+    [self placeHeaderView:userLabel frame:userLabel.frame];
     [self.userInfoView addSubview:userLabel];
     
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
@@ -4666,6 +4682,17 @@ heightForHeaderInSection:(NSInteger)section {
 #endif
 }
 
+// FeedsObjCViewController.m measures the account header from the left edge. A right-to-left header mirrors
+// each frame and pins it to the right edge, so it keeps its layout when the navigation bar resizes the title view.
+- (void)placeHeaderView:(UIView *)headerView frame:(CGRect)frame {
+    // The header is laid out before it joins the navigation bar, so it reads the account language's direction.
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    headerView.frame = [NBLocalization directionalRect:frame within:self.userInfoView.bounds rightToLeft:rightToLeft];
+    if (rightToLeft) {
+        headerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    }
+}
+
 - (void)refreshHeaderCounts {
     if (self.awaitingAuthenticatedFeedList || !appDelegate.activeUsername) {
         userAvatarButton.hidden = YES;
@@ -4681,30 +4708,37 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.hidden = NO;
     [appDelegate.folderCountCache removeObjectForKey:@"everything"];
 
-    NSNumberFormatter *formatter = [NSNumberFormatter new];
-    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     
-    positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
+    // FeedsObjCViewController.m groups digits like the account language (NBLocalization.swift).
+    positiveCount.text = [NBLocalization formattedCount:counts.ps];
     positiveCount.accessibilityLabel = [NBLocalization plural:@"%@ focused stories" count:@(counts.ps)];
     
-    neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
+    neutralCount.text = [NBLocalization formattedCount:counts.nt];
     neutralCount.accessibilityLabel = [NBLocalization plural:@"%@ unread stories" count:@(counts.nt)];
 
-    CGFloat countY = CGRectGetMaxY(userLabel.frame) + 2 - yOffset;
+    // FeedsObjCViewController.m chains the counts with left-to-right frames, mirroring each one as it is placed.
+    CGRect userLabelFrame = [NBLocalization directionalRect:userLabel.frame within:self.userInfoView.bounds
+                                                rightToLeft:NBLocalization.isRightToLeft];
+    CGFloat countY = CGRectGetMaxY(userLabelFrame) + 2 - yOffset;
     CGFloat iconY = countY + 3;
 
-    yellowIcon.frame = CGRectMake(CGRectGetMinX(userLabel.frame), iconY, 10, 10);
+    CGRect yellowIconFrame = CGRectMake(CGRectGetMinX(userLabelFrame), iconY, 10, 10);
 
-    neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIcon.frame) + 2,
+    neutralCount.frame = CGRectMake(CGRectGetMaxX(yellowIconFrame) + 2,
                                     countY, 100, 16);
     [neutralCount sizeToFit];
+    CGRect neutralCountFrame = neutralCount.frame;
 
-    greenIcon.frame = CGRectMake(CGRectGetMaxX(neutralCount.frame) + 8,
-                                 iconY, 10, 10);
-    positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIcon.frame) + 2,
+    CGRect greenIconFrame = CGRectMake(CGRectGetMaxX(neutralCountFrame) + 8,
+                                       iconY, 10, 10);
+    positiveCount.frame = CGRectMake(CGRectGetMaxX(greenIconFrame) + 2,
                                      countY, 100, 16);
     [positiveCount sizeToFit];
+    [self placeHeaderView:yellowIcon frame:yellowIconFrame];
+    [self placeHeaderView:neutralCount frame:neutralCountFrame];
+    [self placeHeaderView:greenIcon frame:greenIconFrame];
+    [self placeHeaderView:positiveCount frame:positiveCount.frame];
     
     yellowIcon.hidden = NO;
     greenIcon.hidden = NO;

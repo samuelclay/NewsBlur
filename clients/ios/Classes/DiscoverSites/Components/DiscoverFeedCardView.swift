@@ -166,7 +166,7 @@ struct DiscoverFeedCardView: View {
             Label(subscriberLabel, systemImage: "person.2")
                 .accessibilityIdentifier("discover-subscribers-\(feed.id)")
             if feed.averageStoriesPerMonth > 0 {
-                Text(verbatim: "\(feed.averageStoriesPerMonth.formatted()) \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/month")
+                Text(verbatim: NBLocalization.plural("%@ stories/month", groupedCount: feed.averageStoriesPerMonth))
                     .accessibilityIdentifier("discover-story-count-\(feed.id)")
             }
         }
@@ -271,7 +271,8 @@ struct DiscoverFeedCardView: View {
     }
 
     private var subscriberLabel: String {
-        "\(feed.numSubscribers.formatted()) \(feed.numSubscribers == 1 ? "subscriber" : "subscribers")"
+        // DiscoverFeedCardView.swift uses the language's plural rules instead of English singular and plural words.
+        NBLocalization.plural("%@ subscribers", groupedCount: feed.numSubscribers)
     }
 
     private var isSubscribed: Bool {

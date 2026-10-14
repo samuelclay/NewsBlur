@@ -114,7 +114,7 @@ struct GoogleNewsTabView: View {
                 viewModel.selectGoogleNewsTopic(nil)
             }) {
                 HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: "chevron.backward")
                         .font(.system(size: 13, weight: .medium))
                     Text(NBLocalization.text("All Topics"))
                         .font(.system(size: 14, weight: .medium))
@@ -192,7 +192,7 @@ struct GoogleNewsTabView: View {
                         .foregroundColor(DiscoverColors.textSecondary)
                 }
 
-                Image(systemName: isSelected ? "chevron.down" : "chevron.right")
+                Image(systemName: isSelected ? "chevron.down" : "chevron.forward")
                     .font(.system(size: 12))
                     .foregroundColor(DiscoverColors.textSecondary)
             }

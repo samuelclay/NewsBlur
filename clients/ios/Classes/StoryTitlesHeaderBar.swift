@@ -194,8 +194,8 @@ class StoryTitlesHeaderBar: NSObject {
     private var markReadWidthConstraint: NSLayoutConstraint?
     private var isSearchCompact = false
     private var isDailyBriefingMode = false
-    private var filterText = "ALL"
-    private var orderText = "NEWEST"
+    private var filterText = StoryTitlesHeaderBar.filterTitle(readFilter: "all")
+    private var orderText = StoryTitlesHeaderBar.orderTitle(order: "newest")
     private var fullOptionsWidth: CGFloat = 0
     private var compactOptionsWidth: CGFloat = 0
     private let markReadWidth: CGFloat = 98
@@ -279,7 +279,7 @@ class StoryTitlesHeaderBar: NSObject {
     private func applyDailyBriefingPill(compact: Bool) {
         setPillContent(
             discoverPill,
-            title: compact ? nil : "BRIEFING SETTINGS",
+            title: compact ? nil : NBLocalization.text("BRIEFING SETTINGS"),
             image: dailyBriefingPillImage(),
             leadingInset: 14,
             trailingInset: compact ? 14 : 12,
@@ -338,8 +338,12 @@ class StoryTitlesHeaderBar: NSObject {
         button.setImage(image?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = pillFont
         button.titleLabel?.lineBreakMode = lineBreakMode
-        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: leadingInset, bottom: 0, right: trailingInset)
-        button.semanticContentAttribute = trailingImage ? .forceRightToLeft : .unspecified
+        // StoryTitlesHeaderBar.swift reverses the button's own direction to put the image on the trailing side,
+        // which is the left side in a right-to-left interface.
+        let rightToLeft = NBLocalization.isRightToLeft
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: rightToLeft ? trailingInset : leadingInset,
+                                                bottom: 0, right: rightToLeft ? leadingInset : trailingInset)
+        button.semanticContentAttribute = trailingImage ? (rightToLeft ? .forceLeftToRight : .forceRightToLeft) : .unspecified
         if image != nil && title != nil {
             let half = imagePadding / 2
             if trailingImage {
@@ -852,11 +856,20 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Updates the options pill text to reflect current order and read filter.
     func updateOptionsPill(order: String, readFilter: String) {
-        filterText = readFilter == "unread" ? "UNREAD" : "ALL"
-        orderText = order == "oldest" ? "OLDEST" : "NEWEST"
+        filterText = Self.filterTitle(readFilter: readFilter)
+        orderText = Self.orderTitle(order: order)
         measureOptionsWidths()
         if headerContainer.bounds.width <= 0 { applyOptionsTitle(compact: false) }
         relayoutPills()
+    }
+
+    // StoryTitlesHeaderBar.swift keeps the read_filter and order identifiers literal and only translates their labels.
+    static func filterTitle(readFilter: String) -> String {
+        readFilter == "unread" ? NBLocalization.text("UNREAD") : NBLocalization.text("ALL")
+    }
+
+    static func orderTitle(order: String) -> String {
+        order == "oldest" ? NBLocalization.text("OLDEST") : NBLocalization.text("NEWEST")
     }
 
     private func applyOptionsTitle(compact: Bool, iconOnly: Bool = false) {
@@ -978,7 +991,7 @@ class StoryTitlesHeaderBar: NSObject {
     private func layoutSearchPill(compact: Bool) {
         guard compact != isSearchCompact else { return }
         isSearchCompact = compact
-        setPillContent(searchPill, title: compact ? nil : "SEARCH",
+        setPillContent(searchPill, title: compact ? nil : NBLocalization.text("SEARCH"),
                        image: sym("magnifyingglass", size: compact ? 12 : 11),
                        leadingInset: 14, trailingInset: 14)
         // StoryTitlesHeaderBar.swift preserves active search colors when replacing its content configuration.

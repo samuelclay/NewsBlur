@@ -69,6 +69,13 @@ import UIKit
         // NBLocalization.swift must use the override's plural rules, not the system locale's rules.
         return String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [count])
     }
+    // NBLocalization.swift picks the plural form for an integer count and shows that count grouped like the
+    // interface language (formattedCount), so English keeps "1,240 subscribers".
+    @objc(plural:groupedCount:) static func plural(_ source: String, groupedCount count: Int) -> String {
+        let text = plural(source, count: NSNumber(value: count))
+        guard let digits = text.range(of: String(count)) else { return text }
+        return text.replacingCharacters(in: digits, with: formattedCount(count))
+    }
     // NBLocalization.swift remembers the newest requested language so an older save can't override it.
     @MainActor private static var latestRequest: String?
     @MainActor static func apply(_ value: String, pending: Bool) {
@@ -83,11 +90,26 @@ import UIKit
     }
     @MainActor static func configureDirection() {
         NewsBlurAppDelegate.shared?.networkManager?.requestSerializer.setValue(resolvedLanguage, forHTTPHeaderField: "Accept-Language")
-        let direction: UISemanticContentAttribute = isRightToLeft ? .forceRightToLeft : .forceLeftToRight
-        UIView.appearance().semanticContentAttribute = direction
         for scene in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }) {
-            for window in scene.windows { window.semanticContentAttribute = direction }
+            applyDirection(to: scene)
         }
+    }
+    // NBLocalization.swift sets direction as the scene's layoutDirection trait instead of forcing each view's
+    // semanticContentAttribute, so views that already exist, cells waiting for reuse and SwiftUI hosts all
+    // follow a runtime language change. SceneDelegate.swift and AuxSceneDelegate.swift call this for new scenes.
+    @MainActor static func applyDirection(to scene: UIWindowScene) {
+        scene.traitOverrides.layoutDirection = isRightToLeft ? .rightToLeft : .leftToRight
+    }
+    // NBLocalization.swift groups counts like the interface language with Latin digits, matching the web's
+    // Inflector.commas. English keeps the device-formatted output it always had.
+    static func formattedCount(_ count: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        let code = resolvedLanguage
+        if !code.hasPrefix("en") {
+            formatter.locale = Locale(identifier: "\(code)@numbers=latn")
+        }
+        return formatter.string(from: NSNumber(value: count)) ?? "\(count)"
     }
     // NewsBlurAppDelegate.m clears the previous account's language on login, but keeps a choice made on
     // the login screen; syncProfile saves that pending choice to the new account.
@@ -124,6 +146,83 @@ import UIKit
                 completion(false)
             }
         })
+    }
+}
+
+// NBLocalization.swift lets drawRect code written with left-to-right coordinates mirror itself. Each helper
+// returns its input unchanged for a left-to-right view, so left-to-right drawing stays identical.
+@objc extension UIView {
+    @objc(nb_isRightToLeft) var nbIsRightToLeft: Bool {
+        effectiveUserInterfaceLayoutDirection == .rightToLeft
+    }
+    // NBLocalization.swift reflects a frame measured from the left edge so it is measured from the right edge.
+    @objc(nb_directionalRect:within:) func nbDirectionalRect(_ rect: CGRect, within container: CGRect) -> CGRect {
+        NBLocalization.directionalRect(rect, within: container, rightToLeft: nbIsRightToLeft)
+    }
+    @objc(nb_directionalX:within:) func nbDirectionalX(_ x: CGFloat, within container: CGRect) -> CGFloat {
+        nbIsRightToLeft ? container.minX + container.maxX - x : x
+    }
+    // NBLocalization.swift aligns interface text and one-line titles to the leading edge.
+    @objc(nb_leadingTextAlignment) var nbLeadingTextAlignment: NSTextAlignment {
+        nbIsRightToLeft ? .right : .left
+    }
+    // NBLocalization.swift lets multi-line user content (story titles and previews) in a right-to-left
+    // interface align by its own script, so an English story reads left to right like the story detail.
+    @objc(nb_contentTextAlignment) var nbContentTextAlignment: NSTextAlignment {
+        nbIsRightToLeft ? .natural : .left
+    }
+    // NBLocalization.swift gives drawn interface strings a right-to-left base direction in a right-to-left
+    // interface, so a translation that starts with a Latin name still orders correctly.
+    @objc(nb_interfaceWritingDirection) var nbInterfaceWritingDirection: NSWritingDirection {
+        nbIsRightToLeft ? .rightToLeft : .natural
+    }
+}
+
+// NBLocalization.swift keeps a text field's leading accessory, such as a search magnifying glass, on the leading
+// edge. When only the layoutDirection trait is right to left, UITextField does not reliably move its overlay views,
+// so a right-to-left field keeps left-to-right overlay geometry, shows the accessory as its right view and
+// right-aligns its text beside it. A field that starts left to right keeps its leftView untouched.
+@objc extension UITextField {
+    @objc(nb_placeLeadingAccessoryForLanguage) func nbPlaceLeadingAccessoryForLanguage() {
+        guard let accessory = leftView ?? rightView else { return }
+        if NBLocalization.isRightToLeft {
+            guard rightView !== accessory || semanticContentAttribute != .forceLeftToRight else { return }
+            semanticContentAttribute = .forceLeftToRight
+            leftView = nil
+            rightView = nbMovedOverlay(accessory)
+            rightViewMode = .always
+            textAlignment = .right
+        } else if rightView === accessory {
+            // A field returning to left to right stays forced left to right: it may still carry the old trait while
+            // its overlay views move, and UITextField files them by its direction at that moment.
+            semanticContentAttribute = .forceLeftToRight
+            rightView = nil
+            leftView = nbMovedOverlay(accessory)
+            leftViewMode = .always
+            textAlignment = .natural
+        } else {
+            return
+        }
+        setNeedsLayout()
+    }
+
+    // NBLocalization.swift hands the other overlay slot a new container holding the accessory's contents, because
+    // UITextField keeps drawing a reused overlay view where it was last laid out.
+    private func nbMovedOverlay(_ accessory: UIView) -> UIView {
+        let overlay = UIView(frame: CGRect(origin: .zero, size: accessory.bounds.size))
+        overlay.backgroundColor = accessory.backgroundColor
+        for subview in accessory.subviews {
+            overlay.addSubview(subview)
+        }
+        return overlay
+    }
+}
+
+extension NBLocalization {
+    @objc(directionalRect:within:rightToLeft:)
+    static func directionalRect(_ rect: CGRect, within container: CGRect, rightToLeft: Bool) -> CGRect {
+        guard rightToLeft else { return rect }
+        return CGRect(x: container.minX + container.maxX - rect.maxX, y: rect.minY, width: rect.width, height: rect.height)
     }
 }
 

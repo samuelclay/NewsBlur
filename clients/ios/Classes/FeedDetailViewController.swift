@@ -2587,7 +2587,7 @@ private struct DailyBriefingGroupView: View {
                 store.toggleCollapse(group)
             } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: store.isCollapsed(group) ? "chevron.right.circle.fill" : "chevron.down.circle.fill")
+                    Image(systemName: store.isCollapsed(group) ? "chevron.forward.circle.fill" : "chevron.down.circle.fill")
                         .font(.system(size: 16, weight: .semibold))
                     Text(group.title)
                         .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 18))

@@ -651,7 +651,11 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .green,
                         type: .multiValue(
                             key: "story_list_preview_images_size",
-                            titles: [NBLocalization.text("None"), NBLocalization.text("Small Left"), NBLocalization.text("Large Left"), NBLocalization.text("Large Right"), NBLocalization.text("Small Right")],
+                            // PreferencesView.swift names the side a thumbnail actually appears on: FeedDetailTableCell.m
+                            // mirrors story rows in a right-to-left interface, so "left" thumbnails sit on the right.
+                            titles: NBLocalization.isRightToLeft
+                                ? [NBLocalization.text("None"), NBLocalization.text("Small Right"), NBLocalization.text("Large Right"), NBLocalization.text("Large Left"), NBLocalization.text("Small Left")]
+                                : [NBLocalization.text("None"), NBLocalization.text("Small Left"), NBLocalization.text("Large Left"), NBLocalization.text("Large Right"), NBLocalization.text("Small Right")],
                             values: ["none", "small_left", "large_left", "large_right", "small_right"],
                             defaultValue: "large_right"
                         )
@@ -1513,7 +1517,7 @@ private struct LanguagePreferenceItemView: View {
                 Text(NBLocalization.languages.first { $0.0 == language }?.1 ?? NBLocalization.text("Automatic"))
                     .font(.system(size: 14))
                     .foregroundColor(PreferencesColors.textSecondary)
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
             }
@@ -1661,7 +1665,7 @@ struct MultiValueItemView: View {
                 .font(.system(size: 14))
                 .foregroundColor(PreferencesColors.textSecondary)
 
-            Image(systemName: "chevron.right")
+            Image(systemName: "chevron.forward")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
         }
@@ -1698,7 +1702,7 @@ struct MultiValueItemView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Image(systemName: "chevron.right")
+            Image(systemName: "chevron.forward")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
                 .padding(.top, 6)
@@ -2114,7 +2118,7 @@ struct AppIconPreferenceItemView: View {
                         .minimumScaleFactor(0.75)
                 }
 
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(PreferencesColors.textSecondary.opacity(0.4))
             }

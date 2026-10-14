@@ -427,9 +427,6 @@
     
     NSDictionary *result = [self.autocompleteResults objectAtIndex:indexPath.row];
     int subs = [[result objectForKey:@"num_subscribers"] intValue];
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    [numberFormatter setPositiveFormat:@"#,###"];
-    NSNumber *theScore = [NSNumber numberWithInt:subs];
     NSString *favicon = [result objectForKey:@"favicon"];
     UIImage *faviconImage;
     if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
@@ -443,8 +440,8 @@
     cell.feedTitle.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     cell.feedUrl.text = [result objectForKey:@"value"];
     cell.feedUrl.textColor = UIColorFromLightDarkRGB(NEWSBLUR_LINK_COLOR, 0x3B7CC5);
-    cell.feedSubs.text = [NSString stringWithFormat:[NBLocalization text:@"%@ subscriber%@"],
-                           [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:theScore]], subs == 1 ? @"" : @"s"];
+    // AddSiteViewController.m uses the language's plural rules instead of appending an English "s".
+    cell.feedSubs.text = [NBLocalization plural:@"%@ subscribers" groupedCount:subs];
     cell.feedSubs.textColor = UIColorFromRGB(0x808080);
     cell.feedFavicon.image = faviconImage;
     cell.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);

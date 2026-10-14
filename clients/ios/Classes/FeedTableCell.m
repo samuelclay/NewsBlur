@@ -51,6 +51,8 @@ static UIFont *textFont = nil;
         self.selectedBackgroundView = selectedBackground;
 
         [self.contentView addSubview:cellContent];
+        // FeedTableCell.m redraws its mirrored layout when the account language changes direction.
+        [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(setNeedsDisplay)];
     }
 
     return self;
@@ -59,11 +61,13 @@ static UIFont *textFont = nil;
 - (void)drawRect:(CGRect)rect {
     ((FeedTableCellView *)cellContent).cell = self;
     
+    CGRect cellRect = rect;
     CGFloat indentationOffset = self.indentationLevel * self.indentationWidth;
     rect.origin.x += indentationOffset;
     rect.size.width -= indentationOffset;
     
-    cellContent.frame = rect;
+    // FeedTableCell.m indents nested feeds from the right edge in a right-to-left feed list.
+    cellContent.frame = [self nb_directionalRect:rect within:cellRect];
     [cellContent setNeedsDisplay];
 }
 
@@ -194,14 +198,18 @@ static UIFont *textFont = nil;
         CGContextFillPath(context);
     }
     
+    // FeedTableCell.m lays out with left-to-right coordinates and mirrors each frame within the row when the
+    // feed list is right to left, so favicons lead and counts trail on either side.
+    BOOL rightToLeft = self.nb_isRightToLeft;
     if (cell.isInactive) {
         CGRect imageRect = CGRectMake(CGRectGetMaxX(r) - 25, CGRectGetMidY(r) - 8, 16, 16);
-        [[UIImage imageNamed:@"mute_gray.png"] drawInRect:imageRect];
+        [[UIImage imageNamed:@"mute_gray.png"] drawInRect:[self nb_directionalRect:imageRect within:r]];
     } else if (cell.savedStoriesCount > 0) {
-        [cell.unreadCount drawInRect:r ps:cell.savedStoriesCount nt:0 listType:NBFeedListSaved];
+        [cell.unreadCount drawInRect:r ps:cell.savedStoriesCount nt:0 listType:NBFeedListSaved rightToLeft:rightToLeft];
     } else {
         [cell.unreadCount drawInRect:r ps:cell.positiveCount nt:cell.neutralCount
-                        listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)];
+                        listType:(cell.isSocial ? NBFeedListSocial : cell.isSaved ? NBFeedListSaved : NBFeedListFeed)
+                     rightToLeft:rightToLeft];
     }
     
     UIColor *textColor = isHighlighted ?
@@ -218,22 +226,23 @@ static UIFont *textFont = nil;
     NSInteger titleOffsetY = ((r.size.height - font.pointSize) / 2) - 1;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-    paragraphStyle.alignment = NSTextAlignmentLeft;
+    // FeedTableCell.m keeps a feed title beside its favicon; the title's own script still orders its characters.
+    paragraphStyle.alignment = self.nb_leadingTextAlignment;
     CGSize faviconSize;
     if (cell.isSocial) {
         if (!cell.appDelegate.isPhone) {
             faviconSize = CGSizeMake(28, 28);
             UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
-            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
-            [cell.feedTitle drawInRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4)
+            [feedIcon drawInRect:[self nb_directionalRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height) within:r]];
+            [cell.feedTitle drawInRect:[self nb_directionalRect:CGRectMake(46, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 16, font.pointSize*1.4) within:r]
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
             faviconSize = CGSizeMake(26, 26);
             UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
-            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
-            [cell.feedTitle drawInRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4)
+            [feedIcon drawInRect:[self nb_directionalRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height) within:r]];
+            [cell.feedTitle drawInRect:[self nb_directionalRect:CGRectMake(42, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10 - 12, font.pointSize*1.4) within:r]
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
@@ -242,14 +251,14 @@ static UIFont *textFont = nil;
         faviconSize = CGSizeMake(16, 16);
         UIImage *feedIcon = cell.feedFaviconPrepared ? cell.feedFavicon : [Utilities roundCorneredImage:cell.feedFavicon radius:4 convertToSize:faviconSize];
         if (!cell.appDelegate.isPhone) {
-            [feedIcon drawInRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
-            [cell.feedTitle drawInRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
+            [feedIcon drawInRect:[self nb_directionalRect:CGRectMake(12.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height) within:r]];
+            [cell.feedTitle drawInRect:[self nb_directionalRect:CGRectMake(36.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4) within:r]
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
         } else {
-            [feedIcon drawInRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height)];
-            [cell.feedTitle drawInRect:CGRectMake(34.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4)
+            [feedIcon drawInRect:[self nb_directionalRect:CGRectMake(9.0, CGRectGetMidY(r)-faviconSize.height/2, faviconSize.width, faviconSize.height) within:r]];
+            [cell.feedTitle drawInRect:[self nb_directionalRect:CGRectMake(34.0, titleOffsetY, r.size.width - ([cell.unreadCount offsetWidth] + 36) - 10, font.pointSize*1.4) within:r]
                    withAttributes:@{NSFontAttributeName: font,
                                     NSForegroundColorAttributeName: textColor,
                                     NSParagraphStyleAttributeName: paragraphStyle}];
