@@ -114,6 +114,7 @@ import com.newsblur.util.DefaultBrowser
 import com.newsblur.util.FeedListOrder
 import com.newsblur.util.GestureAction
 import com.newsblur.util.GestureChoices
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.MarkAllReadConfirmation
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants
@@ -514,10 +515,9 @@ fun SettingsScreen(
             palette = palette,
         ) {
             val languageTitle = stringResource(R.string.language_title)
-            val automatic = stringResource(R.string.language_automatic)
-            val selected = com.newsblur.util.LanguageSettings.selected(context)
-            val options = (linkedMapOf("auto" to automatic) + com.newsblur.util.LanguageSettings.names)
-                .map { (code, name) -> ChoiceOption(code, name) }
+            val automatic = remember(context) { LanguageSettings.automaticLabel(context) }
+            val selected = LanguageSettings.selected(context)
+            val options = LanguageSettings.options(automatic).map { (code, name) -> ChoiceOption(code, name) }
             ValueSettingsRow(
                 title = languageTitle,
                 icon = Icons.Rounded.Public,

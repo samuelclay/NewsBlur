@@ -6,9 +6,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.design.NewsBlurTheme
@@ -45,7 +45,8 @@ class LoginActivity : AppCompatActivity() {
             isAppearanceLightStatusBars = light
             isAppearanceLightNavigationBars = light
         }
-        intent?.data?.let(account::callback)
+        // LoginActivity.kt hands a sign-in callback over once; a recreate, such as after a language change, must not replay it.
+        if (savedInstanceState == null) intent?.data?.let(account::callback)
         val variant = prefsRepo.getSelectedTheme().toVariant()
         setContent {
             NewsBlurTheme(variant = variant, dynamic = false) {

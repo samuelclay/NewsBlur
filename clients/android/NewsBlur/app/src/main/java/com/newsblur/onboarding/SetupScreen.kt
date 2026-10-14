@@ -1,6 +1,5 @@
 package com.newsblur.onboarding
 
-import androidx.compose.ui.res.stringResource
 import android.text.format.DateUtils
 import android.widget.ImageView
 import androidx.activity.compose.BackHandler
@@ -100,9 +99,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -168,7 +169,7 @@ fun SetupScreen(
                 Text(if (complete) "2 / 2" else "1 / 2", color = colors.textSecondary, fontSize = 14.sp)
                 Spacer(Modifier.width(8.dp))
                 IconButton(onClick = onClose, modifier = Modifier.size(44.dp).background(colors.cardBackground, CircleShape)) {
-                    Icon(Icons.Outlined.Close, "Close setup", Modifier.size(20.dp), tint = colors.textPrimary)
+                    Icon(Icons.Outlined.Close, stringResource(R.string.setup_close_setup), Modifier.size(20.dp), tint = colors.textPrimary)
                 }
             }
             Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -271,7 +272,7 @@ fun SetupScreen(
                 if (progress.failures.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) { Failures(progress, model, colors) }
             }
             PrimaryAction(
-                if (complete) "Start reading" else "Continue",
+                stringResource(if (complete) R.string.setup_start_reading else R.string.setup_continue),
                 Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                 enabled = !state.importing,
             ) {
@@ -303,7 +304,7 @@ fun SetupScreen(
                 ) {
                     Box(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
                         Text(
-                            if (state.category!!.isEmpty()) "A little of everything" else OnboardingCatalog.title(state.category!!),
+                            if (state.category!!.isEmpty()) stringResource(R.string.setup_a_little_of_everything) else OnboardingCatalog.title(state.category!!),
                             Modifier.fillMaxWidth().padding(horizontal = 56.dp),
                             color = colors.textPrimary,
                             fontSize = 17.sp,
@@ -339,6 +340,7 @@ fun SetupScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(Icons.Outlined.Folder, null, tint = colors.textSecondary)
+                            val bundleFolderName = stringResource(R.string.setup_bundle_folder_name)
                             BasicTextField(
                                 state.folder,
                                 model::folder,
@@ -347,7 +349,7 @@ fun SetupScreen(
                                         start = 12.dp,
                                     ).weight(
                                         1f,
-                                    ).semantics { contentDescription = "Bundle folder name" },
+                                    ).semantics { contentDescription = bundleFolderName },
                                 singleLine = true,
                                 textStyle =
                                     TextStyle(
@@ -365,8 +367,8 @@ fun SetupScreen(
                         state.choices.feeds.forEach { feed ->
                             val status =
                                 when (feed.url) {
-                                    in progress.added, in state.unavailable -> "Added"
-                                    in progress.queued -> "Queued"
+                                    in progress.added, in state.unavailable -> stringResource(R.string.setup_added)
+                                    in progress.queued -> stringResource(R.string.setup_queued)
                                     else -> null
                                 }
                             BundleCard(
@@ -385,7 +387,9 @@ fun SetupScreen(
                             ) {
                                 CircularProgressIndicator(Modifier.size(24.dp), color = colors.textSecondary, strokeWidth = 2.dp)
                                 Text(
-                                    if (state.choices.feeds.isEmpty()) "Loading feeds to choose from…" else "Loading more feeds…",
+                                    stringResource(
+                                        if (state.choices.feeds.isEmpty()) R.string.setup_loading_feeds_to_choose_from else R.string.setup_loading_more_feeds,
+                                    ),
                                     Modifier.padding(start = 14.dp),
                                     color = colors.textSecondary,
                                 )
@@ -402,11 +406,11 @@ fun SetupScreen(
                             if (count ==
                                 0
                             ) {
-                                "Select feeds to add"
+                                stringResource(R.string.setup_select_feeds_to_add)
                             } else if (state.folder.isBlank()) {
-                                "Name your folder to continue"
+                                stringResource(R.string.setup_name_your_folder_to_continue)
                             } else {
-                                "Add $count ${if (count == 1) "feed" else "feeds"} to “${state.folder.trim()}” folder"
+                                pluralStringResource(R.plurals.setup_add_feeds_to_folder, count, count, state.folder.trim())
                             }
                         PrimaryAction(label, Modifier.padding(16.dp), count > 0 && state.folder.isNotBlank(), model::addBundle)
                     }
@@ -477,7 +481,12 @@ fun SetupScreen(
         border = BorderStroke(1.dp, colors.border),
         colors = ButtonDefaults.outlinedButtonColors(containerColor = colors.cardBackground),
     ) {
-        Text(if (busy) "Importing…" else "Import OPML", color = colors.textPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+        Text(
+            stringResource(if (busy) R.string.setup_importing else R.string.ui_690910f6ed17),
+            color = colors.textPrimary,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
@@ -485,7 +494,7 @@ fun SetupScreen(
     Column {
         Text(stringResource(R.string.onboarding_explore_interests), color = colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
         if (state.categories.isNotEmpty()) {
-            Text("${state.categories.size} categories to choose from", Modifier.padding(top = 4.dp),
+            Text(pluralStringResource(R.plurals.setup_categories_to_choose_from, state.categories.size, state.categories.size), Modifier.padding(top = 4.dp),
                 color = colors.textSecondary, fontSize = 12.sp)
         }
     }
@@ -514,18 +523,19 @@ fun SetupScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(Icons.Outlined.Search, null, Modifier.size(20.dp), tint = colors.textSecondary)
+                    val searchDescription = stringResource(R.string.setup_search_interests_and_sites)
                     BasicTextField(
                         state.query, onSearch,
                         Modifier.padding(start = 8.dp).weight(1f)
                             .onFocusChanged { focused = it.isFocused }
-                            .semantics { contentDescription = "Search interests and sites" },
+                            .semantics { contentDescription = searchDescription },
                         singleLine = true,
                         textStyle = TextStyle(color = colors.textPrimary, fontSize = 15.sp),
                         cursorBrush = SolidColor(setupTeal),
                     )
                     if (state.query.isNotEmpty()) {
                         IconButton(onClick = { onSearch("") }, modifier = Modifier.size(28.dp)) {
-                            Icon(Icons.Outlined.Close, "Clear search", tint = colors.textSecondary)
+                            Icon(Icons.Outlined.Close, stringResource(R.string.feed_list_clear_search), tint = colors.textSecondary)
                         }
                     }
                 }
@@ -577,7 +587,7 @@ fun SetupScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Icon(categoryIcon(category), null, Modifier.size(23.dp), tint = colors.textPrimary)
             Text(
-                if (category.isEmpty()) "A little of everything" else OnboardingCatalog.title(category),
+                if (category.isEmpty()) stringResource(R.string.setup_a_little_of_everything) else OnboardingCatalog.title(category),
                 color = colors.textPrimary,
                 fontSize = 17.sp,
                 lineHeight = 20.sp,
@@ -601,7 +611,7 @@ fun SetupScreen(
         Row(Modifier.padding(top = 10.dp).alpha(if (count > 0) 1f else 0f), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Outlined.CheckCircle, null, Modifier.size(14.dp), tint = accent)
             Text(
-                "$count ${if (count == 1) "feed" else "feeds"} ${if (pending > 0) "selected" else "added"}",
+                pluralStringResource(if (pending > 0) R.plurals.setup_feeds_selected else R.plurals.setup_feeds_added, count, count),
                 Modifier.padding(start = 5.dp),
                 color = accent,
                 fontSize = 12.sp,
@@ -732,7 +742,7 @@ private fun categoryIcon(name: String): ImageVector =
                 tint = setupTeal,
             )
             Text(
-                status ?: if (selected) "Included in bundle" else "Include in bundle",
+                status ?: stringResource(if (selected) R.string.setup_included_in_bundle else R.string.setup_include_in_bundle),
                 Modifier.padding(start = 6.dp),
                 color = colors.textSecondary,
                 fontSize = 14.sp,
@@ -762,10 +772,10 @@ private fun categoryIcon(name: String): ImageVector =
         FeedStatistics(feed, colors)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Box {
-                TextButton(onClick = { choose = true }) { Text(folder.ifEmpty { "All Site Stories" }, color = colors.siteLink) }
+                TextButton(onClick = { choose = true }) { Text(folder.ifEmpty { stringResource(R.string.all_stories_title) }, color = colors.siteLink) }
                 DropdownMenu(choose, { choose = false }) {
                     state.existingFolders.forEach { option ->
-                        DropdownMenuItem(text = { Text(option.ifEmpty { "All Site Stories" }) }, onClick = {
+                        DropdownMenuItem(text = { Text(option.ifEmpty { stringResource(R.string.all_stories_title) }) }, onClick = {
                             folder =
                                 option
                             ; choose = false
@@ -781,11 +791,11 @@ private fun categoryIcon(name: String): ImageVector =
                     if (feed.url in
                         progress.queued
                     ) {
-                        "Queued"
+                        stringResource(R.string.setup_queued)
                     } else if (unavailable) {
-                        "Added"
+                        stringResource(R.string.setup_added)
                     } else {
-                        "Add"
+                        stringResource(R.string.i18n_add)
                     },
                     color = colors.siteLink,
                 )
@@ -837,9 +847,9 @@ private fun categoryIcon(name: String): ImageVector =
                 if (count ==
                     0
                 ) {
-                    "Your reader is ready. Add feeds anytime from Add + Discover Sites."
+                    stringResource(R.string.setup_reader_ready_add_feeds_anytime)
                 } else {
-                    "A reading list that’s yours. Everything you chose, in one place."
+                    stringResource(R.string.setup_reading_list_yours)
                 },
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center,
@@ -858,7 +868,7 @@ private fun categoryIcon(name: String): ImageVector =
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    Text("$count ${if (count == 1) "feed" else "feeds"}", color = accent)
+                    Text(pluralStringResource(R.plurals.setup_feed_count, count, count), color = accent)
                 }
                 folders.forEach { (folder, feeds) ->
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -866,7 +876,7 @@ private fun categoryIcon(name: String): ImageVector =
                             Icon(Icons.Outlined.Folder, null, tint = accent)
                             Text(
                                 folder.ifEmpty {
-                                    "All Site Stories"
+                                    stringResource(R.string.all_stories_title)
                                 },
                                 Modifier.padding(start = 10.dp).weight(1f),
                                 color = colors.textPrimary,
@@ -898,9 +908,21 @@ private fun categoryIcon(name: String): ImageVector =
             Column(Modifier.background(colors.cardBackground, RoundedCornerShape(22.dp))) {
                 val links =
                     listOf(
-                        Triple("NewsBlur Forum", "Ask questions and share ideas", "https://forum.newsblur.com"),
-                        Triple("@samuelclay on X", "From the creator of NewsBlur", "https://x.com/samuelclay"),
-                        Triple("@NewsBlur on X", "News and updates", "https://x.com/NewsBlur"),
+                        Triple(
+                            stringResource(R.string.setup_newsblur_forum),
+                            stringResource(R.string.setup_newsblur_forum_description),
+                            "https://forum.newsblur.com",
+                        ),
+                        Triple(
+                            stringResource(R.string.setup_handle_on_x, "@samuelclay"),
+                            stringResource(R.string.setup_samuelclay_on_x_description),
+                            "https://x.com/samuelclay",
+                        ),
+                        Triple(
+                            stringResource(R.string.setup_handle_on_x, "@NewsBlur"),
+                            stringResource(R.string.setup_newsblur_on_x_description),
+                            "https://x.com/NewsBlur",
+                        ),
                     )
                 links.forEachIndexed { i, link ->
                     if (i > 0) HorizontalDivider(Modifier.padding(start = 80.dp), color = colors.border.copy(alpha = .5f))
@@ -969,7 +991,13 @@ private fun categoryIcon(name: String): ImageVector =
     Column {
         progress.failures.forEach { failure ->
             Text(
-                "${failure.feeds.size} feeds could not be added to ${failure.folder.ifEmpty { "All Site Stories" }}. ${failure.message}",
+                pluralStringResource(
+                    R.plurals.setup_feeds_could_not_be_added,
+                    failure.feeds.size,
+                    failure.feeds.size,
+                    failure.folder.ifEmpty { stringResource(R.string.all_stories_title) },
+                    failure.message,
+                ),
                 color = colors.textSecondary,
             )
             TextButton(onClick = { model.queue.retry(failure) }) { Text(stringResource(R.string.i18n_retry), color = colors.siteLink) }
@@ -984,11 +1012,21 @@ private fun categoryIcon(name: String): ImageVector =
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
+                pluralStringResource(
+                    R.plurals.discover_subscribers,
+                    feed.subscribers,
+                    java.text.NumberFormat.getIntegerInstance().format(feed.subscribers),
+                ),
                 color = colors.textSecondary,
                 fontSize = 12.sp,
             )
-            if (feed.storiesPerMonth > 0) Text("${feed.storiesPerMonth} stories/month", color = colors.textSecondary, fontSize = 12.sp)
+            if (feed.storiesPerMonth > 0) {
+                Text(
+                    pluralStringResource(R.plurals.setup_stories_per_month, feed.storiesPerMonth, feed.storiesPerMonth),
+                    color = colors.textSecondary,
+                    fontSize = 12.sp,
+                )
+            }
         }
         val date =
             com.newsblur.util.DiscoverFeedFreshnessFormatter
@@ -996,12 +1034,9 @@ private fun categoryIcon(name: String): ImageVector =
                 ?: feed.stories.mapNotNull { it.timestamp?.times(1000) }.maxOrNull()
         if (date != null) {
             val stale = System.currentTimeMillis() - date > 365L * 86400000
+            val relative = DateUtils.getRelativeTimeSpanString(date, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
             Text(
-                "● ${if (stale) "Stale · last story" else "Updated"} ${DateUtils.getRelativeTimeSpanString(
-                    date,
-                    System.currentTimeMillis(),
-                    DateUtils.MINUTE_IN_MILLIS,
-                )}",
+                "● " + stringResource(if (stale) R.string.setup_feed_stale_last_story else R.string.discover_updated_relative, relative),
                 color = if (stale) colors.stale else colors.fresh,
                 fontSize = 12.sp,
             )

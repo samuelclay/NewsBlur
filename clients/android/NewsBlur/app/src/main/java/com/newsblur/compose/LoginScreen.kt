@@ -358,10 +358,7 @@ internal fun LoginScreenContent(
                     .testTag(LoginScreenTags.ScrollContent),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LanguagePicker { language ->
-                com.newsblur.util.LanguageSettings.select(context, language, pending = true)
-            }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(48.dp))
             Header(palette = palette)
             TextButton(onClick = { context.startActivity(Intent(context, ContactActivity::class.java)) }) {
                 Text(stringResource(R.string.contact_us), color = palette.link, fontFamily = whitney)
