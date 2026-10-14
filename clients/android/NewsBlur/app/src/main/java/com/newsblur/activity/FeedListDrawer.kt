@@ -214,7 +214,7 @@ class FeedListDrawer : Main() {
             FrameLayout(this).apply {
                 background = listBackground()
                 elevation = UIUtils.dp2px(this@FeedListDrawer, PANEL_ELEVATION_DP).toFloat()
-                translationX = -panelWidth.toFloat()
+                translationX = closedTranslation()
                 addView(mainScreen, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             }
         val root = FrameLayout(this)
@@ -235,10 +235,13 @@ class FeedListDrawer : Main() {
         }
     }
 
-    private fun openFraction(): Float = 1f + panel.translationX / panelWidth
+    // FeedListDrawer.kt keeps the closed panel just past the start edge, the right edge in Arabic and Hebrew.
+    private fun closedTranslation(): Float = -UIUtils.towardEndSign(this) * panelWidth
+
+    private fun openFraction(): Float = 1f - panel.translationX / closedTranslation()
 
     private fun setOpenFraction(fraction: Float) {
-        panel.translationX = -panelWidth * (1f - fraction)
+        panel.translationX = closedTranslation() * (1f - fraction)
         scrim.alpha = if (usesReaderPaneDim) 0f else fraction
         if (usesReaderPaneDim) readerPaneDim.get()?.alpha = fraction
     }
@@ -251,7 +254,7 @@ class FeedListDrawer : Main() {
         // smooth while the main thread is busy, such as switching the story list beneath to a pick.
         panel
             .animate()
-            .translationX(-panelWidth * (1f - end))
+            .translationX(closedTranslation() * (1f - end))
             .setDuration(duration)
             .setInterpolator(SLIDE_INTERPOLATOR)
             .start()
@@ -307,7 +310,8 @@ class FeedListDrawer : Main() {
 
             MotionEvent.ACTION_MOVE -> {
                 velocityTracker?.addMovement(event)
-                val deltaX = event.rawX - downRawX
+                // deltaX counts toward the end edge, so closing is a swipe toward the start edge in either direction.
+                val deltaX = (event.rawX - downRawX) * UIUtils.towardEndSign(this)
                 val deltaY = event.rawY - downRawY
                 if (!isDraggingClosed &&
                     deltaX < -ViewConfiguration.get(this).scaledTouchSlop &&
@@ -331,7 +335,7 @@ class FeedListDrawer : Main() {
                     isDraggingClosed = false
                     velocityTracker?.addMovement(event)
                     velocityTracker?.computeCurrentVelocity(1000)
-                    val velocityX = velocityTracker?.xVelocity ?: 0f
+                    val velocityX = (velocityTracker?.xVelocity ?: 0f) * UIUtils.towardEndSign(this)
                     val flungClosed = velocityX < -ViewConfiguration.get(this).scaledMinimumFlingVelocity * CLOSE_FLING_MULTIPLIER
                     if (event.actionMasked == MotionEvent.ACTION_UP && (openFraction() < CLOSE_THRESHOLD || flungClosed)) {
                         close()
@@ -396,7 +400,7 @@ class FeedListDrawer : Main() {
         private var snapshotGestureFrom = WeakReference<Activity>(null)
 
         /**
-         * Puts the panel's last picture over [from]'s pane, just off its left edge, when the picture
+         * Puts the panel's last picture over [from]'s pane, just off its start edge, when the picture
          * fits the pane. Returns false when there is no picture, or the window changed size since
          * it was taken (a rotation), and the panel just slides in once it arrives.
          */
@@ -412,7 +416,7 @@ class FeedListDrawer : Main() {
                     setImageBitmap(snapshot)
                     // Drawn at its own size from the top left, never scaled to fit the pane.
                     scaleType = ImageView.ScaleType.MATRIX
-                    translationX = -snapshot.width.toFloat()
+                    translationX = -UIUtils.towardEndSign(from) * snapshot.width
                     elevation = UIUtils.dp2px(from, PANEL_ELEVATION_DP).toFloat()
                     // Touches during the handoff land on nothing rather than the list beneath.
                     isClickable = true
@@ -444,7 +448,7 @@ class FeedListDrawer : Main() {
             fadeReaderPaneDim(if (open) 1f else 0f, SLIDE_DURATION_MS)
             view
                 .animate()
-                .translationX(if (open) 0f else -view.width.toFloat())
+                .translationX(if (open) 0f else -UIUtils.towardEndSign(view.context) * view.width)
                 .setDuration(SLIDE_DURATION_MS)
                 .setInterpolator(SLIDE_INTERPOLATOR)
                 .start()
@@ -467,8 +471,9 @@ class FeedListDrawer : Main() {
         private fun followSnapshot(offsetPx: Float) {
             val view = snapshotView.get() ?: return
             view.animate().cancel()
-            view.translationX = (offsetPx - view.width).coerceIn(-view.width.toFloat(), 0f)
-            readerPaneDim.get()?.alpha = 1f + view.translationX / view.width
+            val towardEnd = (offsetPx - view.width).coerceIn(-view.width.toFloat(), 0f)
+            view.translationX = towardEnd * UIUtils.towardEndSign(view.context)
+            readerPaneDim.get()?.alpha = 1f + towardEnd / view.width
         }
 
         /**

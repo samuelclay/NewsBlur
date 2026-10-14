@@ -18,7 +18,7 @@
         android:id="@+id/story_item_favicon_borderbar_2"
         android:layout_width="4dp"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_1" 
+        android:layout_toEndOf="@id/story_item_favicon_borderbar_1" 
         />
 
     <TextView
@@ -35,23 +35,25 @@
         android:id="@+id/story_item_feedicon"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+        android:layout_toEndOf="@id/story_item_favicon_borderbar_2"
         android:layout_above="@id/story_item_date"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp"
         android:layout_marginBottom="2dp"
         newsblur:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance"
         />
 
     <TextView
         android:id="@+id/story_item_feedtitle"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/story_item_feedicon"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@id/story_item_feedicon"
         android:layout_above="@id/story_item_date"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="2dp"
         android:layout_marginBottom="2dp"
         android:ellipsize="end"
         android:singleLine="true"
@@ -64,10 +66,10 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_above="@id/story_item_feedtitle"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
         android:visibility="gone" 
         />
 
@@ -77,22 +79,24 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_above="@id/story_item_feedtitle"
-        android:layout_toLeftOf="@id/story_item_saved_icon"
+        android:layout_toStartOf="@id/story_item_saved_icon"
         android:layout_alignWithParentIfMissing="true"
         android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
         android:visibility="gone" 
         />
 
     <TextView
         android:id="@+id/story_item_title"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/story_item_feedtitle"
-        android:layout_toLeftOf="@id/story_item_shared_icon"
-        android:layout_marginLeft="26dp"
-        android:layout_marginRight="2dp"
+        android:layout_toStartOf="@id/story_item_shared_icon"
+        android:layout_marginStart="26dp"
+        android:layout_marginEnd="2dp"
         android:layout_marginBottom="2dp"
         android:breakStrategy="balanced"
         android:hyphenationFrequency="none"
@@ -106,8 +110,8 @@
         android:layout_height="match_parent"
         android:layout_alignTop="@id/story_item_title"
         android:layout_alignBottom="@id/story_item_title"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
-        android:layout_marginLeft="4dp"
+        android:layout_toEndOf="@id/story_item_favicon_borderbar_2"
+        android:layout_marginStart="4dp"
         />
 
     <ImageView
@@ -116,7 +120,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/story_item_title"
         android:layout_marginBottom="2dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:scaleType="centerCrop"
         />
 

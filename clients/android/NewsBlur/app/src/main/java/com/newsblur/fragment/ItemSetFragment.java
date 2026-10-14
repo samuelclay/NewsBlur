@@ -585,7 +585,7 @@ public class ItemSetFragment extends NbFragment {
             int overlap = Math.max(0, listLocation[1] + grid.getHeight() - headerLocation[1]);
             int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8);
             if (grid.getPaddingBottom() != bottomPadding) {
-                grid.setPadding(grid.getPaddingLeft(), grid.getPaddingTop(), grid.getPaddingRight(), bottomPadding);
+                grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
             }
             // ItemSetFragment.java keeps the next-feed control above both search and the floating action capsules.
             targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap;
@@ -1140,7 +1140,7 @@ public class ItemSetFragment extends NbFragment {
                 case MotionEvent.ACTION_DOWN:
                     ItemsList storyList = (ItemsList) getActivity();
                     gestureEligible = (storyList != null && (!storyList.isTaskRoot() || storyList.slidesOverFeedDrawer())) &&
-                            (event.getX() < UIUtils.dp2px(requireContext(), 24) ||
+                            (isNearStartEdge(recyclerView, event) ||
                              (prefsRepo.isStorySwipesEnabled() && isInteractiveStoryListSwipeEnabled()));
 
                     isDragging = false;
@@ -1153,7 +1153,8 @@ public class ItemSetFragment extends NbFragment {
                 case MotionEvent.ACTION_MOVE:
                     if (!gestureEligible) return false;
                     trackMovement(event);
-                    float deltaX = event.getRawX() - downRawX;
+                    // deltaX counts toward the end edge, so the swipe mirrors in right-to-left layouts.
+                    float deltaX = towardEnd(event.getRawX() - downRawX);
                     float deltaY = event.getRawY() - downRawY;
                     if (!isDragging && Math.abs(deltaY) > touchSlopPx && Math.abs(deltaY) >= Math.abs(deltaX)) {
                         gestureEligible = false;
@@ -1196,10 +1197,10 @@ public class ItemSetFragment extends NbFragment {
 
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_MOVE:
-                    activity.updateInteractiveStoryListSwipe(event.getRawX() - downRawX);
+                    activity.updateInteractiveStoryListSwipe(towardEnd(event.getRawX() - downRawX));
                     break;
                 case MotionEvent.ACTION_UP:
-                    float totalDeltaX = Math.max(0f, event.getRawX() - downRawX);
+                    float totalDeltaX = Math.max(0f, towardEnd(event.getRawX() - downRawX));
                     float xVelocity = getXVelocity();
                     boolean shouldComplete = totalDeltaX >= recyclerView.getWidth() * STORY_LIST_BACK_GESTURE_TRIGGER_RATIO;
                     if (!shouldComplete && xVelocity > minimumFlingVelocityPx * 4f) {
@@ -1225,10 +1226,20 @@ public class ItemSetFragment extends NbFragment {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         }
 
+        private float towardEnd(float physicalDeltaX) {
+            return physicalDeltaX * UIUtils.towardEndSign(requireContext());
+        }
+
+        // ItemSetFragment.java starts the back swipe from the start edge, the right edge in Arabic and Hebrew.
+        private boolean isNearStartEdge(@NonNull RecyclerView recyclerView, @NonNull MotionEvent event) {
+            int edge = UIUtils.dp2px(requireContext(), 24);
+            return UIUtils.towardEndSign(requireContext()) < 0f ? event.getX() > recyclerView.getWidth() - edge : event.getX() < edge;
+        }
+
         private float getXVelocity() {
             if (velocityTracker == null) return 0f;
             velocityTracker.computeCurrentVelocity(1000);
-            return velocityTracker.getXVelocity();
+            return towardEnd(velocityTracker.getXVelocity());
         }
 
         private void trackMovement(@NonNull MotionEvent event) {

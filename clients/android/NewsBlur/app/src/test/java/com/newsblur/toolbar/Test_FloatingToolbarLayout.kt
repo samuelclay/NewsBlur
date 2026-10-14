@@ -47,6 +47,20 @@ class Test_FloatingToolbarLayout {
         assertTrue(popup.height < 700)
     }
 
+    @Test fun test_menu_lines_up_with_button_end_edge() {
+        val ltr = FloatingToolbarLayout.popover(0, 24, 360, 780, 260, 70, 304, 114, 200, 300, 8)
+        assertEquals(104, ltr.x)
+        val rtl = FloatingToolbarLayout.popover(0, 24, 360, 780, 56, 70, 100, 114, 200, 300, 8, rtl = true)
+        assertEquals(56, rtl.x)
+        assertEquals(360 - ltr.x - ltr.width, rtl.x)
+    }
+
+    @Test fun test_rtl_menu_stays_on_screen_beside_the_right_edge() {
+        val popup = FloatingToolbarLayout.popover(0, 24, 360, 780, 300, 70, 344, 114, 200, 300, 8, rtl = true)
+        assertEquals(152, popup.x)
+        assertTrue(popup.x + popup.width <= 352)
+    }
+
     @Test fun test_top_menu_opens_below_visible_button() {
         val popup = FloatingToolbarLayout.popover(0, 24, 360, 780, 16, 70, 60, 114, 400, 600, 8)
         assertEquals(122, popup.y)

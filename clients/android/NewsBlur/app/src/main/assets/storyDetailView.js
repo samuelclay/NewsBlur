@@ -109,8 +109,11 @@ function setImage(img, inline_contexts) {
         img.naturalHeight >= 50 && !NB_is_deliberately_small_image(img) &&
         NB_is_standalone_image(img, inline_contexts || new WeakMap())) {
         setImageClass(img, 'NB-large-image');
-        // storyDetailView.js measures the image's actual inset, including nested wrapper padding.
-        img.style.setProperty('--NB-image-offset', -img.getBoundingClientRect().left + 'px');
+        // storyDetailView.js measures the image's actual inset, including nested wrapper padding, from
+        // the story's start edge, which is the right edge when the story reads right to left.
+        var rect = img.getBoundingClientRect();
+        var inset = window.getComputedStyle(img).direction === 'rtl' ? pane_width - rect.right : rect.left;
+        img.style.setProperty('--NB-image-offset', -inset + 'px');
     } else {
         setImageClass(img, 'NB-small-image');
     }

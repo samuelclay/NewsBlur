@@ -37,8 +37,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Article
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.ListAlt
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.automirrored.rounded.ShortText
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Article
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Contrast
@@ -49,18 +54,14 @@ import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.Gesture
 import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.ListAlt
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PanTool
 import androidx.compose.material.icons.rounded.Photo
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.ShortText
 import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.SwapVert
@@ -69,7 +70,6 @@ import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -531,7 +531,7 @@ fun SettingsScreen(
         }
         SettingsSection(
             title = stringResource(R.string.settings_cat_story_list),
-            icon = Icons.Rounded.ListAlt,
+            icon = Icons.AutoMirrored.Rounded.ListAlt,
             iconColor = NewsblurBlue,
             palette = palette,
         ) {
@@ -587,7 +587,7 @@ fun SettingsScreen(
             RowDivider(palette)
             SegmentedSettingsRow(
                 title = stringResource(R.string.settings_when_opening_site_title),
-                icon = Icons.Rounded.Article,
+                icon = Icons.AutoMirrored.Rounded.Article,
                 iconColor = NewsblurIndigo,
                 selectedValue = if (state.autoOpenFirstUnread) "first_story" else "stories",
                 options = siteOpeningOptions,
@@ -614,7 +614,7 @@ fun SettingsScreen(
             RowDivider(palette)
             ToggleSettingsRow(
                 title = stringResource(R.string.settings_story_clustering),
-                icon = Icons.Rounded.Article,
+                icon = Icons.AutoMirrored.Rounded.Article,
                 iconColor = NewsblurIndigo,
                 checked = state.storyClusteringEnabled,
                 subtitle = stringResource(R.string.settings_story_clustering_summary),
@@ -683,7 +683,7 @@ fun SettingsScreen(
             RowDivider(palette)
             SegmentedSettingsRow(
                 title = stringResource(R.string.settings_content_preview).stripTrailingEllipsis(),
-                icon = Icons.Rounded.ShortText,
+                icon = Icons.AutoMirrored.Rounded.ShortText,
                 iconColor = NewsblurOrange,
                 selectedValue = state.storyContentPreviewStyle,
                 options = contentPreviewOptions,
@@ -803,7 +803,7 @@ fun SettingsScreen(
 
         SettingsSection(
             title = stringResource(R.string.settings_reading),
-            icon = Icons.Rounded.MenuBook,
+            icon = Icons.AutoMirrored.Rounded.MenuBook,
             iconColor = NewsblurBlue,
             palette = palette,
         ) {
@@ -843,7 +843,7 @@ fun SettingsScreen(
             RowDivider(palette)
             SegmentedSettingsRow(
                 title = stringResource(R.string.volume_key_navigation).stripTrailingEllipsis(),
-                icon = Icons.Rounded.VolumeUp,
+                icon = Icons.AutoMirrored.Rounded.VolumeUp,
                 iconColor = NewsblurCyan,
                 selectedValue = state.volumeKeyNavigation,
                 options = volumeKeyOptions,
@@ -1247,7 +1247,7 @@ private fun ValueSettingsRow(
                 modifier = Modifier.weight(valueWeight, fill = fillValueWidth),
             )
             Icon(
-                imageVector = Icons.Rounded.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = palette.textSecondary.copy(alpha = 0.55f),
                 modifier = Modifier.size(20.dp),
@@ -1329,7 +1329,7 @@ private fun AppIconSettingsRow(
                 modifier = Modifier.weight(0.55f, fill = false),
             )
             Icon(
-                imageVector = Icons.Rounded.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = palette.textSecondary.copy(alpha = 0.55f),
                 modifier = Modifier.size(20.dp),
@@ -1849,7 +1849,7 @@ private fun ClusterModeSettingsRow(
                 }
             }
             Icon(
-                imageVector = Icons.Rounded.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = palette.textSecondary.copy(alpha = 0.55f),
                 modifier = Modifier.size(20.dp),

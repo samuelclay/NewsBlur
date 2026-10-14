@@ -731,7 +731,7 @@ abstract class Reading :
                         !parked &&
                         supportsPredictiveReaderBack() &&
                         isInteractiveReaderBackEnabled() &&
-                        backEvent.swipeEdge == BackEventCompat.EDGE_LEFT
+                        backEvent.swipeEdge == readerBackSwipeEdge()
                     if (predictiveBackInProgress) {
                         beginInteractiveReaderBackSwipe()
                     }
@@ -1117,7 +1117,7 @@ abstract class Reading :
         if (BuildConfig.DEBUG) {
             Log.d("NB.Reader", "entrance reason=$reason elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}")
         }
-        surface.translationX = surface.width.toFloat()
+        surface.translationX = surface.width.toFloat() * UIUtils.towardEndSign(this)
         binding.root.alpha = 1f
         binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         surface
@@ -2089,8 +2089,12 @@ abstract class Reading :
         if (width > 0) {
             clampedOffset = clampedOffset.coerceAtMost(width.toFloat())
         }
-        surface.translationX = clampedOffset
+        // The offset counts toward the end edge, so the reader slides left in right-to-left layouts.
+        surface.translationX = clampedOffset * UIUtils.towardEndSign(this)
     }
+
+    // Reading.kt follows the system back swipe from the start edge, the right edge in Arabic and Hebrew.
+    private fun readerBackSwipeEdge(): Int = if (UIUtils.towardEndSign(this) < 0f) BackEventCompat.EDGE_RIGHT else BackEventCompat.EDGE_LEFT
 
     private fun cancelInteractiveReaderBackSwipe() {
         animateInteractiveReaderBackSwipe(0f, finishWhenComplete = false)
@@ -2110,12 +2114,13 @@ abstract class Reading :
         preparedEntranceTimeout = null
         preparedEntranceLoading?.dismiss()
         preparedEntranceLoading = null
-        val targetTranslation =
+        val slideDistance =
             if (surface.width > 0) {
                 surface.width.toFloat()
             } else {
                 resources.displayMetrics.widthPixels.toFloat()
             }
+        val targetTranslation = slideDistance * UIUtils.towardEndSign(this)
         animateInteractiveReaderBackSwipe(targetTranslation, finishWhenComplete = true)
     }
 
@@ -2246,7 +2251,8 @@ abstract class Reading :
 
                 MotionEvent.ACTION_MOVE -> {
                     trackMovement(event)
-                    val deltaX = event.rawX - downRawX
+                    // deltaX counts toward the end edge, so the swipe mirrors in right-to-left layouts.
+                    val deltaX = (event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)
                     val deltaY = event.rawY - downRawY
                     if (!isDragging &&
                         deltaX > touchSlopPx &&
@@ -2263,7 +2269,7 @@ abstract class Reading :
 
                 MotionEvent.ACTION_UP -> {
                     if (isDragging) {
-                        val totalDeltaX = (event.rawX - downRawX).coerceAtLeast(0f)
+                        val totalDeltaX = ((event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)).coerceAtLeast(0f)
                         val shouldComplete =
                             totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
                                 getXVelocity() > minimumFlingVelocityPx * 4f
@@ -2299,7 +2305,7 @@ abstract class Reading :
         private fun getXVelocity(): Float {
             val tracker = velocityTracker ?: return 0f
             tracker.computeCurrentVelocity(1000)
-            return tracker.xVelocity
+            return tracker.xVelocity * UIUtils.towardEndSign(this@Reading)
         }
 
         private fun trackMovement(event: MotionEvent) {

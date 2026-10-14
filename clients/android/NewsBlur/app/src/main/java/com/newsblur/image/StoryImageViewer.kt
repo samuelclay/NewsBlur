@@ -196,7 +196,8 @@ class StoryImageViewer(
             val safe = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             safeInsets = safe
             (close.layoutParams as FrameLayout.LayoutParams).apply {
-                leftMargin = safe.left + dp(16)
+                // The close button sits in the reading start corner, the top right in Arabic and Hebrew.
+                marginStart = startInset(safe) + dp(16)
                 topMargin = safe.top + dp(12)
                 close.layoutParams = this
             }
@@ -353,9 +354,11 @@ class StoryImageViewer(
         val width = root.width
         val height = root.height
         if (width == 0 || height == 0) return
-        var left = safeInsets.left
+        // left and right are measured from the start edge, which place() turns into start margins,
+        // so the whole viewer mirrors in right-to-left languages.
+        var left = startInset(safeInsets)
         var top = safeInsets.top
-        var right = width - safeInsets.right
+        var right = width - endInset(safeInsets)
         var bottom = height - safeInsets.bottom
         hoverPanel.visibility = if (disclosuresVisible && source.hoverText != null) View.VISIBLE else View.GONE
         actionsPanel.visibility = if (disclosuresVisible) View.VISIBLE else View.GONE
@@ -398,9 +401,9 @@ class StoryImageViewer(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
             )
             this.width = statusWidth
-            leftMargin = left + dp(24)
+            marginStart = left + dp(24)
             topMargin = if (disclosuresVisible) (top + bottom) / 2 - status.measuredHeight / 2 else bottom - dp(32) - status.measuredHeight
-            rightMargin = 0
+            marginEnd = 0
             bottomMargin = 0
             status.layoutParams = this
         }
@@ -414,14 +417,21 @@ class StoryImageViewer(
         height: Int,
     ) {
         val params = view.layoutParams as FrameLayout.LayoutParams
-        if (params.leftMargin == x && params.topMargin == y && params.width == width && params.height == height) return
+        if (params.marginStart == x && params.topMargin == y && params.width == width && params.height == height) return
         params.gravity = Gravity.TOP or Gravity.START
-        params.leftMargin = x
+        params.marginStart = x
+        params.marginEnd = 0
         params.topMargin = y
         params.width = width
         params.height = height
         view.layoutParams = params
     }
+
+    private fun isRtl(): Boolean = root.layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+    private fun startInset(insets: Insets): Int = if (isRtl()) insets.right else insets.left
+
+    private fun endInset(insets: Insets): Int = if (isRtl()) insets.left else insets.right
 
     // StoryImageView.kt reports its photo within its own bounds, which the panels can move.
     private fun imageRectOnScreen(): RectF = image.imageRect().apply { offset(image.x, image.y) }

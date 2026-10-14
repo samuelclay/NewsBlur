@@ -41,20 +41,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.DirectionsRun
 import androidx.compose.material.icons.outlined.Eco
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Memory
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.MoveToInbox
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Newspaper
@@ -68,7 +69,6 @@ import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.TheaterComedy
-import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.WorkOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -78,6 +78,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -116,6 +117,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
+import com.newsblur.design.withContentDirection
 import com.newsblur.discover.DiscoveryFeed
 import com.newsblur.discover.DiscoveryStory
 import com.newsblur.util.ImageLoader
@@ -630,11 +632,11 @@ private fun categoryIcon(name: String): ImageVector =
         "design" in name || "art" in name -> Icons.Outlined.Palette
         "travel" in name -> Icons.Outlined.Public
         "music" in name -> Icons.Outlined.MusicNote
-        "sport" in name -> Icons.Outlined.DirectionsRun
+        "sport" in name -> Icons.AutoMirrored.Outlined.DirectionsRun
         "news" in name -> Icons.Outlined.Newspaper
-        "business" in name -> Icons.Outlined.TrendingUp
+        "business" in name -> Icons.AutoMirrored.Outlined.TrendingUp
         "gaming" in name -> Icons.Outlined.SportsEsports
-        "book" in name -> Icons.Outlined.MenuBook
+        "book" in name -> Icons.AutoMirrored.Outlined.MenuBook
         "nature" in name || "agriculture" in name -> Icons.Outlined.Eco
         "space" in name -> Icons.Outlined.NightsStay
         "architecture" in name -> Icons.Outlined.Apartment
@@ -699,7 +701,13 @@ private fun categoryIcon(name: String): ImageVector =
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FeedIcon(feed, state, colors)
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
                 Text(
                     android.net.Uri
                         .parse(feed.link)
@@ -764,8 +772,21 @@ private fun categoryIcon(name: String): ImageVector =
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FeedIcon(feed, state, colors)
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-                Text(feed.url, color = colors.siteLink, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
+                Text(
+                    feed.url,
+                    color = colors.siteLink,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
             }
         }
         Spacer(Modifier.height(8.dp))

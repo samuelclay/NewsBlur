@@ -57,7 +57,7 @@ class BottomNextFeedControl
             cardView.clipToOutline = true
             cardView.gravity = Gravity.CENTER_VERTICAL
             cardView.orientation = LinearLayout.HORIZONTAL
-            cardView.setPadding(dp(12), 0, dp(14), 0)
+            cardView.setPaddingRelative(dp(12), 0, dp(14), 0)
             addView(
                 cardView,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
