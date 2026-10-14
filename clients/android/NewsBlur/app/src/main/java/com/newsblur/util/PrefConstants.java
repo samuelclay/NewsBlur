@@ -110,6 +110,11 @@ public class PrefConstants {
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
 
+    // LanguageChooserDialog.kt shows the language dialog once per device. Debug builds also read a language code
+    // that forces it, with that language as the detected one, for screenshots.
+    public static final String LANGUAGE_DIALOG_SEEN = "language_dialog_seen";
+    public static final String LANGUAGE_DIALOG_DEBUG = "language_dialog_debug";
+
     public static final String THEME = "theme";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";

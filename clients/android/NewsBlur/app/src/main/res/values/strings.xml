@@ -1324,6 +1324,12 @@ people together to talk about the world.</string>
         <item quantity="one">%d story</item>
         <item quantity="other">%d stories</item>
     </plurals>
+    <string name="language_dialog_title">Choose your language</string>
+    <string name="language_dialog_detected">NewsBlur detected %1$s from your device.</string>
+    <string name="language_dialog_note">You can change this anytime in Preferences.</string>
+    <string name="language_dialog_use">Use %1$s</string>
+    <string name="language_dialog_choose_another">Choose another language</string>
+    <string name="language_dialog_pick">Pick the language you\'d like NewsBlur to use. You can change this anytime in Preferences.</string>
     <string name="main_menu_import_feed_bundles">Import and feed bundles</string>
     <string name="main_menu_export_feeds">Export feeds</string>
     <string name="discover_open">Open</string>
