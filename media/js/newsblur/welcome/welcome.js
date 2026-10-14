@@ -248,13 +248,14 @@ NEWSBLUR.Welcome = Backbone.View.extend({
 
         // Show layout if not already visible
         if (!this.flags.loaded) {
-            NEWSBLUR.reader.$s.$layout.layout().hide('west', true);
+            // welcome.js: layout_edge is the feed list pane, east in RTL languages.
+            NEWSBLUR.reader.$s.$layout.layout().hide(NEWSBLUR.utils.layout_edge('west'), true);
             NEWSBLUR.reader.$s.$layout.show();
             this.flags.loaded = true;
         }
 
         // Size sidebar to full width BEFORE adding classes to prevent flash
-        NEWSBLUR.reader.layout.outerLayout.sizePane('west', window.innerWidth);
+        NEWSBLUR.reader.layout.outerLayout.sizePane(NEWSBLUR.utils.layout_edge('west'), window.innerWidth);
 
         $('body').addClass('NB-mobile-single-pane NB-welcome-tryout-active');
         this.$('.NB-welcome-container').addClass('NB-welcome-tryout');
@@ -270,7 +271,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var is_mobile = this.is_mobile();
 
         if (!this.flags.loaded) {
-            NEWSBLUR.reader.$s.$layout.layout().hide('west', true);
+            NEWSBLUR.reader.$s.$layout.layout().hide(NEWSBLUR.utils.layout_edge('west'), true);
             NEWSBLUR.reader.$s.$layout.show();
             this.flags.loaded = true;
         }
@@ -279,7 +280,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         // so the sidebar opens at full width instead of flashing at half-width
         if (is_mobile) {
             $('body').addClass('NB-mobile-single-pane NB-welcome-tryout-active');
-            NEWSBLUR.reader.layout.outerLayout.sizePane('west', window.innerWidth);
+            NEWSBLUR.reader.layout.outerLayout.sizePane(NEWSBLUR.utils.layout_edge('west'), window.innerWidth);
         }
 
         var open = NEWSBLUR.reader.toggle_sidebar();

@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load social_tags %}
+{# story_comment.xhtml: dir="auto" on usernames and comment text lets mixed scripts read correctly in LTR and RTL. #}
 
 <div class="NB-story-comment" data-id="{{ comment.id }}" data-user-id="{{ comment.user_id }}">
     <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
@@ -13,7 +14,7 @@
                 </a>
             </div>
         {% endif %}
-        <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
+        <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username" dir="auto">{{ comment.user.username }}</a>
         <div class="NB-story-comment-date">{% blocktrans with time=comment.shared_date %}{{ time }} ago{% endblocktrans %}</div>
         <div class="NB-story-comment-button NB-story-comment-reply-button">
             <div class="NB-story-comment-button-wrapper NB-story-comment-reply-button-wrapper">
@@ -43,7 +44,7 @@
         <div class="NB-story-comment-error"></div>
         <div class="NB-spinner"></div>
     </div>
-    <div class="NB-story-comment-content">
+    <div class="NB-story-comment-content" dir="auto">
         {{ comment.comments|safe|linebreaksbr }}
     </div>
     {% if comment.user.location %}
@@ -57,14 +58,14 @@
             <a href="{{ reply.user.feed_link }}">
                 <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
             </a>
-            <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
+            <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username" dir="auto">{{ reply.user.username }}</a>
             <div class="NB-story-comment-date NB-story-comment-reply-date">{% blocktrans with time=reply.publish_date %}{{ time }} ago{% endblocktrans %}</div>
             {% if reply.user_id == user.pk %}
                 <div class="NB-story-comment-button NB-story-comment-edit-reply-button">
                     <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">{% trans "edit" context "button to edit a comment" %}</div>
                 </div>
             {% endif %}
-            <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>
+            <div class="NB-story-comment-reply-content" dir="auto">{{ reply.comments|safe }}</div>
         </div>
         {% endfor %}
     </div>

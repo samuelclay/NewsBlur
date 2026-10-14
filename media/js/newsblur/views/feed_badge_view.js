@@ -139,18 +139,19 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         }
 
         this.$el.html($.make('div', { className: 'NB-feed-badge-inner' }, [
+            // feed_badge_view.js: dir="auto" isolates the feed title and tagline for LTR and RTL readers.
             $.make('div', { className: "NB-feed-badge-header" }, [
                 $.make('div', { className: "NB-feed-badge-icon" }, [
                     $.favicon_el(this.model, { image_class: '', emoji_class: 'NB-feed-emoji', colored_class: 'NB-feed-icon-colored' })
                 ]),
                 $.make('div', { className: "NB-feed-badge-info" }, [
-                    $.make('div', { className: "NB-feed-badge-title" }, this.model.get('feed_title')),
+                    $.make('div', { className: "NB-feed-badge-title", dir: 'auto' }, this.model.get('feed_title')),
                     $.make('div', { className: "NB-feed-badge-meta" }, meta_parts.join(' • ')),
                     $freshness
                 ].filter(Boolean)),
                 (actions_in_header && $actions)
             ].filter(Boolean)),
-            $.make('div', { className: "NB-feed-badge-tagline" }, this.model.get('tagline')),
+            $.make('div', { className: "NB-feed-badge-tagline", dir: 'auto' }, this.model.get('tagline')),
             (!actions_in_header && $actions)
         ].filter(Boolean)));
 

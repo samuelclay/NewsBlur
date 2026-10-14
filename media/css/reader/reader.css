@@ -42771,3 +42771,23 @@ span.NB-briefing-inline-favicon {
 .NB-dark .NB-social-existing-account p {
     color: #FBDB9B;
 }
+
+/* ================================================= */
+/* = Bidi isolation of user content                = */
+/* ================================================= */
+
+/* reader.css: a dir="auto" label aligns like its parent did before it was
+   isolated, so isolating it never moves it. Story bodies and comments (and any
+   dir="auto" inside the feed's own HTML) are left out: their alignment follows
+   their own text. :where() keeps this at zero specificity, so any rule that
+   aligns one of these labels on purpose still wins. */
+:where([dir="auto"]:not(
+    .NB-feed-story-content, .NB-feed-story-content *,
+    .NB-story-content, .NB-story-content *,
+    .NB-story-comment-content, .NB-story-comment-content *,
+    .NB-story-comment-reply-content, .NB-story-comment-reply-content *,
+    .NB-title-bio)) {
+    /* Chrome only supports the prefixed value; Firefox and Safari use the standard one. */
+    text-align: -webkit-match-parent;
+    text-align: match-parent;
+}

@@ -3617,13 +3617,12 @@ var classifier_prototype = {
 
             // Move popover to body and position it
             $popover.appendTo('body');
-            $popover.css({
+            // reader_classifier.js: inline_end_alignment_css opens the popover toward the screen's middle in LTR and RTL.
+            $popover.css(_.extend({
                 position: 'fixed',
                 top: iconRect.bottom + 8,
-                right: window.innerWidth - iconRect.right,
-                left: 'auto',
                 bottom: 'auto'
-            });
+            }, NEWSBLUR.utils.inline_end_alignment_css(iconRect)));
 
             // Show this popover
             $popover.addClass('NB-visible');
@@ -3671,13 +3670,12 @@ var classifier_prototype = {
             var iconRect = $icon[0].getBoundingClientRect();
 
             $popover.appendTo('body');
-            $popover.css({
+            // reader_classifier.js: inline_end_alignment_css opens the popover toward the screen's middle in LTR and RTL.
+            $popover.css(_.extend({
                 position: 'fixed',
                 top: iconRect.bottom + 8,
-                right: window.innerWidth - iconRect.right,
-                left: 'auto',
                 bottom: 'auto'
-            });
+            }, NEWSBLUR.utils.inline_end_alignment_css(iconRect)));
 
             $popover.addClass('NB-visible');
             $icon.data('popover', $popover);

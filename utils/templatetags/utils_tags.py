@@ -9,6 +9,7 @@ from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.utils import formats
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
 
@@ -415,9 +416,19 @@ def include_stylesheets_raw(parser, token):
 
 
 class DebugAssetsAwareStylesheetNode(StylesheetNode):
-    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG."""
+    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG, and links mirrored CSS on RTL pages."""
 
     def render(self, context):
+        # utils_tags.py: a right-to-left page links the mirrored copy of "common" or "blurblog"
+        # (utils/rtl_css.py, served by apps/profile/language.py) instead of the LTR bundle, so every
+        # template that includes one, including pages that include "common" twice, stays mirrored.
+        flipped_stylesheets = context.get("ui_flipped_stylesheets")
+        if flipped_stylesheets:
+            flipped_url = flipped_stylesheets.get(template.Variable(self.name).resolve(context))
+            if flipped_url:
+                return format_html(
+                    '<link href="{}" rel="stylesheet" type="text/css" media="all" />', flipped_url
+                )
         # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
         original_debug = settings.DEBUG
         try:

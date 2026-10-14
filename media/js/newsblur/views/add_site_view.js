@@ -4106,7 +4106,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         }
                     }
 
-                    story_elements.push($.make('div', { className: 'NB-add-site-card-story-title' },
+                    // add_site_view.js: dir="auto" isolates feed-provided titles and previews for LTR and RTL readers.
+
+                    story_elements.push($.make('div', { className: 'NB-add-site-card-story-title', dir: 'auto' },
                         story.story_title || story.title || gettext('Untitled')));
 
                     // Add story content preview based on preference
@@ -4117,7 +4119,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                             var max_chars = max_lines * 80; // Approximate chars per line
                             var preview_text = self.truncate_text(content_text, max_chars);
                             var preview_class = 'NB-add-site-card-story-preview NB-preview-lines-' + max_lines;
-                            story_elements.push($.make('div', { className: preview_class }, preview_text));
+                            story_elements.push($.make('div', { className: preview_class, dir: 'auto' }, preview_text));
                         }
                     }
 
@@ -4205,7 +4207,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     onerror: "this.src='/media/img/icons/lucide/rss.svg'"
                 }),
                 $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' },
+                    $.make('div', { className: 'NB-add-site-card-title', dir: 'auto' },
                         feed.feed_title || feed.title || gettext('Unknown Feed')),
                     $.make('div', { className: 'NB-add-site-card-meta' },
                         meta_parts.join(' \u2022 ')

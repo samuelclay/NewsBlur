@@ -182,7 +182,8 @@
     NEWSBLUR.Views = {};
     NEWSBLUR.app = {};
       </script>
-      {% include_stylesheets "common" %}
+      {% include_stylesheets "common" %}{# base.html: RTL pages get the mirrored "common" here (utils_tags.py, utils/rtl_css.py), then the hand-written reader_rtl.css overrides. #}
+      {% if ui_language_rtl %}{% include_stylesheets "rtl" %}{% endif %}
       {% if debug_assets %}
         <link rel="preload"
               as="style"

@@ -50,8 +50,9 @@
         <meta name="twitter:description" content="{{ active_story.story_content|striptags|slice:":300"|addslashes|safe }}">
     {% endif %}
     
-    {% include_stylesheets "blurblog" %}
-    
+    {% include_stylesheets "blurblog" %}{# social_page.xhtml: RTL pages get the mirrored "blurblog" (utils_tags.py, utils/rtl_css.py) plus reader_rtl.css. #}{% if ui_language_rtl %}
+    {% include_stylesheets "rtl" %}{% endif %}
+
     {% if social_profile.custom_css %}
     <style type="text/css" media="screen">
         {{ social_profile.custom_css|safe }}
@@ -139,7 +140,8 @@
                 <div class="NB-header-tab NB-user-tab dropdown" data-toggle="dropdown">
                     <div class="NB-tab-inner">
                         <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
-                        <div class="NB-header-username">{{ user_social_profile.username }}</div>
+                        {# social_page.xhtml: dir="auto" isolates user-written names, titles and bios for RTL and LTR readers. #}
+                        <div class="NB-header-username" dir="auto">{{ user_social_profile.username }}</div>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
                     </div>
                     <ul class="dropdown-menu" role="menu">
@@ -203,10 +205,10 @@
                 <td class="NB-title">
                     <div class="NB-title-content">
                         <div class="NB-title-name">
-                            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}">{{ social_profile.title }}</a>
+                            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" dir="auto">{{ social_profile.title }}</a>
                         </div>
                         {% if social_profile.bio %}
-                            <div class="NB-title-bio">
+                            <div class="NB-title-bio" dir="auto">
                                 {{ social_profile.bio }}
                             </div>
                         {% endif %}

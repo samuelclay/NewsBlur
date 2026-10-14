@@ -152,6 +152,10 @@ stylesheets:
   #     - css/mobile/jquery.mobile-1.0b1.css
   #     - css/mobile/mobile.css
   bookmarklet:
+  # assets.yml: right-to-left pages (Arabic, Hebrew) link a mirrored copy of common or blurblog built at
+  # runtime by utils/rtl_css.py, then these hand-written overrides right after it.
+  rtl:
+    - css/reader/reader_rtl.css
     - css/bookmarklet/reset.css
     - css/reader/modals.css
     - css/bookmarklet/bookmarklet.css
