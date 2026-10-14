@@ -44,16 +44,28 @@ final class Test_StoryImageViewer: XCTestCase {
         XCTAssertTrue(ready)
         for offsetY: CGFloat in [-100, 80] {
             web.scrollView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
-            try await Task.sleep(nanoseconds: 100_000_000)
-            // StoryImageViewerTests.swift uses the known CSS fixture position through UIKit's content coordinates.
-            let point = web.scrollView.convert(CGPoint(x: 100, y: 240), to: web)
-            let offset = web.scrollView.contentOffset
-            let hit = try await web.evaluateJavaScript("newsblurOpenImageAt(\(point.x), \(point.y), \(offset.x), \(offset.y), \(web.bounds.width))") as? Bool
+            // StoryImageViewerTests.swift measures the tap, the JavaScript hit test and the returned geometry against one
+            // native offset. WebKit can still move contentOffset when a later layer commit arrives, which a fixed 100ms
+            // sleep did not always outlast on CI, so a sample whose offset moved during its round trips is taken again.
+            var sample: (point: CGPoint, hit: Bool?, nativeRect: CGRect, expectedOrigin: CGPoint)?
+            let deadline = CACurrentMediaTime() + SimulatorTestTiming.realWorkTimeout
+            while sample == nil, CACurrentMediaTime() < deadline {
+                // StoryImageViewerTests.swift uses the known CSS fixture position through UIKit's content coordinates.
+                let point = web.scrollView.convert(CGPoint(x: 100, y: 240), to: web)
+                let offset = web.scrollView.contentOffset
+                let hit = try await web.evaluateJavaScript("newsblurOpenImageAt(\(point.x), \(point.y), \(offset.x), \(offset.y), \(web.bounds.width))") as? Bool
+                let result = try await web.evaluateJavaScript("newsblurImageRect('1', '1')")
+                let (rect, viewport) = try XCTUnwrap(StoryImageSource.geometry(result))
+                let nativeRect = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: web)
+                let expectedOrigin = web.scrollView.convert(CGPoint(x: 40, y: 200), to: web)
+                if web.scrollView.contentOffset == offset {
+                    sample = (point, hit, nativeRect, expectedOrigin)
+                } else {
+                    try await Task.sleep(nanoseconds: 50_000_000)
+                }
+            }
+            let (point, hit, nativeRect, expectedOrigin) = try XCTUnwrap(sample, "WebKit must hold one native offset while the tap is measured at \(offsetY)")
             XCTAssertEqual(hit, true, "The stationary native tap must hit the small photo at native offset \(offsetY)")
-            let result = try await web.evaluateJavaScript("newsblurImageRect('1', '1')")
-            let (rect, viewport) = try XCTUnwrap(StoryImageSource.geometry(result))
-            let nativeRect = StoryImageSource.viewRect(rect, viewportWidth: viewport, in: web)
-            let expectedOrigin = web.scrollView.convert(CGPoint(x: 40, y: 200), to: web)
             XCTAssertEqual(nativeRect.origin.x, expectedOrigin.x, accuracy: 0.5)
             XCTAssertEqual(nativeRect.origin.y, expectedOrigin.y, accuracy: 0.5)
             XCTAssertEqual(nativeRect.width, 120, accuracy: 0.5)

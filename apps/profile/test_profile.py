@@ -427,6 +427,58 @@ class Test_UpgradePaths(TestCase):
         m["email_staff"].assert_not_called()
 
 
+class Test_ConcurrentArchiveActivation(TestCase):
+    """Four PayPal webhooks for one archive upgrade each ran setup_premium_history and
+    activate_archive at once on 2026-10-10, and every one of them scheduled the archive
+    backfill for all 3,910 of the user's feeds. A handler still holding the profile it
+    loaded before the upgrade saved the whole row back, which turned is_archive off again
+    so the next handler's guard let it through (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="archiverace", password="password", email="archiverace@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = False
+        self.profile.is_archive = False
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=10)
+        self.profile.save()
+
+        patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
+        patch("apps.profile.models.SchedulePremiumSetup").start()
+        patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
+        self.archive_fetch = patch(
+            "apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user"
+        ).start()
+        self.addCleanup(patch.stopall)
+
+    def test_a_stale_premium_history_save_does_not_reopen_the_archive_upgrade(self):
+        # A second webhook loaded the profile before the upgrade landed.
+        stale_profile = Profile.objects.get(pk=self.profile.pk)
+
+        self.profile.activate_archive()
+        self.assertTrue(Profile.objects.get(pk=self.profile.pk).is_archive)
+
+        # The upgrade payment moves premium_expire forward, so the stale handler's history
+        # sync has something to save.
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=99,
+            payment_provider="paypal",
+        )
+        stale_profile.setup_premium_history()
+
+        self.assertTrue(
+            Profile.objects.get(pk=self.profile.pk).is_archive,
+            "a history sync on a stale profile must not turn archive back off",
+        )
+
+        Profile.objects.get(pk=self.profile.pk).activate_archive()
+        self.assertEqual(self.archive_fetch.call_count, 1, "the archive backfill must be scheduled once")
+
+
 class Test_SetupPremiumHistoryStripe(TestCase):
     """Tests for Stripe subscription handling in setup_premium_history (apps/profile/models.py)."""
 

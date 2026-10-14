@@ -10,18 +10,20 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let nextTraits = UITraitCollection(traitsFrom: [UITraitCollection(displayScale: 3), UITraitCollection(displayGamut: .P3)])
         let entered = expectation(description: "First display preparation is active")
         let resume = DispatchSemaphore(value: 0)
+        // StoryThumbnailCacheTests.swift also releases the held worker if the test throws before its own signal.
+        defer { resume.signal() }
         var seen = [(CGFloat, UIDisplayGamut)]()
         var canceled = [Bool]()
         let prefetcher = StoryThumbnailPrefetcher(worker: queue) { _, operation in
             seen.append((UITraitCollection.current.displayScale, UITraitCollection.current.displayGamut))
             if seen.count == 1 {
                 entered.fulfill()
-                _ = resume.wait(timeout: .now() + 3)
+                _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
             canceled.append(operation.isCancelled)
         }
         firstTraits.performAsCurrent { prefetcher.prefetchStoryHashes(["story"]) }
-        wait(for: [entered], timeout: 1)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
         nextTraits.performAsCurrent { prefetcher.prefetchStoryHashes(["story"]) }
         resume.signal()
         queue.sync {}
@@ -107,16 +109,17 @@ final class Test_StoryThumbnailCache: XCTestCase {
             let source = ThumbnailPreparationImage(cgImage: try XCTUnwrap(prepared.cgImage), scale: prepared.scale, orientation: prepared.imageOrientation)
             let entered = expectation(description: "Display preparation started: \(invalidation)")
             let resume = DispatchSemaphore(value: 0)
+            defer { resume.signal() }
             source.preparation = {
                 entered.fulfill()
-                _ = resume.wait(timeout: .now() + 3)
+                _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
                 return prepared
             }
             cache.diskCache.setObject(source, forKey: "story")
             let operation = BlockOperation()
             let queue = DispatchQueue(label: "test.thumbnail-display.invalidation")
             queue.async { app.prefetchCachedStoryImage(forStoryHash: "story", operation: operation) }
-            wait(for: [entered], timeout: 1)
+            wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
             switch invalidation {
             case "cancel": operation.cancel()
             case "save", "save_then_evict":
@@ -329,7 +332,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let prefetcher = try XCTUnwrap(controller as? UITableViewDataSourcePrefetching)
         prefetcher.tableView(table, prefetchRowsAt: [path])
         // StoryThumbnailCacheTests.swift waits for actual publication instead of periodically polling while WebKit tests retire their processes.
-        wait(for: [warmed, promoted], timeout: 2)
+        wait(for: [warmed, promoted], timeout: SimulatorTestTiming.realWorkTimeout)
         cache.memoryCache.onWrite = nil
         let started = CACurrentMediaTime()
         let actual = try drawOlderCell()
@@ -380,10 +383,11 @@ final class Test_StoryThumbnailCache: XCTestCase {
             let entered = expectation(description: "Both title controllers have an active disk read")
             entered.expectedFulfillmentCount = 2
             let resume = DispatchSemaphore(value: 0)
+            defer { resume.signal() }
             cache.diskCache.onRead = { hash, isMain in
                 if !isMain && (hash == "left-0" || hash == "right-0") {
                     entered.fulfill()
-                    _ = resume.wait(timeout: .now() + 2)
+                    _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
                 }
             }
             let leftQueue = DispatchQueue(label: "test.thumbnail-memory.left")
@@ -396,7 +400,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
             }
             left.prefetchStoryHashes(leftHashes)
             right.prefetchStoryHashes(rightHashes)
-            wait(for: [entered], timeout: 2)
+            wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
             // StoryThumbnailCacheTests.swift covers both notification orders because PINMemoryCache also clears memory independently.
             if notificationFirst { NotificationCenter.default.post(name: UIApplication.didReceiveMemoryWarningNotification, object: nil) }
             app.didReceiveMemoryWarning()
@@ -461,16 +465,17 @@ final class Test_StoryThumbnailCache: XCTestCase {
         let queue = DispatchQueue(label: "test.thumbnail-prefetch.direction")
         let entered = expectation(description: "Old direction is reading its first image")
         let resume = DispatchSemaphore(value: 0)
+        defer { resume.signal() }
         var published = [String]()
         let prefetcher = StoryThumbnailPrefetcher(worker: queue) { hash, operation in
             if hash == "old" {
                 entered.fulfill()
-                _ = resume.wait(timeout: .now() + 2)
+                _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
             if !operation.isCancelled { published.append(hash) }
         }
         prefetcher.prefetchStoryHashes(["old", "abandoned"])
-        wait(for: [entered], timeout: 2)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
         prefetcher.prefetchStoryHashes(["reverse"])
         resume.signal()
         queue.sync {}
@@ -483,10 +488,11 @@ final class Test_StoryThumbnailCache: XCTestCase {
         cache.diskCache.setObject(makeImage(), forKey: "story")
         let entered = expectation(description: "Disk prefetch is waiting outside the publication lock")
         let resume = DispatchSemaphore(value: 0)
+        defer { resume.signal() }
         cache.diskCache.onRead = { _, isMain in
             if !isMain {
                 entered.fulfill()
-                _ = resume.wait(timeout: .now() + 2)
+                _ = resume.wait(timeout: .now() + SimulatorTestTiming.realWorkTimeout)
             }
         }
         let queue = DispatchQueue(label: "test.thumbnail-prefetch.publication")
@@ -494,7 +500,7 @@ final class Test_StoryThumbnailCache: XCTestCase {
             app.prefetchCachedStoryImage(forStoryHash: hash, operation: operation)
         }
         prefetcher.prefetchStoryHashes(["story"])
-        wait(for: [entered], timeout: 2)
+        wait(for: [entered], timeout: SimulatorTestTiming.realWorkTimeout)
         let newer = makeImage()
         let started = CACurrentMediaTime()
         app.cacheStoryImage(newer, forStoryHash: "story")

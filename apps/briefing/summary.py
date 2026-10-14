@@ -38,6 +38,43 @@ def is_transient_llm_error(error):
     return status_code >= 500
 
 
+def is_refused_llm_error(error):
+    """
+    Did the provider refuse to serve the account: a bad key, no credits left, a spending
+    limit, or a rate limit? Retrying the same provider won't help, but another one can.
+    xAI answers 403 once its credits run out. apps/briefing/summary.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        status_code = getattr(error, "code", None)
+    return status_code in (401, 402, 403, 429)
+
+
+def _generate_with_retries(provider, messages, model_id, max_tokens, thinking_config, user_id):
+    """Generate the summary, retrying transient LLM failures so a momentary outage doesn't cost
+    the user their briefing for the day. The final failure is raised. apps/briefing/summary.py"""
+    from apps.ask_ai.providers import LLM_EXCEPTIONS
+
+    for attempt in range(BRIEFING_RETRY_ATTEMPTS):
+        try:
+            return provider.generate(
+                messages,
+                model_id,
+                max_tokens=max_tokens,
+                thinking_config=thinking_config,
+            )
+        except LLM_EXCEPTIONS as e:
+            last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
+            if last_attempt or not is_transient_llm_error(e):
+                raise
+            backoff = BRIEFING_RETRY_BACKOFF_SECONDS * (attempt + 1)
+            logging.debug(
+                " ---> Briefing summary retrying for user %s in %ss (attempt %s of %s): %s"
+                % (user_id, backoff, attempt + 1, BRIEFING_RETRY_ATTEMPTS, str(e))
+            )
+            time.sleep(backoff)
+
+
 def normalize_section_key(key):
     """
     Normalize a section key to match VALID_SECTION_KEYS.
@@ -418,28 +455,33 @@ def generate_briefing_summary(
             {"role": "user", "content": user_prompt},
         ]
 
-        # summary.py: Retry transient LLM failures so a momentary outage doesn't cost
-        # the user their briefing for the day. The final failure falls through to the
-        # LLM_EXCEPTIONS handler below.
-        for attempt in range(BRIEFING_RETRY_ATTEMPTS):
-            try:
-                summary_html = provider.generate(
-                    messages,
-                    model_id,
-                    max_tokens=max_tokens,
-                    thinking_config=thinking_config,
-                )
-                break
-            except LLM_EXCEPTIONS as e:
-                last_attempt = attempt == BRIEFING_RETRY_ATTEMPTS - 1
-                if last_attempt or not is_transient_llm_error(e):
-                    raise
-                backoff = BRIEFING_RETRY_BACKOFF_SECONDS * (attempt + 1)
-                logging.debug(
-                    " ---> Briefing summary retrying for user %s in %ss (attempt %s of %s): %s"
-                    % (user_id, backoff, attempt + 1, BRIEFING_RETRY_ATTEMPTS, str(e))
-                )
-                time.sleep(backoff)
+        # summary.py: The final failure falls through to the LLM_EXCEPTIONS handler below.
+        try:
+            summary_html = _generate_with_retries(
+                provider, messages, model_id, max_tokens, thinking_config, user_id
+            )
+        except LLM_EXCEPTIONS as e:
+            # summary.py: xAI refuses outright once its account runs out of credits or hits its
+            # spending limit. Users who picked Grok get their briefing from the default model
+            # instead of none at all.
+            if (
+                model_config.get("vendor") != "xai"
+                or model_name == DEFAULT_BRIEFING_MODEL
+                or not is_refused_llm_error(e)
+            ):
+                raise
+            logging.info(
+                " ---> Briefing summary for user %s refused by xAI, using %s instead: %s"
+                % (user_id, DEFAULT_BRIEFING_MODEL, str(e))
+            )
+            model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
+            provider, model_id = get_briefing_provider(model_name)
+            thinking_config = model_config.get("thinking_config")
+            if not provider.is_configured():
+                raise
+            summary_html = _generate_with_retries(
+                provider, messages, model_id, max_tokens, thinking_config, user_id
+            )
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):

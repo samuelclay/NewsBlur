@@ -183,6 +183,24 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 # far apart, before the archive walk stops at that page. utils/feed_fetcher.py
 ARCHIVE_PAGE_LOCK_ATTEMPTS = 3
 ARCHIVE_PAGE_LOCK_WAIT_SECONDS = 30
+# A walk stopped at a locked page is queued again at most this many times within the window,
+# so a feed whose lock stays taken can't keep queuing its own walk forever. utils/feed_fetcher.py
+ARCHIVE_WALK_MAX_REQUEUES = 3
+ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS = 60 * 60 * 6
+# The walk that queues the retry keeps going through the other page styles and holds the feed's
+# walk lock until it finishes, at most the backfill task's time limit, which is also how long the
+# lock lasts (apps/rss_feeds/models.py fill_out_archive_stories). A retry that arrived sooner
+# would find the lock taken and exit without walking. utils/feed_fetcher.py
+ARCHIVE_WALK_REQUEUE_DELAY_SECONDS = settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED + 60
+# Counts a requeue and starts its window in one step, and gives a counter that somehow lost its
+# expiry one again, so a feed's requeues can never be stopped for good. utils/feed_fetcher.py
+ARCHIVE_WALK_REQUEUE_COUNT_SCRIPT = """
+local requeues = redis.call('INCR', KEYS[1])
+if redis.call('TTL', KEYS[1]) < 0 then
+    redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return requeues
+"""
 
 # Statuses a site uses to refuse a request because of its User-Agent rather than because the
 # feed is gone: bugs.kde.org answers any UA carrying a desktop browser string with 403 (forum
@@ -1330,6 +1348,8 @@ class ProcessFeed:
         self.raw_feed = raw_feed
         self.feed_entries = []
         self.archive_seen_story_hashes = set()
+        # The hashes of the stories in this response, which an unread feed's trim keeps (utils/feed_fetcher.py)
+        self.fetched_story_hashes = []
         self.cache_control_max_age = None
         # Set when the lease on the feed's merge lock ran out partway through the batch.
         self.lease_lost = False
@@ -1545,7 +1565,7 @@ class ProcessFeed:
         fetch_date = datetime.datetime.now()
         if ret_values["new"]:
             if not getattr(settings, "TEST_DEBUG", False):
-                self.feed.trim_feed()
+                self.feed.trim_feed(fetched_story_hashes=self.fetched_story_hashes)
                 self.feed.expire_redis()
             if MStatistics.get("raw_feed", None) == self.feed.pk:
                 self.feed.save_raw_feed(self.raw_feed, fetch_date)
@@ -1679,6 +1699,7 @@ class ProcessFeed:
             story_hashes.append(story.get("story_hash"))
 
         original_story_hash_count = len(story_hashes)
+        self.fetched_story_hashes = list(story_hashes)
         story_hashes_in_unread_cutoff = self.feed.story_hashes_in_unread_cutoff[:original_story_hash_count]
         story_hashes.extend(story_hashes_in_unread_cutoff)
         story_hashes = list(set(story_hashes))
@@ -2336,18 +2357,38 @@ class FeedFetcherWorker:
         return False
 
     def reschedule_archive_walk(self, feed):
-        """Queue the archive import for this feed again, after the fetch deferral: the walk
-        stopped at a page the feed's lock kept it from storing, and no ordinary refresh ever
-        comes back for historical pages. The walk restarts from the first page; pages
-        already stored are matched as unchanged. utils/feed_fetcher.py"""
+        """Queue the archive import for this feed again, once the walk that stopped has let go
+        of the feed: the walk stopped at a page the feed's lock kept it from storing, and no
+        ordinary refresh ever comes back for historical pages. The walk restarts from the
+        first page; pages already stored are matched as unchanged. utils/feed_fetcher.py"""
         from apps.profile.tasks import FetchArchiveFeedsChunk
 
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        requeue_key = "archive_walk_requeues:%s" % feed.pk
+        requeues = r.eval(
+            ARCHIVE_WALK_REQUEUE_COUNT_SCRIPT, 1, requeue_key, ARCHIVE_WALK_REQUEUE_WINDOW_SECONDS
+        )
+        if requeues > ARCHIVE_WALK_MAX_REQUEUES:
+            logging.info(
+                "   ---> [%-30s] ~FRArchive import already queued again %s times, not queuing it again"
+                % (feed.log_title[:30], ARCHIVE_WALK_MAX_REQUEUES)
+            )
+            return
+
+        # Back on the archive queue with the archive time limits, the same as the backfill
+        # (apps/reader/models.py dispatch_archive_backfill). On the default queue it ran on
+        # the work servers under the 360 second global limit, which a long walk never finishes in.
         FetchArchiveFeedsChunk.apply_async(
-            args=[[feed.pk]], kwargs={"user_id": None}, countdown=FETCH_LOCK_DEFERRAL_SECONDS
+            args=[[feed.pk]],
+            kwargs={"user_id": None},
+            queue="search_indexer",
+            countdown=ARCHIVE_WALK_REQUEUE_DELAY_SECONDS,
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
         logging.info(
             "   ---> [%-30s] ~FYArchive import queued again in %s seconds"
-            % (feed.log_title[:30], FETCH_LOCK_DEFERRAL_SECONDS)
+            % (feed.log_title[:30], ARCHIVE_WALK_REQUEUE_DELAY_SECONDS)
         )
 
     def fetch_and_process_archive_pages(self, feed_id):

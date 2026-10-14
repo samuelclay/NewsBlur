@@ -1,12 +1,28 @@
 name: iOS Tests
 
+# Pull requests run this once (pull_request), and only when they touch the iOS
+# client or this workflow. Branch pushes no longer start a second copy of the
+# same job; main still runs after every iOS merge.
 on:
   push:
+    branches: [main]
+    paths:
+      - "clients/ios/**"
+      - ".github/workflows/ios-actions.yml"
   pull_request:
+    paths:
+      - "clients/ios/**"
+      - ".github/workflows/ios-actions.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# A newer push to the same pull request supersedes its older iOS run, which
+# frees the macOS runner that later runs are queued behind.
+concurrency:
+  group: ios-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   ios-tests:
@@ -19,10 +35,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Run iOS Swift package tests
-        run: swift test --parallel
-
-      - name: Select and boot iOS simulator
+      # Booting a fresh simulator spends minutes on data migration, so start it
+      # here and let it finish while the package tests and the app build run.
+      - name: Select iOS simulator and start booting it
         run: |
           IOS_SIMULATOR_UDID="$(
             python3 - <<'PY'
@@ -52,8 +67,10 @@ jobs:
           )"
 
           echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
-          xcrun simctl boot "$IOS_SIMULATOR_UDID" || true
-          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          nohup xcrun simctl boot "$IOS_SIMULATOR_UDID" > "$RUNNER_TEMP/simulator-boot.log" 2>&1 &
+
+      - name: Run iOS Swift package tests
+        run: swift test --parallel
 
       - name: Build iOS Xcode test bundles
         run: |
@@ -65,7 +82,13 @@ jobs:
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            RUN_CLANG_STATIC_ANALYZER=NO
+            RUN_CLANG_STATIC_ANALYZER=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+      - name: Wait for the iOS simulator to finish booting
+        run: |
+          cat "$RUNNER_TEMP/simulator-boot.log" || true
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
 
       - name: Run iOS app-hosted tests
         run: |
@@ -81,12 +104,104 @@ jobs:
             RUN_CLANG_STATIC_ANALYZER=NO \
             -resultBundlePath TestResults/NewsBlurTests.xcresult
 
-      # UI smoke tests are flaky on GitHub Actions simulators (different test
-      # times out each run due to slow CI hardware). Run them for visibility
-      # but don't block the overall job on failure.
+      # The full UI suite takes about an hour on GitHub's simulators, so pull
+      # requests run a few core flows for visibility and main runs everything
+      # in the iOS UI Tests job below. Neither blocks the workflow.
       - name: Run iOS UI smoke tests
+        if: ${{ github.event_name == 'pull_request' }}
         continue-on-error: true
-        timeout-minutes: 25
+        timeout-minutes: 8
+        run: |
+          xcodebuild test-without-building \
+            -project NewsBlur.xcodeproj \
+            -scheme NewsBlur \
+            -destination "id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath DerivedData \
+            -parallel-testing-enabled NO \
+            -only-testing:NewsBlurUITests/AddSiteUITests/test_addSiteSheetLaunchesInUiTestMode \
+            -only-testing:NewsBlurUITests/ReaderUITests/test_experimentalTitlesTappingStoryOpensDetail \
+            -only-testing:NewsBlurUITests/ReaderUITests/test_defaultStorySwipesToggleReadAndReturnToFeeds \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            RUN_CLANG_STATIC_ANALYZER=NO \
+            -resultBundlePath TestResults/NewsBlurUISmokeTests.xcresult
+
+      - name: Upload iOS xcresult
+        uses: actions/upload-artifact@v6
+        if: ${{ always() }}
+        with:
+          name: ios-newsblur-tests-xcresults
+          path: clients/ios/TestResults/*.xcresult
+          if-no-files-found: ignore
+
+  ios-ui-tests:
+    name: iOS UI Tests
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: macos-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: clients/ios
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Select iOS simulator and start booting it
+        run: |
+          IOS_SIMULATOR_UDID="$(
+            python3 - <<'PY'
+          import json
+          import subprocess
+          import sys
+
+          data = json.loads(subprocess.check_output(
+              ["xcrun", "simctl", "list", "devices", "available", "--json"], text=True
+          ))
+          device_preference = {"iPhone 16e": 0, "iPhone 17e": 1}
+          runtime_prefix = "com.apple.CoreSimulator.SimRuntime.iOS-"
+          candidates = []
+          for runtime, devices in data["devices"].items():
+              if not runtime.startswith(runtime_prefix):
+                  continue
+              version = tuple(int(part) for part in runtime.removeprefix(runtime_prefix).split("-"))
+              for device in devices:
+                  preference = device_preference.get(device.get("name"))
+                  if preference is not None and device.get("isAvailable", False):
+                      candidates.append((version, preference, device["udid"]))
+
+          if not candidates:
+              sys.exit("Unable to find an available iPhone 17e or iPhone 16e simulator")
+          print(max(candidates)[2])
+          PY
+          )"
+
+          echo "IOS_SIMULATOR_UDID=$IOS_SIMULATOR_UDID" >> "$GITHUB_ENV"
+          nohup xcrun simctl boot "$IOS_SIMULATOR_UDID" > "$RUNNER_TEMP/simulator-boot.log" 2>&1 &
+
+      - name: Build iOS Xcode test bundles
+        run: |
+          mkdir -p TestResults
+          xcodebuild build-for-testing \
+            -project NewsBlur.xcodeproj \
+            -scheme NewsBlur \
+            -destination "id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            RUN_CLANG_STATIC_ANALYZER=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+      - name: Wait for the iOS simulator to finish booting
+        run: |
+          cat "$RUNNER_TEMP/simulator-boot.log" || true
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+
+      # UI tests are flaky on GitHub Actions simulators (different test times
+      # out each run due to slow CI hardware). Run the whole suite for
+      # visibility but don't fail the workflow on it.
+      - name: Run iOS UI tests
+        continue-on-error: true
+        timeout-minutes: 100
         run: |
           xcodebuild test-without-building \
             -project NewsBlur.xcodeproj \
@@ -100,10 +215,10 @@ jobs:
             RUN_CLANG_STATIC_ANALYZER=NO \
             -resultBundlePath TestResults/NewsBlurUITests.xcresult
 
-      - name: Upload iOS xcresult
+      - name: Upload iOS UI xcresult
         uses: actions/upload-artifact@v6
         if: ${{ always() }}
         with:
-          name: ios-newsblur-tests-xcresults
+          name: ios-newsblur-ui-tests-xcresults
           path: clients/ios/TestResults/*.xcresult
           if-no-files-found: ignore
