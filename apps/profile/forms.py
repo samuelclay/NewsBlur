@@ -130,10 +130,10 @@ class AccountSettingsForm(forms.Form):
         required=False,
     )
     custom_js = forms.CharField(
-        widget=forms.TextInput(attrs={"class": "NB-input"}), label=gettext_lazy("custom_js"), required=False
+        widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_js", required=False
     )
     custom_css = forms.CharField(
-        widget=forms.TextInput(attrs={"class": "NB-input"}), label=gettext_lazy("custom_css"), required=False
+        widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_css", required=False
     )
 
     def __init__(self, user, *args, **kwargs):

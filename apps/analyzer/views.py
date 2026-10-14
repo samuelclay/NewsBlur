@@ -390,7 +390,7 @@ def save_prompt_classifier(request):
 
     return {
         "code": 0,
-        "message": gettext("OK"),
+        "message": "OK",
         "prompt_classifiers": prompt_list,
         "cost_estimate": cost_estimate,
     }
@@ -605,7 +605,7 @@ def save_all_classifiers(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % ",".join(map(str, feeds_updated)))
 
-    return {"code": 0, "message": gettext("OK"), "feeds_updated": feeds_updated}
+    return {"code": 0, "message": "OK", "feeds_updated": feeds_updated}
 
 
 def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data):

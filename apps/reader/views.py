@@ -135,6 +135,7 @@ from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
+    localized_date,
     strip_tags,
     strip_tags_preserve_blockquote,
 )
@@ -4691,7 +4692,7 @@ def load_features(request):
     features = [
         {
             "description": f["description"],
-            "date": localtime_for_timezone(f["date"], user.profile.timezone).strftime("%b %d, %Y"),
+            "date": localized_date(localtime_for_timezone(f["date"], user.profile.timezone), "%b %d, %Y"),
         }
         for f in features
     ]

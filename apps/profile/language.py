@@ -4,7 +4,9 @@ import hashlib
 import re
 from functools import lru_cache
 
+from django.conf import settings
 from django.contrib.auth.signals import user_logged_in
+from django.core.exceptions import ObjectDoesNotExist
 from django.dispatch import receiver
 from django.http import (
     Http404,
@@ -19,8 +21,9 @@ from django.urls import reverse
 from django.utils import translation
 from django.utils.cache import get_conditional_response, patch_vary_headers
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext
 from django.utils.translation.trans_real import parse_accept_lang_header
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.i18n import JavaScriptCatalog
 
@@ -29,12 +32,37 @@ from utils.languages import LANGUAGES, match_language, normalize_language
 
 COOKIE_NAME = "newsblur_language"
 JAVASCRIPT_CATALOG_PATTERN = r"^jsi18n/(?P<language>[A-Za-z-]+)/(?P<version>[a-f0-9]{16})/$"
+UI_LANGUAGES = list(LANGUAGES.items())
 
 
 def preference(request):
     if request.user.is_authenticated:
-        return normalize_language(json.decode(request.user.profile.preferences).get("language")) or "auto"
+        # language.py runs on every request, so a missing profile or blank preferences falls back to auto.
+        try:
+            preferences = json.decode(request.user.profile.preferences) or {}
+        except (ObjectDoesNotExist, ValueError):
+            preferences = {}
+        return normalize_language(preferences.get("language")) or "auto"
     return normalize_language(request.COOKIES.get(COOKIE_NAME)) or "auto"
+
+
+def save_account_language(profile, language):
+    preferences = json.decode(profile.preferences)
+    preferences["language"] = language
+    profile.preferences = json.encode(preferences)
+    profile.save(update_fields=["preferences"])
+
+
+def set_language_cookie(response, name, value, max_age):
+    response.set_cookie(
+        name,
+        value,
+        max_age=max_age,
+        domain=settings.SESSION_COOKIE_DOMAIN,
+        secure=settings.SESSION_COOKIE_SECURE,
+        httponly=True,
+        samesite="Lax",
+    )
 
 
 def detect_language(header):
@@ -51,17 +79,17 @@ def detect_language(header):
 class NewsBlurLocaleMiddleware(LocaleMiddleware):
     def process_request(self, request):
         override = preference(request)
-        language = (
-            override if override != "auto" else detect_language(request.META.get("HTTP_ACCEPT_LANGUAGE", ""))
-        )
+        detected = detect_language(request.META.get("HTTP_ACCEPT_LANGUAGE", ""))
+        language = detected if override == "auto" else override
         translation.activate(language.lower())
         request.LANGUAGE_CODE = language
+        request.detected_language = detected
         request.language_preference = override
 
     def process_response(self, request, response):
         response = super().process_response(request, response)
         if getattr(request, "language_choice_adopted", False):
-            response.delete_cookie(COOKIE_NAME + "_pending")
+            response.delete_cookie(COOKIE_NAME + "_pending", domain=settings.SESSION_COOKIE_DOMAIN)
         patch_vary_headers(response, ("Accept-Language", "Cookie"))
         return response
 
@@ -81,12 +109,23 @@ class LanguageCatalogMiddleware:
 
 def language_context(request):
     language = getattr(request, "LANGUAGE_CODE", "en")
+    detected = getattr(request, "detected_language", "en")
     _, version = javascript_catalog_data(language)
+    # language.py labels Automatic in the language it resolves to, so someone who picked a language
+    # they can't read still recognizes the way back.
+    with translation.override(detected.lower()):
+        auto_label = gettext("Automatic (device language)")
+        auto_short = gettext("Auto")
     return {
-        "ui_languages": list(LANGUAGES.items()),
-        "ui_language": getattr(request, "LANGUAGE_CODE", "en"),
+        "ui_languages": UI_LANGUAGES,
+        "ui_language": language,
         "ui_language_preference": getattr(request, "language_preference", "auto"),
-        "ui_language_rtl": getattr(request, "LANGUAGE_CODE", "en") in ("ar", "he"),
+        "ui_language_rtl": language in ("ar", "he"),
+        "ui_language_dir": "rtl" if language in ("ar", "he") else "ltr",
+        "ui_detected_language": detected,
+        "ui_detected_language_name": LANGUAGES[detected],
+        "ui_language_auto_label": auto_label,
+        "ui_language_auto_short": auto_short,
         "ui_catalog_url": reverse("javascript-catalog", kwargs={"language": language, "version": version}),
     }
 
@@ -117,7 +156,9 @@ def javascript_catalog(request, language, version):
     return get_conditional_response(request, etag=etag, response=response)
 
 
-@csrf_protect
+# language.py accepts the footer form from static pages, which never set a CSRF cookie. A cross-site post
+# arrives without the SameSite=Lax session cookie, so it can only set an anonymous display language.
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def language_preference(request):
     if request.method == "GET":
@@ -128,11 +169,7 @@ def language_preference(request):
     if language is None:
         return HttpResponseBadRequest("Unsupported language")
     if request.user.is_authenticated:
-        profile = request.user.profile
-        preferences = json.decode(profile.preferences)
-        preferences["language"] = language
-        profile.preferences = json.encode(preferences)
-        profile.save(update_fields=["preferences"])
+        save_account_language(request.user.profile, language)
     next_url = request.POST.get("next")
     if next_url:
         if not url_has_allowed_host_and_scheme(
@@ -143,17 +180,8 @@ def language_preference(request):
     else:
         response = JsonResponse({"code": 1, "language": language})
     if not request.user.is_authenticated:
-        response.set_cookie(
-            COOKIE_NAME + "_pending",
-            "1",
-            max_age=86400,
-            secure=request.is_secure(),
-            httponly=True,
-            samesite="Lax",
-        )
-    response.set_cookie(
-        COOKIE_NAME, language, max_age=31536000, secure=request.is_secure(), httponly=True, samesite="Lax"
-    )
+        set_language_cookie(response, COOKIE_NAME + "_pending", "1", max_age=86400)
+    set_language_cookie(response, COOKIE_NAME, language, max_age=31536000)
     return response
 
 
@@ -165,9 +193,5 @@ def adopt_login_language(sender, request, user, **kwargs):
     language = normalize_language(request.COOKIES.get(COOKIE_NAME))
     if language is None:
         return
-    profile = user.profile
-    preferences = json.decode(profile.preferences)
-    preferences["language"] = language
-    profile.preferences = json.encode(preferences)
-    profile.save(update_fields=["preferences"])
+    save_account_language(user.profile, language)
     request.language_choice_adopted = True
