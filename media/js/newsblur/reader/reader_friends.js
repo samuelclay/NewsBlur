@@ -144,11 +144,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
 
         var $autofollow = $.make('div', { className: 'NB-friends-service NB-friends-autofollow' }, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
-            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, [
-                gettext('Auto-follow'),
-                $.make('br'),
-                gettext('my friends')
-            ])
+            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, gettext("Auto-follow<br>my friends"))
         ]);
         $services.prepend($autofollow);
 
@@ -218,10 +214,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $tab.append($ghost);
         } else {
             var $heading = $.make('fieldset', [
-                $.make('legend', { className: 'NB-profile-section-heading' }, [
-                    gettext('You are followed by '),
-                    Inflector.pluralize('person', this.profile.get('follower_count'), true)
-                ])
+                $.make('legend', { className: 'NB-profile-section-heading' }, interpolate(ngettext("You are followed by %(count)s person", "You are followed by %(count)s people", this.profile.get('follower_count')), {count: Inflector.commas(this.profile.get('follower_count'))}, true))
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.follower_profiles.each(_.bind(function (profile) {
@@ -237,10 +230,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             $tab.append($ghost);
         } else {
             var $heading = $.make('fieldset', [
-                $.make('legend', { className: 'NB-profile-section-heading' }, [
-                    gettext('You are following '),
-                    Inflector.pluralize('person', this.profile.get('following_count'), true)
-                ])
+                $.make('legend', { className: 'NB-profile-section-heading' }, interpolate(ngettext("You are following %(count)s person", "You are following %(count)s people", this.profile.get('following_count')), {count: Inflector.commas(this.profile.get('following_count'))}, true))
             ]);
             $tab.append($heading);
             NEWSBLUR.assets.following_profiles.each(_.bind(function (profile) {
@@ -343,7 +333,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
-                $.make('span', { className: 'NB-raquo' }, gettext('&raquo; ')),
+                $.make('span', { className: 'NB-raquo' }, '&raquo; '),
                 data.error
             ]).css('opacity', 0);
             $('.NB-friends-services', this.$modal).append($error);
@@ -379,7 +369,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 $badges.html($.make('div', {
                     className: 'NB-friends-search-badges-empty'
                 }, [
-                    $.make('div', { className: 'NB-raquo' }, gettext('&raquo;')),
+                    $.make('div', { className: 'NB-raquo' }, '&raquo;'),
                     interpolate(gettext("Sorry, nobody matches \"%(value_1)s\"."), {value_1: query}, true)
                 ]));
                 return;

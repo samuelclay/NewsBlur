@@ -554,7 +554,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
             var $star = this.$('.NB-storytitles-sentiment');
             $star.stop().css('opacity', null);
-            $star.attr({ 'title': options.message || 'Failed to mark as unread' });
+            $star.attr({ 'title': options.message || gettext('Failed to mark as unread') });
             $star.tipsy({
                 gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
@@ -808,14 +808,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     // list and the detail-view badge path produce identical markup.
     _cluster_tier_meta: function (raw_tier) {
         var tier = raw_tier === 'title' ? 'title' : 'related';
-        var label = tier === 'title' ? 'Match' : 'Related';
-        var tooltip = tier === 'title' ? 'Matched via a duplicate title' : 'Matched via related topics';
+        var label = tier === 'title' ? gettext('Match') : gettext('Related');
+        var tooltip = tier === 'title' ? gettext('Matched via a duplicate title') : gettext('Matched via related topics');
         return {
             tier: tier,
             label: label,
             tooltip: tooltip,
             row_class: ' NB-cluster-tier-' + tier,
-            badge_html: '<span class="NB-cluster-tier-badge" title="' + tooltip + '">' + label + '</span>'
+            badge_html: '<span class="NB-cluster-tier-badge" title="' + _.escape(tooltip) + '">' + _.escape(label) + '</span>'
         };
     },
 
@@ -846,7 +846,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 var d = new Date(parseInt(cs.story_timestamp, 10) * 1000);
                 var now = new Date();
                 var diff_hours = Math.round((now - d) / (1000 * 60 * 60));
-                date = diff_hours < 24 ? diff_hours + 'h ago' : Math.round(diff_hours / 24) + 'd ago';
+                var diff_days = Math.round(diff_hours / 24);
+                date = diff_hours < 24 ?
+                    interpolate(ngettext('%(count)sh ago', '%(count)sh ago', diff_hours), {count: diff_hours}, true) :
+                    interpolate(ngettext('%(count)sd ago', '%(count)sd ago', diff_days), {count: diff_days}, true);
             }
             var feed_title = feed ? feed.get('feed_title') : '';
             var favicon_color = feed ? '#' + feed.get('favicon_color') : '#505050';

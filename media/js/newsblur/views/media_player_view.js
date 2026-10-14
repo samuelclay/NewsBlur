@@ -171,8 +171,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '</div>';
 
         // Settings + close on info row
-        html += '<div class="NB-media-player-settings" title="Player settings">' + this.SVG_SETTINGS + '</div>';
-        html += '<div class="NB-media-player-close" title="Close player">' + this.SVG_CLOSE + '</div>';
+        html += '<div class="NB-media-player-settings" title="' + _.escape(gettext('Player settings')) + '">' + this.SVG_SETTINGS + '</div>';
+        html += '<div class="NB-media-player-close" title="' + _.escape(gettext('Close player')) + '">' + this.SVG_CLOSE + '</div>';
 
         html += '</div>'; // end row-info
 
@@ -184,9 +184,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // Row 3: Controls + centered time + speed + volume
         html += '<div class="NB-media-player-row-controls">';
         html += '<div class="NB-media-player-controls">';
-        html += '<div class="NB-media-player-skip-back" title="Back ' + this.skip_back_seconds + ' seconds">' + this.SVG_SKIP_BACK + '</div>';
-        html += '<div class="NB-media-player-play-pause" title="Play/Pause">' + (this.is_playing ? this.SVG_PAUSE : this.SVG_PLAY) + '</div>';
-        html += '<div class="NB-media-player-skip-forward" title="Forward ' + this.skip_forward_seconds + ' seconds">' + this.SVG_SKIP_FORWARD + '</div>';
+        html += '<div class="NB-media-player-skip-back" title="' + _.escape(this.skip_back_title()) + '">' + this.SVG_SKIP_BACK + '</div>';
+        html += '<div class="NB-media-player-play-pause" title="' + _.escape(gettext('Play/Pause')) + '">' + (this.is_playing ? this.SVG_PAUSE : this.SVG_PLAY) + '</div>';
+        html += '<div class="NB-media-player-skip-forward" title="' + _.escape(this.skip_forward_title()) + '">' + this.SVG_SKIP_FORWARD + '</div>';
         html += '</div>';
         html += '<div class="NB-media-player-time">';
         html += '<span class="NB-media-player-time-current">' + this.format_time(this.current_position) + '</span>';
@@ -194,15 +194,15 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '<span class="NB-media-player-time-duration">' + this.format_time(this.current_duration) + '</span>';
         html += '</div>';
         html += '<div class="NB-media-player-right-controls">';
-        html += '<div class="NB-media-player-speed" title="Playback speed">' + this.format_speed(this.playback_rate) + '</div>';
+        html += '<div class="NB-media-player-speed" title="' + _.escape(gettext('Playback speed')) + '">' + this.format_speed(this.playback_rate) + '</div>';
         html += '<div class="NB-media-player-volume-container">';
-        html += '<div class="NB-media-player-volume-icon" title="Mute">' + this.get_volume_svg() + '</div>';
+        html += '<div class="NB-media-player-volume-icon" title="' + _.escape(gettext('Mute')) + '">' + this.get_volume_svg() + '</div>';
         html += '<div class="NB-media-player-volume-popover">';
         html += '<input type="range" class="NB-media-player-volume" min="0" max="100" value="' + Math.round(this.volume * 100) + '" />';
         html += '</div>';
         html += '</div>';
         if (is_video) {
-            html += '<div class="NB-media-player-fullscreen" title="Fullscreen">' + this.SVG_FULLSCREEN + '</div>';
+            html += '<div class="NB-media-player-fullscreen" title="' + _.escape(gettext('Fullscreen')) + '">' + this.SVG_FULLSCREEN + '</div>';
         }
         html += '</div>';
         html += '</div>'; // end row-controls
@@ -231,13 +231,13 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // Segmented control tabs
         html += '<ul class="segmented-control">';
         html += '<li class="NB-media-player-tab-queue' + (!this.showing_history ? ' NB-active' : '') + '">';
-        html += 'Up Next';
+        html += _.escape(gettext('Up Next'));
         if (this.queue.length > 0) {
             html += '<span class="NB-media-player-queue-count">' + this.queue.length + '</span>';
         }
         html += '</li>';
         html += '<li class="NB-media-player-tab-history' + (this.showing_history ? ' NB-active' : '') + '">';
-        html += 'History';
+        html += _.escape(gettext('History'));
         if (this.history.length > 0) {
             html += '<span class="NB-media-player-history-count">' + this.history.length + '</span>';
         }
@@ -247,7 +247,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // Clear button (clears whichever tab is active)
         var active_list = this.showing_history ? this.history : this.queue;
         if (active_list.length > 0) {
-            html += '<div class="NB-media-player-queue-clear" title="Clear">' + this.SVG_CLEAR + ' Clear</div>';
+            html += '<div class="NB-media-player-queue-clear" title="' + _.escape(gettext('Clear')) + '">' + this.SVG_CLEAR + ' ' + _.escape(gettext('Clear')) + '</div>';
         }
 
         html += '</div>'; // end header
@@ -270,24 +270,24 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var item = this.queue[i];
             var feed = NEWSBLUR.assets.get_feed(item.feed_id);
             var favicon_html = feed ? $.favicon_html(feed) : '';
-            var type_label = item.media_type === 'youtube' ? 'video' : item.media_type;
+            var type_label = this.media_type_label(item.media_type);
             var added_label = item.added_at ? this.format_relative_date(item.added_at) : '';
             var duration_label = item.duration ? this.format_time(item.duration) : '';
             html += '<li class="NB-media-player-queue-item" data-index="' + i + '">';
-            html += '<div class="NB-queue-drag-handle" title="Drag to reorder">' + this.SVG_DRAG_HANDLE + '</div>';
+            html += '<div class="NB-queue-drag-handle" title="' + _.escape(gettext('Drag to reorder')) + '">' + this.SVG_DRAG_HANDLE + '</div>';
             html += '<div class="NB-queue-favicon">' + favicon_html + '</div>';
             html += '<div class="NB-queue-info">';
             html += '<div class="NB-queue-title">' + _.escape(item.media_title) + '</div>';
             if (added_label || duration_label) {
                 html += '<div class="NB-queue-date">';
-                if (added_label) html += 'Added ' + added_label;
+                if (added_label) html += _.escape(interpolate(gettext("Added %(date)s"), {date: added_label}, true));
                 if (added_label && duration_label) html += ' &middot; ';
                 if (duration_label) html += duration_label;
                 html += '</div>';
             }
             html += '</div>';
             html += '<div class="NB-queue-type">' + type_label + '</div>';
-            html += '<div class="NB-media-player-queue-remove" data-index="' + i + '" title="Remove">' + this.SVG_CLOSE + '</div>';
+            html += '<div class="NB-media-player-queue-remove" data-index="' + i + '" title="' + _.escape(gettext('Remove')) + '">' + this.SVG_CLOSE + '</div>';
             html += '</li>';
         }
         html += '</ul>';
@@ -302,7 +302,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var item = this.history[i];
             var feed = NEWSBLUR.assets.get_feed(item.feed_id);
             var favicon_html = feed ? $.favicon_html(feed) : '';
-            var type_label = item.media_type === 'youtube' ? 'video' : item.media_type;
+            var type_label = this.media_type_label(item.media_type);
             var position_label = this.format_time(item.position || 0);
             var duration_label = this.format_time(item.duration || 0);
             html += '<li class="NB-media-player-history-item" data-index="' + i + '">';
@@ -312,7 +312,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             html += '<div class="NB-queue-date">' + position_label + ' / ' + duration_label + '</div>';
             html += '</div>';
             html += '<div class="NB-queue-type">' + type_label + '</div>';
-            html += '<div class="NB-media-player-history-remove" data-index="' + i + '" title="Remove">' + this.SVG_CLOSE + '</div>';
+            html += '<div class="NB-media-player-history-remove" data-index="' + i + '" title="' + _.escape(gettext('Remove')) + '">' + this.SVG_CLOSE + '</div>';
             html += '</li>';
         }
         html += '</ul>';
@@ -720,8 +720,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     },
 
     update_skip_labels: function () {
-        this.$('.NB-media-player-skip-back').attr('title', 'Back ' + this.skip_back_seconds + ' seconds');
-        this.$('.NB-media-player-skip-forward').attr('title', 'Forward ' + this.skip_forward_seconds + ' seconds');
+        this.$('.NB-media-player-skip-back').attr('title', this.skip_back_title());
+        this.$('.NB-media-player-skip-forward').attr('title', this.skip_forward_title());
         this.$('.NB-media-player-skip-back .NB-skip-label').text(this.skip_back_seconds);
         this.$('.NB-media-player-skip-forward .NB-skip-label').text(this.skip_forward_seconds);
     },
@@ -1505,6 +1505,22 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         return this.SVG_VOLUME_HIGH;
     },
 
+    skip_back_title: function () {
+        return interpolate(ngettext("Back %(seconds)s second", "Back %(seconds)s seconds", this.skip_back_seconds), {seconds: this.skip_back_seconds}, true);
+    },
+
+    skip_forward_title: function () {
+        return interpolate(ngettext("Forward %(seconds)s second", "Forward %(seconds)s seconds", this.skip_forward_seconds), {seconds: this.skip_forward_seconds}, true);
+    },
+
+    // media_player_view.js: Display label for a queue item's media_type, which stays untranslated
+    // because it is stored in the playback state.
+    media_type_label: function (media_type) {
+        if (media_type === 'audio') return gettext('audio');
+        if (media_type === 'video' || media_type === 'youtube') return gettext('video');
+        return media_type;
+    },
+
     format_relative_date: function (iso_string) {
         if (!iso_string) return '';
         var date = new Date(iso_string);
@@ -1514,10 +1530,10 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         var diff_hours = Math.floor(diff_ms / 3600000);
         var diff_days = Math.floor(diff_ms / 86400000);
 
-        if (diff_mins < 1) return 'just now';
-        if (diff_mins < 60) return diff_mins + 'm ago';
-        if (diff_hours < 24) return diff_hours + 'h ago';
-        if (diff_days < 7) return diff_days + 'd ago';
+        if (diff_mins < 1) return gettext('just now');
+        if (diff_mins < 60) return interpolate(ngettext("%(count)sm ago", "%(count)sm ago", diff_mins), {count: diff_mins}, true);
+        if (diff_hours < 24) return interpolate(ngettext("%(count)sh ago", "%(count)sh ago", diff_hours), {count: diff_hours}, true);
+        if (diff_days < 7) return interpolate(ngettext("%(count)sd ago", "%(count)sd ago", diff_days), {count: diff_days}, true);
         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     },
 

@@ -1250,7 +1250,7 @@
             this.$s.$feed_list.sortable({
                 items: '.feed,li.folder',
                 connectWith: 'ul.folder,.feed.NB-empty',
-                placeholder: gettext('NB-feeds-list-highlight'),
+                placeholder: 'NB-feeds-list-highlight',
                 axis: 'y',
                 distance: 4,
                 cursor: 'move',
@@ -1336,10 +1336,12 @@
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
-            var limit_text = NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : 'your';
+            var choose_text = NEWSBLUR.Globals.max_feed_limit ?
+                interpolate(ngettext("Choose %(count)s site", "Choose %(count)s sites", NEWSBLUR.Globals.max_feed_limit), {count: Inflector.commas(NEWSBLUR.Globals.max_feed_limit)}, true) :
+                gettext("Choose your sites");
             $('.NB-progress-link', $progress).html($.make('div', {
                 className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
-            }, [interpolate(gettext("Choose %(value_1)s sites"), {value_1: limit_text}, true)]));
+            }, [choose_text]));
 
             this.show_progress_bar();
         },
@@ -1385,7 +1387,7 @@
             if (!NEWSBLUR.assets.folders.length ||
                 !NEWSBLUR.assets.preference('has_setup_feeds')) {
                 if (options.delayed_import || this.flags.delayed_import) {
-                    this.setup_ftux_add_feed_callout("Check your email...");
+                    this.setup_ftux_add_feed_callout(gettext("Check your email..."));
                 } else if (options.finished_intro || NEWSBLUR.assets.preference('has_setup_feeds')) {
                     this.setup_ftux_add_feed_callout();
                 } else if (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open) {
@@ -2833,10 +2835,10 @@
             // reader.js: Convert briefing admin entries into story objects so the
             // normal story titles + story detail split view renders them.
             var stories = _.map(data.briefing_admin_entries || [], function (entry) {
-                var username = (entry.user_profile && entry.user_profile.username) || 'Unknown';
+                var username = (entry.user_profile && entry.user_profile.username) || gettext('Unknown');
                 return {
                     story_hash: 'briefing-admin:' + entry.briefing_id,
-                    story_title: username + ' — ' + (entry.summary_story_title || 'Briefing'),
+                    story_title: username + ' — ' + (entry.summary_story_title || gettext('Briefing')),
                     story_content: entry.summary_html || '',
                     story_date: entry.briefing_date || new Date().toISOString(),
                     story_timestamp: entry.briefing_date ? String(Math.floor(new Date(entry.briefing_date).getTime() / 1000)) : '0',
@@ -2864,9 +2866,9 @@
             this.flags.briefing_generating = true;
 
             if (this.briefing_onboarding_view) {
-                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+                this.briefing_onboarding_view.show_progress(gettext("Starting briefing generation..."));
             } else if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+                NEWSBLUR.app.story_titles.show_briefing_progress(gettext("Starting briefing generation..."));
             }
             this.model.generate_briefing(callback);
 
@@ -2875,21 +2877,21 @@
             clearTimeout(this.flags.briefing_generate_timeout);
             this.flags.briefing_generate_timeout = _.delay(_.bind(function () {
                 if (!this.flags.briefing_generating) return;
-                this.handle_briefing_error({ error: "Briefing generation timed out. Please try again." });
+                this.handle_briefing_error({ error: gettext("Briefing generation timed out. Please try again.") });
             }, this), 120 * 1000);
         },
 
         handle_briefing_start: function () {
             this.flags.briefing_generating = true;
             if (this.briefing_onboarding_view) {
-                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+                this.briefing_onboarding_view.show_progress(gettext("Starting briefing generation..."));
             } else if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+                NEWSBLUR.app.story_titles.show_briefing_progress(gettext("Starting briefing generation..."));
             }
         },
 
         handle_briefing_progress: function (data) {
-            var message = data.message || "Generating...";
+            var message = data.message || gettext("Generating...");
             if (this.briefing_onboarding_view) {
                 this.briefing_onboarding_view.show_progress(message);
             } else if (NEWSBLUR.app.story_titles) {
@@ -2915,7 +2917,7 @@
         handle_briefing_error: function (data) {
             clearTimeout(this.flags.briefing_generate_timeout);
             this.flags.briefing_generating = false;
-            var error_message = data.error || "Generation failed.";
+            var error_message = data.error || gettext("Generation failed.");
             if (this.briefing_onboarding_view) {
                 this.briefing_onboarding_view.show_error(error_message);
             } else if (NEWSBLUR.app.story_titles) {
@@ -3731,9 +3733,9 @@
             if (options.message) {
                 message = options.message;
             } else if (options.days) {
-                message = 'Mark older than ' + options.days + ' day' + (options.days == 1 ? '' : 's') + ' as read?';
+                message = interpolate(ngettext("Mark older than %(count)s day as read?", "Mark older than %(count)s days as read?", options.days), {count: options.days}, true);
             } else {
-                message = 'Mark all as read?';
+                message = gettext('Mark all as read?');
             }
 
             // Remove any existing confirmation
@@ -3750,7 +3752,7 @@
                 ]),
                 $.make('span', { className: 'NB-confirm-no', role: 'button' }, [
                     gettext('No'),
-                    $.make('span', { className: 'NB-confirm-shortcut' }, gettext('esc'))
+                    $.make('span', { className: 'NB-confirm-shortcut' }, 'esc')
                 ])
             ]);
 
@@ -3854,7 +3856,7 @@
                         var $container = $('.NB-feedbar-mark-feed-read-container:visible').first();
                         this.show_mark_read_confirm($container, function () {
                             self.mark_feeds_as_read(feeds, days_back, direction);
-                        }, 'Mark ' + Inflector.commas(total) + ' stories as read?');
+                        }, interpolate(ngettext("Mark %(count)s story as read?", "Mark %(count)s stories as read?", total), {count: Inflector.commas(total)}, true));
                         return;
                     }
                 }
@@ -4881,13 +4883,13 @@
 
         get_premium_menu_title: function () {
             if (NEWSBLUR.Globals.is_pro) {
-                return 'Premium Pro Account';
+                return gettext('Premium Pro Account');
             } else if (NEWSBLUR.Globals.is_archive) {
-                return 'Upgrade to Premium Pro';
+                return gettext('Upgrade to Premium Pro');
             } else if (NEWSBLUR.Globals.is_premium) {
-                return 'Upgrade to Archive or Pro';
+                return gettext('Upgrade to Archive or Pro');
             } else {
-                return 'Upgrade to Premium';
+                return gettext('Upgrade to Premium');
             }
         },
 
@@ -5173,7 +5175,9 @@
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, interpolate(gettext("Choose Your %(value_1)s sites"), {value_1: NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : ''}, true)),
+                        $.make('div', { className: 'NB-menu-manage-title' }, NEWSBLUR.Globals.max_feed_limit ?
+                            interpolate(ngettext("Choose Your %(count)s site", "Choose Your %(count)s sites", NEWSBLUR.Globals.max_feed_limit), {count: Inflector.commas(NEWSBLUR.Globals.max_feed_limit)}, true) :
+                            gettext("Choose Your sites")),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, gettext('Enable the sites you want'))
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [
@@ -5252,26 +5256,26 @@
                         $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
                             $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Whitney')
+                                'Whitney'
                             ]),
                             $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Lucida Grande')
+                                'Lucida Grande'
                             ]),
                             $.make('li', { className: 'NB-feed-font-option NB-options-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Gotham')
+                                'Gotham'
                             ])
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-size' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
-                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xs', role: "button" }, gettext('XS')),
-                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-s', role: "button" }, gettext('S')),
-                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-m', role: "button" }, gettext('M')),
-                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-l', role: "button" }, gettext('L')),
-                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xl', role: "button" }, gettext('XL'))
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-s', role: "button" }, 'S'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-m', role: "button" }, 'M'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-l', role: "button" }, 'L'),
+                            $.make('li', { className: 'NB-feed-size-option NB-options-feed-size-xl', role: "button" }, 'XL')
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-density' }, [
@@ -5397,7 +5401,7 @@
                                     step: '1'
                                 }),
                                 $.make('div', { className: 'NB-mute-buttons' }, [
-                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-slider-save' }, gettext('Mute for 1 week')),
+                                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-slider-save' }, NEWSBLUR.utils.format_mute_button_label(7)),
                                     $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-forever-save' }, gettext('Mute indefinitely'))
                                 ])
                             ])
@@ -5558,9 +5562,9 @@
                 var story_feed_id = story.get('story_feed_id');
                 var story_feed = this.model.get_feed(story_feed_id);
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
-                var starred_title = story.get('starred') ? 'Unsave this story' : 'Save this story';
+                var starred_title = story.get('starred') ? gettext('Unsave this story') : gettext('Save this story');
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
-                var shared_title = story.get('shared') ? 'Shared' : 'Share to your Blurblog';
+                var shared_title = story.get('shared') ? gettext('Shared') : gettext('Share to your Blurblog');
                 var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
                 var in_river = this.flags.river_view || this.flags.social_view;
                 var story_feed_muted = story_feed && !story_feed.get('active');
@@ -5643,7 +5647,7 @@
                                             step: '1'
                                         }),
                                         $.make('div', { className: 'NB-mute-buttons' }, [
-                                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-slider-save' }, gettext('Mute for 1 week')),
+                                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-slider-save' }, NEWSBLUR.utils.format_mute_button_label(7)),
                                             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-forever-save' }, gettext('Mute indefinitely'))
                                         ])
                                     ])
@@ -6160,8 +6164,7 @@
         update_mute_slider_value: function ($slider) {
             var index = parseInt($slider.val(), 10);
             var days = NEWSBLUR.utils.mute_slider_to_days(index);
-            var label = NEWSBLUR.utils.format_mute_days(days);
-            $slider.closest('.NB-mute-slider-container').find('.NB-mute-slider-save').text(interpolate(gettext("Mute for %(value_1)s"), {value_1: label}, true));
+            $slider.closest('.NB-mute-slider-container').find('.NB-mute-slider-save').text(NEWSBLUR.utils.format_mute_button_label(days));
         },
 
         show_confirm_mute_menu_item: function () {
@@ -6213,8 +6216,8 @@
             $delete.removeClass('NB-menu-manage-feed-delete-cancel');
 
             var text = $delete.hasClass('NB-menu-manage-folder-delete') ?
-                'Delete this folder' :
-                'Delete this site';
+                gettext('Delete this folder') :
+                gettext('Delete this site');
             $('.NB-menu-manage-title', $delete).text(text);
             $confirm.slideUp(500);
         },
@@ -6331,7 +6334,7 @@
             in_folders = _.unique(in_folders.concat(feed.get('menu_folders') || []));
             feed.set('menu_folders', in_folders, { silent: true });
             var $options = $.make('div', { className: 'NB-folders' });
-            var $option = this.make_folder_selectable('Top Level', '', 0, _.any(in_folders, function (folder) {
+            var $option = this.make_folder_selectable(gettext('Top Level'), '', 0, _.any(in_folders, function (folder) {
                 return !folder;
             }));
             $options.append($option);
@@ -6399,7 +6402,7 @@
             if (!in_folders.length) {
                 $save.text(gettext('Select a folder'));
             } else {
-                $save.text(interpolate(gettext("Save %(value_1)s"), {value_1: Inflector.pluralize(' folder', in_folders.length, true)}, true));
+                $save.text(interpolate(ngettext("Save %(count)s folder", "Save %(count)s folders", in_folders.length), {count: in_folders.length}, true));
             }
         },
 
@@ -6503,11 +6506,11 @@
 
             $move_folder.removeClass('NB-menu-manage-feed-move-cancel');
             $move_feed.removeClass('NB-menu-manage-feed-move-cancel');
-            var text_folder = 'Move to folder';
-            var text_feed = 'Change folders';
+            var text_folder = gettext('Move to folder');
+            var text_feed = gettext('Change folders');
             if (moved) {
-                text_folder = 'Moved';
-                text_feed = 'Moved';
+                text_folder = gettext('Moved');
+                text_feed = gettext('Moved');
                 $move_folder.addClass('NB-active');
                 $move_feed.addClass('NB-active');
             } else {
@@ -6577,10 +6580,10 @@
 
             $rename.removeClass('NB-menu-manage-feed-rename-cancel');
             var text = $rename.hasClass('NB-menu-manage-folder-rename') ?
-                'Rename this folder' :
-                'Rename this site';
+                gettext('Rename this folder') :
+                gettext('Rename this site');
             if (renamed) {
-                text = 'Renamed';
+                text = gettext('Renamed');
                 $rename.addClass('NB-active');
             } else {
                 $rename.removeClass('NB-active');
@@ -6644,9 +6647,9 @@
             var $confirm = $('.NB-menu-manage-story-share-confirm');
 
             $share.removeClass('NB-menu-manage-story-share-cancel');
-            var text = 'Share to your Blurblog';
+            var text = gettext('Share to your Blurblog');
             if (shared) {
-                text = 'Shared';
+                text = gettext('Shared');
                 $share.addClass('NB-active');
             } else {
                 $share.removeClass('NB-active');
@@ -6749,8 +6752,7 @@
             // console.log(["toggle_focus_in_slider", unread_view, view_not_empty, starred_mode]);
             if (!view_not_empty && !all_mode && !starred_mode) {
                 var $empty = $.make("div", { className: "NB-feeds-list-empty" }, [
-                    gettext('You have no unread stories'),
-                    unread_view == 'positive' ? gettext(" in Focus mode.") : ".",
+                    unread_view == 'positive' ? gettext('You have no unread stories in Focus mode.') : gettext('You have no unread stories.'),
                     $.make('br'),
                     $.make('br'),
                     unread_view == 'positive' ? gettext('Switch to All or Unread.') : ""
@@ -7229,7 +7231,7 @@
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
+                    $('.NB-module-content-account-realtime').attr('title', interpolate(ngettext("Updating sites every %(count)s second...", "Updating sites every %(count)s seconds...", this.flags.refresh_interval), {count: this.flags.refresh_interval}, true)).addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
                 }, this));
 
@@ -7238,7 +7240,7 @@
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
+                    $('.NB-module-content-account-realtime').attr('title', interpolate(ngettext("Updating sites every %(count)s second...", "Updating sites every %(count)s seconds...", this.flags.refresh_interval), {count: this.flags.refresh_interval}, true)).addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), Math.random() * 60 * 1000);
                 }, this));
@@ -7620,7 +7622,7 @@
                 if (tipsy) return;
 
                 $button.tipsy({
-                    title: function () { return "Hang tight, indexing..."; },
+                    title: function () { return gettext("Hang tight, indexing..."); },
                     gravity: 'se',
                     fade: true,
                     trigger: 'hover',
@@ -7709,7 +7711,7 @@
             }, refresh_interval);
             this.flags.refresh_interval = parseInt(refresh_interval / 1000, 10);
             if (!this.socket || !this.socket.connected) {
-                $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
+                $('.NB-module-content-account-realtime').attr('title', interpolate(ngettext("Updating sites every %(count)s second...", "Updating sites every %(count)s seconds...", this.flags.refresh_interval), {count: this.flags.refresh_interval}, true)).addClass('NB-error');
                 this.apply_tipsy_titles();
             }
             NEWSBLUR.log(["Setting refresh interval to every " + this.flags.refresh_interval + " seconds."]);
@@ -7821,7 +7823,7 @@
                 return;
             }
             Push.create("NewsBlur", {
-                body: feed.get('feed_title') + " notifications are setup",
+                body: interpolate(gettext("%(feed_title)s notifications are set up"), {feed_title: feed.get('feed_title')}, true),
                 icon: $.favicon_image_url(feed),
                 timeout: 10000,
                 onClick: function () {
@@ -8121,7 +8123,7 @@
             var self = this;
             if (this.flags['bouncing_callout']) return;
 
-            $('.NB-callout-ftux .NB-callout-text').text(message || 'First things first...');
+            $('.NB-callout-ftux .NB-callout-text').text(message || gettext('First things first...'));
             $('.NB-callout-ftux').corner('5px');
             $('.NB-callout-ftux').css({
                 'opacity': 0,
@@ -8328,7 +8330,7 @@
             var $banner = $.make('div', { className: 'NB-tryfeed-subscribe-banner' }, [
                 $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
                 $.make('div', { className: 'NB-tryfeed-banner-content' }, [
-                    $.make('div', { className: 'NB-tryfeed-banner-text' }, this.flags['tryfeed_title'] || (feed ? feed.get('feed_title') : 'Subscribe')),
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, this.flags['tryfeed_title'] || (feed ? feed.get('feed_title') : gettext('Subscribe'))),
                     $.make('div', { className: 'NB-tryfeed-banner-subtext' }, gettext('Subscribe to add this feed to your NewsBlur'))
                 ]),
                 $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, gettext('Subscribe'))
@@ -8354,7 +8356,7 @@
             if (!origin) return null;
 
             var self = this;
-            var parts = ['Discover'];
+            var parts = [gettext('Discover')];
             if (origin.tab_label) {
                 parts.push(origin.tab_label);
             }

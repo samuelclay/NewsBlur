@@ -72,11 +72,12 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                             $.make('span', { className: 'NB-count NB-count-bio' }),
                             $.make('label', { 'for': 'NB-profile-privacy-public' }, [
                                 gettext('Privacy'),
-                                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
-                                    gettext('You must have a '),
-                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, gettext('premium account')),
-                                    gettext(' to change privacy.')
-                                ]))
+                                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' },
+                                    interpolate(gettext("You must have a %(link_start)spremium account%(link_end)s to change privacy."), {
+                                        link_start: '<div class="NB-splash-link NB-premium-link">',
+                                        link_end: '</div>'
+                                    }, true)
+                                ))
                             ]),
                             $.make('div', { className: 'NB-profile-privacy-options' }, [
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
@@ -255,11 +256,19 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
 
         $profiles.append($.make('div', { className: "NB-photo-upload-error NB-error" }));
 
+        // reader_profile_editor.js: Service values stay literal; only the non-brand labels translate.
+        var service_labels = {
+            'nothing': gettext('Nothing'),
+            'upload': gettext('Upload'),
+            'twitter': 'Twitter',
+            'facebook': 'Facebook',
+            'gravatar': 'Gravatar'
+        };
         _.each(['nothing', 'upload', 'twitter', 'facebook', 'gravatar'], _.bind(function (service) {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-' + service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-' + service }),
-                    $.make('label', { 'for': 'NB-profile-photo-service-' + service }, _.string.capitalize(service))
+                    $.make('label', { 'for': 'NB-profile-photo-service-' + service }, service_labels[service])
                 ]),
                 $.make('div', { className: 'NB-friends-photo-image' }, [
                     $.make('label', { 'for': 'NB-profile-photo-service-' + service }, [
@@ -278,7 +287,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     ])
                 ])),
                 (service == 'gravatar' && $.make('div', { className: 'NB-gravatar-link' }, [
-                    $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, gettext('gravatar.com'))
+                    $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
                 ])),
                 (_.contains(['facebook', 'twitter'], service) && $.make('div', { className: 'NB-friends-link' }, [
                     $.make('div', { className: 'NB-splash-link' }, gettext('connect'))

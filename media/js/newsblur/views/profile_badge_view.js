@@ -54,17 +54,17 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                     $.make('div', { className: 'NB-profile-badge-bio' }, profile.get('bio')),
                     (_.isNumber(profile.get('shared_stories_count')) &&
                         $.make('div', { className: 'NB-profile-badge-stats' }, [
-                            $.make('span', { className: 'NB-count' }, Inflector.commas(profile.get('shared_stories_count'))),
-                            gettext('shared '),
-                            Inflector.pluralize('story', profile.get('shared_stories_count')),
-                            gettext(' &middot; '),
+                            interpolate(ngettext("%(count)s shared story", "%(count)s shared stories", profile.get('shared_stories_count')), {
+                                count: '<span class="NB-count">' + Inflector.commas(profile.get('shared_stories_count')) + '</span>'
+                            }, true),
+                            ' &middot; ',
                             $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', '')),
                             (this.model.get('following_you') && $.make('span', [
-                                gettext(' &middot; '),
+                                ' &middot; ',
                                 $.make('div', { className: 'NB-profile-badge-following-you' }, gettext('Follows you'))
                             ])),
                             (NEWSBLUR.Globals.is_admin && $.make('span', [
-                                gettext(' &middot; '),
+                                ' &middot; ',
                                 $.make('span', { className: 'NB-profile-badge-action-admin' })
                             ]))
                         ]))

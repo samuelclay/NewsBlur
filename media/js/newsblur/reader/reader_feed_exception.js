@@ -115,8 +115,10 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $status_text.text(gettext('This site is active and receiving stories.'));
         } else if (mute_expires_at) {
             $mute_section.addClass('NB-mute-state-timed');
-            var remaining = NEWSBLUR.utils.mute_time_remaining(mute_expires_at);
-            $status_text.text(interpolate(gettext("Muted · unmutes in %(value_1)s"), {value_1: remaining.replace(' left', '')}, true));
+            var remaining = NEWSBLUR.utils.mute_duration_remaining(mute_expires_at);
+            $status_text.text(remaining ?
+                interpolate(gettext("Muted · unmutes in %(time)s"), {time: remaining}, true) :
+                gettext("Muted · unmuting soon"));
             // Find closest slider stop to remaining days
             var days_left = Math.max(1, Math.round((new Date(mute_expires_at) - new Date()) / (1000 * 60 * 60 * 24)));
             var closest_index = 0;
@@ -127,7 +129,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
             $slider.val(closest_index);
             var days = stops[closest_index];
-            $('.NB-mute-settings-timed-save', this.$modal).text(interpolate(gettext("Mute for %(value_1)s"), {value_1: NEWSBLUR.utils.format_mute_days(days)}, true));
+            $('.NB-mute-settings-timed-save', this.$modal).text(NEWSBLUR.utils.format_mute_button_label(days));
         } else {
             $mute_section.addClass('NB-mute-state-permanent');
             $status_text.text(gettext('Muted indefinitely.'));
@@ -137,8 +139,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $slider.off('input.mute').on('input.mute', function () {
             var index = parseInt($(this).val(), 10);
             var days = NEWSBLUR.utils.mute_slider_to_days(index);
-            var label = NEWSBLUR.utils.format_mute_days(days);
-            $('.NB-mute-settings-timed-save', self.$modal).text(interpolate(gettext("Mute for %(value_1)s"), {value_1: label}, true));
+            $('.NB-mute-settings-timed-save', self.$modal).text(NEWSBLUR.utils.format_mute_button_label(days));
         });
     },
 
@@ -331,7 +332,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             step: '1'
                         }),
                         $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-mute' }, [
-                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-timed-save', role: 'button' }, gettext('Mute for 1 week')),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-timed-save', role: 'button' }, NEWSBLUR.utils.format_mute_button_label(7)),
                             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-mute-settings-forever-save', role: 'button' }, gettext('Mute indefinitely'))
                         ]),
                         $.make('div', { className: 'NB-mute-buttons NB-mute-buttons-unmute' }, [
@@ -518,7 +519,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $loading.addClass('NB-active');
         var feed_id = this.feed_id;
 
-        $('.NB-modal-submit-retry', this.$modal).addClass('NB-disabled').attr('value', 'Fetching...');
+        $('.NB-modal-submit-retry', this.$modal).addClass('NB-disabled').attr('value', gettext('Fetching...'));
 
         this.model.save_exception_retry(feed_id, function () {
             NEWSBLUR.reader.force_feed_refresh(feed_id);
@@ -530,7 +531,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $loading = $('.NB-modal-loading', this.$modal);
         $loading.addClass('NB-active');
 
-        $('.NB-modal-submit-delete', this.$modal).addClass('NB-disabled').attr('value', 'Deleting...');
+        $('.NB-modal-submit-delete', this.$modal).addClass('NB-disabled').attr('value', gettext('Deleting...'));
 
         var feed_id = this.feed_id;
 
@@ -549,7 +550,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var feed_address = $feed_address.val();
 
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').attr('value', 'Parsing...');
+        $submit.addClass('NB-disabled').attr('value', gettext('Parsing...'));
         $error.hide().html('');
 
         if (feed_address.length) {
@@ -572,14 +573,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
                 console.log(["feed address", feed, NEWSBLUR.assets.get_feed(feed_id)]);
                 if (!data || data.code < 0 || !data.new_feed_id) {
-                    var error = data.message || "There was a problem fetching the feed from this URL.";
+                    var error = data.message || gettext("There was a problem fetching the feed from this URL.");
                     if (parseInt(feed.get('exception_code'), 10) == 404) {
-                        error = "URL gives a 404 - page not found.";
+                        error = gettext("URL gives a 404 - page not found.");
                     }
                     $error.show().html((data && data.message) || error);
                 }
                 $loading.removeClass('NB-active');
-                $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
+                $submit.removeClass('NB-disabled').attr('value', gettext('Parse this RSS/XML Feed'));
                 this.populate_settings(data);
             }, this));
         }
@@ -594,7 +595,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var feed_link = $feed_link.val();
 
         $loading.addClass('NB-active');
-        $submit.addClass('NB-disabled').attr('value', 'Fetching...');
+        $submit.addClass('NB-disabled').attr('value', gettext('Fetching...'));
         $error.hide().html('');
 
         if (feed_link.length) {
@@ -615,14 +616,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 var feed = NEWSBLUR.assets.get_feed(data.new_feed_id) || NEWSBLUR.assets.get_feed(feed_id);
 
                 if (!data || data.code < 0 || !data.new_feed_id) {
-                    var error = data.message || "There was a problem fetching the feed from this URL.";
+                    var error = data.message || gettext("There was a problem fetching the feed from this URL.");
                     if (feed.get('exception_code') == '404') {
-                        error = "URL gives a 404 - page not found.";
+                        error = gettext("URL gives a 404 - page not found.");
                     }
                     $error.show().html((data && data.message) || error);
                 }
                 $loading.removeClass('NB-active');
-                $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
+                $submit.removeClass('NB-disabled').attr('value', gettext('Fetch Feed From Website'));
                 this.populate_settings(data);
             }, this));
         }
@@ -1409,7 +1410,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     self.animate_reset_banner_in();
                     self.resize();
                 } else {
-                    $error.text(response.message || 'Upload failed. Please try again.').show();
+                    $error.text(response.message || gettext('Upload failed. Please try again.')).show();
                 }
             },
             error: function (xhr, status, error) {

@@ -215,8 +215,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                     // heavyweight green button under "Show more related stories".
                     (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive &&
                         NEWSBLUR.utils.make_archive_callout(
-                            this.render_discover_indexed_non_premium_message() +
-                            ' Upgrade to see related stories from your entire archive.',
+                            interpolate(gettext('%(message)s Upgrade to see related stories from your entire archive.'), {
+                                message: this.render_discover_indexed_non_premium_message()
+                            }, true),
                             { highlight_feature: 'discover' }
                         )
                     )
@@ -266,9 +267,9 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
 
         if (is_this_site) {
             if (!feed_discover_indexed) {
-                return 'This site has not yet been indexed for related stories.';
+                return gettext('This site has not yet been indexed for related stories.');
             } else {
-                return 'Only recent stories shown from this site are available.';
+                return gettext('Only recent stories shown from this site are available.');
             }
         } else if (is_folder) {
             var folder_title = view_setting.split(':')[1];
@@ -280,25 +281,26 @@ NEWSBLUR.Views.DiscoverStoriesView = Backbone.View.extend({
                 return sum + (feed.get('discover_indexed') ? 1 : 0);
             }, 0);
             if (discover_indexed_count == 0) {
-                return 'No stories from ' + folder_title + ' have yet been indexed for related stories.';
+                // discover_stories_view.js escapes the folder title because the archive callout renders HTML.
+                return interpolate(gettext('No stories from %(folder)s have yet been indexed for related stories.'), {folder: _.escape(folder_title)}, true);
             } else if (discover_indexed_count < feed_count) {
-                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(indexed)s of %(count)s site.', 'Only recent stories shown from %(indexed)s of %(count)s sites.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
             } else {
-                return 'Only recent stories shown from ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
             }
         } else if (is_all) {
             if (discover_indexed_count == 0) {
-                return 'No stories from your ' + feed_count + ' sites have yet been indexed for related stories.';
+                return interpolate(ngettext('No stories from your %(count)s site have yet been indexed for related stories.', 'No stories from your %(count)s sites have yet been indexed for related stories.', feed_count), {count: feed_count}, true);
             } else if (discover_indexed_count < feed_count) {
-                return 'Only recent stories shown from ' + discover_indexed_count + ' of ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(indexed)s of %(count)s site.', 'Only recent stories shown from %(indexed)s of %(count)s sites.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
             } else {
-                return 'Only recent stories shown from ' + feed_count + ' sites.';
+                return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
             }
         } else if (is_global) {
-            return 'Only ' + discover_indexed_count + ' of ' + feed_count + ' of your sites have been indexed for related stories.';
+            return interpolate(ngettext('Only %(indexed)s of your %(count)s site has been indexed for related stories.', 'Only %(indexed)s of %(count)s of your sites have been indexed for related stories.', feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
         }
 
-        return 'Only recent stories shown from ' + feed_count + ' sites.';
+        return interpolate(ngettext('Only recent stories shown from %(count)s site.', 'Only recent stories shown from %(count)s sites.', feed_count), {count: feed_count}, true);
     },
 
     render_premium_only_message: function () {

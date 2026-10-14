@@ -57,7 +57,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                         ]),
                         $.make('div', { className: 'NB-modal-submit' }, [
                             $.make('div', { className: 'NB-markread-submit-wrapper' }, [
-                                $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markread-submit', value: 'Mark as read' }),
+                                $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markread-submit', value: gettext('Mark as read') }),
                                 $.make('span', { className: 'NB-markread-shortcut-hint' }, shortcut_key)
                             ])
                         ])
@@ -84,7 +84,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
                         ]),
                         $.make('div', { className: 'NB-mark-unread-premium-notice' }),
                         $.make('div', { className: 'NB-modal-submit' }, [
-                            $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markunread-submit', value: 'Mark as unread' })
+                            $.make('input', { type: 'submit', className: 'NB-modal-submit-button NB-modal-submit-green NB-markunread-submit', value: gettext('Mark as unread') })
                         ])
                     ]).bind('submit', function (e) {
                         e.preventDefault();
@@ -137,7 +137,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
 
         this.model.preference('mark_read_days', days);
         this.flags.saving = true;
-        $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
+        $save.attr('value', gettext('Marking as read...')).addClass('NB-disabled').attr('disabled', true);
         if (NEWSBLUR.Globals.is_authenticated) {
             this.model.save_mark_read(days, _.bind(function () {
                 $.modal.close();
@@ -227,7 +227,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
 
         this.model.preference('mark_unread_days', days);
         this.flags.saving_unread = true;
-        $button.attr('value', 'Marking as unread...').addClass('NB-disabled').attr('disabled', true);
+        $button.attr('value', gettext('Marking as unread...')).addClass('NB-disabled').attr('disabled', true);
 
         NEWSBLUR.assets.mark_stories_as_unread(days, null, null, _.bind(function (data) {
             if (data.code === -1) {
@@ -250,7 +250,7 @@ _.extend(NEWSBLUR.ReaderMarkRead.prototype, {
             }
             this.flags.saving_unread = false;
         }, this), _.bind(function () {
-            $button.attr('value', 'Error. Try again.').removeClass('NB-disabled').removeAttr('disabled');
+            $button.attr('value', gettext('Error. Try again.')).removeClass('NB-disabled').removeAttr('disabled');
             this.flags.saving_unread = false;
         }, this));
     },

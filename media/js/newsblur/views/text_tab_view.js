@@ -97,7 +97,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
 
     show_loading: function () {
         NEWSBLUR.app.taskbar_info.hide_stories_error();
-        NEWSBLUR.app.taskbar_info.show_stories_progress_bar(10, "Fetching text");
+        NEWSBLUR.app.taskbar_info.show_stories_progress_bar(10, gettext("Fetching text"));
     },
 
     hide_loading: function () {
@@ -106,7 +106,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
 
     error: function () {
         this.hide_loading();
-        NEWSBLUR.app.taskbar_info.show_stories_error({}, "Sorry, the story\'s text<br />could not be extracted.");
+        NEWSBLUR.app.taskbar_info.show_stories_error({}, gettext("Sorry, the story\'s text<br />could not be extracted."));
 
         var $content = this.$('.NB-feed-story-content');
         $content.html(this.story.story_content());
@@ -115,15 +115,17 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
 
     append_premium_only_notification: function () {
         var $content = this.$('.NB-feed-story-content');
+        // text_tab_view.js: One translated sentence; %(icon)s is the Text view icon and the
+        // link markers wrap the upgrade link.
+        var $notice_text = $.make('div', { className: 'NB-feed-story-premium-only-text' });
+        $notice_text.html(interpolate(_.escape(gettext('The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s.')), {
+            icon: '<img src="' + _.escape(NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/circular/nav_story_text_active.png') + '">',
+            link_start: '<a href="#" class="NB-splash-link">',
+            link_end: '</a>'
+        }, true));
         var $notice = $.make('div', { className: 'NB-text-view-premium-only' }, [
             $.make('div', { className: 'NB-feed-story-premium-only-divider' }),
-            $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                gettext('The full '),
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/circular/nav_story_text_active.png' }),
-                gettext(' Text view is a '),
-                $.make('a', { href: '#', className: 'NB-splash-link' }, gettext('premium feature')),
-                '.'
-            ])
+            $notice_text
         ]);
 
         $notice.hide();

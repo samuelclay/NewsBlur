@@ -172,7 +172,7 @@ _.extend(NEWSBLUR.ReaderNotifications.prototype, {
             if (notif.scope === 'global') {
                 global_classifiers.push(notif);
             } else if (notif.scope === 'folder') {
-                var folder = notif.folder_name || 'Uncategorized';
+                var folder = notif.folder_name || gettext('Uncategorized');
                 if (!folder_classifiers[folder]) folder_classifiers[folder] = [];
                 folder_classifiers[folder].push(notif);
             } else {

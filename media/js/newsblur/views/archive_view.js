@@ -329,7 +329,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }, function () {
             self.is_loading = false;
             self.hide_archive_loading();
-            self.show_archive_error('Failed to load archives');
+            self.show_archive_error(gettext('Failed to load archives'));
         }, { request_type: 'GET' });
     },
 
@@ -499,7 +499,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         target: '_blank'
                     }, [
                         $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-assistant-ext-icon' }),
-                        $.make('span', gettext('Chrome'))
+                        $.make('span', 'Chrome')
                     ]),
                     $.make('a', {
                         className: 'NB-archive-assistant-ext-link',
@@ -507,7 +507,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         target: '_blank'
                     }, [
                         $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-assistant-ext-icon' }),
-                        $.make('span', gettext('Firefox'))
+                        $.make('span', 'Firefox')
                     ]),
                     $.make('a', {
                         className: 'NB-archive-assistant-ext-link',
@@ -515,7 +515,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         target: '_blank'
                     }, [
                         $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-assistant-ext-icon' }),
-                        $.make('span', gettext('Safari'))
+                        $.make('span', 'Safari')
                     ])
                 ])
             ]));
@@ -582,7 +582,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 'data-conversation-id': conv.id
             }, [
                 $.make('div', { className: 'NB-archive-conversation-title' },
-                    conv.title || 'New Conversation'),
+                    conv.title || gettext('New Conversation')),
                 $.make('div', { className: 'NB-archive-conversation-date' }, date_str)
             ]);
         });
@@ -649,11 +649,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         ]);
                         if (message.truncated && i === text_segments.length - 1) {
                             $segment.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
-                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
-                                gettext('Full Archive Assistant responses are a '),
-                                $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, gettext('premium archive feature')),
-                                '.'
-                            ]));
+                            // archive_view.js: %(link_start)s/%(link_end)s markers wrap the upgrade link.
+                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-notice' },
+                                interpolate(_.escape(gettext('Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s.')), {
+                                    link_start: '<a href="#" class="NB-splash-link NB-premium-link">',
+                                    link_end: '</a>'
+                                }, true)
+                            ));
                         }
                         elements.push($segment);
                     }
@@ -791,36 +793,43 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         return this.render_filters(this.domains, 'domain', this.active_domain);
     },
 
+    // archive_view.js: Display labels for the relative date filters; the keys stay untranslated identifiers.
+    date_option_labels: function () {
+        return {
+            'today': gettext('Today'),
+            'yesterday': gettext('Yesterday'),
+            'this_week': gettext('This Week'),
+            'last_7_days': gettext('Last 7 Days'),
+            'last_30_days': gettext('Last 30 Days'),
+            'last_90_days': gettext('Last 90 Days'),
+            'this_month': gettext('This Month'),
+            'this_year': gettext('This Year')
+        };
+    },
+
     render_date_filters: function () {
         var self = this;
         var filters = [];
         var date_counts = this.date_counts || {};
-        var date_options = [
-            { value: 'today', label: gettext('Today') },
-            { value: 'yesterday', label: gettext('Yesterday') },
-            { value: 'this_week', label: gettext('This Week') },
-            { value: 'last_7_days', label: gettext('Last 7 Days') },
-            { value: 'last_30_days', label: gettext('Last 30 Days') },
-            { value: 'last_90_days', label: gettext('Last 90 Days') },
-            { value: 'this_month', label: gettext('This Month') },
-            { value: 'this_year', label: gettext('This Year') }
-        ];
+        var date_options = _.map(this.date_option_labels(), function (label, value) {
+            return { value: value, label: label };
+        });
 
         // Add custom date range if set
         if (this.custom_date_from || this.custom_date_to) {
             var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
                 month: 'short', day: 'numeric'
-            }) : 'Any';
+            }) : gettext('Any');
             var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
                 month: 'short', day: 'numeric'
-            }) : 'Now';
+            }) : gettext('Now');
             var is_custom_active = this.custom_date_from || this.custom_date_to;
 
             filters.push($.make('div', {
                 className: 'NB-archive-date-filter NB-archive-date-custom' + (is_custom_active ? ' NB-active' : ''),
                 'data-date': 'custom'
             }, [
-                $.make('span', { className: 'NB-archive-filter-name' }, from_str + ' → ' + to_str),
+                $.make('span', { className: 'NB-archive-filter-name' }, interpolate(gettext('%(date_from)s → %(date_to)s'), {date_from: from_str, date_to: to_str}, true)),
                 $.make('span', { className: 'NB-archive-date-custom-clear', title: gettext('Clear custom range') }, '×')
             ]));
         }
@@ -855,14 +864,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
             month: 'short', day: 'numeric', year: 'numeric'
-        }) : 'Any';
+        }) : gettext('Any');
         var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
             month: 'short', day: 'numeric', year: 'numeric'
-        }) : 'Now';
+        }) : gettext('Now');
 
         return $.make('div', { className: 'NB-custom-date-display NB-active' }, [
             $.make('div', { className: 'NB-custom-date-range' }, [
-                $.make('span', { className: 'NB-custom-date-label' }, from_str + ' → ' + to_str)
+                $.make('span', { className: 'NB-custom-date-label' }, interpolate(gettext('%(date_from)s → %(date_to)s'), {date_from: from_str, date_to: to_str}, true))
             ]),
             $.make('div', { className: 'NB-custom-date-clear', title: gettext('Clear date range') }, '×')
         ]);
@@ -928,28 +937,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             ]));
         }
         if (this.active_date) {
-            var date_labels = {
-                'today': 'Today',
-                'yesterday': 'Yesterday',
-                'this_week': 'This Week',
-                'last_7_days': 'Last 7 Days',
-                'last_30_days': 'Last 30 Days',
-                'last_90_days': 'Last 90 Days',
-                'this_month': 'This Month',
-                'this_year': 'This Year'
-            };
             filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'date' }, [
-                $.make('span', { className: 'NB-filter-chip-label' }, interpolate(gettext("Time: %(value_1)s"), {value_1: date_labels[this.active_date] || this.active_date}, true)),
+                $.make('span', { className: 'NB-filter-chip-label' }, interpolate(gettext("Time: %(value_1)s"), {value_1: this.date_option_labels()[this.active_date] || this.active_date}, true)),
                 $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'date' }, '×')
             ]));
         }
         if (this.custom_date_from || this.custom_date_to) {
             var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
                 month: 'short', day: 'numeric'
-            }) : 'Any';
+            }) : gettext('Any');
             var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
                 month: 'short', day: 'numeric'
-            }) : 'Now';
+            }) : gettext('Now');
             filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'custom_date' }, [
                 $.make('span', { className: 'NB-filter-chip-label' }, interpolate(gettext("Date: %(value_1)s → %(value_2)s"), {value_1: from_str, value_2: to_str}, true)),
                 $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'custom_date' }, '×')
@@ -1052,7 +1051,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                             }, [
                                 $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-empty-ext-icon' }),
                                 $.make('div', { className: 'NB-empty-ext-info' }, [
-                                    $.make('div', { className: 'NB-empty-ext-name' }, gettext('Chrome')),
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Chrome'),
                                     $.make('div', { className: 'NB-empty-ext-desc' }, gettext('Also works with Edge'))
                                 ])
                             ]),
@@ -1064,7 +1063,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                             }, [
                                 $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-empty-ext-icon' }),
                                 $.make('div', { className: 'NB-empty-ext-info' }, [
-                                    $.make('div', { className: 'NB-empty-ext-name' }, gettext('Firefox')),
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Firefox'),
                                     $.make('div', { className: 'NB-empty-ext-desc' }, gettext('Get the add-on'))
                                 ])
                             ]),
@@ -1076,7 +1075,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                             }, [
                                 $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-empty-ext-icon' }),
                                 $.make('div', { className: 'NB-empty-ext-info' }, [
-                                    $.make('div', { className: 'NB-empty-ext-name' }, gettext('Safari')),
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Safari'),
                                     $.make('div', { className: 'NB-empty-ext-desc' }, gettext('For Mac'))
                                 ])
                             ])
@@ -1141,10 +1140,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Build stats display (word count only)
         var stats_items = [];
         if (archive.word_count_display) {
-            stats_items.push($.make('span', { className: 'NB-archive-item-stat' }, [
-                $.make('span', { className: 'NB-archive-stat-value' }, archive.word_count_display),
-                gettext(' words')
-            ]));
+            stats_items.push($.make('span', { className: 'NB-archive-item-stat' },
+                interpolate(_.escape(ngettext('%(count)s word', '%(count)s words', archive.word_count || 0)), {
+                    count: '<span class="NB-archive-stat-value">' + _.escape(archive.word_count_display) + '</span>'
+                }, true)
+            ));
         }
         if (archive.has_content === false) {
             stats_items.push($.make('span', { className: 'NB-archive-item-stat NB-no-content' }, gettext('No content')));
@@ -1197,7 +1197,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (archive.highlights && archive.highlights.title && archive.highlights.title.length > 0) {
             $title.html(archive.highlights.title[0]);
         } else {
-            $title.text(archive.title || 'Untitled');
+            $title.text(archive.title || gettext('Untitled'));
         }
 
         // Content preview - show highlighted content when searching, otherwise plain preview
@@ -1241,9 +1241,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var hours = Math.floor(diff / 3600000);
 
         // Show relative only for < 24 hours
-        if (minutes < 1) return 'Just now';
-        if (minutes < 60) return minutes + 'm ago';
-        if (hours < 24) return hours + 'h ago';
+        if (minutes < 1) return gettext('Just now');
+        if (minutes < 60) return interpolate(ngettext('%(count)sm ago', '%(count)sm ago', minutes), {count: minutes}, true);
+        if (hours < 24) return interpolate(ngettext('%(count)sh ago', '%(count)sh ago', hours), {count: hours}, true);
 
         // For >= 24 hours, show absolute date in user's locale
         return date.toLocaleDateString(undefined, {
@@ -1346,19 +1346,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 name: 'Chrome',
                 icon: '/media/img/reader/chrome.png',
                 url: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
-                description: 'For Chrome & Edge'
+                description: gettext('For Chrome & Edge')
             },
             {
                 name: 'Firefox',
                 icon: '/media/img/reader/firefox.png',
                 url: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
-                description: 'For Firefox'
+                description: gettext('For Firefox')
             },
             {
                 name: 'Safari',
                 icon: '/media/img/reader/safari.png',
                 url: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
-                description: 'For Safari on Mac'
+                description: gettext('For Safari on Mac')
             }
         ];
 
@@ -1799,7 +1799,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     } else {
                         // Show other errors in placeholder temporarily
                         $voice_button.attr('title', gettext('Record voice question'));
-                        $input.attr('placeholder', error || 'Voice recording failed. Please try again.');
+                        $input.attr('placeholder', error || gettext('Voice recording failed. Please try again.'));
                         // Reset placeholder after 3 seconds
                         setTimeout(function () {
                             $input.attr('placeholder', gettext('Ask about your browsing history...'));
@@ -1869,7 +1869,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             self.scroll_to_bottom();
             self.render_conversation_sidebar();
         }, function () {
-            self.handle_assistant_error('Failed to load conversation');
+            self.handle_assistant_error(gettext('Failed to load conversation'));
         }, { request_type: 'GET' });
     },
 
@@ -1996,10 +1996,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     }
                 }, 5000);
             } else {
-                self.handle_assistant_error(data.message || 'Failed to submit query');
+                self.handle_assistant_error(data.message || gettext('Failed to submit query'));
             }
         }, function () {
-            self.handle_assistant_error('Failed to connect to server');
+            self.handle_assistant_error(gettext('Failed to connect to server'));
         }, { method: 'POST' });
     },
 
@@ -2016,7 +2016,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             }
 
             if (poll_count >= max_polls) {
-                self.handle_assistant_error('Request timed out');
+                self.handle_assistant_error(gettext('Request timed out'));
                 return;
             }
 
@@ -2083,7 +2083,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             error_content += this.response_text;
         }
         if (error_content) error_content += '\n\n';
-        error_content += '**Error:** ' + message;
+        error_content += '**' + gettext('Error:') + '** ' + message;
 
         // Save to history with any tool calls that were completed
         this.conversation_history.push({
@@ -2127,14 +2127,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     show_tool_call: function (tool_name, tool_input) {
         // Map tool names to user-friendly status messages
         var status_messages = {
-            'search_archives': 'Searching your archive...',
-            'get_archive_content': 'Reading article...',
-            'get_archive_summary': 'Analyzing your archive...',
-            'get_recent_archives': 'Checking recent pages...',
-            'search_starred_stories': 'Searching saved stories...',
-            'get_starred_story_content': 'Reading saved story...',
-            'get_starred_summary': 'Analyzing saved stories...',
-            'search_feed_stories': 'Searching RSS feeds...'
+            'search_archives': gettext('Searching your archive...'),
+            'get_archive_content': gettext('Reading article...'),
+            'get_archive_summary': gettext('Analyzing your archive...'),
+            'get_recent_archives': gettext('Checking recent pages...'),
+            'search_starred_stories': gettext('Searching saved stories...'),
+            'get_starred_story_content': gettext('Reading saved story...'),
+            'get_starred_summary': gettext('Analyzing saved stories...'),
+            'search_feed_stories': gettext('Searching RSS feeds...')
         };
 
         // Save any existing response_text as a completed segment before tool call
@@ -2146,7 +2146,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.response_text = '';
         }
 
-        this.tool_status = status_messages[tool_name] || 'Processing...';
+        this.tool_status = status_messages[tool_name] || gettext('Processing...');
         NEWSBLUR.log(['Archive Assistant: Tool call', tool_name, tool_input]);
         this.render_assistant_messages();
         this.scroll_to_bottom();
@@ -2894,7 +2894,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 'data-category': cat._id
             }, [
                 $.make('span', { className: 'NB-split-candidate-name' }, cat._id),
-                $.make('span', { className: 'NB-split-candidate-count' }, interpolate(gettext("%(value_1)s stories"), {value_1: cat.count}, true)),
+                $.make('span', { className: 'NB-split-candidate-count' }, interpolate(ngettext("%(count)s story", "%(count)s stories", cat.count), {count: cat.count}, true)),
                 $.make('span', { className: 'NB-split-candidate-action' }, gettext('Get AI Suggestions →'))
             ]));
         });
@@ -2904,7 +2904,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (this.split_loading) {
             $container.append($.make('div', { className: 'NB-split-suggestions-panel NB-loading' }, [
                 $.make('span', { className: 'NB-split-loading-icon' }, '⏳'),
-                $.make('span', 'Getting AI suggestions for "' + this.selected_split_category + '"...')
+                $.make('span', interpolate(gettext('Getting AI suggestions for "%(category)s"...'), {category: this.selected_split_category}, true))
             ]));
         } else if (this.split_suggestions) {
             var $panel = $.make('div', { className: 'NB-split-suggestions-panel' }, [
@@ -2928,7 +2928,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         'data-index': i
                     }),
                     $.make('span', { className: 'NB-split-suggestion-count' },
-                        interpolate(gettext("%(value_1)s stories"), {value_1: suggestion.story_ids ? suggestion.story_ids.length : 0}, true))
+                        interpolate(ngettext("%(count)s story", "%(count)s stories", suggestion.story_ids ? suggestion.story_ids.length : 0), {count: suggestion.story_ids ? suggestion.story_ids.length : 0}, true))
                 ]));
             });
             $panel.append($suggestions);
@@ -2972,6 +2972,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         return $container;
     },
 
+    // archive_view.js: Shared category manager status messages; server error messages are shown as-is.
+    category_error_message: function (message) {
+        return interpolate(gettext('Error: %(message)s'), {message: message || gettext('Unknown error')}, true);
+    },
+
+    merged_stories_message: function (count, target) {
+        return interpolate(ngettext('Merged %(count)s story into "%(category)s"', 'Merged %(count)s stories into "%(category)s"', count), {count: count, category: target}, true);
+    },
+
+    renamed_stories_message: function (count, new_name) {
+        return interpolate(ngettext('Renamed %(count)s story to "%(category)s"', 'Renamed %(count)s stories to "%(category)s"', count), {count: count, category: new_name}, true);
+    },
+
     show_category_status: function (message, type) {
         // type: 'success', 'error', 'info'
         var $status = this.$('.NB-category-manager-status');
@@ -3003,7 +3016,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (action_type === 'merge') {
             content = $.make('div', { className: 'NB-inline-action-content' }, [
                 $.make('span', { className: 'NB-inline-action-label' },
-                    interpolate(gettext("Merge %(value_1)s categories into:"), {value_1: data.categories.length}, true)),
+                    interpolate(ngettext("Merge %(count)s category into:", "Merge %(count)s categories into:", data.categories.length), {count: data.categories.length}, true)),
                 $.make('input', {
                     type: 'text',
                     className: 'NB-inline-action-input',
@@ -3036,13 +3049,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     $.make('span', { className: 'NB-split-suggestion-num' }, (i + 1) + '.'),
                     $.make('span', { className: 'NB-split-suggestion-name' }, s.name),
                     $.make('span', { className: 'NB-split-suggestion-count' },
-                        interpolate(gettext("(%(value_1)s items)"), {value_1: s.items ? s.items.length : 0}, true))
+                        interpolate(ngettext("(%(count)s item)", "(%(count)s items)", s.items ? s.items.length : 0), {count: s.items ? s.items.length : 0}, true))
                 ]);
             });
 
             content = $.make('div', { className: 'NB-inline-action-content NB-split-content' }, [
                 $.make('div', { className: 'NB-inline-action-label' },
-                    interpolate(gettext("Split \"%(value_1)s\" (%(value_2)s stories) into:"), {value_1: data.category, value_2: data.total_stories}, true)),
+                    interpolate(ngettext("Split \"%(category)s\" (%(count)s story) into:", "Split \"%(category)s\" (%(count)s stories) into:", data.total_stories), {category: data.category, count: data.total_stories}, true)),
                 $.make('div', { className: 'NB-split-suggestions' }, suggestions_html),
                 $.make('div', { className: 'NB-inline-action-buttons' }, [
                     $.make('button', { className: 'NB-inline-action-confirm NB-button NB-primary' }, gettext('Apply Split')),
@@ -3195,7 +3208,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var target = this.$('.NB-inline-action-input').val().trim();
 
         if (!target) {
-            this.show_category_status('Please enter a target category name', 'error');
+            this.show_category_status(gettext('Please enter a target category name'), 'error');
             return;
         }
 
@@ -3209,7 +3222,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (response.code === 0) {
                 NEWSBLUR.log(['Merged', response.merged_count, 'stories into', target]);
                 self.hide_inline_action();
-                self.show_category_status('Merged ' + response.merged_count + ' stories into "' + target + '"', 'success');
+                self.show_category_status(self.merged_stories_message(response.merged_count, target), 'success');
                 // Refresh categories
                 self.fetch_filters(function () {
                     self.selected_categories = [];
@@ -3218,11 +3231,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     self.$('.NB-archive-categories').html(self.render_category_filters());
                 });
             } else {
-                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.show_category_status(self.category_error_message(response.message), 'error');
                 self.$('.NB-inline-action-confirm').prop('disabled', false).text(gettext('Merge'));
             }
         }, function () {
-            self.show_category_status('Failed to merge categories', 'error');
+            self.show_category_status(gettext('Failed to merge categories'), 'error');
             self.$('.NB-inline-action-confirm').prop('disabled', false).text(gettext('Merge'));
         }, { method: 'POST' });
     },
@@ -3242,7 +3255,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }, function (data) {
             if (data.code === 0) {
                 NEWSBLUR.log(['Merged', data.merged_count, 'stories into', target]);
-                self.show_category_status('Merged ' + data.merged_count + ' stories into "' + target + '"', 'success');
+                self.show_category_status(self.merged_stories_message(data.merged_count, target), 'success');
                 // Refresh everything
                 self.fetch_filters(function () {
                     self.fetch_merge_suggestions();
@@ -3251,11 +3264,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 });
             } else {
                 $btn.text(gettext('Apply')).prop('disabled', false);
-                self.show_category_status('Error: ' + (data.message || 'Unknown error'), 'error');
+                self.show_category_status(self.category_error_message(data.message), 'error');
             }
         }, function () {
             $btn.text(gettext('Apply')).prop('disabled', false);
-            self.show_category_status('Failed to merge categories', 'error');
+            self.show_category_status(gettext('Failed to merge categories'), 'error');
         }, { method: 'POST' });
     },
 
@@ -3276,7 +3289,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var new_name = this.$('.NB-inline-action-input').val().trim();
 
         if (!new_name) {
-            this.show_category_status('Please enter a new category name', 'error');
+            this.show_category_status(gettext('Please enter a new category name'), 'error');
             return;
         }
 
@@ -3295,18 +3308,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (response.code === 0) {
                 NEWSBLUR.log(['Renamed', response.renamed_count, 'stories from', data.old_name, 'to', new_name]);
                 self.hide_inline_action();
-                self.show_category_status('Renamed ' + response.renamed_count + ' stories to "' + new_name + '"', 'success');
+                self.show_category_status(self.renamed_stories_message(response.renamed_count, new_name), 'success');
                 // Refresh categories
                 self.fetch_filters(function () {
                     self.render_category_manager();
                     self.$('.NB-archive-categories').html(self.render_category_filters());
                 });
             } else {
-                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.show_category_status(self.category_error_message(response.message), 'error');
                 self.$('.NB-inline-action-confirm').prop('disabled', false).text(gettext('Rename'));
             }
         }, function () {
-            self.show_category_status('Failed to rename category', 'error');
+            self.show_category_status(gettext('Failed to rename category'), 'error');
             self.$('.NB-inline-action-confirm').prop('disabled', false).text(gettext('Rename'));
         }, { method: 'POST' });
     },
@@ -3319,7 +3332,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Show loading state
         $btn.text('⏳').prop('disabled', true);
-        this.show_category_status('Getting AI suggestions for "' + category + '"...', 'info');
+        this.show_category_status(interpolate(gettext('Getting AI suggestions for "%(category)s"...'), {category: category}, true), 'info');
 
         // Get AI suggestions for split
         this.model.make_request('/api/archive/categories/split', {
@@ -3337,11 +3350,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     total_stories: data.total_stories
                 });
             } else {
-                self.show_category_status('No split suggestions available for this category', 'info');
+                self.show_category_status(gettext('No split suggestions available for this category'), 'info');
             }
         }, function () {
             $btn.text('✂️').prop('disabled', false);
-            self.show_category_status('Failed to get split suggestions', 'error');
+            self.show_category_status(gettext('Failed to get split suggestions'), 'error');
         }, { method: 'POST' });
     },
 
@@ -3350,7 +3363,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Disable buttons during request
         this.$('.NB-inline-action-confirm').prop('disabled', true).text(gettext('Applying...'));
-        this.show_category_status('Split functionality coming soon', 'info');
+        this.show_category_status(gettext('Split functionality coming soon'), 'info');
 
         // For now, just hide the panel after a short delay
         setTimeout(function () {
@@ -3365,36 +3378,51 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         if (this.uncategorized_count === 0) return;
 
+        // archive_view.js: Shared label for the bulk categorize button.
+        var categorize_label = function (count) {
+            return interpolate(ngettext("Categorize %(count)s Uncategorized", "Categorize %(count)s Uncategorized", count), {count: count}, true);
+        };
+
         $btn.text(gettext('Categorizing...')).prop('disabled', true);
-        this.show_category_status('Starting categorization...', 'info');
+        this.show_category_status(gettext('Starting categorization...'), 'info');
 
         this.model.make_request('/api/archive/categories/bulk-categorize', {
             limit: 100
         }, function (data) {
             if (data.code === 0) {
-                var msg = 'Queued ' + data.queued_count + ' stories for categorization';
+                var msg;
                 if (data.total_uncategorized > data.queued_count) {
-                    msg += ' (' + (data.total_uncategorized - data.queued_count) + ' remaining)';
+                    msg = interpolate(ngettext(
+                        'Queued %(count)s story for categorization (%(remaining)s remaining). Categories will appear as stories are processed.',
+                        'Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories are processed.',
+                        data.queued_count
+                    ), {count: data.queued_count, remaining: data.total_uncategorized - data.queued_count}, true);
+                } else {
+                    msg = interpolate(ngettext(
+                        'Queued %(count)s story for categorization. Categories will appear as stories are processed.',
+                        'Queued %(count)s stories for categorization. Categories will appear as stories are processed.',
+                        data.queued_count
+                    ), {count: data.queued_count}, true);
                 }
                 NEWSBLUR.log([msg]);
-                self.show_category_status(msg + '. Categories will appear as stories are processed.', 'success');
+                self.show_category_status(msg, 'success');
 
                 // Update uncategorized count
                 self.uncategorized_count = Math.max(0, self.uncategorized_count - data.queued_count);
                 $btn.text(self.uncategorized_count > 0 ?
-                    interpolate(gettext("Categorize %(value_1)s Uncategorized"), {value_1: self.uncategorized_count}, true) :
+                    categorize_label(self.uncategorized_count) :
                     gettext('All Categorized'));
                 $btn.prop('disabled', self.uncategorized_count === 0);
                 if (self.uncategorized_count === 0) {
                     $btn.addClass('NB-disabled');
                 }
             } else {
-                $btn.text(interpolate(gettext("Categorize %(value_1)s Uncategorized"), {value_1: self.uncategorized_count}, true)).prop('disabled', false);
-                self.show_category_status('Error: ' + (data.message || 'Unknown error'), 'error');
+                $btn.text(categorize_label(self.uncategorized_count)).prop('disabled', false);
+                self.show_category_status(self.category_error_message(data.message), 'error');
             }
         }, function () {
-            $btn.text(interpolate(gettext("Categorize %(value_1)s Uncategorized"), {value_1: self.uncategorized_count}, true)).prop('disabled', false);
-            self.show_category_status('Failed to start categorization', 'error');
+            $btn.text(categorize_label(self.uncategorized_count)).prop('disabled', false);
+            self.show_category_status(gettext('Failed to start categorization'), 'error');
         }, { method: 'POST' });
     },
 
@@ -3578,13 +3606,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             return g.id === group_id;
         });
         if (!group || group.categories.length < 2) {
-            this.show_category_status('Need at least 2 categories to merge', 'error');
+            this.show_category_status(gettext('Need at least 2 categories to merge'), 'error');
             return;
         }
 
         var target = group.target;
         if (!target) {
-            this.show_category_status('Please enter a target category name', 'error');
+            this.show_category_status(gettext('Please enter a target category name'), 'error');
             return;
         }
 
@@ -3596,7 +3624,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             target_category: target
         }, function (response) {
             if (response.code === 0) {
-                self.show_category_status('Merged ' + response.merged_count + ' stories into "' + target + '"', 'success');
+                self.show_category_status(self.merged_stories_message(response.merged_count, target), 'success');
                 // Remove this group from the list
                 self.merge_groups = _.reject(self.merge_groups, function (g) {
                     return g.id === group_id;
@@ -3607,11 +3635,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     self.$('.NB-archive-categories').html(self.render_category_filters());
                 });
             } else {
-                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.show_category_status(self.category_error_message(response.message), 'error');
                 $btn.text(gettext('Apply')).prop('disabled', false);
             }
         }, function () {
-            self.show_category_status('Failed to merge categories', 'error');
+            self.show_category_status(gettext('Failed to merge categories'), 'error');
             $btn.text(gettext('Apply')).prop('disabled', false);
         }, { method: 'POST' });
     },
@@ -3627,7 +3655,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
 
         if (valid_groups.length === 0) {
-            this.show_category_status('No valid merge groups to apply', 'error');
+            this.show_category_status(gettext('No valid merge groups to apply'), 'error');
             return;
         }
 
@@ -3641,13 +3669,21 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (completed !== total) return;
 
             var succeeded = total - failed;
+            var merged_stories_label = interpolate(ngettext('%(count)s story', '%(count)s stories', total_merged), {count: total_merged}, true);
             if (failed > 0) {
                 self.show_category_status(
-                    'Applied ' + succeeded + ' of ' + total + ' merges (' + total_merged + ' stories)',
+                    interpolate(ngettext('Applied %(succeeded)s of %(count)s merge (%(stories)s)', 'Applied %(succeeded)s of %(count)s merges (%(stories)s)', total), {
+                        succeeded: succeeded,
+                        count: total,
+                        stories: merged_stories_label
+                    }, true),
                     'error'
                 );
             } else {
-                self.show_category_status('Applied ' + total + ' merges (' + total_merged + ' stories)', 'success');
+                self.show_category_status(interpolate(ngettext('Applied %(count)s merge (%(stories)s)', 'Applied %(count)s merges (%(stories)s)', total), {
+                    count: total,
+                    stories: merged_stories_label
+                }, true), 'success');
             }
 
             var refresh = function () {
@@ -3725,12 +3761,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     total_stories: data.total_stories
                 };
             } else {
-                self.show_category_status('No split suggestions available', 'info');
+                self.show_category_status(gettext('No split suggestions available'), 'info');
             }
             self.render_active_tab();
         }, function () {
             self.split_loading = false;
-            self.show_category_status('Failed to get split suggestions', 'error');
+            self.show_category_status(gettext('Failed to get split suggestions'), 'error');
             self.render_active_tab();
         }, { method: 'POST' });
     },
@@ -3770,7 +3806,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
 
         if (suggestions_to_apply.length === 0) {
-            this.show_category_status('Please select at least one category to split into', 'error');
+            this.show_category_status(gettext('Please select at least one category to split into'), 'error');
             return;
         }
 
@@ -3778,7 +3814,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             return !suggestion.name || !suggestion.story_ids.length;
         });
         if (invalid) {
-            this.show_category_status('Each selected split needs a name and at least one story', 'error');
+            this.show_category_status(gettext('Each selected split needs a name and at least one story'), 'error');
             return;
         }
 
@@ -3797,12 +3833,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (total_applied > 0) {
                 if (failed > 0) {
                     self.show_category_status(
-                        'Split partially applied: ' + total_applied + ' stories recategorized',
+                        interpolate(ngettext('Split partially applied: %(count)s story recategorized', 'Split partially applied: %(count)s stories recategorized', total_applied), {count: total_applied}, true),
                         'error'
                     );
                 } else {
                     self.show_category_status(
-                        'Split complete: ' + total_applied + ' stories recategorized',
+                        interpolate(ngettext('Split complete: %(count)s story recategorized', 'Split complete: %(count)s stories recategorized', total_applied), {count: total_applied}, true),
                         'success'
                     );
                 }
@@ -3816,7 +3852,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     self.$('.NB-archive-categories').html(self.render_category_filters());
                 });
             } else {
-                self.show_category_status('Split failed to apply', 'error');
+                self.show_category_status(gettext('Split failed to apply'), 'error');
             }
 
             $btn.text(gettext('Apply Split')).prop('disabled', false);
@@ -3908,7 +3944,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             new_name: new_name
         }, function (response) {
             if (response.code === 0) {
-                self.show_category_status('Renamed ' + response.renamed_count + ' stories to "' + new_name + '"', 'success');
+                self.show_category_status(self.renamed_stories_message(response.renamed_count, new_name), 'success');
                 // Update the item
                 $wrapper.replaceWith($.make('span', { className: 'NB-all-category-name' }, new_name));
                 $item.data('category', new_name);
@@ -3918,11 +3954,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     self.$('.NB-archive-categories').html(self.render_category_filters());
                 });
             } else {
-                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.show_category_status(self.category_error_message(response.message), 'error');
                 $btn.text('✓').prop('disabled', false);
             }
         }, function () {
-            self.show_category_status('Failed to rename category', 'error');
+            self.show_category_status(gettext('Failed to rename category'), 'error');
             $btn.text('✓').prop('disabled', false);
         }, { method: 'POST' });
     },
@@ -4008,29 +4044,29 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Custom blocked domains section
         elements.push(this.render_blocklist_section(
-            'Blocked Domains',
-            'Add domains you never want to archive.',
+            gettext('Blocked Domains'),
+            gettext('Add domains you never want to archive.'),
             this.blocklist.custom_blocked_domains || [],
             'blocked_domains',
-            'e.g., facebook.com'
+            interpolate(gettext('e.g., %(example)s'), {example: 'facebook.com'}, true)
         ));
 
         // Custom blocked patterns section
         elements.push(this.render_blocklist_section(
-            'Blocked URL Patterns',
-            'Block URLs matching these patterns (supports wildcards like *.example.com).',
+            gettext('Blocked URL Patterns'),
+            gettext('Block URLs matching these patterns (supports wildcards like *.example.com).'),
             this.blocklist.custom_blocked_patterns || [],
             'blocked_patterns',
-            'e.g., *.internal.company.com'
+            interpolate(gettext('e.g., %(example)s'), {example: '*.internal.company.com'}, true)
         ));
 
         // Allowed domains section (override defaults)
         elements.push(this.render_blocklist_section(
-            'Allowed Domains',
-            'Override the default blocklist for these domains. These sites WILL be archived even if normally blocked.',
+            gettext('Allowed Domains'),
+            gettext('Override the default blocklist for these domains. These sites WILL be archived even if normally blocked.'),
             this.blocklist.allowed_domains || [],
             'allowed_domains',
-            'e.g., mail.google.com'
+            interpolate(gettext('e.g., %(example)s'), {example: 'mail.google.com'}, true)
         ));
 
         // Domain browser section - browse and block domains from your archives
@@ -4098,7 +4134,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $.make('div', { className: 'NB-archive-settings-section-header' }, [
                 $.make('h3', { className: 'NB-archive-settings-section-title' }, [
                     gettext('Default Blocklist'),
-                    $.make('span', { className: 'NB-default-blocklist-count' }, interpolate(gettext(" (%(value_1)s domains)"), {value_1: default_domains.length}, true))
+                    $.make('span', { className: 'NB-default-blocklist-count' }, interpolate(ngettext(" (%(count)s domain)", " (%(count)s domains)", default_domains.length), {count: default_domains.length}, true))
                 ]),
                 $.make('p', { className: 'NB-archive-settings-section-desc' },
                     gettext('These domains are blocked by default (search engines, social media, etc.). Add them to "Allowed Domains" above to override.'))
@@ -4143,7 +4179,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     })
                 ]),
                 $.make('span', { className: 'NB-domain-browser-name' }, domain),
-                $.make('span', { className: 'NB-domain-browser-count' }, interpolate(gettext("%(value_1)s pages"), {value_1: count}, true)),
+                $.make('span', { className: 'NB-domain-browser-count' }, interpolate(ngettext("%(count)s page", "%(count)s pages", count), {count: count}, true)),
                 is_blocked ?
                     $.make('span', { className: 'NB-domain-browser-status NB-blocked-status' }, gettext('Blocked')) :
                     $.make('span', { className: 'NB-domain-browser-action' }, gettext('Click to block'))
@@ -4154,7 +4190,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $.make('div', { className: 'NB-archive-settings-section-header' }, [
                 $.make('h3', { className: 'NB-archive-settings-section-title' }, [
                     gettext('Your Archived Domains'),
-                    $.make('span', { className: 'NB-domain-browser-count-total' }, interpolate(gettext(" (%(value_1)s domains)"), {value_1: archived_domains.length}, true))
+                    $.make('span', { className: 'NB-domain-browser-count-total' }, interpolate(ngettext(" (%(count)s domain)", " (%(count)s domains)", archived_domains.length), {count: archived_domains.length}, true))
                 ]),
                 $.make('p', { className: 'NB-archive-settings-section-desc' },
                     gettext('Browse domains from your archives. Click on a domain to block it from future archiving.'))

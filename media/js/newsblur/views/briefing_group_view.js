@@ -37,8 +37,14 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var date_label = this.format_date(briefing_date);
         // briefing_group_view.js: Prepend slot name (Morning/Afternoon/Evening) when available
         if (slot) {
-            var slot_label = slot.charAt(0).toUpperCase() + slot.slice(1);
-            date_label = slot_label + ' \u2014 ' + date_label;
+            // briefing_group_view.js maps slot identifiers to display labels; the identifiers stay untranslated.
+            var slot_labels = {
+                morning: gettext('Morning'),
+                afternoon: gettext('Afternoon'),
+                evening: gettext('Evening')
+            };
+            var slot_label = slot_labels[slot] || (slot.charAt(0).toUpperCase() + slot.slice(1));
+            date_label = interpolate(gettext('%(slot)s \u2014 %(date)s'), {slot: slot_label, date: date_label}, true);
         }
 
         return $.make('div', { className: 'NB-briefing-group-header' }, [
@@ -147,9 +153,9 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         });
 
         if (date.toDateString() === today.toDateString()) {
-            return 'Today, ' + date_str;
+            return interpolate(gettext('Today, %(date)s'), {date: date_str}, true);
         } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Yesterday, ' + date_str;
+            return interpolate(gettext('Yesterday, %(date)s'), {date: date_str}, true);
         }
 
         return date.toLocaleDateString(undefined, {

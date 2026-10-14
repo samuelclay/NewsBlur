@@ -60,9 +60,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         if (NEWSBLUR.utils.is_briefing_preview()) {
             this.$('.NB-briefing-onboarding-header').append(
                 NEWSBLUR.utils.make_archive_callout(
-                    "Daily Briefings are a Premium Archive feature. On your plan you can generate a " +
-                    "preview with the first 3 stories of each briefing. Upgrade for every story and " +
-                    "automatic briefings on your schedule.",
+                    gettext("Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 stories of each briefing. Upgrade for every story and automatic briefings on your schedule."),
                     { highlight_feature: 'briefing' }
                 )
             );
@@ -96,40 +94,40 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
         var $settings = this.$('.NB-briefing-onboarding-settings');
         $settings.html($.make('div', [
-            this.make_section('How often', 'Schedule when your briefing is generated', [
+            this.make_section(gettext('How often'), gettext('Schedule when your briefing is generated'), [
                 this.make_control('frequency', [
-                    ['thrice_daily', '3x daily'],
-                    ['twice_daily', '2x daily'],
-                    ['daily', 'Daily'],
-                    ['weekly', 'Weekly']
+                    ['thrice_daily', gettext('3x daily')],
+                    ['twice_daily', gettext('2x daily')],
+                    ['daily', gettext('Daily')],
+                    ['weekly', gettext('Weekly')]
                 ]),
                 $.make('div', { className: 'NB-briefing-schedule-controls' }, [
                     this.make_control('preferred_time', [
-                        ['morning', 'Morning'],
-                        ['afternoon', 'Afternoon'],
-                        ['evening', 'Evening']
+                        ['morning', gettext('Morning')],
+                        ['afternoon', gettext('Afternoon')],
+                        ['evening', gettext('Evening')]
                     ]),
                     this.make_control('twice_daily_time', [
-                        ['afternoon', 'Morning + Afternoon'],
-                        ['evening', 'Morning + Evening']
+                        ['afternoon', gettext('Morning + Afternoon')],
+                        ['evening', gettext('Morning + Evening')]
                     ]),
                     this.make_control('thrice_daily_time', [
-                        ['morning', 'Morning'],
-                        ['afternoon', 'Afternoon'],
-                        ['evening', 'Evening']
+                        ['morning', gettext('Morning')],
+                        ['afternoon', gettext('Afternoon')],
+                        ['evening', gettext('Evening')]
                     ]),
                     this.make_control('preferred_day', [
-                        ['sun', 'Sun'],
-                        ['mon', 'Mon'],
-                        ['tue', 'Tue'],
-                        ['wed', 'Wed'],
-                        ['thu', 'Thu'],
-                        ['fri', 'Fri'],
-                        ['sat', 'Sat']
+                        ['sun', gettext('Sun')],
+                        ['mon', gettext('Mon')],
+                        ['tue', gettext('Tue')],
+                        ['wed', gettext('Wed')],
+                        ['thu', gettext('Thu')],
+                        ['fri', gettext('Fri')],
+                        ['sat', gettext('Sat')]
                     ])
                 ])
             ]),
-            this.make_section('Briefing length', 'Number of stories to include in each briefing', [
+            this.make_section(gettext('Briefing length'), gettext('Number of stories to include in each briefing'), [
                 this.make_control('story_count', [
                     ['5', '5'],
                     ['10', '10'],
@@ -137,20 +135,20 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                     ['20', '20']
                 ])
             ]),
-            this.make_section('Writing style', null, [
+            this.make_section(gettext('Writing style'), null, [
                 this.make_style_chooser()
             ]),
-            this.make_section('Source feeds', 'Choose which feeds are used to build your briefing', [
+            this.make_section(gettext('Source feeds'), gettext('Choose which feeds are used to build your briefing'), [
                 $.make('div', { className: 'NB-briefing-folder-chooser-container' }, [
                     $folder_chooser
                 ]),
                 this.make_icon_control('read_filter', [
-                    ['unread', 'Unread', 'NB-unread-icon'],
-                    ['focus', 'Focus', 'NB-focus-icon']
+                    ['unread', gettext('Unread'), 'NB-unread-icon'],
+                    ['focus', gettext('Focus'), 'NB-focus-icon']
                 ]),
                 this.make_control('include_read', [
-                    ['false', 'Unread only'],
-                    ['true', 'Include read']
+                    ['false', gettext('Unread only')],
+                    ['true', gettext('Include read')]
                 ])
             ]),
             this.make_sections_ui(prefs),
@@ -227,7 +225,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             return this.make_section_item(def, sections[def.key]);
         }, this));
 
-        var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
+        var $section = this.make_section(gettext('Sections'), gettext('Choose which sections appear in your briefing'), [
             $.make('div', { className: 'NB-briefing-sections' }, items)
         ]);
         $section.find('.NB-popover-section-label').append(
@@ -254,7 +252,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             ]));
         }
 
-        return this.make_section('Keyword sections', 'Add keyword filters that create their own briefing section. All keywords must match.', [
+        return this.make_section(gettext('Keyword sections'), gettext('Add keyword filters that create their own briefing section. All keywords must match.'), [
             $.make('div', { className: 'NB-briefing-sections NB-briefing-keyword-sections' }, items)
         ]);
     },
@@ -263,20 +261,20 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var STYLE_OPTIONS = [
             {
                 value: 'bullets',
-                name: 'Bullets',
-                subtitle: 'Concise bullet points highlighting key takeaways from each story',
+                name: gettext('Bullets'),
+                subtitle: gettext('Concise bullet points highlighting key takeaways from each story'),
                 icon: 'layout-magazine.svg'
             },
             {
                 value: 'editorial',
-                name: 'Editorial',
-                subtitle: 'Flowing narrative that connects stories into a readable digest',
+                name: gettext('Editorial'),
+                subtitle: gettext('Flowing narrative that connects stories into a readable digest'),
                 icon: 'paragraph.svg'
             },
             {
                 value: 'headlines',
-                name: 'Headlines',
-                subtitle: 'Just the headlines with minimal commentary',
+                name: gettext('Headlines'),
+                subtitle: gettext('Just the headlines with minimal commentary'),
                 icon: 'content-preview-m.svg'
             }
         ];
@@ -340,7 +338,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 type: 'text',
                 className: 'NB-briefing-custom-prompt-input',
                 'data-custom-index': index,
-                placeholder: 'e.g. ' + NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)],
+                placeholder: interpolate(gettext('e.g. %(example)s'), {example: NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)]}, true),
                 value: prompt || ''
             }),
             $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
@@ -408,16 +406,16 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             var $opt = $(this);
             var value = $opt.data('value');
             var is_active = $opt.hasClass('NB-active');
-            $opt.text(value + (is_active ? ' stories' : ''));
+            $opt.text(is_active ? interpolate(ngettext('%(count)s story', '%(count)s stories', value), {count: value}, true) : String(value));
         });
     },
 
     update_generate_button_text: function ($settings) {
         var frequency = $settings.find('.NB-briefing-control-frequency .NB-active').data('value') || 'daily';
         var labels = {
-            'twice_daily': 'Generate Twice-Daily Briefing',
-            'daily': 'Generate Daily Briefing',
-            'weekly': 'Generate Weekly Briefing'
+            'twice_daily': gettext('Generate Twice-Daily Briefing'),
+            'daily': gettext('Generate Daily Briefing'),
+            'weekly': gettext('Generate Weekly Briefing')
         };
         this.$('.NB-briefing-onboarding-generate').text(labels[frequency] || labels['daily']);
     },
@@ -648,8 +646,8 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var notification_types = (prefs && prefs.notification_types) || [];
 
         var items = _.map([
-            ['email', 'Email'],
-            ['web', 'Web'],
+            ['email', gettext('Email')],
+            ['web', gettext('Web')],
             ['ios', 'iOS'],
             ['android', 'Android']
         ], function (opt) {
@@ -668,7 +666,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             }, items)
         ];
 
-        return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        return this.make_section(gettext('Notifications'), gettext('Get notified when a new briefing is ready'), controls);
     },
 
     toggle_notification_type: function (e) {

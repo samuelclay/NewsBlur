@@ -19,7 +19,79 @@ NEWSBLUR.ClassifierConstants = {
         { key: 'feed', title: gettext('This site only'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
         { key: 'folder', title: gettext('All sites in folder'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
         { key: 'global', title: gettext('All sites'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
-    ]
+    ],
+
+    // reader_classifier.js: Pill type labels keyed by classifier type. The keys
+    // are protocol identifiers; only the values are shown to the reader.
+    TYPE_LABELS: {
+        title: gettext('Title'),
+        author: gettext('Author'),
+        tag: gettext('Tag'),
+        text: gettext('Text'),
+        feed: gettext('Site'),
+        url: gettext('URL'),
+        regex: gettext('Regex'),
+        prompt: gettext('Content Filter'),
+        image_prompt: gettext('Image Filter')
+    },
+
+    // reader_classifier.js: Italic text shown in each section's live pill until
+    // the reader types or selects something. handle_text_highlight compares the
+    // pill text against these same values to tell when nothing is selected.
+    PLACEHOLDER_LABELS: {
+        text: gettext('Enter text above'),
+        title: gettext('Select title phrase'),
+        url: gettext('Select URL portion above'),
+        author: gettext('Enter author pattern above'),
+        prompt: gettext('Describe what to focus or hide')
+    },
+
+    // reader_classifier.js: Splits a translated message around %(name)s
+    // placeholders and inserts the matching DOM nodes, so links and styled
+    // words stay inside one complete translatable sentence. Text pieces become
+    // text nodes, or whatever wrap_text returns for them.
+    interpolate_nodes: function (message, nodes, wrap_text) {
+        var parts = [];
+        _.each(message.split(/(%\([a-z_]+\)s)/), function (part) {
+            var match = part.match(/^%\(([a-z_]+)\)s$/);
+            if (match && _.has(nodes, match[1])) {
+                parts.push(nodes[match[1]]);
+            } else if (part) {
+                parts.push(wrap_text ? wrap_text(part) : document.createTextNode(part));
+            }
+        });
+        return parts;
+    },
+
+    // reader_classifier.js: Banner shown under the AI filter sections when the
+    // reader has saved prompts but hasn't set up usage-based billing.
+    make_ai_billing_banner: function () {
+        var $billing_link = $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing'));
+        return $.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' },
+            NEWSBLUR.ClassifierConstants.interpolate_nodes(
+                gettext("AI filters are saved but won't run until you %(billing_link)s."),
+                { billing_link: $billing_link },
+                function (text) { return $.make('b').text(text); }
+            ));
+    },
+
+    // reader_classifier.js: "What do you like and dislike about this site/story?"
+    // as one sentence, with the like/dislike words wrapped in the given tag.
+    make_like_dislike_title: function (subject, tag_name, like_class, dislike_class) {
+        var message = subject === 'story' ?
+            gettext("What do you %(like)s and %(dislike)s about this story?") :
+            gettext("What do you %(like)s and %(dislike)s about this site?");
+        return NEWSBLUR.ClassifierConstants.interpolate_nodes(message, {
+            like: $.make(tag_name, { className: like_class }, gettext('like')),
+            dislike: $.make(tag_name, { className: dislike_class }, gettext('dislike'))
+        });
+    },
+
+    // reader_classifier.js: Builds the floating tooltip for scope toggles and the
+    // matching stories button. Tooltip text is set as text, never parsed as HTML.
+    make_tooltip: function (text, extra_class) {
+        return $.make('div', { className: 'NB-scope-tooltip' + (extra_class ? ' ' + extra_class : '') }).text(text);
+    }
 };
 
 NEWSBLUR.ReaderClassifierTrainer = function (options) {
@@ -385,7 +457,7 @@ var classifier_prototype = {
                 }
             }
             $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
-            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
+            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true));
         }
     },
 
@@ -479,11 +551,12 @@ var classifier_prototype = {
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/sample_classifier_tag.png', style: 'float: right', width: 135 }),
                     $.make('b', gettext('You can change your opinions.')),
-                    gettext(' You can click the '),
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-up.svg', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-down.svg', style: 'vertical-align: top; padding: 0', width: 14, height: 20 }),
-                    gettext(' buttons next to stories as you read them.')
-                ]),
+                    ' '
+                ].concat(NEWSBLUR.ClassifierConstants.interpolate_nodes(
+                    gettext("You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."), {
+                        like_icon: $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-up.svg', style: 'vertical-align: middle;padding: 0 8px 0 2px', width: 14, height: 20 }),
+                        dislike_icon: $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/thumbs-down.svg', style: 'vertical-align: top; padding: 0', width: 14, height: 20 })
+                    }))),
                 $.make('li', [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/intelligence_slider_positive.png', style: 'float: right', width: 114, height: 29 }),
                     $.make('b', gettext('As a reminder, use the intelligence slider to select a filter:')),
@@ -532,7 +605,7 @@ var classifier_prototype = {
                 }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true))
                 ])
             ]),
             (this.options['feed_loaded'] &&
@@ -605,13 +678,8 @@ var classifier_prototype = {
             $feed_content.find('.NB-modal-loading').remove();
 
             this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
-                $.make('h2', { className: 'NB-modal-title' }, [
-                    gettext('What do you '),
-                    $.make('span', { className: 'NB-classifier-like NB-like' }, gettext('like')),
-                    gettext(' and '),
-                    $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, gettext('dislike')),
-                    gettext(' about this site?')
-                ]),
+                $.make('h2', { className: 'NB-modal-title' },
+                    NEWSBLUR.ClassifierConstants.make_like_dislike_title('site', 'span', 'NB-classifier-like NB-like', 'NB-classifier-dislike NB-dislike')),
                 $.make('div', { className: 'NB-modal-header' }, [
                     $subtitle,
                     $.make('div', { className: 'NB-modal-tabs' }, [
@@ -646,13 +714,8 @@ var classifier_prototype = {
 
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('div', { className: 'NB-modal-loading' }),
-            $.make('h2', { className: 'NB-modal-title' }, [
-                gettext('What do you '),
-                $.make('span', { className: 'NB-classifier-like NB-like' }, gettext('like')),
-                gettext(' and '),
-                $.make('span', { className: 'NB-classifier-dislike NB-dislike' }, gettext('dislike')),
-                gettext(' about this story?')
-            ]),
+            $.make('h2', { className: 'NB-modal-title' },
+                NEWSBLUR.ClassifierConstants.make_like_dislike_title('story', 'span', 'NB-classifier-like NB-like', 'NB-classifier-dislike NB-dislike')),
             $.make('div', { className: 'NB-modal-header' }, [
                 $.make('h2', { className: 'NB-modal-subtitle' }, [
                     $.favicon_el(this.feed, {
@@ -662,7 +725,7 @@ var classifier_prototype = {
                     }),
                     $.make('div', { className: 'NB-modal-feed-heading' }, [
                         $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                        $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                        $.make('span', { className: 'NB-modal-feed-subscribers' }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true))
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-tabs' }, [
@@ -725,7 +788,7 @@ var classifier_prototype = {
         var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
-            this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
+            this.make_classifier('<span class="NB-classifier-text-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.text) + '</span>', '', 'text'),
             $.make('span', matching_texts),
             $.make('span', matching_text_regex)
         ]);
@@ -783,7 +846,7 @@ var classifier_prototype = {
         var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
-            this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
+            this.make_classifier('<span class="NB-classifier-title-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.title) + '</span>', '', 'title'),
             $.make('span', matching_titles),
             $.make('span', matching_title_regex)
         ]);
@@ -846,7 +909,7 @@ var classifier_prototype = {
 
         // Always create the "this story" div with the placeholder, plus any matching URLs
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
-            this.make_classifier('<span class="NB-classifier-url-placeholder">Select URL portion above</span>', '', 'url'),
+            this.make_classifier('<span class="NB-classifier-url-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.url) + '</span>', '', 'url'),
             $.make('span', matching_urls),
             $.make('span', matching_url_regex)
         ]);
@@ -897,41 +960,41 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
                         $.make('div', { className: 'NB-regex-tip-category' }, gettext('Word Matching')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', gettext('\\bcat\\b')), gettext(' — Whole word "cat" only')]),
-                            $.make('li', [$.make('code', gettext('\\bthe cat\\b')), gettext(' — Exact phrase "the cat"')]),
-                            $.make('li', [$.make('code', gettext('cat|dog|bird')), gettext(' — Any of these words')]),
-                            $.make('li', [$.make('code', gettext('\\b(new|latest) release\\b')), gettext(' — "new release" or "latest release"')]),
-                            $.make('li', [$.make('code', gettext('colou?r')), gettext(' — "color" or "colour" (optional letter)')])
+                            $.make('li', [$.make('code', '\\bcat\\b'), interpolate(gettext(' — Whole word "%(word)s" only'), {word: 'cat'}, true)]),
+                            $.make('li', [$.make('code', '\\bthe cat\\b'), interpolate(gettext(' — Exact phrase "%(phrase)s"'), {phrase: 'the cat'}, true)]),
+                            $.make('li', [$.make('code', 'cat|dog|bird'), gettext(' — Any of these words')]),
+                            $.make('li', [$.make('code', '\\b(new|latest) release\\b'), interpolate(gettext(' — "%(first)s" or "%(second)s"'), {first: 'new release', second: 'latest release'}, true)]),
+                            $.make('li', [$.make('code', 'colou?r'), interpolate(gettext(' — "%(first)s" or "%(second)s" (optional letter)'), {first: 'color', second: 'colour'}, true)])
                         ]),
                         $.make('div', { className: 'NB-regex-tip-category' }, gettext('Position & Greedy')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', gettext('^Breaking')), gettext(' — Starts with "Breaking"')]),
-                            $.make('li', [$.make('code', gettext('update$')), gettext(' — Ends with "update"')]),
-                            $.make('li', [$.make('code', gettext('^\\[Video\\]')), gettext(' — Starts with "[Video]"')]),
-                            $.make('li', [$.make('code', gettext('breaking.*news')), gettext(' — "breaking" then anything then "news"')]),
+                            $.make('li', [$.make('code', '^Breaking'), interpolate(gettext(' — Starts with "%(text)s"'), {text: 'Breaking'}, true)]),
+                            $.make('li', [$.make('code', 'update$'), interpolate(gettext(' — Ends with "%(text)s"'), {text: 'update'}, true)]),
+                            $.make('li', [$.make('code', '^\\[Video\\]'), interpolate(gettext(' — Starts with "%(text)s"'), {text: '[Video]'}, true)]),
+                            $.make('li', [$.make('code', 'breaking.*news'), interpolate(gettext(' — "%(first)s" then anything then "%(second)s"'), {first: 'breaking', second: 'news'}, true)]),
                             $.make('li', [$.make('code', '".*?"'), gettext(' — Non-greedy: each quoted phrase')])
                         ])
                     ]),
                     $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
                         $.make('div', { className: 'NB-regex-tip-category' }, gettext('Numbers & Symbols')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', gettext('v\\d+')), gettext(' — "v" followed by numbers (v1, v2, v10)')]),
-                            $.make('li', [$.make('code', gettext('\\$\\d+')), gettext(' — Dollar amounts ($5, $100)')]),
-                            $.make('li', [$.make('code', '#\\w+'), gettext(' — Hashtags (#news, #tech)')]),
-                            $.make('li', [$.make('code', gettext('@\\w+')), gettext(' — Mentions (@user, @company)')]),
-                            $.make('li', [$.make('code', gettext('^\\d+\\.')), gettext(' — Starts with number and period')])
+                            $.make('li', [$.make('code', 'v\\d+'), interpolate(gettext(' — "%(prefix)s" followed by numbers (%(examples)s)'), {prefix: 'v', examples: 'v1, v2, v10'}, true)]),
+                            $.make('li', [$.make('code', '\\$\\d+'), interpolate(gettext(' — Dollar amounts (%(examples)s)'), {examples: '$5, $100'}, true)]),
+                            $.make('li', [$.make('code', '#\\w+'), interpolate(gettext(' — Hashtags (%(examples)s)'), {examples: '#news, #tech'}, true)]),
+                            $.make('li', [$.make('code', '@\\w+'), interpolate(gettext(' — Mentions (%(examples)s)'), {examples: '@user, @company'}, true)]),
+                            $.make('li', [$.make('code', '^\\d+\\.'), gettext(' — Starts with number and period')])
                         ]),
                         $.make('div', { className: 'NB-regex-tip-category' }, gettext('Exclusions & Advanced')),
                         $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
-                            $.make('li', [$.make('code', gettext('^(?!.*sponsor)')), gettext(' — NOT containing "sponsor"')]),
-                            $.make('li', [$.make('code', gettext('^(?!.*\\bad\\b)')), gettext(' — NOT containing word "ad"')]),
-                            $.make('li', [$.make('code', gettext('\\d{4}')), gettext(' — Exactly 4 digits (years)')]),
-                            $.make('li', [$.make('code', '.{50,}'), gettext(' — At least 50 characters')]),
-                            $.make('li', [$.make('code', gettext('[A-Z]{2,}')), gettext(' — Two or more capital letters')])
+                            $.make('li', [$.make('code', '^(?!.*sponsor)'), interpolate(gettext(' — NOT containing "%(text)s"'), {text: 'sponsor'}, true)]),
+                            $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), interpolate(gettext(' — NOT containing word "%(word)s"'), {word: 'ad'}, true)]),
+                            $.make('li', [$.make('code', '\\d{4}'), interpolate(ngettext(' — Exactly %(count)s digit (years)', ' — Exactly %(count)s digits (years)', 4), {count: 4}, true)]),
+                            $.make('li', [$.make('code', '.{50,}'), interpolate(ngettext(' — At least %(count)s character', ' — At least %(count)s characters', 50), {count: 50}, true)]),
+                            $.make('li', [$.make('code', '[A-Z]{2,}'), gettext(' — Two or more capital letters')])
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-regex-popover-note' }, gettext('All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.'))
+                $.make('div', { className: 'NB-classifier-regex-popover-note' }, interpolate(gettext('All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches.'), {code: '\\b'}, true))
             ])
         ]);
     },
@@ -1023,7 +1086,7 @@ var classifier_prototype = {
         var $story_authors = (has_story_author || matching_author_regex.length) ?
             $.make('div', { className: 'NB-classifier-this-story' }, [
                 (has_story_author ? this.make_authors([story_author]) : null),
-                this.make_classifier('<span class="NB-classifier-author-placeholder">Enter author pattern above</span>', '', 'author'),
+                this.make_classifier('<span class="NB-classifier-author-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.author) + '</span>', '', 'author'),
                 $.make('span', matching_author_regex)
             ]) : '';
 
@@ -1159,7 +1222,7 @@ var classifier_prototype = {
         var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
 
         var $prompt_classifier = this.make_prompt_classifier(
-            '<span class="NB-classifier-content-prompt-placeholder">Describe what to focus or hide</span>', '', 'content'
+            '<span class="NB-classifier-content-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', '', 'content'
         );
 
         var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-filter-section', 'data-section': 'content_prompt' }, [
@@ -1211,14 +1274,10 @@ var classifier_prototype = {
                 }
                 $btn.removeClass('NB-disabled');
                 if (!can_use_ai) {
-                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                        $.make('b', '.')
-                    ])).show();
+                    $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
                 }
             } else {
-                $placeholder.html(gettext('Describe what to focus or hide'));
+                $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
@@ -1255,11 +1314,11 @@ var classifier_prototype = {
                 if (resp.code === 0) {
                     var cls = resp.classification;
                     var matched = cls !== 0;
-                    var result_text = matched ? '\u2713 Story matches this filter' : '\u2717 Story does not match this filter';
+                    var result_text = matched ? gettext('✓ Story matches this filter') : gettext('✗ Story does not match this filter');
                     var result_badge_class = matched ? 'NB-image-filter-status-match' : 'NB-image-filter-status-neutral';
                     $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
                 } else {
-                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || gettext('Test failed')));
                 }
             });
         };
@@ -1293,7 +1352,7 @@ var classifier_prototype = {
 
             $input.val('').focus();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-            $placeholder.html(gettext('Describe what to focus or hide'));
+            $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
             $placeholder.css('font-style', 'italic');
             $('.NB-content-filter-test-status', $section).empty();
             var $btn = $('.NB-content-filter-test-button', $section);
@@ -1302,11 +1361,7 @@ var classifier_prototype = {
             // Show upgrade banner for non-billing users
             if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                    $.make('b', '.')
-                ])).show();
+                $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
             }
 
             self.recalculate_section_costs();
@@ -1357,11 +1412,7 @@ var classifier_prototype = {
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
         if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
-            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                $.make('b', '.')
-            ])).show();
+            $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
         } else {
             $banner.empty().hide();
         }
@@ -1410,7 +1461,7 @@ var classifier_prototype = {
 
         // Build the live classifier pill
         var $prompt_classifier = this.make_prompt_classifier(
-            '<span class="NB-classifier-prompt-placeholder">Describe what to focus or hide</span>', ''
+            '<span class="NB-classifier-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', ''
         );
 
         var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-image-filter-section', 'data-section': 'prompt' }, [
@@ -1464,14 +1515,10 @@ var classifier_prototype = {
                 }
                 $btn.removeClass('NB-disabled');
                 if (!can_use_ai) {
-                    $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                        $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                        $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                        $.make('b', '.')
-                    ])).show();
+                    $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
                 }
             } else {
-                $placeholder.html(gettext('Describe what to focus or hide'));
+                $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
@@ -1523,7 +1570,7 @@ var classifier_prototype = {
                     $thumbs.each(function (i) {
                         var img_matched = image_results[i] === 1;
                         $(this).addClass(img_matched ? 'NB-image-filter-thumb-match' : 'NB-image-filter-thumb-neutral');
-                        var label_text = img_matched ? 'Match' : 'No match';
+                        var label_text = img_matched ? gettext('Match') : gettext('No match');
                         var label_class = 'NB-image-filter-thumb-label' + (img_matched ? ' NB-image-filter-thumb-label-match' : '');
                         $(this).append($.make('span', { className: label_class }, label_text));
                         if (img_matched) match_count++;
@@ -1532,18 +1579,18 @@ var classifier_prototype = {
                     var total = image_urls.length;
                     var result_text, result_badge_class;
                     if (match_count === 0) {
-                        result_text = total === 1 ? '\u2717 Image does not match this filter' : '\u2717 No images match this filter';
+                        result_text = total === 1 ? gettext('✗ Image does not match this filter') : gettext('✗ No images match this filter');
                         result_badge_class = 'NB-image-filter-status-neutral';
                     } else if (total === 1) {
-                        result_text = '\u2713 Image matches this filter';
+                        result_text = gettext('✓ Image matches this filter');
                         result_badge_class = 'NB-image-filter-status-match';
                     } else {
-                        result_text = '\u2713 ' + match_count + ' of ' + total + ' images match this filter';
+                        result_text = interpolate(ngettext('✓ %(count)s of %(total)s image matches this filter', '✓ %(count)s of %(total)s images match this filter', total), {count: match_count, total: total}, true);
                         result_badge_class = 'NB-image-filter-status-match';
                     }
                     $status.html($.make('span', { className: 'NB-image-filter-status-badge ' + result_badge_class }, result_text));
                 } else {
-                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || 'Test failed'));
+                    $status.html($.make('span', { className: 'NB-image-filter-status-badge NB-image-filter-status-error' }, resp.message || gettext('Test failed')));
                 }
             });
         };
@@ -1577,7 +1624,7 @@ var classifier_prototype = {
 
             $input.val('').focus();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
-            $placeholder.html(gettext('Describe what to focus or hide'));
+            $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
             $placeholder.css('font-style', 'italic');
             self.clear_image_test_results($section);
             var $btn = $('.NB-image-filter-test-button', $section);
@@ -1586,11 +1633,7 @@ var classifier_prototype = {
             // Show upgrade banner for non-billing users
             if (!can_use_ai) {
                 var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-                $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                    $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                    $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                    $.make('b', '.')
-                ])).show();
+                $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
             }
 
             self.recalculate_section_costs();
@@ -1621,7 +1664,7 @@ var classifier_prototype = {
         var $content_section = this.$modal.find('.NB-classifier-content-filter-section');
         var $content_el = $content_section.find('.NB-ai-cost-estimate');
         this._render_section_cost($content_el, {
-            type: 'content filter',
+            type: 'content',
             cost_per_run: avg_text,
             $section: $content_section,
             pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
@@ -1631,7 +1674,7 @@ var classifier_prototype = {
         var $image_section = this.$modal.find('.NB-classifier-image-filter-section');
         var $image_el = $image_section.find('.NB-ai-cost-estimate');
         this._render_section_cost($image_el, {
-            type: 'image filter',
+            type: 'image',
             cost_per_run: avg_image,
             $section: $image_section,
             pill_selector: '.NB-classifier-content-classifiers .NB-classifier-container'
@@ -1724,24 +1767,31 @@ var classifier_prototype = {
         // Always show the breakdown
         var breakdown;
         var scope_names = _.keys(scope_groups);
+        // reader_classifier.js: Each factor of the cost formula is its own complete message.
+        var stories_per_month = function (stories) {
+            return interpolate(ngettext('%(count)s story/mo', '%(count)s stories/mo', stories), {count: stories.toLocaleString()}, true);
+        };
+        var filters_label = function (count) {
+            return type === 'image' ?
+                interpolate(ngettext('%(count)s image filter', '%(count)s image filters', count), {count: count}, true) :
+                interpolate(ngettext('%(count)s content filter', '%(count)s content filters', count), {count: count}, true);
+        };
+        var cost_per_story = interpolate(gettext('%(cost)s/story'), {cost: self._format_cost(cost_per)}, true);
         if (filter_count === 0) {
-            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
-                '0 ' + type + 's \u00d7 ' + self._format_cost(cost_per) + '/story';
+            breakdown = stories_per_month(feed_stories) + ' \u00d7 ' +
+                filters_label(0) + ' \u00d7 ' + cost_per_story;
         } else if (scope_names.length === 1 && scope_names[0] === 'feed') {
-            breakdown = feed_stories.toLocaleString() + ' stories/mo \u00d7 ' +
-                filter_count + ' ' + type + (filter_count !== 1 ? 's' : '') +
-                ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+            breakdown = stories_per_month(feed_stories) + ' \u00d7 ' +
+                filters_label(filter_count) +
+                ' \u00d7 ' + cost_per_story;
         } else {
             var parts = [];
             _.each(scope_groups, function (group, scope) {
-                var scope_label = scope === 'feed' ? 'this site' :
-                    scope === 'folder' ? 'folder' : 'all sites';
-                parts.push(
-                    group.count + ' on ' + scope_label +
-                    ' (' + group.stories.toLocaleString() + ' stories/mo)'
-                );
+                var scope_message = scope === 'feed' ? gettext('%(count)s on this site (%(stories)s)') :
+                    scope === 'folder' ? gettext('%(count)s on folder (%(stories)s)') : gettext('%(count)s on all sites (%(stories)s)');
+                parts.push(interpolate(scope_message, {count: group.count, stories: stories_per_month(group.stories)}, true));
             });
-            breakdown = parts.join(' + ') + ' \u00d7 ' + self._format_cost(cost_per) + '/story';
+            breakdown = parts.join(' + ') + ' \u00d7 ' + cost_per_story;
         }
 
         $content.push($.make('div', { className: 'NB-ai-cost-breakdown' }, breakdown));
@@ -1804,19 +1854,14 @@ var classifier_prototype = {
 
         var label;
         if (filter_type === 'content') {
-            label = 'Content';
+            label = gettext('Content');
         } else {
-            label = 'Image';
+            label = gettext('Image');
         }
 
         // Scope toggle icons — same as make_classifier() for non-feed types
-        var scope_icon_data = [
-            { key: 'feed', title: gettext('This site only'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
-            { key: 'folder', title: gettext('All sites in folder'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
-            { key: 'global', title: gettext('All sites'), svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
-        ];
         var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
-        _.each(scope_icon_data, function (icon) {
+        _.each(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
             var $toggle = $.make('span', {
                 className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === scope ? ' NB-active' : ''),
                 'data-tooltip': icon.title
@@ -1906,7 +1951,7 @@ var classifier_prototype = {
             var $this = $(this);
             var text = $this.attr('data-tooltip');
             if (!text) return;
-            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+            var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
             $('body').append($tip);
             var rect = this.getBoundingClientRect();
             $tip.css({
@@ -1932,11 +1977,7 @@ var classifier_prototype = {
         // Show/hide upgrade banner
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
         if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
-            $banner.html($.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' }, [
-                $.make('b', gettext('AI filters are saved but won\'t run until you ')),
-                $.make('a', { href: '#', className: 'NB-ai-billing-setup-link' }, gettext('set up usage-based billing')),
-                $.make('b', '.')
-            ])).show();
+            $banner.html(NEWSBLUR.ClassifierConstants.make_ai_billing_banner()).show();
         } else {
             $banner.empty().hide();
         }
@@ -1965,16 +2006,8 @@ var classifier_prototype = {
         var $container = (this.options['training'] && this.$tab_content) ? this.$tab_content : this.$modal;
         var $modal_title = $('.NB-modal-title', $container);
 
-        var $title = $.make('div', [
-            gettext('What do you '),
-            $.make('b', { className: 'NB-classifier-title-like' }, gettext('like')),
-            gettext(' and '),
-            $.make('b', { className: 'NB-classifier-title-dislike' }, gettext('dislike')),
-            gettext(' about this '),
-            (this.flags['publisher'] && 'site'),
-            (this.flags['story'] && 'story'),
-            '?'
-        ]);
+        var $title = $.make('div', NEWSBLUR.ClassifierConstants.make_like_dislike_title(
+            this.flags['story'] ? 'story' : 'site', 'b', 'NB-classifier-title-like', 'NB-classifier-title-dislike'));
 
         var $explainer = $.make('div', { className: 'NB-classifier-explainer' }, [
             $.make('div', { className: 'NB-explainer-hierarchy' }, [
@@ -2681,8 +2714,7 @@ var classifier_prototype = {
         var scope_folder_name = scope_info ? scope_info.folder_name : '';
 
         // Label shows the display type (Text, Title, etc.) not "Regex"
-        var display_type = classifier_type == 'feed' ? 'site' : (classifier_type == 'url' ? 'URL' : classifier_type);
-        var classifier_type_title = classifier_type == 'url' ? 'URL' : Inflector.capitalize(display_type);
+        var classifier_type_title = NEWSBLUR.ClassifierConstants.TYPE_LABELS[classifier_type] || Inflector.capitalize(classifier_type);
 
         var css_class = 'NB-classifier NB-classifier-' + classifier_type;
         if (is_regex) {
@@ -2718,7 +2750,7 @@ var classifier_prototype = {
             type: 'button',
             className: 'NB-classifier-filter-view-btn',
             'aria-label': gettext('View matching stories'),
-            'data-tooltip': 'View matching stories'
+            'data-tooltip': gettext('View matching stories')
         }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
@@ -2750,14 +2782,14 @@ var classifier_prototype = {
                     $scope_badge,
                     this.make_notification_bell(classifier_type, classifier_value, scope, scope_folder_name, score, is_regex),
                     $type_label,
-                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX'))),
+                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (classifier_type === 'feed' && $.favicon_el(classifier)),
                     $.make('span', classifier_title)
                 ])
             ]),
             $filter_view_button,
             (classifier_count && $.make('span', { className: 'NB-classifier-count' }, [
-                gettext('&times;&nbsp;'),
+                '&times;&nbsp;',
                 classifier_count
             ]))
         ]);
@@ -2831,7 +2863,7 @@ var classifier_prototype = {
                 var $this = $(this);
                 var text = $this.attr('data-tooltip');
                 if (!text) return;
-                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
                 $('body').append($tip);
                 var rect = this.getBoundingClientRect();
                 $tip.css({
@@ -2859,7 +2891,7 @@ var classifier_prototype = {
                 var $this = $(this);
                 var text = $this.attr('data-tooltip');
                 if (!text) return;
-                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
                 $('body').append($tip);
                 var rect = this.getBoundingClientRect();
                 $tip.css({
@@ -2900,7 +2932,7 @@ var classifier_prototype = {
 
             // 3. Show a brief "Requires Pro" tooltip on the blocked toggle
             $('.NB-scope-tooltip').remove();
-            var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
+            var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(gettext('Requires Premium Archive'), 'NB-scope-tooltip-denied');
             $('body').append($tip);
             var rect = $toggle[0].getBoundingClientRect();
             $tip.css({
@@ -3104,12 +3136,9 @@ var classifier_prototype = {
 
     get_save_button_text: function (count) {
         if (count === 0) {
-            return 'Check what you like above...';
-        } else if (count === 1) {
-            return 'Save 1 classifier';
-        } else {
-            return 'Save ' + count + ' classifiers';
+            return gettext('Check what you like above...');
         }
+        return interpolate(ngettext('Save %(count)s classifier', 'Save %(count)s classifiers', count), {count: count}, true);
     },
 
     update_save_button: function () {
@@ -3212,7 +3241,7 @@ var classifier_prototype = {
                 }
             } else {
                 $text_classifier.show();
-                $text_placeholder.text(gettext('Enter text above'));
+                $text_placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.text);
                 $text_placeholder.css('font-style', 'italic');
             }
         };
@@ -3305,7 +3334,7 @@ var classifier_prototype = {
         // Clicking the placeholder does nothing - user must select text first
         $title_placeholder.parents('.NB-classifier').bind('click', function (e) {
             // Prevent default classifier toggle behavior if placeholder text is showing
-            if ($title_placeholder.text() === 'Select title phrase') {
+            if ($title_placeholder.text() === NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.title) {
                 e.preventDefault();
                 return false;
             }
@@ -3392,7 +3421,7 @@ var classifier_prototype = {
 
             // Clicking the placeholder does nothing - user must select URL text first
             $url_placeholder.parents('.NB-classifier').bind('click', function (e) {
-                if ($url_placeholder.text() === 'Select URL portion above') {
+                if ($url_placeholder.text() === NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.url) {
                     e.preventDefault();
                     return false;
                 }
@@ -3460,7 +3489,7 @@ var classifier_prototype = {
             this.update_author_classifier = update_author;
 
             $author_placeholder.parents('.NB-classifier').bind('click', function (e) {
-                if ($author_placeholder.text() === 'Enter author pattern above') {
+                if ($author_placeholder.text() === NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.author) {
                     e.preventDefault();
                     return false;
                 }
@@ -3500,13 +3529,13 @@ var classifier_prototype = {
                 // Update input styling for regex mode
                 $input.addClass('NB-classifier-input-regex-mode');
                 if (section_type === 'text') {
-                    $input.attr('placeholder', gettext('e.g., \\bcat\\b or dog|bird'));
+                    $input.attr('placeholder', interpolate(gettext('e.g., %(first)s or %(second)s'), {first: '\\bcat\\b', second: 'dog|bird'}, true));
                 } else if (section_type === 'title') {
-                    $input.attr('placeholder', gettext('e.g., \\bbreaking\\b or urgent|alert'));
+                    $input.attr('placeholder', interpolate(gettext('e.g., %(first)s or %(second)s'), {first: '\\bbreaking\\b', second: 'urgent|alert'}, true));
                 } else if (section_type === 'url') {
-                    $input.attr('placeholder', gettext('e.g., /news/\\d+ or /category/'));
+                    $input.attr('placeholder', interpolate(gettext('e.g., %(first)s or %(second)s'), {first: '/news/\\d+', second: '/category/'}, true));
                 } else if (section_type === 'author') {
-                    $input.attr('placeholder', gettext('e.g., ^Sam or smith|jones'));
+                    $input.attr('placeholder', interpolate(gettext('e.g., %(first)s or %(second)s'), {first: '^Sam', second: 'smith|jones'}, true));
                 }
 
                 // Change classifier to regex type for saving
@@ -3519,7 +3548,7 @@ var classifier_prototype = {
                 // Add small "REGEX" badge after the label text (keep "Text:" or "Title:")
                 var $existing_badge = $label.find('.NB-classifier-regex-badge');
                 if (!$existing_badge.length) {
-                    $label.find('b').after($.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX')));
+                    $label.find('b').after($.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX'));
                 }
             } else {
                 $section.removeClass('NB-classifier-section-regex-active');
@@ -3680,7 +3709,7 @@ var classifier_prototype = {
 
     validate_regex: function (pattern) {
         if (!pattern || pattern.trim() === '') {
-            return { valid: false, error: 'Enter a pattern' };
+            return { valid: false, error: gettext('Enter a pattern') };
         }
 
         try {
@@ -3688,7 +3717,7 @@ var classifier_prototype = {
             var regex = new RegExp(pattern, 'i');
             return { valid: true, regex: regex };
         } catch (e) {
-            return { valid: false, error: 'Invalid regex: ' + e.message };
+            return { valid: false, error: interpolate(gettext('Invalid regex: %(error)s'), {error: e.message}, true) };
         }
     },
 
@@ -4479,7 +4508,7 @@ var classifier_prototype = {
                 });
 
                 if ($folder_feeds.length) {
-                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    var folder_name = raw_folder_name === ' ' ? gettext('Top Level') : raw_folder_name;
                     $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
                         $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
                         $.make('div', { className: 'NB-manage-folder-feeds' }, $folder_feeds)
@@ -4490,7 +4519,7 @@ var classifier_prototype = {
             // Handle orphan folders (folder-scoped classifiers for folders not in the feed list)
             _.each(folder_scoped_map, function ($items, raw_folder_name) {
                 if ($items.length) {
-                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    var folder_name = raw_folder_name === ' ' ? gettext('Top Level') : raw_folder_name;
                     $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
                         $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
                         $.make('div', { className: 'NB-manage-folder-feeds' }, [
@@ -4779,7 +4808,7 @@ var classifier_prototype = {
 
         // Remove the "All Folders & Sites" / Top Level from inside the Folders optgroup
         // (it gets added by make_folders but we want it only at the root level)
-        $feed_chooser.find('optgroup[label="Folders"] option[value="river:"]').remove();
+        $feed_chooser.find('optgroup option[value="river:"]').remove();
 
         // Add "All Folders & Sites" as first option at the root level
         if (!$feed_chooser.find('> option[value=""]').length) {
@@ -4882,11 +4911,11 @@ var classifier_prototype = {
                 ])
             ]),
             // Archive banner for scope filter (hidden by default)
-            $.make('div', { className: 'NB-manage-scope-pro-banner' }, [
-                $.make('span', gettext('Scoped classifiers are only available to ')),
-                $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, gettext('Premium Archive')),
-                $.make('span', gettext(' subscribers.'))
-            ]),
+            $.make('div', { className: 'NB-manage-scope-pro-banner' }, NEWSBLUR.ClassifierConstants.interpolate_nodes(
+                gettext('Scoped classifiers are only available to %(plan)s subscribers.'),
+                { plan: $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, gettext('Premium Archive')) },
+                function (text) { return $.make('span').text(text); }
+            )),
             // Row 3: Type control (full width)
             $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-3' }, [
                 $.make('ul', { className: 'segmented-control NB-manage-types-control' }, [
@@ -5189,11 +5218,7 @@ var classifier_prototype = {
     },
 
     make_manage_classifier_item: function (feed_id, type, value, score, scope, folder_name, is_regex) {
-        var type_label = type.charAt(0).toUpperCase() + type.slice(1);
-        if (type === 'feed') type_label = 'Site';
-        if (type === 'url') type_label = 'URL';
-        if (type === 'prompt') type_label = 'Content Filter';
-        if (type === 'image_prompt') type_label = 'Image Filter';
+        var type_label = NEWSBLUR.ClassifierConstants.TYPE_LABELS[type] || (type.charAt(0).toUpperCase() + type.slice(1));
 
         var effective_scope = scope || 'feed';
         var has_filter_view = !is_regex &&
@@ -5228,7 +5253,7 @@ var classifier_prototype = {
             type: 'button',
             className: 'NB-classifier-filter-view-btn',
             'aria-label': gettext('View matching stories'),
-            'data-tooltip': 'View matching stories'
+            'data-tooltip': gettext('View matching stories')
         }, NEWSBLUR.ClassifierConstants.MATCHING_STORIES_ICON);
 
         var $item = $.make('div', {
@@ -5253,7 +5278,7 @@ var classifier_prototype = {
                     $scope_badge,
                     this.make_notification_bell(type, value, effective_scope, folder_name, score, is_regex),
                     (type !== 'feed' ? $type_label_el : null),
-                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, gettext('REGEX'))),
+                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     (type === 'feed' && $.favicon_el(feed_id)),
                     $.make('span', value)
                 ])
@@ -5295,7 +5320,7 @@ var classifier_prototype = {
                 var $this = $(this);
                 var text = $this.attr('data-tooltip');
                 if (!text) return;
-                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
                 $('body').append($tip);
                 var rect = this.getBoundingClientRect();
                 $tip.css({
@@ -5334,7 +5359,7 @@ var classifier_prototype = {
             var $this = $(this);
             var text = $this.attr('data-tooltip');
             if (!text) return;
-            var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+            var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
             $('body').append($tip);
             var rect = this.getBoundingClientRect();
             $tip.css({
@@ -5411,7 +5436,7 @@ var classifier_prototype = {
         });
 
         if (total_changes > 0) {
-            var label = total_changes === 1 ? 'Save 1 classifier' : 'Save ' + total_changes + ' classifiers';
+            var label = this.get_save_button_text(total_changes);
             $save.text(label).removeClass('NB-disabled').show();
             $prompt.hide();
             $saved.hide();

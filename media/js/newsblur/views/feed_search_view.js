@@ -94,7 +94,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         if (tipsy) return;
 
         $icon.tipsy({
-            title: function () { return "Hang tight, indexing..."; },
+            title: function () { return gettext("Hang tight, indexing..."); },
             gravity: 'nw',
             fade: true,
             trigger: 'manual',

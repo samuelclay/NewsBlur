@@ -1,9 +1,10 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    // assetmodel.js translates the generic actions; service names stay as their brands.
     third_party_sharing_services: {
-        "copyurl": "Copy URL",
-        "copytext": "Copy Text",
-        "print": "Print",
+        "copyurl": gettext("Copy URL"),
+        "copytext": gettext("Copy Text"),
+        "print": gettext("Print"),
         "facebook": "Facebook",
         "twitter": "X / Twitter",
         "reddit": "Reddit",

@@ -59,10 +59,10 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         var num_subscribers = Math.max(0, this.model.get('num_subscribers') || 0);
         var stories_per_month = this.model.get('average_stories_per_month');
         if (num_subscribers) {
-            meta_parts.push(Inflector.commas(num_subscribers) + ' ' + Inflector.pluralize('subscriber', num_subscribers));
+            meta_parts.push(interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", num_subscribers), { count: Inflector.commas(num_subscribers) }, true));
         }
         if (stories_per_month) {
-            meta_parts.push(Inflector.commas(stories_per_month) + ' ' + Inflector.pluralize('story', stories_per_month) + '/month');
+            meta_parts.push(interpolate(ngettext("%(count)s story/month", "%(count)s stories/month", stories_per_month), { count: Inflector.commas(stories_per_month) }, true));
         }
 
         // Build freshness indicator if in add site view
@@ -86,7 +86,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
             $actions = $.make('div', { className: 'NB-feed-badge-subscribed-actions NB-feed-badge-actions-add-site' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
                     $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
-                    gettext(' Subscribed')
+                    ' ' + gettext('Subscribed')
                 ]),
                 $.make('div', { className: 'NB-badge-actions-row' }, [
                     $stats_btn,
@@ -226,7 +226,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         var $submit = this.$('.NB-badge-action-add');
         var $error = this.$('.NB-error');
 
-        $error.text(data.message || "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened.");
+        $error.text(data.message || gettext("Oh no, there was a problem grabbing that URL and there's no good explanation for what happened."));
         $error.slideDown(300);
         $submit.text(gettext('Add'));
         NEWSBLUR.reader.flags['reloading_feeds'] = false;

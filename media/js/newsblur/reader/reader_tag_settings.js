@@ -120,11 +120,12 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
                         $.make('div', { className: 'NB-tag-rss-copy NB-modal-submit-button NB-modal-submit-grey' }, gettext('Copy'))
                     ]),
                     (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-premium-only' }, [
-                        $.make('div', { className: 'NB-premium-only-text' }, [
-                            gettext('RSS feeds for saved story tags is a '),
-                            $.make('a', { href: '#', className: 'NB-premium-only-link NB-splash-link' }, gettext('premium feature')),
-                            '.'
-                        ])
+                        $.make('div', { className: 'NB-premium-only-text' },
+                            interpolate(gettext("RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."), {
+                                link_start: '<a href="#" class="NB-premium-only-link NB-splash-link">',
+                                link_end: '</a>'
+                            }, true)
+                        )
                     ]))
                 ])
             ]),
@@ -215,7 +216,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         this.model.rename_starred_tag(this.tag_name, new_tag_name, function (data) {
             if (data.code < 0) {
                 $button.removeClass('NB-disabled').text(gettext('Rename'));
-                $error.html(data.message || 'Failed to rename tag.').show();
+                $error.html(data.message || gettext('Failed to rename tag.')).show();
                 return;
             }
 
@@ -245,7 +246,7 @@ _.extend(NEWSBLUR.ReaderTagSettings.prototype, {
         this.model.delete_starred_tag(this.tag_name, function (data) {
             if (data.code < 0) {
                 $button.removeClass('NB-disabled').text(gettext('Yes, delete it'));
-                $error.html(data.message || 'Failed to delete tag.').show();
+                $error.html(data.message || gettext('Failed to delete tag.')).show();
                 return;
             }
 

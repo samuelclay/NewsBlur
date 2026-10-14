@@ -65,13 +65,13 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
                 $.make('div', { className: 'NB-faq-loading' }, gettext('Loading...'))
             ]),
             $.make('div', { className: 'NB-modal-footer NB-faq-modal-footer' }, [
-                $.make('div', { className: 'NB-faq-footer-text' }, [
-                    gettext('Browse the full '),
-                    $.make('a', { href: '/faq', target: '_blank', className: 'NB-splash-link' }, gettext('FAQ page')),
-                    gettext(' or '),
-                    $.make('a', { href: 'https://forum.newsblur.com', target: '_blank', className: 'NB-splash-link' }, gettext('ask the community')),
-                    '.'
-                ])
+                // reader_faq.js: Link markers keep the footer sentence whole for translators.
+                $.make('div', { className: 'NB-faq-footer-text' }, interpolate(gettext("Browse the full %(faq_link_start)sFAQ page%(faq_link_end)s or %(forum_link_start)sask the community%(forum_link_end)s."), {
+                    faq_link_start: '<a href="/faq" target="_blank" class="NB-splash-link">',
+                    faq_link_end: '</a>',
+                    forum_link_start: '<a href="https://forum.newsblur.com" target="_blank" class="NB-splash-link">',
+                    forum_link_end: '</a>'
+                }, true))
             ])
         ]);
     },
@@ -91,8 +91,8 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
                 }, this));
             }, this),
             error: _.bind(function () {
-                $('.NB-faq-modal-body', this.$modal).html(
-                    gettext('<div class="NB-faq-error">Could not load FAQ. Please try again.</div>')
+                $('.NB-faq-modal-body', this.$modal).empty().append(
+                    $.make('div', { className: 'NB-faq-error' }, gettext('Could not load FAQ. Please try again.'))
                 );
             }, this)
         });
@@ -216,7 +216,7 @@ _.extend(NEWSBLUR.ReaderFaq.prototype, {
 
         var $links = $.make('div', { className: 'NB-faq-item-links' });
         if (has_feature) {
-            var label = item.feature_label ? ('See ' + item.feature_label) : 'See feature';
+            var label = item.feature_label ? interpolate(gettext("See %(feature)s"), {feature: item.feature_label}, true) : gettext('See feature');
             $links.append($.make('a', {
                 className: 'NB-faq-button NB-faq-button-primary',
                 href: item.feature_url,

@@ -107,7 +107,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                         className: 'NB-merge-group-remove',
                         'data-group-id': group.id,
                         title: gettext('Remove this merge group')
-                    }, gettext('&times;'))
+                    }, '&times;')
                 ]),
                 $.make('div', { className: 'NB-merge-group-pills', 'data-group-id': group.id },
                     _.map(group.categories, function (cat) {
@@ -172,11 +172,14 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
         });
 
         if (total_merges === 0) {
-            return 'No merges to apply';
+            return gettext('No merges to apply');
         }
 
-        return total_merges + ' merge' + (total_merges > 1 ? 's' : '') +
-               ' (' + total_categories + ' categories into ' + total_merges + ')';
+        return interpolate(ngettext(
+            "%(count)s merge (%(categories)s categories into %(count)s)",
+            "%(count)s merges (%(categories)s categories into %(count)s)",
+            total_merges
+        ), {count: total_merges, categories: total_categories}, true);
     },
 
     render_split_tab: function () {
@@ -233,7 +236,7 @@ _.extend(NEWSBLUR.ReaderCategoryManager.prototype, {
                         'data-index': i
                     }),
                     $.make('span', { className: 'NB-split-count' },
-                        interpolate(gettext("%(value_1)s stories"), {value_1: suggestion.story_ids ? suggestion.story_ids.length : 0}, true))
+                        interpolate(ngettext("%(count)s story", "%(count)s stories", suggestion.story_ids ? suggestion.story_ids.length : 0), {count: suggestion.story_ids ? suggestion.story_ids.length : 0}, true))
                 ]));
             });
             $panel.append($suggestions);

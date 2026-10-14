@@ -45,13 +45,11 @@ _.extend(NEWSBLUR.ReaderNewsletters.prototype, {
             ]),
             $.make('div', { className: 'NB-newsletters-group' }, [
                 $.make('p', gettext('To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown above.')),
-                $.make('p', [
-                    gettext('In Gmail, go to '),
-                    $.make('b', gettext('Settings &gt; Forwarding')),
-                    gettext(' and click on '),
-                    $.make('b', gettext('Add a forwarding address')),
-                    '. Add your custom NewsBlur email address.'
-                ]),
+                // reader_newsletters.js: The bold Gmail menu labels translate separately, as Gmail shows them in its own language.
+                $.make('p', interpolate(gettext("In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."), {
+                    settings_menu: '<b>' + gettext('Settings &gt; Forwarding') + '</b>',
+                    add_button: '<b>' + _.escape(gettext('Add a forwarding address')) + '</b>'
+                }, true)),
                 $.make('p', gettext('Gmail will walk you through confirming the email address. You\'ll want to come back to NewsBlur and look for the confirmation email under the "Newsletters" folder.')),
                 $.make('p', gettext('Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur.')),
                 $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + "/img/reader/newsletters_gmail.png", className: 'NB-newsletters-gmail' })

@@ -129,7 +129,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 (this.options.on_dashboard && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-dashboardcount' }, [
                     $.make('div', { className: 'NB-icon' }),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-dashboardcount' }, [
-                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, gettext('5 stories')),
+                        $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-5  NB-active', role: "button" }, interpolate(ngettext("%(count)s story", "%(count)s stories", 5), {count: 5}, true)),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-10', role: "button" }, '10'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-15', role: "button" }, '15'),
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-dashboardcount-20', role: "button" }, '20'),
@@ -176,10 +176,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                             autocomplete: 'off'
                         }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-start' }, [
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1day', role: "button" }, gettext('1d')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1week', role: "button" }, gettext('1w')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1month', role: "button" }, gettext('1m')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1year', role: "button" }, gettext('1y'))
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1day', role: "button" }, '1d'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1week', role: "button" }, '1w'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1month', role: "button" }, '1m'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-start-1year', role: "button" }, '1y')
                         ])
                     ]),
                     $.make('div', { className: 'NB-date-filter-column' }, [
@@ -191,10 +191,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                             autocomplete: 'off'
                         }),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-date-filter-end' }, [
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1day', role: "button" }, gettext('1d')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1week', role: "button" }, gettext('1w')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1month', role: "button" }, gettext('1m')),
-                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1year', role: "button" }, gettext('1y'))
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1day', role: "button" }, '1d'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1week', role: "button" }, '1w'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1month', role: "button" }, '1m'),
+                            $.make('li', { className: 'NB-date-filter-duration NB-date-filter-end-1year', role: "button" }, '1y')
                         ])
                     ]),
                     $.make('div', { className: 'NB-clear-date-button' })
@@ -205,7 +205,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('div', { className: 'NB-popover-section-title' }, gettext('Site stats')),
                 $.make('div', { className: 'NB-feedbar-options-stat NB-stat-subscribers' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, Inflector.pluralize('subscriber', feed.get('num_subscribers'), true))
+                    $.make('div', { className: 'NB-stat' }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", feed.get('num_subscribers')), {count: Inflector.commas(feed.get('num_subscribers'))}, true))
                 ]),
                 (feed.get('is_push') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-realtime' }, [
                     $.make('div', { className: 'NB-icon' }),
@@ -213,11 +213,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])),
                 (feed.get('average_stories_per_month') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-average' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("%(value_1)s per month"), {value_1: Inflector.pluralize("story", feed.get('average_stories_per_month'), true)}, true))
+                    $.make('div', { className: 'NB-stat' }, interpolate(ngettext("%(count)s story per month", "%(count)s stories per month", feed.get('average_stories_per_month')), {count: Inflector.commas(feed.get('average_stories_per_month'))}, true))
                 ])),
                 (feed.get('archive_count') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-archive-count' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    $.make('div', { className: 'NB-stat' }, interpolate(gettext("%(value_1)s in archive"), {value_1: Inflector.pluralize("story", feed.get('archive_count'), true)}, true))
+                    $.make('div', { className: 'NB-stat' }, interpolate(ngettext("%(count)s story in archive", "%(count)s stories in archive", feed.get('archive_count')), {count: Inflector.commas(feed.get('archive_count'))}, true))
                 ])),
                 (feed.get('updated') && $.make('div', { className: 'NB-feedbar-options-stat NB-stat-updated' }, [
                     $.make('div', { className: 'NB-icon' }),
@@ -309,26 +309,26 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('ul', { className: 'segmented-control NB-options-feed-font' }, [
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-whitney NB-theme-feed-font-whitney', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Whitney')
+                                'Whitney'
                             ]),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-lucida NB-theme-feed-font-lucida', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Lucida')
+                                'Lucida'
                             ]),
                             $.make('li', { className: 'NB-view-setting-option NB-view-setting-feed-font-gotham NB-theme-feed-font-gotham', role: "button" }, [
                                 $.make('div', { className: 'NB-icon' }),
-                                gettext('Gotham')
+                                'Gotham'
                             ])
                         ])
                     ]),
                     $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-feed-size' }, [
                         $.make('div', { className: 'NB-icon' }),
                         $.make('ul', { className: 'segmented-control NB-options-feed-size' }, [
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, gettext('XS')),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, gettext('S')),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, gettext('M')),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, gettext('L')),
-                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, gettext('XL'))
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xs', role: "button" }, 'XS'),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-s', role: "button" }, 'S'),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-m NB-active', role: "button" }, 'M'),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-l', role: "button" }, 'L'),
+                            $.make('li', { className: 'NB-view-setting-option NB-options-feed-size-xl', role: "button" }, 'XL')
                         ])
                     ])
                 ]),
@@ -470,17 +470,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         $oldest.toggleClass('NB-active', order == 'oldest');
         $newest.toggleClass('NB-active', order != 'oldest');
-        $oldest.text(interpolate(gettext("Oldest%(value_1)s"), {value_1: order == 'oldest' ? ' first' : ''}, true));
-        $newest.text(interpolate(gettext("Newest%(value_1)s"), {value_1: order != 'oldest' ? ' first' : ''}, true));
+        $oldest.text(order == 'oldest' ? gettext('Oldest first') : gettext('Oldest'));
+        $newest.text(order != 'oldest' ? gettext('Newest first') : gettext('Newest'));
         $unread.toggleClass('NB-active', read_filter == 'unread');
         $count5.toggleClass('NB-active', dashboard_count == 5);
         $count10.toggleClass('NB-active', dashboard_count == 10);
         $count15.toggleClass('NB-active', dashboard_count == 15);
         $count20.toggleClass('NB-active', dashboard_count == 20);
-        $count5.text('5' + (dashboard_count == 5 ? ' stories' : ''));
-        $count10.text('10' + (dashboard_count == 10 ? ' stories' : ''));
-        $count15.text('15' + (dashboard_count == 15 ? ' stories' : ''));
-        $count20.text('20' + (dashboard_count == 20 ? ' stories' : ''));
+        _.each({5: $count5, 10: $count10, 15: $count15, 20: $count20}, function ($count, count) {
+            count = parseInt(count, 10);
+            $count.text(dashboard_count == count ?
+                interpolate(ngettext("%(count)s story", "%(count)s stories", count), {count: count}, true) :
+                String(count));
+        });
         $all.toggleClass('NB-active', read_filter != 'unread');
         $mark_unread.toggleClass('NB-active', !mark_scroll);
         $mark_read.toggleClass('NB-active', mark_scroll);
@@ -606,6 +608,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
     update_slider_status_text: function ($element, mode, days, source) {
         var html = '';
+        // feed_options_popover.js: source may be a folder title, so escape it before .html()
+        source = _.escape(source);
         if (mode === 'default') {
             if (days === 0) {
                 html = interpolate(gettext("Using default: <b>never</b> (from %(source)s)"), {source: source}, true);

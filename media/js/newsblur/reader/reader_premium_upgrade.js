@@ -61,10 +61,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     gettext('Upgrade to Premium'),
                     $.make('div', { className: 'NB-icon-dropdown' })
                 ]),
-                (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-trial-badge' }, [
-                    $.make('strong', NEWSBLUR.Globals.trial_days_remaining + ' day' + (NEWSBLUR.Globals.trial_days_remaining === 1 ? '' : 's')),
-                    gettext(' left in your premium trial')
-                ]))
+                (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-trial-badge' },
+                    interpolate(ngettext("<strong>%(count)s day</strong> left in your premium trial", "<strong>%(count)s days</strong> left in your premium trial", NEWSBLUR.Globals.trial_days_remaining), {count: NEWSBLUR.Globals.trial_days_remaining}, true)
+                ))
             ]),
             $.make('div', { className: 'NB-premium-tiers' }, [
                 // Premium Tier
@@ -337,7 +336,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-status' }, [
                 $.make('div', { className: 'NB-premium-tier-status-active' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan).toLowerCase()}, true))
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan)}, true))
                 ]),
                 $.make('div', { className: 'NB-provider-button-change NB-modal-submit-button NB-modal-submit-grey' }, gettext('Change billing details'))
             ]);
@@ -348,12 +347,12 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-buttons' }, [
                 $.make('div', { className: 'NB-premium-tier-status-active' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan).toLowerCase()}, true))
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription is active"), {value_1: this.plan_name(plan)}, true))
                 ]),
                 $creditcards,
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
-                }, interpolate(gettext("Restart your %(value_1)s subscription"), {value_1: this.plan_name(plan).toLowerCase()}, true)),
+                }, interpolate(gettext("Restart your %(value_1)s subscription"), {value_1: this.plan_name(plan)}, true)),
                 this.make_paypal_alternate(plan)
             ]);
         }
@@ -378,11 +377,11 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             return $.make('div', { className: 'NB-premium-tier-status' }, [
                 $.make('div', { className: 'NB-premium-tier-status-included' }, [
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription includes everything above"), {value_1: current_plan_name.toLowerCase()}, true))
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription includes everything above"), {value_1: current_plan_name}, true))
                 ]),
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
-                }, interpolate(gettext("Switch to %(value_1)s"), {value_1: this.plan_name(plan).toLowerCase()}, true))
+                }, interpolate(gettext("Switch to %(value_1)s"), {value_1: this.plan_name(plan)}, true))
             ]);
         }
 
@@ -421,9 +420,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     plan_name: function (plan) {
-        if (plan === 'premium') return 'Premium';
-        if (plan === 'archive') return 'Premium Archive';
-        if (plan === 'pro') return 'Premium Pro';
+        if (plan === 'premium') return gettext('Premium');
+        if (plan === 'archive') return gettext('Premium Archive');
+        if (plan === 'pro') return gettext('Premium Pro');
         return plan;
     },
 
@@ -457,8 +456,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             var days = NEWSBLUR.Globals.trial_days_remaining;
             return $.make('div', { className: 'NB-premium-tier-free-status' }, [
                 $.make('div', { className: 'NB-premium-tier-free-trial-notice' }, [
-                    interpolate(ngettext("In %(value_1)s day, your premium trial ends ", "In %(value_1)s days, your premium trial ends ", days), {value_1: days}, true),
-                    gettext('and you\'ll return to Free')
+                    interpolate(ngettext("In %(count)s day, your premium trial ends and you'll return to Free", "In %(count)s days, your premium trial ends and you'll return to Free", days), {count: days}, true)
                 ])
             ]);
         }
@@ -500,7 +498,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         shape: 'rect',
                         color: 'silver',
                         layout: 'horizontal',
-                        label: gettext('paypal'),
+                        label: 'paypal',
                     },
 
                     createSubscription: function (data, actions) {

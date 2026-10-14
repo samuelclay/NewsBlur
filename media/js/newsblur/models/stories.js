@@ -120,6 +120,23 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return highlights;
     },
 
+    // stories.js keeps NewsBlur's English date style; other languages use the browser's Intl formats.
+    uses_english_dates: function () {
+        return (document.documentElement.lang || 'en').indexOf('en') === 0;
+    },
+
+    localized_date_parts: function (date) {
+        var language = document.documentElement.lang;
+        // The locale's own clock convention applies unless the reader chose 24-hour time.
+        var hour12 = NEWSBLUR.assets.preference('dateformat') == "24" ? false : undefined;
+        return {
+            time: date.toLocaleTimeString(language, { hour: 'numeric', minute: '2-digit', hour12: hour12 }),
+            short_date: date.toLocaleDateString(language, { day: 'numeric', month: 'short', year: 'numeric' }),
+            date: date.toLocaleDateString(language, { day: 'numeric', month: 'long', year: 'numeric' }),
+            weekday: date.toLocaleDateString(language, { weekday: 'long' })
+        };
+    },
+
     formatted_short_date: function () {
         var timestamp = this.get('story_timestamp');
         var dateformat = NEWSBLUR.assets.preference('dateformat');
@@ -139,6 +156,17 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             return midnight_tomorrow(midnight, -1);
         };
         var midnight = midnight_today();
+        if (!this.uses_english_dates()) {
+            var parts = this.localized_date_parts(date);
+            if (date > midnight_tomorrow(midnight) && date < midnight_tomorrow(midnight, 2)) {
+                return interpolate(gettext("Tomorrow, %(time)s"), parts, true);
+            } else if (date > midnight && date <= midnight_tomorrow(midnight)) {
+                return parts.time;
+            } else if (date > midnight_yesterday(midnight) && date <= midnight) {
+                return interpolate(gettext("Yesterday, %(time)s"), parts, true);
+            }
+            return parts.short_date + ", " + parts.time;
+        }
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
 
         if (date > midnight) {
@@ -185,6 +213,17 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             return month;
         };
         var midnight = midnight_today();
+        if (!this.uses_english_dates()) {
+            var parts = this.localized_date_parts(date);
+            if (date > midnight_tomorrow(midnight) && date < midnight_tomorrow(midnight, 2)) {
+                return interpolate(gettext("Tomorrow, %(date)s %(time)s"), parts, true);
+            } else if (date > midnight && date <= midnight_tomorrow(midnight)) {
+                return interpolate(gettext("Today, %(date)s %(time)s"), parts, true);
+            } else if (date > midnight_yesterday(midnight) && date <= midnight) {
+                return interpolate(gettext("Yesterday, %(date)s %(time)s"), parts, true);
+            }
+            return interpolate(gettext("%(weekday)s, %(date)s %(time)s"), parts, true);
+        }
         var time = date.format(dateformat == "24" ? "H:i" : "g:ia");
         if (date > midnight) {
             if (date > midnight_tomorrow(midnight)) {
