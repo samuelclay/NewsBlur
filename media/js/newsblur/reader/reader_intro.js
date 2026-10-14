@@ -3,10 +3,15 @@ NEWSBLUR.ReaderIntro = function (options) {
         modal_container_class: "NB-full-container"
     };
     var intro_page = NEWSBLUR.assets.preference('intro_page');
+    var first_page = intro_page && _.isNumber(intro_page) && intro_page <= 3 ? intro_page : 1;
+    // reader_intro.js: A fresh intro starts on the language chooser (page 0) from reader_language.js.
+    if (!intro_page && NEWSBLUR.LanguageChooser.should_offer()) {
+        first_page = 0;
+    }
 
     _.bindAll(this, 'close', 'post_connect');
     this.options = $.extend({
-        'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 3 ? intro_page : 1
+        'page_number': first_page
     }, defaults, options);
     this.services = {
         'twitter': {},
@@ -15,6 +20,7 @@ NEWSBLUR.ReaderIntro = function (options) {
     this.flags = {};
     this.autofollow = true;
     this.chosen_categories = [];
+    this.intro_width = this.options.width || 600;
 
     this.page_number = this.options.page_number;
     this.slider_value = 0;
@@ -53,6 +59,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('div', { className: 'NB-divider' })
             ]),
             $.make('img', { className: 'NB-intro-spinning-logo', src: NEWSBLUR.Globals.MEDIA_URL + 'img/logo_512.png' }),
+            $.make('div', { className: 'NB-page NB-page-0' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
                 $.make('h4', { className: 'NB-page-1-started' }, gettext("So much time and so little to do. Strike that! Reverse it."))
             ]),
@@ -415,10 +422,15 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (page_number == null) {
             return this.page_number;
         }
-        var page_count = $('.NB-page', this.$modal).length;
+        // reader_intro.js: The language chooser on page 0 is not a numbered step.
+        var page_count = $('.NB-page', this.$modal).not('.NB-page-0').length;
+        var was_language_page = this.$modal.hasClass('NB-intro-language');
         this.page_number = page_number;
+        this.$modal.toggleClass('NB-intro-language', page_number == 0);
 
-        if (page_number == page_count) {
+        if (page_number == 0) {
+            this.make_language_page();
+        } else if (page_number == page_count) {
             $('.NB-tutorial-next-page-text', this.$modal).text(gettext('All Done '));
         } else if (page_number > page_count) {
             NEWSBLUR.reader.check_hide_getting_started();
@@ -459,8 +471,40 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
 
         clearTimeout(this.sync_interval);
-        NEWSBLUR.assets.preference('intro_page', page_number);
+        if (page_number == 0 || was_language_page) {
+            // The language page is as wide as the standalone language dialog and sizes to its chooser,
+            // while the numbered pages keep the intro's width and fixed height.
+            this.set_width(page_number == 0 ? NEWSBLUR.ReaderLanguage.WIDTH : this.intro_width);
+            this.resize();
+        }
+        if (page_number > 0) {
+            NEWSBLUR.assets.preference('intro_page', page_number);
+        }
         // _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
+    },
+
+    // Simplemodal sizes the container from these options on every resize.
+    set_width: function (width) {
+        this.options.width = width;
+        if (this.simplemodal && this.simplemodal.o) {
+            this.simplemodal.o.minWidth = width;
+            this.simplemodal.o.maxWidth = width;
+        }
+    },
+
+    make_language_page: function () {
+        if (this.language_chooser) return;
+
+        this.language_chooser = new NEWSBLUR.LanguageChooser({
+            on_keep: _.bind(function () {
+                this.page(1);
+            }, this),
+            on_resize: _.bind(this.resize, this),
+            // A new language reloads the page, which reopens the intro on the welcome page.
+            preferences: { intro_page: 1 }
+        });
+        $('.NB-page-0', this.$modal).append(this.language_chooser.$el);
+        NEWSBLUR.LanguageChooser.mark_seen();
     },
 
     advance_import_carousel: function (page, options) {
