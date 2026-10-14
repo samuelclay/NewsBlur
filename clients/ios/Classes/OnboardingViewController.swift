@@ -833,6 +833,11 @@ private struct OnboardingView: View {
     let onFinish: () -> Void
     @StateObject private var bundles = OnboardingBundles()
     @StateObject private var discovery = DiscoverSitesViewModel(session: OnboardingAPI.session)
+    @StateObject private var languageChooser = LanguageChooserModel(startsInGrid: LanguageDialog.startsInGrid)
+    // OnboardingViewController.swift opens with LanguageChooserView.swift when the device language was detected
+    // automatically and the language dialog hasn't been seen yet.
+    @State private var includesLanguageStep: Bool
+    @State private var choosingLanguage: Bool
     @State private var step = 0
     @State private var showImporter = false
     @State private var importing = false
@@ -850,39 +855,63 @@ private struct OnboardingView: View {
     private var matchingInterests: [String] {
         bundles.interests.filter { query.isEmpty || $0.localizedCaseInsensitiveContains(query) }
     }
+    private var stepCount: Int { includesLanguageStep ? 3 : 2 }
+    private var stepIndex: Int { choosingLanguage ? 0 : step + (includesLanguageStep ? 1 : 0) }
+
+    init(onDismiss: @escaping () -> Void, onFinish: @escaping () -> Void) {
+        self.onDismiss = onDismiss
+        self.onFinish = onFinish
+        let offersLanguage = LanguageDialog.offersOnboardingStep()
+        _includesLanguageStep = State(initialValue: offersLanguage)
+        _choosingLanguage = State(initialValue: offersLanguage)
+    }
 
     var body: some View {
         ZStack {
             DiscoverColors.background.ignoresSafeArea()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    if step == 0 {
-                        importPage
-                        discoveryPage
-                    } else {
-                        finishedPage
-                    }
-                }.padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 24)
+            if choosingLanguage {
+                // OnboardingViewController.swift advances to import and discovery after any language choice.
+                LanguageChooserView(model: languageChooser, background: DiscoverColors.background, topPadding: 8,
+                                    wideHint: horizontalSizeClass == .regular, onFinish: { choosingLanguage = false })
                     .frame(maxWidth: contentWidth).frame(maxWidth: .infinity)
-            }.id(step)
-                .scrollDismissesKeyboard(.interactively)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        if step == 0 {
+                            importPage
+                            discoveryPage
+                        } else {
+                            finishedPage
+                        }
+                    }.padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 24)
+                        .frame(maxWidth: contentWidth).frame(maxWidth: .infinity)
+                }.id(step)
+                    .scrollDismissesKeyboard(.interactively)
+            }
         }
         .safeAreaInset(edge: .top, spacing: 0) { header }
         .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 12) {
-                if step == 0 {
-                    Button(NBLocalization.text("Continue")) { showCompletion() }
-                        .buttonStyle(OnboardingPrimaryButton())
-                } else {
-                    Button(NBLocalization.text("Start reading")) {
-                        bundles.prepareToRead()
-                        onFinish()
-                    }.buttonStyle(OnboardingPrimaryButton())
-                }
-            }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: contentWidth)
-                .frame(maxWidth: .infinity).background(DiscoverColors.background)
+            if !choosingLanguage {
+                VStack(spacing: 12) {
+                    if step == 0 {
+                        Button(NBLocalization.text("Continue")) { showCompletion() }
+                            .buttonStyle(OnboardingPrimaryButton())
+                    } else {
+                        Button(NBLocalization.text("Start reading")) {
+                            bundles.prepareToRead()
+                            onFinish()
+                        }.buttonStyle(OnboardingPrimaryButton())
+                    }
+                }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: contentWidth)
+                    .frame(maxWidth: .infinity).background(DiscoverColors.background)
+            }
         }
         .foregroundColor(DiscoverColors.textPrimary)
+        // OnboardingViewController.swift skips the language step when the account language synced after setup
+        // opened turns out to be an explicit choice.
+        .onReceive(NotificationCenter.default.publisher(for: NBLocalization.changed)) { _ in
+            if choosingLanguage && NBLocalization.language != "auto" { choosingLanguage = false }
+        }
         .onAppear { NewsBlurAppDelegate.shared()?.feedsViewController.syncNotifier?.isPresentationSuppressed = true }
         .onDisappear { NewsBlurAppDelegate.shared()?.feedsViewController.syncNotifier?.isPresentationSuppressed = false }
         .onChange(of: bundles.added) { discovery.addedFeedURLs.formUnion($0) }
@@ -924,7 +953,7 @@ private struct OnboardingView: View {
                     .resizable().frame(width: 36, height: 36)
                 Text(verbatim: "NewsBlur").font(.title3.bold())
                 Spacer(minLength: 8)
-                Text("\(step + 1) / 2").font(.subheadline.monospacedDigit())
+                Text("\(stepIndex + 1) / \(stepCount)").font(.subheadline.monospacedDigit())
                     .foregroundStyle(DiscoverColors.textSecondary)
                 Button {
                     bundles.prepareToRead()
@@ -938,8 +967,8 @@ private struct OnboardingView: View {
                 .accessibilityLabel("Close import and discovery")
             }
             HStack(spacing: 6) {
-                ForEach(0..<2) { index in
-                    Capsule().fill(index <= step ? DiscoverColors.textSecondary : DiscoverColors.border.opacity(0.5)).frame(height: 3)
+                ForEach(0..<stepCount, id: \.self) { index in
+                    Capsule().fill(index <= stepIndex ? DiscoverColors.textSecondary : DiscoverColors.border.opacity(0.5)).frame(height: 3)
                 }
             }
         }

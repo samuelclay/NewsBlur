@@ -97,6 +97,13 @@ final class NewsBlurUITestHarness {
         guard isEnabled, !didScheduleScenario else { return }
 
         UIView.setAnimationsEnabled(ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-animations"))
+        // NewsBlurUITestHarness.swift can grow an iPadOS windowed app toward the screen size, so screenshots taken
+        // without taps capture wide layouts such as LanguageChooserView.swift's side-by-side columns.
+        if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-fill-window") {
+            for scene in UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }) {
+                scene.sizeRestrictions?.minimumSize = scene.screen.bounds.size
+            }
+        }
         // NewsBlurUITestHarness.swift also supports reopening onboarding from the reader's settings menu.
         let onboardingConfiguration = URLSessionConfiguration.ephemeral
         onboardingConfiguration.protocolClasses = [DiscoverSitesUITestURLProtocol.self]
