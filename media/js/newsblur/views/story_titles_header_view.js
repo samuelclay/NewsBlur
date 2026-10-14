@@ -29,6 +29,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         // }
     },
 
+    // story_titles_header_view.js: folder and river names get dir="auto" so a name in another
+    // script keeps its punctuation and truncates at its own end (see reader_rtl.css).
     render: function (options) {
         var $view;
         this.options = _.extend({}, this.options, options);
@@ -50,7 +52,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <img class="feed_favicon" src="<%= $.favicon("starred") %>">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: NEWSBLUR.reader.feed_title(),
@@ -74,7 +76,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <img class="feed_favicon" src="<%= $.favicon("read") %>">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <div class="folder_title_text"><%= folder_title %></div>\
+                    <div class="folder_title_text" dir="auto"><%= folder_title %></div>\
                 </div>\
             ', {
                 folder_title: NEWSBLUR.reader.feed_title(),
@@ -131,7 +133,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <%= $.favicon_html(folder_id) %>\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: NEWSBLUR.reader.feed_title(),
@@ -175,7 +177,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                     <% if (show_settings) { %>\
                     <span class="NB-briefing-preferences-icon" title="<%- gettext("Briefing Preferences") %>">\
                         <div class="NB-icon"></div>\
@@ -201,7 +203,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-folder-icon">\
                         <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
                     </div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="folder_title_text" dir="auto"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: gettext('Briefing Admin'),

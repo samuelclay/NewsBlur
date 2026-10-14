@@ -42,7 +42,8 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         NEWSBLUR.reader.layout.leftLayout.sizePane('north');
 
         if (NEWSBLUR.reader.flags['sidebar_closed']) {
-            NEWSBLUR.reader.layout.outerLayout.show('west', true);
+            // feed_selector.js: layout_edge is the feed list pane, east in RTL languages.
+            NEWSBLUR.reader.layout.outerLayout.show(NEWSBLUR.utils.layout_edge('west'), true);
         }
 
         $input.focus();
@@ -70,7 +71,7 @@ NEWSBLUR.Views.FeedSelector = Backbone.View.extend({
         NEWSBLUR.reader.layout.leftLayout.sizePane('north');
 
         if (NEWSBLUR.reader.flags['sidebar_closed']) {
-            NEWSBLUR.reader.layout.outerLayout.hide('west');
+            NEWSBLUR.reader.layout.outerLayout.hide(NEWSBLUR.utils.layout_edge('west'));
         }
     },
 

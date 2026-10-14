@@ -157,6 +157,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
 
     render_folder: function ($feeds) {
+        // folder_view.js: dir="auto" on .folder_title_text isolates the folder name, so a name in
+        // another script keeps its punctuation and truncates at its own end (see reader_rtl.css).
         var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel NB-sticky-sidebar-folder<% } %>">\
@@ -219,7 +221,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %><%- gettext("Expand Folder") %><% } else {%><%- gettext("Collapse Folder") %><% } %>"></div>\
                 <div class="NB-feedlist-manage-icon" role="button"></div>\
-                <span class="folder_title_text">\
+                <span class="folder_title_text" dir="auto">\
                     <span><%= folder_title %></span>\
                 </span>\
             </div>\

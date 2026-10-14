@@ -362,13 +362,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         };
     },
 
+    // story_detail_view.js: dir="auto" on feed titles, story titles, dates, authors, tags and the
+    // story content lets each take the direction of its own text, so an English story reads
+    // correctly in an Arabic interface and vice versa (see media/css/reader/reader_rtl.css).
     story_header_template: _.template('\
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <%= $.favicon_html(feed) %>\
-                    <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
+                    <span class="NB-feed-story-header-title" dir="auto"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\
         </div>\
@@ -377,7 +380,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-feed-story-title-container">\
                     <div class="NB-feed-story-sentiment"></div>\
                     <div class="NB-feed-story-manage-icon"></div>\
-                    <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
+                    <a class="NB-feed-story-title" dir="auto" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
                 <div class="NB-feed-story-date-line">\
                     <% if (story.get("has_modifications")) { %>\
@@ -388,13 +391,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                         </div>\
                     <% } %>\
-                    <div class="NB-feed-story-date">\
+                    <div class="NB-feed-story-date" dir="auto">\
                         <%= story.formatted_long_date() %>\
                     </div>\
                     <% if (story.story_authors()) { %>\
                         <div class="NB-feed-story-author-wrapper">\
                             <span class="NB-middot">&middot;</span>\
-                            <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                            <span dir="auto" class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
                                 <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
                                 <%= classifier_filter_button_html("author", story.story_authors()) %>\
                             </span>\
@@ -404,7 +407,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-feed-story-tags">\
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(story.get("story_tags"), function(tag) { %>\
-                                <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                <div dir="auto" class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                     <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
                                     <%= classifier_filter_button_html("tag", tag) %>\
                                 </div>\
@@ -434,7 +437,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-feed-story-starred-date">\
                         <span class="NB-icon"></span>\
                         <span class="NB-title"><%- gettext("Saved:") %> </span>\
-                        <span class="NB-date"><%= story.get("starred_date") %></span>\
+                        <span class="NB-date" dir="auto"><%= story.get("starred_date") %></span>\
                     </div >\
                 <% } %>\
             </div>\
@@ -447,7 +450,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
                 <div class="NB-story-content-positioning-wrapper">\
-                    <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
+                    <div dir="auto" class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
                         <% if (!options.skip_content) { %>\
                             <%= story.story_content() %>\
                         <% } %>\
@@ -714,10 +717,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $icon = $(e.currentTarget);
         var $tooltip = $icon.siblings('.NB-clustering-detail-info-tooltip');
         var rect = $icon[0].getBoundingClientRect();
-        $tooltip.css({
-            top: rect.top - $tooltip.outerHeight() - 8,
-            right: window.innerWidth - rect.right - 4
-        }).show();
+        // story_detail_view.js: inline_end_alignment_css opens the tooltip toward the screen's middle in LTR and RTL.
+        $tooltip.css(_.extend({
+            top: rect.top - $tooltip.outerHeight() - 8
+        }, NEWSBLUR.utils.inline_end_alignment_css(rect, 4))).show();
     },
 
     hide_clustering_tooltip: function (e) {

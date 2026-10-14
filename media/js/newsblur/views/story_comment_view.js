@@ -27,6 +27,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var quote_html = extracted.quote
             ? '<blockquote>' + extracted.quote.replace(/\n/g, '<br>') + '</blockquote>'
             : '';
+        // story_comment_view.js: the username and comment below get dir="auto", so mixed scripts read correctly in LTR and RTL.
         var comments = quote_html + extracted.comments.replace(/\n+/g, '<br><br>');
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
         var has_likes = _.any(this.model.get('liking_users'));
@@ -40,7 +41,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
                     profile_thumb && profile_thumb.render().el
                 ])),
-                $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
+                $.make('div', { className: 'NB-story-comment-username', dir: 'auto' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, interpolate(gettext("%(value_1)s ago"), {value_1: this.model.get('shared_date')}, true)),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, [
@@ -60,7 +61,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 ])),
                 $.make('div', { className: 'NB-story-comment-error' })
             ]),
-            $.make('div', { className: 'NB-story-comment-content' }, comments),
+            $.make('div', { className: 'NB-story-comment-content', dir: 'auto' }, comments),
             this.make_story_share_comment_replies()
         ]);
 

@@ -84,6 +84,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         Backbone.View.prototype.remove.call(this);
     },
 
+    // feed_title_view.js: dir="auto" on .feed_title isolates the feed name, so a title in another
+    // script keeps its punctuation and truncates at its own end (see media/css/reader/reader_rtl.css).
     render: function () {
         var feed = this.model;
         var extra_classes = this.extra_classes();
@@ -152,7 +154,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               <% } %>\
           <% } %>\
           <%= $.favicon_html(feed, { role: type == "story" ? "button" : null }) %>\
-          <span class="feed_title">\
+          <span class="feed_title" dir="auto">\
             <%= feed.get("feed_title") %>\
           </span>\
           <div class="NB-feed-exception-icon"></div>\
@@ -510,23 +512,26 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         var $expand = this.$(".NB-feedbar-mark-feed-read-expand");
         var $times = this.$(".NB-feedbar-mark-feed-read-time");
         var times_count = $times.length;
+        // feed_title_view.js: the mirrored CSS (utils/rtl_css.py) pins these from the left in RTL,
+        // so the times fan out from that side and the container makes room on its right.
+        var is_rtl = NEWSBLUR.utils.is_rtl();
+        var edge = is_rtl ? 'left' : 'right';
+        var expand_to = { opacity: 0 };
+        expand_to[edge] = 0;
 
         $hidden.hide();
         $markread.css('z-index', times_count + 1);
-        $container.css('margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
-        $expand.animate({
-            right: 0,
-            opacity: 0
-        }, {
+        $container.css(is_rtl ? 'margin-right' : 'margin-left', $times.eq(0).outerWidth(true) * (times_count - 1) + 12);
+        $expand.animate(expand_to, {
             queue: false,
             easing: 'easeInQuint',
             duration: 180,
             complete: function () {
                 $times.each(function (i) {
+                    var fan_to = {};
+                    fan_to[edge] = (32 * (i + 1)) + 6;
                     $(this).css('z-index', times_count - i);
-                    $(this).animate({
-                        right: (32 * (i + 1)) + 6
-                    }, {
+                    $(this).animate(fan_to, {
                         queue: false,
                         easing: 'easeOutBack',
                         duration: 280 + 100 * (Math.pow(i, 0.5))

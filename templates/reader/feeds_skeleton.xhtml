@@ -23,7 +23,8 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         {% endif %}
                     {% endif %}
                 </div>
-                <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
+                {# feeds_skeleton.xhtml: dir="auto" isolates the username for RTL and LTR interfaces. #}
+                <div class="NB-feeds-header-user-name" dir="auto">{{ social_profile.username }}</div>
                 <div class="NB-feeds-header-collapse-sidebar" role="button">
                     <img src="{{ MEDIA_URL }}/img/icons/nouns/nav-left.svg">
                 </div>

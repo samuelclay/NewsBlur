@@ -337,7 +337,8 @@
             if (story_layout == 'split') {
                 north = NEWSBLUR.reader.layout.contentLayout.panes.north;
                 center = NEWSBLUR.reader.layout.contentLayout.panes.center;
-                west = NEWSBLUR.reader.layout.contentLayout.panes.west;
+                // reader.js: the side-by-side titles pane is the east pane in RTL.
+                west = NEWSBLUR.reader.layout.contentLayout.panes[NEWSBLUR.utils.layout_edge('west')];
             } else {
                 center = NEWSBLUR.reader.layout.rightLayout.panes.center;
             }
@@ -371,8 +372,9 @@
                 $windows.removeClass('NB-narrow');
             }
 
-            var pane = this.layout.outerLayout.panes.west;
-            var width = this.layout.outerLayout.state.west.size;
+            var feed_pane_edge = NEWSBLUR.utils.layout_edge('west');
+            var pane = this.layout.outerLayout.panes[feed_pane_edge];
+            var width = this.layout.outerLayout.state[feed_pane_edge].size;
             pane.toggleClass("NB-narrow-pane-blue", width < 306);
             pane.toggleClass("NB-narrow-pane-green", width < 278);
             pane.toggleClass("NB-narrow-pane-yellow", width < 258);
@@ -383,6 +385,11 @@
         apply_resizable_layout: function (options) {
             options = options || {};
             var story_anchor = this.model.preference('story_pane_anchor');
+            // reader.js: story_anchor stays logical for the NB-story-pane-* classes, while
+            // the jQuery Layout panes use physical edges. In RTL the feed list and the
+            // side-by-side titles pane are east panes (see NEWSBLUR.utils.layout_edge).
+            var story_anchor_edge = NEWSBLUR.utils.layout_edge(story_anchor);
+            var feed_pane_edge = NEWSBLUR.utils.layout_edge('west');
 
             if (options.right_side) {
                 this.layout.contentLayout && this.layout.contentLayout.destroy();
@@ -402,23 +409,25 @@
                 .toggleClass('NB-story-pane-' + story_anchor,
                     NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
             if (!options.right_side) {
-                this.layout.outerLayout = this.$s.$layout.layout({
+                var outerLayoutOptions = {
                     zIndex: 2,
                     fxName: "slideOffscreen",
                     fxSettings: { duration: 560, easing: "easeInOutQuint" },
                     center__paneSelector: ".right-pane",
-                    west__paneSelector: ".left-pane",
-                    west__size: this.model.preference('feed_pane_size'),
-                    west__minSize: this.constants.MIN_FEED_LIST_SIZE,
-                    west__onresize_end: _.bind(this.save_feed_pane_size, this),
-                    west__onopen: _.bind(this.resize_window, this),
-                    // west__initHidden:       this.options.hide_sidebar,
-                    west__spacing_open: this.options.hide_sidebar ? 1 : 1,
                     resizerDragOpacity: 0.6,
                     resizeWhileDragging: true,
                     enableCursorHotkey: false,
                     togglerLength_open: 0
-                });
+                };
+                // reader.js: the feed list is the west pane in LTR and the east pane in RTL.
+                outerLayoutOptions[feed_pane_edge + '__paneSelector'] = ".left-pane";
+                outerLayoutOptions[feed_pane_edge + '__size'] = this.model.preference('feed_pane_size');
+                outerLayoutOptions[feed_pane_edge + '__minSize'] = this.constants.MIN_FEED_LIST_SIZE;
+                outerLayoutOptions[feed_pane_edge + '__onresize_end'] = _.bind(this.save_feed_pane_size, this);
+                outerLayoutOptions[feed_pane_edge + '__onopen'] = _.bind(this.resize_window, this);
+                // outerLayoutOptions[feed_pane_edge + '__initHidden'] = this.options.hide_sidebar;
+                outerLayoutOptions[feed_pane_edge + '__spacing_open'] = this.options.hide_sidebar ? 1 : 1;
+                this.layout.outerLayout = this.$s.$layout.layout(outerLayoutOptions);
 
                 this.layout.leftLayout = $('.left-pane').layout({
                     closable: false,
@@ -494,17 +503,17 @@
                     togglerLength_open: 0
                 };
                 if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
-                    contentLayoutOptions[story_anchor + '__initHidden'] = true;
+                    contentLayoutOptions[story_anchor_edge + '__initHidden'] = true;
                     this.flags['story_titles_closed'] = true;
                 } else {
                     this.flags['story_titles_closed'] = false;
                 }
-                contentLayoutOptions[story_anchor + '__paneSelector'] = '.right-north';
-                contentLayoutOptions[story_anchor + '__minSize'] = this.constants.MIN_STORY_LIST_SIZE;
-                contentLayoutOptions[story_anchor + '__size'] = this.model.preference('story_titles_pane_size');
-                contentLayoutOptions[story_anchor + '__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
-                contentLayoutOptions[story_anchor + '__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
-                contentLayoutOptions[story_anchor + '__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
+                contentLayoutOptions[story_anchor_edge + '__paneSelector'] = '.right-north';
+                contentLayoutOptions[story_anchor_edge + '__minSize'] = this.constants.MIN_STORY_LIST_SIZE;
+                contentLayoutOptions[story_anchor_edge + '__size'] = this.model.preference('story_titles_pane_size');
+                contentLayoutOptions[story_anchor_edge + '__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
+                contentLayoutOptions[story_anchor_edge + '__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
+                contentLayoutOptions[story_anchor_edge + '__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
                 this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions);
             } else if (_.contains(['list', 'grid', 'magazine'],
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -554,9 +563,11 @@
                 $(this).tipsy('disable');
             });
 
+            // reader.js: the add button sits at the right edge in RTL, so its tooltip opens leftward.
+            var is_rtl = NEWSBLUR.utils.is_rtl();
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-add').tipsy({
-                    gravity: 'sw',
+                    gravity: is_rtl ? 'se' : 'sw',
                     delayIn: 375
                 }).tipsy('enable');
                 $('.NB-task-manage').tipsy({
@@ -573,7 +584,7 @@
             }
 
             $('.NB-module-content-account-realtime').tipsy('disable').tipsy({
-                gravity: 'se',
+                gravity: is_rtl ? 'sw' : 'se',
                 delayIn: 0
             }).tipsy('enable');
         },
@@ -581,12 +592,14 @@
         save_feed_pane_size: function (pane, $pane, state, options, name) {
             if (!this.layout.outerLayout) return;
 
-            var feed_pane_size = this.layout.outerLayout.state.west.size;
+            // reader.js: the feed list is the east pane in RTL (NEWSBLUR.utils.layout_edge),
+            // so the dashboard splash is offset from the right edge instead of the left.
+            var feed_pane_size = this.layout.outerLayout.state[NEWSBLUR.utils.layout_edge('west')].size;
 
-            $('#NB-splash').css('left', feed_pane_size);
+            $('#NB-splash').css(NEWSBLUR.utils.is_rtl() ? 'right' : 'left', feed_pane_size);
             this.adjust_for_narrow_window();
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce(_.bind(function () {
-                var feed_pane_size = this.layout.outerLayout.state.west.size;
+                var feed_pane_size = this.layout.outerLayout.state[NEWSBLUR.utils.layout_edge('west')].size;
                 // console.log('debounced save_feed_pane_size', this, feed_pane_size);
                 this.model.preference('feed_pane_size', feed_pane_size);
                 this.flags.set_feed_pane_size = null;
@@ -602,7 +615,7 @@
             this.align_story_pane_to_current_view();
 
             this.flags.set_story_titles_size = this.flags.set_story_titles_size || _.debounce(_.bind(function () {
-                var story_titles_size = this.layout.contentLayout.state[this.model.preference('story_pane_anchor')].size;
+                var story_titles_size = this.layout.contentLayout.state[NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'))].size;
                 this.model.preference('story_titles_pane_size', story_titles_size);
                 this.flags.set_story_titles_size = null;
                 this.locks.scrolling = _.delay(_.bind(function () {
@@ -620,7 +633,8 @@
         },
 
         add_drag_handles: function () {
-            var $resizer = NEWSBLUR.reader.layout.outerLayout.resizers.west;
+            // reader.js: the feed list resizer is on the east pane in RTL.
+            var $resizer = NEWSBLUR.reader.layout.outerLayout.resizers[NEWSBLUR.utils.layout_edge('west')];
             if ($resizer.find(".NB-task-drag").length) return;
 
             $resizer.append($.make('div', { className: "NB-task-drag" }, [
@@ -1363,7 +1377,7 @@
             // Both accept the same dialog keywords.
             var test_param = $.getQueryString('test');
             var next_param = $.getQueryString('next');
-            var dialog_keywords = ['feedchooser', 'premium', 'faq'];
+            var dialog_keywords = ['feedchooser', 'premium', 'faq', 'language', 'language_intro'];
             var dialog_param = _.contains(dialog_keywords, test_param) ? test_param
                              : _.contains(dialog_keywords, next_param) ? next_param
                              : null;
@@ -1624,7 +1638,7 @@
             }
             if (NEWSBLUR.Globals.is_anonymous) {
                 if (options.router) {
-                    this.$s.$layout.layout().show('west', true);
+                    this.$s.$layout.layout().show(NEWSBLUR.utils.layout_edge('west'), true);
                     this.$s.$layout.show();
                 }
                 this.hide_tryout_signup_button();
@@ -1644,7 +1658,8 @@
 
             if (this.archive_view) {
                 // Restore story titles pane and taskbars that were hidden for archive view
-                var story_anchor = this.model.preference('story_pane_anchor');
+                // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+                var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
                 if (this.layout.contentLayout) {
                     this.layout.contentLayout.open(story_anchor, true);
                 }
@@ -1659,7 +1674,8 @@
 
             if (this.add_site_view) {
                 // Restore story titles pane and taskbars instantly that were hidden for add site view
-                var story_anchor = this.model.preference('story_pane_anchor');
+                // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+                var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
                 if (this.layout.contentLayout) {
                     this.layout.contentLayout.open(story_anchor, true);  // true = instant, no animation
                 }
@@ -3412,7 +3428,8 @@
 
             // Hide story titles pane and taskbars to give archive view full width
             // Must be after make_feed_title_in_stories which may affect layout
-            var story_anchor = this.model.preference('story_pane_anchor');
+            // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+            var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
             if (this.layout.contentLayout) {
                 this.layout.contentLayout.hide(story_anchor, true);
             }
@@ -3489,7 +3506,8 @@
 
             // Hide story titles pane and taskbars instantly to give add site view full width
             // Must be after make_feed_title_in_stories which may affect layout
-            var story_anchor = this.model.preference('story_pane_anchor');
+            // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+            var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
             if (this.layout.contentLayout) {
                 this.layout.contentLayout.hide(story_anchor, true);
             }
@@ -5103,14 +5121,14 @@
         },
 
         close_sidebar: function () {
-            this.layout.outerLayout.hide('west');
+            this.layout.outerLayout.hide(NEWSBLUR.utils.layout_edge('west'));
             this.resize_window();
             this.flags['sidebar_closed'] = true;
             NEWSBLUR.app.story_titles_header.watch_toggled_sidebar();
         },
 
         open_sidebar: function () {
-            this.layout.outerLayout.open('west');
+            this.layout.outerLayout.open(NEWSBLUR.utils.layout_edge('west'));
             this.resize_window();
             this.flags['sidebar_closed'] = false;
             NEWSBLUR.app.story_titles_header.watch_toggled_sidebar();
@@ -5125,7 +5143,8 @@
         },
 
         close_story_titles_pane: function (update_layout) {
-            var story_anchor = this.model.preference('story_pane_anchor');
+            // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+            var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
             if (update_layout) {
                 var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
                 NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, no_animation);
@@ -5135,7 +5154,8 @@
         },
 
         open_story_titles_pane: function (update_layout) {
-            var story_anchor = this.model.preference('story_pane_anchor');
+            // reader.js: layout_edge maps the side-by-side titles pane to the east pane in RTL.
+            var story_anchor = NEWSBLUR.utils.layout_edge(this.model.preference('story_pane_anchor'));
             if (update_layout) {
                 var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
                 NEWSBLUR.reader.layout.contentLayout.open(story_anchor, no_animation);
@@ -5828,6 +5848,8 @@
                 }
 
                 if ($item.hasClass('NB-task-manage')) {
+            // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
+            var $menu_anchor = $item;
                     $manage_menu_container.align($item, 'top -left', {
                         'top': 0,
                         'left': -2
@@ -5881,7 +5903,8 @@
                         'left': left
                     });
 
-                    $manage_menu_container.corner('br 8px').corner('bl top 0px');
+                    // reader.js: rtl_corners rounds the mirrored corner in RTL.
+                    $manage_menu_container.corner(NEWSBLUR.utils.rtl_corners('br 8px')).corner(NEWSBLUR.utils.rtl_corners('bl top 0px'));
                     $('li', $manage_menu_container).not('.NB-menu-manage-story-feed-submenu li').each(function () {
                         $(this).prependTo($(this).parent());
                     });
@@ -5897,6 +5920,7 @@
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'socialfeed' || type == 'starred' || type == 'search') {
                         left = toplevel ? 0 : -18;
+                    $menu_anchor = $align;
                         top = toplevel ? 20 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
@@ -5914,7 +5938,8 @@
                         'top': top,
                         'left': left
                     });
-                    $manage_menu_container.corner('tr 8px').corner('tl bottom 0px');
+                    // reader.js: rtl_corners rounds the mirrored corner in RTL.
+                    $manage_menu_container.corner(NEWSBLUR.utils.rtl_corners('tr 8px')).corner(NEWSBLUR.utils.rtl_corners('tl bottom 0px'));
                 }
             }
             $manage_menu_container.stop().css({ 'display': 'block', 'opacity': 1 });
@@ -5931,6 +5956,7 @@
                 if (container_offset.top < margin) {
                     // Menu extends above viewport (inverse/upward menus)
                     max_height = container_height + container_offset.top - margin;
+                    $menu_anchor = $align;
                     $manage_menu_container.css('top', margin);
                     needs_scroll = true;
                 } else if (container_offset.top + container_height > window_height - margin) {
@@ -5939,6 +5965,8 @@
                     needs_scroll = true;
                 }
 
+            // reader.js: $.fn.align only knows LTR placements, so flip the menu around its anchor in RTL.
+            NEWSBLUR.utils.mirror_aligned_element($manage_menu_container, $menu_anchor);
                 if (needs_scroll && max_height > 0) {
                     $manage_menu_container.css({
                         'max-height': max_height,
@@ -6130,8 +6158,15 @@
             var submenu_left = menu_rect.right - 2;
             var submenu_top = item_rect.top;
 
-            // If not enough space on the right, position to the left
-            if (submenu_left + submenu_width > window_width) {
+            if (NEWSBLUR.utils.is_rtl()) {
+                // reader.js: in RTL the flyout opens to the left of the menu, falling
+                // back to the right when there isn't room.
+                submenu_left = menu_rect.left - submenu_width + 2;
+                if (submenu_left < 0) {
+                    submenu_left = menu_rect.right - 2;
+                }
+            } else if (submenu_left + submenu_width > window_width) {
+                // If not enough space on the right, position to the left
                 submenu_left = menu_rect.left - submenu_width + 2;
             }
 
@@ -9708,7 +9743,8 @@
                 if (NEWSBLUR.assets.preference('keyboard_horizontalarrows') == 'site') {
                     self.show_next_feed(-1);
                 } else {
-                    self.switch_taskbar_view_direction(-1);
+                    // reader.js: the view tabs are mirrored in RTL, so the left arrow moves to the next tab there.
+                    self.switch_taskbar_view_direction(NEWSBLUR.utils.is_rtl() ? 1 : -1);
                 }
             });
             $document.bind('keydown', 'right', function (e) {
@@ -9716,7 +9752,7 @@
                 if (NEWSBLUR.assets.preference('keyboard_horizontalarrows') == 'site') {
                     self.show_next_feed(1);
                 } else {
-                    self.switch_taskbar_view_direction(1);
+                    self.switch_taskbar_view_direction(NEWSBLUR.utils.is_rtl() ? -1 : 1);
                 }
             });
             $document.bind('keydown', 'h', function (e) {

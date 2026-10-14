@@ -1206,6 +1206,10 @@ PIPELINE = {
             "source_filenames": assets["stylesheets"]["common"],
             "output_filename": "css/common.css",
         },
+        "rtl": {
+            "source_filenames": assets["stylesheets"]["rtl"],
+            "output_filename": "css/rtl.css",
+        },
         "bookmarklet": {
             "source_filenames": assets["stylesheets"]["bookmarklet"],
             "output_filename": "css/bookmarklet.css",

@@ -821,12 +821,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var space_above = icon_rect.top - 8;
         var place_above = space_below < popover_height && space_above > space_below;
 
-        $popover.css({
+        // briefing_preferences_popover.js: inline_end_alignment_css opens the popover toward the screen's middle in LTR and RTL.
+        $popover.css(_.extend({
             visibility: '',
-            display: '',
-            right: window.innerWidth - icon_rect.right,
-            left: 'auto'
-        });
+            display: ''
+        }, NEWSBLUR.utils.inline_end_alignment_css(icon_rect)));
         if (place_above) {
             $popover.css({ top: 'auto', bottom: (window.innerHeight - icon_rect.top + 8) + 'px' });
         } else {

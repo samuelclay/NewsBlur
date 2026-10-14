@@ -111,6 +111,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$('.story_title').first().append($url_match);
     },
 
+    // story_title_view.js: dir="auto" isolates feed titles, story titles, authors, previews and
+    // dates, so mixed scripts keep their punctuation and truncate at the end of their own text
+    // in both LTR and RTL interfaces (see media/css/reader/reader_rtl.css).
     template: _.template('\
         <div class="NB-story-title NB-story-title-split <% if (!show_content_preview) { %>NB-story-title-hide-preview<% } %> <% if (show_image_preview) { %>NB-has-image<% } %> ">\
             <div class="NB-storytitles-feed-border-inner"></div>\
@@ -126,24 +129,24 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <%= $.favicon_html(feed) %>\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                        <span class="feed_title" dir="auto"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
                 <div class="NB-storytitles-star"></div>\
                 <div class="NB-storytitles-share"></div>\
-                <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                <span class="NB-storytitles-title" dir="auto"><%= story.get("story_title") %></span>\
                 <% if (pane_anchor != "west") { %>\
                     <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
-                    <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                    <span class="NB-storytitles-author" dir="auto"><%= story.story_authors() %></span>\
                 <% } %>\
                 <% if (show_content_preview) { %>\
-                    <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
+                    <div class="NB-storytitles-content-preview <%= content_preview_class %>" dir="auto"><%= show_content_preview %></div>\
                 <% } %>\
                 <div class="NB-story-title-split-bottom">\
-                    <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
+                    <span class="story_date NB-hidden-fade" dir="auto"><%= story.formatted_short_date() %></span>\
                     <% if (pane_anchor == "west") { %>\
                         <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
-                        <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                        <span class="NB-storytitles-author" dir="auto"><%= story.story_authors() %></span>\
                     <% } %>\
                 </div>\
             </a>\
@@ -175,20 +178,20 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <%= $.favicon_html(feed) %>\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                        <span class="feed_title" dir="auto"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
                 <div class="NB-storytitles-star"></div>\
                 <div class="NB-storytitles-share"></div>\
-                <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                <span class="NB-storytitles-title" dir="auto"><%= story.get("story_title") %></span>\
                 <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
-                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                <span class="NB-storytitles-author" dir="auto"><%= story.story_authors() %></span>\
                 <% if (show_content_preview) { %>\
-                    <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
+                    <div class="NB-storytitles-content-preview <%= content_preview_class %>" dir="auto"><%= show_content_preview %></div>\
                 <% } %>\
             </a>\
             <div class="NB-story-title-list-bottom">\
-                <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
+                <span class="story_date NB-hidden-fade" dir="auto"><%= story.formatted_short_date() %></span>\
             </div>\
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
@@ -216,7 +219,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <%= $.favicon_html(feed) %>\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                        <span class="feed_title" dir="auto"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
 \
@@ -225,16 +228,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <div class="NB-storytitles-share"></div>\
                     <div class="NB-storytitles-sentiment"></div>\
                     <div class="NB-story-manage-icon" role="button"></div>\
-                    <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                    <span class="NB-storytitles-title" dir="auto"><%= story.get("story_title") %></span>\
                     <% if (show_content_preview) { %>\
-                        <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
+                        <div class="NB-storytitles-content-preview <%= content_preview_class %>" dir="auto"><%= show_content_preview %></div>\
                     <% } %>\
                 </a>\
             </div>\
             <div class="NB-storytitles-grid-bottom">\
-                <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
+                <span class="story_date NB-hidden-fade" dir="auto"><%= story.formatted_short_date() %></span>\
                 <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
-                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                <span class="NB-storytitles-author" dir="auto"><%= story.story_authors() %></span>\
             </div>\
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
@@ -260,7 +263,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
                         <%= $.favicon_html(feed) %>\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                        <span class="feed_title" dir="auto"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
 \
@@ -269,16 +272,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <div class="NB-storytitles-share"></div>\
                     <div class="NB-storytitles-sentiment"></div>\
                     <div class="NB-story-manage-icon" role="button"></div>\
-                    <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+                    <span class="NB-storytitles-title" dir="auto"><%= story.get("story_title") %></span>\
                     <% if (show_content_preview) { %>\
-                        <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
+                        <div class="NB-storytitles-content-preview <%= content_preview_class %>" dir="auto"><%= show_content_preview %></div>\
                     <% } %>\
                 </a>\
             </div>\
             <div class="NB-storytitles-magazine-bottom">\
-                <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
+                <span class="story_date NB-hidden-fade" dir="auto"><%= story.formatted_short_date() %></span>\
                 <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
-                <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
+                <span class="NB-storytitles-author" dir="auto"><%= story.story_authors() %></span>\
             </div>\
             <% if (story.get("comment_count_friends")) { %>\
                 <div class="NB-storytitles-shares">\
@@ -905,11 +908,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     '<div class="NB-storytitles-sentiment"></div>' +
                     image_html +
                     '<div class="NB-story-feed">' + favicon + '</div>' +
-                    '<span class="NB-storytitles-title">' + _.escape(title) + '</span>' +
-                    (content_preview ? '<div class="NB-storytitles-content-preview">' + _.escape(content_preview) + '</div>' : '') +
+                    '<span class="NB-storytitles-title" dir="auto">' + _.escape(title) + '</span>' +
+                    (content_preview ? '<div class="NB-storytitles-content-preview" dir="auto">' + _.escape(content_preview) + '</div>' : '') +
                     '<div class="NB-story-title-split-bottom">' +
-                    '<span class="story_date">' + date + '</span> ' +
-                    (authors ? '<span class="NB-middot">&middot;</span> <span class="NB-storytitles-author">' + _.escape(authors) + '</span>' : '') +
+                    '<span class="story_date" dir="auto">' + date + '</span> ' +
+                    (authors ? '<span class="NB-middot">&middot;</span> <span class="NB-storytitles-author" dir="auto">' + _.escape(authors) + '</span>' : '') +
                     '<span class="NB-middot">&middot;</span> ' + tier_badge_html +
                     '</div>' +
                     '</a>' +
@@ -934,14 +937,14 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
                     '<div class="NB-cluster-sentiment"></div>' +
                     favicon +
-                    '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
+                    '<span class="NB-cluster-story-title" dir="auto">' + _.escape(title) + '</span>' +
                     // Tier badge sits right after the title so the reason the
                     // story was clustered is adjacent to the title itself.
                     // The image thumbnail is pushed to the right edge next to
                     // the date so it reads as a row-level affordance.
                     tier_badge_html +
                     cluster_image_html +
-                    '<span class="NB-cluster-date">' + date + '</span>' +
+                    '<span class="NB-cluster-date" dir="auto">' + date + '</span>' +
                     '</div>');
                 $container.append($source);
             }

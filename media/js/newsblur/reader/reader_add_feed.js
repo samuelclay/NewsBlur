@@ -252,6 +252,8 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
 
     setup_chosen: function () {
         var $select = this.$('select');
+        // reader_add_feed.js: chosen reads its RTL layout (media/css/controls/chosen.css) from chzn-rtl.
+        $select.toggleClass('chzn-rtl', NEWSBLUR.utils.is_rtl());
         $select.chosen();
     },
 

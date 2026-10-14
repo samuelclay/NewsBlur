@@ -120,12 +120,13 @@ test('story classifier pills embed browse buttons for matching-story views', fun
     assert.match(js, /show_classifier_filter_tooltip:\s*function[\s\S]*?tippy\(e\.currentTarget/);
     assert.match(js, /trigger:\s*'manual'/);
 
-    const author_start = js.indexOf('<span class="NB-feed-story-author');
+    // classifier_filter_layout.test.js allows attributes such as dir="auto" before the class.
+    const author_start = js.search(/<span[^>]*class="NB-feed-story-author/);
     const author_button = js.indexOf('classifier_filter_button_html("author"', author_start);
     const author_end = js.indexOf('</span>', author_start);
     assert.ok(author_button > author_start && author_button < author_end);
 
-    const tag_start = js.indexOf('<div class="NB-feed-story-tag ');
+    const tag_start = js.search(/<div[^>]*class="NB-feed-story-tag /);
     const tag_button = js.indexOf('classifier_filter_button_html("tag"', tag_start);
     const tag_end = js.indexOf('</div>', tag_start);
     assert.ok(tag_button > tag_start && tag_button < tag_end);

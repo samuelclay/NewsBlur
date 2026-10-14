@@ -7,6 +7,71 @@ NEWSBLUR.utils = {
         return !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro;
     },
 
+    // reader_utils.js: True when the interface language is written right to left
+    // (Arabic, Hebrew). templates/base.html sets <html dir> from the account
+    // language, and the page links CSS mirrored by utils/rtl_css.py plus the
+    // overrides in media/css/reader/reader_rtl.css.
+    is_rtl: function () {
+        return document.documentElement.dir == 'rtl';
+    },
+
+    // reader_utils.js: jQuery Layout pane names are physical ("west" is always
+    // the left side). Callers name the logical edge they mean for LTR, and in RTL
+    // this returns the mirrored pane, so the feed list and the side-by-side story
+    // titles pane sit on the right.
+    layout_edge: function (edge) {
+        if (!NEWSBLUR.utils.is_rtl()) return edge;
+        if (edge == 'west') return 'east';
+        if (edge == 'east') return 'west';
+        return edge;
+    },
+
+    // reader_utils.js: $.fn.align (media/js/vendor/jquery.newsblur.js) only knows
+    // LTR placements. In RTL, flip an aligned popover or menu horizontally around
+    // its anchor so it opens toward the inline end, mirroring the LTR geometry.
+    mirror_aligned_element: function ($el, $anchor) {
+        if (!NEWSBLUR.utils.is_rtl()) return;
+        $anchor = $($anchor).first();
+        if (!$el || !$el.length || !$anchor.length) return;
+        var anchor_offset = $anchor.offset();
+        var el_offset = $el.offset();
+        if (!anchor_offset || !el_offset) return;
+        var el_width = $el.outerWidth();
+        var anchor_width = $anchor.outerWidth();
+        var client_width = document.documentElement.clientWidth;
+        var mirrored_left = 2 * anchor_offset.left + anchor_width - el_offset.left - el_width;
+        mirrored_left = Math.max(0, Math.min(mirrored_left, client_width - el_width));
+        // Pin the mirrored element by its right edge, so if it grows later (scrollbars,
+        // late content) it grows toward the inline end like the LTR original does.
+        var $parent = $el.offsetParent();
+        var parent = $parent[0];
+        var parent_right = client_width;
+        if (parent && parent != document.documentElement && parent != document.body) {
+            parent_right = $parent.offset().left + parent.clientLeft + parent.clientWidth;
+        }
+        $el.css({ right: parent_right - (mirrored_left + el_width), left: 'auto' });
+    },
+
+    // reader_utils.js: CSS for a position: fixed popover whose inline-end edge lines up
+    // with its trigger's inline-end edge, so it opens toward the middle of the screen:
+    // from the trigger's right edge leftward in LTR, from its left edge rightward in RTL.
+    inline_end_alignment_css: function (rect, inset) {
+        inset = inset || 0;
+        if (NEWSBLUR.utils.is_rtl()) {
+            return { left: rect.left - inset, right: 'auto' };
+        }
+        return { right: window.innerWidth - rect.right - inset, left: 'auto' };
+    },
+
+    // reader_utils.js: jquery.corners takes physical corner names (tl, tr, bl, br).
+    // Swap them in RTL so rounded corners follow the mirrored menus.
+    rtl_corners: function (spec) {
+        if (!NEWSBLUR.utils.is_rtl()) return spec;
+        return spec.replace(/\b(t|b)(l|r)\b/g, function (match, vertical, horizontal) {
+            return vertical + (horizontal == 'l' ? 'r' : 'l');
+        });
+    },
+
     // reader_utils.js: Shared Premium Archive callout — a light strip with the
     // archive badge and a one-line message that opens the upgrade modal. Used by
     // the briefing views and the related stories upsell. Pass
