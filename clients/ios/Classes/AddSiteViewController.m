@@ -366,7 +366,7 @@
     __weak __typeof(&*self)weakSelf = self;
     
     [viewController addTitle:[NBLocalization text:@"Top Level"] iconName:@"menu_icn_all.png" selectionShouldDismiss:NO handler:^{
-        weakSelf.inFolderInput.text = [NBLocalization text:@"— Top Level —"];
+        weakSelf.inFolderInput.text = @"— Top Level —";
         [self.navigationController popViewControllerAnimated:YES];
     }];
     

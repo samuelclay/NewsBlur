@@ -95,9 +95,9 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     [HUD hide:YES afterDelay:(details ? 3 : 1)];
     
     //    UIAlertView* alertView = [[UIAlertView alloc]
-    //                              initWithTitle:[NBLocalization text:@"Error"]
+    //                              initWithTitle:@"Error"
     //                              message:localizedDescription delegate:nil
-    //                              cancelButtonTitle:[NBLocalization text:@"OK"]
+    //                              cancelButtonTitle:@"OK"
     //                              otherButtonTitles:nil];
     //    [alertView show];
     //    [alertView release];
@@ -173,7 +173,9 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle wantPriority:(BOOL)wantPriority {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
     if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
-        keyCommand.discoverabilityTitle = discoverabilityTitle;
+        // BaseViewController.m translates every shortcut title here; localization/manage.py extracts the
+        // discoverabilityTitle:@"..." literals passed by callers.
+        keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
         if (@available(iOS 15.0, *)) {
             keyCommand.wantsPriorityOverSystemBehavior = wantPriority;
         }
@@ -234,7 +236,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
                                                         input:input
                                                 modifierFlags:modifierFlags
                                                  propertyList:NSStringFromSelector(readerAction)];
-    keyCommand.discoverabilityTitle = discoverabilityTitle;
+    keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
     keyCommand.wantsPriorityOverSystemBehavior = YES;
     [self addKeyCommand:keyCommand];
 }
@@ -755,22 +757,22 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)muteSite:(id)sender {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to mute %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Mute Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController muteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)deleteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to delete %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to delete %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Delete Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController deleteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }

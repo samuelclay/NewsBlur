@@ -993,15 +993,15 @@
 - (void)prepareVerticalReaderToolbar {
     if (self.verticalReaderToolbarItems) return;
     BOOL horizontal = self.isHorizontal;
-    self.verticalTextButton = [self readerBarButtonWithTitle:@"Text view" symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
-    self.verticalSendButton = [self readerBarButtonWithTitle:@"Share story" symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
-    self.verticalProgressButton = [self readerBarButtonWithTitle:@"Reading progress" symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
-    self.verticalPreviousButton = [self readerBarButtonWithTitle:@"Previous story" symbol:horizontal ? @"chevron.left" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
-    self.verticalNextButton = [self readerBarButtonWithTitle:@"Next unread story" symbol:horizontal ? @"chevron.right" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
-    self.verticalOriginalButton = [self readerBarButtonWithTitle:@"Show original story" symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
-    self.verticalSettingsButton = [self readerBarButtonWithTitle:@"Story settings" symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
-    self.verticalMarkReadButton = [self readerBarButtonWithTitle:@"Mark all as read" symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
-    self.verticalAutoscrollButton = [self readerBarButtonWithTitle:@"Autoscroll" symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
+    self.verticalTextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Text view"] symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
+    self.verticalSendButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Share story"] symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
+    self.verticalProgressButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Reading progress"] symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
+    self.verticalPreviousButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Previous story"] symbol:horizontal ? @"chevron.left" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
+    self.verticalNextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Next unread story"] symbol:horizontal ? @"chevron.right" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
+    self.verticalOriginalButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Show original story"] symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
+    self.verticalSettingsButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Story settings"] symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
+    self.verticalMarkReadButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Mark all as read"] symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
+    self.verticalAutoscrollButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Autoscroll"] symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
     [self ensureTemporaryFullScreenButton];
     self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
@@ -1035,7 +1035,7 @@
     self.temporaryFullScreenButton.hidden = !detail.canToggleDuoFullscreenReader;
     self.verticalProgressButton.hidden = detail.canToggleDuoFullscreenReader;
     self.temporaryFullScreenButton.target = detail;
-    self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? @"On" : @"Off";
+    self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? [NBLocalization text:@"On"] : [NBLocalization text:@"Off"];
     NSString *symbol = detail.isDuoFullscreenReader ? @"rectangle.split.2x1" : @"arrow.left.and.right";
     self.temporaryFullScreenButton.image = [UIImage systemImageNamed:symbol];
 }
@@ -3395,7 +3395,7 @@
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
     BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
-    self.verticalNextButton.title = hasMoreUnread ? @"Next unread story" : @"Done";
+    self.verticalNextButton.title = hasMoreUnread ? [NBLocalization text:@"Next unread story"] : [NBLocalization text:@"Done"];
     self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
     self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.right" : @"chevron.down") : @"checkmark"];
 
@@ -3404,7 +3404,7 @@
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     [self.traverseBar updateProgress:progress];
-    self.verticalProgressButton.title = [NSString stringWithFormat:[NBLocalization text:@"%ld unread %@"], (long)unreadCount, unreadCount == 1 ? @"story" : @"stories"];
+    self.verticalProgressButton.title = [NBLocalization plural:@"%@ unread stories" count:@(unreadCount)];
     self.verticalProgressButton.accessibilityLabel = self.verticalProgressButton.title;
 }
 
@@ -3541,10 +3541,8 @@
     NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         hud.labelText = [NBLocalization text:@"No unread stories"];
-    } else if (unreadCount == 1) {
-        hud.labelText = [NBLocalization text:@"1 story left"];
     } else {
-        hud.labelText = [NSString stringWithFormat:[NBLocalization text:@"%li stories left"], (long)unreadCount];
+        hud.labelText = [NBLocalization plural:@"%@ stories left" count:@(unreadCount)];
     }
 	[hud hide:YES afterDelay:0.8];
 }

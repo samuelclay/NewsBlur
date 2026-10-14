@@ -240,7 +240,7 @@ static NSString *const kWaveShaderSource =
 
     // === "NewsBlur" in GothamNarrow ===
     UILabel *welcomeLabel = [[UILabel alloc] init];
-    welcomeLabel.text = [NBLocalization text:@"NewsBlur"];
+    welcomeLabel.text = @"NewsBlur";
     welcomeLabel.font = [UIFont fontWithName:@"GothamNarrow-Medium" size:38] ?: [UIFont systemFontOfSize:38 weight:UIFontWeightBold];
     welcomeLabel.textColor = [UIColor whiteColor];
     welcomeLabel.textAlignment = NSTextAlignmentCenter;
@@ -505,7 +505,6 @@ static NSString *const kWaveShaderSource =
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [NBLocalization installLoginButton:self];
 }
 
 - (void)viewDidLayoutSubviews {

@@ -102,10 +102,10 @@ typedef NS_ENUM(NSUInteger, MarkReadMenuOlderNewerMode)
             [self addTitle:[NBLocalization text:@"Mark newer stories read"] iconName:@"menu_icn_markread.png" olderNewerMode:MarkReadMenuOlderNewerModeNewer];
         }
     } else {
-        [self addTitle:[NSString stringWithFormat:[NBLocalization text:@"Mark %@ as read"], self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
+        [self addTitle:[NBLocalization markReadTitle:self.collectionTitle] iconName:@"menu_icn_markread.png" days:0];
         
         if (self.visibleUnreadCount) {
-            NSString *stories = self.visibleUnreadCount == 1 ? @"Mark this story as read" : [NSString stringWithFormat:[NBLocalization text:@"Mark these %@ stories read"], @(self.visibleUnreadCount)];
+            NSString *stories = self.visibleUnreadCount == 1 ? [NBLocalization text:@"Mark this story as read"] : [NBLocalization plural:@"Mark these %@ stories read" count:@(self.visibleUnreadCount)];
             
             [self addTitle:stories iconName:@"menu_icn_markread.png" days:-1];
         }

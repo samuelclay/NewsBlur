@@ -165,10 +165,8 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = [NSString stringWithFormat:[NBLocalization text:@"You are subscribed to %lu sites"], (unsigned long)[[appDelegate.dictFeeds allKeys] count]];
-    NSString *msg = [NSString stringWithFormat:[NBLocalization text:@"Imported %i site%@"],
-                     self.importedFeedCount_,
-                     self.importedFeedCount_ == 1 ? @"" : @"s"];
+    self.instructionLabel.text = [NBLocalization plural:@"You are subscribed to %@ sites" count:@([[appDelegate.dictFeeds allKeys] count])];
+    NSString *msg = [NBLocalization plural:@"Imported %@ sites" count:@(self.importedFeedCount_)];
     [self.googleReaderButton setTitle:msg  forState:UIControlStateSelected];
     self.googleReaderButton.selected = YES;
     [self.activityIndicator stopAnimating];

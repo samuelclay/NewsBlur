@@ -500,7 +500,7 @@ private struct OnboardingAccountView: View {
             ScrollView {
                 VStack(spacing: 22) {
                     Picker(NBLocalization.text("Language"), selection: $language) {
-                        Text(NBLocalization.text("Automatic (device language)")).tag("auto")
+                        Text(NBLocalization.automaticLabel).tag("auto")
                         ForEach(NBLocalization.languages, id: \.0) { code, name in
                             Text(name).tag(code)
                         }
@@ -514,7 +514,7 @@ private struct OnboardingAccountView: View {
                             .resizable().scaledToFit().frame(width: 120, height: 120)
                             .shadow(color: gold.opacity(0.4), radius: 30)
                             .accessibilityHidden(true)
-                        Text(NBLocalization.text("NewsBlur"))
+                        Text(verbatim: "NewsBlur")
                             .font(.custom("GothamNarrow-Medium", size: 38, relativeTo: .largeTitle))
                             .shadow(color: .black.opacity(0.5), radius: 2, y: 1)
                         Text(NBLocalization.text("A personal news reader bringing\npeople together to talk about the world."))

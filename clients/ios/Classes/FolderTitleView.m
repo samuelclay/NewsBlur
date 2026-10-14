@@ -77,7 +77,9 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     BOOL isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     BOOL isSavedStoriesFeed = self.appDelegate.isSavedStoriesIntelligenceMode;
     NSInteger countWidth = 0;
-    NSString *accessibilityCount = @"";
+    // FolderTitleView.m builds a complete translated count phrase, then places it in a folder label template.
+    NSString *accessibilityCount = nil;
+    BOOL accessibilityCollapsed = NO;
     NSArray *folderComponents = [folderName componentsSeparatedByString:@" ▸ "];
     NSString *folderDisplayName = folderComponents.lastObject;
     
@@ -96,7 +98,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ stories"], @(appDelegate.savedStoriesCount)];
+        accessibilityCount = [NBLocalization plural:@"%@ stories" count:@(appDelegate.savedStoriesCount)];
     } else if ([folderName isEqual:@"saved_searches"]) {
         NSInteger count = appDelegate.savedSearchesCount;
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectInset(rect, 0, 2)];
@@ -109,7 +111,7 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ searches"], @(count)];
+        accessibilityCount = [NBLocalization plural:@"%@ searches" count:@(count)];
     } else if (isFolderCollapsed && !isSavedStoriesFeed) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:CGRectMake(rect.origin.x, 0, CGRectGetWidth(rect), CGRectGetHeight(rect))];
@@ -122,11 +124,12 @@ static NSString *NBAccessibilitySlug(NSString *value) {
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
         
-        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", collapsed, %@ unread stories"], @(counts.nt)];
+        accessibilityCount = [NBLocalization plural:@"%@ unread stories" count:@(counts.nt)];
+        accessibilityCollapsed = YES;
     } else if (UIAccessibilityIsVoiceOverRunning()) {
         UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         
-        accessibilityCount = [NSString stringWithFormat:[NBLocalization text:@", %@ unread stories"], @(counts.nt)];
+        accessibilityCount = [NBLocalization plural:@"%@ unread stories" count:@(counts.nt)];
     }
     
     // create the parent view that will hold header Label
@@ -198,7 +201,13 @@ static NSString *NBAccessibilitySlug(NSString *value) {
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityIdentifier = [NSString stringWithFormat:@"folder-header-%@",
                                                      NBAccessibilitySlug(folderName)];
-    invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder%@"], folderTitle, accessibilityCount];
+    if (accessibilityCollapsed) {
+        invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder, collapsed, %@"], folderTitle, accessibilityCount];
+    } else if (accessibilityCount) {
+        invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder, %@"], folderTitle, accessibilityCount];
+    } else {
+        invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ folder"], folderTitle];
+    }
     invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController
                               action:@selector(didSelectSectionHeader:)

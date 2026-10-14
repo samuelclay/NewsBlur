@@ -28,7 +28,7 @@ struct TrainerView: View {
     var body: some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text(NBLocalization.text("dislike")).colored(.red)) about this \(feedOrStoryLowercase)?")
+                Text(trainerQuestion)
                     .font(font(named: "WhitneySSm-Medium", size: 16))
                     .foregroundColor(textColor)
 
@@ -348,11 +348,11 @@ struct TrainerView: View {
 
     var explainerHierarchyChain: some View {
         HStack(spacing: 0) {
-            explainerPill("Super dislike", color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
+            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
             explainerSeparator
-            explainerPill("Like", color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
+            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
             explainerSeparator
-            explainerPill("Dislike", color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
+            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
         }
     }
 
@@ -462,8 +462,21 @@ struct TrainerView: View {
         )
     }
 
-    var feedOrStoryLowercase: String {
-        return interaction.isStoryTrainer ? "story" : "site"
+    /// TrainerView.swift translates the whole question, then colors the two inserted verbs wherever the language places them.
+    var trainerQuestion: AttributedString {
+        let template = interaction.isStoryTrainer
+            ? NBLocalization.text("What do you 👍 %1$@ and 👎 %2$@ about this story?")
+            : NBLocalization.text("What do you 👍 %1$@ and 👎 %2$@ about this site?")
+        let likeMarker = "\u{E000}"
+        let dislikeMarker = "\u{E001}"
+        var question = AttributedString(String(format: template, likeMarker, dislikeMarker))
+        for (marker, word, color) in [(likeMarker, NBLocalization.text("like"), Color.green), (dislikeMarker, NBLocalization.text("dislike"), Color.red)] {
+            guard let range = question.range(of: marker) else { continue }
+            var replacement = AttributedString(word)
+            replacement.foregroundColor = color
+            question.replaceSubrange(range, with: replacement)
+        }
+        return question
     }
 
     var listBackground: Color {

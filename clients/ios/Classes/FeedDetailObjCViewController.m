@@ -1302,12 +1302,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                 item.sharesBackground = NO;
                 return item;
             };
-            self.verticalDiscoverItem = makeItem(@"Related Sites", @"sparkle.magnifyingglass", @"story-list-discover", @selector(doOpenDiscoverFromPill:));
-            self.verticalOptionsItem = makeItem(@"Story options", @"line.3.horizontal.decrease", @"story-list-options", @selector(doOpenOptionsMenu:));
-            self.verticalSettingsItem = makeItem(@"Site Settings", @"gearshape", @"story-list-settings", @selector(doOpenSettingsMenu:));
-            self.verticalSearchItem = makeItem(@"Search stories", @"magnifyingglass", @"story-list-search", @selector(doActivateSearch:));
-            self.verticalMarkReadOptionsItem = makeItem(@"Mark Read options", @"plus", @"story-list-mark-read-options", nil);
-            self.verticalMarkReadItem = makeItem(@"Mark all read and return", @"checkmark", @"story-list-mark-read", @selector(doOpenMarkReadMenu:));
+            self.verticalDiscoverItem = makeItem([NBLocalization text:@"Related Sites"], @"sparkle.magnifyingglass", @"story-list-discover", @selector(doOpenDiscoverFromPill:));
+            self.verticalOptionsItem = makeItem([NBLocalization text:@"Story options"], @"line.3.horizontal.decrease", @"story-list-options", @selector(doOpenOptionsMenu:));
+            self.verticalSettingsItem = makeItem([NBLocalization text:@"Site Settings"], @"gearshape", @"story-list-settings", @selector(doOpenSettingsMenu:));
+            self.verticalSearchItem = makeItem([NBLocalization text:@"Search stories"], @"magnifyingglass", @"story-list-search", @selector(doActivateSearch:));
+            self.verticalMarkReadOptionsItem = makeItem([NBLocalization text:@"Mark Read options"], @"plus", @"story-list-mark-read-options", nil);
+            self.verticalMarkReadItem = makeItem([NBLocalization text:@"Mark all read and return"], @"checkmark", @"story-list-mark-read", @selector(doOpenMarkReadMenu:));
             self.verticalStoryToolbarItems = @[
                 self.verticalDiscoverItem, self.verticalOptionsItem, self.verticalSettingsItem, self.verticalSearchItem,
                 self.verticalMarkReadOptionsItem, self.verticalMarkReadItem
@@ -1330,7 +1330,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         if (self.verticalDiscoverItem.hidden != self.storyTitlesHeaderBar.discoverPill.hidden) {
             self.verticalDiscoverItem.hidden = self.storyTitlesHeaderBar.discoverPill.hidden;
         }
-        NSString *discoverTitle = storiesCollection.isDailyBriefing ? @"Daily Briefing Settings" : @"Related Sites";
+        NSString *discoverTitle = storiesCollection.isDailyBriefing ? [NBLocalization text:@"Daily Briefing Settings"] : [NBLocalization text:@"Related Sites"];
         if (![self.verticalDiscoverItem.title isEqualToString:discoverTitle]) {
             self.verticalDiscoverItem.title = discoverTitle;
             self.verticalDiscoverItem.accessibilityLabel = discoverTitle;
@@ -3818,7 +3818,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     
     NSLog(@"Test for try feed");
     
-    if (![[MBProgressHUD HUDForView:self.view].labelText isEqualToString:@"Finding story..."]) {
+    if (![[MBProgressHUD HUDForView:self.view].labelText isEqualToString:[NBLocalization text:@"Finding story..."]]) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = [NBLocalization text:@"Finding story..."];
@@ -6435,7 +6435,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
     if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget && !dashboard) {
-        NSString *manageText = [NSString stringWithFormat:[NBLocalization text:@"Manage this %@…"], appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+        NSString *manageText = appDelegate.storiesCollection.isRiverView ? [NBLocalization text:@"Manage this folder…"] : [NBLocalization text:@"Manage this site…"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
             [self manageSite:weakViewController.navigationController manageText:manageText everything:everything];
@@ -6518,7 +6518,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     if (infrequent) {
         NSString *preferenceKey = @"infrequent_stories_per_month";
-        NSArray *titles = @[[NBLocalization text:@"5"], [NBLocalization text:@"15"], [NBLocalization text:@"30"], [NBLocalization text:@"60"], [NBLocalization text:@"90"]];
+        NSArray *titles = @[@"5", @"15", @"30", @"60", @"90"];
         NSArray *values = @[@5, @15, @30, @60, @90];
 
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
@@ -6680,7 +6680,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     {
         NSString *preferenceKey = @"feed_list_font_size";
-        NSArray *titles = @[[NBLocalization text:@"XS"], [NBLocalization text:@"S"], [NBLocalization text:@"M"], [NBLocalization text:@"L"], [NBLocalization text:@"XL"]];
+        // FeedDetailObjCViewController.m keeps the size abbreviations language-neutral, like clothing sizes.
+        NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
         NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
 
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
@@ -6959,10 +6960,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     viewController.title = manageText;
     
     if (!everything || !appDelegate.storiesCollection.isRiverView) {
-        NSString *deleteText = [NSString stringWithFormat:@"Delete %@",
-                                appDelegate.storiesCollection.isRiverView ?
-                                @"this entire folder" :
-                                @"this site"];
+        NSString *deleteText = appDelegate.storiesCollection.isRiverView ?
+                               [NBLocalization text:@"Delete this entire folder"] :
+                               [NBLocalization text:@"Delete this site"];
         
         [viewController addTitle:deleteText iconName:@"menu_icn_delete.png" selectionShouldDismiss:NO handler:^{
             [self confirmDeleteSite:weakViewController.navigationController];
@@ -6973,7 +6973,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    NSString *renameText = [NSString stringWithFormat:[NBLocalization text:@"Rename this %@"], appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+    NSString *renameText = appDelegate.storiesCollection.isRiverView ? [NBLocalization text:@"Rename this folder"] : [NBLocalization text:@"Rename this site"];
     
     [viewController addTitle:renameText iconName:@"menu_icn_rename.png" selectionShouldDismiss:YES handler:^{
         [self openRenameSite];
@@ -6998,7 +6998,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController {
     MenuViewController *viewController = [MenuViewController new];
     viewController.title = [NBLocalization text:@"Positive?"];
-    NSString *title = storiesCollection.isRiverView ? @"Delete Folder" : @"Delete Site";
+    NSString *title = storiesCollection.isRiverView ? [NBLocalization text:@"Delete Folder"] : [NBLocalization text:@"Delete Site"];
     
     [viewController addTitle:title iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         if (self.storiesCollection.isRiverView) {

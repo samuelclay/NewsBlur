@@ -1,4 +1,3 @@
-#import "NewsBlur-Swift.h"
 //
 //  UserTagsViewController.m
 //  NewsBlur
