@@ -2,6 +2,46 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%@ Widget Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ сайти віджетів</string>
+			<key>many</key>
+			<string>Сайти віджетів: %@</string>
+			<key>one</key>
+			<string>%@ сайт-віджет</string>
+			<key>other</key>
+			<string>Сайти віджетів %@</string>
+		</dict>
+	</dict>
+	<key>%@ focused stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@focused_count@</string>
+		<key>focused_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ відібраних історій</string>
+			<key>many</key>
+			<string>%@ вибраних статей</string>
+			<key>one</key>
+			<string>%@ вибрана стаття</string>
+			<key>other</key>
+			<string>%@ відібраних статей</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -20,6 +60,66 @@
 			<string>%@ відкриття</string>
 			<key>other</key>
 			<string>%@ відкриттів</string>
+		</dict>
+	</dict>
+	<key>%@ searches</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@search_count@</string>
+		<key>search_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ пошукові запити</string>
+			<key>many</key>
+			<string>%@ пошуків</string>
+			<key>one</key>
+			<string>%@ пошук</string>
+			<key>other</key>
+			<string>%@ пошукових запитів</string>
+		</dict>
+	</dict>
+	<key>%@ stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@story_count@</string>
+		<key>story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ статті</string>
+			<key>many</key>
+			<string>%@ публікацій</string>
+			<key>one</key>
+			<string>%@ історія</string>
+			<key>other</key>
+			<string>%@ статей</string>
+		</dict>
+	</dict>
+	<key>%@ stories left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Залишилося %@ історії</string>
+			<key>many</key>
+			<string>Залишилося статей: %@</string>
+			<key>one</key>
+			<string>Залишилася %@ історія</string>
+			<key>other</key>
+			<string>Залишилося %@ статей</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -60,6 +160,206 @@
 			<string>%@ підписник</string>
 			<key>other</key>
 			<string>%@ підписників</string>
+		</dict>
+	</dict>
+	<key>%@ unread stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ непрочитані статті</string>
+			<key>many</key>
+			<string>%@ непрочитаних статей</string>
+			<key>one</key>
+			<string>%@ непрочитана стаття</string>
+			<key>other</key>
+			<string>%@ непрочитаних новин</string>
+		</dict>
+	</dict>
+	<key>Followers label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@follower_count@</string>
+		<key>follower_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Підписники</string>
+			<key>many</key>
+			<string>Підписники</string>
+			<key>one</key>
+			<string>Підписник</string>
+			<key>other</key>
+			<string>Підписники</string>
+		</dict>
+	</dict>
+	<key>Imported %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@imported_count@</string>
+		<key>imported_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Імпортовано %@ сайтів</string>
+			<key>many</key>
+			<string>Імпортовано сайтів: %@</string>
+			<key>one</key>
+			<string>Імпортовано сайтів: %@</string>
+			<key>other</key>
+			<string>Імпортовано сайтів: %@</string>
+		</dict>
+	</dict>
+	<key>Mark these %@ stories read</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@visible_unread_count@</string>
+		<key>visible_unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Позначити ці %@ статей як прочитані</string>
+			<key>many</key>
+			<string>Позначити ці %@ статей як прочитані</string>
+			<key>one</key>
+			<string>Позначити %@ прочитаною</string>
+			<key>other</key>
+			<string>Позначити ці %@ статей як прочитані</string>
+		</dict>
+	</dict>
+	<key>Mute %@ Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Вимкнути %@ сайтів</string>
+			<key>many</key>
+			<string>Ігнорувати сайти (%@)</string>
+			<key>one</key>
+			<string>Заглушити %@ сайт</string>
+			<key>other</key>
+			<string>Ігнорувати %@ сайтів</string>
+		</dict>
+	</dict>
+	<key>Older than %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Старіші за %@ дні</string>
+			<key>many</key>
+			<string>Старіші за %@ днів</string>
+			<key>one</key>
+			<string>Старше ніж %@ день</string>
+			<key>other</key>
+			<string>Старші за %@ днів</string>
+		</dict>
+	</dict>
+	<key>Shared Stories label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@shared_stories_count@</string>
+		<key>shared_stories_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Поширені новини</string>
+			<key>many</key>
+			<string>Поширені статті</string>
+			<key>one</key>
+			<string>Поширена новина</string>
+			<key>other</key>
+			<string>Поширені публікації</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Зберігання за останні %@ днів</string>
+			<key>many</key>
+			<string>Зберігання за минулі %@ днів</string>
+			<key>one</key>
+			<string>Зберігання за минулий %@ день</string>
+			<key>other</key>
+			<string>Зберігаються дані за останні %@ днів</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hours@</string>
+		<key>hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Зберігання за останні %@ годин</string>
+			<key>many</key>
+			<string>Зберігати за останні %@ годин</string>
+			<key>one</key>
+			<string>Зберігати за останню %@ годину</string>
+			<key>other</key>
+			<string>Зберігання за останні %@ годин</string>
+		</dict>
+	</dict>
+	<key>You are subscribed to %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@subscription_count@</string>
+		<key>subscription_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Ви підписані на %@ сайтів</string>
+			<key>many</key>
+			<string>Ви підписані на %@ сайтів</string>
+			<key>one</key>
+			<string>Ви підписані на %@ сайт</string>
+			<key>other</key>
+			<string>Ви підписані на %@ сайтів</string>
 		</dict>
 	</dict>
 </dict>

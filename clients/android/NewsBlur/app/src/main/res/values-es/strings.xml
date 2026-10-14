@@ -160,7 +160,6 @@ personas para hablar sobre el mundo.</string>
     <string name="edit_reply_update">Actualizar respuesta</string>
     <string name="edit_reply_delete">Eliminar respuesta</string>
     <string name="alert_dialog_ok">Aceptar</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Hecho</string>
     <string name="alert_dialog_openlink">Abrir enlace</string>
     <string name="alert_dialog_openimage">Abrir imagen</string>
@@ -412,7 +411,7 @@ personas para hablar sobre el mundo.</string>
     <string name="premium_subscription_renewal">Tu suscripción se renovará el %s</string>
     <string name="premium_subscription_expiration">Tu suscripción expirará el %s</string>
     <string name="premium_subscription_no_expiration">Tu suscripción está configurada para nunca expirar. ¡Wow!</string>
-    <string name="premium_policies">Consulta la <a href="https://newsblur.com/privacy">política de privacidad</a> y los <a href="https://newsblur.com/tos">términos de uso</a> de NewsBlur para obtener detalles.</string>
+    <string name="premium_policies">Consulta la &lt;a href=\"https://newsblur.com/privacy\"&gt;política de privacidad&lt;/a&gt; y los &lt;a href=\"https://newsblur.com/tos\"&gt;términos de uso&lt;/a&gt; de NewsBlur para obtener detalles.</string>
     <string name="premium_subscription_header">Suscripción Premium</string>
     <string name="archive_subscription_header">Archivo Premium</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -592,9 +591,9 @@ personas para hablar sobre el mundo.</string>
         <item quantity="other">%s historias/mes</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="many">También publicado por %d sitios</item>
-        <item quantity="one">También publicado por el sitio %d</item>
-        <item quantity="other">También publicado por %d sitios</item>
+        <item quantity="many">También publicado por otros %d sitios</item>
+        <item quantity="one">También publicado por %d otro sitio</item>
+        <item quantity="other">También publicado por %d otros sitios</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="many">+ %d sitios más</item>
@@ -730,7 +729,7 @@ personas para hablar sobre el mundo.</string>
     <string name="explainer_like">Me gusta</string>
     <string name="explainer_dislike">No me gusta</string>
     <string name="explainer_beats">temas</string>
-    <string name="explainer_example1_header">Un solo \"me gusta\" anula cualquier número de \"no me gusta\"</string>
+    <string name="explainer_example1_header">Un solo «Me gusta» anula cualquier cantidad de «No me gusta»</string>
     <string name="explainer_example1_result">El artículo se muestra en la vista de Enfoque</string>
     <string name="explainer_example2_header">Un solo «me disgusta mucho» lo anula todo</string>
     <string name="explainer_example2_result">La historia siempre está oculta</string>
@@ -829,7 +828,6 @@ personas para hablar sobre el mundo.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Historias nuevas</string>
     <string name="go_to_feed">Ir al feed</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -912,8 +910,6 @@ personas para hablar sobre el mundo.</string>
     <string name="ui_690910f6ed17">Importar OPML</string>
     <string name="ui_244fd5e426f0">Exportar OPML</string>
     <string name="ui_768e0c1c6957">Título</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Etiquetas guardadas</string>
     <string name="ui_6e914f494515">Etiquetas de noticias</string>
     <string name="ui_e912ab619a72">Otras etiquetas</string>
@@ -941,7 +937,6 @@ personas para hablar sobre el mundo.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Al eliminar tu cuenta, se borrarán permanentemente tus canales, historias guardadas y datos de la cuenta. Esta acción no se puede deshacer.</string>
     <string name="onboarding_confirm_your_password">Confirma tu contraseña</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Escribe %1$s para eliminar tu cuenta de forma permanente.</string>
-    <string name="onboarding_delete">Eliminar</string>
     <string name="onboarding_permanently_delete_account">Eliminar cuenta permanentemente</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Un lector de noticias personal que reúne\na personas para hablar del mundo.</string>
     <string name="onboarding_or">o</string>
@@ -966,4 +961,173 @@ personas para hablar sobre el mundo.</string>
     <string name="onboarding_you_re_all_set_up">Todo está listo.</string>
     <string name="onboarding_your_reading_list">Tu lista de lectura</string>
     <string name="onboarding_stay_connected">Mantener la conexión</string>
+    <string name="onboarding_connect_your_account">Conecta tu cuenta</string>
+    <string name="onboarding_choose_your_username">Elige tu nombre de usuario</string>
+    <string name="onboarding_create_an_account">Crear una cuenta</string>
+    <string name="onboarding_welcome_back">Te damos la bienvenida de nuevo</string>
+    <string name="onboarding_signing_in_with_provider">Iniciando sesión con %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Iniciar sesión con %1$s</string>
+    <string name="onboarding_email">Correo electrónico</string>
+    <string name="onboarding_username">Nombre de usuario</string>
+    <string name="onboarding_username_or_email">Nombre de usuario o correo electrónico</string>
+    <string name="onboarding_password">Contraseña</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_create_account">Crear cuenta</string>
+    <string name="onboarding_sign_in">Iniciar sesión</string>
+    <string name="onboarding_already_have_an_account_sign_in">¿Ya tienes una cuenta? Inicia sesión</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">¿Nuevo en NewsBlur? Crear una cuenta</string>
+    <string name="onboarding_use_a_custom_server">Usar un servidor personalizado</string>
+    <string name="onboarding_verify_with_provider">Verificar con %1$s</string>
+    <string name="setup_close_setup">Cerrar configuración</string>
+    <string name="setup_start_reading">Empezar a leer</string>
+    <string name="setup_continue">Continuar</string>
+    <string name="setup_a_little_of_everything">Un poco de todo</string>
+    <string name="setup_bundle_folder_name">Nombre de la carpeta del paquete</string>
+    <string name="setup_added">Añadido</string>
+    <string name="setup_queued">En cola</string>
+    <string name="setup_loading_feeds_to_choose_from">Cargando fuentes para elegir…</string>
+    <string name="setup_loading_more_feeds">Cargando más feeds…</string>
+    <string name="setup_select_feeds_to_add">Selecciona los feeds que quieras añadir</string>
+    <string name="setup_name_your_folder_to_continue">Ponle un nombre a la carpeta para continuar</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="many">Añadir %1$d feeds a la carpeta «%2$s»</item>
+        <item quantity="one">Añadir el feed %1$d a la carpeta «%2$s»</item>
+        <item quantity="other">Añadir %1$d feeds a la carpeta «%2$s»</item>
+    </plurals>
+    <string name="setup_importing">Importando…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="many">%1$d categorías para elegir</item>
+        <item quantity="one">%1$d categoría para elegir</item>
+        <item quantity="other">%1$d categorías entre las que elegir</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Buscar intereses y sitios</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="many">%1$d feeds seleccionados</item>
+        <item quantity="one">%1$d feed seleccionado</item>
+        <item quantity="other">%1$d canales seleccionados</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="many">Se añadieron %1$d fuentes</item>
+        <item quantity="one">Se añadió %1$d feed</item>
+        <item quantity="other">%1$d fuentes añadidas</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Incluido en el paquete</string>
+    <string name="setup_include_in_bundle">Incluir en el paquete</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Tu lector está listo. Añade feeds cuando quieras desde Añadir + Descubrir sitios.</string>
+    <string name="setup_reading_list_yours">Una lista de lectura a tu medida. Todo lo que elegiste, en un solo lugar.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="many">%1$d feeds</item>
+        <item quantity="one">%1$d canal</item>
+        <item quantity="other">%1$d feeds</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur Foro</string>
+    <string name="setup_newsblur_forum_description">Haz preguntas y comparte ideas</string>
+    <string name="setup_handle_on_x">%1$s en X</string>
+    <string name="setup_samuelclay_on_x_description">Del creador de NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Noticias y novedades</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="many">No se pudieron añadir %1$d fuentes a %2$s. %3$s</item>
+        <item quantity="one">No se pudo añadir el feed %1$d a %2$s. %3$s</item>
+        <item quantity="other">No se pudieron añadir %1$d feeds a %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="many">%1$d artículos/mes</item>
+        <item quantity="one">%1$d historia/mes</item>
+        <item quantity="other">%1$d artículos al mes</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Desactualizado · última noticia %1$s</string>
+    <string name="add_site_url_or_search">https:// o buscar</string>
+    <string name="add_site_choose_folder">Elegir carpeta</string>
+    <string name="add_site_top_level">— Nivel superior —</string>
+    <string name="add_site_adding_site">Añadiendo sitio</string>
+    <string name="add_site_add_folder">Añadir carpeta</string>
+    <string name="add_site_cancel_new_folder">Cancelar carpeta nueva</string>
+    <string name="add_site_create_new_folder">Crear carpeta nueva</string>
+    <string name="add_site_new_folder_name">Nombre de la carpeta nueva</string>
+    <string name="add_site_searching_sites">Buscando sitios</string>
+    <string name="discover_quick_add">Añadir rápidamente un sitio o una carpeta</string>
+    <string name="discover_tab_search">Buscar</string>
+    <string name="discover_tab_web_feed">Canal web</string>
+    <string name="discover_tab_popular">Popular</string>
+    <string name="discover_tab_newsletters">Boletines</string>
+    <string name="discover_tab_podcasts">Podcasts</string>
+    <string name="discover_tab_heading">Descubrir %1$s</string>
+    <string name="discover_hint_search">Busca sitios o pega una URL</string>
+    <string name="discover_hint_popular">Buscar sitios populares</string>
+    <string name="discover_hint_youtube">Busca canales o pega una URL</string>
+    <string name="discover_hint_reddit">Buscar subreddits</string>
+    <string name="discover_hint_newsletters">Busca boletines o pega una URL</string>
+    <string name="discover_hint_podcasts">Buscar podcasts</string>
+    <string name="discover_platform">Plataforma</string>
+    <string name="discover_all_platforms">Todo</string>
+    <string name="discover_category">Categoría</string>
+    <string name="discover_all_categories">Todas las categorías</string>
+    <string name="discover_topic">Tema</string>
+    <string name="discover_all_topics">Todos los temas</string>
+    <string name="discover_trending_this_week">Tendencias de esta semana</string>
+    <string name="discover_search_results">Resultados de búsqueda</string>
+    <string name="discover_add_this_url">Añadir esta URL</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Elegir %1$s</string>
+    <string name="discover_clear_input">Borrar %1$s</string>
+    <string name="discover_web_page_url">URL de la página web</string>
+    <string name="discover_which_stories_optional">¿Qué artículos? (opcional)</string>
+    <string name="discover_analyze_page">Analizar página</string>
+    <string name="discover_refine_analysis">Perfeccionar el análisis</string>
+    <string name="discover_add_rss_feed">Añadir fuente RSS</string>
+    <string name="discover_added">Añadido</string>
+    <string name="discover_web_pattern">Patrón %1$d</string>
+    <string name="discover_feed_title">Título del feed</string>
+    <string name="discover_keep_stories">Conservar artículos</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="many">%d días</item>
+        <item quantity="one">%d día</item>
+        <item quantity="other">%d días</item>
+    </plurals>
+    <string name="discover_create_web_feed">Crear feed web</string>
+    <string name="discover_search_news_topic">Buscar un tema de actualidad</string>
+    <string name="discover_top_stories">Artículos destacados</string>
+    <string name="discover_choose_a_topic">Elige un tema</string>
+    <string name="discover_choose_a_category">Elige una categoría</string>
+    <string name="discover_add_google_news_feed">Añadir feed de Google News</string>
+    <string name="discover_news_topic_world">Mundo</string>
+    <string name="discover_news_topic_nation">Nación</string>
+    <string name="discover_news_topic_business">Negocios</string>
+    <string name="discover_news_topic_technology">Tecnología</string>
+    <string name="discover_news_topic_entertainment">Entretenimiento</string>
+    <string name="discover_news_topic_sports">Deportes</string>
+    <string name="discover_news_topic_science">Ciencia</string>
+    <string name="discover_news_topic_health">Salud</string>
+    <string name="briefing_frequency">Frecuencia</string>
+    <string name="briefing_frequency_thrice_daily">3 veces al día</string>
+    <string name="briefing_frequency_twice_daily">2 veces al día</string>
+    <string name="briefing_frequency_daily">Diario</string>
+    <string name="briefing_frequency_weekly">Semanal</string>
+    <string name="briefing_preferred_time">Hora preferida</string>
+    <string name="briefing_time_morning">Mañana</string>
+    <string name="briefing_time_afternoon">Tarde</string>
+    <string name="briefing_time_evening">Tarde</string>
+    <string name="briefing_preferred_day">Día preferido</string>
+    <string name="briefing_day_sunday">Domingo</string>
+    <string name="briefing_day_monday">Lunes</string>
+    <string name="briefing_day_tuesday">Martes</string>
+    <string name="briefing_day_wednesday">miércoles</string>
+    <string name="briefing_day_thursday">Jueves</string>
+    <string name="briefing_day_friday">Viernes</string>
+    <string name="briefing_day_saturday">sábado</string>
+    <string name="briefing_story_count">Recuento de historias</string>
+    <string name="briefing_writing_style">Estilo de escritura</string>
+    <string name="briefing_style_bullets">Viñetas</string>
+    <string name="briefing_style_editorial">Editorial</string>
+    <string name="briefing_style_headlines">Titulares</string>
+    <string name="briefing_filter">Filtro</string>
+    <string name="briefing_keyword_section">Sección de palabras clave %1$d</string>
+    <string name="briefing_remove_keyword_section">Eliminar</string>
+    <string name="briefing_generate_now">Generar ahora</string>
+    <string name="briefing_saving_settings">Guardando la configuración del resumen diario…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="many">%d artículos</item>
+        <item quantity="one">%d artículo</item>
+        <item quantity="other">%d artículos</item>
+    </plurals>
 </resources>

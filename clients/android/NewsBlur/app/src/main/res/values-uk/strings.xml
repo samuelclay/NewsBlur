@@ -160,7 +160,6 @@
     <string name="edit_reply_update">Оновити відповідь</string>
     <string name="edit_reply_delete">Видалити відповідьY</string>
     <string name="alert_dialog_ok">Гаразд</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Готово</string>
     <string name="alert_dialog_openlink">Відкрити посилання</string>
     <string name="alert_dialog_openimage">Відкрити зображення</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">Термін дії вашої підписки буде поновлено %s</string>
     <string name="premium_subscription_expiration">Термін дії вашої підписки закінчиться %s</string>
     <string name="premium_subscription_no_expiration">Термін дії вашої підписки ніколи не закінчиться. Ого!</string>
-    <string name="premium_policies">Докладніше див. у <a href="https://newsblur.com/privacy">політиці конфіденційності</a> та <a href="https://newsblur.com/tos">умовах використання</a> NewsBlur.</string>
+    <string name="premium_policies">Докладніше див. у &lt;a href=\"https://newsblur.com/privacy\"&gt;політиці конфіденційності&lt;/a&gt; та &lt;a href=\"https://newsblur.com/tos\"&gt;умовах використання&lt;/a&gt; NewsBlur.</string>
     <string name="premium_subscription_header">Преміумпідписка</string>
     <string name="archive_subscription_header">Преміум-архів</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -595,10 +594,10 @@
         <item quantity="other">%s записів/міс.</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="few">Також опубліковано на %d сайтах</item>
-        <item quantity="many">Також опубліковано на %d сайтах</item>
-        <item quantity="one">Також опубліковано на сайті %d</item>
-        <item quantity="other">Також опубліковано на %d сайтах</item>
+        <item quantity="few">Також опубліковано на %d інших сайтах</item>
+        <item quantity="many">Також опубліковано на ще %d сайтах</item>
+        <item quantity="one">Також публікується на %d іншому сайті</item>
+        <item quantity="other">Також опубліковано на %d інших сайтах</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="few">+ ще %d сайтів</item>
@@ -834,7 +833,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Нові статті</string>
     <string name="go_to_feed">Перейти до стрічки</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -917,8 +915,6 @@
     <string name="ui_690910f6ed17">Імпортувати OPML</string>
     <string name="ui_244fd5e426f0">Експортувати OPML</string>
     <string name="ui_768e0c1c6957">Назва</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Збережені теги</string>
     <string name="ui_6e914f494515">Теги історії</string>
     <string name="ui_e912ab619a72">Інші мітки</string>
@@ -946,7 +942,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Якщо видалити обліковий запис, ваші стрічки, збережені статті та дані облікового запису буде видалено назавжди. Цю дію не можна скасувати.</string>
     <string name="onboarding_confirm_your_password">Підтвердьте пароль</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Введіть %1$s, щоб назавжди видалити обліковий запис.</string>
-    <string name="onboarding_delete">Видалити</string>
     <string name="onboarding_permanently_delete_account">Назавжди видалити обліковий запис</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.</string>
     <string name="onboarding_or">або</string>
@@ -971,4 +966,182 @@
     <string name="onboarding_you_re_all_set_up">Усе готово.</string>
     <string name="onboarding_your_reading_list">Ваш список для читання</string>
     <string name="onboarding_stay_connected">Залишайтеся на зв’язку</string>
+    <string name="onboarding_connect_your_account">Підключити обліковий запис</string>
+    <string name="onboarding_choose_your_username">Виберіть ім’я користувача</string>
+    <string name="onboarding_create_an_account">Створити обліковий запис</string>
+    <string name="onboarding_welcome_back">З поверненням</string>
+    <string name="onboarding_signing_in_with_provider">Вхід через %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Увійти через %1$s</string>
+    <string name="onboarding_email">Електронна пошта</string>
+    <string name="onboarding_username">Ім’я користувача</string>
+    <string name="onboarding_username_or_email">Ім’я користувача або електронна пошта</string>
+    <string name="onboarding_password">Пароль</string>
+    <string name="onboarding_continue">Продовжити</string>
+    <string name="onboarding_create_account">Створити обліковий запис</string>
+    <string name="onboarding_sign_in">Увійти</string>
+    <string name="onboarding_already_have_an_account_sign_in">Уже маєте обліковий запис? Увійти</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Новачок у NewsBlur? Створіть обліковий запис</string>
+    <string name="onboarding_use_a_custom_server">Використовувати власний сервер</string>
+    <string name="onboarding_verify_with_provider">Підтвердити за допомогою %1$s</string>
+    <string name="setup_close_setup">Закрити налаштування</string>
+    <string name="setup_start_reading">Почати читати</string>
+    <string name="setup_continue">Продовжити</string>
+    <string name="setup_a_little_of_everything">Потроху всього</string>
+    <string name="setup_bundle_folder_name">Назва папки добірки</string>
+    <string name="setup_added">Додано</string>
+    <string name="setup_queued">У черзі</string>
+    <string name="setup_loading_feeds_to_choose_from">Завантаження стрічок для вибору…</string>
+    <string name="setup_loading_more_feeds">Завантаження нових стрічок…</string>
+    <string name="setup_select_feeds_to_add">Виберіть стрічки для додавання</string>
+    <string name="setup_name_your_folder_to_continue">Щоб продовжити, назвіть папку</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="few">Додати %1$d стрічок до папки «%2$s»</item>
+        <item quantity="many">Додати %1$d стрічок до папки «%2$s»</item>
+        <item quantity="one">Додати стрічку %1$d до папки «%2$s»</item>
+        <item quantity="other">Додати %1$d стрічок до папки «%2$s»</item>
+    </plurals>
+    <string name="setup_importing">Імпортування…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="few">%1$d категорії на вибір</item>
+        <item quantity="many">На вибір доступно %1$d категорій</item>
+        <item quantity="one">%1$d категорія на вибір</item>
+        <item quantity="other">є категорій на вибір: %1$d</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Пошук за інтересами та сайтами</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="few">Вибрано %1$d стрічки</item>
+        <item quantity="many">Вибрано стрічок: %1$d</item>
+        <item quantity="one">Вибрано %1$d стрічку</item>
+        <item quantity="other">Вибрано стрічок: %1$d</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="few">Додано %1$d стрічки</item>
+        <item quantity="many">Додано каналів: %1$d</item>
+        <item quantity="one">Додано стрічку %1$d</item>
+        <item quantity="other">Додано стрічок: %1$d</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Входить до пакета</string>
+    <string name="setup_include_in_bundle">Додати до пакета</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Ваш рідер готовий. Додавайте стрічки будь-коли через «Додати + Знайти сайти».</string>
+    <string name="setup_reading_list_yours">Ваш особистий список читання. Усе, що ви обрали, в одному місці.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="few">%1$d стрічки</item>
+        <item quantity="many">%1$d стрічок</item>
+        <item quantity="one">%1$d стрічка</item>
+        <item quantity="other">%1$d стрічок</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur Форум</string>
+    <string name="setup_newsblur_forum_description">Ставте запитання та діліться ідеями</string>
+    <string name="setup_handle_on_x">%1$s у X</string>
+    <string name="setup_samuelclay_on_x_description">Від творця NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Новини й оновлення</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="few">Не вдалося додати %1$d стрічки до %2$s. %3$s</item>
+        <item quantity="many">Не вдалося додати %1$d стрічок до %2$s. %3$s</item>
+        <item quantity="one">Не вдалося додати стрічку %1$d до %2$s. %3$s</item>
+        <item quantity="other">Не вдалося додати %1$d стрічок до %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="few">%1$d матеріалів на місяць</item>
+        <item quantity="many">%1$d новин на місяць</item>
+        <item quantity="one">%1$d матеріал на місяць</item>
+        <item quantity="other">%1$d історій/місяць</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Застаріла · остання новина %1$s</string>
+    <string name="add_site_url_or_search">https:// або пошук</string>
+    <string name="add_site_choose_folder">Виберіть папку</string>
+    <string name="add_site_top_level">— Верхній рівень —</string>
+    <string name="add_site_adding_site">Додавання сайту</string>
+    <string name="add_site_add_folder">Додати папку</string>
+    <string name="add_site_cancel_new_folder">Скасувати створення папки</string>
+    <string name="add_site_create_new_folder">Створити нову папку</string>
+    <string name="add_site_new_folder_name">Назва нової папки</string>
+    <string name="add_site_searching_sites">Пошук сайтів</string>
+    <string name="discover_quick_add">Швидко додати сайт або папку</string>
+    <string name="discover_tab_search">Пошук</string>
+    <string name="discover_tab_web_feed">Вебстрічка</string>
+    <string name="discover_tab_popular">Популярне</string>
+    <string name="discover_tab_newsletters">Інформаційні розсилки</string>
+    <string name="discover_tab_podcasts">Подкасти</string>
+    <string name="discover_tab_heading">Відкрити %1$s</string>
+    <string name="discover_hint_search">Шукайте сайти або вставте URL-адресу</string>
+    <string name="discover_hint_popular">Шукати популярні сайти</string>
+    <string name="discover_hint_youtube">Шукайте канали або вставте URL</string>
+    <string name="discover_hint_reddit">Пошук сабреддітів</string>
+    <string name="discover_hint_newsletters">Шукайте розсилки або вставте URL-адресу</string>
+    <string name="discover_hint_podcasts">Пошук подкастів</string>
+    <string name="discover_platform">Платформа</string>
+    <string name="discover_all_platforms">Усі</string>
+    <string name="discover_category">Категорія</string>
+    <string name="discover_all_categories">Усі категорії</string>
+    <string name="discover_topic">Тема</string>
+    <string name="discover_all_topics">Усі теми</string>
+    <string name="discover_trending_this_week">У тренді цього тижня</string>
+    <string name="discover_search_results">Результати пошуку</string>
+    <string name="discover_add_this_url">Додати цю URL-адресу</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Виберіть %1$s</string>
+    <string name="discover_clear_input">Очистити %1$s</string>
+    <string name="discover_web_page_url">URL вебсторінки</string>
+    <string name="discover_which_stories_optional">Які історії? (необов’язково)</string>
+    <string name="discover_analyze_page">Аналізувати сторінку</string>
+    <string name="discover_refine_analysis">Уточнити аналіз</string>
+    <string name="discover_add_rss_feed">Додати RSS-стрічку</string>
+    <string name="discover_added">Додано</string>
+    <string name="discover_web_pattern">Шаблон %1$d</string>
+    <string name="discover_feed_title">Назва стрічки</string>
+    <string name="discover_keep_stories">Зберігати матеріали</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="few">%d днів</item>
+        <item quantity="many">%d днів</item>
+        <item quantity="one">%d день</item>
+        <item quantity="other">%d днів</item>
+    </plurals>
+    <string name="discover_create_web_feed">Створити вебстрічку</string>
+    <string name="discover_search_news_topic">Знайти тему новин</string>
+    <string name="discover_top_stories">Популярні матеріали</string>
+    <string name="discover_choose_a_topic">Виберіть тему</string>
+    <string name="discover_choose_a_category">Виберіть категорію</string>
+    <string name="discover_add_google_news_feed">Додати стрічку Google Новин</string>
+    <string name="discover_news_topic_world">Світ</string>
+    <string name="discover_news_topic_nation">Країна</string>
+    <string name="discover_news_topic_business">Бізнес</string>
+    <string name="discover_news_topic_technology">Технології</string>
+    <string name="discover_news_topic_entertainment">Розваги</string>
+    <string name="discover_news_topic_sports">Спорт</string>
+    <string name="discover_news_topic_science">Наука</string>
+    <string name="discover_news_topic_health">Здоров’я</string>
+    <string name="briefing_frequency">Частота</string>
+    <string name="briefing_frequency_thrice_daily">3 рази на день</string>
+    <string name="briefing_frequency_twice_daily">Двічі на день</string>
+    <string name="briefing_frequency_daily">Щодня</string>
+    <string name="briefing_frequency_weekly">Щотижня</string>
+    <string name="briefing_preferred_time">Бажаний час</string>
+    <string name="briefing_time_morning">Ранок</string>
+    <string name="briefing_time_afternoon">Пообіддя</string>
+    <string name="briefing_time_evening">Вечір</string>
+    <string name="briefing_preferred_day">Бажаний день</string>
+    <string name="briefing_day_sunday">Неділя</string>
+    <string name="briefing_day_monday">Понеділок</string>
+    <string name="briefing_day_tuesday">Вівторок</string>
+    <string name="briefing_day_wednesday">Середа</string>
+    <string name="briefing_day_thursday">Четвер</string>
+    <string name="briefing_day_friday">П’ятниця</string>
+    <string name="briefing_day_saturday">субота</string>
+    <string name="briefing_story_count">Кількість історій</string>
+    <string name="briefing_writing_style">Стиль написання</string>
+    <string name="briefing_style_bullets">Маркери</string>
+    <string name="briefing_style_editorial">Редакційний</string>
+    <string name="briefing_style_headlines">Заголовки</string>
+    <string name="briefing_filter">Фільтр</string>
+    <string name="briefing_keyword_section">Розділ за ключовим словом %1$d</string>
+    <string name="briefing_remove_keyword_section">Вилучити</string>
+    <string name="briefing_generate_now">Створити зараз</string>
+    <string name="briefing_saving_settings">Збереження налаштувань щоденного огляду…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="few">%d статті</item>
+        <item quantity="many">%d статей</item>
+        <item quantity="one">%d історія</item>
+        <item quantity="other">%d матеріалів</item>
+    </plurals>
 </resources>

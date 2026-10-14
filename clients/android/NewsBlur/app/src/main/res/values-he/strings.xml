@@ -160,7 +160,6 @@
     <string name="edit_reply_update">עדכון התשובה</string>
     <string name="edit_reply_delete">מחיקת התשובה</string>
     <string name="alert_dialog_ok">אישור</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">סיום</string>
     <string name="alert_dialog_openlink">פתיחת קישור</string>
     <string name="alert_dialog_openimage">פתיחת תמונה</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">המינוי שלך יתחדש בתאריך %s</string>
     <string name="premium_subscription_expiration">המינוי שלך יפוג בתאריך %s</string>
     <string name="premium_subscription_no_expiration">המינוי שלך מוגדר כך שלא יפוג לעולם. וואו!</string>
-    <string name="premium_policies">לפרטים, עיינו ב<a href="https://newsblur.com/privacy">מדיניות הפרטיות</a> וב<a href="https://newsblur.com/tos">תנאי השימוש</a> של NewsBlur\.</string>
+    <string name="premium_policies">לפרטים, עיינו ב&lt;a href=\"https://newsblur.com/privacy\"&gt;מדיניות הפרטיות&lt;/a&gt; וב&lt;a href=\"https://newsblur.com/tos\"&gt;תנאי השימוש&lt;/a&gt; של NewsBlur\.</string>
     <string name="premium_subscription_header">מינוי Premium</string>
     <string name="archive_subscription_header">ארכיון פרימיום</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -592,9 +591,9 @@
         <item quantity="two">%s כתבות בחודש</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">פורסם גם באתר %d</item>
-        <item quantity="other">פורסם גם באתרים של %d</item>
-        <item quantity="two">פורסם גם ב־%d אתרים</item>
+        <item quantity="one">פורסם גם באתר נוסף אחד מאת %d</item>
+        <item quantity="other">פורסם גם ב-%d אתרים אחרים</item>
+        <item quantity="two">פורסם גם ב־%d אתרים אחרים</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d אתר נוסף</item>
@@ -829,7 +828,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">כתבות חדשות</string>
     <string name="go_to_feed">מעבר לפיד</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -912,8 +910,6 @@
     <string name="ui_690910f6ed17">ייבוא OPML</string>
     <string name="ui_244fd5e426f0">ייצוא OPML</string>
     <string name="ui_768e0c1c6957">כותרת</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">תגיות שמורות</string>
     <string name="ui_6e914f494515">תגיות כתבות</string>
     <string name="ui_e912ab619a72">תגיות אחרות</string>
@@ -941,7 +937,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">מחיקת החשבון תסיר לצמיתות את העדכונים, הסיפורים השמורים ונתוני החשבון שלכם. אי אפשר לבטל פעולה זו.</string>
     <string name="onboarding_confirm_your_password">אימות הסיסמה</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">הקלידו %1$s כדי למחוק את החשבון לצמיתות.</string>
-    <string name="onboarding_delete">מחיקה</string>
     <string name="onboarding_permanently_delete_account">מחיקת החשבון לצמיתות</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">קורא חדשות אישי שמחבר בין \n אנשים כדי לדבר על העולם.</string>
     <string name="onboarding_or">או</string>
@@ -966,4 +961,173 @@
     <string name="onboarding_you_re_all_set_up">הכול מוכן.</string>
     <string name="onboarding_your_reading_list">רשימת הקריאה שלכם</string>
     <string name="onboarding_stay_connected">להישאר מחוברים</string>
+    <string name="onboarding_connect_your_account">חיבור החשבון שלך</string>
+    <string name="onboarding_choose_your_username">בחר/י שם משתמש</string>
+    <string name="onboarding_create_an_account">יצירת חשבון</string>
+    <string name="onboarding_welcome_back">ברוך שובך</string>
+    <string name="onboarding_signing_in_with_provider">מתבצעת כניסה באמצעות %1$s</string>
+    <string name="onboarding_sign_in_with_provider">התחברות באמצעות %1$s</string>
+    <string name="onboarding_email">דוא״ל</string>
+    <string name="onboarding_username">שם משתמש</string>
+    <string name="onboarding_username_or_email">שם משתמש או כתובת אימייל</string>
+    <string name="onboarding_password">סיסמה</string>
+    <string name="onboarding_continue">המשך</string>
+    <string name="onboarding_create_account">יצירת חשבון</string>
+    <string name="onboarding_sign_in">התחברות</string>
+    <string name="onboarding_already_have_an_account_sign_in">כבר יש לך חשבון? התחברות</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">חדש ב־NewsBlur? צור חשבון</string>
+    <string name="onboarding_use_a_custom_server">שימוש בשרת מותאם אישית</string>
+    <string name="onboarding_verify_with_provider">אימות באמצעות %1$s</string>
+    <string name="setup_close_setup">סגירת ההגדרה</string>
+    <string name="setup_start_reading">התחלת קריאה</string>
+    <string name="setup_continue">המשך</string>
+    <string name="setup_a_little_of_everything">קצת מכל דבר</string>
+    <string name="setup_bundle_folder_name">שם תיקיית האוסף</string>
+    <string name="setup_added">נוסף</string>
+    <string name="setup_queued">בתור</string>
+    <string name="setup_loading_feeds_to_choose_from">טוען פידים לבחירה…</string>
+    <string name="setup_loading_more_feeds">טוען עוד מקורות…</string>
+    <string name="setup_select_feeds_to_add">בחירת פידים להוספה</string>
+    <string name="setup_name_your_folder_to_continue">תנו שם לתיקייה כדי להמשיך</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">הוספת הפיד %1$d לתיקייה „%2$s”</item>
+        <item quantity="other">הוספת %1$d פידים לתיקייה „%2$s”</item>
+        <item quantity="two">הוספת %1$d מקורות לתיקייה „%2$s”</item>
+    </plurals>
+    <string name="setup_importing">מייבא…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">קטגוריה אחת לבחירה מתוך %1$d</item>
+        <item quantity="other">%1$d קטגוריות לבחירה</item>
+        <item quantity="two">%1$d קטגוריות לבחירה</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">חיפוש תחומי עניין ואתרים</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">נבחר פיד אחד: %1$d</item>
+        <item quantity="other">נבחרו %1$d פידים</item>
+        <item quantity="two">נבחרו %1$d פידים</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">נוסף עדכון אחד: %1$d</item>
+        <item quantity="other">נוספו %1$d הזנות</item>
+        <item quantity="two">%1$d מקורות נוספו</item>
+    </plurals>
+    <string name="setup_included_in_bundle">כלול בחבילה</string>
+    <string name="setup_include_in_bundle">לכלול בחבילה</string>
+    <string name="setup_reader_ready_add_feeds_anytime">הקורא שלך מוכן. אפשר להוסיף הזנות בכל עת דרך הוספה + גילוי אתרים.</string>
+    <string name="setup_reading_list_yours">רשימת קריאה משלך. כל מה שבחרת, במקום אחד.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d פיד</item>
+        <item quantity="other">%1$d פידים</item>
+        <item quantity="two">%1$d פידים</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur פורום</string>
+    <string name="setup_newsblur_forum_description">שאלו שאלות ושתפו רעיונות</string>
+    <string name="setup_handle_on_x">%1$s ב־X</string>
+    <string name="setup_samuelclay_on_x_description">מאת היוצר של NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">חדשות ועדכונים</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">לא ניתן להוסיף את העדכון %1$d אל %2$s. %3$s</item>
+        <item quantity="other">לא ניתן היה להוסיף %1$d הזנות אל %2$s. %3$s</item>
+        <item quantity="two">לא ניתן היה להוסיף %1$d פידים אל %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">%1$d כתבה בחודש</item>
+        <item quantity="other">%1$d כתבות בחודש</item>
+        <item quantity="two">%1$d כתבות בחודש</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">לא מעודכן · הסיפור האחרון %1$s</string>
+    <string name="add_site_url_or_search">https:// או חיפוש</string>
+    <string name="add_site_choose_folder">בחירת תיקייה</string>
+    <string name="add_site_top_level">— רמה עליונה —</string>
+    <string name="add_site_adding_site">מוסיף אתר</string>
+    <string name="add_site_add_folder">הוספת תיקייה</string>
+    <string name="add_site_cancel_new_folder">ביטול יצירת תיקייה חדשה</string>
+    <string name="add_site_create_new_folder">יצירת תיקייה חדשה</string>
+    <string name="add_site_new_folder_name">שם התיקייה החדשה</string>
+    <string name="add_site_searching_sites">מחפש באתרים</string>
+    <string name="discover_quick_add">הוספה מהירה של אתר או תיקייה</string>
+    <string name="discover_tab_search">חיפוש</string>
+    <string name="discover_tab_web_feed">פיד אינטרנט</string>
+    <string name="discover_tab_popular">פופולריים</string>
+    <string name="discover_tab_newsletters">ניוזלטרים</string>
+    <string name="discover_tab_podcasts">פודקאסטים</string>
+    <string name="discover_tab_heading">גילוי %1$s</string>
+    <string name="discover_hint_search">חיפוש אתרים או הדבקת כתובת URL</string>
+    <string name="discover_hint_popular">חיפוש באתרים פופולריים</string>
+    <string name="discover_hint_youtube">חפש בערוצים או הדבק כתובת URL</string>
+    <string name="discover_hint_reddit">חיפוש תת־פורומים של Reddit</string>
+    <string name="discover_hint_newsletters">חיפוש ניוזלטרים או הדבקת כתובת URL</string>
+    <string name="discover_hint_podcasts">חיפוש פודקאסטים</string>
+    <string name="discover_platform">פלטפורמה</string>
+    <string name="discover_all_platforms">הכול</string>
+    <string name="discover_category">קטגוריה</string>
+    <string name="discover_all_categories">כל הקטגוריות</string>
+    <string name="discover_topic">נושא</string>
+    <string name="discover_all_topics">כל הנושאים</string>
+    <string name="discover_trending_this_week">במגמת עלייה השבוע</string>
+    <string name="discover_search_results">תוצאות חיפוש</string>
+    <string name="discover_add_this_url">הוסף את כתובת ה-URL הזו</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">בחר %1$s</string>
+    <string name="discover_clear_input">נקה %1$s</string>
+    <string name="discover_web_page_url">כתובת דף אינטרנט</string>
+    <string name="discover_which_stories_optional">אילו כתבות? (לא חובה)</string>
+    <string name="discover_analyze_page">ניתוח הדף</string>
+    <string name="discover_refine_analysis">דיוק הניתוח</string>
+    <string name="discover_add_rss_feed">הוספת הזנת RSS</string>
+    <string name="discover_added">נוסף</string>
+    <string name="discover_web_pattern">תבנית %1$d</string>
+    <string name="discover_feed_title">כותרת הפיד</string>
+    <string name="discover_keep_stories">השארת כתבות</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d ימים</item>
+        <item quantity="other">%d ימים</item>
+        <item quantity="two">%d ימים</item>
+    </plurals>
+    <string name="discover_create_web_feed">יצירת פיד אינטרנט</string>
+    <string name="discover_search_news_topic">חיפוש נושא חדשותי</string>
+    <string name="discover_top_stories">כתבות מובילות</string>
+    <string name="discover_choose_a_topic">בחירת נושא</string>
+    <string name="discover_choose_a_category">בחר/י קטגוריה</string>
+    <string name="discover_add_google_news_feed">הוספת פיד של Google News</string>
+    <string name="discover_news_topic_world">עולם</string>
+    <string name="discover_news_topic_nation">מדינה</string>
+    <string name="discover_news_topic_business">עסקים</string>
+    <string name="discover_news_topic_technology">טכנולוגיה</string>
+    <string name="discover_news_topic_entertainment">בידור</string>
+    <string name="discover_news_topic_sports">ספורט</string>
+    <string name="discover_news_topic_science">מדע</string>
+    <string name="discover_news_topic_health">בריאות</string>
+    <string name="briefing_frequency">תדירות</string>
+    <string name="briefing_frequency_thrice_daily">3 פעמים ביום</string>
+    <string name="briefing_frequency_twice_daily">פעמיים ביום</string>
+    <string name="briefing_frequency_daily">יומי</string>
+    <string name="briefing_frequency_weekly">שבועי</string>
+    <string name="briefing_preferred_time">שעה מועדפת</string>
+    <string name="briefing_time_morning">בוקר</string>
+    <string name="briefing_time_afternoon">אחר הצהריים</string>
+    <string name="briefing_time_evening">ערב</string>
+    <string name="briefing_preferred_day">היום המועדף</string>
+    <string name="briefing_day_sunday">יום ראשון</string>
+    <string name="briefing_day_monday">יום שני</string>
+    <string name="briefing_day_tuesday">יום שלישי</string>
+    <string name="briefing_day_wednesday">יום רביעי</string>
+    <string name="briefing_day_thursday">יום חמישי</string>
+    <string name="briefing_day_friday">יום שישי</string>
+    <string name="briefing_day_saturday">שבת</string>
+    <string name="briefing_story_count">מספר הכתבות</string>
+    <string name="briefing_writing_style">סגנון כתיבה</string>
+    <string name="briefing_style_bullets">תבליטים</string>
+    <string name="briefing_style_editorial">מערכתי</string>
+    <string name="briefing_style_headlines">כותרות</string>
+    <string name="briefing_filter">סינון</string>
+    <string name="briefing_keyword_section">מקטע מילות מפתח %1$d</string>
+    <string name="briefing_remove_keyword_section">הסרה</string>
+    <string name="briefing_generate_now">יצירה כעת</string>
+    <string name="briefing_saving_settings">שומר את הגדרות התקציר היומי…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d כתבה</item>
+        <item quantity="other">%d כתבות</item>
+        <item quantity="two">%d כתבות</item>
+    </plurals>
 </resources>

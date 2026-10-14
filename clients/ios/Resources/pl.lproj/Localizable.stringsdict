@@ -2,6 +2,46 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%@ Widget Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ witryny widżetów</string>
+			<key>many</key>
+			<string>%@ witryn widżetu</string>
+			<key>one</key>
+			<string>%@ witryna z widżetami</string>
+			<key>other</key>
+			<string>%@ witryn z widżetami</string>
+		</dict>
+	</dict>
+	<key>%@ focused stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@focused_count@</string>
+		<key>focused_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ wybranych artykułów</string>
+			<key>many</key>
+			<string>%@ wyróżnionych artykułów</string>
+			<key>one</key>
+			<string>%@ wyróżniony artykuł</string>
+			<key>other</key>
+			<string>%@ wyróżnionych artykułów</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -20,6 +60,66 @@
 			<string>%@ otwarcie</string>
 			<key>other</key>
 			<string>%@ otwarć</string>
+		</dict>
+	</dict>
+	<key>%@ searches</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@search_count@</string>
+		<key>search_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ wyszukiwania</string>
+			<key>many</key>
+			<string>%@ wyszukiwań</string>
+			<key>one</key>
+			<string>%@ wyszukiwanie</string>
+			<key>other</key>
+			<string>%@ wyszukiwań</string>
+		</dict>
+	</dict>
+	<key>%@ stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@story_count@</string>
+		<key>story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ artykułów</string>
+			<key>many</key>
+			<string>%@ artykułów</string>
+			<key>one</key>
+			<string>%@ artykuł</string>
+			<key>other</key>
+			<string>%@ artykułów</string>
+		</dict>
+	</dict>
+	<key>%@ stories left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Pozostało %@ artykułów</string>
+			<key>many</key>
+			<string>Pozostało %@ artykułów</string>
+			<key>one</key>
+			<string>Pozostał %@ artykuł</string>
+			<key>other</key>
+			<string>Pozostało %@ artykułów</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -60,6 +160,206 @@
 			<string>%@ subskrybent</string>
 			<key>other</key>
 			<string>%@ subskrybentów</string>
+		</dict>
+	</dict>
+	<key>%@ unread stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ nieprzeczytane artykuły</string>
+			<key>many</key>
+			<string>%@ nieprzeczytanych artykułów</string>
+			<key>one</key>
+			<string>%@ nieprzeczytany artykuł</string>
+			<key>other</key>
+			<string>%@ nieprzeczytanych artykułów</string>
+		</dict>
+	</dict>
+	<key>Followers label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@follower_count@</string>
+		<key>follower_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Obserwujący</string>
+			<key>many</key>
+			<string>Obserwujący</string>
+			<key>one</key>
+			<string>Obserwujący</string>
+			<key>other</key>
+			<string>Obserwujący</string>
+		</dict>
+	</dict>
+	<key>Imported %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@imported_count@</string>
+		<key>imported_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Zaimportowano %@ witryny</string>
+			<key>many</key>
+			<string>Zaimportowano %@ witryn</string>
+			<key>one</key>
+			<string>Zaimportowano %@ witrynę</string>
+			<key>other</key>
+			<string>Zaimportowano %@ witryn</string>
+		</dict>
+	</dict>
+	<key>Mark these %@ stories read</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@visible_unread_count@</string>
+		<key>visible_unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Oznacz te %@ artykułów jako przeczytane</string>
+			<key>many</key>
+			<string>Oznacz te %@ artykułów jako przeczytane</string>
+			<key>one</key>
+			<string>Oznacz %@ artykuł jako przeczytany</string>
+			<key>other</key>
+			<string>Oznacz te %@ artykułów jako przeczytane</string>
+		</dict>
+	</dict>
+	<key>Mute %@ Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Wycisz %@ witryny</string>
+			<key>many</key>
+			<string>Wycisz %@ witryn</string>
+			<key>one</key>
+			<string>Wycisz witrynę %@</string>
+			<key>other</key>
+			<string>Wycisz %@ witryn z widżetami</string>
+		</dict>
+	</dict>
+	<key>Older than %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Starsze niż %@ dni</string>
+			<key>many</key>
+			<string>Starsze niż %@ dni</string>
+			<key>one</key>
+			<string>Starsze niż %@ dzień</string>
+			<key>other</key>
+			<string>Starsze niż %@ dni</string>
+		</dict>
+	</dict>
+	<key>Shared Stories label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@shared_stories_count@</string>
+		<key>shared_stories_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Udostępnione artykuły</string>
+			<key>many</key>
+			<string>Udostępnione artykuły</string>
+			<key>one</key>
+			<string>Udostępniony artykuł</string>
+			<key>other</key>
+			<string>Udostępnione historie</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Przechowywanie danych z ostatnich %@ dni</string>
+			<key>many</key>
+			<string>Przechowywanie artykułów z ostatnich %@ dni</string>
+			<key>one</key>
+			<string>Przechowywanie danych z ostatniego %@ dnia</string>
+			<key>other</key>
+			<string>Przechowywanie danych z ostatnich %@ dni</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hours@</string>
+		<key>hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Przechowywanie z ostatnich %@ godzin</string>
+			<key>many</key>
+			<string>Przechowuj dane z ostatnich %@ godzin</string>
+			<key>one</key>
+			<string>Przechowywanie z ostatniej %@ godziny</string>
+			<key>other</key>
+			<string>Przechowywanie danych z ostatnich %@ godzin</string>
+		</dict>
+	</dict>
+	<key>You are subscribed to %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@subscription_count@</string>
+		<key>subscription_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Subskrybujesz %@ witryn</string>
+			<key>many</key>
+			<string>Subskrybujesz %@ witryn</string>
+			<key>one</key>
+			<string>Subskrybujesz %@ witrynę</string>
+			<key>other</key>
+			<string>Subskrybujesz %@ witryn</string>
 		</dict>
 	</dict>
 </dict>

@@ -2,6 +2,46 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%@ Widget Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ сайта виджетов</string>
+			<key>many</key>
+			<string>%@ сайтов в виджете</string>
+			<key>one</key>
+			<string>%@ сайт с виджетами</string>
+			<key>other</key>
+			<string>Сайтов-виджетов: %@</string>
+		</dict>
+	</dict>
+	<key>%@ focused stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@focused_count@</string>
+		<key>focused_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ отобранных записей</string>
+			<key>many</key>
+			<string>%@ историй в фокусе</string>
+			<key>one</key>
+			<string>%@ выбранная статья</string>
+			<key>other</key>
+			<string>%@ важных историй</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -20,6 +60,66 @@
 			<string>%@ открытие</string>
 			<key>other</key>
 			<string>%@ открытий</string>
+		</dict>
+	</dict>
+	<key>%@ searches</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@search_count@</string>
+		<key>search_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Поисковых запросов: %@</string>
+			<key>many</key>
+			<string>%@ поисковых запросов</string>
+			<key>one</key>
+			<string>%@ поиск</string>
+			<key>other</key>
+			<string>%@ поисковых запросов</string>
+		</dict>
+	</dict>
+	<key>%@ stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@story_count@</string>
+		<key>story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ статей</string>
+			<key>many</key>
+			<string>%@ историй</string>
+			<key>one</key>
+			<string>%@ история</string>
+			<key>other</key>
+			<string>%@ статей</string>
+		</dict>
+	</dict>
+	<key>%@ stories left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Осталось %@ публикаций</string>
+			<key>many</key>
+			<string>Осталось записей: %@</string>
+			<key>one</key>
+			<string>Осталась %@ статья</string>
+			<key>other</key>
+			<string>Осталось историй: %@</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -60,6 +160,206 @@
 			<string>%@ подписчик</string>
 			<key>other</key>
 			<string>%@ подписчиков</string>
+		</dict>
+	</dict>
+	<key>%@ unread stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ непрочитанная запись</string>
+			<key>many</key>
+			<string>Непрочитанных статей: %@</string>
+			<key>one</key>
+			<string>%@ непрочитанная статья</string>
+			<key>other</key>
+			<string>%@ непрочитанных историй</string>
+		</dict>
+	</dict>
+	<key>Followers label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@follower_count@</string>
+		<key>follower_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Подписчики</string>
+			<key>many</key>
+			<string>Подписчики</string>
+			<key>one</key>
+			<string>Подписчик</string>
+			<key>other</key>
+			<string>Подписчики</string>
+		</dict>
+	</dict>
+	<key>Imported %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@imported_count@</string>
+		<key>imported_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Импортировано %@ сайта</string>
+			<key>many</key>
+			<string>Импортировано сайтов: %@</string>
+			<key>one</key>
+			<string>Импортирован %@ сайт</string>
+			<key>other</key>
+			<string>Импортировано сайтов: %@</string>
+		</dict>
+	</dict>
+	<key>Mark these %@ stories read</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@visible_unread_count@</string>
+		<key>visible_unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Отметить эти %@ записей как прочитанные</string>
+			<key>many</key>
+			<string>Отметить эти %@ историй как прочитанные</string>
+			<key>one</key>
+			<string>Отметить %@ историю как прочитанную</string>
+			<key>other</key>
+			<string>Отметить эти %@ статьи как прочитанные</string>
+		</dict>
+	</dict>
+	<key>Mute %@ Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Не показывать сайты %@</string>
+			<key>many</key>
+			<string>Игнорировать сайты (%@)</string>
+			<key>one</key>
+			<string>Заглушить %@ сайт</string>
+			<key>other</key>
+			<string>Отключить %@ сайтов</string>
+		</dict>
+	</dict>
+	<key>Older than %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Старше %@ дней</string>
+			<key>many</key>
+			<string>Старше %@ дней</string>
+			<key>one</key>
+			<string>Старше чем %@ день</string>
+			<key>other</key>
+			<string>Старше чем %@ дней</string>
+		</dict>
+	</dict>
+	<key>Shared Stories label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@shared_stories_count@</string>
+		<key>shared_stories_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Истории, которыми поделились</string>
+			<key>many</key>
+			<string>Истории, которыми поделились</string>
+			<key>one</key>
+			<string>Публикация, которой поделились</string>
+			<key>other</key>
+			<string>Истории, которыми поделились</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Хранение за последние %@ дней</string>
+			<key>many</key>
+			<string>Хранение за последние %@ дней</string>
+			<key>one</key>
+			<string>Хранить за прошедший %@ день</string>
+			<key>other</key>
+			<string>Хранение данных за последние %@ дней</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hours@</string>
+		<key>hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Хранить за последние %@ часов</string>
+			<key>many</key>
+			<string>Хранить за последние %@ ч.</string>
+			<key>one</key>
+			<string>Хранить за последний %@ час</string>
+			<key>other</key>
+			<string>Хранить за последние %@ ч.</string>
+		</dict>
+	</dict>
+	<key>You are subscribed to %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@subscription_count@</string>
+		<key>subscription_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Вы подписаны на %@ сайта</string>
+			<key>many</key>
+			<string>Вы подписаны на %@ сайтов</string>
+			<key>one</key>
+			<string>Вы подписаны на %@ сайт</string>
+			<key>other</key>
+			<string>Вы подписаны на %@ сайтов</string>
 		</dict>
 	</dict>
 </dict>

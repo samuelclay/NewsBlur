@@ -160,7 +160,6 @@
     <string name="edit_reply_update">Обновить ответ</string>
     <string name="edit_reply_delete">Удалить ответY</string>
     <string name="alert_dialog_ok">ОК</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Готово</string>
     <string name="alert_dialog_openlink">Открыть ссылку</string>
     <string name="alert_dialog_openimage">Открыть изображение</string>
@@ -412,7 +411,7 @@
     <string name="premium_subscription_renewal">Подписка будет продлена %s</string>
     <string name="premium_subscription_expiration">Срок действия подписки истекает %s</string>
     <string name="premium_subscription_no_expiration">Ваша подписка настроена так, что никогда не истечёт. Вот это да!</string>
-    <string name="premium_policies">Подробности смотрите в <a href="https://newsblur.com/privacy">политике конфиденциальности</a> NewsBlur и <a href="https://newsblur.com/tos">условиях использования</a>.</string>
+    <string name="premium_policies">Подробности смотрите в &lt;a href=\"https://newsblur.com/privacy\"&gt;политике конфиденциальности&lt;/a&gt; NewsBlur и &lt;a href=\"https://newsblur.com/tos\"&gt;условиях использования&lt;/a&gt;.</string>
     <string name="premium_subscription_header">Премиум-подписка</string>
     <string name="archive_subscription_header">Премиум-архив</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -595,10 +594,10 @@
         <item quantity="other">%s публикаций/мес.</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="few">Также опубликовано на сайтах %d</item>
-        <item quantity="many">Также опубликовано на %d сайтах</item>
-        <item quantity="one">Также опубликовано на сайте %d</item>
-        <item quantity="other">Также опубликовано на сайтах %d</item>
+        <item quantity="few">Также опубликовано на %d других сайтах</item>
+        <item quantity="many">Также опубликовано на %d других сайтах</item>
+        <item quantity="one">Также опубликовано на %d другом сайте</item>
+        <item quantity="other">Также опубликовано ещё на %d сайтах</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="few">+ ещё %d сайтов</item>
@@ -834,7 +833,6 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Новые статьи</string>
     <string name="go_to_feed">Перейти к ленте</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -917,8 +915,6 @@
     <string name="ui_690910f6ed17">Импортировать OPML</string>
     <string name="ui_244fd5e426f0">Экспорт OPML</string>
     <string name="ui_768e0c1c6957">Заголовок</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Сохранённые теги</string>
     <string name="ui_6e914f494515">Теги статей</string>
     <string name="ui_e912ab619a72">Другие теги</string>
@@ -946,7 +942,6 @@
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Удаление аккаунта навсегда удалит ваши ленты, сохранённые статьи и данные аккаунта. Это действие нельзя отменить.</string>
     <string name="onboarding_confirm_your_password">Подтвердите пароль</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Введите %1$s, чтобы навсегда удалить аккаунт.</string>
-    <string name="onboarding_delete">Удалить</string>
     <string name="onboarding_permanently_delete_account">Удалить аккаунт навсегда</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Персональная программа для чтения новостей, которая объединяет\nлюдей, чтобы обсуждать происходящее в мире.</string>
     <string name="onboarding_or">или</string>
@@ -971,4 +966,182 @@
     <string name="onboarding_you_re_all_set_up">Всё готово.</string>
     <string name="onboarding_your_reading_list">Ваш список для чтения</string>
     <string name="onboarding_stay_connected">Оставайтесь на связи</string>
+    <string name="onboarding_connect_your_account">Подключить аккаунт</string>
+    <string name="onboarding_choose_your_username">Выберите имя пользователя</string>
+    <string name="onboarding_create_an_account">Создать аккаунт</string>
+    <string name="onboarding_welcome_back">С возвращением</string>
+    <string name="onboarding_signing_in_with_provider">Вход через %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Войти через %1$s</string>
+    <string name="onboarding_email">Электронная почта</string>
+    <string name="onboarding_username">Имя пользователя</string>
+    <string name="onboarding_username_or_email">Имя пользователя или электронная почта</string>
+    <string name="onboarding_password">Пароль</string>
+    <string name="onboarding_continue">Продолжить</string>
+    <string name="onboarding_create_account">Создать аккаунт</string>
+    <string name="onboarding_sign_in">Войти</string>
+    <string name="onboarding_already_have_an_account_sign_in">Уже есть аккаунт? Войти</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Впервые на NewsBlur? Создать аккаунт</string>
+    <string name="onboarding_use_a_custom_server">Использовать свой сервер</string>
+    <string name="onboarding_verify_with_provider">Подтвердить с помощью %1$s</string>
+    <string name="setup_close_setup">Закрыть настройку</string>
+    <string name="setup_start_reading">Начать чтение</string>
+    <string name="setup_continue">Продолжить</string>
+    <string name="setup_a_little_of_everything">Всего понемногу</string>
+    <string name="setup_bundle_folder_name">Название папки подборки</string>
+    <string name="setup_added">Добавлено</string>
+    <string name="setup_queued">В очереди</string>
+    <string name="setup_loading_feeds_to_choose_from">Загружаем ленты для выбора…</string>
+    <string name="setup_loading_more_feeds">Загружаем другие ленты…</string>
+    <string name="setup_select_feeds_to_add">Выберите ленты для добавления</string>
+    <string name="setup_name_your_folder_to_continue">Назовите папку, чтобы продолжить</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="few">Добавить %1$d ленты в папку «%2$s»</item>
+        <item quantity="many">Добавить %1$d лент в папку «%2$s»</item>
+        <item quantity="one">Добавить ленту %1$d в папку «%2$s»</item>
+        <item quantity="other">Добавить %1$d лент в папку «%2$s»</item>
+    </plurals>
+    <string name="setup_importing">Импортирование…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="few">%1$d категории на выбор</item>
+        <item quantity="many">На выбор категорий: %1$d</item>
+        <item quantity="one">%1$d категория на выбор</item>
+        <item quantity="other">На выбор доступно %1$d категорий</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Поиск по интересам и сайтам</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="few">Выбрано %1$d ленты</item>
+        <item quantity="many">Выбрано лент: %1$d</item>
+        <item quantity="one">Выбрана %1$d лента</item>
+        <item quantity="other">Выбрано лент: %1$d</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="few">Добавлено %1$d ленты</item>
+        <item quantity="many">Добавлено лент: %1$d</item>
+        <item quantity="one">Добавлена %1$d лента</item>
+        <item quantity="other">Добавлено лент: %1$d</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Включено в комплект</string>
+    <string name="setup_include_in_bundle">Добавить в подборку</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Ваша лента готова. Добавляйте источники в любое время через «Добавить + Найти сайты».</string>
+    <string name="setup_reading_list_yours">Ваш список для чтения. Всё, что вы выбрали, в одном месте.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="few">%1$d ленты</item>
+        <item quantity="many">%1$d лент</item>
+        <item quantity="one">%1$d лента</item>
+        <item quantity="other">%1$d лент</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur форум</string>
+    <string name="setup_newsblur_forum_description">Задавайте вопросы и делитесь идеями</string>
+    <string name="setup_handle_on_x">%1$s в X</string>
+    <string name="setup_samuelclay_on_x_description">От создателя NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Новости и обновления</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="few">Не удалось добавить %1$d ленты в %2$s. %3$s</item>
+        <item quantity="many">Не удалось добавить %1$d лент в %2$s. %3$s</item>
+        <item quantity="one">Не удалось добавить ленту %1$d в %2$s. %3$s</item>
+        <item quantity="other">Не удалось добавить %1$d каналов в %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="few">%1$d историй в месяц</item>
+        <item quantity="many">%1$d статей в месяц</item>
+        <item quantity="one">%1$d история в месяц</item>
+        <item quantity="other">%1$d публикаций в месяц</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Не обновляется · последняя статья %1$s</string>
+    <string name="add_site_url_or_search">https:// или поиск</string>
+    <string name="add_site_choose_folder">Выбрать папку</string>
+    <string name="add_site_top_level">— Верхний уровень —</string>
+    <string name="add_site_adding_site">Добавление сайта</string>
+    <string name="add_site_add_folder">Добавить папку</string>
+    <string name="add_site_cancel_new_folder">Отменить создание папки</string>
+    <string name="add_site_create_new_folder">Создать папку</string>
+    <string name="add_site_new_folder_name">Название новой папки</string>
+    <string name="add_site_searching_sites">Поиск сайтов</string>
+    <string name="discover_quick_add">Быстро добавить сайт или папку</string>
+    <string name="discover_tab_search">Поиск</string>
+    <string name="discover_tab_web_feed">Веб-лента</string>
+    <string name="discover_tab_popular">Популярное</string>
+    <string name="discover_tab_newsletters">Рассылки</string>
+    <string name="discover_tab_podcasts">Подкасты</string>
+    <string name="discover_tab_heading">Откройте для себя %1$s</string>
+    <string name="discover_hint_search">Найдите сайты или вставьте URL</string>
+    <string name="discover_hint_popular">Поиск популярных сайтов</string>
+    <string name="discover_hint_youtube">Ищите каналы или вставьте URL</string>
+    <string name="discover_hint_reddit">Поиск сабреддитов</string>
+    <string name="discover_hint_newsletters">Найдите рассылку или вставьте URL</string>
+    <string name="discover_hint_podcasts">Поиск подкастов</string>
+    <string name="discover_platform">Платформа</string>
+    <string name="discover_all_platforms">Все</string>
+    <string name="discover_category">Категория</string>
+    <string name="discover_all_categories">Все категории</string>
+    <string name="discover_topic">Тема</string>
+    <string name="discover_all_topics">Все темы</string>
+    <string name="discover_trending_this_week">В тренде на этой неделе</string>
+    <string name="discover_search_results">Результаты поиска</string>
+    <string name="discover_add_this_url">Добавить этот URL</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Выберите %1$s</string>
+    <string name="discover_clear_input">Очистить %1$s</string>
+    <string name="discover_web_page_url">URL веб-страницы</string>
+    <string name="discover_which_stories_optional">Какие статьи? (необязательно)</string>
+    <string name="discover_analyze_page">Анализировать страницу</string>
+    <string name="discover_refine_analysis">Уточнить анализ</string>
+    <string name="discover_add_rss_feed">Добавить RSS-ленту</string>
+    <string name="discover_added">Добавлено</string>
+    <string name="discover_web_pattern">Шаблон %1$d</string>
+    <string name="discover_feed_title">Название ленты</string>
+    <string name="discover_keep_stories">Оставить материалы</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="few">%d дней</item>
+        <item quantity="many">%d дней</item>
+        <item quantity="one">%d день</item>
+        <item quantity="other">%d дн.</item>
+    </plurals>
+    <string name="discover_create_web_feed">Создать веб-ленту</string>
+    <string name="discover_search_news_topic">Поиск по новостной теме</string>
+    <string name="discover_top_stories">Главные новости</string>
+    <string name="discover_choose_a_topic">Выберите тему</string>
+    <string name="discover_choose_a_category">Выберите категорию</string>
+    <string name="discover_add_google_news_feed">Добавить ленту Google Новостей</string>
+    <string name="discover_news_topic_world">Мир</string>
+    <string name="discover_news_topic_nation">Страна</string>
+    <string name="discover_news_topic_business">Бизнес</string>
+    <string name="discover_news_topic_technology">Технологии</string>
+    <string name="discover_news_topic_entertainment">Развлечения</string>
+    <string name="discover_news_topic_sports">Спорт</string>
+    <string name="discover_news_topic_science">Наука</string>
+    <string name="discover_news_topic_health">Здоровье</string>
+    <string name="briefing_frequency">Частота</string>
+    <string name="briefing_frequency_thrice_daily">3 раза в день</string>
+    <string name="briefing_frequency_twice_daily">2 раза в день</string>
+    <string name="briefing_frequency_daily">Ежедневно</string>
+    <string name="briefing_frequency_weekly">Еженедельно</string>
+    <string name="briefing_preferred_time">Предпочтительное время</string>
+    <string name="briefing_time_morning">Утро</string>
+    <string name="briefing_time_afternoon">День</string>
+    <string name="briefing_time_evening">Вечер</string>
+    <string name="briefing_preferred_day">Предпочтительный день</string>
+    <string name="briefing_day_sunday">Воскресенье</string>
+    <string name="briefing_day_monday">Понедельник</string>
+    <string name="briefing_day_tuesday">Вторник</string>
+    <string name="briefing_day_wednesday">Среда</string>
+    <string name="briefing_day_thursday">Четверг</string>
+    <string name="briefing_day_friday">Пятница</string>
+    <string name="briefing_day_saturday">Суббота</string>
+    <string name="briefing_story_count">Количество историй</string>
+    <string name="briefing_writing_style">Стиль письма</string>
+    <string name="briefing_style_bullets">Маркированный список</string>
+    <string name="briefing_style_editorial">Редакционный</string>
+    <string name="briefing_style_headlines">Заголовки</string>
+    <string name="briefing_filter">Фильтр</string>
+    <string name="briefing_keyword_section">Раздел по ключевому слову %1$d</string>
+    <string name="briefing_remove_keyword_section">Удалить</string>
+    <string name="briefing_generate_now">Создать сейчас</string>
+    <string name="briefing_saving_settings">Сохранение настроек ежедневной сводки…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="few">%d статьи</item>
+        <item quantity="many">%d записей</item>
+        <item quantity="one">%d история</item>
+        <item quantity="other">%d материалов</item>
+    </plurals>
 </resources>

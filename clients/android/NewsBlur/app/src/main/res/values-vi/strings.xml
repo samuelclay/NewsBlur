@@ -160,7 +160,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="edit_reply_update">Cập nhật câu trả lời</string>
     <string name="edit_reply_delete">Xóa câu trả lờiY</string>
     <string name="alert_dialog_ok">Đồng ý</string>
-    <string name="alert_dialog_cancel">@android:string/cancel</string>
     <string name="alert_dialog_done">Xong</string>
     <string name="alert_dialog_openlink">Mở liên kết</string>
     <string name="alert_dialog_openimage">Mở hình ảnh</string>
@@ -412,7 +411,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="premium_subscription_renewal">Gói đăng ký của bạn sẽ gia hạn vào %s</string>
     <string name="premium_subscription_expiration">Gói đăng ký của bạn sẽ hết hạn vào %s</string>
     <string name="premium_subscription_no_expiration">Gói đăng ký của bạn được thiết lập để không bao giờ hết hạn. Tuyệt vời!</string>
-    <string name="premium_policies">Xem <a href="https://newsblur.com/privacy">chính sách quyền riêng tư</a> và <a href="https://newsblur.com/tos">điều khoản sử dụng</a> của NewsBlur để biết chi tiết.</string>
+    <string name="premium_policies">Xem &lt;a href=\"https://newsblur.com/privacy\"&gt;chính sách quyền riêng tư&lt;/a&gt; và &lt;a href=\"https://newsblur.com/tos\"&gt;điều khoản sử dụng&lt;/a&gt; của NewsBlur để biết chi tiết.</string>
     <string name="premium_subscription_header">Gói đăng ký Premium</string>
     <string name="archive_subscription_header">Kho lưu trữ Premium</string>
     <string name="pro_subscription_header">Premium Pro</string>
@@ -586,7 +585,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
         <item quantity="other">%s tin/tháng</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="other">Cũng được đăng trên các trang %d</item>
+        <item quantity="other">Cũng được đăng trên %d trang khác</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="other">+ thêm %d trang web</item>
@@ -819,7 +818,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
     <string name="story_notification_channel_name">Bài viết mới</string>
     <string name="go_to_feed">Đến nguồn tin</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
@@ -902,8 +900,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="ui_690910f6ed17">Nhập OPML</string>
     <string name="ui_244fd5e426f0">Xuất OPML</string>
     <string name="ui_768e0c1c6957">Tiêu đề</string>
-    <string name="ui_0c2dd345a681">\u24D8</string>
-    <string name="ui_5fc52b1a5a92">\u2192</string>
     <string name="ui_e17c700c2575">Thẻ đã lưu</string>
     <string name="ui_6e914f494515">Thẻ bài viết</string>
     <string name="ui_e912ab619a72">Thẻ khác</string>
@@ -931,7 +927,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Việc xóa tài khoản sẽ xóa vĩnh viễn nguồn cấp dữ liệu, tin đã lưu và dữ liệu tài khoản của bạn. Không thể hoàn tác.</string>
     <string name="onboarding_confirm_your_password">Xác nhận mật khẩu</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">Nhập %1$s để xóa vĩnh viễn tài khoản của bạn.</string>
-    <string name="onboarding_delete">Xóa</string>
     <string name="onboarding_permanently_delete_account">Xóa tài khoản vĩnh viễn</string>
     <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">Trình đọc tin tức cá nhân giúp\nmọi người kết nối và cùng thảo luận về thế giới.</string>
     <string name="onboarding_or">hoặc</string>
@@ -956,4 +951,155 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="onboarding_you_re_all_set_up">Bạn đã thiết lập xong.</string>
     <string name="onboarding_your_reading_list">Danh sách đọc của bạn</string>
     <string name="onboarding_stay_connected">Luôn kết nối</string>
+    <string name="onboarding_connect_your_account">Kết nối tài khoản của bạn</string>
+    <string name="onboarding_choose_your_username">Chọn tên người dùng</string>
+    <string name="onboarding_create_an_account">Tạo tài khoản</string>
+    <string name="onboarding_welcome_back">Chào mừng bạn trở lại</string>
+    <string name="onboarding_signing_in_with_provider">Đang đăng nhập bằng %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Đăng nhập bằng %1$s</string>
+    <string name="onboarding_email">Email</string>
+    <string name="onboarding_username">Tên người dùng</string>
+    <string name="onboarding_username_or_email">Tên người dùng hoặc email</string>
+    <string name="onboarding_password">Mật khẩu</string>
+    <string name="onboarding_continue">Tiếp tục</string>
+    <string name="onboarding_create_account">Tạo tài khoản</string>
+    <string name="onboarding_sign_in">Đăng nhập</string>
+    <string name="onboarding_already_have_an_account_sign_in">Đã có tài khoản? Đăng nhập</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">Bạn mới dùng NewsBlur? Tạo tài khoản</string>
+    <string name="onboarding_use_a_custom_server">Dùng máy chủ tùy chỉnh</string>
+    <string name="onboarding_verify_with_provider">Xác minh bằng %1$s</string>
+    <string name="setup_close_setup">Đóng thiết lập</string>
+    <string name="setup_start_reading">Bắt đầu đọc</string>
+    <string name="setup_continue">Tiếp tục</string>
+    <string name="setup_a_little_of_everything">Một chút về mọi thứ</string>
+    <string name="setup_bundle_folder_name">Tên thư mục gói</string>
+    <string name="setup_added">Đã thêm</string>
+    <string name="setup_queued">Đã xếp hàng</string>
+    <string name="setup_loading_feeds_to_choose_from">Đang tải các nguồn tin để bạn chọn…</string>
+    <string name="setup_loading_more_feeds">Đang tải thêm nguồn tin…</string>
+    <string name="setup_select_feeds_to_add">Chọn nguồn cấp dữ liệu để thêm</string>
+    <string name="setup_name_your_folder_to_continue">Đặt tên thư mục để tiếp tục</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="other">Thêm %1$d nguồn tin vào thư mục “%2$s”</item>
+    </plurals>
+    <string name="setup_importing">Đang nhập…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="other">Có %1$d danh mục để chọn</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Tìm kiếm chủ đề quan tâm và trang</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="other">Đã chọn %1$d nguồn tin</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="other">Đã thêm %1$d nguồn cấp</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Đã bao gồm trong gói</string>
+    <string name="setup_include_in_bundle">Đưa vào bộ sưu tập</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Trình đọc của bạn đã sẵn sàng. Bạn có thể thêm nguồn cấp bất cứ lúc nào trong mục Thêm + Khám phá trang web.</string>
+    <string name="setup_reading_list_yours">Danh sách đọc của riêng bạn. Mọi thứ bạn chọn, ở cùng một nơi.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="other">%1$d nguồn tin</item>
+    </plurals>
+    <string name="setup_newsblur_forum">Diễn đàn NewsBlur</string>
+    <string name="setup_newsblur_forum_description">Đặt câu hỏi và chia sẻ ý tưởng</string>
+    <string name="setup_handle_on_x">%1$s trên X</string>
+    <string name="setup_samuelclay_on_x_description">Được tạo bởi NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">Tin tức và cập nhật</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="other">Không thể thêm %1$d nguồn cấp vào %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="other">%1$d bài viết/tháng</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Lỗi thời · bài viết cuối cùng %1$s</string>
+    <string name="add_site_url_or_search">https:// hoặc tìm kiếm</string>
+    <string name="add_site_choose_folder">Chọn thư mục</string>
+    <string name="add_site_top_level">— Cấp cao nhất —</string>
+    <string name="add_site_adding_site">Đang thêm trang</string>
+    <string name="add_site_add_folder">Thêm thư mục</string>
+    <string name="add_site_cancel_new_folder">Hủy tạo thư mục mới</string>
+    <string name="add_site_create_new_folder">Tạo thư mục mới</string>
+    <string name="add_site_new_folder_name">Tên thư mục mới</string>
+    <string name="add_site_searching_sites">Đang tìm kiếm trang web</string>
+    <string name="discover_quick_add">Thêm nhanh trang web hoặc thư mục</string>
+    <string name="discover_tab_search">Tìm kiếm</string>
+    <string name="discover_tab_web_feed">Nguồn cấp web</string>
+    <string name="discover_tab_popular">Phổ biến</string>
+    <string name="discover_tab_newsletters">Bản tin email</string>
+    <string name="discover_tab_podcasts">Podcast</string>
+    <string name="discover_tab_heading">Khám phá %1$s</string>
+    <string name="discover_hint_search">Tìm trang web hoặc dán URL</string>
+    <string name="discover_hint_popular">Tìm kiếm các trang web phổ biến</string>
+    <string name="discover_hint_youtube">Tìm kênh hoặc dán URL</string>
+    <string name="discover_hint_reddit">Tìm subreddit</string>
+    <string name="discover_hint_newsletters">Tìm bản tin email hoặc dán URL</string>
+    <string name="discover_hint_podcasts">Tìm podcast</string>
+    <string name="discover_platform">Nền tảng</string>
+    <string name="discover_all_platforms">Tất cả</string>
+    <string name="discover_category">Danh mục</string>
+    <string name="discover_all_categories">Tất cả danh mục</string>
+    <string name="discover_topic">Chủ đề</string>
+    <string name="discover_all_topics">Tất cả chủ đề</string>
+    <string name="discover_trending_this_week">Xu hướng trong tuần này</string>
+    <string name="discover_search_results">Kết quả tìm kiếm</string>
+    <string name="discover_add_this_url">Thêm URL này</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Chọn %1$s</string>
+    <string name="discover_clear_input">Xóa %1$s</string>
+    <string name="discover_web_page_url">URL trang web</string>
+    <string name="discover_which_stories_optional">Những bài viết nào? (không bắt buộc)</string>
+    <string name="discover_analyze_page">Phân tích trang</string>
+    <string name="discover_refine_analysis">Tinh chỉnh phân tích</string>
+    <string name="discover_add_rss_feed">Thêm nguồn cấp RSS</string>
+    <string name="discover_added">Đã thêm</string>
+    <string name="discover_web_pattern">Mẫu %1$d</string>
+    <string name="discover_feed_title">Tiêu đề nguồn tin</string>
+    <string name="discover_keep_stories">Giữ lại bài viết</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="other">%d ngày</item>
+    </plurals>
+    <string name="discover_create_web_feed">Tạo nguồn cấp dữ liệu web</string>
+    <string name="discover_search_news_topic">Tìm kiếm chủ đề tin tức</string>
+    <string name="discover_top_stories">Bài viết hàng đầu</string>
+    <string name="discover_choose_a_topic">Chọn một chủ đề</string>
+    <string name="discover_choose_a_category">Chọn danh mục</string>
+    <string name="discover_add_google_news_feed">Thêm nguồn cấp Google News</string>
+    <string name="discover_news_topic_world">Thế giới</string>
+    <string name="discover_news_topic_nation">Quốc gia</string>
+    <string name="discover_news_topic_business">Kinh doanh</string>
+    <string name="discover_news_topic_technology">Công nghệ</string>
+    <string name="discover_news_topic_entertainment">Giải trí</string>
+    <string name="discover_news_topic_sports">Thể thao</string>
+    <string name="discover_news_topic_science">Khoa học</string>
+    <string name="discover_news_topic_health">Sức khỏe</string>
+    <string name="briefing_frequency">Tần suất</string>
+    <string name="briefing_frequency_thrice_daily">3 lần mỗi ngày</string>
+    <string name="briefing_frequency_twice_daily">2 lần mỗi ngày</string>
+    <string name="briefing_frequency_daily">Hằng ngày</string>
+    <string name="briefing_frequency_weekly">Hàng tuần</string>
+    <string name="briefing_preferred_time">Thời gian ưu tiên</string>
+    <string name="briefing_time_morning">Buổi sáng</string>
+    <string name="briefing_time_afternoon">Buổi chiều</string>
+    <string name="briefing_time_evening">Buổi tối</string>
+    <string name="briefing_preferred_day">Ngày ưu tiên</string>
+    <string name="briefing_day_sunday">Chủ Nhật</string>
+    <string name="briefing_day_monday">Thứ Hai</string>
+    <string name="briefing_day_tuesday">Thứ Ba</string>
+    <string name="briefing_day_wednesday">Thứ Tư</string>
+    <string name="briefing_day_thursday">Thứ Năm</string>
+    <string name="briefing_day_friday">Thứ Sáu</string>
+    <string name="briefing_day_saturday">Thứ Bảy</string>
+    <string name="briefing_story_count">Số lượng bài viết</string>
+    <string name="briefing_writing_style">Phong cách viết</string>
+    <string name="briefing_style_bullets">Dạng gạch đầu dòng</string>
+    <string name="briefing_style_editorial">Biên tập</string>
+    <string name="briefing_style_headlines">Tiêu đề</string>
+    <string name="briefing_filter">Lọc</string>
+    <string name="briefing_keyword_section">Mục từ khóa %1$d</string>
+    <string name="briefing_remove_keyword_section">Xóa</string>
+    <string name="briefing_generate_now">Tạo ngay</string>
+    <string name="briefing_saving_settings">Đang lưu cài đặt Bản tin hằng ngày…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="other">%d bài viết</item>
+    </plurals>
 </resources>
