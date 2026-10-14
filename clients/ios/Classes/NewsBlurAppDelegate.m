@@ -624,7 +624,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }];
     
     //    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_STORY_IDENTIFIER"
-    //                                                                            title:[NBLocalization text:@"View story"]
+    //                                                                            title:@"View story"
     //                                                                          options:UNNotificationActionOptionForeground];
     UNNotificationAction *readAction = [UNNotificationAction actionWithIdentifier:@"MARK_READ_IDENTIFIER"
                                                                             title:[NBLocalization text:@"Mark read"]
@@ -2257,7 +2257,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.dictSocialFeeds = @{};
     self.dictSocialProfile = nil;
     self.dictUserProfile = nil;
-    [NBLocalization reset];
+    [NBLocalization resetForAccountChange];
     self.dictSocialServices = nil;
     self.dictSavedStoryTags = @{};
     self.dictSavedStoryFeedCounts = @{};
@@ -2818,9 +2818,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)confirmLogout {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Positive?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NBLocalization text:@"Positive?"] message:nil preferredStyle:UIAlertControllerStyleAlert];
     
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Logout"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self actuallyLogout];
     }]];
@@ -2832,7 +2832,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 //        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 //    }]];
 //#endif
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
@@ -4844,33 +4844,34 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
 
     UILabel *titleLabel = [[UILabel alloc] init];
+    // NewsBlurAppDelegate.m indents titles in code so each title reuses its unpadded translation.
     if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     All Shared Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Shared Stories"]];
     } else if (storiesCollection.isSocialRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
-            titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Global Shared Stories"]];
+            titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Global Shared Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Widely Read Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Widely Read Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Long Reads"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Long Reads"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Good Reads"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Good Reads"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     NewsBlur Dashboard"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     All Site Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Site Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Infrequent Site Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Infrequent Site Stories"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Daily Briefing"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Daily Briefing"]];
     } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeSavedStoryTag];
@@ -4878,11 +4879,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Saved Stories - %@"], storiesCollection.activeSavedStoryTag];
         }
     } else if ([storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Widget Site Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Widget Site Stories"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Read Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Read Stories"]];
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
-        titleLabel.text = [NSString stringWithFormat:[NBLocalization text:@"     Saved Stories"]];
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Saved Stories"]];
     } else if (storiesCollection.isSocialView) {
         NSString *feedTitle = [feed objectForKey:@"feed_title"];
         if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {

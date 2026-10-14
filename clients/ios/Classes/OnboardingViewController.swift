@@ -922,7 +922,7 @@ private struct OnboardingView: View {
             HStack(spacing: 8) {
                 Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "sun.max.fill")!)
                     .resizable().frame(width: 36, height: 36)
-                Text(NBLocalization.text("NewsBlur")).font(.title3.bold())
+                Text(verbatim: "NewsBlur").font(.title3.bold())
                 Spacer(minLength: 8)
                 Text("\(step + 1) / 2").font(.subheadline.monospacedDigit())
                     .foregroundStyle(DiscoverColors.textSecondary)

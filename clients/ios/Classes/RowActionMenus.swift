@@ -78,32 +78,32 @@ import UIKit
         }
         var reading: [RowMenuAction] = []
         if !dashboard && !controller.isDashboard && story.isReadAvailable {
-            reading.append(action("read", story.isRead ? "Mark as unread" : "Mark as read", story.isRead ? "circle" : "checkmark.circle") {
+            reading.append(action("read", story.isRead ? NBLocalization.text("Mark as unread") : NBLocalization.text("Mark as read"), story.isRead ? "circle" : "checkmark.circle") {
                 collection.toggleStoryUnread(dictionary)
                 controller.reload()
             })
             if !collection.isSavedView && !collection.isReadView && !collection.isSocialView && !collection.isDailyBriefing && !collection.isTrending && !collection.isInfrequent {
                 reading += [
-                    action("newer", "Mark newer as read", newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
+                    action("newer", NBLocalization.text("Mark newer as read"), newestFirst ? "arrow.up.to.line" : "arrow.down.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
                     },
-                    action("older", "Mark older as read", newestFirst ? "arrow.down.to.line" : "arrow.up.to.line") {
+                    action("older", NBLocalization.text("Mark older as read"), newestFirst ? "arrow.down.to.line" : "arrow.up.to.line") {
                         controller.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
                     }
                 ]
             }
         }
-        let saving = [action("save", story.isSaved ? "Unsave story" : "Save story", story.isSaved ? "bookmark.slash" : "bookmark") {
+        let saving = [action("save", story.isSaved ? NBLocalization.text("Unsave story") : NBLocalization.text("Save story"), story.isSaved ? "bookmark.slash" : "bookmark") {
             collection.toggleStorySaved(dictionary)
             controller.reload()
         }]
         var sharing: [RowMenuAction] = []
         if let permalink = dictionary["story_permalink"] as? String, let url = URL(string: permalink) {
             sharing = [
-                action("share-link", "Share link…", "square.and.arrow.up") {
+                action("share-link", NBLocalization.text("Share link…"), "square.and.arrow.up") {
                     share([url], from: controller, source: source)
                 },
-                action("share-story", "Share story…", "doc.text") {
+                action("share-story", NBLocalization.text("Share story…"), "doc.text") {
                     // NewsBlurAppDelegate.m snapshots the story when constructing its share sheet.
                     let previous = app.activeStory
                     app.activeStory = dictionary
@@ -112,7 +112,7 @@ import UIKit
                 }
             ]
         }
-        sharing.append(action("share-newsblur", story.isShared ? "Edit NewsBlur share…" : "Share on NewsBlur…", "quote.bubble") {
+        sharing.append(action("share-newsblur", story.isShared ? NBLocalization.text("Edit NewsBlur share…") : NBLocalization.text("Share on NewsBlur…"), "quote.bubble") {
             // ShareViewController.m reads the active story and comment when the composer opens and submits.
             app.activeStory = dictionary
             let userID = app.dictSocialProfile?["user_id"].map { String(describing: $0) }
@@ -127,17 +127,17 @@ import UIKit
         var tools: [RowMenuAction] = []
         if !dashboard && collection.isRiverView && !collection.isSavedView && !collection.isSocialView,
            let id = dictionary["story_feed_id"], let feed = app.getFeed(String(describing: id)), !feed.isEmpty {
-            tools.append(action("open-feed", "Open feed", "dot.radiowaves.left.and.right") {
+            tools.append(action("open-feed", NBLocalization.text("Open feed"), "dot.radiowaves.left.and.right") {
                 app.loadFeed(String(describing: id), withStory: nil, animated: true)
             })
         }
-        tools.append(action("train", "Train intelligence…", "slider.horizontal.3") {
+        tools.append(action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") {
             app.activeStory = dictionary
             app.openTrainStory(source)
         })
         let defaults = UserDefaults.standard
         if defaults.object(forKey: "show_ask_ai") == nil || defaults.bool(forKey: "show_ask_ai") {
-            tools.append(action("ask-ai", "Ask AI…", "sparkles") {
+            tools.append(action("ask-ai", NBLocalization.text("Ask AI…"), "sparkles") {
                 app.openAskAIDialog(dictionary)
             })
         }
@@ -165,7 +165,7 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
         }
         var reading: [RowMenuAction] = []
         if !feedIDs.isEmpty && !app.isSavedStoriesIntelligenceMode() && !folder.hasPrefix("saved_") && !folder.hasPrefix("trending:") && folder != "read_stories" {
-            reading.append(action("mark-read", "Mark as read…", "checkmark.circle") { [weak self] in
+            reading.append(action("mark-read", NBLocalization.text("Mark as read…"), "checkmark.circle") { [weak self] in
                 guard let self else { return }
                 app.showMarkReadMenu(withFeedIds: feedIDs, collectionTitle: folder == "everything" ? "everything" : feedID == nil ? "entire folder" : "site",
                                     sourceView: source, sourceRect: source.bounds) { _ in
@@ -177,38 +177,38 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
         var organize: [RowMenuAction] = []
         var deletion: [RowMenuAction] = []
         if let feedID, feed != nil, !app.isSocialFeed(feedID), !app.isSavedFeed(feedID) {
-            reading.append(action("refresh", "Refresh site", "arrow.clockwise") { [weak self] in
+            reading.append(action("refresh", NBLocalization.text("Refresh site"), "arrow.clockwise") { [weak self] in
                 app.get("\(app.url!)/reader/refresh_feed/\(feedID)", parameters: nil, success: { _, _ in
                     app.reloadFeedsView(false)
                 }, failure: { _, error in self?.informError(error) })
             })
             tools = [
-                action("statistics", "Statistics", "chart.bar") { app.openStatistics(withFeed: feedID, sender: source) },
-                action("notifications", "Notifications", "bell") { app.openNotifications(withFeed: feedID, sender: source) },
-                action("train", "Train intelligence…", "slider.horizontal.3") { [weak self] in
+                action("statistics", NBLocalization.text("Statistics"), "chart.bar") { app.openStatistics(withFeed: feedID, sender: source) },
+                action("notifications", NBLocalization.text("Notifications"), "bell") { app.openNotifications(withFeed: feedID, sender: source) },
+                action("train", NBLocalization.text("Train intelligence…"), "slider.horizontal.3") { [weak self] in
                     self?.selectFeed(feedID, inFolder: folder)
                     app.openTrainSite(withFeedLoaded: true, from: source)
                 },
-                action("related", "Related sites", "sparkles") { app.openDiscoverFeedsDialog(fromSettingsButton: feedID, sourceView: source) }
+                action("related", NBLocalization.text("Related sites"), "sparkles") { app.openDiscoverFeedsDialog(fromSettingsButton: feedID, sourceView: source) }
             ]
-            organize.append(action("rename", "Rename site…", "pencil") { [weak self] in
+            organize.append(action("rename", NBLocalization.text("Rename site…"), "pencil") { [weak self] in
                 self?.renameMenuTarget(title: title, path: "/reader/rename_feed", parameters: ["feed_id": feedID], nameKey: "feed_title")
             })
             let muted = app.dictInactiveFeeds[feedID] != nil
-            organize.append(action("mute", muted ? "Unmute site" : "Mute site", muted ? "speaker.wave.2" : "speaker.slash") { [weak self] in
+            organize.append(action("mute", muted ? NBLocalization.text("Unmute site") : NBLocalization.text("Mute site"), muted ? "speaker.wave.2" : "speaker.slash") { [weak self] in
                 self?.submitMenuAction("/reader/set_feed_mute", parameters: ["feed_id": feedID, "mute": muted ? "false" : "true"])
             })
-            deletion = [action("delete", "Delete site…", "trash", destructive: true) { [weak self] in
+            deletion = [action("delete", NBLocalization.text("Delete site…"), "trash", destructive: true) { [weak self] in
                 self?.confirmMenuDeletion(title: title, path: "/reader/delete_feed",
                                          parameters: ["feed_id": feedID, "in_folder": app.extractFolderName(folder) ?? ""])
             }]
         } else if feedID == nil && regularFolder {
             let parent = app.extractFolderName(app.extractParentFolderName(folder)) ?? ""
-            organize = [action("rename", "Rename folder…", "pencil") { [weak self] in
+            organize = [action("rename", NBLocalization.text("Rename folder…"), "pencil") { [weak self] in
                 self?.renameMenuTarget(title: title, path: "/reader/rename_folder",
                                       parameters: ["folder_name": title, "in_folder": parent], nameKey: "new_folder_name")
             }]
-            deletion = [action("delete", "Delete folder…", "trash", destructive: true) { [weak self] in
+            deletion = [action("delete", NBLocalization.text("Delete folder…"), "trash", destructive: true) { [weak self] in
                 self?.confirmMenuDeletion(title: title, path: "/reader/delete_folder",
                                          parameters: ["folder_to_delete": title, "in_folder": parent, "feed_id": feedIDs])
             }]
@@ -221,7 +221,7 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
         appDelegate.post("\(appDelegate.url!)\(path)", parameters: parameters, success: { [weak self] _, response in
             guard let self else { return }
             if let result = response as? [String: Any], let code = result["code"] as? Int, code < 0 {
-                self.informError(result["message"] as? String ?? "Unable to complete this action.")
+                self.informError(result["message"] as? String ?? NBLocalization.text("Unable to complete this action."))
             } else {
                 self.appDelegate.reloadFeedsView(false)
             }
@@ -229,7 +229,7 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
     }
 
     private func renameMenuTarget(title: String, path: String, parameters: [String: Any], nameKey: String) {
-        let alert = UIAlertController(title: "Rename \(title)", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: String(format: NBLocalization.text("Rename %@"), title), message: nil, preferredStyle: .alert)
         alert.addTextField { $0.text = title }
         alert.addAction(UIAlertAction(title: NBLocalization.text("Cancel"), style: .cancel))
         alert.addAction(UIAlertAction(title: NBLocalization.text("Rename"), style: .default) { [weak self, weak alert] _ in
@@ -242,8 +242,10 @@ extension FeedsViewController: UIContextMenuInteractionDelegate {
     }
 
     private func confirmMenuDeletion(title: String, path: String, parameters: [String: Any]) {
-        let message = path == "/reader/delete_folder" ? "This deletes the folder and unsubscribes from sites that are not in another folder." : "This removes the subscription from your feeds."
-        let alert = UIAlertController(title: "Delete \(title)?", message: message, preferredStyle: .alert)
+        let message = path == "/reader/delete_folder"
+            ? NBLocalization.text("This deletes the folder and unsubscribes from sites that are not in another folder.")
+            : NBLocalization.text("This removes the subscription from your feeds.")
+        let alert = UIAlertController(title: String(format: NBLocalization.text("Delete %@?"), title), message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NBLocalization.text("Cancel"), style: .cancel))
         alert.addAction(UIAlertAction(title: NBLocalization.text("Delete"), style: .destructive) { [weak self] _ in
             self?.submitMenuAction(path, parameters: parameters)

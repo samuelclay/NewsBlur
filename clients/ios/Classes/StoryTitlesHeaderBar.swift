@@ -638,7 +638,7 @@ class StoryTitlesHeaderBar: NSObject {
             markReadPill.trailingAnchor.constraint(equalTo: markReadContainer.trailingAnchor),
         ])
 
-        updateMarkReadMenu(title: NBLocalization.text("all stories"))
+        updateMarkReadMenu(title: "all stories")
     }
 
     @objc private func handleMarkReadTap() {
@@ -664,17 +664,18 @@ class StoryTitlesHeaderBar: NSObject {
 
         let menu = MenuViewController()
         // StoryTitlesHeaderBar.swift uses MenuViewController's sized icons because its cells center images at intrinsic size.
-        menu.addFeedListTitle("Mark \(markReadMenuTitle) as read", iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
+        menu.addFeedListTitle(NBLocalization.markReadTitle(markReadMenuTitle), iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
             self?.markReadHandler?(0)
         }
         if markReadMenuVisibleCount > 0 {
-            let title = markReadMenuVisibleCount == 1 ? "Mark this story as read" : "Mark these \(markReadMenuVisibleCount) stories read"
+            let title = markReadMenuVisibleCount == 1 ? NBLocalization.text("Mark this story as read")
+                : NBLocalization.plural("Mark these %@ stories read", count: NSNumber(value: markReadMenuVisibleCount))
             menu.addFeedListTitle(title, iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
                 self?.markReadVisibleHandler?()
             }
         }
         for days in [1, 3, 7, 14] {
-            menu.addFeedListTitle("Older than \(days) \(days == 1 ? "day" : "days")", iconName: "clock", selectionShouldDismiss: true) { [weak self] in
+            menu.addFeedListTitle(NBLocalization.plural("Older than %@ days", count: NSNumber(value: days)), iconName: "clock", selectionShouldDismiss: true) { [weak self] in
                 self?.markReadHandler?(days)
             }
         }
@@ -1077,19 +1078,20 @@ class StoryTitlesHeaderBar: NSObject {
         markReadMenuVisibleCount = showVisibleOption ? visibleCount : 0
         var actions: [UIMenuElement] = []
 
-        actions.append(UIAction(title: "Mark \(title) as read", image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
+        actions.append(UIAction(title: NBLocalization.markReadTitle(title), image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
             self?.markReadHandler?(0)
         })
 
         if showVisibleOption && visibleCount > 0 {
-            let visibleTitle = visibleCount == 1 ? "Mark this story as read" : "Mark these \(visibleCount) stories read"
+            let visibleTitle = visibleCount == 1 ? NBLocalization.text("Mark this story as read")
+                : NBLocalization.plural("Mark these %@ stories read", count: NSNumber(value: visibleCount))
             actions.append(UIAction(title: visibleTitle, image: UIImage(systemName: "eye")) { [weak self] _ in
                 self?.markReadVisibleHandler?()
             })
         }
 
         for days in [1, 3, 7, 14] {
-            actions.append(UIAction(title: "Older than \(days) \(days == 1 ? "day" : "days")", image: UIImage(systemName: "calendar")) { [weak self] _ in
+            actions.append(UIAction(title: NBLocalization.plural("Older than %@ days", count: NSNumber(value: days)), image: UIImage(systemName: "calendar")) { [weak self] _ in
                 self?.markReadHandler?(days)
             })
         }

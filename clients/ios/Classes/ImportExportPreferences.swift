@@ -34,6 +34,12 @@ private extension ImportExportPreferences {
         static let fileType = UTType(exportedAs: "com.newsblur.preferences")
         static let fileName = "NewsBlur Preferences"
         static let fileExtension = "newsblurprefs"
+        /// System settings and the account-owned interface language never move between devices.
+        static let excludedKeyPrefixes = ["Apple", "NS", NBLocalization.preferenceKey]
+    }
+    
+    func isPortable(_ key: String) -> Bool {
+        !Constant.excludedKeyPrefixes.contains { key.hasPrefix($0) }
     }
     
     func importPreferences(from controller: UIViewController) {
@@ -47,7 +53,7 @@ private extension ImportExportPreferences {
     func exportPreferences(from controller: UIViewController) {
         let temporaryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
         let prefsURL = temporaryURL.appendingPathComponent(Constant.fileName).appendingPathExtension(Constant.fileExtension)
-        let dictionary = UserDefaults.standard.dictionaryRepresentation() as NSDictionary
+        let dictionary = UserDefaults.standard.dictionaryRepresentation().filter { isPortable($0.key) } as NSDictionary
         
         dictionary.write(to: prefsURL, atomically: true)
         
@@ -65,7 +71,7 @@ extension ImportExportPreferences: UIDocumentPickerDelegate {
         
         let prefs = UserDefaults.standard
         
-        for (key, value) in dictionary {
+        for (key, value) in dictionary where isPortable(key) {
             prefs.set(value, forKey: key)
         }
         

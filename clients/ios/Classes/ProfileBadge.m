@@ -249,9 +249,8 @@
         [self.contentView addSubview:shared];
         
         UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *sharedLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Shared Stor%@"],
-                                    [[profile objectForKey:@"shared_stories_count"] intValue] == 1 ? @"y" : @"ies"];
-        sharedLabel.text = sharedLabelStr;
+        // ProfileBadge.m shows the count in its own label, so the plural forms are only the noun.
+        sharedLabel.text = [NBLocalization plural:@"Shared Stories label" count:@([[profile objectForKey:@"shared_stories_count"] intValue])];
         sharedLabel.textAlignment = NSTextAlignmentCenter;
         sharedLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         sharedLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -271,8 +270,7 @@
         [self.contentView addSubview:following];
         
         UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followingLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Following"]];
-        followingLabel.text = followingLabelStr;
+        followingLabel.text = [NBLocalization text:@"Following"];
         followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         followingLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -292,9 +290,7 @@
         [self.contentView addSubview:followers];
         
         UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3) * 2, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followersLabelStr = [NSString stringWithFormat:[NBLocalization text:@"Follower%@"],
-                                       [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
-        followersLabel.text = followersLabelStr;
+        followersLabel.text = [NBLocalization plural:@"Followers label" count:@([[profile objectForKey:@"follower_count"] intValue])];
         followersLabel.textAlignment = NSTextAlignmentCenter;
         followersLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         followersLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -317,7 +313,9 @@
     
     [self.activityIndicator startAnimating];
     
-    if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+    // ProfileBadge.m decides from the profile state because the button title is translated.
+    BOOL follow = ![[self.activeProfile objectForKey:@"followed_by_you"] intValue];
+    if (follow) {
         urlString = [NSString stringWithFormat:@"%@/social/follow",
                                self.appDelegate.url];
     } else {
@@ -329,7 +327,7 @@
     [params setObject:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+        if (follow) {
             [self finishFollowing:responseObject];
         } else {
             [self finishUnfollowing:responseObject];

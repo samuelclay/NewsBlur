@@ -175,7 +175,7 @@
 
 - (NSString *)description {
     if (self.contents) {
-        return [NSString stringWithFormat:[NBLocalization text:@"%@ %@ (contains %@ items)"], [super description], self.title, @(self.contents.count)];
+        return [NSString stringWithFormat:@"%@ %@ (contains %@ items)", [super description], self.title, @(self.contents.count)];
     } else {
         return [NSString stringWithFormat:@"%@ %@ (%@)", [super description], self.title, self.identifier];
     }

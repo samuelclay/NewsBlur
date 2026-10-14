@@ -958,7 +958,8 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .cyan,
                         type: .multiValue(
                             key: "story_browser",
-                            titles: [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), NBLocalization.text("Safari"), NBLocalization.text("Chrome"), NBLocalization.text("Opera Mini"), NBLocalization.text("Firefox"), NBLocalization.text("Edge"), NBLocalization.text("Brave")],
+                            // PreferencesView.swift keeps browser brand names untranslated.
+                            titles: [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
                             values: ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
                             defaultValue: "inappsafari"
                         )
@@ -1236,7 +1237,7 @@ struct PreferencesView: View {
             viewModel.buildSections()
         }
         .environment(\.locale, Locale(identifier: NBLocalization.resolvedLanguage))
-        .environment(\.layoutDirection, ["ar", "he"].contains(NBLocalization.resolvedLanguage) ? .rightToLeft : .leftToRight)
+        .environment(\.layoutDirection, NBLocalization.isRightToLeft ? .rightToLeft : .leftToRight)
         .background(PreferencesColors.background.ignoresSafeArea())
         .onAppear {
             // Refresh state when view appears
@@ -1499,7 +1500,7 @@ private struct LanguagePreferenceItemView: View {
                 saving = true
                 NBLocalization.save(value) { success in saving = false; failed = !success }
             })) {
-                Text(NBLocalization.text("Automatic (device language)")).tag("auto")
+                Text(NBLocalization.automaticLabel).tag("auto")
                 ForEach(NBLocalization.languages, id: \.0) { code, name in Text(name).tag(code) }
             }
         } label: {

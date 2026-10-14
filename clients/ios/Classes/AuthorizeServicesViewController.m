@@ -39,12 +39,13 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    // AuthorizeServicesViewController.m titles each service with its untranslated brand name.
     if ([type isEqualToString:@"google"]) {
-        self.navigationItem.title = [NBLocalization text:@"Google Reader"];
+        self.navigationItem.title = @"Google Reader";
     } else if ([type isEqualToString:@"facebook"]) {
-        self.navigationItem.title = [NBLocalization text:@"Facebook"];
+        self.navigationItem.title = @"Facebook";
     } else if ([type isEqualToString:@"twitter"]) {
-        self.navigationItem.title = [NBLocalization text:@"Twitter"];
+        self.navigationItem.title = @"Twitter";
     }
     
     [self.appDelegate prepareWebView:self.webView completionHandler:^{

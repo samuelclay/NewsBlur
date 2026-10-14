@@ -1265,21 +1265,23 @@ private final class DailyBriefingStore: ObservableObject {
         }
     }
 
-    static let builtInSections = [
-        SectionDefinition(key: "top_stories", name: "Top stories", subtitle: NBLocalization.text("The most important stories from your feeds")),
-        SectionDefinition(key: "infrequent", name: "From infrequent sites", subtitle: NBLocalization.text("Stories from feeds that rarely publish")),
-        SectionDefinition(key: "long_read", name: "Long reads for later", subtitle: NBLocalization.text("Longer articles worth setting time aside for")),
-        SectionDefinition(key: "classifier_match", name: "Based on your interests", subtitle: NBLocalization.text("Stories matching your trained topics and authors")),
-        SectionDefinition(key: "follow_up", name: "Follow-ups", subtitle: NBLocalization.text("New posts from feeds you recently read")),
-        SectionDefinition(key: "widely_covered", name: "Widely covered", subtitle: NBLocalization.text("Stories covered by 3+ feeds")),
-    ]
+    // FeedDetailViewController.swift rebuilds these titles so a language change shows on the next render.
+    static var builtInSections: [SectionDefinition] { [
+        SectionDefinition(key: "top_stories", name: NBLocalization.text("Top stories"), subtitle: NBLocalization.text("The most important stories from your feeds")),
+        SectionDefinition(key: "infrequent", name: NBLocalization.text("From infrequent sites"), subtitle: NBLocalization.text("Stories from feeds that rarely publish")),
+        SectionDefinition(key: "long_read", name: NBLocalization.text("Long reads for later"), subtitle: NBLocalization.text("Longer articles worth setting time aside for")),
+        SectionDefinition(key: "classifier_match", name: NBLocalization.text("Based on your interests"), subtitle: NBLocalization.text("Stories matching your trained topics and authors")),
+        SectionDefinition(key: "follow_up", name: NBLocalization.text("Follow-ups"), subtitle: NBLocalization.text("New posts from feeds you recently read")),
+        SectionDefinition(key: "widely_covered", name: NBLocalization.text("Widely covered"), subtitle: NBLocalization.text("Stories covered by 3+ feeds")),
+    ] }
 
-    static let notificationOptions = [
+    // FeedDetailViewController.swift keeps platform names untranslated.
+    static var notificationOptions: [DailyBriefingOption<String>] { [
         DailyBriefingOption(value: "email", title: NBLocalization.text("Email")),
         DailyBriefingOption(value: "web", title: NBLocalization.text("Web")),
-        DailyBriefingOption(value: "ios", title: NBLocalization.text("iOS")),
-        DailyBriefingOption(value: "android", title: NBLocalization.text("Android")),
-    ]
+        DailyBriefingOption(value: "ios", title: "iOS"),
+        DailyBriefingOption(value: "android", title: "Android"),
+    ] }
 
     weak var controller: FeedDetailViewController?
 

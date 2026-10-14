@@ -554,6 +554,8 @@ static BOOL NBBoolPreferenceValue(id value) {
             settings.accessibilityIdentifier = @"feed-list-settings";
 
             NSArray<NSString *> *titles = @[[NBLocalization text:@"All"], [NBLocalization text:@"Unread"], [NBLocalization text:@"Focus"], [NBLocalization text:@"Saved"]];
+            // FeedsObjCViewController.m keeps UI test identifiers in English whatever the interface language.
+            NSArray<NSString *> *identifiers = @[@"all", @"unread", @"focus", @"saved"];
             // FeedsObjCViewController.m preserves the existing intelligence artwork and its semantic colors.
             NSArray<UIImage *> *images = @[
                 [UIImage systemImageNamed:@"tray.full"],
@@ -568,7 +570,7 @@ static BOOL NBBoolPreferenceValue(id value) {
                                                                       target:self action:@selector(selectVerticalIntelligence:)];
                 item.title = titles[index];
                 item.tag = index;
-                item.accessibilityIdentifier = [@"feed-list-intelligence-" stringByAppendingString:titles[index].lowercaseString];
+                item.accessibilityIdentifier = [@"feed-list-intelligence-" stringByAppendingString:identifiers[index]];
                 [filters addObject:item];
             }
             self.verticalIntelligenceItems = filters;
@@ -800,7 +802,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-//    self.navigationController.navigationBar.backItem.title = [NBLocalization text:@"All Sites"];
+//    self.navigationController.navigationBar.backItem.title = @"All Sites";
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
@@ -1362,6 +1364,9 @@ static BOOL NBBoolPreferenceValue(id value) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
             [self finishLoadingFeedListWithDict:results finished:YES];
+            // FeedsObjCViewController.m syncs the account language only from a network response, never from the
+            // offline cache, and only after the feed list is rebuilt for the reload that a language change triggers.
+            [NBLocalization syncProfile:results[@"user_profile"]];
             if (requestGeneration == self.feedListRequestGeneration) [[OnboardingFeedLoading shared] refreshDidFinish];
         });
     });
@@ -1397,7 +1402,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 //    [addButton sizeToFit];
 //    [addButton addTarget:self action:@selector(tapAddSite:)
 //        forControlEvents:UIControlEventTouchUpInside];
-//    addButton.accessibilityLabel = [NBLocalization text:@"Add feed"];
+//    addButton.accessibilityLabel = @"Add feed";
 //    [addBarButton setCustomView:addButton];
 
 //    NBBarButtonItem *settingsButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
@@ -1406,7 +1411,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 //    [settingsButton sizeToFit];
 //    [settingsButton addTarget:self action:@selector(showSettingsPopover:)
 //             forControlEvents:UIControlEventTouchUpInside];
-//    settingsButton.accessibilityLabel = [NBLocalization text:@"Settings"];
+//    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
     // Activity button moved to sidebar as "Interactions" folder
@@ -1414,7 +1419,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     // UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
     // [self.activityButton removeFromSuperview];
     // self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    // self.activityButton.accessibilityLabel = [NBLocalization text:@"Activities"];
+    // self.activityButton.accessibilityLabel = @"Activities";
     // [self.activityButton setImage:activityImage forState:UIControlStateNormal];
     // self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
     // [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
@@ -1434,7 +1439,6 @@ static BOOL NBBoolPreferenceValue(id value) {
     appDelegate.dictUnreadCounts = [NSMutableDictionary dictionary];
     appDelegate.dictSocialProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
-    [NBLocalization syncProfile:appDelegate.dictUserProfile];
     [self syncStoryClusteringDefaultsFromUserProfile:appDelegate.dictUserProfile];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
@@ -1919,7 +1923,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     }
     
     NSString *preferenceKey = @"feed_list_font_size";
-    NSArray *titles = @[[NBLocalization text:@"XS"], [NBLocalization text:@"S"], [NBLocalization text:@"M"], [NBLocalization text:@"L"], [NBLocalization text:@"XL"]];
+    // FeedsObjCViewController.m keeps the size abbreviations language-neutral, like clothing sizes.
+    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
     NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
@@ -2280,6 +2285,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)languageDidChange:(NSNotification *)notification {
     // FeedsObjCViewController.m refreshes already visible controls after an account language changes.
+    // The cached vertical toolbar items carry their titles, so they are rebuilt.
+    self.verticalFeedToolbarItems = nil;
+    self.verticalIntelligenceItems = nil;
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     [self configureFeedToolbarItemsForOrientation:self.view.window.windowScene.interfaceOrientation];
     [self reloadFeedTitlesTable];
@@ -2850,7 +2858,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         }
     }
     NSString *accessibilityLabel = neutralCount ?
-        [NSString stringWithFormat:[NBLocalization text:@"%@ feed, %@ unread stories"], cell.feedTitle, @(neutralCount)] :
+        [NSString stringWithFormat:[NBLocalization text:@"%@ feed, %@"], cell.feedTitle,
+         [NBLocalization plural:@"%@ unread stories" count:@(neutralCount)]] :
         [NSString stringWithFormat:[NBLocalization text:@"%@ feed"], cell.feedTitle];
     BOOL changed = cell.positiveCount != positiveCount || cell.neutralCount != neutralCount ||
         cell.negativeCount != negativeCount || cell.savedStoriesCount != savedStoriesCount ||
@@ -4677,10 +4686,10 @@ heightForHeaderInSection:(NSInteger)section {
     UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:@"everything"];
     
     positiveCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.ps]];
-    positiveCount.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ focused stories"], positiveCount.text];
+    positiveCount.accessibilityLabel = [NBLocalization plural:@"%@ focused stories" count:@(counts.ps)];
     
     neutralCount.text = [formatter stringFromNumber:[NSNumber numberWithInt:counts.nt]];
-    neutralCount.accessibilityLabel = [NSString stringWithFormat:[NBLocalization text:@"%@ unread stories"], neutralCount.text];
+    neutralCount.accessibilityLabel = [NBLocalization plural:@"%@ unread stories" count:@(counts.nt)];
 
     CGFloat countY = CGRectGetMaxY(userLabel.frame) + 2 - yOffset;
     CGFloat iconY = countY + 3;
@@ -4775,13 +4784,13 @@ heightForHeaderInSection:(NSInteger)section {
     if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
     NSString *title;
     if (hours < 2) {
-        title = @"Storing past hour";
+        title = [NBLocalization text:@"Storing past hour"];
     } else if (hours < 24) {
-        title = [NSString stringWithFormat:[NBLocalization text:@"Storing past %ld hours"], (long)hours];
+        title = [NBLocalization plural:@"Storing past %@ hours" count:@(hours)];
     } else if (hours < 48) {
-        title = @"Storing yesterday";
+        title = [NBLocalization text:@"Storing yesterday"];
     } else {
-        title = [NSString stringWithFormat:[NBLocalization text:@"Storing past %d days"], (int)round(hours / 24.f)];
+        title = [NBLocalization plural:@"Storing past %@ days" count:@((int)round(hours / 24.f))];
     }
     [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }

@@ -522,7 +522,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         } else if (count == 1) {
             self.navigationItem.title = [NBLocalization text:@"Mute 1 Site"];
         } else {
-            self.navigationItem.title = [NSString stringWithFormat:[NBLocalization text:@"Mute %@ Sites"], @(count)];
+            self.navigationItem.title = [NBLocalization plural:@"Mute %@ Sites" count:@(count)];
         }
     } else if (self.operation == FeedChooserOperationOrganizeSites) {
         self.navigationItem.title = [NBLocalization text:@"Organize Sites"];
@@ -536,7 +536,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         } else if (count == 1) {
             self.navigationItem.title = [NBLocalization text:@"1 Widget Site"];
         } else {
-            self.navigationItem.title = [NSString stringWithFormat:[NBLocalization text:@"%@ Widget Sites"], @(count)];
+            self.navigationItem.title = [NBLocalization plural:@"%@ Widget Sites" count:@(count)];
         }
     }
 }
@@ -742,7 +742,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
     
-    [viewController addSegmentedControlWithTitles:@[@"Nested", @"Flat"] selectIndex:self.flat ? 1 : 0 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+    [viewController addSegmentedControlWithTitles:@[[NBLocalization text:@"Nested"], [NBLocalization text:@"Flat"]] selectIndex:self.flat ? 1 : 0 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.flat = selectedIndex == 1;
         [self rebuildItemsAnimated:YES];

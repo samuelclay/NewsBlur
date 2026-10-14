@@ -4703,6 +4703,14 @@
 				"pt-PT",
 				th,
 				tr,
+				"pt-BR",
+				uk,
+				ar,
+				he,
+				hi,
+				id,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;

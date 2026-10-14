@@ -585,11 +585,11 @@
     cell.backgroundColor = MenuTableViewCell.menuBackgroundColor;
     
     self.fontSizeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
-    [self.fontSizeSegment setTitle:[NBLocalization text:@"XS"] forSegmentAtIndex:0];
-    [self.fontSizeSegment setTitle:[NBLocalization text:@"S"] forSegmentAtIndex:1];
-    [self.fontSizeSegment setTitle:[NBLocalization text:@"M"] forSegmentAtIndex:2];
-    [self.fontSizeSegment setTitle:[NBLocalization text:@"L"] forSegmentAtIndex:3];
-    [self.fontSizeSegment setTitle:[NBLocalization text:@"XL"] forSegmentAtIndex:4];
+    // FontSettingsViewController.m keeps the size abbreviations language-neutral, like clothing sizes.
+    NSArray<NSString *> *sizeTitles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    for (NSUInteger index = 0; index < sizeTitles.count; index++) {
+        [self.fontSizeSegment setTitle:sizeTitles[index] forSegmentAtIndex:index];
+    }
 #if !TARGET_OS_MACCATALYST
     self.fontSizeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
