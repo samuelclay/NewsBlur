@@ -384,6 +384,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      */
     public void updateFeedCount(int feedCount) {
         setupQueue.feedListRendered();
+        // LanguageChooserDialog.kt asks once which language to use, after a feed list has loaded.
+        if (folderFeedList.firstCursorSeenYet) com.newsblur.compose.LanguageChooserGate.feedListLoaded(this);
         if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isFeedCountSyncRunning()) {
             updateStatusIndicators();
         }

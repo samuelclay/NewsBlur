@@ -139,6 +139,10 @@ fun SetupScreen(
     val colors = SetupPalette.colors(theme)
     val tablet = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
     var complete by rememberSaveable { mutableStateOf(false) }
+    // First-run setup opens on the language page (SetupLanguageStep.kt), which adds a step.
+    val languageStep by model.languageStep.collectAsStateWithLifecycle()
+    val steps = if (model.hasLanguageStep) 3 else 2
+    val step = if (languageStep) 1 else if (complete) steps else steps - 1
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(model::import) }
     BackHandler { if (state.category != null) model.closeBundle() else onClose() }
     Box(
@@ -168,19 +172,17 @@ fun SetupScreen(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                Text(if (complete) "2 / 2" else "1 / 2", color = colors.textSecondary, fontSize = 14.sp)
+                Text("$step / $steps", color = colors.textSecondary, fontSize = 14.sp)
                 Spacer(Modifier.width(8.dp))
                 IconButton(onClick = onClose, modifier = Modifier.size(44.dp).background(colors.cardBackground, CircleShape)) {
                     Icon(Icons.Outlined.Close, stringResource(R.string.setup_close_setup), Modifier.size(20.dp), tint = colors.textPrimary)
                 }
             }
             Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                repeat(2) { index ->
+                repeat(steps) { index ->
                     Box(
                         Modifier.weight(1f).height(3.dp).background(
-                            if (index == 0 ||
-                                complete
-                            ) {
+                            if (index < step) {
                                 colors.textSecondary
                             } else {
                                 colors.border.copy(alpha = .5f)
@@ -194,7 +196,7 @@ fun SetupScreen(
                 (if (state.query.isBlank()) listOf("") else emptyList()) +
                     state.categories.filter { OnboardingCatalog.title(it).contains(state.query, true) }
             val gridState = rememberLazyGridState()
-            LaunchedEffect(complete) { gridState.scrollToItem(0) }
+            LaunchedEffect(complete, languageStep) { gridState.scrollToItem(0) }
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(260.dp),
                 state = gridState,
@@ -203,7 +205,9 @@ fun SetupScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (complete) {
+                if (languageStep) {
+                    item(span = { GridItemSpan(maxLineSpan) }) { SetupLanguageStep(model, theme) }
+                } else if (complete) {
                     item(span = { GridItemSpan(maxLineSpan) }) { Completion(state, progress, colors) }
                 } else {
                     item(span = { GridItemSpan(maxLineSpan) }) {
@@ -273,7 +277,8 @@ fun SetupScreen(
                 }
                 if (progress.failures.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) { Failures(progress, model, colors) }
             }
-            PrimaryAction(
+            // The language page's own buttons move setup on.
+            if (!languageStep) PrimaryAction(
                 stringResource(if (complete) R.string.setup_start_reading else R.string.setup_continue),
                 Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                 enabled = !state.importing,
