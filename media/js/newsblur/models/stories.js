@@ -126,7 +126,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
 
     localized_date_parts: function (date) {
-        var language = document.documentElement.lang;
+        // Latin digits match the server's dates and Inflector.commas counts.
+        var language = document.documentElement.lang + '-u-nu-latn';
         // The locale's own clock convention applies unless the reader chose 24-hour time.
         var hour12 = NEWSBLUR.assets.preference('dateformat') == "24" ? false : undefined;
         return {

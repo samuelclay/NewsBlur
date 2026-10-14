@@ -8,6 +8,7 @@ import struct
 from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.utils import formats
 from django.utils.safestring import mark_safe
 from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
 
@@ -17,7 +18,7 @@ from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
 from utils import log as logging
-from utils.story_functions import localized_date
+from utils.story_functions import localized_date, uses_english_dates
 from utils.user_functions import get_user
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -287,6 +288,9 @@ def commify(n):
     """
     if n is None:
         return None
+    if not uses_english_dates():
+        # utils_tags.py groups digits like the active language; English keeps its original commas.
+        return formats.number_format(n, use_l10n=True, force_grouping=True)
     n = str(n)
     if "." in n:
         dollars, cents = n.split(".")

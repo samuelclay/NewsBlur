@@ -7,6 +7,7 @@ Run inside the development container. See localization/README.md.
 import argparse
 import copy
 import datetime
+import gettext
 import hashlib
 import html
 import http.client
@@ -268,19 +269,31 @@ def load_memory(code):
     return json.loads(path.read_text()) if path.exists() else {}
 
 
+def plural_examples(code):
+    """Counts that select each gettext plural form, which models follow better than a rule expression."""
+    rule = gettext.c2py(gettext_catalog(code).plural_expr)
+    examples = {}
+    for count in range(1000):
+        examples.setdefault(rule(count), [])
+        if len(examples[rule(count)]) < 6:
+            examples[rule(count)].append(count)
+    return examples
+
+
 def units(entries, code):
     result = []
-    catalog = gettext_catalog(code)
+    examples = plural_examples(code)
     for item in entries:
         sources = item["source"]
         if isinstance(sources, list):
-            for index in range(catalog.num_plurals):
-                # Include both English forms as context; gettext indexes are locale-specific.
+            for index, counts in sorted(examples.items()):
+                # manage.py sends the English singular for the form that covers 1, the plural otherwise.
                 result.append(
                     (
                         f'{item["id"]}:{index}',
-                        sources[-1],
-                        f'{item["context"]}; English forms: {sources}; target gettext plural index {index}, rule {catalog.plural_expr}',
+                        sources[0] if 1 in counts else sources[-1],
+                        f'{item["context"]}; English forms: {sources}; '
+                        f"translate the form used for counts like {', '.join(map(str, counts))}",
                     )
                 )
         else:
