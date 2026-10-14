@@ -110,7 +110,7 @@
                             {{ login_form.password }}
                         </div>
                         {{ login_form.add }}
-                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="log in" />
+                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="{% trans "log in" %}" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if login_form.errors %}
@@ -136,7 +136,7 @@
                         <div class="NB-formcard-field">
                             {{ signup_form.email }}
                         </div>
-                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="create account" />
+                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="{% trans "create account" %}" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if signup_form.errors %}

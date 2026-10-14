@@ -418,7 +418,8 @@ def welcome(request, **kwargs):
     social_profile = MSocialProfile.get_user(user.pk)
 
     if request.method == "POST":
-        if request.POST.get("submit", "").startswith("log"):
+        # views.py tells the two welcome forms apart by their fields, since the button label is translated.
+        if "login-username" in request.POST:
             login_form = LoginForm(request.POST, prefix="login")
             signup_form = SignupForm(prefix="signup")
         else:
