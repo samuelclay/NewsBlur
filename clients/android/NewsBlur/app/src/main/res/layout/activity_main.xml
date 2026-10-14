@@ -38,6 +38,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="1dp"
             android:layout_marginEnd="12dp"
+            android:textAlignment="viewStart"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/main_sync_status_container"

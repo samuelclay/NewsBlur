@@ -59,6 +59,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyReaderFooterInsetTo
@@ -1016,7 +1017,8 @@ class ReadingItemFragment :
         setupUserTags()
 
         if (!TextUtils.isEmpty(story!!.authors)) {
-            binding.readingItemAuthors.text = "•   " + story!!.authors
+            // ReadingItemFragment.kt isolates the author so the bullet stays beside the date in either direction.
+            binding.readingItemAuthors.text = "•   " + BidiText.isolate(story!!.authors)
             binding.readingItemAuthors.compoundDrawablePadding = UIUtils.dp2px(requireContext(), 4)
             val authorScore = if (classifier != null) classifier!!.authors[story!!.authors] else null
             when (authorScore) {
@@ -1228,7 +1230,7 @@ class ReadingItemFragment :
                 height = UIUtils.dp2px(requireContext(), sentimentSize)
             }
 
-        dateView.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        dateView.text = StoryUtils.formatRelativeShortDate(requireContext(), clusterStory.timestamp)
         dateView.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
 
         titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")

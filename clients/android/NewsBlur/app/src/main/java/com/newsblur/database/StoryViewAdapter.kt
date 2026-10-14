@@ -41,6 +41,7 @@ import com.newsblur.delegate.StoryMenuPopover
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.ReturnedStoryScrollDecider
 import com.newsblur.fragment.StoryIntelTrainerFragment
@@ -1320,7 +1321,8 @@ class StoryViewAdapter(
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.text = ""
         } else {
-            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, story.authors)
+            // StoryViewAdapter.kt isolates the author so the bullet stays between the date and the author in either direction.
+            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, BidiText.isolate(story.authors))
         }
 
         val typography = StoryRowTypography.forScale(textSize)
@@ -1567,7 +1569,7 @@ class StoryViewAdapter(
             }
 
         vh.title.text = titleCache.get(clusterStory.title)
-        vh.date.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        vh.date.text = StoryUtils.formatRelativeShortDate(context, clusterStory.timestamp)
         vh.title.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
         vh.date.textSize = textSize * 10f
         StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, false)
