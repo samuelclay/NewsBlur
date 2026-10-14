@@ -120,7 +120,7 @@
                 <li><div class="NB-pricing-bullet"></div><span>{% trans "Train stories by author, tag, title" %}</span></li>
                 <li><div class="NB-pricing-bullet"></div><span>{% trans "Public blurblog sharing" %}</span></li>
                 <li><div class="NB-pricing-bullet"></div><span>{% trans "Save stories for later" %}</span></li>
-                <li><div class="NB-pricing-bullet"></div><span>{% trans "iOS" %} &amp; {% trans "Android apps" %}</span></li>
+                <li><div class="NB-pricing-bullet"></div><span>{% trans "iOS & Android apps" %}</span></li>
             </ul>
             <div class="NB-pricing-tier-actions">
                 <a href="{% url "index" %}" class="NB-pricing-cta NB-pricing-cta-free">{% trans "Get Started Free" %}</a>
@@ -147,7 +147,7 @@
     </div>
 
     <div class="NB-pricing-trial-callout">
-        {% trans "New accounts start with a" %} <strong>{% trans "30 day trial premium subscription" %}</strong> &mdash; {% trans "no credit card required." %}
+        {% blocktrans trimmed %}New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card required.{% endblocktrans %}
     </div>
 
     <div class="NB-pricing-faq">
@@ -180,7 +180,7 @@
 
         <div class="NB-pricing-faq-item">
             <h3 class="NB-pricing-faq-question">{% trans "Is there a self-hosted option?" %}</h3>
-            <p class="NB-pricing-faq-answer">{% trans "Yes. NewsBlur is fully open source and can be self-hosted with a single Docker command. Visit the" %} <a href="https://github.com/samuelclay/NewsBlur" class="NB-splash-link">{% trans "GitHub repository" %}</a> {% trans "for instructions." %}</p>
+            <p class="NB-pricing-faq-answer">{% blocktrans trimmed %}Yes. NewsBlur is fully open source and can be self-hosted with a single Docker command. Visit the <a href="https://github.com/samuelclay/NewsBlur" class="NB-splash-link">GitHub repository</a> for instructions.{% endblocktrans %}</p>
         </div>
 
         <div class="NB-pricing-faq-item">

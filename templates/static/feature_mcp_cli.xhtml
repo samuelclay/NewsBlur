@@ -2,8 +2,8 @@
 {% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-features NB-static-feature-mcp-cli{% endblock %}
-{% block title %}{% trans "MCP Server" %} & {% trans "CLI - NewsBlur" %}{% endblock %}
-{% block nav_title %}{% trans "MCP Server" %} & {% trans "CLI" %}{% endblock %}
+{% block title %}{% trans "MCP Server & CLI - NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "MCP Server & CLI" %}{% endblock %}
 {% block head %}
     <meta name="description" content="Connect AI agents to NewsBlur via MCP server and CLI. Manage feeds, triage stories, and train classifiers from Claude Code, Codex, or any MCP-compatible tool.">
     <meta property="og:title" content="MCP Server & CLI - NewsBlur">
@@ -24,7 +24,7 @@
 
     <div class="NB-feature-detail-hero">
         <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Premium Archive" %}</div>
-        <h1 class="NB-feature-detail-title">{% trans "MCP Server" %} &amp; {% trans "CLI" %}</h1>
+        <h1 class="NB-feature-detail-title">{% trans "MCP Server & CLI" %}</h1>
         <p class="NB-feature-detail-subtitle">{% trans "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool." %}</p>
     </div>
 
@@ -128,7 +128,7 @@
                         <span class="NB-mcp-tool-desc">{% trans "Share to blurblog" %}</span>
                     </li>
                 </ul>
-                <h3 class="NB-mcp-tools-column-heading NB-mcp-tools-column-heading-intelligence" data-category="intelligence">{% trans "Intelligence" %} &amp; {% trans "Discovery" %}</h3>
+                <h3 class="NB-mcp-tools-column-heading NB-mcp-tools-column-heading-intelligence" data-category="intelligence">{% trans "Intelligence & Discovery" %}</h3>
                 <ul class="NB-mcp-tools-list">
                     <li class="NB-mcp-tool" data-category="intelligence">
                         <code>newsblur_train_classifier</code>
@@ -147,7 +147,7 @@
                         <span class="NB-mcp-tool-desc">{% trans "Per-feed alerts" %}</span>
                     </li>
                 </ul>
-                <h3 class="NB-mcp-tools-column-heading NB-mcp-tools-column-heading-intelligence" data-category="archive">{% trans "Archive" %} &amp; {% trans "Community" %}</h3>
+                <h3 class="NB-mcp-tools-column-heading NB-mcp-tools-column-heading-intelligence" data-category="archive">{% trans "Archive & Community" %}</h3>
                 <ul class="NB-mcp-tools-list">
                     <li class="NB-mcp-tool" data-category="archive">
                         <code>newsblur_search_archive</code>
@@ -182,14 +182,14 @@
             <div class="NB-mcp-example-prompt">"What are my infrequent stories today?"</div>
             <div class="NB-mcp-example-tool">newsblur_get_infrequent_stories</div>
             <div class="NB-mcp-example-response">
-                <p><strong>{% trans "Stratechery" %}</strong> &mdash; <em>{% trans "Agents Over Bubbles" %}</em><br>
+                <p><strong>Stratechery</strong> &mdash; <em>Agents Over Bubbles</em><br>
                 {% trans "Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in a bubble." %}</p>
-                <p><strong>{% trans "furbo.org" %}</strong> &mdash; <em>{% trans "Your Mac and a Canon Printer" %}</em><br>
-                Craig Hockenberry deep-dives into why Canon printers constantly go "Offline" on Mac &mdash; {% trans "broken Bonjour/mDNS firmware" %} &mdash; {% trans "and presents a permanent workaround." %}</p>
-                <p><strong>{% trans "smitten kitchen" %}</strong> &mdash; <em>{% trans "Black Bean Confetti Salad 2.0" %}</em><br>
+                <p><strong>furbo.org</strong> &mdash; <em>Your Mac and a Canon Printer</em><br>
+                {% blocktrans trimmed %}Craig Hockenberry deep-dives into why Canon printers constantly go "Offline" on Mac &mdash; broken Bonjour/mDNS firmware &mdash; and presents a permanent workaround.{% endblocktrans %}</p>
+                <p><strong>smitten kitchen</strong> &mdash; <em>Black Bean Confetti Salad 2.0</em><br>
                 {% trans "Deb's spring salad refresh, inspired by a Paris trip where the magnolias were blooming." %}</p>
-                <p><strong>{% trans "David Smith" %}</strong> &mdash; <em>{% trans "Display Zoom Statistics" %}</em><br>
-                {% trans "Only 1.9% of Widgetsmith users use Display Zoom" %} &mdash; {% trans "way lower than expected. Helped him decide not to support it for clear widget backgrounds." %}</p>
+                <p><strong>David Smith</strong> &mdash; <em>Display Zoom Statistics</em><br>
+                {% blocktrans trimmed %}Only 1.9% of Widgetsmith users use Display Zoom &mdash; way lower than expected. Helped him decide not to support it for clear widget backgrounds.{% endblocktrans %}</p>
             </div>
         </div>
 
@@ -197,13 +197,13 @@
             <div class="NB-mcp-example-prompt">"What are the top stories from my Hardware folder?"</div>
             <div class="NB-mcp-example-tool">newsblur_get_stories <span class="NB-mcp-example-tool-args">folder: "Hardware"</span></div>
             <div class="NB-mcp-example-response">
-                <p><strong>{% trans "Adafruit" %}</strong> &mdash; <em>{% trans "Ryugu Asteroid Samples Contain All DNA and RNA Building Blocks" %}</em><br>
+                <p><strong>Adafruit</strong> &mdash; <em>Ryugu Asteroid Samples Contain All DNA and RNA Building Blocks</em><br>
                 {% trans "All five nucleobases detected in asteroid Ryugu samples, reinforcing the theory that carbonaceous asteroids seeded early Earth's prebiotic chemistry." %}</p>
-                <p><strong>{% trans "Hackaday" %}</strong> &mdash; <em>{% trans "Hacking The System In A Moral Panic" %}</em><br>
+                <p><strong>Hackaday</strong> &mdash; <em>Hacking The System In A Moral Panic</em><br>
                 {% trans "Washington State bill HB2320 would require 3D printers to phone home and refuse to print known firearms. Why it's technically infeasible." %}</p>
-                <p><strong>{% trans "Adafruit" %}</strong> &mdash; <em>{% trans "Atari 2600 BASIC Programming Limitations" %}</em><br>
-                {% trans "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0" %}&ndash;99.</p>
-                <p><strong>{% trans "Adafruit" %}</strong> &mdash; <em>{% trans "FPGA Replacement for Nintendo Arcade PPU" %}</em><br>
+                <p><strong>Adafruit</strong> &mdash; <em>Atari 2600 BASIC Programming Limitations</em><br>
+                {% blocktrans trimmed %}Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99.{% endblocktrans %}</p>
+                <p><strong>Adafruit</strong> &mdash; <em>FPGA Replacement for Nintendo Arcade PPU</em><br>
                 {% trans "A cheap, clock-accurate FPGA replacement for the Nintendo arcade Picture Processing Unit on a 2-layer PCB." %}</p>
             </div>
         </div>
@@ -212,7 +212,7 @@
             <div class="NB-mcp-example-prompt">"Save that Stratechery article and tag it ai, investing"</div>
             <div class="NB-mcp-example-tool">newsblur_save_story <span class="NB-mcp-example-tool-args">tags: ["ai", "investing"]</span></div>
             <div class="NB-mcp-example-response">
-                <p>{% trans "Saved" %} <strong>{% trans "Agents Over Bubbles" %}</strong> {% trans "by Ben Thompson with tags" %} <code>ai</code> {% trans "and" %} <code>investing</code>{% trans ". You can find it in your saved stories any time." %}</p>
+                <p>{% blocktrans trimmed with title="Agents Over Bubbles" first_tag="ai" second_tag="investing" %}Saved <strong>{{ title }}</strong> by Ben Thompson with tags <code>{{ first_tag }}</code> and <code>{{ second_tag }}</code>. You can find it in your saved stories any time.{% endblocktrans %}</p>
             </div>
         </div>
     </div>
@@ -222,13 +222,13 @@
 
         <div class="NB-mcp-setup-options">
             <div class="NB-mcp-setup-option">
-                <h3>{% trans "Claude Code" %}</h3>
+                <h3>Claude Code</h3>
                 <pre class="NB-feature-detail-code">claude mcp add --transport http newsblur https://newsblur.com/mcp/</pre>
             </div>
 
             <div class="NB-mcp-setup-option">
-                <h3>{% trans "Claude Desktop" %}</h3>
-                <p>{% trans "Add to" %} <code>claude_desktop_config.json</code> {% trans "under" %} <code>mcpServers</code>:</p>
+                <h3>Claude Desktop</h3>
+                <p>{% blocktrans trimmed with path="claude_desktop_config.json" key="mcpServers" %}Add to <code>{{ path }}</code> under <code>{{ key }}</code>:{% endblocktrans %}</p>
                 <pre class="NB-feature-detail-code">{
   "newsblur": {
     "type": "http",
@@ -238,15 +238,15 @@
             </div>
 
             <div class="NB-mcp-setup-option">
-                <h3>{% trans "Codex" %}</h3>
-                <p>{% trans "Add to" %} <code>~/.codex/config.toml</code>:</p>
+                <h3>Codex</h3>
+                <p>{% blocktrans trimmed with path="~/.codex/config.toml" %}Add to <code>{{ path }}</code>:{% endblocktrans %}</p>
                 <pre class="NB-feature-detail-code">[mcp_servers.newsblur]
 url = "https://newsblur.com/mcp"</pre>
             </div>
 
             <div class="NB-mcp-setup-option">
-                <h3>{% trans "Cursor" %}</h3>
-                <p>{% trans "Add to" %} <code>.cursor/mcp.json</code>:</p>
+                <h3>Cursor</h3>
+                <p>{% blocktrans trimmed with path=".cursor/mcp.json" %}Add to <code>{{ path }}</code>:{% endblocktrans %}</p>
                 <pre class="NB-feature-detail-code">{
   "mcpServers": {
     "newsblur": {
@@ -258,8 +258,8 @@ url = "https://newsblur.com/mcp"</pre>
             </div>
 
             <div class="NB-mcp-setup-option">
-                <h3>{% trans "Windsurf" %}</h3>
-                <p>{% trans "Add to" %} <code>~/.codeium/windsurf/mcp_config.json</code>:</p>
+                <h3>Windsurf</h3>
+                <p>{% blocktrans trimmed with path="~/.codeium/windsurf/mcp_config.json" %}Add to <code>{{ path }}</code>:{% endblocktrans %}</p>
                 <pre class="NB-feature-detail-code">{
   "mcpServers": {
     "newsblur": {
@@ -273,7 +273,7 @@ url = "https://newsblur.com/mcp"</pre>
                 <h3>{% trans "Any MCP client" %}</h3>
                 <p>{% trans "Point your client at the streamable HTTP endpoint:" %}</p>
                 <pre class="NB-feature-detail-code">https://newsblur.com/mcp/</pre>
-                <p>{% trans "Authentication uses OAuth 2.0" %} &mdash; {% trans "your client will handle the flow automatically." %}</p>
+                <p>{% blocktrans trimmed %}Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically.{% endblocktrans %}</p>
             </div>
         </div>
 
@@ -293,11 +293,11 @@ url = "https://newsblur.com/mcp"</pre>
             <div class="NB-cli-step">
                 <h3>{% trans "Login" %}</h3>
                 <pre class="NB-feature-detail-code">newsblur auth login</pre>
-                <p class="NB-cli-step-note">{% trans "Opens your browser to authorize. Token stored locally at" %} <code>~/.config/newsblur/</code>.</p>
+                <p class="NB-cli-step-note">{% blocktrans trimmed with path="~/.config/newsblur/" %}Opens your browser to authorize. Token stored locally at <code>{{ path }}</code>.{% endblocktrans %}</p>
             </div>
 
             <div class="NB-cli-step">
-                <h3>{% trans "Use" %}</h3>
+                <h3>{% trans "Use" context "heading for CLI usage examples" %}</h3>
                 <pre class="NB-feature-detail-code">newsblur stories list                          # unread stories
 newsblur stories list --folder Tech --limit 5  # filter by folder
 newsblur stories search "machine learning"     # full-text search
@@ -332,7 +332,7 @@ newsblur stories list --json | jq '.items[].title'  # pipe to jq</pre>
         </div>
         <div class="NB-feature-detail-faq-item">
             <h3 class="NB-feature-detail-faq-q">{% trans "Want more MCP features?" %}</h3>
-            <p class="NB-feature-detail-faq-a">{% trans "Have an idea for a new tool or workflow? Post it on the" %} <a href="https://forum.newsblur.com">{% trans "NewsBlur support forum" %}</a> {% trans "and we'll consider it for a future release." %}</p>
+            <p class="NB-feature-detail-faq-a">{% blocktrans trimmed %}Have an idea for a new tool or workflow? Post it on the <a href="https://forum.newsblur.com">NewsBlur support forum</a> and we'll consider it for a future release.{% endblocktrans %}</p>
         </div>
     </div>
 

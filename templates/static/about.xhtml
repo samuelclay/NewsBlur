@@ -39,7 +39,7 @@
             <div class="NB-about-card">
                 <div class="NB-about-card-header">
                     <svg class="NB-about-card-icon NB-about-card-icon-inline" viewBox="0 0 256 256" fill="currentColor"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16ZM80,32h96a8,8,0,0,1,8,8v8H72V40A8,8,0,0,1,80,32Zm96,192H80a8,8,0,0,1-8-8v-8H184v8A8,8,0,0,1,176,224Z"/></svg>
-                    <h3 class="NB-about-card-title">{% trans "iOS" %} &amp; {% trans "Android Apps" %}</h3>
+                    <h3 class="NB-about-card-title">{% trans "iOS & Android Apps" %}</h3>
                 </div>
                 <p class="NB-about-card-text">{% trans "First-class native apps built specifically for each platform. Full training, sharing, and offline reading on your phone and tablet." %}</p>
             </div>
@@ -92,22 +92,22 @@
         <h2 class="NB-about-section-title">{% trans "The team" %}</h2>
         <div class="NB-about-team">
             <div class="NB-about-person">
-                <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg" class="NB-about-person-photo" alt="{% trans 'Samuel Clay' %}">
-                <div class="NB-about-person-name">{% trans "Samuel Clay" %}</div>
+                <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg" class="NB-about-person-photo" alt="Samuel Clay">
+                <div class="NB-about-person-name">Samuel Clay</div>
                 <div class="NB-about-person-role">{% trans "Founder" %}</div>
                 <div class="NB-about-person-links">
-                    <a href="https://x.com/samuelclay">{% trans "@samuelclay" %}</a>
-                    <a href="https://www.samuelclay.com">{% trans "samuelclay.com" %}</a>
-                    <a href="mailto:samuel@newsblur.com">{% trans "samuel@newsblur.com" %}</a>
+                    <a href="https://x.com/samuelclay">@samuelclay</a>
+                    <a href="https://www.samuelclay.com">samuelclay.com</a>
+                    <a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a>
                 </div>
             </div>
             <div class="NB-about-person">
-                <img src="{{ MEDIA_URL }}img/static/Lyric.jpg" class="NB-about-person-photo" alt="{% trans 'Lyric' %}">
-                <div class="NB-about-person-name">{% trans "Lyric" %}</div>
+                <img src="{{ MEDIA_URL }}img/static/Lyric.jpg" class="NB-about-person-photo" alt="Lyric">
+                <div class="NB-about-person-name">Lyric</div>
                 <div class="NB-about-person-role">{% trans "Chief Morale Officer" %}</div>
                 <div class="NB-about-person-links">
-                    <a href="https://x.com/newsblur">{% trans "@newsblur" %}</a>
-                    <a href="mailto:lyric@newsblur.com">{% trans "lyric@newsblur.com" %}</a>
+                    <a href="https://x.com/newsblur">@newsblur</a>
+                    <a href="mailto:lyric@newsblur.com">lyric@newsblur.com</a>
                 </div>
             </div>
         </div>
@@ -153,23 +153,23 @@
         <h2 class="NB-about-section-title">{% trans "Built with" %}</h2>
         <div class="NB-about-tech">
             <div class="NB-about-tech-group">
-                <h3 class="NB-about-tech-group-title">{% trans "Server" %}</h3>
+                <h3 class="NB-about-tech-group-title">{% trans "Server" context "technology stack group" %}</h3>
                 <div class="NB-about-tech-pills">
-                    <a href="https://www.djangoproject.com" class="NB-about-tech-pill">{% trans "Django" %}</a>
-                    <a href="https://docs.celeryq.dev/" class="NB-about-tech-pill">{% trans "Celery" %}</a>
-                    <a href="https://www.elastic.co" class="NB-about-tech-pill">{% trans "Elasticsearch" %}</a>
-                    <a href="https://www.mongodb.com" class="NB-about-tech-pill">{% trans "MongoDB" %}</a>
-                    <a href="https://www.postgresql.org" class="NB-about-tech-pill">{% trans "PostgreSQL" %}</a>
-                    <a href="https://redis.io" class="NB-about-tech-pill">{% trans "Redis" %}</a>
-                    <a href="https://nodejs.org" class="NB-about-tech-pill">{% trans "Node.js" %}</a>
+                    <a href="https://www.djangoproject.com" class="NB-about-tech-pill">Django</a>
+                    <a href="https://docs.celeryq.dev/" class="NB-about-tech-pill">Celery</a>
+                    <a href="https://www.elastic.co" class="NB-about-tech-pill">Elasticsearch</a>
+                    <a href="https://www.mongodb.com" class="NB-about-tech-pill">MongoDB</a>
+                    <a href="https://www.postgresql.org" class="NB-about-tech-pill">PostgreSQL</a>
+                    <a href="https://redis.io" class="NB-about-tech-pill">Redis</a>
+                    <a href="https://nodejs.org" class="NB-about-tech-pill">Node.js</a>
                 </div>
             </div>
             <div class="NB-about-tech-group">
-                <h3 class="NB-about-tech-group-title">{% trans "Client" %}</h3>
+                <h3 class="NB-about-tech-group-title">{% trans "Client" context "technology stack group" %}</h3>
                 <div class="NB-about-tech-pills">
-                    <a href="https://jquery.com" class="NB-about-tech-pill">{% trans "jQuery" %}</a>
-                    <a href="https://backbonejs.org" class="NB-about-tech-pill">{% trans "Backbone.js" %}</a>
-                    <a href="https://underscorejs.org" class="NB-about-tech-pill">{% trans "Underscore.js" %}</a>
+                    <a href="https://jquery.com" class="NB-about-tech-pill">jQuery</a>
+                    <a href="https://backbonejs.org" class="NB-about-tech-pill">Backbone.js</a>
+                    <a href="https://underscorejs.org" class="NB-about-tech-pill">Underscore.js</a>
                 </div>
             </div>
             <div class="NB-about-tech-group">
@@ -195,7 +195,7 @@
     <div class="NB-about-tagline">
         <p class="NB-about-tagline-text">{% trans "A new sound of an old instrument." %}</p>
         <a href="https://www.youtube.com/watch?v=Lks51ELeUB4">
-            <img src="{{ MEDIA_URL }}img/static/Moondog.jpg" class="NB-about-tagline-img" alt="{% trans 'Moondog' %}">
+            <img src="{{ MEDIA_URL }}img/static/Moondog.jpg" class="NB-about-tagline-img" alt="Moondog">
         </a>
     </div>
 

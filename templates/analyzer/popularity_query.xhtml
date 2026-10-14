@@ -18,7 +18,7 @@
         <h5>{% trans "Search for topics across millions of stories from millions of publishers" %}</h5>
         
         {% if success %}
-            <h4 style="color: #1C6130; text-align: center">{% trans "Got it!" %}<br>{% trans "Email should be sent within the next few minutes." %}</h4>
+            <h4 style="color: #1C6130; text-align: center">{% blocktrans trimmed %}Got it!<br>Email should be sent within the next few minutes.{% endblocktrans %}</h4>
         {% else %}
             <form action="" method="POST">{% csrf_token %}
                 <div class="NB-fields">

@@ -49,7 +49,7 @@
                 <div><a href="{% url "index" %}">{% trans "Continue to NewsBlur" %} &raquo;</a></div>
             {% else %}
                 <div style="color: #404040;font-size: 28px">{% trans "Unsubscribe from NewsBlur emails" %}</div>
-                <div>{% trans "Stop sending all NewsBlur emails to" %} <b>{{ user.email }}</b> {% trans "for the account" %} <b>{{ user.username }}</b>?</div>
+                <div>{% blocktrans trimmed with email=user.email username=user.username %}Stop sending all NewsBlur emails to <b>{{ email }}</b> for the account <b>{{ username }}</b>?{% endblocktrans %}</div>
                 <form method="post">
                     {% csrf_token %}
                     <button type="submit" class="NB-unsubscribe-button">{% trans "Unsubscribe" %}</button>

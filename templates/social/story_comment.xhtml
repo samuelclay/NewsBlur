@@ -14,18 +14,18 @@
             </div>
         {% endif %}
         <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-        <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
+        <div class="NB-story-comment-date">{% blocktrans with time=comment.shared_date %}{{ time }} ago{% endblocktrans %}</div>
         <div class="NB-story-comment-button NB-story-comment-reply-button">
             <div class="NB-story-comment-button-wrapper NB-story-comment-reply-button-wrapper">
                 {% if comment.user.protected %}
                     <img src="{{ MEDIA_URL }}img/icons/circular/g_icn_lock.png" class="NB-reply-lock">
                 {% endif %}
-                {% trans "reply" %}
+                {% trans "reply" context "button to reply to a comment" %}
             </div>
         </div>
         {% if comment.user_id == user.pk %}
             <div class="NB-story-comment-button NB-story-comment-edit-button">
-                <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">{% trans "edit" %}</div>
+                <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">{% trans "edit" context "button to edit a comment" %}</div>
             </div>
         {% endif %}
         <div class="NB-story-comment-likes">
@@ -58,10 +58,10 @@
                 <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
             </a>
             <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
-            <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
+            <div class="NB-story-comment-date NB-story-comment-reply-date">{% blocktrans with time=reply.publish_date %}{{ time }} ago{% endblocktrans %}</div>
             {% if reply.user_id == user.pk %}
                 <div class="NB-story-comment-button NB-story-comment-edit-reply-button">
-                    <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">{% trans "edit" %}</div>
+                    <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">{% trans "edit" context "button to edit a comment" %}</div>
                 </div>
             {% endif %}
             <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>

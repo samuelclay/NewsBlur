@@ -2,7 +2,7 @@
 {% load utils_tags social_tags %}
 
 <!DOCTYPE html>
-<html lang="{{ ui_language }}" dir="{% if ui_language_rtl %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ ui_language }}" dir="{{ ui_language_dir }}">
 
 <head>
   {% include "includes/i18n_scripts.html" %}
@@ -211,9 +211,9 @@
                             </div>
                         {% endif %}
                         <div class="NB-banner-stats">
-                            <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                            <div class="NB-banner-stat">{% blocktrans count stories=social_profile.shared_stories_count trimmed %}<b>{{ stories }}</b> story{% plural %}<b>{{ stories }}</b> stories{% endblocktrans %}</div>
                             <div class="NB-banner-stat"><b>&middot;</b></div>
-                            <div class="NB-banner-stat NB-stat-followers"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                            <div class="NB-banner-stat NB-stat-followers">{% blocktrans count followers=social_profile.follower_count trimmed %}<b>{{ followers }}</b> follower{% plural %}<b>{{ followers }}</b> followers{% endblocktrans %}</div>
                         </div>
                     </div>
                 </td>

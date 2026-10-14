@@ -32,14 +32,14 @@
             <tr>
                 <th>{% trans "Feature" %}</th>
                 <th>NewsBlur</th>
-                <th>{% trans "Inoreader" %}</th>
+                <th>Inoreader</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>{% trans "Intelligence Training" %}</td>
                 <td><span class="NB-compare-check">&#10003;</span> {% trans "Train by author, tag, title, text, URL, regex" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Rules" %} &amp; {% trans "filters" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> {% trans "Rules & filters" %}</td>
             </tr>
             <tr>
                 <td>{% trans "Regex Classifiers" %}</td>
@@ -53,7 +53,7 @@
             </tr>
             <tr>
                 <td>{% trans "Ask AI (Query Stories)" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Claude, GPT, Gemini, Grok" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> Claude, GPT, Gemini, Grok</td>
                 <td><span class="NB-compare-x">&#10007;</span></td>
             </tr>
             <tr>
@@ -89,7 +89,7 @@
             <tr>
                 <td>{% trans "Social / Sharing" %}</td>
                 <td><span class="NB-compare-check">&#10003;</span> {% trans "Public blurblog with comments" %}</td>
-                <td><span class="NB-compare-check">&#10003;</span> {% trans "Bundles" %} &amp; {% trans "broadcasting" %}</td>
+                <td><span class="NB-compare-check">&#10003;</span> {% trans "Bundles & broadcasting" %}</td>
             </tr>
             <tr>
                 <td>{% trans "Open Source" %}</td>
@@ -147,7 +147,7 @@
     <div class="NB-compare-section">
         <h2 class="NB-compare-section-title">{% trans "AI-powered reading" %}</h2>
         <p class="NB-compare-section-text">
-            {% trans "NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using Claude, GPT, Gemini, or Grok" %} &mdash; {% trans "get summaries, extract key points, or ask follow-up questions. The Daily Briefing generates a personalized AI summary of your top stories with customizable sections. These features turn passive reading into active intelligence gathering." %}
+            {% blocktrans trimmed %}NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using Claude, GPT, Gemini, or Grok &mdash; get summaries, extract key points, or ask follow-up questions. The Daily Briefing generates a personalized AI summary of your top stories with customizable sections. These features turn passive reading into active intelligence gathering.{% endblocktrans %}
         </p>
     </div>
 
@@ -161,14 +161,14 @@
     <div class="NB-compare-section">
         <h2 class="NB-compare-section-title">{% trans "Open source and community-driven" %}</h2>
         <p class="NB-compare-section-text">
-            {% trans "NewsBlur is fully open source under the MIT license. You can run your own instance, contribute features, or audit the code. The entire application" %} &mdash; {% trans "web, iOS, Android, and all backend services" %} &mdash; {% trans "is on GitHub. Inoreader is a closed-source proprietary service with no self-hosted option." %}
+            {% blocktrans trimmed %}NewsBlur is fully open source under the MIT license. You can run your own instance, contribute features, or audit the code. The entire application &mdash; web, iOS, Android, and all backend services &mdash; is on GitHub. Inoreader is a closed-source proprietary service with no self-hosted option.{% endblocktrans %}
         </p>
     </div>
 
     <div class="NB-compare-section">
         <h2 class="NB-compare-section-title">{% trans "Professional-grade feed monitoring" %}</h2>
         <p class="NB-compare-section-text">
-            {% trans "For professionals who need real-time awareness, NewsBlur Pro fetches every feed in your account every 5-15 minutes. Not just priority feeds" %} &mdash; {% trans "every single one of your 10,000 sites. This makes NewsBlur a monitoring-grade tool for journalists, analysts, security researchers, and anyone whose work depends on being the first to know." %}
+            {% blocktrans trimmed %}For professionals who need real-time awareness, NewsBlur Pro fetches every feed in your account every 5-15 minutes. Not just priority feeds &mdash; every single one of your 10,000 sites. This makes NewsBlur a monitoring-grade tool for journalists, analysts, security researchers, and anyone whose work depends on being the first to know.{% endblocktrans %}
         </p>
     </div>
 

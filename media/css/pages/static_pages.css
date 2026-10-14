@@ -259,12 +259,9 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
     margin: 0;
 }
 
+/* static_pages.css: appearance, width and margin come from the shared reader.css select rule. */
 .NB-welcome-language .NB-language-selector select {
-    appearance: auto;
-    width: auto;
-    max-width: 190px;
     min-height: 32px;
-    margin: 0;
     padding: 5px 10px;
     border: 1px solid rgba(45, 38, 26, 0.15);
     border-radius: 16px;
@@ -273,7 +270,6 @@ body.NB-dark.NB-static .NB-splash-blurred-logo {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease;
 }
 

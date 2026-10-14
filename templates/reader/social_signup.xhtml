@@ -76,7 +76,7 @@
         <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
         
         <form class="NB-demo" method="post" action="">
-            <label class="NB-demo-label" for="username">{% trans "Put your Email" %}<br>{% trans "in the box" %}</label>
+            <label class="NB-demo-label" for="username">{% blocktrans trimmed %}Put your Email<br>in the box{% endblocktrans %}</label>
             <input class="NB-input" name="username" type="text" id="username">
             <input type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="Request an invite">
         </form>

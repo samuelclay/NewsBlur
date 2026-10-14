@@ -116,18 +116,18 @@
                                 </div>
                                 <div class="NB-module-stats-count">
                                     <div class="NB-module-stats-count-number NB-module-stats-count-number-sites">{{ feed_count|commify }}</div>
-                                    <div class="NB-module-stats-count-description">{{ feed_count|pluralize:"Site,Sites" }}</div>
+                                    <div class="NB-module-stats-count-description">{% blocktrans count counter=feed_count trimmed %}Site{% plural %}Sites{% endblocktrans %}</div>
                                 </div>
                                 {% if social_profile.shared_stories_count %}
                                 <div class="NB-module-stats-count">
                                     <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
-                                    <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
+                                    <div class="NB-module-stats-count-description">{% blocktrans count counter=social_profile.shared_stories_count trimmed %}Shared story{% plural %}Shared stories{% endblocktrans %}</div>
                                 </div>
                                 {% endif %}
                                 {% if social_profile.follower_count %}
                                 <div class="NB-module-stats-count">
                                     <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
-                                    <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
+                                    <div class="NB-module-stats-count-description">{% blocktrans count counter=social_profile.follower_count trimmed %}Follower{% plural %}Followers{% endblocktrans %}</div>
                                 </div>
                                 {% endif %}
                             </div>

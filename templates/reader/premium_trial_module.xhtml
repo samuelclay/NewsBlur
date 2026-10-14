@@ -10,19 +10,12 @@
     <div class="NB-module-item NB-module-item-intro">
         <div class="NB-module-trial-icon"></div>
         <p class="NB-module-trial-message">
-            {% trans "Your premium trial has" %} <strong class="NB-trial-days">{{ user_profile.trial_days_remaining }} day{{ user_profile.trial_days_remaining|pluralize }}</strong> {% trans "remaining" %}
+            {% blocktrans count days=user_profile.trial_days_remaining trimmed %}Your premium trial has <strong class="NB-trial-days">{{ days }} day</strong> remaining{% plural %}Your premium trial has <strong class="NB-trial-days">{{ days }} days</strong> remaining{% endblocktrans %}
         </p>
         <p class="NB-module-trial-benefits">
             {% trans "Enjoying premium features? Keep them forever!" %}
         </p>
-        <ul class="NB-module-trial-features">
-            <li class="NB-sites">{% trans "Unlimited sites" %}</li>
-            <li class="NB-folder">{% trans "Reading by folder" %}</li>
-            <li class="NB-text">{% trans "Full-text articles" %}</li>
-            <li class="NB-tags">{% trans "Saved story tags" %}</li>
-            <li class="NB-search">{% trans "Search for stories" %}</li>
-            <li class="NB-more">{% trans "...and more" %}</li>
-        </ul>
+        {% include "reader/_premium_trial_features.xhtml" %}
         <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-javascript">
             {% trans "Upgrade to Premium" %}
         </div>
@@ -46,14 +39,7 @@
         <p class="NB-module-trial-benefits">
             {% trans "No credit card required" %}
         </p>
-        <ul class="NB-module-trial-features">
-            <li class="NB-sites">{% trans "Unlimited sites" %}</li>
-            <li class="NB-folder">{% trans "Reading by folder" %}</li>
-            <li class="NB-text">{% trans "Full-text articles" %}</li>
-            <li class="NB-tags">{% trans "Saved story tags" %}</li>
-            <li class="NB-search">{% trans "Search for stories" %}</li>
-            <li class="NB-more">{% trans "...and more" %}</li>
-        </ul>
+        {% include "reader/_premium_trial_features.xhtml" %}
         <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-module-trial-offer-button NB-javascript">
             {% trans "Start Trial Premium" %}
         </div>
@@ -71,14 +57,7 @@
         <p class="NB-module-trial-message">
             {% trans "Unlock the full NewsBlur experience" %}
         </p>
-        <ul class="NB-module-trial-features">
-            <li class="NB-sites">{% trans "Unlimited sites" %}</li>
-            <li class="NB-folder">{% trans "Reading by folder" %}</li>
-            <li class="NB-text">{% trans "Full-text articles" %}</li>
-            <li class="NB-tags">{% trans "Saved story tags" %}</li>
-            <li class="NB-search">{% trans "Search for stories" %}</li>
-            <li class="NB-more">{% trans "...and more" %}</li>
-        </ul>
+        {% include "reader/_premium_trial_features.xhtml" %}
         <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-javascript">
             {% trans "Upgrade to Premium" %}
         </div>

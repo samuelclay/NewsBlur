@@ -45,8 +45,8 @@
   <div class="NB-ios-main NB-android-main">
     
     <div class="NB-ios-title">
-        <div><a href="/">NewsBlur</a> {% trans "is a personal news reader." %}</div>
-        <div class="NB-ios-subtitle">{% trans "Built" %} <a href="http://github.com/samuelclay/">{% trans "in the open" %}</a> {% trans "in New York and San Francisco." %}</div>
+        <div>{% blocktrans trimmed %}<a href="/">NewsBlur</a> is a personal news reader.{% endblocktrans %}</div>
+        <div class="NB-ios-subtitle">{% blocktrans trimmed %}Built <a href="http://github.com/samuelclay/">in the open</a> in New York and San Francisco.{% endblocktrans %}</div>
         
     </div>
     
@@ -55,7 +55,7 @@
     <a href="https://play.google.com/store/apps/details?id=com.newsblur"  class="NB-ios-download">
         <button>
             <img src="{{ MEDIA_URL }}img/reader/download.png" />
-          {% trans "Download the free NewsBlur Android app on" %} <br /><span class="NB-big">{% trans "Google Play" %}</span>
+          {% blocktrans trimmed with store="Google Play" %}Download the free NewsBlur Android app on <br /><span class="NB-big">{{ store }}</span>{% endblocktrans %}
         </button>
     </a>
     </div>
@@ -65,7 +65,7 @@
         <li class="NB-ios-feature" data-screenshot="1">
             <img src="{{ MEDIA_URL }}img/android/v4 - 1 large.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/android/v4 - 1.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">{% trans "Sites" %} &amp; {% trans "Friends" %}</div>
+            <div class="NB-ios-feature-title">{% trans "Sites & Friends" %}</div>
             {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
         <li class="NB-ios-feature" data-screenshot="2">
@@ -98,7 +98,7 @@
         <li class="NB-ios-feature NB-active" data-screenshot="6">
             <img src="{{ MEDIA_URL }}img/android/v4 - 6 large.png" class="NB-ios-ipad-screenshot" />
             <img src="{{ MEDIA_URL }}img/android/v4 - 6.png" class="NB-ios-iphone-screenshot" />
-            <div class="NB-ios-feature-title">{% trans "The NewsBlur" %}<br />{% trans "Android App" %}</div>
+            <div class="NB-ios-feature-title">{% blocktrans trimmed %}The NewsBlur<br />Android App{% endblocktrans %}</div>
             {# <div class="NB-ios-feature-subtitle">{% trans "Read" %}</div> #}
         </li>
     </ul>
