@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Folder
@@ -38,7 +39,6 @@ import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material.icons.rounded.Podcasts
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.SmartDisplay
-import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -348,7 +348,7 @@ private fun DiscoveryShortcut(
             Icon(painterResource(R.drawable.ic_discover_reddit), null, Modifier.size(24.dp), colors.textPrimary)
         } else {
             val icon = when (shortcut.tab) {
-                DiscoveryTab.SEARCH -> Icons.Rounded.TrendingUp
+                DiscoveryTab.SEARCH -> Icons.AutoMirrored.Rounded.TrendingUp
                 DiscoveryTab.WEB -> Icons.Rounded.Public
                 DiscoveryTab.POPULAR -> Icons.Rounded.LocalFireDepartment
                 DiscoveryTab.YOUTUBE -> Icons.Rounded.SmartDisplay

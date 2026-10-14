@@ -53,6 +53,12 @@ public class FlowLayout extends ViewGroup {
         styledAttributes.recycle();
     }
 
+    // FlowLayout.java treats the default flow as start to end and flow="left" as end to start, so
+    // both mirror in right-to-left languages.
+    private boolean flowsRight() {
+        return (flowDirection == FLOW_RIGHT) != (getLayoutDirection() == LAYOUT_DIRECTION_RTL);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int count = getChildCount();
@@ -81,7 +87,7 @@ public class FlowLayout extends ViewGroup {
             }
         } else {
             int line_height = 0;
-            int xpos = (flowDirection == FLOW_RIGHT) ? getPaddingLeft() : (width-getPaddingRight());
+            int xpos = (flowsRight()) ? getPaddingLeft() : (width-getPaddingRight());
             int ypos = getPaddingTop();
             int childHeightMeasureSpec;
             if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
@@ -103,16 +109,16 @@ public class FlowLayout extends ViewGroup {
                         childh = child.getMeasuredHeight();
                     }
                     line_height = Math.max(line_height, childh);
-                    if (flowDirection == FLOW_RIGHT && xpos + childw > (width-getPaddingRight())) {
+                    if (flowsRight() && xpos + childw > (width-getPaddingRight())) {
                         xpos = getPaddingLeft();
                         ypos += line_height + childSpacingPx;
                         line_height = 0;
-                    } else if (flowDirection == FLOW_LEFT && xpos - childw < getPaddingLeft()) {
+                    } else if (!flowsRight() && xpos - childw < getPaddingLeft()) {
                         xpos = width-getPaddingRight();
                         ypos += line_height + childSpacingPx;
                         line_height = 0;
                     }
-                    if (flowDirection == FLOW_RIGHT) {
+                    if (flowsRight()) {
                         xpos += childw + childSpacingPx;
                     } else {
                         xpos -= childw + childSpacingPx;
@@ -135,7 +141,7 @@ public class FlowLayout extends ViewGroup {
         final int count = getChildCount();
         final int width = r - l;
         int line_height = 0;
-        int xpos = (flowDirection == FLOW_RIGHT) ? getPaddingLeft() : (width-getPaddingRight());
+        int xpos = (flowsRight()) ? getPaddingLeft() : (width-getPaddingRight());
         int ypos = getPaddingTop();
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
@@ -150,17 +156,17 @@ public class FlowLayout extends ViewGroup {
                     childh = child.getMeasuredHeight(); 
                 }
                 line_height = Math.max(line_height, childh);
-                if (flowDirection == FLOW_RIGHT && xpos + childw > (width-getPaddingLeft())) {
+                if (flowsRight() && xpos + childw > (width-getPaddingLeft())) {
                     xpos = getPaddingLeft();
                     ypos += line_height + childSpacingPx;
                     line_height = 0;
-                } else if (flowDirection == FLOW_LEFT && xpos - childw < getPaddingRight()) {
+                } else if (!flowsRight() && xpos - childw < getPaddingRight()) {
                     xpos = width-getPaddingRight();
                     ypos += line_height + childSpacingPx;
                     line_height = 0;
                 }
                 
-                if (flowDirection == FLOW_RIGHT) {
+                if (flowsRight()) {
                     child.layout(xpos, ypos, xpos + childw, ypos + childh);
                     xpos += childw + childSpacingPx;
                 } else {

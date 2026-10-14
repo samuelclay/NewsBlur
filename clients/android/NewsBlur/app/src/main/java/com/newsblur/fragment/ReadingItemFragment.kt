@@ -1024,25 +1024,25 @@ class ReadingItemFragment :
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 Classifier.DISLIKE -> {
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.negative))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 Classifier.SUPER_DISLIKE -> {
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.super_negative))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_double_crimson)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 14), UIUtils.dp2px(requireContext(), 14))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 else -> {
                     binding.readingItemAuthors.setTextColor(
                         UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
                     )
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, null, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, null, null)
                 }
             }
         }
@@ -1562,6 +1562,7 @@ class ReadingItemFragment :
                 enableHighlights = enableHighlights,
                 textClassifiers = classifier?.texts?.toMap().orEmpty(),
                 textRegexClassifiers = classifier?.textRegex?.toMap().orEmpty(),
+                interfaceRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL,
             )
         documentRenderer.submit(
             scope = viewLifecycleOwner.lifecycleScope,
@@ -1584,6 +1585,7 @@ class ReadingItemFragment :
                                 nightMask = request.nightMask,
                                 enableHighlights = request.enableHighlights,
                                 classifier = bodyClassifier,
+                                interfaceRtl = request.interfaceRtl,
                             ),
                     )
                 }
@@ -2432,6 +2434,7 @@ private data class ReaderHtmlRequest(
     val enableHighlights: Boolean,
     val textClassifiers: Map<String, Int>,
     val textRegexClassifiers: Map<String, Int>,
+    val interfaceRtl: Boolean,
 )
 
 private data class PreparedReaderDocument(

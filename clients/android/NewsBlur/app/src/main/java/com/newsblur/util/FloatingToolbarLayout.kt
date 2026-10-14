@@ -64,13 +64,17 @@ object FloatingToolbarLayout {
         desiredWidth: Int,
         desiredHeight: Int,
         gap: Int,
+        rtl: Boolean = false,
     ): Popover {
         val width = desiredWidth.coerceAtMost((right - left - gap * 2).coerceAtLeast(1))
         val above = (anchorTop - top - gap * 2).coerceAtLeast(1)
         val below = (bottom - anchorBottom - gap * 2).coerceAtLeast(1)
         val placeAbove = above > below
         val height = desiredHeight.coerceAtMost(if (placeAbove) above else below).coerceAtLeast(1)
-        val x = (anchorRight - width).coerceIn(left + gap, (right - width - gap).coerceAtLeast(left + gap))
+        // FloatingToolbarLayout.kt lines the menu up with the button's end edge, so it opens toward the
+        // middle of the screen: leftward from the button, or rightward in a right-to-left layout.
+        val alignedX = if (rtl) anchorLeft else anchorRight - width
+        val x = alignedX.coerceIn(left + gap, (right - width - gap).coerceAtLeast(left + gap))
         val y = if (placeAbove) anchorTop - gap - height else anchorBottom + gap
         return Popover(x, y, width, height)
     }

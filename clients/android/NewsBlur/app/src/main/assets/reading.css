@@ -23,8 +23,9 @@ body {
     box-sizing: border-box;
     width: 100vw !important;
     max-width: 100vw !important;
-    margin-left: var(--NB-image-offset, 0px) !important;
-    margin-right: 0 !important;
+    /* reading.css pulls a full-width photo to the story's start edge, the right edge in right-to-left text. */
+    margin-inline-start: var(--NB-image-offset, 0px) !important;
+    margin-inline-end: 0 !important;
     height: auto !important;
     margin-bottom: 8px !important;
 }
@@ -146,7 +147,7 @@ code {
 }
 
 pre, blockquote {
-    border-left: 1px solid #C2C5BE;
+    border-inline-start: 1px solid #C2C5BE;
     padding: 0.6em;
     margin: 0.6em;
     word-wrap: break-word !important;

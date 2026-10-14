@@ -62,7 +62,7 @@ object RelatedSitesPopover {
         val header =
             LinearLayout(activity).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(16), dp(4), dp(8), dp(4))
+                setPaddingRelative(dp(16), dp(4), dp(8), dp(4))
             }
         header.addView(
             TextView(activity).apply {

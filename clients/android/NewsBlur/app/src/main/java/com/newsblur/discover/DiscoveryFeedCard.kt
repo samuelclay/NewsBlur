@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
+import com.newsblur.design.withContentDirection
 import com.newsblur.network.FolderPath
 import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
@@ -107,11 +108,17 @@ internal fun DiscoveryFeedCard(
                 }
             })
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    style = MaterialTheme.typography.titleMedium.withContentDirection(),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Text(
                     feed.link,
                     color = colors.siteLink,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.withContentDirection(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -196,7 +203,7 @@ private fun DiscoveryStoryRow(
             Text(
                 title,
                 color = colors.textPrimary,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.withContentDirection(),
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -205,7 +212,7 @@ private fun DiscoveryStoryRow(
                 Text(
                     listOfNotNull(authors.takeIf(String::isNotBlank), date).joinToString(" · "),
                     color = secondaryText,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.labelSmall.withContentDirection(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -214,7 +221,7 @@ private fun DiscoveryStoryRow(
                 Text(
                     excerpt,
                     color = secondaryText,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodySmall.withContentDirection(),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )

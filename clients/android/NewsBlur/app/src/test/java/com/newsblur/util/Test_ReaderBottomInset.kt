@@ -55,7 +55,7 @@ class Test_ReaderBottomInset {
             val clearListener = viewport.applyReaderFooterInsetTo(footer)
 
             // Test_ReaderBottomInset.kt: the real 44px traversal row plus 44px clearance replaces the old 88px blank reserve.
-            verify { footer.setPadding(0, 0, 0, 44) }
+            verify { footer.setPaddingRelative(0, 0, 0, 44) }
 
             // Test_ReaderBottomInset.kt: switching to gesture navigation or resizing must recompute the clearance.
             every { insets.getInsets(WindowInsetsCompat.Type.navigationBars()) } returns Insets.NONE
@@ -63,13 +63,13 @@ class Test_ReaderBottomInset {
             every { overlay.height } returns 44
             every { overlay.paddingBottom } returns 0
             if (listener.isCaptured) listener.captured.onGlobalLayout() else preDraw.captured.onPreDraw()
-            verify { footer.setPadding(0, 0, 0, 20) }
+            verify { footer.setPaddingRelative(0, 0, 0, 20) }
 
             // Test_ReaderBottomInset.kt: AppBarLayout reveals the toolbar with offsetTopAndBottom,
             // moving the viewport without another layout. The next frame must still clear the capsules.
             every { viewport.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 80 }
             if (preDraw.isCaptured) preDraw.captured.onPreDraw()
-            verify { footer.setPadding(0, 0, 0, 76) }
+            verify { footer.setPaddingRelative(0, 0, 0, 76) }
 
             // Test_ReaderBottomInset.kt: FragmentStateManager detaches the view before onDestroyView,
             // so cleanup must remove the callback from the original window observer, not the new floating one.

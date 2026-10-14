@@ -1,5 +1,6 @@
 package com.newsblur.util
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.view.Gravity
 import android.view.View
@@ -7,6 +8,7 @@ import android.widget.PopupWindow
 
 /** AnchoredPopover.kt reserves space for the original button instead of covering it with a tall menu. */
 object AnchoredPopover {
+    @SuppressLint("RtlHardcoded")
     @JvmStatic fun show(
         anchor: View,
         popup: PopupWindow,
@@ -31,11 +33,13 @@ object AnchoredPopover {
                 desiredWidth,
                 desiredHeight,
                 UIUtils.dp2px(anchor.context, 8),
+                anchor.layoutDirection == View.LAYOUT_DIRECTION_RTL,
             )
         if (updating) {
             popup.update(fit.x, fit.y, fit.width, fit.height)
             return
         } else {
+            // AnchoredPopover.kt places the window at physical screen coordinates, so it uses LEFT, not START.
             PopoverEntranceAnimation.show(
                 anchor, popup, Gravity.TOP or Gravity.LEFT, fit.x, fit.y, fit.width, fit.height,
                 location[0] + anchor.width / 2f, location[1] + anchor.height / 2f,

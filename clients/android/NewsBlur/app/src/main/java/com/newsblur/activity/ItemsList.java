@@ -1480,7 +1480,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (width > 0) {
             clampedOffset = Math.min(clampedOffset, width);
         }
-        surface.setTranslationX(clampedOffset);
+        // The offset counts toward the end edge, so the list slides left in right-to-left layouts.
+        surface.setTranslationX(clampedOffset * UIUtils.towardEndSign(this));
         surface.setTranslationZ(clampedOffset > 0f ? UIUtils.dp2px(this, STORY_LIST_SWIPE_ELEVATION_DP) : 0f);
     }
 
@@ -1498,8 +1499,8 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
         View surface = getInteractiveSwipeSurface();
-        float targetTranslation = surface.getWidth() > 0 ? surface.getWidth() : getResources().getDisplayMetrics().widthPixels;
-        animateInteractiveStoryListSwipe(targetTranslation, true);
+        float slideDistance = surface.getWidth() > 0 ? surface.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        animateInteractiveStoryListSwipe(slideDistance * UIUtils.towardEndSign(this), true);
     }
 
     protected boolean interceptBackPress(boolean isGestureNavigation) {
@@ -1668,7 +1669,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 predictiveBackInProgress = supportsPredictiveStoryListBack()
                         && isInteractiveStoryListBackEnabled()
                         && shouldHandlePredictiveBack()
-                        && backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT;
+                        && backEvent.getSwipeEdge() == storyListBackSwipeEdge();
                 if (predictiveBackInProgress) {
                     beginInteractiveStoryListSwipe();
                 }
@@ -1691,7 +1692,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             public void handleOnBackPressed() {
                 predictiveBackInProgress = false;
                 View surface = getInteractiveSwipeSurface();
-                boolean isGestureNavigation = surface.getTranslationX() > 0f;
+                boolean isGestureNavigation = surface.getTranslationX() != 0f;
                 if (interceptBackPress(isGestureNavigation)) {
                     if (isGestureNavigation) {
                         cancelInteractiveStoryListSwipe();
@@ -1705,6 +1706,11 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
                 }
             }
         });
+    }
+
+    // ItemsList.java follows the system back swipe from the start edge, the right edge in Arabic and Hebrew.
+    private int storyListBackSwipeEdge() {
+        return UIUtils.towardEndSign(this) < 0f ? BackEventCompat.EDGE_RIGHT : BackEventCompat.EDGE_LEFT;
     }
 
     private void animateInteractiveStoryListSwipe(float targetTranslationX, boolean finishWhenComplete) {

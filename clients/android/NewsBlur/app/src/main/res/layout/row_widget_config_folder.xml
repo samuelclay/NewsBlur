@@ -11,7 +11,7 @@
         android:id="@+id/img_folder"
         android:layout_width="19dp"
         android:layout_height="19dp"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center_vertical|start"
         android:layout_marginStart="2dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ic_folder" />
