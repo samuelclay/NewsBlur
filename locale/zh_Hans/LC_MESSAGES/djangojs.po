@@ -1476,8 +1476,9 @@ msgstr "书签工具"
 msgid "Bottom"
 msgstr "底部"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "简短"
+msgstr "简要"
 
 msgid "Briefing"
 msgstr "简报"
@@ -2121,6 +2122,7 @@ msgstr "描述要聚焦或隐藏的内容"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "描述你要查找的内容，AI 将根据你的提示分析每篇文章的图片。"
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "详细"
 
@@ -3801,8 +3803,13 @@ msgstr "以后再说"
 msgid "Media"
 msgstr "媒体"
 
+msgctxt "card height"
 msgid "Medium"
 msgstr "中"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "中等"
 
 msgid "Merge"
 msgstr "合并"
@@ -5654,8 +5661,9 @@ msgstr "按 Shift+u 隐藏侧边栏，专心阅读。"
 msgid "Shopping"
 msgstr "购物"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "矮"
+msgstr "短"
 
 msgid "Show"
 msgstr "显示"
@@ -6284,6 +6292,7 @@ msgstr "标签："
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "执行操作：标记为已读、添加标签和备注后保存、订阅、分享"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "高"
 

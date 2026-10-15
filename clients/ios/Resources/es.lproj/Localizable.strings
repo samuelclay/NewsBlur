@@ -310,7 +310,7 @@
 "Export Preferences" = "Exportar preferencias";
 "Export trained stories from folders as RSS feeds" = "Exportar artículos entrenados de las carpetas como feeds RSS";
 "Extra Large" = "Extra grande";
-"Extra Short" = "Muy corto";
+"Extra Short [grid height]" = "Muy bajo";
 "Extra Small" = "Muy pequeño";
 "Extra Tall" = "Extra alto";
 "Extra small" = "Extrapequeño";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Sección de palabras clave %@";
 "Keywords" = "Palabras clave";
 "Language" = "Idioma";
-"Large" = "Grande";
 "Large Left" = "Grande a la izquierda";
 "Large Right" = "Grande a la derecha";
+"Large [text size]" = "Grande";
 "Last used" = "Usado por última vez";
 "Lavender Iris" = "Iris lavanda";
 "Layout" = "Diseño";
@@ -465,8 +465,8 @@
 "Login as…" = "Iniciar sesión como…";
 "Login: %@" = "Inicio de sesión: %@";
 "Logout" = "Cerrar sesión";
-"Long" = "Largo";
 "Long Reads" = "Lecturas largas";
+"Long [preview length]" = "Largo";
 "Long press" = "Mantener pulsado";
 "Long press on feeds and folders" = "Mantén pulsados los feeds y las carpetas";
 "Long press on story titles" = "Mantener pulsados los títulos de los artículos";
@@ -520,7 +520,10 @@
 "Match" = "Coincidencia";
 "Matches story" = "Coincide con el artículo";
 "Meadow Sage" = "Salvia de pradera";
-"Medium" = "Mediano";
+"Medium [grid height]" = "Medio";
+"Medium [preview length]" = "Medio";
+"Medium [text size]" = "Mediano";
+"Medium [theme]" = "Medio";
 "Model" = "Modelo";
 "Monday" = "Lunes";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Más noticias ocupan más espacio en disco, pero no afectan notablemente al rendimiento.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Compartir con comentario";
 "Shared" = "Compartido";
 "Shared Stories label" = "Etiqueta Artículos compartidos";
-"Short" = "Corto";
+"Short [grid height]" = "Bajo";
+"Short [preview length]" = "Breve";
 "Show" = "Mostrar";
 "Show Ask AI" = "Mostrar «Preguntar a la IA»";
 "Show Changes" = "Mostrar cambios";
@@ -840,9 +844,9 @@
 "Skip this step" = "Omitir este paso";
 "Slate Gray" = "Gris pizarra";
 "Slower" = "Más lento";
-"Small" = "Pequeño";
 "Small Left" = "Pequeño a la izquierda";
 "Small Right" = "Pequeño a la derecha";
+"Small [text size]" = "Pequeño";
 "Some feed icons couldn’t load." = "No se pudieron cargar algunos iconos de feeds.";
 "Sources" = "Fuentes";
 "Spacing" = "Espaciado";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Cambia a Todos o No leído.";
 "Syncing stories..." = "Sincronizando artículos...";
 "TEXT" = "TEXTO";
-"Tall" = "Alto";
+"Tall [grid height]" = "Alto";
 "Teal Mint" = "Menta verde azulado";
 "Terms of Use" = "Términos de uso";
 "Text" = "Texto";

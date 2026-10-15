@@ -91,3 +91,9 @@ class Test_Translation(unittest.TestCase):
         self.assertTrue(all(protected(item["source"])["%@"] == 1 for item in subscribers))
         singular = next(item for item in subscribers if item["quantity"] == "one")
         self.assertEqual(singular["source"], "%@ subscriber")
+
+    def test_ios_context_keeps_each_use_of_a_word_separate(self):
+        # "Medium" is a grid height, a text size and a theme; each needs its own translation.
+        contexts = {item["context"] for item in source_entries() if item["platform"] == "ios"}
+        for key in ("Medium [grid height]", "Medium [text size]", "Medium [theme]", "Short [preview length]"):
+            self.assertIn(key, contexts)

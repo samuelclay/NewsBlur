@@ -1486,8 +1486,9 @@ msgstr "บุ๊กมาร์กเล็ต"
 msgid "Bottom"
 msgstr "ด้านล่าง"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "สรุปย่อ"
+msgstr "ย่อ"
 
 msgid "Briefing"
 msgstr "สรุปข่าว"
@@ -2139,8 +2140,9 @@ msgstr "อธิบายสิ่งที่ต้องการเน้น
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "อธิบายสิ่งที่ต้องการค้นหา แล้ว AI จะวิเคราะห์ภาพของแต่ละเรื่องราวตามคำสั่งของคุณ"
 
+msgctxt "summary length"
 msgid "Detailed"
-msgstr "แบบละเอียด"
+msgstr "ละเอียด"
 
 msgid "Devices"
 msgstr "อุปกรณ์"
@@ -3839,6 +3841,11 @@ msgstr "ไว้ทีหลัง"
 msgid "Media"
 msgstr "สื่อ"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "ปานกลาง"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "ปานกลาง"
 
@@ -5706,6 +5713,7 @@ msgstr "กด Shift+u เพื่อซ่อนแถบด้านข้า
 msgid "Shopping"
 msgstr "ช้อปปิ้ง"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "สั้น"
 
@@ -6336,6 +6344,7 @@ msgstr "แท็ก:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "ดำเนินการ: ทำเครื่องหมายว่าอ่านแล้ว บันทึกพร้อมแท็กและบันทึกย่อ สมัครติดตาม หรือแชร์"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "สูง"
 

@@ -310,7 +310,7 @@
 "Export Preferences" = "تصدير التفضيلات";
 "Export trained stories from folders as RSS feeds" = "تصدير المقالات المدرّبة من المجلدات كخلاصات RSS";
 "Extra Large" = "كبير جدًا";
-"Extra Short" = "قصير جدًا";
+"Extra Short [grid height]" = "قصير جدًا";
 "Extra Small" = "صغير جدًا";
 "Extra Tall" = "طويل جدًا";
 "Extra small" = "صغير جدًا";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "قسم الكلمات المفتاحية %@";
 "Keywords" = "الكلمات المفتاحية";
 "Language" = "اللغة";
-"Large" = "كبير";
 "Large Left" = "كبير إلى اليسار";
 "Large Right" = "يمين كبير";
+"Large [text size]" = "كبير";
 "Last used" = "آخر استخدام";
 "Lavender Iris" = "السوسن الخزامي";
 "Layout" = "التخطيط";
@@ -465,8 +465,8 @@
 "Login as…" = "تسجيل الدخول باسم…";
 "Login: %@" = "تسجيل الدخول: %@";
 "Logout" = "تسجيل الخروج";
-"Long" = "طويل";
 "Long Reads" = "قراءات طويلة";
+"Long [preview length]" = "طويل";
 "Long press" = "اضغط مطولًا";
 "Long press on feeds and folders" = "اضغط مطولًا على الموجزات والمجلدات";
 "Long press on story titles" = "اضغط مطولًا على عناوين القصص";
@@ -520,7 +520,10 @@
 "Match" = "مطابقة";
 "Matches story" = "يطابق القصة";
 "Meadow Sage" = "مريمية المروج";
-"Medium" = "متوسط";
+"Medium [grid height]" = "متوسط";
+"Medium [preview length]" = "متوسط";
+"Medium [text size]" = "متوسط";
+"Medium [theme]" = "متوسط";
 "Model" = "النموذج";
 "Monday" = "الاثنين";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "تستهلك القصص الإضافية مساحة أكبر على القرص، لكنها لا تؤثر بشكل ملحوظ في الأداء.";
@@ -797,7 +800,8 @@
 "Share with comment" = "مشاركة مع تعليق";
 "Shared" = "تمت المشاركة";
 "Shared Stories label" = "تسمية القصص المشتركة";
-"Short" = "قصير";
+"Short [grid height]" = "قصير";
+"Short [preview length]" = "قصير";
 "Show" = "عرض";
 "Show Ask AI" = "إظهار Ask AI";
 "Show Changes" = "إظهار التغييرات";
@@ -840,9 +844,9 @@
 "Skip this step" = "تخطَّ هذه الخطوة";
 "Slate Gray" = "رمادي أردوازي";
 "Slower" = "أبطأ";
-"Small" = "صغير";
 "Small Left" = "يسار صغير";
 "Small Right" = "صغير يمين";
+"Small [text size]" = "صغير";
 "Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
 "Sources" = "المصادر";
 "Spacing" = "التباعد";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "التبديل إلى «الكل» أو «غير مقروءة».";
 "Syncing stories..." = "جارٍ مزامنة القصص...";
 "TEXT" = "نص";
-"Tall" = "طويل";
+"Tall [grid height]" = "طويل";
 "Teal Mint" = "نعناعي فيروزي";
 "Terms of Use" = "شروط الاستخدام";
 "Text" = "نص";

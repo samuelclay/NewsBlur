@@ -310,7 +310,7 @@
 "Export Preferences" = "환경설정 내보내기";
 "Export trained stories from folders as RSS feeds" = "폴더에서 학습된 스토리를 RSS 피드로 내보내기";
 "Extra Large" = "특대";
-"Extra Short" = "매우 짧게";
+"Extra Short [grid height]" = "매우 낮음";
 "Extra Small" = "아주 작게";
 "Extra Tall" = "매우 높음";
 "Extra small" = "아주 작음";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "키워드 섹션 %@";
 "Keywords" = "키워드";
 "Language" = "언어";
-"Large" = "크게";
 "Large Left" = "왼쪽 크게";
 "Large Right" = "오른쪽 크게";
+"Large [text size]" = "크게";
 "Last used" = "최근 사용";
 "Lavender Iris" = "라벤더 아이리스";
 "Layout" = "레이아웃";
@@ -465,8 +465,8 @@
 "Login as…" = "다음 계정으로 로그인…";
 "Login: %@" = "로그인: %@";
 "Logout" = "로그아웃";
-"Long" = "길게";
 "Long Reads" = "긴 글";
+"Long [preview length]" = "길게";
 "Long press" = "길게 누르기";
 "Long press on feeds and folders" = "피드와 폴더를 길게 누르기";
 "Long press on story titles" = "스토리 제목을 길게 누르기";
@@ -520,7 +520,10 @@
 "Match" = "일치";
 "Matches story" = "스토리와 일치합니다";
 "Meadow Sage" = "메도우 세이지";
-"Medium" = "중간";
+"Medium [grid height]" = "중간";
+"Medium [preview length]" = "보통";
+"Medium [text size]" = "중간";
+"Medium [theme]" = "보통";
 "Model" = "모델";
 "Monday" = "월요일";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "스토리를 더 많이 저장하면 디스크 공간을 더 사용하지만, 그 외에는 성능에 눈에 띄는 영향이 없습니다.";
@@ -797,7 +800,8 @@
 "Share with comment" = "댓글과 함께 공유";
 "Shared" = "공유됨";
 "Shared Stories label" = "공유한 스토리";
-"Short" = "짧게";
+"Short [grid height]" = "낮음";
+"Short [preview length]" = "짧게";
 "Show" = "표시";
 "Show Ask AI" = "AI에게 질문 표시";
 "Show Changes" = "변경 사항 표시";
@@ -840,9 +844,9 @@
 "Skip this step" = "이 단계 건너뛰기";
 "Slate Gray" = "슬레이트 그레이";
 "Slower" = "느리게";
-"Small" = "작게";
 "Small Left" = "왼쪽 작게";
 "Small Right" = "오른쪽 작게";
+"Small [text size]" = "작게";
 "Some feed icons couldn’t load." = "일부 피드 아이콘을 불러오지 못했습니다.";
 "Sources" = "출처";
 "Spacing" = "간격";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "전체 또는 읽지 않음으로 전환하세요.";
 "Syncing stories..." = "스토리 동기화 중...";
 "TEXT" = "텍스트";
-"Tall" = "높음";
+"Tall [grid height]" = "높음";
 "Teal Mint" = "청록 민트";
 "Terms of Use" = "이용 약관";
 "Text" = "텍스트";

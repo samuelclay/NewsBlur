@@ -1567,8 +1567,9 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "Inferior"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Breve"
+msgstr "Resumido"
 
 msgid "Briefing"
 msgstr "Resumo"
@@ -2228,6 +2229,7 @@ msgstr "Descreva no que focar ou o que ocultar"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Descreva o que procurar, e a IA analisará as imagens de cada artigo com base na sua instrução."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Detalhado"
 
@@ -3951,6 +3953,11 @@ msgstr "Talvez mais tarde"
 msgid "Media"
 msgstr "Mídia"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "Médio"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "Médio"
 
@@ -5862,8 +5869,9 @@ msgstr "Shift+u oculta a barra lateral para uma leitura sem distrações."
 msgid "Shopping"
 msgstr "Compras"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "Baixo"
+msgstr "Curto"
 
 msgid "Show"
 msgstr "Mostrar"
@@ -6501,6 +6509,7 @@ msgstr "Tags:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Ações: marcar como lido, salvar com tags e notas, assinar, compartilhar"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "Alto"
 

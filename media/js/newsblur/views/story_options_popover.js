@@ -116,13 +116,13 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         'XS'
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-s', role: "button" }, [
-                        gettext('Short')
+                        pgettext('card height', 'Short')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-m', role: "button" }, [
-                        gettext('Medium')
+                        pgettext('card height', 'Medium')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-l', role: "button" }, [
-                        gettext('Tall')
+                        pgettext('card height', 'Tall')
                     ]),
                     $.make('li', { className: 'NB-grid-height-option NB-options-grid-height-xl', role: "button" }, [
                         'XL'

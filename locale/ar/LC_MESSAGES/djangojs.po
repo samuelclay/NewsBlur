@@ -1858,6 +1858,7 @@ msgstr "أداة مرجعية"
 msgid "Bottom"
 msgstr "أسفل"
 
+msgctxt "summary length"
 msgid "Brief"
 msgstr "موجز"
 
@@ -2536,8 +2537,9 @@ msgstr "صف ما تريد التركيز عليه أو إخفاءه"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "صف ما تريد البحث عنه، وسيحلل الذكاء الاصطناعي صور كل مقالة وفقًا لوصفك."
 
+msgctxt "summary length"
 msgid "Detailed"
-msgstr "مفصّل"
+msgstr "مفصل"
 
 msgid "Devices"
 msgstr "الأجهزة"
@@ -4276,6 +4278,11 @@ msgstr "ربما لاحقًا"
 msgid "Media"
 msgstr "الوسائط"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "متوسط"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "متوسط"
 
@@ -6231,6 +6238,7 @@ msgstr "يخفي Shift+u الشريط الجانبي لتتمكن من القر�
 msgid "Shopping"
 msgstr "التسوق"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "قصير"
 
@@ -6886,6 +6894,7 @@ msgstr "الوسوم:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "اتخذ إجراءً: علّم كمقروء، أو احفظ مع الوسوم والملاحظات، أو اشترك، أو شارك"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "طويل"
 

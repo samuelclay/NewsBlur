@@ -310,7 +310,7 @@
 "Export Preferences" = "导出偏好设置";
 "Export trained stories from folders as RSS feeds" = "将文件夹中已训练的文章导出为 RSS 订阅源";
 "Extra Large" = "超大";
-"Extra Short" = "特短";
+"Extra Short [grid height]" = "特矮";
 "Extra Small" = "超小";
 "Extra Tall" = "特高";
 "Extra small" = "超小";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "关键词部分 %@";
 "Keywords" = "关键词";
 "Language" = "语言";
-"Large" = "大";
 "Large Left" = "左侧大图";
 "Large Right" = "右侧大图";
+"Large [text size]" = "大";
 "Last used" = "上次使用";
 "Lavender Iris" = "薰衣草鸢尾";
 "Layout" = "布局";
@@ -465,8 +465,8 @@
 "Login as…" = "以……身份登录";
 "Login: %@" = "登录：%@";
 "Logout" = "退出登录";
-"Long" = "长";
 "Long Reads" = "长篇阅读";
+"Long [preview length]" = "长";
 "Long press" = "长按";
 "Long press on feeds and folders" = "长按订阅源和文件夹";
 "Long press on story titles" = "长按文章标题";
@@ -520,7 +520,10 @@
 "Match" = "匹配";
 "Matches story" = "文章中有匹配项";
 "Meadow Sage" = "鼠尾草绿";
-"Medium" = "中";
+"Medium [grid height]" = "中";
+"Medium [preview length]" = "中";
+"Medium [text size]" = "中";
+"Medium [theme]" = "中";
 "Model" = "模型";
 "Monday" = "星期一";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "保存更多文章会占用更多磁盘空间，但除此之外不会对性能产生明显影响。";
@@ -797,7 +800,8 @@
 "Share with comment" = "分享并附上评论";
 "Shared" = "已分享";
 "Shared Stories label" = "分享的文章";
-"Short" = "短";
+"Short [grid height]" = "短";
+"Short [preview length]" = "短";
 "Show" = "显示";
 "Show Ask AI" = "显示“询问 AI”";
 "Show Changes" = "显示更改";
@@ -840,9 +844,9 @@
 "Skip this step" = "跳过此步骤";
 "Slate Gray" = "石板灰";
 "Slower" = "较慢";
-"Small" = "小";
 "Small Left" = "左侧小图";
 "Small Right" = "右侧小图";
+"Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分订阅源图标无法加载。";
 "Sources" = "来源";
 "Spacing" = "间距";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "切换到“全部”或“未读”。";
 "Syncing stories..." = "正在同步文章…";
 "TEXT" = "文本";
-"Tall" = "高";
+"Tall [grid height]" = "高";
 "Teal Mint" = "青绿色薄荷";
 "Terms of Use" = "使用条款";
 "Text" = "文本";

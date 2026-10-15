@@ -310,7 +310,7 @@
 "Export Preferences" = "ייצוא העדפות";
 "Export trained stories from folders as RSS feeds" = "ייצוא כתבות שעברו אימון מתיקיות כפידים של RSS";
 "Extra Large" = "גדול במיוחד";
-"Extra Short" = "קצר במיוחד";
+"Extra Short [grid height]" = "נמוך במיוחד";
 "Extra Small" = "קטן במיוחד";
 "Extra Tall" = "גבוה במיוחד";
 "Extra small" = "קטן במיוחד";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "מקטע מילות מפתח %@";
 "Keywords" = "מילות מפתח";
 "Language" = "שפה";
-"Large" = "גדול";
 "Large Left" = "גדול משמאל";
 "Large Right" = "גדול, ימינה";
+"Large [text size]" = "גדול";
 "Last used" = "בשימוש לאחרונה";
 "Lavender Iris" = "איריס לבנדר";
 "Layout" = "פריסה";
@@ -465,8 +465,8 @@
 "Login as…" = "התחברות בתור…";
 "Login: %@" = "התחברות: %@";
 "Logout" = "התנתקות";
-"Long" = "ארוך";
 "Long Reads" = "קריאות ארוכות";
+"Long [preview length]" = "ארוך";
 "Long press" = "לחיצה ממושכת";
 "Long press on feeds and folders" = "לחיצה ממושכת על פידים ותיקיות";
 "Long press on story titles" = "לחיצה ממושכת על כותרות כתבות";
@@ -520,7 +520,10 @@
 "Match" = "התאמה";
 "Matches story" = "תואם לסיפור";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "בינוני";
+"Medium [grid height]" = "בינוני";
+"Medium [preview length]" = "בינוני";
+"Medium [text size]" = "בינוני";
+"Medium [theme]" = "בינוני";
 "Model" = "דגם";
 "Monday" = "יום שני";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "יותר כתבות תופסות יותר מקום בדיסק, אך מלבד זאת אין להן השפעה מורגשת על הביצועים.";
@@ -797,7 +800,8 @@
 "Share with comment" = "שיתוף עם תגובה";
 "Shared" = "משותף";
 "Shared Stories label" = "תווית כתבות משותפות";
-"Short" = "קצר";
+"Short [grid height]" = "נמוך";
+"Short [preview length]" = "קצר";
 "Show" = "הצגה";
 "Show Ask AI" = "הצגת Ask AI";
 "Show Changes" = "הצג שינויים";
@@ -840,9 +844,9 @@
 "Skip this step" = "דלג על השלב הזה";
 "Slate Gray" = "אפור צפחה";
 "Slower" = "איטי יותר";
-"Small" = "קטן";
 "Small Left" = "שמאל קטן";
 "Small Right" = "ימני קטן";
+"Small [text size]" = "קטן";
 "Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
 "Sources" = "מקורות";
 "Spacing" = "מרווחים";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "עברו אל הכול או אל שלא נקראו.";
 "Syncing stories..." = "מסנכרן כתבות...";
 "TEXT" = "טקסט";
-"Tall" = "גבוה";
+"Tall [grid height]" = "גבוה";
 "Teal Mint" = "מנטה טורקיז";
 "Terms of Use" = "תנאי השימוש";
 "Text" = "טקסט";

@@ -310,7 +310,7 @@
 "Export Preferences" = "Экспорт настроек";
 "Export trained stories from folders as RSS feeds" = "Экспортируйте обученные статьи из папок в виде RSS-лент";
 "Extra Large" = "Очень крупный";
-"Extra Short" = "Очень короткий";
+"Extra Short [grid height]" = "Очень низкая";
 "Extra Small" = "Очень маленький";
 "Extra Tall" = "Очень высокий";
 "Extra small" = "Очень маленький";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Раздел ключевого слова %@";
 "Keywords" = "Ключевые слова";
 "Language" = "Язык";
-"Large" = "Крупный";
 "Large Left" = "Большой слева";
 "Large Right" = "Большой справа";
+"Large [text size]" = "Крупный";
 "Last used" = "Последнее использование";
 "Lavender Iris" = "Лавандовый ирис";
 "Layout" = "Макет";
@@ -465,8 +465,8 @@
 "Login as…" = "Войти как…";
 "Login: %@" = "Вход: %@";
 "Logout" = "Выйти";
-"Long" = "Длинный";
 "Long Reads" = "Длинные статьи";
+"Long [preview length]" = "Длинный";
 "Long press" = "Нажмите и удерживайте";
 "Long press on feeds and folders" = "Нажмите и удерживайте ленты и папки";
 "Long press on story titles" = "Нажмите и удерживайте заголовки статей";
@@ -520,7 +520,10 @@
 "Match" = "Совпадение";
 "Matches story" = "Совпадает со статьёй";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "Средний";
+"Medium [grid height]" = "Средняя";
+"Medium [preview length]" = "Средний";
+"Medium [text size]" = "Средний";
+"Medium [theme]" = "Средняя";
 "Model" = "Модель";
 "Monday" = "Понедельник";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Чем больше историй, тем больше места на диске, но заметно на производительности это не сказывается.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Поделиться с комментарием";
 "Shared" = "Общий доступ";
 "Shared Stories label" = "Метка «Общие статьи»";
-"Short" = "Короткий";
+"Short [grid height]" = "Низкая";
+"Short [preview length]" = "Краткий";
 "Show" = "Показать";
 "Show Ask AI" = "Показывать «Спросить AI»";
 "Show Changes" = "Показать изменения";
@@ -840,9 +844,9 @@
 "Skip this step" = "Пропустить этот шаг";
 "Slate Gray" = "Сланцево-серый";
 "Slower" = "Медленнее";
-"Small" = "Маленький";
 "Small Left" = "Маленькая слева";
 "Small Right" = "Маленький справа";
+"Small [text size]" = "Мелкий";
 "Some feed icons couldn’t load." = "Не удалось загрузить некоторые значки лент.";
 "Sources" = "Источники";
 "Spacing" = "Интервалы";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Переключитесь на режим «Все» или «Непрочитанные».";
 "Syncing stories..." = "Синхронизация статей...";
 "TEXT" = "ТЕКСТ";
-"Tall" = "Высокий";
+"Tall [grid height]" = "Высокий";
 "Teal Mint" = "Бирюзовая мята";
 "Terms of Use" = "Условия использования";
 "Text" = "Текст";

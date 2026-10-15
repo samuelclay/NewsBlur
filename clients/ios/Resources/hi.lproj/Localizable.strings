@@ -310,7 +310,7 @@
 "Export Preferences" = "प्राथमिकताएँ एक्सपोर्ट करें";
 "Export trained stories from folders as RSS feeds" = "फ़ोल्डरों से प्रशिक्षित कहानियों को RSS फ़ीड के रूप में निर्यात करें";
 "Extra Large" = "अतिरिक्त बड़ा";
-"Extra Short" = "बहुत छोटा";
+"Extra Short [grid height]" = "बहुत छोटा";
 "Extra Small" = "अतिरिक्त छोटा";
 "Extra Tall" = "अतिरिक्त लंबा";
 "Extra small" = "अत्यंत छोटा";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "कीवर्ड अनुभाग %@";
 "Keywords" = "कीवर्ड";
 "Language" = "भाषा";
-"Large" = "बड़ा";
 "Large Left" = "बड़ा बायाँ";
 "Large Right" = "बड़ा दायाँ";
+"Large [text size]" = "बड़ा";
 "Last used" = "आख़िरी बार इस्तेमाल किया गया";
 "Lavender Iris" = "लैवेंडर आइरिस";
 "Layout" = "लेआउट";
@@ -465,8 +465,8 @@
 "Login as…" = "इस रूप में लॉग इन करें…";
 "Login: %@" = "लॉगिन: %@";
 "Logout" = "लॉग आउट";
-"Long" = "लंबा";
 "Long Reads" = "लंबे लेख";
+"Long [preview length]" = "लंबा";
 "Long press" = "देर तक दबाएँ";
 "Long press on feeds and folders" = "फ़ीड और फ़ोल्डर को देर तक दबाएँ";
 "Long press on story titles" = "लेखों के शीर्षक को देर तक दबाएँ";
@@ -520,7 +520,10 @@
 "Match" = "मिलान";
 "Matches story" = "कहानी से मेल खाता है";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "मध्यम";
+"Medium [grid height]" = "मध्यम";
+"Medium [preview length]" = "मध्यम";
+"Medium [text size]" = "मध्यम";
+"Medium [theme]" = "मध्यम";
 "Model" = "मॉडल";
 "Monday" = "सोमवार";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "ज़्यादा स्टोरीज़ में डिस्क की जगह ज़्यादा लगती है, लेकिन इसके अलावा प्रदर्शन पर कोई ध्यान देने योग्य असर नहीं पड़ता।";
@@ -797,7 +800,8 @@
 "Share with comment" = "टिप्पणी के साथ साझा करें";
 "Shared" = "साझा किया गया";
 "Shared Stories label" = "साझा की गई कहानियों का लेबल";
-"Short" = "छोटा";
+"Short [grid height]" = "छोटा";
+"Short [preview length]" = "छोटा";
 "Show" = "दिखाएँ";
 "Show Ask AI" = "Ask AI दिखाएँ";
 "Show Changes" = "बदलाव दिखाएँ";
@@ -840,9 +844,9 @@
 "Skip this step" = "यह चरण छोड़ें";
 "Slate Gray" = "स्लेट ग्रे";
 "Slower" = "धीमा";
-"Small" = "छोटा";
 "Small Left" = "छोटा बायाँ";
 "Small Right" = "छोटा दायाँ";
+"Small [text size]" = "छोटा";
 "Some feed icons couldn’t load." = "कुछ फ़ीड आइकन लोड नहीं हो सके।";
 "Sources" = "स्रोत";
 "Spacing" = "अंतराल";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "सभी या अपठित पर जाएँ।";
 "Syncing stories..." = "कहानियाँ सिंक हो रही हैं...";
 "TEXT" = "TEXT";
-"Tall" = "लंबा";
+"Tall [grid height]" = "लंबा";
 "Teal Mint" = "टील मिंट";
 "Terms of Use" = "उपयोग की शर्तें";
 "Text" = "पाठ";

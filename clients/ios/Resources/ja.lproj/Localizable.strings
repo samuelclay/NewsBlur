@@ -310,7 +310,7 @@
 "Export Preferences" = "設定をエクスポート";
 "Export trained stories from folders as RSS feeds" = "フォルダー内の学習済み記事をRSSフィードとしてエクスポート";
 "Extra Large" = "特大";
-"Extra Short" = "非常に短い";
+"Extra Short [grid height]" = "極低";
 "Extra Small" = "極小";
 "Extra Tall" = "特大";
 "Extra small" = "極小";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "キーワードセクション %@";
 "Keywords" = "キーワード";
 "Language" = "言語";
-"Large" = "大";
 "Large Left" = "左・大";
 "Large Right" = "右・大";
+"Large [text size]" = "大";
 "Last used" = "前回使用";
 "Lavender Iris" = "ラベンダーアイリス";
 "Layout" = "レイアウト";
@@ -465,8 +465,8 @@
 "Login as…" = "次のユーザーとしてログイン…";
 "Login: %@" = "ログイン: %@";
 "Logout" = "ログアウト";
-"Long" = "長い";
 "Long Reads" = "長文記事";
+"Long [preview length]" = "長";
 "Long press" = "長押し";
 "Long press on feeds and folders" = "フィードやフォルダーを長押し";
 "Long press on story titles" = "記事のタイトルを長押し";
@@ -520,7 +520,10 @@
 "Match" = "一致";
 "Matches story" = "記事に一致";
 "Meadow Sage" = "メドウセージ";
-"Medium" = "中";
+"Medium [grid height]" = "中";
+"Medium [preview length]" = "中";
+"Medium [text size]" = "中";
+"Medium [theme]" = "中";
 "Model" = "モデル";
 "Monday" = "月曜日";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "記事を増やすとディスク容量を多く使いますが、それ以外にパフォーマンスへの目立った影響はありません。";
@@ -797,7 +800,8 @@
 "Share with comment" = "コメントを添えて共有";
 "Shared" = "共有";
 "Shared Stories label" = "共有記事ラベル";
-"Short" = "短い";
+"Short [grid height]" = "低";
+"Short [preview length]" = "短";
 "Show" = "表示";
 "Show Ask AI" = "「AIに質問」を表示";
 "Show Changes" = "変更を表示";
@@ -840,9 +844,9 @@
 "Skip this step" = "この手順をスキップ";
 "Slate Gray" = "スレートグレー";
 "Slower" = "遅く";
-"Small" = "小";
 "Small Left" = "左・小";
 "Small Right" = "右・小";
+"Small [text size]" = "小";
 "Some feed icons couldn’t load." = "一部のフィードアイコンを読み込めませんでした。";
 "Sources" = "ソース";
 "Spacing" = "間隔";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "「すべて」または「未読」に切り替えてください。";
 "Syncing stories..." = "記事を同期中...";
 "TEXT" = "テキスト";
-"Tall" = "縦長";
+"Tall [grid height]" = "高";
 "Teal Mint" = "ティールミント";
 "Terms of Use" = "利用規約";
 "Text" = "テキスト";

@@ -1645,8 +1645,9 @@ msgstr "Букмарклет"
 msgid "Bottom"
 msgstr "Снизу"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Кратко"
+msgstr "Краткая"
 
 msgid "Briefing"
 msgstr "Обзор"
@@ -2315,8 +2316,9 @@ msgstr "Укажите, на чём сосредоточиться или что
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Опишите, что нужно найти, и ИИ проанализирует изображения в каждой статье с учетом вашего запроса."
 
+msgctxt "summary length"
 msgid "Detailed"
-msgstr "Подробно"
+msgstr "Подробная"
 
 msgid "Devices"
 msgstr "Устройства"
@@ -4051,8 +4053,13 @@ msgstr "Может быть, позже"
 msgid "Media"
 msgstr "Медиа"
 
+msgctxt "card height"
 msgid "Medium"
-msgstr "Средний"
+msgstr "Средняя"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "Средняя"
 
 msgid "Merge"
 msgstr "Объединить"
@@ -5984,8 +5991,9 @@ msgstr "Нажмите Shift+u, чтобы скрыть боковую пане�
 msgid "Shopping"
 msgstr "Покупки"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "Кратко"
+msgstr "Низкая"
 
 msgid "Show"
 msgstr "Показать"
@@ -6626,8 +6634,9 @@ msgstr "Теги:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Выполняйте действия: отмечайте прочитанным, сохраняйте с тегами и заметками, подписывайтесь и делитесь"
 
+msgctxt "card height"
 msgid "Tall"
-msgstr "Высокий"
+msgstr "Высокая"
 
 msgid "Target category name"
 msgstr "Название целевой категории"

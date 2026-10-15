@@ -1563,8 +1563,9 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "Onder"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Kort"
+msgstr "Beknopt"
 
 msgid "Briefing"
 msgstr "Briefing"
@@ -2228,6 +2229,7 @@ msgstr "Beschrijf wat je wilt uitlichten of verbergen"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen van elk artikel op basis van je prompt."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Gedetailleerd"
 
@@ -3944,6 +3946,11 @@ msgstr "Misschien later"
 msgid "Media"
 msgstr "Media"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "Gemiddeld"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "Gemiddeld"
 
@@ -5855,8 +5862,9 @@ msgstr "Met Shift+u verberg je de zijbalk voor lezen zonder afleiding."
 msgid "Shopping"
 msgstr "Winkelen"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "Laag"
+msgstr "Kort"
 
 msgid "Show"
 msgstr "Weergeven"
@@ -6494,6 +6502,7 @@ msgstr "Tags:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Onderneem actie: markeer als gelezen, sla op met tags en notities, abonneer je of deel"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "Hoog"
 

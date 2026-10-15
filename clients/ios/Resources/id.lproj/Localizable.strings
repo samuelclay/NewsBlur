@@ -310,7 +310,7 @@
 "Export Preferences" = "Ekspor Preferensi";
 "Export trained stories from folders as RSS feeds" = "Ekspor artikel terlatih dari folder sebagai feed RSS";
 "Extra Large" = "Ekstra besar";
-"Extra Short" = "Ekstra Pendek";
+"Extra Short [grid height]" = "Sangat pendek";
 "Extra Small" = "Ekstra Kecil";
 "Extra Tall" = "Sangat Tinggi";
 "Extra small" = "Ekstra kecil";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Bagian kata kunci %@";
 "Keywords" = "Kata kunci";
 "Language" = "Bahasa";
-"Large" = "Besar";
 "Large Left" = "Besar Kiri";
 "Large Right" = "Besar Kanan";
+"Large [text size]" = "Besar";
 "Last used" = "Terakhir digunakan";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Tata letak";
@@ -465,8 +465,8 @@
 "Login as…" = "Masuk sebagai…";
 "Login: %@" = "Login: %@";
 "Logout" = "Keluar";
-"Long" = "Panjang";
 "Long Reads" = "Bacaan Panjang";
+"Long [preview length]" = "Panjang";
 "Long press" = "Tekan lama";
 "Long press on feeds and folders" = "Tekan lama pada feed dan folder";
 "Long press on story titles" = "Tekan lama judul artikel";
@@ -520,7 +520,10 @@
 "Match" = "Cocokkan";
 "Matches story" = "Cocok dengan artikel";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "Medium";
+"Medium [grid height]" = "Sedang";
+"Medium [preview length]" = "Sedang";
+"Medium [text size]" = "Sedang";
+"Medium [theme]" = "Sedang";
 "Model" = "Model";
 "Monday" = "Senin";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Semakin banyak cerita, semakin besar ruang disk yang digunakan, tetapi selain itu tidak ada dampak nyata pada kinerja.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Bagikan dengan komentar";
 "Shared" = "Dibagikan";
 "Shared Stories label" = "Label Berita yang Dibagikan";
-"Short" = "Pendek";
+"Short [grid height]" = "Pendek";
+"Short [preview length]" = "Pendek";
 "Show" = "Tampilkan";
 "Show Ask AI" = "Tampilkan Ask AI";
 "Show Changes" = "Tampilkan Perubahan";
@@ -840,9 +844,9 @@
 "Skip this step" = "Lewati langkah ini";
 "Slate Gray" = "Abu-abu Slate";
 "Slower" = "Lebih lambat";
-"Small" = "Kecil";
 "Small Left" = "Kiri Kecil";
 "Small Right" = "Kanan Kecil";
+"Small [text size]" = "Kecil";
 "Some feed icons couldn’t load." = "Beberapa ikon feed tidak dapat dimuat.";
 "Sources" = "Sumber";
 "Spacing" = "Jarak";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Beralih ke Semua atau Belum dibaca.";
 "Syncing stories..." = "Menyinkronkan artikel...";
 "TEXT" = "TEKS";
-"Tall" = "Tinggi";
+"Tall [grid height]" = "Tinggi";
 "Teal Mint" = "Mint Teal";
 "Terms of Use" = "Ketentuan Penggunaan";
 "Text" = "Teks";

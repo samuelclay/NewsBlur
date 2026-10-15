@@ -1561,6 +1561,7 @@ msgstr "बुकमार्कलेट"
 msgid "Bottom"
 msgstr "नीचे"
 
+msgctxt "summary length"
 msgid "Brief"
 msgstr "संक्षिप्त"
 
@@ -2223,6 +2224,7 @@ msgstr "बताएँ कि किस पर ध्यान देना ह
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "बताएँ कि क्या देखना है और AI आपके निर्देश के आधार पर हर कहानी की छवियों का विश्लेषण करेगा।"
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "विस्तृत"
 
@@ -3939,6 +3941,11 @@ msgstr "शायद बाद में"
 msgid "Media"
 msgstr "मीडिया"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "मध्यम"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "मध्यम"
 
@@ -5840,6 +5847,7 @@ msgstr "बिना ध्यान भटकाए पढ़ने के ल�
 msgid "Shopping"
 msgstr "खरीदारी"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "छोटा"
 
@@ -6477,6 +6485,7 @@ msgstr "टैग:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "कार्रवाई करें: पढ़ा हुआ चिह्नित करें, टैग और नोट्स के साथ सहेजें, सदस्यता लें, साझा करें"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "लंबा"
 

@@ -310,7 +310,7 @@
 "Export Preferences" = "Експортувати налаштування";
 "Export trained stories from folders as RSS feeds" = "Експортувати навчені історії з папок як RSS-стрічки";
 "Extra Large" = "Дуже великий";
-"Extra Short" = "Дуже короткий";
+"Extra Short [grid height]" = "Дуже низький";
 "Extra Small" = "Дуже малий";
 "Extra Tall" = "Дуже високий";
 "Extra small" = "Дуже малий";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Розділ ключового слова %@";
 "Keywords" = "Ключові слова";
 "Language" = "Мова";
-"Large" = "Великий";
 "Large Left" = "Великий ліворуч";
 "Large Right" = "Великий праворуч";
+"Large [text size]" = "Великий";
 "Last used" = "Використано востаннє";
 "Lavender Iris" = "Лавандовий ірис";
 "Layout" = "Макет";
@@ -465,8 +465,8 @@
 "Login as…" = "Увійти як…";
 "Login: %@" = "Вхід: %@";
 "Logout" = "Вийти";
-"Long" = "Довгий";
 "Long Reads" = "Довгі статті";
+"Long [preview length]" = "Довгий";
 "Long press" = "Натисніть і утримуйте";
 "Long press on feeds and folders" = "Натисніть і утримуйте стрічки та папки";
 "Long press on story titles" = "Натисніть і утримуйте заголовок статті";
@@ -520,7 +520,10 @@
 "Match" = "Збіг";
 "Matches story" = "Відповідає історії";
 "Meadow Sage" = "Лугова шавлія";
-"Medium" = "Середній";
+"Medium [grid height]" = "Середній";
+"Medium [preview length]" = "Середній";
+"Medium [text size]" = "Середній";
+"Medium [theme]" = "Середня";
 "Model" = "Модель";
 "Monday" = "Понеділок";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість історій займає більше місця на диску, але майже не впливає на продуктивність.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Поділитися з коментарем";
 "Shared" = "Спільне";
 "Shared Stories label" = "Мітка «Поширені статті»";
-"Short" = "Короткий";
+"Short [grid height]" = "Низький";
+"Short [preview length]" = "Короткий";
 "Show" = "Показати";
 "Show Ask AI" = "Показати «Запитати ШІ»";
 "Show Changes" = "Показати зміни";
@@ -840,9 +844,9 @@
 "Skip this step" = "Пропустити цей крок";
 "Slate Gray" = "Сланцево-сірий";
 "Slower" = "Повільніше";
-"Small" = "Малий";
 "Small Left" = "Маленький ліворуч";
 "Small Right" = "Маленький праворуч";
+"Small [text size]" = "Малий";
 "Some feed icons couldn’t load." = "Не вдалося завантажити деякі значки стрічок.";
 "Sources" = "Джерела";
 "Spacing" = "Інтервали";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Перемкніться на режим «Усі» або «Непрочитані».";
 "Syncing stories..." = "Синхронізація статей...";
 "TEXT" = "ТЕКСТ";
-"Tall" = "Високий";
+"Tall [grid height]" = "Високий";
 "Teal Mint" = "Бірюзова м'ята";
 "Terms of Use" = "Умови використання";
 "Text" = "Текст";

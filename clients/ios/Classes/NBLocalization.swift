@@ -41,6 +41,13 @@ import UIKit
     static func text(_ source: String) -> String {
         bundle.localizedString(forKey: source, value: source, table: nil)
     }
+    // NBLocalization.swift keeps words like "Medium" apart when each use needs its own translation (a grid
+    // height, a text size, a theme); the catalog key carries the context and English falls back to the word.
+    static func text(_ source: String, context: String) -> String {
+        let key = "\(source) [\(context)]"
+        let value = bundle.localizedString(forKey: key, value: nil, table: nil)
+        return value == key ? source : value
+    }
     static func text(_ source: String, language code: String) -> String {
         bundle(for: code).localizedString(forKey: source, value: source, table: nil)
     }

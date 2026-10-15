@@ -158,10 +158,18 @@ def common_entries():
     pattern = re.compile(
         r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?|discoverabilityTitle:@)("(?:\\.|[^"\\])*")'
     )
+    # manage.py stores NBLocalization.text("Medium", context: "theme") under the key "Medium [theme]".
+    contextual = re.compile(
+        r'NBLocalization\.text\(\s*("(?:\\.|[^"\\])*")\s*,\s*context:\s*("(?:\\.|[^"\\])*")\s*\)'
+    )
+    ios_contextual = set()
     for path in sorted((ROOT / "clients/ios/Classes").rglob("*")):
         if path.suffix not in (".swift", ".m") or "TestHarness" in path.name:
             continue
-        for match in pattern.finditer(path.read_text()):
+        content = path.read_text()
+        for match in contextual.finditer(content):
+            ios_contextual.add((json.loads(match[1]), json.loads(match[2])))
+        for match in pattern.finditer(contextual.sub("", content)):
             ios_strings.add(json.loads(match[1]))
     interfaces = list((ROOT / "clients/ios/Classes").glob("*.xib")) + list(IOS.glob("*.storyboard"))
     for path in interfaces:
@@ -170,6 +178,8 @@ def common_entries():
                 ios_strings.add(node.attrib["value"])
     for value in sorted(ios_strings):
         entries.append(entry("ios", value, value))
+    for value, context in sorted(ios_contextual):
+        entries.append(entry("ios", f"{value} [{context}]", value))
     # Django's template compiler preserves gettext contexts and plural messages.
     from django.conf import settings
 

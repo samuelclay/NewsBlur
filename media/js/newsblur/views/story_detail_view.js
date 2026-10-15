@@ -2173,9 +2173,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 isGroup: true,
                 icon: 'paragraph',
                 children: [
-                    { id: 'sentence', text: gettext('Brief'), detail: gettext('One sentence'), icon: 'content-preview-s', level: 'low' },
-                    { id: 'bullets', text: gettext('Medium'), detail: gettext('Bullet points'), icon: 'content-preview-m', level: 'medium' },
-                    { id: 'paragraph', text: gettext('Detailed'), detail: gettext('Full paragraph'), icon: 'content-preview-l', level: 'high' }
+                    { id: 'sentence', text: pgettext('summary length', 'Brief'), detail: gettext('One sentence'), icon: 'content-preview-s', level: 'low' },
+                    { id: 'bullets', text: pgettext('summary length', 'Medium'), detail: gettext('Bullet points'), icon: 'content-preview-m', level: 'medium' },
+                    { id: 'paragraph', text: pgettext('summary length', 'Detailed'), detail: gettext('Full paragraph'), icon: 'content-preview-l', level: 'high' }
                 ]
             },
             { id: 'context', text: this.get_ask_ai_prompt_text('context', gettext("What's the context and background?")), icon: 'world' },
