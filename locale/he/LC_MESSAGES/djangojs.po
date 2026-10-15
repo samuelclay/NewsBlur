@@ -21,7 +21,7 @@ msgstr ""
 #, python-format
 msgid " (%(count)s domain)"
 msgid_plural " (%(count)s domains)"
-msgstr[0] " (דומיין %(count)s)"
+msgstr[0] " (%(count)s דומיין)"
 msgstr[1] " (%(count)s דומיינים)"
 
 msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
@@ -125,10 +125,10 @@ msgid " — Whole word \"%(word)s\" only"
 msgstr " — המילה השלמה \"%(word)s\" בלבד"
 
 msgid "$29/month"
-msgstr "29$ לחודש"
+msgstr "$29 לחודש"
 
 msgid "$36/year"
-msgstr "36 דולר לשנה"
+msgstr "$36 לשנה"
 
 msgid "$99/year"
 msgstr "$99 לשנה"
@@ -149,7 +149,7 @@ msgstr[1] "%(badge)s למשך עד %(count)s ימים"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s נושאים"
+msgstr "נושאים בקטגוריה %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -174,7 +174,7 @@ msgstr[1] "%(count)s ערוצים"
 #, python-format
 msgid "%(count)s classifier has been deleted."
 msgid_plural "%(count)s classifiers have been deleted."
-msgstr[0] "מסווג אחד (%(count)s) נמחק."
+msgstr[0] "%(count)s מסווג נמחק."
 msgstr[1] "%(count)s מסווגים נמחקו."
 
 #, python-format
@@ -199,7 +199,7 @@ msgstr[1] "%(count)s מסנני תוכן"
 msgid "%(count)s curated story"
 msgid_plural "%(count)s curated stories"
 msgstr[0] "%(count)s כתבה שנבחרה"
-msgstr[1] "%(count)s סיפורים שנבחרו בקפידה"
+msgstr[1] "%(count)s כתבות שנבחרו בקפידה"
 
 #, python-format
 msgid "%(count)s day"
@@ -217,7 +217,7 @@ msgstr[1] "לפני %(count)s ימים"
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s סימון לא אהבתי"
-msgstr[1] "%(count)s לא אוהבים"
+msgstr[1] "%(count)s סימוני לא אהבתי"
 
 #, python-format
 msgid "%(count)s episode"
@@ -294,7 +294,7 @@ msgstr[1] "%(count)s עלוני חדשות"
 #, python-format
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
-msgstr[0] "%(count)s מתוך %(limit)s אתר"
+msgstr[0] "%(count)s אתר מתוך %(limit)s"
 msgstr[1] "%(count)s מתוך %(limit)s אתרים"
 
 #, python-format
@@ -366,7 +366,7 @@ msgstr[1] "%(count)s אתרים"
 #, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
-msgstr[0] "אתר %(count)s זמין"
+msgstr[0] "%(count)s אתר זמין"
 msgstr[1] "%(count)s אתרים זמינים"
 
 #, python-format
@@ -402,13 +402,13 @@ msgstr[1] "%(count)s כתבות ביום"
 #, python-format
 msgid "%(count)s story per month"
 msgid_plural "%(count)s stories per month"
-msgstr[0] "%(count)s סיפור בחודש"
+msgstr[0] "%(count)s כתבה בחודש"
 msgstr[1] "%(count)s כתבות בחודש"
 
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "כתבה אחת (%(count)s) תימחק"
+msgstr[0] "%(count)s כתבה תימחק"
 msgstr[1] "%(count)s כתבות יימחקו"
 
 #, python-format
@@ -420,13 +420,13 @@ msgstr[1] "%(count)s כתבות לחודש"
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
-msgstr[0] "%(count)s סיפור/חודש"
+msgstr[0] "%(count)s כתבה בחודש"
 msgstr[1] "%(count)s כתבות בחודש"
 
 #, python-format
 msgid "%(count)s subreddit"
 msgid_plural "%(count)s subreddits"
-msgstr[0] "%(count)s סאברדיט"
+msgstr[0] "%(count)s תת־פורום ב-Reddit"
 msgstr[1] "%(count)s תתי־פורומים ב-Reddit"
 
 #, python-format
@@ -466,13 +466,13 @@ msgstr[1] "%(count)s שנים"
 #, python-format
 msgid "%(count)sd ago"
 msgid_plural "%(count)sd ago"
-msgstr[0] "לפני %(count)s ימים"
+msgstr[0] "לפני %(count)s יום"
 msgstr[1] "לפני %(count)s ימים"
 
 #, python-format
 msgid "%(count)sh ago"
 msgid_plural "%(count)sh ago"
-msgstr[0] "לפני %(count)s שעות"
+msgstr[0] "לפני %(count)s שעה"
 msgstr[1] "לפני %(count)s שעות"
 
 #, python-format
@@ -490,7 +490,7 @@ msgstr[1] "לפני %(count)s חודשים"
 #, python-format
 msgid "%(count)sw ago"
 msgid_plural "%(count)sw ago"
-msgstr[0] "לפני %(count)s שבועות"
+msgstr[0] "לפני %(count)s שבוע"
 msgstr[1] "לפני %(count)s שבועות"
 
 #, python-format
@@ -507,7 +507,7 @@ msgstr "ההתראות של %(feed_title)s הוגדרו"
 
 #, python-format
 msgid "%(icon)s are stories you don't like"
-msgstr "%(icon)s הן כתבות שאינך אוהב/ת"
+msgstr "%(icon)s הן כתבות שלא אהבת"
 
 #, python-format
 msgid "%(icon)s are stories you have not yet rated"
@@ -527,7 +527,7 @@ msgstr[1] "אינדקסנו %(indexed)s מתוך %(count)s אתרים"
 msgid "%(indexed)s of %(count)s site indexed. Index remaining feeds to get better recommendations."
 msgid_plural "%(indexed)s of %(count)s sites indexed. Index remaining feeds to get better recommendations."
 msgstr[0] "%(indexed)s מתוך %(count)s אתר נסרקו. סריקת הפידים הנותרים תספק המלצות טובות יותר."
-msgstr[1] "אינדקסנו %(indexed)s מתוך %(count)s אתרים. כדאי להוסיף לאינדקס את שאר העדכונים כדי לקבל המלצות טובות יותר."
+msgstr[1] "אינדקסנו %(indexed)s מתוך %(count)s אתרים. כדאי להוסיף לאינדקס את שאר הפידים כדי לקבל המלצות טובות יותר."
 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
@@ -535,7 +535,7 @@ msgstr "%(message)s שדרגו כדי לראות כתבות קשורות מכל 
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
-msgstr "%(name)s משתף סיפור: %(title)s"
+msgstr "%(name)s משתף כתבה: %(title)s"
 
 #, python-format
 msgid "%(price)s · Menu bar news ticker for Mac"
@@ -560,13 +560,13 @@ msgstr "%(slot)s — %(date)s"
 #, python-format
 msgid "%(start)s to %(end)s hour"
 msgid_plural "%(start)s to %(end)s hours"
-msgstr[0] "%(start)s עד %(end)s שעות"
+msgstr[0] "%(start)s עד %(end)s שעה"
 msgstr[1] "%(start)s עד %(end)s שעות"
 
 #, python-format
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
-msgstr[0] "%(start)s עד %(end)s דקות"
+msgstr[0] "%(start)s עד %(end)s דקה"
 msgstr[1] "%(start)s עד %(end)s דקות"
 
 #, python-format
@@ -591,23 +591,23 @@ msgstr "נותרו %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "ערוצים %(topic)s"
+msgstr "ערוצים בנושא %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s ניוזלטרים"
+msgstr "ניוזלטרים בנושא %(topic)s"
 
 #, python-format
 msgid "%(topic)s Podcasts"
-msgstr "פודקאסטים %(topic)s"
+msgstr "פודקאסטים בנושא %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s אתרים"
+msgstr "אתרים בנושא %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s תת־פורומים של Reddit"
+msgstr "תת־פורומים של Reddit בנושא %(topic)s"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -619,7 +619,7 @@ msgstr "%(value_1)s אימון מחדש של כל האתרים"
 
 #, python-format
 msgid "%(value_1)s Unlock this and all premium features."
-msgstr "%(value_1)s שדרוג זה וכל תכונות הפרימיום."
+msgstr "%(value_1)s שדרגו כדי לקבל גישה לתכונה הזו ולכל תכונות ה־Premium."
 
 #, python-format
 msgid "%(value_1)s ago"
@@ -627,7 +627,7 @@ msgstr "לפני %(value_1)s"
 
 #, python-format
 msgid "%(value_1)s is Premium"
-msgstr "%(value_1)s הוא משתמש Premium"
+msgstr "%(value_1)s: תכונת Premium"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
@@ -845,7 +845,7 @@ msgid "(GMT-04:00) Atlantic Time (Canada)"
 msgstr "(GMT-04:00) שעון האוקיינוס האטלנטי (קנדה)"
 
 msgid "(GMT-04:00) Atlantic Time (Goose Bay)"
-msgstr "(GMT-04:00) שעון אטלנטי (Goose Bay)"
+msgstr "(GMT-04:00) שעון אטלנטי (גוס ביי)"
 
 msgid "(GMT-04:00) Brazil"
 msgstr "(GMT-04:00) ברזיל"
@@ -928,7 +928,7 @@ msgstr "(בקרוב)"
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
-msgstr[0] "+ עוד אתר %(value_1)s"
+msgstr[0] "+ עוד %(value_1)s אתר"
 msgstr[1] "+ עוד %(value_1)s אתרים"
 
 msgid "+ New Folder..."
@@ -993,14 +993,14 @@ msgstr "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no
 #, python-format
 msgid "<strong>%(count)s day</strong> left in your premium trial"
 msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
-msgstr[0] "<strong>%(count)s יום</strong> נותרו לתקופת הניסיון שלך למנוי פרימיום"
-msgstr[1] "נותרו <strong>%(count)s ימים</strong> לתקופת הניסיון של הפרימיום שלך"
+msgstr[0] "נותר <strong>%(count)s יום</strong> לתקופת הניסיון שלך ב־Premium"
+msgstr[1] "נותרו <strong>%(count)s ימים</strong> לתקופת הניסיון שלך ב־Premium"
 
 msgid "A blurblog of shared stories"
 msgstr "בלוג שיתופים של כתבות"
 
 msgid "A folder of feeds read as one stream"
-msgstr "תיקיית עדכונים שנקראת כזרם אחד"
+msgstr "תיקיית פידים שנקראת כזרם אחד"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
 msgstr "מבחר טרי של כתבות ששיתפו קוראי NewsBlur, נבחר מדי שעה."
@@ -1029,7 +1029,7 @@ msgstr "מודל בינה מלאכותית"
 
 #, python-format
 msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "מסנני AI נשמרו, אך לא יפעלו עד ש־%(billing_link)s."
+msgstr "מסנני AI נשמרו, אך לא יפעלו עד %(billing_link)s."
 
 msgid "AI finds the stories"
 msgstr "AI מאתר את הכתבות"
@@ -1068,14 +1068,14 @@ msgstr "הוספה"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "הוספת תגית ל־%(count)s כתבה"
-msgstr[1] "הוספת %(count)s תגיות לכתבות"
+msgstr[0] "הוספת %(count)s תגית של הכתבה"
+msgstr[1] "הוספת %(count)s תגיות של הכתבה"
 
 msgid "Add Folder"
 msgstr "הוסף תיקייה"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "הוספת אתר &amp; סימנייה לשיתוף כתבה"
+msgstr "סימניית הוספת אתר &amp; שיתוף כתבה"
 
 msgid "Add a forwarding address"
 msgstr "הוספת כתובת להעברה"
@@ -1166,7 +1166,7 @@ msgid "All Categories"
 msgstr "כל הקטגוריות"
 
 msgid "All Categorized"
-msgstr "כל הקטגוריות"
+msgstr "הכול סווג"
 
 msgid "All Done "
 msgstr "הכול הושלם "
@@ -1181,7 +1181,7 @@ msgid "All Shared Stories"
 msgstr "כל הכתבות ששותפו"
 
 msgid "All Site Stories"
-msgstr "כל כתבות האתר"
+msgstr "כל כתבות האתרים"
 
 msgid "All Stories"
 msgstr "כל הכתבות"
@@ -1195,8 +1195,8 @@ msgstr "כל הפידים מתעדכנים כל 5–15 דקות"
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
-"כברירת מחדל, כל התבניות אינן תלויות באותיות רישיות. השתמש/י ב-%(code)s לציון גבולות מילים, כדי למנוע התאמות"
-" חלקיות."
+"כברירת מחדל, כל התבניות אינן תלויות באותיות רישיות. השתמשו ב-%(code)s לציון גבולות מילים, כדי למנוע התאמות "
+"חלקיות."
 
 msgid "All sites"
 msgstr "כל האתרים"
@@ -1223,13 +1223,13 @@ msgstr "לפי סדר אלפביתי"
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
-msgstr[0] "מחק גם את הארכיון הקיים %(value_1)s מהדומיין הזה"
+msgstr[0] "למחוק גם %(value_1)s ארכיון קיים מהדומיין הזה"
 msgstr[1] "למחוק גם את %(value_1)s הארכיונים הקיימים מהדומיין הזה"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
 msgid_plural "Also published by %(value_1)s sites"
-msgstr[0] "פורסם גם על ידי אתר %(value_1)s"
+msgstr[0] "פורסם גם ב־%(value_1)s אתר"
 msgstr[1] "פורסם גם ב־%(value_1)s אתרים"
 
 msgid "Also works with Edge"
@@ -1258,7 +1258,7 @@ msgid "An error occurred. Please try again."
 msgstr "אירעה שגיאה. נסו שוב."
 
 msgid "Analysis timed out. Please try again."
-msgstr "ניתוח הזמן הקצוב הסתיים. נא לנסות שוב."
+msgstr "הזמן שהוקצב לניתוח הסתיים. נא לנסות שוב."
 
 msgid "Analyzing images..."
 msgstr "מנתח תמונות..."
@@ -1275,14 +1275,14 @@ msgstr "מנתחים את הארכיון שלך..."
 #, python-format
 msgid "And you have %(count)s saved story."
 msgid_plural "And you have %(count)s saved stories."
-msgstr[0] "ויש לך כתבה שמורה אחת (%(count)s)."
+msgstr[0] "ויש לך %(count)s כתבה שמורה."
 msgstr[1] "ויש לך %(count)s כתבות שמורות."
 
 msgid "Android notifications"
 msgstr "התראות Android"
 
 msgid "Android notifications require Premium Archive"
-msgstr "התראות Android דורשות ארכיון Premium"
+msgstr "התראות Android דורשות Premium Archive"
 
 msgid "Animals"
 msgstr "בעלי חיים"
@@ -1306,13 +1306,13 @@ msgstr "בכל עת"
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
-msgstr[0] "בוצעו %(count)s מיזוגים (%(stories)s)"
+msgstr[0] "בוצע %(count)s מיזוג (%(stories)s)"
 msgstr[1] "הוחלו %(count)s מיזוגים (%(stories)s)"
 
 #, python-format
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
-msgstr[0] "בוצעו %(succeeded)s מתוך %(count)s מיזוגים (%(stories)s)"
+msgstr[0] "בוצעו %(succeeded)s מתוך %(count)s מיזוג (%(stories)s)"
 msgstr[1] "הוחלו %(succeeded)s מתוך %(count)s מיזוגים (%(stories)s)"
 
 msgid "Apply"
@@ -1343,7 +1343,7 @@ msgid "April"
 msgstr "אפריל"
 
 msgid "Archive"
-msgstr "ארכיון"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "עוזר הארכיון"
@@ -1376,7 +1376,7 @@ msgid "Ask AI anything about your browsing history"
 msgstr "שאלו את ה-AI כל דבר על היסטוריית הגלישה שלכם"
 
 msgid "Ask AI can transcribe a podcast or video first, then answer questions about it."
-msgstr "Ask AI יכול קודם לתמלל פודקאסט או סרטון, ואז לענות על שאלות לגביו."
+msgstr "התכונה ״שאלו את ה-AI״ יכולה קודם לתמלל פודקאסט או סרטון, ואז לענות על שאלות לגביו."
 
 msgid "Ask AI questions about stories"
 msgstr "שאלו את הבינה המלאכותית שאלות על כתבות"
@@ -1460,7 +1460,7 @@ msgid "Automatically archive every page you visit to search with AI later."
 msgstr "העבר אוטומטית לארכיון כל דף שבו ביקרת כדי שתוכל לחפש בו בהמשך באמצעות AI."
 
 msgid "Automatically generate briefings on schedule"
-msgstr "יצירה אוטומטית של תקצירים לפי לוח זמנים"
+msgstr "יצירה אוטומטית של תדריכים לפי לוח זמנים"
 
 msgid "Automatically play next item in queue"
 msgstr "הפעל אוטומטית את הפריט הבא בתור"
@@ -1484,7 +1484,7 @@ msgid "Back to classifier trainer"
 msgstr "חזרה לאימון המסווג"
 
 msgid "Back to feeds"
-msgstr "חזרה לעדכונים"
+msgstr "חזרה לפידים"
 
 msgid "Back to stories"
 msgstr "חזרה לכתבות"
@@ -1545,13 +1545,13 @@ msgid "Blurblog address"
 msgstr "כתובת הבלוג"
 
 msgid "Blurblog permalinks"
-msgstr "קישורים קבועים לבלוג Blurblog"
+msgstr "קישורים קבועים ב־Blurblog"
 
 msgid "Blurblog title"
 msgstr "כותרת Blurblog"
 
 msgid "Blurblogs"
-msgstr "בלוגי Blur"
+msgstr "Blurblogs"
 
 msgid "Bookmarklet"
 msgstr "סימנייה"
@@ -1576,7 +1576,7 @@ msgid "Briefing Settings"
 msgstr "הגדרות התדריך"
 
 msgid "Briefing generation timed out. Please try again."
-msgstr "יצירת התקציר חרגה ממגבלת הזמן. נא לנסות שוב."
+msgstr "יצירת התדריך חרגה ממגבלת הזמן. נא לנסות שוב."
 
 msgid "Briefing length"
 msgstr "אורך התדריך"
@@ -1603,7 +1603,7 @@ msgid "Browse popular blogs, news sites, and publications with RSS feeds."
 msgstr "עיון בבלוגים, באתרי חדשות ובפרסומים פופולריים עם פידי RSS."
 
 msgid "Browse saved stories by tag in the sidebar"
-msgstr "עיינו בסיפורים השמורים לפי תגית בסרגל הצד"
+msgstr "עיינו בכתבות השמורות לפי תגית בסרגל הצד"
 
 #, python-format
 msgid ""
@@ -1706,7 +1706,7 @@ msgid "Change"
 msgstr "שינוי"
 
 msgid "Change RSS Feed Address"
-msgstr "שינוי כתובת הזנת RSS"
+msgstr "שינוי כתובת פיד ה-RSS"
 
 msgid "Change Website Address"
 msgstr "שינוי כתובת האתר"
@@ -1733,7 +1733,7 @@ msgid "Change your profile above"
 msgstr "שנה את הפרופיל שלך למעלה"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
-msgstr "כדאי לבדוק שוב בהמשך אילו אתרים פופולריים הוסיפו NewsBlur משתמשים."
+msgstr "כדאי לבדוק שוב בהמשך אילו אתרים פופולריים הוסיפו משתמשי NewsBlur."
 
 msgid "Check what you like above..."
 msgstr "סמנו למעלה מה מוצא חן בעיניכם..."
@@ -1750,13 +1750,13 @@ msgstr "סינית"
 #, python-format
 msgid "Choose %(count)s site"
 msgid_plural "Choose %(count)s sites"
-msgstr[0] "בחר/י אתר %(count)s"
+msgstr[0] "בחירת %(count)s אתר"
 msgstr[1] "בחירת %(count)s אתרים"
 
 #, python-format
 msgid "Choose Your %(count)s site"
 msgid_plural "Choose Your %(count)s sites"
-msgstr[0] "בחר/י אתר %(count)s"
+msgstr[0] "בחירת %(count)s אתר"
 msgstr[1] "בחירת %(count)s אתרים"
 
 msgid "Choose Your sites"
@@ -1784,13 +1784,13 @@ msgid "Choose when stories are marked as read"
 msgstr "בחירת המועד שבו כתבות יסומנו כנקראו"
 
 msgid "Choose which AI model writes your briefing"
-msgstr "בחר איזה מודל AI יכתוב את התקציר שלך"
+msgstr "בחר איזה מודל AI יכתוב את התדריך שלך"
 
 msgid "Choose which feeds are used to build your briefing"
 msgstr "בחר אילו פידים ישמשו ליצירת התדריך שלך"
 
 msgid "Choose which feeds to include"
-msgstr "בחר/י אילו הזנות לכלול"
+msgstr "בחירת הפידים שייכללו"
 
 msgid "Choose which sections appear in your briefing"
 msgstr "בחר אילו מקטעים יופיעו בתדריך שלך"
@@ -1827,7 +1827,7 @@ msgid "Clear all filters"
 msgstr "נקה את כל המסננים"
 
 msgid "Clear all overrides"
-msgstr "נקה את כל החריגות"
+msgstr "ניקוי כל הדריסות"
 
 msgid "Clear classifier filter"
 msgstr "ניקוי מסנן המסווג"
@@ -1850,8 +1850,8 @@ msgstr "ניקוי החיפוש"
 #, python-format
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
-msgstr[0] "בוטלה דריסה אחת (%(count)s)."
-msgstr[1] "הוסרו %(count)s חריגות."
+msgstr[0] "הוסרה %(count)s דריסה."
+msgstr[1] "הוסרו %(count)s דריסות."
 
 msgid "Click any source card on a clustered story to read that version instead."
 msgstr "לחצו על כרטיס מקור כלשהו בכתבה מקובצת כדי לקרוא במקום זאת את הגרסה הזו."
@@ -1917,7 +1917,7 @@ msgid "Comment"
 msgstr "תגובה"
 
 msgid "Comment on stories"
-msgstr "הגיבו על סיפורים"
+msgstr "הגיבו על כתבות"
 
 msgid "Comments:"
 msgstr "תגובות:"
@@ -1958,7 +1958,7 @@ msgid ""
 "Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
 "shares to Slack; trigger custom workflows from your training."
 msgstr ""
-"חברו את NewsBlur למאות שירותים. שמרו סיפורים ב-Pocket, ב-Instapaper, ב-Evernote או ב-Notion; פרסמו שיתופים "
+"חברו את NewsBlur למאות שירותים. שמרו כתבות ב-Pocket, ב-Instapaper, ב-Evernote או ב-Notion; פרסמו שיתופים "
 "ב-Slack; והפעילו תהליכי עבודה מותאמים אישית על סמך האימון שלכם."
 
 msgid "Connected"
@@ -2025,7 +2025,7 @@ msgid "Create Gift Link"
 msgstr "יצירת קישור למתנה"
 
 msgid "Create a feed for any website, even without RSS."
-msgstr "צרו עדכון לכל אתר, גם בלי RSS."
+msgstr "צרו פיד לכל אתר, גם בלי RSS."
 
 msgid "Create a new subfolder"
 msgstr "צור תיקיית משנה חדשה"
@@ -2040,7 +2040,7 @@ msgid "Credit"
 msgstr "קרדיט"
 
 msgid "Cursors"
-msgstr "סמנים"
+msgstr "סמני עכבר"
 
 msgid "Custom Add Site URL"
 msgstr "כתובת URL מותאמת אישית להוספת אתר"
@@ -2049,7 +2049,7 @@ msgid "Custom CSS"
 msgstr "CSS מותאם אישית"
 
 msgid "Custom CSS for your Blurblog"
-msgstr "CSS מותאם אישית לבלוג Blur שלך"
+msgstr "CSS מותאם אישית ל־Blurblog שלך"
 
 msgid "Custom CSS/JavaScript"
 msgstr "CSS/JavaScript מותאמים אישית"
@@ -2061,7 +2061,7 @@ msgid "Custom JavaScript"
 msgstr "JavaScript מותאם אישית"
 
 msgid "Custom RSS feeds for saved stories"
-msgstr "הזנות RSS מותאמות אישית לכתבות שמורות"
+msgstr "פידי RSS מותאמים אישית לכתבות שמורות"
 
 msgid "Custom URLs"
 msgstr "כתובות URL מותאמות אישית"
@@ -2079,7 +2079,7 @@ msgid "Customize auto-read by site or folder"
 msgstr "התאימו אישית קריאה אוטומטית לפי אתר או תיקייה"
 
 msgid "Customize briefing sections and delivery schedule"
-msgstr "התאימו אישית את מקטעי התדרוך ואת לוח הזמנים לשליחה"
+msgstr "התאימו אישית את מקטעי התדריך ואת לוח הזמנים לשליחה"
 
 msgid "Customize with Claude Code"
 msgstr "התאמה אישית באמצעות Claude Code"
@@ -2100,11 +2100,11 @@ msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"תדריכים יומיים הם חלק מארכיון Premium. במסגרת התוכנית שלך אפשר ליצור תצוגה מקדימה עם 3 הכתבות הראשונות מכל "
-"תדריך. שדרג כדי לקבל את כל הכתבות ותדריכים אוטומטיים לפי לוח הזמנים שלך."
+"תדריכים יומיים הם תכונה של Premium Archive. במסגרת התוכנית שלך אפשר ליצור תצוגה מקדימה עם 3 הכתבות הראשונות"
+" מכל תדריך. שדרג כדי לקבל את כל הכתבות ותדריכים אוטומטיים לפי לוח הזמנים שלך."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "תדריך יומי עם הכתבות והמילות המובילות שלך"
+msgstr "תדריך יומי עם הכתבות המובילות ומילות המפתח שלך"
 
 msgid "Daily distribution of stories"
 msgstr "התפלגות הכתבות היומית"
@@ -2150,7 +2150,7 @@ msgid "Default layout"
 msgstr "פריסת ברירת מחדל"
 
 msgid "Default story order"
-msgstr "סדר ברירת מחדל של סיפורים"
+msgstr "סדר ברירת המחדל של הכתבות"
 
 msgid "Default view"
 msgstr "תצוגת ברירת מחדל"
@@ -2161,7 +2161,7 @@ msgstr "מחיקה"
 #, python-format
 msgid "Delete %(count)s site"
 msgid_plural "Delete %(count)s sites"
-msgstr[0] "מחיקת אתר %(count)s"
+msgstr[0] "מחיקת %(count)s אתר"
 msgstr[1] "מחיקת %(count)s אתרים"
 
 msgid "Delete It. It Just Won't Work!"
@@ -2226,7 +2226,7 @@ msgid "Devices"
 msgstr "מכשירים"
 
 msgid "Disable daily briefings"
-msgstr "השבתת תקצירים יומיים"
+msgstr "השבתת תדריכים יומיים"
 
 msgid "Disable social features"
 msgstr "השבתת התכונות החברתיות"
@@ -2267,7 +2267,7 @@ msgid "Discover Subreddits"
 msgstr "גילוי תתי־פורומים ב-Reddit"
 
 msgid "Discover feeds organized by topic and interest."
-msgstr "גלו עדכונים לפי נושאים ותחומי עניין."
+msgstr "גלו פידים לפי נושאים ותחומי עניין."
 
 msgid "Discover more to read"
 msgstr "גלו עוד דברים לקרוא"
@@ -2285,16 +2285,16 @@ msgid "Discover sites"
 msgstr "גילוי אתרים"
 
 msgid "Dislike"
-msgstr "לא אוהב"
+msgstr "לא אהבתי"
 
 msgid "Dislike "
 msgstr "לא אהבתי "
 
 msgid "Dislike matching stories"
-msgstr "הביעו סלידה מכתבות תואמות"
+msgstr "סימון לא אהבתי לכתבות תואמות"
 
 msgid "Dislikes"
-msgstr "לא אוהב"
+msgstr "לא אהבתי"
 
 msgid "Dismiss"
 msgstr "סגור"
@@ -2306,7 +2306,7 @@ msgid "Do the apps work offline?"
 msgstr "האם האפליקציות פועלות במצב לא מקוון?"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "האם Ask AI עובד עם אודיו ווידאו?"
+msgstr "האם ״שאלו את ה-AI״ עובד עם אודיו ווידאו?"
 
 msgid "Does training work across all my feeds?"
 msgstr "האם האימון חל על כל הפידים שלי?"
@@ -2360,7 +2360,7 @@ msgstr "גררו קטגוריות לכאן כדי להחריג אותן"
 msgid ""
 "Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
 " reading."
-msgstr "גררו את הכפתור לסרגל הסימניות. בכל אתר, הוא יאפשר לכם להירשם לעדכון או לשתף את הכתבה שאתם קוראים."
+msgstr "גררו את הכפתור לסרגל הסימניות. בכל אתר, הוא יאפשר לכם להירשם לפיד או לשתף את הכתבה שאתם קוראים."
 
 msgid "Drag this bookmarklet into your bookmarks bar"
 msgstr "גררו את הסימנייה הזו לסרגל הסימניות"
@@ -2407,7 +2407,7 @@ msgid "Edit Profile"
 msgstr "עריכת פרופיל"
 
 msgid "Editorial"
-msgstr "עריכה"
+msgstr "מאמר מערכת"
 
 msgid "Education"
 msgstr "חינוך"
@@ -2431,7 +2431,7 @@ msgid "Email notifications"
 msgstr "התראות בדוא״ל"
 
 msgid "Email notifications require Premium Archive"
-msgstr "התראות בדוא״ל דורשות ארכיון Premium"
+msgstr "התראות בדוא״ל דורשות Premium Archive"
 
 msgid "Email story"
 msgstr "שליחת כתבה באימייל"
@@ -2449,12 +2449,12 @@ msgid "Enable \"mark all as read\" so reading one version clears every duplicate
 msgstr "הפעילו את האפשרות \"סימון הכול כנקרא\" כדי שקריאת גרסה אחת תסיר את כל הכפילויות."
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "הפעילו את התקציר היומי לקבלת סיכום של הסיפורים המובילים שלכם שנוצר באמצעות בינה מלאכותית"
+msgstr "הפעילו את התדריך היומי לקבלת סיכום של הכתבות המובילות שלכם שנוצר באמצעות בינה מלאכותית"
 
 #, python-format
 msgid "Enable all %(count)s site"
 msgid_plural "Enable all %(count)s sites"
-msgstr[0] "הפעל את כל %(count)s האתר"
+msgstr[0] "הפעלת %(count)s אתר"
 msgstr[1] "הפעלת כל %(count)s האתרים"
 
 msgid "Enable all sites"
@@ -2464,7 +2464,7 @@ msgid "Enable captions/subtitles for YouTube videos"
 msgstr "הפעלת כתוביות לסרטוני YouTube"
 
 msgid "Enable daily briefings"
-msgstr "הפעלת תדרוכים יומיים"
+msgstr "הפעלת תדריכים יומיים"
 
 msgid "Enable highlighting"
 msgstr "הפעלת הדגשה"
@@ -2518,7 +2518,7 @@ msgid "Erase your shared stories"
 msgstr "מחיקת הכתבות ששיתפת"
 
 msgid "Erase yourself"
-msgstr "מחק את עצמך"
+msgstr "מחיקת כל האתרים שלך"
 
 msgid "Erase yourself permanently"
 msgstr "מחיקה לצמיתות"
@@ -2565,16 +2565,16 @@ msgid "Every new story is archived permanently"
 msgstr "כל כתבה חדשה נשמרת בארכיון לצמיתות"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "לכל תגית של סיפור שמור יש הזנת RSS משלה, שמתאימה במיוחד לחיבור ל-IFTTT או ל-Zapier."
+msgstr "לכל תגית של כתבה שמורה יש פיד RSS משלה, שמתאים במיוחד לחיבור ל-IFTTT או ל-Zapier."
 
 msgid "Every story archived and searchable forever"
 msgstr "כל כתבה נשמרת בארכיון וניתנת לחיפוש לנצח"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
-msgstr "כל סיפור נשמר בארכיון וניתן לחיפוש לתמיד. בסיס הידע האישי שלכם."
+msgstr "כל כתבה נשמרת בארכיון וניתנת לחיפוש לתמיד. בסיס הידע האישי שלכם."
 
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
-msgstr "לכל תג יש עדכון RSS משלו. שתפו את הקישור או העבירו אותו ל-IFTTT או Zapier."
+msgstr "לכל תג יש פיד RSS משלו. שתפו את הקישור או העבירו אותו ל-IFTTT או Zapier."
 
 msgid "Everybody"
 msgstr "כולם"
@@ -2641,7 +2641,7 @@ msgid "Expire 1 YR"
 msgstr "תוקף לשנה"
 
 msgid "Export trained stories from folders"
-msgstr "ייצוא סיפורים שאומנו מתיקיות"
+msgstr "ייצוא כתבות שאומנו מתיקיות"
 
 msgid "Extras"
 msgstr "תוספות"
@@ -2662,10 +2662,10 @@ msgid "Failed to convert newsletter URL"
 msgstr "המרת כתובת ה־URL של העלון נכשלה"
 
 msgid "Failed to create Google News feed"
-msgstr "יצירת מקור Google News נכשלה"
+msgstr "יצירת פיד Google News נכשלה"
 
 msgid "Failed to create feed"
-msgstr "יצירת העדכון נכשלה"
+msgstr "יצירת הפיד נכשלה"
 
 msgid "Failed to delete tag."
 msgstr "מחיקת התגית נכשלה."
@@ -2746,42 +2746,42 @@ msgid "February"
 msgstr "פברואר"
 
 msgid "Feed"
-msgstr "עדכון"
+msgstr "פיד"
 
 #, python-format
 msgid "Feed \"%(value_1)s\" has been created."
-msgstr "העדכון \"%(value_1)s\" נוצר."
+msgstr "הפיד \"%(value_1)s\" נוצר."
 
 #, python-format
 msgid "Feed \"%(value_1)s\" is ready."
-msgstr "העדכון \"%(value_1)s\" מוכן."
+msgstr "הפיד \"%(value_1)s\" מוכן."
 
 msgid "Feed Fetch"
-msgstr "אחזור עדכונים"
+msgstr "אחזור פיד"
 
 msgid "Feed Icon"
-msgstr "סמל הזנה"
+msgstr "סמל הפיד"
 
 msgid "Feed Push"
 msgstr "דחיפת פיד"
 
 msgid "Feed opens:"
-msgstr "הפיד נפתח:"
+msgstr "פתיחות פיד:"
 
 msgid "Feed: "
 msgstr "מקור: "
 
 msgid "Feeds"
-msgstr "עדכונים"
+msgstr "פידים"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "הזנות הושלמו לאחור עבור ארכיון מלא"
+msgstr "השלמה לאחור של פידים לארכיון מלא"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
 msgstr "מקורות עם קוראים מעורבים מאוד, שעדיין אינם מוכרים לרבים"
 
 msgid "Feeds:"
-msgstr "עדכונים:"
+msgstr "פידים:"
 
 msgid "Feel comfortable connecting to these services."
 msgstr "אפשר להרגיש בנוח להתחבר לשירותים האלה."
@@ -2804,7 +2804,7 @@ msgid "Fetching stories"
 msgstr "טוען כתבות"
 
 msgid "Fetching stories..."
-msgstr "הסיפורים נטענים..."
+msgstr "הכתבות נטענות..."
 
 msgid "Fetching story"
 msgstr "מאחזר כתבה"
@@ -2840,7 +2840,7 @@ msgid "Filter newsletters..."
 msgstr "סינון ניוזלטרים..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
-msgstr "סננו התראות כך שיתמקדו רק בכתבות רלוונטיות, ותנו לאימון שלכם לקבוע אילו התראות תקבלו."
+msgstr "סננו התראות כך שיישלחו רק על כתבות במיקוד, והאימון שלכם יקבע אילו התראות תקבלו."
 
 msgid "Filter podcasts..."
 msgstr "סינון פודקאסטים..."
@@ -2878,7 +2878,7 @@ msgid "Find Friends"
 msgstr "איתור חברים"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
-msgstr "מצאו את כתובת האימייל הייחודית שלכם ב-NewsBlur בחלונית הדיוור באימייל"
+msgstr "מצאו את כתובת האימייל הייחודית שלכם ב-NewsBlur בחלונית הניוזלטרים באימייל"
 
 msgid "Finish recording..."
 msgstr "סיום ההקלטה..."
@@ -2939,7 +2939,7 @@ msgid "Folders"
 msgstr "תיקיות"
 
 msgid "Folders, feeds, and story titles"
-msgstr "תיקיות, עדכונים וכותרות כתבות"
+msgstr "תיקיות, פידים וכותרות כתבות"
 
 msgid "Follow"
 msgstr "עקוב"
@@ -2949,13 +2949,13 @@ msgid "Follow %(value_1)s"
 msgstr "לעקוב אחרי %(value_1)s"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
-msgstr "עקבו אחר כל אתר, גם כאלה שלא מפרסמים עדכון RSS."
+msgstr "עקבו אחר כל אתר, גם כאלה שלא מפרסמים פיד RSS."
 
 msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
-msgstr "עקבו אחר פרופילים חברתיים, לוחות דרושים, יומני שינויים ודפי מוצרים שמעולם לא הציעו עדכון."
+msgstr "עקבו אחר פרופילים חברתיים, לוחות דרושים, יומני שינויים ודפי מוצרים שמעולם לא הציעו פיד."
 
 msgid "Follow to see their shared stories"
-msgstr "עקבו כדי לראות את הסיפורים שהם משתפים"
+msgstr "עקבו כדי לראות את הכתבות שהם משתפים"
 
 msgid "Follow up to 1,024 sites"
 msgstr "עקוב אחרי עד 1,024 אתרים"
@@ -2970,10 +2970,10 @@ msgid "Follow up to 64 sites"
 msgstr "עקבו אחרי עד 64 אתרים"
 
 msgid "Follow up..."
-msgstr "מעקב..."
+msgstr "שאלת המשך..."
 
 msgid "Follow-ups"
-msgstr "תגובות המשך"
+msgstr "המשכים"
 
 msgid "Followers"
 msgstr "עוקבים"
@@ -3006,7 +3006,7 @@ msgid "For Safari on Mac"
 msgstr "עבור Safari ב-Mac"
 
 msgid "Force all tall stories to have a max height"
-msgstr "הגבלת הגובה של כל הסיפורים הארוכים"
+msgstr "הגבלת הגובה של כל הכתבות הארוכות"
 
 #, python-format
 msgid "Forward %(seconds)s second"
@@ -3023,7 +3023,7 @@ msgstr "כתובת להעברת אימיילים"
 #, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
-msgstr[0] "נמצאה תבנית אחת (%(count)s). בחר/י את התבנית המתאימה ביותר לכתבות הרצויות."
+msgstr[0] "נמצאה %(count)s תבנית. בחרו את התבנית המתאימה ביותר לכתבות הרצויות."
 msgstr[1] "נמצאו %(count)s תבניות. בחר את התבנית שהכי מתאימה לכתבות הרצויות."
 
 msgid "Found in the Account dialog"
@@ -3039,7 +3039,7 @@ msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "חינם + מנוי · iPhone, iPad &amp; Mac"
 
 msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "בטא בחינם · Mac, iPhone &amp; ו-iPad"
+msgstr "בטא חינמית · Mac, iPhone &amp; iPad"
 
 msgid "Free beta · iPhone, iPad &amp; Mac"
 msgstr "בטא חינמית · iPhone, iPad &amp; Mac"
@@ -3109,7 +3109,7 @@ msgstr "חברים ועוקבים"
 
 msgctxt "date range"
 msgid "From"
-msgstr "מאת"
+msgstr "מתאריך"
 
 msgid "From infrequent sites"
 msgstr "מאתרים שמתעדכנים לעיתים רחוקות"
@@ -3119,7 +3119,7 @@ msgstr "מלא"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "תשובות עוזר הארכיון המלא הן %(link_start)sתכונת ארכיון פרימיום%(link_end)s."
+msgstr "תשובות עוזר הארכיון המלא הן %(link_start)sתכונת Premium Archive%(link_end)s."
 
 msgid "Full Refund"
 msgstr "החזר מלא"
@@ -3143,7 +3143,7 @@ msgid "Full-text search across all stories"
 msgstr "חיפוש בטקסט המלא בכל הכתבות"
 
 msgid "Full-text search requires Premium or higher."
-msgstr "חיפוש בטקסט מלא דורש מנוי Premium ומעלה."
+msgstr "חיפוש בטקסט מלא דורש מינוי Premium ומעלה."
 
 msgid "Full-text training on the Archive plan"
 msgstr "אימון על טקסט מלא בתוכנית Archive"
@@ -3161,13 +3161,13 @@ msgid "General"
 msgstr "כללי"
 
 msgid "Generate Briefing"
-msgstr "יצירת תקציר"
+msgstr "יצירת תדריך"
 
 msgid "Generate Daily Briefing"
 msgstr "יצירת תדריך יומי"
 
 msgid "Generate Twice-Daily Briefing"
-msgstr "צור תקציר פעמיים ביום"
+msgstr "יצירת תדריך פעמיים ביום"
 
 msgid "Generate Weekly Briefing"
 msgstr "יצירת תדריך שבועי"
@@ -3200,7 +3200,7 @@ msgid "Get a summary of your top stories, delivered on your schedule."
 msgstr "קבלו סיכום של הכתבות המובילות שלכם, במועד שנוח לכם."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
-msgstr "קבלו תקציר יומי באוצרות בינה מלאכותית, עם סיפורים מובילים וכתבות ארוכות"
+msgstr "קבלו תדריך יומי שנבחר בידי בינה מלאכותית, עם כתבות מובילות וכתבות ארוכות"
 
 msgid "Get more from NewsBlur"
 msgstr "הפיקו יותר מ־NewsBlur"
@@ -3269,7 +3269,7 @@ msgstr ""
 "\"Newsletters\"."
 
 msgid "Go Premium — $36/year"
-msgstr "שדרגו לפרימיום — $36 לשנה"
+msgstr "שדרגו ל־Premium — $36 לשנה"
 
 #, python-format
 msgid "Go back to %(breadcrumb)s"
@@ -3282,7 +3282,7 @@ msgid "Good Reads on NewsBlur"
 msgstr "קריאות מומלצות ב־NewsBlur"
 
 msgid "Goodies &amp; Extras"
-msgstr "מתנות &amp; תוספות"
+msgstr "כלים &amp; תוספות"
 
 msgid "Goodies &amp; Mobile Apps"
 msgstr "הטבות &amp; אפליקציות לנייד"
@@ -3303,7 +3303,7 @@ msgid "Grid view"
 msgstr "תצוגת רשת"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "קיבוץ סיפורים כפולים מכל העדכונים שלך"
+msgstr "קיבוץ כתבות כפולות מכל הפידים שלך"
 
 msgid "Group stories that share:"
 msgstr "קבץ כתבות שיש להן במשותף:"
@@ -3369,7 +3369,7 @@ msgid "History"
 msgstr "היסטוריה"
 
 msgid "Home"
-msgstr "דף הבית"
+msgstr "בית"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
 msgstr "הווידג'טים במסך הבית מציגים במבט חטוף את מספר הפריטים שלא נקראו ואת הכתבות האחרונות."
@@ -3408,7 +3408,7 @@ msgid "Identify key people and relationships"
 msgstr "זיהוי אנשים מרכזיים והקשרים ביניהם"
 
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
-msgstr "אם לא נמצא עדכון RSS, NewsBlur מציע ליצור עדכון אינטרנט"
+msgstr "אם לא נמצא פיד RSS, NewsBlur מציע ליצור פיד אינטרנט"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
 msgstr "אם אף אחת מהאפשרויות אינה מתאימה, הקלד כותרת של כתבה שמופיעה בדף וננתח אותו מחדש."
@@ -3421,7 +3421,7 @@ msgid "Ignore"
 msgstr "התעלם"
 
 msgid "Ignored"
-msgstr "התעלמו"
+msgstr "התעלמת"
 
 msgid "Image"
 msgstr "תמונה"
@@ -3459,7 +3459,7 @@ msgstr "מייבא את האתרים שלך..."
 #, python-format
 msgid "In %(count)s day, your premium trial ends and you'll return to Free"
 msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
-msgstr[0] "בעוד %(count)s יום תקופת הניסיון שלך בפרימיום תסתיים ותחזור/י למסלול החינמי"
+msgstr[0] "בעוד %(count)s יום תסתיים תקופת הניסיון של Premium ותחזור לתוכנית החינמית"
 msgstr[1] "בעוד %(count)s ימים תסתיים תקופת הניסיון של Premium ותחזור לתוכנית החינמית"
 
 #, python-format
@@ -3486,8 +3486,8 @@ msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
 msgstr ""
-"בתצוגת העדכון, לחצו על תגיות ושמות כותבים בכותרת הכתבה כדי לאמן את המערכת. כל לחיצה עוברת בין אהבתי, לא "
-"אהבתי וניטרלי."
+"בתצוגת הפיד, לחצו על תגיות ושמות כותבים בכותרת הכתבה כדי לאמן את המערכת. כל לחיצה עוברת בין אהבתי, לא אהבתי"
+" וניטרלי."
 
 msgid "In this window"
 msgstr "בחלון הזה"
@@ -3502,22 +3502,22 @@ msgid "Independent"
 msgstr "עצמאי"
 
 msgid "Index feeds for discovery"
-msgstr "הוסף הזנות לאינדקס לצורך גילוי"
+msgstr "הוספת פידים לאינדקס לצורך גילוי"
 
 msgid "Index remaining feeds"
 msgstr "אינדקס את הפידים שנותרו"
 
 msgid "Indexing your feeds for search"
-msgstr "האינדוקס של העדכונים שלך לצורך חיפוש מתבצע"
+msgstr "מתבצע אינדוקס של הפידים שלך לצורך חיפוש"
 
 msgid "Indexing..."
-msgstr "מתבצע יצירת אינדקס..."
+msgstr "מתבצעת יצירת אינדקס..."
 
 msgid "Infrequent Site Stories"
 msgstr "כתבות מאתרים שמתעדכנים לעיתים רחוקות"
 
 msgid "Infrequent stories per month"
-msgstr "כתבות לא תכופות בחודש"
+msgstr "אתרים שמתעדכנים לעיתים רחוקות: כתבות בחודש"
 
 msgid "Insta-fetch stories"
 msgstr "שליפה מיידית של כתבות"
@@ -3536,7 +3536,7 @@ msgid "Install with: uv pip install newsblur-cli"
 msgstr "להתקנה: uv pip install newsblur-cli"
 
 msgid "Intelligence Trainer"
-msgstr "מאמן המודיעין"
+msgstr "מאמן הבינה"
 
 msgid "Intelligence Training"
 msgstr "אימון הבינה"
@@ -3582,7 +3582,7 @@ msgid "June"
 msgstr "יוני"
 
 msgid "Just Delete This Feed"
-msgstr "מחיקת העדכון הזה בלבד"
+msgstr "פשוט למחוק את הפיד הזה"
 
 msgid "Just now"
 msgstr "הרגע"
@@ -3683,10 +3683,10 @@ msgid "Like "
 msgstr "אהבתי "
 
 msgid "Like matching stories"
-msgstr "אהבתי כתבות תואמות"
+msgstr "סימון אהבתי לכתבות תואמות"
 
 msgid "Likes"
-msgstr "לייקים"
+msgstr "אהבתי"
 
 msgid "Link"
 msgstr "קישור"
@@ -3695,7 +3695,7 @@ msgid "Link directly to the original story"
 msgstr "קישור ישירות לכתבה המקורית"
 
 msgid "Link to my blurblog and shared comments"
-msgstr "קישור לבלוג השיתופים שלי ולהערות המשותפות"
+msgstr "קישור לבלוג השיתופים שלי ולתגובות המשותפות"
 
 msgid "List"
 msgstr "רשימה"
@@ -3722,7 +3722,7 @@ msgid "Loading feeds..."
 msgstr "טוען פידים..."
 
 msgid "Loading more briefings..."
-msgstr "טוען תקצירים נוספים..."
+msgstr "טוען תדריכים נוספים..."
 
 msgid "Loading your blocklist settings..."
 msgstr "הגדרות רשימת החסימה נטענות..."
@@ -3752,7 +3752,7 @@ msgid "Long Reads on NewsBlur"
 msgstr "כתבות ארוכות ב-NewsBlur"
 
 msgid "Long reads for later"
-msgstr "קריאה ארוכה להמשך"
+msgstr "כתבות ארוכות לקריאה מאוחר יותר"
 
 msgid "Longer articles worth setting time aside for"
 msgstr "כתבות ארוכות ששווה לפנות זמן לקריאתן"
@@ -3807,11 +3807,11 @@ msgstr "מרץ"
 #, python-format
 msgid "Mark %(count)s story as read?"
 msgid_plural "Mark %(count)s stories as read?"
-msgstr[0] "לסמן את %(count)s הסיפור כנקרא?"
+msgstr[0] "לסמן %(count)s כתבה כנקראה?"
 msgstr[1] "לסמן את %(count)s הכתבות כנקראות?"
 
 msgid "Mark <b>every story</b> as read"
-msgstr "סמן <b>כל הסיפורים</b> כנקראו"
+msgstr "סמן את <b>כל הכתבות</b> כנקראו"
 
 msgid "Mark Everything Read / Unread"
 msgstr "סימון הכול כנקרא / לא נקרא"
@@ -3837,7 +3837,7 @@ msgstr "לסמן הכול כנקרא?"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "סמן כנקראו את כל הסיפורים הישנים מ־<b>%(value_1)s יום</b>"
+msgstr[0] "סימון כל הכתבות שגילן עולה על <b>%(value_1)s יום</b> כנקראו"
 msgstr[1] "סימון כל הכתבות שגילן עולה על <b>%(value_1)s ימים</b> כנקראו"
 
 msgid "Mark as read"
@@ -3850,7 +3850,7 @@ msgid "Mark as unread"
 msgstr "סימון כלא נקרא"
 
 msgid "Mark below stories read"
-msgstr "סמן את הסיפורים שמתחת כנקראו"
+msgstr "סימון הכתבות שמתחת כנקראו"
 
 msgid "Mark duplicates as read"
 msgstr "סימון כתבות כפולות כנקראו"
@@ -3941,7 +3941,7 @@ msgstr "מיזוג"
 #, python-format
 msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
-msgstr[0] "מזג/י %(count)s קטגוריה לתוך:"
+msgstr[0] "מיזוג %(count)s קטגוריה לתוך:"
 msgstr[1] "מיזוג %(count)s קטגוריות אל:"
 
 msgid "Merge into:"
@@ -3950,7 +3950,7 @@ msgstr "מזג לתוך:"
 #, python-format
 msgid "Merged %(count)s story into \"%(category)s\""
 msgid_plural "Merged %(count)s stories into \"%(category)s\""
-msgstr[0] "מוזגה כתבה אחת (%(count)s) לתוך \"%(category)s\""
+msgstr[0] "מוזגה %(count)s כתבה לתוך \"%(category)s\""
 msgstr[1] "מוזגו %(count)s כתבות אל תוך \"%(category)s\""
 
 msgid "Merging..."
@@ -4010,7 +4010,7 @@ msgstr "העבר"
 #, python-format
 msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
-msgstr[0] "העבר/י %(count)s אתר"
+msgstr[0] "העברת %(count)s אתר"
 msgstr[1] "העברת %(count)s אתרים"
 
 msgid "Move to folder"
@@ -4031,7 +4031,7 @@ msgstr "השתקה"
 #, python-format
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
-msgstr[0] "השתק אתר %(count)s"
+msgstr[0] "השתקת %(count)s אתר"
 msgstr[1] "השתק %(count)s אתרים"
 
 msgid "Mute Sites"
@@ -4064,7 +4064,7 @@ msgid "Muted · unmuting soon"
 msgstr "מושתק · הביטול יחל בקרוב"
 
 msgid "My shared stories are public and anybody can reply to me"
-msgstr "הסיפורים שאני משתף ציבוריים וכל אחד יכול להשיב לי"
+msgstr "הכתבות שאני משתף ציבוריות וכל אחד יכול להשיב לי"
 
 msgid "My shared stories are public but only people I approve can reply"
 msgstr "הכתבות שאני משתף/ת גלויות לכולם, אך רק אנשים שאאשר יוכלו להשיב"
@@ -4106,7 +4106,7 @@ msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
 "train, all from the keyboard."
 msgstr ""
-"נווטו בכל התוכן בלי לגעת בעכבר. פתחו עדכונים, גללו בין כתבות, סמנו כנקראו, שמרו, שתפו ואמנו — הכול באמצעות "
+"נווטו בכל התוכן בלי לגעת בעכבר. פתחו פידים, גללו בין כתבות, סמנו כנקראו, שמרו, שתפו ואמנו — הכול באמצעות "
 "המקלדת."
 
 msgid "Need at least 2 categories to merge"
@@ -4125,7 +4125,7 @@ msgid "Never expire"
 msgstr "לעולם לא יפוג"
 
 msgid "Never gonna expire. Congrats!"
-msgstr "הכתבות לעולם לא יפוגו. איזה יופי!"
+msgstr "המינוי לעולם לא יפוג. כל הכבוד!"
 
 msgid "New Arrivals"
 msgstr "חדשים שהגיעו"
@@ -4140,7 +4140,7 @@ msgid "New category name"
 msgstr "שם קטגוריה חדש"
 
 msgid "New content appears in your feed just like regular RSS"
-msgstr "תוכן חדש מופיע בפיד שלכם כמו בכל הזנת RSS רגילה"
+msgstr "תוכן חדש מופיע בפיד שלכם כמו בכל פיד RSS רגיל"
 
 msgid "New folder"
 msgstr "תיקייה חדשה"
@@ -4165,10 +4165,10 @@ msgid "New to me"
 msgstr "חדש עבורי"
 
 msgid "Newer:"
-msgstr "חדש יותר:"
+msgstr "אחרי:"
 
 msgid "Newest"
-msgstr "החדש ביותר"
+msgstr "החדשות ביותר"
 
 msgid "Newest first"
 msgstr "החדשים ביותר תחילה"
@@ -4181,7 +4181,7 @@ msgstr "NewsBlur מחובר לשירותים אחרים"
 
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
-msgstr "NewsBlur זיהה את %(language)s בדפדפן שלכם."
+msgstr "NewsBlur זיהה בדפדפן שלכם את השפה %(language)s."
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur לא זמין כרגע. <br> כדאי לנסות שוב בקרוב."
@@ -4196,7 +4196,7 @@ msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur ב-iOS עם כל מגוון התכונות"
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
-msgstr "NewsBlur יאתר אוטומטית את הזנת ה-RSS של האתר הזה."
+msgstr "NewsBlur יאתר אוטומטית את פיד ה-RSS של האתר הזה."
 
 msgid "Newsletter"
 msgstr "ניוזלטר"
@@ -4208,7 +4208,7 @@ msgid "Newsletters & Substack"
 msgstr "ניוזלטרים ו־Substack"
 
 msgid "Newsletters appearing as feeds"
-msgstr "ניוזלטרים שמופיעים כעדכונים"
+msgstr "ניוזלטרים שמופיעים כפידים"
 
 msgid "Next Unread Story"
 msgstr "הכתבה הבאה שלא נקראה"
@@ -4244,7 +4244,7 @@ msgid "No archives match your filters"
 msgstr "לא נמצאו ארכיונים התואמים למסננים שלך"
 
 msgid "No briefings yet."
-msgstr "עדיין אין תדרוכים."
+msgstr "עדיין אין תדריכים."
 
 msgid "No categories available. Categories will appear here once they are configured."
 msgstr "אין קטגוריות זמינות. הקטגוריות יופיעו כאן לאחר שיוגדרו."
@@ -4268,7 +4268,7 @@ msgid "No feeds found"
 msgstr "לא נמצאו פידים"
 
 msgid "No feeds found in this category."
-msgstr "לא נמצאו עדכונים בקטגוריה הזו."
+msgstr "לא נמצאו פידים בקטגוריה הזו."
 
 msgid "No gifts sent yet."
 msgstr "עדיין לא נשלחו מתנות."
@@ -4366,7 +4366,7 @@ msgid "No split suggestions available for this category"
 msgstr "אין הצעות לפיצול בקטגוריה הזו"
 
 msgid "No stories"
-msgstr "אין סיפורים"
+msgstr "אין כתבות"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
@@ -4375,8 +4375,8 @@ msgstr "עדיין לא נוספו לאינדקס כתבות מ־%(folder)s עב
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "עדיין לא נוספו לאינדקס כתבות מאתר %(count)s שלך לצורך מציאת כתבות קשורות."
-msgstr[1] "עדיין לא נוספו לאינדקס סיפורים מהאתרים שלך (%(count)s) לצורך מציאת סיפורים קשורים."
+msgstr[0] "עדיין לא נוספו לאינדקס כתבות מ־%(count)s אתר שלך לצורך מציאת כתבות קשורות."
+msgstr[1] "עדיין לא נוספו לאינדקס כתבות מ־%(count)s האתרים שלך לצורך מציאת כתבות קשורות."
 
 msgid "No stories published last month"
 msgstr "לא פורסמו כתבות בחודש שעבר"
@@ -4391,10 +4391,10 @@ msgid "No stories yet"
 msgstr "עדיין אין כתבות"
 
 msgid "No story patterns found on this page."
-msgstr "לא נמצאו דפוסי סיפור בעמוד הזה."
+msgstr "לא נמצאו דפוסי כתבות בעמוד הזה."
 
 msgid "No trending sites available"
-msgstr "אין אתרים במגמות כרגע"
+msgstr "אין כרגע אתרים במגמת עלייה"
 
 msgid "No usage billing invoices yet."
 msgstr "עדיין אין חשבוניות חיוב לפי שימוש."
@@ -4406,7 +4406,7 @@ msgid "No valid merge groups to apply"
 msgstr "אין קבוצות מיזוג תקינות להחלה"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "אף אחד עדיין לא נרשם לסיפורים המשותפים שלך."
+msgstr "אף אחד עדיין לא נרשם לכתבות המשותפות שלך."
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "אין עוד משתמשים להמליץ עליהם. כל הכבוד!"
@@ -4418,7 +4418,7 @@ msgid "Not active"
 msgstr "לא פעיל"
 
 msgid "Not authenticated"
-msgstr "לא מאומתים"
+msgstr "לא בוצע אימות"
 
 msgid "Not found in URL"
 msgstr "לא נמצא בכתובת URL"
@@ -4470,10 +4470,10 @@ msgid "Notify on"
 msgstr "להפעיל התראות עבור"
 
 msgid "Notify on match"
-msgstr "שליחת התראה בהתאמה"
+msgstr "התראה בעת התאמה"
 
 msgid "Notify on match. Premium Archive required"
-msgstr "שליחת התראה בהתאמה. נדרש ארכיון Premium"
+msgstr "התראה בעת התאמה. נדרש Premium Archive"
 
 msgid "November"
 msgstr "נובמבר"
@@ -4494,7 +4494,7 @@ msgid "ON"
 msgstr "מופעל"
 
 msgid "Objects"
-msgstr "אובייקטים"
+msgstr "חפצים"
 
 msgid "October"
 msgstr "אוקטובר"
@@ -4503,13 +4503,13 @@ msgid "Off"
 msgstr "כבוי"
 
 msgid "Official NewsBlur Android App"
-msgstr "אפליקציית Android הרשמית NewsBlur"
+msgstr "אפליקציית Android הרשמית של NewsBlur"
 
 msgid "Official NewsBlur iPhone/iPad App"
-msgstr "האפליקציה הרשמית ל־NewsBlur iPhone/iPad"
+msgstr "האפליקציה הרשמית של NewsBlur ל־iPhone/iPad"
 
 msgid "Official NewsBlur macOS App"
-msgstr "האפליקציה הרשמית ל־NewsBlur macOS"
+msgstr "האפליקציה הרשמית של NewsBlur ל־macOS"
 
 msgid "Oh no! <br> There was an error!"
 msgstr "אוי לא! <br> אירעה שגיאה!"
@@ -4522,10 +4522,10 @@ msgstr "סיסמה ישנה"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "ישן יותר מ: %(month)s %(day)s %(year)s"
+msgstr "לפני התאריך: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
-msgstr "ישן יותר:"
+msgstr "לפני:"
 
 msgid "Oldest"
 msgstr "הישנות ביותר"
@@ -4540,7 +4540,7 @@ msgid "On"
 msgstr "מופעל"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
-msgstr "בארכיון Premium, החיפוש מגיע לכל כתבה שאי פעם נשמרה בארכיון, ולא רק לכתבות האחרונות."
+msgstr "ב־Premium Archive, החיפוש מגיע לכל כתבה שאי פעם נשמרה בארכיון, ולא רק לכתבות האחרונות."
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "ב־Premium אפשר לחפש בכתבות האחרונות שלכם. ב־Premium Archive אפשר לחפש בכל כתבה שאי פעם הועברה לארכיון."
@@ -4552,12 +4552,12 @@ msgid "One sentence"
 msgstr "משפט אחד"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
-msgstr "הירשמו בלחיצה אחת בכל אתר עם פיד. השתמשו בכתובת ה־URL להוספת אתר מותאם אישית בכרטיסייה Extras."
+msgstr "הירשמו בלחיצה אחת בכל אתר עם פיד. השתמשו בכתובת ה־URL המותאמת להוספת אתר מהכרטיסייה ״תוספות״."
 
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "רק %(indexed)s מתוך %(count)s האתר שלך אונדקסו עבור סיפורים קשורים."
+msgstr[0] "רק %(indexed)s מתוך %(count)s אתר שלך אונדקסו עבור כתבות קשורות."
 msgstr[1] "רק %(indexed)s מתוך %(count)s מהאתרים שלך אונדקסו למציאת כתבות קשורות."
 
 #, python-format
@@ -4568,14 +4568,14 @@ msgid_plural ""
 "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
 " personalized recommendations."
 msgstr[0] ""
-"רק %(indexed)s מתוך האתר %(count)s שלך מאונדקס לגילוי. שדרג כדי לאנדקס את כל האתרים שלך ולקבל המלצות "
-"מותאמות אישית."
+"רק %(indexed)s מתוך %(count)s אתר שלך מאונדקס לגילוי. שדרג כדי לאנדקס את כל האתרים שלך ולקבל המלצות מותאמות"
+" אישית."
 msgstr[1] ""
 "רק %(indexed)s מתוך %(count)s האתרים שלכם מאונדקסים לגילוי. שדרגו כדי לאנדקס את כל האתרים שלכם ולקבל המלצות"
 " מותאמות אישית."
 
 msgid "Only Focus:"
-msgstr "התמקדות בלבד:"
+msgstr "מיקוד בלבד:"
 
 msgid "Only page down in story, do not open next unread story"
 msgstr "לגלול למטה בתוך הכתבה בלבד, בלי לפתוח את הכתבה הבאה שלא נקראה"
@@ -4586,13 +4586,13 @@ msgstr "רק אנשים שאאשר יוכלו לראות את הכתבות שש�
 #, python-format
 msgid "Only recent stories shown from %(count)s site."
 msgid_plural "Only recent stories shown from %(count)s sites."
-msgstr[0] "מוצגות רק כתבות עדכניות מאתר אחד: %(count)s."
-msgstr[1] "מוצגים רק פריטים עדכניים מ־%(count)s אתרים."
+msgstr[0] "מוצגות רק כתבות עדכניות מ־%(count)s אתר."
+msgstr[1] "מוצגות רק כתבות עדכניות מ־%(count)s אתרים."
 
 #, python-format
 msgid "Only recent stories shown from %(indexed)s of %(count)s site."
 msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
-msgstr[0] "מוצגות רק כתבות אחרונות מתוך %(indexed)s מתוך %(count)s אתר."
+msgstr[0] "מוצגות רק כתבות אחרונות מ־%(indexed)s מתוך %(count)s אתר."
 msgstr[1] "מוצגות רק כתבות אחרונות מ־%(indexed)s מתוך %(count)s אתרים."
 
 msgid "Only recent stories shown from this site are available."
@@ -4608,13 +4608,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "הצגת ספירות רק בתיקיות מכווצות"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "לקצר רק כתבות משותפות ארוכות בבלוגי blurblog"
+msgstr "לקצר רק כתבות משותפות ארוכות ב־Blurblog"
 
 msgid "Open"
 msgstr "פתיחה"
 
 msgid "Open All Site Stories"
-msgstr "פתיחת כל כתבות האתר"
+msgstr "פתיחת כל כתבות האתרים"
 
 msgid "Open Everything"
 msgstr "פתיחת הכול"
@@ -4668,7 +4668,7 @@ msgid "Open the Intelligence Trainer"
 msgstr "פתחו את מאמן הבינה"
 
 msgid "Open the feed and story title menu"
-msgstr "פתיחת תפריט ההזנה וכותרת הכתבה"
+msgstr "פתיחת תפריט הפיד וכותרת הכתבה"
 
 msgid "Open the first story"
 msgstr "פתח את הכתבה הראשונה"
@@ -4683,7 +4683,7 @@ msgid "Open the site in a new window and mark it as read"
 msgstr "פתח את האתר בחלון חדש וסמן אותו כנקרא"
 
 msgid "Open the trainer for any feed"
-msgstr "פתחו את כלי האימון עבור כל עדכון"
+msgstr "פתחו את כלי האימון עבור כל פיד"
 
 msgid "Open this story in NewsBlur"
 msgstr "פתיחת הכתבה הזו ב-NewsBlur"
@@ -4750,7 +4750,7 @@ msgstr "עמוד למטה"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
-msgstr "גלילה מטה בעזרת %(slider)s %(percent)s מהמסך"
+msgstr "גלילה מטה ב־%(slider)s %(percent)s מהמסך"
 
 msgid "Page up"
 msgstr "עמוד למעלה"
@@ -4762,7 +4762,7 @@ msgid "Paired with full-text search, the archive doubles as a personal knowledge
 msgstr "בשילוב עם חיפוש בטקסט מלא, הארכיון הופך למאגר ידע אישי."
 
 msgid "Parse this RSS/XML Feed"
-msgstr "נתח את הזנת ה-RSS/XML הזו"
+msgstr "ניתוח פיד ה-RSS/XML הזה"
 
 msgid "Parsing..."
 msgstr "מנתח..."
@@ -4823,10 +4823,10 @@ msgid "Platform"
 msgstr "פלטפורמה"
 
 msgid "Play Last"
-msgstr "נגן את האחרון"
+msgstr "הפעל בסוף התור"
 
 msgid "Play Next"
-msgstr "הפעל הבא"
+msgstr "הפעל כבא בתור"
 
 msgid "Play in Mini Media Player"
 msgstr "הפעל בנגן מדיה מוקטן"
@@ -4889,7 +4889,7 @@ msgid "Positive you want to delete your saved stories?"
 msgstr "בטוח שברצונך למחוק את הכתבות השמורות שלך?"
 
 msgid "Positive you want to delete your shared stories?"
-msgstr "בטוח שברצונך למחוק את הסיפורים ששיתפת?"
+msgstr "בטוח שברצונך למחוק את הכתבות ששיתפת?"
 
 msgid "Post"
 msgstr "פרסם"
@@ -4911,7 +4911,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "ארכיון פרימיום"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -4920,7 +4920,7 @@ msgid "Premium Pro Account"
 msgstr "חשבון Premium Pro"
 
 msgid "Premium Subscription"
-msgstr "מינוי פרימיום"
+msgstr "מינוי Premium"
 
 msgid "Premium Trial"
 msgstr "תקופת ניסיון Premium"
@@ -4936,7 +4936,7 @@ msgstr "פרטי Premium"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
-msgstr "גופנים מתקדמים דורשים %(link_start)sחשבון פרימיום%(link_end)s"
+msgstr "גופני Premium דורשים %(link_start)sחשבון Premium%(link_end)s"
 
 msgid "Premium renewal"
 msgstr "חידוש Premium"
@@ -4948,7 +4948,7 @@ msgid "Premium status"
 msgstr "סטטוס Premium"
 
 msgid "Premium users can make their blurblog private."
-msgstr "משתמשי Premium יכולים להפוך את הבלוג המטושטש שלהם לפרטי."
+msgstr "משתמשי Premium יכולים להפוך את ה־Blurblog שלהם לפרטי."
 
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "לחצו על / בכל מקום כדי לעבור ישירות לשדה החיפוש."
@@ -4988,7 +4988,7 @@ msgid "Privacy"
 msgstr "פרטיות"
 
 msgid "Privacy options for your blurblog"
-msgstr "אפשרויות פרטיות לבלוג הטשטוש שלך"
+msgstr "אפשרויות פרטיות ל־Blurblog שלך"
 
 msgid "Private by default — banking, medical, and email sites are never archived"
 msgstr "פרטי כברירת מחדל — אתרי בנקאות, רפואה ודוא״ל לעולם אינם נשמרים בארכיון"
@@ -5012,7 +5012,7 @@ msgid "Profile"
 msgstr "פרופיל"
 
 msgid "Profile &amp; Blurblog"
-msgstr "בלוג הטשטוש של פרופיל &amp;"
+msgstr "פרופיל &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "פרטי פרופיל"
@@ -5039,10 +5039,10 @@ msgid "Publisher"
 msgstr "מפרסם"
 
 msgid "Push Expires"
-msgstr "תפוגת התראות הדחיפה"
+msgstr "תפוגת הדחיפה"
 
 msgid "Push expires"
-msgstr "תוקף ההתראות בדחיפה פג"
+msgstr "תפוגת הדחיפה"
 
 msgid "Questions"
 msgstr "שאלות"
@@ -5054,17 +5054,17 @@ msgid ""
 msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
-msgstr[0] "נוסף לתור סיפור %(count)s למיון (%(remaining)s נותרו). הקטגוריות יופיעו כשהסיפורים יעובדו."
+msgstr[0] "%(count)s כתבה נוספה לתור לסיווג (%(remaining)s נותרו). הקטגוריות יופיעו עם עיבוד הכתבות."
 msgstr[1] "%(count)s כתבות נוספו לתור לקטלוג (%(remaining)s נותרו). הקטגוריות יופיעו עם עיבוד הכתבות."
 
 #, python-format
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
-msgstr[0] "נוסף לתור סיפור %(count)s למיון. הקטגוריות יופיעו כשהסיפורים יעובדו."
+msgstr[0] "%(count)s כתבה נוספה לתור לסיווג. הקטגוריות יופיעו עם עיבוד הכתבות."
 msgstr[1] "הועלו לתור %(count)s כתבות לסיווג. הקטגוריות יופיעו עם עיבוד הכתבות."
 
 msgid "Quick search for a site"
-msgstr "חיפוש מהיר באתר"
+msgstr "חיפוש מהיר של אתר"
 
 msgid "Quota exceeded"
 msgstr "חריגה מהמכסה"
@@ -5073,21 +5073,21 @@ msgid "Quote"
 msgstr "ציטוט"
 
 msgid "RSS Feed"
-msgstr "הזנת RSS"
+msgstr "פיד RSS"
 
 #, python-format
 msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
-msgstr "הזנות RSS של תיקיות הן תכונת %(link_start)sפרימיום%(link_end)s."
+msgstr "פידי RSS של תיקיות הם תכונת %(link_start)sPremium%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "הזנות RSS לתגיות של כתבות שמורות הן %(link_start)sתכונת Premium%(link_end)s."
+msgstr "פידי RSS לתגיות של כתבות שמורות הם %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "כתובת RSS/XML: "
 
 msgid "Re-analysis timed out. Please try again."
-msgstr "ניתוח מחדש הסתיים בזמן הקצוב. נא לנסות שוב."
+msgstr "הזמן שהוקצב לניתוח החוזר הסתיים. נא לנסות שוב."
 
 msgid "Re-analyze"
 msgstr "נתח מחדש"
@@ -5108,16 +5108,16 @@ msgid "Re-categorizing..."
 msgstr "מקטלג מחדש..."
 
 msgid "Read Stories"
-msgstr "קריאת כתבות"
+msgstr "כתבות שנקראו"
 
 msgid "Read Stories:"
-msgstr "קריאת כתבות:"
+msgstr "כתבות שנקראו:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
 msgstr ""
-"קראו את כל העדכונים שבתיקייה כרצף גלילה אחד, בסדר כרונולוגי. בשילוב עם אימון, הנהר מציג את הכתבות הטובות "
+"קראו את כל הפידים שבתיקייה כרצף גלילה אחד, בסדר כרונולוגי. בשילוב עם אימון, הזרם מציג את הכתבות הטובות "
 "ביותר מכל המינויים שלכם."
 
 msgid "Read more on the NewsBlur Blog"
@@ -5145,14 +5145,14 @@ msgid "Read your feeds: unread stories, folders, search, and saved stories by ta
 msgstr "קראו את הפידים שלכם: כתבות שלא נקראו, תיקיות, חיפוש וכתבות שמורות לפי תג"
 
 msgid "Reading"
-msgstr "בקריאה"
+msgstr "קריאה"
 
 msgid "Reading article..."
 msgstr "הכתבה נטענת..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "קריאת כתבות שמורות לפי תגית היא %(link_start)sתכונת פרימיום%(link_end)s."
+msgstr "קריאת כתבות שמורות לפי תגית היא %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "Reading saved story..."
 msgstr "טוען כתבה שמורה..."
@@ -5231,7 +5231,7 @@ msgid "Refunded $%(amount)s"
 msgstr "הוחזרו $%(amount)s"
 
 msgid "Regenerate Briefing"
-msgstr "יצירת תדרוך מחדש"
+msgstr "יצירת התדריך מחדש"
 
 msgid "Regex"
 msgstr "ביטוי רגולרי"
@@ -5247,7 +5247,7 @@ msgid "Related Sites"
 msgstr "אתרים קשורים"
 
 msgid "Related stories are only available for premium subscribers."
-msgstr "סיפורים קשורים זמינים רק למנויי Premium."
+msgstr "כתבות קשורות זמינות רק למנויי Premium."
 
 msgid "Reload NewsBlur"
 msgstr "טעינה מחדש של NewsBlur"
@@ -5295,7 +5295,7 @@ msgstr "שונה השם"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "שם הסיפור %(count)s שונה ל־\"%(category)s\""
+msgstr[0] "שונתה הקטגוריה של %(count)s כתבה ל־\"%(category)s\""
 msgstr[1] "שונתה הקטגוריה של %(count)s כתבות ל־\"%(category)s\""
 
 msgid "Renaming..."
@@ -5311,17 +5311,17 @@ msgid "Request timed out. The AI service took too long to respond. Please try ag
 msgstr "תם הזמן הקצוב לבקשה. שירות ה-AI התעכב בתגובה. נסו שוב."
 
 msgid "Requested"
-msgstr "התבקש"
+msgstr "הבקשה נשלחה"
 
 msgid "Requests to Follow You"
 msgstr "בקשות לעקוב אחריך"
 
 #, python-format
 msgid "Requires %(tier_link)s"
-msgstr "נדרשת %(tier_link)s"
+msgstr "נדרש %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "נדרש ארכיון פרימיום"
+msgstr "נדרש Premium Archive"
 
 msgid "Reset"
 msgstr "איפוס"
@@ -5405,7 +5405,7 @@ msgstr "שמירה"
 msgid "Save %(count)s classifier"
 msgid_plural "Save %(count)s classifiers"
 msgstr[0] "שמור %(count)s מסווג"
-msgstr[1] "שמירת מסווגים עבור %(count)s"
+msgstr[1] "שמירת %(count)s מסווגים"
 
 #, python-format
 msgid "Save %(count)s folder"
@@ -5488,7 +5488,7 @@ msgid "Saved Tags"
 msgstr "תגיות שמורות"
 
 msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
-msgstr "כתבות שמורות נשמרות לעד, גם מעדכונים שתבטלו את המינוי אליהם בהמשך."
+msgstr "כתבות שמורות נשמרות לעד, גם מפידים שתבטלו את המינוי אליהם בהמשך."
 
 msgid "Saved stories organized with custom tags"
 msgstr "כתבות שמורות מאורגנות באמצעות תגים מותאמים אישית"
@@ -5500,20 +5500,20 @@ msgid "Saved:"
 msgstr "נשמר:"
 
 msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium or higher."
-msgstr "שמירת כתבות זמינה בכל התוכניות. תגים ועדכוני RSS לתגים דורשים תוכנית Premium ומעלה."
+msgstr "שמירת כתבות זמינה בכל התוכניות. תגים ופידי RSS לתגים דורשים תוכנית Premium ומעלה."
 
 msgid "Saving..."
 msgstr "שומר..."
 
 msgid "Schedule when your briefing is generated"
-msgstr "תזמן מתי התקציר שלך ייווצר"
+msgstr "תזמן מתי התדריך שלך ייווצר"
 
 msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
 msgstr ""
-"תדרוכים מתוזמנים דורשים מינוי לארכיון Premium. במסגרת התוכנית שלכם, תדרוכים נוצרים רק כשלוחצים על כפתור "
-"Generate."
+"תדריכים מתוזמנים דורשים מינוי Premium Archive. במסגרת התוכנית שלכם, תדריכים נוצרים רק כשלוחצים על כפתור "
+"היצירה."
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "שליחה מתוזמנת (פעם ביום או פעמיים ביום)"
@@ -5530,13 +5530,13 @@ msgstr "גלילה לתגובות"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "גלילה מעלה/מטה בכתבה באמצעות %(slider)s %(pixels)s פיקסלים."
+msgstr "גלילה מעלה/מטה בכתבה ב־%(slider)s %(pixels)s פיקסלים."
 
 msgid "Search"
 msgstr "חיפוש"
 
 msgid "Search All Site Stories"
-msgstr "חיפוש בכל כתבות האתר"
+msgstr "חיפוש בכל כתבות האתרים"
 
 msgid "Search YouTube channels..."
 msgstr "חיפוש בערוצי YouTube..."
@@ -5570,7 +5570,7 @@ msgstr "חיפוש חברים"
 
 #, python-format
 msgid "Search is a %(link_start)spremium feature%(link_end)s."
-msgstr "חיפוש הוא %(link_start)sתכונת פרימיום%(link_end)s."
+msgstr "חיפוש הוא %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "Search keywords"
 msgstr "חיפוש מילות מפתח"
@@ -5614,7 +5614,7 @@ msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "מחפש ב־<b>%(feed_title)s</b> את \"<b>%(query)s</b>\""
 
 msgid "Searching RSS feeds..."
-msgstr "מחפש הזנות RSS..."
+msgstr "מחפש בפידי RSS..."
 
 msgid "Searching saved stories..."
 msgstr "מחפש בכתבות השמורות..."
@@ -5676,7 +5676,7 @@ msgid "Select a story to read"
 msgstr "יש לבחור כתבה לקריאה"
 
 msgid "Select any story and click \"Ask AI\""
-msgstr "בחרו כתבה כלשהי ולחצו על \"שאלו את AI\""
+msgstr "בחרו כתבה כלשהי ולחצו על \"שאלו את ה-AI\""
 
 msgid "Select classifiers to remove"
 msgstr "בחירת מסווגים להסרה"
@@ -5763,13 +5763,13 @@ msgstr "שיתוף כתבות"
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
-msgstr "שתפו סיפורים עם הערות משלכם בבלורבלוג הציבורי שלכם. עקבו אחר חברים כדי לראות מה הם קוראים ומשתפים."
+msgstr "שתפו כתבות עם הערות משלכם ב־Blurblog הציבורי שלכם. עקבו אחר חברים כדי לראות מה הם קוראים ומשתפים."
 
 msgid "Share the link."
 msgstr "שתף את הקישור."
 
 msgid "Share this link. When someone signs up and subscribes to premium, you earn a free year."
-msgstr "שתף את הקישור הזה. כשמישהו יירשם וירכוש מינוי פרימיום, תקבל שנת מנוי בחינם."
+msgstr "שתף את הקישור הזה. כשמישהו יירשם וירכוש מינוי Premium, תקבל שנת מנוי בחינם."
 
 msgid "Share this story"
 msgstr "שיתוף הכתבה"
@@ -5792,7 +5792,7 @@ msgstr "כתבות משותפות ו-Blurblog"
 #, python-format
 msgid "Shared by %(count)s person"
 msgid_plural "Shared by %(count)s people"
-msgstr[0] "שותף על ידי אדם %(count)s"
+msgstr[0] "שותף על ידי %(count)s אדם"
 msgstr[1] "שותף על ידי %(count)s אנשים"
 
 msgid "Shared with NewsBlur.com"
@@ -5821,7 +5821,7 @@ msgstr "קניות"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "קצר"
+msgstr "נמוך"
 
 msgid "Show"
 msgstr "הצג"
@@ -5833,10 +5833,10 @@ msgid "Show Global Shared Stories"
 msgstr "הצג כתבות משותפות גלובליות"
 
 msgid "Show Good Reads"
-msgstr "הצגת ביקורות חיוביות"
+msgstr "הצגת קריאות מומלצות"
 
 msgid "Show Infrequent Site Stories"
-msgstr "הצג סיפורים מאתרים המתעדכנים לעיתים רחוקות"
+msgstr "הצגת כתבות מאתרים שמתעדכנים לעיתים רחוקות"
 
 msgid "Show Long Reads"
 msgstr "הצגת כתבות ארוכות"
@@ -5845,7 +5845,7 @@ msgid "Show Widely Read Stories"
 msgstr "הצגת כתבות שנקראו רבות"
 
 msgid "Show a preview of the story"
-msgstr "הצגת תצוגה מקדימה של הסיפור"
+msgstr "הצגת תצוגה מקדימה של הכתבה"
 
 msgid "Show all animations"
 msgstr "הצגת כל ההנפשות"
@@ -5854,7 +5854,7 @@ msgid "Show all comments"
 msgstr "הצגת כל התגובות"
 
 msgid "Show all stories"
-msgstr "הצג את כל הסיפורים"
+msgstr "הצג את כל הכתבות"
 
 msgid "Show buttons on the right (when there is room)"
 msgstr "הצגת לחצנים מימין (כשיש מקום)"
@@ -5896,7 +5896,7 @@ msgid "Show the dashboard when loading NewsBlur"
 msgstr "הצגת לוח הבקרה בעת טעינת NewsBlur"
 
 msgid "Show the entire story, even if really, really long"
-msgstr "הצגת הסיפור כולו, גם אם הוא ארוך מאוד"
+msgstr "הצגת הכתבה כולה, גם אם היא ארוכה מאוד"
 
 msgid "Show tooltips"
 msgstr "הצגת הסברים קופצים"
@@ -5930,7 +5930,7 @@ msgid "Sign up"
 msgstr "הרשמה"
 
 msgid "Sign up to read your own feeds."
-msgstr "הירשמו כדי לקרוא את העדכונים שלכם."
+msgstr "הירשמו כדי לקרוא את הפידים שלכם."
 
 msgid "Signup"
 msgstr "הרשמה"
@@ -5981,7 +5981,7 @@ msgid "Skip this step "
 msgstr "דלג על שלב זה "
 
 msgid "Small feeds with the fastest-growing subscriber base"
-msgstr "עדכונים קטנים עם בסיס המנויים הצומח במהירות הרבה ביותר"
+msgstr "פידים קטנים עם בסיס המנויים שצומח הכי מהר"
 
 msgid "Small image thumbnail on the left"
 msgstr "תמונה ממוזערת קטנה משמאל"
@@ -6007,16 +6007,16 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "מצטערים, אין תוצאות שתואמות ל־\"%(value_1)s\"."
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "מצטערים, לא ניתן היה להעביר את הסיפור המקורי<br />."
+msgstr "מצטערים, לא ניתן היה להעביר את הכתבה<br />המקורית."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "מצטערים, לא ניתן היה לחלץ את הטקסט של הכתבה<br />."
+msgstr "מצטערים, לא ניתן היה לחלץ<br />את הטקסט של הכתבה."
 
 msgid "Sorry, there was a problem deleting feeds."
-msgstr "מצטערים, אירעה בעיה במחיקת העדכונים."
+msgstr "מצטערים, אירעה בעיה במחיקת הפידים."
 
 msgid "Sorry, there was a problem moving feeds."
-msgstr "מצטערים, אירעה בעיה בהעברת העדכונים."
+msgstr "מצטערים, אירעה בעיה בהעברת הפידים."
 
 msgid "Sorry, there was an unhandled error."
 msgstr "מצטערים, אירעה שגיאה לא מטופלת."
@@ -6028,7 +6028,7 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "מצטערים, לא ניתן לפרסם את התגובה. כנראה בגלל Adblock."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "מצטערים, לא ניתן היה לשתף את הסיפור הזה. כנראה בגלל Adblock."
+msgstr "מצטערים, לא ניתן היה לשתף את הכתבה הזו. כנראה בגלל Adblock."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
 msgstr "מצטערים, אי אפשר היה לבטל את השיתוף של הכתבה הזו. כנראה בגלל Adblock."
@@ -6040,16 +6040,16 @@ msgid "Sort By"
 msgstr "מיון לפי"
 
 msgid "Sort the river oldest-first or newest-first from the feed options popover."
-msgstr "מחלונית אפשרויות העדכון תוכלו למיין את הנהר מהישן לחדש או מהחדש לישן."
+msgstr "מחלונית אפשרויות הפיד תוכלו למיין את הזרם מהישן לחדש או מהחדש לישן."
 
 msgid "Sort, filter, and display options"
 msgstr "אפשרויות מיון, סינון ותצוגה"
 
 msgid "Source feeds"
-msgstr "עדכוני מקור"
+msgstr "פידי מקור"
 
 msgid "Spacing between feeds and story titles"
-msgstr "ריווח בין העדכונים לכותרות הכתבות"
+msgstr "ריווח בין הפידים לכותרות הכתבות"
 
 msgid "Spanish"
 msgstr "ספרדית"
@@ -6066,7 +6066,7 @@ msgstr "פיצול"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "פצל את \"%(category)s\" (%(count)s סיפור) ל:"
+msgstr[0] "פצל את \"%(category)s\" (%(count)s כתבה) ל:"
 msgstr[1] "פיצול „%(category)s” (%(count)s כתבות) ל־:"
 
 #, python-format
@@ -6076,7 +6076,7 @@ msgstr "פיצול של \"%(value_1)s\" ל:"
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
-msgstr[0] "הפיצול הושלם: סיפור %(count)s סווג מחדש"
+msgstr[0] "הפיצול הושלם: %(count)s כתבה סווגה מחדש"
 msgstr[1] "הפיצול הושלם: %(count)s כתבות סווגו מחדש"
 
 msgid "Split failed to apply"
@@ -6088,7 +6088,7 @@ msgstr "הפונקציונליות לפיצול תתווסף בקרוב"
 #, python-format
 msgid "Split partially applied: %(count)s story recategorized"
 msgid_plural "Split partially applied: %(count)s stories recategorized"
-msgstr[0] "הפיצול הוחל חלקית: סווגה מחדש כתבה אחת (%(count)s)"
+msgstr[0] "הפיצול הוחל חלקית: %(count)s כתבה סווגה מחדש"
 msgstr[1] "הפיצול הוחל חלקית: %(count)s כתבות סווגו מחדש"
 
 msgid "Split with AI"
@@ -6098,7 +6098,7 @@ msgid "Sports"
 msgstr "ספורט"
 
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
-msgstr "שדרגו את סיסמת האתר. אם הוא ייבחר, האתר יופיע במשך שבוע בלוח המחוונים של NewsBlur."
+msgstr "שדרגו את סיסמת האתר. אם הוא ייבחר, האתר יופיע במשך שבוע בלוח הבקרה של NewsBlur."
 
 #, python-format
 msgid "Stale %(date)s"
@@ -6139,7 +6139,7 @@ msgid "Status"
 msgstr "סטטוס"
 
 msgid "Stay on the same feed/folder"
-msgstr "להישאר באותו מקור/תיקייה"
+msgstr "להישאר באותו פיד/תיקייה"
 
 #, python-format
 msgid "Step %(step)s of %(count)s"
@@ -6164,7 +6164,7 @@ msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "כתבות נשמרות במטמון לקריאה לא מקוונת, עם רענון אוטומטי ברקע."
 
 msgid "Stories can stay unread forever"
-msgstr "כתבות יכולות להישאר לא נקראו לנצח"
+msgstr "כתבות יכולות להישאר לא נקראות לנצח"
 
 msgid "Stories covered by 3+ feeds"
 msgstr "כתבות שמופיעות ב־3 פידים ומעלה"
@@ -6174,7 +6174,7 @@ msgid "Stories from %(start_date)s to %(end_date)s"
 msgstr "כתבות מ־%(start_date)s עד %(end_date)s"
 
 msgid "Stories from feeds that rarely publish"
-msgstr "כתבות מעדכונים שמתפרסמים לעיתים רחוקות"
+msgstr "כתבות מפידים שמפרסמים לעיתים רחוקות"
 
 msgid "Stories in archive"
 msgstr "כתבות בארכיון"
@@ -6182,11 +6182,11 @@ msgstr "כתבות בארכיון"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "סיפורים שסומנו כנקראים לאחר <b>%(days)s יום</b>"
-msgstr[1] "סיפורים שסומנו כנקראו אחרי <b>%(days)s ימים</b>"
+msgstr[0] "כתבות יסומנו כנקראו לאחר <b>%(days)s יום</b>"
+msgstr[1] "כתבות יסומנו כנקראו לאחר <b>%(days)s ימים</b>"
 
 msgid "Stories matching your trained topics and authors"
-msgstr "סיפורים שתואמים לנושאים ולכותבים שאימנת"
+msgstr "כתבות שתואמות לנושאים ולכותבים שאימנת"
 
 msgid "Stories never expire or disappear"
 msgstr "כתבות לעולם אינן פוקעות או נעלמות"
@@ -6197,7 +6197,7 @@ msgstr "כתבות חדשות יותר מ־%(date)s"
 
 #, python-format
 msgid "Stories older than %(date)s"
-msgstr "כתבות מלפני יותר מ-%(date)s"
+msgstr "כתבות שפורסמו לפני %(date)s"
 
 #, python-format
 msgid "Stories on %(date)s"
@@ -6273,16 +6273,16 @@ msgid "Story shows in Focus view"
 msgstr "הכתבה מוצגת בתצוגת המיקוד"
 
 msgid "Story side options"
-msgstr "אפשרויות בצד הסיפור"
+msgstr "אפשרויות בצד הכתבה"
 
 msgid "Story side options buttons"
-msgstr "כפתורי אפשרויות בצד הסיפור"
+msgstr "כפתורי אפשרויות בצד הכתבה"
 
 msgid "Story side options placement"
 msgstr "מיקום אפשרויות הצד של הכתבה"
 
 msgid "Story title styling"
-msgstr "עיצוב כותרת הסיפור"
+msgstr "עיצוב כותרת הכתבה"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "הזרם נקטע. לא התקבלה תגובה במשך 10 שניות."
@@ -6302,7 +6302,7 @@ msgstr "הירשם"
 #, python-format
 msgid "Subscribe to %(count)s site"
 msgid_plural "Subscribe to %(count)s sites"
-msgstr[0] "הירשם לאתר %(count)s"
+msgstr[0] "הרשמה ל־%(count)s אתר"
 msgstr[1] "הרשמה ל־%(count)s אתרים"
 
 #, python-format
@@ -6320,7 +6320,7 @@ msgid "Subscribe to Premium Archive"
 msgstr "הירשמו ל-Premium Archive"
 
 msgid "Subscribe to YouTube channels and playlists as RSS feeds."
-msgstr "הירשמו לערוצי YouTube ולרשימות השמעה כעדכוני RSS."
+msgstr "הירשמו לערוצי YouTube ולרשימות השמעה כפידי RSS."
 
 msgid "Subscribe to a new feed and its entire available history back-fills automatically."
 msgstr "כשנרשמים לפיד חדש, כל ההיסטוריה הזמינה שלו מתווספת אוטומטית."
@@ -6345,10 +6345,10 @@ msgid "Subscribe to r/%(value_1)s"
 msgstr "הירשם ל־r/%(value_1)s"
 
 msgid "Subscribe to subreddits as RSS feeds."
-msgstr "הירשמו ל-subreddits בתור הזנות RSS."
+msgstr "הירשמו ל-subreddits בתור פידי RSS."
 
 msgid "Subscribed"
-msgstr "רשומים כמנויים"
+msgstr "רשום"
 
 msgid "Subscribed with errors"
 msgstr "ההרשמה בוצעה עם שגיאות"
@@ -6384,7 +6384,7 @@ msgid "Summarize in one sentence"
 msgstr "סיכום במשפט אחד"
 
 msgid "Sun"
-msgstr "יום א׳"
+msgstr "א׳"
 
 msgid "Sunday"
 msgstr "יום ראשון"
@@ -6394,13 +6394,13 @@ msgstr "סלידה חזקה במיוחד "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
-msgstr "מתווסף באמצעות בדיקות כל %(value_1)s"
+msgstr "בתוספת בדיקות כל %(value_1)s"
 
 msgid "Switch between views (original, feed, text, story)"
-msgstr "מעבר בין תצוגות (מקורית, עדכון, טקסט, כתבה)"
+msgstr "מעבר בין תצוגות (מקורית, פיד, טקסט, כתבה)"
 
 msgid "Switch focus/unread"
-msgstr "העברת המיקוד/לא נקראו"
+msgstr "מעבר בין מיקוד ללא נקראו"
 
 msgid "Switch models per question. Each answer is labeled with the model that wrote it."
 msgstr "החליפו מודל לכל שאלה. בכל תשובה מצוין איזה מודל כתב אותה."
@@ -6425,7 +6425,7 @@ msgid "Tag"
 msgstr "תגית"
 
 msgid "Tag RSS Feed"
-msgstr "עדכון RSS של תג"
+msgstr "פיד RSS של התגית"
 
 msgid "Tag Settings"
 msgstr "הגדרות תגיות"
@@ -6469,7 +6469,7 @@ msgid "Technology"
 msgstr "טכנולוגיה"
 
 msgid "Temporarily turn off feeds"
-msgstr "כיבוי זמני של העדכונים"
+msgstr "כיבוי זמני של פידים"
 
 msgid "Test failed"
 msgstr "הבדיקה נכשלה"
@@ -6506,15 +6506,15 @@ msgid "Text filters found no stories in this view."
 msgstr "מסנני הטקסט לא מצאו כתבות בתצוגה זו."
 
 msgid "Text view extracts the story"
-msgstr "תצוגת טקסט מחלצת את הסיפור"
+msgstr "תצוגת טקסט מחלצת את הכתבה"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
-msgstr "תודה! יש לך %(bold_start)sחשבון פרימיום%(bold_end)s."
+msgstr "תודה! יש לך %(bold_start)sחשבון Premium%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "תודה! יש לך %(bold_start)sחשבון ארכיון פרימיום%(bold_end)s."
+msgstr "תודה! יש לך %(bold_start)sחשבון Premium Archive%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
@@ -6554,14 +6554,14 @@ msgstr "הבלוג של NewsBlur"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
-msgstr "תצוגת הטקסט המלאה של %(icon)s היא %(link_start)sתכונת פרימיום%(link_end)s."
+msgstr "%(icon)s תצוגת הטקסט המלאה היא %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "The full NewsBlur API is open and documented for custom integrations."
 msgstr "ממשק ה-API המלא של NewsBlur פתוח ומתועד לשילובים מותאמים אישית."
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "נהר החדשות המלא הוא %(link_start)sתכונת פרימיום%(link_end)s."
+msgstr "זרם החדשות המלא הוא %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "רשימת כל קיצורי המקלדת"
@@ -6570,12 +6570,12 @@ msgid "The gift has been applied to your account."
 msgstr "המתנה הוחלה על חשבונך."
 
 msgid "The intelligence slider filters stories."
-msgstr "מחוון רמת העניין מסנן סיפורים."
+msgstr "מחוון רמת העניין מסנן כתבות."
 
 msgid ""
 "The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
 "stories."
-msgstr "מחוון החוכמה בפינה השמאלית התחתונה מסנן בין כל הסיפורים, הסיפורים שלא נקראו וסיפורי המיקוד."
+msgstr "מחוון הבינה בפינה השמאלית התחתונה מסנן בין כל הכתבות, הכתבות שלא נקראו וכתבות המיקוד."
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
@@ -6583,7 +6583,7 @@ msgid ""
 msgstr "פקודת ההתחברות פותחת את הדפדפן לאימות OAuth. האסימון נשמר מקומית ונשלח רק ל-API של NewsBlur."
 
 msgid "The most important stories from your feeds"
-msgstr "הכתבות החשובות ביותר מהעדכונים שלך"
+msgstr "הכתבות החשובות ביותר מהפידים שלך"
 
 msgid "The original page has been disabled by the publisher."
 msgstr "הדף המקורי הושבת על ידי המפרסם."
@@ -6592,7 +6592,7 @@ msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "קוד ה-HTML של הדף נטען ומנותח כדי לחלץ את מבנה התוכן."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
-msgstr "התצוגה שתבחרו נשמרת לכל אתר, כך שעדכונים שמציגים תקצירים בלבד יכולים להציג טקסט כברירת מחדל."
+msgstr "התצוגה שתבחרו נשמרת לכל אתר, כך שפידים שמציגים תקצירים בלבד יכולים להציג טקסט כברירת מחדל."
 
 msgid "Themes & Customization"
 msgstr "ערכות נושא והתאמה אישית"
@@ -6623,7 +6623,7 @@ msgid "There was a problem deleting your classifiers."
 msgstr "אירעה בעיה במחיקת המסווגים שלך."
 
 msgid "There was a problem deleting your saved stories."
-msgstr "אירעה בעיה במחיקת הסיפורים השמורים שלך."
+msgstr "אירעה בעיה במחיקת הכתבות השמורות שלך."
 
 msgid "There was a problem deleting your shared stories."
 msgstr "אירעה בעיה במחיקת הכתבות המשותפות שלך."
@@ -6632,7 +6632,7 @@ msgid "There was a problem deleting your sites."
 msgstr "אירעה בעיה במחיקת האתרים שלך."
 
 msgid "There was a problem fetching the feed from this URL."
-msgstr "אירעה בעיה באחזור העדכון מכתובת URL זו."
+msgstr "אירעה בעיה באחזור הפיד מכתובת URL זו."
 
 msgid "There was a problem loading your training data. Please try again."
 msgstr "אירעה בעיה בטעינת נתוני האימון שלך. נסו שוב."
@@ -6653,7 +6653,7 @@ msgid "There's no limit. Save as many stories as you want and they're kept forev
 msgstr "אין הגבלה. שמרו כמה כתבות שתרצו והן יישמרו לנצח."
 
 msgid "These clusters were found because other subscribers share these feeds."
-msgstr "האשכולות האלה נמצאו כי מנויים אחרים משתפים את הפידים האלה."
+msgstr "האשכולות האלה נמצאו כי מנויים אחרים רשומים גם הם לפידים האלה."
 
 msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
@@ -6666,7 +6666,7 @@ msgid "They redeem it."
 msgstr "הם מממשים אותו."
 
 msgid "Thinking"
-msgstr "חושב"
+msgstr "חשיבה"
 
 msgid "Thinking..."
 msgstr "חושב..."
@@ -6695,11 +6695,11 @@ msgid ""
 msgstr "ההתאמה כוללת את כל טקסט הכתבה ותתאים רק לכתבה המדויקת הזו. כדאי להשתמש בביטוי או בדפוס קצרים יותר."
 
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
-msgstr "ההתאמה כוללת את כל הכותרת ותתאים רק לידיעה המדויקת הזו. במקום זאת, בחרו חלק מהכותרת."
+msgstr "ההתאמה כוללת את כל הכותרת ותתאים רק לכתבה המדויקת הזו. במקום זאת, בחרו חלק מהכותרת."
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "רשימת הכתבות שנקראו היא %(link_start)sתכונת פרימיום%(link_end)s."
+msgstr "רשימת הכתבות שנקראו היא %(link_start)sתכונת Premium%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "הפעולה תסיר את התג מכל הכתבות השמורות. הכתבות יישארו שמורות ללא התג הזה."
@@ -6712,8 +6712,8 @@ msgid ""
 "see the exact status codes for the feed. The more errors for the feed, the longer time taken between "
 "fetches."
 msgstr ""
-"האתר הזה זורק שגיאות ואינו במצב תקין. בדקו בתחתית תיבת הדו־שיח את קודי המצב המדויקים של העדכון. ככל שיש "
-"יותר שגיאות בעדכון, כך יחלוף זמן רב יותר בין שליפות."
+"האתר הזה זורק שגיאות ואינו במצב תקין. בדקו בתחתית תיבת הדו־שיח את קודי המצב המדויקים של הפיד. ככל שיש יותר "
+"שגיאות בפיד, כך יחלוף זמן רב יותר בין שליפות."
 
 #, python-format
 msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors."
@@ -6739,7 +6739,7 @@ msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetc
 msgstr "פיד האינטרנט הזה <b>מושהה</b>. שדרגו ל־Premium Archive כדי לחדש את קבלת הכתבות."
 
 msgid "This will erase all existing feeds and folders."
-msgstr "פעולה זו תמחק את כל העדכונים והתיקיות הקיימים."
+msgstr "פעולה זו תמחק את כל הפידים והתיקיות הקיימים."
 
 msgid "This will prevent the browser extension from archiving pages from this domain in the future."
 msgstr "פעולה זו תמנע מתוסף הדפדפן לשמור בארכיון דפים מהדומיין הזה בעתיד."
@@ -6760,14 +6760,14 @@ msgid "Thursday"
 msgstr "יום חמישי"
 
 msgid "Tier"
-msgstr "דרגה"
+msgstr "מסלול"
 
 msgid "Time Period"
 msgstr "תקופת זמן"
 
 #, python-format
 msgid "Time: %(value_1)s"
-msgstr "שעה: %(value_1)s"
+msgstr "תקופה: %(value_1)s"
 
 msgid "Timezone"
 msgstr "אזור זמן"
@@ -6851,7 +6851,7 @@ msgstr "מחר, %(time)s"
 #, python-format
 msgid "Too many sites! Deselect %(count)s site..."
 msgid_plural "Too many sites! Deselect %(count)s sites..."
-msgstr[0] "יותר מדי אתרים! בטל/י את הבחירה של אתר %(count)s..."
+msgstr[0] "יותר מדי אתרים! בטלו את הבחירה ב־%(count)s אתר..."
 msgstr[1] "יש יותר מדי אתרים! בטלו את הבחירה ב־%(count)s אתרים..."
 
 msgid "Tools"
@@ -6873,7 +6873,7 @@ msgid "Top Level"
 msgstr "רמה עליונה"
 
 msgid "Top stories"
-msgstr "הסיפורים המובילים"
+msgstr "הכתבות המובילות"
 
 msgid "Track Changes"
 msgstr "מעקב אחר שינויים"
@@ -6882,7 +6882,7 @@ msgid "Train"
 msgstr "אימון"
 
 msgid "Train &amp; filter"
-msgstr "אמן את המסנן &amp;"
+msgstr "אימון &amp; סינון"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr "אמנו את NewsBlur להציג לכם את מה שאתם רוצים ולהסתיר את מה שלא. השליטה בידיים שלכם, לא בידי אלגוריתם."
@@ -6894,22 +6894,22 @@ msgid "Train and notification settings"
 msgstr "הגדרות אימון והתראות"
 
 msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
-msgstr "אימון הבינה: סימון מחברים, תגים, כותרות ועדכונים כמועדפים או כלא מועדפים"
+msgstr "אימון הבינה: סימון אהבתי או לא אהבתי על מחברים, תגים, כותרות ופידים"
 
 msgid "Train stories by author, tag, title"
-msgstr "אימון סיפורים לפי מחבר, תגית וכותרת"
+msgstr "אימון כתבות לפי מחבר, תגית וכותרת"
 
 msgid "Train stories on full text content"
 msgstr "אימון על כתבות לפי תוכן מלא"
 
 msgid "Train stories with regular expressions"
-msgstr "אימון סיפורים באמצעות ביטויים רגולריים"
+msgstr "אימון כתבות באמצעות ביטויים רגולריים"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "אימון על כתבות, חיפוש, שיתוף ותיוג — בדיוק כמו באתר"
 
 msgid "Train this classifier"
-msgstr "אמן/י את המסווג הזה"
+msgstr "אימון המסווג הזה"
 
 msgid "Train this site"
 msgstr "אמן את האתר הזה"
@@ -6918,7 +6918,7 @@ msgid "Train this story"
 msgstr "אימון על הכתבה הזו"
 
 msgid "Train your feeds to filter stories you like and dislike."
-msgstr "אמנו את העדכונים שלכם כדי לסנן כתבות שאהבתם או לא אהבתם."
+msgstr "אמנו את הפידים שלכם כדי לסנן כתבות שאהבתם או לא אהבתם."
 
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "אמן, תייג, חפש וארגן ניוזלטרים כמו כל פיד אחר"
@@ -6972,7 +6972,7 @@ msgid "Tuesday"
 msgstr "יום שלישי"
 
 msgid "Turn off automatic briefing generation"
-msgstr "כיבוי יצירה אוטומטית של תקצירים"
+msgstr "כיבוי היצירה האוטומטית של תדריכים"
 
 #, python-format
 msgid "Turn on this %(count)s site, please"
@@ -7040,7 +7040,7 @@ msgid "Unknown"
 msgstr "לא ידוע"
 
 msgid "Unknown Feed"
-msgstr "הזנה לא ידועה"
+msgstr "פיד לא ידוע"
 
 msgid "Unknown error"
 msgstr "שגיאה לא ידועה"
@@ -7082,7 +7082,7 @@ msgid "Unread stories never expire, so read at your own pace."
 msgstr "כתבות שלא נקראו לעולם לא פגות, כך שאפשר לקרוא בקצב שלכם."
 
 msgid "Unread+Focus:"
-msgstr "לא נקראו + מועדפים:"
+msgstr "לא נקראו + מיקוד:"
 
 msgid "Unsave this story"
 msgstr "הסר את השמירה של הכתבה"
@@ -7165,7 +7165,7 @@ msgid "Upgrade to Premium"
 msgstr "שדרוג ל-Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "שדרוג לארכיון פרימיום"
+msgstr "שדרוג ל־Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "שדרגו ל־Premium Archive כדי לקבל התראות מסיווגים"
@@ -7177,13 +7177,13 @@ msgid "Upgrade to Premium Pro"
 msgstr "שדרוג ל-Premium Pro"
 
 msgid "Upgrade to a Premium Archive account"
-msgstr "שדרוג לחשבון ארכיון Premium"
+msgstr "שדרוג לחשבון Premium Archive"
 
 msgid "Upgrade to a Premium account"
 msgstr "שדרוג לחשבון Premium"
 
 msgid "Upgrade to premium"
-msgstr "שדרוג למנוי פרימיום"
+msgstr "שדרוג ל־Premium"
 
 msgid "Upgrade your reading"
 msgstr "שדרגו את חוויית הקריאה"
@@ -7232,10 +7232,10 @@ msgid "Use the native browser context menu"
 msgstr "השתמשו בתפריט ההקשר המקורי של הדפדפן"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
-msgstr "השתמשו בתבנית כתובת ה-URL הזו בתוספי דפדפן ובקוראי עדכונים כדי להירשם ל-NewsBlur."
+msgstr "השתמשו בתבנית כתובת ה-URL הזו בתוספי דפדפן ובקוראי פידים כדי להירשם ל-NewsBlur."
 
 msgid "Use widgets to see unread counts and stories at a glance"
-msgstr "השתמשו בווידג'טים כדי לראות במבט חטוף את מספר הפריטים שלא נקראו ואת הסיפורים"
+msgstr "השתמשו בווידג'טים כדי לראות במבט חטוף את מספר הפריטים שלא נקראו ואת הכתבות"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
 msgstr "שימושי למעקב אחר התפתחותן של כתבות חדשותיות, מאמרים מתוקנים והודעות מוצר שמתעדכנות."
@@ -7244,10 +7244,10 @@ msgid "User Admin"
 msgstr "ניהול משתמשים"
 
 msgid "User is premium ARCHIVE, expires: "
-msgstr "למשתמש יש ארכיון פרימיום, תוקף עד: "
+msgstr "למשתמש יש Premium Archive, תוקף עד: "
 
 msgid "User is premium, expires: "
-msgstr "המשתמש הוא משתמש פרימיום, תוקף עד: "
+msgstr "המשתמש הוא משתמש Premium, תוקף עד: "
 
 msgid "Username"
 msgstr "שם משתמש"
@@ -7264,12 +7264,12 @@ msgstr[1] "שימוש בברירת המחדל: <b>%(days)s ימים</b>"
 #, python-format
 msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
 msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
-msgstr[0] "שימוש בברירת המחדל: <b>%(days)s יום</b> (מאת %(source)s)"
+msgstr[0] "שימוש בברירת המחדל: <b>%(days)s יום</b> (מתוך %(source)s)"
 msgstr[1] "שימוש בברירת המחדל: <b>%(days)s ימים</b> (מתוך %(source)s)"
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "בשימוש ברירת המחדל: <b>never</b> (מתוך %(source)s)"
+msgstr "שימוש בברירת המחדל: <b>לעולם לא</b> (מתוך %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "בשימוש בברירת המחדל: כתבות <b>לעולם לא</b> יסומנו אוטומטית כנקראו"
@@ -7312,10 +7312,10 @@ msgid "Web Feed"
 msgstr "פיד אינטרנט"
 
 msgid "Web Feeds"
-msgstr "הזנות אינטרנט"
+msgstr "פידי אינטרנט"
 
 msgid "Web Feeds from any website, even without RSS"
-msgstr "הזנות רשת מכל אתר, גם בלי RSS"
+msgstr "פידי אינטרנט מכל אתר, גם בלי RSS"
 
 msgid ""
 "Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
@@ -7323,7 +7323,7 @@ msgid ""
 msgstr "פידי אינטרנט מחייבים Premium Archive או Premium Pro, מכיוון שסריקת דפים צורכת יותר משאבים מאחזור RSS."
 
 msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
-msgstr "פידים מהאינטרנט נבדקים לפי אותו לוח זמנים כמו פידים רגילים, ובתדירות גבוהה יותר במסלולים מתקדמים."
+msgstr "פידי אינטרנט נבדקים לפי אותו לוח זמנים כמו פידים רגילים, ובתדירות גבוהה יותר במסלולים מתקדמים."
 
 msgid "Web feeds train, search, and organize exactly like RSS feeds."
 msgstr "אפשר לאמן, לחפש ולארגן פידי אינטרנט בדיוק כמו פידי RSS."
@@ -7332,7 +7332,7 @@ msgid "Web notifications"
 msgstr "התראות אינטרנט"
 
 msgid "Web notifications require Premium Archive"
-msgstr "התראות דפדפן דורשות ארכיון Premium"
+msgstr "התראות דפדפן דורשות Premium Archive"
 
 msgid "Website"
 msgstr "אתר אינטרנט"
@@ -7357,14 +7357,14 @@ msgstr "מהם הטיעונים העיקריים?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "מה %(like)s ו-%(dislike)s לדעתך על האתר הזה?"
+msgstr "מה %(like)s ומה %(dislike)s באתר הזה?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "מה %(like)s ו־%(dislike)s על הסיפור הזה?"
+msgstr "מה %(like)s ומה %(dislike)s בכתבה הזו?"
 
 msgid "What happens if I downgrade?"
-msgstr "מה יקרה אם אשנמך את התוכנית?"
+msgstr "מה יקרה אם אעבור לתוכנית נמוכה יותר?"
 
 msgid "What is MCP?"
 msgstr "מה זה MCP?"
@@ -7397,7 +7397,7 @@ msgid "When a feed updates, NewsBlur checks for duplicates across all your subsc
 msgstr "כשפיד מתעדכן, NewsBlur בודק כפילויות בכל המינויים שלכם"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
-msgstr "כשכמה פידים כוללים את אותו סיפור, NewsBlur מקבץ אותם יחד כדי שתראו אותו רק פעם אחת."
+msgstr "כשכמה פידים כוללים את אותה כתבה, NewsBlur מקבץ אותם יחד כדי שתראו אותה רק פעם אחת."
 
 msgid "When opening a site"
 msgstr "בעת פתיחת אתר"
@@ -7411,7 +7411,7 @@ msgstr "כשחל שינוי בתוכן הכתבה"
 msgid ""
 "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
 "is kept forever."
-msgstr "כשנרשמים לפיד, NewsBlur משלים את כל ההיסטוריה הזמינה שלו. מכאן והלאה, כל סיפור נשמר לתמיד."
+msgstr "כשנרשמים לפיד, NewsBlur משלים את כל ההיסטוריה הזמינה שלו. מכאן והלאה, כל כתבה נשמרת לתמיד."
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "כשנרשמים לפיד חדש, ההיסטוריה שלו נטענת לאחור"
@@ -7420,7 +7420,7 @@ msgid "Which AI models are available?"
 msgstr "אילו מודלים של בינה מלאכותית זמינים?"
 
 msgid "Whoops! Something went wrong. Try again."
-msgstr "אופס! משהו השתבש. נסה/י שוב."
+msgstr "אופס! משהו השתבש. נסו שוב."
 
 msgid "Why is the next update not at the normal rate?"
 msgstr "למה העדכון הבא לא מתוזמן בקצב הרגיל?"
@@ -7468,13 +7468,13 @@ msgid "YYYY-MM-DD"
 msgstr "YYYY-MM-DD"
 
 msgid "Years Earned"
-msgstr "שנות ותק"
+msgstr "שנות חברות שנצברו"
 
 msgid "Yes"
 msgstr "כן"
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
-msgstr "כן, כל תכונות אימון המערכת פועלות עם ניוזלטרים בדיוק כמו עם עדכונים רגילים."
+msgstr "כן, כל תכונות אימון המערכת פועלות עם ניוזלטרים בדיוק כמו עם פידים רגילים."
 
 msgid "Yes, both apps are open source and actively developed on GitHub."
 msgstr "כן, שתי האפליקציות הן בקוד פתוח ומתוחזקות באופן פעיל ב-GitHub."
@@ -7482,7 +7482,7 @@ msgstr "כן, שתי האפליקציות הן בקוד פתוח ומתוחזק�
 msgid ""
 "Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
 "web."
-msgstr "כן, אפליקציות iOS ו-Android הן בחינם. תכונות הפרימיום באפליקציות תואמות למינוי שלך באתר."
+msgstr "כן, אפליקציות iOS ו-Android הן בחינם. תכונות ה־Premium באפליקציות תואמות למינוי שלך באתר."
 
 msgid "Yes, delete it"
 msgstr "כן, מחק אותו"
@@ -7509,7 +7509,7 @@ msgid "Yes. Stories are cached locally and background refresh keeps them up to d
 msgstr "כן. כתבות נשמרות במטמון המקומי, ורענון ברקע שומר אותן מעודכנות."
 
 msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
-msgstr "כן. הפעילו את האפשרות \"השארת כתבות נפרדות\" בתפריט אפשרויות העדכון או בהעדפות."
+msgstr "כן. הפעילו את האפשרות \"השארת כתבות נפרדות\" בתפריט אפשרויות הפיד או בהעדפות."
 
 msgid ""
 "Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
@@ -7522,8 +7522,8 @@ msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
 "even when sites don't offer RSS."
 msgstr ""
-"כן. Web Feeds עוקבים אחר שינויים ב-HTML של דף, ואילו RSS קורא קובץ פיד מובנה. Web Feeds פועלים גם כשאתרים "
-"אינם מציעים RSS."
+"כן. פידי אינטרנט עוקבים אחר שינויים ב-HTML של דף, ואילו RSS קורא קובץ פיד מובנה. פידי אינטרנט פועלים גם "
+"כשאתרים אינם מציעים RSS."
 
 msgid "Yesterday"
 msgstr "אתמול"
@@ -7553,18 +7553,18 @@ msgstr[1] "%(count)s אנשים עוקבים אחריך"
 msgid "You are following %(count)s person"
 msgid_plural "You are following %(count)s people"
 msgstr[0] "אתה עוקב אחרי %(count)s אדם"
-msgstr[1] "את/ה עוקב/ת אחרי %(count)s אנשים"
+msgstr[1] "אתה עוקב אחרי %(count)s אנשים"
 
 #, python-format
 msgid "You are subscribed to %(count)s site."
 msgid_plural "You are subscribed to %(count)s sites."
-msgstr[0] "את/ה מנוי/ה ל-%(count)s אתר."
+msgstr[0] "אתה מנוי ל־%(count)s אתר."
 msgstr[1] "אתה מנוי ל־%(count)s אתרים."
 
 #, python-format
 msgid "You are subscribed to at least %(count)s site."
 msgid_plural "You are subscribed to at least %(count)s sites."
-msgstr[0] "אתה מנוי לפחות לאתר %(count)s."
+msgstr[0] "אתה מנוי לפחות ל־%(count)s אתר."
 msgstr[1] "אתה מנוי לפחות ל־%(count)s אתרים."
 
 msgid "You are trialing this plan"
@@ -7577,7 +7577,7 @@ msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails b
 msgstr "הסרת את ההרשמה מכל הודעות האימייל של NewsBlur. בחר למטה אילו הודעות לקבל ושמור כדי להירשם מחדש."
 
 msgid "You can also filter out stories you don't want to read."
-msgstr "אפשר גם לסנן סיפורים שאינך רוצה לקרוא."
+msgstr "אפשר גם לסנן כתבות שאינך רוצה לקרוא."
 
 msgid "You can change this anytime in Preferences."
 msgstr "אפשר לשנות זאת בכל עת בהעדפות."
@@ -7587,7 +7587,7 @@ msgstr "אפשר לשנות את הדעות שלכם."
 
 #, python-format
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
-msgstr "אפשר ללחוץ על הלחצנים %(like_icon)s%(dislike_icon)s שלצד הסיפורים בזמן הקריאה."
+msgstr "אפשר ללחוץ על הלחצנים %(like_icon)s%(dislike_icon)s שלצד הכתבות בזמן הקריאה."
 
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "אפשר לשנות זאת בנפרד לכל אתר ולכל תיקייה."
@@ -7601,15 +7601,15 @@ msgstr "אפשר לאמן את המערכת לכל פיד בחינם, או לכ�
 #, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
-msgstr[0] "אתה עוקב אחרי אתר %(count)s. Premium משפר את כולם."
-msgstr[1] "אתם עוקבים אחרי %(count)s אתרים. פרימיום משפר את כולם."
+msgstr[0] "אתה עוקב אחרי %(count)s אתר. Premium משפר את כולם."
+msgstr[1] "אתם עוקבים אחרי %(count)s אתרים. Premium משפר את כולם."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
 msgstr "יש לך %(bold_start)sחשבון חינמי%(bold_end)s."
 
 msgid "You have no active subscriptions."
-msgstr "אין לך מנויים פעילים."
+msgstr "אין לך מינויים פעילים."
 
 msgid "You have no saved stories."
 msgstr "אין לך כתבות שמורות."
@@ -7628,15 +7628,15 @@ msgid "You must be following %(value_1)s to reply"
 msgstr "עליך לעקוב אחרי %(value_1)s כדי להשיב"
 
 msgid "You must be logged in to send a story over email."
-msgstr "עליך להתחבר כדי לשלוח סיפור בדוא״ל."
+msgstr "עליך להתחבר כדי לשלוח כתבה בדוא״ל."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
-msgstr "נדרש %(link_start)sחשבון פרימיום%(link_end)s כדי לשנות קיצורי מקלדת."
+msgstr "נדרש %(link_start)sחשבון Premium%(link_end)s כדי לשנות קיצורי מקלדת."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
-msgstr "כדי לשנות את הגדרות הפרטיות דרוש לך חשבון %(link_start)spremium account%(link_end)s."
+msgstr "כדי לשנות את הגדרות הפרטיות נדרש %(link_start)sחשבון Premium%(link_end)s."
 
 msgid "You need to be logged in to reply to a comment."
 msgstr "כדי להשיב לתגובה צריך להתחבר."
@@ -7668,7 +7668,7 @@ msgstr "הכול מוכן! מקווים שתיהנו מ-NewsBlur."
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "קיבלת במתנה %(value_1)s מתוך %(value_2)s!"
+msgstr "קיבלת במתנה %(value_1)s של %(value_2)s!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -7713,7 +7713,7 @@ msgid "Your email"
 msgstr "כתובת האימייל שלך"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
-msgstr "ייתכן שהמסננים שלך מסתירים אתרים — פתח/י את האפשרויות כדי להרחיב את הסינון."
+msgstr "ייתכן שהמסננים שלך מסתירים אתרים — פתחו את האפשרויות כדי להרחיב את הסינון."
 
 msgid "Your inbox stays clean"
 msgstr "תיבת הדואר הנכנס שלכם נשארת מסודרת"
@@ -7722,7 +7722,7 @@ msgid "Your name"
 msgstr "השם שלך"
 
 msgid "Your premium account is paid until:"
-msgstr "החשבון שלך בפרימיום שולם עד:"
+msgstr "חשבון ה־Premium שלך שולם עד:"
 
 msgid "Your premium account will downgrade on:"
 msgstr "החשבון שלך יועבר לתוכנית נמוכה יותר בתאריך:"
@@ -7794,7 +7794,7 @@ msgid "data privacy"
 msgstr "פרטיות מידע"
 
 msgid "dislike"
-msgstr "לא אוהב"
+msgstr "לא אהבת"
 
 #, python-format
 msgid "e.g. %(example)s"
@@ -7829,7 +7829,7 @@ msgstr[0] "עוקב"
 msgstr[1] "עוקבים"
 
 msgid "following"
-msgstr "עוקב"
+msgstr "במעקב"
 
 msgid "food science"
 msgstr "מדעי המזון"
@@ -7838,7 +7838,7 @@ msgid "gene therapy"
 msgstr "ריפוי גנטי"
 
 msgid "hide hidden stories"
-msgstr "הסתר סיפורים מוסתרים"
+msgstr "הסתרת כתבות מוסתרות"
 
 msgid "housing market"
 msgstr "שוק הדיור"
@@ -7850,17 +7850,17 @@ msgid "iOS notifications"
 msgstr "התראות iOS"
 
 msgid "iOS notifications require Premium Archive"
-msgstr "התראות iOS דורשות ארכיון Premium"
+msgstr "התראות iOS דורשות Premium Archive"
 
 msgid "iPhone &amp; iPad"
-msgstr "iPhone ו-&amp; iPad"
+msgstr "iPhone &amp; iPad"
 
 msgid "in"
 msgstr "ב־"
 
 #, python-format
 msgid "in %(time)s"
-msgstr "ב־%(time)s"
+msgstr "בעוד %(time)s"
 
 msgid "indie games"
 msgstr "משחקי אינדי"
@@ -7878,7 +7878,7 @@ msgid "labor unions"
 msgstr "איגודי עובדים"
 
 msgid "like"
-msgstr "אהבתי"
+msgstr "אהבת"
 
 msgid "local elections"
 msgstr "בחירות מקומיות"
@@ -7909,7 +7909,7 @@ msgid "podcast industry"
 msgstr "תעשיית הפודקאסטים"
 
 msgid "premium"
-msgstr "פרימיום"
+msgstr "Premium"
 
 msgid "public transit"
 msgstr "תחבורה ציבורית"
@@ -7989,7 +7989,7 @@ msgstr "תקני אינטרנט"
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"
 msgid_plural "✓ %(count)s of %(total)s images match this filter"
-msgstr[0] "✓ %(count)s מתוך %(total)s תמונה תואמת למסנן הזה"
+msgstr[0] "✓ %(count)s תמונה מתוך %(total)s תואמת למסנן הזה"
 msgstr[1] "✓ %(count)s מתוך %(total)s תמונות תואמות למסנן הזה"
 
 msgid "✓ Found in story"
@@ -8005,7 +8005,7 @@ msgid "✓ Matches author"
 msgstr "✓ תואם למחבר"
 
 msgid "✓ Matches story"
-msgstr "✓ מתאים לסיפור"
+msgstr "✓ תואם לכתבה"
 
 msgid "✓ Matches title"
 msgstr "✓ תואם לכותרת"
@@ -8026,5 +8026,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ אין תמונות שתואמות למסנן הזה"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ הסיפור אינו תואם למסנן הזה"
+msgstr "✗ הכתבה אינה תואמת למסנן הזה"
 

@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>לא ניתן היה להוסיף את ההזנה %1$@ אל %2$@.</string>
+			<string>לא ניתן היה להוסיף %1$@ פיד אל %2$@.</string>
 			<key>other</key>
-			<string>לא ניתן להוסיף את %1$@ ההזנות אל %2$@.</string>
+			<string>לא ניתן היה להוסיף %1$@ פידים אל %2$@.</string>
 			<key>two</key>
 			<string>לא ניתן להוסיף %1$@ פידים אל %2$@.</string>
 		</dict>
@@ -35,7 +35,7 @@
 			<key>other</key>
 			<string>%@ אתרי ווידג'טים</string>
 			<key>two</key>
-			<string>%@ אתרי Widget</string>
+			<string>%@ אתרי ווידג׳ט</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -49,7 +49,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>קטגוריה %@ לבחירה</string>
+			<string>%@ קטגוריה לבחירה</string>
 			<key>other</key>
 			<string>%@ קטגוריות לבחירה</string>
 			<key>two</key>
@@ -67,7 +67,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ תגובות</string>
+			<string>%@ תגובה</string>
 			<key>other</key>
 			<string>%@ תגובות</string>
 			<key>two</key>
@@ -121,11 +121,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>הזנה %@</string>
+			<string>%@ פיד</string>
 			<key>other</key>
 			<string>%@ פידים</string>
 			<key>two</key>
-			<string>%@ עדכונים</string>
+			<string>%@ פידים</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added</key>
@@ -143,7 +143,7 @@
 			<key>other</key>
 			<string>נוספו %@ פידים</string>
 			<key>two</key>
-			<string>נוספו %@ הזנות</string>
+			<string>נוספו %@ פידים</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added.</key>
@@ -157,11 +157,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>נוסף פיד אחד: %@</string>
+			<string>נוסף %@ פיד.</string>
 			<key>other</key>
-			<string>נוספו %@ עדכונים.</string>
+			<string>נוספו %@ פידים.</string>
 			<key>two</key>
-			<string>נוספו %@ הזנות.</string>
+			<string>נוספו %@ פידים.</string>
 		</dict>
 	</dict>
 	<key>%@ feeds couldn’t be added.</key>
@@ -195,7 +195,7 @@
 			<key>one</key>
 			<string>%@ פיד נבחר</string>
 			<key>other</key>
-			<string>נבחרו %@ הזנות</string>
+			<string>נבחרו %@ פידים</string>
 			<key>two</key>
 			<string>נבחרו %@ פידים</string>
 		</dict>
@@ -265,7 +265,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ חיפושים</string>
+			<string>%@ חיפוש</string>
 			<key>other</key>
 			<string>%@ חיפושים</string>
 			<key>two</key>
@@ -321,7 +321,7 @@
 			<key>one</key>
 			<string>%@ כתבה</string>
 			<key>other</key>
-			<string>%@ סיפורים</string>
+			<string>%@ כתבות</string>
 			<key>two</key>
 			<string>%@ כתבות</string>
 		</dict>
@@ -337,7 +337,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>נותרה כתבה אחת (%@)</string>
+			<string>נותרה %@ כתבה</string>
 			<key>other</key>
 			<string>נותרו %@ כתבות</string>
 			<key>two</key>
@@ -409,11 +409,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>+ עוד אתר אחד (%@)</string>
+			<string>+ עוד %@ אתר</string>
 			<key>other</key>
 			<string>+ עוד %@ אתרים</string>
 			<key>two</key>
-			<string>+ עוד שני אתרים (%@)</string>
+			<string>+ עוד %@ אתרים</string>
 		</dict>
 	</dict>
 	<key>Add %1$@ feeds to “%2$@” folder</key>
@@ -427,11 +427,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>הוספת פיד %1$@ לתיקייה „%2$@”</string>
+			<string>הוספת %1$@ פיד לתיקייה „%2$@”</string>
 			<key>other</key>
-			<string>הוספת %1$@ עדכונים לתיקייה „%2$@”</string>
+			<string>הוספת %1$@ פידים לתיקייה „%2$@”</string>
 			<key>two</key>
-			<string>הוספת %1$@ הזנות לתיקייה „%2$@”</string>
+			<string>הוספת %1$@ פידים לתיקייה „%2$@”</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -445,9 +445,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>נוסף עדכון %1$@ אל %2$@.</string>
+			<string>נוסף %1$@ פיד אל %2$@.</string>
 			<key>other</key>
-			<string>נוספו %1$@ הזנות אל %2$@.</string>
+			<string>נוספו %1$@ פידים אל %2$@.</string>
 			<key>two</key>
 			<string>נוספו %1$@ פידים אל %2$@.</string>
 		</dict>
@@ -463,11 +463,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>נוספה הזנה אחת: %@.</string>
+			<string>נוסף %@ פיד.</string>
 			<key>other</key>
 			<string>נוספו %@ פידים.</string>
 			<key>two</key>
-			<string>נוספו %@ הזנות.</string>
+			<string>נוספו %@ פידים.</string>
 		</dict>
 	</dict>
 	<key>Also published by %@ sites</key>
@@ -481,7 +481,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>פורסם גם באתר %@</string>
+			<string>פורסם גם ב־%@ אתר</string>
 			<key>other</key>
 			<string>פורסם גם ב־%@ אתרים</string>
 			<key>two</key>
@@ -499,7 +499,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>למחוק אתר %@?</string>
+			<string>למחוק %@ אתר?</string>
 			<key>other</key>
 			<string>למחוק %@ אתרים?</string>
 			<key>two</key>
@@ -571,7 +571,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>יובא אתר %@</string>
+			<string>יובא %@ אתר</string>
 			<key>other</key>
 			<string>יובאו %@ אתרים</string>
 			<key>two</key>
@@ -589,7 +589,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>סימון הכתבה %@ כנקראה</string>
+			<string>סימון %@ כתבה כנקראה</string>
 			<key>other</key>
 			<string>סמן כנקראו את %@ הכתבות האלה</string>
 			<key>two</key>
@@ -607,7 +607,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>השתקת אתר %@</string>
+			<string>השתקת %@ אתר</string>
 			<key>other</key>
 			<string>השתק %@ אתרים</string>
 			<key>two</key>
@@ -645,7 +645,7 @@
 			<key>one</key>
 			<string>כתבה ששותפה</string>
 			<key>other</key>
-			<string>סיפורים ששותפו</string>
+			<string>כתבות ששותפו</string>
 			<key>two</key>
 			<string>כתבות משותפות</string>
 		</dict>
@@ -661,7 +661,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>שמירת נתונים מהיום הקודם %@</string>
+			<string>שמירת נתונים מ־%@ יום אחרון</string>
 			<key>other</key>
 			<string>שמירת נתונים מ־%@ הימים האחרונים</string>
 			<key>two</key>
@@ -679,7 +679,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>שמירת השעה האחרונה מתוך %@</string>
+			<string>שמירת נתונים מ־%@ שעה אחרונה</string>
 			<key>other</key>
 			<string>שמירת %@ השעות האחרונות</string>
 			<key>two</key>
@@ -787,7 +787,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>אתה רשום כמנוי לאתר %@</string>
+			<string>אתה רשום כמנוי ל־%@ אתר</string>
 			<key>other</key>
 			<string>אתם מנויים ל-%@ אתרים</string>
 			<key>two</key>
