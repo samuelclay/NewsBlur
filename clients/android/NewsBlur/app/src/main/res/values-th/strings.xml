@@ -5,10 +5,10 @@
     <string name="gesture_toggle_read">อ่านแล้ว / ยังไม่อ่าน</string>
     <string name="gesture_markread">ทำเครื่องหมายว่าอ่านแล้ว</string>
     <string name="gesture_markunread">ทำเครื่องหมายว่ายังไม่ได้อ่าน</string>
-    <string name="gesture_save">บันทึกเรื่องราว</string>
-    <string name="gesture_unsave">เลิกบันทึกเรื่อง</string>
+    <string name="gesture_save">บันทึกบทความ</string>
+    <string name="gesture_unsave">เลิกบันทึกบทความ</string>
     <string name="gesture_statistics">สถิติ</string>
-    <string name="gesture_menu">แสดงการทำงาน</string>
+    <string name="gesture_menu">แสดงเมนูการดำเนินการ</string>
     <string name="gesture_share">แชร์</string>
     <string name="gesture_toggle_save">บันทึก / ยกเลิกการบันทึก</string>
     <string name="gesture_ask_ai">ถาม AI</string>
@@ -17,26 +17,26 @@
     <string name="gesture_read_range">เลือกระยะเวลาย้อนหลังที่จะทำเครื่องหมายว่าอ่านแล้ว</string>
     <string name="gesture_feed_list">รายการฟีด</string>
     <string name="gesture_story_titles">ชื่อเรื่อง</string>
-    <string name="gesture_reading_story">ขณะอ่านเรื่องราว</string>
+    <string name="gesture_reading_story">ขณะอ่านบทความ</string>
     <string name="gesture_swipe_feeds">ปัดบนฟีด</string>
-    <string name="gesture_swipe_stories">ปัดบนเรื่อง</string>
+    <string name="gesture_swipe_stories">ปัดบนบทความ</string>
     <string name="gesture_left">ปัดไปทางซ้าย</string>
     <string name="gesture_right">ปัดไปทางขวา</string>
     <string name="gesture_long_press">กดค้าง</string>
     <string name="gesture_double_tap">แตะสองครั้ง</string>
     <string name="gesture_two_finger_double_tap">แตะสองครั้งด้วยสองนิ้ว</string>
     <string name="gesture_left_edge">ปัดจากขอบซ้าย</string>
-    <string name="gesture_edge_footer">ปัดจากขอบซ้ายเพื่อกลับไปยังฟีดได้เสมอ แม้ปิดการปัดเพื่อเปลี่ยนเรื่องราวแล้ว</string>
-    <string name="gesture_mark_all">ทำเครื่องหมายเรื่องราวทั้งหมดว่าอ่านแล้ว</string>
-    <string name="gesture_original">เปิดเรื่องราวต้นฉบับ</string>
+    <string name="gesture_edge_footer">ปัดจากขอบซ้ายเพื่อกลับไปยังฟีดได้เสมอ แม้ปิดการปัดเพื่อเปลี่ยนบทความแล้ว</string>
+    <string name="gesture_mark_all">ทำเครื่องหมายบทความทั้งหมดว่าอ่านแล้ว</string>
+    <string name="gesture_original">เปิดบทความต้นฉบับ</string>
     <string name="gesture_text">แสดงข้อความต้นฉบับ</string>
     <string name="gesture_unread">ทำเครื่องหมายว่ายังไม่ได้อ่าน</string>
     <string name="gesture_back_titles">กลับไปยังชื่อเรื่อง</string>
-    <string name="gesture_previous">เรื่องก่อนหน้า</string>
+    <string name="gesture_previous">บทความก่อนหน้า</string>
     <string name="gesture_off">ปิด</string>
-    <string name="gesture_unread_stories">เรื่องราวที่ยังไม่อ่าน</string>
-    <string name="gesture_focus_stories">โฟกัสเรื่อง</string>
-    <string name="story_title_mark_story_read">ทำเครื่องหมายเรื่องว่าอ่านแล้ว…</string>
+    <string name="gesture_unread_stories">บทความที่ยังไม่อ่าน</string>
+    <string name="gesture_focus_stories">บทความโฟกัส</string>
+    <string name="story_title_mark_story_read">ทำเครื่องหมายบทความว่าอ่านแล้ว…</string>
     <string name="story_title_list_font_size">ขนาดตัวอักษรของฟีดและชื่อเรื่อง</string>
     <string name="language_title">ภาษา</string>
     <string name="settings_cat_general">ทั่วไป</string>
@@ -44,9 +44,9 @@
     <string name="language_automatic">อัตโนมัติ (ภาษาของอุปกรณ์)</string>
     <string name="language_save_failed">บันทึกภาษาของคุณไม่สำเร็จ โปรดลองอีกครั้ง</string>
     <string name="reader_enter_fullscreen">อ่านเต็มหน้าจอ</string>
-    <string name="reader_exit_fullscreen">แสดงรายการเรื่องราว</string>
-    <string name="try_feed_instafetching">กำลังดึงเรื่องราวทันที…</string>
-    <string name="try_feed_fetch_failed">ดึงเรื่องราวไม่สำเร็จ แตะเพื่อลองอีกครั้ง</string>
+    <string name="reader_exit_fullscreen">แสดงรายการบทความ</string>
+    <string name="try_feed_instafetching">กำลังดึงบทความทันที…</string>
+    <string name="try_feed_fetch_failed">ดึงบทความไม่สำเร็จ แตะเพื่อลองอีกครั้ง</string>
     <string name="try_feed_empty">เว็บไซต์นี้ยังไม่มีบทความให้แสดง แตะเพื่อรีเฟรช</string>
     <string name="image_viewer_close">ปิดรูปภาพ</string>
     <string name="image_viewer_loading">กำลังโหลดรูปภาพ…</string>
@@ -64,7 +64,7 @@
     <string name="image_viewer_share_failed">แชร์รูปภาพไม่ได้</string>
     <string name="image_viewer_storage_permission">อนุญาตให้เข้าถึงพื้นที่จัดเก็บเพื่อบันทึกรูปภาพ แล้วลองอีกครั้ง</string>
     <string name="image_viewer_show_actions">แสดงการทำงานกับรูปภาพ</string>
-    <string name="settings_story_toolbar_position">ตำแหน่งแถบเครื่องมือรายการเรื่องราว</string>
+    <string name="settings_story_toolbar_position">ตำแหน่งแถบเครื่องมือรายการบทความ</string>
     <string name="settings_story_toolbar_top">บนสุด</string>
     <string name="settings_story_toolbar_bottom">ด้านล่าง</string>
     <string name="story_header_mark_read_cutoff">เลือกช่วงเวลาย้อนหลังที่จะทำเครื่องหมายว่าอ่านแล้ว</string>
@@ -87,15 +87,15 @@
     <string name="login_logged_in">กำลังจัดเรียงเส้นโค้ง…</string>
     <string name="login_retrieving_feeds">กำลังดึงฟีด…</string>
     <string name="login_next">ถัดไป</string>
-    <string name="login_custom_server_scheme_error">คาดหวัง \'https://\' ใน URL เซิร์ฟเวอร์แบบกำหนดเอง</string>
+    <string name="login_custom_server_scheme_error">URL เซิร์ฟเวอร์แบบกำหนดเองต้องขึ้นต้นด้วย \'https://\'</string>
     <string name="login_custom_server_invalid">ป้อน URL เซิร์ฟเวอร์ที่กำหนดเองให้ถูกต้อง</string>
     <string name="login_tagline">โปรแกรมอ่านข่าวส่วนตัวที่พา
 ผู้คนมาพูดคุยเกี่ยวกับโลกใบนี้</string>
     <string name="user_profile_picture">รูปโปรไฟล์ผู้ใช้</string>
     <string name="search_for_feed">ค้นหาฟีด</string>
     <string name="loading">กำลังโหลด…</string>
-    <string name="story_navigation_failed">เปิดเรื่องราวไม่ได้ โปรดลองอีกครั้ง</string>
-    <string name="orig_text_loading">กำลังดึงข้อความเรื่องราว…</string>
+    <string name="story_navigation_failed">เปิดบทความไม่ได้ โปรดลองอีกครั้ง</string>
+    <string name="orig_text_loading">กำลังดึงข้อความบทความ…</string>
     <string name="follow_error">เกิดปัญหาในการติดตามผู้ใช้</string>
     <string name="unfollow_error">เกิดปัญหาในการเลิกติดตามผู้ใช้</string>
     <string name="description_login_button">กดเพื่อเข้าสู่ระบบ</string>
@@ -109,26 +109,26 @@
     <string name="description_comment_user">รูปภาพผู้ใช้ที่แสดงความคิดเห็น</string>
     <string name="description_empty_list_image">ภาพตัวอย่างรายการว่าง</string>
     <string name="description_menu">เมนู</string>
-    <string name="story_settings">การตั้งค่าเรื่อง</string>
+    <string name="story_settings">การตั้งค่าบทความ</string>
     <string name="title_choose_folders">เลือกโฟลเดอร์สำหรับฟีด %s</string>
     <string name="title_rename_feed">เปลี่ยนชื่อฟีด %s</string>
     <string name="title_rename_folder">เปลี่ยนชื่อโฟลเดอร์ %s</string>
-    <string name="all_stories_title">เรื่องทั้งหมดจากเว็บไซต์</string>
+    <string name="all_stories_title">บทความจากทุกเว็บไซต์</string>
     <string name="daily_briefing_title">สรุปข่าวประจำวัน</string>
-    <string name="infrequent_title">เรื่องราวจากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
-    <string name="widely_read_stories_title">เรื่องราวที่มีผู้อ่านมาก</string>
+    <string name="infrequent_title">บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
+    <string name="widely_read_stories_title">บทความที่มีผู้อ่านมาก</string>
     <string name="long_reads_title">บทความอ่านยาว</string>
-    <string name="good_reads_title">หนังสือดี</string>
-    <string name="all_shared_stories_title">เรื่องราวที่แชร์ทั้งหมด</string>
-    <string name="global_shared_stories_title">เรื่องราวที่แชร์ทั่วโลก</string>
-    <string name="read_stories_title">เรื่องราวที่อ่านแล้ว</string>
-    <string name="saved_stories_title">เรื่องที่บันทึกไว้</string>
+    <string name="good_reads_title">บทความน่าอ่าน</string>
+    <string name="all_shared_stories_title">บทความที่แชร์ทั้งหมด</string>
+    <string name="global_shared_stories_title">บทความที่แชร์ทั่วโลก</string>
+    <string name="read_stories_title">บทความที่อ่านแล้ว</string>
+    <string name="saved_stories_title">บทความที่บันทึกไว้</string>
     <string name="saved_searches_title">การค้นหาที่บันทึกไว้</string>
     <string name="feed_list">รายการฟีด</string>
     <string name="bottom_next_unread_site">เว็บไซต์ที่ยังไม่อ่านถัดไป, %1$s</string>
     <string name="bottom_next_unread_folder">โฟลเดอร์ถัดไปที่ยังไม่ได้อ่าน, %1$s</string>
     <string name="top_level">ระดับบนสุด</string>
-    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nแชร์กับ NewsBlur</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nแชร์ผ่าน NewsBlur</string>
     <string name="share_comment_hint">ความคิดเห็นสำหรับแชร์ (ไม่บังคับ)</string>
     <string name="share_save_newsblur">แชร์/บันทึก \"%s\" ไปยัง Blurblog ของคุณหรือไม่?</string>
     <string name="share_this">แชร์</string>
@@ -143,11 +143,11 @@
     <string name="train_this">ฝึก</string>
     <string name="ask_ai">ถาม AI</string>
     <string name="story_mark_unread_state">อ่านแล้ว</string>
-    <string name="story_mark_read_state">ทำเครื่องหมายเรื่องราวว่าอ่านแล้ว</string>
+    <string name="story_mark_read_state">ทำเครื่องหมายบทความว่าอ่านแล้ว</string>
     <string name="overlay_next">ถัดไป</string>
-    <string name="overlay_done">เสร็จแล้ว</string>
+    <string name="overlay_done">เสร็จสิ้น</string>
     <string name="overlay_count_toast_N">บทความที่ยังไม่อ่าน %d รายการ</string>
-    <string name="overlay_count_toast_1">มีเรื่องราวที่ยังไม่อ่าน 1 เรื่อง</string>
+    <string name="overlay_count_toast_1">บทความที่ยังไม่อ่าน 1 รายการ</string>
     <string name="overlay_text">ข้อความ</string>
     <string name="overlay_story">บทความ</string>
     <string name="orig_text_failed">ขออภัย ไม่สามารถดึงข้อความของเรื่องนี้ได้</string>
@@ -158,7 +158,7 @@
     <string name="reply_to">ตอบกลับ \"%s\"</string>
     <string name="edit_reply">แก้ไขคำตอบ</string>
     <string name="edit_reply_update">อัปเดตคำตอบ</string>
-    <string name="edit_reply_delete">ลบคำตอบY</string>
+    <string name="edit_reply_delete">ลบคำตอบ</string>
     <string name="alert_dialog_ok">ตกลง</string>
     <string name="alert_dialog_done">เสร็จสิ้น</string>
     <string name="alert_dialog_openlink">เปิดลิงก์</string>
@@ -170,7 +170,7 @@
     <string name="profile_location_icon">ไอคอนตำแหน่งที่ตั้ง</string>
     <string name="profile_following">กำลังติดตาม</string>
     <string name="profile_followers">ผู้ติดตาม</string>
-    <string name="profile_shared">เรื่องราวที่แชร์</string>
+    <string name="profile_shared">บทความที่แชร์</string>
     <string name="profile_time_ago">%1$s ที่แล้ว</string>
     <string name="profile_recent_actvity">กิจกรรม</string>
     <string name="profile_recent_interactions">การโต้ตอบ</string>
@@ -183,7 +183,7 @@
     <string name="menu_search_feeds">ค้นหาฟีดของคุณ</string>
     <string name="menu_original">ดูต้นฉบับ</string>
     <string name="menu_send_story">ส่งลิงก์ไปยัง…</string>
-    <string name="menu_send_story_full">ส่งเรื่องไปยัง…</string>
+    <string name="menu_send_story_full">ส่งบทความไปยัง…</string>
     <string name="menu_mark_feed_as_read">ทำเครื่องหมายฟีดว่าอ่านแล้ว</string>
     <string name="menu_delete_feed">ลบฟีด</string>
     <string name="menu_statistics">สถิติ</string>
@@ -192,10 +192,10 @@
     <string name="menu_choose_folders">เลือกโฟลเดอร์</string>
     <string name="menu_notifications_choose">การแจ้งเตือน</string>
     <string name="menu_notifications_disable">ปิดการแจ้งเตือน</string>
-    <string name="menu_notifications_focus">แจ้งเตือนเมื่อมีเรื่องราวใหม่ที่เน้นติดตาม</string>
+    <string name="menu_notifications_focus">แจ้งเตือนเมื่อมีบทความโฟกัสใหม่</string>
     <string name="menu_notifications_unread">แจ้งเตือนเมื่อมีบทความใหม่ทั้งหมด</string>
     <string name="menu_mark_folder_as_read">ทำเครื่องหมายโฟลเดอร์ว่าอ่านแล้ว</string>
-    <string name="menu_sharenewsblur">แชร์เรื่องราวนี้</string>
+    <string name="menu_sharenewsblur">แชร์บทความนี้</string>
     <string name="menu_text_size">ขนาดข้อความ</string>
     <string name="menu_text_size_xs">XS</string>
     <string name="menu_text_size_s">S</string>
@@ -204,15 +204,15 @@
     <string name="menu_text_size_xl">XL</string>
     <string name="menu_text_size_xxl">XXL</string>
     <string name="menu_font">แบบอักษร</string>
-    <string name="menu_save_story">บันทึกเรื่องนี้</string>
-    <string name="menu_unsave_story">ยกเลิกการบันทึกเรื่องราวนี้</string>
+    <string name="menu_save_story">บันทึกบทความนี้</string>
+    <string name="menu_unsave_story">ยกเลิกการบันทึกบทความนี้</string>
     <string name="menu_newest_mark_older_stories_as_read">ทำเครื่องหมายรายการเก่ากว่าเป็นอ่านแล้ว</string>
     <string name="menu_newest_mark_newer_stories_as_read">ทำเครื่องหมายรายการใหม่กว่าเป็นอ่านแล้ว</string>
     <string name="menu_oldest_mark_older_stories_as_read">ทำเครื่องหมายรายการเก่ากว่าเป็นอ่านแล้ว</string>
-    <string name="menu_oldest_mark_newer_stories_as_read">ทำเครื่องหมายเรื่องราวใหม่กว่าเป็นอ่านแล้ว</string>
+    <string name="menu_oldest_mark_newer_stories_as_read">ทำเครื่องหมายรายการใหม่กว่าเป็นอ่านแล้ว</string>
     <string name="story_menu_open_feed">เปิดฟีด</string>
     <string name="story_menu_share_link">แชร์ลิงก์…</string>
-    <string name="story_menu_share_story">แชร์เรื่องราว…</string>
+    <string name="story_menu_share_story">แชร์บทความ…</string>
     <string name="menu_mark_story_as_read">ทำเครื่องหมายว่าอ่านแล้ว</string>
     <string name="menu_mark_unread">ทำเครื่องหมายว่ายังไม่ได้อ่าน</string>
     <string name="menu_search_stories">ค้นหา…</string>
@@ -222,30 +222,30 @@
     <string name="menu_unmute_folder">เปิดเสียงโฟลเดอร์</string>
     <string name="menu_delete_folder">ลบโฟลเดอร์</string>
     <string name="menu_rename_folder">เปลี่ยนชื่อโฟลเดอร์</string>
-    <string name="menu_instafetch_feed">ดึงเรื่องราวจาก Insta</string>
+    <string name="menu_instafetch_feed">ดึงบทความทันที</string>
     <string name="feed_menu_back_to_actions">กลับไปที่การดำเนินการของฟีด</string>
-    <string name="menu_infrequent_cutoff">เรื่องราวที่พบน้อยต่อเดือน</string>
-    <string name="menu_intel">ฝึก Intelligence Trainer</string>
+    <string name="menu_infrequent_cutoff">บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย</string>
+    <string name="menu_intel">เครื่องมือฝึกระบบอัจฉริยะ</string>
     <string name="menu_rename_feed">เปลี่ยนชื่อฟีด</string>
     <string name="menu_story_list_style_choose">รูปแบบรายการ</string>
     <string name="menu_save_search">บันทึกการค้นหา</string>
     <string name="menu_web_search">ค้นหาเว็บ</string>
     <string name="menu_highlight">ไฮไลต์</string>
     <string name="list_style_list">รายการ</string>
-    <string name="list_style_grid_f">ตาราง (ละเอียด)</string>
+    <string name="list_style_grid_f">ตาราง (เล็ก)</string>
     <string name="list_style_grid_m">ตาราง (ขนาดกลาง)</string>
-    <string name="list_style_grid_c">ตาราง (หยาบ)</string>
+    <string name="list_style_grid_c">ตาราง (ใหญ่)</string>
     <string name="story_content_preview_none">เฉพาะชื่อเรื่อง (ไม่มี)</string>
     <string name="story_content_preview_small">2 บรรทัด (เล็ก)</string>
     <string name="story_content_preview_medium">4 บรรทัด (ปานกลาง)</string>
     <string name="story_content_preview_large">6 บรรทัด (ใหญ่)</string>
-    <string name="mark_read_on_scroll_disabled">ทำเครื่องหมายว่ายังไม่อ่าน</string>
+    <string name="mark_read_on_scroll_disabled">คงสถานะยังไม่อ่าน</string>
     <string name="mark_read_on_scroll_enabled">ทำเครื่องหมายว่าอ่านแล้วเมื่อเลื่อน</string>
     <string name="menu_sort_by">เรียงตาม</string>
     <string name="menu_sort_by_name">ชื่อ</string>
     <string name="menu_sort_by_subs">ตามจำนวนผู้ติดตาม</string>
-    <string name="menu_sort_by_stories_month">เรื่องราวต่อเดือน</string>
-    <string name="menu_sort_by_recent_story">เรื่องราวล่าสุด</string>
+    <string name="menu_sort_by_stories_month">บทความต่อเดือน</string>
+    <string name="menu_sort_by_recent_story">บทความล่าสุด</string>
     <string name="menu_sort_by_number_opens">จำนวนครั้งที่เปิด</string>
     <string name="menu_sort_order">ลำดับการจัดเรียง</string>
     <string name="menu_sort_order_ascending">จากน้อยไปมาก</string>
@@ -254,7 +254,7 @@
     <string name="menu_folder_view_nested">ซ้อนกัน</string>
     <string name="menu_folder_view_flat">แบบแบน</string>
     <string name="menu_mute_all">ปิดเสียงทั้งหมด</string>
-    <string name="menu_mute_none">ปิดเสียง: ไม่มี</string>
+    <string name="menu_mute_none">เลิกปิดเสียงทั้งหมด</string>
     <string name="menu_select_all">เลือกทั้งหมด</string>
     <string name="menu_select_none">ไม่เลือกเลย</string>
     <string name="menu_widget_background">พื้นหลังวิดเจ็ต</string>
@@ -262,29 +262,29 @@
     <string name="menu_widget_background_transparent">โปร่งใส</string>
     <string name="toast_hold_to_select">แตะค้างไว้เพื่อเลือกข้อความ</string>
     <string name="logout_warning">คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ</string>
-    <string name="search_mark_read_warning">ระวัง! เรื่องราวทั้งหมดในฟีด/โฟลเดอร์จะถูกทำเครื่องหมายว่าอ่านแล้ว ไม่ใช่แค่ผลการค้นหา หากต้องการทำเครื่องหมายเรื่องราวทั้งหมดว่าอ่านแล้วจริงๆ โปรดล้างคำค้นหาเพื่อยืนยัน</string>
-    <string name="story_show_changes">แสดงการเปลี่ยนแปลงของเรื่องราว</string>
-    <string name="story_hide_changes">ซ่อนการเปลี่ยนแปลงของเรื่องราว</string>
-    <string name="story_changes_loading">กำลังโหลดการเปลี่ยนแปลงของเรื่องราว …</string>
-    <string name="story_saved_timestamp">บันทึกแล้ว %s</string>
+    <string name="search_mark_read_warning">ระวัง! บทความทั้งหมดในฟีด/โฟลเดอร์จะถูกทำเครื่องหมายว่าอ่านแล้ว ไม่ใช่แค่ผลการค้นหา หากต้องการทำเครื่องหมายบทความทั้งหมดว่าอ่านแล้วจริงๆ โปรดล้างคำค้นหาเพื่อยืนยัน</string>
+    <string name="story_show_changes">แสดงการเปลี่ยนแปลงของบทความ</string>
+    <string name="story_hide_changes">ซ่อนการเปลี่ยนแปลงของบทความ</string>
+    <string name="story_changes_loading">กำลังโหลดการเปลี่ยนแปลงของบทความ …</string>
+    <string name="story_saved_timestamp">บันทึกเมื่อ %s</string>
     <string name="your_feeds_search_hint">ค้นหาในฟีดของคุณ</string>
     <string name="feed_list_clear_search">ล้างการค้นหา</string>
-    <string name="story_search_hint">ค้นหาเรื่อง</string>
+    <string name="story_search_hint">ค้นหาบทความ</string>
     <string name="discover_related_sites_title">เว็บไซต์ที่เกี่ยวข้อง</string>
     <string name="discover_show_grid">แสดงแบบตาราง</string>
     <string name="discover_show_list">แสดงรายการ</string>
     <string name="discover_loading">กำลังค้นหาเว็บไซต์ที่เกี่ยวข้อง…</string>
     <string name="discover_no_related_sites">ไม่พบเว็บไซต์ที่เกี่ยวข้อง</string>
-    <string name="discover_view_mode_grid">ตารางกริด</string>
+    <string name="discover_view_mode_grid">ตาราง</string>
     <string name="discover_view_mode_list">รายการ</string>
     <string name="discover_try">ลอง</string>
     <string name="discover_add">เพิ่ม</string>
     <string name="discover_subscribed">ติดตามแล้ว</string>
     <string name="discover_updated_today">อัปเดตวันนี้</string>
-    <string name="discover_updated_relative">อัปเดตแล้ว %s</string>
-    <string name="discover_stale_updated_relative">ข้อมูลเก่า — อัปเดตเมื่อ %s</string>
-    <string name="discover_stale_date">ไม่มีการอัปเดต เรื่องล่าสุด %s</string>
-    <string name="discover_last_fetched_relative">ดึงข้อมูล %s</string>
+    <string name="discover_updated_relative">อัปเดตเมื่อ %s</string>
+    <string name="discover_stale_updated_relative">ไม่มีการอัปเดต — อัปเดตล่าสุดเมื่อ %s</string>
+    <string name="discover_stale_date">ไม่มีการอัปเดต บทความล่าสุด %s</string>
+    <string name="discover_last_fetched_relative">ดึงข้อมูลเมื่อ %s</string>
     <string name="try_feed_banner_subtitle">ดูตัวอย่าง ยังไม่ได้สมัครรับข้อมูล</string>
     <string name="try_feed_subscribe_button">ติดตาม</string>
     <string name="empty_search_notice">พิมพ์คำค้นหาเพื่อเริ่มต้น</string>
@@ -317,17 +317,17 @@
     <string name="menu_theme_choose">ธีม</string>
     <string name="menu_spacing">ระยะห่าง</string>
     <string name="menu_subscription">การสมัครสมาชิก…</string>
-    <string name="description_add_new_folder_icon">เพิ่มไอคอนโฟลเดอร์ใหม่</string>
+    <string name="description_add_new_folder_icon">ไอคอนเพิ่มโฟลเดอร์ใหม่</string>
     <string name="menu_loginas">เข้าสู่ระบบในชื่อ…</string>
     <string name="loginas_title">เข้าสู่ระบบในฐานะผู้ใช้</string>
     <string name="empty_list_view_loading">กำลังโหลด…</string>
-    <string name="story_loading_description">กำลังโหลดเรื่องราว</string>
-    <string name="empty_list_view_no_stories">ไม่มีเรื่องให้อ่าน</string>
-    <string name="empty_list_view_no_stories_unread">ไม่มีเรื่องราวที่ยังไม่ได้อ่าน</string>
-    <string name="reading_placeholder_select_story">เลือกเรื่องที่ต้องการอ่าน</string>
-    <string name="empty_list_view_no_unread_stories">คุณไม่มีเรื่องที่ยังไม่ได้อ่าน</string>
-    <string name="empty_list_view_no_focus_stories">คุณไม่มีเรื่องราวที่ยังไม่ได้อ่านใน Focus.\n\nเปลี่ยนไปใช้ทั้งหมดหรือยังไม่ได้อ่าน</string>
-    <string name="empty_list_view_no_saved_stories">คุณไม่มีเรื่องที่บันทึกไว้\n\nเปลี่ยนไปที่ทั้งหมดหรือยังไม่ได้อ่าน</string>
+    <string name="story_loading_description">กำลังโหลดบทความ</string>
+    <string name="empty_list_view_no_stories">ไม่มีบทความให้อ่าน</string>
+    <string name="empty_list_view_no_stories_unread">ไม่มีบทความที่ยังไม่ได้อ่าน</string>
+    <string name="reading_placeholder_select_story">เลือกบทความที่ต้องการอ่าน</string>
+    <string name="empty_list_view_no_unread_stories">คุณไม่มีบทความที่ยังไม่ได้อ่าน</string>
+    <string name="empty_list_view_no_focus_stories">คุณไม่มีบทความที่ยังไม่ได้อ่านในโหมดโฟกัส\n\nเปลี่ยนไปที่ทั้งหมดหรือยังไม่ได้อ่าน</string>
+    <string name="empty_list_view_no_saved_stories">คุณไม่มีบทความที่บันทึกไว้\n\nเปลี่ยนไปที่ทั้งหมดหรือยังไม่ได้อ่าน</string>
     <string name="login_registration_custom_server">ตั้งค่าเซิร์ฟเวอร์แบบกำหนดเอง</string>
     <string name="login_registration_reset_url">รีเซ็ต</string>
     <string name="login_registration_register">ลงทะเบียน</string>
@@ -355,10 +355,10 @@
     <string name="setup_instructions">คำแนะนำการตั้งค่า \u25bc</string>
     <string name="setup_instructions_details">หากต้องการอ่านจดหมายข่าวทางอีเมลใน NewsBlur ให้ส่งต่อจดหมายข่าวไปยังที่อยู่อีเมลเฉพาะของคุณที่แสดงไว้ด้านบน\n\nใน Gmail ไปที่การตั้งค่า &gt; การส่งต่อ แล้วคลิกเพิ่มที่อยู่สำหรับส่งต่อ เพิ่มที่อยู่อีเมล NewsBlur เฉพาะของคุณ\n\nGmail จะแนะนำขั้นตอนการยืนยันที่อยู่อีเมล จากนั้นกลับมาที่ NewsBlur แล้วมองหาอีเมลยืนยันในโฟลเดอร์ \"จดหมายข่าว\"\n\nต่อไป ให้สร้างตัวกรองสำหรับจดหมายข่าวทั้งหมดเพื่อส่งต่อไปยังที่อยู่เฉพาะของ NewsBlur</string>
     <string name="copy_email">คัดลอกอีเมล</string>
-    <string name="stories_shortcuts">แป้นลัดสำหรับเรื่อง</string>
-    <string name="feeds_shortcuts">ทางลัดฟีด</string>
+    <string name="stories_shortcuts">แป้นพิมพ์ลัดสำหรับบทความ</string>
+    <string name="feeds_shortcuts">แป้นพิมพ์ลัดสำหรับฟีด</string>
     <string name="import_export">นำเข้า/ส่งออก…</string>
-    <string name="settings">ค่ากำหนด…</string>
+    <string name="settings">การตั้งค่า…</string>
     <string name="menu_mute_sites">ปิดเสียงเว็บไซต์…</string>
     <string name="mute_sites">ปิดเสียงเว็บไซต์</string>
     <string name="menu_widget">วิดเจ็ต…</string>
@@ -371,21 +371,21 @@
     <string name="menu_shortcuts">แป้นพิมพ์ลัด…</string>
     <string name="main_menu_preferences">การตั้งค่า</string>
     <string name="main_menu_mute_sites">ปิดเสียงเว็บไซต์</string>
-    <string name="main_menu_widget_sites">เว็บไซต์วิดเจ็ต</string>
+    <string name="main_menu_widget_sites">เว็บไซต์สำหรับวิดเจ็ต</string>
     <string name="main_menu_notifications">การแจ้งเตือน</string>
     <string name="main_menu_interactions">การโต้ตอบ</string>
     <string name="main_menu_upgrade_premium">อัปเกรดเป็น Premium</string>
     <string name="main_menu_upgrade_archive">อัปเกรดเป็น Archive</string>
-    <string name="main_menu_premium_archive">คลังเก็บถาวรพรีเมียม</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">ฟอรัมช่วยเหลือ</string>
     <string name="newsblur_opml">OPML ของ NewsBlur</string>
     <string name="newsbluropml">NewsBlur-OPML</string>
     <string name="import_export_title">นำเข้า/ส่งออก OPML</string>
     <string name="notifications_title">การแจ้งเตือน</string>
-    <string name="premium_subscribers_folder">River of News แบบเต็มเป็นฟีเจอร์พรีเมียม</string>
-    <string name="premium_subscribers_allstories">การอ่านเรื่องราวจากทุกเว็บไซต์เป็นฟีเจอร์พรีเมียม</string>
-    <string name="premium_subscribers_saved_tag">การอ่านเรื่องราวที่บันทึกไว้ตามแท็กเป็นฟีเจอร์พรีเมียม</string>
+    <string name="premium_subscribers_folder">ฟีดข่าวรวมแบบเต็มเป็นฟีเจอร์พรีเมียม</string>
+    <string name="premium_subscribers_allstories">การอ่านบทความจากทุกเว็บไซต์เป็นฟีเจอร์พรีเมียม</string>
+    <string name="premium_subscribers_saved_tag">การอ่านบทความที่บันทึกไว้ตามแท็กเป็นฟีเจอร์พรีเมียม</string>
     <string name="premium_subscribers_search">การค้นหาเป็นฟีเจอร์ Premium</string>
     <string name="premium_subscribers">สมาชิกพรีเมียม</string>
     <string name="premium_upgrade_button">อัปเกรดเป็น Premium</string>
@@ -396,15 +396,15 @@
     <string name="premium_subscription_no_expiration">การสมัครสมาชิกของคุณตั้งค่าให้ไม่มีวันหมดอายุ ว้าว!</string>
     <string name="premium_policies">ดู&lt;a href=\"https://newsblur.com/privacy\"&gt;นโยบายความเป็นส่วนตัว&lt;/a&gt;และ&lt;a href=\"https://newsblur.com/tos\"&gt;ข้อกำหนดการใช้งาน&lt;/a&gt;ของ NewsBlur เพื่อดูรายละเอียด</string>
     <string name="premium_subscription_header">การสมัครสมาชิก Premium</string>
-    <string name="archive_subscription_header">คลังพรีเมียม</string>
+    <string name="archive_subscription_header">Premium Archive</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">การสมัครสมาชิก NewsBlur Premium</string>
-    <string name="archive_subscription_title">คลังเก็บ NewsBlur Premium</string>
+    <string name="archive_subscription_title">NewsBlur Premium Archive</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 ต่อปี ($3.00/เดือน)</string>
     <string name="premium_subscription_active">การสมัครสมาชิกพรีเมียมของคุณใช้งานอยู่</string>
-    <string name="archive_subscription_active">การสมัครสมาชิกคลังถาวร Premium ของคุณใช้งานอยู่</string>
-    <string name="pro_subscription_active">การสมัครสมาชิก premium pro ของคุณใช้งานอยู่</string>
+    <string name="archive_subscription_active">การสมัครสมาชิก Premium Archive ของคุณใช้งานอยู่</string>
+    <string name="pro_subscription_active">การสมัครสมาชิก Premium Pro ของคุณใช้งานอยู่</string>
     <string name="subscription_manage">จัดการการสมัครสมาชิก</string>
     <string name="subscription_details_error">เกิดข้อผิดพลาดในการเรียกดูรายละเอียดการสมัครสมาชิก</string>
     <string name="no_subscription_available">ไม่มีแพ็กเกจสมัครสมาชิก</string>
@@ -416,32 +416,32 @@
     <string name="subscription_price_monthly">%1$s/เดือน</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
     <string name="premium_archive_includes_above">การสมัครสมาชิก Premium Archive ของคุณมีทุกอย่างตามรายการด้านบน</string>
-    <string name="premium_pro_includes_above">การสมัครสมาชิกพรีเมียมโปรของคุณมีทุกอย่างข้างต้น</string>
+    <string name="premium_pro_includes_above">การสมัครสมาชิก Premium Pro ของคุณมีทุกอย่างข้างต้น</string>
     <string name="premium_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 1,024 แห่ง</string>
     <string name="premium_sync">อัปเดตเว็บไซต์บ่อยขึ้นสูงสุด 5 เท่า</string>
     <string name="premium_read_by_folder">ฟีดข่าวต่อเนื่อง (อ่านตามโฟลเดอร์)</string>
     <string name="premium_search">ค้นหาเว็บไซต์และโฟลเดอร์</string>
-    <string name="premium_searchable_tags">บันทึกเรื่องราวพร้อมแท็กที่ค้นหาได้</string>
-    <string name="premium_privacy_options">ตัวเลือกความเป็นส่วนตัวสำหรับบล็อกข่าวของคุณ</string>
-    <string name="premium_custom_rss">ฟีด RSS แบบกำหนดเองสำหรับเรื่องราวที่บันทึกไว้</string>
-    <string name="premium_text_view">มุมมองข้อความช่วยดึงเนื้อหาเรื่องราวออกมาได้อย่างสะดวก</string>
-    <string name="premium_discover_related">ค้นพบเรื่องราวและเว็บไซต์ที่เกี่ยวข้อง</string>
+    <string name="premium_searchable_tags">บันทึกบทความพร้อมแท็กที่ค้นหาได้</string>
+    <string name="premium_privacy_options">ตัวเลือกความเป็นส่วนตัวสำหรับ Blurblog ของคุณ</string>
+    <string name="premium_custom_rss">ฟีด RSS แบบกำหนดเองสำหรับบทความที่บันทึกไว้</string>
+    <string name="premium_text_view">มุมมองข้อความช่วยดึงเนื้อหาบทความออกมาได้อย่างสะดวก</string>
+    <string name="premium_discover_related">ค้นพบบทความและเว็บไซต์ที่เกี่ยวข้อง</string>
     <string name="premium_shiloh">คุณป้อนอาหารให้ Lyric สุนัขล่าเนื้อผู้หิวโหยของ NewsBlur เป็นเวลา 6 วัน</string>
     <string name="archive_everything_premium">แน่นอนว่าได้ทุกอย่างในแพ็กเกจพรีเมียม</string>
     <string name="archive_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 4,096 แห่ง</string>
-    <string name="archive_marked_as_read">เลือกว่าเมื่อใดให้ทำเครื่องหมายเรื่องราวว่าอ่านแล้วโดยอัตโนมัติ</string>
+    <string name="archive_marked_as_read">เลือกว่าเมื่อใดให้ทำเครื่องหมายบทความว่าอ่านแล้วโดยอัตโนมัติ</string>
     <string name="archive_customize_auto_read">ปรับแต่งการทำเครื่องหมายว่าอ่านแล้วอัตโนมัติตามเว็บไซต์หรือโฟลเดอร์</string>
-    <string name="archive_story_searchable_forever">เรื่องราวทั้งหมดจากทุกเว็บไซต์จะถูกเก็บถาวรและค้นหาได้ตลอดไป</string>
+    <string name="archive_story_searchable_forever">บทความทุกรายการจากทุกเว็บไซต์จะถูกเก็บถาวรและค้นหาได้ตลอดไป</string>
     <string name="archive_back_filled">ฟีดที่รองรับการแบ่งหน้าจะเติมข้อมูลย้อนหลังให้ครบเป็นคลังถาวร</string>
-    <string name="archive_train_full_text">ฝึกเรื่องราวจากเนื้อหาฉบับเต็ม</string>
-    <string name="archive_discover_related">ค้นพบเรื่องราวที่เกี่ยวข้องในคลังของคุณ</string>
-    <string name="archive_export_trained_stories">ส่งออกเรื่องราวที่ฝึกแล้วจากโฟลเดอร์เป็นฟีด RSS</string>
-    <string name="archive_stories_unread_forever">เรื่องราวสามารถคงสถานะยังไม่อ่านได้ตลอดไป</string>
-    <string name="archive_ask_ai">ถาม AI เกี่ยวกับเรื่องราว</string>
+    <string name="archive_train_full_text">ฝึกบทความจากเนื้อหาฉบับเต็ม</string>
+    <string name="archive_discover_related">ค้นพบบทความที่เกี่ยวข้องในคลังของคุณ</string>
+    <string name="archive_export_trained_stories">ส่งออกบทความที่ฝึกแล้วจากโฟลเดอร์เป็นฟีด RSS</string>
+    <string name="archive_stories_unread_forever">บทความสามารถคงสถานะยังไม่อ่านได้ตลอดไป</string>
+    <string name="archive_ask_ai">ถาม AI เกี่ยวกับบทความ</string>
     <string name="archive_filter_by_date_range">กรองเรื่องตามช่วงวันที่</string>
     <string name="archive_train_folder">ใช้การฝึกกับทั้งโฟลเดอร์</string>
     <string name="archive_train_globally">ใช้การฝึกกับทั้งหมด</string>
-    <string name="pro_everything_archive">แน่นอนว่าได้ทุกอย่างที่มีในแพ็กเกจสมัครสมาชิกคลังเก็บ</string>
+    <string name="pro_everything_archive">แน่นอนว่าได้ทุกอย่างในแพ็กเกจ Archive</string>
     <string name="pro_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 10,000 แห่ง</string>
     <string name="pro_all_feeds_fetched">ดึงข้อมูลทุกฟีดทุก 5-15 นาที</string>
     <string name="pro_regex_train">ฝึกคัดกรองเรื่องด้วยนิพจน์ทั่วไป</string>
@@ -449,21 +449,21 @@
     <string name="pro_natural_language_filters">ตัวกรองภาษาธรรมชาติ</string>
     <string name="pro_natural_language_search">ค้นหาด้วยภาษาธรรมชาติ</string>
     <string name="settings_cat_offline">อ่านแบบออฟไลน์</string>
-    <string name="settings_enable_offline">ดาวน์โหลดเรื่องราว</string>
+    <string name="settings_enable_offline">ดาวน์โหลดบทความ</string>
     <string name="settings_enable_offline_sum">ดึงบทความเป็นระยะในเบื้องหลัง</string>
     <string name="settings_enable_image_prefetch">ดาวน์โหลดรูปภาพ</string>
     <string name="settings_enable_image_prefetch_sum">โหลดรูปล่วงหน้าเพื่ออ่านแบบออฟไลน์</string>
-    <string name="settings_keep_old_stories">เก็บเรื่องราวไว้หลังอ่าน</string>
+    <string name="settings_keep_old_stories">เก็บบทความไว้หลังอ่าน</string>
     <string name="settings_keep_old_stories_sum">ปิดใช้งานเพื่อลดการใช้พื้นที่จัดเก็บ</string>
     <string name="mute_config_title">คุณติดตามเว็บไซต์ได้สูงสุด 64 แห่งด้วยบัญชีมาตรฐานฟรี</string>
-    <string name="mute_config_message">โปรดปิดเสียงเว็บไซต์ %d หรือรีเซ็ตเป็นเว็บไซต์ยอดนิยมที่สุด</string>
+    <string name="mute_config_message">โปรดปิดเสียงเว็บไซต์ %d แห่ง หรือรีเซ็ตเป็นเว็บไซต์ยอดนิยม</string>
     <string name="mute_config_reset_button">รีเซ็ตเป็นเว็บไซต์ยอดนิยม</string>
     <string name="mute_config_upgrade_to_premium">อัปเกรดเป็น Premium</string>
     <string name="mute_config_upgrade_subtitle">สมัครรับข้อมูลจาก 1,024 เว็บไซต์</string>
     <string name="mute_config_upgrade">อัปเกรด</string>
     <string name="mute_config_sites">%1$d/%2$d</string>
     <string name="mute_config_sites_available">มีเว็บไซต์ให้ใช้งาน %d แห่ง</string>
-    <string name="mute_config_sites_over">เกินขีดจำกัด %d</string>
+    <string name="mute_config_sites_over">เกินขีดจำกัด %d แห่ง</string>
     <string name="menu_network_select">ดาวน์โหลดโดยใช้…</string>
     <string name="menu_network_select_sum">จำกัดการใช้ข้อมูลเบื้องหลังให้เฉพาะเครือข่ายที่เลือก</string>
     <string name="menu_network_select_opt_any">เครือข่ายใดก็ได้</string>
@@ -474,11 +474,11 @@
         <item>@string/menu_network_select_opt_nomo</item>
         <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
-    <string name="menu_delete_offline_stories">ลบเรื่องที่ใช้งานออฟไลน์…</string>
-    <string name="menu_delete_offline_stories_sum">เพิ่มพื้นที่ว่างด้วยการล้างเรื่องราวและรูปภาพที่จัดเก็บไว้</string>
-    <string name="menu_delete_offline_stories_confirmation">ล้างเรื่องราวและรูปภาพทั้งหมดแล้ว!</string>
-    <string name="menu_cache_age_select">เก็บเรื่องราวไว้นานเท่าใด…</string>
-    <string name="menu_cache_age_select_sum">ล้างเรื่องราวที่จัดเก็บไว้สำหรับอ่านแบบออฟไลน์</string>
+    <string name="menu_delete_offline_stories">ลบบทความออฟไลน์…</string>
+    <string name="menu_delete_offline_stories_sum">เพิ่มพื้นที่ว่างด้วยการล้างบทความและรูปภาพที่จัดเก็บไว้</string>
+    <string name="menu_delete_offline_stories_confirmation">ล้างบทความและรูปภาพทั้งหมดแล้ว!</string>
+    <string name="menu_cache_age_select">เก็บบทความไว้นานเท่าใด…</string>
+    <string name="menu_cache_age_select_sum">ล้างบทความที่จัดเก็บไว้สำหรับอ่านแบบออฟไลน์</string>
     <string name="menu_cache_age_select_opt_2d">2 วัน (ลดการใช้พื้นที่จัดเก็บ)</string>
     <string name="menu_cache_age_select_opt_7d">7 วัน</string>
     <string name="menu_cache_age_select_opt_14d">14 วัน</string>
@@ -491,20 +491,20 @@
     </string-array>
     <string name="settings_cat_feed_list">รายการฟีด</string>
     <string name="setting_feed_list_order">ลำดับรายการฟีด…</string>
-    <string name="settings_enable_row_global_shared">แสดงบทความที่แชร์สู่สาธารณะ</string>
-    <string name="settings_enable_row_global_shared_sum">แสดงโฟลเดอร์เรื่องราวที่แชร์ทั่วโลก</string>
-    <string name="settings_enable_row_infrequent_stories">แสดงเรื่องราวที่มานาน ๆ ครั้ง</string>
-    <string name="settings_enable_row_infrequent_stories_sum">แสดงโฟลเดอร์เรื่องจากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
+    <string name="settings_enable_row_global_shared">แสดงบทความที่แชร์ทั่วโลก</string>
+    <string name="settings_enable_row_global_shared_sum">แสดงโฟลเดอร์บทความที่แชร์ทั่วโลก</string>
+    <string name="settings_enable_row_infrequent_stories">แสดงบทความจากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
+    <string name="settings_enable_row_infrequent_stories_sum">แสดงโฟลเดอร์บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
     <string name="settings_enable_row_daily_briefing">แสดงสรุปข่าวประจำวัน</string>
     <string name="settings_enable_row_daily_briefing_sum">แสดงโฟลเดอร์สรุปข่าวประจำวัน</string>
-    <string name="settings_enable_row_widely_read_stories">แสดงเรื่องราวที่มีผู้อ่านมาก</string>
-    <string name="settings_enable_row_widely_read_stories_sum">แสดงโฟลเดอร์เรื่องที่มีผู้อ่านมาก</string>
+    <string name="settings_enable_row_widely_read_stories">แสดงบทความที่มีผู้อ่านมาก</string>
+    <string name="settings_enable_row_widely_read_stories_sum">แสดงโฟลเดอร์บทความที่มีผู้อ่านมาก</string>
     <string name="settings_enable_row_long_reads">แสดงบทความอ่านยาว</string>
-    <string name="settings_enable_row_long_reads_sum">แสดงโฟลเดอร์ Long Reads</string>
-    <string name="settings_enable_row_good_reads">แสดงเรื่องราวที่น่าอ่าน</string>
-    <string name="settings_enable_row_good_reads_sum">แสดงโฟลเดอร์เรื่องดีๆ</string>
-    <string name="settings_cat_story_list">รายการเรื่อง</string>
-    <string name="settings_cat_story_layout">เลย์เอาต์เรื่องราว</string>
+    <string name="settings_enable_row_long_reads_sum">แสดงโฟลเดอร์บทความอ่านยาว</string>
+    <string name="settings_enable_row_good_reads">แสดงบทความน่าอ่าน</string>
+    <string name="settings_enable_row_good_reads_sum">แสดงโฟลเดอร์บทความน่าอ่าน</string>
+    <string name="settings_cat_story_list">รายการบทความ</string>
+    <string name="settings_cat_story_layout">เลย์เอาต์บทความ</string>
     <string name="settings_app_icon">ไอคอนแอป</string>
     <string name="settings_app_icon_choose">เลือกไอคอน</string>
     <string name="settings_app_icon_summary">มี 12 โทนสี พร้อมรูปแบบสว่างและมืด</string>
@@ -517,7 +517,7 @@
     <string name="settings_app_icon_appearance_auto">ใช้ทั้งสองแบบ</string>
     <string name="settings_app_icon_appearance_dark">มืด</string>
     <string name="settings_app_icon_appearance_light_caption">คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าอย่างไร</string>
-    <string name="settings_app_icon_appearance_auto_caption">ไอคอนจะปรับตามโหมดสว่างหรือมืดของอุปกรณ์\'คุณ</string>
+    <string name="settings_app_icon_appearance_auto_caption">ไอคอนจะปรับตามโหมดสว่างหรือมืดของอุปกรณ์คุณ</string>
     <string name="settings_app_icon_appearance_dark_caption">ใช้ไอคอนสีเข้มเสมอ ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร</string>
     <string name="oldest">เก่าที่สุด</string>
     <string name="newest">ใหม่ที่สุด</string>
@@ -538,14 +538,14 @@
         <item>@string/alphabetical</item>
         <item>@string/most_used_at_top</item>
     </string-array>
-    <string name="all_stories">เรื่องราวทั้งหมด</string>
+    <string name="all_stories">บทความทั้งหมด</string>
     <string name="unread_only">เฉพาะที่ยังไม่อ่าน</string>
-    <string name="menu_story_content_preview">ตัวอย่างเนื้อหาเรื่องราว</string>
+    <string name="menu_story_content_preview">ตัวอย่างเนื้อหาบทความ</string>
     <string name="menu_story_thumbnail_preview">ตัวอย่างภาพขนาดย่อ</string>
     <string name="menu_mark_read_on_scroll">ทำเครื่องหมายว่าอ่านแล้วเมื่อเลื่อน</string>
-    <string name="settings_read_filter">ตัวกรองเรื่องราวที่อ่านแล้ว…</string>
-    <string name="settings_read_filter_title">เรื่องราวที่แสดง</string>
-    <string name="menu_read_filter">ตัวกรองเรื่องราวที่อ่านแล้ว</string>
+    <string name="settings_read_filter">ตัวกรองสถานะการอ่าน…</string>
+    <string name="settings_read_filter_title">บทความที่แสดง</string>
+    <string name="menu_read_filter">ตัวกรองสถานะการอ่าน</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
@@ -555,7 +555,7 @@
         <item>ยกเลิก</item>
     </string-array>
     <string-array name="mark_older_read_options">
-        <item>ทำเครื่องหมายเรื่องเก่าเป็นอ่านแล้ว</item>
+        <item>ทำเครื่องหมายบทความที่เก่ากว่าว่าอ่านแล้ว</item>
         <item>ยกเลิก</item>
     </string-array>
     <plurals name="story_header_mark_read_older_than_days">
@@ -574,25 +574,25 @@
         <item quantity="other">+ อีก %d เว็บไซต์</item>
     </plurals>
     <string-array name="mark_newer_read_options">
-        <item>ทำเครื่องหมายเรื่องราวใหม่กว่าเป็นอ่านแล้ว</item>
+        <item>ทำเครื่องหมายบทความที่ใหม่กว่าว่าอ่านแล้ว</item>
         <item>ยกเลิก</item>
     </string-array>
     <string name="settings_auto_open_first_unread">เปิดบทความแรกอัตโนมัติ</string>
-    <string name="settings_auto_open_first_unread_sum">เปิดเรื่องราวแรกที่ยังไม่ได้อ่านในรายการเรื่องราวโดยอัตโนมัติ</string>
+    <string name="settings_auto_open_first_unread_sum">เปิดบทความแรกที่ยังไม่ได้อ่านในรายการบทความโดยอัตโนมัติ</string>
     <string name="settings_mark_read_on_feed_scroll">ทำเครื่องหมายชื่อเรื่องว่าอ่านแล้วเมื่อเลื่อนดู</string>
-    <string name="settings_mark_read_on_feed_scroll_sum">ทำเครื่องหมายเรื่องราวว่าอ่านแล้วโดยอัตโนมัติเมื่อเลื่อนผ่าน</string>
-    <string name="settings_story_clustering">จัดกลุ่มเรื่องที่เกี่ยวข้อง</string>
-    <string name="settings_story_clustering_summary">แสดงเรื่องราวซ้ำจากฟีดอื่นใต้ชื่อเรื่อง</string>
-    <string name="settings_cluster_matches">จับคู่คลัสเตอร์</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">ทำเครื่องหมายบทความว่าอ่านแล้วโดยอัตโนมัติเมื่อเลื่อนผ่าน</string>
+    <string name="settings_story_clustering">จัดกลุ่มบทความที่เกี่ยวข้อง</string>
+    <string name="settings_story_clustering_summary">แสดงบทความซ้ำจากฟีดอื่นใต้ชื่อเรื่อง</string>
+    <string name="settings_cluster_matches">เกณฑ์การจัดกลุ่ม</string>
     <string name="settings_cluster_matches_summary">เลือกว่าจะแสดงเฉพาะชื่อเรื่องที่ซ้ำกัน หรือรวมเรื่องที่เกี่ยวข้องด้วย</string>
-    <string name="settings_story_clustering_save_failed">บันทึกค่ากำหนดการจัดกลุ่มเรื่องราวไม่สำเร็จ</string>
+    <string name="settings_story_clustering_save_failed">บันทึกค่ากำหนดการจัดกลุ่มบทความไม่สำเร็จ</string>
     <string name="settings_story_clustering_title_only">เฉพาะชื่อเรื่อง</string>
     <string name="settings_cluster_mode_title_match_only">จับคู่เฉพาะชื่อเรื่อง</string>
     <string name="settings_cluster_mode_title_match_plus_related">ตรงกับชื่อเรื่องและเนื้อหาที่เกี่ยวข้อง</string>
-    <string name="settings_cluster_mark_read_matches">ทำเครื่องหมายเรื่องที่ตรงกันว่าอ่านแล้ว</string>
-    <string name="settings_cluster_mark_read_related">ทำเครื่องหมายเรื่องที่เกี่ยวข้องว่าอ่านแล้ว</string>
-    <string name="settings_cluster_mark_read_matches_summary">เมื่อคุณอ่านเรื่องราว ให้ทำเครื่องหมายเรื่องราวที่ตรงกันว่าอ่านแล้วด้วย</string>
-    <string name="settings_cluster_mark_read_related_summary">เมื่อคุณอ่านเรื่องราว ให้ทำเครื่องหมายเรื่องราวที่ตรงกันและเกี่ยวข้องว่าอ่านแล้วด้วย</string>
+    <string name="settings_cluster_mark_read_matches">ทำเครื่องหมายบทความที่ตรงกันว่าอ่านแล้ว</string>
+    <string name="settings_cluster_mark_read_related">ทำเครื่องหมายบทความที่เกี่ยวข้องว่าอ่านแล้ว</string>
+    <string name="settings_cluster_mark_read_matches_summary">เมื่อคุณอ่านบทความ ให้ทำเครื่องหมายบทความที่ตรงกันว่าอ่านแล้วด้วย</string>
+    <string name="settings_cluster_mark_read_related_summary">เมื่อคุณอ่านบทความ ให้ทำเครื่องหมายบทความที่ตรงกันและเกี่ยวข้องว่าอ่านแล้วด้วย</string>
     <string name="settings_cluster_mark_read_save_failed">บันทึกค่ากำหนดการอ่านเรื่องที่เกี่ยวข้องไม่สำเร็จ</string>
     <string name="settings_story_clustering_title">ชื่อเรื่อง</string>
     <string name="settings_story_clustering_only">เท่านั้น</string>
@@ -600,7 +600,7 @@
     <string name="story_cluster_badge_match">ตรงกัน</string>
     <string name="story_cluster_badge_related">เกี่ยวข้อง</string>
     <string name="settings_mark_story_read">ทำเครื่องหมายบทความว่าอ่านแล้ว…</string>
-    <string name="settings_mark_story_read_title">ทำเครื่องหมายเรื่องว่าอ่านแล้ว</string>
+    <string name="settings_mark_story_read_title">ทำเครื่องหมายบทความว่าอ่านแล้ว</string>
     <string name="mark_story_read_immediately">เมื่อเลือกเท่านั้น</string>
     <string name="mark_story_read_on_scroll">เมื่อเลื่อนหรือเลือก</string>
     <string name="mark_story_read_1_second">หลังจาก 1 วินาที</string>
@@ -627,20 +627,20 @@
         <item>@string/mark_story_read_60_seconds</item>
         <item>@string/mark_story_read_manually</item>
     </string-array>
-    <string name="settings_social">การแชร์เรื่องราว</string>
+    <string name="settings_social">การแชร์บทความ</string>
     <string name="settings_show_public_comments">แสดงความคิดเห็นสาธารณะ</string>
     <string name="settings_reading">การอ่าน</string>
     <string name="settings_always_show_reading_controls">แสดงปุ่มควบคุมการอ่านไว้เสมอ</string>
     <string name="settings_always_show_reading_controls_sum">แสดงปุ่มควบคุมการอ่าน เช่น ก่อนหน้าและถัดไปไว้เสมอขณะเลื่อนหน้า</string>
-    <string name="settings_show_ask_ai">แสดง Ask AI</string>
+    <string name="settings_show_ask_ai">แสดงฟีเจอร์ถาม AI</string>
     <string name="settings_content_preview">ข้อความตัวอย่างเนื้อหา…</string>
     <string name="settings_thumbnails_style">ภาพตัวอย่างขนาดย่อ…</string>
     <string name="settings_preview_images_title">แสดงตัวอย่างรูปภาพ</string>
     <string name="settings_preview_images_segment_off">ปิด</string>
-    <string name="settings_preview_images_segment_left_small">L ขนาดเล็ก</string>
-    <string name="settings_preview_images_segment_left_large">L ใหญ่</string>
-    <string name="settings_preview_images_segment_right_small">R เล็ก</string>
-    <string name="settings_preview_images_segment_right_large">R ใหญ่</string>
+    <string name="settings_preview_images_segment_left_small">ซ้ายเล็ก</string>
+    <string name="settings_preview_images_segment_left_large">ซ้ายใหญ่</string>
+    <string name="settings_preview_images_segment_right_small">ขวาเล็ก</string>
+    <string name="settings_preview_images_segment_right_large">ขวาใหญ่</string>
     <string name="settings_notifications">การแจ้งเตือน</string>
     <string name="settings_enable_notifications">เปิดใช้การแจ้งเตือน</string>
     <string name="ask_ai_upgrade_archive">อัปเกรดเป็น Premium Archive</string>
@@ -653,7 +653,7 @@
     <string name="ask_ai_transcribing">กำลังถอดเสียง…</string>
     <string name="ask_ai_microphone_permission_denied">ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน</string>
     <string name="ask_ai_microphone_error">บันทึกเสียงไม่ได้</string>
-    <string name="settings_confirm_mark_all_read_note">ระบบจะขอให้ยืนยันทุกครั้งที่ทำเครื่องหมายเรื่องราวทั้งหมดของเว็บไซต์ว่าอ่านแล้ว กดปุ่มทำเครื่องหมายว่าอ่านค้างไว้เพื่อดูตัวเลือกเพิ่มเติม</string>
+    <string name="settings_confirm_mark_all_read_note">ระบบจะขอให้ยืนยันทุกครั้งที่ทำเครื่องหมายบทความจากทุกเว็บไซต์ว่าอ่านแล้ว กดปุ่มทำเครื่องหมายว่าอ่านค้างไว้เพื่อดูตัวเลือกเพิ่มเติม</string>
     <string name="settings_confirm_mark_all_read_segment_both">ทั้งสอง</string>
     <string name="settings_confirm_mark_all_read_segment_folders">โฟลเดอร์</string>
     <string name="settings_confirm_mark_all_read_segment_never">ไม่เลย</string>
@@ -661,19 +661,19 @@
     <string name="settings_after_mark_read_next">เปิดรายการถัดไป</string>
     <string name="settings_after_mark_read_stay">อยู่ที่นี่</string>
     <string name="settings_when_opening_site_title">เมื่อเปิดเว็บไซต์</string>
-    <string name="settings_when_opening_site_stories">แสดงเรื่อง</string>
-    <string name="settings_when_opening_site_first_story">เปิดเรื่องแรก</string>
-    <string name="story_cluster_upgrade_archive">คลังเก็บพรีเมียม</string>
+    <string name="settings_when_opening_site_stories">แสดงบทความ</string>
+    <string name="settings_when_opening_site_first_story">เปิดบทความแรก</string>
+    <string name="story_cluster_upgrade_archive">Premium Archive</string>
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
         <item>@string/story_content_preview_small</item>
         <item>@string/story_content_preview_medium</item>
         <item>@string/story_content_preview_large</item>
     </string-array>
-    <string name="story_thumbnail_left_hand_small">ขนาดเล็กด้านซ้าย</string>
-    <string name="story_thumbnail_left_hand_large">ใหญ่ด้านซ้าย</string>
+    <string name="story_thumbnail_left_hand_small">ด้านซ้าย ขนาดเล็ก</string>
+    <string name="story_thumbnail_left_hand_large">ด้านซ้าย ขนาดใหญ่</string>
     <string name="story_thumbnail_right_hand_small">ด้านขวา ขนาดเล็ก</string>
-    <string name="story_thumbnail_right_hand_large">ขนาดใหญ่ด้านขวา</string>
+    <string name="story_thumbnail_right_hand_large">ด้านขวา ขนาดใหญ่</string>
     <string name="story_thumbnail_no_image_preview">ไม่มีตัวอย่างรูปภาพ</string>
     <string-array name="thumbnail_style_entries">
         <item>@string/story_thumbnail_left_hand_small</item>
@@ -684,28 +684,28 @@
     </string-array>
     <string name="infrequent_choice_title">บทความจากเว็บไซต์ที่มี</string>
     <string name="infrequent_5">น้อยกว่า 5 เรื่อง/เดือน</string>
-    <string name="infrequent_15">&lt; 15 เรื่อง/เดือน</string>
+    <string name="infrequent_15">น้อยกว่า 15 เรื่อง/เดือน</string>
     <string name="infrequent_30">น้อยกว่า 30 เรื่อง/เดือน</string>
     <string name="infrequent_60">น้อยกว่า 60 เรื่อง/เดือน</string>
     <string name="infrequent_90">น้อยกว่า 90 เรื่อง/เดือน</string>
-    <string name="story_intel_dialog_title">คุณชอบหรือไม่ชอบอะไรเกี่ยวกับเรื่องนี้</string>
+    <string name="story_intel_dialog_title">คุณชอบหรือไม่ชอบอะไรเกี่ยวกับบทความนี้</string>
     <string name="feed_intel_dialog_title">คุณชอบและไม่ชอบอะไรเกี่ยวกับเว็บไซต์นี้</string>
     <string name="intel_title_header">ชื่อเรื่อง</string>
     <string name="feed_intel_title_header">หัวเรื่อง</string>
-    <string name="intel_tag_header">แท็กเรื่องราว</string>
+    <string name="intel_tag_header">แท็กบทความ</string>
     <string name="feed_intel_tag_header">แท็ก</string>
-    <string name="intel_author_header">ผู้เขียนเรื่องราว</string>
+    <string name="intel_author_header">ผู้เขียนบทความ</string>
     <string name="feed_intel_author_header">ผู้เขียน</string>
-    <string name="intel_feed_header">ทั้งหมดตามผู้เผยแพร่</string>
+    <string name="intel_feed_header">ทั้งหมดจากผู้เผยแพร่</string>
     <string name="intel_super_dislike">ไม่ชอบอย่างยิ่ง</string>
     <string name="explainer_super_dislike">ไม่ชอบอย่างยิ่ง</string>
-    <string name="explainer_like">ถูกใจ</string>
+    <string name="explainer_like">ชอบ</string>
     <string name="explainer_dislike">ไม่ชอบ</string>
-    <string name="explainer_beats">จังหวะ</string>
+    <string name="explainer_beats">ชนะ</string>
     <string name="explainer_example1_header">การกดถูกใจเพียงครั้งเดียวมีน้ำหนักมากกว่าการกดไม่ถูกใจจำนวนเท่าใดก็ได้</string>
-    <string name="explainer_example1_result">เรื่องจะแสดงในมุมมองโฟกัส</string>
+    <string name="explainer_example1_result">บทความจะแสดงในมุมมองโฟกัส</string>
     <string name="explainer_example2_header">การไม่ชอบขั้นสุดเพียงครั้งเดียวมีผลเหนือทุกอย่าง</string>
-    <string name="explainer_example2_result">ซ่อนเรื่องราวนี้ไว้เสมอ</string>
+    <string name="explainer_example2_result">บทความจะถูกซ่อนเสมอ</string>
     <string name="auto">อัตโนมัติ</string>
     <string name="light">สว่าง</string>
     <string name="sepia">ซีเปีย</string>
@@ -713,21 +713,21 @@
     <string name="black">สีดำ</string>
     <string name="settings_gestures">ท่าทาง</string>
     <string name="sync_status_housekeeping">กำลังจัดระเบียบ…</string>
-    <string name="sync_status_actions">กำลังตามอ่านการดำเนินการอ่าน %d…</string>
+    <string name="sync_status_actions">กำลังซิงค์การอ่าน %d รายการ…</string>
     <string name="sync_status_recounts">กำลังซิงก์การทำเครื่องหมายว่าอ่านแล้ว…</string>
-    <string name="sync_status_ffsync">กำลังมา…</string>
+    <string name="sync_status_ffsync">กำลังโหลด…</string>
     <string name="sync_status_cleanup">กำลังล้างข้อมูล…</string>
-    <string name="sync_status_starred">กำลังซิงค์การดำเนินการกับเรื่องราวที่บันทึกไว้…</string>
-    <string name="sync_status_stories">กำลังดึงเรื่องราวใหม่…</string>
-    <string name="sync_status_unreads">กำลังจัดเก็บ%sเรื่องที่ยังไม่อ่าน…</string>
-    <string name="sync_status_images">กำลังจัดเก็บรูปภาพ %d…</string>
+    <string name="sync_status_starred">กำลังซิงค์การดำเนินการกับบทความที่บันทึกไว้…</string>
+    <string name="sync_status_stories">กำลังดึงบทความใหม่…</string>
+    <string name="sync_status_unreads">กำลังจัดเก็บ%sบทความที่ยังไม่อ่าน…</string>
+    <string name="sync_status_images">กำลังจัดเก็บรูปภาพ %d รูป…</string>
     <string name="sync_status_offline">ออฟไลน์</string>
     <string name="sync_status_feed_add">กำลังเพิ่มฟีด</string>
     <string name="sync_status_done">เสร็จแล้ว</string>
     <string name="volume_key_navigation">การนำทางด้วยปุ่มปรับระดับเสียง…</string>
     <string name="off">ปิด</string>
-    <string name="volume_up_next">ขึ้น = เรื่องถัดไป</string>
-    <string name="volume_down_next">ลง = เรื่องถัดไป</string>
+    <string name="volume_up_next">ขึ้น = บทความถัดไป</string>
+    <string name="volume_down_next">ลง = บทความถัดไป</string>
     <string-array name="volume_key_navigation_entries">
         <item>@string/off</item>
         <item>@string/volume_up_next</item>
@@ -745,15 +745,15 @@
         <item>@string/none</item>
     </string-array>
     <string name="settings_confirm_mark_range_read">ยืนยันการทำเครื่องหมายว่าอ่านแล้วตั้งแต่เก่ากว่า/ใหม่กว่า</string>
-    <string name="settings_ltr_gesture_action">ปัดไปทางขวาบนรายการเรื่องราว…</string>
+    <string name="settings_ltr_gesture_action">ปัดไปทางขวาบนรายการบทความ…</string>
     <string name="gest_action_none">ไม่ดำเนินการ</string>
     <string name="gest_action_back">กลับไปยังรายการก่อนหน้า</string>
-    <string name="gest_action_toggle_read">สลับสถานะอ่านแล้วของเรื่องราว</string>
+    <string name="gest_action_toggle_read">สลับสถานะอ่านแล้วของบทความ</string>
     <string name="gest_action_markread">ทำเครื่องหมายว่าอ่านแล้ว</string>
-    <string name="gest_action_markunread">ทำเครื่องหมายเรื่องราวว่ายังไม่ได้อ่าน</string>
-    <string name="gest_action_save">บันทึกเรื่อง</string>
-    <string name="gest_action_unsave">ยกเลิกบันทึกเรื่อง</string>
-    <string name="gest_action_statistics">สถิติเหล่านี้</string>
+    <string name="gest_action_markunread">ทำเครื่องหมายบทความว่ายังไม่ได้อ่าน</string>
+    <string name="gest_action_save">บันทึกบทความ</string>
+    <string name="gest_action_unsave">เลิกบันทึกบทความ</string>
+    <string name="gest_action_statistics">สถิติเว็บไซต์</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_back</item>
         <item>@string/gest_action_toggle_read</item>
@@ -801,7 +801,7 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="story_notification_channel_name">เรื่องราวใหม่</string>
+    <string name="story_notification_channel_name">บทความใหม่</string>
     <string name="go_to_feed">ไปที่ฟีด</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
     <string name="search">ค้นหา</string>
@@ -813,30 +813,30 @@
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">ไม่มีการแจ้งเตือนจากฟีด</string>
     <string name="notification_permissions_context">ต้องใช้สิทธิ์เพื่อส่งการแจ้งเตือน</string>
-    <string name="notification_permissions_rationale">ต้องเพิ่มสิทธิ์การแจ้งเตือนด้วยตนเองในการตั้งค่าแอป\'ก่อนลองเปิดใช้การแจ้งเตือนอีกครั้ง</string>
+    <string name="notification_permissions_rationale">ต้องเพิ่มสิทธิ์การแจ้งเตือนด้วยตนเองในการตั้งค่าของแอปก่อนลองเปิดใช้การแจ้งเตือนอีกครั้ง</string>
     <string name="write_storage_permission_opml">ต้องได้รับอนุญาตให้เขียนลงพื้นที่จัดเก็บเพื่อส่งออก OPML</string>
-    <string name="story_saved">ทำเครื่องหมายบทความว่าเก็บไว้แล้ว</string>
-    <string name="story_unsaved">ทำเครื่องหมายเรื่องราวว่าไม่ได้บันทึกแล้ว</string>
-    <string name="story_read">ทำเครื่องหมายข่าวว่าอ่านแล้ว</string>
-    <string name="story_unread">ทำเครื่องหมายเรื่องราวว่ายังไม่ได้อ่านแล้ว</string>
-    <string name="unread_stories">เรื่องราวที่ยังไม่อ่าน</string>
-    <string name="focused_stories">เรื่องที่เน้น</string>
-    <string name="saved_stories">เรื่องราวที่บันทึกไว้</string>
-    <string name="short_next_story">เรื่องถัดไป</string>
-    <string name="short_previous_story">เรื่องราวก่อนหน้า</string>
+    <string name="story_saved">ทำเครื่องหมายบทความว่าบันทึกไว้แล้ว</string>
+    <string name="story_unsaved">เลิกบันทึกบทความแล้ว</string>
+    <string name="story_read">ทำเครื่องหมายบทความว่าอ่านแล้ว</string>
+    <string name="story_unread">บทความถูกทำเครื่องหมายว่ายังไม่ได้อ่าน</string>
+    <string name="unread_stories">บทความที่ยังไม่อ่าน</string>
+    <string name="focused_stories">บทความโฟกัส</string>
+    <string name="saved_stories">บทความที่บันทึกไว้</string>
+    <string name="short_next_story">บทความถัดไป</string>
+    <string name="short_previous_story">บทความก่อนหน้า</string>
     <string name="short_text_view">มุมมองข้อความ</string>
-    <string name="short_page_down">เลื่อนหน้าลง</string>
+    <string name="short_page_down">เลื่อนลงหนึ่งหน้า</string>
     <string name="short_page_down_key">เว้นวรรค</string>
     <string name="short_page_up">เลื่อนขึ้นหนึ่งหน้า</string>
     <string name="short_page_up_key">\u21E7 เว้นวรรค</string>
-    <string name="short_next_unread_story">ข่าวที่ยังไม่อ่านถัดไป</string>
+    <string name="short_next_unread_story">บทความที่ยังไม่อ่านถัดไป</string>
     <string name="short_toggle_read_unread">สลับสถานะอ่านแล้ว/ยังไม่ได้อ่าน</string>
-    <string name="short_save_unsave_story">บันทึก/เลิกบันทึกเรื่องราว</string>
+    <string name="short_save_unsave_story">บันทึก/เลิกบันทึกบทความ</string>
     <string name="short_open_in_browser">เปิดในเบราว์เซอร์</string>
-    <string name="short_share_this_story">แชร์เรื่องนี้</string>
+    <string name="short_share_this_story">แชร์บทความนี้</string>
     <string name="short_scroll_to_comments">เลื่อนไปยังความคิดเห็น</string>
-    <string name="short_open_story_trainer">เปิดตัวฝึกเรื่อง</string>
-    <string name="short_open_all_stories">เปิดเรื่องราวทั้งหมดจากเว็บไซต์</string>
+    <string name="short_open_story_trainer">เปิดเครื่องมือฝึกบทความ</string>
+    <string name="short_open_all_stories">เปิดบทความจากทุกเว็บไซต์</string>
     <string name="short_switch_views">สลับมุมมอง</string>
     <string name="short_add_site">เพิ่มเว็บไซต์</string>
     <string name="registering">กำลังลงทะเบียน...</string>
@@ -853,22 +853,22 @@
     <string name="ui_2eb56be3c2d9">แหล่งที่มา</string>
     <string name="ui_314ef761a08f">เพิ่มส่วนคำสำคัญ</string>
     <string name="ui_3af014d03229">แหล่งฟีด</string>
-    <string name="ui_3e4a49541e18">รวมเรื่องราวที่อ่านแล้ว</string>
+    <string name="ui_3e4a49541e18">รวมบทความที่อ่านแล้ว</string>
     <string name="ui_4a24ff492222">รับสรุปข่าวประจำวันพร้อมเรื่องเด่นทั้งหมด</string>
-    <string name="ui_4e9f59082144">คลังเก็บ Premium</string>
-    <string name="ui_5b170811b992">อัปเกรดเป็นคลังเก็บถาวรพรีเมียม</string>
+    <string name="ui_4e9f59082144">Premium Archive</string>
+    <string name="ui_5b170811b992">อัปเกรดเป็น Premium Archive</string>
     <string name="ui_67a31d6fa581">เลือกตำแหน่งที่จะรับการแจ้งเตือนสรุปข่าวประจำวัน</string>
     <string name="ui_67d0be0dd546">ควบคุมเนื้อหาที่รวมไว้และรูปแบบการเขียน</string>
     <string name="ui_68c2cc7f0cea">โมเดล</string>
     <string name="ui_710089545189">ความยาวและสไตล์</string>
     <string name="ui_753a22b2eb61">การแจ้งเตือน</string>
-    <string name="ui_771ee100da2b">หมวดหมู่คำสำคัญ</string>
+    <string name="ui_771ee100da2b">ส่วนคำสำคัญ</string>
     <string name="ui_7c522fb68f07">รับสรุปข่าวเด่นของคุณตามเวลาที่คุณกำหนด</string>
-    <string name="ui_7f7e956b2244">ตั้งค่าบทสรุปรายวันเพื่อสร้างสรุปเรื่องราวที่สำคัญที่สุดสำหรับคุณ</string>
+    <string name="ui_7f7e956b2244">ตั้งค่าสรุปข่าวประจำวันเพื่อสร้างสรุปบทความที่สำคัญที่สุดสำหรับคุณ</string>
     <string name="ui_7ff5a6dafd80">ส่วนต่างๆ</string>
     <string name="ui_80f7bcbc57b0">เลือกรอบเวลาและเวลาที่ต้องการสร้างสรุปข่าว</string>
-    <string name="ui_a4d5830966af">สร้างสรุปย่ออัตโนมัติตามกำหนดเวลาของคุณ</string>
-    <string name="ui_a92076d4b9e3">เลือกว่าโมเดลใดจะเขียนสรุปประจำวันของคุณ</string>
+    <string name="ui_a4d5830966af">สร้างสรุปข่าวอัตโนมัติตามกำหนดเวลาของคุณ</string>
+    <string name="ui_a92076d4b9e3">เลือกว่าโมเดลใดจะเขียนสรุปข่าวประจำวันของคุณ</string>
     <string name="ui_a970fbbd6df8">สร้างอัตโนมัติ</string>
     <string name="ui_a9dc7e4dcba7">การตั้งค่าสรุปข่าวประจำวัน</string>
     <string name="ui_bbfa773e5a63">ปิด</string>
@@ -876,15 +876,15 @@
     <string name="ui_d521ea8640b5">สร้างสรุปข่าวประจำวัน</string>
     <string name="ui_df174a3f2faa">เปิดใช้งาน</string>
     <string name="ui_df2164622bcf">โหลดสรุปข่าวประจำวันไม่ได้</string>
-    <string name="ui_eaed56ec84ae">สรุปประจำวัน</string>
+    <string name="ui_eaed56ec84ae">สรุปข่าวประจำวัน</string>
     <string name="ui_efc007a393f6">บันทึก</string>
     <string name="ui_f530db58b3e5">คำสำคัญ</string>
-    <string name="ui_fdafe86c10a4">ระบบจะแสดงเฉพาะส่วนที่มีเรื่องราวตรงกัน</string>
+    <string name="ui_fdafe86c10a4">ระบบจะแสดงเฉพาะส่วนที่มีบทความตรงกัน</string>
     <string name="ui_690910f6ed17">นำเข้า OPML</string>
     <string name="ui_244fd5e426f0">ส่งออก OPML</string>
     <string name="ui_768e0c1c6957">ชื่อเรื่อง</string>
     <string name="ui_e17c700c2575">แท็กที่บันทึกไว้</string>
-    <string name="ui_6e914f494515">แท็กเรื่อง</string>
+    <string name="ui_6e914f494515">แท็กบทความ</string>
     <string name="ui_e912ab619a72">แท็กอื่นๆ</string>
     <string name="i18n_add_site">เพิ่มเว็บไซต์</string>
     <string name="i18n_add">เพิ่ม</string>
@@ -892,7 +892,7 @@
     <string name="i18n_no_sites_found_try_another_search">ไม่พบเว็บไซต์ ลองค้นหาอย่างอื่น</string>
     <string name="i18n_load_more">โหลดเพิ่มเติม</string>
     <string name="i18n_follow_any_website">ติดตามเว็บไซต์ใดก็ได้</string>
-    <string name="i18n_mark_updated_stories_unread">ทำเครื่องหมายเรื่องราวที่อัปเดตแล้วว่ายังไม่ได้อ่าน</string>
+    <string name="i18n_mark_updated_stories_unread">ทำเครื่องหมายบทความที่อัปเดตแล้วว่ายังไม่ได้อ่าน</string>
     <string name="i18n_follow_news_that_matters_to_you">ติดตามข่าวสารที่สำคัญสำหรับคุณ</string>
     <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">เลือกหัวข้อหรือสร้างฟีด Google News จากการค้นหาใดก็ได้</string>
     <string name="i18n_subscribe">สมัครรับข้อมูล</string>
@@ -901,13 +901,13 @@
     <string name="i18n_sponsored">ได้รับการสนับสนุน</string>
     <string name="i18n_discover_more_to_read">ค้นพบเรื่องน่าอ่านเพิ่มเติม</string>
     <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">ไม่พบเว็บไซต์ คุณสามารถเพิ่มเว็บไซต์ได้ด้วย URL</string>
-    <string name="i18n_add_discover_sites">เพิ่ม + ค้นหาเว็บไซต์</string>
-    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">สร้างฟีดจากหน้าเว็บที่ไม่มี RSS NewsBlur จะค้นหาเรื่องราวและตรวจสอบการอัปเดต ต้องมี Premium Archive</string>
+    <string name="i18n_add_discover_sites">เพิ่ม + ค้นพบเว็บไซต์</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">สร้างฟีดจากหน้าเว็บที่ไม่มี RSS NewsBlur จะค้นหาบทความและตรวจสอบการอัปเดต ต้องมี Premium Archive</string>
     <string name="onboarding_delete_account">ลบบัญชี</string>
     <string name="onboarding_your_account_has_been_deleted">ลบบัญชีของคุณแล้ว</string>
     <string name="onboarding_disconnect_newsblur_from_sign_in_with_apple_in_your_apple_account">ยกเลิกการเชื่อมต่อ NewsBlur จากการลงชื่อเข้าด้วย Apple ในการตั้งค่าบัญชี Apple เพื่อดำเนินการยกเลิกการอนุญาตให้เสร็จสิ้น</string>
     <string name="onboarding_apple_account_settings">การตั้งค่าบัญชี Apple</string>
-    <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">การลบบัญชีจะลบฟีด เรื่องราวที่บันทึกไว้ และข้อมูลบัญชีของคุณอย่างถาวร และไม่สามารถยกเลิกได้</string>
+    <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">การลบบัญชีจะลบฟีด บทความที่บันทึกไว้ และข้อมูลบัญชีของคุณอย่างถาวร และไม่สามารถยกเลิกได้</string>
     <string name="onboarding_confirm_your_password">ยืนยันรหัสผ่านของคุณ</string>
     <string name="onboarding_type_delete_to_permanently_delete_your_account">พิมพ์ %1$s เพื่อลบบัญชีของคุณอย่างถาวร</string>
     <string name="onboarding_permanently_delete_account">ลบบัญชีอย่างถาวร</string>
@@ -932,7 +932,7 @@
     <string name="onboarding_bring_your_feeds_and_folders_from_another_reader">นำเข้าฟีดและโฟลเดอร์จากโปรแกรมอ่านอื่น</string>
     <string name="onboarding_explore_interests">สำรวจความสนใจ</string>
     <string name="onboarding_you_re_all_set_up">ตั้งค่าทุกอย่างเรียบร้อยแล้ว</string>
-    <string name="onboarding_your_reading_list">รายการเรื่องราวที่อ่าน</string>
+    <string name="onboarding_your_reading_list">รายการอ่านของคุณ</string>
     <string name="onboarding_stay_connected">เชื่อมต่ออยู่เสมอ</string>
     <string name="onboarding_connect_your_account">เชื่อมต่อบัญชีของคุณ</string>
     <string name="onboarding_choose_your_username">เลือกชื่อผู้ใช้</string>
@@ -976,9 +976,9 @@
     <plurals name="setup_feeds_added">
         <item quantity="other">เพิ่มฟีดแล้ว %1$d รายการ</item>
     </plurals>
-    <string name="setup_included_in_bundle">รวมอยู่ในแพ็กเกจ</string>
+    <string name="setup_included_in_bundle">รวมอยู่ในชุดแล้ว</string>
     <string name="setup_include_in_bundle">รวมไว้ในชุด</string>
-    <string name="setup_reader_ready_add_feeds_anytime">ตัวอ่านของคุณพร้อมแล้ว เพิ่มฟีดได้ทุกเมื่อจาก เพิ่ม + ค้นพบเว็บไซต์</string>
+    <string name="setup_reader_ready_add_feeds_anytime">โปรแกรมอ่านของคุณพร้อมแล้ว เพิ่มฟีดได้ทุกเมื่อจากเมนู “เพิ่ม + ค้นพบเว็บไซต์”</string>
     <string name="setup_reading_list_yours">รายการอ่านที่เป็นของคุณ ทุกสิ่งที่คุณเลือกอยู่ในที่เดียว</string>
     <plurals name="setup_feed_count">
         <item quantity="other">ฟีด %1$d รายการ</item>
@@ -994,7 +994,7 @@
     <plurals name="setup_stories_per_month">
         <item quantity="other">%1$d เรื่อง/เดือน</item>
     </plurals>
-    <string name="setup_feed_stale_last_story">ข้อมูลล้าสมัย · เรื่องล่าสุด %1$s</string>
+    <string name="setup_feed_stale_last_story">ไม่มีการอัปเดต · บทความล่าสุด %1$s</string>
     <string name="add_site_url_or_search">%1$s หรือค้นหา</string>
     <string name="add_site_choose_folder">เลือกโฟลเดอร์</string>
     <string name="add_site_top_level">— ระดับบนสุด —</string>
@@ -1030,14 +1030,14 @@
     <string name="discover_choose_option">เลือก %1$s</string>
     <string name="discover_clear_input">ล้าง %1$s</string>
     <string name="discover_web_page_url">URL ของหน้าเว็บ</string>
-    <string name="discover_which_stories_optional">เรื่องราวใด (ไม่บังคับ)</string>
+    <string name="discover_which_stories_optional">บทความใด (ไม่บังคับ)</string>
     <string name="discover_analyze_page">วิเคราะห์หน้าเว็บ</string>
     <string name="discover_refine_analysis">ปรับแต่งการวิเคราะห์</string>
     <string name="discover_add_rss_feed">เพิ่มฟีด RSS</string>
     <string name="discover_added">เพิ่มแล้ว</string>
     <string name="discover_web_pattern">รูปแบบ %1$d</string>
     <string name="discover_feed_title">ชื่อฟีด</string>
-    <string name="discover_keep_stories">เก็บเรื่องราว</string>
+    <string name="discover_keep_stories">เก็บบทความ</string>
     <plurals name="discover_keep_stories_days">
         <item quantity="other">%d วัน</item>
     </plurals>
@@ -1048,7 +1048,7 @@
     <string name="discover_choose_a_category">เลือกหมวดหมู่</string>
     <string name="discover_add_google_news_feed">เพิ่มฟีด Google News</string>
     <string name="discover_news_topic_world">โลก</string>
-    <string name="discover_news_topic_nation">ประเทศ</string>
+    <string name="discover_news_topic_nation">ในประเทศ</string>
     <string name="discover_news_topic_business">ธุรกิจ</string>
     <string name="discover_news_topic_technology">เทคโนโลยี</string>
     <string name="discover_news_topic_entertainment">บันเทิง</string>
@@ -1061,9 +1061,9 @@
     <string name="briefing_frequency_daily">รายวัน</string>
     <string name="briefing_frequency_weekly">รายสัปดาห์</string>
     <string name="briefing_preferred_time">เวลาที่ต้องการ</string>
-    <string name="briefing_time_morning">เช้า</string>
+    <string name="briefing_time_morning">ช่วงเช้า</string>
     <string name="briefing_time_afternoon">ช่วงบ่าย</string>
-    <string name="briefing_time_evening">ตอนเย็น</string>
+    <string name="briefing_time_evening">ช่วงเย็น</string>
     <string name="briefing_preferred_day">วันที่ต้องการ</string>
     <string name="briefing_day_sunday">วันอาทิตย์</string>
     <string name="briefing_day_monday">วันจันทร์</string>
@@ -1087,17 +1087,17 @@
     </plurals>
     <string name="language_dialog_title">เลือกภาษาของคุณ</string>
     <string name="language_dialog_detected">NewsBlur ตรวจพบว่าอุปกรณ์ของคุณใช้ %1$s</string>
-    <string name="language_dialog_note">คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในค่ากำหนด</string>
+    <string name="language_dialog_note">คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า</string>
     <string name="language_dialog_use">ใช้ %1$s</string>
     <string name="language_dialog_choose_another">เลือกภาษาอื่น</string>
-    <string name="language_dialog_pick">เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในค่ากำหนด</string>
+    <string name="language_dialog_pick">เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า</string>
     <string name="main_menu_import_feed_bundles">นำเข้าและชุดฟีด</string>
     <string name="main_menu_export_feeds">ส่งออกฟีด</string>
     <string name="discover_open">เปิด</string>
     <string name="discover_folder_top_level">ระดับบนสุด</string>
     <string name="discover_add_to_folder">เพิ่มลงในโฟลเดอร์</string>
     <string name="add_site_shortcut_trending">กำลังเป็นที่นิยม</string>
-    <string name="add_site_freshness_stale">%1$s ล้าสมัย</string>
+    <string name="add_site_freshness_stale">ไม่อัปเดตตั้งแต่ %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="other">%d นาทีที่แล้ว</item>
     </plurals>
@@ -1121,8 +1121,8 @@
     <string name="profile_activity_user_signed_up">%1$s สมัครใช้งาน Newsblur แล้ว</string>
     <string name="profile_activity_you_followed">คุณติดตาม %1$s แล้ว</string>
     <string name="profile_activity_user_followed">%1$s ติดตาม %2$s</string>
-    <string name="profile_activity_you_favorited_comments">คุณถูกใจ %1$s ความคิดเห็นใน %2$s</string>
-    <string name="profile_activity_user_favorited_comments">%1$s ถูกใจความคิดเห็นของ %2$s รายการเกี่ยวกับ %3$s</string>
+    <string name="profile_activity_you_favorited_comments">คุณถูกใจความคิดเห็นของ %1$s ใน %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s ถูกใจความคิดเห็นของ %2$s ใน %3$s</string>
     <string name="profile_activity_you_replied">คุณตอบกลับ %1$s</string>
     <string name="profile_activity_user_replied">%1$s ตอบกลับ %2$s</string>
     <string name="profile_activity_you_shared">คุณแชร์ %1$s</string>

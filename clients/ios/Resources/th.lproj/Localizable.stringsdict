@@ -27,7 +27,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เว็บไซต์วิดเจ็ต %@ แห่ง</string>
+			<string>เว็บไซต์ในวิดเจ็ต %@ แห่ง</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เรื่องเด่นที่คัดสรรแล้ว %@ เรื่อง</string>
+			<string>บทความโฟกัส %@ รายการ</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -223,7 +223,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ การแชร์</string>
+			<string>แชร์ %@ ครั้ง</string>
 		</dict>
 	</dict>
 	<key>%@ sources</key>
@@ -251,7 +251,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ เรื่องราว</string>
+			<string>%@ บทความ</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -307,7 +307,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เรื่องราวที่ยังไม่ได้อ่าน %@ เรื่อง</string>
+			<string>บทความที่ยังไม่ได้อ่าน %@ รายการ</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -461,7 +461,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>ทำเครื่องหมายเรื่อง %@ รายการนี้ว่าอ่านแล้ว</string>
+			<string>ทำเครื่องหมายบทความ %@ รายการนี้ว่าอ่านแล้ว</string>
 		</dict>
 	</dict>
 	<key>Mute %@ Sites</key>
@@ -503,7 +503,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เรื่องราวที่แชร์</string>
+			<string>บทความที่แชร์</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
