@@ -435,6 +435,13 @@ class DebugAssetsAwareStylesheetNode(StylesheetNode):
             if hasattr(settings, "DEBUG_ASSETS"):
                 settings.DEBUG = settings.DEBUG_ASSETS
             return super().render(context)
+        except ValueError as error:
+            # utils_tags.py keeps right-to-left pages up when code ships before its static build:
+            # the hand-written rtl overrides are optional, the mirrored common sheet still loads.
+            if template.Variable(self.name).resolve(context) != "rtl":
+                raise
+            logging.error(" ***> Missing the rtl stylesheet bundle, run deploy_static: %s" % error)
+            return ""
         finally:
             settings.DEBUG = original_debug
 

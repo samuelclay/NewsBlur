@@ -308,3 +308,16 @@ class Test_RtlStylesheetView(SimpleTestCase):
             sources,
             (("/srv/newsblur/static/css/common.0123456789ab.css", "/static/css/common.0123456789ab.css"),),
         )
+
+
+class Test_RtlStylesheetTag(SimpleTestCase):
+    def render(self, bundle):
+        return Template("{% load utils_tags %}{% include_stylesheets '" + bundle + "' %}").render(Context({}))
+
+    def test_missing_rtl_bundle_does_not_break_the_page(self):
+        # Code can reach a server before deploy_static writes the rtl bundle's manifest entry.
+        missing = ValueError("Missing staticfiles manifest entry for 'css/rtl.css'")
+        with patch("pipeline.templatetags.pipeline.StylesheetNode.render", side_effect=missing):
+            self.assertEqual(self.render("rtl"), "")
+            with self.assertRaises(ValueError):
+                self.render("common")
