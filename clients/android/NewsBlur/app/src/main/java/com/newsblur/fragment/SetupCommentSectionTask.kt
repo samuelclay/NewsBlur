@@ -87,9 +87,9 @@ class SetupCommentSectionTask(
             commentText.text = UIUtils.fromHtml(comment.commentText)
             val commentImage = commentView.findViewById<View>(R.id.comment_user_image) as ShapeableImageView
             val commentSharedDate = commentView.findViewById<View>(R.id.comment_shareddate) as TextView
-            // TODO: this uses hard-coded "ago" values, which will be wrong when reading prefetched stories
+            // SetupCommentSectionTask.kt shows the server's relative age, which goes stale on prefetched stories.
             if (comment.sharedDate != null) {
-                commentSharedDate.text = comment.sharedDate + " ago"
+                commentSharedDate.text = context.getString(R.string.profile_time_ago, comment.sharedDate)
             }
             val favouriteContainer = commentView.findViewById<View>(R.id.comment_favourite_avatars) as FlowLayout
             val favouriteIcon = commentView.findViewById<View>(R.id.comment_favourite_icon) as ImageView
