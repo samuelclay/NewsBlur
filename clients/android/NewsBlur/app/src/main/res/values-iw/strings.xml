@@ -1088,7 +1088,7 @@
     <string name="briefing_frequency_weekly">שבועי</string>
     <string name="briefing_preferred_time">שעה מועדפת</string>
     <string name="briefing_time_morning">בוקר</string>
-    <string name="briefing_time_afternoon">אחר הצהריים</string>
+    <string name="briefing_time_afternoon">צהריים</string>
     <string name="briefing_time_evening">ערב</string>
     <string name="briefing_preferred_day">היום המועדף</string>
     <string name="briefing_day_sunday">יום ראשון</string>
@@ -1097,7 +1097,7 @@
     <string name="briefing_day_wednesday">יום רביעי</string>
     <string name="briefing_day_thursday">יום חמישי</string>
     <string name="briefing_day_friday">יום שישי</string>
-    <string name="briefing_day_saturday">שבת</string>
+    <string name="briefing_day_saturday">יום שבת</string>
     <string name="briefing_story_count">מספר הכתבות</string>
     <string name="briefing_writing_style">סגנון כתיבה</string>
     <string name="briefing_style_bullets">תבליטים</string>
@@ -1125,7 +1125,7 @@
     <string name="discover_folder_top_level">הרמה העליונה</string>
     <string name="discover_add_to_folder">הוספה לתיקייה</string>
     <string name="add_site_shortcut_trending">במגמת עלייה</string>
-    <string name="add_site_freshness_stale">לא מעודכן: %1$s</string>
+    <string name="add_site_freshness_stale">לא מעודכן מאז %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="one">לפני %d דק׳</item>
         <item quantity="other">לפני %d דקות</item>
@@ -1156,7 +1156,7 @@
     <string name="profile_activity_you_saved">שמרת את %1$s</string>
     <string name="profile_activity_user_saved">%1$s שמר/ה את %2$s</string>
     <string name="profile_activity_you_signed_up">נרשמת ל־NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s נרשם ל־NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s נרשם/ה ל־NewsBlur</string>
     <string name="profile_activity_you_followed">התחלת לעקוב אחר %1$s</string>
     <string name="profile_activity_user_followed">%1$s התחיל/ה לעקוב אחרי %2$s</string>
     <string name="profile_activity_you_favorited_comments">הוספת למועדפים את התגובות של %1$s על %2$s</string>
@@ -1175,15 +1175,15 @@
     <string name="profile_interaction_replied_user_reply">%1$s השיב/ה לתשובה של %2$s</string>
     <string name="profile_interaction_reshared">%1$s שיתף/ה מחדש את %2$s</string>
     <string name="briefing_section_top_stories">כתבות מובילות</string>
-    <string name="briefing_section_top_stories_subtitle">הכתבות החשובות ביותר מהמקורות שלך</string>
-    <string name="briefing_section_infrequent">ממקורות שמפרסמים לעיתים רחוקות</string>
-    <string name="briefing_section_infrequent_subtitle">כתבות ממקורות שמפרסמים לעיתים רחוקות</string>
-    <string name="briefing_section_long_read">כתבות ארוכות לקריאה בהמשך</string>
-    <string name="briefing_section_long_read_subtitle">כתבות ארוכות ששווה לפנות להן זמן</string>
-    <string name="briefing_section_classifier_match">בהתאם לתחומי העניין שלך</string>
-    <string name="briefing_section_classifier_match_subtitle">כתבות שתואמות לנושאים ולכותבים שאימנת את המערכת לזהות</string>
-    <string name="briefing_section_follow_up">עדכונים נוספים</string>
-    <string name="briefing_section_follow_up_subtitle">פוסטים חדשים ממקורות שקראת לאחרונה</string>
+    <string name="briefing_section_top_stories_subtitle">הכתבות החשובות ביותר מהפידים שלך</string>
+    <string name="briefing_section_infrequent">מאתרים שמתעדכנים לעיתים רחוקות</string>
+    <string name="briefing_section_infrequent_subtitle">כתבות מפידים שמפרסמים לעיתים רחוקות</string>
+    <string name="briefing_section_long_read">כתבות ארוכות לקריאה מאוחר יותר</string>
+    <string name="briefing_section_long_read_subtitle">כתבות ארוכות שכדאי לפנות להן זמן</string>
+    <string name="briefing_section_classifier_match">על סמך תחומי העניין שלך</string>
+    <string name="briefing_section_classifier_match_subtitle">כתבות שתואמות לנושאים ולכותבים שאימנת</string>
+    <string name="briefing_section_follow_up">המשכים</string>
+    <string name="briefing_section_follow_up_subtitle">פוסטים חדשים מפידים שקראת לאחרונה</string>
     <string name="briefing_section_widely_covered">סיקור נרחב</string>
-    <string name="briefing_section_widely_covered_subtitle">כתבות שסוקרו ב־3 מקורות או יותר</string>
+    <string name="briefing_section_widely_covered_subtitle">כתבות שמופיעות ב־3 פידים או יותר</string>
 </resources>

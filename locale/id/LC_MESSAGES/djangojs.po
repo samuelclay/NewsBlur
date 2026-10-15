@@ -3780,7 +3780,7 @@ msgid "Long reads for later"
 msgstr "Bacaan panjang untuk nanti"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "Artikel yang lebih panjang dan layak diluangkan waktu untuk membacanya"
+msgstr "Artikel panjang yang layak diluangkan waktu untuk membacanya"
 
 msgid "MCP Server"
 msgstr "Server MCP"
@@ -4183,7 +4183,7 @@ msgid "New password"
 msgstr "Kata sandi baru"
 
 msgid "New posts from feeds you recently read"
-msgstr "Kiriman baru dari feed yang baru saja Anda baca"
+msgstr "Postingan baru dari feed yang baru-baru ini Anda baca"
 
 msgid "New tag name"
 msgstr "Nama tag baru"
@@ -4551,7 +4551,7 @@ msgstr "Kata sandi lama"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Lebih lama dari: %(month)s %(day)s %(year)s"
+msgstr "Lebih lama dari: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "Sebelum:"
@@ -6149,7 +6149,7 @@ msgstr "Percantik slogan situs. Jika terpilih, situs ini akan tampil selama semi
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Usang %(date)s"
+msgstr "Usang sejak %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
@@ -6233,7 +6233,7 @@ msgstr[0] "Artikel ditandai telah dibaca pada <b>%(days)s hari</b>"
 msgstr[1] "Artikel ditandai telah dibaca pada <b>%(days)s hari</b>"
 
 msgid "Stories matching your trained topics and authors"
-msgstr "Artikel yang cocok dengan topik dan penulis yang telah Anda latih"
+msgstr "Artikel yang cocok dengan topik dan penulis yang Anda latih"
 
 msgid "Stories never expire or disappear"
 msgstr "Artikel tidak pernah kedaluwarsa atau hilang"
@@ -7517,7 +7517,7 @@ msgid "Widely Read on NewsBlur"
 msgstr "Banyak Dibaca di NewsBlur"
 
 msgid "Widely covered"
-msgstr "Banyak dibahas"
+msgstr "Banyak diliput"
 
 msgid "Widen pane for controls"
 msgstr "Perlebar panel untuk menampilkan kontrol"

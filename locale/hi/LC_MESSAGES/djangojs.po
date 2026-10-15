@@ -3126,7 +3126,7 @@ msgid "From"
 msgstr "से"
 
 msgid "From infrequent sites"
-msgstr "कम बार अपडेट होने वाली साइटों से"
+msgstr "कम प्रकाशित होने वाली साइटों से"
 
 msgid "Full"
 msgstr "पूर्ण"
@@ -3767,7 +3767,7 @@ msgid "Long reads for later"
 msgstr "बाद में पढ़ने के लिए लंबे लेख"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "अधिक समय निकालकर पढ़ने लायक लंबे लेख"
+msgstr "लंबे लेख, जिन्हें पढ़ने के लिए समय निकालना सार्थक है"
 
 msgid "MCP Server"
 msgstr "MCP सर्वर"
@@ -4538,7 +4538,7 @@ msgstr "पुराना पासवर्ड"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "इससे पुराना: %(month)s %(day)s %(year)s"
+msgstr "इससे पुराना: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "इस तारीख से पहले:"
@@ -6915,7 +6915,7 @@ msgid "Top Level"
 msgstr "शीर्ष स्तर"
 
 msgid "Top stories"
-msgstr "शीर्ष लेख"
+msgstr "प्रमुख लेख"
 
 msgid "Track Changes"
 msgstr "बदलावों पर नज़र रखें"

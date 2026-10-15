@@ -23,7 +23,7 @@
 "%@ ago" = "%@ ที่แล้ว";
 "%@ categories to choose from" = "มีหมวดหมู่ให้เลือก %@ หมวด";
 "%@ comments" = "%@ ความคิดเห็น";
-"%@ could not be added." = "เพิ่ม %@ ไม่ได้";
+"%@ could not be added." = "เพิ่มฟีด %@ รายการไม่ได้";
 "%@ days" = "%@ วัน";
 "%@ feed" = "ฟีด %@";
 "%@ feeds" = "ฟีด %@ รายการ";
@@ -122,8 +122,8 @@
 "After 60 Seconds" = "หลังจาก 60 วินาที";
 "After 60 seconds" = "หลังจาก 60 วินาที";
 "After mark read" = "หลังทำเครื่องหมายว่าอ่านแล้ว";
-"Afternoon" = "ช่วงบ่าย";
-"Afternoon Briefing" = "สรุปข่าวช่วงบ่าย";
+"Afternoon" = "ช่วงเที่ยง";
+"Afternoon Briefing" = "สรุปข่าวตอนเที่ยง";
 "Alert after no new stories for" = "แจ้งเตือนเมื่อไม่มีบทความใหม่เป็นเวลา";
 "All" = "ทั้งหมด";
 "All Done" = "เสร็จแล้ว";
@@ -312,9 +312,9 @@
 "Export trained stories from folders as RSS feeds" = "ส่งออกเรื่องที่ฝึกจากโฟลเดอร์เป็นฟีด RSS";
 "Extra Large" = "ใหญ่มาก";
 "Extra Short [grid height]" = "สั้นมาก";
-"Extra Small" = "เล็กพิเศษ";
-"Extra Tall" = "สูงพิเศษ";
-"Extra small" = "เล็กพิเศษ";
+"Extra Small" = "เล็กมาก";
+"Extra Tall" = "สูงมาก";
+"Extra small" = "เล็กมาก";
 "Faster" = "เร็วขึ้น";
 "Favorited" = "ถูกใจแล้ว";
 "Favoriting" = "กำลังกดถูกใจ";
@@ -354,7 +354,7 @@
 "Follow up to 10,000 sites" = "ติดตามเว็บไซต์ได้สูงสุด 10,000 แห่ง";
 "Follow up to 4,096 sites" = "ติดตามเว็บไซต์ได้สูงสุด 4,096 แห่ง";
 "Follow up..." = "ถามต่อ...";
-"Follow-ups" = "เรื่องติดตาม";
+"Follow-ups" = "ติดตามความคืบหน้า";
 "Followed" = "ติดตามแล้ว";
 "Followers label" = "ป้ายผู้ติดตาม";
 "Following [button state]" = "กำลังติดตาม";
@@ -474,8 +474,8 @@
 "Long press" = "กดค้าง";
 "Long press on feeds and folders" = "กดค้างที่ฟีดและโฟลเดอร์";
 "Long press on story titles" = "กดชื่อบทความค้างไว้";
-"Long reads for later" = "บทความยาวเก็บไว้อ่านทีหลัง";
-"Longer articles worth setting time aside for" = "บทความยาวที่ควรหาเวลามาอ่าน";
+"Long reads for later" = "บทความยาวไว้อ่านทีหลัง";
+"Longer articles worth setting time aside for" = "บทความยาวที่ควรหาเวลาอ่าน";
 "Magazine" = "นิตยสาร";
 "Manage" = "จัดการ";
 "Manage Account on the Web" = "จัดการบัญชีบนเว็บ";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "ปานกลาง";
 "Medium [preview length]" = "ปานกลาง";
 "Medium [text size]" = "ปานกลาง";
-"Medium [theme]" = "ปานกลาง";
+"Medium [theme]" = "สีเทา";
 "Model" = "โมเดล";
 "Monday" = "วันจันทร์";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "บทความจำนวนมากขึ้นใช้พื้นที่ดิสก์มากขึ้น แต่ไม่มีผลต่อประสิทธิภาพอย่างเห็นได้ชัด";
@@ -867,7 +867,7 @@
 "Stop autoscroll" = "หยุดเลื่อนอัตโนมัติ";
 "Stories" = "บทความ";
 "Stories can stay unread forever" = "บทความคงสถานะยังไม่อ่านได้ตลอดไป";
-"Stories covered by 3+ feeds" = "เรื่องที่มีฟีดครอบคลุมตั้งแต่ 3 ฟีดขึ้นไป";
+"Stories covered by 3+ feeds" = "บทความที่มีฟีดนำเสนอตั้งแต่ 3 ฟีดขึ้นไป";
 "Stories from feeds that rarely publish" = "บทความจากฟีดที่เผยแพร่ไม่บ่อย";
 "Stories in a folder" = "บทความในโฟลเดอร์";
 "Stories in a site" = "บทความในเว็บไซต์";

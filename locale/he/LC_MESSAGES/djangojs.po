@@ -1151,7 +1151,7 @@ msgid "After marking feed/folder read"
 msgstr "לאחר סימון הפיד/התיקייה כנקראו"
 
 msgid "Afternoon"
-msgstr "אחר הצהריים"
+msgstr "צהריים"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -3755,7 +3755,7 @@ msgid "Long reads for later"
 msgstr "כתבות ארוכות לקריאה מאוחר יותר"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "כתבות ארוכות ששווה לפנות זמן לקריאתן"
+msgstr "כתבות ארוכות שכדאי לפנות להן זמן"
 
 msgid "MCP Server"
 msgstr "שרת MCP"
@@ -3993,7 +3993,7 @@ msgid "Morning"
 msgstr "בוקר"
 
 msgid "Morning + Afternoon"
-msgstr "בוקר + אחר הצהריים"
+msgstr "בוקר + צהריים"
 
 msgid "Morning + Evening"
 msgstr "בוקר + ערב"
@@ -4156,7 +4156,7 @@ msgid "New password"
 msgstr "סיסמה חדשה"
 
 msgid "New posts from feeds you recently read"
-msgstr "פוסטים חדשים ממקורות שקראת לאחרונה"
+msgstr "פוסטים חדשים מפידים שקראת לאחרונה"
 
 msgid "New tag name"
 msgstr "שם תג חדש"
@@ -6102,7 +6102,7 @@ msgstr "שדרגו את סיסמת האתר. אם הוא ייבחר, האתר י
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "מיושן %(date)s"
+msgstr "לא מעודכן מאז %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
@@ -6167,7 +6167,7 @@ msgid "Stories can stay unread forever"
 msgstr "כתבות יכולות להישאר לא נקראות לנצח"
 
 msgid "Stories covered by 3+ feeds"
-msgstr "כתבות שמופיעות ב־3 פידים ומעלה"
+msgstr "כתבות שמופיעות ב־3 פידים או יותר"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
@@ -6873,7 +6873,7 @@ msgid "Top Level"
 msgstr "רמה עליונה"
 
 msgid "Top stories"
-msgstr "הכתבות המובילות"
+msgstr "כתבות מובילות"
 
 msgid "Track Changes"
 msgstr "מעקב אחר שינויים"

@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เพิ่ม %@ ไม่ได้</string>
+			<string>เพิ่มฟีด %@ รายการไม่ได้</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

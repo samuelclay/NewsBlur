@@ -1087,7 +1087,7 @@ msgid "After marking feed/folder read"
 msgstr "Sau khi đánh dấu nguồn cấp dữ liệu/thư mục là đã đọc"
 
 msgid "Afternoon"
-msgstr "Buổi chiều"
+msgstr "Buổi trưa"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1338,7 +1338,7 @@ msgid "Audio not transcribed"
 msgstr "Âm thanh chưa được chép lại"
 
 msgid "August"
-msgstr "Tháng 8"
+msgstr "Tháng Tám"
 
 msgid "Author"
 msgstr "Tác giả"
@@ -2062,7 +2062,7 @@ msgid "Days of unreads"
 msgstr "Số ngày chưa đọc"
 
 msgid "December"
-msgstr "Tháng 12"
+msgstr "Tháng Mười Hai"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Những bài đọc chuyên sâu mà cộng đồng thực sự dành thời gian đọc"
@@ -2494,7 +2494,7 @@ msgid "Even geekier"
 msgstr "Còn chuyên sâu hơn"
 
 msgid "Evening"
-msgstr "Buổi tối"
+msgstr "Buổi chiều"
 
 msgid "Every"
 msgstr "Mỗi"
@@ -3926,10 +3926,10 @@ msgid "Morning"
 msgstr "Buổi sáng"
 
 msgid "Morning + Afternoon"
-msgstr "Buổi sáng + buổi chiều"
+msgstr "Buổi sáng + buổi trưa"
 
 msgid "Morning + Evening"
-msgstr "Buổi sáng + Buổi tối"
+msgstr "Buổi sáng + buổi chiều"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "Các nguồn cấp được đăng ký nhiều nhất tuần này"
@@ -4087,7 +4087,7 @@ msgid "New password"
 msgstr "Mật khẩu mới"
 
 msgid "New posts from feeds you recently read"
-msgstr "Bài đăng mới từ các nguồn cấp dữ liệu bạn vừa đọc"
+msgstr "Bài đăng mới từ các nguồn cấp bạn vừa đọc"
 
 msgid "New tag name"
 msgstr "Tên thẻ mới"
@@ -4408,7 +4408,7 @@ msgid "Notify on match. Premium Archive required"
 msgstr "Thông báo khi khớp. Yêu cầu Premium Archive"
 
 msgid "November"
-msgstr "Tháng 11"
+msgstr "Tháng Mười Một"
 
 msgid "Now"
 msgstr "Bây giờ"
@@ -6097,7 +6097,7 @@ msgid "Stories can stay unread forever"
 msgstr "Bài viết có thể giữ trạng thái chưa đọc mãi mãi"
 
 msgid "Stories covered by 3+ feeds"
-msgstr "Bài viết được ít nhất 3 nguồn cấp đăng"
+msgstr "Bài viết được ít nhất 3 nguồn cấp đăng tải"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"

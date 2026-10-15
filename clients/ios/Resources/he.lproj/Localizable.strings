@@ -23,7 +23,7 @@
 "%@ ago" = "לפני %@";
 "%@ categories to choose from" = "%@ קטגוריות לבחירה";
 "%@ comments" = "%@ תגובות";
-"%@ could not be added." = "לא ניתן להוסיף את %@.";
+"%@ could not be added." = "לא ניתן היה להוסיף %@ פידים.";
 "%@ days" = "%@ ימים";
 "%@ feed" = "פיד %@";
 "%@ feeds" = "%@ הזנות";
@@ -96,7 +96,7 @@
 "Add to folder" = "הוספה לתיקייה";
 "Added" = "נוסף";
 "Added %1$@ feeds to %2$@." = "נוספו %1$@ פידים אל %2$@.";
-"Added %@ feeds." = "נוספו %@ הזנות.";
+"Added %@ feeds." = "נוספו %@ פידים.";
 "Adding %@…" = "מוסיף את %@…";
 "Adding folder..." = "מוסיף תיקייה...";
 "Adding site..." = "מוסיף אתר...";
@@ -122,8 +122,8 @@
 "After 60 Seconds" = "לאחר 60 שניות";
 "After 60 seconds" = "לאחר 60 שניות";
 "After mark read" = "לאחר סימון כנקרא";
-"Afternoon" = "אחר הצהריים";
-"Afternoon Briefing" = "תדריך אחר הצהריים";
+"Afternoon" = "צהריים";
+"Afternoon Briefing" = "תדריך צהריים";
 "Alert after no new stories for" = "התרעה לאחר שלא הופיעו כתבות חדשות במשך";
 "All" = "הכול";
 "All Done" = "הכול הושלם";
@@ -358,7 +358,7 @@
 "Followed" = "במעקב";
 "Followers label" = "תווית עוקבים";
 "Following [button state]" = "במעקב";
-"Following [in progress]" = "עוקב";
+"Following [in progress]" = "מתחיל לעקוב";
 "Following [label under the number of people this profile follows]" = "במעקב";
 "Font" = "גופן";
 "Font Size" = "גודל גופן";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "בינוני";
 "Medium [preview length]" = "בינוני";
 "Medium [text size]" = "בינוני";
-"Medium [theme]" = "בינוני";
+"Medium [theme]" = "אפור";
 "Model" = "מודל";
 "Monday" = "יום שני";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "יותר כתבות תופסות יותר מקום בדיסק, אך מלבד זאת אין להן השפעה מורגשת על הביצועים.";
@@ -568,7 +568,7 @@
 "New Folder" = "תיקייה חדשה";
 "New Site" = "אתר חדש";
 "New folder name" = "שם תיקייה חדש";
-"New posts from feeds you recently read" = "פוסטים חדשים מפידים שקראתם לאחרונה";
+"New posts from feeds you recently read" = "פוסטים חדשים מפידים שקראת לאחרונה";
 "New to NewsBlur? Create an account" = "חדש ב־NewsBlur? יצירת חשבון";
 "Newest first" = "החדשים ביותר תחילה";
 "NewsBlur Dashboard" = "לוח הבקרה של NewsBlur";
@@ -804,7 +804,7 @@
 "Share story…" = "שיתוף כתבה…";
 "Share this story" = "שתף את הכתבה הזאת";
 "Share with comment" = "שיתוף עם תגובה";
-"Shared" = "משותף";
+"Shared" = "שותף";
 "Shared Stories label" = "תווית כתבות משותפות";
 "Sharing" = "משתף";
 "Short [grid height]" = "נמוך";

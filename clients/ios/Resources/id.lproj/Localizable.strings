@@ -23,7 +23,7 @@
 "%@ ago" = "%@ yang lalu";
 "%@ categories to choose from" = "%@ kategori yang bisa dipilih";
 "%@ comments" = "%@ komentar";
-"%@ could not be added." = "%@ tidak dapat ditambahkan.";
+"%@ could not be added." = "%@ feed tidak dapat ditambahkan.";
 "%@ days" = "%@ hari";
 "%@ feed" = "%@ feed";
 "%@ feeds" = "%@ feed";
@@ -312,8 +312,8 @@
 "Export trained stories from folders as RSS feeds" = "Ekspor artikel terlatih dari folder sebagai feed RSS";
 "Extra Large" = "Ekstra besar";
 "Extra Short [grid height]" = "Sangat pendek";
-"Extra Small" = "Ekstra Kecil";
-"Extra Tall" = "Sangat Tinggi";
+"Extra Small" = "Ekstra kecil";
+"Extra Tall" = "Sangat tinggi";
 "Extra small" = "Ekstra kecil";
 "Faster" = "Lebih cepat";
 "Favorited" = "Difavoritkan";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Sedang";
 "Medium [preview length]" = "Sedang";
 "Medium [text size]" = "Sedang";
-"Medium [theme]" = "Sedang";
+"Medium [theme]" = "Abu-abu";
 "Model" = "Model";
 "Monday" = "Senin";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Semakin banyak artikel, semakin besar ruang disk yang digunakan, tetapi selain itu tidak ada dampak nyata pada kinerja.";
@@ -868,7 +868,7 @@
 "Stories" = "Artikel";
 "Stories can stay unread forever" = "Artikel dapat tetap belum dibaca selamanya";
 "Stories covered by 3+ feeds" = "Artikel yang diliput oleh 3+ feed";
-"Stories from feeds that rarely publish" = "Artikel dari feed yang jarang menerbitkan konten";
+"Stories from feeds that rarely publish" = "Artikel dari feed yang jarang menerbitkan";
 "Stories in a folder" = "Artikel dalam folder";
 "Stories in a site" = "Artikel di situs";
 "Stories matching your trained topics and authors" = "Artikel yang cocok dengan topik dan penulis yang Anda latih";
@@ -941,7 +941,7 @@
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tampilan Teks penuh adalah <a href=\"http://ios.newsblur.com/premium\">fitur premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Simulator iOS tidak dapat mengubah ikon Layar Utama. Coba di perangkat.";
 "The icon follows your device's light and dark appearance." = "Ikon mengikuti tampilan terang atau gelap perangkat Anda.";
-"The most important stories from your feeds" = "Artikel paling penting dari feed Anda";
+"The most important stories from your feeds" = "Artikel terpenting dari feed Anda";
 "The request failed. Please try again." = "Permintaan gagal. Silakan coba lagi.";
 "The story doesn't link anywhere." = "Artikel ini tidak mengarah ke mana pun.";
 "Theme" = "Tema";
@@ -1058,7 +1058,7 @@
 "WiFi + Cellular" = "Wi-Fi + Seluler";
 "WiFi only" = "Hanya Wi-Fi";
 "Widely Read Stories" = "Artikel yang Banyak Dibaca";
-"Widely covered" = "Banyak dibahas";
+"Widely covered" = "Banyak diliput";
 "Widget Site Stories" = "Artikel Situs Widget";
 "Widget Sites" = "Situs Widget";
 "Widget Stories" = "Artikel Widget";

@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ को नहीं जोड़ा जा सका।</string>
+			<string>%@ फ़ीड नहीं जोड़ी जा सकी।</string>
 			<key>other</key>
-			<string>%@ को नहीं जोड़ा जा सका।</string>
+			<string>%@ फ़ीड नहीं जोड़ी जा सकीं।</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

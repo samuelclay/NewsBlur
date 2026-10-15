@@ -1062,7 +1062,7 @@
     <string name="briefing_frequency_weekly">รายสัปดาห์</string>
     <string name="briefing_preferred_time">เวลาที่ต้องการ</string>
     <string name="briefing_time_morning">ช่วงเช้า</string>
-    <string name="briefing_time_afternoon">ช่วงบ่าย</string>
+    <string name="briefing_time_afternoon">ช่วงเที่ยง</string>
     <string name="briefing_time_evening">ช่วงเย็น</string>
     <string name="briefing_preferred_day">วันที่ต้องการ</string>
     <string name="briefing_day_sunday">วันอาทิตย์</string>
@@ -1117,8 +1117,8 @@
     <string name="profile_activity_user_subscribed">%1$s สมัครรับข้อมูลจาก %2$s</string>
     <string name="profile_activity_you_saved">คุณบันทึก %1$s แล้ว</string>
     <string name="profile_activity_user_saved">%1$s บันทึก %2$s</string>
-    <string name="profile_activity_you_signed_up">คุณสมัคร NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s สมัคร NewsBlur</string>
+    <string name="profile_activity_you_signed_up">คุณสมัครใช้งาน NewsBlur แล้ว</string>
+    <string name="profile_activity_user_signed_up">%1$s สมัครใช้งาน NewsBlur แล้ว</string>
     <string name="profile_activity_you_followed">คุณติดตาม %1$s แล้ว</string>
     <string name="profile_activity_user_followed">%1$s ติดตาม %2$s</string>
     <string name="profile_activity_you_favorited_comments">คุณถูกใจความคิดเห็นของ %1$s ใน %2$s</string>
@@ -1136,16 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s ตอบกลับความคิดเห็นของ %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s ตอบกลับข้อความตอบกลับของ %2$s</string>
     <string name="profile_interaction_reshared">%1$s แชร์ต่อ %2$s</string>
-    <string name="briefing_section_top_stories">ข่าวเด่น</string>
-    <string name="briefing_section_top_stories_subtitle">ข่าวสำคัญที่สุดจากฟีดของคุณ</string>
-    <string name="briefing_section_infrequent">จากเว็บไซต์ที่เผยแพร่ไม่บ่อย</string>
-    <string name="briefing_section_infrequent_subtitle">ข่าวจากฟีดที่เผยแพร่ไม่บ่อย</string>
+    <string name="briefing_section_top_stories">เรื่องเด่น</string>
+    <string name="briefing_section_top_stories_subtitle">บทความสำคัญที่สุดจากฟีดของคุณ</string>
+    <string name="briefing_section_infrequent">จากเว็บไซต์ที่อัปเดตไม่บ่อย</string>
+    <string name="briefing_section_infrequent_subtitle">บทความจากฟีดที่เผยแพร่ไม่บ่อย</string>
     <string name="briefing_section_long_read">บทความยาวไว้อ่านทีหลัง</string>
     <string name="briefing_section_long_read_subtitle">บทความยาวที่ควรหาเวลาอ่าน</string>
     <string name="briefing_section_classifier_match">อิงตามความสนใจของคุณ</string>
-    <string name="briefing_section_classifier_match_subtitle">ข่าวที่ตรงกับหัวข้อและผู้เขียนที่คุณฝึกไว้</string>
+    <string name="briefing_section_classifier_match_subtitle">บทความที่ตรงกับหัวข้อและผู้เขียนที่คุณฝึกไว้</string>
     <string name="briefing_section_follow_up">ติดตามความคืบหน้า</string>
     <string name="briefing_section_follow_up_subtitle">โพสต์ใหม่จากฟีดที่คุณเพิ่งอ่าน</string>
-    <string name="briefing_section_widely_covered">มีการพูดถึงอย่างกว้างขวาง</string>
-    <string name="briefing_section_widely_covered_subtitle">ข่าวที่มีฟีดพูดถึงตั้งแต่ 3 ฟีดขึ้นไป</string>
+    <string name="briefing_section_widely_covered">มีการกล่าวถึงอย่างกว้างขวาง</string>
+    <string name="briefing_section_widely_covered_subtitle">บทความที่มีฟีดนำเสนอตั้งแต่ 3 ฟีดขึ้นไป</string>
 </resources>

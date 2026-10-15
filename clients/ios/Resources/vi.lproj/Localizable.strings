@@ -23,7 +23,7 @@
 "%@ ago" = "%@ trước";
 "%@ categories to choose from" = "Có %@ danh mục để chọn";
 "%@ comments" = "%@ bình luận";
-"%@ could not be added." = "Không thể thêm %@.";
+"%@ could not be added." = "Không thể thêm %@ nguồn cấp.";
 "%@ days" = "%@ ngày";
 "%@ feed" = "%@ nguồn cấp dữ liệu";
 "%@ feeds" = "%@ nguồn tin";
@@ -122,8 +122,8 @@
 "After 60 Seconds" = "Sau 60 giây";
 "After 60 seconds" = "Sau 60 giây";
 "After mark read" = "Sau khi đánh dấu đã đọc";
-"Afternoon" = "Buổi chiều";
-"Afternoon Briefing" = "Bản tin buổi chiều";
+"Afternoon" = "Buổi trưa";
+"Afternoon Briefing" = "Bản tin buổi trưa";
 "Alert after no new stories for" = "Cảnh báo khi không có bài viết mới trong";
 "All" = "Tất cả";
 "All Done" = "Hoàn tất";
@@ -299,8 +299,8 @@
 "Enter the name of the new folder." = "Nhập tên thư mục mới.";
 "Enter title phrase..." = "Nhập cụm từ trong tiêu đề...";
 "Enter your existing NewsBlur username or email and NewsBlur password." = "Nhập tên người dùng hoặc email NewsBlur hiện có và mật khẩu NewsBlur của bạn.";
-"Evening" = "Buổi tối";
-"Evening Briefing" = "Bản tin buổi tối";
+"Evening" = "Buổi chiều";
+"Evening Briefing" = "Bản tin buổi chiều";
 "Every story from every site is archived and searchable forever" = "Mọi bài viết từ mọi trang web đều được lưu trữ và có thể tìm kiếm mãi mãi";
 "Everything in the archive subscription, of course" = "Tất nhiên là mọi thứ trong gói Premium Archive";
 "Everything in the premium subscription, of course" = "Tất nhiên là có tất cả tính năng trong gói đăng ký Premium";
@@ -355,7 +355,7 @@
 "Follow up to 4,096 sites" = "Theo dõi tối đa 4.096 trang";
 "Follow up..." = "Hỏi tiếp...";
 "Follow-ups" = "Tin cập nhật";
-"Followed" = "Đang theo dõi";
+"Followed" = "Đã theo dõi";
 "Followers label" = "Nhãn người theo dõi";
 "Following [button state]" = "Đang theo dõi";
 "Following [in progress]" = "Đang theo dõi";
@@ -475,7 +475,7 @@
 "Long press on feeds and folders" = "Nhấn giữ trên nguồn cấp dữ liệu và thư mục";
 "Long press on story titles" = "Nhấn giữ tiêu đề bài viết";
 "Long reads for later" = "Bài đọc dài để xem sau";
-"Longer articles worth setting time aside for" = "Những bài viết dài đáng dành thời gian đọc";
+"Longer articles worth setting time aside for" = "Bài viết dài đáng dành thời gian đọc";
 "Magazine" = "Tạp chí";
 "Manage" = "Quản lý";
 "Manage Account on the Web" = "Quản lý tài khoản trên web";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Vừa";
 "Medium [preview length]" = "Vừa";
 "Medium [text size]" = "Vừa";
-"Medium [theme]" = "Trung bình";
+"Medium [theme]" = "Xám";
 "Model" = "Mô hình";
 "Monday" = "Thứ Hai";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Nhiều bài viết hơn sẽ chiếm thêm dung lượng đĩa, nhưng ngoài ra không ảnh hưởng đáng kể đến hiệu năng.";
@@ -867,7 +867,7 @@
 "Stop autoscroll" = "Dừng cuộn tự động";
 "Stories" = "Bài viết";
 "Stories can stay unread forever" = "Bài viết có thể giữ trạng thái chưa đọc mãi mãi";
-"Stories covered by 3+ feeds" = "Bài viết xuất hiện trên từ 3 nguồn cấp dữ liệu trở lên";
+"Stories covered by 3+ feeds" = "Bài viết được ít nhất 3 nguồn cấp đăng tải";
 "Stories from feeds that rarely publish" = "Bài viết từ các nguồn cấp dữ liệu hiếm khi đăng bài";
 "Stories in a folder" = "Bài viết trong một thư mục";
 "Stories in a site" = "Bài viết trong một trang web";
@@ -905,7 +905,7 @@
 "Subscribers" = "Người đăng ký";
 "Subscribing..." = "Đang đăng ký…";
 "Summarize" = "Tóm tắt";
-"Sunday" = "Chủ nhật";
+"Sunday" = "Chủ Nhật";
 "Sunrise Gold" = "Vàng bình minh";
 "Super dislike" = "Rất không thích";
 "Super dislike beats any number of likes:" = "Một lượt rất không thích thắng mọi số lượt thích:";

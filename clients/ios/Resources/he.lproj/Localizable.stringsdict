@@ -85,11 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>לא ניתן היה להוסיף את %@.</string>
+			<string>לא ניתן היה להוסיף %@ פיד.</string>
 			<key>other</key>
-			<string>לא ניתן להוסיף את %@.</string>
+			<string>לא ניתן היה להוסיף %@ פידים.</string>
 			<key>two</key>
-			<string>לא ניתן היה להוסיף את %@.</string>
+			<string>לא ניתן היה להוסיף %@ פידים.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>
