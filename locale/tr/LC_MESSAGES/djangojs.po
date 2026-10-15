@@ -24,7 +24,9 @@ msgid_plural " (%(count)s domains)"
 msgstr[0] " (%(count)s alan adı)"
 
 msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
-msgstr " İyi içerikler bulmak ne kadar güzel olsa da beğenmediğiniz yazıları kolayca görmezden gelebilirsiniz."
+msgstr ""
+" İyi içerikler bulmak ne kadar güzel olsa da beğenmediğiniz haberleri de bir o kadar kolayca görmezden "
+"gelebilirsiniz."
 
 msgid " Choose Premium, Archive, or Pro and check out."
 msgstr " Premium, Archive veya Pro'yu seçip ödeme adımına geçin."
@@ -57,7 +59,7 @@ msgstr " — \"%(first)s\" veya \"%(second)s\" (isteğe bağlı harf)"
 
 #, python-format
 msgid " — \"%(first)s\" then anything then \"%(second)s\""
-msgstr " — \"%(first)s\" ile başlar, ardından herhangi bir şey gelir ve \"%(second)s\""
+msgstr " — \"%(first)s\", ardından herhangi bir şey, ardından \"%(second)s\""
 
 #, python-format
 msgid " — \"%(prefix)s\" followed by numbers (%(examples)s)"
@@ -145,7 +147,7 @@ msgstr[0] "%(badge)s, en fazla %(count)s gün boyunca"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s konu"
+msgstr "%(category)s konuları"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -153,7 +155,7 @@ msgstr "%(comments)s ve %(replies)s"
 
 #, python-format
 msgid "%(cost)s/story"
-msgstr "%(cost)s/hikâye"
+msgstr "%(cost)s/haber"
 
 #, python-format
 msgid "%(count)s byte"
@@ -188,7 +190,7 @@ msgstr[0] "%(count)s içerik filtresi"
 #, python-format
 msgid "%(count)s curated story"
 msgid_plural "%(count)s curated stories"
-msgstr[0] "%(count)s seçilmiş hikâye"
+msgstr[0] "%(count)s seçilmiş haber"
 
 #, python-format
 msgid "%(count)s day"
@@ -248,7 +250,7 @@ msgstr[0] "%(count)s üye"
 #, python-format
 msgid "%(count)s merge (%(categories)s categories into %(count)s)"
 msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
-msgstr[0] "%(count)s birleştirme (%(categories)s kategori %(count)s içine)"
+msgstr[0] "%(count)s birleştirme (%(categories)s kategori → %(count)s)"
 
 #, python-format
 msgid "%(count)s minute ago"
@@ -335,7 +337,7 @@ msgstr[0] "%(count)s site mevcut"
 #, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
-msgstr[0] "%(count)s site sınırı aşıldı"
+msgstr[0] "Sınırı %(count)s site aşıyor"
 
 #, python-format
 msgid "%(count)s story"
@@ -345,7 +347,7 @@ msgstr[0] "%(count)s haber"
 #, python-format
 msgid "%(count)s story has been deleted."
 msgid_plural "%(count)s stories have been deleted."
-msgstr[0] "%(count)s hikâye silindi."
+msgstr[0] "%(count)s haber silindi."
 
 #, python-format
 msgid "%(count)s story in archive"
@@ -365,7 +367,7 @@ msgstr[0] "Ayda %(count)s haber"
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "%(count)s hikâye silinecek"
+msgstr[0] "%(count)s haber silinecek"
 
 #, python-format
 msgid "%(count)s story/mo"
@@ -375,7 +377,7 @@ msgstr[0] "Ayda %(count)s haber"
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
-msgstr[0] "Ayda %(count)s hikâye"
+msgstr[0] "Ayda %(count)s haber"
 
 #, python-format
 msgid "%(count)s subreddit"
@@ -429,7 +431,7 @@ msgstr[0] "%(count)s dk önce"
 #, python-format
 msgid "%(count)smo ago"
 msgid_plural "%(count)smo ago"
-msgstr[0] "%(count)say önce"
+msgstr[0] "%(count)s ay önce"
 
 #, python-format
 msgid "%(count)sw ago"
@@ -450,15 +452,15 @@ msgstr "%(feed_title)s bildirimleri ayarlandı"
 
 #, python-format
 msgid "%(icon)s are stories you don't like"
-msgstr "%(icon)s, beğenmediğiniz hikâyelerdir"
+msgstr "%(icon)s, beğenmediğiniz haberlerdir"
 
 #, python-format
 msgid "%(icon)s are stories you have not yet rated"
-msgstr "%(icon)s, henüz puan vermediğiniz hikâyelerdir"
+msgstr "%(icon)s, henüz puan vermediğiniz haberlerdir"
 
 #, python-format
 msgid "%(icon)s are stories you like"
-msgstr "%(icon)s, beğendiğiniz hikâyelerdir"
+msgstr "%(icon)s, beğendiğiniz haberlerdir"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -532,11 +534,11 @@ msgstr "%(time)s kaldı"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s kanal"
+msgstr "%(topic)s kanalları"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s bülten"
+msgstr "%(topic)s bültenleri"
 
 #, python-format
 msgid "%(topic)s Podcasts"
@@ -544,11 +546,11 @@ msgstr "%(topic)s Podcast'leri"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s site"
+msgstr "%(topic)s siteleri"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s Subreddit"
+msgstr "%(topic)s subreddit'leri"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -568,7 +570,7 @@ msgstr "%(value_1)s önce"
 
 #, python-format
 msgid "%(value_1)s is Premium"
-msgstr "%(value_1)s Premium'dur"
+msgstr "%(value_1)s bir Premium özelliğidir"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
@@ -593,10 +595,10 @@ msgid "(GMT) Greenwich Mean Time : Belfast"
 msgstr "(GMT) Greenwich Ortalama Saati: Belfast"
 
 msgid "(GMT) Greenwich Mean Time : Dublin"
-msgstr "(GMT) Greenwich Ortalama Saati : Dublin"
+msgstr "(GMT) Greenwich Ortalama Saati: Dublin"
 
 msgid "(GMT) Greenwich Mean Time : Lisbon"
-msgstr "(GMT) Greenwich Ortalama Saati : Lizbon"
+msgstr "(GMT) Greenwich Ortalama Saati: Lizbon"
 
 msgid "(GMT) Greenwich Mean Time : London"
 msgstr "(GMT) Greenwich Ortalama Saati: Londra"
@@ -818,7 +820,7 @@ msgid "(GMT-06:00) Easter Island"
 msgstr "(GMT-06:00) Paskalya Adası"
 
 msgid "(GMT-06:00) Guadalajara, Mexico City"
-msgstr "(GMT-06:00) Guadalajara, Mexico City"
+msgstr "(GMT-06:00) Guadalajara, Meksiko"
 
 msgid "(GMT-06:00) Saskatchewan, Central America"
 msgstr "(GMT-06:00) Saskatchewan, Orta Amerika"
@@ -863,7 +865,7 @@ msgid "(no title)"
 msgstr "(başlık yok)"
 
 msgid "(upcoming)"
-msgstr "(yakında)"
+msgstr "(yaklaşan)"
 
 #, python-format
 msgid "+ %(value_1)s more site"
@@ -909,7 +911,7 @@ msgstr "5 kat daha hızlı akış güncellemeleri"
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "— Ayda %(count)s haberden az"
+msgstr[0] "Ayda %(count)s haberden az"
 
 #, python-format
 msgid "< %(value_1)s/month"
@@ -936,10 +938,10 @@ msgid "A blurblog of shared stories"
 msgstr "Paylaşılan haberlerden oluşan bir blurblog"
 
 msgid "A folder of feeds read as one stream"
-msgstr "Tek bir akış olarak okunan bir akış klasörü"
+msgstr "Tek bir haber akışı olarak okunan bir klasör"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "Okuyucuların paylaştığı NewsBlur haberlerden her saat seçilen taptaze bir avuç."
+msgstr "NewsBlur okurlarının paylaştığı haberlerden her saat seçilen taptaze bir derleme."
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -952,10 +954,10 @@ msgid "A single like overrides any number of dislikes"
 msgstr "Tek bir beğeni, istenen sayıda beğenmemeyi geçersiz kılar"
 
 msgid "A single super dislike overrides everything"
-msgstr "Tek bir güçlü beğenmeme her şeyi geçersiz kılar"
+msgstr "Tek bir “Hiç beğenme” her şeyi geçersiz kılar"
 
 msgid "A story diff with additions and deletions"
-msgstr "Eklemeleri ve silmeleri gösteren bir hikâye farkı"
+msgstr "Eklemeleri ve silmeleri gösteren bir haber farkı"
 
 msgid "AI Filter"
 msgstr "Yapay zekâ filtresi"
@@ -965,13 +967,13 @@ msgstr "Yapay zekâ modeli"
 
 #, python-format
 msgid "AI filters are saved but won't run until you %(billing_link)s."
-msgstr "Yapay zekâ filtreleri kaydedildi ancak siz %(billing_link)s kadar çalıştırılmayacak."
+msgstr "Yapay zekâ filtreleri kaydedildi ancak çalışmaları için %(billing_link)s."
 
 msgid "AI finds the stories"
 msgstr "Haberleri yapay zekâ bulur"
 
 msgid "AI-curated summary of your top stories"
-msgstr "En popüler haberlerinizin yapay zekâ tarafından seçilmiş özeti"
+msgstr "En önemli haberlerinizin yapay zekâ tarafından derlenmiş özeti"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
 msgstr "Haber akışlarınızdaki içeriklerin yapay zekâ destekli analizi ve size özel günlük özetler."
@@ -1004,19 +1006,19 @@ msgstr "Ekle"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "%(count)s hikâye etiketi ekle"
+msgstr[0] "%(count)s haber etiketi ekle"
 
 msgid "Add Folder"
 msgstr "Klasör Ekle"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "Site Ekle &amp; Hikâye Paylaşma Yer İmi"
+msgstr "Site Ekle &amp; Haber Paylaş Yer İmi Uygulaması"
 
 msgid "Add a forwarding address"
 msgstr "Yönlendirme adresi ekle"
 
 msgid "Add a note to send along with the story…"
-msgstr "Hikâyeyle birlikte göndermek için bir not ekleyin…"
+msgstr "Haberle birlikte göndermek için bir not ekleyin…"
 
 msgid "Add a site"
 msgstr "Bir site ekle"
@@ -1090,7 +1092,7 @@ msgstr "Öğleden sonra"
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
 msgid_plural "Alert after %(value_1)s days without new stories"
-msgstr[0] "Yeni yazı olmadan %(value_1)s gün geçince uyar"
+msgstr[0] "Yeni haber gelmeden %(value_1)s gün geçince uyar"
 
 msgid "All"
 msgstr "Tümü"
@@ -1111,10 +1113,10 @@ msgid "All Notifications"
 msgstr "Tüm Bildirimler"
 
 msgid "All Shared Stories"
-msgstr "Paylaşılan Tüm Hikâyeler"
+msgstr "Paylaşılan Tüm Haberler"
 
 msgid "All Site Stories"
-msgstr "Tüm Site Haberleri"
+msgstr "Tüm Sitelerin Haberleri"
 
 msgid "All Stories"
 msgstr "Tüm Haberler"
@@ -1195,10 +1197,10 @@ msgid "Analyzing images..."
 msgstr "Görseller analiz ediliyor..."
 
 msgid "Analyzing page to find story patterns..."
-msgstr "Hikâye kalıplarını bulmak için sayfa analiz ediliyor..."
+msgstr "Haber kalıplarını bulmak için sayfa analiz ediliyor..."
 
 msgid "Analyzing saved stories..."
-msgstr "Kaydedilen hikâyeler analiz ediliyor..."
+msgstr "Kaydedilen haberler analiz ediliyor..."
 
 msgid "Analyzing your archive..."
 msgstr "Arşiviniz analiz ediliyor..."
@@ -1221,7 +1223,7 @@ msgid "Animations"
 msgstr "Animasyonlar"
 
 msgid "Any"
-msgstr "Herhangi biri"
+msgstr "Herhangi bir tarih"
 
 msgid ""
 "Any public web page: Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
@@ -1231,7 +1233,7 @@ msgstr ""
 "sayfaları, iş ilanı siteleri, devlet siteleri ve daha fazlası."
 
 msgid "Any time"
-msgstr "İstediğiniz zaman"
+msgstr "Tüm zamanlar"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -1271,7 +1273,7 @@ msgid "April"
 msgstr "Nisan"
 
 msgid "Archive"
-msgstr "Arşiv"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "Arşiv Asistanı"
@@ -1283,7 +1285,7 @@ msgid "Are the apps open source?"
 msgstr "Uygulamalar açık kaynaklı mı?"
 
 msgid "Arrows"
-msgstr "Ok tuşları"
+msgstr "Oklar"
 
 msgid "As a reminder, use the intelligence slider to select a filter:"
 msgstr "Hatırlatma: Bir filtre seçmek için zeka kaydırıcısını kullanın:"
@@ -1298,7 +1300,7 @@ msgid "Ask AI & Daily Briefing"
 msgstr "Yapay Zekâya Sor ve Günlük Özet"
 
 msgid "Ask AI about story"
-msgstr "Haberi yapay zekâya sor"
+msgstr "Haber hakkında yapay zekâya sor"
 
 msgid "Ask AI anything about your browsing history"
 msgstr "Gezinme geçmişiniz hakkında yapay zekâya istediğinizi sorun"
@@ -1309,7 +1311,7 @@ msgstr ""
 " yanıtlayabilir."
 
 msgid "Ask AI questions about stories"
-msgstr "Hikâyeler hakkında yapay zekâya soru sor"
+msgstr "Haberler hakkında yapay zekâya soru sor"
 
 msgid "Ask AI with a choice of models"
 msgstr "Model seçerek yapay zekâya sorun"
@@ -1321,7 +1323,7 @@ msgid "Ask a question..."
 msgstr "Bir soru sorun..."
 
 msgid "Ask about your browsing history..."
-msgstr "Tarama geçmişinizi sorun..."
+msgstr "Gezinme geçmişiniz hakkında sorun..."
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1351,7 +1353,7 @@ msgid "Author filters found no stories in %(context)s."
 msgstr "Yazar filtreleri %(context)s içinde haber bulamadı."
 
 msgid "Author filters found no stories in this view."
-msgstr "Yazar filtreleri bu görünümde hiç hikâye bulamadı."
+msgstr "Yazar filtreleri bu görünümde hiç haber bulamadı."
 
 msgid "Author: "
 msgstr "Yazar: "
@@ -1372,7 +1374,7 @@ msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Otomatik tema, sisteminizin aydınlık ve karanlık mod zamanlamasını izler."
 
 msgid "Auto-follow<br>my friends"
-msgstr "Otomatik takip et<br>arkadaşlarımı"
+msgstr "Arkadaşlarımı<br>otomatik takip et"
 
 msgid "Auto-generate"
 msgstr "Otomatik oluştur"
@@ -1416,7 +1418,7 @@ msgid "Back to feeds"
 msgstr "Akışlara dön"
 
 msgid "Back to stories"
-msgstr "Hikâyelere dön"
+msgstr "Haberlere dön"
 
 msgid "Back to trainer"
 msgstr "Eğitmene geri dön"
@@ -1444,7 +1446,7 @@ msgid "Block Domain"
 msgstr "Alan Adını Engelle"
 
 msgid "Block URLs matching these patterns (supports wildcards like *.example.com)."
-msgstr "Bu kalıplarla eşleşen URL'leri engelle ( *.example.com gibi joker karakterleri destekler)."
+msgstr "Bu kalıplarla eşleşen URL'leri engelle (*.example.com gibi joker karakterleri destekler)."
 
 msgid "Blocked"
 msgstr "Engellendi"
@@ -1483,23 +1485,23 @@ msgid "Blurblogs"
 msgstr "Blurblog'lar"
 
 msgid "Bookmarklet"
-msgstr "Yer imi"
+msgstr "Yer imi uygulaması"
 
 msgid "Bottom"
 msgstr "Alt"
 
 msgctxt "summary length"
 msgid "Brief"
-msgstr "Özet"
+msgstr "Kısa"
 
 msgid "Briefing"
-msgstr "Brifing"
+msgstr "Özet"
 
 msgid "Briefing Admin"
 msgstr "Özet Yöneticisi"
 
 msgid "Briefing Preferences"
-msgstr "Bilgilendirme Tercihleri"
+msgstr "Özet Tercihleri"
 
 msgid "Briefing Settings"
 msgstr "Özet Ayarları"
@@ -1556,7 +1558,7 @@ msgstr "Madde işaretleri"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
-msgstr "10+ HİKÂYE İÇEREN KATEGORİLER (%(value_1)s)"
+msgstr "10+ HABER İÇEREN KATEGORİLER (%(value_1)s)"
 
 msgid "CLI Tool"
 msgstr "CLI Aracı"
@@ -1577,7 +1579,7 @@ msgid "Can I train on newsletter content?"
 msgstr "Bülten içerikleri üzerinde eğitim yapabilir miyim?"
 
 msgid "Can I turn clustering off?"
-msgstr "Gruplandırmayı kapatabilir miyim?"
+msgstr "Kümelemeyi kapatabilir miyim?"
 
 msgid "Can I undo training?"
 msgstr "Eğitimi geri alabilir miyim?"
@@ -1707,7 +1709,7 @@ msgid "Choose sites"
 msgstr "Siteleri seç"
 
 msgid "Choose when stories are marked as read"
-msgstr "Hikâyelerin ne zaman okundu olarak işaretleneceğini seçin"
+msgstr "Haberlerin ne zaman okundu olarak işaretleneceğini seçin"
 
 msgid "Choose which AI model writes your briefing"
 msgstr "Özetinizi hangi yapay zekâ modelinin yazacağını seçin"
@@ -1841,7 +1843,7 @@ msgid "Commands output JSON you can pipe straight to jq."
 msgstr "Komutlar, doğrudan jq'ya aktarabileceğiniz JSON çıktısı verir."
 
 msgid "Comment"
-msgstr "Yorum yap"
+msgstr "Yorum"
 
 msgid "Comment on stories"
 msgstr "Haberler hakkında yorum yap"
@@ -1859,10 +1861,10 @@ msgid "Complete data ownership"
 msgstr "Veriler üzerinde tam sahiplik"
 
 msgid "Concise bullet points highlighting key takeaways from each story"
-msgstr "Her hikâyenin önemli noktalarını vurgulayan kısa madde işaretleri"
+msgstr "Her haberin önemli noktalarını vurgulayan kısa madde işaretleri"
 
 msgid "Confirming mark as read"
-msgstr "Okundu olarak işaretleme onaylanıyor"
+msgstr "Okundu olarak işaretlemeyi onaylama"
 
 msgid "Congratulations! You're done."
 msgstr "Tebrikler! İşiniz tamam."
@@ -1879,7 +1881,7 @@ msgstr ""
 " akışları okuyun, haberleri ayıklayın, sınıflandırıcıları eğitin ve aboneliklerinizi yönetin."
 
 msgid "Connect AI agents with MCP server and CLI"
-msgstr "AI aracılarını MCP sunucusu ve CLI ile bağlayın"
+msgstr "Yapay zekâ ajanlarını MCP sunucusu ve CLI ile bağlayın"
 
 msgid ""
 "Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
@@ -1902,7 +1904,7 @@ msgstr "İçerik Filtresi"
 
 msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
 msgstr ""
-"Kümelemeyi her akış için akış seçenekleri açılır penceresinden, tüm akışlar içinse Tercihler > Hikâyeler "
+"Kümelemeyi her akış için akış seçenekleri açılır penceresinden, tüm akışlar içinse Tercihler > Haberler "
 "bölümünden yönetin."
 
 msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
@@ -2010,7 +2012,7 @@ msgid "Customize auto-read by site or folder"
 msgstr "Otomatik okumayı siteye veya klasöre göre özelleştirin"
 
 msgid "Customize briefing sections and delivery schedule"
-msgstr "Brifing bölümlerini ve gönderim zamanlamasını özelleştirin"
+msgstr "Özet bölümlerini ve gönderim zamanlamasını özelleştirin"
 
 msgid "Customize with Claude Code"
 msgstr "Claude Code ile özelleştirin"
@@ -2035,7 +2037,7 @@ msgstr ""
 "oluşturabilirsiniz. Tüm haberler ve programınıza göre otomatik özetler için planınızı yükseltin."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "En iyi hikâyeleriniz ve anahtar kelimelerinizle günlük özet"
+msgstr "En önemli haberleriniz ve anahtar kelimelerinizle günlük özet"
 
 msgid "Daily distribution of stories"
 msgstr "Haberlerin günlere göre dağılımı"
@@ -2116,7 +2118,7 @@ msgid "Delete my saved stories"
 msgstr "Kaydedilmiş haberlerimi sil"
 
 msgid "Delete my shared stories"
-msgstr "Paylaştığım hikâyeleri sil"
+msgstr "Paylaştığım haberleri sil"
 
 msgid "Delete saved search"
 msgstr "Kayıtlı aramayı sil"
@@ -2146,7 +2148,7 @@ msgid "Describe what to focus or hide"
 msgstr "Neye odaklanılacağını veya neyin gizleneceğini açıklayın"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Neye bakılacağını açıklayın; yapay zekâ her hikâyenin görsellerini isteminize göre analiz etsin."
+msgstr "Neye bakılacağını açıklayın; yapay zekâ her haberin görsellerini isteminize göre analiz etsin."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2162,16 +2164,14 @@ msgid "Disable social features"
 msgstr "Sosyal özellikleri devre dışı bırak"
 
 msgid "Disable story clustering"
-msgstr "Hikâye kümelemeyi devre dışı bırak"
+msgstr "Haber kümelemeyi devre dışı bırak"
 
 msgid "Disable the highlighter"
 msgstr "Vurgulayıcıyı devre dışı bırak"
 
 #, python-format
 msgid "Disconnect %(account)s? You will no longer be able to use it to sign in to this NewsBlur account."
-msgstr ""
-"%(account)s bağlantısı kesilsin mi? Bu hesabınıza NewsBlur ile giriş yapmak için artık onu "
-"kullanamayacaksınız."
+msgstr "%(account)s bağlantısı kesilsin mi? Artık bu NewsBlur hesabına giriş yapmak için onu kullanamayacaksınız."
 
 #, python-format
 msgid "Disconnect %(provider)s (%(email)s)"
@@ -2205,10 +2205,10 @@ msgid "Discover more to read"
 msgstr "Okuyacak daha fazla şey keşfedin"
 
 msgid "Discover new feeds by topic and search your Reading Archive"
-msgstr "Konuya göre yeni feed'ler keşfedin ve Okuma Arşivinizde arama yapın"
+msgstr "Konuya göre yeni akışlar keşfedin ve Okuma Arşivinizde arama yapın"
 
 msgid "Discover related stories across your archive"
-msgstr "Arşivinizdeki ilgili hikâyeleri keşfedin"
+msgstr "Arşivinizdeki ilgili haberleri keşfedin"
 
 msgid "Discover related stories and sites"
 msgstr "İlgili haberleri ve siteleri keşfedin"
@@ -2223,10 +2223,10 @@ msgid "Dislike "
 msgstr "Beğenme "
 
 msgid "Dislike matching stories"
-msgstr "Eşleşen hikâyeleri beğenme"
+msgstr "Eşleşen haberleri beğenme"
 
 msgid "Dislikes"
-msgstr "Beğenmeyenler"
+msgstr "Beğenmemeler"
 
 msgid "Dismiss"
 msgstr "Kapat"
@@ -2369,10 +2369,10 @@ msgid "Email notifications"
 msgstr "E-posta bildirimleri"
 
 msgid "Email notifications require Premium Archive"
-msgstr "E-posta bildirimleri için Premium Arşiv gerekir"
+msgstr "E-posta bildirimleri için Premium Archive gerekir"
 
 msgid "Email story"
-msgstr "Hikâyeyi e-postayla gönder"
+msgstr "Haberi e-postayla gönder"
 
 msgid "Email:"
 msgstr "E-posta:"
@@ -2389,7 +2389,7 @@ msgstr ""
 "etkinleştirin."
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "Öne çıkan haberlerinizin yapay zekâ tarafından oluşturulan özeti için Günlük Brifing'i etkinleştirin"
+msgstr "Öne çıkan haberlerinizin yapay zekâ tarafından oluşturulan özeti için Günlük Özeti etkinleştirin"
 
 #, python-format
 msgid "Enable all %(count)s site"
@@ -2415,7 +2415,7 @@ msgid "Enable social features"
 msgstr "Sosyal özellikleri etkinleştir"
 
 msgid "Enable story clustering"
-msgstr "Haber kümelendirmeyi etkinleştir"
+msgstr "Haber kümelemeyi etkinleştir"
 
 msgid "Enable the sites you want"
 msgstr "İstediğiniz siteleri etkinleştirin"
@@ -2450,13 +2450,13 @@ msgid "Enter text to match..."
 msgstr "Eşleşecek metni girin..."
 
 msgid "Erase your intelligence training classifiers"
-msgstr "Akıllı eğitim sınıflandırıcılarını sil"
+msgstr "Zekâ eğitimi sınıflandırıcılarınızı silin"
 
 msgid "Erase your saved stories"
 msgstr "Kaydedilmiş haberlerinizi silin"
 
 msgid "Erase your shared stories"
-msgstr "Paylaştığınız hikâyeleri silin"
+msgstr "Paylaştığınız haberleri silin"
 
 msgid "Erase yourself"
 msgstr "Kendinizi silin"
@@ -2511,7 +2511,7 @@ msgstr ""
 "idealdir."
 
 msgid "Every story archived and searchable forever"
-msgstr "Her hikâye sonsuza dek arşivlenir ve aranabilir"
+msgstr "Her haber sonsuza dek arşivlenir ve aranabilir"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Her haber sonsuza dek arşivlenir ve aranabilir. Kişisel bilgi birikiminiz."
@@ -2532,7 +2532,7 @@ msgid "Everything has been deleted."
 msgstr "Her şey silindi."
 
 msgid "Everything in Archive, plus:"
-msgstr "Arşiv'deki her şey ve ayrıca:"
+msgstr "Archive'daki her şey ve ayrıca:"
 
 msgid "Everything in Free, plus:"
 msgstr "Ücretsiz plandaki her şey, ayrıca:"
@@ -2596,7 +2596,7 @@ msgid "Faces"
 msgstr "Yüzler"
 
 msgid "Fact check this story"
-msgstr "Bu hikâyedeki bilgileri doğrula"
+msgstr "Bu haberdeki bilgileri doğrula"
 
 msgid "Failed to connect to server"
 msgstr "Sunucuya bağlanılamadı"
@@ -2605,7 +2605,7 @@ msgid "Failed to convert newsletter URL"
 msgstr "Bülten URL'si dönüştürülemedi"
 
 msgid "Failed to create Google News feed"
-msgstr "Google News akışı oluşturulamadı"
+msgstr "Google Haberler akışı oluşturulamadı"
 
 msgid "Failed to create feed"
 msgstr "Akış oluşturulamadı"
@@ -2718,7 +2718,7 @@ msgid "Feeds"
 msgstr "Akışlar"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "Tam arşiv için akışların geçmiş haberleri tamamlandı"
+msgstr "Eksiksiz arşiv için akışların geçmiş haberleri de getirilir"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
 msgstr "Henüz geniş kitlelerce tanınmayan, okuyucularının yoğun ilgi gösterdiği akışlar"
@@ -2774,7 +2774,7 @@ msgid "Filter by site or classifier..."
 msgstr "Siteye veya sınıflandırıcıya göre filtrele..."
 
 msgid "Filter channels..."
-msgstr "Akışları filtrele..."
+msgstr "Kanalları filtrele..."
 
 msgid "Filter icons..."
 msgstr "Simgeleri filtrele..."
@@ -2817,7 +2817,7 @@ msgstr "Finans"
 
 #, python-format
 msgid "Find %(value_1)s Friends"
-msgstr "%(value_1)s Arkadaş Bul"
+msgstr "%(value_1)s Arkadaşlarını Bul"
 
 msgid "Find Friends"
 msgstr "Arkadaş Bul"
@@ -2891,7 +2891,7 @@ msgstr "Takip et"
 
 #, python-format
 msgid "Follow %(value_1)s"
-msgstr "%(value_1)s takip et"
+msgstr "%(value_1)s kullanıcısını takip et"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "RSS akışı yayımlamayanlar da dahil, istediğiniz web sitesini takip edin."
@@ -2902,7 +2902,7 @@ msgstr ""
 " edin."
 
 msgid "Follow to see their shared stories"
-msgstr "Paylaşılan hikâyelerini görmek için takip et"
+msgstr "Paylaştığı haberleri görmek için takip edin"
 
 msgid "Follow up to 1,024 sites"
 msgstr "1.024 siteye kadar takip edin"
@@ -2917,10 +2917,10 @@ msgid "Follow up to 64 sites"
 msgstr "64 siteye kadar takip edin"
 
 msgid "Follow up..."
-msgstr "Takip et..."
+msgstr "Ek bir soru sorun..."
 
 msgid "Follow-ups"
-msgstr "Takip edenler"
+msgstr "Takip haberleri"
 
 msgid "Followers"
 msgstr "Takipçiler"
@@ -2972,7 +2972,7 @@ msgid_plural "Found %(count)s patterns. Select the one that best matches the sto
 msgstr[0] "%(count)s desen bulundu. Görmek istediğiniz haberlerle en iyi eşleşeni seçin."
 
 msgid "Found in the Account dialog"
-msgstr "Hesap iletişim kutusunda bulundu"
+msgstr "Hesap iletişim kutusunda yer alır"
 
 msgid "Free"
 msgstr "Ücretsiz"
@@ -3064,7 +3064,7 @@ msgstr "Tam"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "Tam Arşiv Asistanı yanıtları %(link_start)spremium arşiv özelliğidir%(link_end)s."
+msgstr "Tam Arşiv Asistanı yanıtları bir %(link_start)sPremium Archive özelliğidir%(link_end)s."
 
 msgid "Full Refund"
 msgstr "Tam geri ödeme"
@@ -3085,7 +3085,7 @@ msgid "Full-Text Search"
 msgstr "Tam Metin Arama"
 
 msgid "Full-text search across all stories"
-msgstr "Tüm yazılarda tam metin arama"
+msgstr "Tüm haberlerde tam metin arama"
 
 msgid "Full-text search requires Premium or higher."
 msgstr "Tam metin araması için Premium veya üzeri gerekir."
@@ -3154,11 +3154,11 @@ msgid ""
 "Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
 "Android, filtered by your training."
 msgstr ""
-"Bir akış yeni bir hikâye yayınladığı anda bildirim alın. Web, e-posta, iOS ve Android'de akış bazında "
+"Bir akış yeni bir haber yayınladığı anda bildirim alın. Web, e-posta, iOS ve Android'de akış bazında "
 "bildirimler; eğitim tercihlerinize göre filtrelenir."
 
 msgid "Get notified when a new briefing is ready"
-msgstr "Yeni bir bilgilendirme hazır olduğunda bildirim al"
+msgstr "Yeni bir özet hazır olduğunda bildirim al"
 
 msgid "Get started"
 msgstr "Başlayın"
@@ -3201,7 +3201,7 @@ msgid "Global Classifiers"
 msgstr "Genel Sınıflandırıcılar"
 
 msgid "Global Shared Stories"
-msgstr "Genel Paylaşılan Hikâyeler"
+msgstr "Genel Paylaşılan Haberler"
 
 msgid "Global settings"
 msgstr "Genel ayarlar"
@@ -3221,13 +3221,13 @@ msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)s sayfasına geri dön"
 
 msgid "Good Reads"
-msgstr "İyi Okumalar"
+msgstr "Okumaya Değer"
 
 msgid "Good Reads on NewsBlur"
-msgstr "NewsBlur'daki iyi okumalar"
+msgstr "NewsBlur'da okumaya değer haberler"
 
 msgid "Goodies &amp; Extras"
-msgstr "İkramlar &amp; Ekstralar"
+msgstr "Ek Özellikler &amp; Ekstralar"
 
 msgid "Goodies &amp; Mobile Apps"
 msgstr "Ekstralar &amp; Mobil Uygulamalar"
@@ -3248,10 +3248,10 @@ msgid "Grid view"
 msgstr "Izgara görünümü"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "Akışlarındaki yinelenen hikâyeleri grupla"
+msgstr "Akışlarınızdaki yinelenen haberleri gruplayın"
 
 msgid "Group stories that share:"
-msgstr "Şunları paylaşan hikâyeleri grupla:"
+msgstr "Şunları paylaşan haberleri grupla:"
 
 msgid "Groups similar stories from different feeds"
 msgstr "Farklı akışlardaki benzer haberleri gruplandırır"
@@ -3287,7 +3287,7 @@ msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Tüm paylaşım, yorum ve blurblog özelliklerini gizle"
 
 msgid "Hide discover sites popover"
-msgstr "Keşif siteleri açılır penceresini gizle"
+msgstr "Site keşfetme açılır penceresini gizle"
 
 msgid "Hide history"
 msgstr "Geçmişi gizle"
@@ -3314,10 +3314,10 @@ msgid "History"
 msgstr "Geçmiş"
 
 msgid "Home"
-msgstr "Ana sayfa"
+msgstr "Ev"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
-msgstr "Ana ekran araç takımları, okunmamış haber sayılarını ve en yeni haberleri bir bakışta gösterir."
+msgstr "Ana ekran widget'ları, okunmamış haber sayılarını ve en yeni haberleri bir bakışta gösterir."
 
 msgid "How Gifting Works"
 msgstr "Hediye Sistemi Nasıl Çalışır?"
@@ -3344,7 +3344,7 @@ msgid "How often"
 msgstr "Ne sıklıkla"
 
 msgid "I'm Following"
-msgstr "Takip ediyorum"
+msgstr "Takip Ettiklerim"
 
 msgid "IFTTT & Zapier"
 msgstr "IFTTT ve Zapier"
@@ -3353,14 +3353,14 @@ msgid "Identify key people and relationships"
 msgstr "Önemli kişileri ve ilişkileri belirle"
 
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
-msgstr "RSS akışı bulunamazsa NewsBlur bir Web Feed oluşturmayı önerir"
+msgstr "RSS akışı bulunamazsa NewsBlur bir web akışı oluşturmayı önerir"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
 msgstr "Seçeneklerden hiçbiri uymuyorsa sayfada gördüğünüz bir haberin başlığını yazın; yeniden analiz edelim."
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "%(premium_link)s seçseydiniz,<br>bu site her"
+msgstr "%(premium_link)s plana geçseydiniz,<br>bu site şu sıklıkla güncellenirdi:"
 
 msgid "Ignore"
 msgstr "Yoksay"
@@ -3409,8 +3409,8 @@ msgstr[0] "Premium denemeniz %(count)s gün içinde sona erecek ve Ücretsiz pla
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr ""
-"Gmail'de %(settings_menu)s sayfasına gidin ve %(add_button)s'ı tıklayın. Size özel NewsBlur e-posta "
-"adresini ekleyin."
+"Gmail'de %(settings_menu)s sayfasına gidin ve %(add_button)s seçeneğine tıklayın. Size özel NewsBlur "
+"e-posta adresinizi ekleyin."
 
 msgid "In NewsBlur"
 msgstr "NewsBlur'da"
@@ -3420,7 +3420,7 @@ msgid ""
 "In a new tab, open <b>%(config_page)s</b>, search for <b>%(setting)s</b>, and set it to <b>%(value)s</b>. "
 "Stories opened with %(shortcut)s will then load in the background."
 msgstr ""
-"Yeni bir sekmede <b>%(config_page)s</b>'ı açın, <b>%(setting)s</b> için arama yapın ve bunu "
+"Yeni bir sekmede <b>%(config_page)s</b> sayfasını açın, <b>%(setting)s</b> için arama yapın ve bunu "
 "<b>%(value)s</b> olarak ayarlayın. %(shortcut)s ile açılan haberler bundan sonra arka planda yüklenecektir."
 
 msgid "In a new window"
@@ -3461,7 +3461,7 @@ msgid "Infrequent Site Stories"
 msgstr "Seyrek Güncellenen Sitelerin Haberleri"
 
 msgid "Infrequent stories per month"
-msgstr "Aylık seyrek hikâye sayısı"
+msgstr "Seyrek haber eşiği (aylık)"
 
 msgid "Insta-fetch stories"
 msgstr "Haberleri anında getir"
@@ -3480,10 +3480,10 @@ msgid "Install with: uv pip install newsblur-cli"
 msgstr "Şununla yükleyin: uv pip install newsblur-cli"
 
 msgid "Intelligence Trainer"
-msgstr "İlgi Alanları Eğitmeni"
+msgstr "Zekâ Eğitmeni"
 
 msgid "Intelligence Training"
-msgstr "Zeka Eğitimi"
+msgstr "Zekâ Eğitimi"
 
 msgid "Interactions"
 msgstr "Etkileşimler"
@@ -3575,10 +3575,10 @@ msgid "Language"
 msgstr "Dil"
 
 msgid "Large image thumbnail on the left"
-msgstr "Solda büyük görsel küçük resmi"
+msgstr "Solda büyük görsel"
 
 msgid "Large image thumbnail on the right"
-msgstr "Sağda büyük görsel küçük resmi"
+msgstr "Sağda büyük görsel"
 
 msgid "Last 30 Days"
 msgstr "Son 30 Gün"
@@ -3636,7 +3636,7 @@ msgid "Link"
 msgstr "Bağlantı"
 
 msgid "Link directly to the original story"
-msgstr "Doğrudan orijinal hikâyeye bağlantı ver"
+msgstr "Doğrudan orijinal habere bağlantı ver"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Blurblog'uma ve paylaşılan yorumlara bağlantı"
@@ -3693,7 +3693,7 @@ msgid "Long Reads"
 msgstr "Uzun Okumalar"
 
 msgid "Long Reads on NewsBlur"
-msgstr "NewsBlur Uzun Okumalar"
+msgstr "NewsBlur'da uzun okumalar"
 
 msgid "Long reads for later"
 msgstr "Daha sonra okumak için uzun yazılar"
@@ -3742,7 +3742,7 @@ msgid ""
 "Many feeds only include a summary. Text view extracts the full story from the original website and displays"
 " it right in NewsBlur, with clean formatting and no clutter."
 msgstr ""
-"Birçok feed yalnızca özet içerir. Metin görünümü, haberin tamamını özgün web sitesinden çıkarır ve temiz, "
+"Birçok akış yalnızca özet içerir. Metin görünümü, haberin tamamını özgün web sitesinden çıkarır ve temiz, "
 "sade bir biçimde doğrudan NewsBlur'da gösterir."
 
 msgid "March"
@@ -3754,19 +3754,19 @@ msgid_plural "Mark %(count)s stories as read?"
 msgstr[0] "%(count)s haber okundu olarak işaretlensin mi?"
 
 msgid "Mark <b>every story</b> as read"
-msgstr "<b>Her yazıyı</b> okunmuş olarak işaretle"
+msgstr "<b>Tüm haberleri</b> okundu olarak işaretle"
 
 msgid "Mark Everything Read / Unread"
 msgstr "Her Şeyi Okundu / Okunmadı Olarak İşaretle"
 
 msgid "Mark Stories as Read"
-msgstr "Hikâyeleri Okundu Olarak İşaretle"
+msgstr "Haberleri Okundu Olarak İşaretle"
 
 msgid "Mark Stories as Unread"
 msgstr "Haberleri okunmamış olarak işaretle"
 
 msgid "Mark a story as read"
-msgstr "Bir hikâyeyi okundu olarak işaretle"
+msgstr "Bir haberi okundu olarak işaretle"
 
 msgid "Mark above stories read"
 msgstr "Yukarıdaki haberleri okundu olarak işaretle"
@@ -3775,7 +3775,7 @@ msgid "Mark all as read"
 msgstr "Tümünü okundu olarak işaretle"
 
 msgid "Mark all as read?"
-msgstr "Tümünü okundu olarak işaretle?"
+msgstr "Tümü okundu olarak işaretlensin mi?"
 
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
@@ -3807,7 +3807,7 @@ msgid "Mark folder stories as unread"
 msgstr "Klasördeki haberleri okunmadı olarak işaretle"
 
 msgid "Mark newer stories read"
-msgstr "Daha yeni hikâyeleri okundu olarak işaretle"
+msgstr "Daha yeni haberleri okundu olarak işaretle"
 
 msgid "Mark older stories read"
 msgstr "Daha eski haberleri okundu olarak işaretle"
@@ -3821,12 +3821,12 @@ msgid "Mark stories as read when scrolled past"
 msgstr "Üzerinden geçildiğinde haberleri okundu olarak işaretle"
 
 msgid "Mark stories as unread"
-msgstr "Hikâyeleri okunmadı olarak işaretle"
+msgstr "Haberleri okunmadı olarak işaretle"
 
 #, python-format
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
-msgstr[0] "Son <b>%(value_1)s gün</b> içindeki hikâyeleri okunmadı olarak işaretle"
+msgstr[0] "Son <b>%(value_1)s gün</b> içindeki haberleri okunmadı olarak işaretle"
 
 msgid "Mark stories read on scroll"
 msgstr "Kaydırırken haberleri okundu olarak işaretle"
@@ -3844,12 +3844,12 @@ msgid "Marking as unread..."
 msgstr "Okunmamış olarak işaretleniyor..."
 
 msgid "Match"
-msgstr "Eşleştir"
+msgstr "Eşleşme"
 
 msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
 msgstr ""
-"Yazıların gövdesindeki kelime veya ifadelere göre eşleştirin. Yazıda bir metni seçip otomatik doldurmak "
-"için Eğit'e tıklayın."
+"Haberleri gövdedeki kelime veya ifadelere göre eşleştirin. Haberde bir metni seçip otomatik doldurmak için "
+"Eğit'e tıklayın."
 
 msgid "Matched via a duplicate title"
 msgstr "Eşleşme yinelenen bir başlık üzerinden bulundu"
@@ -3891,7 +3891,7 @@ msgstr "Şununla birleştir:"
 #, python-format
 msgid "Merged %(count)s story into \"%(category)s\""
 msgid_plural "Merged %(count)s stories into \"%(category)s\""
-msgstr[0] "%(count)s hikâye \"%(category)s\" içine birleştirildi"
+msgstr[0] "%(count)s haber \"%(category)s\" kategorisinde birleştirildi"
 
 msgid "Merging..."
 msgstr "Birleştiriliyor..."
@@ -4044,8 +4044,8 @@ msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
 "train, all from the keyboard."
 msgstr ""
-"Fareleri kullanmadan her yerde gezinin. Akışları açın, haberlerde ilerleyin, okundu olarak işaretleyin, "
-"kaydedin, paylaşın ve klavyeden öğrenme ayarlarını yapın."
+"Fareye dokunmadan her yerde gezinin. Akışları açın, haberlerde ilerleyin, okundu olarak işaretleyin, "
+"kaydedin, paylaşın ve eğitin; hepsi klavyeden."
 
 msgid "Need at least 2 categories to merge"
 msgstr "Birleştirmek için en az 2 kategori gerekli"
@@ -4091,7 +4091,7 @@ msgid "New folder under %(folder)s..."
 msgstr "%(folder)s altında yeni klasör..."
 
 msgid "New password"
-msgstr "Yeni parola"
+msgstr "Yeni şifre"
 
 msgid "New posts from feeds you recently read"
 msgstr "Yakın zamanda okuduğunuz akışlardan yeni gönderiler"
@@ -4119,7 +4119,7 @@ msgstr "NewsBlur'ın diğer hizmetlerle bağlantıları"
 
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
-msgstr "NewsBlur, tarayıcınızda %(language)s dilini algıladı."
+msgstr "NewsBlur tarayıcınızın dilini algıladı: %(language)s."
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur şu anda çalışmıyor. <br> Lütfen biraz sonra tekrar deneyin."
@@ -4182,7 +4182,7 @@ msgid "No archives match your filters"
 msgstr "Filtrelerinizle eşleşen arşiv yok"
 
 msgid "No briefings yet."
-msgstr "Henüz bilgilendirme yok."
+msgstr "Henüz özet yok."
 
 msgid "No categories available. Categories will appear here once they are configured."
 msgstr "Kullanılabilir kategori yok. Yapılandırıldıklarında kategoriler burada görünür."
@@ -4280,13 +4280,13 @@ msgid "No recency filter"
 msgstr "Güncellik filtresi yok"
 
 msgid "No referrals yet. Share your link to get started!"
-msgstr "Henüz yönlendirme yok. Başlamak için bağlantınızı paylaşın!"
+msgstr "Henüz davet yok. Başlamak için bağlantınızı paylaşın!"
 
 msgid "No results found, but you can subscribe directly if you know the subreddit name."
 msgstr "Sonuç bulunamadı; ancak subreddit adını biliyorsanız doğrudan abone olabilirsiniz."
 
 msgid "No similar stories found"
-msgstr "Benzer hikâye bulunamadı"
+msgstr "Benzer haber bulunamadı"
 
 msgid "No sites available"
 msgstr "Kullanılabilir site yok"
@@ -4308,15 +4308,15 @@ msgstr "Haber yok"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "%(folder)s kaynaklı hikâyeler, ilgili hikâyeler için henüz dizine eklenmedi."
+msgstr "%(folder)s klasöründen hiçbir haber, ilgili haberler için henüz dizine eklenmedi."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "İlgili hikâyeler için %(count)s sitenizden henüz hiçbir hikâye dizine eklenmedi."
+msgstr[0] "İlgili haberler için %(count)s sitenizden henüz hiçbir haber dizine eklenmedi."
 
 msgid "No stories published last month"
-msgstr "Geçen ay hikâye yayımlanmadı"
+msgstr "Geçen ay haber yayımlanmadı"
 
 msgid "No stories to delete"
 msgstr "Silinecek haber yok"
@@ -4325,10 +4325,10 @@ msgid "No stories to read"
 msgstr "Okunacak haber yok"
 
 msgid "No stories yet"
-msgstr "Henüz hikâye yok"
+msgstr "Henüz haber yok"
 
 msgid "No story patterns found on this page."
-msgstr "Bu sayfada hikâye kalıbı bulunamadı."
+msgstr "Bu sayfada haber kalıbı bulunamadı."
 
 msgid "No trending sites available"
 msgstr "Şu anda popüler site yok"
@@ -4343,7 +4343,7 @@ msgid "No valid merge groups to apply"
 msgstr "Uygulanacak geçerli birleştirme grubu yok"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "Paylaşılan hikâyelerinize henüz kimse abone olmadı."
+msgstr "Paylaştığınız haberlere henüz kimse abone olmadı."
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "Önerilecek kimse kalmadı. Harika iş!"
@@ -4373,10 +4373,10 @@ msgid "Not now"
 msgstr "Şimdi değil"
 
 msgid "Not redeemed in 90 days?"
-msgstr "90 gündür kullanılmadı mı?"
+msgstr "90 gün içinde kullanılmazsa?"
 
 msgid "Not seeing the right stories?"
-msgstr "Aradığınız hikâyeleri bulamıyor musunuz?"
+msgstr "Doğru haberleri göremiyor musunuz?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
 msgstr "En çok okunanlar değil; en iyi karşılananlar ve büyük siteler yerine küçük sitelere ağırlık verilir."
@@ -4455,11 +4455,11 @@ msgid "Oh no, there was a problem grabbing that URL and there's no good explanat
 msgstr "Eyvah, bu URL alınırken bir sorun oluştu ve ne olduğuna dair geçerli bir açıklama yok."
 
 msgid "Old password"
-msgstr "Eski parola"
+msgstr "Eski şifre"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Şundan daha eski: %(month)s %(day)s %(year)s"
+msgstr "Şu tarihten eski: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "Daha eski:"
@@ -4471,7 +4471,7 @@ msgid "Oldest first"
 msgstr "En eskiler önce"
 
 msgid "Oldest unread story"
-msgstr "En eski okunmamış yazı"
+msgstr "En eski okunmamış haber"
 
 msgid "On"
 msgstr "Açık"
@@ -4481,7 +4481,7 @@ msgstr "Premium Archive'da arama, yalnızca son haberleri değil, arşivlenmiş 
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr ""
-"Premium'da arama, son haberlerinizi kapsar. Premium Arşiv'de arşivlenmiş tüm haberlerde arama "
+"Premium'da arama, son haberlerinizi kapsar. Premium Archive'da arşivlenmiş tüm haberlerde arama "
 "yapabilirsiniz."
 
 msgid "One command with Docker"
@@ -4512,10 +4512,10 @@ msgstr[0] ""
 " ve kişiselleştirilmiş öneriler almak için yükseltin."
 
 msgid "Only Focus:"
-msgstr "Yalnızca odaklanılanlar:"
+msgstr "Yalnızca Odak:"
 
 msgid "Only page down in story, do not open next unread story"
-msgstr "Hikâyede yalnızca sayfayı aşağı kaydır, sonraki okunmamış hikâyeyi açma"
+msgstr "Haberde yalnızca sayfayı aşağı kaydır, sonraki okunmamış haberi açma"
 
 msgid "Only people I approve can see my shared stories and reply to me"
 msgstr "Paylaştığım haberleri yalnızca onayladığım kişiler görebilir ve bana yanıt verebilir"
@@ -4543,24 +4543,24 @@ msgid "Only show counts on collapsed folders"
 msgstr "Sayıları yalnızca daraltılmış klasörlerde göster"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "Yalnızca blurblog'lardaki uzun paylaşılan hikâyeleri kısalt"
+msgstr "Yalnızca blurblog'lardaki uzun paylaşılan haberleri kısalt"
 
 msgid "Open"
 msgstr "Aç"
 
 msgid "Open All Site Stories"
-msgstr "Tüm Site Haberlerini Aç"
+msgstr "Tüm Sitelerin Haberlerini Aç"
 
 msgid "Open Everything"
-msgstr "Tümünü Aç"
+msgstr "Tüm Sitelerin Haberlerini Aç"
 
 msgid "Open Site"
 msgstr "Siteyi Aç"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
 msgstr ""
-"Tüm akışlarını bir kerede okumak için herhangi bir klasör başlığına dokunun. Tüm Site Haberleri, her şeyin "
-"bir araya aktığı yerdir."
+"Tüm akışlarını bir kerede okumak için herhangi bir klasör başlığını açın. Tüm Sitelerin Haberleri, her "
+"şeyin bir araya aktığı yerdir."
 
 msgid "Open clustering preferences"
 msgstr "Kümeleme tercihlerini aç"
@@ -4587,10 +4587,10 @@ msgid "Open links in a background tab"
 msgstr "Bağlantıları arka plan sekmesinde aç"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "Hikâyenin sonu görünür olduğunda sonraki okunmamış hikâyeyi aç"
+msgstr "Haberin sonu görünür olduğunda sonraki okunmamış haberi aç"
 
 msgid "Open next unread story when story is half-way up"
-msgstr "Hikâye ekranın yarısına geldiğinde okunmamış sonraki hikâyeyi aç"
+msgstr "Haber ekranın yarısına geldiğinde sonraki okunmamış haberi aç"
 
 msgid "Open preferences"
 msgstr "Tercihleri aç"
@@ -4602,7 +4602,7 @@ msgid "Open story trainer"
 msgstr "Haber eğiticisini aç"
 
 msgid "Open the Intelligence Trainer"
-msgstr "Zekâ Eğitmeni'ni Aç"
+msgstr "Zekâ Eğitmenini Aç"
 
 msgid "Open the feed and story title menu"
 msgstr "Akış ve haber başlığı menüsünü aç"
@@ -4620,7 +4620,7 @@ msgid "Open the site in a new window and mark it as read"
 msgstr "Siteyi yeni bir pencerede aç ve okundu olarak işaretle"
 
 msgid "Open the trainer for any feed"
-msgstr "Herhangi bir akış için eğitimi açın"
+msgstr "Herhangi bir akış için eğitmeni açın"
 
 msgid "Open this story in NewsBlur"
 msgstr "Bu haberi NewsBlur'da aç"
@@ -4635,10 +4635,10 @@ msgid "Opens"
 msgstr "Açılma"
 
 msgid "Opens stories in a background tab with a customizable hotkey"
-msgstr "Hikâyeleri özelleştirilebilir bir kısayol tuşuyla arka plan sekmesinde açar"
+msgstr "Haberleri özelleştirilebilir bir kısayol tuşuyla arka plan sekmesinde açar"
 
 msgid "Option 1:"
-msgstr "1. seçenek:"
+msgstr "Seçenek 1:"
 
 msgid "Option 2:"
 msgstr "Seçenek 2:"
@@ -4764,10 +4764,10 @@ msgid "Platform"
 msgstr "Platform"
 
 msgid "Play Last"
-msgstr "Sonuncuyu Oynat"
+msgstr "Sıranın sonuna ekle"
 
 msgid "Play Next"
-msgstr "Sonrakini oynat"
+msgstr "Sıradaki olarak oynat"
 
 msgid "Play in Mini Media Player"
 msgstr "Mini Medya Oynatıcı'da oynat"
@@ -4827,17 +4827,17 @@ msgid "Positive you want to delete your intelligence training classifiers?"
 msgstr "Zekâ eğitimi sınıflandırıcılarınızı silmek istediğinizden emin misiniz?"
 
 msgid "Positive you want to delete your saved stories?"
-msgstr "Kaydedilmiş hikâyelerinizi silmek istediğinizden emin misiniz?"
+msgstr "Kaydedilmiş haberlerinizi silmek istediğinizden emin misiniz?"
 
 msgid "Positive you want to delete your shared stories?"
-msgstr "Paylaştığınız hikâyeleri silmek istediğinizden emin misiniz?"
+msgstr "Paylaştığınız haberleri silmek istediğinizden emin misiniz?"
 
 msgid "Post"
-msgstr "Gönderi"
+msgstr "Gönder"
 
 #, python-format
 msgid "Post to %(service)s"
-msgstr "%(service)s'da paylaş"
+msgstr "%(service)s üzerinde paylaş"
 
 msgid "Posting..."
 msgstr "Gönderiliyor..."
@@ -4854,7 +4854,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "Premium Arşiv"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -4878,7 +4878,7 @@ msgstr "Premium ayrıntıları"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
-msgstr "Premium yazı tipleri için %(link_start)spremium account%(link_end)s gerekir"
+msgstr "Premium yazı tipleri için %(link_start)spremium hesap%(link_end)s gerekir"
 
 msgid "Premium renewal"
 msgstr "Premium yenileme"
@@ -4918,7 +4918,7 @@ msgstr "Önceki haber"
 
 #, python-format
 msgid "Previously Recommended on: %(date)s"
-msgstr "Şurada daha önce önerildi: %(date)s"
+msgstr "Daha önce önerildiği tarih: %(date)s"
 
 msgid "Print"
 msgstr "Yazdır"
@@ -4954,7 +4954,7 @@ msgid "Profile"
 msgstr "Profil"
 
 msgid "Profile &amp; Blurblog"
-msgstr "Profil &amp; Blurblog'u"
+msgstr "Profil &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "Profil Ayrıntıları"
@@ -4981,10 +4981,10 @@ msgid "Publisher"
 msgstr "Yayıncı"
 
 msgid "Push Expires"
-msgstr "Anlık Bildirim Süresi Doluyor"
+msgstr "Push Aboneliğinin Bitişi"
 
 msgid "Push expires"
-msgstr "Anlık bildirim süresi doluyor"
+msgstr "Push aboneliğinin bitişi"
 
 msgid "Questions"
 msgstr "Sorular"
@@ -4997,13 +4997,13 @@ msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
 msgstr[0] ""
-"%(count)s hikâye kategorilere ayrılmak üzere kuyruğa alındı (%(remaining)s kaldı). Hikâyeler işlendikçe "
+"%(count)s haber kategorilere ayrılmak üzere kuyruğa alındı (%(remaining)s kaldı). Haberler işlendikçe "
 "kategoriler görünür."
 
 #, python-format
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
-msgstr[0] "%(count)s hikâye kategorilere ayrılmak üzere kuyruğa alındı. Hikâyeler işlendikçe kategoriler görünür."
+msgstr[0] "%(count)s haber kategorilere ayrılmak üzere kuyruğa alındı. Haberler işlendikçe kategoriler görünür."
 
 msgid "Quick search for a site"
 msgstr "Bir siteyi hızlıca ara"
@@ -5023,7 +5023,7 @@ msgstr "Klasörler için RSS akışları %(link_start)spremium özelliktir%(link
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "Kaydedilen hikâye etiketlerinin RSS akışları %(link_start)spremium bir özelliktir%(link_end)s."
+msgstr "Kaydedilen haber etiketlerinin RSS akışları %(link_start)spremium bir özelliktir%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "RSS/XML URL'si: "
@@ -5050,29 +5050,29 @@ msgid "Re-categorizing..."
 msgstr "Yeniden kategorilendiriliyor..."
 
 msgid "Read Stories"
-msgstr "Haberleri Oku"
+msgstr "Okunmuş Haberler"
 
 msgid "Read Stories:"
-msgstr "Haberleri oku:"
+msgstr "Okunan haber sayısı:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
 msgstr ""
 "Bir klasördeki tüm akışları kronolojik sırayla, kaydırılabilir tek bir akışta okuyun. Eğitimle birlikte "
-"nehir görünümü, aboneliklerinizdeki en iyi haberleri öne çıkarır."
+"Haber Akışı, aboneliklerinizdeki en iyi haberleri öne çıkarır."
 
 msgid "Read more on the NewsBlur Blog"
-msgstr "NewsBlur Blogu'nda daha fazlasını okuyun"
+msgstr "NewsBlur Blog'unda daha fazlasını okuyun"
 
 msgid "Read offline with automatic background refresh"
 msgstr "Otomatik arka plan yenilemesiyle çevrimdışı okuyun"
 
 msgid "Read on scroll"
-msgstr "Kaydırırken oku"
+msgstr "Kaydırınca okundu işaretle"
 
 msgid "Read stories by folder"
-msgstr "Klasöre göre hikâyeleri oku"
+msgstr "Haberleri klasöre göre okuyun"
 
 msgid "Read the whole story"
 msgstr "Haberin tamamını oku"
@@ -5094,10 +5094,10 @@ msgstr "Makale okunuyor..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "Etikete göre kaydedilmiş hikâyeleri okumak %(link_start)spremium özelliğidir%(link_end)s."
+msgstr "Etikete göre kaydedilmiş haberleri okumak %(link_start)spremium özelliğidir%(link_end)s."
 
 msgid "Reading saved story..."
-msgstr "Hikâye kaydediliyor..."
+msgstr "Kaydedilen haber okunuyor..."
 
 msgid "Reading view"
 msgstr "Okuma görünümü"
@@ -5139,10 +5139,10 @@ msgid "Record voice question"
 msgstr "Sesli soru kaydet"
 
 msgid "Recording..."
-msgstr "Kaydediliyor..."
+msgstr "Ses kaydediliyor..."
 
 msgid "Reddit Subreddits"
-msgstr "Reddit alt dizinleri"
+msgstr "Reddit Subreddit'leri"
 
 msgid "Redeemed"
 msgstr "Kullanıldı"
@@ -5151,7 +5151,7 @@ msgid "Reduce clutter in your river of stories"
 msgstr "Haber akışınızdaki kalabalığı azaltın"
 
 msgid "Refer"
-msgstr "Yönlendir"
+msgstr "Davet et"
 
 msgid "Refer &amp; Gift"
 msgstr "Davet Et &amp; Hediye Et"
@@ -5173,7 +5173,7 @@ msgid "Refunded $%(amount)s"
 msgstr "$%(amount)s iade edildi"
 
 msgid "Regenerate Briefing"
-msgstr "Bilgilendirmeyi yeniden oluştur"
+msgstr "Özeti yeniden oluştur"
 
 msgid "Regex"
 msgstr "Regex"
@@ -5237,7 +5237,7 @@ msgstr "Yeniden adlandırıldı"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "%(count)s haber \"%(category)s\" olarak yeniden adlandırıldı"
+msgstr[0] "Kategori \"%(category)s\" olarak yeniden adlandırıldı (%(count)s haber)"
 
 msgid "Renaming..."
 msgstr "Yeniden adlandırılıyor..."
@@ -5252,7 +5252,7 @@ msgid "Request timed out. The AI service took too long to respond. Please try ag
 msgstr "İstek zaman aşımına uğradı. Yapay zekâ hizmetinin yanıt vermesi çok uzun sürdü. Lütfen tekrar deneyin."
 
 msgid "Requested"
-msgstr "İstendi"
+msgstr "İstek gönderildi"
 
 msgid "Requests to Follow You"
 msgstr "Takip istekleri"
@@ -5281,7 +5281,7 @@ msgid "Restart your subscription"
 msgstr "Aboneliğinizi yeniden başlatın"
 
 msgid "Restore the player when you reload NewsBlur"
-msgstr "NewsBlur yeniden yüklediğinde oynatıcıyı geri yükle"
+msgstr "NewsBlur'ı yeniden yüklediğinizde oynatıcıyı geri getir"
 
 msgid "Results show matching stories with highlighted terms"
 msgstr "Sonuçlarda eşleşen haberler vurgulanmış terimlerle gösterilir"
@@ -5308,10 +5308,10 @@ msgid "Right-clicking"
 msgstr "Sağ tıklama"
 
 msgid "Rising"
-msgstr "Yükseliyor"
+msgstr "Yükselenler"
 
 msgid "River of News"
-msgstr "Haber Nehri"
+msgstr "Haber Akışı"
 
 msgid "River of News (reading by folder)"
 msgstr "Haber Akışı (klasöre göre okuma)"
@@ -5323,15 +5323,15 @@ msgid "Run your own NewsBlur"
 msgstr "Kendi NewsBlur sunucunuzu çalıştırın"
 
 msgid "Runs silently — pages are captured after 5 seconds of reading"
-msgstr "Sessizce çalışır — sayfalar 5 saniye okuduktan sonra kaydedilir"
+msgstr "Sessizce çalışır — sayfalar 5 saniyelik okumanın ardından kaydedilir"
 
 #, python-format
 msgid ""
 "Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the "
 "Releases appcast in the repo."
 msgstr ""
-"%(shortcut)s için haberleri arka plan sekmesinde açmayı sağlayan Safari Uygulama Uzantısı. Uygulamayı "
-"depodaki Releases uygulama akışından indirin."
+"%(shortcut)s kısayoluyla haberleri arka plan sekmesinde açmanızı sağlayan Safari Uygulama Uzantısı. "
+"Uygulamayı depodaki Releases appcast'inden indirin."
 
 msgid "Sat"
 msgstr "Cmt"
@@ -5381,7 +5381,7 @@ msgid "Save a search as a feed and it keeps collecting matches in your sidebar."
 msgstr "Bir aramayı akış olarak kaydedin; eşleşen sonuçlar kenar çubuğunuzda birikmeye devam etsin."
 
 msgid "Save any story with one click or the s key"
-msgstr "Herhangi bir hikâyeyi tek tıkla veya s tuşuyla kaydedin"
+msgstr "Herhangi bir haberi tek tıkla veya s tuşuyla kaydedin"
 
 msgid "Save comments"
 msgstr "Yorumları kaydet"
@@ -5393,13 +5393,13 @@ msgid "Save searches as feeds for ongoing monitoring"
 msgstr "Aramaları sürekli izlemek için akış olarak kaydedin"
 
 msgid "Save stories for later"
-msgstr "Hikâyeleri daha sonrası için kaydet"
+msgstr "Haberleri daha sonra okumak için kaydedin"
 
 msgid ""
 "Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
 "shareable."
 msgstr ""
-"Hikâyeleri daha sonra okumak için kaydedin ve özel etiketlerle düzenleyin. Kişisel kupür arşivinizde arama "
+"Haberleri daha sonra okumak için kaydedin ve özel etiketlerle düzenleyin. Kişisel kupür arşivinizde arama "
 "yapabilir ve içerikleri paylaşabilirsiniz."
 
 msgid "Save stories with searchable tags"
@@ -5409,7 +5409,7 @@ msgid "Save this story"
 msgstr "Bu haberi kaydet"
 
 msgid "Save/Unsave story"
-msgstr "Hikâyeyi kaydet / kaydı kaldır"
+msgstr "Haberi kaydet / kaydedilenlerden kaldır"
 
 msgid "Saved"
 msgstr "Kaydedildi"
@@ -5418,7 +5418,7 @@ msgid "Saved Searches"
 msgstr "Kayıtlı Aramalar"
 
 msgid "Saved Stories"
-msgstr "Kaydedilen Hikâyeler"
+msgstr "Kaydedilen Haberler"
 
 msgid "Saved Stories & Tags"
 msgstr "Kaydedilmiş Haberler ve Etiketler"
@@ -5430,7 +5430,7 @@ msgid "Saved stories are kept forever, even from feeds you later unsubscribe fro
 msgstr "Kaydedilen haberler, aboneliğinizi daha sonra iptal ettiğiniz akışlardan bile sonsuza kadar saklanır."
 
 msgid "Saved stories organized with custom tags"
-msgstr "Özel etiketlerle düzenlenmiş kaydedilen hikâyeler"
+msgstr "Özel etiketlerle düzenlenmiş kaydedilen haberler"
 
 msgid "Saved!"
 msgstr "Kaydedildi!"
@@ -5471,13 +5471,13 @@ msgstr "Yorumlara kaydır"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "Hikâyede %(slider)s %(pixels)spx yukarı/aşağı kaydır."
+msgstr "Haberde %(slider)s %(pixels)spx yukarı/aşağı kaydır."
 
 msgid "Search"
 msgstr "Ara"
 
 msgid "Search All Site Stories"
-msgstr "Tüm Site Haberlerinde Ara"
+msgstr "Tüm Sitelerin Haberlerinde Ara"
 
 msgid "Search YouTube channels..."
 msgstr "YouTube kanallarında ara..."
@@ -5544,7 +5544,7 @@ msgid "Search your entire archive with full-text search"
 msgstr "Tüm arşivinizde tam metin araması yapın"
 
 msgid "Search your stories"
-msgstr "Hikâyelerinizde arama yapın"
+msgstr "Haberlerinizde arama yapın"
 
 #, python-format
 msgid "Search: \"%(value_1)s\""
@@ -5558,7 +5558,7 @@ msgid "Searching RSS feeds..."
 msgstr "RSS akışları aranıyor..."
 
 msgid "Searching saved stories..."
-msgstr "Kaydedilmiş hikâyeler aranıyor..."
+msgstr "Kaydedilmiş haberler aranıyor..."
 
 msgid "Searching your archive..."
 msgstr "Arşivinizde aranıyor..."
@@ -5596,10 +5596,10 @@ msgstr ""
 "yeşil ve kırmızıyla vurgulayarak gösterir."
 
 msgid "See shared stories"
-msgstr "Paylaşılan hikâyeleri gör"
+msgstr "Paylaşılan haberleri gör"
 
 msgid "See the story title and a short content preview"
-msgstr "Hikâyenin başlığını ve kısa bir içerik önizlemesini gör"
+msgstr "Haberin başlığını ve kısa bir içerik önizlemesini gör"
 
 msgid "See which feeds cover the same story"
 msgstr "Hangi akışların aynı haberi kapsadığını görün"
@@ -5617,7 +5617,7 @@ msgid "Select a story to read"
 msgstr "Okumak için bir haber seçin"
 
 msgid "Select any story and click \"Ask AI\""
-msgstr "Herhangi bir haberi seçip \"Ask AI\" düğmesine tıklayın"
+msgstr "Herhangi bir haberi seçip “Yapay zekâya sor” düğmesine tıklayın"
 
 msgid "Select classifiers to remove"
 msgstr "Kaldırılacak sınıflandırıcıları seçin"
@@ -5644,13 +5644,13 @@ msgid "Send"
 msgstr "Gönder"
 
 msgid "Send Story by Email"
-msgstr "Hikâyeyi E-postayla Gönder"
+msgstr "Haberi E-postayla Gönder"
 
 msgid "Send me a copy of this email"
 msgstr "Bu e-postanın bir kopyasını bana gönder"
 
 msgid "Send this story"
-msgstr "Bu hikâyeyi gönder"
+msgstr "Bu haberi gönder"
 
 msgid "Sending…"
 msgstr "Gönderiliyor…"
@@ -5699,7 +5699,7 @@ msgid "Share on NewsBlur"
 msgstr "NewsBlur'da paylaş"
 
 msgid "Share stories"
-msgstr "Hikâyeleri paylaş"
+msgstr "Haberleri paylaş"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -5749,7 +5749,7 @@ msgid "Sharing"
 msgstr "Paylaşım"
 
 msgid "Sharing Stories From These Sites"
-msgstr "Bu Sitelerdeki Haberleri Paylaşma"
+msgstr "Bu Sitelerden Paylaşılan Haberler"
 
 msgid "Sharing services"
 msgstr "Paylaşım hizmetleri"
@@ -5777,19 +5777,19 @@ msgid "Show Global Shared Stories"
 msgstr "Genel Paylaşılan Haberleri Göster"
 
 msgid "Show Good Reads"
-msgstr "Beğenilenleri göster"
+msgstr "Okumaya Değer Haberleri Göster"
 
 msgid "Show Infrequent Site Stories"
-msgstr "Seyrek Güncellenen Site Hikâyelerini Göster"
+msgstr "Seyrek Güncellenen Sitelerin Haberlerini Göster"
 
 msgid "Show Long Reads"
 msgstr "Uzun Okumaları Göster"
 
 msgid "Show Widely Read Stories"
-msgstr "Çok Okunan Hikâyeleri Göster"
+msgstr "Çok Okunan Haberleri Göster"
 
 msgid "Show a preview of the story"
-msgstr "Yazının önizlemesini göster"
+msgstr "Haberin önizlemesini göster"
 
 msgid "Show all animations"
 msgstr "Tüm animasyonları göster"
@@ -5810,7 +5810,7 @@ msgid "Show confirmation when marking feeds or folders as read"
 msgstr "Akışları veya klasörleri okundu olarak işaretlerken onay iste"
 
 msgid "Show discover sites popover above story titles"
-msgstr "Site keşfet açılır penceresini haber başlıklarının üstünde göster"
+msgstr "Site keşfetme açılır penceresini haber başlıklarının üstünde göster"
 
 msgid "Show every site, including ones you already follow"
 msgstr "Zaten takip ettikleriniz de dahil tüm siteleri göster"
@@ -5828,13 +5828,13 @@ msgid "Show history"
 msgstr "Geçmişi göster"
 
 msgid "Show more related stories"
-msgstr "Benzer haberleri göster"
+msgstr "Daha fazla benzer haber göster"
 
 msgid "Show on Load"
 msgstr "Yüklenince göster"
 
 msgid "Show story changes"
-msgstr "Hikâye değişikliklerini göster"
+msgstr "Haber değişikliklerini göster"
 
 msgid "Show the dashboard when loading NewsBlur"
 msgstr "NewsBlur açıldığında kontrol panelini göster"
@@ -5850,11 +5850,11 @@ msgstr "Okunmamış sayılarını pencere başlığında göster"
 
 #, python-format
 msgid "Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"
-msgstr "<b>%(start_date)s</b> ile <b>%(end_date)s</b> arasındaki hikâyeler gösteriliyor"
+msgstr "<b>%(start_date)s</b> ile <b>%(end_date)s</b> arasındaki haberler gösteriliyor"
 
 #, python-format
 msgid "Showing stories newer than <b>%(date)s</b>"
-msgstr "<b>%(date)s</b> tarihinden daha yeni hikâyeler gösteriliyor"
+msgstr "<b>%(date)s</b> tarihinden daha yeni haberler gösteriliyor"
 
 #, python-format
 msgid "Showing stories older than <b>%(date)s</b>"
@@ -5862,13 +5862,13 @@ msgstr "<b>%(date)s</b> tarihinden daha eski haberler gösteriliyor"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "Hikâyeler <b>%(date)s</b> tarihinde gösteriliyor"
+msgstr "<b>%(date)s</b> tarihli haberler gösteriliyor"
 
 msgid "Shows a toolbar button with your unread count"
 msgstr "Okunmamış sayınızı gösteren bir araç çubuğu düğmesi ekler"
 
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
-msgstr "Oturum açın; akışlarınız, eğitim verileriniz ve kaydedilen hikâyeleriniz anında eşitlenir"
+msgstr "Oturum açın; akışlarınız, eğitim verileriniz ve kaydedilen haberleriniz anında eşitlenir"
 
 msgid "Sign up"
 msgstr "Kaydol"
@@ -5919,7 +5919,7 @@ msgid "Skip Back"
 msgstr "Geri atla"
 
 msgid "Skip Forward"
-msgstr "İleri Sar"
+msgstr "İleri atla"
 
 msgid "Skip this step "
 msgstr "Bu adımı atla "
@@ -5928,10 +5928,10 @@ msgid "Small feeds with the fastest-growing subscriber base"
 msgstr "Abone sayısı en hızlı artan küçük yayın akışları"
 
 msgid "Small image thumbnail on the left"
-msgstr "Solda küçük görsel küçük resmi"
+msgstr "Solda küçük görsel"
 
 msgid "Small image thumbnail on the right"
-msgstr "Sağda küçük görsel küçük resmi"
+msgstr "Sağda küçük görsel"
 
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Bu kadar çok zaman, yapılacak bu kadar az şey. Yok, öyle değil! Tersini söyleyecektim."
@@ -5972,7 +5972,7 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "Üzgünüz, bu yanıt gönderilemedi. Muhtemelen Adblock yüzünden."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "Üzgünüz, bu hikâye paylaşılamadı. Muhtemelen reklam engelleyici yüzünden."
+msgstr "Üzgünüz, bu haber paylaşılamadı. Muhtemelen reklam engelleyici yüzünden."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
 msgstr "Üzgünüz, bu haberin paylaşımı kaldırılamadı. Muhtemelen Adblock yüzünden."
@@ -5984,13 +5984,13 @@ msgid "Sort By"
 msgstr "Sıralama ölçütü"
 
 msgid "Sort the river oldest-first or newest-first from the feed options popover."
-msgstr "Akışı, akış seçenekleri menüsünden eskiden yeniye veya yeniden eskiye sıralayın."
+msgstr "Haber Akışını, akış seçenekleri menüsünden eskiden yeniye veya yeniden eskiye sıralayın."
 
 msgid "Sort, filter, and display options"
 msgstr "Sıralama, filtre ve görüntüleme seçenekleri"
 
 msgid "Source feeds"
-msgstr "Kaynak akışları"
+msgstr "Kaynak akışlar"
 
 msgid "Spacing between feeds and story titles"
 msgstr "Akışlar ve haber başlıkları arasındaki boşluk"
@@ -6002,7 +6002,7 @@ msgid "Special Folders"
 msgstr "Özel Klasörler"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Harcam sınırına ulaşıldı. Sınıflandırıcılar bir sonraki döneme kadar duraklatıldı."
+msgstr "Harcama sınırına ulaşıldı. Sınıflandırıcılar bir sonraki döneme kadar duraklatıldı."
 
 msgid "Split"
 msgstr "Böl"
@@ -6010,7 +6010,7 @@ msgstr "Böl"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "\"%(category)s\" kategorisini (%(count)s hikâye) şunlara böl:"
+msgstr[0] "\"%(category)s\" kategorisini (%(count)s haber) şunlara böl:"
 
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
@@ -6019,7 +6019,7 @@ msgstr "\"%(value_1)s\" öğesini şunlara böl:"
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
-msgstr[0] "Bölme tamamlandı: %(count)s hikâye yeniden kategorilendirildi"
+msgstr[0] "Bölme tamamlandı: %(count)s haber yeniden kategorilendirildi"
 
 msgid "Split failed to apply"
 msgstr "Bölme uygulanamadı"
@@ -6055,7 +6055,7 @@ msgid "Stars"
 msgstr "Yıldızlar"
 
 msgid "Start Training Site by Site"
-msgstr "Eğitime Site Site Başla"
+msgstr "Site Site Eğitmeye Başla"
 
 msgid "Starting analysis..."
 msgstr "Analiz başlatılıyor..."
@@ -6064,7 +6064,7 @@ msgid "Starting briefing generation..."
 msgstr "Özet oluşturuluyor..."
 
 msgid "Starting categorization..."
-msgstr "Kategoriler oluşturuluyor..."
+msgstr "Kategorilere ayırma başlatılıyor..."
 
 msgid "Starting trial..."
 msgstr "Deneme başlatılıyor..."
@@ -6086,7 +6086,7 @@ msgstr "Aynı akışta/klasörde kal"
 
 #, python-format
 msgid "Step %(step)s of %(count)s"
-msgstr "%(step)s / %(count)s. adım"
+msgstr "Adım %(step)s / %(count)s"
 
 msgid "Stop any time you like."
 msgstr "İstediğiniz zaman durdurabilirsiniz."
@@ -6095,26 +6095,26 @@ msgid "Stop recording"
 msgstr "Kaydı durdur"
 
 msgid "Stories"
-msgstr "Hikâyeler"
+msgstr "Haberler"
 
 msgid "Stories are highlighted green (like) or hidden (dislike)"
-msgstr "Beğenilen hikâyeler yeşil renkle vurgulanır, beğenilmeyenler gizlenir"
+msgstr "Beğenilen haberler yeşil renkle vurgulanır, beğenilmeyenler gizlenir"
 
 msgid "Stories arrive in real-time"
-msgstr "Hikâyeler gerçek zamanlı gelir"
+msgstr "Haberler gerçek zamanlı gelir"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Haberler, otomatik arka plan yenilemesiyle çevrimdışı okumak üzere önbelleğe alınır."
 
 msgid "Stories can stay unread forever"
-msgstr "Hikâyeler sonsuza kadar okunmamış kalabilir"
+msgstr "Haberler sonsuza kadar okunmamış kalabilir"
 
 msgid "Stories covered by 3+ feeds"
 msgstr "3 veya daha fazla akışta yer alan haberler"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
-msgstr "%(start_date)s ile %(end_date)s arasındaki hikâyeler"
+msgstr "%(start_date)s ile %(end_date)s arasındaki haberler"
 
 msgid "Stories from feeds that rarely publish"
 msgstr "Nadiren yayın yapan akışlardan haberler"
@@ -6125,7 +6125,7 @@ msgstr "Arşivdeki haberler"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "<b>%(days)s günden eski haberler okundu olarak işaretlendi</b>"
+msgstr[0] "Haberler <b>%(days)s gün</b> sonra okundu olarak işaretlenir"
 
 msgid "Stories matching your trained topics and authors"
 msgstr "Eğitilmiş konularınız ve yazarlarınızla eşleşen haberler"
@@ -6139,11 +6139,11 @@ msgstr "%(date)s tarihinden daha yeni haberler"
 
 #, python-format
 msgid "Stories older than %(date)s"
-msgstr "%(date)s öncesindeki hikâyeler"
+msgstr "%(date)s öncesindeki haberler"
 
 #, python-format
 msgid "Stories on %(date)s"
-msgstr "%(date)s tarihindeki hikâyeler"
+msgstr "%(date)s tarihindeki haberler"
 
 msgid "Stories per day"
 msgstr "Günlük haber sayısı"
@@ -6170,13 +6170,13 @@ msgid "Story Archive"
 msgstr "Haber Arşivi"
 
 msgid "Story Authors"
-msgstr "Hikâye Yazarları"
+msgstr "Haber Yazarları"
 
 msgid "Story Categories &amp; Tags"
-msgstr "Hikâye Kategorileri &amp; Etiketler"
+msgstr "Haber Kategorileri &amp; Etiketler"
 
 msgid "Story Clustering"
-msgstr "Hikâye Gruplandırma"
+msgstr "Haber Kümeleme"
 
 msgid "Story Layout - Grid Columns"
 msgstr "Haber düzeni - Izgara sütunları"
@@ -6185,19 +6185,19 @@ msgid "Story Layout - Split"
 msgstr "Haber Düzeni - Bölünmüş"
 
 msgid "Story Text"
-msgstr "Hikâye metni"
+msgstr "Haber metni"
 
 msgid "Story Title"
 msgstr "Haber Başlığı"
 
 msgid "Story Typography"
-msgstr "Hikâye Tipografisi"
+msgstr "Haber Tipografisi"
 
 msgid "Story URL"
-msgstr "Hikâye URL'si"
+msgstr "Haber URL'si"
 
 msgid "Story clustering"
-msgstr "Haberleri gruplama"
+msgstr "Haber kümeleme"
 
 msgid "Story content preview"
 msgstr "Haber içeriği önizlemesi"
@@ -6218,13 +6218,13 @@ msgid "Story side options"
 msgstr "Haber kenarı seçenekleri"
 
 msgid "Story side options buttons"
-msgstr "Yazı yan seçenek düğmeleri"
+msgstr "Haber kenarı seçenek düğmeleri"
 
 msgid "Story side options placement"
-msgstr "Hikâye kenar seçeneklerinin konumu"
+msgstr "Haber kenarı seçeneklerinin konumu"
 
 msgid "Story title styling"
-msgstr "Hikâye başlığı biçemi"
+msgstr "Haber başlığı görünümü"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
@@ -6252,13 +6252,13 @@ msgstr "%(title)s sitesine RSS üzerinden abone ol"
 
 #, python-format
 msgid "Subscribe to %(value_1)s"
-msgstr "%(value_1)s için abone ol"
+msgstr "Abone ol: %(value_1)s"
 
 msgid "Subscribe to Google News feeds by topic or custom keywords."
 msgstr "Google Haberler akışlarına konuya veya özel anahtar kelimelere göre abone olun."
 
 msgid "Subscribe to Premium Archive"
-msgstr "Premium Archive'e abone olun"
+msgstr "Premium Archive'a abone olun"
 
 msgid "Subscribe to YouTube channels and playlists as RSS feeds."
 msgstr "YouTube kanallarına ve oynatma listelerine RSS akışları olarak abone olun."
@@ -6272,7 +6272,7 @@ msgstr "Bu akışı NewsBlur'ınıza eklemek için abone olun"
 msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
 msgstr ""
 "RSS olmasa bile tüm web sitelerine akış olarak abone olun. Web Akışlarının kilidini açmak için Premium "
-"Arşiv'e geçin."
+"Archive'a geçin."
 
 msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
 msgstr "Substack, Medium, Ghost, Buttondown ve diğerlerinden bültenlere abone olun."
@@ -6288,7 +6288,7 @@ msgid "Subscribe to r/%(value_1)s"
 msgstr "r/%(value_1)s subreddit'ine abone ol"
 
 msgid "Subscribe to subreddits as RSS feeds."
-msgstr "Alt dizinlere RSS akışı olarak abone olun."
+msgstr "Subreddit'lere RSS akışı olarak abone olun."
 
 msgid "Subscribed"
 msgstr "Abone olundu"
@@ -6333,7 +6333,7 @@ msgid "Sunday"
 msgstr "Pazar"
 
 msgid "Super Dislike "
-msgstr "Çok Beğenme "
+msgstr "Hiç Beğenme "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
@@ -6356,7 +6356,7 @@ msgid "Switch to %(value_1)s"
 msgstr "%(value_1)s seçeneğine geç"
 
 msgid "Switch to All or Unread."
-msgstr "Tümü veya Okunmamış'a geçin."
+msgstr "Tümü veya Okunmamış görünümüne geçin."
 
 msgid "Switch to Credit Card"
 msgstr "Kredi Kartına Geç"
@@ -6368,7 +6368,7 @@ msgid "Tag"
 msgstr "Etiket"
 
 msgid "Tag RSS Feed"
-msgstr "RSS Akışını Etiketle"
+msgstr "Etiketin RSS Akışı"
 
 msgid "Tag Settings"
 msgstr "Etiket ayarları"
@@ -6443,7 +6443,7 @@ msgstr "Metin görünümü"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
-msgstr "Metin filtreleri %(context)s içinde hiç hikâye bulamadı."
+msgstr "Metin filtreleri %(context)s içinde hiç haber bulamadı."
 
 msgid "Text filters found no stories in this view."
 msgstr "Metin filtreleri bu görünümde haber bulamadı."
@@ -6457,11 +6457,11 @@ msgstr "Teşekkürler! %(bold_start)spremium hesabınız%(bold_end)s var."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "Teşekkürler! %(bold_start)spremium arşiv hesabınız%(bold_end)s var."
+msgstr "Teşekkürler! %(bold_start)sPremium Archive hesabınız%(bold_end)s var."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "Teşekkürler! %(bold_start)spremium pro hesabınız%(bold_end)s var."
+msgstr "Teşekkürler! %(bold_start)sPremium Pro hesabınız%(bold_end)s var."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Yapay zekâ hizmetinin yanıt vermesi çok uzun sürdü. Lütfen tekrar deneyin."
@@ -6470,7 +6470,7 @@ msgid ""
 "The CLI is a standalone terminal tool you run directly. The MCP server lets AI agents connect on your "
 "behalf. Both use the same API and have the same capabilities."
 msgstr ""
-"CLI, doğrudan çalıştırdığınız bağımsız bir terminal aracıdır. MCP sunucusu, yapay zekâ aracıların sizin "
+"CLI, doğrudan çalıştırdığınız bağımsız bir terminal aracıdır. MCP sunucusu, yapay zekâ ajanlarının sizin "
 "adınıza bağlanmasını sağlar. İkisi de aynı API'yi ve özellikleri kullanır."
 
 msgid ""
@@ -6491,8 +6491,9 @@ msgid ""
 "The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets"
 " Claude, Codex, and other AI assistants interact with NewsBlur on your behalf."
 msgstr ""
-"Model Context Protocol, AI ajanlarını harici araçlara ve verilere bağlamak için açık bir standarttır. "
-"Claude, Codex ve diğer AI asistanlarının sizin adınıza NewsBlur ile etkileşim kurmasını sağlar."
+"Model Context Protocol, yapay zekâ ajanlarını harici araçlara ve verilere bağlamak için açık bir "
+"standarttır. Claude, Codex ve diğer yapay zekâ asistanlarının sizin adınıza NewsBlur ile etkileşim "
+"kurmasını sağlar."
 
 msgid "The NewsBlur Blog"
 msgstr "NewsBlur Blogu"
@@ -6572,10 +6573,10 @@ msgid "There was a problem deleting your classifiers."
 msgstr "Sınıflandırıcılarınızı silerken bir sorun oluştu."
 
 msgid "There was a problem deleting your saved stories."
-msgstr "Kaydedilmiş hikâyeleriniz silinirken bir sorun oluştu."
+msgstr "Kaydedilmiş haberleriniz silinirken bir sorun oluştu."
 
 msgid "There was a problem deleting your shared stories."
-msgstr "Paylaşılan yazılarınız silinirken bir sorun oluştu."
+msgstr "Paylaştığınız haberler silinirken bir sorun oluştu."
 
 msgid "There was a problem deleting your sites."
 msgstr "Siteleriniz silinirken bir sorun oluştu."
@@ -6612,10 +6613,10 @@ msgstr ""
 "bunları yukarıdaki \"İzin Verilen Alan Adları\" bölümüne ekleyin."
 
 msgid "They redeem it."
-msgstr "Onlar kullanıyor."
+msgstr "Alıcı bağlantıyı kullanır."
 
 msgid "Thinking"
-msgstr "Düşünüyor"
+msgstr "Düşünen"
 
 msgid "Thinking..."
 msgstr "Düşünüyor..."
@@ -6636,7 +6637,7 @@ msgid "This is just the demo."
 msgstr "Bu yalnızca bir demo."
 
 msgid "This matches the entire URL and will only match this exact story. Select a portion of the URL instead."
-msgstr "Bu, URL'nin tamamıyla eşleşir ve yalnızca bu hikâyeyi bulur. Bunun yerine URL'nin bir bölümünü seçin."
+msgstr "Bu, URL'nin tamamıyla eşleşir ve yalnızca bu haberle eşleşir. Bunun yerine URL'nin bir bölümünü seçin."
 
 msgid ""
 "This matches the entire story text and will only match this exact story. Consider using a shorter phrase or"
@@ -6650,7 +6651,7 @@ msgstr "Bu, başlığın tamamıyla eşleşir ve yalnızca bu haberle eşleşir.
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "Okunmuş hikâyeler listesi bir %(link_start)sPremium özelliktir%(link_end)s."
+msgstr "Okunmuş haberler listesi bir %(link_start)sPremium özelliktir%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "Bu işlem etiketi kaydedilmiş tüm haberlerden kaldırır. Haberler etiketsiz olarak kaydedilmeye devam eder."
@@ -6687,7 +6688,7 @@ msgid "This site only"
 msgstr "Yalnızca bu site"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "Bu web akışı <b>duraklatıldı</b>. Yeni hikâyeleri almaya devam etmek için Premium Archive'a yükseltin."
+msgstr "Bu web akışı <b>duraklatıldı</b>. Yeni haberleri almaya devam etmek için Premium Archive'a yükseltin."
 
 msgid "This will erase all existing feeds and folders."
 msgstr "Bu işlem mevcut tüm akışları ve klasörleri silecek."
@@ -6711,14 +6712,14 @@ msgid "Thursday"
 msgstr "Perşembe"
 
 msgid "Tier"
-msgstr "Katman"
+msgstr "Paket"
 
 msgid "Time Period"
 msgstr "Zaman aralığı"
 
 #, python-format
 msgid "Time: %(value_1)s"
-msgstr "Saat: %(value_1)s"
+msgstr "Zaman: %(value_1)s"
 
 msgid "Timezone"
 msgstr "Saat dilimi"
@@ -6793,7 +6794,7 @@ msgid "Toggle read/unread"
 msgstr "Okundu/okunmadı durumunu değiştir"
 
 msgid "Toggle unread/all"
-msgstr "Okunmadı/tümü arasında geçiş yap"
+msgstr "Okunmamış/tümü arasında geçiş yap"
 
 #, python-format
 msgid "Tomorrow, %(date)s %(time)s"
@@ -6827,7 +6828,7 @@ msgid "Top Level"
 msgstr "En üst düzey"
 
 msgid "Top stories"
-msgstr "En iyi hikâyeler"
+msgstr "Öne çıkan haberler"
 
 msgid "Track Changes"
 msgstr "Değişiklikleri takip et"
@@ -6836,7 +6837,7 @@ msgid "Train"
 msgstr "Eğit"
 
 msgid "Train &amp; filter"
-msgstr "&amp; filtresini eğit"
+msgstr "Eğit &amp; filtrele"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr ""
@@ -6853,16 +6854,16 @@ msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
 msgstr "Zekâyı eğitin: yazarları, etiketleri, başlıkları ve akışları beğenin veya beğenmeyin"
 
 msgid "Train stories by author, tag, title"
-msgstr "Hikâyeleri yazara, etikete ve başlığa göre eğitin"
+msgstr "Haberleri yazara, etikete ve başlığa göre eğitin"
 
 msgid "Train stories on full text content"
-msgstr "Hikâyeleri tam metin içeriğine göre eğit"
+msgstr "Haberleri tam metin içeriğine göre eğit"
 
 msgid "Train stories with regular expressions"
-msgstr "Düzenli ifadelerle hikâyeleri eğitin"
+msgstr "Düzenli ifadelerle haberleri eğitin"
 
 msgid "Train stories, search, share, and tag just like on the web"
-msgstr "Hikâyeleri eğitin, arayın, paylaşın ve etiketleyin; tıpkı web'de olduğu gibi"
+msgstr "Haberleri eğitin, arayın, paylaşın ve etiketleyin; tıpkı web'de olduğu gibi"
 
 msgid "Train this classifier"
 msgstr "Bu sınıflandırıcıyı eğit"
@@ -6874,7 +6875,7 @@ msgid "Train this story"
 msgstr "Bu haberi eğit"
 
 msgid "Train your feeds to filter stories you like and dislike."
-msgstr "Beğendiğiniz ve beğenmediğiniz hikâyeleri filtrelemek için akışlarınızı eğitin."
+msgstr "Beğendiğiniz ve beğenmediğiniz haberleri filtrelemek için akışlarınızı eğitin."
 
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Bültenleri de diğer akışlar gibi eğitin, etiketleyin, arayın ve düzenleyin"
@@ -6889,7 +6890,7 @@ msgid "Transcribing..."
 msgstr "Yazıya dönüştürülüyor..."
 
 msgid "Transport"
-msgstr "Taşıma"
+msgstr "Ulaşım"
 
 msgid "Travel"
 msgstr "Seyahat"
@@ -6901,7 +6902,7 @@ msgid "Trending Sites"
 msgstr "Trend olan siteler"
 
 msgid "Truncate stories"
-msgstr "Yazıları kısalt"
+msgstr "Haberleri kısalt"
 
 msgid "Try"
 msgstr "Dene"
@@ -7016,7 +7017,7 @@ msgid "Unlocked"
 msgstr "Kilidi açıldı"
 
 msgid "Unmute"
-msgstr "Sesi aç"
+msgstr "Sessizden çıkar"
 
 msgid "Unmuted"
 msgstr "Sessizden çıkarıldı"
@@ -7040,10 +7041,10 @@ msgid "Unread+Focus:"
 msgstr "Okunmamış+Odak:"
 
 msgid "Unsave this story"
-msgstr "Bu haberi kayıtlardan çıkar"
+msgstr "Bu haberi kaydedilenlerden kaldır"
 
 msgid "Unshared"
-msgstr "Paylaşılmadı"
+msgstr "Paylaşım kaldırıldı"
 
 msgid "Untitled"
 msgstr "Başlıksız"
@@ -7058,7 +7059,7 @@ msgid "Update History"
 msgstr "Güncelleme Geçmişi"
 
 msgid "Updated"
-msgstr "Güncellendi"
+msgstr "Son güncelleme"
 
 #, python-format
 msgid "Updated %(count)s day ago"
@@ -7110,27 +7111,27 @@ msgid "Upgrade to %(value_1)s"
 msgstr "%(value_1)s paketine yükseltin"
 
 msgid "Upgrade to Archive or Pro"
-msgstr "Archive veya Pro'ya yükseltin"
+msgstr "Archive'a veya Pro'ya yükseltin"
 
 msgid "Upgrade to Premium"
 msgstr "Premium'a yükselt"
 
 msgid "Upgrade to Premium Archive"
-msgstr "Premium Arşiv'e yükselt"
+msgstr "Premium Archive'a yükselt"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
-msgstr "Sınıflandırıcı bildirimleri için Premium Arşiv'e yükseltin"
+msgstr "Sınıflandırıcı bildirimleri için Premium Archive'a yükseltin"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr ""
-"Hiçbir kümeyi kaçırmamak için tüm beslemelerinizdeki yinelenen içerikleri taramak üzere Premium Archive'a "
+"Hiçbir kümeyi kaçırmamak için tüm akışlarınızdaki yinelenen içerikleri taramak üzere Premium Archive'a "
 "yükseltin."
 
 msgid "Upgrade to Premium Pro"
 msgstr "Premium Pro'ya yükselt"
 
 msgid "Upgrade to a Premium Archive account"
-msgstr "Premium Arşiv hesabına yükseltin"
+msgstr "Premium Archive hesabına yükseltin"
 
 msgid "Upgrade to a Premium account"
 msgstr "Premium hesaba yükseltin"
@@ -7173,13 +7174,13 @@ msgid "Use %(language)s"
 msgstr "%(language)s kullan"
 
 msgid "Use 12-hour clock"
-msgstr "12 saatlik saati kullan"
+msgstr "12 saatlik saat biçimini kullan"
 
 msgid "Use 24-hour clock"
 msgstr "24 saatlik saat biçimini kullan"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
-msgstr "Gelen kutusu ayıklama, konu araştırması ve feed denetimleri için istem şablonları kullanın"
+msgstr "Gelen kutusu ayıklama, konu araştırması ve akış denetimleri için istem şablonları kullanın"
 
 msgid "Use the native browser context menu"
 msgstr "Yerel tarayıcı bağlam menüsünü kullan"
@@ -7188,7 +7189,7 @@ msgid "Use this URL template in browser extensions and feed readers to subscribe
 msgstr "NewsBlur'a abone olmak için tarayıcı uzantılarında ve akış okuyucularında bu URL şablonunu kullanın."
 
 msgid "Use widgets to see unread counts and stories at a glance"
-msgstr "Okunmamış sayılarını ve haberleri bir bakışta görmek için bileşenleri kullanın"
+msgstr "Okunmamış sayılarını ve haberleri bir bakışta görmek için widget'ları kullanın"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
 msgstr "Gelişen haberler, düzeltilmiş makaleler ve zamanla değişen ürün duyuruları için kullanışlıdır."
@@ -7220,10 +7221,10 @@ msgstr[0] "Varsayılan kullanılıyor: <b>%(days)s gün</b> (%(source)s kaynağ�
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "Varsayılan kullanılıyor: <b>never</b> (%(source)s üzerinden)"
+msgstr "Varsayılan kullanılıyor: <b>asla</b> (kaynak: %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
-msgstr "Varsayılan ayar kullanılıyor: hikâyeler <b>asla</b> otomatik olarak okundu işaretlenmez"
+msgstr "Varsayılan ayar kullanılıyor: haberler <b>asla</b> otomatik olarak okundu işaretlenmez"
 
 #, python-format
 msgid "Variant %(number)s"
@@ -7233,7 +7234,7 @@ msgid "View keyboard shortcuts"
 msgstr "Klavye kısayollarını görüntüle"
 
 msgid "View matching stories"
-msgstr "Eşleşen hikâyeleri görüntüle"
+msgstr "Eşleşen haberleri görüntüle"
 
 msgid "View on GitHub"
 msgstr "GitHub'da görüntüle"
@@ -7285,7 +7286,7 @@ msgid "Web notifications"
 msgstr "Web bildirimleri"
 
 msgid "Web notifications require Premium Archive"
-msgstr "Web bildirimleri için Premium Arşiv gerekir"
+msgstr "Web bildirimleri için Premium Archive gerekir"
 
 msgid "Website"
 msgstr "Web sitesi"
@@ -7310,11 +7311,11 @@ msgstr "Başlıca savlar nelerdir?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "Bu site hakkında ne %(like)s ve %(dislike)s?"
+msgstr "Bu sitede neyi %(like)s, neyi %(dislike)s?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "Bu hikâye hakkında ne %(like)s ve %(dislike)s?"
+msgstr "Bu haberde neyi %(like)s, neyi %(dislike)s?"
 
 msgid "What happens if I downgrade?"
 msgstr "Planımı düşürürsem ne olur?"
@@ -7361,7 +7362,7 @@ msgid "When reading a clustered story:"
 msgstr "Gruplanmış bir haberi okurken:"
 
 msgid "When story content changes"
-msgstr "Yazı içeriği değiştiğinde"
+msgstr "Haber içeriği değiştiğinde"
 
 msgid ""
 "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
@@ -7389,16 +7390,16 @@ msgid "Widely Read Stories"
 msgstr "Çok Okunan Haberler"
 
 msgid "Widely Read on NewsBlur"
-msgstr "NewsBlur tarihinde çok okunanlar"
+msgstr "NewsBlur'da çok okunanlar"
 
 msgid "Widely covered"
-msgstr "Geniş çapta haber yapıldı"
+msgstr "Geniş yer bulan haberler"
 
 msgid "Widen pane for controls"
 msgstr "Denetimler için bölmeyi genişlet"
 
 msgid "Widen the story titles pane to use filter controls"
-msgstr "Filtre kontrollerini kullanmak için hikâye başlıkları bölmesini genişlet"
+msgstr "Filtre kontrollerini kullanmak için haber başlıkları bölmesini genişlet"
 
 msgid "Window title"
 msgstr "Pencere başlığı"
@@ -7419,7 +7420,7 @@ msgid "Writing style"
 msgstr "Yazım tarzı"
 
 msgid "XPath patterns identify story blocks, headlines, links, and images."
-msgstr "XPath desenleri hikâye bloklarını, başlıkları, bağlantıları ve görselleri belirler."
+msgstr "XPath desenleri haber bloklarını, başlıkları, bağlantıları ve görselleri belirler."
 
 msgid "YYYY-MM-DD"
 msgstr "YYYY-MM-DD"
@@ -7453,7 +7454,7 @@ msgid "Yes, every NewsBlur account has a unique email address for receiving news
 msgstr "Evet, her NewsBlur hesabının bültenleri almak için özel bir e-posta adresi vardır."
 
 msgid "Yes, every archived story is fully searchable."
-msgstr "Evet, arşivlenen her hikâye tam metin aranabilir."
+msgstr "Evet, arşivlenen her haber tam metin aranabilir."
 
 msgid "Yes, it can transcribe audio and video content and then answer questions about it."
 msgstr "Evet, ses ve video içeriklerini yazıya dökebilir ve ardından bunlarla ilgili soruları yanıtlayabilir."
@@ -7463,7 +7464,7 @@ msgstr "Evet, kaydedilmiş haberlerde ve etiketlerinde tam metin araması yapabi
 
 msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
 msgstr ""
-"Evet. Her etiket kendi RSS feed'ini oluşturur; böylece başka bir okuyucudan abone olabilir veya bağlantıyı "
+"Evet. Her etiket kendi RSS akışını oluşturur; böylece başka bir okuyucudan abone olabilir veya bağlantıyı "
 "paylaşabilirsiniz."
 
 msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
@@ -7476,15 +7477,15 @@ msgid ""
 "Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
 "Premium Archive."
 msgstr ""
-"Evet. Yazarlar, etiketler ve başlık anahtar kelimeleri üzerinde eğitim ücretsizdir. Hikâye içeriğinde tam "
+"Evet. Yazarlar, etiketler ve başlık anahtar kelimeleri üzerinde eğitim ücretsizdir. Haber içeriğinde tam "
 "metin eğitimi için Premium Archive gerekir."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
 "even when sites don't offer RSS."
 msgstr ""
-"Evet. Web Feed'ler bir sayfanın HTML'ini değişiklikler için izlerken RSS, yapılandırılmış bir feed "
-"dosyasını okur. Siteler RSS sunmadığında bile Web Feed'ler çalışır."
+"Evet. Web akışları bir sayfanın HTML'indeki değişiklikleri izlerken RSS yapılandırılmış bir akış dosyasını "
+"okur. Siteler RSS sunmadığında bile web akışları çalışır."
 
 msgid "Yesterday"
 msgstr "Dün"
@@ -7525,10 +7526,10 @@ msgid_plural "You are subscribed to at least %(count)s sites."
 msgstr[0] "En az %(count)s siteye abonesiniz."
 
 msgid "You are trialing this plan"
-msgstr "Bu planı deneme sürecindesiniz"
+msgstr "Bu planı deniyorsunuz"
 
 msgid "You are unsubscribed from all NewsBlur emails"
-msgstr "NewsBlur e-postalarının tümünden aboneliğinizi iptal ettiniz"
+msgstr "Tüm NewsBlur e-postalarının aboneliğinden çıktınız"
 
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr ""
@@ -7536,7 +7537,7 @@ msgstr ""
 "e-postaları seçip kaydedin."
 
 msgid "You can also filter out stories you don't want to read."
-msgstr "Okumak istemediğiniz hikâyeleri de filtreleyebilirsiniz."
+msgstr "Okumak istemediğiniz haberleri de filtreleyebilirsiniz."
 
 msgid "You can change this anytime in Preferences."
 msgstr "Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz."
@@ -7572,7 +7573,7 @@ msgid "You have no active subscriptions."
 msgstr "Etkin aboneliğiniz yok."
 
 msgid "You have no saved stories."
-msgstr "Kaydedilmiş hikâyeniz yok."
+msgstr "Kaydedilmiş haberiniz yok."
 
 msgid "You have no unread stories in Focus mode."
 msgstr "Odak modunda okunmamış haberiniz yok."
@@ -7588,21 +7589,21 @@ msgid "You must be following %(value_1)s to reply"
 msgstr "Yanıt vermek için %(value_1)s kişisini takip ediyor olmalısınız"
 
 msgid "You must be logged in to send a story over email."
-msgstr "Bir hikâyeyi e-postayla göndermek için oturum açmalısınız."
+msgstr "Bir haberi e-postayla göndermek için oturum açmalısınız."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
-msgstr "Klavye kısayollarını değiştirmek için %(link_start)spremium account%(link_end)s sahibi olmanız gerekir."
+msgstr "Klavye kısayollarını değiştirmek için %(link_start)spremium hesabınızın%(link_end)s olması gerekir."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
-msgstr "Gizliliği değiştirmek için %(link_start)spremium account%(link_end)s hesabınız olmalıdır."
+msgstr "Gizliliği değiştirmek için %(link_start)spremium hesabınızın%(link_end)s olması gerekir."
 
 msgid "You need to be logged in to reply to a comment."
 msgstr "Bir yoruma yanıt vermek için giriş yapmalısınız."
 
 msgid "You need to be logged in to share a story."
-msgstr "Bir hikâyeyi paylaşmak için giriş yapmalısınız."
+msgstr "Bir haberi paylaşmak için giriş yapmalısınız."
 
 msgid "You will be emailed within a minute or three."
 msgstr "Bir iki dakika içinde e-postayla bilgilendirileceksiniz."
@@ -7620,15 +7621,15 @@ msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
 "briefings on your schedule."
 msgstr ""
-"Her bültendeki ilk 3 haberin ön izlemesini görüyorsunuz. Tüm haberlerin kilidini açmak ve planınıza göre "
-"otomatik bültenler almak için paketinizi yükseltin."
+"Her özetteki ilk 3 haberin önizlemesini görüyorsunuz. Tüm haberlerin kilidini açmak ve programınıza göre "
+"otomatik özetler almak için paketinizi yükseltin."
 
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "Başlamaya hazırsınız! NewsBlur'ı beğeneceğinizi umuyoruz."
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "Size %(value_1)s / %(value_2)s hediye edildi!"
+msgstr "Size %(value_1)s süreyle %(value_2)s hediye edildi!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -7660,10 +7661,10 @@ msgid "Your Blurblog"
 msgstr "Blurblog'unuz"
 
 msgid "Your Referral Link"
-msgstr "Referans Bağlantınız"
+msgstr "Davet Bağlantınız"
 
 msgid "Your Referral Stats"
-msgstr "Yönlendirme İstatistikleriniz"
+msgstr "Davet İstatistikleriniz"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Arşivlediğiniz haberlere erişmeye devam edebilirsiniz; yeni haberler standart saklama politikasına tabidir."
@@ -7714,7 +7715,7 @@ msgid "autonomous vehicles"
 msgstr "otonom araçlar"
 
 msgid "beats any"
-msgstr "hepsinden iyi"
+msgstr ">"
 
 msgid "bird migration"
 msgstr "kuş göçü"
@@ -7756,7 +7757,7 @@ msgid "data privacy"
 msgstr "veri gizliliği"
 
 msgid "dislike"
-msgstr "beğenme"
+msgstr "beğenmiyorsunuz"
 
 #, python-format
 msgid "e.g. %(example)s"
@@ -7790,7 +7791,7 @@ msgid_plural "followers"
 msgstr[0] "takipçi"
 
 msgid "following"
-msgstr "takip ediyor"
+msgstr "takip edilen"
 
 msgid "food science"
 msgstr "gıda bilimi"
@@ -7799,7 +7800,7 @@ msgid "gene therapy"
 msgstr "gen tedavisi"
 
 msgid "hide hidden stories"
-msgstr "gizli hikâyeleri gizle"
+msgstr "gizli haberleri gizle"
 
 msgid "housing market"
 msgstr "konut piyasası"
@@ -7833,13 +7834,13 @@ msgid "j and k move through stories; n jumps to the next unread."
 msgstr "j ve k haberler arasında gezinir; n sonraki okunmamış habere atlar."
 
 msgid "just now"
-msgstr "şimdi"
+msgstr "az önce"
 
 msgid "labor unions"
 msgstr "işçi sendikaları"
 
 msgid "like"
-msgstr "beğen"
+msgstr "beğeniyorsunuz"
 
 msgid "local elections"
 msgstr "yerel seçimler"
@@ -7918,7 +7919,7 @@ msgid "streaming wars"
 msgstr "yayın akışı savaşları"
 
 msgid "subscribed"
-msgstr "abone olundu"
+msgstr "abone oldu"
 
 msgid "supply chain"
 msgstr "tedarik zinciri"
@@ -7953,7 +7954,7 @@ msgid_plural "✓ %(count)s of %(total)s images match this filter"
 msgstr[0] "✓ %(count)s / %(total)s görsel bu filtreyle eşleşiyor"
 
 msgid "✓ Found in story"
-msgstr "✓ Hikâyede bulundu"
+msgstr "✓ Haberde bulundu"
 
 msgid "✓ Image matches this filter"
 msgstr "✓ Görsel bu filtreyle eşleşiyor"
@@ -7974,7 +7975,7 @@ msgid "✓ Sent"
 msgstr "✓ Gönderildi"
 
 msgid "✓ Story matches this filter"
-msgstr "✓ Hikâye bu filtreyle eşleşiyor"
+msgstr "✓ Haber bu filtreyle eşleşiyor"
 
 msgid "✓ Valid"
 msgstr "✓ Geçerli"
@@ -7986,5 +7987,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ Bu filtreyle eşleşen görsel yok"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ Hikâye bu filtreyle eşleşmiyor"
+msgstr "✗ Haber bu filtreyle eşleşmiyor"
 
