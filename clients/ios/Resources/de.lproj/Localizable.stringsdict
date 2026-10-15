@@ -29,7 +29,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@-Widget-Website</string>
+			<string>%@ Widget-Website</string>
 			<key>other</key>
 			<string>%@ Widget-Websites</string>
 		</dict>
@@ -189,9 +189,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ fokussierte Story</string>
+			<string>%@ Fokus-Artikel</string>
 			<key>other</key>
-			<string>%@ fokussierte Beiträge</string>
+			<string>%@ Fokus-Artikel</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -205,9 +205,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ Öffnung</string>
+			<string>%@ Aufruf</string>
 			<key>other</key>
-			<string>%@ Öffnungen</string>
+			<string>%@ Aufrufe</string>
 		</dict>
 	</dict>
 	<key>%@ public comments</key>
@@ -253,9 +253,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ geteilte Beiträge</string>
+			<string>%@-mal geteilt</string>
 			<key>other</key>
-			<string>%@ geteilte Beiträge</string>
+			<string>%@-mal geteilt</string>
 		</dict>
 	</dict>
 	<key>%@ sources</key>
@@ -287,7 +287,7 @@
 			<key>one</key>
 			<string>%@ Artikel</string>
 			<key>other</key>
-			<string>%@ Stories</string>
+			<string>%@ Artikel</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -301,7 +301,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ Story übrig</string>
+			<string>Noch %@ Artikel</string>
 			<key>other</key>
 			<string>Noch %@ Artikel</string>
 		</dict>
@@ -351,7 +351,7 @@
 			<key>one</key>
 			<string>%@ ungelesener Artikel</string>
 			<key>other</key>
-			<string>%@ ungelesene Stories</string>
+			<string>%@ ungelesene Artikel</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -445,7 +445,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Website %@ löschen?</string>
+			<string>%@ Website löschen?</string>
 			<key>other</key>
 			<string>%@ Websites löschen?</string>
 		</dict>
@@ -525,7 +525,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ Story als gelesen markieren</string>
+			<string>%@ Artikel als gelesen markieren</string>
 			<key>other</key>
 			<string>Diese %@ Artikel als gelesen markieren</string>
 		</dict>
@@ -543,7 +543,7 @@
 			<key>one</key>
 			<string>%@ Website stummschalten</string>
 			<key>other</key>
-			<string>%@-Websites stummschalten</string>
+			<string>%@ Websites stummschalten</string>
 		</dict>
 	</dict>
 	<key>Older than %@ days</key>
@@ -573,9 +573,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Geteilte Story</string>
+			<string>Geteilter Artikel</string>
 			<key>other</key>
-			<string>Geteilte Stories</string>
+			<string>Geteilte Artikel</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -589,9 +589,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Speichere die letzten %@ Tage</string>
+			<string>Letzter %@ Tag wird gespeichert</string>
 			<key>other</key>
-			<string>Speichert die letzten %@ Tage</string>
+			<string>Letzte %@ Tage werden gespeichert</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ hours</key>
@@ -605,9 +605,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Vergangene %@ Stunde speichern</string>
+			<string>Letzte %@ Stunde wird gespeichert</string>
 			<key>other</key>
-			<string>Vergangene %@ Stunden speichern</string>
+			<string>Letzte %@ Stunden werden gespeichert</string>
 		</dict>
 	</dict>
 	<key>Text from %@ days ago</key>
