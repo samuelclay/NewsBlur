@@ -4455,7 +4455,7 @@ msgstr "스토리 클러스터링 - NewsBlur"
 
 msgid "Story Shared"
 msgid_plural "Stories Shared"
-msgstr[0] "공유된 글"
+msgstr[0] "공유된 스토리"
 
 msgid "Story Tagging"
 msgstr "스토리 태그 지정"

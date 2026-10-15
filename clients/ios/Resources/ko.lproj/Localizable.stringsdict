@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@을(를) 추가할 수 없습니다.</string>
+			<string>피드 %@개를 추가하지 못했습니다.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>
