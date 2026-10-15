@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@さんが%2$@を共有しました:\n \n%3$@";
 "%@ Widget Sites" = "%@ ウィジェットサイト";
 "%@ ago" = "%@前";
+"%@ comments" = "コメント%@件";
+"%@ days" = "%@日間";
 "%@ feed" = "%@ フィード";
 "%@ focused stories" = "フォーカス記事 %@ 件";
 "%@ folder" = "%@フォルダー";
 "%@ is now following you." = "%@さんがあなたをフォローしました。";
 "%@ opens" = "%@ 回開かれました";
+"%@ or search" = "%@または検索";
+"%@ public comments" = "公開コメント%@件";
 "%@ searches" = "%@ 件の検索";
+"%@ shares" = "シェア%@件";
 "%@ stories" = "%@件の記事";
 "%@ stories left" = "残り%@件";
 "%@ stories/month" = "月あたり%@件の記事";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld時間前";
 "%ldm ago" = "%ld分前";
 "%ldw ago" = "%ld週間前";
+"+ %@ more sites" = "ほか%@サイト";
 "..." = "…";
 "1 Widget Site" = "ウィジェットサイト 1 件";
 "1,000 stories" = "1,000件の記事";
@@ -66,6 +72,7 @@
 "Add Story List" = "記事一覧を追加";
 "Add Story List After" = "後ろに記事一覧を追加";
 "Add Story List Before" = "前に記事一覧を追加";
+"Add Tag" = "タグを追加";
 "Add To" = "追加先";
 "Add custom keyword filters that become their own briefing sections" = "カスタムキーワードフィルターを追加して、専用のブリーフィングセクションを作成";
 "Add feed" = "フィードを追加";
@@ -111,6 +118,7 @@
 "All stories" = "すべての記事";
 "Alphabetical" = "アルファベット順";
 "Already have feeds?" = "すでにフィードをお持ちですか？";
+"Also published by %@ sites" = "ほか%@サイトでも公開";
 "Analyze" = "分析";
 "App Badge" = "アプリアイコンのバッジ";
 "App Icon" = "アプリアイコン";
@@ -235,6 +243,7 @@
 "Download stories" = "記事をダウンロード";
 "Download text" = "テキストをダウンロード";
 "Download using" = "ダウンロード方法";
+"Edit" = "編集";
 "Edit NewsBlur share…" = "NewsBlurの共有を編集…";
 "Edit your comment" = "コメントを編集";
 "Edit your reply" = "返信を編集";
@@ -270,6 +279,8 @@
 "Feed source" = "フィードのソース";
 "Feeds" = "フィード";
 "Feeds that support paging are back-filled in for a complete archive" = "ページ送りに対応したフィードは、完全なアーカイブを作成できるよう過去分まで取り込まれます";
+"Fetching recent stories..." = "最近の記事を取得中...";
+"Fetching stories from this site..." = "このサイトの記事を取得中...";
 "Fetching text..." = "テキストを取得中...";
 "Filter" = "フィルター";
 "Filter stories by date range" = "日付範囲で記事を絞り込む";
@@ -327,6 +338,7 @@
 "Grid Height" = "グリッドの高さ";
 "Headlines" = "見出し";
 "Hidden" = "非表示";
+"Hide Changes" = "変更を非表示";
 "Hide Story Titles" = "記事タイトルを非表示";
 "Hide status bar" = "ステータスバーを非表示";
 "Hide toolbars when reading" = "記事を読むときにツールバーを非表示にする";
@@ -376,6 +388,7 @@
 "Loading image…" = "画像を読み込み中…";
 "Loading interests" = "興味のあるトピックを読み込み中";
 "Loading settings…" = "設定を読み込み中…";
+"Loading your feeds…" = "フィードを読み込み中…";
 "Loading..." = "読み込み中...";
 "Loading…" = "読み込み中…";
 "Log In" = "ログイン";
@@ -492,6 +505,7 @@
 "No longer saved" = "保存されなくなりました";
 "No notifications yet." = "通知はまだありません。";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "表示できる記事がありません。表示できる記事がありません。表示できる記事がありません。表示できる記事がありません。";
+"No stories yet" = "まだ記事がありません";
 "No story selected" = "記事が選択されていません";
 "No unread stories" = "未読の記事はありません";
 "None" = "なし";
@@ -610,6 +624,7 @@
 "Rename this site" = "このサイトの名前を変更";
 "Renaming..." = "名前を変更中...";
 "Replied" = "返信済み";
+"Reply" = "返信";
 "Reply to %@" = "%@に返信";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
@@ -637,6 +652,7 @@
 "Saved" = "保存済み";
 "Saved Searches" = "保存した検索";
 "Saved Stories" = "保存した記事";
+"Saved on %@" = "%@に保存";
 "Saving search..." = "検索を保存中...";
 "Schedule" = "スケジュール";
 "Scroll horizontally" = "横スクロール";
@@ -677,6 +693,7 @@
 "Short" = "短い";
 "Show" = "表示";
 "Show Ask AI" = "「AIに質問」を表示";
+"Show Changes" = "変更を表示";
 "Show Global Shared Stories" = "全体で共有されている記事を表示";
 "Show Good Reads" = "おすすめ記事を表示";
 "Show Infrequent Site Stories" = "更新頻度の低いサイトの記事を表示";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "一部のフィードアイコンを読み込めませんでした。";
 "Sources" = "ソース";
 "Spacing" = "間隔";
+"Stale — last story %@" = "古い — 最後の記事は%@";
 "Standard" = "標準";
 "Start reading" = "読み始める";
 "Statistics" = "統計";
@@ -783,6 +801,7 @@
 "Text View" = "テキスト表示";
 "Text view" = "テキスト表示";
 "Text view conveniently extracts the story" = "テキスト表示では記事の本文を手軽に抽出できます";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "全文表示は<a href=\"http://ios.newsblur.com/premium\">プレミアム機能</a>です";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOSシミュレーターではホーム画面のアイコンを変更できませんでした。デバイスでお試しください。";
 "The icon follows your device's light and dark appearance." = "アイコンは、お使いのデバイスのライト／ダーク表示設定に従います。";
 "The most important stories from your feeds" = "フィードの中で特に重要な記事";
@@ -810,6 +829,7 @@
 "Top" = "上";
 "Top Level" = "最上位";
 "Top stories" = "トップ記事";
+"Train" = "学習";
 "Train This Story…" = "この記事を学習…";
 "Train intelligence" = "インテリジェンス学習";
 "Train intelligence…" = "学習させる…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "この記事の保存を解除";
 "Unsave story" = "記事の保存を解除";
 "Unsave this story" = "この記事の保存を解除";
+"Updated %@ days ago" = "%@日前に更新";
+"Updated %@ months ago" = "%@か月前に更新";
+"Updated %@ weeks ago" = "%@週間前に更新";
+"Updated today" = "今日更新";
 "Updates come to you" = "更新情報が届く";
 "Updating..." = "更新中…";
 "Upgrade from Archive" = "アーカイブからアップグレード";
@@ -864,6 +888,7 @@
 "User info" = "ユーザー情報";
 "Username" = "ユーザー名";
 "Username or Email" = "ユーザー名またはメールアドレス";
+"Variant %@" = "バリエーション%@";
 "Version" = "バージョン";
 "View mode" = "表示モード";
 "Warm" = "暖色";

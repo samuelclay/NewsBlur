@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@, %2$@ paylaştı:\n \n%3$@";
 "%@ Widget Sites" = "%@ Widget Siteleri";
 "%@ ago" = "%@ önce";
+"%@ comments" = "%@ yorum";
+"%@ days" = "%@ gün";
 "%@ feed" = "%@ akışı";
 "%@ focused stories" = "%@ odaklanılan haber";
 "%@ folder" = "%@ klasörü";
 "%@ is now following you." = "%@ artık sizi takip ediyor.";
 "%@ opens" = "%@ açılma";
+"%@ or search" = "%@ veya ara";
+"%@ public comments" = "%@ herkese açık yorum";
 "%@ searches" = "%@ arama";
+"%@ shares" = "%@ paylaşım";
 "%@ stories" = "%@ hikâye";
 "%@ stories left" = "%@ haber kaldı";
 "%@ stories/month" = "Ayda %@ haber";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld saat önce";
 "%ldm ago" = "%ld dk önce";
 "%ldw ago" = "%ld hafta önce";
+"+ %@ more sites" = "+ %@ site daha";
 "..." = "...";
 "1 Widget Site" = "1 Widget sitesi";
 "1,000 stories" = "1.000 hikâye";
@@ -66,6 +72,7 @@
 "Add Story List" = "Hikâye Listesi Ekle";
 "Add Story List After" = "Hikâye Listesini Sonrasına Ekle";
 "Add Story List Before" = "Hikâye Listesini Öncesine Ekle";
+"Add Tag" = "Etiket ekle";
 "Add To" = "Şuraya ekle";
 "Add custom keyword filters that become their own briefing sections" = "Kendi bilgilendirme bölümleri olarak görüntülenecek özel anahtar kelime filtreleri ekleyin";
 "Add feed" = "Akış ekle";
@@ -111,6 +118,7 @@
 "All stories" = "Tüm haberler";
 "Alphabetical" = "Alfabetik";
 "Already have feeds?" = "Zaten akışlarınız var mı?";
+"Also published by %@ sites" = "%@ başka sitede de yayımlandı";
 "Analyze" = "Analiz et";
 "App Badge" = "Uygulama rozeti";
 "App Icon" = "Uygulama Simgesi";
@@ -235,6 +243,7 @@
 "Download stories" = "Haberleri indir";
 "Download text" = "Metni indir";
 "Download using" = "Şunu kullanarak indir";
+"Edit" = "Düzenle";
 "Edit NewsBlur share…" = "NewsBlur paylaşımını düzenle…";
 "Edit your comment" = "Yorumunuzu düzenleyin";
 "Edit your reply" = "Yanıtınızı düzenleyin";
@@ -270,6 +279,8 @@
 "Feed source" = "Akış kaynağı";
 "Feeds" = "Akışlar";
 "Feeds that support paging are back-filled in for a complete archive" = "Sayfalama özelliğini destekleyen akışlar, eksiksiz bir arşiv oluşturmak için geriye dönük olarak doldurulur";
+"Fetching recent stories..." = "Son haberler alınıyor...";
+"Fetching stories from this site..." = "Bu siteden haberler alınıyor...";
 "Fetching text..." = "Metin alınıyor...";
 "Filter" = "Filtre";
 "Filter stories by date range" = "Haberleri tarih aralığına göre filtrele";
@@ -327,6 +338,7 @@
 "Grid Height" = "Izgara yüksekliği";
 "Headlines" = "Başlıklar";
 "Hidden" = "Gizli";
+"Hide Changes" = "Değişiklikleri gizle";
 "Hide Story Titles" = "Hikâye başlıklarını gizle";
 "Hide status bar" = "Durum çubuğunu gizle";
 "Hide toolbars when reading" = "Okurken araç çubuklarını gizle";
@@ -376,6 +388,7 @@
 "Loading image…" = "Görsel yükleniyor…";
 "Loading interests" = "İlgi alanları yükleniyor";
 "Loading settings…" = "Ayarlar yükleniyor…";
+"Loading your feeds…" = "Akışlarınız yükleniyor…";
 "Loading..." = "Yükleniyor...";
 "Loading…" = "Yükleniyor…";
 "Log In" = "Giriş Yap";
@@ -492,6 +505,7 @@
 "No longer saved" = "Artık kaydedilmiyor";
 "No notifications yet." = "Henüz bildirim yok.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Gösterilecek haber yok. Gösterilecek haber yok. Gösterilecek haber yok. Gösterilecek haber yok.";
+"No stories yet" = "Henüz haber yok";
 "No story selected" = "Hiçbir hikâye seçilmedi";
 "No unread stories" = "Okunmamış haber yok";
 "None" = "Hiçbiri";
@@ -610,6 +624,7 @@
 "Rename this site" = "Bu sitenin adını değiştir";
 "Renaming..." = "Yeniden adlandırılıyor...";
 "Replied" = "Yanıtlandı";
+"Reply" = "Yanıtla";
 "Reply to %@" = "%@ kullanıcısına yanıt ver";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
@@ -637,6 +652,7 @@
 "Saved" = "Kaydedildi";
 "Saved Searches" = "Kayıtlı Aramalar";
 "Saved Stories" = "Kaydedilen Haberler";
+"Saved on %@" = "%@ tarihinde kaydedildi";
 "Saving search..." = "Arama kaydediliyor...";
 "Schedule" = "Zamanla";
 "Scroll horizontally" = "Yatay kaydır";
@@ -677,6 +693,7 @@
 "Short" = "Kısa";
 "Show" = "Göster";
 "Show Ask AI" = "Ask AI'ı göster";
+"Show Changes" = "Değişiklikleri göster";
 "Show Global Shared Stories" = "Genel Paylaşılan Hikâyeleri Göster";
 "Show Good Reads" = "İyi Okumaları Göster";
 "Show Infrequent Site Stories" = "Seyrek Güncellenen Site Hikâyelerini Göster";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Bazı akış simgeleri yüklenemedi.";
 "Sources" = "Kaynaklar";
 "Spacing" = "Boşluk";
+"Stale — last story %@" = "Eski — son haber %@";
 "Standard" = "Standart";
 "Start reading" = "Okumaya başla";
 "Statistics" = "İstatistikler";
@@ -783,6 +801,7 @@
 "Text View" = "Metin görünümü";
 "Text view" = "Metin görünümü";
 "Text view conveniently extracts the story" = "Metin görünümü, haberin içeriğini kolayca ayıklar";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tam Metin görünümü bir <a href=\"http://ios.newsblur.com/premium\">premium özelliktir</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS simülatörü Ana Ekran simgesini değiştiremedi. Bunu bir aygıtta deneyin.";
 "The icon follows your device's light and dark appearance." = "Simge, cihazınızın açık ve koyu görünüm ayarını izler.";
 "The most important stories from your feeds" = "Akışlarınızdaki en önemli yazılar";
@@ -810,6 +829,7 @@
 "Top" = "Üst";
 "Top Level" = "En Üst Düzey";
 "Top stories" = "Öne çıkan haberler";
+"Train" = "Eğit";
 "Train This Story…" = "Bu Haberi Eğit…";
 "Train intelligence" = "Akıllı içerik eğitimi";
 "Train intelligence…" = "Eğitimi iyileştir…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Bu haberi kaydedilmişlerden çıkar";
 "Unsave story" = "Hikayeyi kaydetmekten vazgeç";
 "Unsave this story" = "Bu haberi kaydedilenlerden çıkar";
+"Updated %@ days ago" = "%@ gün önce güncellendi";
+"Updated %@ months ago" = "%@ ay önce güncellendi";
+"Updated %@ weeks ago" = "%@ hafta önce güncellendi";
+"Updated today" = "Bugün güncellendi";
 "Updates come to you" = "Güncellemeler size ulaşır";
 "Updating..." = "Güncelleniyor...";
 "Upgrade from Archive" = "Archive'dan yükselt";
@@ -864,6 +888,7 @@
 "User info" = "Kullanıcı bilgileri";
 "Username" = "Kullanıcı adı";
 "Username or Email" = "Kullanıcı adı veya e-posta";
+"Variant %@" = "Varyant %@";
 "Version" = "Sürüm";
 "View mode" = "Görünüm modu";
 "Warm" = "Ilık";

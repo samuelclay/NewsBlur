@@ -3105,6 +3105,7 @@ msgstr "חברים &amp; עוקבים"
 msgid "Friends and Followers"
 msgstr "חברים ועוקבים"
 
+msgctxt "date range"
 msgid "From"
 msgstr "מאת"
 
@@ -6803,6 +6804,10 @@ msgstr "כותרות"
 
 msgid "To"
 msgstr "אל"
+
+msgctxt "date range"
+msgid "To"
+msgstr "עד"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

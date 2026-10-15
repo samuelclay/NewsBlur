@@ -3043,6 +3043,7 @@ msgstr "Bạn bè &amp; người theo dõi"
 msgid "Friends and Followers"
 msgstr "Bạn bè và người theo dõi"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Từ"
 
@@ -6741,6 +6742,10 @@ msgstr "Tiêu đề: "
 msgid "Titles"
 msgstr "Tiêu đề"
 
+msgid "To"
+msgstr "Đến"
+
+msgctxt "date range"
 msgid "To"
 msgstr "Đến"
 

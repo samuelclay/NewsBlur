@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ heeft %2$@ gedeeld:\n \n%3$@";
 "%@ Widget Sites" = "%@ widgetsites";
 "%@ ago" = "%@ geleden";
+"%@ comments" = "%@ reacties";
+"%@ days" = "%@ dagen";
 "%@ feed" = "%@-feed";
 "%@ focused stories" = "%@ gefocuste artikelen";
 "%@ folder" = "map %@";
 "%@ is now following you." = "%@ volgt je nu.";
 "%@ opens" = "%@ keer geopend";
+"%@ or search" = "%@ of zoeken";
+"%@ public comments" = "%@ openbare reacties";
 "%@ searches" = "%@ zoekopdrachten";
+"%@ shares" = "%@ gedeelde berichten";
 "%@ stories" = "%@ artikelen";
 "%@ stories left" = "Nog %@ artikelen";
 "%@ stories/month" = "%@ artikelen/maand";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld uur geleden";
 "%ldm ago" = "%ld min geleden";
 "%ldw ago" = "%ld w geleden";
+"+ %@ more sites" = "+ %@ andere sites";
 "..." = "...";
 "1 Widget Site" = "1 widgets-site";
 "1,000 stories" = "1.000 verhalen";
@@ -66,6 +72,7 @@
 "Add Story List" = "Artikellijst toevoegen";
 "Add Story List After" = "Verhalenlijst toevoegen na";
 "Add Story List Before" = "Verhaallijst ervoor toevoegen";
+"Add Tag" = "Tag toevoegen";
 "Add To" = "Toevoegen aan";
 "Add custom keyword filters that become their own briefing sections" = "Voeg aangepaste trefwoordfilters toe die eigen briefingsecties vormen";
 "Add feed" = "Feed toevoegen";
@@ -111,6 +118,7 @@
 "All stories" = "Alle artikelen";
 "Alphabetical" = "Alfabetisch";
 "Already have feeds?" = "Heb je al feeds?";
+"Also published by %@ sites" = "Ook gepubliceerd op %@ sites";
 "Analyze" = "Analyseren";
 "App Badge" = "Appbadge";
 "App Icon" = "App-pictogram";
@@ -235,6 +243,7 @@
 "Download stories" = "Artikelen downloaden";
 "Download text" = "Tekst downloaden";
 "Download using" = "Downloaden met";
+"Edit" = "Bewerken";
 "Edit NewsBlur share…" = "NewsBlur delen bewerken…";
 "Edit your comment" = "Je reactie bewerken";
 "Edit your reply" = "Je reactie bewerken";
@@ -270,6 +279,8 @@
 "Feed source" = "Feedbron";
 "Feeds" = "Feeds";
 "Feeds that support paging are back-filled in for a complete archive" = "Feeds die paginering ondersteunen, worden met oudere artikelen aangevuld voor een compleet archief";
+"Fetching recent stories..." = "Recente artikelen ophalen...";
+"Fetching stories from this site..." = "Artikelen van deze site ophalen...";
 "Fetching text..." = "Tekst ophalen...";
 "Filter" = "Filteren";
 "Filter stories by date range" = "Verhalen filteren op datumbereik";
@@ -327,6 +338,7 @@
 "Grid Height" = "Rasterhoogte";
 "Headlines" = "Koppen";
 "Hidden" = "Verborgen";
+"Hide Changes" = "Wijzigingen verbergen";
 "Hide Story Titles" = "Artikeltitels verbergen";
 "Hide status bar" = "Statusbalk verbergen";
 "Hide toolbars when reading" = "Werkbalken verbergen tijdens het lezen";
@@ -376,6 +388,7 @@
 "Loading image…" = "Afbeelding laden…";
 "Loading interests" = "Interesses laden";
 "Loading settings…" = "Instellingen laden…";
+"Loading your feeds…" = "Je feeds laden…";
 "Loading..." = "Laden...";
 "Loading…" = "Laden…";
 "Log In" = "Inloggen";
@@ -492,6 +505,7 @@
 "No longer saved" = "Niet langer opgeslagen";
 "No notifications yet." = "Nog geen meldingen.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Geen artikelen om weer te geven. Geen artikelen om weer te geven. Geen artikelen om weer te geven. Geen artikelen om weer te geven.";
+"No stories yet" = "Nog geen artikelen";
 "No story selected" = "Geen artikel geselecteerd";
 "No unread stories" = "Geen ongelezen artikelen";
 "None" = "Geen";
@@ -610,6 +624,7 @@
 "Rename this site" = "Deze site hernoemen";
 "Renaming..." = "Hernoemen...";
 "Replied" = "Beantwoord";
+"Reply" = "Reageren";
 "Reply to %@" = "Reageren op %@";
 "Resize sidebar" = "Zijbalkformaat wijzigen";
 "Restore" = "Herstellen";
@@ -637,6 +652,7 @@
 "Saved" = "Opgeslagen";
 "Saved Searches" = "Opgeslagen zoekopdrachten";
 "Saved Stories" = "Opgeslagen verhalen";
+"Saved on %@" = "Opgeslagen op %@";
 "Saving search..." = "Zoekopdracht opslaan...";
 "Schedule" = "Planning";
 "Scroll horizontally" = "Horizontaal scrollen";
@@ -677,6 +693,7 @@
 "Short" = "Kort";
 "Show" = "Tonen";
 "Show Ask AI" = "Ask AI tonen";
+"Show Changes" = "Wijzigingen tonen";
 "Show Global Shared Stories" = "Wereldwijd gedeelde artikelen weergeven";
 "Show Good Reads" = "Good Reads tonen";
 "Show Infrequent Site Stories" = "Minder frequente artikelen van sites weergeven";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Sommige feedpictogrammen konden niet worden geladen.";
 "Sources" = "Bronnen";
 "Spacing" = "Tussenruimte";
+"Stale — last story %@" = "Verouderd — laatste artikel %@";
 "Standard" = "Standaard";
 "Start reading" = "Begin met lezen";
 "Statistics" = "Statistieken";
@@ -783,6 +801,7 @@
 "Text View" = "Tekstweergave";
 "Text view" = "Tekstweergave";
 "Text view conveniently extracts the story" = "De tekstweergave haalt het artikel handig op";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "De volledige tekstweergave is een <a href=\"http://ios.newsblur.com/premium\">premiumfunctie</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "De iOS-simulator kon het beginschermicoon niet wijzigen. Probeer dit op een apparaat.";
 "The icon follows your device's light and dark appearance." = "Het pictogram past zich aan het lichte of donkere uiterlijk van je apparaat aan.";
 "The most important stories from your feeds" = "De belangrijkste artikelen uit je feeds";
@@ -810,6 +829,7 @@
 "Top" = "Boven";
 "Top Level" = "Hoofdniveau";
 "Top stories" = "Topartikelen";
+"Train" = "Trainen";
 "Train This Story…" = "Dit verhaal trainen…";
 "Train intelligence" = "Intelligentie trainen";
 "Train intelligence…" = "Intelligentie trainen…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Artikel niet meer bewaren";
 "Unsave story" = "Verhaal niet meer opslaan";
 "Unsave this story" = "Artikel niet meer bewaren";
+"Updated %@ days ago" = "%@ dagen geleden bijgewerkt";
+"Updated %@ months ago" = "%@ maanden geleden bijgewerkt";
+"Updated %@ weeks ago" = "%@ weken geleden bijgewerkt";
+"Updated today" = "Vandaag bijgewerkt";
 "Updates come to you" = "Updates komen naar jou";
 "Updating..." = "Wordt bijgewerkt...";
 "Upgrade from Archive" = "Upgraden vanuit Archive";
@@ -864,6 +888,7 @@
 "User info" = "Gebruikersgegevens";
 "Username" = "Gebruikersnaam";
 "Username or Email" = "Gebruikersnaam of e-mailadres";
+"Variant %@" = "Variant %@";
 "Version" = "Versie";
 "View mode" = "Weergavemodus";
 "Warm" = "Warm";

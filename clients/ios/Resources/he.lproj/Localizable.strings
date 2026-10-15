@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ שיתף/ה את %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ אתרים לווידג'טים";
 "%@ ago" = "לפני %@";
+"%@ comments" = "%@ תגובות";
+"%@ days" = "%@ ימים";
 "%@ feed" = "פיד %@";
 "%@ focused stories" = "%@ כתבות ממוקדות";
 "%@ folder" = "תיקיית %@";
 "%@ is now following you." = "%@ עוקב/ת אחריך כעת.";
 "%@ opens" = "%@ פתיחות";
+"%@ or search" = "%@ או חיפוש";
+"%@ public comments" = "%@ תגובות ציבוריות";
 "%@ searches" = "%@ חיפושים";
+"%@ shares" = "%@ שיתופים";
 "%@ stories" = "%@ כתבות";
 "%@ stories left" = "נותרו %@ כתבות";
 "%@ stories/month" = "%@ כתבות בחודש";
@@ -33,6 +38,7 @@
 "%ldh ago" = "לפני %ld שעות";
 "%ldm ago" = "%ld דקות לפני";
 "%ldw ago" = "לפני %ld שבועות";
+"+ %@ more sites" = "+ עוד %@ אתרים";
 "..." = "...";
 "1 Widget Site" = "אתר ווידג'טים אחד";
 "1,000 stories" = "1,000 כתבות";
@@ -66,6 +72,7 @@
 "Add Story List" = "הוספת רשימת סיפורים";
 "Add Story List After" = "הוספת רשימת כתבות אחרי";
 "Add Story List Before" = "הוספת רשימת כתבות לפני";
+"Add Tag" = "הוספת תגית";
 "Add To" = "הוספה אל";
 "Add custom keyword filters that become their own briefing sections" = "הוסיפו מסנני מילות מפתח מותאמים אישית שיופיעו כמקטעים נפרדים בתקציר";
 "Add feed" = "הוספת עדכון";
@@ -111,6 +118,7 @@
 "All stories" = "כל הכתבות";
 "Alphabetical" = "לפי סדר אלפביתי";
 "Already have feeds?" = "כבר יש לך פידים?";
+"Also published by %@ sites" = "פורסם גם ב־%@ אתרים";
 "Analyze" = "ניתוח";
 "App Badge" = "תג אפליקציה";
 "App Icon" = "סמל האפליקציה";
@@ -235,6 +243,7 @@
 "Download stories" = "הורדת כתבות";
 "Download text" = "הורדת טקסט";
 "Download using" = "הורדה באמצעות";
+"Edit" = "עריכה";
 "Edit NewsBlur share…" = "עריכת שיתוף NewsBlur…";
 "Edit your comment" = "עריכת התגובה שלך";
 "Edit your reply" = "עריכת התשובה שלך";
@@ -270,6 +279,8 @@
 "Feed source" = "מקור הפיד";
 "Feeds" = "עדכונים";
 "Feeds that support paging are back-filled in for a complete archive" = "הזנות שתומכות בדפדוף נטענות לאחור כדי ליצור ארכיון מלא";
+"Fetching recent stories..." = "אחזור כתבות אחרונות...";
+"Fetching stories from this site..." = "טוען כתבות מהאתר הזה...";
 "Fetching text..." = "טוען טקסט...";
 "Filter" = "סינון";
 "Filter stories by date range" = "סינון סיפורים לפי טווח תאריכים";
@@ -327,6 +338,7 @@
 "Grid Height" = "גובה הרשת";
 "Headlines" = "כותרות";
 "Hidden" = "מוסתר";
+"Hide Changes" = "הסתרת שינויים";
 "Hide Story Titles" = "הסתרת כותרות כתבות";
 "Hide status bar" = "הסתרת שורת המצב";
 "Hide toolbars when reading" = "הסתרת סרגלי כלים בזמן הקריאה";
@@ -376,6 +388,7 @@
 "Loading image…" = "טוען תמונה…";
 "Loading interests" = "תחומי עניין נטענים";
 "Loading settings…" = "ההגדרות נטענות…";
+"Loading your feeds…" = "העדכונים שלך נטענים…";
 "Loading..." = "טוען...";
 "Loading…" = "בטעינה…";
 "Log In" = "התחברות";
@@ -492,6 +505,7 @@
 "No longer saved" = "לא נשמר עוד";
 "No notifications yet." = "עדיין אין התראות.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "אין כתבות להצגה. אין כתבות להצגה. אין כתבות להצגה. אין כתבות להצגה.";
+"No stories yet" = "עדיין אין כתבות";
 "No story selected" = "לא נבחרה כתבה";
 "No unread stories" = "אין כתבות שלא נקראו";
 "None" = "ללא";
@@ -610,6 +624,7 @@
 "Rename this site" = "שינוי שם האתר הזה";
 "Renaming..." = "משנה שם...";
 "Replied" = "השיב";
+"Reply" = "השב";
 "Reply to %@" = "תגובה אל %@";
 "Resize sidebar" = "שינוי גודל סרגל הצד";
 "Restore" = "שחזור";
@@ -637,6 +652,7 @@
 "Saved" = "נשמר";
 "Saved Searches" = "חיפושים שמורים";
 "Saved Stories" = "כתבות שמורות";
+"Saved on %@" = "נשמר ב־%@";
 "Saving search..." = "שומר את החיפוש...";
 "Schedule" = "לוח זמנים";
 "Scroll horizontally" = "גלילה אופקית";
@@ -677,6 +693,7 @@
 "Short" = "קצר";
 "Show" = "הצגה";
 "Show Ask AI" = "הצגת Ask AI";
+"Show Changes" = "הצג שינויים";
 "Show Global Shared Stories" = "הצגת כתבות משותפות גלובליות";
 "Show Good Reads" = "הצגת קריאות טובות";
 "Show Infrequent Site Stories" = "הצגת כתבות מאתרים שמתעדכנים לעיתים רחוקות";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
 "Sources" = "מקורות";
 "Spacing" = "מרווחים";
+"Stale — last story %@" = "לא מעודכן — הכתבה האחרונה %@";
 "Standard" = "רגיל";
 "Start reading" = "התחל לקרוא";
 "Statistics" = "סטטיסטיקה";
@@ -783,6 +801,7 @@
 "Text View" = "תצוגת טקסט";
 "Text view" = "תצוגת טקסט";
 "Text view conveniently extracts the story" = "תצוגת הטקסט מחלצת את הכתבה בנוחות";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "תצוגת הטקסט המלא היא <a href=\"http://ios.newsblur.com/premium\">תכונת פרימיום</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "הסימולטור של iOS לא הצליח לשנות את סמל מסך הבית. נסו זאת במכשיר.";
 "The icon follows your device's light and dark appearance." = "הסמל מתאים את עצמו למראה הבהיר או הכהה של המכשיר.";
 "The most important stories from your feeds" = "הכתבות החשובות ביותר מהפידים שלך";
@@ -810,6 +829,7 @@
 "Top" = "למעלה";
 "Top Level" = "רמה עליונה";
 "Top stories" = "כתבות מובילות";
+"Train" = "אימון";
 "Train This Story…" = "אמן את הסיפור הזה…";
 "Train intelligence" = "אימון המערכת החכמה";
 "Train intelligence…" = "אימון האינטליגנציה…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "הסר שמירה של ידיעה זו";
 "Unsave story" = "ביטול שמירת הכתבה";
 "Unsave this story" = "הסרת הכתבה מהשמורים";
+"Updated %@ days ago" = "עודכן לפני %@ ימים";
+"Updated %@ months ago" = "עודכן לפני %@ חודשים";
+"Updated %@ weeks ago" = "עודכן לפני %@ שבועות";
+"Updated today" = "עודכן היום";
 "Updates come to you" = "העדכונים מגיעים אליכם";
 "Updating..." = "מעדכן...";
 "Upgrade from Archive" = "שדרג מארכיון";
@@ -864,6 +888,7 @@
 "User info" = "פרטי משתמש";
 "Username" = "שם משתמש";
 "Username or Email" = "שם משתמש או כתובת אימייל";
+"Variant %@" = "גרסה %@";
 "Version" = "גרסה";
 "View mode" = "מצב תצוגה";
 "Warm" = "חם";

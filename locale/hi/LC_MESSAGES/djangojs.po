@@ -3119,6 +3119,7 @@ msgstr "मित्र &amp; फ़ॉलोअर"
 msgid "Friends and Followers"
 msgstr "दोस्त और फ़ॉलोअर"
 
+msgctxt "date range"
 msgid "From"
 msgstr "से"
 
@@ -6845,6 +6846,10 @@ msgstr "शीर्षक"
 
 msgid "To"
 msgstr "को"
+
+msgctxt "date range"
+msgid "To"
+msgstr "तक"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

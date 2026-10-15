@@ -3130,6 +3130,7 @@ msgstr "Teman &amp; Pengikut"
 msgid "Friends and Followers"
 msgstr "Teman dan Pengikut"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Dari"
 
@@ -6866,6 +6867,10 @@ msgstr "Judul"
 
 msgid "To"
 msgstr "Kepada"
+
+msgctxt "date range"
+msgid "To"
+msgstr "Sampai"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

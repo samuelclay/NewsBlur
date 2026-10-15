@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ ने %2$@ साझा किया:\n \n%3$@";
 "%@ Widget Sites" = "%@ विजेट साइटें";
 "%@ ago" = "%@ पहले";
+"%@ comments" = "%@ टिप्पणियाँ";
+"%@ days" = "%@ दिन";
 "%@ feed" = "%@ फ़ीड";
 "%@ focused stories" = "%@ केंद्रित खबरें";
 "%@ folder" = "%@ फ़ोल्डर";
 "%@ is now following you." = "अब %@ आपको फ़ॉलो कर रहे हैं।";
 "%@ opens" = "%@ बार खुलता है";
+"%@ or search" = "%@ या खोजें";
+"%@ public comments" = "%@ सार्वजनिक टिप्पणियाँ";
 "%@ searches" = "%@ खोजें";
+"%@ shares" = "%@ शेयर";
 "%@ stories" = "%@ कहानियाँ";
 "%@ stories left" = "%@ लेख बाकी";
 "%@ stories/month" = "%@ स्टोरीज़/माह";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld घंटे पहले";
 "%ldm ago" = "%ld मिनट पहले";
 "%ldw ago" = "%ld सप्ताह पहले";
+"+ %@ more sites" = "+ %@ और साइटें";
 "..." = "...";
 "1 Widget Site" = "1 विजेट साइट";
 "1,000 stories" = "1,000 लेख";
@@ -66,6 +72,7 @@
 "Add Story List" = "कहानी सूची जोड़ें";
 "Add Story List After" = "कहानी सूची बाद में जोड़ें";
 "Add Story List Before" = "कहानी सूची पहले जोड़ें";
+"Add Tag" = "टैग जोड़ें";
 "Add To" = "इसमें जोड़ें";
 "Add custom keyword filters that become their own briefing sections" = "कस्टम कीवर्ड फ़िल्टर जोड़ें, जो अपने अलग ब्रीफ़िंग अनुभाग बन जाएँ";
 "Add feed" = "फ़ीड जोड़ें";
@@ -111,6 +118,7 @@
 "All stories" = "सभी कहानियाँ";
 "Alphabetical" = "वर्णमाला के क्रम में";
 "Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
+"Also published by %@ sites" = "%@ अन्य साइटों पर भी प्रकाशित";
 "Analyze" = "विश्लेषण करें";
 "App Badge" = "ऐप बैज";
 "App Icon" = "ऐप आइकन";
@@ -235,6 +243,7 @@
 "Download stories" = "स्टोरी डाउनलोड करें";
 "Download text" = "पाठ डाउनलोड करें";
 "Download using" = "इससे डाउनलोड करें";
+"Edit" = "संपादित करें";
 "Edit NewsBlur share…" = "NewsBlur शेयर संपादित करें…";
 "Edit your comment" = "अपनी टिप्पणी संपादित करें";
 "Edit your reply" = "अपना जवाब संपादित करें";
@@ -270,6 +279,8 @@
 "Feed source" = "फ़ीड स्रोत";
 "Feeds" = "फ़ीड";
 "Feeds that support paging are back-filled in for a complete archive" = "पेजिंग का समर्थन करने वाली फ़ीड पूरी संग्रह-सूची के लिए पुराने आइटम भी भर देती हैं";
+"Fetching recent stories..." = "हाल की खबरें लाई जा रही हैं...";
+"Fetching stories from this site..." = "इस साइट से खबरें लाई जा रही हैं...";
 "Fetching text..." = "टेक्स्ट फ़ेच हो रहा है...";
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
@@ -327,6 +338,7 @@
 "Grid Height" = "ग्रिड की ऊँचाई";
 "Headlines" = "शीर्षक";
 "Hidden" = "छिपा हुआ";
+"Hide Changes" = "बदलाव छिपाएँ";
 "Hide Story Titles" = "कहानी के शीर्षक छिपाएँ";
 "Hide status bar" = "स्टेटस बार छिपाएँ";
 "Hide toolbars when reading" = "पढ़ते समय टूलबार छिपाएँ";
@@ -376,6 +388,7 @@
 "Loading image…" = "छवि लोड हो रही है…";
 "Loading interests" = "रुचियाँ लोड हो रही हैं";
 "Loading settings…" = "सेटिंग लोड हो रही हैं…";
+"Loading your feeds…" = "आपकी फ़ीड लोड हो रही हैं…";
 "Loading..." = "लोड हो रहा है...";
 "Loading…" = "लोड हो रहा है…";
 "Log In" = "लॉग इन करें";
@@ -492,6 +505,7 @@
 "No longer saved" = "अब सहेजा नहीं गया";
 "No notifications yet." = "अभी तक कोई सूचना नहीं।";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं। दिखाने के लिए कोई लेख नहीं।";
+"No stories yet" = "अभी तक कोई खबर नहीं";
 "No story selected" = "कोई कहानी चयनित नहीं है";
 "No unread stories" = "कोई अपठित लेख नहीं";
 "None" = "कोई नहीं";
@@ -610,6 +624,7 @@
 "Rename this site" = "इस साइट का नाम बदलें";
 "Renaming..." = "नाम बदला जा रहा है...";
 "Replied" = "जवाब दिया";
+"Reply" = "जवाब दें";
 "Reply to %@" = "%@ को जवाब दें";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
@@ -637,6 +652,7 @@
 "Saved" = "सहेजा गया";
 "Saved Searches" = "सहेजी गई खोजें";
 "Saved Stories" = "सहेजे गए लेख";
+"Saved on %@" = "%@ को सहेजा गया";
 "Saving search..." = "खोज सहेजी जा रही है...";
 "Schedule" = "शेड्यूल";
 "Scroll horizontally" = "क्षैतिज रूप से स्क्रॉल करें";
@@ -677,6 +693,7 @@
 "Short" = "छोटा";
 "Show" = "दिखाएँ";
 "Show Ask AI" = "Ask AI दिखाएँ";
+"Show Changes" = "बदलाव दिखाएँ";
 "Show Global Shared Stories" = "वैश्विक साझा कहानियाँ दिखाएँ";
 "Show Good Reads" = "अच्छी रीड्स दिखाएँ";
 "Show Infrequent Site Stories" = "साइट की कम बार आने वाली स्टोरी दिखाएँ";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "कुछ फ़ीड आइकन लोड नहीं हो सके।";
 "Sources" = "स्रोत";
 "Spacing" = "अंतराल";
+"Stale — last story %@" = "पुराना — आख़िरी खबर %@";
 "Standard" = "मानक";
 "Start reading" = "पढ़ना शुरू करें";
 "Statistics" = "आँकड़े";
@@ -783,6 +801,7 @@
 "Text View" = "टेक्स्ट दृश्य";
 "Text view" = "पाठ दृश्य";
 "Text view conveniently extracts the story" = "टेक्स्ट दृश्य कहानी को सुविधाजनक रूप से निकालता है";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "पूरा टेक्स्ट दृश्य एक <a href=\"http://ios.newsblur.com/premium\">प्रीमियम सुविधा</a> है";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS सिम्युलेटर होम स्क्रीन का आइकन नहीं बदल सका। इसे किसी डिवाइस पर आज़माएँ।";
 "The icon follows your device's light and dark appearance." = "आइकन आपके डिवाइस की लाइट या डार्क थीम के अनुसार बदलता है।";
 "The most important stories from your feeds" = "आपकी फ़ीड की सबसे महत्वपूर्ण खबरें";
@@ -810,6 +829,7 @@
 "Top" = "शीर्ष";
 "Top Level" = "शीर्ष स्तर";
 "Top stories" = "शीर्ष कहानियाँ";
+"Train" = "प्रशिक्षित करें";
 "Train This Story…" = "इस कहानी को ट्रेन करें…";
 "Train intelligence" = "इंटेलिजेंस को प्रशिक्षित करें";
 "Train intelligence…" = "बुद्धिमत्ता को प्रशिक्षित करें…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "इस कहानी को सहेजना हटाएँ";
 "Unsave story" = "खबर को सहेजे गए में से हटाएँ";
 "Unsave this story" = "इस लेख को सहेजे गए से हटाएँ";
+"Updated %@ days ago" = "%@ दिन पहले अपडेट किया गया";
+"Updated %@ months ago" = "%@ महीने पहले अपडेट किया गया";
+"Updated %@ weeks ago" = "%@ सप्ताह पहले अपडेट किया गया";
+"Updated today" = "आज अपडेट किया गया";
 "Updates come to you" = "अपडेट आपके पास आते हैं";
 "Updating..." = "अपडेट किया जा रहा है...";
 "Upgrade from Archive" = "आर्काइव से अपग्रेड करें";
@@ -864,6 +888,7 @@
 "User info" = "उपयोगकर्ता जानकारी";
 "Username" = "उपयोगकर्ता नाम";
 "Username or Email" = "उपयोगकर्ता नाम या ईमेल";
+"Variant %@" = "वेरिएंट %@";
 "Version" = "संस्करण";
 "View mode" = "दृश्य मोड";
 "Warm" = "गर्म";

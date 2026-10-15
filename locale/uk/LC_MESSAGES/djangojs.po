@@ -3218,6 +3218,7 @@ msgstr "Друзі &amp; підписники"
 msgid "Friends and Followers"
 msgstr "Друзі та підписники"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Від"
 
@@ -6991,6 +6992,10 @@ msgstr "Назви"
 
 msgid "To"
 msgstr "Кому"
+
+msgctxt "date range"
+msgid "To"
+msgstr "До"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

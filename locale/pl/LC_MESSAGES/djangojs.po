@@ -3217,6 +3217,7 @@ msgstr "Znajomi &amp; Obserwujący"
 msgid "Friends and Followers"
 msgstr "Znajomi i obserwujący"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Od"
 
@@ -6999,6 +7000,10 @@ msgstr "Tytuł: "
 msgid "Titles"
 msgstr "Tytuły"
 
+msgid "To"
+msgstr "Do"
+
+msgctxt "date range"
 msgid "To"
 msgstr "Do"
 

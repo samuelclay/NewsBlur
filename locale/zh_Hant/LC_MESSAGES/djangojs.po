@@ -3002,8 +3002,9 @@ msgstr "好友 &amp; 追蹤者"
 msgid "Friends and Followers"
 msgstr "好友與追蹤者"
 
+msgctxt "date range"
 msgid "From"
-msgstr "寄件者"
+msgstr "從"
 
 msgid "From infrequent sites"
 msgstr "來自更新較少的網站"
@@ -6624,6 +6625,10 @@ msgstr "標題"
 
 msgid "To"
 msgstr "收件者"
+
+msgctxt "date range"
+msgid "To"
+msgstr "至"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

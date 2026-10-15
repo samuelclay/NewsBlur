@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ แชร์ %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ เว็บไซต์วิดเจ็ต";
 "%@ ago" = "ผ่านมาแล้ว %@";
+"%@ comments" = "%@ ความคิดเห็น";
+"%@ days" = "%@ วัน";
 "%@ feed" = "ฟีด %@";
 "%@ focused stories" = "%@ เรื่องราวที่เน้น";
 "%@ folder" = "โฟลเดอร์ %@";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ opens" = "เปิด %@ ครั้ง";
+"%@ or search" = "%@ หรือค้นหา";
+"%@ public comments" = "%@ ความคิดเห็นสาธารณะ";
 "%@ searches" = "การค้นหา %@ ครั้ง";
+"%@ shares" = "%@ การแชร์";
 "%@ stories" = "%@ เรื่อง";
 "%@ stories left" = "เหลือข่าว %@ รายการ";
 "%@ stories/month" = "%@ เรื่อง/เดือน";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld ชม.ก่อน";
 "%ldm ago" = "%ld นาทีที่แล้ว";
 "%ldw ago" = "%ld สัปดาห์ก่อน";
+"+ %@ more sites" = "+ อีก %@ เว็บไซต์";
 "..." = "…";
 "1 Widget Site" = "1 ไซต์วิดเจ็ต";
 "1,000 stories" = "1,000 เรื่อง";
@@ -66,6 +72,7 @@
 "Add Story List" = "เพิ่มรายการเรื่องราว";
 "Add Story List After" = "เพิ่มรายการเรื่องราวถัดไป";
 "Add Story List Before" = "เพิ่มรายการเรื่องราวก่อนหน้า";
+"Add Tag" = "เพิ่มแท็ก";
 "Add To" = "เพิ่มไปยัง";
 "Add custom keyword filters that become their own briefing sections" = "เพิ่มตัวกรองคำสำคัญแบบกำหนดเอง เพื่อสร้างส่วนสรุปแยกตามตัวกรอง";
 "Add feed" = "เพิ่มฟีด";
@@ -111,6 +118,7 @@
 "All stories" = "เรื่องราวทั้งหมด";
 "Alphabetical" = "ตามตัวอักษร";
 "Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
+"Also published by %@ sites" = "เผยแพร่โดยเว็บไซต์อื่นอีก %@ แห่ง";
 "Analyze" = "วิเคราะห์";
 "App Badge" = "ป้ายแอป";
 "App Icon" = "ไอคอนแอป";
@@ -235,6 +243,7 @@
 "Download stories" = "ดาวน์โหลดเรื่องราว";
 "Download text" = "ดาวน์โหลดข้อความ";
 "Download using" = "ดาวน์โหลดโดยใช้";
+"Edit" = "แก้ไข";
 "Edit NewsBlur share…" = "แก้ไขการแชร์ NewsBlur…";
 "Edit your comment" = "แก้ไขความคิดเห็นของคุณ";
 "Edit your reply" = "แก้ไขคำตอบของคุณ";
@@ -270,6 +279,8 @@
 "Feed source" = "แหล่งฟีด";
 "Feeds" = "ฟีด";
 "Feeds that support paging are back-filled in for a complete archive" = "ฟีดที่รองรับการแบ่งหน้าได้รับการเติมย้อนหลัง เพื่อให้มีคลังเนื้อหาครบถ้วน";
+"Fetching recent stories..." = "กำลังดึงเรื่องราวล่าสุด...";
+"Fetching stories from this site..." = "กำลังดึงเรื่องราวจากเว็บไซต์นี้...";
 "Fetching text..." = "กำลังดึงข้อความ...";
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองเรื่องราวตามช่วงวันที่";
@@ -327,6 +338,7 @@
 "Grid Height" = "ความสูงของตาราง";
 "Headlines" = "พาดหัวข่าว";
 "Hidden" = "ซ่อนอยู่";
+"Hide Changes" = "ซ่อนการเปลี่ยนแปลง";
 "Hide Story Titles" = "ซ่อนชื่อเรื่อง";
 "Hide status bar" = "ซ่อนแถบสถานะ";
 "Hide toolbars when reading" = "ซ่อนแถบเครื่องมือขณะอ่าน";
@@ -376,6 +388,7 @@
 "Loading image…" = "กำลังโหลดรูปภาพ…";
 "Loading interests" = "กำลังโหลดความสนใจ";
 "Loading settings…" = "กำลังโหลดการตั้งค่า…";
+"Loading your feeds…" = "กำลังโหลดฟีดของคุณ…";
 "Loading..." = "กำลังโหลด...";
 "Loading…" = "กำลังโหลด…";
 "Log In" = "เข้าสู่ระบบ";
@@ -492,6 +505,7 @@
 "No longer saved" = "ไม่ได้บันทึกไว้อีกต่อไป";
 "No notifications yet." = "ยังไม่มีการแจ้งเตือน";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง ไม่มีเรื่องให้แสดง";
+"No stories yet" = "ยังไม่มีเรื่องราว";
 "No story selected" = "ยังไม่ได้เลือกเรื่องราว";
 "No unread stories" = "ไม่มีเรื่องราวที่ยังไม่อ่าน";
 "None" = "ไม่มี";
@@ -610,6 +624,7 @@
 "Rename this site" = "เปลี่ยนชื่อเว็บไซต์นี้";
 "Renaming..." = "กำลังเปลี่ยนชื่อ...";
 "Replied" = "ตอบกลับแล้ว";
+"Reply" = "ตอบกลับ";
 "Reply to %@" = "ตอบกลับ %@";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
@@ -637,6 +652,7 @@
 "Saved" = "บันทึกแล้ว";
 "Saved Searches" = "การค้นหาที่บันทึกไว้";
 "Saved Stories" = "เรื่องราวที่บันทึกไว้";
+"Saved on %@" = "บันทึกเมื่อ %@";
 "Saving search..." = "กำลังบันทึกการค้นหา...";
 "Schedule" = "กำหนดเวลา";
 "Scroll horizontally" = "เลื่อนแนวนอน";
@@ -677,6 +693,7 @@
 "Short" = "สั้น";
 "Show" = "แสดง";
 "Show Ask AI" = "แสดง Ask AI";
+"Show Changes" = "แสดงการเปลี่ยนแปลง";
 "Show Global Shared Stories" = "แสดงเรื่องที่แชร์ทั่วโลก";
 "Show Good Reads" = "แสดงรีวิวดีๆ";
 "Show Infrequent Site Stories" = "แสดงเรื่องราวจากเว็บไซต์ที่อัปเดตไม่บ่อย";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
 "Sources" = "แหล่งที่มา";
 "Spacing" = "ระยะห่าง";
+"Stale — last story %@" = "ไม่มีการอัปเดต — เรื่องราวล่าสุดเมื่อ %@";
 "Standard" = "มาตรฐาน";
 "Start reading" = "เริ่มอ่าน";
 "Statistics" = "สถิติ";
@@ -783,6 +801,7 @@
 "Text View" = "มุมมองข้อความ";
 "Text view" = "มุมมองข้อความ";
 "Text view conveniently extracts the story" = "มุมมองข้อความช่วยดึงเนื้อหาเรื่องราวออกมา";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "มุมมองข้อความฉบับเต็มเป็น<a href=\"http://ios.newsblur.com/premium\">ฟีเจอร์พรีเมียม</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "ตัวจำลอง iOS ไม่สามารถเปลี่ยนไอคอนหน้าจอโฮมได้ ลองทำบนอุปกรณ์จริง";
 "The icon follows your device's light and dark appearance." = "ไอคอนจะปรับตามโหมดสว่างหรือมืดของอุปกรณ์";
 "The most important stories from your feeds" = "เรื่องราวสำคัญที่สุดจากฟีดของคุณ";
@@ -810,6 +829,7 @@
 "Top" = "ด้านบน";
 "Top Level" = "ระดับบนสุด";
 "Top stories" = "เรื่องเด่น";
+"Train" = "ฝึก";
 "Train This Story…" = "ฝึกสอนเรื่องนี้…";
 "Train intelligence" = "ฝึกความฉลาด";
 "Train intelligence…" = "ฝึกระบบอัจฉริยะ…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "เลิกบันทึกข่าวนี้";
 "Unsave story" = "ยกเลิกบันทึกเรื่องราว";
 "Unsave this story" = "ยกเลิกบันทึกเรื่องราวนี้";
+"Updated %@ days ago" = "อัปเดตเมื่อ %@ วันก่อน";
+"Updated %@ months ago" = "อัปเดตเมื่อ %@ เดือนก่อน";
+"Updated %@ weeks ago" = "อัปเดตเมื่อ %@ สัปดาห์ก่อน";
+"Updated today" = "อัปเดตวันนี้";
 "Updates come to you" = "รับข่าวสารถึงคุณ";
 "Updating..." = "กำลังอัปเดต...";
 "Upgrade from Archive" = "อัปเกรดจาก Archive";
@@ -864,6 +888,7 @@
 "User info" = "ข้อมูลผู้ใช้";
 "Username" = "ชื่อผู้ใช้";
 "Username or Email" = "ชื่อผู้ใช้หรืออีเมล";
+"Variant %@" = "รูปแบบ %@";
 "Version" = "เวอร์ชัน";
 "View mode" = "โหมดการแสดงผล";
 "Warm" = "โทนอุ่น";

@@ -26,6 +26,54 @@
 			<string>%@ مواقع الأدوات</string>
 		</dict>
 	</dict>
+	<key>%@ comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@comment_count@</string>
+		<key>comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ تعليقًا</string>
+			<key>many</key>
+			<string>%@ تعليقًا</string>
+			<key>one</key>
+			<string>%@ تعليق</string>
+			<key>other</key>
+			<string>%@ تعليقًا</string>
+			<key>two</key>
+			<string>%@ تعليقان</string>
+			<key>zero</key>
+			<string>%@ تعليق</string>
+		</dict>
+	</dict>
+	<key>%@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@day_count@</string>
+		<key>day_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ أيام</string>
+			<key>many</key>
+			<string>%@ يومًا</string>
+			<key>one</key>
+			<string>%@ يوم</string>
+			<key>other</key>
+			<string>%@ يومًا</string>
+			<key>two</key>
+			<string>%@ يومان</string>
+			<key>zero</key>
+			<string>%@ يوم</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -74,6 +122,30 @@
 			<string>%@ مرة فتح</string>
 		</dict>
 	</dict>
+	<key>%@ public comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@public_comment_count@</string>
+		<key>public_comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ تعليقات عامة</string>
+			<key>many</key>
+			<string>%@ تعليقًا عامًا</string>
+			<key>one</key>
+			<string>%@ تعليق عام</string>
+			<key>other</key>
+			<string>%@ تعليقًا عامًا</string>
+			<key>two</key>
+			<string>%@ تعليقان عامّان</string>
+			<key>zero</key>
+			<string>%@ تعليق عام</string>
+		</dict>
+	</dict>
 	<key>%@ searches</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -96,6 +168,30 @@
 			<string>%@ عملية بحث</string>
 			<key>zero</key>
 			<string>%@ عملية بحث</string>
+		</dict>
+	</dict>
+	<key>%@ shares</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@share_count@</string>
+		<key>share_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ مشاركات</string>
+			<key>many</key>
+			<string>%@ مشاركة</string>
+			<key>one</key>
+			<string>%@ مشاركة</string>
+			<key>other</key>
+			<string>%@ مشاركة</string>
+			<key>two</key>
+			<string>%@ مشاركتين</string>
+			<key>zero</key>
+			<string>%@ مشاركة</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -216,6 +312,54 @@
 			<string>%@ قصتين غير مقروءتين</string>
 			<key>zero</key>
 			<string>%@ قصة غير مقروءة</string>
+		</dict>
+	</dict>
+	<key>+ %@ more sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hidden_cluster_site_count@</string>
+		<key>hidden_cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>+ %@ مواقع أخرى</string>
+			<key>many</key>
+			<string>+ %@ مواقع أخرى</string>
+			<key>one</key>
+			<string>+ موقع آخر (%@)</string>
+			<key>other</key>
+			<string>+ %@ مواقع أخرى</string>
+			<key>two</key>
+			<string>+ %@ موقعان آخران</string>
+			<key>zero</key>
+			<string>+ %@ مواقع أخرى</string>
+		</dict>
+	</dict>
+	<key>Also published by %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@cluster_site_count@</string>
+		<key>cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>نُشر أيضًا على %@ مواقع</string>
+			<key>many</key>
+			<string>نُشر أيضًا على %@ موقعًا</string>
+			<key>one</key>
+			<string>نُشر أيضًا على %@ موقع</string>
+			<key>other</key>
+			<string>نُشر أيضًا على %@ مواقع</string>
+			<key>two</key>
+			<string>نُشر أيضًا على موقعيْن: %@</string>
+			<key>zero</key>
+			<string>نُشر أيضًا على %@ موقع</string>
 		</dict>
 	</dict>
 	<key>Followers label</key>
@@ -408,6 +552,78 @@
 			<string>الاحتفاظ بسجل آخر %@ ساعتين</string>
 			<key>zero</key>
 			<string>تخزين آخر %@ ساعة</string>
+		</dict>
+	</dict>
+	<key>Updated %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_days_ago@</string>
+		<key>updated_days_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تم التحديث قبل %@ أيام</string>
+			<key>many</key>
+			<string>تم التحديث قبل %@ يومًا</string>
+			<key>one</key>
+			<string>حُدّث قبل %@ يوم</string>
+			<key>other</key>
+			<string>تم التحديث قبل %@ يومًا</string>
+			<key>two</key>
+			<string>حُدّث قبل %@ يومين</string>
+			<key>zero</key>
+			<string>تم التحديث قبل %@ يوم</string>
+		</dict>
+	</dict>
+	<key>Updated %@ months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_months_ago@</string>
+		<key>updated_months_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>حُدّث قبل %@ أشهر</string>
+			<key>many</key>
+			<string>حُدّث قبل %@ شهرًا</string>
+			<key>one</key>
+			<string>تم التحديث قبل %@ شهر</string>
+			<key>other</key>
+			<string>تم التحديث قبل %@ شهرًا</string>
+			<key>two</key>
+			<string>حُدّث قبل %@ شهرين</string>
+			<key>zero</key>
+			<string>تم التحديث قبل %@ شهر</string>
+		</dict>
+	</dict>
+	<key>Updated %@ weeks ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_weeks_ago@</string>
+		<key>updated_weeks_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>تم التحديث قبل %@ أسابيع</string>
+			<key>many</key>
+			<string>تم التحديث قبل %@ أسبوعًا</string>
+			<key>one</key>
+			<string>تم التحديث قبل %@ أسبوع</string>
+			<key>other</key>
+			<string>حُدّث قبل %@ أسبوعًا</string>
+			<key>two</key>
+			<string>حُدّث قبل %@ أسبوعين</string>
+			<key>zero</key>
+			<string>تم التحديث قبل %@ أسبوع</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

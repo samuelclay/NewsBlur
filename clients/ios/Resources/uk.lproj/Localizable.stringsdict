@@ -22,6 +22,46 @@
 			<string>Сайти віджетів %@</string>
 		</dict>
 	</dict>
+	<key>%@ comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@comment_count@</string>
+		<key>comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ коментарі</string>
+			<key>many</key>
+			<string>%@ коментарів</string>
+			<key>one</key>
+			<string>%@ коментар</string>
+			<key>other</key>
+			<string>%@ коментарів</string>
+		</dict>
+	</dict>
+	<key>%@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@day_count@</string>
+		<key>day_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ дні</string>
+			<key>many</key>
+			<string>%@ днів</string>
+			<key>one</key>
+			<string>%@ день</string>
+			<key>other</key>
+			<string>%@ днів</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -62,6 +102,26 @@
 			<string>%@ відкриттів</string>
 		</dict>
 	</dict>
+	<key>%@ public comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@public_comment_count@</string>
+		<key>public_comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ публічні коментарі</string>
+			<key>many</key>
+			<string>%@ публічних коментарів</string>
+			<key>one</key>
+			<string>%@ публічний коментар</string>
+			<key>other</key>
+			<string>%@ публічних коментарів</string>
+		</dict>
+	</dict>
 	<key>%@ searches</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -80,6 +140,26 @@
 			<string>%@ пошук</string>
 			<key>other</key>
 			<string>%@ пошукових запитів</string>
+		</dict>
+	</dict>
+	<key>%@ shares</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@share_count@</string>
+		<key>share_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ поширення</string>
+			<key>many</key>
+			<string>%@ поширень</string>
+			<key>one</key>
+			<string>%@ поширення</string>
+			<key>other</key>
+			<string>%@ поширень</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -180,6 +260,46 @@
 			<string>%@ непрочитана стаття</string>
 			<key>other</key>
 			<string>%@ непрочитаних новин</string>
+		</dict>
+	</dict>
+	<key>+ %@ more sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hidden_cluster_site_count@</string>
+		<key>hidden_cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>+ ще %@ сайти</string>
+			<key>many</key>
+			<string>+ ще %@ сайтів</string>
+			<key>one</key>
+			<string>+ ще %@ сайт</string>
+			<key>other</key>
+			<string>+ ще %@ сайтів</string>
+		</dict>
+	</dict>
+	<key>Also published by %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@cluster_site_count@</string>
+		<key>cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Також опубліковано на %@ сайтах</string>
+			<key>many</key>
+			<string>Також опубліковано на %@ сайтах</string>
+			<key>one</key>
+			<string>Також опубліковано на %@ сайті</string>
+			<key>other</key>
+			<string>Також опубліковано на %@ сайтах</string>
 		</dict>
 	</dict>
 	<key>Followers label</key>
@@ -340,6 +460,66 @@
 			<string>Зберігати за останню %@ годину</string>
 			<key>other</key>
 			<string>Зберігання за останні %@ годин</string>
+		</dict>
+	</dict>
+	<key>Updated %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_days_ago@</string>
+		<key>updated_days_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Оновлено %@ дні тому</string>
+			<key>many</key>
+			<string>Оновлено %@ днів тому</string>
+			<key>one</key>
+			<string>Оновлено %@ день тому</string>
+			<key>other</key>
+			<string>Оновлено %@ днів тому</string>
+		</dict>
+	</dict>
+	<key>Updated %@ months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_months_ago@</string>
+		<key>updated_months_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Оновлено %@ місяці тому</string>
+			<key>many</key>
+			<string>Оновлено %@ місяців тому</string>
+			<key>one</key>
+			<string>Оновлено %@ місяць тому</string>
+			<key>other</key>
+			<string>Оновлено %@ місяців тому</string>
+		</dict>
+	</dict>
+	<key>Updated %@ weeks ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_weeks_ago@</string>
+		<key>updated_weeks_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Оновлено %@ тижні тому</string>
+			<key>many</key>
+			<string>Оновлено %@ тижнів тому</string>
+			<key>one</key>
+			<string>Оновлено %@ тиждень тому</string>
+			<key>other</key>
+			<string>Оновлено %@ тижнів тому</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

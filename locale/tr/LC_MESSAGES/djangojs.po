@@ -3050,8 +3050,9 @@ msgstr "Arkadaşlar &amp; Takipçiler"
 msgid "Friends and Followers"
 msgstr "Arkadaşlar ve takipçiler"
 
+msgctxt "date range"
 msgid "From"
-msgstr "Kimden"
+msgstr "Başlangıç"
 
 msgid "From infrequent sites"
 msgstr "Nadiren güncellenen sitelerden"
@@ -6756,6 +6757,10 @@ msgstr "Başlıklar"
 
 msgid "To"
 msgstr "Kime"
+
+msgctxt "date range"
+msgid "To"
+msgstr "Bitiş"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

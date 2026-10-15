@@ -3140,8 +3140,9 @@ msgstr "Amis &amp; abonnés"
 msgid "Friends and Followers"
 msgstr "Amis et abonnés"
 
+msgctxt "date range"
 msgid "From"
-msgstr "De"
+msgstr "Du"
 
 msgid "From infrequent sites"
 msgstr "Des sites peu fréquents"
@@ -6922,6 +6923,10 @@ msgstr "Titre : "
 msgid "Titles"
 msgstr "Titres"
 
+msgid "To"
+msgstr "À"
+
+msgctxt "date range"
 msgid "To"
 msgstr "À"
 

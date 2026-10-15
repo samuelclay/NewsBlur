@@ -3002,6 +3002,7 @@ msgstr "友達 &amp; フォロワー"
 msgid "Friends and Followers"
 msgstr "友達とフォロワー"
 
+msgctxt "date range"
 msgid "From"
 msgstr "開始日"
 
@@ -6624,6 +6625,10 @@ msgstr "タイトル: "
 msgid "Titles"
 msgstr "タイトル"
 
+msgid "To"
+msgstr "宛先"
+
+msgctxt "date range"
 msgid "To"
 msgstr "終了日"
 

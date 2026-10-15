@@ -3028,6 +3028,7 @@ msgstr "เพื่อน &amp; ผู้ติดตาม"
 msgid "Friends and Followers"
 msgstr "เพื่อนและผู้ติดตาม"
 
+msgctxt "date range"
 msgid "From"
 msgstr "จาก"
 
@@ -6698,6 +6699,10 @@ msgstr "ชื่อเรื่อง: "
 msgid "Titles"
 msgstr "ชื่อเรื่อง"
 
+msgid "To"
+msgstr "ถึง"
+
+msgctxt "date range"
 msgid "To"
 msgstr "ถึง"
 

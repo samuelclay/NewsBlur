@@ -24,10 +24,10 @@ msgid_plural " (%(count)s domains)"
 msgstr[0] " (도메인 %(count)s개)"
 
 msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
-msgstr " 좋은 콘텐츠를 찾는 것만큼이나 마음에 들지 않는 글은 쉽게 무시할 수 있습니다."
+msgstr " 좋은 콘텐츠를 찾는 것만큼이나 마음에 들지 않는 스토리는 쉽게 무시할 수 있습니다."
 
 msgid " Choose Premium, Archive, or Pro and check out."
-msgstr " Premium, Archive 또는 Pro를 선택하고 결제를 진행하세요."
+msgstr " 프리미엄, 아카이브 또는 프로를 선택하고 결제를 진행하세요."
 
 msgid " Gift for free (staff)"
 msgstr " 무료 선물(직원용)"
@@ -57,7 +57,7 @@ msgstr " — \"%(first)s\" 또는 \"%(second)s\" (선택적 문자)"
 
 #, python-format
 msgid " — \"%(first)s\" then anything then \"%(second)s\""
-msgstr " — \"%(first)s\" 다음에 무엇이든 입력한 후 \"%(second)s\""
+msgstr " — \"%(first)s\" 다음에 임의의 텍스트, 그다음 \"%(second)s\""
 
 #, python-format
 msgid " — \"%(prefix)s\" followed by numbers (%(examples)s)"
@@ -86,7 +86,7 @@ msgstr " — 정확한 문구 \"%(phrase)s\""
 #, python-format
 msgid " — Exactly %(count)s digit (years)"
 msgid_plural " — Exactly %(count)s digits (years)"
-msgstr[0] " — 숫자(%(count)s자리)와 정확히 일치"
+msgstr[0] " — 정확히 %(count)s자리 숫자(연도)"
 
 #, python-format
 msgid " — Hashtags (%(examples)s)"
@@ -98,11 +98,11 @@ msgstr " — 언급 (%(examples)s)"
 
 #, python-format
 msgid " — NOT containing \"%(text)s\""
-msgstr " — \"%(text)s\"을 포함하지 않음"
+msgstr " — \"%(text)s\"을(를) 포함하지 않음"
 
 #, python-format
 msgid " — NOT containing word \"%(word)s\""
-msgstr " — \"%(word)s\"이라는 단어를 포함하지 않음"
+msgstr " — \"%(word)s\"(이)라는 단어를 포함하지 않음"
 
 msgid " — Non-greedy: each quoted phrase"
 msgstr " — 비탐욕적: 각 인용구"
@@ -145,7 +145,7 @@ msgstr[0] "최대 %(count)s일 동안 %(badge)s"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "주제 %(category)s개"
+msgstr "%(category)s 주제"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -203,7 +203,7 @@ msgstr[0] "%(count)s일 전"
 #, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
-msgstr[0] "%(count)s개의 싫어요"
+msgstr[0] "싫어요 %(count)s개"
 
 #, python-format
 msgid "%(count)s episode"
@@ -345,7 +345,7 @@ msgstr[0] "%(count)s개 스토리"
 #, python-format
 msgid "%(count)s story has been deleted."
 msgid_plural "%(count)s stories have been deleted."
-msgstr[0] "%(count)s개의 글이 삭제되었습니다."
+msgstr[0] "%(count)s개의 스토리가 삭제되었습니다."
 
 #, python-format
 msgid "%(count)s story in archive"
@@ -375,7 +375,7 @@ msgstr[0] "월 %(count)s개 스토리"
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
-msgstr[0] "%(count)s개 스토리/월"
+msgstr[0] "월 %(count)s개 스토리"
 
 #, python-format
 msgid "%(count)s subreddit"
@@ -472,7 +472,7 @@ msgstr[0] "사이트 %(count)s개 중 %(indexed)s개가 색인되었습니다. �
 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
-msgstr "%(message)s 업그레이드하고 전체 아카이브에서 관련 기사를 확인하세요."
+msgstr "%(message)s 업그레이드하고 전체 아카이브에서 관련 스토리를 확인하세요."
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -492,7 +492,7 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(shortcut)s to send"
-msgstr "보낼 %(shortcut)s"
+msgstr "%(shortcut)s 키로 보내기"
 
 #, python-format
 msgid "%(slot)s — %(date)s"
@@ -530,7 +530,7 @@ msgstr "%(time)s 남음"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s개 채널"
+msgstr "%(topic)s 채널"
 
 #, python-format
 msgid "%(topic)s Newsletters"
@@ -542,7 +542,7 @@ msgstr "%(topic)s 팟캐스트"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s개 사이트"
+msgstr "%(topic)s 사이트"
 
 #, python-format
 msgid "%(topic)s Subreddits"
@@ -574,7 +574,7 @@ msgstr "%(weekday)s, %(date)s %(time)s"
 
 #, python-format
 msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
-msgstr "%(weekday)s, %(month)s %(day)s, %(year)s"
+msgstr "%(year)s년 %(month)s %(day)s일 %(weekday)s"
 
 msgid "&laquo; Re-upload your sites"
 msgstr "&laquo; 사이트 다시 업로드"
@@ -911,7 +911,7 @@ msgstr[0] "월 %(count)s개 미만의 스토리"
 
 #, python-format
 msgid "< %(value_1)s/month"
-msgstr "< %(value_1)s/월"
+msgstr "월 %(value_1)s개 미만"
 
 msgid "< 30 stories/month"
 msgstr "월 30개 미만"
@@ -931,7 +931,7 @@ msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
 msgstr[0] "프리미엄 체험 기간이 <strong>%(count)s일 남았습니다</strong>"
 
 msgid "A blurblog of shared stories"
-msgstr "공유한 스토리를 모아 보는 blurblog"
+msgstr "공유한 스토리를 모아 보는 Blurblog"
 
 msgid "A folder of feeds read as one stream"
 msgstr "여러 피드를 하나의 스트림으로 모아 읽기"
@@ -950,7 +950,7 @@ msgid "A single like overrides any number of dislikes"
 msgstr "좋아요 하나는 싫어요 개수와 관계없이 우선 적용됩니다"
 
 msgid "A single super dislike overrides everything"
-msgstr "한 번의 강력한 비선호 설정이 모든 설정을 무시합니다"
+msgstr "매우 싫어요 하나는 다른 모든 것보다 우선합니다"
 
 msgid "A story diff with additions and deletions"
 msgstr "추가 및 삭제 내용이 표시되는 스토리 변경 비교"
@@ -966,10 +966,10 @@ msgid "AI filters are saved but won't run until you %(billing_link)s."
 msgstr "AI 필터가 저장되었지만 %(billing_link)s 전까지 실행되지 않습니다."
 
 msgid "AI finds the stories"
-msgstr "AI가 기사를 찾아줍니다"
+msgstr "AI가 스토리를 찾아줍니다"
 
 msgid "AI-curated summary of your top stories"
-msgstr "AI가 선별한 주요 기사 요약"
+msgstr "AI가 선별한 주요 스토리 요약"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
 msgstr "뉴스 피드를 AI로 분석하고 나만을 위한 일일 요약을 제공합니다."
@@ -979,7 +979,7 @@ msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "전체 카테고리 (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
-msgstr "물론입니다. 트레이너를 열고 엄지 위 또는 아래 표시를 삭제해 초기화하세요."
+msgstr "물론입니다. 트레이너를 열고 좋아요나 싫어요 표시를 삭제해 초기화하세요."
 
 msgid "Account"
 msgstr "계정"
@@ -1097,7 +1097,7 @@ msgid "All Categories"
 msgstr "전체 카테고리"
 
 msgid "All Categorized"
-msgstr "모든 카테고리"
+msgstr "모두 분류됨"
 
 msgid "All Done "
 msgstr "모두 완료 "
@@ -1109,10 +1109,10 @@ msgid "All Notifications"
 msgstr "모든 알림"
 
 msgid "All Shared Stories"
-msgstr "공유한 모든 글"
+msgstr "공유된 모든 스토리"
 
 msgid "All Site Stories"
-msgstr "사이트의 모든 스토리"
+msgstr "모든 사이트 스토리"
 
 msgid "All Stories"
 msgstr "모든 스토리"
@@ -1125,7 +1125,7 @@ msgstr "모든 피드를 5~15분마다 가져옵니다"
 
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
-msgstr "기본적으로 모든 패턴은 대소문자를 구분하지 않습니다. 부분 일치를 피하려면 단어 경계에 %(code)s을 사용하세요."
+msgstr "기본적으로 모든 패턴은 대소문자를 구분하지 않습니다. 부분 일치를 피하려면 단어 경계에 %(code)s을(를) 사용하세요."
 
 msgid "All sites"
 msgstr "모든 사이트"
@@ -1134,7 +1134,7 @@ msgid "All sites in folder"
 msgstr "폴더의 모든 사이트"
 
 msgid "All stories"
-msgstr "모든 글"
+msgstr "모든 스토리"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
@@ -1145,7 +1145,7 @@ msgid "Allowed Domains"
 msgstr "허용된 도메인"
 
 msgid "Alphabetical"
-msgstr "알파벳순"
+msgstr "가나다순"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -1221,7 +1221,7 @@ msgid ""
 msgstr "공개된 웹페이지라면 무엇이든 가능합니다. Twitter 프로필, Reddit 스레드, GitHub 저장소, 제품 페이지, 구인 게시판, 정부 사이트 등 다양한 페이지를 지원합니다."
 
 msgid "Any time"
-msgstr "언제든지"
+msgstr "전체 기간"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -1261,10 +1261,10 @@ msgid "April"
 msgstr "4월"
 
 msgid "Archive"
-msgstr "보관함"
+msgstr "아카이브"
 
 msgid "Archive Assistant"
-msgstr "보관 도우미"
+msgstr "아카이브 어시스턴트"
 
 msgid "Are the apps free?"
 msgstr "앱은 무료인가요?"
@@ -1285,7 +1285,7 @@ msgid "Ask AI"
 msgstr "AI에 질문하기"
 
 msgid "Ask AI & Daily Briefing"
-msgstr "Ask AI 및 데일리 브리핑"
+msgstr "AI에게 질문 및 데일리 브리핑"
 
 msgid "Ask AI about story"
 msgstr "스토리에 대해 AI에게 질문"
@@ -1300,7 +1300,7 @@ msgid "Ask AI questions about stories"
 msgstr "스토리에 대해 AI에게 질문하기"
 
 msgid "Ask AI with a choice of models"
-msgstr "모델을 선택해 Ask AI 사용"
+msgstr "모델을 선택해 AI에게 질문"
 
 msgid "Ask a custom question..."
 msgstr "맞춤 질문하기..."
@@ -1360,7 +1360,7 @@ msgid "Auto theme follows your system's light and dark schedule."
 msgstr "자동 테마는 시스템의 라이트 및 다크 모드 일정에 맞춰 변경됩니다."
 
 msgid "Auto-follow<br>my friends"
-msgstr "<br>내 친구 자동 팔로우"
+msgstr "내 친구<br>자동 팔로우"
 
 msgid "Auto-generate"
 msgstr "자동 생성"
@@ -1398,13 +1398,13 @@ msgid "Back to Search"
 msgstr "검색으로 돌아가기"
 
 msgid "Back to classifier trainer"
-msgstr "분류기 학습기로 돌아가기"
+msgstr "분류기 트레이너로 돌아가기"
 
 msgid "Back to feeds"
 msgstr "피드로 돌아가기"
 
 msgid "Back to stories"
-msgstr "기사 목록으로 돌아가기"
+msgstr "스토리 목록으로 돌아가기"
 
 msgid "Back to trainer"
 msgstr "트레이너로 돌아가기"
@@ -1453,7 +1453,7 @@ msgid "Blocklist Settings"
 msgstr "차단 목록 설정"
 
 msgid "Blurblog"
-msgstr "블로그 피드"
+msgstr "Blurblog"
 
 msgid "Blurblog Options"
 msgstr "Blurblog 옵션"
@@ -1468,7 +1468,7 @@ msgid "Blurblog title"
 msgstr "Blurblog 제목"
 
 msgid "Blurblogs"
-msgstr "Blurblogs"
+msgstr "Blurblog"
 
 msgid "Bookmarklet"
 msgstr "북마클릿"
@@ -1519,7 +1519,7 @@ msgid "Browse popular blogs, news sites, and publications with RSS feeds."
 msgstr "RSS 피드가 있는 인기 블로그, 뉴스 사이트, 간행물을 둘러보세요."
 
 msgid "Browse saved stories by tag in the sidebar"
-msgstr "사이드바에서 태그별로 저장한 글을 둘러보세요"
+msgstr "사이드바에서 태그별로 저장한 스토리를 둘러보세요"
 
 #, python-format
 msgid ""
@@ -1541,13 +1541,13 @@ msgstr "글머리 기호"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
-msgstr "기사 10개 이상인 카테고리 (%(value_1)s)"
+msgstr "스토리 10개 이상인 카테고리 (%(value_1)s)"
 
 msgid "CLI Tool"
 msgstr "CLI 도구"
 
 msgid "CLI access requires Premium Archive or Premium Pro."
-msgstr "CLI를 사용하려면 Premium Archive 또는 Premium Pro가 필요합니다."
+msgstr "CLI를 사용하려면 프리미엄 아카이브 또는 프리미엄 프로가 필요합니다."
 
 msgid "Can I search saved stories?"
 msgstr "저장한 스토리를 검색할 수 있나요?"
@@ -1574,7 +1574,7 @@ msgid "Cancel delete"
 msgstr "삭제 취소"
 
 msgid "Cancel mute"
-msgstr "뮤트 취소"
+msgstr "음소거 취소"
 
 msgid "Cancel rename"
 msgstr "이름 변경 취소"
@@ -1586,7 +1586,7 @@ msgid "Cancel subscription renewal"
 msgstr "구독 갱신 취소"
 
 msgid "Cancel unfollow"
-msgstr "팔로우 취소 취소"
+msgstr "팔로우 유지"
 
 msgid "Canceled Request"
 msgstr "요청 취소됨"
@@ -1637,7 +1637,7 @@ msgid "Change what you like above..."
 msgstr "위에서 원하는 항목을 변경하세요..."
 
 msgid "Change your blurblog settings above"
-msgstr "위에서 블로그 설정을 변경하세요"
+msgstr "위에서 Blurblog 설정을 변경하세요"
 
 msgid "Change your credit card"
 msgstr "신용카드 변경"
@@ -1646,7 +1646,7 @@ msgid "Change your profile above"
 msgstr "위에서 프로필 변경"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
-msgstr "NewsBlur명의 사용자가 추가하는 인기 사이트를 나중에 다시 확인하세요."
+msgstr "NewsBlur 사용자들이 추가하는 인기 사이트를 나중에 다시 확인하세요."
 
 msgid "Check what you like above..."
 msgstr "위에서 원하는 항목을 선택하세요..."
@@ -1692,7 +1692,7 @@ msgid "Choose sites"
 msgstr "사이트 선택"
 
 msgid "Choose when stories are marked as read"
-msgstr "기사를 읽음으로 표시할 시점 선택"
+msgstr "스토리를 읽음으로 표시할 시점 선택"
 
 msgid "Choose which AI model writes your briefing"
 msgstr "브리핑을 작성할 AI 모델 선택"
@@ -1788,7 +1788,7 @@ msgid "Cluster preview:"
 msgstr "클러스터 미리 보기:"
 
 msgid "Cluster related stories"
-msgstr "관련 기사를 묶기"
+msgstr "관련 스토리 묶기"
 
 msgid "Clustered stories in the titles view"
 msgstr "제목 보기에서 스토리 묶기"
@@ -1803,7 +1803,7 @@ msgid "Collapse all"
 msgstr "모두 접기"
 
 msgid "Collapse story"
-msgstr "기사 접기"
+msgstr "스토리 접기"
 
 msgid "Collapsed"
 msgstr "접힘"
@@ -1842,10 +1842,10 @@ msgid "Complete data ownership"
 msgstr "완전한 데이터 소유권"
 
 msgid "Concise bullet points highlighting key takeaways from each story"
-msgstr "각 기사의 핵심 내용을 간결한 글머리표로 정리"
+msgstr "각 스토리의 핵심 내용을 간결한 글머리표로 정리"
 
 msgid "Confirming mark as read"
-msgstr "읽음으로 표시 확인 중"
+msgstr "읽음 표시 확인"
 
 msgid "Congratulations! You're done."
 msgstr "축하합니다! 완료했습니다."
@@ -1857,7 +1857,9 @@ msgstr "%(provider)s 연결"
 msgid ""
 "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
 "subscriptions from Claude Code, Codex, or any MCP-compatible tool."
-msgstr "AI 에이전트를 NewsBlur 계정에 연결하세요. Claude Code, Codex 또는 MCP 호환 도구에서 피드를 읽고, 기사를 분류하고, 분류기를 학습시키고, 구독을 관리할 수 있습니다."
+msgstr ""
+"AI 에이전트를 NewsBlur 계정에 연결하세요. Claude Code, Codex 또는 MCP 호환 도구에서 피드를 읽고, 스토리를 분류하고, 분류기를 학습시키고, 구독을 관리할 수 "
+"있습니다."
 
 msgid "Connect AI agents with MCP server and CLI"
 msgstr "MCP 서버 및 CLI로 AI 에이전트 연결"
@@ -1866,7 +1868,7 @@ msgid ""
 "Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
 "shares to Slack; trigger custom workflows from your training."
 msgstr ""
-"NewsBlur를 수백 가지 서비스와 연결하세요. 기사를 Pocket, Instapaper, Evernote 또는 Notion에 저장하고, Slack에 공유 글을 게시하고, 학습 결과를 "
+"NewsBlur를 수백 가지 서비스와 연결하세요. 스토리를 Pocket, Instapaper, Evernote 또는 Notion에 저장하고, Slack에 공유 글을 게시하고, 학습 결과를 "
 "바탕으로 맞춤 워크플로를 실행할 수 있습니다."
 
 msgid "Connected"
@@ -1894,7 +1896,7 @@ msgid "Copied URL"
 msgstr "URL 복사됨"
 
 msgid "Copied text"
-msgstr "복사한 텍스트"
+msgstr "텍스트 복사됨"
 
 msgid "Copied!"
 msgstr "복사했습니다!"
@@ -1951,7 +1953,7 @@ msgid "Cursors"
 msgstr "커서"
 
 msgid "Custom Add Site URL"
-msgstr "사용자 지정 사이트 URL 추가"
+msgstr "사이트 추가용 맞춤 URL"
 
 msgid "Custom CSS"
 msgstr "사용자 지정 CSS"
@@ -2002,15 +2004,15 @@ msgid "Daily Briefing"
 msgstr "데일리 브리핑"
 
 msgid "Daily Briefing with story summaries"
-msgstr "스토리 요약이 포함된 일일 브리핑"
+msgstr "스토리 요약이 포함된 데일리 브리핑"
 
 msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
-msgstr "일일 브리핑은 프리미엄 아카이브 기능입니다. 현재 요금제에서는 각 브리핑의 처음 3개 기사로 미리보기를 만들 수 있습니다. 전체 기사와 예약된 자동 브리핑을 이용하려면 업그레이드하세요."
+msgstr "데일리 브리핑은 프리미엄 아카이브 기능입니다. 현재 요금제에서는 각 브리핑의 처음 3개 스토리로 미리보기를 만들 수 있습니다. 모든 스토리와 예약된 자동 브리핑을 이용하려면 업그레이드하세요."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "주요 기사와 키워드를 담은 데일리 브리핑"
+msgstr "주요 스토리와 키워드를 담은 데일리 브리핑"
 
 msgid "Daily distribution of stories"
 msgstr "스토리 일일 분포"
@@ -2035,7 +2037,7 @@ msgid "Days"
 msgstr "일"
 
 msgid "Days of unreads"
-msgstr "읽지 않은 항목 수(일)"
+msgstr "읽지 않은 항목 보관 기간(일)"
 
 msgid "December"
 msgstr "12월"
@@ -2056,7 +2058,7 @@ msgid "Default layout"
 msgstr "기본 레이아웃"
 
 msgid "Default story order"
-msgstr "기본 기사 정렬 순서"
+msgstr "기본 스토리 순서"
 
 msgid "Default view"
 msgstr "기본 보기"
@@ -2088,7 +2090,7 @@ msgid "Delete my intelligence training classifiers"
 msgstr "인텔리전스 학습 분류기 삭제"
 
 msgid "Delete my saved stories"
-msgstr "저장한 기사 삭제"
+msgstr "저장한 스토리 삭제"
 
 msgid "Delete my shared stories"
 msgstr "공유한 스토리 삭제"
@@ -2115,13 +2117,13 @@ msgid "Describe a story you're looking for and we'll re-analyze the page to find
 msgstr "찾고 있는 스토리를 설명해 주세요. 페이지를 다시 분석해 찾아보겠습니다."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "주제를 설명하면 AI가 각 기사를 프롬프트와 비교해 점수를 매겨 일치하는 기사를 강조하거나 숨깁니다."
+msgstr "주제를 설명하면 AI가 각 스토리를 프롬프트와 비교해 점수를 매겨 일치하는 스토리를 강조하거나 숨깁니다."
 
 msgid "Describe what to focus or hide"
 msgstr "집중하거나 숨길 내용을 설명하세요"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "찾을 내용을 설명하면 AI가 프롬프트에 따라 각 기사의 이미지를 분석합니다."
+msgstr "찾을 내용을 설명하면 AI가 프롬프트에 따라 각 스토리의 이미지를 분석합니다."
 
 msgid "Detailed"
 msgstr "자세히"
@@ -2136,7 +2138,7 @@ msgid "Disable social features"
 msgstr "소셜 기능 사용 안 함"
 
 msgid "Disable story clustering"
-msgstr "스토리 묶기 사용 안 함"
+msgstr "스토리 클러스터링 사용 안 함"
 
 msgid "Disable the highlighter"
 msgstr "하이라이터 사용 중지"
@@ -2183,7 +2185,7 @@ msgid "Discover related stories across your archive"
 msgstr "아카이브에서 관련 스토리 찾기"
 
 msgid "Discover related stories and sites"
-msgstr "관련 기사 및 사이트 찾기"
+msgstr "관련 스토리 및 사이트 찾기"
 
 msgid "Discover sites"
 msgstr "사이트 둘러보기"
@@ -2195,7 +2197,7 @@ msgid "Dislike "
 msgstr "싫어요 "
 
 msgid "Dislike matching stories"
-msgstr "일치하는 스토리 싫어요"
+msgstr "일치하는 스토리에 싫어요 표시"
 
 msgid "Dislikes"
 msgstr "싫어요"
@@ -2210,7 +2212,7 @@ msgid "Do the apps work offline?"
 msgstr "앱을 오프라인에서도 사용할 수 있나요?"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "Ask AI는 오디오와 동영상도 지원하나요?"
+msgstr "AI에게 질문 기능은 오디오와 동영상도 지원하나요?"
 
 msgid "Does training work across all my feeds?"
 msgstr "학습 설정은 모든 피드에 적용되나요?"
@@ -2264,7 +2266,7 @@ msgstr "제외할 카테고리를 여기로 드래그하세요"
 msgid ""
 "Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
 " reading."
-msgstr "버튼을 북마크 도구 모음으로 드래그하세요. 어떤 사이트에서든 이 버튼을 누르면 피드를 구독하거나 읽고 있는 글을 공유할 수 있습니다."
+msgstr "버튼을 북마크 도구 모음으로 드래그하세요. 어떤 사이트에서든 이 버튼을 누르면 피드를 구독하거나 읽고 있는 스토리를 공유할 수 있습니다."
 
 msgid "Drag this bookmarklet into your bookmarks bar"
 msgstr "이 북마클릿을 북마크 바에 끌어다 놓으세요"
@@ -2279,7 +2281,7 @@ msgid "Drag to reorder priority. Only shown when matching stories are found."
 msgstr "드래그하여 우선순위를 변경하세요. 일치하는 스토리가 있을 때만 표시됩니다."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
-msgstr "중복 스토리는 리버에서 점수가 가장 높은 버전 아래로 접힙니다"
+msgstr "중복 스토리는 뉴스 스트림에서 점수가 가장 높은 버전 아래로 접힙니다"
 
 msgid "EXCLUDED FROM MERGES"
 msgstr "병합에서 제외됨"
@@ -2311,7 +2313,7 @@ msgid "Edit Profile"
 msgstr "프로필 수정"
 
 msgid "Editorial"
-msgstr "편집"
+msgstr "서술형"
 
 msgid "Education"
 msgstr "교육"
@@ -2353,7 +2355,7 @@ msgid "Enable \"mark all as read\" so reading one version clears every duplicate
 msgstr "\"모두 읽음으로 표시\"를 켜면 한 버전을 읽었을 때 모든 중복 항목이 읽음 처리됩니다."
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "AI가 주요 기사를 요약해 주는 일일 브리핑을 사용 설정하세요"
+msgstr "AI가 주요 스토리를 요약해 주는 데일리 브리핑을 사용 설정하세요"
 
 #, python-format
 msgid "Enable all %(count)s site"
@@ -2367,7 +2369,7 @@ msgid "Enable captions/subtitles for YouTube videos"
 msgstr "YouTube 동영상 자막 사용"
 
 msgid "Enable daily briefings"
-msgstr "일일 브리핑 사용"
+msgstr "데일리 브리핑 사용"
 
 msgid "Enable highlighting"
 msgstr "강조 표시 사용"
@@ -2415,10 +2417,10 @@ msgid "Erase your intelligence training classifiers"
 msgstr "인텔리전스 학습 분류기 삭제"
 
 msgid "Erase your saved stories"
-msgstr "저장한 기사를 지우기"
+msgstr "저장한 스토리 지우기"
 
 msgid "Erase your shared stories"
-msgstr "공유한 기사 삭제"
+msgstr "공유한 스토리 지우기"
 
 msgid "Erase yourself"
 msgstr "계정 삭제"
@@ -2462,19 +2464,19 @@ msgid "Evening"
 msgstr "저녁"
 
 msgid "Every"
-msgstr "매"
+msgstr "업데이트 간격"
 
 msgid "Every new story is archived permanently"
 msgstr "새 스토리는 모두 영구 보관됩니다"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "저장한 기사의 각 태그마다 RSS 피드가 제공되어 IFTTT나 Zapier로 연결하기 좋습니다."
+msgstr "저장한 스토리의 각 태그마다 RSS 피드가 제공되어 IFTTT나 Zapier로 연결하기 좋습니다."
 
 msgid "Every story archived and searchable forever"
 msgstr "모든 스토리를 영구 보관하고 검색"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
-msgstr "모든 글을 영구 보관하고 검색하세요. 나만의 지식 베이스입니다."
+msgstr "모든 스토리를 영구 보관하고 검색하세요. 나만의 지식 베이스입니다."
 
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "각 태그마다 별도의 RSS 피드가 제공됩니다. 링크를 공유하거나 IFTTT 또는 Zapier에 연결하세요."
@@ -2492,7 +2494,7 @@ msgid "Everything has been deleted."
 msgstr "모든 항목이 삭제되었습니다."
 
 msgid "Everything in Archive, plus:"
-msgstr "Archive의 모든 기능에 더해:"
+msgstr "아카이브의 모든 기능에 더해:"
 
 msgid "Everything in Free, plus:"
 msgstr "무료 플랜의 모든 기능에 더해:"
@@ -2535,7 +2537,7 @@ msgid "Expand all"
 msgstr "모두 펼치기"
 
 msgid "Expand story"
-msgstr "기사 펼치기"
+msgstr "스토리 펼치기"
 
 msgid "Expanded"
 msgstr "펼침"
@@ -2544,7 +2546,7 @@ msgid "Expire 1 YR"
 msgstr "1년 후 만료"
 
 msgid "Export trained stories from folders"
-msgstr "폴더의 학습된 기사 내보내기"
+msgstr "폴더의 학습된 스토리 내보내기"
 
 msgid "Extras"
 msgstr "추가 기능"
@@ -2556,7 +2558,7 @@ msgid "Faces"
 msgstr "얼굴"
 
 msgid "Fact check this story"
-msgstr "이 기사 팩트체크하기"
+msgstr "이 스토리 팩트체크하기"
 
 msgid "Failed to connect to server"
 msgstr "서버에 연결하지 못했습니다"
@@ -2678,7 +2680,7 @@ msgid "Feeds"
 msgstr "피드"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "전체 아카이브에 피드를 소급해 채웠습니다"
+msgstr "완전한 아카이브를 위해 피드의 과거 스토리까지 수집"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
 msgstr "열성적인 독자가 있지만 아직 널리 알려지지 않은 피드"
@@ -2707,7 +2709,7 @@ msgid "Fetching stories"
 msgstr "스토리 가져오는 중"
 
 msgid "Fetching stories..."
-msgstr "기사를 가져오는 중..."
+msgstr "스토리를 가져오는 중..."
 
 msgid "Fetching story"
 msgstr "스토리를 가져오는 중"
@@ -2743,7 +2745,7 @@ msgid "Filter newsletters..."
 msgstr "뉴스레터 필터링..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
-msgstr "알림을 집중 기사로 필터링해 학습 결과에 따라 알림을 받아보세요."
+msgstr "알림을 집중 스토리로 필터링해 학습 결과에 따라 알림을 받아보세요."
 
 msgid "Filter podcasts..."
 msgstr "팟캐스트 필터링..."
@@ -2752,10 +2754,10 @@ msgid "Filter sites..."
 msgstr "사이트 필터링..."
 
 msgid "Filter stories"
-msgstr "기사 필터링"
+msgstr "스토리 필터링"
 
 msgid "Filter stories by date range"
-msgstr "날짜 범위로 기사 필터링"
+msgstr "날짜 범위로 스토리 필터링"
 
 msgid "Filter subreddits..."
 msgstr "서브레딧 필터링..."
@@ -2816,7 +2818,7 @@ msgid "Focus"
 msgstr "집중"
 
 msgid "Focus or hide all stories from this publisher."
-msgstr "이 발행자의 모든 기사를 강조하거나 숨깁니다."
+msgstr "이 게시자의 모든 스토리를 강조하거나 숨깁니다."
 
 msgid "Folder"
 msgstr "폴더"
@@ -2856,7 +2858,7 @@ msgid "Follow social profiles, job boards, changelogs, and product pages that ne
 msgstr "피드를 제공하지 않는 소셜 프로필, 채용 게시판, 변경 로그, 제품 페이지를 팔로우하세요."
 
 msgid "Follow to see their shared stories"
-msgstr "공유한 기사를 보려면 팔로우하세요"
+msgstr "공유한 스토리를 보려면 팔로우하세요"
 
 msgid "Follow up to 1,024 sites"
 msgstr "최대 1,024개 사이트 팔로우"
@@ -2871,7 +2873,7 @@ msgid "Follow up to 64 sites"
 msgstr "최대 64개 사이트 팔로우"
 
 msgid "Follow up..."
-msgstr "후속 조치..."
+msgstr "추가 질문..."
 
 msgid "Follow-ups"
 msgstr "후속 항목"
@@ -2883,7 +2885,7 @@ msgid "Following"
 msgstr "팔로우 중"
 
 msgid "Following Me"
-msgstr "나를 팔로우함"
+msgstr "팔로워"
 
 msgid "Following..."
 msgstr "팔로우 중..."
@@ -2907,7 +2909,7 @@ msgid "For Safari on Mac"
 msgstr "Mac용 Safari"
 
 msgid "Force all tall stories to have a max height"
-msgstr "세로로 긴 모든 기사의 최대 높이 설정"
+msgstr "세로로 긴 모든 스토리의 최대 높이 설정"
 
 #, python-format
 msgid "Forward %(seconds)s second"
@@ -2926,7 +2928,7 @@ msgid_plural "Found %(count)s patterns. Select the one that best matches the sto
 msgstr[0] "패턴 %(count)s개를 찾았습니다. 원하는 스토리와 가장 잘 맞는 패턴을 선택하세요."
 
 msgid "Found in the Account dialog"
-msgstr "계정 대화상자에서 찾기"
+msgstr "계정 대화상자에 있습니다"
 
 msgid "Free"
 msgstr "무료"
@@ -3006,11 +3008,12 @@ msgstr "친구 &amp; 팔로워"
 msgid "Friends and Followers"
 msgstr "친구 및 팔로워"
 
+msgctxt "date range"
 msgid "From"
-msgstr "보낸 사람"
+msgstr "시작일"
 
 msgid "From infrequent sites"
-msgstr "자주 방문하지 않는 사이트에서"
+msgstr "업데이트가 드문 사이트에서"
 
 msgid "Full"
 msgstr "전체"
@@ -3041,10 +3044,10 @@ msgid "Full-text search across all stories"
 msgstr "모든 스토리 전문 검색"
 
 msgid "Full-text search requires Premium or higher."
-msgstr "전체 텍스트 검색은 Premium 이상에서 이용할 수 있습니다."
+msgstr "전체 텍스트 검색은 프리미엄 이상에서 이용할 수 있습니다."
 
 msgid "Full-text training on the Archive plan"
-msgstr "Archive 요금제의 전체 텍스트 학습"
+msgstr "아카이브 요금제의 전체 텍스트 학습"
 
 msgid "Fullscreen"
 msgstr "전체 화면"
@@ -3062,7 +3065,7 @@ msgid "Generate Briefing"
 msgstr "브리핑 생성"
 
 msgid "Generate Daily Briefing"
-msgstr "일일 브리핑 생성"
+msgstr "데일리 브리핑 생성"
 
 msgid "Generate Twice-Daily Briefing"
 msgstr "하루 두 번 브리핑 생성"
@@ -3163,20 +3166,20 @@ msgid ""
 msgstr "Gmail에서 이메일 주소 확인 절차를 안내합니다. NewsBlur로 돌아와 \"뉴스레터\" 폴더에서 확인 이메일을 찾아보세요."
 
 msgid "Go Premium — $36/year"
-msgstr "Premium 가입 — 연 $36"
+msgstr "프리미엄 가입 — 연 $36"
 
 #, python-format
 msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)s(으)로 돌아가기"
 
 msgid "Good Reads"
-msgstr "추천 콘텐츠"
+msgstr "좋은 글"
 
 msgid "Good Reads on NewsBlur"
-msgstr "NewsBlur의 추천 도서"
+msgstr "NewsBlur의 좋은 글"
 
 msgid "Goodies &amp; Extras"
-msgstr "혜택 &amp; 추가 기능"
+msgstr "유용한 도구 &amp; 추가 기능"
 
 msgid "Goodies &amp; Mobile Apps"
 msgstr "유용한 기능 &amp; 모바일 앱"
@@ -3197,13 +3200,13 @@ msgid "Grid view"
 msgstr "그리드 보기"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "피드 전체에서 중복 기사를 그룹화"
+msgstr "피드 전체에서 중복 스토리를 그룹화"
 
 msgid "Group stories that share:"
 msgstr "다음 항목이 같은 스토리 그룹화:"
 
 msgid "Groups similar stories from different feeds"
-msgstr "서로 다른 피드의 유사한 기사를 그룹으로 묶습니다"
+msgstr "서로 다른 피드의 유사한 스토리를 그룹으로 묶습니다"
 
 msgid "Hand-picked shares from across NewsBlur"
 msgstr "NewsBlur 전역에서 엄선한 공유 콘텐츠"
@@ -3233,16 +3236,16 @@ msgid "Hide"
 msgstr "숨기기"
 
 msgid "Hide all sharing, comments, and blurblog features"
-msgstr "공유, 댓글, 블로그 피드 기능 모두 숨기기"
+msgstr "공유, 댓글, Blurblog 기능 모두 숨기기"
 
 msgid "Hide discover sites popover"
-msgstr "사이트 둘러보기 팝오버 숨기기"
+msgstr "사이트 탐색 팝오버 숨기기"
 
 msgid "Hide history"
 msgstr "기록 숨기기"
 
 msgid "Hide matching stories"
-msgstr "일치하는 기사 숨기기"
+msgstr "일치하는 스토리 숨기기"
 
 msgid "Hide sites"
 msgstr "사이트 숨기기"
@@ -3287,13 +3290,13 @@ msgid "How it works"
 msgstr "작동 방식"
 
 msgid "How many stories can I save?"
-msgstr "기사를 몇 개까지 저장할 수 있나요?"
+msgstr "스토리를 몇 개까지 저장할 수 있나요?"
 
 msgid "How often"
 msgstr "빈도"
 
 msgid "I'm Following"
-msgstr "팔로우 중"
+msgstr "팔로잉"
 
 msgid "IFTTT & Zapier"
 msgstr "IFTTT 및 Zapier"
@@ -3309,7 +3312,7 @@ msgstr "일치하는 옵션이 없으면 페이지에서 보이는 스토리 제
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "%(premium_link)s로 설정하면,<br>이 사이트는 다음 간격으로 업데이트됩니다"
+msgstr "%(premium_link)s(으)로 업그레이드하면,<br>이 사이트는 다음 간격으로 업데이트됩니다"
 
 msgid "Ignore"
 msgstr "무시"
@@ -3357,7 +3360,7 @@ msgstr[0] "%(count)s일 후 프리미엄 체험이 종료되고 무료 요금제
 
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
-msgstr "Gmail에서 %(settings_menu)s으로 이동해 %(add_button)s을(를) 클릭하세요. 사용자 지정 NewsBlur 이메일 주소를 추가하세요."
+msgstr "Gmail에서 %(settings_menu)s로 이동해 %(add_button)s을(를) 클릭하세요. 사용자 지정 NewsBlur 이메일 주소를 추가하세요."
 
 msgid "In NewsBlur"
 msgstr "NewsBlur에서"
@@ -3391,7 +3394,7 @@ msgid "Independent"
 msgstr "독립"
 
 msgid "Index feeds for discovery"
-msgstr "검색을 위해 피드 색인"
+msgstr "탐색을 위해 피드 색인"
 
 msgid "Index remaining feeds"
 msgstr "남은 피드 색인 생성"
@@ -3403,10 +3406,10 @@ msgid "Indexing..."
 msgstr "색인 중..."
 
 msgid "Infrequent Site Stories"
-msgstr "업데이트가 뜸한 사이트의 글"
+msgstr "업데이트가 드문 사이트의 스토리"
 
 msgid "Infrequent stories per month"
-msgstr "월별 드물게 올라오는 기사"
+msgstr "업데이트가 드문 사이트 기준(월 스토리 수)"
 
 msgid "Insta-fetch stories"
 msgstr "스토리 즉시 가져오기"
@@ -3423,7 +3426,7 @@ msgid "Install with: uv pip install newsblur-cli"
 msgstr "설치 명령: uv pip install newsblur-cli"
 
 msgid "Intelligence Trainer"
-msgstr "지능형 학습 도구"
+msgstr "인텔리전스 트레이너"
 
 msgid "Intelligence Training"
 msgstr "인텔리전스 학습"
@@ -3448,7 +3451,7 @@ msgid "Is this different from RSS?"
 msgstr "RSS와 다른 점이 있나요?"
 
 msgid "Is training free?"
-msgstr "교육은 무료인가요?"
+msgstr "학습은 무료인가요?"
 
 msgid "January"
 msgstr "1월"
@@ -3580,7 +3583,7 @@ msgid "Link directly to the original story"
 msgstr "원본 스토리로 바로 연결"
 
 msgid "Link to my blurblog and shared comments"
-msgstr "내 blurblog 및 공유 댓글 링크"
+msgstr "내 Blurblog 및 공유 댓글 링크"
 
 msgid "List"
 msgstr "목록"
@@ -3631,7 +3634,7 @@ msgid "Logout"
 msgstr "로그아웃"
 
 msgid "Long Reads"
-msgstr "장문 읽기"
+msgstr "긴 글"
 
 msgid "Long Reads on NewsBlur"
 msgstr "NewsBlur의 긴 글"
@@ -3646,7 +3649,7 @@ msgid "MCP Server"
 msgstr "MCP 서버"
 
 msgid "MCP server access requires Premium Archive or Premium Pro."
-msgstr "MCP 서버에 액세스하려면 Premium Archive 또는 Premium Pro가 필요합니다."
+msgstr "MCP 서버에 액세스하려면 프리미엄 아카이브 또는 프리미엄 프로가 필요합니다."
 
 msgid "Magazine"
 msgstr "매거진"
@@ -3693,7 +3696,7 @@ msgid_plural "Mark %(count)s stories as read?"
 msgstr[0] "%(count)s개의 스토리를 읽음으로 표시할까요?"
 
 msgid "Mark <b>every story</b> as read"
-msgstr "<b>모든 기사</b>를 읽음으로 표시"
+msgstr "<b>모든 스토리</b>를 읽음으로 표시"
 
 msgid "Mark Everything Read / Unread"
 msgstr "모두 읽음/읽지 않음으로 표시"
@@ -3746,10 +3749,10 @@ msgid "Mark folder stories as unread"
 msgstr "폴더의 스토리를 읽지 않음으로 표시"
 
 msgid "Mark newer stories read"
-msgstr "최신 기사를 읽음으로 표시"
+msgstr "이후 스토리를 읽음으로 표시"
 
 msgid "Mark older stories read"
-msgstr "오래된 기사 읽음으로 표시"
+msgstr "이전 스토리를 읽음으로 표시"
 
 #, python-format
 msgid "Mark older than %(count)s day as read?"
@@ -3757,7 +3760,7 @@ msgid_plural "Mark older than %(count)s days as read?"
 msgstr[0] "%(count)s일보다 오래된 항목을 읽음으로 표시할까요?"
 
 msgid "Mark stories as read when scrolled past"
-msgstr "스크롤해서 지나간 기사를 읽음으로 표시"
+msgstr "스크롤해서 지나간 스토리를 읽음으로 표시"
 
 msgid "Mark stories as unread"
 msgstr "스토리를 읽지 않음으로 표시"
@@ -3780,13 +3783,13 @@ msgid "Marking as read..."
 msgstr "읽음으로 표시하는 중..."
 
 msgid "Marking as unread..."
-msgstr "미읽음으로 표시하는 중..."
+msgstr "읽지 않음으로 표시하는 중..."
 
 msgid "Match"
 msgstr "일치"
 
 msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
-msgstr "본문의 단어나 구문으로 기사를 찾습니다. 기사에서 텍스트를 선택하고 학습을 클릭하면 자동으로 입력됩니다."
+msgstr "본문의 단어나 구문으로 스토리를 찾습니다. 스토리에서 텍스트를 선택하고 학습을 클릭하면 자동으로 입력됩니다."
 
 msgid "Matched via a duplicate title"
 msgstr "중복 제목으로 일치함"
@@ -3795,7 +3798,7 @@ msgid "Matched via related topics"
 msgstr "관련 주제를 통해 일치"
 
 msgid "Matches story titles containing all keywords"
-msgstr "모든 키워드가 포함된 글 제목과 일치"
+msgstr "모든 키워드가 포함된 스토리 제목과 일치"
 
 msgid "May"
 msgstr "5월"
@@ -3905,7 +3908,7 @@ msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s개 사이트 음소거"
 
 msgid "Mute Sites"
-msgstr "사이트 뮤트"
+msgstr "사이트 음소거"
 
 #, python-format
 msgid "Mute for %(duration)s"
@@ -3921,7 +3924,7 @@ msgid "Mute this site"
 msgstr "이 사이트 음소거"
 
 msgid "Muted"
-msgstr "뮤트됨"
+msgstr "음소거됨"
 
 msgid "Muted indefinitely."
 msgstr "무기한 음소거되었습니다."
@@ -3940,7 +3943,7 @@ msgid "My shared stories are public but only people I approve can reply"
 msgstr "내 공유 스토리는 공개되지만 내가 승인한 사람만 답글을 달 수 있습니다"
 
 msgid "NEVER"
-msgstr "안 함"
+msgstr "없음"
 
 msgid "Name"
 msgstr "이름"
@@ -3975,7 +3978,7 @@ msgstr "스토리 간 이동"
 msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
 "train, all from the keyboard."
-msgstr "마우스를 건드리지 않고 모든 기능을 이용하세요. 키보드만으로 피드를 열고, 기사를 스크롤하고, 읽음으로 표시하고, 저장하고, 공유하고, 학습시킬 수 있습니다."
+msgstr "마우스를 건드리지 않고 모든 기능을 이용하세요. 키보드만으로 피드를 열고, 스토리를 스크롤하고, 읽음으로 표시하고, 저장하고, 공유하고, 학습시킬 수 있습니다."
 
 msgid "Need at least 2 categories to merge"
 msgstr "병합하려면 카테고리가 2개 이상 필요합니다"
@@ -4033,7 +4036,7 @@ msgid "New to me"
 msgstr "처음 보는 항목"
 
 msgid "Newer:"
-msgstr "최신순:"
+msgstr "이후:"
 
 msgid "Newest"
 msgstr "최신순"
@@ -4042,7 +4045,7 @@ msgid "Newest first"
 msgstr "최신순"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "NewsBlur 변경 사항을 확인하고 새 스토리를 피드에 전달합니다."
+msgstr "NewsBlur가 변경 사항을 확인하고 새 스토리를 피드에 전달합니다."
 
 msgid "NewsBlur connected to other services"
 msgstr "다른 서비스와 연동된 NewsBlur"
@@ -4052,10 +4055,10 @@ msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur에서 브라우저 언어를 %(language)s로 감지했습니다."
 
 msgid "NewsBlur is down right now. <br> Try again soon."
-msgstr "NewsBlur이(가) 현재 다운되었습니다. <br>잠시 후 다시 시도하세요."
+msgstr "NewsBlur가 현재 다운되었습니다. <br>잠시 후 다시 시도하세요."
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
-msgstr "NewsBlur은(는) 점검 모드입니다. <br> 잠시 후 다시 시도하세요."
+msgstr "NewsBlur는 점검 모드입니다. <br> 잠시 후 다시 시도하세요."
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur가 페이지 변경 사항을 자동으로 확인합니다"
@@ -4079,7 +4082,7 @@ msgid "Newsletters appearing as feeds"
 msgstr "피드로 표시되는 뉴스레터"
 
 msgid "Next Unread Story"
-msgstr "다음 읽지 않은 기사"
+msgstr "다음 읽지 않은 스토리"
 
 msgid "Next Update"
 msgstr "다음 업데이트"
@@ -4091,7 +4094,7 @@ msgid "Next step "
 msgstr "다음 단계 "
 
 msgid "Next story"
-msgstr "다음 기사"
+msgstr "다음 스토리"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "다음으로 모든 뉴스레터를 포함하는 필터를 만들어 NewsBlur의 맞춤 주소로 전달되도록 설정하세요."
@@ -4207,7 +4210,7 @@ msgid "No questions match that search."
 msgstr "검색어와 일치하는 질문이 없습니다."
 
 msgid "No recency filter"
-msgstr "최신순 필터 없음"
+msgstr "기간 필터 없음"
 
 msgid "No referrals yet. Share your link to get started!"
 msgstr "아직 추천 실적이 없습니다. 링크를 공유해 시작하세요!"
@@ -4238,7 +4241,7 @@ msgstr "스토리가 없습니다"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "%(folder)s의 관련 기사는 아직 색인되지 않았습니다."
+msgstr "%(folder)s의 스토리는 아직 관련 스토리용으로 색인되지 않았습니다."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
@@ -4255,13 +4258,13 @@ msgid "No stories to read"
 msgstr "읽을 스토리가 없습니다"
 
 msgid "No stories yet"
-msgstr "아직 글이 없습니다"
+msgstr "아직 스토리가 없습니다"
 
 msgid "No story patterns found on this page."
 msgstr "이 페이지에서 스토리 패턴을 찾을 수 없습니다."
 
 msgid "No trending sites available"
-msgstr "현재 인기 사이트가 없습니다"
+msgstr "현재 인기 급상승 사이트가 없습니다"
 
 msgid "No usage billing invoices yet."
 msgstr "아직 사용량 청구서가 없습니다."
@@ -4309,7 +4312,7 @@ msgid "Not seeing the right stories?"
 msgstr "원하는 스토리가 보이지 않나요?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
-msgstr "가장 많이 읽히는 사이트가 아니라 가장 좋은 반응을 얻는 사이트를 중심으로, 대형 사이트보다 소규모 사이트에 비중을 둡니다."
+msgstr "가장 많이 읽힌 스토리가 아니라 가장 반응이 좋은 스토리로, 대형 사이트보다 소규모 사이트에 비중을 둡니다."
 
 msgid "Nothing"
 msgstr "없음"
@@ -4361,7 +4364,7 @@ msgid "ON"
 msgstr "켜짐"
 
 msgid "Objects"
-msgstr "객체"
+msgstr "사물"
 
 msgid "October"
 msgstr "10월"
@@ -4395,22 +4398,22 @@ msgid "Older:"
 msgstr "이전:"
 
 msgid "Oldest"
-msgstr "가장 오래된 항목"
+msgstr "오래된순"
 
 msgid "Oldest first"
 msgstr "오래된 순"
 
 msgid "Oldest unread story"
-msgstr "가장 오래된 읽지 않은 글"
+msgstr "가장 오래된 읽지 않은 스토리"
 
 msgid "On"
-msgstr "켜기"
+msgstr "켜짐"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
 msgstr "프리미엄 아카이브에서는 최근 스토리뿐 아니라 지금까지 보관된 모든 스토리를 검색할 수 있습니다."
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
-msgstr "Premium에서는 최근 스토리를 검색할 수 있습니다. Premium Archive에서는 지금까지 보관된 모든 스토리를 검색할 수 있습니다."
+msgstr "프리미엄에서는 최근 스토리를 검색할 수 있습니다. 프리미엄 아카이브에서는 지금까지 보관된 모든 스토리를 검색할 수 있습니다."
 
 msgid "One command with Docker"
 msgstr "Docker로 명령 한 번에 설치"
@@ -4419,12 +4422,12 @@ msgid "One sentence"
 msgstr "한 문장"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
-msgstr "피드가 있는 사이트에서 한 번의 클릭으로 구독하세요. Extras 탭에서 사이트 추가용 사용자 지정 URL을 사용하세요."
+msgstr "피드가 있는 사이트에서 한 번의 클릭으로 구독하세요. ‘추가 기능’ 탭에서 사이트 추가용 사용자 지정 URL을 사용하세요."
 
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "관련 스토리를 위해 사이트 중 %(count)s개 가운데 %(indexed)s개만 색인되었습니다."
+msgstr[0] "관련 스토리용으로 사이트 %(count)s개 중 %(indexed)s개만 색인되었습니다."
 
 #, python-format
 msgid ""
@@ -4433,16 +4436,16 @@ msgid ""
 msgid_plural ""
 "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
 " personalized recommendations."
-msgstr[0] "검색을 위해 회원님의 사이트 %(count)s개 중 %(indexed)s개만 색인되어 있습니다. 업그레이드하면 모든 사이트를 색인하고 맞춤 추천을 받을 수 있습니다."
+msgstr[0] "탐색을 위해 회원님의 사이트 %(count)s개 중 %(indexed)s개만 색인되어 있습니다. 업그레이드하면 모든 사이트를 색인하고 맞춤 추천을 받을 수 있습니다."
 
 msgid "Only Focus:"
-msgstr "다음 항목만 집중:"
+msgstr "집중만:"
 
 msgid "Only page down in story, do not open next unread story"
 msgstr "스토리에서만 페이지 아래로 이동하고 다음 읽지 않은 스토리는 열지 않음"
 
 msgid "Only people I approve can see my shared stories and reply to me"
-msgstr "내가 승인한 사람만 공유한 기사를 보고 내게 답장할 수 있습니다"
+msgstr "내가 승인한 사람만 공유한 스토리를 보고 내게 답글을 달 수 있습니다"
 
 #, python-format
 msgid "Only recent stories shown from %(count)s site."
@@ -4467,13 +4470,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "접힌 폴더에만 개수 표시"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "블로그 공유 글에서 긴 글만 말줄임"
+msgstr "Blurblog에서는 긴 공유 스토리만 줄여서 표시"
 
 msgid "Open"
 msgstr "열기"
 
 msgid "Open All Site Stories"
-msgstr "모든 사이트 기사 열기"
+msgstr "모든 사이트 스토리 열기"
 
 msgid "Open Everything"
 msgstr "모두 열기"
@@ -4509,7 +4512,7 @@ msgid "Open links in a background tab"
 msgstr "링크를 백그라운드 탭에서 열기"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "기사 하단이 보이면 다음 읽지 않은 기사 열기"
+msgstr "스토리 하단이 보이면 다음 읽지 않은 스토리 열기"
 
 msgid "Open next unread story when story is half-way up"
 msgstr "스토리가 화면 중간까지 올라오면 다음 읽지 않은 스토리 열기"
@@ -4551,10 +4554,10 @@ msgid "Open your Daily Briefing"
 msgstr "데일리 브리핑 열기"
 
 msgid "Open your saved stories"
-msgstr "저장한 기사 열기"
+msgstr "저장한 스토리 열기"
 
 msgid "Opens"
-msgstr "열기"
+msgstr "열람 횟수"
 
 msgid "Opens stories in a background tab with a customizable hotkey"
 msgstr "사용자 지정 단축키로 스토리를 백그라운드 탭에서 엽니다"
@@ -4680,7 +4683,7 @@ msgid "Platform"
 msgstr "플랫폼"
 
 msgid "Play Last"
-msgstr "마지막 항목 재생"
+msgstr "맨 마지막에 재생"
 
 msgid "Play Next"
 msgstr "다음 재생"
@@ -4734,7 +4737,7 @@ msgid "Portuguese"
 msgstr "포르투갈어"
 
 msgid "Position & Greedy"
-msgstr "위치 및 탐욕"
+msgstr "위치 및 탐욕적 일치"
 
 msgid "Positive you want to delete everything?"
 msgstr "정말 모든 항목을 삭제하시겠습니까?"
@@ -4749,7 +4752,7 @@ msgid "Positive you want to delete your shared stories?"
 msgstr "공유한 스토리를 정말 삭제하시겠습니까?"
 
 msgid "Post"
-msgstr "게시물"
+msgstr "게시"
 
 #, python-format
 msgid "Post to %(service)s"
@@ -4771,7 +4774,7 @@ msgid "Premium Archive"
 msgstr "프리미엄 아카이브"
 
 msgid "Premium Pro"
-msgstr "프리미엄 Pro"
+msgstr "프리미엄 프로"
 
 msgid "Premium Pro Account"
 msgstr "프리미엄 프로 계정"
@@ -4804,7 +4807,7 @@ msgid "Premium status"
 msgstr "프리미엄 상태"
 
 msgid "Premium users can make their blurblog private."
-msgstr "Premium 사용자는 블러그를 비공개로 설정할 수 있습니다."
+msgstr "프리미엄 사용자는 Blurblog를 비공개로 설정할 수 있습니다."
 
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "/ 키를 누르면 어디서든 바로 검색창으로 이동합니다."
@@ -4844,7 +4847,7 @@ msgid "Privacy"
 msgstr "개인정보 보호"
 
 msgid "Privacy options for your blurblog"
-msgstr "블러그의 개인정보 보호 옵션"
+msgstr "Blurblog 개인정보 보호 옵션"
 
 msgid "Private by default — banking, medical, and email sites are never archived"
 msgstr "기본적으로 비공개 — 은행, 의료 및 이메일 사이트는 보관되지 않습니다"
@@ -4856,7 +4859,7 @@ msgid "Private:"
 msgstr "비공개:"
 
 msgid "Pro"
-msgstr "Pro"
+msgstr "프로"
 
 msgid "Processing stories..."
 msgstr "스토리 처리 중..."
@@ -4868,7 +4871,7 @@ msgid "Profile"
 msgstr "프로필"
 
 msgid "Profile &amp; Blurblog"
-msgstr "프로필 &amp; 블러그"
+msgstr "프로필 &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "프로필 세부 정보"
@@ -4962,15 +4965,15 @@ msgid "Re-categorizing..."
 msgstr "재분류 중..."
 
 msgid "Read Stories"
-msgstr "기사 읽기"
+msgstr "읽은 스토리"
 
 msgid "Read Stories:"
-msgstr "스토리 읽기:"
+msgstr "읽은 스토리:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
-msgstr "폴더의 모든 피드를 시간순으로 하나의 스크롤 스트림에서 읽으세요. 학습 기능과 함께 사용하면 구독한 피드 전반에서 가장 좋은 기사를 리버에 모아 보여줍니다."
+msgstr "폴더의 모든 피드를 시간순으로 하나의 스크롤 스트림에서 읽으세요. 학습 기능과 함께 사용하면 구독한 피드 전반에서 가장 좋은 스토리를 뉴스 스트림에 모아 보여줍니다."
 
 msgid "Read more on the NewsBlur Blog"
 msgstr "NewsBlur 블로그에서 더 읽기"
@@ -4979,7 +4982,7 @@ msgid "Read offline with automatic background refresh"
 msgstr "자동 백그라운드 새로고침으로 오프라인에서도 읽기"
 
 msgid "Read on scroll"
-msgstr "스크롤 시 읽기"
+msgstr "스크롤 시 읽음 표시"
 
 msgid "Read stories by folder"
 msgstr "폴더별로 스토리 읽기"
@@ -4988,7 +4991,7 @@ msgid "Read the whole story"
 msgstr "스토리 전체 읽기"
 
 msgid "Read unread stories with: newsblur stories list"
-msgstr "읽지 않은 기사 읽기: newsblur stories list"
+msgstr "읽지 않은 스토리 읽기: newsblur stories list"
 
 msgid "Read your email newsletters in your news reader, not your inbox."
 msgstr "이메일 뉴스레터를 받은편지함이 아닌 뉴스 리더에서 읽으세요."
@@ -4997,14 +5000,14 @@ msgid "Read your feeds: unread stories, folders, search, and saved stories by ta
 msgstr "피드 읽기: 읽지 않은 스토리, 폴더, 검색, 태그별 저장 스토리"
 
 msgid "Reading"
-msgstr "읽는 중"
+msgstr "읽기"
 
 msgid "Reading article..."
 msgstr "기사 읽는 중..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "태그별로 저장된 기사를 읽는 기능은 %(link_start)s프리미엄 기능%(link_end)s입니다."
+msgstr "태그별로 저장된 스토리를 읽는 기능은 %(link_start)s프리미엄 기능%(link_end)s입니다."
 
 msgid "Reading saved story..."
 msgstr "저장된 스토리 읽는 중..."
@@ -5025,7 +5028,7 @@ msgid "Really unfollow?"
 msgstr "정말 팔로우를 취소하시겠습니까?"
 
 msgid "Recency"
-msgstr "최신성"
+msgstr "최근순"
 
 msgid "Recent interactions"
 msgstr "최근 상호작용"
@@ -5058,7 +5061,7 @@ msgid "Redeemed"
 msgstr "사용 완료"
 
 msgid "Reduce clutter in your river of stories"
-msgstr "스토리 피드의 복잡함 줄이기"
+msgstr "스토리 스트림의 복잡함 줄이기"
 
 msgid "Refer"
 msgstr "추천"
@@ -5147,7 +5150,7 @@ msgstr "이름 변경됨"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "%(count)s개의 스토리 이름을 \"%(category)s\"(으)로 변경했습니다"
+msgstr[0] "스토리 %(count)s개의 카테고리를 \"%(category)s\"(으)로 변경했습니다"
 
 msgid "Renaming..."
 msgstr "이름 변경 중..."
@@ -5191,10 +5194,10 @@ msgid "Restart your subscription"
 msgstr "구독 다시 시작"
 
 msgid "Restore the player when you reload NewsBlur"
-msgstr "NewsBlur을 새로고침할 때 플레이어 복원"
+msgstr "NewsBlur를 새로고침할 때 플레이어 복원"
 
 msgid "Results show matching stories with highlighted terms"
-msgstr "검색 결과에는 일치하는 기사가 표시되고 검색어가 강조됩니다"
+msgstr "검색 결과에는 일치하는 스토리가 표시되고 검색어가 강조됩니다"
 
 msgid "Results will appear as indexing completes"
 msgstr "색인 생성이 완료되면 결과가 표시됩니다"
@@ -5312,7 +5315,7 @@ msgid "Save stories with searchable tags"
 msgstr "검색 가능한 태그로 스토리 저장"
 
 msgid "Save this story"
-msgstr "이 기사 저장"
+msgstr "이 스토리 저장"
 
 msgid "Save/Unsave story"
 msgstr "스토리 저장/저장 취소"
@@ -5333,7 +5336,7 @@ msgid "Saved Tags"
 msgstr "저장된 태그"
 
 msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
-msgstr "저장한 기사는 나중에 구독을 취소한 피드의 기사라도 영구 보관됩니다."
+msgstr "저장한 스토리는 나중에 구독을 취소한 피드의 스토리라도 영구 보관됩니다."
 
 msgid "Saved stories organized with custom tags"
 msgstr "맞춤 태그로 정리한 저장된 스토리"
@@ -5345,7 +5348,7 @@ msgid "Saved:"
 msgstr "저장됨:"
 
 msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium or higher."
-msgstr "스토리 저장은 모든 요금제에서 이용할 수 있습니다. 태그와 태그 RSS 피드는 Premium 이상에서 이용할 수 있습니다."
+msgstr "스토리 저장은 모든 요금제에서 이용할 수 있습니다. 태그와 태그 RSS 피드는 프리미엄 이상에서 이용할 수 있습니다."
 
 msgid "Saving..."
 msgstr "저장 중..."
@@ -5356,7 +5359,7 @@ msgstr "브리핑 생성 일정 설정"
 msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
-msgstr "예약 브리핑을 이용하려면 Premium Archive 구독이 필요합니다. 현재 요금제에서는 생성 버튼을 눌렀을 때만 브리핑이 생성됩니다."
+msgstr "예약 브리핑을 이용하려면 프리미엄 아카이브 구독이 필요합니다. 현재 요금제에서는 생성 버튼을 눌렀을 때만 브리핑이 생성됩니다."
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "예약 전송(매일 또는 하루 두 번)"
@@ -5379,7 +5382,7 @@ msgid "Search"
 msgstr "검색"
 
 msgid "Search All Site Stories"
-msgstr "사이트의 모든 기사 검색"
+msgstr "모든 사이트 스토리 검색"
 
 msgid "Search YouTube channels..."
 msgstr "YouTube 채널 검색..."
@@ -5460,7 +5463,7 @@ msgid "Searching RSS feeds..."
 msgstr "RSS 피드 검색 중..."
 
 msgid "Searching saved stories..."
-msgstr "저장된 기사를 검색하는 중..."
+msgstr "저장된 스토리를 검색하는 중..."
 
 msgid "Searching your archive..."
 msgstr "보관함 검색 중..."
@@ -5475,7 +5478,7 @@ msgid "Sections"
 msgstr "섹션"
 
 msgid "Sections are only included when matching stories are found."
-msgstr "일치하는 기사가 있을 때만 섹션이 포함됩니다."
+msgstr "일치하는 스토리가 있을 때만 섹션이 포함됩니다."
 
 msgid "Security"
 msgstr "보안"
@@ -5499,10 +5502,10 @@ msgid "See shared stories"
 msgstr "공유된 스토리 보기"
 
 msgid "See the story title and a short content preview"
-msgstr "기사 제목과 짧은 콘텐츠 미리 보기 표시"
+msgstr "스토리 제목과 짧은 콘텐츠 미리 보기 표시"
 
 msgid "See which feeds cover the same story"
-msgstr "같은 기사를 다루는 피드 보기"
+msgstr "같은 스토리를 다루는 피드 보기"
 
 msgid "Select"
 msgstr "선택"
@@ -5517,7 +5520,7 @@ msgid "Select a story to read"
 msgstr "읽을 스토리를 선택하세요"
 
 msgid "Select any story and click \"Ask AI\""
-msgstr "기사를 선택하고 \"AI에게 질문\"을 클릭하세요"
+msgstr "스토리를 선택하고 \"AI에게 질문\"을 클릭하세요"
 
 msgid "Select classifiers to remove"
 msgstr "삭제할 분류기 선택"
@@ -5532,13 +5535,13 @@ msgid "Select title phrase"
 msgstr "제목 구문 선택"
 
 msgid "Selecting a story in the story titles marks it as read."
-msgstr "글 제목 목록에서 글을 선택하면 읽음으로 표시됩니다."
+msgstr "스토리 제목 목록에서 스토리를 선택하면 읽음으로 표시됩니다."
 
 msgid "Self-Hosted"
 msgstr "직접 호스팅"
 
 msgid "Semantic matching finds stories about the same topic with different headlines"
-msgstr "의미 기반 매칭으로 제목이 달라도 같은 주제를 다룬 기사를 찾습니다"
+msgstr "의미 기반 매칭으로 제목이 달라도 같은 주제를 다룬 스토리를 찾습니다"
 
 msgid "Send"
 msgstr "보내기"
@@ -5578,7 +5581,7 @@ msgid "Set up usage-based billing to use natural language content and image filt
 msgstr "자연어 콘텐츠 및 이미지 필터를 사용하려면 사용량 기반 결제를 설정하세요."
 
 msgid "Set up your blurblog"
-msgstr "블로그를 설정하세요"
+msgstr "Blurblog 설정하기"
 
 msgid "Settings"
 msgstr "설정"
@@ -5593,7 +5596,7 @@ msgid "Share"
 msgstr "공유"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
-msgstr "스토리에 댓글을 달아 공유하면 blurblog에 게시되며, RSS나 웹에서 팔로우할 수 있습니다."
+msgstr "스토리에 댓글을 달아 공유하면 Blurblog에 게시되며, RSS나 웹에서 팔로우할 수 있습니다."
 
 msgid "Share on NewsBlur"
 msgstr "NewsBlur에서 공유"
@@ -5604,7 +5607,7 @@ msgstr "스토리 공유"
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
-msgstr "공개 블러그에 직접 댓글을 달아 글을 공유하세요. 친구를 팔로우하면 친구가 읽고 공유하는 글을 볼 수 있습니다."
+msgstr "공개 Blurblog에 직접 댓글을 달아 스토리를 공유하세요. 친구를 팔로우하면 친구가 읽고 공유하는 스토리를 볼 수 있습니다."
 
 msgid "Share the link."
 msgstr "링크를 공유하세요."
@@ -5628,7 +5631,7 @@ msgid "Shared"
 msgstr "공유됨"
 
 msgid "Shared Stories & Blurblog"
-msgstr "공유한 기사 및 Blurblog"
+msgstr "공유한 스토리 및 Blurblog"
 
 #, python-format
 msgid "Shared by %(count)s person"
@@ -5636,7 +5639,7 @@ msgid_plural "Shared by %(count)s people"
 msgstr[0] "%(count)s명이 공유함"
 
 msgid "Shared with NewsBlur.com"
-msgstr "NewsBlur.com와 공유됨"
+msgstr "NewsBlur.com에서 공유함"
 
 msgid "Shared!"
 msgstr "공유했습니다!"
@@ -5669,7 +5672,7 @@ msgid "Show Folders"
 msgstr "폴더 표시"
 
 msgid "Show Global Shared Stories"
-msgstr "전체 공개 공유 스토리 표시"
+msgstr "전체 공유 스토리 표시"
 
 msgid "Show Good Reads"
 msgstr "좋은 글 표시"
@@ -5684,7 +5687,7 @@ msgid "Show Widely Read Stories"
 msgstr "많이 읽힌 스토리 표시"
 
 msgid "Show a preview of the story"
-msgstr "글 미리보기 표시"
+msgstr "스토리 미리보기 표시"
 
 msgid "Show all animations"
 msgstr "모든 애니메이션 표시"
@@ -5693,7 +5696,7 @@ msgid "Show all comments"
 msgstr "모든 댓글 보기"
 
 msgid "Show all stories"
-msgstr "모든 기사 표시"
+msgstr "모든 스토리 표시"
 
 msgid "Show buttons on the right (when there is room)"
 msgstr "공간이 있으면 오른쪽에 버튼 표시"
@@ -5738,7 +5741,7 @@ msgid "Show the entire story, even if really, really long"
 msgstr "아주 길더라도 스토리 전체 표시"
 
 msgid "Show tooltips"
-msgstr "도움말 표시"
+msgstr "툴팁 표시"
 
 msgid "Show unread counts in the window title"
 msgstr "창 제목에 읽지 않은 항목 수 표시"
@@ -5775,7 +5778,7 @@ msgid "Signup"
 msgstr "가입"
 
 msgid "Single Story"
-msgstr "단일 기사"
+msgstr "단일 스토리"
 
 msgid "Single line"
 msgstr "한 줄"
@@ -5829,7 +5832,7 @@ msgid "Small image thumbnail on the right"
 msgstr "오른쪽에 작은 이미지 미리보기"
 
 msgid "So much time and so little to do. Strike that! Reverse it."
-msgstr "할 일은 너무 많고 시간은 너무 적군. 아니, 반대로!"
+msgstr "시간은 너무 많고 할 일은 너무 적군. 아니, 반대로!"
 
 msgid "Social"
 msgstr "소셜"
@@ -5846,10 +5849,10 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "죄송합니다. \"%(value_1)s\"과(와) 일치하는 항목이 없습니다."
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "죄송합니다. 원본 스토리<br />를 프록시할 수 없습니다."
+msgstr "죄송합니다. 원본 스토리를<br />프록시할 수 없습니다."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "죄송합니다. 스토리의 텍스트<br />를 추출할 수 없습니다."
+msgstr "죄송합니다. 스토리의 텍스트를<br />추출할 수 없습니다."
 
 msgid "Sorry, there was a problem deleting feeds."
 msgstr "피드를 삭제하는 중 문제가 발생했습니다."
@@ -5867,10 +5870,10 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "죄송합니다. 답글을 게시할 수 없습니다. 아마도 Adblock 때문일 수 있습니다."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "죄송합니다. 이 글을 공유할 수 없습니다. Adblock 때문일 수 있습니다."
+msgstr "죄송합니다. 이 스토리를 공유할 수 없습니다. Adblock 때문일 수 있습니다."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
-msgstr "죄송합니다. 이 기사의 공유를 취소할 수 없습니다. Adblock 때문일 수 있습니다."
+msgstr "죄송합니다. 이 스토리의 공유를 취소할 수 없습니다. Adblock 때문일 수 있습니다."
 
 msgid "Sort "
 msgstr "정렬 "
@@ -5879,7 +5882,7 @@ msgid "Sort By"
 msgstr "정렬 기준"
 
 msgid "Sort the river oldest-first or newest-first from the feed options popover."
-msgstr "피드 옵션 팝오버에서 리버를 오래된 순 또는 최신 순으로 정렬하세요."
+msgstr "피드 옵션 팝오버에서 뉴스 스트림을 오래된 순 또는 최신 순으로 정렬하세요."
 
 msgid "Sort, filter, and display options"
 msgstr "정렬, 필터 및 표시 옵션"
@@ -5914,7 +5917,7 @@ msgstr "\"%(value_1)s\"을(를) 다음과 같이 분할:"
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
-msgstr[0] "분할 완료: 기사 %(count)s개가 재분류되었습니다"
+msgstr[0] "분할 완료: 스토리 %(count)s개가 재분류되었습니다"
 
 msgid "Split failed to apply"
 msgstr "분할 적용 실패"
@@ -5938,7 +5941,7 @@ msgstr "사이트의 태그라인을 멋지게 꾸며 보세요. 선정되면 �
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "오래된 %(date)s"
+msgstr "오래됨 · %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
@@ -5979,13 +5982,13 @@ msgstr "같은 피드/폴더에 머무르기"
 
 #, python-format
 msgid "Step %(step)s of %(count)s"
-msgstr "%(step)s단계 중 %(count)s단계"
+msgstr "%(count)s단계 중 %(step)s단계"
 
 msgid "Stop any time you like."
 msgstr "언제든지 중단할 수 있습니다."
 
 msgid "Stop recording"
-msgstr "녹화 중지"
+msgstr "녹음 중지"
 
 msgid "Stories"
 msgstr "스토리"
@@ -5997,7 +6000,7 @@ msgid "Stories arrive in real-time"
 msgstr "스토리가 실시간으로 도착합니다"
 
 msgid "Stories cache for offline reading with automatic background refresh."
-msgstr "오프라인에서 읽을 수 있도록 기사를 캐시하고 백그라운드에서 자동으로 새로고침합니다."
+msgstr "오프라인에서 읽을 수 있도록 스토리를 캐시하고 백그라운드에서 자동으로 새로고침합니다."
 
 msgid "Stories can stay unread forever"
 msgstr "스토리를 계속 읽지 않은 상태로 둘 수 있습니다"
@@ -6018,7 +6021,7 @@ msgstr "보관함의 스토리"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "<b>%(days)s일이 지나면 글을 읽음으로 표시</b>"
+msgstr[0] "<b>%(days)s일</b>이 지나면 스토리를 읽음으로 표시"
 
 msgid "Stories matching your trained topics and authors"
 msgstr "학습한 주제 및 작성자와 일치하는 스토리"
@@ -6032,14 +6035,14 @@ msgstr "%(date)s 이후의 스토리"
 
 #, python-format
 msgid "Stories older than %(date)s"
-msgstr "%(date)s보다 오래된 기사"
+msgstr "%(date)s 이전의 스토리"
 
 #, python-format
 msgid "Stories on %(date)s"
 msgstr "%(date)s의 스토리"
 
 msgid "Stories per day"
-msgstr "하루 기사 수"
+msgstr "일별 스토리 수"
 
 msgid "Stories per month"
 msgstr "월별 스토리 수"
@@ -6048,19 +6051,19 @@ msgid "Stories readers finished, saved, and shared"
 msgstr "독자가 끝까지 읽고 저장하고 공유한 스토리"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "NewsBlur에서 가장 많은 관심을 받은 기사입니다."
+msgstr "NewsBlur에서 가장 많은 관심을 받은 스토리입니다."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "스토리는 읽음으로 자동 표시<b>되지 </b>않습니다"
+msgstr "스토리는 자동으로 읽음 처리되지 <b>않습니다</b>"
 
 msgid "Stories will <b>never</b> be marked as read"
-msgstr "기사는 <b>절대</b> 읽음으로 표시되지 않습니다"
+msgstr "스토리는 <b>절대</b> 읽음으로 표시되지 않습니다"
 
 msgid "Story"
-msgstr "게시물"
+msgstr "스토리"
 
 msgid "Story Archive"
-msgstr "스토리 보관함"
+msgstr "스토리 아카이브"
 
 msgid "Story Authors"
 msgstr "스토리 작성자"
@@ -6069,10 +6072,10 @@ msgid "Story Categories &amp; Tags"
 msgstr "스토리 카테고리 &amp; 태그"
 
 msgid "Story Clustering"
-msgstr "스토리 그룹화"
+msgstr "스토리 클러스터링"
 
 msgid "Story Layout - Grid Columns"
-msgstr "글 레이아웃 - 그리드 열"
+msgstr "스토리 레이아웃 - 그리드 열"
 
 msgid "Story Layout - Split"
 msgstr "스토리 레이아웃 - 분할"
@@ -6090,13 +6093,13 @@ msgid "Story URL"
 msgstr "스토리 URL"
 
 msgid "Story clustering"
-msgstr "스토리 그룹화"
+msgstr "스토리 클러스터링"
 
 msgid "Story content preview"
 msgstr "스토리 콘텐츠 미리보기"
 
 msgid "Story is always hidden"
-msgstr "기사가 항상 숨겨져 있음"
+msgstr "스토리가 항상 숨겨짐"
 
 msgid "Story layout"
 msgstr "스토리 레이아웃"
@@ -6105,19 +6108,19 @@ msgid "Story preview"
 msgstr "스토리 미리보기"
 
 msgid "Story shows in Focus view"
-msgstr "스토리가 포커스 보기에서 표시됨"
+msgstr "집중 보기에 스토리가 표시됨"
 
 msgid "Story side options"
 msgstr "스토리 측면 옵션"
 
 msgid "Story side options buttons"
-msgstr "기사 측면 옵션 버튼"
+msgstr "스토리 측면 옵션 버튼"
 
 msgid "Story side options placement"
 msgstr "스토리 측면 옵션 배치"
 
 msgid "Story title styling"
-msgstr "기사 제목 스타일"
+msgstr "스토리 제목 스타일"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "스트림이 중단되었습니다. 10초 동안 응답이 없습니다."
@@ -6126,7 +6129,7 @@ msgid "Stripe Id:"
 msgstr "Stripe ID:"
 
 msgid "Submit Payment"
-msgstr "결제 제출"
+msgstr "결제하기"
 
 msgid "Submitting..."
 msgstr "제출 중..."
@@ -6151,13 +6154,13 @@ msgid "Subscribe to Google News feeds by topic or custom keywords."
 msgstr "주제나 사용자 지정 키워드로 Google 뉴스 피드를 구독하세요."
 
 msgid "Subscribe to Premium Archive"
-msgstr "Premium Archive 구독"
+msgstr "프리미엄 아카이브 구독"
 
 msgid "Subscribe to YouTube channels and playlists as RSS feeds."
 msgstr "YouTube 채널과 재생목록을 RSS 피드로 구독하세요."
 
 msgid "Subscribe to a new feed and its entire available history back-fills automatically."
-msgstr "새 피드를 구독하면 제공되는 전체 과거 글이 자동으로 채워집니다."
+msgstr "새 피드를 구독하면 제공되는 전체 과거 스토리가 자동으로 채워집니다."
 
 msgid "Subscribe to add this feed to your NewsBlur"
 msgstr "구독하여 이 피드를 NewsBlur에 추가하세요"
@@ -6224,7 +6227,7 @@ msgid "Sunday"
 msgstr "일요일"
 
 msgid "Super Dislike "
-msgstr "매우 싫어함 "
+msgstr "매우 싫어요 "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
@@ -6234,7 +6237,7 @@ msgid "Switch between views (original, feed, text, story)"
 msgstr "보기 전환 (원본, 피드, 텍스트, 스토리)"
 
 msgid "Switch focus/unread"
-msgstr "포커스/읽지 않음 전환"
+msgstr "집중/읽지 않음 전환"
 
 msgid "Switch models per question. Each answer is labeled with the model that wrote it."
 msgstr "질문마다 모델을 바꿔 보세요. 각 답변에는 작성한 모델이 표시됩니다."
@@ -6244,7 +6247,7 @@ msgstr "관리 메뉴 하단에서 테마를 즉시 전환하세요."
 
 #, python-format
 msgid "Switch to %(value_1)s"
-msgstr "%(value_1)s로 전환"
+msgstr "%(value_1)s(으)로 전환"
 
 msgid "Switch to All or Unread."
 msgstr "전체 또는 읽지 않음으로 전환하세요."
@@ -6314,7 +6317,7 @@ msgid "Test on this image"
 msgstr "이 이미지로 테스트"
 
 msgid "Test on this story"
-msgstr "이 기사에서 테스트"
+msgstr "이 스토리에서 테스트"
 
 msgid "Testing on this story..."
 msgstr "이 스토리를 테스트하는 중..."
@@ -6343,7 +6346,7 @@ msgstr "텍스트 보기에서 스토리 추출"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
-msgstr "감사합니다! %(bold_start)s프리미엄 계정%(bold_end)s을(를) 이용 중입니다."
+msgstr "감사합니다! %(bold_start)s프리미엄 계정%(bold_end)s을 이용 중입니다."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
@@ -6351,7 +6354,7 @@ msgstr "감사합니다! %(bold_start)s프리미엄 아카이브 계정%(bold_en
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "감사합니다! %(bold_start)s프리미엄 Pro 계정%(bold_end)s을 이용 중입니다."
+msgstr "감사합니다! %(bold_start)s프리미엄 프로 계정%(bold_end)s을 이용 중입니다."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 서비스 응답이 너무 오래 걸립니다. 다시 시도해 주세요."
@@ -6390,7 +6393,7 @@ msgstr "전체 NewsBlur API가 공개되어 있으며 맞춤형 통합을 위한
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "전체 뉴스 피드는 %(link_start)s프리미엄 기능입니다.%(link_end)s"
+msgstr "전체 뉴스 스트림은 %(link_start)s프리미엄 기능%(link_end)s입니다."
 
 msgid "The full shortcut list"
 msgstr "전체 단축키 목록"
@@ -6404,7 +6407,7 @@ msgstr "인텔리전스 슬라이더로 스토리를 필터링합니다."
 msgid ""
 "The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
 "stories."
-msgstr "왼쪽 아래의 인텔리전스 슬라이더로 모든 글, 읽지 않은 글, 집중 글을 필터링할 수 있습니다."
+msgstr "왼쪽 아래의 인텔리전스 슬라이더로 모든 스토리, 읽지 않은 스토리, 집중 스토리를 필터링할 수 있습니다."
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
@@ -6448,10 +6451,10 @@ msgid "There was a problem deleting your classifiers."
 msgstr "분류기를 삭제하는 중 문제가 발생했습니다."
 
 msgid "There was a problem deleting your saved stories."
-msgstr "저장한 기사를 삭제하는 중 문제가 발생했습니다."
+msgstr "저장한 스토리를 삭제하는 중 문제가 발생했습니다."
 
 msgid "There was a problem deleting your shared stories."
-msgstr "공유한 글을 삭제하는 중 문제가 발생했습니다."
+msgstr "공유한 스토리를 삭제하는 중 문제가 발생했습니다."
 
 msgid "There was a problem deleting your sites."
 msgstr "사이트를 삭제하는 중 문제가 발생했습니다."
@@ -6486,10 +6489,10 @@ msgid ""
 msgstr "이 도메인들은 기본적으로 차단됩니다(검색 엔진, 소셜 미디어 등). 예외로 허용하려면 위의 \"허용된 도메인\"에 추가하세요."
 
 msgid "They redeem it."
-msgstr "그들이 사용합니다."
+msgstr "받는 사람이 사용합니다."
 
 msgid "Thinking"
-msgstr "생각 중"
+msgstr "추론"
 
 msgid "Thinking..."
 msgstr "생각 중..."
@@ -6522,7 +6525,7 @@ msgstr "제목 전체와 일치하므로 이 스토리만 정확히 일치합니
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "이 읽은 기사 목록은 %(link_start)s프리미엄 기능%(link_end)s입니다."
+msgstr "이 읽은 스토리 목록은 %(link_start)s프리미엄 기능%(link_end)s입니다."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "이 작업은 저장된 모든 스토리에서 태그를 삭제합니다. 스토리는 해당 태그 없이 계속 저장됩니다."
@@ -6555,7 +6558,7 @@ msgid "This site only"
 msgstr "이 사이트만"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "이 웹 피드는 <b>일시 중지됨</b> 상태입니다. 새 기사를 다시 가져오려면 프리미엄 아카이브로 업그레이드하세요."
+msgstr "이 웹 피드는 <b>일시 중지됨</b> 상태입니다. 새 스토리를 다시 가져오려면 프리미엄 아카이브로 업그레이드하세요."
 
 msgid "This will erase all existing feeds and folders."
 msgstr "기존 피드와 폴더가 모두 삭제됩니다."
@@ -6611,7 +6614,7 @@ msgid "Title filters found no stories in %(context)s."
 msgstr "제목 필터에서 %(context)s에 해당하는 스토리를 찾지 못했습니다."
 
 msgid "Title filters found no stories in this view."
-msgstr "제목 필터에 해당하는 기사가 이 보기에는 없습니다."
+msgstr "제목 필터에 해당하는 스토리가 이 보기에는 없습니다."
 
 msgid "Title matching catches exact and fuzzy duplicates"
 msgstr "제목 일치 검색으로 정확히 일치하거나 유사한 중복 항목을 찾아냅니다"
@@ -6622,7 +6625,7 @@ msgstr "제목만"
 msgid ""
 "Title training matches phrases, so train just the words that matter and future stories with those words "
 "follow suit."
-msgstr "제목 학습은 구문에 적용되므로 중요한 단어만 학습시키면 됩니다. 이후 해당 단어가 포함된 기사는 그에 맞춰 분류됩니다."
+msgstr "제목 학습은 구문에 적용되므로 중요한 단어만 학습시키면 됩니다. 이후 해당 단어가 포함된 스토리는 그에 맞춰 분류됩니다."
 
 msgid "Title: "
 msgstr "제목: "
@@ -6632,6 +6635,10 @@ msgstr "제목"
 
 msgid "To"
 msgstr "받는 사람"
+
+msgctxt "date range"
+msgid "To"
+msgstr "종료일"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
@@ -6687,7 +6694,7 @@ msgid "Top Level"
 msgstr "최상위"
 
 msgid "Top stories"
-msgstr "인기 스토리"
+msgstr "주요 스토리"
 
 msgid "Track Changes"
 msgstr "변경 사항 추적"
@@ -6696,28 +6703,28 @@ msgid "Train"
 msgstr "학습"
 
 msgid "Train &amp; filter"
-msgstr "&amp; 필터 학습"
+msgstr "학습 &amp; 필터"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr "원하는 내용은 표시하고 원하지 않는 내용은 숨기도록 NewsBlur를 학습시키세요. 알고리즘이 아니라 직접 제어할 수 있습니다."
 
 msgid "Train across folders or globally on Premium Archive"
-msgstr "Premium Archive에서 폴더별 또는 전체를 대상으로 학습"
+msgstr "프리미엄 아카이브에서 폴더별 또는 전체를 대상으로 학습"
 
 msgid "Train and notification settings"
 msgstr "학습 및 알림 설정"
 
 msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
-msgstr "작성자, 태그, 제목, 피드를 좋아하거나 싫어해 지능 기능을 학습시키세요"
+msgstr "인텔리전스 학습: 작성자, 태그, 제목, 피드에 좋아요 또는 싫어요 표시"
 
 msgid "Train stories by author, tag, title"
-msgstr "작성자, 태그, 제목별로 기사 학습시키기"
+msgstr "작성자, 태그, 제목별로 스토리 학습시키기"
 
 msgid "Train stories on full text content"
-msgstr "전체 텍스트 콘텐츠로 기사 학습"
+msgstr "전체 텍스트 콘텐츠로 스토리 학습"
 
 msgid "Train stories with regular expressions"
-msgstr "정규 표현식으로 글 학습하기"
+msgstr "정규식으로 스토리 학습"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "웹에서처럼 스토리 학습, 검색, 공유, 태그 지정"
@@ -6744,7 +6751,7 @@ msgid "Transcribing audio"
 msgstr "오디오 받아쓰기 중"
 
 msgid "Transcribing..."
-msgstr "전사 중..."
+msgstr "받아쓰는 중..."
 
 msgid "Transport"
 msgstr "교통"
@@ -6756,13 +6763,13 @@ msgid "Trending"
 msgstr "인기 급상승"
 
 msgid "Trending Sites"
-msgstr "인기 사이트"
+msgstr "인기 급상승 사이트"
 
 msgid "Truncate stories"
-msgstr "글 내용 줄이기"
+msgstr "스토리 줄여서 표시"
 
 msgid "Try"
-msgstr "시도"
+msgstr "사용해 보기"
 
 msgid "Try Again"
 msgstr "다시 시도"
@@ -6892,22 +6899,22 @@ msgid "Unread stories going back months"
 msgstr "몇 달 전까지 거슬러 올라가는 읽지 않은 스토리"
 
 msgid "Unread stories never expire, so read at your own pace."
-msgstr "읽지 않은 기사는 만료되지 않으니 원하는 속도로 읽으세요."
+msgstr "읽지 않은 스토리는 만료되지 않으니 원하는 속도로 읽으세요."
 
 msgid "Unread+Focus:"
-msgstr "읽지 않음+중요:"
+msgstr "읽지 않음+집중:"
 
 msgid "Unsave this story"
 msgstr "이 스토리 저장 취소"
 
 msgid "Unshared"
-msgstr "공유 안 됨"
+msgstr "공유 취소됨"
 
 msgid "Untitled"
 msgstr "제목 없음"
 
 msgid "Up Next"
-msgstr "다음"
+msgstr "다음 재생"
 
 msgid "Upcoming charge: "
 msgstr "예정된 청구 금액: "
@@ -6965,25 +6972,25 @@ msgstr "사이트를 실시간으로 업데이트하는 중..."
 
 #, python-format
 msgid "Upgrade to %(value_1)s"
-msgstr "%(value_1)s로 업그레이드"
+msgstr "%(value_1)s(으)로 업그레이드"
 
 msgid "Upgrade to Archive or Pro"
-msgstr "Archive 또는 Pro로 업그레이드"
+msgstr "아카이브 또는 프로로 업그레이드"
 
 msgid "Upgrade to Premium"
 msgstr "프리미엄으로 업그레이드"
 
 msgid "Upgrade to Premium Archive"
-msgstr "프리미엄 보관함으로 업그레이드"
+msgstr "프리미엄 아카이브로 업그레이드"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
-msgstr "분류 알림을 받으려면 프리미엄 아카이브로 업그레이드하세요"
+msgstr "분류기 알림을 받으려면 프리미엄 아카이브로 업그레이드하세요"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr "프리미엄 아카이브로 업그레이드해 모든 피드에서 중복 항목을 검색하고, 관련 스토리 묶음을 놓치지 마세요."
 
 msgid "Upgrade to Premium Pro"
-msgstr "Premium Pro로 업그레이드"
+msgstr "프리미엄 프로로 업그레이드"
 
 msgid "Upgrade to a Premium Archive account"
 msgstr "프리미엄 아카이브 계정으로 업그레이드"
@@ -7041,13 +7048,13 @@ msgid "Use the native browser context menu"
 msgstr "브라우저 기본 컨텍스트 메뉴 사용"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
-msgstr "브라우저 확장 프로그램과 피드 리더에서 이 URL 템플릿을 사용해 NewsBlur를 구독하세요."
+msgstr "브라우저 확장 프로그램과 피드 리더에서 이 URL 템플릿을 사용해 NewsBlur에서 피드를 구독하세요."
 
 msgid "Use widgets to see unread counts and stories at a glance"
-msgstr "위젯으로 읽지 않은 글 수와 새 글을 한눈에 확인하세요"
+msgstr "위젯으로 읽지 않은 스토리 수와 새 스토리를 한눈에 확인하세요"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
-msgstr "뉴스 기사 작성, 수정된 기사, 변경되는 제품 공지에 유용합니다."
+msgstr "계속 전개되는 뉴스, 정정된 기사, 계속 바뀌는 제품 공지에 유용합니다."
 
 msgid "User Admin"
 msgstr "사용자 관리"
@@ -7076,7 +7083,7 @@ msgstr[0] "기본값 사용: <b>%(days)s일</b> (%(source)s 기준)"
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "기본값 사용: <b>never</b> (%(source)s에서)"
+msgstr "기본값 사용: <b>안 함</b> (%(source)s 기준)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "기본 설정 사용: 스토리는 자동으로 읽음 처리되지 <b>않습니다</b>"
@@ -7127,7 +7134,7 @@ msgstr "RSS가 없는 웹사이트에서도 웹 피드 가져오기"
 msgid ""
 "Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
 "fetching."
-msgstr "웹 피드를 사용하려면 Premium Archive 또는 Premium Pro가 필요합니다. 페이지 스크래핑은 RSS 가져오기보다 리소스를 많이 사용하기 때문입니다."
+msgstr "웹 피드를 사용하려면 프리미엄 아카이브 또는 프리미엄 프로가 필요합니다. 페이지 스크래핑은 RSS 가져오기보다 리소스를 많이 사용하기 때문입니다."
 
 msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
 msgstr "웹 피드는 일반 피드와 같은 일정으로 확인하며, 상위 요금제에서는 더 자주 확인합니다."
@@ -7164,11 +7171,11 @@ msgstr "주요 논거는 무엇인가요?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "이 사이트에 대해 %(like)s 및 %(dislike)s은 무엇인가요?"
+msgstr "이 사이트에서 %(like)s와 %(dislike)s를 표시할 점은 무엇인가요?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "이 스토리에 대해 무엇을 %(like)s하고 %(dislike)s나요?"
+msgstr "이 스토리에서 %(like)s와 %(dislike)s를 표시할 점은 무엇인가요?"
 
 msgid "What happens if I downgrade?"
 msgstr "요금제를 낮추면 어떻게 되나요?"
@@ -7204,7 +7211,7 @@ msgid "When a feed updates, NewsBlur checks for duplicates across all your subsc
 msgstr "피드가 업데이트되면 NewsBlur가 모든 구독 피드에서 중복 항목을 확인합니다"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
-msgstr "여러 피드에 같은 글이 있으면 NewsBlur가 하나로 묶어 한 번만 표시합니다."
+msgstr "여러 피드에 같은 스토리가 있으면 NewsBlur가 하나로 묶어 한 번만 표시합니다."
 
 msgid "When opening a site"
 msgstr "사이트를 열 때"
@@ -7213,12 +7220,12 @@ msgid "When reading a clustered story:"
 msgstr "여러 출처가 묶인 스토리를 읽을 때:"
 
 msgid "When story content changes"
-msgstr "글 내용이 변경될 때"
+msgstr "스토리 내용이 변경될 때"
 
 msgid ""
 "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
 "is kept forever."
-msgstr "피드를 구독하면 NewsBlur가 제공되는 전체 과거 기사를 가져옵니다. 이후에는 모든 기사가 영구 보관됩니다."
+msgstr "피드를 구독하면 NewsBlur가 제공되는 전체 과거 스토리를 가져옵니다. 이후에는 모든 스토리가 영구 보관됩니다."
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "새 피드를 구독하면 이전 항목도 기록에 채워집니다"
@@ -7233,7 +7240,7 @@ msgid "Why is the next update not at the normal rate?"
 msgstr "다음 업데이트까지 평소보다 오래 걸리는 이유는 무엇인가요?"
 
 msgid "Why so infrequently?"
-msgstr "왜 이렇게 드물게 발생하나요?"
+msgstr "왜 이렇게 드물게 업데이트되나요?"
 
 msgid "Widely Read Stories"
 msgstr "많이 읽힌 스토리"
@@ -7321,7 +7328,7 @@ msgstr "네. 피드 옵션 팝오버나 환경설정에서 \"스토리를 따로
 msgid ""
 "Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
 "Premium Archive."
-msgstr "네. 작성자, 태그, 제목 키워드를 대상으로 한 학습은 무료입니다. 스토리 내용 전체를 대상으로 학습하려면 프리미엄 보관함이 필요합니다."
+msgstr "네. 작성자, 태그, 제목 키워드를 대상으로 한 학습은 무료입니다. 스토리 내용 전체를 대상으로 학습하려면 프리미엄 아카이브가 필요합니다."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
@@ -7395,7 +7402,7 @@ msgid "You can override this on a per-site basis."
 msgstr "사이트별로 이 설정을 재정의할 수 있습니다."
 
 msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
-msgstr "피드별 학습은 무료로 이용할 수 있으며, 폴더별 및 전체 학습은 Premium Archive에서 이용할 수 있습니다."
+msgstr "피드별 학습은 무료로 이용할 수 있으며, 폴더별 및 전체 학습은 프리미엄 아카이브에서 이용할 수 있습니다."
 
 #, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
@@ -7416,7 +7423,7 @@ msgid "You have no unread stories in Focus mode."
 msgstr "집중 모드에 읽지 않은 스토리가 없습니다."
 
 msgid "You have no unread stories."
-msgstr "읽지 않은 기사가 없습니다."
+msgstr "읽지 않은 스토리가 없습니다."
 
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "아직 다른 사람의 공유 스토리를 구독하지 않았습니다."
@@ -7440,7 +7447,7 @@ msgid "You need to be logged in to reply to a comment."
 msgstr "댓글에 답글을 달려면 로그인해야 합니다."
 
 msgid "You need to be logged in to share a story."
-msgstr "기사를 공유하려면 로그인해야 합니다."
+msgstr "스토리를 공유하려면 로그인해야 합니다."
 
 msgid "You will be emailed within a minute or three."
 msgstr "1~3분 이내에 이메일을 보내드립니다."
@@ -7464,7 +7471,7 @@ msgstr "이제 시작할 준비가 끝났습니다! NewsBlur를 즐겁게 이용
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "%(value_1)s을(를) 선물로 받았습니다(%(value_2)s 중)!"
+msgstr "%(value_2)s %(value_1)s을(를) 선물로 받았습니다!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -7518,7 +7525,7 @@ msgid "Your name"
 msgstr "이름"
 
 msgid "Your premium account is paid until:"
-msgstr "프리미엄 계정 결제 기간:"
+msgstr "프리미엄 계정 이용 기한:"
 
 msgid "Your premium account will downgrade on:"
 msgstr "프리미엄 계정이 다음 날짜에 다운그레이드됩니다:"
@@ -7548,7 +7555,7 @@ msgid "autonomous vehicles"
 msgstr "자율주행 차량"
 
 msgid "beats any"
-msgstr "무엇이든 능가합니다"
+msgstr ">"
 
 msgid "bird migration"
 msgstr "새의 이동"
@@ -7633,7 +7640,7 @@ msgid "gene therapy"
 msgstr "유전자 치료"
 
 msgid "hide hidden stories"
-msgstr "숨긴 기사 숨기기"
+msgstr "숨긴 스토리 숨기기"
 
 msgid "housing market"
 msgstr "주택 시장"
@@ -7651,11 +7658,11 @@ msgid "iPhone &amp; iPad"
 msgstr "iPhone &amp; iPad"
 
 msgid "in"
-msgstr "안에"
+msgstr "폴더:"
 
 #, python-format
 msgid "in %(time)s"
-msgstr "%(time)s에"
+msgstr "%(time)s 후"
 
 msgid "indie games"
 msgstr "인디 게임"
@@ -7799,7 +7806,7 @@ msgid "✓ Matches author"
 msgstr "✓ 작성자 일치"
 
 msgid "✓ Matches story"
-msgstr "✓ 기사와 일치"
+msgstr "✓ 스토리와 일치"
 
 msgid "✓ Matches title"
 msgstr "✓ 제목 일치"
@@ -7808,7 +7815,7 @@ msgid "✓ Sent"
 msgstr "✓ 전송됨"
 
 msgid "✓ Story matches this filter"
-msgstr "✓ 기사가 이 필터와 일치합니다"
+msgstr "✓ 스토리가 이 필터와 일치합니다"
 
 msgid "✓ Valid"
 msgstr "✓ 유효함"
@@ -7820,5 +7827,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ 필터와 일치하는 이미지가 없습니다"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ 이 글은 필터와 일치하지 않습니다"
+msgstr "✗ 이 스토리는 이 필터와 일치하지 않습니다"
 

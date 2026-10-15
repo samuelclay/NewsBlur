@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@分享了 %2$@：\n \n%3$@";
 "%@ Widget Sites" = "%@ 小组件网站";
 "%@ ago" = "%@前";
+"%@ comments" = "%@ 条评论";
+"%@ days" = "%@ 天";
 "%@ feed" = "%@ 订阅源";
 "%@ focused stories" = "%@ 篇重点文章";
 "%@ folder" = "%@ 文件夹";
 "%@ is now following you." = "%@ 现在关注了您。";
 "%@ opens" = "%@ 次打开";
+"%@ or search" = "%@ 或搜索";
+"%@ public comments" = "%@ 条公开评论";
 "%@ searches" = "%@ 个搜索";
+"%@ shares" = "%@ 次分享";
 "%@ stories" = "%@ 篇文章";
 "%@ stories left" = "还剩 %@ 篇文章";
 "%@ stories/month" = "每月 %@ 篇文章";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld 小时前";
 "%ldm ago" = "%ld分钟前";
 "%ldw ago" = "%ld周前";
+"+ %@ more sites" = "+ %@ 个网站";
 "..." = "…";
 "1 Widget Site" = "1 个小组件网站";
 "1,000 stories" = "1,000 篇文章";
@@ -66,6 +72,7 @@
 "Add Story List" = "添加文章列表";
 "Add Story List After" = "在此之后添加文章列表";
 "Add Story List Before" = "在此之前添加文章列表";
+"Add Tag" = "添加标签";
 "Add To" = "添加到";
 "Add custom keyword filters that become their own briefing sections" = "添加自定义关键词筛选器，将其设为独立的简报栏目";
 "Add feed" = "添加订阅源";
@@ -111,6 +118,7 @@
 "All stories" = "所有文章";
 "Alphabetical" = "按字母顺序";
 "Already have feeds?" = "已经有订阅源？";
+"Also published by %@ sites" = "另有 %@ 个网站发布了此内容";
 "Analyze" = "分析";
 "App Badge" = "应用角标";
 "App Icon" = "应用图标";
@@ -235,6 +243,7 @@
 "Download stories" = "下载文章";
 "Download text" = "下载文本";
 "Download using" = "使用以下方式下载";
+"Edit" = "编辑";
 "Edit NewsBlur share…" = "编辑 NewsBlur 分享…";
 "Edit your comment" = "编辑你的评论";
 "Edit your reply" = "编辑你的回复";
@@ -270,6 +279,8 @@
 "Feed source" = "订阅源";
 "Feeds" = "订阅源";
 "Feeds that support paging are back-filled in for a complete archive" = "支持分页的订阅源会补充历史内容，形成完整档案";
+"Fetching recent stories..." = "正在获取近期文章...";
+"Fetching stories from this site..." = "正在从此网站获取文章...";
 "Fetching text..." = "正在获取文本…";
 "Filter" = "筛选";
 "Filter stories by date range" = "按日期范围筛选文章";
@@ -327,6 +338,7 @@
 "Grid Height" = "网格高度";
 "Headlines" = "标题";
 "Hidden" = "隐藏";
+"Hide Changes" = "隐藏更改";
 "Hide Story Titles" = "隐藏文章标题";
 "Hide status bar" = "隐藏状态栏";
 "Hide toolbars when reading" = "阅读时隐藏工具栏";
@@ -376,6 +388,7 @@
 "Loading image…" = "正在加载图片…";
 "Loading interests" = "正在加载兴趣内容";
 "Loading settings…" = "正在加载设置…";
+"Loading your feeds…" = "正在加载你的订阅源…";
 "Loading..." = "正在加载…";
 "Loading…" = "正在加载…";
 "Log In" = "登录";
@@ -492,6 +505,7 @@
 "No longer saved" = "不再保存";
 "No notifications yet." = "暂无通知。";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "没有可显示的文章。没有可显示的文章。没有可显示的文章。没有可显示的文章。";
+"No stories yet" = "暂无文章";
 "No story selected" = "未选择文章";
 "No unread stories" = "没有未读文章";
 "None" = "无";
@@ -610,6 +624,7 @@
 "Rename this site" = "重命名此网站";
 "Renaming..." = "正在重命名...";
 "Replied" = "已回复";
+"Reply" = "回复";
 "Reply to %@" = "回复 %@";
 "Resize sidebar" = "调整侧边栏大小";
 "Restore" = "恢复";
@@ -637,6 +652,7 @@
 "Saved" = "已保存";
 "Saved Searches" = "已保存的搜索";
 "Saved Stories" = "已保存的文章";
+"Saved on %@" = "保存于 %@";
 "Saving search..." = "正在保存搜索…";
 "Schedule" = "安排";
 "Scroll horizontally" = "横向滚动";
@@ -677,6 +693,7 @@
 "Short" = "短";
 "Show" = "显示";
 "Show Ask AI" = "显示 Ask AI";
+"Show Changes" = "显示更改";
 "Show Global Shared Stories" = "显示全局分享的文章";
 "Show Good Reads" = "显示优质推荐";
 "Show Infrequent Site Stories" = "显示低频更新网站的文章";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "部分订阅源图标无法加载。";
 "Sources" = "来源";
 "Spacing" = "间距";
+"Stale — last story %@" = "已过时 — 最后一篇文章发布于 %@";
 "Standard" = "标准";
 "Start reading" = "开始阅读";
 "Statistics" = "统计";
@@ -783,6 +801,7 @@
 "Text View" = "文本视图";
 "Text view" = "文本视图";
 "Text view conveniently extracts the story" = "文本视图可便捷地提取文章内容";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整文本视图是 <a href=\"http://ios.newsblur.com/premium\">高级功能</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 模拟器无法更改主屏幕图标。请在设备上尝试。";
 "The icon follows your device's light and dark appearance." = "图标会跟随设备的浅色和深色外观。";
 "The most important stories from your feeds" = "订阅源中最重要的文章";
@@ -810,6 +829,7 @@
 "Top" = "顶部";
 "Top Level" = "顶级";
 "Top stories" = "热门文章";
+"Train" = "训练";
 "Train This Story…" = "训练此文章…";
 "Train intelligence" = "训练智能分类器";
 "Train intelligence…" = "训练智能…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "取消收藏此文章";
 "Unsave story" = "取消收藏文章";
 "Unsave this story" = "取消收藏此文章";
+"Updated %@ days ago" = "更新于 %@ 天前";
+"Updated %@ months ago" = "更新于 %@ 个月前";
+"Updated %@ weeks ago" = "更新于 %@ 周前";
+"Updated today" = "今天更新";
 "Updates come to you" = "更新主动送达";
 "Updating..." = "正在更新…";
 "Upgrade from Archive" = "从 Archive 升级";
@@ -864,6 +888,7 @@
 "User info" = "用户信息";
 "Username" = "用户名";
 "Username or Email" = "用户名或邮箱";
+"Variant %@" = "变体 %@";
 "Version" = "版本";
 "View mode" = "视图模式";
 "Warm" = "温暖";

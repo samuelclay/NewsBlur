@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ compartilhou %2$@:\n \n%3$@";
 "%@ Widget Sites" = "Sites do widget %@";
 "%@ ago" = "há %@";
+"%@ comments" = "%@ comentários";
+"%@ days" = "%@ dias";
 "%@ feed" = "feed %@";
 "%@ focused stories" = "%@ notícias em destaque";
 "%@ folder" = "Pasta %@";
 "%@ is now following you." = "%@ está seguindo você agora.";
 "%@ opens" = "%@ aberturas";
+"%@ or search" = "%@ ou pesquisar";
+"%@ public comments" = "%@ comentários públicos";
 "%@ searches" = "%@ pesquisas";
+"%@ shares" = "%@ compartilhamentos";
 "%@ stories" = "%@ matérias";
 "%@ stories left" = "Restam %@ artigos";
 "%@ stories/month" = "%@ matérias/mês";
@@ -33,6 +38,7 @@
 "%ldh ago" = "há %ldh";
 "%ldm ago" = "%ld min atrás";
 "%ldw ago" = "há %ld semanas";
+"+ %@ more sites" = "+ %@ outros sites";
 "..." = "...";
 "1 Widget Site" = "1 site de widget";
 "1,000 stories" = "1.000 matérias";
@@ -66,6 +72,7 @@
 "Add Story List" = "Adicionar lista de histórias";
 "Add Story List After" = "Adicionar lista de artigos depois";
 "Add Story List Before" = "Adicionar lista de artigos antes";
+"Add Tag" = "Adicionar tag";
 "Add To" = "Adicionar a";
 "Add custom keyword filters that become their own briefing sections" = "Adicione filtros personalizados por palavra-chave para criar seções próprias no resumo";
 "Add feed" = "Adicionar feed";
@@ -111,6 +118,7 @@
 "All stories" = "Todas as notícias";
 "Alphabetical" = "Ordem alfabética";
 "Already have feeds?" = "Já tem feeds?";
+"Also published by %@ sites" = "Também publicado por %@ sites";
 "Analyze" = "Analisar";
 "App Badge" = "Selo do app";
 "App Icon" = "Ícone do aplicativo";
@@ -235,6 +243,7 @@
 "Download stories" = "Baixar artigos";
 "Download text" = "Baixar texto";
 "Download using" = "Baixar usando";
+"Edit" = "Editar";
 "Edit NewsBlur share…" = "Editar compartilhamento de NewsBlur…";
 "Edit your comment" = "Editar seu comentário";
 "Edit your reply" = "Editar sua resposta";
@@ -270,6 +279,8 @@
 "Feed source" = "Fonte do feed";
 "Feeds" = "Feeds";
 "Feeds that support paging are back-filled in for a complete archive" = "Feeds compatíveis com paginação são preenchidos retroativamente para criar um arquivo completo";
+"Fetching recent stories..." = "Buscando artigos recentes...";
+"Fetching stories from this site..." = "Buscando artigos deste site...";
 "Fetching text..." = "Buscando texto...";
 "Filter" = "Filtrar";
 "Filter stories by date range" = "Filtrar notícias por período";
@@ -327,6 +338,7 @@
 "Grid Height" = "Altura da grade";
 "Headlines" = "Manchetes";
 "Hidden" = "Oculto";
+"Hide Changes" = "Ocultar alterações";
 "Hide Story Titles" = "Ocultar títulos das matérias";
 "Hide status bar" = "Ocultar barra de status";
 "Hide toolbars when reading" = "Ocultar barras de ferramentas durante a leitura";
@@ -376,6 +388,7 @@
 "Loading image…" = "Carregando imagem…";
 "Loading interests" = "Carregando interesses";
 "Loading settings…" = "Carregando configurações…";
+"Loading your feeds…" = "Carregando seus feeds…";
 "Loading..." = "Carregando...";
 "Loading…" = "Carregando…";
 "Log In" = "Entrar";
@@ -492,6 +505,7 @@
 "No longer saved" = "Não está mais salvo";
 "No notifications yet." = "Ainda não há notificações.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Nenhuma matéria para exibir. Nenhuma matéria para exibir. Nenhuma matéria para exibir. Nenhuma matéria para exibir.";
+"No stories yet" = "Ainda não há artigos";
 "No story selected" = "Nenhuma matéria selecionada";
 "No unread stories" = "Nenhuma notícia não lida";
 "None" = "Nenhum";
@@ -610,6 +624,7 @@
 "Rename this site" = "Renomear este site";
 "Renaming..." = "Renomeando...";
 "Replied" = "Respondido";
+"Reply" = "Responder";
 "Reply to %@" = "Responder a %@";
 "Resize sidebar" = "Redimensionar barra lateral";
 "Restore" = "Restaurar";
@@ -637,6 +652,7 @@
 "Saved" = "Salvo";
 "Saved Searches" = "Pesquisas salvas";
 "Saved Stories" = "Notícias salvas";
+"Saved on %@" = "Salvo em %@";
 "Saving search..." = "Salvando pesquisa...";
 "Schedule" = "Agendar";
 "Scroll horizontally" = "Rolar horizontalmente";
@@ -677,6 +693,7 @@
 "Short" = "Curto";
 "Show" = "Mostrar";
 "Show Ask AI" = "Mostrar Pergunte à IA";
+"Show Changes" = "Mostrar alterações";
 "Show Global Shared Stories" = "Mostrar matérias compartilhadas globalmente";
 "Show Good Reads" = "Mostrar boas leituras";
 "Show Infrequent Site Stories" = "Mostrar notícias pouco frequentes dos sites";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Não foi possível carregar alguns ícones de feeds.";
 "Sources" = "Fontes";
 "Spacing" = "Espaçamento";
+"Stale — last story %@" = "Desatualizado — último artigo %@";
 "Standard" = "Padrão";
 "Start reading" = "Começar a ler";
 "Statistics" = "Estatísticas";
@@ -783,6 +801,7 @@
 "Text View" = "Visualização de texto";
 "Text view" = "Visualização em texto";
 "Text view conveniently extracts the story" = "A visualização de texto extrai a história com praticidade";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "A visualização de texto completo é um <a href=\"http://ios.newsblur.com/premium\">recurso premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "O simulador do iOS não conseguiu alterar o ícone da Tela de Início. Tente fazer isso em um dispositivo.";
 "The icon follows your device's light and dark appearance." = "O ícone acompanha a aparência clara ou escura do seu dispositivo.";
 "The most important stories from your feeds" = "As matérias mais importantes dos seus feeds";
@@ -810,6 +829,7 @@
 "Top" = "Principal";
 "Top Level" = "Nível superior";
 "Top stories" = "Matérias principais";
+"Train" = "Treinar";
 "Train This Story…" = "Treinar esta matéria…";
 "Train intelligence" = "Treinar inteligência";
 "Train intelligence…" = "Treinar inteligência…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Remover esta matéria dos salvos";
 "Unsave story" = "Remover dos salvos";
 "Unsave this story" = "Remover esta matéria dos salvos";
+"Updated %@ days ago" = "Atualizado há %@ dias";
+"Updated %@ months ago" = "Atualizado há %@ meses";
+"Updated %@ weeks ago" = "Atualizado há %@ semanas";
+"Updated today" = "Atualizado hoje";
 "Updates come to you" = "As atualizações chegam até você";
 "Updating..." = "Atualizando...";
 "Upgrade from Archive" = "Fazer upgrade do Arquivo";
@@ -864,6 +888,7 @@
 "User info" = "Informações do usuário";
 "Username" = "Nome de usuário";
 "Username or Email" = "Nome de usuário ou e-mail";
+"Variant %@" = "Variante %@";
 "Version" = "Versão";
 "View mode" = "Modo de visualização";
 "Warm" = "Quente";

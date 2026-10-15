@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "شارك %1$@ ‏%2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ مواقع الأدوات";
 "%@ ago" = "قبل %@";
+"%@ comments" = "%@ تعليق";
+"%@ days" = "%@ يومًا";
 "%@ feed" = "موجز %@";
 "%@ focused stories" = "%@ قصة مركّزة";
 "%@ folder" = "مجلد %@";
 "%@ is now following you." = "يتابعك الآن %@.";
 "%@ opens" = "%@ مرة فتح";
+"%@ or search" = "%@ أو ابحث";
+"%@ public comments" = "%@ تعليقات عامة";
 "%@ searches" = "%@ من عمليات البحث";
+"%@ shares" = "%@ مشاركة";
 "%@ stories" = "%@ قصة";
 "%@ stories left" = "تبقّت %@ قصة";
 "%@ stories/month" = "%@ خبرًا شهريًا";
@@ -33,6 +38,7 @@
 "%ldh ago" = "قبل %ld ساعة";
 "%ldm ago" = "قبل %ld دقيقة";
 "%ldw ago" = "قبل %ld أسبوع";
+"+ %@ more sites" = "+ %@ مواقع أخرى";
 "..." = "...";
 "1 Widget Site" = "موقع ويدجت واحد";
 "1,000 stories" = "1,000 قصة";
@@ -66,6 +72,7 @@
 "Add Story List" = "إضافة قائمة قصص";
 "Add Story List After" = "إضافة قائمة القصص بعد";
 "Add Story List Before" = "إضافة قائمة القصص قبل";
+"Add Tag" = "إضافة وسم";
 "Add To" = "إضافة إلى";
 "Add custom keyword filters that become their own briefing sections" = "أضف عوامل تصفية مخصصة للكلمات المفتاحية لتظهر كأقسام مستقلة في الملخص";
 "Add feed" = "إضافة خلاصة";
@@ -111,6 +118,7 @@
 "All stories" = "كل القصص";
 "Alphabetical" = "أبجديًا";
 "Already have feeds?" = "لديك خلاصات بالفعل؟";
+"Also published by %@ sites" = "نُشر أيضًا على %@ مواقع";
 "Analyze" = "تحليل";
 "App Badge" = "شارة التطبيق";
 "App Icon" = "أيقونة التطبيق";
@@ -235,6 +243,7 @@
 "Download stories" = "تنزيل القصص";
 "Download text" = "تنزيل النص";
 "Download using" = "التنزيل باستخدام";
+"Edit" = "تعديل";
 "Edit NewsBlur share…" = "تعديل مشاركة NewsBlur…";
 "Edit your comment" = "تعديل تعليقك";
 "Edit your reply" = "تعديل ردك";
@@ -270,6 +279,8 @@
 "Feed source" = "مصدر الخلاصة";
 "Feeds" = "الموجزات";
 "Feeds that support paging are back-filled in for a complete archive" = "تُستكمل أرشفة الخلاصات التي تدعم تقسيم الصفحات لتحصل على أرشيف كامل";
+"Fetching recent stories..." = "جارٍ جلب القصص الأخيرة...";
+"Fetching stories from this site..." = "جارٍ جلب القصص من هذا الموقع...";
 "Fetching text..." = "جارٍ جلب النص...";
 "Filter" = "تصفية";
 "Filter stories by date range" = "تصفية القصص حسب النطاق الزمني";
@@ -327,6 +338,7 @@
 "Grid Height" = "ارتفاع الشبكة";
 "Headlines" = "العناوين";
 "Hidden" = "مخفي";
+"Hide Changes" = "إخفاء التغييرات";
 "Hide Story Titles" = "إخفاء عناوين القصص";
 "Hide status bar" = "إخفاء شريط الحالة";
 "Hide toolbars when reading" = "إخفاء أشرطة الأدوات أثناء القراءة";
@@ -376,6 +388,7 @@
 "Loading image…" = "جارٍ تحميل الصورة…";
 "Loading interests" = "جارٍ تحميل الاهتمامات";
 "Loading settings…" = "جارٍ تحميل الإعدادات…";
+"Loading your feeds…" = "جارٍ تحميل خلاصاتك…";
 "Loading..." = "جارٍ التحميل...";
 "Loading…" = "جارٍ التحميل…";
 "Log In" = "تسجيل الدخول";
@@ -492,6 +505,7 @@
 "No longer saved" = "لم يعد محفوظًا";
 "No notifications yet." = "لا توجد إشعارات بعد.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "لا توجد قصص لعرضها. لا توجد قصص لعرضها. لا توجد قصص لعرضها. لا توجد قصص لعرضها.";
+"No stories yet" = "لا توجد قصص بعد";
 "No story selected" = "لم يتم تحديد أي قصة";
 "No unread stories" = "لا توجد قصص غير مقروءة";
 "None" = "لا شيء";
@@ -610,6 +624,7 @@
 "Rename this site" = "إعادة تسمية هذا الموقع";
 "Renaming..." = "جارٍ تغيير الاسم...";
 "Replied" = "تم الرد";
+"Reply" = "رد";
 "Reply to %@" = "الرد على %@";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
@@ -637,6 +652,7 @@
 "Saved" = "تم الحفظ";
 "Saved Searches" = "عمليات البحث المحفوظة";
 "Saved Stories" = "القصص المحفوظة";
+"Saved on %@" = "حُفظ في %@";
 "Saving search..." = "جارٍ حفظ البحث...";
 "Schedule" = "جدولة";
 "Scroll horizontally" = "التمرير أفقيًا";
@@ -677,6 +693,7 @@
 "Short" = "قصير";
 "Show" = "عرض";
 "Show Ask AI" = "إظهار Ask AI";
+"Show Changes" = "إظهار التغييرات";
 "Show Global Shared Stories" = "إظهار القصص المشتركة عالميًا";
 "Show Good Reads" = "إظهار القراءات الجيدة";
 "Show Infrequent Site Stories" = "إظهار قصص المواقع قليلة التحديث";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
 "Sources" = "المصادر";
 "Spacing" = "التباعد";
+"Stale — last story %@" = "قديم — آخر قصة %@";
 "Standard" = "قياسي";
 "Start reading" = "ابدأ القراءة";
 "Statistics" = "الإحصاءات";
@@ -783,6 +801,7 @@
 "Text View" = "عرض نصي";
 "Text view" = "عرض نصي";
 "Text view conveniently extracts the story" = "يعرض وضع النص خلاصة المقال بسهولة";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "عرض النص الكامل هو <a href=\"http://ios.newsblur.com/premium\">ميزة مميزة</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "تعذّر على محاكي iOS تغيير أيقونة الشاشة الرئيسية. جرّب ذلك على جهاز فعلي.";
 "The icon follows your device's light and dark appearance." = "يتوافق رمز التطبيق مع المظهر الفاتح أو الداكن لجهازك.";
 "The most important stories from your feeds" = "أهم القصص من خلاصاتك";
@@ -810,6 +829,7 @@
 "Top" = "أعلى الصفحة";
 "Top Level" = "المستوى الأعلى";
 "Top stories" = "أهم الأخبار";
+"Train" = "تدريب";
 "Train This Story…" = "درّب هذه المقالة…";
 "Train intelligence" = "درّب الذكاء";
 "Train intelligence…" = "درّب الذكاء…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "إزالة حفظ هذه القصة";
 "Unsave story" = "إلغاء حفظ القصة";
 "Unsave this story" = "إلغاء حفظ هذه القصة";
+"Updated %@ days ago" = "حُدّث قبل %@ يومًا";
+"Updated %@ months ago" = "تم التحديث قبل %@ شهر";
+"Updated %@ weeks ago" = "تم التحديث قبل %@ أسبوع";
+"Updated today" = "تم التحديث اليوم";
 "Updates come to you" = "تصلك التحديثات تلقائيًا";
 "Updating..." = "جارٍ التحديث...";
 "Upgrade from Archive" = "الترقية من الأرشيف";
@@ -864,6 +888,7 @@
 "User info" = "معلومات المستخدم";
 "Username" = "اسم المستخدم";
 "Username or Email" = "اسم المستخدم أو البريد الإلكتروني";
+"Variant %@" = "النسخة %@";
 "Version" = "الإصدار";
 "View mode" = "وضع العرض";
 "Warm" = "دافئ";

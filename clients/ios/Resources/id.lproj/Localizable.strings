@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ membagikan %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ Situs Widget";
 "%@ ago" = "%@ yang lalu";
+"%@ comments" = "%@ komentar";
+"%@ days" = "%@ hari";
 "%@ feed" = "%@ feed";
 "%@ focused stories" = "%@ artikel terpilih";
 "%@ folder" = "Folder %@";
 "%@ is now following you." = "%@ kini mengikuti Anda.";
 "%@ opens" = "%@ kali dibuka";
+"%@ or search" = "%@ atau cari";
+"%@ public comments" = "%@ komentar publik";
 "%@ searches" = "%@ penelusuran";
+"%@ shares" = "%@ kali dibagikan";
 "%@ stories" = "%@ artikel";
 "%@ stories left" = "Sisa %@ artikel";
 "%@ stories/month" = "%@ artikel/bulan";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld jam yang lalu";
 "%ldm ago" = "%ld menit yang lalu";
 "%ldw ago" = "%ld minggu lalu";
+"+ %@ more sites" = "+ %@ situs lainnya";
 "..." = "...";
 "1 Widget Site" = "1 Situs Widget";
 "1,000 stories" = "1.000 cerita";
@@ -66,6 +72,7 @@
 "Add Story List" = "Tambahkan Daftar Cerita";
 "Add Story List After" = "Tambahkan Daftar Berita Setelah";
 "Add Story List Before" = "Tambahkan Daftar Berita Sebelum";
+"Add Tag" = "Tambahkan Tag";
 "Add To" = "Tambahkan ke";
 "Add custom keyword filters that become their own briefing sections" = "Tambahkan filter kata kunci khusus yang akan menjadi bagian tersendiri dalam ringkasan";
 "Add feed" = "Tambahkan feed";
@@ -111,6 +118,7 @@
 "All stories" = "Semua cerita";
 "Alphabetical" = "Urut alfabetis";
 "Already have feeds?" = "Sudah punya feed?";
+"Also published by %@ sites" = "Juga diterbitkan oleh %@ situs";
 "Analyze" = "Analisis";
 "App Badge" = "Lencana Aplikasi";
 "App Icon" = "Ikon Aplikasi";
@@ -235,6 +243,7 @@
 "Download stories" = "Unduh cerita";
 "Download text" = "Unduh teks";
 "Download using" = "Unduh menggunakan";
+"Edit" = "Edit";
 "Edit NewsBlur share…" = "Edit berbagi NewsBlur…";
 "Edit your comment" = "Edit komentar Anda";
 "Edit your reply" = "Edit balasan Anda";
@@ -270,6 +279,8 @@
 "Feed source" = "Sumber feed";
 "Feeds" = "Feed";
 "Feeds that support paging are back-filled in for a complete archive" = "Feed yang mendukung penomoran halaman diisi ulang untuk membuat arsip lengkap";
+"Fetching recent stories..." = "Mengambil artikel terbaru...";
+"Fetching stories from this site..." = "Mengambil artikel dari situs ini...";
 "Fetching text..." = "Mengambil teks...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter cerita berdasarkan rentang tanggal";
@@ -327,6 +338,7 @@
 "Grid Height" = "Tinggi Kisi";
 "Headlines" = "Judul berita";
 "Hidden" = "Tersembunyi";
+"Hide Changes" = "Sembunyikan Perubahan";
 "Hide Story Titles" = "Sembunyikan Judul Cerita";
 "Hide status bar" = "Sembunyikan bilah status";
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
@@ -376,6 +388,7 @@
 "Loading image…" = "Memuat gambar…";
 "Loading interests" = "Memuat minat";
 "Loading settings…" = "Memuat pengaturan…";
+"Loading your feeds…" = "Memuat feed Anda…";
 "Loading..." = "Memuat...";
 "Loading…" = "Memuat…";
 "Log In" = "Masuk";
@@ -492,6 +505,7 @@
 "No longer saved" = "Tidak lagi disimpan";
 "No notifications yet." = "Belum ada notifikasi.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan. Tidak ada berita untuk ditampilkan.";
+"No stories yet" = "Belum ada artikel";
 "No story selected" = "Tidak ada artikel yang dipilih";
 "No unread stories" = "Tidak ada artikel yang belum dibaca";
 "None" = "Tidak ada";
@@ -610,6 +624,7 @@
 "Rename this site" = "Ganti nama situs ini";
 "Renaming..." = "Mengganti nama...";
 "Replied" = "Dibalas";
+"Reply" = "Balas";
 "Reply to %@" = "Balas kepada %@";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
@@ -637,6 +652,7 @@
 "Saved" = "Tersimpan";
 "Saved Searches" = "Pencarian Tersimpan";
 "Saved Stories" = "Artikel Tersimpan";
+"Saved on %@" = "Disimpan pada %@";
 "Saving search..." = "Menyimpan pencarian...";
 "Schedule" = "Jadwal";
 "Scroll horizontally" = "Gulir horizontal";
@@ -677,6 +693,7 @@
 "Short" = "Pendek";
 "Show" = "Tampilkan";
 "Show Ask AI" = "Tampilkan Ask AI";
+"Show Changes" = "Tampilkan Perubahan";
 "Show Global Shared Stories" = "Tampilkan Cerita yang Dibagikan Secara Global";
 "Show Good Reads" = "Tampilkan Bacaan Bagus";
 "Show Infrequent Site Stories" = "Tampilkan Artikel Situs yang Jarang Diperbarui";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Beberapa ikon feed tidak dapat dimuat.";
 "Sources" = "Sumber";
 "Spacing" = "Jarak";
+"Stale — last story %@" = "Usang — artikel terakhir %@";
 "Standard" = "Standar";
 "Start reading" = "Mulai membaca";
 "Statistics" = "Statistik";
@@ -783,6 +801,7 @@
 "Text View" = "Tampilan teks";
 "Text view" = "Tampilan teks";
 "Text view conveniently extracts the story" = "Tampilan Teks mengekstrak isi cerita dengan praktis";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tampilan Teks penuh adalah <a href=\"http://ios.newsblur.com/premium\">fitur premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Simulator iOS tidak dapat mengubah ikon Layar Utama. Coba di perangkat.";
 "The icon follows your device's light and dark appearance." = "Ikon mengikuti tampilan terang atau gelap perangkat Anda.";
 "The most important stories from your feeds" = "Artikel paling penting dari feed Anda";
@@ -810,6 +829,7 @@
 "Top" = "Teratas";
 "Top Level" = "Level Teratas";
 "Top stories" = "Berita teratas";
+"Train" = "Latih";
 "Train This Story…" = "Latih Cerita Ini…";
 "Train intelligence" = "Latih kecerdasan";
 "Train intelligence…" = "Latih kecerdasan…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Hapus cerita ini dari tersimpan";
 "Unsave story" = "Hapus simpanan cerita";
 "Unsave this story" = "Batal simpan artikel ini";
+"Updated %@ days ago" = "Diperbarui %@ hari lalu";
+"Updated %@ months ago" = "Diperbarui %@ bulan lalu";
+"Updated %@ weeks ago" = "Diperbarui %@ minggu lalu";
+"Updated today" = "Diperbarui hari ini";
 "Updates come to you" = "Pembaruan datang kepada Anda";
 "Updating..." = "Memperbarui...";
 "Upgrade from Archive" = "Upgrade dari Archive";
@@ -864,6 +888,7 @@
 "User info" = "Info pengguna";
 "Username" = "Nama pengguna";
 "Username or Email" = "Nama pengguna atau email";
+"Variant %@" = "Varian %@";
 "Version" = "Versi";
 "View mode" = "Mode tampilan";
 "Warm" = "Hangat";
