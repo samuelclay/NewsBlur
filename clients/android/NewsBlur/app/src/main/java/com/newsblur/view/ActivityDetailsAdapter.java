@@ -26,7 +26,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
 
     private final ImageLoader iconLoader;
     private final LayoutInflater inflater;
-    protected final String ago;
+    private final Resources resources;
     private final int linkColor, contentColor, quoteColor;
     protected final UserDetails currentUserDetails;
     protected final boolean userIsYou;
@@ -38,8 +38,7 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
         this.iconLoader = iconLoader;
         currentUserDetails = user;
 
-        Resources resources = context.getResources();
-        ago = resources.getString(R.string.profile_ago);
+        resources = context.getResources();
 
         linkColor = UIUtils.getThemedColor(context, R.attr.linkText, android.R.attr.textColor);
         contentColor = UIUtils.getThemedColor(context, R.attr.defaultText, android.R.attr.textColor);
@@ -62,7 +61,8 @@ public abstract class ActivityDetailsAdapter extends ArrayAdapter<ActivityDetail
         TextView activityTime = view.findViewById(R.id.row_activity_time);
         ShapeableImageView imageView = view.findViewById(R.id.row_activity_icon);
 
-        activityTime.setText(activity.timeSince + " " + ago);
+        // ActivityDetailsAdapter.java formats the whole phrase so each language places "ago" itself.
+        activityTime.setText(resources.getString(R.string.profile_time_ago, activity.timeSince));
         if (activity.category == Category.FEED_SUBSCRIPTION) {
             iconLoader.displayImage(APIConstants.S3_URL_FEED_ICONS + activity.feedId + ".png", imageView);
         } else if (activity.category == Category.SHARED_STORY) {

@@ -151,7 +151,7 @@ people together to talk about the world.</string>
     <string name="profile_following">Following</string>
     <string name="profile_followers">Followers</string>
     <string name="profile_shared">Shared stories</string>
-    <string name="profile_ago">ago</string>
+    <string name="profile_time_ago">%1$s ago</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
     <string name="profile_button_follow">Follow</string>

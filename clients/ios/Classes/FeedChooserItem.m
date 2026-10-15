@@ -144,7 +144,7 @@
         case FeedChooserSortRecency:
         {
             static NSDateFormatter *dateFormatter = nil;
-            static NSDateComponentsFormatter *componentsFormatter = nil;
+            static NSRelativeDateTimeFormatter *relativeFormatter = nil;
             
             if (!dateFormatter) {
                 dateFormatter = [NSDateFormatter new];
@@ -152,18 +152,19 @@
                 dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
             }
             
-            if (!componentsFormatter)
-            {
-                componentsFormatter = [NSDateComponentsFormatter new];
-                
-                componentsFormatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
-                componentsFormatter.maximumUnitCount = 1;
-                componentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
+            if (!relativeFormatter) {
+                relativeFormatter = [NSRelativeDateTimeFormatter new];
+                relativeFormatter.unitsStyle = NSRelativeDateTimeFormatterUnitsStyleFull;
+                relativeFormatter.dateTimeStyle = NSRelativeDateTimeFormatterStyleNumeric;
             }
+            // FeedChooserItem.m lets the formatter phrase the whole age ("3 days ago", "vor 3 Tagen"),
+            // since wrapping a bare "3 Tage" in a translated "ago" breaks languages with case endings.
+            relativeFormatter.locale = NBLocalization.formattingLocale;
             
             NSDate *date = [dateFormatter dateFromString:self.info[@"last_story_date"]];
+            if (!date) return @"";
             
-            return [NSString stringWithFormat:[NBLocalization text:@"%@ ago"],  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
+            return [relativeFormatter localizedStringForDate:date relativeToDate:[NSDate date]];
             break;
         }
         
