@@ -310,7 +310,7 @@
 "Export Preferences" = "Xuất tùy chọn";
 "Export trained stories from folders as RSS feeds" = "Xuất bài viết đã huấn luyện từ các thư mục thành nguồn cấp RSS";
 "Extra Large" = "Cực lớn";
-"Extra Short" = "Cực ngắn";
+"Extra Short [grid height]" = "Cực thấp";
 "Extra Small" = "Cực nhỏ";
 "Extra Tall" = "Cực cao";
 "Extra small" = "Cực nhỏ";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Mục từ khóa %@";
 "Keywords" = "Từ khóa";
 "Language" = "Ngôn ngữ";
-"Large" = "Lớn";
 "Large Left" = "Lớn bên trái";
 "Large Right" = "Phải lớn";
+"Large [text size]" = "Lớn";
 "Last used" = "Dùng gần đây nhất";
 "Lavender Iris" = "Diên vĩ oải hương";
 "Layout" = "Bố cục";
@@ -465,8 +465,8 @@
 "Login as…" = "Đăng nhập với tư cách…";
 "Login: %@" = "Đăng nhập: %@";
 "Logout" = "Đăng xuất";
-"Long" = "Dài";
 "Long Reads" = "Bài đọc dài";
+"Long [preview length]" = "Dài";
 "Long press" = "Nhấn giữ";
 "Long press on feeds and folders" = "Nhấn giữ trên nguồn cấp dữ liệu và thư mục";
 "Long press on story titles" = "Nhấn giữ tiêu đề tin";
@@ -520,7 +520,10 @@
 "Match" = "Khớp";
 "Matches story" = "Khớp với bài viết";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "Trung bình";
+"Medium [grid height]" = "Vừa";
+"Medium [preview length]" = "Vừa";
+"Medium [text size]" = "Vừa";
+"Medium [theme]" = "Trung bình";
 "Model" = "Mô hình";
 "Monday" = "Thứ Hai";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Nhiều bài viết hơn sẽ chiếm thêm dung lượng đĩa, nhưng ngoài ra không ảnh hưởng đáng kể đến hiệu năng.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Chia sẻ kèm bình luận";
 "Shared" = "Đã chia sẻ";
 "Shared Stories label" = "Nhãn Bài viết đã chia sẻ";
-"Short" = "Ngắn";
+"Short [grid height]" = "Thấp";
+"Short [preview length]" = "Ngắn";
 "Show" = "Hiển thị";
 "Show Ask AI" = "Hiển thị Hỏi AI";
 "Show Changes" = "Hiện thay đổi";
@@ -840,9 +844,9 @@
 "Skip this step" = "Bỏ qua bước này";
 "Slate Gray" = "Xám đá phiến";
 "Slower" = "Chậm hơn";
-"Small" = "Nhỏ";
 "Small Left" = "Trái nhỏ";
 "Small Right" = "Nhỏ, bên phải";
+"Small [text size]" = "Nhỏ";
 "Some feed icons couldn’t load." = "Không thể tải một số biểu tượng nguồn tin.";
 "Sources" = "Nguồn";
 "Spacing" = "Khoảng cách";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Chuyển sang Tất cả hoặc Chưa đọc.";
 "Syncing stories..." = "Đang đồng bộ tin...";
 "TEXT" = "VĂN BẢN";
-"Tall" = "Cao";
+"Tall [grid height]" = "Cao";
 "Teal Mint" = "Xanh bạc hà ngọc lam";
 "Terms of Use" = "Điều khoản sử dụng";
 "Text" = "Văn bản";

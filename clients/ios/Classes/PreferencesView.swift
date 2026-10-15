@@ -640,7 +640,7 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .orange,
                         type: .multiValue(
                             key: "story_list_preview_text_size",
-                            titles: [NBLocalization.text("Title only"), NBLocalization.text("Short"), NBLocalization.text("Medium"), NBLocalization.text("Long")],
+                            titles: [NBLocalization.text("Title only"), NBLocalization.text("Short", context: "preview length"), NBLocalization.text("Medium", context: "preview length"), NBLocalization.text("Long", context: "preview length")],
                             values: ["title", "short", "medium", "long"],
                             defaultValue: "short"
                         )
@@ -759,7 +759,7 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .blue,
                         type: .multiValue(
                             key: "feed_list_font_size",
-                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small"), NBLocalization.text("Medium"), NBLocalization.text("Large"), NBLocalization.text("Extra Large")],
+                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small", context: "text size"), NBLocalization.text("Medium", context: "text size"), NBLocalization.text("Large", context: "text size"), NBLocalization.text("Extra Large")],
                             values: ["xs", "small", "medium", "large", "xl"],
                             defaultValue: "medium"
                         )
@@ -770,7 +770,7 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .purple,
                         type: .multiValue(
                             key: "story_font_size",
-                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small"), NBLocalization.text("Medium"), NBLocalization.text("Large"), NBLocalization.text("Extra Large")],
+                            titles: [NBLocalization.text("Extra small"), NBLocalization.text("Small", context: "text size"), NBLocalization.text("Medium", context: "text size"), NBLocalization.text("Large", context: "text size"), NBLocalization.text("Extra Large")],
                             values: ["xs", "small", "medium", "large", "xl"],
                             defaultValue: "medium"
                         )

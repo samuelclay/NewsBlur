@@ -1476,6 +1476,7 @@ msgstr "북마클릿"
 msgid "Bottom"
 msgstr "하단"
 
+msgctxt "summary length"
 msgid "Brief"
 msgstr "간략히"
 
@@ -2125,6 +2126,7 @@ msgstr "집중하거나 숨길 내용을 설명하세요"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "찾을 내용을 설명하면 AI가 프롬프트에 따라 각 스토리의 이미지를 분석합니다."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "자세히"
 
@@ -3809,6 +3811,11 @@ msgstr "나중에"
 msgid "Media"
 msgstr "미디어"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "중간"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "보통"
 
@@ -5662,6 +5669,7 @@ msgstr "Shift+u를 누르면 사이드바가 숨겨져 방해 없이 읽을 수 
 msgid "Shopping"
 msgstr "쇼핑"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "짧게"
 
@@ -6292,6 +6300,7 @@ msgstr "태그:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "작업 실행: 읽음으로 표시, 태그와 메모를 추가해 저장, 구독, 공유"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "높음"
 

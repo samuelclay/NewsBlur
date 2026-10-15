@@ -310,7 +310,7 @@
 "Export Preferences" = "ส่งออกการตั้งค่า";
 "Export trained stories from folders as RSS feeds" = "ส่งออกเรื่องที่ฝึกจากโฟลเดอร์เป็นฟีด RSS";
 "Extra Large" = "ใหญ่มาก";
-"Extra Short" = "สั้นพิเศษ";
+"Extra Short [grid height]" = "สั้นมาก";
 "Extra Small" = "เล็กพิเศษ";
 "Extra Tall" = "สูงพิเศษ";
 "Extra small" = "เล็กพิเศษ";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "ส่วนคำสำคัญ %@";
 "Keywords" = "คำสำคัญ";
 "Language" = "ภาษา";
-"Large" = "ใหญ่";
 "Large Left" = "ใหญ่ ซ้าย";
 "Large Right" = "ขนาดใหญ่ด้านขวา";
+"Large [text size]" = "ใหญ่";
 "Last used" = "ใช้ล่าสุด";
 "Lavender Iris" = "ไอริสลาเวนเดอร์";
 "Layout" = "เค้าโครง";
@@ -465,8 +465,8 @@
 "Login as…" = "เข้าสู่ระบบในชื่อ…";
 "Login: %@" = "เข้าสู่ระบบ: %@";
 "Logout" = "ออกจากระบบ";
-"Long" = "ยาว";
 "Long Reads" = "บทความยาว";
+"Long [preview length]" = "ยาว";
 "Long press" = "กดค้าง";
 "Long press on feeds and folders" = "กดค้างที่ฟีดและโฟลเดอร์";
 "Long press on story titles" = "กดชื่อบทความค้างไว้";
@@ -520,7 +520,10 @@
 "Match" = "ตรงกัน";
 "Matches story" = "ตรงกับเรื่อง";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "ปานกลาง";
+"Medium [grid height]" = "ปานกลาง";
+"Medium [preview length]" = "ปานกลาง";
+"Medium [text size]" = "ปานกลาง";
+"Medium [theme]" = "ปานกลาง";
 "Model" = "โมเดล";
 "Monday" = "วันจันทร์";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "เรื่องราวจำนวนมากขึ้นใช้พื้นที่ดิสก์มากขึ้น แต่ไม่มีผลต่อประสิทธิภาพอย่างเห็นได้ชัด";
@@ -797,7 +800,8 @@
 "Share with comment" = "แชร์พร้อมความคิดเห็น";
 "Shared" = "แชร์แล้ว";
 "Shared Stories label" = "ป้ายเรื่องที่แชร์";
-"Short" = "สั้น";
+"Short [grid height]" = "สั้น";
+"Short [preview length]" = "สั้น";
 "Show" = "แสดง";
 "Show Ask AI" = "แสดง Ask AI";
 "Show Changes" = "แสดงการเปลี่ยนแปลง";
@@ -840,9 +844,9 @@
 "Skip this step" = "ข้ามขั้นตอนนี้";
 "Slate Gray" = "เทาอมฟ้า";
 "Slower" = "ช้าลง";
-"Small" = "เล็ก";
 "Small Left" = "เล็ก ซ้าย";
 "Small Right" = "ขวาขนาดเล็ก";
+"Small [text size]" = "เล็ก";
 "Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
 "Sources" = "แหล่งที่มา";
 "Spacing" = "ระยะห่าง";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "สลับไปที่ทั้งหมดหรือยังไม่อ่าน";
 "Syncing stories..." = "กำลังซิงค์บทความ...";
 "TEXT" = "ข้อความ";
-"Tall" = "สูง";
+"Tall [grid height]" = "สูง";
 "Teal Mint" = "มิ้นต์เขียวอมฟ้า";
 "Terms of Use" = "ข้อกำหนดการใช้งาน";
 "Text" = "ข้อความ";

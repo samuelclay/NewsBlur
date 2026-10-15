@@ -1476,6 +1476,7 @@ msgstr "書籤小工具"
 msgid "Bottom"
 msgstr "底部"
 
+msgctxt "summary length"
 msgid "Brief"
 msgstr "簡短"
 
@@ -2121,6 +2122,7 @@ msgstr "描述要聚焦或隱藏的內容"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "描述你要尋找的內容，AI 會根據你的提示分析每篇文章的圖片。"
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "詳細"
 
@@ -3801,6 +3803,11 @@ msgstr "稍後再說"
 msgid "Media"
 msgstr "媒體"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "中"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "中"
 
@@ -5654,8 +5661,9 @@ msgstr "按 Shift+u 隱藏側邊欄，專心閱讀。"
 msgid "Shopping"
 msgstr "購物"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "矮"
+msgstr "短"
 
 msgid "Show"
 msgstr "顯示"
@@ -6284,6 +6292,7 @@ msgstr "標籤："
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "採取行動：標記為已讀、加上標籤與備註儲存、訂閱、分享"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "高"
 

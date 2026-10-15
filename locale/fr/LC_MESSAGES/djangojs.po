@@ -1571,8 +1571,9 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "En bas"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Court"
+msgstr "Bref"
 
 msgid "Briefing"
 msgstr "Briefing"
@@ -2239,6 +2240,7 @@ msgstr ""
 "Décrivez ce qu’il faut rechercher et l’IA analysera les images de chaque article en fonction de votre "
 "consigne."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Détaillé"
 
@@ -3972,6 +3974,11 @@ msgstr "Peut-être plus tard"
 msgid "Media"
 msgstr "Média"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "Moyen"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "Moyen"
 
@@ -5899,6 +5906,7 @@ msgstr "Maj+u masque la barre latérale pour lire sans distraction."
 msgid "Shopping"
 msgstr "Achats"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "Court"
 
@@ -6542,8 +6550,9 @@ msgstr "Tags :"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Agissez : marquer comme lu, enregistrer avec des tags et des notes, s’abonner, partager"
 
+msgctxt "card height"
 msgid "Tall"
-msgstr "Grand"
+msgstr "Haut"
 
 msgid "Target category name"
 msgstr "Nom de la catégorie cible"

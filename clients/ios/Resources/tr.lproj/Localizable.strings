@@ -310,7 +310,7 @@
 "Export Preferences" = "Tercihleri Dışa Aktar";
 "Export trained stories from folders as RSS feeds" = "Klasörlerdeki eğitilmiş haberleri RSS akışları olarak dışa aktar";
 "Extra Large" = "Ekstra büyük";
-"Extra Short" = "Ekstra Kısa";
+"Extra Short [grid height]" = "Çok kısa";
 "Extra Small" = "Çok Küçük";
 "Extra Tall" = "Ekstra uzun";
 "Extra small" = "Çok küçük";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Anahtar kelime bölümü %@";
 "Keywords" = "Anahtar Kelimeler";
 "Language" = "Dil";
-"Large" = "Büyük";
 "Large Left" = "Büyük Sol";
 "Large Right" = "Sağda Büyük";
+"Large [text size]" = "Büyük";
 "Last used" = "Son kullanılan";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Düzen";
@@ -465,8 +465,8 @@
 "Login as…" = "Şu kullanıcı olarak giriş yap…";
 "Login: %@" = "Giriş: %@";
 "Logout" = "Çıkış yap";
-"Long" = "Uzun";
 "Long Reads" = "Uzun Okumalar";
+"Long [preview length]" = "Uzun";
 "Long press" = "Basılı tut";
 "Long press on feeds and folders" = "Akışlara ve klasörlere uzun basın";
 "Long press on story titles" = "Haber başlıklarına uzun basın";
@@ -520,7 +520,10 @@
 "Match" = "Eşleşme";
 "Matches story" = "Hikâyeyle eşleşiyor";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "Orta";
+"Medium [grid height]" = "Orta";
+"Medium [preview length]" = "Orta";
+"Medium [text size]" = "Orta";
+"Medium [theme]" = "Orta";
 "Model" = "Model";
 "Monday" = "Pazartesi";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Daha fazla haber daha çok disk alanı kaplar; bunun dışında performansı fark edilir biçimde etkilemez.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Yorumla paylaş";
 "Shared" = "Paylaşıldı";
 "Shared Stories label" = "Paylaşılan Haberler etiketi";
-"Short" = "Kısa";
+"Short [grid height]" = "Kısa";
+"Short [preview length]" = "Kısa";
 "Show" = "Göster";
 "Show Ask AI" = "Ask AI'ı göster";
 "Show Changes" = "Değişiklikleri göster";
@@ -840,9 +844,9 @@
 "Skip this step" = "Bu adımı atla";
 "Slate Gray" = "Arduvaz Grisi";
 "Slower" = "Daha yavaş";
-"Small" = "Küçük";
 "Small Left" = "Küçük Sol";
 "Small Right" = "Küçük Sağ";
+"Small [text size]" = "Küçük";
 "Some feed icons couldn’t load." = "Bazı akış simgeleri yüklenemedi.";
 "Sources" = "Kaynaklar";
 "Spacing" = "Boşluk";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Tümü veya Okunmamış görünümüne geçin.";
 "Syncing stories..." = "Haberler eşitleniyor...";
 "TEXT" = "METİN";
-"Tall" = "Uzun";
+"Tall [grid height]" = "Uzun";
 "Teal Mint" = "Turkuaz Nane";
 "Terms of Use" = "Kullanım Koşulları";
 "Text" = "Metin";

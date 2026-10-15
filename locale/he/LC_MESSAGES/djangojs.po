@@ -1559,8 +1559,9 @@ msgstr "סימנייה"
 msgid "Bottom"
 msgstr "למטה"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "תקציר"
+msgstr "תמציתי"
 
 msgid "Briefing"
 msgstr "תדריך"
@@ -2217,6 +2218,7 @@ msgstr "תארו במה להתמקד או מה להסתיר"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "תאר מה לחפש, וה-AI ינתח את התמונות בכל כתבה בהתאם להנחיה שלך."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "מפורט"
 
@@ -3925,6 +3927,11 @@ msgstr "אולי מאוחר יותר"
 msgid "Media"
 msgstr "מדיה"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "בינוני"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "בינוני"
 
@@ -5812,6 +5819,7 @@ msgstr "Shift+u מסתיר את סרגל הצד לקריאה ללא הסחות �
 msgid "Shopping"
 msgstr "קניות"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "קצר"
 
@@ -6447,6 +6455,7 @@ msgstr "תגיות:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "בצעו פעולות: סמנו כנקראה, שמרו עם תגים והערות, הירשמו כמנויים ושתפו"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "גבוה"
 

@@ -310,7 +310,7 @@
 "Export Preferences" = "Exportar preferências";
 "Export trained stories from folders as RSS feeds" = "Exporte artigos treinados de pastas como feeds RSS";
 "Extra Large" = "Extra grande";
-"Extra Short" = "Extra curto";
+"Extra Short [grid height]" = "Muito baixo";
 "Extra Small" = "Extra pequeno";
 "Extra Tall" = "Extra alto";
 "Extra small" = "Extra pequeno";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Seção de palavras-chave %@";
 "Keywords" = "Palavras-chave";
 "Language" = "Idioma";
-"Large" = "Grande";
 "Large Left" = "Grande à esquerda";
 "Large Right" = "Grande à direita";
+"Large [text size]" = "Grande";
 "Last used" = "Usado por último";
 "Lavender Iris" = "Íris lavanda";
 "Layout" = "Layout";
@@ -465,8 +465,8 @@
 "Login as…" = "Entrar como…";
 "Login: %@" = "Login: %@";
 "Logout" = "Sair";
-"Long" = "Longo";
 "Long Reads" = "Leituras longas";
+"Long [preview length]" = "Longo";
 "Long press" = "Mantenha pressionado";
 "Long press on feeds and folders" = "Toque longo em feeds e pastas";
 "Long press on story titles" = "Toque longo nos títulos dos artigos";
@@ -520,7 +520,10 @@
 "Match" = "Correspondência";
 "Matches story" = "Corresponde ao artigo";
 "Meadow Sage" = "Verde-sálvia";
-"Medium" = "Médio";
+"Medium [grid height]" = "Médio";
+"Medium [preview length]" = "Médio";
+"Medium [text size]" = "Médio";
+"Medium [theme]" = "Médio";
 "Model" = "Modelo";
 "Monday" = "Segunda-feira";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mais artigos ocupam mais espaço em disco, mas não afetam o desempenho de forma perceptível.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Compartilhar com comentário";
 "Shared" = "Compartilhado";
 "Shared Stories label" = "Artigos compartilhados";
-"Short" = "Curto";
+"Short [grid height]" = "Baixo";
+"Short [preview length]" = "Curto";
 "Show" = "Mostrar";
 "Show Ask AI" = "Mostrar “Perguntar à IA”";
 "Show Changes" = "Mostrar alterações";
@@ -840,9 +844,9 @@
 "Skip this step" = "Pular esta etapa";
 "Slate Gray" = "Cinza ardósia";
 "Slower" = "Mais devagar";
-"Small" = "Pequeno";
 "Small Left" = "Pequeno à esquerda";
 "Small Right" = "Pequeno à direita";
+"Small [text size]" = "Pequeno";
 "Some feed icons couldn’t load." = "Não foi possível carregar alguns ícones de feeds.";
 "Sources" = "Fontes";
 "Spacing" = "Espaçamento";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Alterne para Todos ou Não lidos.";
 "Syncing stories..." = "Sincronizando artigos...";
 "TEXT" = "TEXTO";
-"Tall" = "Alto";
+"Tall [grid height]" = "Alto";
 "Teal Mint" = "Verde-água menta";
 "Terms of Use" = "Termos de uso";
 "Text" = "Texto";

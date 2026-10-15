@@ -1575,6 +1575,7 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "Unten"
 
+msgctxt "summary length"
 msgid "Brief"
 msgstr "Kurz"
 
@@ -2244,6 +2245,7 @@ msgstr ""
 "Beschreibe, wonach gesucht werden soll, und die KI analysiert die Bilder jedes Artikels anhand deiner "
 "Vorgabe."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Detailliert"
 
@@ -3968,8 +3970,13 @@ msgstr "Vielleicht später"
 msgid "Media"
 msgstr "Medien"
 
+msgctxt "card height"
 msgid "Medium"
 msgstr "Mittel"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "Mittellang"
 
 msgid "Merge"
 msgstr "Zusammenführen"
@@ -5887,6 +5894,7 @@ msgstr "Mit Umschalt+u blendest du die Seitenleiste für ungestörtes Lesen aus.
 msgid "Shopping"
 msgstr "Shopping"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "Kurz"
 
@@ -6524,6 +6532,7 @@ msgstr "Tags:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Aktionen ausführen: als gelesen markieren, mit Tags und Notizen speichern, abonnieren, teilen"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "Hoch"
 

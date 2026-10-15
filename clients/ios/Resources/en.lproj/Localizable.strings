@@ -310,7 +310,7 @@
 "Export Preferences" = "Export Preferences";
 "Export trained stories from folders as RSS feeds" = "Export trained stories from folders as RSS feeds";
 "Extra Large" = "Extra Large";
-"Extra Short" = "Extra Short";
+"Extra Short [grid height]" = "Extra Short";
 "Extra Small" = "Extra Small";
 "Extra Tall" = "Extra Tall";
 "Extra small" = "Extra small";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Keyword section %@";
 "Keywords" = "Keywords";
 "Language" = "Language";
-"Large" = "Large";
 "Large Left" = "Large Left";
 "Large Right" = "Large Right";
+"Large [text size]" = "Large";
 "Last used" = "Last used";
 "Lavender Iris" = "Lavender Iris";
 "Layout" = "Layout";
@@ -465,8 +465,8 @@
 "Login as…" = "Login as…";
 "Login: %@" = "Login: %@";
 "Logout" = "Logout";
-"Long" = "Long";
 "Long Reads" = "Long Reads";
+"Long [preview length]" = "Long";
 "Long press" = "Long press";
 "Long press on feeds and folders" = "Long press on feeds and folders";
 "Long press on story titles" = "Long press on story titles";
@@ -520,7 +520,10 @@
 "Match" = "Match";
 "Matches story" = "Matches story";
 "Meadow Sage" = "Meadow Sage";
-"Medium" = "Medium";
+"Medium [grid height]" = "Medium";
+"Medium [preview length]" = "Medium";
+"Medium [text size]" = "Medium";
+"Medium [theme]" = "Medium";
 "Model" = "Model";
 "Monday" = "Monday";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "More stories take more disk space, but otherwise have no noticeable effect on performance.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Share with comment";
 "Shared" = "Shared";
 "Shared Stories label" = "Shared Stories label";
-"Short" = "Short";
+"Short [grid height]" = "Short";
+"Short [preview length]" = "Short";
 "Show" = "Show";
 "Show Ask AI" = "Show Ask AI";
 "Show Changes" = "Show Changes";
@@ -840,9 +844,9 @@
 "Skip this step" = "Skip this step";
 "Slate Gray" = "Slate Gray";
 "Slower" = "Slower";
-"Small" = "Small";
 "Small Left" = "Small Left";
 "Small Right" = "Small Right";
+"Small [text size]" = "Small";
 "Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
 "Sources" = "Sources";
 "Spacing" = "Spacing";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Switch to All or Unread.";
 "Syncing stories..." = "Syncing stories...";
 "TEXT" = "TEXT";
-"Tall" = "Tall";
+"Tall [grid height]" = "Tall";
 "Teal Mint" = "Teal Mint";
 "Terms of Use" = "Terms of Use";
 "Text" = "Text";

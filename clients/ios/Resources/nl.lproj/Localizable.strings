@@ -310,7 +310,7 @@
 "Export Preferences" = "Voorkeuren exporteren";
 "Export trained stories from folders as RSS feeds" = "Getrainde artikelen uit mappen exporteren als RSS-feeds";
 "Extra Large" = "Extra groot";
-"Extra Short" = "Extra kort";
+"Extra Short [grid height]" = "Extra laag";
 "Extra Small" = "Extra klein";
 "Extra Tall" = "Extra hoog";
 "Extra small" = "Extra klein";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Trefwoordsectie %@";
 "Keywords" = "Trefwoorden";
 "Language" = "Taal";
-"Large" = "Groot";
 "Large Left" = "Groot links";
 "Large Right" = "Groot rechts";
+"Large [text size]" = "Groot";
 "Last used" = "Laatst gebruikt";
 "Lavender Iris" = "Lavendeliris";
 "Layout" = "Lay-out";
@@ -465,8 +465,8 @@
 "Login as…" = "Inloggen als…";
 "Login: %@" = "Inloggen: %@";
 "Logout" = "Uitloggen";
-"Long" = "Lang";
 "Long Reads" = "Lange artikelen";
+"Long [preview length]" = "Lang";
 "Long press" = "Lang indrukken";
 "Long press on feeds and folders" = "Houd feeds en mappen lang ingedrukt";
 "Long press on story titles" = "Houd artikeltitels lang ingedrukt";
@@ -520,7 +520,10 @@
 "Match" = "Overeenkomst";
 "Matches story" = "Komt overeen met artikel";
 "Meadow Sage" = "Weidesalie";
-"Medium" = "Gemiddeld";
+"Medium [grid height]" = "Gemiddeld";
+"Medium [preview length]" = "Gemiddeld";
+"Medium [text size]" = "Gemiddeld";
+"Medium [theme]" = "Gemiddeld";
 "Model" = "Model";
 "Monday" = "maandag";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Meer artikelen nemen meer schijfruimte in beslag, maar hebben verder geen merkbare invloed op de prestaties.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Delen met opmerking";
 "Shared" = "Gedeeld";
 "Shared Stories label" = "Gedeelde artikelen";
-"Short" = "Kort";
+"Short [grid height]" = "Kort";
+"Short [preview length]" = "Kort";
 "Show" = "Tonen";
 "Show Ask AI" = "Vraag AI tonen";
 "Show Changes" = "Wijzigingen tonen";
@@ -840,9 +844,9 @@
 "Skip this step" = "Deze stap overslaan";
 "Slate Gray" = "Leigrijs";
 "Slower" = "Langzamer";
-"Small" = "Klein";
 "Small Left" = "Klein links";
 "Small Right" = "Klein rechts";
+"Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Sommige feedpictogrammen konden niet worden geladen.";
 "Sources" = "Bronnen";
 "Spacing" = "Tussenruimte";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Schakel over naar Alles of Ongelezen.";
 "Syncing stories..." = "Artikelen synchroniseren...";
 "TEXT" = "TEKST";
-"Tall" = "Hoog";
+"Tall [grid height]" = "Hoog";
 "Teal Mint" = "Tealmunt";
 "Terms of Use" = "Gebruiksvoorwaarden";
 "Text" = "Tekst";

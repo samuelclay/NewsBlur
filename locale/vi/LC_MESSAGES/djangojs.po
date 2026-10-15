@@ -1488,8 +1488,9 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "Dưới cùng"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Tóm tắt"
+msgstr "Sơ lược"
 
 msgid "Briefing"
 msgstr "Bản tin tóm lược"
@@ -2148,6 +2149,7 @@ msgstr "Mô tả nội dung cần tập trung hoặc ẩn"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Mô tả những gì cần tìm, AI sẽ phân tích hình ảnh trong từng bài viết dựa trên lời nhắc của bạn."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Chi tiết"
 
@@ -3860,8 +3862,13 @@ msgstr "Để sau"
 msgid "Media"
 msgstr "Phương tiện"
 
+msgctxt "card height"
 msgid "Medium"
-msgstr "Trung bình"
+msgstr "Vừa"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "Vừa"
 
 msgid "Merge"
 msgstr "Gộp"
@@ -5743,8 +5750,9 @@ msgstr "Nhấn Shift+u để ẩn thanh bên, giúp đọc không bị phân tâ
 msgid "Shopping"
 msgstr "Mua sắm"
 
+msgctxt "card height"
 msgid "Short"
-msgstr "Ngắn"
+msgstr "Thấp"
 
 msgid "Show"
 msgstr "Hiển thị"
@@ -6377,6 +6385,7 @@ msgstr "Thẻ:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Thực hiện thao tác: đánh dấu đã đọc, lưu kèm thẻ và ghi chú, đăng ký, chia sẻ"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "Cao"
 

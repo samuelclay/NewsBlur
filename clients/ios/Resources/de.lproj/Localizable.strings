@@ -310,7 +310,7 @@
 "Export Preferences" = "Einstellungen exportieren";
 "Export trained stories from folders as RSS feeds" = "Trainierte Artikel aus Ordnern als RSS-Feeds exportieren";
 "Extra Large" = "Extra groß";
-"Extra Short" = "Extra kurz";
+"Extra Short [grid height]" = "Sehr niedrig";
 "Extra Small" = "Extra klein";
 "Extra Tall" = "Extra hoch";
 "Extra small" = "Extra klein";
@@ -431,9 +431,9 @@
 "Keyword section %@" = "Stichwortabschnitt %@";
 "Keywords" = "Stichwörter";
 "Language" = "Sprache";
-"Large" = "Groß";
 "Large Left" = "Groß links";
 "Large Right" = "Groß rechts";
+"Large [text size]" = "Groß";
 "Last used" = "Zuletzt verwendet";
 "Lavender Iris" = "Lavendel-Iris";
 "Layout" = "Layout";
@@ -465,8 +465,8 @@
 "Login as…" = "Anmelden als…";
 "Login: %@" = "Anmeldung: %@";
 "Logout" = "Abmelden";
-"Long" = "Lang";
 "Long Reads" = "Lange Artikel";
+"Long [preview length]" = "Lang";
 "Long press" = "Lange drücken";
 "Long press on feeds and folders" = "Feeds und Ordner lange drücken";
 "Long press on story titles" = "Artikeltitel lange drücken";
@@ -520,7 +520,10 @@
 "Match" = "Übereinstimmung";
 "Matches story" = "Passt zum Artikel";
 "Meadow Sage" = "Wiesensalbei";
-"Medium" = "Mittel";
+"Medium [grid height]" = "Mittel";
+"Medium [preview length]" = "Mittel";
+"Medium [text size]" = "Mittel";
+"Medium [theme]" = "Mittel";
 "Model" = "Modell";
 "Monday" = "Montag";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mehr Artikel benötigen mehr Speicherplatz, haben ansonsten aber keine spürbaren Auswirkungen auf die Leistung.";
@@ -797,7 +800,8 @@
 "Share with comment" = "Mit Kommentar teilen";
 "Shared" = "Geteilt";
 "Shared Stories label" = "Label „Geteilte Artikel“";
-"Short" = "Kurz";
+"Short [grid height]" = "Niedrig";
+"Short [preview length]" = "Kurz";
 "Show" = "Anzeigen";
 "Show Ask AI" = "„KI fragen“ anzeigen";
 "Show Changes" = "Änderungen anzeigen";
@@ -840,9 +844,9 @@
 "Skip this step" = "Diesen Schritt überspringen";
 "Slate Gray" = "Schiefergrau";
 "Slower" = "Langsamer";
-"Small" = "Klein";
 "Small Left" = "Klein links";
 "Small Right" = "Klein rechts";
+"Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Einige Feed-Symbole konnten nicht geladen werden.";
 "Sources" = "Quellen";
 "Spacing" = "Abstand";
@@ -915,7 +919,7 @@
 "Switch to All or Unread." = "Wechsle zu „Alle“ oder „Ungelesen“.";
 "Syncing stories..." = "Artikel werden synchronisiert …";
 "TEXT" = "TEXT";
-"Tall" = "Hoch";
+"Tall [grid height]" = "Hoch";
 "Teal Mint" = "Türkis-Mint";
 "Terms of Use" = "Nutzungsbedingungen";
 "Text" = "Text";

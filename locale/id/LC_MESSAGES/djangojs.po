@@ -1565,8 +1565,9 @@ msgstr "Bookmarklet"
 msgid "Bottom"
 msgstr "Bawah"
 
+msgctxt "summary length"
 msgid "Brief"
-msgstr "Ringkasan"
+msgstr "Ringkas"
 
 msgid "Briefing"
 msgstr "Ringkasan"
@@ -2226,6 +2227,7 @@ msgstr "Jelaskan hal yang ingin difokuskan atau disembunyikan"
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Jelaskan apa yang perlu dicari, dan AI akan menganalisis gambar setiap cerita berdasarkan perintah Anda."
 
+msgctxt "summary length"
 msgid "Detailed"
 msgstr "Terperinci"
 
@@ -3952,6 +3954,11 @@ msgstr "Mungkin nanti"
 msgid "Media"
 msgstr "Media"
 
+msgctxt "card height"
+msgid "Medium"
+msgstr "Sedang"
+
+msgctxt "summary length"
 msgid "Medium"
 msgstr "Sedang"
 
@@ -5857,6 +5864,7 @@ msgstr "Tekan Shift+u untuk menyembunyikan bilah sisi agar dapat membaca tanpa g
 msgid "Shopping"
 msgstr "Belanja"
 
+msgctxt "card height"
 msgid "Short"
 msgstr "Pendek"
 
@@ -6496,6 +6504,7 @@ msgstr "Tag:"
 msgid "Take action: mark as read, save with tags and notes, subscribe, share"
 msgstr "Lakukan tindakan: tandai telah dibaca, simpan dengan tag dan catatan, berlangganan, bagikan"
 
+msgctxt "card height"
 msgid "Tall"
 msgstr "Tinggi"
 
