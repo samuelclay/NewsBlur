@@ -175,6 +175,7 @@
 "Bullets" = "تعداد نقطي";
 "Bundle folder name" = "اسم مجلد الحزمة";
 "Cancel" = "إلغاء";
+"Cannot reply to this story" = "لا يمكن الرد على هذه القصة";
 "Change Story List" = "تغيير قائمة القصص";
 "Choose Icon" = "اختيار أيقونة";
 "Choose Story List" = "اختر قائمة القصص";
@@ -316,6 +317,7 @@
 "Extra small" = "صغير جدًا";
 "Faster" = "أسرع";
 "Favorited" = "مفضّلة";
+"Favoriting" = "جارٍ الإضافة إلى المفضّلة";
 "Feed List" = "قائمة الخلاصات";
 "Feed Title" = "عنوان الخلاصة";
 "Feed and story list" = "قائمة الخلاصات والمقالات";
@@ -355,7 +357,9 @@
 "Follow-ups" = "المتابعات";
 "Followed" = "تمت المتابعة";
 "Followers label" = "تسمية المتابعين";
-"Following" = "يتابع";
+"Following [button state]" = "تتابع";
+"Following [in progress]" = "جارٍ المتابعة";
+"Following [label under the number of people this profile follows]" = "يتابع";
 "Font" = "الخط";
 "Font Size" = "حجم الخط";
 "Font..." = "الخط...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "يمكن لمشتركي Premium اختيار أيقونة مخصصة لـ NewsBlur. يتضمن كل نمط نسختين فاتحة وداكنة.";
 "Preview images" = "صور المعاينة";
 "Preview — not yet subscribed" = "معاينة — لم يُشترَك بعد";
+"Previewing..." = "جارٍ المعاينة...";
 "Previous Folder" = "المجلد السابق";
 "Previous Site" = "الموقع السابق";
 "Previous Story" = "القصة السابقة";
@@ -729,6 +734,7 @@
 "Replied" = "تم الرد";
 "Reply" = "رد";
 "Reply to %@" = "الرد على %@";
+"Replying" = "جارٍ الرد";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
 "Resume" = "استئناف";
@@ -800,6 +806,7 @@
 "Share with comment" = "مشاركة مع تعليق";
 "Shared" = "تمت المشاركة";
 "Shared Stories label" = "تسمية القصص المشتركة";
+"Sharing" = "جارٍ المشاركة";
 "Short [grid height]" = "قصير";
 "Short [preview length]" = "قصير";
 "Show" = "عرض";

@@ -175,6 +175,7 @@
 "Bullets" = "要点";
 "Bundle folder name" = "合集文件夹名称";
 "Cancel" = "取消";
+"Cannot reply to this story" = "无法回复此故事";
 "Change Story List" = "更改文章列表";
 "Choose Icon" = "选择图标";
 "Choose Story List" = "选择文章列表";
@@ -316,6 +317,7 @@
 "Extra small" = "超小";
 "Faster" = "更快";
 "Favorited" = "已点赞";
+"Favoriting" = "收藏中";
 "Feed List" = "订阅源列表";
 "Feed Title" = "订阅源标题";
 "Feed and story list" = "订阅源和文章列表";
@@ -355,7 +357,9 @@
 "Follow-ups" = "后续跟进";
 "Followed" = "已关注";
 "Followers label" = "关注者";
-"Following" = "正在关注";
+"Following [button state]" = "已关注";
+"Following [in progress]" = "正在关注";
+"Following [label under the number of people this profile follows]" = "关注中";
 "Font" = "字体";
 "Font Size" = "字体大小";
 "Font..." = "字体…";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "高级版订阅者可以选择自定义的 NewsBlur 图标。每种样式都包含浅色和深色版本。";
 "Preview images" = "预览图片";
 "Preview — not yet subscribed" = "预览 — 尚未订阅";
+"Previewing..." = "正在预览...";
 "Previous Folder" = "上一个文件夹";
 "Previous Site" = "上一个网站";
 "Previous Story" = "上一篇";
@@ -729,6 +734,7 @@
 "Replied" = "已回复";
 "Reply" = "回复";
 "Reply to %@" = "回复 %@";
+"Replying" = "回复中";
 "Resize sidebar" = "调整侧边栏大小";
 "Restore" = "恢复";
 "Resume" = "继续";
@@ -800,6 +806,7 @@
 "Share with comment" = "分享并附上评论";
 "Shared" = "已分享";
 "Shared Stories label" = "分享的文章";
+"Sharing" = "分享中";
 "Short [grid height]" = "短";
 "Short [preview length]" = "短";
 "Show" = "显示";

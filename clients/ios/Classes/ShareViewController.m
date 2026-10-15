@@ -310,7 +310,7 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyPagesViewController showShareHUD:@"Sharing"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Sharing"]];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -368,7 +368,7 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyPagesViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Replying"]];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -382,7 +382,7 @@ static NSMutableDictionary *NBShareMergedStory(NSDictionary *existingStory, NSDi
     id commentUserId = [appDelegate.activeComment objectForKey:@"user_id"];
 
     if (!feedId || !storyId || !commentUserId) {
-        [appDelegate.storyPagesViewController showShareHUD:@"Cannot reply to this story"];
+        [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Cannot reply to this story"]];
         return;
     }
 

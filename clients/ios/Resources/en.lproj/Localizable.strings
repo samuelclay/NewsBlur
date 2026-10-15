@@ -175,6 +175,7 @@
 "Bullets" = "Bullets";
 "Bundle folder name" = "Bundle folder name";
 "Cancel" = "Cancel";
+"Cannot reply to this story" = "Cannot reply to this story";
 "Change Story List" = "Change Story List";
 "Choose Icon" = "Choose Icon";
 "Choose Story List" = "Choose Story List";
@@ -316,6 +317,7 @@
 "Extra small" = "Extra small";
 "Faster" = "Faster";
 "Favorited" = "Favorited";
+"Favoriting" = "Favoriting";
 "Feed List" = "Feed List";
 "Feed Title" = "Feed Title";
 "Feed and story list" = "Feed and story list";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Follow-ups";
 "Followed" = "Followed";
 "Followers label" = "Followers label";
-"Following" = "Following";
+"Following [button state]" = "Following";
+"Following [in progress]" = "Following";
+"Following [label under the number of people this profile follows]" = "Following";
 "Font" = "Font";
 "Font Size" = "Font Size";
 "Font..." = "Font...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants.";
 "Preview images" = "Preview images";
 "Preview — not yet subscribed" = "Preview — not yet subscribed";
+"Previewing..." = "Previewing...";
 "Previous Folder" = "Previous Folder";
 "Previous Site" = "Previous Site";
 "Previous Story" = "Previous Story";
@@ -729,6 +734,7 @@
 "Replied" = "Replied";
 "Reply" = "Reply";
 "Reply to %@" = "Reply to %@";
+"Replying" = "Replying";
 "Resize sidebar" = "Resize sidebar";
 "Restore" = "Restore";
 "Resume" = "Resume";
@@ -800,6 +806,7 @@
 "Share with comment" = "Share with comment";
 "Shared" = "Shared";
 "Shared Stories label" = "Shared Stories label";
+"Sharing" = "Sharing";
 "Short [grid height]" = "Short";
 "Short [preview length]" = "Short";
 "Show" = "Show";

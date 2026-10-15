@@ -2678,7 +2678,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     if (showHUD) {
         if (!self.isPhone) {
-            [self.storyPagesViewController showShareHUD:@"Finding story..."];
+            [self.storyPagesViewController showShareHUD:[NBLocalization text:@"Finding story..."]];
         } else {
             MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
             HUD.labelText = [NBLocalization text:@"Finding story..."];

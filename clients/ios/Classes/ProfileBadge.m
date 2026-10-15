@@ -145,7 +145,7 @@
         [follow setTitle:[NBLocalization text:@"You"] forState:UIControlStateNormal];
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
-        [follow setTitle:[NBLocalization text:@"Following"] forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"Following" context:@"button state"] forState:UIControlStateNormal];
         follow.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
         [follow setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     } else {
@@ -272,7 +272,7 @@
         [self.contentView addSubview:following];
         
         UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight + 30, (width/3), 20)];
-        followingLabel.text = [NBLocalization text:@"Following"];
+        followingLabel.text = [NBLocalization text:@"Following" context:@"label under the number of people this profile follows"];
         followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         followingLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -359,7 +359,7 @@
         return;
     } 
     
-    [self.followButton setTitle:[NBLocalization text:@"Following"] forState:UIControlStateNormal];
+    [self.followButton setTitle:[NBLocalization text:@"Following" context:@"button state"] forState:UIControlStateNormal];
     self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowColor);
     [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowTextColor) forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];

@@ -175,6 +175,7 @@
 "Bullets" = "Stichpunkte";
 "Bundle folder name" = "Name des Bündelordners";
 "Cancel" = "Abbrechen";
+"Cannot reply to this story" = "Auf diese Meldung kann nicht geantwortet werden";
 "Change Story List" = "Artikelliste ändern";
 "Choose Icon" = "Symbol auswählen";
 "Choose Story List" = "Artikelliste auswählen";
@@ -316,6 +317,7 @@
 "Extra small" = "Extra klein";
 "Faster" = "Schneller";
 "Favorited" = "Zu Favoriten hinzugefügt";
+"Favoriting" = "Wird favorisiert";
 "Feed List" = "Feedliste";
 "Feed Title" = "Feed-Titel";
 "Feed and story list" = "Feed- und Artikelliste";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Folgeartikel";
 "Followed" = "Gefolgt";
 "Followers label" = "Follower";
-"Following" = "Folge ich";
+"Following [button state]" = "Folge ich";
+"Following [in progress]" = "Wird gefolgt";
+"Following [label under the number of people this profile follows]" = "Folgt";
 "Font" = "Schriftart";
 "Font Size" = "Schriftgröße";
 "Font..." = "Schriftart …";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium-Abonnenten können ein benutzerdefiniertes NewsBlur-Symbol auswählen. Jede Variante gibt es in einer hellen und einer dunklen Ausführung.";
 "Preview images" = "Vorschaubilder";
 "Preview — not yet subscribed" = "Vorschau — noch nicht abonniert";
+"Previewing..." = "Vorschau wird geladen …";
 "Previous Folder" = "Vorheriger Ordner";
 "Previous Site" = "Vorherige Website";
 "Previous Story" = "Vorheriger Artikel";
@@ -729,6 +734,7 @@
 "Replied" = "Beantwortet";
 "Reply" = "Antworten";
 "Reply to %@" = "%@ antworten";
+"Replying" = "Wird geantwortet";
 "Resize sidebar" = "Seitenleiste in der Größe ändern";
 "Restore" = "Wiederherstellen";
 "Resume" = "Fortsetzen";
@@ -800,6 +806,7 @@
 "Share with comment" = "Mit Kommentar teilen";
 "Shared" = "Geteilt";
 "Shared Stories label" = "Label „Geteilte Artikel“";
+"Sharing" = "Wird geteilt";
 "Short [grid height]" = "Niedrig";
 "Short [preview length]" = "Kurz";
 "Show" = "Anzeigen";

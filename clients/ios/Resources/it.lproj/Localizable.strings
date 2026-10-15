@@ -175,6 +175,7 @@
 "Bullets" = "Elenchi puntati";
 "Bundle folder name" = "Nome della cartella del bundle";
 "Cancel" = "Annulla";
+"Cannot reply to this story" = "Impossibile rispondere a questa storia";
 "Change Story List" = "Modifica elenco articoli";
 "Choose Icon" = "Scegli icona";
 "Choose Story List" = "Scegli l’elenco degli articoli";
@@ -316,6 +317,7 @@
 "Extra small" = "Extra piccolo";
 "Faster" = "Più veloce";
 "Favorited" = "Aggiunto ai preferiti";
+"Favoriting" = "Aggiunta ai preferiti";
 "Feed List" = "Elenco dei feed";
 "Feed Title" = "Titolo del feed";
 "Feed and story list" = "Feed ed elenco degli articoli";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Sviluppi";
 "Followed" = "Seguito";
 "Followers label" = "Etichetta follower";
-"Following" = "Seguiti";
+"Following [button state]" = "Seguito";
+"Following [in progress]" = "Segui";
+"Following [label under the number of people this profile follows]" = "Segue";
 "Font" = "Carattere";
 "Font Size" = "Dimensione carattere";
 "Font..." = "Carattere...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Gli abbonati Premium possono scegliere un'icona personalizzata di NewsBlur. Ogni variante include versioni chiare e scure.";
 "Preview images" = "Immagini di anteprima";
 "Preview — not yet subscribed" = "Anteprima — non ancora iscritto";
+"Previewing..." = "Anteprima in corso...";
 "Previous Folder" = "Cartella precedente";
 "Previous Site" = "Sito precedente";
 "Previous Story" = "Articolo precedente";
@@ -729,6 +734,7 @@
 "Replied" = "Risposta inviata";
 "Reply" = "Rispondi";
 "Reply to %@" = "Rispondi a %@";
+"Replying" = "Invio della risposta";
 "Resize sidebar" = "Ridimensiona barra laterale";
 "Restore" = "Ripristina";
 "Resume" = "Riprendi";
@@ -800,6 +806,7 @@
 "Share with comment" = "Condividi con un commento";
 "Shared" = "Condivisi";
 "Shared Stories label" = "Etichetta Articoli condivisi";
+"Sharing" = "Condivisione";
 "Short [grid height]" = "Basso";
 "Short [preview length]" = "Breve";
 "Show" = "Mostra";

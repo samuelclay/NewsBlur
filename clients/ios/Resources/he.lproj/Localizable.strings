@@ -175,6 +175,7 @@
 "Bullets" = "תבליטים";
 "Bundle folder name" = "שם תיקיית האיגוד";
 "Cancel" = "ביטול";
+"Cannot reply to this story" = "אי אפשר להשיב לסיפור הזה";
 "Change Story List" = "שינוי רשימת הכתבות";
 "Choose Icon" = "בחירת סמל";
 "Choose Story List" = "בחירת רשימת כתבות";
@@ -316,6 +317,7 @@
 "Extra small" = "קטן במיוחד";
 "Faster" = "מהיר יותר";
 "Favorited" = "נוסף למועדפים";
+"Favoriting" = "מוסיף למועדפים";
 "Feed List" = "רשימת פידים";
 "Feed Title" = "כותרת הפיד";
 "Feed and story list" = "רשימת הזנות וכתבות";
@@ -355,7 +357,9 @@
 "Follow-ups" = "המשכים";
 "Followed" = "במעקב";
 "Followers label" = "תווית עוקבים";
-"Following" = "במעקב";
+"Following [button state]" = "עוקב";
+"Following [in progress]" = "עוקב";
+"Following [label under the number of people this profile follows]" = "עוקב";
 "Font" = "גופן";
 "Font Size" = "גודל גופן";
 "Font..." = "גופן...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "מנויי Premium יכולים לבחור סמל NewsBlur מותאם אישית. כל סגנון כולל גרסה בהירה וכהה.";
 "Preview images" = "תמונות תצוגה מקדימה";
 "Preview — not yet subscribed" = "תצוגה מקדימה — עדיין לא נרשמת כמנוי";
+"Previewing..." = "מציג תצוגה מקדימה...";
 "Previous Folder" = "התיקייה הקודמת";
 "Previous Site" = "האתר הקודם";
 "Previous Story" = "כתבה קודמת";
@@ -729,6 +734,7 @@
 "Replied" = "השיב";
 "Reply" = "השב";
 "Reply to %@" = "תגובה אל %@";
+"Replying" = "משיב";
 "Resize sidebar" = "שינוי גודל סרגל הצד";
 "Restore" = "שחזור";
 "Resume" = "המשך";
@@ -800,6 +806,7 @@
 "Share with comment" = "שיתוף עם תגובה";
 "Shared" = "משותף";
 "Shared Stories label" = "תווית כתבות משותפות";
+"Sharing" = "משתף";
 "Short [grid height]" = "נמוך";
 "Short [preview length]" = "קצר";
 "Show" = "הצגה";

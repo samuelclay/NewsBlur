@@ -175,6 +175,7 @@
 "Bullets" = "Dấu đầu dòng";
 "Bundle folder name" = "Tên thư mục gói";
 "Cancel" = "Hủy";
+"Cannot reply to this story" = "Không thể trả lời tin này";
 "Change Story List" = "Thay đổi danh sách bài viết";
 "Choose Icon" = "Chọn biểu tượng";
 "Choose Story List" = "Chọn danh sách tin";
@@ -316,6 +317,7 @@
 "Extra small" = "Cực nhỏ";
 "Faster" = "Nhanh hơn";
 "Favorited" = "Đã yêu thích";
+"Favoriting" = "Đang thêm vào mục yêu thích";
 "Feed List" = "Danh sách nguồn tin";
 "Feed Title" = "Tiêu đề nguồn cấp dữ liệu";
 "Feed and story list" = "Nguồn cấp và danh sách bài viết";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Bài viết tiếp theo";
 "Followed" = "Đang theo dõi";
 "Followers label" = "Nhãn người theo dõi";
-"Following" = "Đang theo dõi";
+"Following [button state]" = "Đang theo dõi";
+"Following [in progress]" = "Đang theo dõi";
+"Following [label under the number of people this profile follows]" = "Đang theo dõi";
 "Font" = "Phông chữ";
 "Font Size" = "Cỡ chữ";
 "Font..." = "Phông chữ...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Người đăng ký Premium có thể chọn biểu tượng NewsBlur tùy chỉnh. Mỗi kiểu có phiên bản sáng và tối.";
 "Preview images" = "Ảnh xem trước";
 "Preview — not yet subscribed" = "Xem trước — chưa đăng ký";
+"Previewing..." = "Đang xem trước...";
 "Previous Folder" = "Thư mục trước";
 "Previous Site" = "Trang trước";
 "Previous Story" = "Tin trước đó";
@@ -729,6 +734,7 @@
 "Replied" = "Đã trả lời";
 "Reply" = "Trả lời";
 "Reply to %@" = "Trả lời %@";
+"Replying" = "Đang trả lời";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
 "Resume" = "Tiếp tục";
@@ -800,6 +806,7 @@
 "Share with comment" = "Chia sẻ kèm bình luận";
 "Shared" = "Đã chia sẻ";
 "Shared Stories label" = "Nhãn Bài viết đã chia sẻ";
+"Sharing" = "Đang chia sẻ";
 "Short [grid height]" = "Thấp";
 "Short [preview length]" = "Ngắn";
 "Show" = "Hiển thị";

@@ -175,6 +175,7 @@
 "Bullets" = "बुलेट";
 "Bundle folder name" = "बंडल फ़ोल्डर का नाम";
 "Cancel" = "रद्द करें";
+"Cannot reply to this story" = "इस कहानी का जवाब नहीं दिया जा सकता";
 "Change Story List" = "स्टोरी सूची बदलें";
 "Choose Icon" = "आइकन चुनें";
 "Choose Story List" = "स्टोरी सूची चुनें";
@@ -316,6 +317,7 @@
 "Extra small" = "अत्यंत छोटा";
 "Faster" = "तेज़";
 "Favorited" = "पसंदीदा";
+"Favoriting" = "पसंद किया जा रहा है";
 "Feed List" = "फ़ीड सूची";
 "Feed Title" = "फ़ीड का शीर्षक";
 "Feed and story list" = "फ़ीड और कहानी सूची";
@@ -355,7 +357,9 @@
 "Follow-ups" = "फ़ॉलो-अप";
 "Followed" = "फ़ॉलो किया गया";
 "Followers label" = "फ़ॉलोअर्स";
-"Following" = "फ़ॉलो कर रहे हैं";
+"Following [button state]" = "फ़ॉलो किया जा रहा है";
+"Following [in progress]" = "फ़ॉलो किया जा रहा है";
+"Following [label under the number of people this profile follows]" = "फ़ॉलो किए जा रहे हैं";
 "Font" = "फ़ॉन्ट";
 "Font Size" = "फ़ॉन्ट का आकार";
 "Font..." = "फ़ॉन्ट...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium सदस्य अपनी पसंद का NewsBlur आइकन चुन सकते हैं। हर रूप में हल्का और गहरा, दोनों संस्करण शामिल हैं।";
 "Preview images" = "पूर्वावलोकन छवियाँ";
 "Preview — not yet subscribed" = "पूर्वावलोकन — अभी सदस्यता नहीं ली गई";
+"Previewing..." = "पूर्वावलोकन हो रहा है...";
 "Previous Folder" = "पिछला फ़ोल्डर";
 "Previous Site" = "पिछली साइट";
 "Previous Story" = "पिछली कहानी";
@@ -729,6 +734,7 @@
 "Replied" = "जवाब दिया";
 "Reply" = "जवाब दें";
 "Reply to %@" = "%@ को जवाब दें";
+"Replying" = "जवाब दिया जा रहा है";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
 "Resume" = "फिर शुरू करें";
@@ -800,6 +806,7 @@
 "Share with comment" = "टिप्पणी के साथ साझा करें";
 "Shared" = "साझा किया गया";
 "Shared Stories label" = "साझा की गई कहानियों का लेबल";
+"Sharing" = "साझा किया जा रहा है";
 "Short [grid height]" = "छोटा";
 "Short [preview length]" = "छोटा";
 "Show" = "दिखाएँ";

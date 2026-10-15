@@ -161,6 +161,7 @@ def common_entries():
     # manage.py stores NBLocalization.text("Medium", context: "theme") under the key "Medium [theme]".
     contextual = re.compile(
         r'NBLocalization\.text\(\s*("(?:\\.|[^"\\])*")\s*,\s*context:\s*("(?:\\.|[^"\\])*")\s*\)'
+        r'|\[NBLocalization text:@("(?:\\.|[^"\\])*")\s+context:@("(?:\\.|[^"\\])*")\]'
     )
     ios_contextual = set()
     for path in sorted((ROOT / "clients/ios/Classes").rglob("*")):
@@ -168,7 +169,9 @@ def common_entries():
             continue
         content = path.read_text()
         for match in contextual.finditer(content):
-            ios_contextual.add((json.loads(match[1]), json.loads(match[2])))
+            # manage.py reads the Swift form (groups 1-2) or the Objective-C form (groups 3-4).
+            value, context = (match[1], match[2]) if match[1] else (match[3], match[4])
+            ios_contextual.add((json.loads(value), json.loads(context)))
         for match in pattern.finditer(contextual.sub("", content)):
             ios_strings.add(json.loads(match[1]))
     interfaces = list((ROOT / "clients/ios/Classes").glob("*.xib")) + list(IOS.glob("*.storyboard"))

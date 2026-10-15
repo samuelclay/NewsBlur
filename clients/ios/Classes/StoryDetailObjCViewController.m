@@ -3470,7 +3470,7 @@
 #pragma mark Actions
 
 - (void)toggleLikeComment:(BOOL)likeComment {
-    [appDelegate.storyPagesViewController showShareHUD:@"Favoriting"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Favoriting"]];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"%@/social/like_comment",
@@ -3722,7 +3722,7 @@
 
 - (void)previewImage:(NSURL *)url {
     [self hideHUDAnimated:YES];
-    [appDelegate.storyPagesViewController showShareHUD:@"Previewing..."];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Previewing..."]];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
@@ -3767,7 +3767,7 @@
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {
-    [appDelegate.storyPagesViewController showShareHUD:@"Following"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Following" context:@"in progress"]];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];

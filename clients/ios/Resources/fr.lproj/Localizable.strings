@@ -175,6 +175,7 @@
 "Bullets" = "Puces";
 "Bundle folder name" = "Nom du dossier de la collection";
 "Cancel" = "Annuler";
+"Cannot reply to this story" = "Impossible de répondre à cette publication";
 "Change Story List" = "Modifier la liste des articles";
 "Choose Icon" = "Choisir une icône";
 "Choose Story List" = "Choisir la liste des articles";
@@ -316,6 +317,7 @@
 "Extra small" = "Très petit";
 "Faster" = "Plus rapide";
 "Favorited" = "Ajouté aux favoris";
+"Favoriting" = "Ajout aux favoris";
 "Feed List" = "Liste des flux";
 "Feed Title" = "Titre du flux";
 "Feed and story list" = "Flux et liste d’articles";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Suivis";
 "Followed" = "Suivi";
 "Followers label" = "Libellé des abonnés";
-"Following" = "Abonnements";
+"Following [button state]" = "Abonné";
+"Following [in progress]" = "Abonnement en cours";
+"Following [label under the number of people this profile follows]" = "Abonnements";
 "Font" = "Police";
 "Font Size" = "Taille de police";
 "Font..." = "Police…";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Les abonnés Premium peuvent choisir une icône NewsBlur personnalisée. Chaque style comprend des variantes claires et sombres.";
 "Preview images" = "Images d’aperçu";
 "Preview — not yet subscribed" = "Aperçu — pas encore abonné";
+"Previewing..." = "Aperçu en cours...";
 "Previous Folder" = "Dossier précédent";
 "Previous Site" = "Site précédent";
 "Previous Story" = "Article précédent";
@@ -729,6 +734,7 @@
 "Replied" = "A répondu";
 "Reply" = "Répondre";
 "Reply to %@" = "Répondre à %@";
+"Replying" = "Réponse en cours";
 "Resize sidebar" = "Redimensionner la barre latérale";
 "Restore" = "Restaurer";
 "Resume" = "Reprendre";
@@ -800,6 +806,7 @@
 "Share with comment" = "Partager avec un commentaire";
 "Shared" = "Partagé";
 "Shared Stories label" = "Libellé « Articles partagés »";
+"Sharing" = "Partage";
 "Short [grid height]" = "Court";
 "Short [preview length]" = "Court";
 "Show" = "Afficher";
