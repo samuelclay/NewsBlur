@@ -223,7 +223,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>シェア%@件</string>
+			<string>共有%@件</string>
 		</dict>
 	</dict>
 	<key>%@ sources</key>
@@ -335,7 +335,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%1$@件のフィードを「%2$@」フォルダに追加</string>
+			<string>%1$@件のフィードを「%2$@」フォルダーに追加</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>

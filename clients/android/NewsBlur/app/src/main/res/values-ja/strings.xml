@@ -645,7 +645,7 @@
     <string name="settings_enable_notifications">通知を有効にする</string>
     <string name="ask_ai_upgrade_archive">プレミアムアーカイブにアップグレード</string>
     <string name="ask_ai_ask_question">質問する…</string>
-    <string name="ask_ai_follow_up">続けて質問…</string>
+    <string name="ask_ai_follow_up">追加で質問…</string>
     <string name="ask_ai_ask">質問する</string>
     <string name="ask_ai_send">送信</string>
     <string name="ask_ai_reask">もう一度質問</string>
@@ -1121,8 +1121,8 @@
     <string name="profile_activity_user_signed_up">%1$sがNewsblurに登録しました</string>
     <string name="profile_activity_you_followed">%1$sをフォローしました</string>
     <string name="profile_activity_user_followed">%1$sが%2$sをフォローしました</string>
-    <string name="profile_activity_you_favorited_comments">%2$sへのコメント%1$s件にお気に入りを付けました</string>
-    <string name="profile_activity_user_favorited_comments">%1$sが%3$sへの%2$s件のコメントをお気に入りに追加しました</string>
+    <string name="profile_activity_you_favorited_comments">%2$sへの%1$sのコメントをお気に入りに追加しました</string>
+    <string name="profile_activity_user_favorited_comments">%1$sが%3$sへの%2$sのコメントをお気に入りに追加しました</string>
     <string name="profile_activity_you_replied">%1$sさんに返信しました</string>
     <string name="profile_activity_user_replied">%1$sが%2$sに返信しました</string>
     <string name="profile_activity_you_shared">%1$sを共有しました</string>
@@ -1136,16 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$sさんが%2$sさんのコメントに返信しました</string>
     <string name="profile_interaction_replied_user_reply">%1$sさんが%2$sさんの返信に返信しました</string>
     <string name="profile_interaction_reshared">%1$sが%2$sを再共有しました</string>
-    <string name="briefing_section_top_stories">注目の記事</string>
-    <string name="briefing_section_top_stories_subtitle">フィードの重要な記事</string>
-    <string name="briefing_section_infrequent">更新頻度の低いサイトの記事</string>
+    <string name="briefing_section_top_stories">トップ記事</string>
+    <string name="briefing_section_top_stories_subtitle">フィードの中で特に重要な記事</string>
+    <string name="briefing_section_infrequent">更新頻度の低いサイトから</string>
     <string name="briefing_section_infrequent_subtitle">更新頻度の低いフィードの記事</string>
     <string name="briefing_section_long_read">あとで読む長文記事</string>
-    <string name="briefing_section_long_read_subtitle">時間をかけて読む価値のある長い記事</string>
-    <string name="briefing_section_classifier_match">あなたの興味に基づく記事</string>
+    <string name="briefing_section_long_read_subtitle">時間を取って読む価値のある長い記事</string>
+    <string name="briefing_section_classifier_match">興味に基づく</string>
     <string name="briefing_section_classifier_match_subtitle">学習したトピックや著者に一致する記事</string>
     <string name="briefing_section_follow_up">続報</string>
     <string name="briefing_section_follow_up_subtitle">最近読んだフィードの新着記事</string>
-    <string name="briefing_section_widely_covered">複数のフィードで掲載</string>
+    <string name="briefing_section_widely_covered">広く取り上げられている</string>
     <string name="briefing_section_widely_covered_subtitle">3つ以上のフィードで取り上げられた記事</string>
 </resources>
