@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Не вдалося додати %1$@ стрічок до %2$@.</string>
+			<string>Не вдалося додати %1$@ стрічки до %2$@.</string>
 			<key>many</key>
 			<string>Не вдалося додати %1$@ стрічок до %2$@.</string>
 			<key>one</key>
@@ -37,7 +37,7 @@
 			<key>many</key>
 			<string>Сайти віджетів: %@</string>
 			<key>one</key>
-			<string>%@ сайт-віджет</string>
+			<string>%@ сайт віджета</string>
 			<key>other</key>
 			<string>Сайти віджетів %@</string>
 		</dict>
@@ -57,7 +57,7 @@
 			<key>many</key>
 			<string>%@ категорій на вибір</string>
 			<key>one</key>
-			<string>%@ категорію на вибір</string>
+			<string>%@ категорія на вибір</string>
 			<key>other</key>
 			<string>Доступно категорій на вибір: %@</string>
 		</dict>
@@ -93,11 +93,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Не вдалося додати %@.</string>
+			<string>Не вдалося додати %@ стрічки.</string>
 			<key>many</key>
-			<string>Не вдалося додати %@.</string>
+			<string>Не вдалося додати %@ стрічок.</string>
 			<key>one</key>
-			<string>Не вдалося додати %@.</string>
+			<string>Не вдалося додати %@ стрічку.</string>
 			<key>other</key>
 			<string>Не вдалося додати %@.</string>
 		</dict>
@@ -137,7 +137,7 @@
 			<key>many</key>
 			<string>%@ стрічок</string>
 			<key>one</key>
-			<string>%@ стрічку</string>
+			<string>%@ стрічка</string>
 			<key>other</key>
 			<string>%@ стрічок</string>
 		</dict>
@@ -233,13 +233,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ відібраних історій</string>
+			<string>%@ статті у фокусі</string>
 			<key>many</key>
-			<string>%@ вибраних статей</string>
+			<string>%@ статей у фокусі</string>
 			<key>one</key>
-			<string>%@ вибрана стаття</string>
+			<string>%@ стаття у фокусі</string>
 			<key>other</key>
-			<string>%@ відібраних статей</string>
+			<string>%@ статті у фокусі</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -355,9 +355,9 @@
 			<key>few</key>
 			<string>%@ статті</string>
 			<key>many</key>
-			<string>%@ публікацій</string>
+			<string>%@ статей</string>
 			<key>one</key>
-			<string>%@ історія</string>
+			<string>%@ стаття</string>
 			<key>other</key>
 			<string>%@ статей</string>
 		</dict>
@@ -373,11 +373,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Залишилося %@ історії</string>
+			<string>Залишилося %@ статті</string>
 			<key>many</key>
 			<string>Залишилося статей: %@</string>
 			<key>one</key>
-			<string>Залишилася %@ історія</string>
+			<string>Залишилася %@ стаття</string>
 			<key>other</key>
 			<string>Залишилося %@ статей</string>
 		</dict>
@@ -473,7 +473,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Додати %1$@ стрічок до папки «%2$@»</string>
+			<string>Додати %1$@ стрічки до папки «%2$@»</string>
 			<key>many</key>
 			<string>Додати %1$@ стрічок до папки «%2$@»</string>
 			<key>one</key>
@@ -553,11 +553,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Видалити %@ сайтів?</string>
+			<string>Видалити %@ сайти?</string>
 			<key>many</key>
 			<string>Видалити %@ сайтів?</string>
 			<key>one</key>
-			<string>Видалити сайт %@?</string>
+			<string>Видалити %@ сайт?</string>
 			<key>other</key>
 			<string>Видалити %@ сайтів?</string>
 		</dict>
@@ -593,11 +593,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Зображення за %@ дні тому</string>
+			<string>Зображення за останні %@ дні</string>
 			<key>many</key>
-			<string>Зображення за %@ днів тому</string>
+			<string>Зображення за останні %@ днів</string>
 			<key>one</key>
-			<string>Зображення за %@ день</string>
+			<string>Зображення за останній %@ день</string>
 			<key>other</key>
 			<string>Зображення за %@ днів тому</string>
 		</dict>
@@ -613,11 +613,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Зображення за %@ год тому</string>
+			<string>Зображення за останні %@ години</string>
 			<key>many</key>
-			<string>Зображення за %@ годин тому</string>
+			<string>Зображення за останні %@ годин</string>
 			<key>one</key>
-			<string>Зображення за %@ годину тому</string>
+			<string>Зображення за останню %@ годину</string>
 			<key>other</key>
 			<string>Зображення за %@ годин тому</string>
 		</dict>
@@ -633,7 +633,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Імпортовано %@ сайтів</string>
+			<string>Імпортовано %@ сайти</string>
 			<key>many</key>
 			<string>Імпортовано сайтів: %@</string>
 			<key>one</key>
@@ -653,11 +653,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Позначити ці %@ статей як прочитані</string>
+			<string>Позначити ці %@ статті як прочитані</string>
 			<key>many</key>
 			<string>Позначити ці %@ статей як прочитані</string>
 			<key>one</key>
-			<string>Позначити %@ прочитаною</string>
+			<string>Позначити %@ статтю як прочитану</string>
 			<key>other</key>
 			<string>Позначити ці %@ статей як прочитані</string>
 		</dict>
@@ -673,11 +673,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Вимкнути %@ сайтів</string>
+			<string>Вимкнути %@ сайти</string>
 			<key>many</key>
-			<string>Ігнорувати сайти (%@)</string>
+			<string>Вимкнути %@ сайтів</string>
 			<key>one</key>
-			<string>Заглушити %@ сайт</string>
+			<string>Вимкнути %@ сайт</string>
 			<key>other</key>
 			<string>Ігнорувати %@ сайтів</string>
 		</dict>
@@ -697,7 +697,7 @@
 			<key>many</key>
 			<string>Старіші за %@ днів</string>
 			<key>one</key>
-			<string>Старше ніж %@ день</string>
+			<string>Старіші за %@ день</string>
 			<key>other</key>
 			<string>Старші за %@ днів</string>
 		</dict>
@@ -713,13 +713,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Поширені новини</string>
+			<string>Поширені статті</string>
 			<key>many</key>
 			<string>Поширені статті</string>
 			<key>one</key>
-			<string>Поширена новина</string>
+			<string>Поширена стаття</string>
 			<key>other</key>
-			<string>Поширені публікації</string>
+			<string>Поширені статті</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -733,7 +733,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Зберігання за останні %@ днів</string>
+			<string>Зберігання за останні %@ дні</string>
 			<key>many</key>
 			<string>Зберігання за минулі %@ днів</string>
 			<key>one</key>
@@ -753,11 +753,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Зберігання за останні %@ годин</string>
+			<string>Зберігання за останні %@ години</string>
 			<key>many</key>
-			<string>Зберігати за останні %@ годин</string>
+			<string>Зберігання за останні %@ годин</string>
 			<key>one</key>
-			<string>Зберігати за останню %@ годину</string>
+			<string>Зберігання за останню %@ годину</string>
 			<key>other</key>
 			<string>Зберігання за останні %@ годин</string>
 		</dict>
@@ -773,11 +773,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Текст за %@ дні тому</string>
+			<string>Текст за останні %@ дні</string>
 			<key>many</key>
-			<string>Текст за %@ днів тому</string>
+			<string>Текст за останні %@ днів</string>
 			<key>one</key>
-			<string>Текст за %@ день тому</string>
+			<string>Текст за останній %@ день</string>
 			<key>other</key>
 			<string>Текст за %@ днів тому</string>
 		</dict>
@@ -793,11 +793,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Текст за %@ годин тому</string>
+			<string>Текст за останні %@ години</string>
 			<key>many</key>
-			<string>Текст із %@ годин тому</string>
+			<string>Текст за останні %@ годин</string>
 			<key>one</key>
-			<string>Текст за %@ годину тому</string>
+			<string>Текст за останню %@ годину</string>
 			<key>other</key>
 			<string>Текст за %@ год тому</string>
 		</dict>
@@ -873,7 +873,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Ви підписані на %@ сайтів</string>
+			<string>Ви підписані на %@ сайти</string>
 			<key>many</key>
 			<string>Ви підписані на %@ сайтів</string>
 			<key>one</key>
