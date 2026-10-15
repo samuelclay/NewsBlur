@@ -189,9 +189,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ केंद्रित स्टोरी</string>
+			<string>%@ फ़ोकस लेख</string>
 			<key>other</key>
-			<string>%@ फ़ोकस की गई स्टोरीज़</string>
+			<string>%@ फ़ोकस लेख</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -285,7 +285,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ स्टोरी</string>
+			<string>%@ लेख</string>
 			<key>other</key>
 			<string>%@ लेख</string>
 		</dict>
@@ -301,9 +301,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ स्टोरी बाकी</string>
+			<string>%@ लेख बाकी</string>
 			<key>other</key>
-			<string>%@ कहानियाँ बाकी</string>
+			<string>%@ लेख बाकी</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -349,9 +349,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ अपठित कहानी</string>
+			<string>%@ अपठित लेख</string>
 			<key>other</key>
-			<string>%@ अपठित खबरें</string>
+			<string>%@ अपठित लेख</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -461,9 +461,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>अनुयायी</string>
+			<string>फ़ॉलोअर</string>
 			<key>other</key>
-			<string>अनुयायी</string>
+			<string>फ़ॉलोअर</string>
 		</dict>
 	</dict>
 	<key>Images from %@ days ago</key>
@@ -525,7 +525,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ खबर को पढ़ा हुआ चिह्नित करें</string>
+			<string>%@ लेख को पढ़ा हुआ चिह्नित करें</string>
 			<key>other</key>
 			<string>इन %@ लेखों को पढ़ा हुआ चिह्नित करें</string>
 		</dict>
@@ -573,9 +573,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>साझा की गई खबर</string>
+			<string>साझा किया गया लेख</string>
 			<key>other</key>
-			<string>साझा की गई कहानियाँ</string>
+			<string>साझा किए गए लेख</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -589,7 +589,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>पिछले %@ दिन का डेटा रखें</string>
+			<string>पिछले %@ दिन का डेटा संग्रहित किया जा रहा है</string>
 			<key>other</key>
 			<string>पिछले %@ दिनों का डेटा संग्रहित किया जा रहा है</string>
 		</dict>
@@ -607,7 +607,7 @@
 			<key>one</key>
 			<string>पिछले %@ घंटे का डेटा संग्रहीत किया जा रहा है</string>
 			<key>other</key>
-			<string>पिछले %@ घंटों का डेटा संग्रहित करना</string>
+			<string>पिछले %@ घंटों का डेटा संग्रहित किया जा रहा है</string>
 		</dict>
 	</dict>
 	<key>Text from %@ days ago</key>
