@@ -67,14 +67,14 @@ msgid " — \"%(prefix)s\" followed by numbers (%(examples)s)"
 msgstr " — «%(prefix)s» с последующими цифрами (%(examples)s)"
 
 msgid " — Any of these words"
-msgstr " — Любое из этих слов"
+msgstr " — любое из этих слов"
 
 #, python-format
 msgid " — At least %(count)s character"
 msgid_plural " — At least %(count)s characters"
-msgstr[0] " — Не менее %(count)s символа"
-msgstr[1] " — Не менее %(count)s символов"
-msgstr[2] " — Не менее %(count)s символов"
+msgstr[0] " — не менее %(count)s символа"
+msgstr[1] " — не менее %(count)s символов"
+msgstr[2] " — не менее %(count)s символов"
 
 #, python-format
 msgid " — Dollar amounts (%(examples)s)"
@@ -86,18 +86,18 @@ msgstr " — заканчивается на «%(text)s»"
 
 #, python-format
 msgid " — Exact phrase \"%(phrase)s\""
-msgstr " — Точная фраза «%(phrase)s»"
+msgstr " — точная фраза «%(phrase)s»"
 
 #, python-format
 msgid " — Exactly %(count)s digit (years)"
 msgid_plural " — Exactly %(count)s digits (years)"
-msgstr[0] " — Ровно %(count)s цифра (годы)"
+msgstr[0] " — ровно %(count)s цифра (годы)"
 msgstr[1] " — ровно %(count)s цифры (годы)"
 msgstr[2] " — ровно %(count)s цифр (годы)"
 
 #, python-format
 msgid " — Hashtags (%(examples)s)"
-msgstr " — Хэштеги (%(examples)s)"
+msgstr " — хэштеги (%(examples)s)"
 
 #, python-format
 msgid " — Mentions (%(examples)s)"
@@ -116,23 +116,23 @@ msgstr " — Нежадный режим: каждая фраза в кавыч�
 
 #, python-format
 msgid " — Starts with \"%(text)s\""
-msgstr " — Начинается с «%(text)s»"
+msgstr " — начинается с «%(text)s»"
 
 msgid " — Starts with number and period"
 msgstr " — начинается с числа и точки"
 
 msgid " — Two or more capital letters"
-msgstr " — Две или более заглавные буквы"
+msgstr " — две или более заглавных буквы"
 
 #, python-format
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — только целое слово «%(word)s»"
 
 msgid "$29/month"
-msgstr "$29/месяц"
+msgstr "29 $/месяц"
 
 msgid "$36/year"
-msgstr "$36/год"
+msgstr "36 $/год"
 
 msgid "$99/year"
 msgstr "99 $/год"
@@ -154,7 +154,7 @@ msgstr[2] "%(badge)s на срок до %(count)s дней"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s тем"
+msgstr "Темы: %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -162,7 +162,7 @@ msgstr "%(comments)s и %(replies)s"
 
 #, python-format
 msgid "%(cost)s/story"
-msgstr "%(cost)s/запись"
+msgstr "%(cost)s за статью"
 
 #, python-format
 msgid "%(count)s byte"
@@ -210,8 +210,8 @@ msgstr[2] "%(count)s фильтров содержимого"
 msgid "%(count)s curated story"
 msgid_plural "%(count)s curated stories"
 msgstr[0] "%(count)s отобранная статья"
-msgstr[1] "%(count)s отобранные записи"
-msgstr[2] "%(count)s отобранных записей"
+msgstr[1] "%(count)s отобранные статьи"
+msgstr[2] "%(count)s отобранных статей"
 
 #, python-format
 msgid "%(count)s day"
@@ -231,8 +231,8 @@ msgstr[2] "%(count)s дней назад"
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s отметка «Не нравится»"
-msgstr[1] "%(count)s дизлайка"
-msgstr[2] "%(count)s дизлайков"
+msgstr[1] "%(count)s отметки «Не нравится»"
+msgstr[2] "%(count)s отметок «Не нравится»"
 
 #, python-format
 msgid "%(count)s episode"
@@ -376,8 +376,8 @@ msgstr[2] "%(count)s ответов"
 msgid "%(count)s selected"
 msgid_plural "%(count)s selected"
 msgstr[0] "Выбрано: %(count)s"
-msgstr[1] "Выбрано %(count)s записи"
-msgstr[2] "Выбрано %(count)s записей"
+msgstr[1] "Выбрано: %(count)s"
+msgstr[2] "Выбрано: %(count)s"
 
 #, python-format
 msgid "%(count)s share"
@@ -389,9 +389,9 @@ msgstr[2] "%(count)s публикаций"
 #, python-format
 msgid "%(count)s shared story"
 msgid_plural "%(count)s shared stories"
-msgstr[0] "%(count)s опубликованная запись"
-msgstr[1] "%(count)s общие публикации"
-msgstr[2] "%(count)s общих публикаций"
+msgstr[0] "%(count)s опубликованная статья"
+msgstr[1] "%(count)s опубликованные статьи"
+msgstr[2] "%(count)s опубликованных статей"
 
 #, python-format
 msgid "%(count)s site"
@@ -431,44 +431,44 @@ msgstr[2] "Удалено %(count)s статей."
 #, python-format
 msgid "%(count)s story in archive"
 msgid_plural "%(count)s stories in archive"
-msgstr[0] "%(count)s история в архиве"
-msgstr[1] "%(count)s записи в архиве"
-msgstr[2] "%(count)s записей в архиве"
+msgstr[0] "%(count)s статья в архиве"
+msgstr[1] "%(count)s статьи в архиве"
+msgstr[2] "%(count)s статей в архиве"
 
 #, python-format
 msgid "%(count)s story per day"
 msgid_plural "%(count)s stories per day"
-msgstr[0] "%(count)s запись в день"
-msgstr[1] "%(count)s истории в день"
-msgstr[2] "%(count)s историй в день"
+msgstr[0] "%(count)s статья в день"
+msgstr[1] "%(count)s статьи в день"
+msgstr[2] "%(count)s статей в день"
 
 #, python-format
 msgid "%(count)s story per month"
 msgid_plural "%(count)s stories per month"
-msgstr[0] "%(count)s запись в месяц"
-msgstr[1] "%(count)s публикации в месяц"
-msgstr[2] "%(count)s публикаций в месяц"
+msgstr[0] "%(count)s статья в месяц"
+msgstr[1] "%(count)s статьи в месяц"
+msgstr[2] "%(count)s статей в месяц"
 
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "Будет удалена %(count)s история"
+msgstr[0] "Будет удалена %(count)s статья"
 msgstr[1] "Будут удалены %(count)s статьи"
 msgstr[2] "Будет удалено %(count)s статей"
 
 #, python-format
 msgid "%(count)s story/mo"
 msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s историй/мес."
+msgstr[0] "%(count)s статья/мес."
 msgstr[1] "%(count)s статьи/мес."
-msgstr[2] "%(count)s историй/мес."
+msgstr[2] "%(count)s статей/мес."
 
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
 msgstr[0] "%(count)s статья в месяц"
-msgstr[1] "%(count)s истории в месяц"
-msgstr[2] "%(count)s историй в месяц"
+msgstr[1] "%(count)s статьи в месяц"
+msgstr[2] "%(count)s статей в месяц"
 
 #, python-format
 msgid "%(count)s subreddit"
@@ -486,7 +486,7 @@ msgstr[2] "%(count)s подписчиков"
 
 #, python-format
 msgid "%(count)s subscribers"
-msgstr "%(count)s подписчиков"
+msgstr "Подписчиков: %(count)s"
 
 #, python-format
 msgid "%(count)s video"
@@ -498,7 +498,7 @@ msgstr[2] "%(count)s видео"
 #, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
-msgstr[0] "%(count)s неделя"
+msgstr[0] "%(count)s неделю"
 msgstr[1] "%(count)s недели"
 msgstr[2] "%(count)s недель"
 
@@ -565,7 +565,7 @@ msgstr "Уведомления %(feed_title)s настроены"
 
 #, python-format
 msgid "%(icon)s are stories you don't like"
-msgstr "%(icon)s — записи, которые вам не нравятся"
+msgstr "%(icon)s — статьи, которые вам не нравятся"
 
 #, python-format
 msgid "%(icon)s are stories you have not yet rated"
@@ -578,7 +578,7 @@ msgstr "%(icon)s — это статьи, которые вам нравятся
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
 msgid_plural "%(indexed)s of %(count)s sites indexed"
-msgstr[0] "Проиндексировано %(indexed)s из %(count)s сайтов"
+msgstr[0] "Проиндексировано %(indexed)s из %(count)s сайта"
 msgstr[1] "Проиндексировано %(indexed)s из %(count)s сайтов"
 msgstr[2] "Проиндексировано %(indexed)s из %(count)s сайтов"
 
@@ -597,7 +597,7 @@ msgstr[2] ""
 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
-msgstr "%(message)s Перейдите на платный тариф, чтобы видеть похожие истории из всего архива."
+msgstr "%(message)s Перейдите на платный тариф, чтобы видеть похожие статьи из всего архива."
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -635,7 +635,7 @@ msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
 msgstr[0] "%(start)s–%(end)s минута"
 msgstr[1] "От %(start)s до %(end)s минут"
-msgstr[2] "От %(start)s до %(end)s минуты"
+msgstr[2] "От %(start)s до %(end)s минут"
 
 #, python-format
 msgid "%(start)s – %(end)s"
@@ -655,27 +655,27 @@ msgstr "%(time)s назад"
 
 #, python-format
 msgid "%(time)s left"
-msgstr "осталось %(time)s"
+msgstr "включится через %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s каналов"
+msgstr "Каналы: %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s рассылки"
+msgstr "Рассылки: %(topic)s"
 
 #, python-format
 msgid "%(topic)s Podcasts"
-msgstr "Подкасты %(topic)s"
+msgstr "Подкасты: %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s сайтов"
+msgstr "Сайты: %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s сабреддитов"
+msgstr "Сабреддиты: %(topic)s"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -695,7 +695,7 @@ msgstr "%(value_1)s назад"
 
 #, python-format
 msgid "%(value_1)s is Premium"
-msgstr "%(value_1)s — Premium"
+msgstr "%(value_1)s — функция Premium"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
@@ -1040,7 +1040,7 @@ msgstr "Обновление лент в 5 раз быстрее"
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "< %(count)s истории в месяц"
+msgstr[0] "< %(count)s статьи/мес."
 msgstr[1] "< %(count)s статьи/мес."
 msgstr[2] "< %(count)s статей/мес."
 
@@ -1054,7 +1054,7 @@ msgstr "< 30 статей в месяц"
 #, python-format
 msgid "<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days"
 msgid_plural "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days"
-msgstr[0] "<b>%(value_1)s день</b> &mdash; — превышает лимит вашего тарифа в %(value_3)s дней"
+msgstr[0] "<b>%(value_1)s день</b> &mdash; превышает ограничение вашего тарифного плана в %(value_3)s дней"
 msgstr[1] "<b>%(value_1)s дня</b> &mdash; превышает ограничение вашего тарифного плана в %(value_3)s дней"
 msgstr[2] "<b>%(value_1)s дней</b> &mdash; превышает ограничение вашего тарифного плана в %(value_3)s дней"
 
@@ -1070,7 +1070,7 @@ msgstr[1] "<strong>%(count)s дня</strong> осталось до оконча�
 msgstr[2] "<strong>%(count)s дней</strong> осталось до окончания пробного периода Premium"
 
 msgid "A blurblog of shared stories"
-msgstr "Блёрблог с опубликованными статьями"
+msgstr "Blurblog с опубликованными статьями"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Папка лент, объединённых в один поток"
@@ -1089,7 +1089,7 @@ msgid "A single like overrides any number of dislikes"
 msgstr "Одного лайка достаточно, чтобы перевесить любое количество дизлайков"
 
 msgid "A single super dislike overrides everything"
-msgstr "Одно сильное «не нравится» перевешивает всё"
+msgstr "Одна отметка «Очень не нравится» перевешивает всё"
 
 msgid "A story diff with additions and deletions"
 msgstr "Сравнение версий статьи с добавлениями и удалениями"
@@ -1105,7 +1105,7 @@ msgid "AI filters are saved but won't run until you %(billing_link)s."
 msgstr "Фильтры ИИ сохранены, но не будут работать, пока вы не %(billing_link)s."
 
 msgid "AI finds the stories"
-msgstr "ИИ находит интересные материалы"
+msgstr "ИИ находит статьи"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Краткое содержание главных статей, подготовленное ИИ"
@@ -1118,7 +1118,9 @@ msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "ВСЕ КАТЕГОРИИ (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
-msgstr "Конечно. Откройте тренажёр и удалите любые отметки «Нравится» или «Не нравится», чтобы сбросить обучение."
+msgstr ""
+"Конечно. Откройте тренер интеллектуальной фильтрации и удалите любые отметки «Нравится» или «Не нравится», "
+"чтобы сбросить обучение."
 
 msgid "Account"
 msgstr "Аккаунт"
@@ -1142,20 +1144,20 @@ msgstr "Добавить"
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "Добавить %(count)s тег статьи"
-msgstr[1] "Добавить %(count)s тега истории"
-msgstr[2] "Добавить %(count)s тегов истории"
+msgstr[1] "Добавить %(count)s тега статьи"
+msgstr[2] "Добавить %(count)s тегов статьи"
 
 msgid "Add Folder"
 msgstr "Добавить папку"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "Добавить сайт &amp; букмарклетом для публикации записи"
+msgstr "Букмарклет для добавления сайтов &amp; публикации статей"
 
 msgid "Add a forwarding address"
 msgstr "Добавить адрес для пересылки"
 
 msgid "Add a note to send along with the story…"
-msgstr "Добавьте заметку, чтобы отправить её вместе с публикацией…"
+msgstr "Добавьте заметку, чтобы отправить её вместе со статьёй…"
 
 msgid "Add a site"
 msgstr "Добавить сайт"
@@ -1167,7 +1169,7 @@ msgid "Add any site or feed"
 msgstr "Добавить любой сайт или ленту"
 
 msgid "Add custom tags to organize saved stories by topic"
-msgstr "Добавляйте собственные метки, чтобы сортировать сохранённые истории по темам"
+msgstr "Добавляйте собственные теги, чтобы сортировать сохранённые статьи по темам"
 
 msgid "Add domains you never want to archive."
 msgstr "Добавьте домены, которые никогда не нужно архивировать."
@@ -1193,7 +1195,7 @@ msgid "Add site/folder"
 msgstr "Добавить сайт/папку"
 
 msgid "Add story list"
-msgstr "Добавить список историй"
+msgstr "Добавить список статей"
 
 msgid "Add to Chrome"
 msgstr "Добавить в Chrome"
@@ -1233,7 +1235,7 @@ msgstr "День"
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
 msgid_plural "Alert after %(value_1)s days without new stories"
-msgstr[0] "Оповестить, если новых записей не будет %(value_1)s день"
+msgstr[0] "Предупреждать, если новых статей нет %(value_1)s день"
 msgstr[1] "Предупреждать, если новых статей нет %(value_1)s дня"
 msgstr[2] "Предупреждать, если новых статей нет %(value_1)s дней"
 
@@ -1244,7 +1246,7 @@ msgid "All Categories"
 msgstr "Все категории"
 
 msgid "All Categorized"
-msgstr "Все по категориям"
+msgstr "Всё распределено"
 
 msgid "All Done "
 msgstr "Готово "
@@ -1256,10 +1258,10 @@ msgid "All Notifications"
 msgstr "Все уведомления"
 
 msgid "All Shared Stories"
-msgstr "Все опубликованные статьи"
+msgstr "Все статьи, которыми поделились"
 
 msgid "All Site Stories"
-msgstr "Все статьи сайта"
+msgstr "Статьи со всех сайтов"
 
 msgid "All Stories"
 msgstr "Все статьи"
@@ -1289,8 +1291,8 @@ msgid ""
 "All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
 "styles, and auto mark-as-read."
 msgstr ""
-"В популярных лентах истории сгруппированы для всех пользователей. Premium Archive открывает полный "
-"контроль: переключатели, стили отображения и автоматическую отметку как прочитанного."
+"В популярных лентах статьи сгруппированы для всех пользователей. Premium Archive открывает полный контроль:"
+" переключатели, стили отображения и автоматическую отметку как прочитанного."
 
 msgid "Allowed Domains"
 msgstr "Разрешённые домены"
@@ -1316,7 +1318,7 @@ msgid "Also works with Edge"
 msgstr "Также работает в Edge"
 
 msgid "Always show Train/Save/Share buttons below stories"
-msgstr "Всегда показывать кнопки «Обучить», «Сохранить» и «Поделиться» под историями"
+msgstr "Всегда показывать кнопки «Обучить», «Сохранить» и «Поделиться» под статьями"
 
 msgid "Always show unread counts on folders"
 msgstr "Всегда показывать число непрочитанных статей в папках"
@@ -1355,7 +1357,7 @@ msgstr "Анализируем ваш архив..."
 #, python-format
 msgid "And you have %(count)s saved story."
 msgid_plural "And you have %(count)s saved stories."
-msgstr[0] "И у вас сохранена %(count)s история."
+msgstr[0] "И у вас сохранена %(count)s статья."
 msgstr[1] "И у вас сохранено %(count)s статьи."
 msgstr[2] "И у вас сохранено %(count)s статей."
 
@@ -1382,19 +1384,19 @@ msgstr ""
 "товаров, сайты с вакансиями, государственные сайты и многое другое."
 
 msgid "Any time"
-msgstr "В любое время"
+msgstr "За всё время"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
 msgstr[0] "Применено объединений: %(count)s (%(stories)s)"
-msgstr[1] "Применено слияния: %(count)s (%(stories)s)"
-msgstr[2] "Применено слияний: %(count)s (%(stories)s)"
+msgstr[1] "Применено объединений: %(count)s (%(stories)s)"
+msgstr[2] "Применено объединений: %(count)s (%(stories)s)"
 
 #, python-format
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
-msgstr[0] "Объединено %(succeeded)s из %(count)s объединений (%(stories)s)"
+msgstr[0] "Применено объединений: %(succeeded)s из %(count)s (%(stories)s)"
 msgstr[1] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
 msgstr[2] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
 
@@ -1426,7 +1428,7 @@ msgid "April"
 msgstr "Апрель"
 
 msgid "Archive"
-msgstr "Архив"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "Помощник по архиву"
@@ -1441,7 +1443,7 @@ msgid "Arrows"
 msgstr "Стрелки"
 
 msgid "As a reminder, use the intelligence slider to select a filter:"
-msgstr "Напоминаем: выберите фильтр с помощью ползунка интеллектуальной сортировки:"
+msgstr "Напоминаем: выберите фильтр с помощью ползунка интеллектуальной фильтрации:"
 
 msgid "Ask"
 msgstr "Спросить"
@@ -1450,7 +1452,7 @@ msgid "Ask AI"
 msgstr "Спросить ИИ"
 
 msgid "Ask AI & Daily Briefing"
-msgstr "Вопросы ИИ и ежедневная сводка"
+msgstr "«Спросить ИИ» и ежедневная сводка"
 
 msgid "Ask AI about story"
 msgstr "Спросить ИИ об этой статье"
@@ -1501,7 +1503,7 @@ msgstr "Регулярное выражение для автора"
 
 #, python-format
 msgid "Author filters found no stories in %(context)s."
-msgstr "Фильтры по авторам не нашли историй в %(context)s."
+msgstr "Фильтры по авторам не нашли статей в %(context)s."
 
 msgid "Author filters found no stories in this view."
 msgstr "Фильтры по авторам не нашли статей в этом представлении."
@@ -1525,7 +1527,7 @@ msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Автоматическая тема переключается между светлой и тёмной в соответствии с настройками вашей системы."
 
 msgid "Auto-follow<br>my friends"
-msgstr "Автоматически подписаться<br>на мои подписки"
+msgstr "Автоматически подписываться<br>на моих друзей"
 
 msgid "Auto-generate"
 msgstr "Создать автоматически"
@@ -1534,7 +1536,7 @@ msgid "Auto-play"
 msgstr "Автовоспроизведение"
 
 msgid "Auto-select top sites"
-msgstr "Автоматически выбирать лучшие сайты"
+msgstr "Автоматически выбрать популярные сайты"
 
 msgid "Auto-selected by popularity"
 msgstr "Автоматически выбрано по популярности"
@@ -1580,7 +1582,7 @@ msgid "Background color"
 msgstr "Цвет фона"
 
 msgid "Backup your sites"
-msgstr "Создайте резервную копию своих сайтов"
+msgstr "Резервная копия списка сайтов"
 
 msgid "Based on your interests"
 msgstr "На основе ваших интересов"
@@ -1622,7 +1624,7 @@ msgid "Blocklist Settings"
 msgstr "Настройки списка заблокированных"
 
 msgid "Blurblog"
-msgstr "Блог Blur"
+msgstr "Blurblog"
 
 msgid "Blurblog Options"
 msgstr "Параметры Blurblog"
@@ -1637,7 +1639,7 @@ msgid "Blurblog title"
 msgstr "Название Blurblog"
 
 msgid "Blurblogs"
-msgstr "Блогблюры"
+msgstr "Blurblog"
 
 msgid "Bookmarklet"
 msgstr "Букмарклет"
@@ -1650,28 +1652,28 @@ msgid "Brief"
 msgstr "Краткая"
 
 msgid "Briefing"
-msgstr "Обзор"
+msgstr "Сводка"
 
 msgid "Briefing Admin"
-msgstr "Администрирование дайджеста"
+msgstr "Администрирование сводки"
 
 msgid "Briefing Preferences"
-msgstr "Настройки дайджеста"
+msgstr "Настройки сводки"
 
 msgid "Briefing Settings"
-msgstr "Настройки дайджеста"
+msgstr "Настройки сводки"
 
 msgid "Briefing generation timed out. Please try again."
 msgstr "Время ожидания при создании сводки истекло. Попробуйте ещё раз."
 
 msgid "Briefing length"
-msgstr "Длительность сводки"
+msgstr "Размер сводки"
 
 msgid "Browse Archives"
 msgstr "Просмотреть архивы"
 
 msgid "Browse all your stories"
-msgstr "Просмотреть все свои истории"
+msgstr "Просмотреть все свои статьи"
 
 msgid "Browse by Category"
 msgstr "Просмотр по категориям"
@@ -1708,10 +1710,10 @@ msgid "Browser Extensions"
 msgstr "Расширения браузера"
 
 msgid "Bullet points"
-msgstr "Маркеры списка"
+msgstr "Маркированный список"
 
 msgid "Bullets"
-msgstr "Маркеры"
+msgstr "Тезисы"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1748,7 +1750,7 @@ msgid "Cancel delete"
 msgstr "Отменить удаление"
 
 msgid "Cancel mute"
-msgstr "Отменить заглушение"
+msgstr "Отменить отключение"
 
 msgid "Cancel rename"
 msgstr "Отменить переименование"
@@ -1772,7 +1774,7 @@ msgid "Categories"
 msgstr "Категории"
 
 msgid "Categories &amp; Tags"
-msgstr "Категории &amp; Теги"
+msgstr "Категории &amp; теги"
 
 #, python-format
 msgid "Categorize %(count)s Uncategorized"
@@ -1813,7 +1815,7 @@ msgid "Change what you like above..."
 msgstr "Измените параметры выше по своему вкусу..."
 
 msgid "Change your blurblog settings above"
-msgstr "Измените настройки блога выше"
+msgstr "Измените настройки Blurblog выше"
 
 msgid "Change your credit card"
 msgstr "Изменить данные кредитной карты"
@@ -1825,7 +1827,7 @@ msgid "Check back later for popular sites being added by NewsBlur users."
 msgstr "Загляните позже — популярные сайты добавляют пользователи NewsBlur."
 
 msgid "Check what you like above..."
-msgstr "Отметьте, что вам нравится выше..."
+msgstr "Отметьте выше то, что вам нравится..."
 
 msgid "Check your email..."
 msgstr "Проверьте почту..."
@@ -1854,7 +1856,7 @@ msgid "Choose Your sites"
 msgstr "Выберите сайты"
 
 msgid "Choose a story pattern"
-msgstr "Выберите шаблон публикации"
+msgstr "Выберите шаблон статей"
 
 msgid "Choose another language"
 msgstr "Выбрать другой язык"
@@ -1872,7 +1874,7 @@ msgid "Choose sites"
 msgstr "Выбрать сайты"
 
 msgid "Choose when stories are marked as read"
-msgstr "Выберите, когда помечать истории как прочитанные"
+msgstr "Выберите, когда помечать статьи как прочитанные"
 
 msgid "Choose which AI model writes your briefing"
 msgstr "Выберите модель ИИ для подготовки сводки"
@@ -1942,7 +1944,7 @@ msgstr "Очистить поиск"
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
 msgstr[0] "Сброшено переопределений: %(count)s."
-msgstr[1] "Удалено переопределения: %(count)s."
+msgstr[1] "Сброшено переопределений: %(count)s."
 msgstr[2] "Удалено переопределений: %(count)s."
 
 msgid "Click any source card on a clustered story to read that version instead."
@@ -1964,16 +1966,16 @@ msgid "Close player"
 msgstr "Закрыть плеер"
 
 msgid "Cluster duplicate stories across all your feeds"
-msgstr "Объединять дублирующиеся публикации во всех лентах"
+msgstr "Группировать дубликаты статей во всех лентах"
 
 msgid "Cluster preview:"
-msgstr "Предварительный просмотр кластера:"
+msgstr "Предпросмотр группы:"
 
 msgid "Cluster related stories"
 msgstr "Группировать похожие статьи"
 
 msgid "Clustered stories in the titles view"
-msgstr "Группировать статьи в режиме заголовков"
+msgstr "Сгруппированные статьи в режиме заголовков"
 
 msgid "Collapse All Folders"
 msgstr "Свернуть все папки"
@@ -2006,10 +2008,10 @@ msgid "Commands output JSON you can pipe straight to jq."
 msgstr "Команды выводят JSON, который можно сразу передать в jq."
 
 msgid "Comment"
-msgstr "Комментировать"
+msgstr "Комментарий"
 
 msgid "Comment on stories"
-msgstr "Комментировать публикации"
+msgstr "Комментировать статьи"
 
 msgid "Comments:"
 msgstr "Комментарии:"
@@ -2080,7 +2082,7 @@ msgid "Copied URL"
 msgstr "URL скопирован"
 
 msgid "Copied text"
-msgstr "Скопированный текст"
+msgstr "Текст скопирован"
 
 msgid "Copied!"
 msgstr "Скопировано!"
@@ -2131,7 +2133,7 @@ msgid "Creative"
 msgstr "Творчество"
 
 msgid "Credit"
-msgstr "Платёж"
+msgstr "Бонус"
 
 msgid "Cursors"
 msgstr "Курсоры"
@@ -2164,7 +2166,7 @@ msgid "Custom date range"
 msgstr "Произвольный диапазон дат"
 
 msgid "Custom icon"
-msgstr "Пользовательская иконка"
+msgstr "Свой значок"
 
 msgid "Customizable writing style and length"
 msgstr "Настраиваемый стиль и длина текста"
@@ -2188,15 +2190,15 @@ msgid "Daily Briefing"
 msgstr "Ежедневная сводка"
 
 msgid "Daily Briefing with story summaries"
-msgstr "Ежедневный дайджест со сводками статей"
+msgstr "Ежедневная сводка с краткими изложениями статей"
 
 msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"Ежедневные сводки доступны в функции «Архив» тарифа Premium. На вашем тарифе можно создать предварительный "
-"просмотр из первых 3 статей каждой сводки. Перейдите на платный тариф, чтобы видеть все статьи и получать "
-"сводки автоматически по расписанию."
+"Ежедневные сводки — функция Premium Archive. На вашем тарифе можно создать предварительный просмотр из "
+"первых 3 статей каждой сводки. Перейдите на Premium Archive, чтобы видеть все статьи и получать сводки "
+"автоматически по расписанию."
 
 msgid "Daily briefing with your top stories and keywords"
 msgstr "Ежедневная сводка с главными новостями и ключевыми словами"
@@ -2224,13 +2226,13 @@ msgid "Days"
 msgstr "Дни"
 
 msgid "Days of unreads"
-msgstr "Дней непрочитанных"
+msgstr "Срок хранения непрочитанных"
 
 msgid "December"
 msgstr "Декабрь"
 
 msgid "Deep reads the community gave real time to"
-msgstr "Материалы, которым сообщество уделило время"
+msgstr "Статьи, которым сообщество уделило время"
 
 msgid "Default"
 msgstr "По умолчанию"
@@ -2248,7 +2250,7 @@ msgid "Default story order"
 msgstr "Порядок статей по умолчанию"
 
 msgid "Default view"
-msgstr "Представление по умолчанию"
+msgstr "Вид по умолчанию"
 
 msgid "Delete"
 msgstr "Удалить"
@@ -2261,7 +2263,7 @@ msgstr[1] "Удалить %(count)s сайта"
 msgstr[2] "Удалить %(count)s сайтов"
 
 msgid "Delete It. It Just Won't Work!"
-msgstr "Удалите это. Это просто не будет работать!"
+msgstr "Удалить. Всё равно не заработает!"
 
 msgid "Delete Share"
 msgstr "Удалить публикацию"
@@ -2282,7 +2284,7 @@ msgid "Delete my saved stories"
 msgstr "Удалить мои сохранённые статьи"
 
 msgid "Delete my shared stories"
-msgstr "Удалить мои публикации, которыми я поделился"
+msgstr "Удалить мои опубликованные статьи"
 
 msgid "Delete saved search"
 msgstr "Удалить сохранённый поиск"
@@ -2306,12 +2308,10 @@ msgid "Describe a story you're looking for and we'll re-analyze the page to find
 msgstr "Опишите нужную вам статью, и мы повторно проанализируем страницу, чтобы найти её."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Опишите тему, и ИИ будет оценивать каждую статью по вашему запросу, чтобы показывать подходящие или "
-"скрывать совпадения."
+msgstr "Опишите тему, и ИИ будет оценивать каждую статью по вашему запросу, чтобы выделять или скрывать подходящие."
 
 msgid "Describe what to focus or hide"
-msgstr "Укажите, на чём сосредоточиться или что скрыть"
+msgstr "Опишите, что выделять, а что скрывать"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Опишите, что нужно найти, и ИИ проанализирует изображения в каждой статье с учетом вашего запроса."
@@ -2330,7 +2330,7 @@ msgid "Disable social features"
 msgstr "Отключить социальные функции"
 
 msgid "Disable story clustering"
-msgstr "Отключить группировку публикаций"
+msgstr "Отключить группировку статей"
 
 msgid "Disable the highlighter"
 msgstr "Отключить подсветку"
@@ -2350,7 +2350,7 @@ msgid "Discover"
 msgstr "Обзор"
 
 msgid "Discover Channels"
-msgstr "Открыть каналы"
+msgstr "Найти каналы"
 
 msgid "Discover Newsletters"
 msgstr "Найти рассылки"
@@ -2389,7 +2389,7 @@ msgid "Dislike "
 msgstr "Не нравится "
 
 msgid "Dislike matching stories"
-msgstr "Отмечать похожие статьи как нежелательные"
+msgstr "Отмечать подходящие статьи как «Не нравится»"
 
 msgid "Dislikes"
 msgstr "Не нравится"
@@ -2460,7 +2460,7 @@ msgid ""
 " reading."
 msgstr ""
 "Перетащите кнопку на панель закладок. На любом сайте она позволит подписаться на ленту или поделиться "
-"историей, которую вы читаете."
+"статьёй, которую вы читаете."
 
 msgid "Drag this bookmarklet into your bookmarks bar"
 msgstr "Перетащите эту закладку на панель закладок"
@@ -2472,10 +2472,10 @@ msgid "Drag to reorder"
 msgstr "Перетащите, чтобы изменить порядок"
 
 msgid "Drag to reorder priority. Only shown when matching stories are found."
-msgstr "Перетащите, чтобы изменить приоритет. Показывается только при наличии совпадающих историй."
+msgstr "Перетащите, чтобы изменить приоритет. Показывается только при наличии подходящих статей."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
-msgstr "Дубликаты сворачиваются под версией с наивысшей оценкой в вашей общей ленте"
+msgstr "Дубликаты сворачиваются под версией с наивысшей оценкой в вашем потоке новостей"
 
 msgid "EXCLUDED FROM MERGES"
 msgstr "ИСКЛЮЧЕНО ИЗ ОБЪЕДИНЕНИЙ"
@@ -2489,15 +2489,13 @@ msgid "Each newsletter sender becomes its own feed"
 msgstr "Для каждого отправителя рассылки создаётся отдельная лента"
 
 msgid "Each selected split needs a name and at least one story"
-msgstr "Для каждого выбранного раздела нужно указать название и выбрать хотя бы одну публикацию"
+msgstr "Для каждого выбранного раздела нужно указать название и выбрать хотя бы одну статью"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
-msgstr ""
-"Для каждого отправителя создаётся отдельная лента, чтобы вы могли отучить её от рассылок, которые слишком "
-"задерживаются."
+msgstr "Для каждого отправителя создаётся отдельная лента, поэтому надоевшие рассылки можно скрыть обучением."
 
 msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
-msgstr "Для каждой метки создаётся отдельная RSS-лента — ею можно делиться или передавать её в другие инструменты"
+msgstr "Для каждого тега создаётся отдельная RSS-лента — ею можно делиться или передавать её в другие инструменты"
 
 msgid "Earn Free Premium"
 msgstr "Получите Premium бесплатно"
@@ -2513,7 +2511,7 @@ msgid "Edit Profile"
 msgstr "Редактировать профиль"
 
 msgid "Editorial"
-msgstr "Редакционное"
+msgstr "Редакционный"
 
 msgid "Education"
 msgstr "Образование"
@@ -2562,7 +2560,7 @@ msgstr "Включите ежедневную сводку, чтобы полу�
 #, python-format
 msgid "Enable all %(count)s site"
 msgid_plural "Enable all %(count)s sites"
-msgstr[0] "Включить все %(count)s сайта"
+msgstr[0] "Включить %(count)s сайт"
 msgstr[1] "Включить все %(count)s сайта"
 msgstr[2] "Включить все %(count)s сайтов"
 
@@ -2626,7 +2624,7 @@ msgid "Erase your saved stories"
 msgstr "Удалить сохранённые статьи"
 
 msgid "Erase your shared stories"
-msgstr "Удалить опубликованные вами истории"
+msgstr "Удалить опубликованные вами статьи"
 
 msgid "Erase yourself"
 msgstr "Удалить свой аккаунт"
@@ -2670,7 +2668,7 @@ msgid "Evening"
 msgstr "Вечер"
 
 msgid "Every"
-msgstr "Каждый"
+msgstr "Интервал"
 
 msgid "Every new story is archived permanently"
 msgstr "Каждая новая статья сохраняется в архиве навсегда"
@@ -2694,13 +2692,13 @@ msgid "Everything NewsBlur can do, and how to try it"
 msgstr "Все возможности NewsBlur и способы их попробовать"
 
 msgid "Everything by This Publisher"
-msgstr "Все публикации этого издателя"
+msgstr "Всё от этого издателя"
 
 msgid "Everything has been deleted."
 msgstr "Всё удалено."
 
 msgid "Everything in Archive, plus:"
-msgstr "Всё, что входит в «Архив», а также:"
+msgstr "Всё, что входит в Archive, а также:"
 
 msgid "Everything in Free, plus:"
 msgstr "Всё, что есть в бесплатной версии, и ещё:"
@@ -2749,7 +2747,7 @@ msgid "Expanded"
 msgstr "Развёрнутый"
 
 msgid "Expire 1 YR"
-msgstr "Хранить 1 год"
+msgstr "Истекает через 1 год"
 
 msgid "Export trained stories from folders"
 msgstr "Экспортировать обученные статьи из папок"
@@ -2797,7 +2795,7 @@ msgid "Failed to load related sites"
 msgstr "Не удалось загрузить похожие сайты"
 
 msgid "Failed to load stories"
-msgstr "Не удалось загрузить истории"
+msgstr "Не удалось загрузить статьи"
 
 msgid "Failed to mark as unread"
 msgstr "Не удалось отметить как непрочитанное"
@@ -2836,7 +2834,7 @@ msgid "Fast"
 msgstr "Быстро"
 
 msgid "Faster updates. Full-text search. Read by folder."
-msgstr "Быстрее обновления. Полнотекстовый поиск. Чтение по папкам."
+msgstr "Более быстрые обновления. Полнотекстовый поиск. Чтение по папкам."
 
 msgid "Favorited!"
 msgstr "Добавлено в избранное!"
@@ -2848,7 +2846,7 @@ msgid "Features & Tips"
 msgstr "Возможности и советы"
 
 msgid "Features &amp; Tips"
-msgstr "Возможности &amp; Советы"
+msgstr "Возможности &amp; советы"
 
 msgid "Features and essays that readers gave real time to."
 msgstr "Материалы и эссе, которым читатели уделили время."
@@ -2874,10 +2872,10 @@ msgid "Feed Icon"
 msgstr "Значок ленты"
 
 msgid "Feed Push"
-msgstr "Push-уведомления ленты"
+msgstr "Push-обновления ленты"
 
 msgid "Feed opens:"
-msgstr "Открытие ленты:"
+msgstr "Открытий лент:"
 
 msgid "Feed: "
 msgstr "Лента: "
@@ -2906,7 +2904,7 @@ msgstr "Ошибка загрузки: %(error)s"
 
 #, python-format
 msgid "Fetched every %(value_1)s"
-msgstr "Загружено с интервалом %(value_1)s"
+msgstr "Загружается с интервалом %(value_1)s"
 
 msgid "Fetching page..."
 msgstr "Загрузка страницы..."
@@ -2918,7 +2916,7 @@ msgid "Fetching stories..."
 msgstr "Загрузка статей..."
 
 msgid "Fetching story"
-msgstr "Загрузка истории"
+msgstr "Загрузка статьи"
 
 msgid "Fetching text"
 msgstr "Получение текста"
@@ -2951,9 +2949,7 @@ msgid "Filter newsletters..."
 msgstr "Фильтровать рассылки..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
-msgstr ""
-"Фильтруйте уведомления, оставляя только статьи, соответствующие вашим интересам: обучение определяет, о чём"
-" вас оповещать."
+msgstr "Фильтруйте уведомления, оставляя только статьи в фокусе: обучение определяет, о чём вас оповещать."
 
 msgid "Filter podcasts..."
 msgstr "Фильтр подкастов..."
@@ -2975,7 +2971,7 @@ msgstr "Фильтр по"
 
 #, python-format
 msgid "Filters found no stories in %(context)s."
-msgstr "Фильтры не нашли историй в %(context)s."
+msgstr "Фильтры не нашли статей в %(context)s."
 
 msgid "Filters found no stories in this view."
 msgstr "Фильтры не нашли статей в этом представлении."
@@ -2985,7 +2981,7 @@ msgstr "Финансы"
 
 #, python-format
 msgid "Find %(value_1)s Friends"
-msgstr "Найти друзей %(value_1)s"
+msgstr "Найти друзей из %(value_1)s"
 
 msgid "Find Friends"
 msgstr "Найти друзей"
@@ -3022,13 +3018,13 @@ msgid "Flat"
 msgstr "Плоский"
 
 msgid "Flowing narrative that connects stories into a readable digest"
-msgstr "Связное повествование, объединяющее истории в удобный для чтения дайджест"
+msgstr "Связное повествование, объединяющее статьи в удобную для чтения сводку"
 
 msgid "Focus"
 msgstr "Фокус"
 
 msgid "Focus or hide all stories from this publisher."
-msgstr "Показывать или скрывать все статьи этого издателя."
+msgstr "Выделять или скрывать все статьи этого издателя."
 
 msgid "Folder"
 msgstr "Папка"
@@ -3052,7 +3048,7 @@ msgid "Folders"
 msgstr "Папки"
 
 msgid "Folders, feeds, and story titles"
-msgstr "Папки, ленты и заголовки публикаций"
+msgstr "Папки, ленты и заголовки статей"
 
 msgid "Follow"
 msgstr "Подписаться"
@@ -3073,37 +3069,37 @@ msgid "Follow to see their shared stories"
 msgstr "Подпишитесь, чтобы видеть публикации, которыми они делятся"
 
 msgid "Follow up to 1,024 sites"
-msgstr "Подпишитесь на 1 024 сайта"
+msgstr "Подписаться максимум на 1 024 сайта"
 
 msgid "Follow up to 10,000 sites"
-msgstr "Подписывайтесь на 10 000 сайтов"
+msgstr "Подписаться максимум на 10 000 сайтов"
 
 msgid "Follow up to 4,096 sites"
-msgstr "Подпишитесь на 4 096 сайтов"
+msgstr "Подписаться максимум на 4 096 сайтов"
 
 msgid "Follow up to 64 sites"
 msgstr "Подписаться максимум на 64 сайта"
 
 msgid "Follow up..."
-msgstr "Напомнить позже..."
+msgstr "Задать уточняющий вопрос..."
 
 msgid "Follow-ups"
-msgstr "Ответы"
+msgstr "Продолжения"
 
 msgid "Followers"
 msgstr "Подписчики"
 
 msgid "Following"
-msgstr "Подписка оформлена"
+msgstr "Вы подписаны"
 
 msgid "Following Me"
-msgstr "Подписаны на меня"
+msgstr "Мои подписчики"
 
 msgid "Following..."
 msgstr "Подписка..."
 
 msgid "Follows you"
-msgstr "Подписан(а) на вас"
+msgstr "Ваш подписчик"
 
 msgid "Food"
 msgstr "Еда"
@@ -3139,7 +3135,7 @@ msgstr "Адрес для пересылки писем"
 #, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
-msgstr[0] "Найдено %(count)s совпадение. Выберите вариант, который лучше всего соответствует нужным вам историям."
+msgstr[0] "Найден %(count)s шаблон. Выберите тот, который лучше всего соответствует нужным вам статьям."
 msgstr[1] "Найдено %(count)s шаблона. Выберите тот, который лучше всего соответствует нужным вам статьям."
 msgstr[2] "Найдено %(count)s шаблонов. Выберите тот, который лучше всего соответствует нужным вам статьям."
 
@@ -3219,7 +3215,7 @@ msgid "Friendly note: You will be emailed a backup of your sites"
 msgstr "Обратите внимание: вам будет отправлена по электронной почте резервная копия ваших сайтов"
 
 msgid "Friends &amp; Followers"
-msgstr "Друзья &amp; Подписчики"
+msgstr "Друзья &amp; подписчики"
 
 msgid "Friends and Followers"
 msgstr "Друзья и подписчики"
@@ -3236,7 +3232,7 @@ msgstr "Полный"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "Ответы помощника по полному архиву — это %(link_start)sпремиум-функция архива%(link_end)s."
+msgstr "Ответы помощника по полному архиву — это %(link_start)sфункция Premium Archive%(link_end)s."
 
 msgid "Full Refund"
 msgstr "Полный возврат средств"
@@ -3257,7 +3253,7 @@ msgid "Full-Text Search"
 msgstr "Полнотекстовый поиск"
 
 msgid "Full-text search across all stories"
-msgstr "Полнотекстовый поиск по всем материалам"
+msgstr "Полнотекстовый поиск по всем статьям"
 
 msgid "Full-text search requires Premium or higher."
 msgstr "Для полнотекстового поиска требуется Premium или выше."
@@ -3287,7 +3283,7 @@ msgid "Generate Twice-Daily Briefing"
 msgstr "Создать сводку дважды в день"
 
 msgid "Generate Weekly Briefing"
-msgstr "Создать еженедельный обзор"
+msgstr "Создать еженедельную сводку"
 
 msgid "Generating..."
 msgstr "Создание..."
@@ -3317,10 +3313,10 @@ msgid "Get a summary of your top stories, delivered on your schedule."
 msgstr "Получайте подборку лучших статей в удобное для вас время."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
-msgstr "Получайте ежедневную подборку лучших новостей и больших статей, составленную ИИ"
+msgstr "Получайте ежедневную подборку лучших новостей и длинных статей, составленную ИИ"
 
 msgid "Get more from NewsBlur"
-msgstr "Узнайте больше о NewsBlur"
+msgstr "Получите от NewsBlur больше"
 
 msgid ""
 "Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
@@ -3330,7 +3326,7 @@ msgstr ""
 "веб-версии, по электронной почте, на iOS и Android с учётом ваших настроек обучения."
 
 msgid "Get notified when a new briefing is ready"
-msgstr "Получать уведомления о готовности нового дайджеста"
+msgstr "Получать уведомления о готовности новой сводки"
 
 msgid "Get started"
 msgstr "Начать"
@@ -3373,7 +3369,7 @@ msgid "Global Classifiers"
 msgstr "Глобальные классификаторы"
 
 msgid "Global Shared Stories"
-msgstr "Общие статьи всех пользователей"
+msgstr "Общие статьи сообщества"
 
 msgid "Global settings"
 msgstr "Общие настройки"
@@ -3386,23 +3382,23 @@ msgstr ""
 "подтверждением в папке «Рассылки»."
 
 msgid "Go Premium — $36/year"
-msgstr "Перейти на Premium — $36 в год"
+msgstr "Перейти на Premium — 36 $ в год"
 
 #, python-format
 msgid "Go back to %(breadcrumb)s"
 msgstr "Вернуться к %(breadcrumb)s"
 
 msgid "Good Reads"
-msgstr "Хорошие материалы"
+msgstr "Хорошие статьи"
 
 msgid "Good Reads on NewsBlur"
-msgstr "Интересные материалы на NewsBlur"
+msgstr "Хорошие статьи на NewsBlur"
 
 msgid "Goodies &amp; Extras"
-msgstr "Плюшки &amp; Дополнительно"
+msgstr "Полезное &amp; дополнения"
 
 msgid "Goodies &amp; Mobile Apps"
-msgstr "Полезное &amp; Мобильные приложения"
+msgstr "Полезное &amp; мобильные приложения"
 
 msgid "Google News"
 msgstr "Google Новости"
@@ -3465,7 +3461,7 @@ msgid "Hide history"
 msgstr "Скрыть историю"
 
 msgid "Hide matching stories"
-msgstr "Скрыть совпадающие публикации"
+msgstr "Скрывать подходящие статьи"
 
 msgid "Hide sites"
 msgstr "Скрыть сайты"
@@ -3486,7 +3482,7 @@ msgid "History"
 msgstr "История"
 
 msgid "Home"
-msgstr "Главная"
+msgstr "Дом"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
 msgstr "Виджеты на главном экране показывают количество непрочитанных статей и последние публикации."
@@ -3516,7 +3512,7 @@ msgid "How often"
 msgstr "Как часто"
 
 msgid "I'm Following"
-msgstr "Я подписан(а)"
+msgstr "Мои подписки"
 
 msgid "IFTTT & Zapier"
 msgstr "IFTTT и Zapier"
@@ -3534,7 +3530,7 @@ msgstr ""
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "Если бы вы перешли по ссылке %(premium_link)s,<br>этот сайт обновлялся бы каждые"
+msgstr "Если бы вы перешли на %(premium_link)s,<br>этот сайт обновлялся бы с интервалом"
 
 msgid "Ignore"
 msgstr "Игнорировать"
@@ -3597,7 +3593,7 @@ msgid ""
 "Stories opened with %(shortcut)s will then load in the background."
 msgstr ""
 "Откройте в новой вкладке <b>%(config_page)s</b>, найдите <b>%(setting)s</b> и установите значение "
-"<b>%(value)s</b>. После этого истории, открытые с помощью %(shortcut)s, будут загружаться в фоновом режиме."
+"<b>%(value)s</b>. После этого статьи, открытые с помощью %(shortcut)s, будут загружаться в фоновом режиме."
 
 msgid "In a new window"
 msgstr "В новом окне"
@@ -3634,10 +3630,10 @@ msgid "Indexing..."
 msgstr "Индексация..."
 
 msgid "Infrequent Site Stories"
-msgstr "Редко публикуемые истории"
+msgstr "Статьи с редко обновляемых сайтов"
 
 msgid "Infrequent stories per month"
-msgstr "Редкие статьи в месяц"
+msgstr "Порог редко обновляемых сайтов"
 
 msgid "Insta-fetch stories"
 msgstr "Мгновенно загружать статьи"
@@ -3702,7 +3698,7 @@ msgid "June"
 msgstr "Июнь"
 
 msgid "Just Delete This Feed"
-msgstr "Удалить только эту ленту"
+msgstr "Просто удалить эту ленту"
 
 msgid "Just now"
 msgstr "Только что"
@@ -3723,7 +3719,7 @@ msgid "Keep right-side buttons visible while reading"
 msgstr "Не скрывать кнопки справа во время чтения"
 
 msgid "Keep stories separate"
-msgstr "Не объединять истории"
+msgstr "Не объединять статьи"
 
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Будьте в курсе новостей NewsBlur"
@@ -3775,7 +3771,7 @@ msgid "Last seen:"
 msgstr "Последний раз в сети:"
 
 msgid "Leave unread"
-msgstr "Оставить непрочитанной"
+msgstr "Оставлять непрочитанными"
 
 msgid "Left"
 msgstr "Слева"
@@ -3803,10 +3799,10 @@ msgid "Like "
 msgstr "Нравится "
 
 msgid "Like matching stories"
-msgstr "Отмечать совпадающие статьи"
+msgstr "Отмечать подходящие статьи как «Нравится»"
 
 msgid "Likes"
-msgstr "Отметки «Нравится»"
+msgstr "Нравится"
 
 msgid "Link"
 msgstr "Ссылка"
@@ -3815,7 +3811,7 @@ msgid "Link directly to the original story"
 msgstr "Ссылка непосредственно на исходную статью"
 
 msgid "Link to my blurblog and shared comments"
-msgstr "Ссылка на мой бларг и комментарии"
+msgstr "Ссылка на мой Blurblog и комментарии"
 
 msgid "List"
 msgstr "Список"
@@ -3857,7 +3853,7 @@ msgid "Lock"
 msgstr "Закрепить"
 
 msgid "Locked"
-msgstr "Заблокировано"
+msgstr "Закреплено"
 
 msgid "Log In or Sign Up"
 msgstr "Войти или зарегистрироваться"
@@ -3866,7 +3862,7 @@ msgid "Logout"
 msgstr "Выйти"
 
 msgid "Long Reads"
-msgstr "Большие статьи"
+msgstr "Длинные статьи"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Длинные статьи в NewsBlur"
@@ -3912,7 +3908,7 @@ msgid "Manually by hitting %(first_key)s or %(second_key)s"
 msgstr "Вручную, нажав %(first_key)s или %(second_key)s"
 
 msgid "Manually or by clicking in the story"
-msgstr "Вручную или при нажатии на запись"
+msgstr "Вручную или при нажатии на статью"
 
 msgid ""
 "Many feeds only include a summary. Text view extracts the full story from the original website and displays"
@@ -3927,9 +3923,9 @@ msgstr "Март"
 #, python-format
 msgid "Mark %(count)s story as read?"
 msgid_plural "Mark %(count)s stories as read?"
-msgstr[0] "Отметить %(count)s запись как прочитанную?"
-msgstr[1] "Отметить %(count)s записи как прочитанные?"
-msgstr[2] "Отметить %(count)s записей как прочитанные?"
+msgstr[0] "Отметить %(count)s статью как прочитанную?"
+msgstr[1] "Отметить %(count)s статьи как прочитанные?"
+msgstr[2] "Отметить %(count)s статей как прочитанные?"
 
 msgid "Mark <b>every story</b> as read"
 msgstr "Отметить <b>все статьи</b> как прочитанные"
@@ -3958,9 +3954,9 @@ msgstr "Отметить всё как прочитанное?"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "Отметить как прочитанные все записи старше <b>%(value_1)s дня</b>"
-msgstr[1] "Отметить как прочитанные все истории старше <b>%(value_1)s дней</b>"
-msgstr[2] "Отметить как прочитанные все истории старше <b>%(value_1)s дней</b>"
+msgstr[0] "Отметить как прочитанные все статьи старше <b>%(value_1)s дня</b>"
+msgstr[1] "Отметить как прочитанные все статьи старше <b>%(value_1)s дней</b>"
+msgstr[2] "Отметить как прочитанные все статьи старше <b>%(value_1)s дней</b>"
 
 msgid "Mark as read"
 msgstr "Отметить как прочитанное"
@@ -3995,7 +3991,7 @@ msgstr "Отметить старые статьи как прочитанные
 #, python-format
 msgid "Mark older than %(count)s day as read?"
 msgid_plural "Mark older than %(count)s days as read?"
-msgstr[0] "Отметить прочитанными записи старше %(count)s дня?"
+msgstr[0] "Отметить прочитанными статьи старше %(count)s дня?"
 msgstr[1] "Отметить прочитанными статьи старше %(count)s дней?"
 msgstr[2] "Отметить прочитанными статьи старше %(count)s дней?"
 
@@ -4008,9 +4004,9 @@ msgstr "Отметить статьи как непрочитанные"
 #, python-format
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
-msgstr[0] "Отметить записи за последние <b>%(value_1)s день</b> как непрочитанные"
-msgstr[1] "Отметить истории за последние <b>%(value_1)s дня</b> как непрочитанные"
-msgstr[2] "Отметить истории за последние <b>%(value_1)s дней</b> как непрочитанные"
+msgstr[0] "Отметить статьи за последний <b>%(value_1)s день</b> как непрочитанные"
+msgstr[1] "Отметить статьи за последние <b>%(value_1)s дня</b> как непрочитанные"
+msgstr[2] "Отметить статьи за последние <b>%(value_1)s дней</b> как непрочитанные"
 
 msgid "Mark stories read on scroll"
 msgstr "Отмечать статьи как прочитанные при прокрутке"
@@ -4042,7 +4038,7 @@ msgid "Matched via related topics"
 msgstr "Подобрано по связанным темам"
 
 msgid "Matches story titles containing all keywords"
-msgstr "Совпадают с заголовками публикаций, содержащими все ключевые слова"
+msgstr "Находит заголовки статей, содержащие все ключевые слова"
 
 msgid "May"
 msgstr "Май"
@@ -4077,7 +4073,7 @@ msgstr "Объединить с:"
 #, python-format
 msgid "Merged %(count)s story into \"%(category)s\""
 msgid_plural "Merged %(count)s stories into \"%(category)s\""
-msgstr[0] "Объединена %(count)s запись в категорию «%(category)s»"
+msgstr[0] "Объединена %(count)s статья в категорию «%(category)s»"
 msgstr[1] "Объединены %(count)s статьи в «%(category)s»"
 msgstr[2] "Объединено %(count)s статей в «%(category)s»"
 
@@ -4160,12 +4156,12 @@ msgstr "Отключить"
 #, python-format
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
-msgstr[0] "Заглушить %(count)s сайт"
-msgstr[1] "Заглушить %(count)s сайта"
-msgstr[2] "Заглушить %(count)s сайтов"
+msgstr[0] "Отключить %(count)s сайт"
+msgstr[1] "Отключить %(count)s сайта"
+msgstr[2] "Отключить %(count)s сайтов"
 
 msgid "Mute Sites"
-msgstr "Игнорировать сайты"
+msgstr "Отключить сайты"
 
 #, python-format
 msgid "Mute for %(duration)s"
@@ -4175,26 +4171,26 @@ msgid "Mute indefinitely"
 msgstr "Отключить навсегда"
 
 msgid "Mute sites"
-msgstr "Скрыть сайты"
+msgstr "Отключить сайты"
 
 msgid "Mute this site"
-msgstr "Отключить уведомления с этого сайта"
+msgstr "Отключить этот сайт"
 
 msgid "Muted"
-msgstr "Без звука"
+msgstr "Отключено"
 
 msgid "Muted indefinitely."
 msgstr "Отключено навсегда."
 
 #, python-format
 msgid "Muted · unmutes in %(time)s"
-msgstr "Заглушено · включится через %(time)s"
+msgstr "Отключено · включится через %(time)s"
 
 msgid "Muted · unmuting soon"
-msgstr "Приглушено · скоро будет включено"
+msgstr "Отключено · скоро включится"
 
 msgid "My shared stories are public and anybody can reply to me"
-msgstr "Мои опубликованные истории доступны всем, и любой может ответить мне"
+msgstr "Мои публикации доступны всем, и любой может мне ответить"
 
 msgid "My shared stories are public but only people I approve can reply"
 msgstr "Мои публикации доступны всем, но отвечать могут только одобренные мной люди"
@@ -4230,7 +4226,7 @@ msgid "Nature"
 msgstr "Природа"
 
 msgid "Navigate between stories"
-msgstr "Переход между публикациями"
+msgstr "Переход между статьями"
 
 msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
@@ -4249,10 +4245,10 @@ msgid "Never"
 msgstr "Никогда"
 
 msgid "Never ever send me an email"
-msgstr "Никогда не отправляйте мне электронные письма"
+msgstr "Никогда не присылать мне письма"
 
 msgid "Never expire"
-msgstr "Никогда не удалять"
+msgstr "Сделать бессрочной"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Срок действия никогда не истечёт. Поздравляем!"
@@ -4292,10 +4288,10 @@ msgid "New tag name"
 msgstr "Название нового тега"
 
 msgid "New to me"
-msgstr "Впервые для меня"
+msgstr "Новые для меня"
 
 msgid "Newer:"
-msgstr "Более новые:"
+msgstr "Новее:"
 
 msgid "Newest"
 msgstr "Сначала новые"
@@ -4304,14 +4300,14 @@ msgid "Newest first"
 msgstr "Сначала новые"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "NewsBlur проверяет обновления и добавляет новые публикации в вашу ленту."
+msgstr "NewsBlur проверяет обновления и добавляет новые статьи в вашу ленту."
 
 msgid "NewsBlur connected to other services"
 msgstr "Сервисы, связанные с NewsBlur"
 
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
-msgstr "NewsBlur определил %(language)s по настройкам вашего браузера."
+msgstr "NewsBlur определил язык вашего браузера: %(language)s."
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur сейчас недоступен. <br> Повторите попытку позже."
@@ -4356,7 +4352,7 @@ msgid "Next story"
 msgstr "Следующая статья"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
-msgstr "Затем создайте фильтр для всех своих рассылок, чтобы они пересылали письма на специальный адрес NewsBlur."
+msgstr "Затем создайте фильтр для всех своих рассылок, чтобы они пересылались на ваш адрес NewsBlur."
 
 msgid "No"
 msgstr "Нет"
@@ -4500,14 +4496,14 @@ msgstr "Нет статей"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "Истории с сайта %(folder)s ещё не индексировались для поиска связанных историй."
+msgstr "Статьи из папки «%(folder)s» ещё не проиндексированы для поиска похожих статей."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "Статьи с вашего сайта %(count)s ещё не проиндексированы для поиска похожих статей."
-msgstr[1] "Истории с ваших %(count)s сайтов ещё не индексировались для поиска похожих историй."
-msgstr[2] "Истории с ваших %(count)s сайтов ещё не индексировались для поиска похожих историй."
+msgstr[0] "Статьи с %(count)s вашего сайта ещё не проиндексированы для поиска похожих статей."
+msgstr[1] "Статьи с ваших %(count)s сайтов ещё не проиндексированы для поиска похожих статей."
+msgstr[2] "Статьи с ваших %(count)s сайтов ещё не проиндексированы для поиска похожих статей."
 
 msgid "No stories published last month"
 msgstr "В прошлом месяце не опубликовано ни одной статьи"
@@ -4522,7 +4518,7 @@ msgid "No stories yet"
 msgstr "Пока нет статей"
 
 msgid "No story patterns found on this page."
-msgstr "На этой странице не найдено шаблонов историй."
+msgstr "На этой странице не найдено шаблонов статей."
 
 msgid "No trending sites available"
 msgstr "Нет доступных популярных сайтов"
@@ -4537,7 +4533,7 @@ msgid "No valid merge groups to apply"
 msgstr "Нет подходящих групп для объединения"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "Пока никто не подписался на ваши истории, которыми вы поделились."
+msgstr "Пока никто не подписался на статьи, которыми вы делитесь."
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "Больше некого рекомендовать. Отличная работа!"
@@ -4573,7 +4569,7 @@ msgid "Not seeing the right stories?"
 msgstr "Не видите нужных статей?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
-msgstr "Не самые читаемые, а самые популярные; предпочтение отдаётся небольшим сайтам, а не крупным."
+msgstr "Не самые читаемые, а лучше всего принятые читателями; предпочтение отдаётся небольшим сайтам, а не крупным."
 
 msgid "Nothing"
 msgstr "Ничего"
@@ -4591,14 +4587,14 @@ msgid "Notifications"
 msgstr "Уведомления"
 
 msgid "Notifications on trained intelligence classifiers"
-msgstr "Уведомления о классификаторах, обученных вами"
+msgstr "Уведомления по обученным классификаторам"
 
 #, python-format
 msgid "Notifications require %(tier_link)s"
 msgstr "Для уведомлений требуется %(tier_link)s"
 
 msgid "Notify on"
-msgstr "Уведомлять о"
+msgstr "Уведомления:"
 
 msgid "Notify on match"
 msgstr "Уведомлять при совпадении"
@@ -4613,7 +4609,7 @@ msgid "Now"
 msgstr "Сейчас"
 
 msgid "Number of stories to include in each briefing"
-msgstr "Количество историй в каждом дайджесте"
+msgstr "Количество статей в каждой сводке"
 
 msgid "Numbers & Symbols"
 msgstr "Цифры и символы"
@@ -4659,19 +4655,19 @@ msgid "Older:"
 msgstr "Старше:"
 
 msgid "Oldest"
-msgstr "Старейшие"
+msgstr "Сначала старые"
 
 msgid "Oldest first"
 msgstr "Сначала старые"
 
 msgid "Oldest unread story"
-msgstr "Самая старая непрочитанная история"
+msgstr "Самая старая непрочитанная статья"
 
 msgid "On"
 msgstr "Вкл."
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
-msgstr "В Premium Archive поиск охватывает все когда-либо архивированные истории, а не только недавние."
+msgstr "В Premium Archive поиск охватывает все когда-либо архивированные статьи, а не только недавние."
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr ""
@@ -4692,7 +4688,7 @@ msgstr ""
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "Для связанных записей проиндексирован только %(indexed)s из %(count)s сайта."
+msgstr[0] "Для поиска похожих статей проиндексировано только %(indexed)s из %(count)s сайта."
 msgstr[1] "Для связанных статей проиндексировано только %(indexed)s из %(count)s ваших сайтов."
 msgstr[2] "Для связанных статей проиндексировано только %(indexed)s из %(count)s ваших сайтов."
 
@@ -4704,7 +4700,7 @@ msgid_plural ""
 "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
 " personalized recommendations."
 msgstr[0] ""
-"Для рекомендаций проиндексирован только %(indexed)s из %(count)s сайтов. Перейдите на Premium, чтобы "
+"Для рекомендаций проиндексировано сайтов: %(indexed)s из %(count)s. Перейдите на Premium, чтобы "
 "проиндексировать все сайты и получать персональные рекомендации."
 msgstr[1] ""
 "Для поиска проиндексировано только %(indexed)s из %(count)s ваших сайтов. Перейдите на платный тариф, чтобы"
@@ -4714,27 +4710,27 @@ msgstr[2] ""
 " индексировать все сайты и получать персональные рекомендации."
 
 msgid "Only Focus:"
-msgstr "Только избранное:"
+msgstr "Только в фокусе:"
 
 msgid "Only page down in story, do not open next unread story"
 msgstr "Прокручивать только статью, не открывая следующую непрочитанную"
 
 msgid "Only people I approve can see my shared stories and reply to me"
-msgstr "Мои публикации и ответы на мои сообщения видны только тем, кого я одобрил(а)"
+msgstr "Только одобренные мной люди могут видеть мои публикации и отвечать мне"
 
 #, python-format
 msgid "Only recent stories shown from %(count)s site."
 msgid_plural "Only recent stories shown from %(count)s sites."
-msgstr[0] "Показываются только новые записи с %(count)s сайта."
+msgstr[0] "Показываются только недавние статьи с %(count)s сайта."
 msgstr[1] "Показываются только недавние статьи с %(count)s сайтов."
 msgstr[2] "Показываются только недавние статьи с %(count)s сайтов."
 
 #, python-format
 msgid "Only recent stories shown from %(indexed)s of %(count)s site."
 msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
-msgstr[0] "Показаны только недавние истории с %(indexed)s из %(count)s сайта."
-msgstr[1] "Показываются только недавние записи из %(indexed)s из %(count)s сайтов."
-msgstr[2] "Показываются только недавние записи из %(indexed)s из %(count)s сайтов."
+msgstr[0] "Показаны только недавние статьи с %(indexed)s из %(count)s сайта."
+msgstr[1] "Показаны только недавние статьи с %(indexed)s из %(count)s сайтов."
+msgstr[2] "Показаны только недавние статьи с %(indexed)s из %(count)s сайтов."
 
 msgid "Only recent stories shown from this site are available."
 msgstr "Доступны только недавние статьи, отображаемые на этом сайте."
@@ -4749,13 +4745,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "Показывать счётчики только у свёрнутых папок"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "Обрезать только длинные истории в блогах"
+msgstr "Обрезать только длинные статьи в Blurblog"
 
 msgid "Open"
 msgstr "Открыть"
 
 msgid "Open All Site Stories"
-msgstr "Открыть все статьи сайта"
+msgstr "Открыть статьи со всех сайтов"
 
 msgid "Open Everything"
 msgstr "Открыть «Всё»"
@@ -4765,7 +4761,7 @@ msgstr "Открыть сайт"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
 msgstr ""
-"Откройте заголовок любой папки, чтобы читать все её ленты сразу. «Все статьи сайтов» — это поток всех "
+"Откройте заголовок любой папки, чтобы читать все её ленты сразу. «Статьи со всех сайтов» — это поток всех "
 "новостей."
 
 msgid "Open clustering preferences"
@@ -4778,7 +4774,7 @@ msgid "Open in Text view"
 msgstr "Открыть в текстовом режиме"
 
 msgid "Open in background tab"
-msgstr "Открывать в фоновой вкладке"
+msgstr "Открыть в фоновой вкладке"
 
 msgid "Open in email client"
 msgstr "Открыть в почтовом приложении"
@@ -4787,13 +4783,13 @@ msgid "Open in new window"
 msgstr "Открыть в новом окне"
 
 msgid "Open links"
-msgstr "Открытые ссылки"
+msgstr "Открывать ссылки"
 
 msgid "Open links in a background tab"
 msgstr "Открывать ссылки в фоновой вкладке"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "Открывать следующую непрочитанную историю, когда нижняя часть истории видна"
+msgstr "Открывать следующую непрочитанную статью, когда видна нижняя часть текущей"
 
 msgid "Open next unread story when story is half-way up"
 msgstr "Открывать следующую непрочитанную статью, когда текущая прокручена наполовину вверх"
@@ -4802,19 +4798,19 @@ msgid "Open preferences"
 msgstr "Открыть настройки"
 
 msgid "Open site/feed trainer"
-msgstr "Открыть сайт/обучение ленты"
+msgstr "Открыть обучение по сайту/ленте"
 
 msgid "Open story trainer"
-msgstr "Открыть тренажёр статей"
+msgstr "Открыть обучение по статье"
 
 msgid "Open the Intelligence Trainer"
-msgstr "Открыть тренажёр интеллектуальной обработки"
+msgstr "Открыть тренер интеллектуальной фильтрации"
 
 msgid "Open the feed and story title menu"
 msgstr "Открыть меню ленты и заголовка статьи"
 
 msgid "Open the first story"
-msgstr "Открыть первую историю"
+msgstr "Открыть первую статью"
 
 msgid "Open the next site/folder"
 msgstr "Открыть следующий сайт или папку"
@@ -4829,7 +4825,7 @@ msgid "Open the trainer for any feed"
 msgstr "Откройте тренер для любой ленты"
 
 msgid "Open this story in NewsBlur"
-msgstr "Открыть эту публикацию в NewsBlur"
+msgstr "Открыть эту статью в NewsBlur"
 
 msgid "Open your Daily Briefing"
 msgstr "Открыть ежедневную сводку"
@@ -4898,7 +4894,7 @@ msgid "Page down by %(slider)s %(percent)s of the screen"
 msgstr "Прокрутить вниз на %(slider)s %(percent)s экрана"
 
 msgid "Page up"
-msgstr "На страницу вверх"
+msgstr "Страница вверх"
 
 msgid "Pages are re-checked on a configurable schedule and diffed for new content."
 msgstr ""
@@ -4970,10 +4966,10 @@ msgid "Platform"
 msgstr "Платформа"
 
 msgid "Play Last"
-msgstr "Воспроизвести последним"
+msgstr "Воспроизвести в конце очереди"
 
 msgid "Play Next"
-msgstr "Воспроизвести следующую"
+msgstr "Воспроизвести следующим"
 
 msgid "Play in Mini Media Player"
 msgstr "Воспроизвести в мини-плеере"
@@ -5018,7 +5014,7 @@ msgid "Popular"
 msgstr "Популярное"
 
 msgid "Popular Shared Stories"
-msgstr "Популярные публикации, которыми делятся"
+msgstr "Популярные статьи, которыми делятся"
 
 msgid "Portuguese"
 msgstr "Португальский"
@@ -5036,7 +5032,7 @@ msgid "Positive you want to delete your saved stories?"
 msgstr "Вы уверены, что хотите удалить сохранённые статьи?"
 
 msgid "Positive you want to delete your shared stories?"
-msgstr "Вы точно хотите удалить опубликованные вами истории?"
+msgstr "Вы точно хотите удалить опубликованные вами статьи?"
 
 msgid "Post"
 msgstr "Опубликовать"
@@ -5060,7 +5056,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "Премиум-архив"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -5122,11 +5118,11 @@ msgid "Preview"
 msgstr "Предпросмотр"
 
 msgid "Previous story"
-msgstr "Предыдущая новость"
+msgstr "Предыдущая статья"
 
 #, python-format
 msgid "Previously Recommended on: %(date)s"
-msgstr "Ранее рекомендовано на: %(date)s"
+msgstr "Дата прошлой рекомендации: %(date)s"
 
 msgid "Print"
 msgstr "Печать"
@@ -5138,7 +5134,7 @@ msgid "Privacy"
 msgstr "Конфиденциальность"
 
 msgid "Privacy options for your blurblog"
-msgstr "Настройки конфиденциальности вашего блога blurblog"
+msgstr "Настройки конфиденциальности вашего Blurblog"
 
 msgid "Private by default — banking, medical, and email sites are never archived"
 msgstr ""
@@ -5149,7 +5145,7 @@ msgid "Private notes:"
 msgstr "Личные заметки:"
 
 msgid "Private:"
-msgstr "Личное:"
+msgstr "Закрытый:"
 
 msgid "Pro"
 msgstr "Pro"
@@ -5164,7 +5160,7 @@ msgid "Profile"
 msgstr "Профиль"
 
 msgid "Profile &amp; Blurblog"
-msgstr "Блог профиля &amp;"
+msgstr "Профиль &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "Данные профиля"
@@ -5176,10 +5172,10 @@ msgid "Prompt"
 msgstr "Запрос"
 
 msgid "Protected:"
-msgstr "Защищено:"
+msgstr "Защищённый:"
 
 msgid "Public blurblog sharing"
-msgstr "Публичный доступ к blurblog"
+msgstr "Публичный доступ к Blurblog"
 
 msgid "Public comments"
 msgstr "Публичные комментарии"
@@ -5191,7 +5187,7 @@ msgid "Publisher"
 msgstr "Издатель"
 
 msgid "Push Expires"
-msgstr "Срок действия push-уведомлений"
+msgstr "Окончание push-подписки"
 
 msgid "Push expires"
 msgstr "Срок действия push-уведомлений истекает"
@@ -5207,21 +5203,21 @@ msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
 msgstr[0] ""
-"В очередь на категоризацию добавлена %(count)s запись (осталось %(remaining)s). Категории появятся по мере "
-"обработки записей."
+"В очередь на категоризацию добавлена %(count)s статья (осталось %(remaining)s). Категории появятся по мере "
+"обработки статей."
 msgstr[1] ""
-"В очередь на категоризацию добавлены %(count)s истории (%(remaining)s осталось). Категории появятся по мере"
-" обработки историй."
+"В очередь на категоризацию добавлены %(count)s статьи (осталось %(remaining)s). Категории появятся по мере "
+"обработки статей."
 msgstr[2] ""
-"В очередь на категоризацию добавлено %(count)s историй (%(remaining)s осталось). Категории появятся по мере"
-" обработки историй."
+"В очередь на категоризацию добавлено %(count)s статей (осталось %(remaining)s). Категории появятся по мере "
+"обработки статей."
 
 #, python-format
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
-msgstr[0] "В очередь на категоризацию добавлена %(count)s запись. Категории появятся по мере обработки записей."
-msgstr[1] "В очередь на категоризацию добавлены %(count)s истории. Категории появятся по мере обработки историй."
-msgstr[2] "В очередь на категоризацию добавлено %(count)s историй. Категории появятся по мере обработки историй."
+msgstr[0] "В очередь на категоризацию добавлена %(count)s статья. Категории появятся по мере обработки статей."
+msgstr[1] "В очередь на категоризацию добавлены %(count)s статьи. Категории появятся по мере обработки статей."
+msgstr[2] "В очередь на категоризацию добавлено %(count)s статей. Категории появятся по мере обработки статей."
 
 msgid "Quick search for a site"
 msgstr "Быстрый поиск сайта"
@@ -5241,7 +5237,7 @@ msgstr "RSS-ленты папок — это %(link_start)sпремиум-фун
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "RSS-ленты для тегов сохранённых историй — это %(link_start)sпремиум-функция%(link_end)s."
+msgstr "RSS-ленты для тегов сохранённых статей — это %(link_start)sпремиум-функция%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "URL RSS/XML: "
@@ -5268,10 +5264,10 @@ msgid "Re-categorizing..."
 msgstr "Изменение категории..."
 
 msgid "Read Stories"
-msgstr "Читать статьи"
+msgstr "Прочитанные статьи"
 
 msgid "Read Stories:"
-msgstr "Читать записи:"
+msgstr "Прочитано статей:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
@@ -5299,10 +5295,10 @@ msgid "Read unread stories with: newsblur stories list"
 msgstr "Читайте непрочитанные статьи командой: newsblur stories list"
 
 msgid "Read your email newsletters in your news reader, not your inbox."
-msgstr "Читайте рассылки в своей новостной ленте, а не во входящих письмах."
+msgstr "Читайте рассылки в ридере новостей, а не во входящих."
 
 msgid "Read your feeds: unread stories, folders, search, and saved stories by tag"
-msgstr "Читать ленты: непрочитанные истории, папки, поиск и сохранённые истории по меткам"
+msgstr "Читать ленты: непрочитанные статьи, папки, поиск и сохранённые статьи по тегам"
 
 msgid "Reading"
 msgstr "Чтение"
@@ -5315,7 +5311,7 @@ msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end
 msgstr "Чтение сохранённых статей по тегам — это %(link_start)sфункция Premium%(link_end)s."
 
 msgid "Reading saved story..."
-msgstr "Чтение сохранённой публикации..."
+msgstr "Чтение сохранённой статьи..."
 
 msgid "Reading view"
 msgstr "Режим чтения"
@@ -5360,19 +5356,19 @@ msgid "Recording..."
 msgstr "Запись..."
 
 msgid "Reddit Subreddits"
-msgstr "Субреддиты Reddit"
+msgstr "Сабреддиты Reddit"
 
 msgid "Redeemed"
 msgstr "Использовано"
 
 msgid "Reduce clutter in your river of stories"
-msgstr "Уменьшите беспорядок в потоке историй"
+msgstr "Меньше беспорядка в потоке статей"
 
 msgid "Refer"
 msgstr "Рекомендовать"
 
 msgid "Refer &amp; Gift"
-msgstr "Порекомендуйте &amp; в подарок"
+msgstr "Рекомендации &amp; подарки"
 
 msgid "Referral History"
 msgstr "История приглашений"
@@ -5398,7 +5394,7 @@ msgstr "Регулярное выражение"
 
 #, python-format
 msgid "Regex requires %(tier_link)s"
-msgstr "Регулярное выражение должно содержать %(tier_link)s"
+msgstr "Для регулярных выражений требуется %(tier_link)s"
 
 msgid "Related"
 msgstr "Похожие"
@@ -5455,9 +5451,9 @@ msgstr "Переименовано"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "Переименована %(count)s запись в «%(category)s»"
-msgstr[1] "Переименованы %(count)s статьи в «%(category)s»"
-msgstr[2] "Переименовано %(count)s статей в «%(category)s»"
+msgstr[0] "Категория %(count)s статьи изменена на «%(category)s»"
+msgstr[1] "Категория %(count)s статей изменена на «%(category)s»"
+msgstr[2] "Категория %(count)s статей изменена на «%(category)s»"
 
 msgid "Renaming..."
 msgstr "Переименование..."
@@ -5475,14 +5471,14 @@ msgid "Requested"
 msgstr "Запрошено"
 
 msgid "Requests to Follow You"
-msgstr "Запросы на подписку на вас"
+msgstr "Запросы на подписку"
 
 #, python-format
 msgid "Requires %(tier_link)s"
 msgstr "Требуется %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "Требуется архив Premium"
+msgstr "Требуется Premium Archive"
 
 msgid "Reset"
 msgstr "Сбросить"
@@ -5528,13 +5524,13 @@ msgid "Right-clicking"
 msgstr "Щелчок правой кнопкой мыши"
 
 msgid "Rising"
-msgstr "Растёт"
+msgstr "Растущие"
 
 msgid "River of News"
-msgstr "Лента новостей"
+msgstr "Поток новостей"
 
 msgid "River of News (reading by folder)"
-msgstr "Лента новостей (чтение по папкам)"
+msgstr "Поток новостей (чтение по папкам)"
 
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "Выполните newsblur auth login, чтобы авторизоваться через OAuth"
@@ -5590,7 +5586,7 @@ msgid "Save My Account"
 msgstr "Сохранить аккаунт"
 
 msgid "Save My Blurblog Settings"
-msgstr "Сохранить настройки моего блога Blurblog"
+msgstr "Сохранить настройки Blurblog"
 
 msgid "Save My Profile"
 msgstr "Сохранить профиль"
@@ -5608,7 +5604,7 @@ msgid "Save any story with one click or the s key"
 msgstr "Сохраняйте любую статью одним нажатием или клавишей s"
 
 msgid "Save comments"
-msgstr "Сохранять комментарии"
+msgstr "Сохранить комментарии"
 
 msgid "Save my profile"
 msgstr "Сохранить профиль"
@@ -5645,7 +5641,7 @@ msgid "Saved Stories"
 msgstr "Сохранённые статьи"
 
 msgid "Saved Stories & Tags"
-msgstr "Сохранённые истории и метки"
+msgstr "Сохранённые статьи и теги"
 
 msgid "Saved Tags"
 msgstr "Сохранённые теги"
@@ -5675,8 +5671,8 @@ msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
 msgstr ""
-"Для запланированных дайджестов нужна подписка Premium Archive. В вашем тарифе дайджесты создаются только "
-"при нажатии кнопки «Создать»."
+"Для запланированных сводок нужна подписка Premium Archive. В вашем тарифе сводки создаются только при "
+"нажатии кнопки «Создать»."
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "Запланированная доставка (ежедневно или дважды в день)"
@@ -5693,19 +5689,19 @@ msgstr "Прокрутить к комментариям"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "Прокрутить запись вверх/вниз на %(slider)s %(pixels)s пикс."
+msgstr "Прокручивать статью вверх/вниз на %(slider)s %(pixels)s пикс."
 
 msgid "Search"
 msgstr "Поиск"
 
 msgid "Search All Site Stories"
-msgstr "Искать во всех публикациях сайта"
+msgstr "Искать в статьях со всех сайтов"
 
 msgid "Search YouTube channels..."
 msgstr "Поиск каналов YouTube..."
 
 msgid "Search across all saved stories and tags"
-msgstr "Поиск по всем сохранённым историям и меткам"
+msgstr "Поиск по всем сохранённым статьям и тегам"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Ищите во всех подписках с помощью полнотекстового поиска на базе Elasticsearch."
@@ -5770,17 +5766,17 @@ msgstr "Поиск по вашим статьям"
 
 #, python-format
 msgid "Search: \"%(value_1)s\""
-msgstr "Поиск: \"%(value_1)s\""
+msgstr "Поиск: «%(value_1)s»"
 
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
-msgstr "Поиск <b>%(feed_title)s</b> по запросу «<b>%(query)s</b>»"
+msgstr "Поиск в <b>%(feed_title)s</b> по запросу «<b>%(query)s</b>»"
 
 msgid "Searching RSS feeds..."
 msgstr "Поиск RSS-лент..."
 
 msgid "Searching saved stories..."
-msgstr "Поиск сохранённых записей..."
+msgstr "Поиск сохранённых статей..."
 
 msgid "Searching your archive..."
 msgstr "Поиск в архиве..."
@@ -5836,7 +5832,7 @@ msgid "Select a folder"
 msgstr "Выберите папку"
 
 msgid "Select a story to read"
-msgstr "Выберите историю для чтения"
+msgstr "Выберите статью для чтения"
 
 msgid "Select any story and click \"Ask AI\""
 msgstr "Выберите любую статью и нажмите «Спросить ИИ»"
@@ -5902,7 +5898,7 @@ msgstr ""
 "языке."
 
 msgid "Set up your blurblog"
-msgstr "Настроить свой блог blurblog"
+msgstr "Настроить свой Blurblog"
 
 msgid "Settings"
 msgstr "Настройки"
@@ -5918,7 +5914,7 @@ msgstr "Поделиться"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
 msgstr ""
-"Поделитесь статьёй с комментарием — она появится в вашем блёрблоге, на который можно подписаться через RSS "
+"Поделитесь статьёй с комментарием — она появится в вашем Blurblog, на который можно подписаться через RSS "
 "или в интернете."
 
 msgid "Share on NewsBlur"
@@ -5931,7 +5927,7 @@ msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
 msgstr ""
-"Делитесь статьями с собственными комментариями в публичном блёрблоге. Подписывайтесь на друзей, чтобы "
+"Делитесь статьями с собственными комментариями в своём публичном Blurblog. Подписывайтесь на друзей, чтобы "
 "видеть, что они читают и чем делятся."
 
 msgid "Share the link."
@@ -5943,7 +5939,7 @@ msgstr ""
 "бесплатный год подписки."
 
 msgid "Share this story"
-msgstr "Поделиться публикацией"
+msgstr "Поделиться статьёй"
 
 msgid "Share to your Blurblog"
 msgstr "Опубликовать в своём Blurblog"
@@ -5955,7 +5951,7 @@ msgid "Share with comments"
 msgstr "Поделиться с комментариями"
 
 msgid "Shared"
-msgstr "Общие"
+msgstr "Опубликовано"
 
 msgid "Shared Stories & Blurblog"
 msgstr "Общие статьи и Blurblog"
@@ -5968,7 +5964,7 @@ msgstr[1] "Поделились: %(count)s человека"
 msgstr[2] "Поделились: %(count)s человек"
 
 msgid "Shared with NewsBlur.com"
-msgstr "Доступ открыт пользователям NewsBlur.com"
+msgstr "Отправлено через NewsBlur.com"
 
 msgid "Shared!"
 msgstr "Опубликовано!"
@@ -6002,13 +5998,13 @@ msgid "Show Folders"
 msgstr "Показывать папки"
 
 msgid "Show Global Shared Stories"
-msgstr "Показывать общие статьи для всех"
+msgstr "Показывать общие статьи сообщества"
 
 msgid "Show Good Reads"
-msgstr "Показывать хорошие чтения"
+msgstr "Показывать хорошие статьи"
 
 msgid "Show Infrequent Site Stories"
-msgstr "Показывать редкие статьи сайта"
+msgstr "Показывать статьи с редко обновляемых сайтов"
 
 msgid "Show Long Reads"
 msgstr "Показывать длинные статьи"
@@ -6047,7 +6043,7 @@ msgid "Show every story individually without grouping"
 msgstr "Показывать каждую статью отдельно, без группировки"
 
 msgid "Show from both friends and the public"
-msgstr "Показывать публикации друзей и всех пользователей"
+msgstr "Показывать комментарии друзей и всех пользователей"
 
 msgid "Show highlighter when selecting text"
 msgstr "Показывать маркер при выделении текста"
@@ -6062,7 +6058,7 @@ msgid "Show on Load"
 msgstr "Показывать при загрузке"
 
 msgid "Show story changes"
-msgstr "Показывать изменения в записи"
+msgstr "Показать изменения в статье"
 
 msgid "Show the dashboard when loading NewsBlur"
 msgstr "Показывать панель управления при загрузке NewsBlur"
@@ -6078,7 +6074,7 @@ msgstr "Показывать количество непрочитанных в 
 
 #, python-format
 msgid "Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"
-msgstr "Показаны истории за период с <b>%(start_date)s</b> по <b>%(end_date)s</b>"
+msgstr "Показаны статьи за период с <b>%(start_date)s</b> по <b>%(end_date)s</b>"
 
 #, python-format
 msgid "Showing stories newer than <b>%(date)s</b>"
@@ -6108,7 +6104,7 @@ msgid "Signup"
 msgstr "Регистрация"
 
 msgid "Single Story"
-msgstr "Отдельная история"
+msgstr "Одна статья"
 
 msgid "Single line"
 msgstr "Одна строка"
@@ -6144,10 +6140,10 @@ msgid "Sites updated up to 5x more often"
 msgstr "Сайты обновляются до 5 раз чаще"
 
 msgid "Skip Back"
-msgstr "Назад"
+msgstr "Перемотка назад"
 
 msgid "Skip Forward"
-msgstr "Перейти вперёд"
+msgstr "Перемотка вперёд"
 
 msgid "Skip this step "
 msgstr "Пропустить этот шаг "
@@ -6165,7 +6161,7 @@ msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Столько времени и так мало дел. Нет, постойте! Наоборот."
 
 msgid "Social"
-msgstr "Социальные функции"
+msgstr "Общение"
 
 msgid "Social Connections"
 msgstr "Социальные связи"
@@ -6179,10 +6175,10 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "Извините, ничего не найдено по запросу «%(value_1)s»."
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "Извините, исходную запись<br />не удалось проксировать."
+msgstr "Извините, исходную статью<br />не удалось проксировать."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "К сожалению, не удалось извлечь текст статьи<br />."
+msgstr "К сожалению, текст статьи<br />не удалось извлечь."
 
 msgid "Sorry, there was a problem deleting feeds."
 msgstr "Не удалось удалить ленты."
@@ -6200,10 +6196,10 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "Не удалось опубликовать ответ. Возможно, мешает Adblock."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "Не удалось поделиться этой историей. Вероятно, виноват Adblock."
+msgstr "Не удалось поделиться этой статьёй. Вероятно, виноват Adblock."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
-msgstr "Не удалось отменить публикацию этой истории. Вероятно, причина в Adblock."
+msgstr "Не удалось отменить публикацию этой статьи. Вероятно, причина в Adblock."
 
 msgid "Sort "
 msgstr "Сортировать "
@@ -6221,7 +6217,7 @@ msgid "Source feeds"
 msgstr "Ленты источников"
 
 msgid "Spacing between feeds and story titles"
-msgstr "Интервал между лентами и заголовками историй"
+msgstr "Интервал между лентами и заголовками статей"
 
 msgid "Spanish"
 msgstr "Испанский"
@@ -6238,9 +6234,9 @@ msgstr "Разделить"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "Разделить «%(category)s» (%(count)s запись) на:"
-msgstr[1] "Разделить «%(category)s» (%(count)s записи) на:"
-msgstr[2] "Разделить «%(category)s» (%(count)s записей) на:"
+msgstr[0] "Разделить «%(category)s» (%(count)s статья) на:"
+msgstr[1] "Разделить «%(category)s» (%(count)s статьи) на:"
+msgstr[2] "Разделить «%(category)s» (%(count)s статей) на:"
 
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
@@ -6250,8 +6246,8 @@ msgstr "Разделить «%(value_1)s» на:"
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
 msgstr[0] "Разделение завершено: изменена категория у %(count)s статьи"
-msgstr[1] "Разделение завершено: перекатегоризировано %(count)s истории"
-msgstr[2] "Разделение завершено: перекатегоризировано %(count)s историй"
+msgstr[1] "Разделение завершено: изменена категория у %(count)s статей"
+msgstr[2] "Разделение завершено: изменена категория у %(count)s статей"
 
 msgid "Split failed to apply"
 msgstr "Не удалось применить разделение"
@@ -6262,9 +6258,9 @@ msgstr "Функция разделения скоро появится"
 #, python-format
 msgid "Split partially applied: %(count)s story recategorized"
 msgid_plural "Split partially applied: %(count)s stories recategorized"
-msgstr[0] "Разделение выполнено частично: изменена категория у %(count)s записи"
-msgstr[1] "Разделение выполнено частично: перекатегоризированы %(count)s истории"
-msgstr[2] "Разделение выполнено частично: перекатегоризировано %(count)s историй"
+msgstr[0] "Разделение выполнено частично: изменена категория у %(count)s статьи"
+msgstr[1] "Разделение выполнено частично: изменена категория у %(count)s статей"
+msgstr[2] "Разделение выполнено частично: изменена категория у %(count)s статей"
 
 msgid "Split with AI"
 msgstr "Разделить с помощью ИИ"
@@ -6281,10 +6277,10 @@ msgstr "Устарело: %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
-msgstr "Устарело — последняя публикация %(date)s"
+msgstr "Не обновляется — последняя статья %(date)s"
 
 msgid "Stars"
-msgstr "Избранное"
+msgstr "Звёзды"
 
 msgid "Start Training Site by Site"
 msgstr "Начать обучение для каждого сайта"
@@ -6305,7 +6301,7 @@ msgid "Statistics"
 msgstr "Статистика"
 
 msgid "Statistics &amp; History"
-msgstr "Статистика &amp; История"
+msgstr "Статистика &amp; история"
 
 msgid "Stats"
 msgstr "Статистика"
@@ -6321,7 +6317,7 @@ msgid "Step %(step)s of %(count)s"
 msgstr "Шаг %(step)s из %(count)s"
 
 msgid "Stop any time you like."
-msgstr "Отменить подписку можно в любой момент."
+msgstr "Можно остановиться в любой момент."
 
 msgid "Stop recording"
 msgstr "Остановить запись"
@@ -6330,7 +6326,7 @@ msgid "Stories"
 msgstr "Статьи"
 
 msgid "Stories are highlighted green (like) or hidden (dislike)"
-msgstr "Публикации подсвечиваются зелёным (нравится) или скрываются (не нравится)"
+msgstr "Статьи подсвечиваются зелёным (нравится) или скрываются (не нравится)"
 
 msgid "Stories arrive in real-time"
 msgstr "Статьи поступают в реальном времени"
@@ -6339,14 +6335,14 @@ msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Статьи кешируются для чтения офлайн и автоматически обновляются в фоновом режиме."
 
 msgid "Stories can stay unread forever"
-msgstr "Публикации могут оставаться непрочитанными сколько угодно"
+msgstr "Статьи могут оставаться непрочитанными сколько угодно"
 
 msgid "Stories covered by 3+ feeds"
 msgstr "Статьи, встречающиеся в 3 и более лентах"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
-msgstr "Истории с %(start_date)s по %(end_date)s"
+msgstr "Статьи с %(start_date)s по %(end_date)s"
 
 msgid "Stories from feeds that rarely publish"
 msgstr "Статьи из лент, которые редко публикуют"
@@ -6357,19 +6353,19 @@ msgstr "Статьи в архиве"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "Записи, отмечаемые как прочитанные через <b>%(days)s день</b>"
+msgstr[0] "Статьи старше <b>%(days)s дня</b> отмечены как прочитанные"
 msgstr[1] "Статьи старше <b>%(days)s дней</b> отмечены как прочитанные"
 msgstr[2] "Статьи старше <b>%(days)s дней</b> отмечены как прочитанные"
 
 msgid "Stories matching your trained topics and authors"
-msgstr "Записи по выбранным вами темам и авторам"
+msgstr "Статьи по выбранным вами темам и авторам"
 
 msgid "Stories never expire or disappear"
 msgstr "Статьи не устаревают и не исчезают"
 
 #, python-format
 msgid "Stories newer than %(date)s"
-msgstr "Истории новее %(date)s"
+msgstr "Статьи новее %(date)s"
 
 #, python-format
 msgid "Stories older than %(date)s"
@@ -6377,7 +6373,7 @@ msgstr "Статьи старше %(date)s"
 
 #, python-format
 msgid "Stories on %(date)s"
-msgstr "Статьи на %(date)s"
+msgstr "Статьи за %(date)s"
 
 msgid "Stories per day"
 msgstr "Статей в день"
@@ -6386,19 +6382,19 @@ msgid "Stories per month"
 msgstr "Статей в месяц"
 
 msgid "Stories readers finished, saved, and shared"
-msgstr "Истории, которые читатели дочитали, сохранили и которыми поделились"
+msgstr "Статьи, которые читатели дочитали, сохранили и которыми поделились"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "Истории, привлёкшие наибольшее внимание среди NewsBlur."
+msgstr "Статьи, которые привлекли больше всего внимания на NewsBlur."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "Истории <b>никогда</b> не будут автоматически отмечаться как прочитанные"
+msgstr "Статьи <b>никогда</b> не будут автоматически отмечаться как прочитанные"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Статьи <b>никогда</b> не будут отмечены как прочитанные"
 
 msgid "Story"
-msgstr "Публикация"
+msgstr "Статья"
 
 msgid "Story Archive"
 msgstr "Архив статей"
@@ -6407,13 +6403,13 @@ msgid "Story Authors"
 msgstr "Авторы статей"
 
 msgid "Story Categories &amp; Tags"
-msgstr "Категории историй &amp; Теги"
+msgstr "Категории статей &amp; теги"
 
 msgid "Story Clustering"
 msgstr "Группировка статей"
 
 msgid "Story Layout - Grid Columns"
-msgstr "Макет публикаций — столбцы сетки"
+msgstr "Макет статей — столбцы сетки"
 
 msgid "Story Layout - Split"
 msgstr "Расположение статей — разделённый экран"
@@ -6425,28 +6421,28 @@ msgid "Story Title"
 msgstr "Заголовок статьи"
 
 msgid "Story Typography"
-msgstr "Типографика публикаций"
+msgstr "Типографика статей"
 
 msgid "Story URL"
-msgstr "URL истории"
+msgstr "URL статьи"
 
 msgid "Story clustering"
 msgstr "Группировка статей"
 
 msgid "Story content preview"
-msgstr "Предпросмотр содержимого записи"
+msgstr "Предпросмотр содержимого статьи"
 
 msgid "Story is always hidden"
 msgstr "Статья всегда скрыта"
 
 msgid "Story layout"
-msgstr "Макет публикаций"
+msgstr "Макет статей"
 
 msgid "Story preview"
-msgstr "Предпросмотр записи"
+msgstr "Предпросмотр статьи"
 
 msgid "Story shows in Focus view"
-msgstr "Статья отображается в режиме фокусировки"
+msgstr "Статья отображается в режиме «Фокус»"
 
 msgid "Story side options"
 msgstr "Параметры боковой панели статьи"
@@ -6455,7 +6451,7 @@ msgid "Story side options buttons"
 msgstr "Кнопки дополнительных параметров статьи"
 
 msgid "Story side options placement"
-msgstr "Расположение параметров боковой панели публикации"
+msgstr "Расположение параметров боковой панели статьи"
 
 msgid "Story title styling"
 msgstr "Оформление заголовка статьи"
@@ -6569,11 +6565,11 @@ msgid "Sunday"
 msgstr "Воскресенье"
 
 msgid "Super Dislike "
-msgstr "Совсем не нравится "
+msgstr "Очень не нравится "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
-msgstr "Дополняется проверками каждые %(value_1)s"
+msgstr "Дополняется проверками с интервалом %(value_1)s"
 
 msgid "Switch between views (original, feed, text, story)"
 msgstr "Переключение между режимами просмотра (исходный, лента, текст, статья)"
@@ -6604,7 +6600,7 @@ msgid "Tag"
 msgstr "Тег"
 
 msgid "Tag RSS Feed"
-msgstr "Добавить RSS-ленту в тег"
+msgstr "RSS-лента тега"
 
 msgid "Tag Settings"
 msgstr "Настройки тегов"
@@ -6614,7 +6610,7 @@ msgid "Tag filters found no stories in %(context)s."
 msgstr "Фильтры по тегам не нашли статей в %(context)s."
 
 msgid "Tag filters found no stories in this view."
-msgstr "Фильтры тегов не нашли записей в этом представлении."
+msgstr "Фильтры по тегам не нашли статей в этом представлении."
 
 msgid "Tag name must be 128 characters or less."
 msgstr "Название тега не должно превышать 128 символов."
@@ -6682,7 +6678,7 @@ msgid "Text filters found no stories in %(context)s."
 msgstr "Текстовые фильтры не нашли статей в %(context)s."
 
 msgid "Text filters found no stories in this view."
-msgstr "Текстовые фильтры не нашли публикаций в этом представлении."
+msgstr "Текстовые фильтры не нашли статей в этом представлении."
 
 msgid "Text view extracts the story"
 msgstr "Текстовый режим извлекает текст статьи"
@@ -6693,11 +6689,11 @@ msgstr "Спасибо! У вас %(bold_start)sпремиум-аккаунт%(b
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "Спасибо! У вас есть %(bold_start)sпремиум-архив%(bold_end)s."
+msgstr "Спасибо! У вас %(bold_start)sаккаунт Premium Archive%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "Спасибо! У вас %(bold_start)sпремиум-аккаунт Pro%(bold_end)s."
+msgstr "Спасибо! У вас %(bold_start)sаккаунт Premium Pro%(bold_end)s."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Служба ИИ слишком долго отвечала. Попробуйте ещё раз."
@@ -6714,7 +6710,7 @@ msgid ""
 "The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
 "custom sections you define."
 msgstr ""
-"Ежедневный дайджест отображается вверху боковой панели. В нём есть разделы с главными новостями, длинными "
+"Ежедневная сводка отображается вверху боковой панели. В ней есть разделы с главными новостями, длинными "
 "статьями и разделами, которые вы настроите сами."
 
 msgid ""
@@ -6743,7 +6739,7 @@ msgstr "Полный API NewsBlur открыт и документирован �
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "Полная лента новостей — функция %(link_start)sПремиум%(link_end)s."
+msgstr "Полный поток новостей — это %(link_start)sфункция Premium%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "Полный список сочетаний клавиш"
@@ -6759,7 +6755,7 @@ msgid ""
 "stories."
 msgstr ""
 "Ползунок интеллектуальной фильтрации в левом нижнем углу переключает между всеми статьями, непрочитанными "
-"статьями и избранными статьями."
+"статьями и статьями в фокусе."
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
@@ -6791,9 +6787,9 @@ msgstr "Слишком много сайтов и статей для обраб
 #, python-format
 msgid "There is %(count)s hidden story"
 msgid_plural "There are %(count)s hidden stories"
-msgstr[0] "Скрыта %(count)s запись"
-msgstr[1] "Скрыто %(count)s публикации"
-msgstr[2] "Скрыто %(count)s публикаций"
+msgstr[0] "Скрыта %(count)s статья"
+msgstr[1] "Скрыто %(count)s статьи"
+msgstr[2] "Скрыто %(count)s статей"
 
 #, python-format
 msgid "There is %(count)s public comment"
@@ -6843,7 +6839,7 @@ msgid "There's no limit. Save as many stories as you want and they're kept forev
 msgstr "Ограничений нет. Сохраняйте сколько угодно статей — они останутся навсегда."
 
 msgid "These clusters were found because other subscribers share these feeds."
-msgstr "Эти группы были найдены, потому что другие подписчики делятся этими лентами."
+msgstr "Эти группы были найдены, потому что другие подписчики тоже читают эти ленты."
 
 msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
@@ -6853,10 +6849,10 @@ msgstr ""
 "«Разрешённые домены» выше, чтобы разрешить доступ."
 
 msgid "They redeem it."
-msgstr "Они используют его."
+msgstr "Получатель активирует подарок."
 
 msgid "Thinking"
-msgstr "Думает"
+msgstr "Вдумчиво"
 
 msgid "Thinking..."
 msgstr "Думаю..."
@@ -6924,7 +6920,7 @@ msgstr ""
 " в месяц. Как только он начнёт публиковать хотя бы раз в месяц, частота загрузки автоматически увеличится."
 
 msgid "This site is active and receiving stories."
-msgstr "Этот сайт активен и получает публикации."
+msgstr "Этот сайт активен и получает статьи."
 
 msgid "This site only"
 msgstr "Только этот сайт"
@@ -6954,7 +6950,7 @@ msgid "Thursday"
 msgstr "Четверг"
 
 msgid "Tier"
-msgstr "Уровень"
+msgstr "Тариф"
 
 msgid "Time Period"
 msgstr "Период времени"
@@ -6986,7 +6982,7 @@ msgid "Title filters found no stories in %(context)s."
 msgstr "Фильтры по заголовку не нашли статей в %(context)s."
 
 msgid "Title filters found no stories in this view."
-msgstr "Фильтры по заголовку не нашли историй в этом представлении."
+msgstr "Фильтры по заголовку не нашли статей в этом представлении."
 
 msgid "Title matching catches exact and fuzzy duplicates"
 msgstr "Поиск по заголовкам выявляет точные и приблизительные дубликаты"
@@ -6998,8 +6994,8 @@ msgid ""
 "Title training matches phrases, so train just the words that matter and future stories with those words "
 "follow suit."
 msgstr ""
-"Обучение заголовков работает с фразами, поэтому обучайте только важным словам — будущие статьи с этими "
-"словами будут учитываться так же."
+"Обучение по заголовкам работает с фразами, поэтому обучайте фильтр только на важных словах — будущие статьи"
+" с этими словами будут оцениваться так же."
 
 msgid "Title: "
 msgstr "Заголовок: "
@@ -7075,13 +7071,13 @@ msgid "Top stories"
 msgstr "Главные статьи"
 
 msgid "Track Changes"
-msgstr "Отслеживать изменения"
+msgstr "Отслеживание изменений"
 
 msgid "Train"
 msgstr "Обучить"
 
 msgid "Train &amp; filter"
-msgstr "Обучить фильтр &amp;"
+msgstr "Обучение &amp; фильтрация"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr ""
@@ -7104,7 +7100,7 @@ msgid "Train stories on full text content"
 msgstr "Обучать на статьях с полным текстом"
 
 msgid "Train stories with regular expressions"
-msgstr "Обучайте ленту с помощью регулярных выражений"
+msgstr "Обучать фильтры статей с помощью регулярных выражений"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "Обучайте ленты, ищите, делитесь и добавляйте теги — как в веб-версии"
@@ -7113,7 +7109,7 @@ msgid "Train this classifier"
 msgstr "Обучить этот классификатор"
 
 msgid "Train this site"
-msgstr "Обучить этому сайту"
+msgstr "Обучить для этого сайта"
 
 msgid "Train this story"
 msgstr "Обучить на этой статье"
@@ -7122,7 +7118,7 @@ msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Обучайте ленты, чтобы отфильтровывать понравившиеся и нежелательные статьи."
 
 msgid "Train, tag, search, and organize newsletters like any feed"
-msgstr "Обучайте, добавляйте метки, ищите и сортируйте рассылки так же, как любые другие ленты"
+msgstr "Обучайте, добавляйте теги, ищите и сортируйте рассылки так же, как любые другие ленты"
 
 msgid "Training:"
 msgstr "Обучение:"
@@ -7146,7 +7142,7 @@ msgid "Trending Sites"
 msgstr "Популярные сайты"
 
 msgid "Truncate stories"
-msgstr "Обрезать истории"
+msgstr "Обрезать статьи"
 
 msgid "Try"
 msgstr "Попробовать"
@@ -7178,7 +7174,7 @@ msgstr "Отключить автоматическое создание сво�
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
-msgstr[0] "Пожалуйста, включите этот сайт: %(count)s"
+msgstr[0] "Пожалуйста, включите %(count)s сайт"
 msgstr[1] "Пожалуйста, включите %(count)s сайта"
 msgstr[2] "Пожалуйста, включите %(count)s сайтов"
 
@@ -7207,10 +7203,10 @@ msgstr "Регулярное выражение URL"
 
 #, python-format
 msgid "URL filters found no stories in %(context)s."
-msgstr "Фильтры URL не нашли записей в %(context)s."
+msgstr "Фильтры URL не нашли статей в %(context)s."
 
 msgid "URL filters found no stories in this view."
-msgstr "Фильтры URL не нашли публикаций в этом представлении."
+msgstr "Фильтры URL не нашли статей в этом представлении."
 
 msgid "URL gives a 404 - page not found."
 msgstr "URL ведёт на страницу 404 — страница не найдена."
@@ -7219,7 +7215,7 @@ msgid "URL:"
 msgstr "URL:"
 
 msgid "Un-mute this site"
-msgstr "Снять заглушение с этого сайта"
+msgstr "Включить этот сайт"
 
 msgid "Uncategorized"
 msgstr "Без категории"
@@ -7252,7 +7248,7 @@ msgid "Unknown question"
 msgstr "Неизвестный вопрос"
 
 msgid "Unlock"
-msgstr "Разблокировать"
+msgstr "Открепить"
 
 msgid "Unlock for $36/year"
 msgstr "Разблокировать за 36 $ в год"
@@ -7261,13 +7257,13 @@ msgid "Unlock full discovery"
 msgstr "Откройте полный доступ к разделу «Обзор»"
 
 msgid "Unlocked"
-msgstr "Разблокировано"
+msgstr "Откреплено"
 
 msgid "Unmute"
-msgstr "Включить звук"
+msgstr "Включить"
 
 msgid "Unmuted"
-msgstr "Не заглушено"
+msgstr "Включено"
 
 msgid "Unread"
 msgstr "Непрочитанное"
@@ -7276,7 +7272,7 @@ msgid "Unread only"
 msgstr "Только непрочитанные"
 
 msgid "Unread stories"
-msgstr "Непрочитанные истории"
+msgstr "Непрочитанные статьи"
 
 msgid "Unread stories going back months"
 msgstr "Непрочитанные статьи за последние месяцы"
@@ -7285,13 +7281,13 @@ msgid "Unread stories never expire, so read at your own pace."
 msgstr "Непрочитанные статьи не устаревают — читайте в удобном темпе."
 
 msgid "Unread+Focus:"
-msgstr "Непрочитанные + избранное:"
+msgstr "Непрочитанные + Фокус:"
 
 msgid "Unsave this story"
-msgstr "Убрать историю из сохранённых"
+msgstr "Убрать статью из сохранённых"
 
 msgid "Unshared"
-msgstr "Не опубликовано"
+msgstr "Публикация отменена"
 
 msgid "Untitled"
 msgstr "Без названия"
@@ -7372,13 +7368,13 @@ msgid "Upgrade to Premium"
 msgstr "Перейти на Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "Перейти на премиум-архив"
+msgstr "Перейти на Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "Перейдите на Premium Archive, чтобы получать уведомления классификатора"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
-msgstr "Перейдите на Premium Archive, чтобы проверить все ленты на дубликаты и не пропустить ни одной подборки."
+msgstr "Перейдите на Premium Archive, чтобы проверить все ленты на дубликаты и не пропустить ни одной группы."
 
 msgid "Upgrade to Premium Pro"
 msgstr "Перейти на Premium Pro"
@@ -7424,7 +7420,7 @@ msgstr "Для классификаторов естественного язы�
 
 #, python-format
 msgid "Use %(language)s"
-msgstr "Использовать %(language)s"
+msgstr "Использовать язык: %(language)s"
 
 msgid "Use 12-hour clock"
 msgstr "Использовать 12-часовой формат времени"
@@ -7447,13 +7443,13 @@ msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Используйте виджеты, чтобы сразу видеть количество непрочитанных статей и сами статьи"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
-msgstr "Полезно для разработки новостных сюжетов, исправленных статей и обновлений о развивающихся продуктах."
+msgstr "Полезно для развивающихся новостных сюжетов, исправленных статей и меняющихся анонсов продуктов."
 
 msgid "User Admin"
-msgstr "Администратор пользователей"
+msgstr "Управление пользователем"
 
 msgid "User is premium ARCHIVE, expires: "
-msgstr "У пользователя премиум-архив, срок действия истекает: "
+msgstr "У пользователя Premium Archive, срок действия истекает: "
 
 msgid "User is premium, expires: "
 msgstr "У пользователя премиум-подписка, срок действия до: "
@@ -7474,13 +7470,13 @@ msgstr[2] "По умолчанию: <b>%(days)s дней</b>"
 #, python-format
 msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
 msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
-msgstr[0] "Используется значение по умолчанию: <b>%(days)s день</b> (из %(source)s)"
-msgstr[1] "По умолчанию: <b>%(days)s дня</b> (из %(source)s)"
-msgstr[2] "По умолчанию: <b>%(days)s дней</b> (из %(source)s)"
+msgstr[0] "Используется значение по умолчанию: <b>%(days)s день</b> (источник: %(source)s)"
+msgstr[1] "По умолчанию: <b>%(days)s дня</b> (источник: %(source)s)"
+msgstr[2] "По умолчанию: <b>%(days)s дней</b> (источник: %(source)s)"
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "Используется значение по умолчанию: <b>never</b> (из %(source)s)"
+msgstr "Используется значение по умолчанию: <b>никогда</b> (источник: %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "По умолчанию статьи <b>никогда</b> не будут автоматически отмечаться как прочитанные"
@@ -7570,11 +7566,11 @@ msgstr "Каковы основные аргументы?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "Что вам %(like)s и %(dislike)s в этом сайте?"
+msgstr "Что вам %(like)s и %(dislike)s на этом сайте?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "Что вам %(like)s и %(dislike)s в этой записи?"
+msgstr "Что вам %(like)s и %(dislike)s в этой статье?"
 
 msgid "What happens if I downgrade?"
 msgstr "Что произойдёт при переходе на более дешёвый тариф?"
@@ -7646,7 +7642,7 @@ msgid "Why so infrequently?"
 msgstr "Почему так редко?"
 
 msgid "Widely Read Stories"
-msgstr "Популярные записи"
+msgstr "Популярные статьи"
 
 msgid "Widely Read on NewsBlur"
 msgstr "Популярное на NewsBlur"
@@ -7719,7 +7715,7 @@ msgid "Yes, it can transcribe audio and video content and then answer questions 
 msgstr "Да, он может расшифровывать аудио и видео, а затем отвечать на вопросы по их содержанию."
 
 msgid "Yes, saved stories and their tags are fully searchable."
-msgstr "Да, сохранённые истории и их метки доступны для поиска."
+msgstr "Да, сохранённые статьи и их теги доступны для поиска."
 
 msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
 msgstr ""
@@ -7727,7 +7723,7 @@ msgstr ""
 "поделиться ссылкой."
 
 msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
-msgstr "Да. Истории кэшируются локально, а фоновые обновления поддерживают их актуальность."
+msgstr "Да. Статьи кэшируются локально, а фоновые обновления поддерживают их актуальность."
 
 msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
 msgstr "Да. Включите «Не объединять статьи» во всплывающем меню параметров ленты или в настройках."
@@ -7737,7 +7733,7 @@ msgid ""
 "Premium Archive."
 msgstr ""
 "Да. Обучение на авторах, тегах и ключевых словах в заголовках бесплатно. Для обучения на полном тексте "
-"публикаций нужен Premium Archive."
+"статей нужен Premium Archive."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
@@ -7804,7 +7800,7 @@ msgstr ""
 "подписаться снова."
 
 msgid "You can also filter out stories you don't want to read."
-msgstr "Вы также можете фильтровать истории, которые не хотите читать."
+msgstr "Вы также можете фильтровать статьи, которые не хотите читать."
 
 msgid "You can change this anytime in Preferences."
 msgstr "Вы можете изменить это в любое время в настройках."
@@ -7814,7 +7810,7 @@ msgstr "Вы можете изменить своё мнение."
 
 #, python-format
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
-msgstr "Во время чтения нажимайте кнопки %(like_icon)s%(dislike_icon)s рядом с записями."
+msgstr "Во время чтения нажимайте кнопки %(like_icon)s%(dislike_icon)s рядом со статьями."
 
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Это можно переопределить отдельно для каждого сайта и папки."
@@ -7829,8 +7825,8 @@ msgstr "Бесплатно можно обучать каждую ленту о�
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "Вы читаете %(count)s сайт. С Premium все они станут лучше."
-msgstr[1] "Вы читаете %(count)s сайта. Премиум улучшит каждый из них."
-msgstr[2] "Вы читаете %(count)s сайтов. Премиум улучшит каждый из них."
+msgstr[1] "Вы читаете %(count)s сайта. С Premium все они станут лучше."
+msgstr[2] "Вы читаете %(count)s сайтов. С Premium все они станут лучше."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -7843,20 +7839,20 @@ msgid "You have no saved stories."
 msgstr "У вас нет сохранённых статей."
 
 msgid "You have no unread stories in Focus mode."
-msgstr "В режиме фокуса нет непрочитанных записей."
+msgstr "В режиме «Фокус» нет непрочитанных статей."
 
 msgid "You have no unread stories."
 msgstr "У вас нет непрочитанных статей."
 
 msgid "You have not yet subscribed to anybody's shared stories."
-msgstr "Вы пока не подписаны ни на чьи общие истории."
+msgstr "Вы пока не подписаны ни на чьи общие статьи."
 
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Чтобы ответить, нужно подписаться на %(value_1)s"
 
 msgid "You must be logged in to send a story over email."
-msgstr "Чтобы отправить историю по электронной почте, необходимо войти в систему."
+msgstr "Чтобы отправить статью по электронной почте, необходимо войти в систему."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
@@ -7870,7 +7866,7 @@ msgid "You need to be logged in to reply to a comment."
 msgstr "Чтобы ответить на комментарий, нужно войти в систему."
 
 msgid "You need to be logged in to share a story."
-msgstr "Чтобы поделиться историей, нужно войти в систему."
+msgstr "Чтобы поделиться статьёй, нужно войти в систему."
 
 msgid "You will be emailed within a minute or three."
 msgstr "Письмо придёт в течение одной-трёх минут."
@@ -7888,20 +7884,20 @@ msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
 "briefings on your schedule."
 msgstr ""
-"Вы просматриваете первые 3 статьи каждого дайджеста. Перейдите на платный тариф, чтобы открыть все статьи и"
-" получать дайджесты автоматически по расписанию."
+"Вы просматриваете первые 3 статьи каждой сводки. Перейдите на платный тариф, чтобы открыть все статьи и "
+"получать сводки автоматически по расписанию."
 
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "Всё готово! Надеемся, NewsBlur вам понравится."
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "Вам подарили %(value_1)s из %(value_2)s!"
+msgstr "Вам подарили %(value_2)s на %(value_1)s!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
 msgstr ""
-"Вы достигли лимита в %(value_1)s сайтов. Отключите некоторые сайты или перейдите на другой тариф, чтобы "
+"Вы достигли лимита сайтов (%(value_1)s). Отключите некоторые сайты или перейдите на другой тариф, чтобы "
 "добавить больше."
 
 msgid "You:"
@@ -7984,7 +7980,7 @@ msgid "autonomous vehicles"
 msgstr "автономные автомобили"
 
 msgid "beats any"
-msgstr "лучше любого"
+msgstr "сильнее любого"
 
 msgid "bird migration"
 msgstr "миграция птиц"
@@ -8062,7 +8058,7 @@ msgstr[1] "подписчика"
 msgstr[2] "подписчиков"
 
 msgid "following"
-msgstr "подписан"
+msgstr "подписки"
 
 msgid "food science"
 msgstr "пищевая наука"
@@ -8083,7 +8079,7 @@ msgid "iOS notifications"
 msgstr "Уведомления iOS"
 
 msgid "iOS notifications require Premium Archive"
-msgstr "Для уведомлений iOS нужен архив Premium"
+msgstr "Для уведомлений iOS нужен Premium Archive"
 
 msgid "iPhone &amp; iPad"
 msgstr "iPhone &amp; iPad"
@@ -8129,7 +8125,7 @@ msgid "open source"
 msgstr "с открытым исходным кодом"
 
 msgid "optional, appears above the story"
-msgstr "необязательно, отображается над историей"
+msgstr "необязательно, отображается над статьёй"
 
 #, python-format
 msgid "or subscribe with %(paypal_button)s"
@@ -8142,7 +8138,7 @@ msgid "podcast industry"
 msgstr "индустрия подкастов"
 
 msgid "premium"
-msgstr "премиум"
+msgstr "Premium"
 
 msgid "public transit"
 msgstr "общественный транспорт"
@@ -8169,16 +8165,16 @@ msgid "separate multiple addresses with commas"
 msgstr "разделяйте несколько адресов запятыми"
 
 msgid "set up usage-based billing"
-msgstr "настроить оплату по фактическому использованию"
+msgstr "настроите оплату по факту использования"
 
 msgid "show hidden stories"
-msgstr "показывать скрытые истории"
+msgstr "показывать скрытые статьи"
 
 msgid "site-wide"
-msgstr "для всего сайта"
+msgstr "общие настройки"
 
 msgid "site-wide preference"
-msgstr "настройка для всего сайта"
+msgstr "общая настройка"
 
 msgid "soil health"
 msgstr "здоровье почвы"
@@ -8190,7 +8186,7 @@ msgid "streaming wars"
 msgstr "войны стриминговых сервисов"
 
 msgid "subscribed"
-msgstr "подписан"
+msgstr "подписка оформлена"
 
 msgid "supply chain"
 msgstr "цепочка поставок"
@@ -8202,7 +8198,7 @@ msgid "typography"
 msgstr "типографика"
 
 msgid "unmuting soon"
-msgstr "скоро перестанет игнорироваться"
+msgstr "скоро включится"
 
 msgid "upload picture"
 msgstr "загрузить изображение"
@@ -8248,10 +8244,10 @@ msgid "✓ Sent"
 msgstr "✓ Отправлено"
 
 msgid "✓ Story matches this filter"
-msgstr "✓ История соответствует этому фильтру"
+msgstr "✓ Статья соответствует этому фильтру"
 
 msgid "✓ Valid"
-msgstr "✓ Действительно"
+msgstr "✓ Допустимо"
 
 msgid "✗ Image does not match this filter"
 msgstr "✗ Изображение не соответствует этому фильтру"
@@ -8260,5 +8256,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ Фильтр не нашёл изображений"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ История не соответствует этому фильтру"
+msgstr "✗ Статья не соответствует этому фильтру"
 
