@@ -1365,4 +1365,16 @@ people together to talk about the world.</string>
     <string name="profile_interaction_replied_user_comment">%1$s replied to %2$s\'s comment</string>
     <string name="profile_interaction_replied_user_reply">%1$s replied to %2$s\'s reply</string>
     <string name="profile_interaction_reshared">%1$s re-shared %2$s</string>
+    <string name="briefing_section_top_stories">Top stories</string>
+    <string name="briefing_section_top_stories_subtitle">The most important stories from your feeds</string>
+    <string name="briefing_section_infrequent">From infrequent sites</string>
+    <string name="briefing_section_infrequent_subtitle">Stories from feeds that rarely publish</string>
+    <string name="briefing_section_long_read">Long reads for later</string>
+    <string name="briefing_section_long_read_subtitle">Longer articles worth setting time aside for</string>
+    <string name="briefing_section_classifier_match">Based on your interests</string>
+    <string name="briefing_section_classifier_match_subtitle">Stories matching your trained topics and authors</string>
+    <string name="briefing_section_follow_up">Follow-ups</string>
+    <string name="briefing_section_follow_up_subtitle">New posts from feeds you recently read</string>
+    <string name="briefing_section_widely_covered">Widely covered</string>
+    <string name="briefing_section_widely_covered_subtitle">Stories covered by 3+ feeds</string>
 </resources>

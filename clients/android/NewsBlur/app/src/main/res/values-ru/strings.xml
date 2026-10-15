@@ -1193,4 +1193,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s отвечает на комментарий пользователя %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s отвечает на ответ пользователя %2$s</string>
     <string name="profile_interaction_reshared">%1$s повторно делится статьёй %2$s</string>
+    <string name="briefing_section_top_stories">Главные новости</string>
+    <string name="briefing_section_top_stories_subtitle">Самые важные материалы из ваших лент</string>
+    <string name="briefing_section_infrequent">Из редко обновляемых источников</string>
+    <string name="briefing_section_infrequent_subtitle">Материалы из лент, которые редко обновляются</string>
+    <string name="briefing_section_long_read">Длинные статьи на потом</string>
+    <string name="briefing_section_long_read_subtitle">Длинные статьи, на которые стоит выделить время</string>
+    <string name="briefing_section_classifier_match">На основе ваших интересов</string>
+    <string name="briefing_section_classifier_match_subtitle">Материалы по темам и авторам, которым вы обучили систему</string>
+    <string name="briefing_section_follow_up">Продолжения</string>
+    <string name="briefing_section_follow_up_subtitle">Новые публикации из недавно прочитанных вами лент</string>
+    <string name="briefing_section_widely_covered">Широкое освещение</string>
+    <string name="briefing_section_widely_covered_subtitle">Материалы, опубликованные в 3 и более лентах</string>
 </resources>

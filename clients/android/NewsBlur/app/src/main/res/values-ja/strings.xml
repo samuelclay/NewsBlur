@@ -1136,4 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$sさんが%2$sさんのコメントに返信しました</string>
     <string name="profile_interaction_replied_user_reply">%1$sさんが%2$sさんの返信に返信しました</string>
     <string name="profile_interaction_reshared">%1$sが%2$sを再共有しました</string>
+    <string name="briefing_section_top_stories">注目の記事</string>
+    <string name="briefing_section_top_stories_subtitle">フィードの重要な記事</string>
+    <string name="briefing_section_infrequent">更新頻度の低いサイトの記事</string>
+    <string name="briefing_section_infrequent_subtitle">更新頻度の低いフィードの記事</string>
+    <string name="briefing_section_long_read">あとで読む長文記事</string>
+    <string name="briefing_section_long_read_subtitle">時間をかけて読む価値のある長い記事</string>
+    <string name="briefing_section_classifier_match">あなたの興味に基づく記事</string>
+    <string name="briefing_section_classifier_match_subtitle">学習したトピックや著者に一致する記事</string>
+    <string name="briefing_section_follow_up">続報</string>
+    <string name="briefing_section_follow_up_subtitle">最近読んだフィードの新着記事</string>
+    <string name="briefing_section_widely_covered">複数のフィードで掲載</string>
+    <string name="briefing_section_widely_covered_subtitle">3つ以上のフィードで取り上げられた記事</string>
 </resources>

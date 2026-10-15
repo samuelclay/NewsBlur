@@ -1136,4 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s님이 %2$s님의 댓글에 답글을 남겼습니다</string>
     <string name="profile_interaction_replied_user_reply">%1$s님이 %2$s님의 답글에 답글을 남겼습니다</string>
     <string name="profile_interaction_reshared">%1$s님이 %2$s을(를) 다시 공유했습니다</string>
+    <string name="briefing_section_top_stories">주요 기사</string>
+    <string name="briefing_section_top_stories_subtitle">피드에서 가장 중요한 기사</string>
+    <string name="briefing_section_infrequent">게시 빈도가 낮은 사이트에서</string>
+    <string name="briefing_section_infrequent_subtitle">게시 빈도가 낮은 피드의 기사</string>
+    <string name="briefing_section_long_read">나중에 읽을 긴 기사</string>
+    <string name="briefing_section_long_read_subtitle">시간을 내서 읽을 만한 긴 기사</string>
+    <string name="briefing_section_classifier_match">관심사에 맞는 기사</string>
+    <string name="briefing_section_classifier_match_subtitle">학습한 주제 및 작성자와 일치하는 기사</string>
+    <string name="briefing_section_follow_up">후속 기사</string>
+    <string name="briefing_section_follow_up_subtitle">최근 읽은 피드의 새 게시물</string>
+    <string name="briefing_section_widely_covered">여러 곳에서 다룬 기사</string>
+    <string name="briefing_section_widely_covered_subtitle">3개 이상의 피드에서 다룬 기사</string>
 </resources>

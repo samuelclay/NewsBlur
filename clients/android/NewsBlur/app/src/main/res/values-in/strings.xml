@@ -1136,4 +1136,16 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="profile_interaction_replied_user_comment">%1$s membalas komentar %2$s\'s</string>
     <string name="profile_interaction_replied_user_reply">%1$s membalas balasan %2$s\'s</string>
     <string name="profile_interaction_reshared">%1$s membagikan ulang %2$s</string>
+    <string name="briefing_section_top_stories">Artikel teratas</string>
+    <string name="briefing_section_top_stories_subtitle">Artikel terpenting dari feed Anda</string>
+    <string name="briefing_section_infrequent">Dari situs yang jarang menerbitkan</string>
+    <string name="briefing_section_infrequent_subtitle">Artikel dari feed yang jarang menerbitkan</string>
+    <string name="briefing_section_long_read">Artikel panjang untuk nanti</string>
+    <string name="briefing_section_long_read_subtitle">Artikel panjang yang layak dibaca dengan meluangkan waktu</string>
+    <string name="briefing_section_classifier_match">Berdasarkan minat Anda</string>
+    <string name="briefing_section_classifier_match_subtitle">Artikel yang sesuai dengan topik dan penulis yang Anda latih</string>
+    <string name="briefing_section_follow_up">Artikel lanjutan</string>
+    <string name="briefing_section_follow_up_subtitle">Tulisan baru dari feed yang baru-baru ini Anda baca</string>
+    <string name="briefing_section_widely_covered">Banyak diliput</string>
+    <string name="briefing_section_widely_covered_subtitle">Artikel yang diliput oleh 3+ feed</string>
 </resources>

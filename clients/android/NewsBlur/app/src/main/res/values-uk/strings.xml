@@ -1193,4 +1193,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s відповідає на коментар користувача %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s відповідає на відповідь користувача %2$s</string>
     <string name="profile_interaction_reshared">%1$s повторно поширює %2$s</string>
+    <string name="briefing_section_top_stories">Головні новини</string>
+    <string name="briefing_section_top_stories_subtitle">Найважливіші матеріали з ваших стрічок</string>
+    <string name="briefing_section_infrequent">З сайтів, які рідко публікують</string>
+    <string name="briefing_section_infrequent_subtitle">Матеріали зі стрічок, які рідко публікують</string>
+    <string name="briefing_section_long_read">Довгі статті на потім</string>
+    <string name="briefing_section_long_read_subtitle">Довші статті, на які варто виділити час</string>
+    <string name="briefing_section_classifier_match">Відповідає вашим інтересам</string>
+    <string name="briefing_section_classifier_match_subtitle">Матеріали на теми й від авторів, яких ви позначили як цікаві</string>
+    <string name="briefing_section_follow_up">Продовження</string>
+    <string name="briefing_section_follow_up_subtitle">Нові публікації зі стрічок, які ви нещодавно читали</string>
+    <string name="briefing_section_widely_covered">Широко висвітлювані</string>
+    <string name="briefing_section_widely_covered_subtitle">Матеріали, опубліковані у 3+ стрічках</string>
 </resources>

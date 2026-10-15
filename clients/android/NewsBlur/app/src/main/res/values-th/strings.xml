@@ -1136,4 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s ตอบกลับความคิดเห็นของ %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s ตอบกลับข้อความตอบกลับของ %2$s</string>
     <string name="profile_interaction_reshared">%1$s แชร์ต่อ %2$s</string>
+    <string name="briefing_section_top_stories">ข่าวเด่น</string>
+    <string name="briefing_section_top_stories_subtitle">ข่าวสำคัญที่สุดจากฟีดของคุณ</string>
+    <string name="briefing_section_infrequent">จากเว็บไซต์ที่เผยแพร่ไม่บ่อย</string>
+    <string name="briefing_section_infrequent_subtitle">ข่าวจากฟีดที่เผยแพร่ไม่บ่อย</string>
+    <string name="briefing_section_long_read">บทความยาวไว้อ่านทีหลัง</string>
+    <string name="briefing_section_long_read_subtitle">บทความยาวที่ควรหาเวลาอ่าน</string>
+    <string name="briefing_section_classifier_match">อิงตามความสนใจของคุณ</string>
+    <string name="briefing_section_classifier_match_subtitle">ข่าวที่ตรงกับหัวข้อและผู้เขียนที่คุณฝึกไว้</string>
+    <string name="briefing_section_follow_up">ติดตามความคืบหน้า</string>
+    <string name="briefing_section_follow_up_subtitle">โพสต์ใหม่จากฟีดที่คุณเพิ่งอ่าน</string>
+    <string name="briefing_section_widely_covered">มีการพูดถึงอย่างกว้างขวาง</string>
+    <string name="briefing_section_widely_covered_subtitle">ข่าวที่มีฟีดพูดถึงตั้งแต่ 3 ฟีดขึ้นไป</string>
 </resources>

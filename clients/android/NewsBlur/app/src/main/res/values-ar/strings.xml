@@ -1231,4 +1231,16 @@
     <string name="profile_interaction_replied_user_comment">ردّ %1$s على تعليق %2$s\'s</string>
     <string name="profile_interaction_replied_user_reply">ردّ %1$s على ردّ %2$s</string>
     <string name="profile_interaction_reshared">أعاد %1$s مشاركة %2$s</string>
+    <string name="briefing_section_top_stories">أهم القصص</string>
+    <string name="briefing_section_top_stories_subtitle">أهم القصص من خلاصاتك</string>
+    <string name="briefing_section_infrequent">من مواقع نادرة النشر</string>
+    <string name="briefing_section_infrequent_subtitle">قصص من خلاصات نادرًا ما تنشر</string>
+    <string name="briefing_section_long_read">قراءات طويلة لوقت لاحق</string>
+    <string name="briefing_section_long_read_subtitle">مقالات أطول تستحق تخصيص وقت لقراءتها</string>
+    <string name="briefing_section_classifier_match">بناءً على اهتماماتك</string>
+    <string name="briefing_section_classifier_match_subtitle">قصص تطابق الموضوعات والكتّاب الذين درّبت النظام عليهم</string>
+    <string name="briefing_section_follow_up">متابعات</string>
+    <string name="briefing_section_follow_up_subtitle">منشورات جديدة من خلاصات قرأتها مؤخرًا</string>
+    <string name="briefing_section_widely_covered">تغطية واسعة</string>
+    <string name="briefing_section_widely_covered_subtitle">قصص تناولتها 3 خلاصات أو أكثر</string>
 </resources>

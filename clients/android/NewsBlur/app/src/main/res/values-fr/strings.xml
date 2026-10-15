@@ -1174,4 +1174,16 @@ les gens pour parler du monde.</string>
     <string name="profile_interaction_replied_user_comment">%1$s a répondu au commentaire de %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s a répondu à la réponse de %2$s</string>
     <string name="profile_interaction_reshared">%1$s a repartagé %2$s</string>
+    <string name="briefing_section_top_stories">À la une</string>
+    <string name="briefing_section_top_stories_subtitle">Les articles les plus importants de vos flux</string>
+    <string name="briefing_section_infrequent">Sites rarement mis à jour</string>
+    <string name="briefing_section_infrequent_subtitle">Articles provenant de flux rarement mis à jour</string>
+    <string name="briefing_section_long_read">Articles longs à lire plus tard</string>
+    <string name="briefing_section_long_read_subtitle">Des articles plus longs qui méritent qu’on leur consacre du temps</string>
+    <string name="briefing_section_classifier_match">Selon vos centres d’intérêt</string>
+    <string name="briefing_section_classifier_match_subtitle">Articles correspondant aux sujets et auteurs que vous avez sélectionnés</string>
+    <string name="briefing_section_follow_up">À suivre</string>
+    <string name="briefing_section_follow_up_subtitle">Nouveaux articles des flux que vous avez consultés récemment</string>
+    <string name="briefing_section_widely_covered">Largement relayés</string>
+    <string name="briefing_section_widely_covered_subtitle">Articles couverts par au moins 3 flux</string>
 </resources>
