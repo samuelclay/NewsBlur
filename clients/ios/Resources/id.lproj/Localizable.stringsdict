@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ cerita terfokus</string>
+			<string>%@ artikel Fokus</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -251,7 +251,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ cerita</string>
+			<string>%@ artikel</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -265,7 +265,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ cerita tersisa</string>
+			<string>%@ artikel tersisa</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -307,7 +307,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ cerita belum dibaca</string>
+			<string>%@ artikel belum dibaca</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -461,7 +461,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Tandai %@ cerita ini sebagai telah dibaca</string>
+			<string>Tandai %@ artikel ini sebagai telah dibaca</string>
 		</dict>
 	</dict>
 	<key>Mute %@ Sites</key>
@@ -503,7 +503,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Cerita yang Dibagikan</string>
+			<string>Artikel yang Dibagikan</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>

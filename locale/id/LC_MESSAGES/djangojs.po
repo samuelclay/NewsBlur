@@ -43,7 +43,7 @@ msgid " Sites will be ordered by popularity. Click on what you like and don't li
 msgstr " Situs akan diurutkan berdasarkan popularitas. Klik yang Anda sukai dan tidak sukai."
 
 msgid " You can easily train individual stories as you read."
-msgstr " Anda dapat dengan mudah melatih cerita satu per satu saat membacanya."
+msgstr " Anda dapat dengan mudah melatih artikel satu per satu saat membacanya."
 
 msgid " You get a full refund, automatically."
 msgstr " Anda akan mendapat pengembalian dana penuh secara otomatis."
@@ -149,7 +149,7 @@ msgstr[1] "%(badge)s berlaku hingga %(count)s hari"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s topik"
+msgstr "Topik %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -175,7 +175,7 @@ msgstr[1] "%(count)s kanal"
 msgid "%(count)s classifier has been deleted."
 msgid_plural "%(count)s classifiers have been deleted."
 msgstr[0] "%(count)s pengklasifikasi telah dihapus."
-msgstr[1] "%(count)s classifier telah dihapus."
+msgstr[1] "%(count)s pengklasifikasi telah dihapus."
 
 #, python-format
 msgid "%(count)s classifier will be deleted"
@@ -198,8 +198,8 @@ msgstr[1] "%(count)s filter konten"
 #, python-format
 msgid "%(count)s curated story"
 msgid_plural "%(count)s curated stories"
-msgstr[0] "%(count)s cerita pilihan"
-msgstr[1] "%(count)s cerita pilihan"
+msgstr[0] "%(count)s artikel pilihan"
+msgstr[1] "%(count)s artikel pilihan"
 
 #, python-format
 msgid "%(count)s day"
@@ -312,8 +312,8 @@ msgstr "%(count)s di situs ini (%(stories)s)"
 #, python-format
 msgid "%(count)s open"
 msgid_plural "%(count)s opens"
-msgstr[0] "%(count)s dibuka"
-msgstr[1] "%(count)s dibuka"
+msgstr[0] "%(count)s kali dibuka"
+msgstr[1] "%(count)s kali dibuka"
 
 #, python-format
 msgid "%(count)s page"
@@ -355,7 +355,7 @@ msgstr[1] "%(count)s kali dibagikan"
 msgid "%(count)s shared story"
 msgid_plural "%(count)s shared stories"
 msgstr[0] "%(count)s artikel yang dibagikan"
-msgstr[1] "%(count)s cerita dibagikan"
+msgstr[1] "%(count)s artikel yang dibagikan"
 
 #, python-format
 msgid "%(count)s site"
@@ -378,44 +378,44 @@ msgstr[1] "%(count)s situs melebihi batas"
 #, python-format
 msgid "%(count)s story"
 msgid_plural "%(count)s stories"
-msgstr[0] "%(count)s cerita"
-msgstr[1] "%(count)s cerita"
+msgstr[0] "%(count)s artikel"
+msgstr[1] "%(count)s artikel"
 
 #, python-format
 msgid "%(count)s story has been deleted."
 msgid_plural "%(count)s stories have been deleted."
-msgstr[0] "%(count)s cerita telah dihapus."
-msgstr[1] "%(count)s cerita telah dihapus."
+msgstr[0] "%(count)s artikel telah dihapus."
+msgstr[1] "%(count)s artikel telah dihapus."
 
 #, python-format
 msgid "%(count)s story in archive"
 msgid_plural "%(count)s stories in archive"
-msgstr[0] "%(count)s cerita di arsip"
+msgstr[0] "%(count)s artikel di arsip"
 msgstr[1] "%(count)s artikel di arsip"
 
 #, python-format
 msgid "%(count)s story per day"
 msgid_plural "%(count)s stories per day"
 msgstr[0] "%(count)s artikel per hari"
-msgstr[1] "%(count)s cerita per hari"
+msgstr[1] "%(count)s artikel per hari"
 
 #, python-format
 msgid "%(count)s story per month"
 msgid_plural "%(count)s stories per month"
-msgstr[0] "%(count)s cerita per bulan"
+msgstr[0] "%(count)s artikel per bulan"
 msgstr[1] "%(count)s artikel per bulan"
 
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "%(count)s cerita akan dihapus"
-msgstr[1] "%(count)s cerita akan dihapus"
+msgstr[0] "%(count)s artikel akan dihapus"
+msgstr[1] "%(count)s artikel akan dihapus"
 
 #, python-format
 msgid "%(count)s story/mo"
 msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s cerita/bln"
-msgstr[1] "%(count)s cerita/bln"
+msgstr[0] "%(count)s artikel/bln"
+msgstr[1] "%(count)s artikel/bln"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -466,31 +466,31 @@ msgstr[1] "%(count)s tahun"
 #, python-format
 msgid "%(count)sd ago"
 msgid_plural "%(count)sd ago"
-msgstr[0] "%(count)sh lalu"
+msgstr[0] "%(count)s hari lalu"
 msgstr[1] "%(count)s hari lalu"
 
 #, python-format
 msgid "%(count)sh ago"
 msgid_plural "%(count)sh ago"
-msgstr[0] "%(count)sj lalu"
+msgstr[0] "%(count)s jam lalu"
 msgstr[1] "%(count)s jam lalu"
 
 #, python-format
 msgid "%(count)sm ago"
 msgid_plural "%(count)sm ago"
-msgstr[0] "%(count)sm lalu"
+msgstr[0] "%(count)s mnt lalu"
 msgstr[1] "%(count)s mnt lalu"
 
 #, python-format
 msgid "%(count)smo ago"
 msgid_plural "%(count)smo ago"
-msgstr[0] "%(count)sbln lalu"
+msgstr[0] "%(count)s bln lalu"
 msgstr[1] "%(count)s bln lalu"
 
 #, python-format
 msgid "%(count)sw ago"
 msgid_plural "%(count)sw ago"
-msgstr[0] "%(count)sm lalu"
+msgstr[0] "%(count)s minggu lalu"
 msgstr[1] "%(count)s minggu lalu"
 
 #, python-format
@@ -535,7 +535,7 @@ msgstr[1] ""
 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
-msgstr "%(message)s Tingkatkan untuk melihat berita terkait dari seluruh arsip Anda."
+msgstr "%(message)s Tingkatkan untuk melihat artikel terkait dari seluruh arsip Anda."
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -555,7 +555,7 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(shortcut)s to send"
-msgstr "%(shortcut)s untuk dikirim"
+msgstr "%(shortcut)s untuk mengirim"
 
 #, python-format
 msgid "%(slot)s — %(date)s"
@@ -595,11 +595,11 @@ msgstr "%(time)s tersisa"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s Kanal"
+msgstr "Kanal %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s Buletin"
+msgstr "Buletin %(topic)s"
 
 #, python-format
 msgid "%(topic)s Podcasts"
@@ -607,11 +607,11 @@ msgstr "Podcast %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s Situs"
+msgstr "Situs %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s subreddit"
+msgstr "Subreddit %(topic)s"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -631,7 +631,7 @@ msgstr "%(value_1)s yang lalu"
 
 #, python-format
 msgid "%(value_1)s is Premium"
-msgstr "%(value_1)s adalah Premium"
+msgstr "%(value_1)s adalah fitur Premium"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
@@ -974,8 +974,8 @@ msgstr "Pembaruan feed 5× lebih cepat"
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "< %(count)s cerita/bulan"
-msgstr[1] "< %(count)s cerita/bulan"
+msgstr[0] "< %(count)s artikel/bulan"
+msgstr[1] "< %(count)s artikel/bulan"
 
 #, python-format
 msgid "< %(value_1)s/month"
@@ -1007,7 +1007,7 @@ msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "Pilihan cerita terbaru yang dibagikan oleh NewsBlur pembaca, dipilih setiap jam."
+msgstr "Pilihan artikel terbaru yang dibagikan pembaca NewsBlur, dipilih setiap jam."
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -1020,7 +1020,7 @@ msgid "A single like overrides any number of dislikes"
 msgstr "Satu suka mengalahkan jumlah tidak suka berapa pun"
 
 msgid "A single super dislike overrides everything"
-msgstr "Satu super tidak suka saja mengesampingkan semuanya"
+msgstr "Satu Sangat Tidak Suka mengalahkan semuanya"
 
 msgid "A story diff with additions and deletions"
 msgstr "Perbandingan artikel yang menampilkan penambahan dan penghapusan"
@@ -1036,13 +1036,13 @@ msgid "AI filters are saved but won't run until you %(billing_link)s."
 msgstr "Filter AI disimpan, tetapi tidak akan dijalankan sampai Anda %(billing_link)s."
 
 msgid "AI finds the stories"
-msgstr "AI menemukan cerita"
+msgstr "AI menemukan artikel"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Ringkasan pilihan AI dari artikel teratas Anda"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
-msgstr "Analisis cerita berbasis AI dan rangkuman harian yang dipersonalisasi dari feed berita Anda."
+msgstr "Analisis artikel berbasis AI dan rangkuman harian yang dipersonalisasi dari feed berita Anda."
 
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
@@ -1072,8 +1072,8 @@ msgstr "Tambah"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "Tambahkan %(count)s tag cerita"
-msgstr[1] "Tambahkan %(count)s tag cerita"
+msgstr[0] "Tambahkan %(count)s tag artikel"
+msgstr[1] "Tambahkan %(count)s tag artikel"
 
 msgid "Add Folder"
 msgstr "Tambah Folder"
@@ -1097,7 +1097,7 @@ msgid "Add any site or feed"
 msgstr "Tambahkan situs atau feed apa pun"
 
 msgid "Add custom tags to organize saved stories by topic"
-msgstr "Tambahkan tag khusus untuk mengatur berita tersimpan berdasarkan topik"
+msgstr "Tambahkan tag khusus untuk mengatur artikel tersimpan berdasarkan topik"
 
 msgid "Add domains you never want to archive."
 msgstr "Tambahkan domain yang tidak ingin Anda arsipkan."
@@ -1185,7 +1185,7 @@ msgid "All Shared Stories"
 msgstr "Semua Artikel yang Dibagikan"
 
 msgid "All Site Stories"
-msgstr "Semua Artikel Situs"
+msgstr "Artikel Semua Situs"
 
 msgid "All Stories"
 msgstr "Semua Artikel"
@@ -1215,7 +1215,7 @@ msgid ""
 "All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
 "styles, and auto mark-as-read."
 msgstr ""
-"Semua pengguna melihat berita yang dikelompokkan di feed populer. Premium Archive membuka kendali penuh: "
+"Semua pengguna melihat artikel yang dikelompokkan di feed populer. Premium Archive membuka kendali penuh: "
 "opsi, gaya tampilan, dan penandaan otomatis sebagai telah dibaca."
 
 msgid "Allowed Domains"
@@ -1268,10 +1268,10 @@ msgid "Analyzing images..."
 msgstr "Menganalisis gambar..."
 
 msgid "Analyzing page to find story patterns..."
-msgstr "Menganalisis halaman untuk menemukan pola cerita..."
+msgstr "Menganalisis halaman untuk menemukan pola artikel..."
 
 msgid "Analyzing saved stories..."
-msgstr "Menganalisis cerita tersimpan..."
+msgstr "Menganalisis artikel tersimpan..."
 
 msgid "Analyzing your archive..."
 msgstr "Menganalisis arsip Anda..."
@@ -1279,8 +1279,8 @@ msgstr "Menganalisis arsip Anda..."
 #, python-format
 msgid "And you have %(count)s saved story."
 msgid_plural "And you have %(count)s saved stories."
-msgstr[0] "Dan Anda memiliki %(count)s cerita tersimpan."
-msgstr[1] "Dan Anda memiliki %(count)s cerita tersimpan."
+msgstr[0] "Dan Anda memiliki %(count)s artikel tersimpan."
+msgstr[1] "Dan Anda memiliki %(count)s artikel tersimpan."
 
 msgid "Android notifications"
 msgstr "Notifikasi Android"
@@ -1295,7 +1295,7 @@ msgid "Animations"
 msgstr "Animasi"
 
 msgid "Any"
-msgstr "Apa saja"
+msgstr "Kapan saja"
 
 msgid ""
 "Any public web page: Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
@@ -1347,7 +1347,7 @@ msgid "April"
 msgstr "April"
 
 msgid "Archive"
-msgstr "Arsip"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "Asisten Arsip"
@@ -1374,7 +1374,7 @@ msgid "Ask AI & Daily Briefing"
 msgstr "Tanya AI & Ringkasan Harian"
 
 msgid "Ask AI about story"
-msgstr "Tanyakan kepada AI tentang cerita"
+msgstr "Tanyakan kepada AI tentang artikel"
 
 msgid "Ask AI anything about your browsing history"
 msgstr "Tanyakan apa saja kepada AI tentang riwayat penjelajahan Anda"
@@ -1427,13 +1427,13 @@ msgid "Author filters found no stories in %(context)s."
 msgstr "Filter penulis tidak menemukan artikel di %(context)s."
 
 msgid "Author filters found no stories in this view."
-msgstr "Filter penulis tidak menemukan berita dalam tampilan ini."
+msgstr "Filter penulis tidak menemukan artikel dalam tampilan ini."
 
 msgid "Author: "
 msgstr "Penulis: "
 
 msgid "Authors"
-msgstr "Para penulis"
+msgstr "Penulis"
 
 msgid "Auto"
 msgstr "Otomatis"
@@ -1487,7 +1487,7 @@ msgid "Back to Search"
 msgstr "Kembali ke Pencarian"
 
 msgid "Back to classifier trainer"
-msgstr "Kembali ke pelatih klasifikasi"
+msgstr "Kembali ke pelatih pengklasifikasi"
 
 msgid "Back to feeds"
 msgstr "Kembali ke feed"
@@ -1496,7 +1496,7 @@ msgid "Back to stories"
 msgstr "Kembali ke artikel"
 
 msgid "Back to trainer"
-msgstr "Kembali ke pelatihan"
+msgstr "Kembali ke pelatih"
 
 msgid "Background color"
 msgstr "Warna latar belakang"
@@ -1576,7 +1576,7 @@ msgid "Briefing Admin"
 msgstr "Admin Ringkasan"
 
 msgid "Briefing Preferences"
-msgstr "Preferensi Briefing"
+msgstr "Preferensi Ringkasan"
 
 msgid "Briefing Settings"
 msgstr "Pengaturan Ringkasan"
@@ -1591,7 +1591,7 @@ msgid "Browse Archives"
 msgstr "Jelajahi Arsip"
 
 msgid "Browse all your stories"
-msgstr "Jelajahi semua berita Anda"
+msgstr "Jelajahi semua artikel Anda"
 
 msgid "Browse by Category"
 msgstr "Jelajahi berdasarkan Kategori"
@@ -1609,7 +1609,7 @@ msgid "Browse popular blogs, news sites, and publications with RSS feeds."
 msgstr "Jelajahi blog, situs berita, dan publikasi populer yang menyediakan feed RSS."
 
 msgid "Browse saved stories by tag in the sidebar"
-msgstr "Telusuri berita tersimpan berdasarkan tag di bilah sisi"
+msgstr "Telusuri artikel tersimpan berdasarkan tag di bilah sisi"
 
 #, python-format
 msgid ""
@@ -1633,7 +1633,7 @@ msgstr "Poin-poin"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
-msgstr "KATEGORI DENGAN 10+ CERITA (%(value_1)s)"
+msgstr "KATEGORI DENGAN 10+ ARTIKEL (%(value_1)s)"
 
 msgid "CLI Tool"
 msgstr "Alat CLI"
@@ -1739,7 +1739,7 @@ msgid "Change your profile above"
 msgstr "Ubah profil Anda di atas"
 
 msgid "Check back later for popular sites being added by NewsBlur users."
-msgstr "Nanti lihat lagi situs populer yang ditambahkan oleh NewsBlur pengguna."
+msgstr "Nanti lihat lagi situs populer yang ditambahkan oleh pengguna NewsBlur."
 
 msgid "Check what you like above..."
 msgstr "Centang yang Anda suka di atas..."
@@ -1833,7 +1833,7 @@ msgid "Clear all filters"
 msgstr "Hapus semua filter"
 
 msgid "Clear all overrides"
-msgstr "Hapus semua penggantian"
+msgstr "Hapus semua pengaturan khusus"
 
 msgid "Clear classifier filter"
 msgstr "Hapus filter pengklasifikasi"
@@ -1856,8 +1856,8 @@ msgstr "Hapus pencarian"
 #, python-format
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
-msgstr[0] "%(count)s pengecualian dihapus."
-msgstr[1] "%(count)s penggantian telah dihapus."
+msgstr[0] "%(count)s pengaturan khusus dihapus."
+msgstr[1] "%(count)s pengaturan khusus dihapus."
 
 msgid "Click any source card on a clustered story to read that version instead."
 msgstr "Klik kartu sumber mana pun pada artikel yang dikelompokkan untuk membaca versi tersebut."
@@ -1878,7 +1878,7 @@ msgid "Close player"
 msgstr "Tutup pemutar"
 
 msgid "Cluster duplicate stories across all your feeds"
-msgstr "Kelompokkan cerita duplikat di semua feed Anda"
+msgstr "Kelompokkan artikel duplikat di semua feed Anda"
 
 msgid "Cluster preview:"
 msgstr "Pratinjau klaster:"
@@ -1923,7 +1923,7 @@ msgid "Comment"
 msgstr "Komentar"
 
 msgid "Comment on stories"
-msgstr "Komentari cerita"
+msgstr "Komentari artikel"
 
 msgid "Comments:"
 msgstr "Komentar:"
@@ -1938,10 +1938,10 @@ msgid "Complete data ownership"
 msgstr "Kepemilikan data sepenuhnya"
 
 msgid "Concise bullet points highlighting key takeaways from each story"
-msgstr "Poin-poin ringkas yang menyoroti inti penting dari setiap cerita"
+msgstr "Poin-poin ringkas yang menyoroti inti penting dari setiap artikel"
 
 msgid "Confirming mark as read"
-msgstr "Mengonfirmasi penandaan sebagai telah dibaca"
+msgstr "Konfirmasi tandai telah dibaca"
 
 msgid "Congratulations! You're done."
 msgstr "Selamat! Anda sudah selesai."
@@ -1954,7 +1954,7 @@ msgid ""
 "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
 "subscriptions from Claude Code, Codex, or any MCP-compatible tool."
 msgstr ""
-"Hubungkan agen AI ke akun NewsBlur Anda. Baca feed, pilah cerita, latih pengklasifikasi, dan kelola "
+"Hubungkan agen AI ke akun NewsBlur Anda. Baca feed, pilah artikel, latih pengklasifikasi, dan kelola "
 "langganan melalui Claude Code, Codex, atau alat apa pun yang kompatibel dengan MCP."
 
 msgid "Connect AI agents with MCP server and CLI"
@@ -1964,8 +1964,8 @@ msgid ""
 "Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
 "shares to Slack; trigger custom workflows from your training."
 msgstr ""
-"Hubungkan NewsBlur ke ratusan layanan. Simpan berita ke Pocket, Instapaper, Evernote, atau Notion; bagikan "
-"postingan ke Slack; picu alur kerja khusus dari pelatihan Anda."
+"Hubungkan NewsBlur ke ratusan layanan. Simpan artikel ke Pocket, Instapaper, Evernote, atau Notion; bagikan"
+" postingan ke Slack; picu alur kerja khusus dari pelatihan Anda."
 
 msgid "Connected"
 msgstr "Terhubung"
@@ -2049,7 +2049,7 @@ msgid "Cursors"
 msgstr "Kursor"
 
 msgid "Custom Add Site URL"
-msgstr "URL Situs Tambahan Khusus"
+msgstr "URL Tambah Situs Khusus"
 
 msgid "Custom CSS"
 msgstr "CSS khusus"
@@ -2067,7 +2067,7 @@ msgid "Custom JavaScript"
 msgstr "JavaScript Kustom"
 
 msgid "Custom RSS feeds for saved stories"
-msgstr "Feed RSS khusus untuk berita tersimpan"
+msgstr "Feed RSS khusus untuk artikel tersimpan"
 
 msgid "Custom URLs"
 msgstr "URL khusus"
@@ -2106,12 +2106,12 @@ msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"Daily Briefing adalah fitur Premium Archive. Dengan paket Anda, Anda dapat membuat pratinjau yang memuat 3 "
-"cerita pertama dari setiap briefing. Tingkatkan paket untuk mengakses semua cerita dan briefing otomatis "
-"sesuai jadwal Anda."
+"Ringkasan Harian adalah fitur Premium Archive. Dengan paket Anda, Anda dapat membuat pratinjau yang memuat "
+"3 artikel pertama dari setiap ringkasan. Tingkatkan paket untuk mengakses semua artikel dan ringkasan "
+"otomatis sesuai jadwal Anda."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "Ringkasan harian berisi cerita dan kata kunci teratas Anda"
+msgstr "Ringkasan harian berisi artikel dan kata kunci teratas Anda"
 
 msgid "Daily distribution of stories"
 msgstr "Distribusi artikel harian"
@@ -2136,13 +2136,13 @@ msgid "Days"
 msgstr "Hari"
 
 msgid "Days of unreads"
-msgstr "Hari tanpa dibaca"
+msgstr "Masa belum dibaca"
 
 msgid "December"
 msgstr "Desember"
 
 msgid "Deep reads the community gave real time to"
-msgstr "Bacaan mendalam yang diluangkan waktu oleh komunitas"
+msgstr "Bacaan mendalam yang benar-benar disimak komunitas"
 
 msgid "Default"
 msgstr "Default"
@@ -2175,7 +2175,7 @@ msgid "Delete It. It Just Won't Work!"
 msgstr "Hapus. Ini tidak akan berhasil!"
 
 msgid "Delete Share"
-msgstr "Hapus Bagikan"
+msgstr "Batalkan Berbagi"
 
 msgid "Delete Tag"
 msgstr "Hapus Tag"
@@ -2214,18 +2214,18 @@ msgid "Deleting..."
 msgstr "Menghapus..."
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
-msgstr "Jelaskan cerita yang Anda cari, dan kami akan menganalisis ulang halaman untuk menemukannya."
+msgstr "Jelaskan artikel yang Anda cari, dan kami akan menganalisis ulang halaman untuk menemukannya."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr ""
-"Jelaskan sebuah topik dan AI akan menilai setiap berita berdasarkan perintah Anda untuk menyorot atau "
-"menyembunyikan berita yang cocok."
+"Jelaskan sebuah topik dan AI akan menilai setiap artikel berdasarkan perintah Anda untuk menyorot atau "
+"menyembunyikan artikel yang cocok."
 
 msgid "Describe what to focus or hide"
 msgstr "Jelaskan hal yang ingin difokuskan atau disembunyikan"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Jelaskan apa yang perlu dicari, dan AI akan menganalisis gambar setiap cerita berdasarkan perintah Anda."
+msgstr "Jelaskan apa yang perlu dicari, dan AI akan menganalisis gambar setiap artikel berdasarkan perintah Anda."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2241,7 +2241,7 @@ msgid "Disable social features"
 msgstr "Nonaktifkan fitur sosial"
 
 msgid "Disable story clustering"
-msgstr "Nonaktifkan pengelompokan cerita"
+msgstr "Nonaktifkan pengelompokan artikel"
 
 msgid "Disable the highlighter"
 msgstr "Nonaktifkan penyorot"
@@ -2300,7 +2300,7 @@ msgid "Dislike "
 msgstr "Tidak suka "
 
 msgid "Dislike matching stories"
-msgstr "Tidak suka cerita yang cocok"
+msgstr "Tidak suka artikel yang cocok"
 
 msgid "Dislikes"
 msgstr "Tidak suka"
@@ -2325,7 +2325,7 @@ msgid "Domain: %(value_1)s"
 msgstr "Domain: %(value_1)s"
 
 msgid "Don't automatically mark stories as read"
-msgstr "Jangan otomatis menandai cerita sebagai telah dibaca"
+msgstr "Jangan otomatis menandai artikel sebagai telah dibaca"
 
 msgid "Don't bother showing tooltips"
 msgstr "Jangan tampilkan tooltip"
@@ -2370,8 +2370,8 @@ msgid ""
 "Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
 " reading."
 msgstr ""
-"Seret tombol ke bilah bookmark. Di situs mana pun, tombol ini akan berlangganan ke suapannya atau "
-"membagikan berita yang sedang Anda baca."
+"Seret tombol ke bilah bookmark. Di situs mana pun, tombol ini akan berlangganan ke feed-nya atau membagikan"
+" artikel yang sedang Anda baca."
 
 msgid "Drag this bookmarklet into your bookmarks bar"
 msgstr "Seret bookmarklet ini ke bilah bookmark"
@@ -2383,24 +2383,24 @@ msgid "Drag to reorder"
 msgstr "Seret untuk mengurutkan ulang"
 
 msgid "Drag to reorder priority. Only shown when matching stories are found."
-msgstr "Seret untuk mengubah urutan prioritas. Hanya ditampilkan jika cerita yang cocok ditemukan."
+msgstr "Seret untuk mengubah urutan prioritas. Hanya ditampilkan jika artikel yang cocok ditemukan."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
-msgstr "Duplikat digabungkan di bawah versi dengan skor tertinggi di river Anda"
+msgstr "Duplikat digabungkan di bawah versi dengan skor tertinggi di aliran Anda"
 
 msgid "EXCLUDED FROM MERGES"
 msgstr "DIKECUALIKAN DARI PENGGABUNGAN"
 
 msgid "Each feed can notify a different way: browser push, email, iOS, or Android."
 msgstr ""
-"Setiap umpan dapat mengirim notifikasi dengan cara berbeda: notifikasi push browser, email, iOS, atau "
+"Setiap feed dapat mengirim notifikasi dengan cara berbeda: notifikasi push browser, email, iOS, atau "
 "Android."
 
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Setiap pengirim buletin menjadi feed tersendiri"
 
 msgid "Each selected split needs a name and at least one story"
-msgstr "Setiap pemisahan yang dipilih harus memiliki nama dan setidaknya satu cerita"
+msgstr "Setiap pemisahan yang dipilih harus memiliki nama dan setidaknya satu artikel"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
 msgstr ""
@@ -2480,7 +2480,7 @@ msgid "Enable all sites"
 msgstr "Aktifkan semua situs"
 
 msgid "Enable captions/subtitles for YouTube videos"
-msgstr "Aktifkan teks terjemahan/subtitel untuk video YouTube"
+msgstr "Aktifkan teks/subtitel untuk video YouTube"
 
 msgid "Enable daily briefings"
 msgstr "Aktifkan ringkasan harian"
@@ -2495,7 +2495,7 @@ msgid "Enable social features"
 msgstr "Aktifkan fitur sosial"
 
 msgid "Enable story clustering"
-msgstr "Aktifkan pengelompokan berita"
+msgstr "Aktifkan pengelompokan artikel"
 
 msgid "Enable the sites you want"
 msgstr "Aktifkan situs yang Anda inginkan"
@@ -2520,8 +2520,8 @@ msgstr "Masukkan pola penulis..."
 
 msgid "Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content."
 msgstr ""
-"Masukkan kata kunci untuk membuat bagian yang menampilkan cerita yang cocok. Mencocokkan frasa persis pada "
-"judul dan isi cerita."
+"Masukkan kata kunci untuk membuat bagian yang menampilkan artikel yang cocok. Mencocokkan frasa persis pada"
+" judul dan isi artikel."
 
 msgid "Enter text above"
 msgstr "Masukkan teks di atas"
@@ -2533,10 +2533,10 @@ msgid "Erase your intelligence training classifiers"
 msgstr "Hapus pengklasifikasi pelatihan kecerdasan Anda"
 
 msgid "Erase your saved stories"
-msgstr "Hapus cerita tersimpan Anda"
+msgstr "Hapus artikel tersimpan Anda"
 
 msgid "Erase your shared stories"
-msgstr "Hapus cerita yang Anda bagikan"
+msgstr "Hapus artikel yang Anda bagikan"
 
 msgid "Erase yourself"
 msgstr "Hapus diri Anda"
@@ -2586,13 +2586,13 @@ msgid "Every new story is archived permanently"
 msgstr "Setiap artikel baru diarsipkan secara permanen"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "Setiap tag berita tersimpan memiliki umpan RSS sendiri, cocok untuk diteruskan ke IFTTT atau Zapier."
+msgstr "Setiap tag artikel tersimpan memiliki feed RSS sendiri, cocok untuk diteruskan ke IFTTT atau Zapier."
 
 msgid "Every story archived and searchable forever"
 msgstr "Semua artikel diarsipkan dan dapat dicari selamanya"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
-msgstr "Setiap berita diarsipkan dan dapat ditelusuri selamanya. Basis pengetahuan pribadi Anda."
+msgstr "Setiap artikel diarsipkan dan dapat ditelusuri selamanya. Basis pengetahuan pribadi Anda."
 
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "Setiap tag memiliki feed RSS sendiri. Bagikan tautannya atau hubungkan ke IFTTT atau Zapier."
@@ -2610,7 +2610,7 @@ msgid "Everything has been deleted."
 msgstr "Semua telah dihapus."
 
 msgid "Everything in Archive, plus:"
-msgstr "Semua yang ada di Arsip, ditambah:"
+msgstr "Semua yang ada di Archive, ditambah:"
 
 msgid "Everything in Free, plus:"
 msgstr "Semua yang ada di paket Gratis, plus:"
@@ -2622,7 +2622,7 @@ msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
 " train classifiers. Pipe to jq or script your workflows."
 msgstr ""
-"Semua yang dapat dilakukan server MCP, langsung dari terminal Anda. Baca feed, cari berita, kelola "
+"Semua yang dapat dilakukan server MCP, langsung dari terminal Anda. Baca feed, cari artikel, kelola "
 "langganan, dan latih pengklasifikasi. Salurkan hasilnya ke jq atau buat skrip untuk alur kerja Anda."
 
 msgid "Exact phrase"
@@ -2653,7 +2653,7 @@ msgid "Expand all"
 msgstr "Bentangkan semua"
 
 msgid "Expand story"
-msgstr "Perluas cerita"
+msgstr "Perluas artikel"
 
 msgid "Expanded"
 msgstr "Diperluas"
@@ -2662,7 +2662,7 @@ msgid "Expire 1 YR"
 msgstr "Kedaluwarsa dalam 1 THN"
 
 msgid "Export trained stories from folders"
-msgstr "Ekspor berita terlatih dari folder"
+msgstr "Ekspor artikel terlatih dari folder"
 
 msgid "Extras"
 msgstr "Ekstra"
@@ -2674,7 +2674,7 @@ msgid "Faces"
 msgstr "Wajah"
 
 msgid "Fact check this story"
-msgstr "Periksa fakta cerita ini"
+msgstr "Periksa fakta artikel ini"
 
 msgid "Failed to connect to server"
 msgstr "Gagal terhubung ke server"
@@ -2707,7 +2707,7 @@ msgid "Failed to load related sites"
 msgstr "Gagal memuat situs terkait"
 
 msgid "Failed to load stories"
-msgstr "Gagal memuat kisah"
+msgstr "Gagal memuat artikel"
 
 msgid "Failed to mark as unread"
 msgstr "Gagal menandai sebagai belum dibaca"
@@ -2761,7 +2761,7 @@ msgid "Features &amp; Tips"
 msgstr "Fitur &amp; Tips"
 
 msgid "Features and essays that readers gave real time to."
-msgstr "Fitur dan esai yang benar-benar disimak oleh pembaca."
+msgstr "Tulisan feature dan esai yang benar-benar disimak oleh pembaca."
 
 msgid "February"
 msgstr "Februari"
@@ -2799,7 +2799,7 @@ msgid "Feeds back-filled for complete archive"
 msgstr "Feed telah dilengkapi untuk arsip lengkap"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
-msgstr "Umpan dengan pembaca yang sangat aktif, tetapi belum dikenal luas"
+msgstr "Feed dengan pembaca yang sangat aktif, tetapi belum dikenal luas"
 
 msgid "Feeds:"
 msgstr "Feed:"
@@ -2822,13 +2822,13 @@ msgid "Fetching page..."
 msgstr "Mengambil halaman..."
 
 msgid "Fetching stories"
-msgstr "Mengambil berita"
+msgstr "Mengambil artikel"
 
 msgid "Fetching stories..."
-msgstr "Mengambil berita..."
+msgstr "Mengambil artikel..."
 
 msgid "Fetching story"
-msgstr "Mengambil cerita"
+msgstr "Mengambil artikel"
 
 msgid "Fetching text"
 msgstr "Mengambil teks"
@@ -2862,7 +2862,7 @@ msgstr "Filter buletin..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
 msgstr ""
-"Saring notifikasi agar hanya menampilkan cerita fokus, sehingga pelatihan Anda menentukan notifikasi yang "
+"Saring notifikasi agar hanya menampilkan artikel Fokus, sehingga pelatihan Anda menentukan notifikasi yang "
 "diterima."
 
 msgid "Filter podcasts..."
@@ -2872,7 +2872,7 @@ msgid "Filter sites..."
 msgstr "Filter situs..."
 
 msgid "Filter stories"
-msgstr "Filter cerita"
+msgstr "Filter artikel"
 
 msgid "Filter stories by date range"
 msgstr "Filter artikel berdasarkan rentang tanggal"
@@ -2885,17 +2885,17 @@ msgstr "Memfilter untuk"
 
 #, python-format
 msgid "Filters found no stories in %(context)s."
-msgstr "Filter tidak menemukan cerita di %(context)s."
+msgstr "Filter tidak menemukan artikel di %(context)s."
 
 msgid "Filters found no stories in this view."
-msgstr "Filter tidak menemukan berita di tampilan ini."
+msgstr "Filter tidak menemukan artikel di tampilan ini."
 
 msgid "Finance"
 msgstr "Keuangan"
 
 #, python-format
 msgid "Find %(value_1)s Friends"
-msgstr "Temukan %(value_1)s Teman"
+msgstr "Temukan Teman %(value_1)s"
 
 msgid "Find Friends"
 msgstr "Cari Teman"
@@ -2932,7 +2932,7 @@ msgid "Flat"
 msgstr "Rata"
 
 msgid "Flowing narrative that connects stories into a readable digest"
-msgstr "Narasi mengalir yang menghubungkan cerita menjadi rangkuman yang mudah dibaca"
+msgstr "Narasi mengalir yang menghubungkan artikel menjadi rangkuman yang mudah dibaca"
 
 msgid "Focus"
 msgstr "Fokus"
@@ -2980,7 +2980,7 @@ msgstr ""
 "feed."
 
 msgid "Follow to see their shared stories"
-msgstr "Ikuti untuk melihat cerita yang mereka bagikan"
+msgstr "Ikuti untuk melihat artikel yang mereka bagikan"
 
 msgid "Follow up to 1,024 sites"
 msgstr "Ikuti hingga 1.024 situs"
@@ -2995,10 +2995,10 @@ msgid "Follow up to 64 sites"
 msgstr "Ikuti hingga 64 situs"
 
 msgid "Follow up..."
-msgstr "Tindak lanjuti..."
+msgstr "Tanyakan lebih lanjut..."
 
 msgid "Follow-ups"
-msgstr "Tindak lanjut"
+msgstr "Artikel lanjutan"
 
 msgid "Followers"
 msgstr "Pengikut"
@@ -3031,7 +3031,7 @@ msgid "For Safari on Mac"
 msgstr "Untuk Safari di Mac"
 
 msgid "Force all tall stories to have a max height"
-msgstr "Batasi tinggi semua berita yang panjang"
+msgstr "Batasi tinggi semua artikel yang panjang"
 
 #, python-format
 msgid "Forward %(seconds)s second"
@@ -3048,11 +3048,11 @@ msgstr "Alamat email penerusan"
 #, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
-msgstr[0] "Menemukan %(count)s pola. Pilih yang paling sesuai dengan cerita yang Anda inginkan."
-msgstr[1] "Menemukan %(count)s pola. Pilih yang paling cocok dengan cerita yang Anda inginkan."
+msgstr[0] "Menemukan %(count)s pola. Pilih yang paling sesuai dengan artikel yang Anda inginkan."
+msgstr[1] "Menemukan %(count)s pola. Pilih yang paling cocok dengan artikel yang Anda inginkan."
 
 msgid "Found in the Account dialog"
-msgstr "Ditemukan di dialog Akun"
+msgstr "Ada di dialog Akun"
 
 msgid "Free"
 msgstr "Gratis"
@@ -3109,7 +3109,7 @@ msgid "Free, open source · iPhone, iPad &amp; Mac"
 msgstr "Gratis, sumber terbuka · iPhone, iPad &amp; Mac"
 
 msgid "French"
-msgstr "Prancis"
+msgstr "Bahasa Prancis"
 
 msgid "Frequency"
 msgstr "Frekuensi"
@@ -3144,7 +3144,7 @@ msgstr "Penuh"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "Respons Asisten Arsip Lengkap adalah fitur %(link_start)sarsip premium%(link_end)s."
+msgstr "Respons lengkap Asisten Arsip adalah fitur %(link_start)sPremium Archive%(link_end)s."
 
 msgid "Full Refund"
 msgstr "Pengembalian Dana Penuh"
@@ -3165,7 +3165,7 @@ msgid "Full-Text Search"
 msgstr "Pencarian Teks Lengkap"
 
 msgid "Full-text search across all stories"
-msgstr "Pencarian teks lengkap di semua berita"
+msgstr "Pencarian teks lengkap di semua artikel"
 
 msgid "Full-text search requires Premium or higher."
 msgstr "Pencarian teks lengkap memerlukan Premium atau paket lebih tinggi."
@@ -3222,7 +3222,7 @@ msgid "Get Started with Archive"
 msgstr "Mulai Menggunakan Arsip"
 
 msgid "Get a summary of your top stories, delivered on your schedule."
-msgstr "Dapatkan ringkasan cerita terbaik Anda, dikirim sesuai jadwal yang Anda tentukan."
+msgstr "Dapatkan ringkasan artikel teratas Anda, dikirim sesuai jadwal yang Anda tentukan."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
 msgstr "Dapatkan ringkasan harian pilihan AI yang berisi berita utama dan bacaan panjang"
@@ -3238,7 +3238,7 @@ msgstr ""
 "Android, disaring berdasarkan pelatihan Anda."
 
 msgid "Get notified when a new briefing is ready"
-msgstr "Dapatkan pemberitahuan saat briefing baru siap"
+msgstr "Dapatkan pemberitahuan saat ringkasan baru siap"
 
 msgid "Get started"
 msgstr "Mulai"
@@ -3281,7 +3281,7 @@ msgid "Global Classifiers"
 msgstr "Pengklasifikasi Global"
 
 msgid "Global Shared Stories"
-msgstr "Berita yang Dibagikan Secara Global"
+msgstr "Artikel yang Dibagikan Secara Global"
 
 msgid "Global settings"
 msgstr "Pengaturan global"
@@ -3301,16 +3301,16 @@ msgid "Go back to %(breadcrumb)s"
 msgstr "Kembali ke %(breadcrumb)s"
 
 msgid "Good Reads"
-msgstr "Bacaan bagus"
+msgstr "Bacaan Bagus"
 
 msgid "Good Reads on NewsBlur"
-msgstr "Bacaan menarik di NewsBlur"
+msgstr "Bacaan Bagus di NewsBlur"
 
 msgid "Goodies &amp; Extras"
 msgstr "Fitur Tambahan &amp; Bonus"
 
 msgid "Goodies &amp; Mobile Apps"
-msgstr "Fitur &amp; Aplikasi Seluler"
+msgstr "Ekstra &amp; Aplikasi Seluler"
 
 msgid "Google News"
 msgstr "Google News"
@@ -3334,10 +3334,10 @@ msgid "Group stories that share:"
 msgstr "Kelompokkan artikel yang memiliki kesamaan:"
 
 msgid "Groups similar stories from different feeds"
-msgstr "Mengelompokkan berita serupa dari feed yang berbeda"
+msgstr "Mengelompokkan artikel serupa dari feed yang berbeda"
 
 msgid "Hand-picked shares from across NewsBlur"
-msgstr "Pilihan berbagi dari seluruh NewsBlur"
+msgstr "Pilihan artikel yang dibagikan dari seluruh NewsBlur"
 
 msgid "Hang tight, indexing..."
 msgstr "Mohon tunggu, sedang mengindeks..."
@@ -3367,7 +3367,7 @@ msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Sembunyikan semua fitur berbagi, komentar, dan blurblog"
 
 msgid "Hide discover sites popover"
-msgstr "Sembunyikan popover situs penjelajahan"
+msgstr "Sembunyikan popover penemuan situs"
 
 msgid "Hide history"
 msgstr "Sembunyikan riwayat"
@@ -3382,7 +3382,7 @@ msgid "Hide sites you already subscribe to"
 msgstr "Sembunyikan situs yang sudah Anda ikuti"
 
 msgid "Hide story changes"
-msgstr "Sembunyikan perubahan cerita"
+msgstr "Sembunyikan perubahan artikel"
 
 msgid "Highlight"
 msgstr "Sorot"
@@ -3394,7 +3394,7 @@ msgid "History"
 msgstr "Riwayat"
 
 msgid "Home"
-msgstr "Beranda"
+msgstr "Rumah"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
 msgstr "Widget layar utama menampilkan jumlah yang belum dibaca dan artikel terbaru sekilas."
@@ -3418,7 +3418,7 @@ msgid "How it works"
 msgstr "Cara kerjanya"
 
 msgid "How many stories can I save?"
-msgstr "Berapa banyak cerita yang bisa saya simpan?"
+msgstr "Berapa banyak artikel yang bisa saya simpan?"
 
 msgid "How often"
 msgstr "Seberapa sering"
@@ -3433,16 +3433,16 @@ msgid "Identify key people and relationships"
 msgstr "Identifikasi tokoh penting dan hubungan mereka"
 
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
-msgstr "Jika feed RSS tidak ditemukan, NewsBlur menawarkan untuk membuat Web Feed"
+msgstr "Jika feed RSS tidak ditemukan, NewsBlur menawarkan untuk membuat Feed Web"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
 msgstr ""
-"Jika tidak ada opsi yang cocok, ketik judul berita yang terlihat di halaman, lalu kami akan menganalisis "
+"Jika tidak ada opsi yang cocok, ketik judul artikel yang terlihat di halaman, lalu kami akan menganalisis "
 "ulang."
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "Jika Anda membuka %(premium_link)s,<br>situs ini akan diperbarui setiap"
+msgstr "Jika Anda beralih ke %(premium_link)s,<br>situs ini akan diperbarui setiap"
 
 msgid "Ignore"
 msgstr "Abaikan"
@@ -3501,7 +3501,7 @@ msgid ""
 "In a new tab, open <b>%(config_page)s</b>, search for <b>%(setting)s</b>, and set it to <b>%(value)s</b>. "
 "Stories opened with %(shortcut)s will then load in the background."
 msgstr ""
-"Di tab baru, buka <b>%(config_page)s</b>, cari <b>%(setting)s</b>, lalu atur ke <b>%(value)s</b>. Cerita "
+"Di tab baru, buka <b>%(config_page)s</b>, cari <b>%(setting)s</b>, lalu atur ke <b>%(value)s</b>. Artikel "
 "yang dibuka dengan %(shortcut)s kemudian akan dimuat di latar belakang."
 
 msgid "In a new window"
@@ -3542,7 +3542,7 @@ msgid "Infrequent Site Stories"
 msgstr "Artikel Situs yang Jarang Diperbarui"
 
 msgid "Infrequent stories per month"
-msgstr "Cerita yang jarang muncul per bulan"
+msgstr "Artikel yang jarang muncul per bulan"
 
 msgid "Insta-fetch stories"
 msgstr "Ambil artikel secara instan"
@@ -3659,7 +3659,7 @@ msgid "Large image thumbnail on the left"
 msgstr "Gambar mini besar di sebelah kiri"
 
 msgid "Large image thumbnail on the right"
-msgstr "Thumbnail gambar besar di sebelah kanan"
+msgstr "Gambar mini besar di sebelah kanan"
 
 msgid "Last 30 Days"
 msgstr "30 Hari Terakhir"
@@ -3708,7 +3708,7 @@ msgid "Like "
 msgstr "Suka "
 
 msgid "Like matching stories"
-msgstr "Sukai cerita yang cocok"
+msgstr "Sukai artikel yang cocok"
 
 msgid "Likes"
 msgstr "Suka"
@@ -3717,7 +3717,7 @@ msgid "Link"
 msgstr "Tautan"
 
 msgid "Link directly to the original story"
-msgstr "Tautkan langsung ke cerita asli"
+msgstr "Tautkan langsung ke artikel asli"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Tautkan ke blurblog dan komentar yang saya bagikan"
@@ -3832,7 +3832,7 @@ msgstr "Maret"
 #, python-format
 msgid "Mark %(count)s story as read?"
 msgid_plural "Mark %(count)s stories as read?"
-msgstr[0] "Tandai %(count)s cerita sebagai telah dibaca?"
+msgstr[0] "Tandai %(count)s artikel sebagai telah dibaca?"
 msgstr[1] "Tandai %(count)s artikel sebagai telah dibaca?"
 
 msgid "Mark <b>every story</b> as read"
@@ -3842,7 +3842,7 @@ msgid "Mark Everything Read / Unread"
 msgstr "Tandai Semua Sudah Dibaca / Belum Dibaca"
 
 msgid "Mark Stories as Read"
-msgstr "Tandai Cerita sebagai Telah Dibaca"
+msgstr "Tandai Artikel sebagai Telah Dibaca"
 
 msgid "Mark Stories as Unread"
 msgstr "Tandai Artikel sebagai Belum Dibaca"
@@ -3862,7 +3862,7 @@ msgstr "Tandai semua sebagai telah dibaca?"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "Tandai semua cerita yang lebih lama dari <b>%(value_1)s hari</b> sebagai telah dibaca"
+msgstr[0] "Tandai semua artikel yang lebih lama dari <b>%(value_1)s hari</b> sebagai telah dibaca"
 msgstr[1] "Tandai semua artikel yang lebih lama dari <b>%(value_1)s hari</b> sebagai telah dibaca"
 
 msgid "Mark as read"
@@ -3875,7 +3875,7 @@ msgid "Mark as unread"
 msgstr "Tandai belum dibaca"
 
 msgid "Mark below stories read"
-msgstr "Tandai cerita di bawah sebagai telah dibaca"
+msgstr "Tandai artikel di bawah sebagai telah dibaca"
 
 msgid "Mark duplicates as read"
 msgstr "Tandai duplikat sebagai telah dibaca"
@@ -3887,10 +3887,10 @@ msgid "Mark folder as read"
 msgstr "Tandai folder sebagai telah dibaca"
 
 msgid "Mark folder stories as unread"
-msgstr "Tandai cerita dalam folder sebagai belum dibaca"
+msgstr "Tandai artikel dalam folder sebagai belum dibaca"
 
 msgid "Mark newer stories read"
-msgstr "Tandai cerita yang lebih baru sebagai telah dibaca"
+msgstr "Tandai artikel yang lebih baru sebagai telah dibaca"
 
 msgid "Mark older stories read"
 msgstr "Tandai artikel lama sebagai telah dibaca"
@@ -3898,11 +3898,11 @@ msgstr "Tandai artikel lama sebagai telah dibaca"
 #, python-format
 msgid "Mark older than %(count)s day as read?"
 msgid_plural "Mark older than %(count)s days as read?"
-msgstr[0] "Tandai sebagai telah dibaca yang lebih lama dari %(count)s hari?"
-msgstr[1] "Tandai sebagai telah dibaca yang lebih lama dari %(count)s hari?"
+msgstr[0] "Tandai yang lebih lama dari %(count)s hari sebagai telah dibaca?"
+msgstr[1] "Tandai yang lebih lama dari %(count)s hari sebagai telah dibaca?"
 
 msgid "Mark stories as read when scrolled past"
-msgstr "Tandai cerita sebagai telah dibaca saat digulir melewatinya"
+msgstr "Tandai artikel sebagai telah dibaca saat digulir melewatinya"
 
 msgid "Mark stories as unread"
 msgstr "Tandai artikel sebagai belum dibaca"
@@ -3911,7 +3911,7 @@ msgstr "Tandai artikel sebagai belum dibaca"
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "Tandai artikel dari <b>%(value_1)s hari</b> terakhir sebagai belum dibaca"
-msgstr[1] "Tandai cerita dari <b>%(value_1)s hari terakhir</b> sebagai belum dibaca"
+msgstr[1] "Tandai artikel dari <b>%(value_1)s hari terakhir</b> sebagai belum dibaca"
 
 msgid "Mark stories read on scroll"
 msgstr "Tandai artikel telah dibaca saat menggulir"
@@ -3929,7 +3929,7 @@ msgid "Marking as unread..."
 msgstr "Menandai sebagai belum dibaca..."
 
 msgid "Match"
-msgstr "Cocokkan"
+msgstr "Cocok"
 
 msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
 msgstr ""
@@ -3943,7 +3943,7 @@ msgid "Matched via related topics"
 msgstr "Cocok melalui topik terkait"
 
 msgid "Matches story titles containing all keywords"
-msgstr "Cocokkan judul artikel yang memuat semua kata kunci"
+msgstr "Mencocokkan judul artikel yang memuat semua kata kunci"
 
 msgid "May"
 msgstr "Mei"
@@ -3978,7 +3978,7 @@ msgstr "Gabungkan ke:"
 msgid "Merged %(count)s story into \"%(category)s\""
 msgid_plural "Merged %(count)s stories into \"%(category)s\""
 msgstr[0] "%(count)s artikel digabungkan ke \"%(category)s\""
-msgstr[1] "Menggabungkan %(count)s berita ke dalam \"%(category)s\""
+msgstr[1] "%(count)s artikel digabungkan ke \"%(category)s\""
 
 msgid "Merging..."
 msgstr "Menggabungkan..."
@@ -4020,7 +4020,7 @@ msgid "Morning"
 msgstr "Pagi"
 
 msgid "Morning + Afternoon"
-msgstr "Pagi + Sore"
+msgstr "Pagi + Siang"
 
 msgid "Morning + Evening"
 msgstr "Pagi + Sore"
@@ -4085,13 +4085,13 @@ msgstr "Dibisukan tanpa batas waktu."
 
 #, python-format
 msgid "Muted · unmutes in %(time)s"
-msgstr "Dibisukan · suara aktif kembali dalam %(time)s"
+msgstr "Dibisukan · aktif kembali dalam %(time)s"
 
 msgid "Muted · unmuting soon"
-msgstr "Dibisukan · segera aktifkan kembali"
+msgstr "Dibisukan · segera aktif kembali"
 
 msgid "My shared stories are public and anybody can reply to me"
-msgstr "Kisah yang saya bagikan bersifat publik dan siapa pun dapat membalas saya"
+msgstr "Artikel yang saya bagikan bersifat publik dan siapa pun dapat membalas saya"
 
 msgid "My shared stories are public but only people I approve can reply"
 msgstr "Artikel yang saya bagikan bersifat publik, tetapi hanya orang yang saya setujui yang dapat membalas"
@@ -4127,7 +4127,7 @@ msgid "Nature"
 msgstr "Alam"
 
 msgid "Navigate between stories"
-msgstr "Menavigasi antar cerita"
+msgstr "Menavigasi antar-artikel"
 
 msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
@@ -4155,7 +4155,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Tidak akan pernah kedaluwarsa. Selamat!"
 
 msgid "New Arrivals"
-msgstr "Yang Baru Tiba"
+msgstr "Pendatang Baru"
 
 msgid "New Chat"
 msgstr "Obrolan Baru"
@@ -4167,7 +4167,7 @@ msgid "New category name"
 msgstr "Nama kategori baru"
 
 msgid "New content appears in your feed just like regular RSS"
-msgstr "Konten baru muncul di umpan Anda seperti RSS biasa"
+msgstr "Konten baru muncul di feed Anda seperti RSS biasa"
 
 msgid "New folder"
 msgstr "Folder baru"
@@ -4192,7 +4192,7 @@ msgid "New to me"
 msgstr "Baru bagi saya"
 
 msgid "Newer:"
-msgstr "Lebih baru:"
+msgstr "Setelah:"
 
 msgid "Newest"
 msgstr "Terbaru"
@@ -4250,7 +4250,7 @@ msgid "Next step "
 msgstr "Langkah berikutnya "
 
 msgid "Next story"
-msgstr "Cerita berikutnya"
+msgstr "Artikel berikutnya"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Selanjutnya, buat filter untuk semua buletin Anda agar diteruskan ke alamat khusus di NewsBlur."
@@ -4271,13 +4271,13 @@ msgid "No archives match your filters"
 msgstr "Tidak ada arsip yang cocok dengan filter Anda"
 
 msgid "No briefings yet."
-msgstr "Belum ada briefing."
+msgstr "Belum ada ringkasan."
 
 msgid "No categories available. Categories will appear here once they are configured."
 msgstr "Tidak ada kategori. Kategori akan muncul di sini setelah dikonfigurasi."
 
 msgid "No categories with 10+ stories available for splitting."
-msgstr "Tidak ada kategori dengan 10+ kisah yang tersedia untuk dipisahkan."
+msgstr "Tidak ada kategori dengan 10+ artikel yang tersedia untuk dipisahkan."
 
 msgid "No channels found matching your filter."
 msgstr "Tidak ditemukan kanal yang cocok dengan filter Anda."
@@ -4323,7 +4323,7 @@ msgid "No match in author"
 msgstr "Tidak ada kecocokan pada penulis"
 
 msgid "No match in story"
-msgstr "Tidak ada kecocokan dalam cerita"
+msgstr "Tidak ada kecocokan dalam artikel"
 
 msgid "No match in title"
 msgstr "Tidak ada kecocokan pada judul"
@@ -4375,7 +4375,7 @@ msgid "No results found, but you can subscribe directly if you know the subreddi
 msgstr "Tidak ada hasil, tetapi Anda dapat berlangganan langsung jika mengetahui nama subreddit."
 
 msgid "No similar stories found"
-msgstr "Tidak ditemukan cerita serupa"
+msgstr "Tidak ditemukan artikel serupa"
 
 msgid "No sites available"
 msgstr "Tidak ada situs yang tersedia"
@@ -4393,20 +4393,20 @@ msgid "No split suggestions available for this category"
 msgstr "Tidak ada saran pemisahan untuk kategori ini"
 
 msgid "No stories"
-msgstr "Tidak ada berita"
+msgstr "Tidak ada artikel"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "Belum ada cerita dari %(folder)s yang diindeks untuk cerita terkait."
+msgstr "Belum ada artikel dari %(folder)s yang diindeks untuk artikel terkait."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "Belum ada cerita dari %(count)s situs Anda yang diindeks untuk cerita terkait."
-msgstr[1] "Cerita dari %(count)s situs Anda belum diindeks untuk cerita terkait."
+msgstr[0] "Belum ada artikel dari %(count)s situs Anda yang diindeks untuk artikel terkait."
+msgstr[1] "Belum ada artikel dari %(count)s situs Anda yang diindeks untuk artikel terkait."
 
 msgid "No stories published last month"
-msgstr "Tidak ada berita yang diterbitkan bulan lalu"
+msgstr "Tidak ada artikel yang diterbitkan bulan lalu"
 
 msgid "No stories to delete"
 msgstr "Tidak ada artikel untuk dihapus"
@@ -4415,10 +4415,10 @@ msgid "No stories to read"
 msgstr "Tidak ada artikel untuk dibaca"
 
 msgid "No stories yet"
-msgstr "Belum ada cerita"
+msgstr "Belum ada artikel"
 
 msgid "No story patterns found on this page."
-msgstr "Tidak ditemukan pola cerita di halaman ini."
+msgstr "Tidak ditemukan pola artikel di halaman ini."
 
 msgid "No trending sites available"
 msgstr "Tidak ada situs yang sedang tren"
@@ -4433,7 +4433,7 @@ msgid "No valid merge groups to apply"
 msgstr "Tidak ada grup penggabungan valid untuk diterapkan"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "Belum ada yang berlangganan cerita yang Anda bagikan."
+msgstr "Belum ada yang berlangganan artikel yang Anda bagikan."
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "Tidak ada lagi yang bisa direkomendasikan. Bagus!"
@@ -4454,7 +4454,7 @@ msgid "Not found in author"
 msgstr "Tidak ditemukan di penulis"
 
 msgid "Not found in story"
-msgstr "Tidak ditemukan dalam cerita"
+msgstr "Tidak ditemukan dalam artikel"
 
 msgid "Not found in title"
 msgstr "Tidak ditemukan dalam judul"
@@ -4466,7 +4466,7 @@ msgid "Not redeemed in 90 days?"
 msgstr "Belum ditukarkan dalam 90 hari?"
 
 msgid "Not seeing the right stories?"
-msgstr "Tidak menemukan cerita yang tepat?"
+msgstr "Tidak menemukan artikel yang tepat?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
 msgstr ""
@@ -4496,13 +4496,13 @@ msgid "Notifications require %(tier_link)s"
 msgstr "Notifikasi memerlukan %(tier_link)s"
 
 msgid "Notify on"
-msgstr "Beri tahu tentang"
+msgstr "Beri tahu melalui"
 
 msgid "Notify on match"
 msgstr "Beri tahu jika cocok"
 
 msgid "Notify on match. Premium Archive required"
-msgstr "Beri tahu jika cocok. Memerlukan Arsip Premium"
+msgstr "Beri tahu jika cocok. Memerlukan Premium Archive"
 
 msgid "November"
 msgstr "November"
@@ -4511,7 +4511,7 @@ msgid "Now"
 msgstr "Sekarang"
 
 msgid "Number of stories to include in each briefing"
-msgstr "Jumlah cerita yang disertakan dalam setiap ringkasan"
+msgstr "Jumlah artikel yang disertakan dalam setiap ringkasan"
 
 msgid "Numbers & Symbols"
 msgstr "Angka & Simbol"
@@ -4554,7 +4554,7 @@ msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Lebih lama dari: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
-msgstr "Lebih lama:"
+msgstr "Sebelum:"
 
 msgid "Oldest"
 msgstr "Terlama"
@@ -4569,11 +4569,13 @@ msgid "On"
 msgstr "Aktif"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
-msgstr "Dengan Arsip Premium, pencarian mencakup semua cerita yang pernah diarsipkan, bukan hanya cerita terbaru."
+msgstr ""
+"Dengan Premium Archive, pencarian mencakup semua artikel yang pernah diarsipkan, bukan hanya artikel "
+"terbaru."
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr ""
-"Dengan Premium, Anda dapat mencari berita terbaru. Dengan Premium Archive, semua berita yang pernah "
+"Dengan Premium, Anda dapat mencari artikel terbaru. Dengan Premium Archive, semua artikel yang pernah "
 "diarsipkan dapat dicari."
 
 msgid "One command with Docker"
@@ -4584,14 +4586,14 @@ msgstr "Satu kalimat"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
-"Berlangganan dengan sekali klik di situs mana pun yang memiliki umpan. Gunakan URL tambah situs khusus dari"
-" tab Extras."
+"Berlangganan dengan sekali klik di situs mana pun yang memiliki feed. Gunakan URL tambah situs khusus dari "
+"tab Ekstra."
 
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "Hanya %(indexed)s dari %(count)s situs Anda yang telah diindeks untuk cerita terkait."
-msgstr[1] "Hanya %(indexed)s dari %(count)s situs Anda yang telah diindeks untuk cerita terkait."
+msgstr[0] "Hanya %(indexed)s dari %(count)s situs Anda yang telah diindeks untuk artikel terkait."
+msgstr[1] "Hanya %(indexed)s dari %(count)s situs Anda yang telah diindeks untuk artikel terkait."
 
 #, python-format
 msgid ""
@@ -4611,25 +4613,25 @@ msgid "Only Focus:"
 msgstr "Hanya Fokus:"
 
 msgid "Only page down in story, do not open next unread story"
-msgstr "Hanya gulir ke bawah dalam berita, jangan buka berita berikutnya yang belum dibaca"
+msgstr "Hanya gulir ke bawah dalam artikel, jangan buka artikel berikutnya yang belum dibaca"
 
 msgid "Only people I approve can see my shared stories and reply to me"
-msgstr "Hanya orang yang saya setujui yang dapat melihat cerita yang saya bagikan dan membalas saya"
+msgstr "Hanya orang yang saya setujui yang dapat melihat artikel yang saya bagikan dan membalas saya"
 
 #, python-format
 msgid "Only recent stories shown from %(count)s site."
 msgid_plural "Only recent stories shown from %(count)s sites."
 msgstr[0] "Hanya artikel terbaru yang ditampilkan dari %(count)s situs."
-msgstr[1] "Hanya berita terbaru dari %(count)s situs yang ditampilkan."
+msgstr[1] "Hanya artikel terbaru dari %(count)s situs yang ditampilkan."
 
 #, python-format
 msgid "Only recent stories shown from %(indexed)s of %(count)s site."
 msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
-msgstr[0] "Hanya cerita terbaru yang ditampilkan dari %(indexed)s dari %(count)s situs."
+msgstr[0] "Hanya artikel terbaru dari %(indexed)s dari %(count)s situs yang ditampilkan."
 msgstr[1] "Hanya artikel terbaru yang ditampilkan dari %(indexed)s dari %(count)s situs."
 
 msgid "Only recent stories shown from this site are available."
-msgstr "Hanya cerita terbaru yang ditampilkan dari situs ini yang tersedia."
+msgstr "Hanya artikel terbaru dari situs ini yang tersedia."
 
 msgid "Only see the full story title"
 msgstr "Hanya tampilkan judul lengkap artikel"
@@ -4641,13 +4643,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "Hanya tampilkan jumlah pada folder yang diciutkan"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "Hanya pangkas berita panjang yang dibagikan di blurblog"
+msgstr "Hanya pangkas artikel panjang yang dibagikan di blurblog"
 
 msgid "Open"
 msgstr "Buka"
 
 msgid "Open All Site Stories"
-msgstr "Buka Semua Artikel Situs"
+msgstr "Buka Artikel Semua Situs"
 
 msgid "Open Everything"
 msgstr "Buka Semua"
@@ -4657,7 +4659,7 @@ msgstr "Buka Situs"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
 msgstr ""
-"Buka judul folder untuk membaca semua feed di dalamnya sekaligus. Semua Cerita Situs adalah aliran dari "
+"Buka judul folder untuk membaca semua feed di dalamnya sekaligus. Artikel Semua Situs adalah aliran dari "
 "semuanya."
 
 msgid "Open clustering preferences"
@@ -4685,10 +4687,10 @@ msgid "Open links in a background tab"
 msgstr "Buka tautan di tab latar belakang"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "Buka cerita belum dibaca berikutnya saat bagian bawah cerita terlihat"
+msgstr "Buka artikel belum dibaca berikutnya saat bagian bawah artikel terlihat"
 
 msgid "Open next unread story when story is half-way up"
-msgstr "Buka cerita berikutnya yang belum dibaca saat cerita berada di tengah layar"
+msgstr "Buka artikel berikutnya yang belum dibaca saat artikel berada di tengah layar"
 
 msgid "Open preferences"
 msgstr "Buka preferensi"
@@ -4706,7 +4708,7 @@ msgid "Open the feed and story title menu"
 msgstr "Buka menu feed dan judul artikel"
 
 msgid "Open the first story"
-msgstr "Buka kisah pertama"
+msgstr "Buka artikel pertama"
 
 msgid "Open the next site/folder"
 msgstr "Buka situs/folder berikutnya"
@@ -4721,13 +4723,13 @@ msgid "Open the trainer for any feed"
 msgstr "Buka pelatih untuk feed apa saja"
 
 msgid "Open this story in NewsBlur"
-msgstr "Buka cerita ini di NewsBlur"
+msgstr "Buka artikel ini di NewsBlur"
 
 msgid "Open your Daily Briefing"
 msgstr "Buka Ringkasan Harian Anda"
 
 msgid "Open your saved stories"
-msgstr "Buka cerita tersimpan Anda"
+msgstr "Buka artikel tersimpan Anda"
 
 msgid "Opens"
 msgstr "Dibuka"
@@ -4783,10 +4785,10 @@ msgstr "Halaman ke bawah"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
-msgstr "Gulir layar ke bawah sebesar %(slider)s %(percent)s layar"
+msgstr "Gulir ke bawah sebesar %(slider)s %(percent)s layar"
 
 msgid "Page up"
-msgstr "Gulir ke atas"
+msgstr "Halaman ke atas"
 
 msgid "Pages are re-checked on a configurable schedule and diffed for new content."
 msgstr "Halaman diperiksa ulang sesuai jadwal yang dapat diatur dan dibandingkan untuk menemukan konten baru."
@@ -4801,7 +4803,7 @@ msgid "Parsing..."
 msgstr "Mengurai..."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
-msgstr "Tempel URL apa pun dan NewsBlur akan membuat umpan dari halamannya, bahkan tanpa RSS."
+msgstr "Tempel URL apa pun dan NewsBlur akan membuat feed dari halamannya, bahkan tanpa RSS."
 
 msgid "Paste any URL into the \"Add Site\" dialog"
 msgstr "Tempel URL apa pun ke dialog \"Tambah Situs\""
@@ -4829,7 +4831,7 @@ msgid "People"
 msgstr "Orang"
 
 msgid "People to follow"
-msgstr "Orang yang diikuti"
+msgstr "Orang yang bisa diikuti"
 
 msgid "People you know"
 msgstr "Orang yang Anda kenal"
@@ -4904,10 +4906,10 @@ msgid "Popular"
 msgstr "Populer"
 
 msgid "Popular Shared Stories"
-msgstr "Kisah Populer yang Dibagikan"
+msgstr "Artikel Populer yang Dibagikan"
 
 msgid "Portuguese"
-msgstr "Portugis"
+msgstr "Bahasa Portugis"
 
 msgid "Position & Greedy"
 msgstr "Posisi & Rakus"
@@ -4919,13 +4921,13 @@ msgid "Positive you want to delete your intelligence training classifiers?"
 msgstr "Anda yakin ingin menghapus pengklasifikasi pelatihan kecerdasan Anda?"
 
 msgid "Positive you want to delete your saved stories?"
-msgstr "Yakin ingin menghapus berita tersimpan Anda?"
+msgstr "Yakin ingin menghapus artikel tersimpan Anda?"
 
 msgid "Positive you want to delete your shared stories?"
-msgstr "Yakin ingin menghapus cerita yang Anda bagikan?"
+msgstr "Yakin ingin menghapus artikel yang Anda bagikan?"
 
 msgid "Post"
-msgstr "Postingan"
+msgstr "Kirim"
 
 #, python-format
 msgid "Post to %(service)s"
@@ -4946,7 +4948,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "Arsip Premium"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -4995,7 +4997,7 @@ msgid "Press s to save the story you're reading."
 msgstr "Tekan s untuk menyimpan artikel yang sedang Anda baca."
 
 msgid "Press the Text tab on any story to fetch the full article."
-msgstr "Tekan tab Teks pada berita apa pun untuk mengambil artikel lengkap."
+msgstr "Tekan tab Teks pada artikel apa pun untuk mengambil artikel lengkap."
 
 msgid "Press the search icon or hit the / key"
 msgstr "Tekan ikon pencarian atau tombol /"
@@ -5007,7 +5009,7 @@ msgid "Preview"
 msgstr "Pratinjau"
 
 msgid "Previous story"
-msgstr "Cerita sebelumnya"
+msgstr "Artikel sebelumnya"
 
 #, python-format
 msgid "Previously Recommended on: %(date)s"
@@ -5038,7 +5040,7 @@ msgid "Pro"
 msgstr "Pro"
 
 msgid "Processing stories..."
-msgstr "Memproses berita..."
+msgstr "Memproses artikel..."
 
 msgid "Processing..."
 msgstr "Memproses..."
@@ -5056,7 +5058,7 @@ msgid "Profile picture"
 msgstr "Foto profil"
 
 msgid "Prompt"
-msgstr "Perintah"
+msgstr "Prompt"
 
 msgid "Protected:"
 msgstr "Dilindungi:"
@@ -5090,8 +5092,8 @@ msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
 msgstr[0] ""
-"Mengantrekan %(count)s cerita untuk dikategorikan (%(remaining)s tersisa). Kategori akan muncul saat cerita"
-" diproses."
+"%(count)s artikel telah diantrekan untuk dikategorikan (%(remaining)s tersisa). Kategori akan muncul saat "
+"artikel diproses."
 msgstr[1] ""
 "%(count)s artikel telah diantrekan untuk dikategorikan (%(remaining)s tersisa). Kategori akan muncul saat "
 "artikel diproses."
@@ -5099,7 +5101,7 @@ msgstr[1] ""
 #, python-format
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
-msgstr[0] "Mengantrekan %(count)s cerita untuk dikategorikan. Kategori akan muncul saat cerita diproses."
+msgstr[0] "%(count)s artikel telah diantrekan untuk dikategorikan. Kategori akan muncul saat artikel diproses."
 msgstr[1] "%(count)s artikel telah diantrekan untuk dikategorikan. Kategori akan muncul saat artikel diproses."
 
 msgid "Quick search for a site"
@@ -5120,7 +5122,7 @@ msgstr "Feed RSS untuk folder adalah fitur %(link_start)spremium%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "Feed RSS untuk tag cerita tersimpan adalah fitur %(link_start)spremium%(link_end)s."
+msgstr "Feed RSS untuk tag artikel tersimpan adalah fitur %(link_start)spremium%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "URL RSS/XML: "
@@ -5147,17 +5149,17 @@ msgid "Re-categorizing..."
 msgstr "Mengategorikan ulang..."
 
 msgid "Read Stories"
-msgstr "Baca Cerita"
+msgstr "Artikel yang Sudah Dibaca"
 
 msgid "Read Stories:"
-msgstr "Baca Artikel:"
+msgstr "Artikel Dibaca:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
 msgstr ""
-"Baca semua umpan dalam folder sebagai satu aliran yang dapat digulir, menurut urutan kronologis. Dipadukan "
-"dengan pelatihan, aliran ini menampilkan berita terbaik dari semua langganan Anda."
+"Baca semua feed dalam folder sebagai satu aliran yang dapat digulir, menurut urutan kronologis. Dipadukan "
+"dengan pelatihan, aliran ini menampilkan artikel terbaik dari semua langganan Anda."
 
 msgid "Read more on the NewsBlur Blog"
 msgstr "Baca selengkapnya di Blog NewsBlur"
@@ -5166,22 +5168,22 @@ msgid "Read offline with automatic background refresh"
 msgstr "Baca secara offline dengan penyegaran otomatis di latar belakang"
 
 msgid "Read on scroll"
-msgstr "Baca saat menggulir"
+msgstr "Dibaca saat digulir"
 
 msgid "Read stories by folder"
-msgstr "Baca cerita berdasarkan folder"
+msgstr "Baca artikel berdasarkan folder"
 
 msgid "Read the whole story"
 msgstr "Baca seluruh artikel"
 
 msgid "Read unread stories with: newsblur stories list"
-msgstr "Baca cerita yang belum dibaca dengan: newsblur stories list"
+msgstr "Baca artikel yang belum dibaca dengan: newsblur stories list"
 
 msgid "Read your email newsletters in your news reader, not your inbox."
 msgstr "Baca buletin email Anda di pembaca berita, bukan di kotak masuk."
 
 msgid "Read your feeds: unread stories, folders, search, and saved stories by tag"
-msgstr "Baca feed Anda: berita belum dibaca, folder, pencarian, dan berita tersimpan berdasarkan tag"
+msgstr "Baca feed Anda: artikel belum dibaca, folder, pencarian, dan artikel tersimpan berdasarkan tag"
 
 msgid "Reading"
 msgstr "Membaca"
@@ -5191,7 +5193,7 @@ msgstr "Memuat artikel..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "Membaca cerita tersimpan berdasarkan tag adalah %(link_start)sfitur premium%(link_end)s."
+msgstr "Membaca artikel tersimpan berdasarkan tag adalah %(link_start)sfitur premium%(link_end)s."
 
 msgid "Reading saved story..."
 msgstr "Membaca artikel tersimpan..."
@@ -5245,13 +5247,13 @@ msgid "Redeemed"
 msgstr "Telah ditukarkan"
 
 msgid "Reduce clutter in your river of stories"
-msgstr "Kurangi keramaian di aliran cerita Anda"
+msgstr "Kurangi kepadatan di aliran artikel Anda"
 
 msgid "Refer"
-msgstr "Rujuk"
+msgstr "Ajak Teman"
 
 msgid "Refer &amp; Gift"
-msgstr "Referensikan &amp; Hadiahkan"
+msgstr "Ajak Teman &amp; Hadiah"
 
 msgid "Referral History"
 msgstr "Riwayat Referral"
@@ -5270,7 +5272,7 @@ msgid "Refunded $%(amount)s"
 msgstr "Dana $%(amount)s telah dikembalikan"
 
 msgid "Regenerate Briefing"
-msgstr "Buat Ulang Briefing"
+msgstr "Buat Ulang Ringkasan"
 
 msgid "Regex"
 msgstr "Regex"
@@ -5286,7 +5288,7 @@ msgid "Related Sites"
 msgstr "Situs Terkait"
 
 msgid "Related stories are only available for premium subscribers."
-msgstr "Cerita terkait hanya tersedia bagi pelanggan premium."
+msgstr "Artikel terkait hanya tersedia bagi pelanggan premium."
 
 msgid "Reload NewsBlur"
 msgstr "Muat Ulang NewsBlur"
@@ -5334,14 +5336,14 @@ msgstr "Nama diubah"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "Mengganti nama %(count)s cerita menjadi \"%(category)s\""
-msgstr[1] "Mengganti nama %(count)s artikel menjadi \"%(category)s\""
+msgstr[0] "Kategori %(count)s artikel diganti namanya menjadi \"%(category)s\""
+msgstr[1] "Kategori %(count)s artikel diganti namanya menjadi \"%(category)s\""
 
 msgid "Renaming..."
 msgstr "Mengganti nama..."
 
 msgid "Request timed out"
-msgstr "Permintaan waktu habis"
+msgstr "Waktu permintaan habis"
 
 msgid "Request timed out."
 msgstr "Waktu permintaan habis."
@@ -5360,7 +5362,7 @@ msgid "Requires %(tier_link)s"
 msgstr "Memerlukan %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "Memerlukan Arsip Premium"
+msgstr "Memerlukan Premium Archive"
 
 msgid "Reset"
 msgstr "Atur ulang"
@@ -5400,7 +5402,7 @@ msgid "Rewinding..."
 msgstr "Memutar kembali..."
 
 msgid "Rich cards for alternative sources"
-msgstr "Kartu kaya untuk sumber alternatif"
+msgstr "Kartu lengkap untuk sumber alternatif"
 
 msgid "Right-clicking"
 msgstr "Klik kanan"
@@ -5421,7 +5423,7 @@ msgid "Run your own NewsBlur"
 msgstr "Jalankan NewsBlur Anda sendiri"
 
 msgid "Runs silently — pages are captured after 5 seconds of reading"
-msgstr "Berjalan tanpa suara — halaman diambil setelah dibaca selama 5 detik"
+msgstr "Berjalan di latar belakang — halaman diambil setelah dibaca selama 5 detik"
 
 #, python-format
 msgid ""
@@ -5521,7 +5523,7 @@ msgid "Saved Stories"
 msgstr "Artikel Tersimpan"
 
 msgid "Saved Stories & Tags"
-msgstr "Cerita & Tag Tersimpan"
+msgstr "Artikel & Tag Tersimpan"
 
 msgid "Saved Tags"
 msgstr "Tag Tersimpan"
@@ -5551,8 +5553,8 @@ msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
 msgstr ""
-"Briefing terjadwal memerlukan langganan Premium Archive. Dengan paket Anda, briefing hanya dibuat saat Anda"
-" menggunakan tombol Buat."
+"Ringkasan terjadwal memerlukan langganan Premium Archive. Dengan paket Anda, ringkasan hanya dibuat saat "
+"Anda menggunakan tombol Buat."
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "Pengiriman terjadwal (harian atau dua kali sehari)"
@@ -5562,7 +5564,7 @@ msgstr "Sains"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
-msgstr "Pengklasifikasi terbatas hanya tersedia bagi pelanggan %(plan)s."
+msgstr "Pengklasifikasi dengan cakupan folder atau global hanya tersedia bagi pelanggan %(plan)s."
 
 msgid "Scroll to comments"
 msgstr "Gulir ke komentar"
@@ -5575,13 +5577,13 @@ msgid "Search"
 msgstr "Cari"
 
 msgid "Search All Site Stories"
-msgstr "Cari Semua Artikel di Situs"
+msgstr "Cari di Artikel Semua Situs"
 
 msgid "Search YouTube channels..."
-msgstr "Cari channel YouTube..."
+msgstr "Cari kanal YouTube..."
 
 msgid "Search across all saved stories and tags"
-msgstr "Cari di semua berita tersimpan dan tag"
+msgstr "Cari di semua artikel tersimpan dan tag"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Cari di semua langganan Anda dengan pencarian teks lengkap yang didukung Elasticsearch."
@@ -5650,7 +5652,7 @@ msgstr "Pencarian: \"%(value_1)s\""
 
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
-msgstr "Menelusuri <b>%(feed_title)s</b> untuk \"<b>%(query)s</b>\""
+msgstr "Mencari \"<b>%(query)s</b>\" di <b>%(feed_title)s</b>"
 
 msgid "Searching RSS feeds..."
 msgstr "Mencari feed RSS..."
@@ -5694,13 +5696,13 @@ msgstr ""
 "menampilkan perbedaan yang berubah, disorot dengan warna hijau dan merah."
 
 msgid "See shared stories"
-msgstr "Lihat cerita yang dibagikan"
+msgstr "Lihat artikel yang dibagikan"
 
 msgid "See the story title and a short content preview"
 msgstr "Lihat judul artikel dan pratinjau singkat kontennya"
 
 msgid "See which feeds cover the same story"
-msgstr "Lihat feed mana yang membahas cerita yang sama"
+msgstr "Lihat feed mana yang membahas artikel yang sama"
 
 msgid "Select"
 msgstr "Pilih"
@@ -5736,7 +5738,7 @@ msgid "Self-Hosted"
 msgstr "Di-host sendiri"
 
 msgid "Semantic matching finds stories about the same topic with different headlines"
-msgstr "Pencocokan semantik menemukan cerita tentang topik yang sama dengan judul berbeda"
+msgstr "Pencocokan semantik menemukan artikel tentang topik yang sama dengan judul berbeda"
 
 msgid "Send"
 msgstr "Kirim"
@@ -5748,7 +5750,7 @@ msgid "Send me a copy of this email"
 msgstr "Kirimkan salinan email ini kepada saya"
 
 msgid "Send this story"
-msgstr "Kirim berita ini"
+msgstr "Kirim artikel ini"
 
 msgid "Sending…"
 msgstr "Mengirim…"
@@ -5799,13 +5801,13 @@ msgid "Share on NewsBlur"
 msgstr "Bagikan di NewsBlur"
 
 msgid "Share stories"
-msgstr "Bagikan berita"
+msgstr "Bagikan artikel"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
 msgstr ""
-"Bagikan berita dengan komentar Anda sendiri di blurblog publik. Ikuti teman untuk melihat apa yang mereka "
+"Bagikan artikel dengan komentar Anda sendiri di blurblog publik. Ikuti teman untuk melihat apa yang mereka "
 "baca dan bagikan."
 
 msgid "Share the link."
@@ -5908,10 +5910,10 @@ msgid "Show confirmation only when marking folders as read"
 msgstr "Tampilkan konfirmasi hanya saat menandai folder sebagai telah dibaca"
 
 msgid "Show confirmation when marking feeds or folders as read"
-msgstr "Tampilkan konfirmasi saat menandai umpan atau folder sebagai telah dibaca"
+msgstr "Tampilkan konfirmasi saat menandai feed atau folder sebagai telah dibaca"
 
 msgid "Show discover sites popover above story titles"
-msgstr "Tampilkan popover situs penemuan di atas judul artikel"
+msgstr "Tampilkan popover penemuan situs di atas judul artikel"
 
 msgid "Show every site, including ones you already follow"
 msgstr "Tampilkan semua situs, termasuk yang sudah Anda ikuti"
@@ -5935,7 +5937,7 @@ msgid "Show on Load"
 msgstr "Tampilkan saat Dimuat"
 
 msgid "Show story changes"
-msgstr "Tampilkan perubahan berita"
+msgstr "Tampilkan perubahan artikel"
 
 msgid "Show the dashboard when loading NewsBlur"
 msgstr "Tampilkan dasbor saat memuat NewsBlur"
@@ -5955,18 +5957,18 @@ msgstr "Menampilkan artikel antara <b>%(start_date)s</b> dan <b>%(end_date)s</b>
 
 #, python-format
 msgid "Showing stories newer than <b>%(date)s</b>"
-msgstr "Menampilkan berita yang lebih baru dari <b>%(date)s</b>"
+msgstr "Menampilkan artikel yang lebih baru dari <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories older than <b>%(date)s</b>"
-msgstr "Menampilkan cerita yang lebih lama dari <b>%(date)s</b>"
+msgstr "Menampilkan artikel yang lebih lama dari <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "Menampilkan cerita pada <b>%(date)s</b>"
+msgstr "Menampilkan artikel pada <b>%(date)s</b>"
 
 msgid "Shows a toolbar button with your unread count"
-msgstr "Menampilkan tombol bilah alat dengan jumlah berita belum dibaca"
+msgstr "Menampilkan tombol bilah alat dengan jumlah artikel belum dibaca"
 
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Masuk agar feed, pelatihan, dan artikel tersimpan Anda langsung disinkronkan"
@@ -5981,7 +5983,7 @@ msgid "Signup"
 msgstr "Daftar"
 
 msgid "Single Story"
-msgstr "Satu Berita"
+msgstr "Satu Artikel"
 
 msgid "Single line"
 msgstr "Satu baris"
@@ -6055,7 +6057,7 @@ msgid "Sorry, the original story<br />could not be proxied."
 msgstr "Maaf, artikel asli<br />tidak dapat diproksikan."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "Maaf, teks cerita<br />tidak dapat diekstrak."
+msgstr "Maaf, teks artikel<br />tidak dapat diekstrak."
 
 msgid "Sorry, there was a problem deleting feeds."
 msgstr "Maaf, terjadi masalah saat menghapus feed."
@@ -6073,10 +6075,10 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "Maaf, balasan ini tidak dapat diposting. Mungkin karena Adblock."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "Maaf, cerita ini tidak dapat dibagikan. Mungkin karena Adblock."
+msgstr "Maaf, artikel ini tidak dapat dibagikan. Mungkin karena Adblock."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
-msgstr "Maaf, berita ini tidak dapat dibatalkan pembagiannya. Mungkin karena Adblock."
+msgstr "Maaf, artikel ini tidak dapat dibatalkan pembagiannya. Mungkin karena Adblock."
 
 msgid "Sort "
 msgstr "Urutkan "
@@ -6111,7 +6113,7 @@ msgstr "Pisah"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "Pisahkan \"%(category)s\" (%(count)s cerita) menjadi:"
+msgstr[0] "Pisahkan \"%(category)s\" (%(count)s artikel) menjadi:"
 msgstr[1] "Pisahkan \"%(category)s\" (%(count)s artikel) menjadi:"
 
 #, python-format
@@ -6121,8 +6123,8 @@ msgstr "Pisahkan \"%(value_1)s\" menjadi:"
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
-msgstr[0] "Pemisahan selesai: %(count)s cerita dikategorikan ulang"
-msgstr[1] "Pemisahan selesai: %(count)s berita dikategorikan ulang"
+msgstr[0] "Pemisahan selesai: %(count)s artikel dikategorikan ulang"
+msgstr[1] "Pemisahan selesai: %(count)s artikel dikategorikan ulang"
 
 msgid "Split failed to apply"
 msgstr "Gagal menerapkan pemisahan"
@@ -6134,7 +6136,7 @@ msgstr "Fungsi pisah akan segera hadir"
 msgid "Split partially applied: %(count)s story recategorized"
 msgid_plural "Split partially applied: %(count)s stories recategorized"
 msgstr[0] "Pemisahan diterapkan sebagian: %(count)s artikel dikategorikan ulang"
-msgstr[1] "Pemisahan diterapkan sebagian: %(count)s cerita dikategorikan ulang"
+msgstr[1] "Pemisahan diterapkan sebagian: %(count)s artikel dikategorikan ulang"
 
 msgid "Split with AI"
 msgstr "Pisahkan dengan AI"
@@ -6147,11 +6149,11 @@ msgstr "Percantik slogan situs. Jika terpilih, situs ini akan tampil selama semi
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Kedaluwarsa %(date)s"
+msgstr "Usang %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
-msgstr "Usang — cerita terakhir %(date)s"
+msgstr "Usang — artikel terakhir %(date)s"
 
 msgid "Stars"
 msgstr "Bintang"
@@ -6222,13 +6224,13 @@ msgid "Stories from feeds that rarely publish"
 msgstr "Artikel dari feed yang jarang menerbitkan"
 
 msgid "Stories in archive"
-msgstr "Cerita dalam arsip"
+msgstr "Artikel dalam arsip"
 
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "Cerita ditandai telah dibaca pada <b>%(days)s hari</b>"
-msgstr[1] "Berita ditandai telah dibaca pada <b>%(days)s hari</b>"
+msgstr[0] "Artikel ditandai telah dibaca pada <b>%(days)s hari</b>"
+msgstr[1] "Artikel ditandai telah dibaca pada <b>%(days)s hari</b>"
 
 msgid "Stories matching your trained topics and authors"
 msgstr "Artikel yang cocok dengan topik dan penulis yang telah Anda latih"
@@ -6238,18 +6240,18 @@ msgstr "Artikel tidak pernah kedaluwarsa atau hilang"
 
 #, python-format
 msgid "Stories newer than %(date)s"
-msgstr "Berita yang lebih baru dari %(date)s"
+msgstr "Artikel yang lebih baru dari %(date)s"
 
 #, python-format
 msgid "Stories older than %(date)s"
-msgstr "Cerita yang lebih lama dari %(date)s"
+msgstr "Artikel yang lebih lama dari %(date)s"
 
 #, python-format
 msgid "Stories on %(date)s"
-msgstr "Artikel di %(date)s"
+msgstr "Artikel pada %(date)s"
 
 msgid "Stories per day"
-msgstr "Berita per hari"
+msgstr "Artikel per hari"
 
 msgid "Stories per month"
 msgstr "Artikel per bulan"
@@ -6258,22 +6260,22 @@ msgid "Stories readers finished, saved, and shared"
 msgstr "Artikel yang selesai dibaca, disimpan, dan dibagikan pembaca"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "Berita yang paling menarik perhatian di NewsBlur."
+msgstr "Artikel yang paling menarik perhatian di NewsBlur."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "Berita <b>tidak akan pernah</b> otomatis ditandai telah dibaca"
+msgstr "Artikel <b>tidak akan pernah</b> otomatis ditandai telah dibaca"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Artikel <b>tidak akan pernah</b> ditandai telah dibaca"
 
 msgid "Story"
-msgstr "Berita"
+msgstr "Artikel"
 
 msgid "Story Archive"
-msgstr "Arsip Berita"
+msgstr "Arsip Artikel"
 
 msgid "Story Authors"
-msgstr "Penulis Berita"
+msgstr "Penulis Artikel"
 
 msgid "Story Categories &amp; Tags"
 msgstr "Kategori &amp; Tag Artikel"
@@ -6282,10 +6284,10 @@ msgid "Story Clustering"
 msgstr "Pengelompokan Artikel"
 
 msgid "Story Layout - Grid Columns"
-msgstr "Tata Letak Cerita - Kolom Kisi"
+msgstr "Tata Letak Artikel - Kolom Kisi"
 
 msgid "Story Layout - Split"
-msgstr "Tata Letak Berita - Terpisah"
+msgstr "Tata Letak Artikel - Terpisah"
 
 msgid "Story Text"
 msgstr "Teks Artikel"
@@ -6294,22 +6296,22 @@ msgid "Story Title"
 msgstr "Judul Artikel"
 
 msgid "Story Typography"
-msgstr "Tipografi cerita"
+msgstr "Tipografi artikel"
 
 msgid "Story URL"
-msgstr "URL cerita"
+msgstr "URL artikel"
 
 msgid "Story clustering"
-msgstr "Pengelompokan cerita"
+msgstr "Pengelompokan artikel"
 
 msgid "Story content preview"
 msgstr "Pratinjau konten artikel"
 
 msgid "Story is always hidden"
-msgstr "Berita selalu disembunyikan"
+msgstr "Artikel selalu disembunyikan"
 
 msgid "Story layout"
-msgstr "Tata letak cerita"
+msgstr "Tata letak artikel"
 
 msgid "Story preview"
 msgstr "Pratinjau artikel"
@@ -6318,7 +6320,7 @@ msgid "Story shows in Focus view"
 msgstr "Artikel ditampilkan dalam tampilan Fokus"
 
 msgid "Story side options"
-msgstr "Opsi sisi berita"
+msgstr "Opsi di samping artikel"
 
 msgid "Story side options buttons"
 msgstr "Tombol opsi di sisi artikel"
@@ -6368,7 +6370,7 @@ msgid "Subscribe to YouTube channels and playlists as RSS feeds."
 msgstr "Berlangganan kanal dan playlist YouTube sebagai feed RSS."
 
 msgid "Subscribe to a new feed and its entire available history back-fills automatically."
-msgstr "Berlangganan umpan baru akan otomatis mengisi seluruh riwayat yang tersedia."
+msgstr "Berlangganan feed baru akan otomatis mengisi seluruh riwayat yang tersedia."
 
 msgid "Subscribe to add this feed to your NewsBlur"
 msgstr "Berlangganan untuk menambahkan feed ini ke NewsBlur Anda"
@@ -6376,7 +6378,7 @@ msgstr "Berlangganan untuk menambahkan feed ini ke NewsBlur Anda"
 msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
 msgstr ""
 "Berlangganan situs web apa pun sebagai feed, bahkan tanpa RSS. Tingkatkan ke Premium Archive untuk membuka "
-"Web Feeds."
+"Feed Web."
 
 msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
 msgstr "Berlangganan buletin dari Substack, Medium, Ghost, Buttondown, dan lainnya."
@@ -6406,7 +6408,7 @@ msgid "Subscribed!"
 msgstr "Berlangganan!"
 
 msgid "Subscribed! Fetching stories..."
-msgstr "Berhasil berlangganan! Mengambil berita..."
+msgstr "Berhasil berlangganan! Mengambil artikel..."
 
 msgid "Subscribers"
 msgstr "Pelanggan"
@@ -6481,7 +6483,7 @@ msgstr "Pengaturan tag"
 
 #, python-format
 msgid "Tag filters found no stories in %(context)s."
-msgstr "Filter tag tidak menemukan berita di %(context)s."
+msgstr "Filter tag tidak menemukan artikel di %(context)s."
 
 msgid "Tag filters found no stories in this view."
 msgstr "Filter tag tidak menemukan artikel dalam tampilan ini."
@@ -6533,7 +6535,7 @@ msgid "Test on this story"
 msgstr "Uji pada artikel ini"
 
 msgid "Testing on this story..."
-msgstr "Menguji berita ini..."
+msgstr "Menguji pada artikel ini..."
 
 msgid "Text"
 msgstr "Teks"
@@ -6549,13 +6551,13 @@ msgstr "Tampilan teks"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
-msgstr "Filter teks tidak menemukan cerita di %(context)s."
+msgstr "Filter teks tidak menemukan artikel di %(context)s."
 
 msgid "Text filters found no stories in this view."
 msgstr "Filter teks tidak menemukan artikel dalam tampilan ini."
 
 msgid "Text view extracts the story"
-msgstr "Tampilan teks mengekstrak isi cerita"
+msgstr "Tampilan teks mengekstrak isi artikel"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
@@ -6563,11 +6565,11 @@ msgstr "Terima kasih! Anda memiliki akun %(bold_start)spremium%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "Terima kasih! Anda memiliki %(bold_start)sakun arsip premium%(bold_end)s."
+msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Archive%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "Terima kasih! Anda memiliki akun %(bold_start)spremium pro account%(bold_end)s."
+msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Pro%(bold_end)s."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Layanan AI terlalu lama merespons. Silakan coba lagi."
@@ -6613,7 +6615,7 @@ msgstr "API NewsBlur lengkap tersedia secara terbuka dan terdokumentasi untuk in
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "River of News lengkap adalah %(link_start)sfitur premium%(link_end)s."
+msgstr "Aliran Berita lengkap adalah %(link_start)sfitur premium%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "Daftar lengkap pintasan"
@@ -6622,12 +6624,14 @@ msgid "The gift has been applied to your account."
 msgstr "Hadiah telah diterapkan ke akun Anda."
 
 msgid "The intelligence slider filters stories."
-msgstr "Penggeser kecerdasan menyaring berita."
+msgstr "Penggeser kecerdasan menyaring artikel."
 
 msgid ""
 "The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
 "stories."
-msgstr "Penggeser kecerdasan di sudut kiri bawah menyaring semua berita, berita yang belum dibaca, dan berita fokus."
+msgstr ""
+"Penggeser kecerdasan di sudut kiri bawah menyaring semua artikel, artikel yang belum dibaca, dan artikel "
+"Fokus."
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
@@ -6637,7 +6641,7 @@ msgstr ""
 "dikirim ke mana pun selain API NewsBlur."
 
 msgid "The most important stories from your feeds"
-msgstr "Berita terpenting dari feed Anda"
+msgstr "Artikel terpenting dari feed Anda"
 
 msgid "The original page has been disabled by the publisher."
 msgstr "Halaman asli telah dinonaktifkan oleh penerbit."
@@ -6654,13 +6658,13 @@ msgid "Themes & Customization"
 msgstr "Tema & Kustomisasi"
 
 msgid "There are too many sites and stories to process. "
-msgstr "Terlalu banyak situs dan cerita untuk diproses. "
+msgstr "Terlalu banyak situs dan artikel untuk diproses. "
 
 #, python-format
 msgid "There is %(count)s hidden story"
 msgid_plural "There are %(count)s hidden stories"
 msgstr[0] "Ada %(count)s artikel tersembunyi"
-msgstr[1] "Ada %(count)s cerita tersembunyi"
+msgstr[1] "Ada %(count)s artikel tersembunyi"
 
 #, python-format
 msgid "There is %(count)s public comment"
@@ -6679,7 +6683,7 @@ msgid "There was a problem deleting your classifiers."
 msgstr "Terjadi masalah saat menghapus pengklasifikasi Anda."
 
 msgid "There was a problem deleting your saved stories."
-msgstr "Terjadi masalah saat menghapus berita tersimpan Anda."
+msgstr "Terjadi masalah saat menghapus artikel tersimpan Anda."
 
 msgid "There was a problem deleting your shared stories."
 msgstr "Terjadi masalah saat menghapus artikel yang Anda bagikan."
@@ -6722,7 +6726,7 @@ msgid "They redeem it."
 msgstr "Mereka menukarkannya."
 
 msgid "Thinking"
-msgstr "Sedang berpikir"
+msgstr "Berpikir"
 
 msgid "Thinking..."
 msgstr "Memproses..."
@@ -6754,7 +6758,7 @@ msgstr ""
 
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr ""
-"Ini cocok dengan seluruh judul dan hanya akan cocok dengan cerita yang persis sama. Pilih sebagian judul "
+"Ini cocok dengan seluruh judul dan hanya akan cocok dengan artikel yang persis sama. Pilih sebagian judul "
 "saja."
 
 #, python-format
@@ -6780,7 +6784,7 @@ msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors.
 msgstr "Situs ini belum diambil dalam <b>%(time)s</b> dan mengalami error."
 
 msgid "This site has not yet been indexed for related stories."
-msgstr "Situs ini belum diindeks untuk berita terkait."
+msgstr "Situs ini belum diindeks untuk artikel terkait."
 
 msgid ""
 "This site has published zero stories in the past month or has averaged less than a single story a month. As"
@@ -6821,7 +6825,7 @@ msgid "Thursday"
 msgstr "Kamis"
 
 msgid "Tier"
-msgstr "Tingkat"
+msgstr "Paket"
 
 msgid "Time Period"
 msgstr "Periode Waktu"
@@ -6850,7 +6854,7 @@ msgstr "Regex Judul"
 
 #, python-format
 msgid "Title filters found no stories in %(context)s."
-msgstr "Filter judul tidak menemukan cerita di %(context)s."
+msgstr "Filter judul tidak menemukan artikel di %(context)s."
 
 msgid "Title filters found no stories in this view."
 msgstr "Filter judul tidak menemukan artikel dalam tampilan ini."
@@ -6865,7 +6869,7 @@ msgid ""
 "Title training matches phrases, so train just the words that matter and future stories with those words "
 "follow suit."
 msgstr ""
-"Pelatihan judul mencocokkan frasa, jadi latih hanya kata-kata yang penting agar cerita mendatang yang "
+"Pelatihan judul mencocokkan frasa, jadi latih hanya kata-kata yang penting agar artikel mendatang yang "
 "memuat kata-kata itu ikut cocok."
 
 msgid "Title: "
@@ -6929,7 +6933,7 @@ msgid "Tooltips like this"
 msgstr "Tooltip seperti ini"
 
 msgid "Top"
-msgstr "Teratas"
+msgstr "Atas"
 
 msgid "Top Domains"
 msgstr "Domain Teratas"
@@ -6938,7 +6942,7 @@ msgid "Top Level"
 msgstr "Level Teratas"
 
 msgid "Top stories"
-msgstr "Cerita teratas"
+msgstr "Artikel teratas"
 
 msgid "Track Changes"
 msgstr "Lacak Perubahan"
@@ -6964,16 +6968,16 @@ msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
 msgstr "Latih kecerdasan: sukai atau tidak sukai penulis, tag, judul, dan feed"
 
 msgid "Train stories by author, tag, title"
-msgstr "Latih cerita berdasarkan penulis, tag, dan judul"
+msgstr "Latih artikel berdasarkan penulis, tag, dan judul"
 
 msgid "Train stories on full text content"
-msgstr "Latih cerita berdasarkan konten teks lengkap"
+msgstr "Latih artikel berdasarkan konten teks lengkap"
 
 msgid "Train stories with regular expressions"
 msgstr "Latih artikel dengan ekspresi reguler"
 
 msgid "Train stories, search, share, and tag just like on the web"
-msgstr "Latih berita, cari, bagikan, dan beri tag seperti di web"
+msgstr "Latih artikel, cari, bagikan, dan beri tag seperti di web"
 
 msgid "Train this classifier"
 msgstr "Latih pengklasifikasi ini"
@@ -6982,7 +6986,7 @@ msgid "Train this site"
 msgstr "Latih situs ini"
 
 msgid "Train this story"
-msgstr "Latih cerita ini"
+msgstr "Latih artikel ini"
 
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Latih feed Anda untuk menyaring artikel yang Anda sukai dan tidak sukai."
@@ -7044,8 +7048,8 @@ msgstr "Nonaktifkan pembuatan ringkasan otomatis"
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
-msgstr[0] "Harap aktifkan situs %(count)s ini"
-msgstr[1] "Harap aktifkan situs-situs %(count)s ini"
+msgstr[0] "Harap aktifkan %(count)s situs ini"
+msgstr[1] "Harap aktifkan %(count)s situs ini"
 
 msgid "Turning any page into a feed"
 msgstr "Mengubah halaman apa pun menjadi feed"
@@ -7072,10 +7076,10 @@ msgstr "Regex URL"
 
 #, python-format
 msgid "URL filters found no stories in %(context)s."
-msgstr "Filter URL tidak menemukan cerita di %(context)s."
+msgstr "Filter URL tidak menemukan artikel di %(context)s."
 
 msgid "URL filters found no stories in this view."
-msgstr "Filter URL tidak menemukan cerita dalam tampilan ini."
+msgstr "Filter URL tidak menemukan artikel dalam tampilan ini."
 
 msgid "URL gives a 404 - page not found."
 msgstr "URL menghasilkan 404 — halaman tidak ditemukan."
@@ -7084,7 +7088,7 @@ msgid "URL:"
 msgstr "URL:"
 
 msgid "Un-mute this site"
-msgstr "Bunyikan situs ini"
+msgstr "Batal bisukan situs ini"
 
 msgid "Uncategorized"
 msgstr "Tanpa kategori"
@@ -7096,7 +7100,7 @@ msgid "Unfollow"
 msgstr "Berhenti mengikuti"
 
 msgid "Unfollowed"
-msgstr "Berhenti mengikuti"
+msgstr "Tidak lagi mengikuti"
 
 msgid "Unfollowing..."
 msgstr "Berhenti mengikuti..."
@@ -7129,10 +7133,10 @@ msgid "Unlocked"
 msgstr "Terbuka"
 
 msgid "Unmute"
-msgstr "Aktifkan suara"
+msgstr "Batal bisukan"
 
 msgid "Unmuted"
-msgstr "Suarakan kembali"
+msgstr "Tidak lagi dibisukan"
 
 msgid "Unread"
 msgstr "Belum dibaca"
@@ -7141,19 +7145,19 @@ msgid "Unread only"
 msgstr "Hanya yang belum dibaca"
 
 msgid "Unread stories"
-msgstr "Cerita belum dibaca"
+msgstr "Artikel belum dibaca"
 
 msgid "Unread stories going back months"
 msgstr "Artikel belum dibaca dari beberapa bulan terakhir"
 
 msgid "Unread stories never expire, so read at your own pace."
-msgstr "Cerita yang belum dibaca tidak pernah kedaluwarsa, jadi bacalah sesuai kecepatan Anda."
+msgstr "Artikel yang belum dibaca tidak pernah kedaluwarsa, jadi bacalah sesuai kecepatan Anda."
 
 msgid "Unread+Focus:"
 msgstr "Belum dibaca+Fokus:"
 
 msgid "Unsave this story"
-msgstr "Hapus penyimpanan cerita ini"
+msgstr "Batal simpan artikel ini"
 
 msgid "Unshared"
 msgstr "Tidak dibagikan"
@@ -7233,21 +7237,21 @@ msgid "Upgrade to Premium"
 msgstr "Upgrade ke Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "Tingkatkan ke Arsip Premium"
+msgstr "Tingkatkan ke Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
-msgstr "Upgrade ke Arsip Premium untuk notifikasi klasifikasi"
+msgstr "Upgrade ke Premium Archive untuk notifikasi pengklasifikasi"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr ""
 "Tingkatkan ke Premium Archive untuk memindai semua feed Anda guna menemukan duplikat agar Anda tidak "
-"melewatkan satu pun kumpulan."
+"melewatkan satu pun klaster."
 
 msgid "Upgrade to Premium Pro"
 msgstr "Tingkatkan ke Premium Pro"
 
 msgid "Upgrade to a Premium Archive account"
-msgstr "Upgrade ke akun Arsip Premium"
+msgstr "Upgrade ke akun Premium Archive"
 
 msgid "Upgrade to a Premium account"
 msgstr "Tingkatkan ke akun Premium"
@@ -7305,10 +7309,12 @@ msgid "Use this URL template in browser extensions and feed readers to subscribe
 msgstr "Gunakan templat URL ini di ekstensi browser dan pembaca feed untuk berlangganan di NewsBlur."
 
 msgid "Use widgets to see unread counts and stories at a glance"
-msgstr "Gunakan widget untuk melihat jumlah belum dibaca dan berita secara sekilas"
+msgstr "Gunakan widget untuk melihat jumlah belum dibaca dan artikel secara sekilas"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
-msgstr "Berguna untuk mengembangkan berita, artikel yang diperbarui, dan pengumuman produk yang terus berkembang."
+msgstr ""
+"Berguna untuk berita yang terus berkembang, artikel yang dikoreksi, dan pengumuman produk yang terus "
+"berubah."
 
 msgid "User Admin"
 msgstr "Administrasi Pengguna"
@@ -7339,7 +7345,7 @@ msgstr[1] "Menggunakan nilai default: <b>%(days)s hari</b> (dari %(source)s)"
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "Menggunakan default: <b>never</b> (dari %(source)s)"
+msgstr "Menggunakan default: <b>tidak pernah</b> (dari %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "Menggunakan setelan bawaan: artikel <b>tidak akan pernah</b> otomatis ditandai telah dibaca"
@@ -7361,7 +7367,7 @@ msgid "View profile"
 msgstr "Lihat profil"
 
 msgid "View settings"
-msgstr "Lihat pengaturan"
+msgstr "Pengaturan tampilan"
 
 msgid "Visual"
 msgstr "Visual"
@@ -7379,10 +7385,10 @@ msgid "Web"
 msgstr "Web"
 
 msgid "Web Feed"
-msgstr "Umpan web"
+msgstr "Feed web"
 
 msgid "Web Feeds"
-msgstr "Umpan Web"
+msgstr "Feed Web"
 
 msgid "Web Feeds from any website, even without RSS"
 msgstr "Feed web dari situs mana pun, bahkan tanpa RSS"
@@ -7391,8 +7397,8 @@ msgid ""
 "Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
 "fetching."
 msgstr ""
-"Web Feeds memerlukan Premium Archive atau Premium Pro karena pengambilan konten dari halaman web "
-"membutuhkan lebih banyak sumber daya daripada pengambilan RSS."
+"Feed Web memerlukan Premium Archive atau Premium Pro karena pengambilan konten dari halaman web membutuhkan"
+" lebih banyak sumber daya daripada pengambilan RSS."
 
 msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
 msgstr ""
@@ -7406,7 +7412,7 @@ msgid "Web notifications"
 msgstr "Notifikasi web"
 
 msgid "Web notifications require Premium Archive"
-msgstr "Notifikasi web memerlukan Arsip Premium"
+msgstr "Notifikasi web memerlukan Premium Archive"
 
 msgid "Website"
 msgstr "Situs web"
@@ -7431,11 +7437,11 @@ msgstr "Apa argumen utamanya?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "Apa yang %(like)s dan %(dislike)s tentang situs ini?"
+msgstr "Apa yang Anda %(like)s dan %(dislike)s dari situs ini?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "Apa yang %(like)s dan %(dislike)s tentang artikel ini?"
+msgstr "Apa yang Anda %(like)s dan %(dislike)s dari artikel ini?"
 
 msgid "What happens if I downgrade?"
 msgstr "Apa yang terjadi jika saya menurunkan paket?"
@@ -7471,7 +7477,7 @@ msgid "When a feed updates, NewsBlur checks for duplicates across all your subsc
 msgstr "Saat feed diperbarui, NewsBlur memeriksa duplikat di semua langganan Anda"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
-msgstr "Jika beberapa umpan memuat berita yang sama, NewsBlur mengelompokkannya agar Anda hanya melihatnya sekali."
+msgstr "Jika beberapa feed memuat artikel yang sama, NewsBlur mengelompokkannya agar Anda hanya melihatnya sekali."
 
 msgid "When opening a site"
 msgstr "Saat membuka situs"
@@ -7486,8 +7492,8 @@ msgid ""
 "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
 "is kept forever."
 msgstr ""
-"Saat Anda berlangganan umpan, NewsBlur akan mengisi riwayat lengkap yang tersedia. Setelah itu, setiap "
-"berita disimpan selamanya."
+"Saat Anda berlangganan feed, NewsBlur akan mengisi riwayat lengkap yang tersedia. Setelah itu, setiap "
+"artikel disimpan selamanya."
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Saat Anda berlangganan feed baru, riwayatnya akan diisi secara surut"
@@ -7576,7 +7582,7 @@ msgid "Yes, it can transcribe audio and video content and then answer questions 
 msgstr "Ya, fitur ini dapat mentranskripsikan audio dan video, lalu menjawab pertanyaan tentangnya."
 
 msgid "Yes, saved stories and their tags are fully searchable."
-msgstr "Ya, berita tersimpan beserta tag-nya dapat dicari sepenuhnya."
+msgstr "Ya, artikel tersimpan beserta tag-nya dapat dicari sepenuhnya."
 
 msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
 msgstr ""
@@ -7584,7 +7590,7 @@ msgstr ""
 "membagikan tautannya."
 
 msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
-msgstr "Ya. Berita disimpan dalam cache lokal dan penyegaran latar belakang membuatnya tetap terbaru."
+msgstr "Ya. Artikel disimpan dalam cache lokal dan penyegaran latar belakang membuatnya tetap terbaru."
 
 msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
 msgstr "Ya. Aktifkan \"Pisahkan artikel\" di popover opsi feed atau di Preferensi."
@@ -7594,14 +7600,14 @@ msgid ""
 "Premium Archive."
 msgstr ""
 "Ya. Pelatihan berdasarkan penulis, tag, dan kata kunci judul tersedia gratis. Pelatihan teks lengkap "
-"berdasarkan isi artikel memerlukan Arsip Premium."
+"berdasarkan isi artikel memerlukan Premium Archive."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
 "even when sites don't offer RSS."
 msgstr ""
-"Ya. Web Feeds memantau HTML halaman untuk mendeteksi perubahan, sedangkan RSS membaca berkas feed "
-"terstruktur. Web Feeds tetap berfungsi meskipun situs tidak menyediakan RSS."
+"Ya. Feed Web memantau HTML halaman untuk mendeteksi perubahan, sedangkan RSS membaca berkas feed "
+"terstruktur. Feed Web tetap berfungsi meskipun situs tidak menyediakan RSS."
 
 msgid "Yesterday"
 msgstr "Kemarin"
@@ -7657,7 +7663,7 @@ msgstr ""
 " untuk berlangganan kembali."
 
 msgid "You can also filter out stories you don't want to read."
-msgstr "Anda juga dapat menyaring cerita yang tidak ingin dibaca."
+msgstr "Anda juga dapat menyaring artikel yang tidak ingin dibaca."
 
 msgid "You can change this anytime in Preferences."
 msgstr "Anda dapat mengubahnya kapan saja di Preferensi."
@@ -7701,14 +7707,14 @@ msgid "You have no unread stories."
 msgstr "Anda tidak memiliki artikel yang belum dibaca."
 
 msgid "You have not yet subscribed to anybody's shared stories."
-msgstr "Anda belum berlangganan cerita yang dibagikan siapa pun."
+msgstr "Anda belum berlangganan artikel yang dibagikan siapa pun."
 
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Anda harus mengikuti %(value_1)s untuk membalas"
 
 msgid "You must be logged in to send a story over email."
-msgstr "Anda harus masuk untuk mengirim berita melalui email."
+msgstr "Anda harus masuk untuk mengirim artikel melalui email."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
@@ -7722,7 +7728,7 @@ msgid "You need to be logged in to reply to a comment."
 msgstr "Anda harus masuk untuk membalas komentar."
 
 msgid "You need to be logged in to share a story."
-msgstr "Anda harus masuk untuk membagikan cerita."
+msgstr "Anda harus masuk untuk membagikan artikel."
 
 msgid "You will be emailed within a minute or three."
 msgstr "Email akan dikirim kepada Anda dalam satu atau tiga menit."
@@ -7734,21 +7740,21 @@ msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Anda terkena pembatasan frekuensi.<br> Coba lagi sebentar lagi, tetapi jangan terlalu cepat."
 
 msgid "You're presented with multiple story pattern options to choose from."
-msgstr "Anda akan melihat beberapa opsi pola berita untuk dipilih."
+msgstr "Anda akan melihat beberapa opsi pola artikel untuk dipilih."
 
 msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
 "briefings on your schedule."
 msgstr ""
-"Anda sedang melihat pratinjau 3 cerita pertama dari setiap briefing. Upgrade untuk membuka semua cerita dan"
-" briefing otomatis sesuai jadwal Anda."
+"Anda sedang melihat pratinjau 3 artikel pertama dari setiap ringkasan. Upgrade untuk membuka semua artikel "
+"dan ringkasan otomatis sesuai jadwal Anda."
 
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "Anda siap memulai! Semoga Anda menikmati NewsBlur."
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "Anda telah diberi hadiah %(value_1)s dari %(value_2)s!"
+msgstr "Anda mendapat hadiah %(value_1)s %(value_2)s!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -7834,7 +7840,7 @@ msgid "autonomous vehicles"
 msgstr "kendaraan otonom"
 
 msgid "beats any"
-msgstr "mengungguli apa pun"
+msgstr "mengalahkan semua"
 
 msgid "bird migration"
 msgstr "migrasi burung"
@@ -7942,7 +7948,7 @@ msgstr "di"
 
 #, python-format
 msgid "in %(time)s"
-msgstr "di %(time)s"
+msgstr "dalam %(time)s"
 
 msgid "indie games"
 msgstr "game indie"
@@ -8027,7 +8033,7 @@ msgid "site-wide"
 msgstr "seluruh situs"
 
 msgid "site-wide preference"
-msgstr "preferensi seluruh situs"
+msgstr "preferensi global"
 
 msgid "soil health"
 msgstr "kesehatan tanah"
@@ -8051,7 +8057,7 @@ msgid "typography"
 msgstr "tipografi"
 
 msgid "unmuting soon"
-msgstr "segera membunyikan"
+msgstr "segera aktif kembali"
 
 msgid "upload picture"
 msgstr "unggah gambar"
@@ -8075,7 +8081,7 @@ msgstr[0] "✓ %(count)s dari %(total)s gambar cocok dengan filter ini"
 msgstr[1] "✓ %(count)s dari %(total)s gambar cocok dengan filter ini"
 
 msgid "✓ Found in story"
-msgstr "✓ Ditemukan dalam cerita"
+msgstr "✓ Ditemukan dalam artikel"
 
 msgid "✓ Image matches this filter"
 msgstr "✓ Gambar cocok dengan filter ini"
@@ -8087,7 +8093,7 @@ msgid "✓ Matches author"
 msgstr "✓ Cocok dengan penulis"
 
 msgid "✓ Matches story"
-msgstr "✓ Cocok dengan cerita"
+msgstr "✓ Cocok dengan artikel"
 
 msgid "✓ Matches title"
 msgstr "✓ Cocok dengan judul"
@@ -8096,7 +8102,7 @@ msgid "✓ Sent"
 msgstr "✓ Terkirim"
 
 msgid "✓ Story matches this filter"
-msgstr "✓ Berita cocok dengan filter ini"
+msgstr "✓ Artikel cocok dengan filter ini"
 
 msgid "✓ Valid"
 msgstr "✓ Valid"
@@ -8108,5 +8114,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ Tidak ada gambar yang cocok dengan filter ini"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ Cerita tidak cocok dengan filter ini"
+msgstr "✗ Artikel tidak cocok dengan filter ini"
 
