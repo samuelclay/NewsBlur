@@ -1167,7 +1167,7 @@
     <string name="discover_folder_top_level">المستوى الأعلى</string>
     <string name="discover_add_to_folder">أضف إلى مجلد</string>
     <string name="add_site_shortcut_trending">رائج</string>
-    <string name="add_site_freshness_stale">قديم %1$s</string>
+    <string name="add_site_freshness_stale">قديم منذ %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="few">قبل %d دقائق</item>
         <item quantity="many">قبل %d دقيقة</item>
@@ -1233,14 +1233,14 @@
     <string name="profile_interaction_reshared">أعاد %1$s مشاركة %2$s</string>
     <string name="briefing_section_top_stories">أهم القصص</string>
     <string name="briefing_section_top_stories_subtitle">أهم القصص من خلاصاتك</string>
-    <string name="briefing_section_infrequent">من مواقع نادرة النشر</string>
+    <string name="briefing_section_infrequent">من المواقع قليلة التحديث</string>
     <string name="briefing_section_infrequent_subtitle">قصص من خلاصات نادرًا ما تنشر</string>
     <string name="briefing_section_long_read">قراءات طويلة لوقت لاحق</string>
     <string name="briefing_section_long_read_subtitle">مقالات أطول تستحق تخصيص وقت لقراءتها</string>
     <string name="briefing_section_classifier_match">بناءً على اهتماماتك</string>
     <string name="briefing_section_classifier_match_subtitle">قصص تطابق الموضوعات والكتّاب الذين درّبت النظام عليهم</string>
-    <string name="briefing_section_follow_up">متابعات</string>
+    <string name="briefing_section_follow_up">المتابعات</string>
     <string name="briefing_section_follow_up_subtitle">منشورات جديدة من خلاصات قرأتها مؤخرًا</string>
     <string name="briefing_section_widely_covered">تغطية واسعة</string>
-    <string name="briefing_section_widely_covered_subtitle">قصص تناولتها 3 خلاصات أو أكثر</string>
+    <string name="briefing_section_widely_covered_subtitle">قصص تغطيها 3 خلاصات أو أكثر</string>
 </resources>

@@ -626,16 +626,16 @@ msgstr "%(slot)s — %(date)s"
 #, python-format
 msgid "%(start)s to %(end)s hour"
 msgid_plural "%(start)s to %(end)s hours"
-msgstr[0] "%(start)s–%(end)s час"
-msgstr[1] "От %(start)s до %(end)s часов"
-msgstr[2] "От %(start)s до %(end)s часов"
+msgstr[0] "от %(start)s до %(end)s часа"
+msgstr[1] "от %(start)s до %(end)s часов"
+msgstr[2] "от %(start)s до %(end)s часов"
 
 #, python-format
 msgid "%(start)s to %(end)s minute"
 msgid_plural "%(start)s to %(end)s minutes"
-msgstr[0] "%(start)s–%(end)s минута"
-msgstr[1] "От %(start)s до %(end)s минут"
-msgstr[2] "От %(start)s до %(end)s минут"
+msgstr[0] "от %(start)s до %(end)s минуты"
+msgstr[1] "от %(start)s до %(end)s минут"
+msgstr[2] "от %(start)s до %(end)s минут"
 
 #, python-format
 msgid "%(start)s – %(end)s"
@@ -3225,7 +3225,7 @@ msgid "From"
 msgstr "С"
 
 msgid "From infrequent sites"
-msgstr "С сайтов с редкими обновлениями"
+msgstr "С редко обновляемых сайтов"
 
 msgid "Full"
 msgstr "Полный"
@@ -4649,7 +4649,7 @@ msgstr "Старый пароль"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Старше чем: %(month)s %(day)s %(year)s"
+msgstr "Старше: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "Старше:"
@@ -7068,7 +7068,7 @@ msgid "Top Level"
 msgstr "Верхний уровень"
 
 msgid "Top stories"
-msgstr "Главные статьи"
+msgstr "Главные новости"
 
 msgid "Track Changes"
 msgstr "Отслеживание изменений"

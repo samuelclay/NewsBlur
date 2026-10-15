@@ -132,7 +132,7 @@
     <string name="share_comment_hint">Комментарий к публикации (необязательно)</string>
     <string name="share_save_newsblur">Поделиться/сохранить «%s» в своём Blurblog?</string>
     <string name="share_this">Поделиться</string>
-    <string name="already_shared">Уже опубликовано</string>
+    <string name="already_shared">Опубликовано</string>
     <string name="share_this_story">Поделиться</string>
     <string name="share_with_comment">Поделиться с комментарием</string>
     <string name="unshare">Удалить публикацию</string>
@@ -1174,8 +1174,8 @@
     <string name="profile_activity_user_subscribed">%1$s подписывается на %2$s</string>
     <string name="profile_activity_you_saved">Вы сохранили %1$s</string>
     <string name="profile_activity_user_saved">%1$s сохраняет статью %2$s</string>
-    <string name="profile_activity_you_signed_up">Вы подписались на NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s подписался(-ась) на NewsBlur</string>
+    <string name="profile_activity_you_signed_up">Вы зарегистрировались в NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s присоединяется к NewsBlur</string>
     <string name="profile_activity_you_followed">Вы подписались на обновления %1$s</string>
     <string name="profile_activity_user_followed">%1$s подписывается на %2$s</string>
     <string name="profile_activity_you_favorited_comments">Вы добавили в избранное комментарии пользователя %1$s к %2$s</string>
@@ -1194,15 +1194,15 @@
     <string name="profile_interaction_replied_user_reply">%1$s отвечает на ответ пользователя %2$s</string>
     <string name="profile_interaction_reshared">%1$s повторно делится статьёй %2$s</string>
     <string name="briefing_section_top_stories">Главные новости</string>
-    <string name="briefing_section_top_stories_subtitle">Самые важные материалы из ваших лент</string>
-    <string name="briefing_section_infrequent">Из редко обновляемых источников</string>
-    <string name="briefing_section_infrequent_subtitle">Материалы из лент, которые редко обновляются</string>
+    <string name="briefing_section_top_stories_subtitle">Самые важные статьи из ваших лент</string>
+    <string name="briefing_section_infrequent">С редко обновляемых сайтов</string>
+    <string name="briefing_section_infrequent_subtitle">Статьи из лент, которые редко публикуют</string>
     <string name="briefing_section_long_read">Длинные статьи на потом</string>
     <string name="briefing_section_long_read_subtitle">Длинные статьи, на которые стоит выделить время</string>
     <string name="briefing_section_classifier_match">На основе ваших интересов</string>
-    <string name="briefing_section_classifier_match_subtitle">Материалы по темам и авторам, которым вы обучили систему</string>
+    <string name="briefing_section_classifier_match_subtitle">Статьи по выбранным вами темам и авторам</string>
     <string name="briefing_section_follow_up">Продолжения</string>
     <string name="briefing_section_follow_up_subtitle">Новые публикации из недавно прочитанных вами лент</string>
-    <string name="briefing_section_widely_covered">Широкое освещение</string>
-    <string name="briefing_section_widely_covered_subtitle">Материалы, опубликованные в 3 и более лентах</string>
+    <string name="briefing_section_widely_covered">Широко освещается</string>
+    <string name="briefing_section_widely_covered_subtitle">Статьи, встречающиеся в 3 и более лентах</string>
 </resources>

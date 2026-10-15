@@ -650,7 +650,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_enable_notifications">Bildirimleri etkinleştir</string>
     <string name="ask_ai_upgrade_archive">Premium Archive\'a yükselt</string>
     <string name="ask_ai_ask_question">Bir soru sor…</string>
-    <string name="ask_ai_follow_up">Takip sorusu…</string>
+    <string name="ask_ai_follow_up">Ek bir soru sorun…</string>
     <string name="ask_ai_ask">Sor</string>
     <string name="ask_ai_send">Gönder</string>
     <string name="ask_ai_reask">Yeniden sor</string>
@@ -1111,7 +1111,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="discover_folder_top_level">En Üst Düzey</string>
     <string name="discover_add_to_folder">Klasöre ekle</string>
     <string name="add_site_shortcut_trending">Trend olan</string>
-    <string name="add_site_freshness_stale">Eski %1$s</string>
+    <string name="add_site_freshness_stale">Güncel değil · %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="one">%d dk önce</item>
         <item quantity="other">%d dk önce</item>
@@ -1136,8 +1136,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_activity_user_subscribed">%1$s, %2$s akışına abone oldu</string>
     <string name="profile_activity_you_saved">Bir haber kaydettiniz: %1$s</string>
     <string name="profile_activity_user_saved">%1$s bir haber kaydetti: %2$s</string>
-    <string name="profile_activity_you_signed_up">NewsBlur için kaydoldunuz</string>
-    <string name="profile_activity_user_signed_up">%1$s, NewsBlur için kaydoldu</string>
+    <string name="profile_activity_you_signed_up">NewsBlur\'a kaydoldunuz</string>
+    <string name="profile_activity_user_signed_up">%1$s, NewsBlur\'a kaydoldu</string>
     <string name="profile_activity_you_followed">%1$s kişisini takip ettiniz</string>
     <string name="profile_activity_user_followed">%1$s, %2$s kişisini takip etmeye başladı</string>
     <string name="profile_activity_you_favorited_comments">%2$s üzerindeki %1$s kullanıcısının yorumlarını favorilerinize eklediniz</string>
@@ -1157,14 +1157,14 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_interaction_reshared">%1$s yeniden paylaştı: %2$s</string>
     <string name="briefing_section_top_stories">Öne çıkan haberler</string>
     <string name="briefing_section_top_stories_subtitle">Akışlarınızdaki en önemli haberler</string>
-    <string name="briefing_section_infrequent">Nadiren yayın yapan sitelerden</string>
+    <string name="briefing_section_infrequent">Seyrek güncellenen sitelerden</string>
     <string name="briefing_section_infrequent_subtitle">Nadiren yayın yapan akışlardan haberler</string>
     <string name="briefing_section_long_read">Daha sonra okumak için uzun yazılar</string>
-    <string name="briefing_section_long_read_subtitle">Zaman ayırmaya değer uzun yazılar</string>
+    <string name="briefing_section_long_read_subtitle">Zaman ayırmaya değer uzun makaleler</string>
     <string name="briefing_section_classifier_match">İlgi alanlarınıza göre</string>
-    <string name="briefing_section_classifier_match_subtitle">Öğrendiğiniz konular ve yazarlarla eşleşen haberler</string>
-    <string name="briefing_section_follow_up">Devam haberleri</string>
-    <string name="briefing_section_follow_up_subtitle">Son zamanlarda okuduğunuz akışlardan yeni yazılar</string>
-    <string name="briefing_section_widely_covered">Birçok yerde yer alanlar</string>
+    <string name="briefing_section_classifier_match_subtitle">Eğitilmiş konularınız ve yazarlarınızla eşleşen haberler</string>
+    <string name="briefing_section_follow_up">Takip haberleri</string>
+    <string name="briefing_section_follow_up_subtitle">Yakın zamanda okuduğunuz akışlardan yeni gönderiler</string>
+    <string name="briefing_section_widely_covered">Geniş yer bulan haberler</string>
     <string name="briefing_section_widely_covered_subtitle">3 veya daha fazla akışta yer alan haberler</string>
 </resources>

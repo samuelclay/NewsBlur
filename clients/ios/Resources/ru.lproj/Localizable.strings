@@ -23,7 +23,7 @@
 "%@ ago" = "%@ назад";
 "%@ categories to choose from" = "категорий на выбор: %@";
 "%@ comments" = "%@ комментариев";
-"%@ could not be added." = "Не удалось добавить %@.";
+"%@ could not be added." = "Не удалось добавить лент: %@.";
 "%@ days" = "%@ дней";
 "%@ feed" = "Лента %@";
 "%@ feeds" = "%@ лент";
@@ -122,7 +122,7 @@
 "After 60 Seconds" = "Через 60 секунд";
 "After 60 seconds" = "Через 60 секунд";
 "After mark read" = "После пометки как прочитанного";
-"Afternoon" = "Вторая половина дня";
+"Afternoon" = "День";
 "Afternoon Briefing" = "Дневная сводка";
 "Alert after no new stories for" = "Уведомлять, если новых статей нет в течение";
 "All" = "Все";
@@ -175,7 +175,7 @@
 "Bullets" = "Маркеры";
 "Bundle folder name" = "Название папки подборки";
 "Cancel" = "Отмена";
-"Cannot reply to this story" = "На эту запись нельзя ответить";
+"Cannot reply to this story" = "На эту статью нельзя ответить";
 "Change Story List" = "Изменить список статей";
 "Choose Icon" = "Выбрать значок";
 "Choose Story List" = "Выбрать список статей";
@@ -312,9 +312,9 @@
 "Export trained stories from folders as RSS feeds" = "Экспортируйте обученные статьи из папок в виде RSS-лент";
 "Extra Large" = "Очень крупный";
 "Extra Short [grid height]" = "Очень низкая";
-"Extra Small" = "Очень маленький";
-"Extra Tall" = "Очень высокий";
-"Extra small" = "Очень маленький";
+"Extra Small" = "Очень мелкий";
+"Extra Tall" = "Очень высокая";
+"Extra small" = "Очень мелкий";
 "Faster" = "Быстрее";
 "Favorited" = "В избранном";
 "Favoriting" = "Добавление в избранное";
@@ -357,7 +357,7 @@
 "Follow-ups" = "Продолжения";
 "Followed" = "Вы подписались";
 "Followers label" = "Подписчики";
-"Following [button state]" = "Читаю";
+"Following [button state]" = "Вы подписаны";
 "Following [in progress]" = "Подписка...";
 "Following [label under the number of people this profile follows]" = "Подписки";
 "Font" = "Шрифт";
@@ -386,7 +386,7 @@
 "Go to the %@ feed in NewsBlur." = "Перейти к ленте %@ в NewsBlur.";
 "Go to the %@ folder in NewsBlur." = "Перейдите в папку %@ в NewsBlur.";
 "Good Reads" = "Хорошие статьи";
-"Gray" = "Серый";
+"Gray" = "Серая";
 "Grid" = "Сетка";
 "Grid Columns" = "Количество столбцов сетки";
 "Grid Height" = "Высота сетки";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Средняя";
 "Medium [preview length]" = "Средний";
 "Medium [text size]" = "Средний";
-"Medium [theme]" = "Средняя";
+"Medium [theme]" = "Серая";
 "Model" = "Модель";
 "Monday" = "Понедельник";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Чем больше статей, тем больше места на диске, но заметно на производительности это не сказывается.";
@@ -734,7 +734,7 @@
 "Replied" = "Ответ отправлен";
 "Reply" = "Ответить";
 "Reply to %@" = "Ответить %@";
-"Replying" = "Ответ";
+"Replying" = "Отправка ответа";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
 "Resume" = "Продолжить";
@@ -808,7 +808,7 @@
 "Shared Stories label" = "Метка «Общие статьи»";
 "Sharing" = "Публикация";
 "Short [grid height]" = "Низкая";
-"Short [preview length]" = "Краткий";
+"Short [preview length]" = "Короткий";
 "Show" = "Показать";
 "Show Ask AI" = "Показывать «Спросить ИИ»";
 "Show Changes" = "Показать изменения";
@@ -871,7 +871,7 @@
 "Stories from feeds that rarely publish" = "Статьи из лент, которые публикуют редко";
 "Stories in a folder" = "Статьи в папке";
 "Stories in a site" = "Статьи сайта";
-"Stories matching your trained topics and authors" = "Статьи, соответствующие темам и авторам, которым вы обучили ленту";
+"Stories matching your trained topics and authors" = "Статьи по выбранным вами темам и авторам";
 "Stories per Month" = "Статей в месяц";
 "Stories to store" = "Количество сохраняемых статей";
 "Storing past %@ days" = "Хранить данные за последние %@ дней";
@@ -926,7 +926,7 @@
 "Switch to All or Unread." = "Переключитесь на режим «Все» или «Непрочитанные».";
 "Syncing stories..." = "Синхронизация статей...";
 "TEXT" = "ТЕКСТ";
-"Tall [grid height]" = "Высокий";
+"Tall [grid height]" = "Высокая";
 "Teal Mint" = "Бирюзовая мята";
 "Terms of Use" = "Условия использования";
 "Text" = "Текст";

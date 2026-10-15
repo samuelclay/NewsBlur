@@ -725,7 +725,7 @@
     <string name="light">Світла</string>
     <string name="sepia">Сепія</string>
     <string name="dark">Темна</string>
-    <string name="black">Чорний</string>
+    <string name="black">Чорна</string>
     <string name="settings_gestures">Жести</string>
     <string name="sync_status_housekeeping">Упорядковуємо…</string>
     <string name="sync_status_actions">Синхронізація дій читання (%d)…</string>
@@ -1101,7 +1101,7 @@
     <string name="briefing_frequency_weekly">Щотижня</string>
     <string name="briefing_preferred_time">Бажаний час</string>
     <string name="briefing_time_morning">Ранок</string>
-    <string name="briefing_time_afternoon">Пообіддя</string>
+    <string name="briefing_time_afternoon">День</string>
     <string name="briefing_time_evening">Вечір</string>
     <string name="briefing_preferred_day">Бажаний день</string>
     <string name="briefing_day_sunday">Неділя</string>
@@ -1139,7 +1139,7 @@
     <string name="discover_folder_top_level">Верхній рівень</string>
     <string name="discover_add_to_folder">Додати до папки</string>
     <string name="add_site_shortcut_trending">У тренді</string>
-    <string name="add_site_freshness_stale">Застарілий %1$s</string>
+    <string name="add_site_freshness_stale">Без оновлень з %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="few">%d хв тому</item>
         <item quantity="many">%d хв тому</item>
@@ -1175,7 +1175,7 @@
     <string name="profile_activity_you_saved">Ви зберегли %1$s</string>
     <string name="profile_activity_user_saved">%1$s зберігає %2$s</string>
     <string name="profile_activity_you_signed_up">Ви зареєструвалися на NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s зареєструвався(-лася) на NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s тепер у NewsBlur</string>
     <string name="profile_activity_you_followed">Ви почали стежити за %1$s</string>
     <string name="profile_activity_user_followed">%1$s тепер стежить за %2$s</string>
     <string name="profile_activity_you_favorited_comments">Ви додали в обране коментарі користувача %1$s до %2$s</string>
@@ -1193,16 +1193,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s відповідає на коментар користувача %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s відповідає на відповідь користувача %2$s</string>
     <string name="profile_interaction_reshared">%1$s повторно поширює %2$s</string>
-    <string name="briefing_section_top_stories">Головні новини</string>
-    <string name="briefing_section_top_stories_subtitle">Найважливіші матеріали з ваших стрічок</string>
-    <string name="briefing_section_infrequent">З сайтів, які рідко публікують</string>
-    <string name="briefing_section_infrequent_subtitle">Матеріали зі стрічок, які рідко публікують</string>
+    <string name="briefing_section_top_stories">Головні статті</string>
+    <string name="briefing_section_top_stories_subtitle">Найважливіші статті з ваших стрічок</string>
+    <string name="briefing_section_infrequent">З нечасто оновлюваних сайтів</string>
+    <string name="briefing_section_infrequent_subtitle">Статті зі стрічок, які рідко оновлюються</string>
     <string name="briefing_section_long_read">Довгі статті на потім</string>
     <string name="briefing_section_long_read_subtitle">Довші статті, на які варто виділити час</string>
-    <string name="briefing_section_classifier_match">Відповідає вашим інтересам</string>
-    <string name="briefing_section_classifier_match_subtitle">Матеріали на теми й від авторів, яких ви позначили як цікаві</string>
+    <string name="briefing_section_classifier_match">На основі ваших інтересів</string>
+    <string name="briefing_section_classifier_match_subtitle">Статті, що відповідають навченим темам і авторам</string>
     <string name="briefing_section_follow_up">Продовження</string>
-    <string name="briefing_section_follow_up_subtitle">Нові публікації зі стрічок, які ви нещодавно читали</string>
-    <string name="briefing_section_widely_covered">Широко висвітлювані</string>
-    <string name="briefing_section_widely_covered_subtitle">Матеріали, опубліковані у 3+ стрічках</string>
+    <string name="briefing_section_follow_up_subtitle">Нові статті зі стрічок, які ви нещодавно читали</string>
+    <string name="briefing_section_widely_covered">Широко висвітлюється</string>
+    <string name="briefing_section_widely_covered_subtitle">Статті, про які пишуть 3+ стрічки</string>
 </resources>
