@@ -15,4 +15,7 @@
         message.replace(/%s/g, function () { return String(values.shift()); });
     };
   }
+  if (!window.pgettext) {
+    window.pgettext = function (context, message) { return message; };
+  }
 </script>

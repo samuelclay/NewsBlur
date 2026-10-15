@@ -888,7 +888,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $.make('div', { className: 'NB-date-picker-content' }, [
                 $.make('div', { className: 'NB-date-picker-title' }, gettext('Custom Date Range')),
                 $.make('div', { className: 'NB-date-picker-row' }, [
-                    $.make('label', { className: 'NB-date-picker-label' }, gettext('From')),
+                    // archive_view.js gives the range labels their own context, apart from the email dialog's "To".
+                    $.make('label', { className: 'NB-date-picker-label' }, pgettext('date range', 'From')),
                     $.make('input', {
                         type: 'date',
                         className: 'NB-date-picker-input NB-date-from',
@@ -897,7 +898,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     })
                 ]),
                 $.make('div', { className: 'NB-date-picker-row' }, [
-                    $.make('label', { className: 'NB-date-picker-label' }, gettext('To')),
+                    $.make('label', { className: 'NB-date-picker-label' }, pgettext('date range', 'To')),
                     $.make('input', {
                         type: 'date',
                         className: 'NB-date-picker-input NB-date-to',

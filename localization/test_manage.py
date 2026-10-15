@@ -61,6 +61,17 @@ class Test_Translation(unittest.TestCase):
             entry("android", "read_verb", "Read")["id"], entry("android", "read_adjective", "Read")["id"]
         )
 
+    def test_date_range_labels_do_not_share_the_email_recipient_message(self):
+        # archive_view.js's date range "To" must not reuse reader_send_email.js's recipient "To",
+        # or one translation ("end date" or "recipient") is wrong in the other dialog.
+        contexts = {
+            item.get("msgctxt")
+            for item in source_entries()
+            if item["platform"] == "web" and item["source"] == "To"
+        }
+        self.assertIn("date range", contexts)
+        self.assertIn(None, contexts)
+
     def test_lazy_form_errors_are_in_the_translation_inventory(self):
         messages = [item["source"] for item in source_entries() if item["platform"] == "web"]
         self.assertIn("Your old password is incorrect.", messages)
