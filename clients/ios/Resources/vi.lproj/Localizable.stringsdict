@@ -27,7 +27,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ trang web tiện ích</string>
+			<string>%@ trang web cho tiện ích</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ nguồn tin</string>
+			<string>%@ nguồn cấp</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã thêm %@ nguồn tin</string>
+			<string>Đã thêm %@ nguồn cấp</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added.</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã thêm %@ nguồn tin.</string>
+			<string>Đã thêm %@ nguồn cấp.</string>
 		</dict>
 	</dict>
 	<key>%@ feeds couldn’t be added.</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Không thể thêm %@ nguồn tin.</string>
+			<string>Không thể thêm %@ nguồn cấp.</string>
 		</dict>
 	</dict>
 	<key>%@ feeds selected</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã chọn %@ nguồn tin</string>
+			<string>Đã chọn %@ nguồn cấp</string>
 		</dict>
 	</dict>
 	<key>%@ focused stories</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ tin được chọn</string>
+			<string>%@ bài viết Tập trung</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -251,7 +251,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ tin</string>
+			<string>%@ bài viết</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -363,7 +363,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã thêm %@ nguồn tin.</string>
+			<string>Đã thêm %@ nguồn cấp.</string>
 		</dict>
 	</dict>
 	<key>Also published by %@ sites</key>
@@ -503,7 +503,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Tin đã chia sẻ</string>
+			<string>Bài viết đã chia sẻ</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
