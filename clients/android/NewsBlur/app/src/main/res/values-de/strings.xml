@@ -1136,8 +1136,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_activity_user_subscribed">%1$s hat %2$s abonniert</string>
     <string name="profile_activity_you_saved">Du hast %1$s gespeichert</string>
     <string name="profile_activity_user_saved">%1$s hat %2$s gespeichert</string>
-    <string name="profile_activity_you_signed_up">Du hast dich für NewsBlur angemeldet</string>
-    <string name="profile_activity_user_signed_up">%1$s hat sich für NewsBlur angemeldet</string>
+    <string name="profile_activity_you_signed_up">Du hast dich bei NewsBlur registriert</string>
+    <string name="profile_activity_user_signed_up">%1$s hat sich bei NewsBlur registriert</string>
     <string name="profile_activity_you_followed">Du folgst jetzt %1$s</string>
     <string name="profile_activity_user_followed">%1$s folgt jetzt %2$s</string>
     <string name="profile_activity_you_favorited_comments">Du hast den Kommentar von %1$s zu %2$s favorisiert</string>
@@ -1157,14 +1157,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_interaction_reshared">%1$s hat %2$s erneut geteilt</string>
     <string name="briefing_section_top_stories">Top-Artikel</string>
     <string name="briefing_section_top_stories_subtitle">Die wichtigsten Artikel aus deinen Feeds</string>
-    <string name="briefing_section_infrequent">Von selten veröffentlichenden Websites</string>
-    <string name="briefing_section_infrequent_subtitle">Artikel von Feeds, die selten veröffentlichen</string>
+    <string name="briefing_section_infrequent">Von selten aktiven Websites</string>
+    <string name="briefing_section_infrequent_subtitle">Artikel aus Feeds, die nur selten veröffentlichen</string>
     <string name="briefing_section_long_read">Längere Artikel für später</string>
     <string name="briefing_section_long_read_subtitle">Längere Artikel, für die es sich lohnt, Zeit einzuplanen</string>
     <string name="briefing_section_classifier_match">Basierend auf deinen Interessen</string>
-    <string name="briefing_section_classifier_match_subtitle">Artikel zu deinen trainierten Themen und Autoren</string>
-    <string name="briefing_section_follow_up">Nachträge</string>
-    <string name="briefing_section_follow_up_subtitle">Neue Beiträge aus Feeds, die du kürzlich gelesen hast</string>
+    <string name="briefing_section_classifier_match_subtitle">Artikel, die zu deinen trainierten Themen und Autoren passen</string>
+    <string name="briefing_section_follow_up">Folgeartikel</string>
+    <string name="briefing_section_follow_up_subtitle">Neue Artikel aus Feeds, die du kürzlich gelesen hast</string>
     <string name="briefing_section_widely_covered">Weit verbreitet</string>
-    <string name="briefing_section_widely_covered_subtitle">Artikel, über die 3 oder mehr Feeds berichten</string>
+    <string name="briefing_section_widely_covered_subtitle">Artikel, die in mindestens 3 Feeds erscheinen</string>
 </resources>

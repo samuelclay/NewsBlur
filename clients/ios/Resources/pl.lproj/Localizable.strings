@@ -175,7 +175,7 @@
 "Bullets" = "Wypunktowania";
 "Bundle folder name" = "Nazwa folderu pakietu";
 "Cancel" = "Anuluj";
-"Cannot reply to this story" = "Nie można odpowiedzieć na tę historię";
+"Cannot reply to this story" = "Nie można odpowiedzieć na ten artykuł";
 "Change Story List" = "Zmień listę artykułów";
 "Choose Icon" = "Wybierz ikonę";
 "Choose Story List" = "Wybierz listę artykułów";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Średni";
 "Medium [preview length]" = "Średni";
 "Medium [text size]" = "Średni";
-"Medium [theme]" = "Średni";
+"Medium [theme]" = "Szary";
 "Model" = "Model";
 "Monday" = "Poniedziałek";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Więcej artykułów zajmuje więcej miejsca na dysku, ale poza tym nie wpływa zauważalnie na wydajność.";
@@ -675,7 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Subskrybenci Premium mogą wybrać własną ikonę NewsBlur. Każdy wariant zawiera jasną i ciemną wersję.";
 "Preview images" = "Podglądy obrazów";
 "Preview — not yet subscribed" = "Podgląd — jeszcze bez subskrypcji";
-"Previewing..." = "Podgląd...";
+"Previewing..." = "Wczytywanie podglądu...";
 "Previous Folder" = "Poprzedni folder";
 "Previous Site" = "Poprzednia witryna";
 "Previous Story" = "Poprzedni artykuł";

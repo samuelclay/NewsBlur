@@ -4036,10 +4036,10 @@ msgid "Morning"
 msgstr "Morgen"
 
 msgid "Morning + Afternoon"
-msgstr "Vormittag + Nachmittag"
+msgstr "Morgen + Nachmittag"
 
 msgid "Morning + Evening"
-msgstr "Morgens + abends"
+msgstr "Morgen + Abend"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "Diese Woche am häufigsten abonnierte Feeds"
@@ -5896,7 +5896,7 @@ msgstr "Shopping"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Kurz"
+msgstr "Niedrig"
 
 msgid "Show"
 msgstr "Anzeigen"
@@ -6179,7 +6179,7 @@ msgstr ""
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Veraltet: %(date)s"
+msgstr "Veraltet seit %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"

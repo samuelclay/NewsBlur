@@ -175,7 +175,7 @@
 "Bullets" = "Stichpunkte";
 "Bundle folder name" = "Name des Bündelordners";
 "Cancel" = "Abbrechen";
-"Cannot reply to this story" = "Auf diese Meldung kann nicht geantwortet werden";
+"Cannot reply to this story" = "Auf diesen Artikel kann nicht geantwortet werden";
 "Change Story List" = "Artikelliste ändern";
 "Choose Icon" = "Symbol auswählen";
 "Choose Story List" = "Artikelliste auswählen";
@@ -313,7 +313,7 @@
 "Extra Large" = "Extra groß";
 "Extra Short [grid height]" = "Sehr niedrig";
 "Extra Small" = "Extra klein";
-"Extra Tall" = "Extra hoch";
+"Extra Tall" = "Sehr hoch";
 "Extra small" = "Extra klein";
 "Faster" = "Schneller";
 "Favorited" = "Zu Favoriten hinzugefügt";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Mittel";
 "Medium [preview length]" = "Mittel";
 "Medium [text size]" = "Mittel";
-"Medium [theme]" = "Mittel";
+"Medium [theme]" = "Grau";
 "Model" = "Modell";
 "Monday" = "Montag";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mehr Artikel benötigen mehr Speicherplatz, haben ansonsten aber keine spürbaren Auswirkungen auf die Leistung.";

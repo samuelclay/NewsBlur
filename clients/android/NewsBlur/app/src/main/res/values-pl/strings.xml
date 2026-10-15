@@ -132,7 +132,7 @@
     <string name="share_comment_hint">Komentarz do udostępnienia (opcjonalnie)</string>
     <string name="share_save_newsblur">Udostępnić/zapisać „%s” na Twoim Blurblogu?</string>
     <string name="share_this">Udostępnij</string>
-    <string name="already_shared">Udostępniono</string>
+    <string name="already_shared">Udostępnione</string>
     <string name="share_this_story">Udostępnij</string>
     <string name="share_with_comment">Udostępnij z komentarzem</string>
     <string name="unshare">Usuń udostępnienie</string>
@@ -1174,8 +1174,8 @@
     <string name="profile_activity_user_subscribed">%1$s subskrybuje %2$s</string>
     <string name="profile_activity_you_saved">Zapisano %1$s</string>
     <string name="profile_activity_user_saved">%1$s zapisuje %2$s</string>
-    <string name="profile_activity_you_signed_up">Zarejestrowałeś(-aś) się w NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s zarejestrował(-a) się w NewsBlur</string>
+    <string name="profile_activity_you_signed_up">Zarejestrowano konto w NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s dołącza do NewsBlur</string>
     <string name="profile_activity_you_followed">Zaczęto obserwować %1$s</string>
     <string name="profile_activity_user_followed">%1$s zaczyna obserwować %2$s</string>
     <string name="profile_activity_you_favorited_comments">Dodano do ulubionych komentarze użytkownika %1$s do %2$s</string>
@@ -1195,14 +1195,14 @@
     <string name="profile_interaction_reshared">%1$s ponownie udostępnia %2$s</string>
     <string name="briefing_section_top_stories">Najważniejsze artykuły</string>
     <string name="briefing_section_top_stories_subtitle">Najważniejsze artykuły z Twoich kanałów</string>
-    <string name="briefing_section_infrequent">Z rzadko publikujących stron</string>
+    <string name="briefing_section_infrequent">Z rzadko aktualizowanych witryn</string>
     <string name="briefing_section_infrequent_subtitle">Artykuły z kanałów, które rzadko publikują</string>
     <string name="briefing_section_long_read">Dłuższe teksty na później</string>
     <string name="briefing_section_long_read_subtitle">Dłuższe artykuły, na które warto znaleźć czas</string>
     <string name="briefing_section_classifier_match">Na podstawie Twoich zainteresowań</string>
     <string name="briefing_section_classifier_match_subtitle">Artykuły pasujące do wytrenowanych tematów i autorów</string>
-    <string name="briefing_section_follow_up">Dalszy ciąg</string>
+    <string name="briefing_section_follow_up">Dalsze artykuły</string>
     <string name="briefing_section_follow_up_subtitle">Nowe wpisy z kanałów, które ostatnio czytano</string>
     <string name="briefing_section_widely_covered">Szeroko omawiane</string>
-    <string name="briefing_section_widely_covered_subtitle">Artykuły omawiane przez co najmniej 3 kanały</string>
+    <string name="briefing_section_widely_covered_subtitle">Artykuły omawiane w co najmniej 3 kanałach</string>
 </resources>
