@@ -25,16 +25,18 @@ msgstr[0] " (%(count)s dominio)"
 msgstr[1] " (%(count)s dominios)"
 
 msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
-msgstr " Tan bueno como es encontrar cosas buenas, puedes ignorar fácilmente las historias que no te gustan."
+msgstr ""
+" Encontrar cosas buenas está muy bien, pero también puedes ignorar fácilmente los artículos que no te "
+"gustan."
 
 msgid " Choose Premium, Archive, or Pro and check out."
-msgstr " Elige Premium, Archivo o Pro y compruébalo."
+msgstr " Elige Premium, Archive o Pro y completa el pago."
 
 msgid " Gift for free (staff)"
-msgstr " Regalo gratis (personal)"
+msgstr " Regalar gratis (equipo)"
 
 msgid " One click and they have premium."
-msgstr " Un clic y tienen premium."
+msgstr " Con un clic ya tienen Premium."
 
 msgid " Send the gift link to anyone."
 msgstr " Envía el enlace de regalo a cualquiera."
@@ -43,7 +45,7 @@ msgid " Sites will be ordered by popularity. Click on what you like and don't li
 msgstr " Los sitios se ordenarán por popularidad. Haz clic en lo que te gusta y lo que no."
 
 msgid " You can easily train individual stories as you read."
-msgstr " Puedes entrenar fácilmente historias individuales mientras lees."
+msgstr " Puedes entrenar fácilmente artículos individuales mientras lees."
 
 msgid " You get a full refund, automatically."
 msgstr " Recibes un reembolso completo, automáticamente."
@@ -83,7 +85,7 @@ msgstr " — Termina en «%(text)s»"
 
 #, python-format
 msgid " — Exact phrase \"%(phrase)s\""
-msgstr " — Frase exacta \"%(phrase)s\""
+msgstr " — Frase exacta «%(phrase)s»"
 
 #, python-format
 msgid " — Exactly %(count)s digit (years)"
@@ -101,7 +103,7 @@ msgstr " — Menciones (%(examples)s)"
 
 #, python-format
 msgid " — NOT containing \"%(text)s\""
-msgstr " — NO contiene \"%(text)s\""
+msgstr " — NO contiene «%(text)s»"
 
 #, python-format
 msgid " — NOT containing word \"%(word)s\""
@@ -122,7 +124,7 @@ msgstr " — Dos o más letras mayúsculas"
 
 #, python-format
 msgid " — Whole word \"%(word)s\" only"
-msgstr " — Solo la palabra completa \"%(word)s\""
+msgstr " — Solo la palabra completa «%(word)s»"
 
 msgid "$29/month"
 msgstr "$29/mes"
@@ -144,12 +146,12 @@ msgstr "%(badge)s Personalizar los días de elementos no leídos"
 #, python-format
 msgid "%(badge)s for up to %(count)s day"
 msgid_plural "%(badge)s for up to %(count)s days"
-msgstr[0] "%(badge)s por hasta %(count)s día"
-msgstr[1] "%(badge)s por hasta %(count)s días"
+msgstr[0] "%(badge)s durante un máximo de %(count)s día"
+msgstr[1] "%(badge)s durante un máximo de %(count)s días"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s temas"
+msgstr "Temas de %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -198,8 +200,8 @@ msgstr[1] "%(count)s filtros de contenido"
 #, python-format
 msgid "%(count)s curated story"
 msgid_plural "%(count)s curated stories"
-msgstr[0] "%(count)s historia seleccionada"
-msgstr[1] "%(count)s historias seleccionadas"
+msgstr[0] "%(count)s artículo seleccionado"
+msgstr[1] "%(count)s artículos seleccionados"
 
 #, python-format
 msgid "%(count)s day"
@@ -210,14 +212,14 @@ msgstr[1] "%(count)s días"
 #, python-format
 msgid "%(count)s day ago"
 msgid_plural "%(count)s days ago"
-msgstr[0] "hace %(count)s día"
+msgstr[0] "Hace %(count)s día"
 msgstr[1] "Hace %(count)s días"
 
 #, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s no me gusta"
-msgstr[1] "%(count)s votos negativos"
+msgstr[1] "%(count)s no me gusta"
 
 #, python-format
 msgid "%(count)s episode"
@@ -228,8 +230,8 @@ msgstr[1] "%(count)s episodios"
 #, python-format
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
-msgstr[0] "%(count)s fuente"
-msgstr[1] "%(count)s fuentes"
+msgstr[0] "%(count)s feed"
+msgstr[1] "%(count)s feeds"
 
 #, python-format
 msgid "%(count)s follower"
@@ -259,7 +261,7 @@ msgstr[1] "%(count)s filtros de imagen"
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s me gusta"
-msgstr[1] "A %(count)s les gusta"
+msgstr[1] "%(count)s me gusta"
 
 #, python-format
 msgid "%(count)s member"
@@ -349,13 +351,13 @@ msgstr[1] "%(count)s seleccionados"
 msgid "%(count)s share"
 msgid_plural "%(count)s shares"
 msgstr[0] "%(count)s vez compartido"
-msgstr[1] "%(count)s compartidos"
+msgstr[1] "%(count)s veces compartido"
 
 #, python-format
 msgid "%(count)s shared story"
 msgid_plural "%(count)s shared stories"
 msgstr[0] "%(count)s artículo compartido"
-msgstr[1] "%(count)s historias compartidas"
+msgstr[1] "%(count)s artículos compartidos"
 
 #, python-format
 msgid "%(count)s site"
@@ -378,14 +380,14 @@ msgstr[1] "%(count)s sitios por encima del límite"
 #, python-format
 msgid "%(count)s story"
 msgid_plural "%(count)s stories"
-msgstr[0] "%(count)s historia"
-msgstr[1] "%(count)s noticias"
+msgstr[0] "%(count)s artículo"
+msgstr[1] "%(count)s artículos"
 
 #, python-format
 msgid "%(count)s story has been deleted."
 msgid_plural "%(count)s stories have been deleted."
-msgstr[0] "Se ha eliminado %(count)s historia."
-msgstr[1] "Se han eliminado %(count)s noticias."
+msgstr[0] "Se ha eliminado %(count)s artículo."
+msgstr[1] "Se han eliminado %(count)s artículos."
 
 #, python-format
 msgid "%(count)s story in archive"
@@ -397,7 +399,7 @@ msgstr[1] "%(count)s artículos en el archivo"
 msgid "%(count)s story per day"
 msgid_plural "%(count)s stories per day"
 msgstr[0] "%(count)s artículo al día"
-msgstr[1] "%(count)s historias al día"
+msgstr[1] "%(count)s artículos al día"
 
 #, python-format
 msgid "%(count)s story per month"
@@ -408,20 +410,20 @@ msgstr[1] "%(count)s artículos al mes"
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "Se eliminará %(count)s historia"
-msgstr[1] "Se eliminarán %(count)s historias"
+msgstr[0] "Se eliminará %(count)s artículo"
+msgstr[1] "Se eliminarán %(count)s artículos"
 
 #, python-format
 msgid "%(count)s story/mo"
 msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s historia/mes"
+msgstr[0] "%(count)s artículo/mes"
 msgstr[1] "%(count)s artículos/mes"
 
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
-msgstr[0] "%(count)s historia/mes"
-msgstr[1] "%(count)s historias/mes"
+msgstr[0] "%(count)s artículo/mes"
+msgstr[1] "%(count)s artículos/mes"
 
 #, python-format
 msgid "%(count)s subreddit"
@@ -443,7 +445,7 @@ msgstr "%(count)s suscriptores"
 msgid "%(count)s video"
 msgid_plural "%(count)s videos"
 msgstr[0] "%(count)s vídeo"
-msgstr[1] "%(count)s videos"
+msgstr[1] "%(count)s vídeos"
 
 #, python-format
 msgid "%(count)s week"
@@ -478,20 +480,20 @@ msgstr[1] "Hace %(count)s h"
 #, python-format
 msgid "%(count)sm ago"
 msgid_plural "%(count)sm ago"
-msgstr[0] "Hace %(count)sm"
+msgstr[0] "Hace %(count)s min"
 msgstr[1] "Hace %(count)s min"
 
 #, python-format
 msgid "%(count)smo ago"
 msgid_plural "%(count)smo ago"
-msgstr[0] "Hace %(count)smo"
+msgstr[0] "Hace %(count)s mes"
 msgstr[1] "Hace %(count)s meses"
 
 #, python-format
 msgid "%(count)sw ago"
 msgid_plural "%(count)sw ago"
 msgstr[0] "Hace %(count)s sem"
-msgstr[1] "hace %(count)s sem."
+msgstr[1] "Hace %(count)s sem"
 
 #, python-format
 msgid "%(date)s, %(time)s"
@@ -507,7 +509,7 @@ msgstr "Se han configurado las notificaciones de %(feed_title)s"
 
 #, python-format
 msgid "%(icon)s are stories you don't like"
-msgstr "%(icon)s son historias que no te gustan"
+msgstr "%(icon)s son artículos que no te gustan"
 
 #, python-format
 msgid "%(icon)s are stories you have not yet rated"
@@ -535,7 +537,7 @@ msgstr "%(message)s Mejora tu plan para ver artículos relacionados de todo tu a
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
-msgstr "%(name)s está compartiendo una noticia: %(title)s"
+msgstr "%(name)s está compartiendo un artículo: %(title)s"
 
 #, python-format
 msgid "%(price)s · Menu bar news ticker for Mac"
@@ -579,7 +581,7 @@ msgstr "%(submit_button)s o %(cancel_link)s"
 
 #, python-format
 msgid "%(tier)s (staff)"
-msgstr "%(tier)s (personal)"
+msgstr "%(tier)s (equipo)"
 
 #, python-format
 msgid "%(time)s ago"
@@ -587,15 +589,15 @@ msgstr "hace %(time)s"
 
 #, python-format
 msgid "%(time)s left"
-msgstr "quedan %(time)s"
+msgstr "tiempo restante: %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s canales"
+msgstr "Canales de %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s boletines"
+msgstr "Boletines de %(topic)s"
 
 #, python-format
 msgid "%(topic)s Podcasts"
@@ -603,11 +605,11 @@ msgstr "Podcasts de %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s sitios"
+msgstr "Sitios de %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s subreddits"
+msgstr "Subreddits de %(topic)s"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -635,13 +637,13 @@ msgstr "%(weekday)s, %(date)s %(time)s"
 
 #, python-format
 msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
-msgstr "%(weekday)s, %(month)s %(day)s, %(year)s"
+msgstr "%(weekday)s, %(day)s de %(month)s de %(year)s"
 
 msgid "&laquo; Re-upload your sites"
-msgstr "&laquo; Re-subir sus sitios"
+msgstr "&laquo; Vuelve a subir tus sitios"
 
 msgid "&raquo; Want credit? Enter your Twitter username: "
-msgstr "&raquo; ¿Quieres crédito? Introduce tu nombre de usuario de Twitter: "
+msgstr "&raquo; ¿Quieres que te mencionemos? Introduce tu nombre de usuario de Twitter: "
 
 #, python-format
 msgid "(%(count)s item)"
@@ -650,13 +652,13 @@ msgstr[0] "(%(count)s elemento)"
 msgstr[1] "(%(count)s elementos)"
 
 msgid "(GMT) Greenwich Mean Time : Belfast"
-msgstr "(GMT) Hora Media de Greenwich : Belfast"
+msgstr "(GMT) Hora media de Greenwich : Belfast"
 
 msgid "(GMT) Greenwich Mean Time : Dublin"
-msgstr "(GMT) Hora Media de Greenwich: Dublín"
+msgstr "(GMT) Hora media de Greenwich: Dublín"
 
 msgid "(GMT) Greenwich Mean Time : Lisbon"
-msgstr "(GMT) Hora Media de Greenwich : Lisboa"
+msgstr "(GMT) Hora media de Greenwich : Lisboa"
 
 msgid "(GMT) Greenwich Mean Time : London"
 msgstr "(GMT) Hora media de Greenwich: Londres"
@@ -674,7 +676,7 @@ msgid "(GMT+01:00) Brussels, Copenhagen, Paris"
 msgstr "(GMT+01:00) Bruselas, Copenhague, París"
 
 msgid "(GMT+01:00) West Central Africa"
-msgstr "(GMT+01:00) África del Oeste Central"
+msgstr "(GMT+01:00) África centro-occidental"
 
 msgid "(GMT+01:00) Windhoek"
 msgstr "(GMT+01:00) Windhoek"
@@ -800,7 +802,7 @@ msgid "(GMT+12:00) Auckland, Wellington"
 msgstr "(GMT+12:00) Auckland, Wellington"
 
 msgid "(GMT+12:00) Fiji, Kamchatka, Marshall Is."
-msgstr "(GMT+12:00) Fiyi, Kamchatka, Islas Marshall."
+msgstr "(GMT+12:00) Fiyi, Kamchatka, Islas Marshall"
 
 msgid "(GMT+12:45) Chatham Islands"
 msgstr "(GMT+12:45) Islas Chatham"
@@ -917,7 +919,7 @@ msgid "(GMT-10:00) Hawaii-Aleutian"
 msgstr "(GMT-10:00) Hawái-Aleutianas"
 
 msgid "(GMT-11:00) Midway Island, Samoa"
-msgstr "(GMT-11:00) Midway Island, Samoa"
+msgstr "(GMT-11:00) Isla Midway, Samoa"
 
 msgid "(no title)"
 msgstr "(sin título)"
@@ -932,7 +934,7 @@ msgstr[0] "+ %(value_1)s sitio más"
 msgstr[1] "+ %(value_1)s sitios más"
 
 msgid "+ New Folder..."
-msgstr "+ Nueva Carpeta..."
+msgstr "+ Nueva carpeta..."
 
 msgid "/day"
 msgstr "/día"
@@ -965,12 +967,12 @@ msgid "5 years"
 msgstr "5 años"
 
 msgid "5× faster feed updates"
-msgstr "Actualizaciones de fuentes 5 veces más rápidas"
+msgstr "Actualizaciones de feeds 5 veces más rápidas"
 
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "< %(count)s historia/mes"
+msgstr[0] "< %(count)s artículo/mes"
 msgstr[1] "< %(count)s artículos/mes"
 
 #, python-format
@@ -978,7 +980,7 @@ msgid "< %(value_1)s/month"
 msgstr "< %(value_1)s/mes"
 
 msgid "< 30 stories/month"
-msgstr "< 30 historias/mes"
+msgstr "< 30 artículos/mes"
 
 #, python-format
 msgid "<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days"
@@ -997,13 +999,13 @@ msgstr[0] "Queda <strong>%(count)s día</strong> de tu prueba premium"
 msgstr[1] "<strong>%(count)s días</strong> restantes de tu prueba premium"
 
 msgid "A blurblog of shared stories"
-msgstr "Un blurblog de historias compartidas"
+msgstr "Un blurblog de artículos compartidos"
 
 msgid "A folder of feeds read as one stream"
-msgstr "Una carpeta de fuentes que se leen como un único flujo"
+msgstr "Una carpeta de feeds que se leen como un único flujo"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "Una nueva selección de las historias que compartieron NewsBlur lectores, elegidas cada hora."
+msgstr "Una nueva selección de los artículos que compartieron los lectores de NewsBlur, elegida cada hora."
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -1016,10 +1018,10 @@ msgid "A single like overrides any number of dislikes"
 msgstr "Un solo «Me gusta» anula cualquier cantidad de «No me gusta»"
 
 msgid "A single super dislike overrides everything"
-msgstr "Un solo voto de gran rechazo lo anula todo"
+msgstr "Un solo «No me gusta nada» lo anula todo"
 
 msgid "A story diff with additions and deletions"
-msgstr "Comparación de una historia con añadidos y eliminaciones"
+msgstr "Comparación de un artículo con añadidos y eliminaciones"
 
 msgid "AI Filter"
 msgstr "Filtro IA"
@@ -1032,13 +1034,13 @@ msgid "AI filters are saved but won't run until you %(billing_link)s."
 msgstr "Los filtros de IA se guardaron, pero no se ejecutarán hasta que %(billing_link)s."
 
 msgid "AI finds the stories"
-msgstr "La IA encuentra las historias"
+msgstr "La IA encuentra los artículos"
 
 msgid "AI-curated summary of your top stories"
-msgstr "Resumen curado por IA de tus principales historias"
+msgstr "Resumen curado por IA de tus principales artículos"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
-msgstr "Análisis de noticias con IA y resúmenes diarios personalizados de tus feeds."
+msgstr "Análisis de artículos con IA y resúmenes diarios personalizados de tus feeds."
 
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
@@ -1068,20 +1070,20 @@ msgstr "Añadir"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "Añadir %(count)s etiqueta de historia"
-msgstr[1] "Añadir %(count)s etiquetas de noticias"
+msgstr[0] "Añadir %(count)s etiqueta de artículo"
+msgstr[1] "Añadir %(count)s etiquetas de artículos"
 
 msgid "Add Folder"
-msgstr "Añadir Carpeta"
+msgstr "Añadir carpeta"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "Añadir sitio &amp; Bookmarklet para compartir artículos"
+msgstr "Bookmarklet para añadir sitios &amp; compartir artículos"
 
 msgid "Add a forwarding address"
 msgstr "Añadir una dirección de reenvío"
 
 msgid "Add a note to send along with the story…"
-msgstr "Añade una nota para enviar junto con la noticia…"
+msgstr "Añade una nota para enviar junto con el artículo…"
 
 msgid "Add a site"
 msgstr "Añadir un sitio"
@@ -1093,7 +1095,7 @@ msgid "Add any site or feed"
 msgstr "Añadir cualquier sitio o feed"
 
 msgid "Add custom tags to organize saved stories by topic"
-msgstr "Añade etiquetas personalizadas para organizar las noticias guardadas por tema"
+msgstr "Añade etiquetas personalizadas para organizar los artículos guardados por tema"
 
 msgid "Add domains you never want to archive."
 msgstr "Añade los dominios que nunca quieras archivar."
@@ -1106,7 +1108,7 @@ msgstr "Añádelo a Claude Code con: claude mcp add --transport http newsblur ht
 
 msgid "Add keyword filters that create their own briefing section. All keywords must match."
 msgstr ""
-"Añade filtros por palabras clave que creen su propia sección informativa. Deben coincidir todas las "
+"Añade filtros por palabras clave que creen su propia sección en el resumen. Deben coincidir todas las "
 "palabras clave."
 
 msgid "Add keyword section"
@@ -1119,7 +1121,7 @@ msgid "Add site/folder"
 msgstr "Añadir sitio/carpeta"
 
 msgid "Add story list"
-msgstr "Añadir lista de noticias"
+msgstr "Añadir lista de artículos"
 
 msgid "Add to Chrome"
 msgstr "Añadir a Chrome"
@@ -1150,7 +1152,7 @@ msgstr[0] "Después de %(slider)s %(count)s segundo."
 msgstr[1] "Después de %(slider)s %(count)s segundos."
 
 msgid "After marking feed/folder read"
-msgstr "Después de marcar la fuente/carpeta como leída"
+msgstr "Después de marcar el feed/carpeta como leído"
 
 msgid "Afternoon"
 msgstr "Tarde"
@@ -1174,19 +1176,19 @@ msgid "All Done "
 msgstr "Todo listo "
 
 msgid "All Folders & Sites"
-msgstr "Todas las Carpetas y Sitios"
+msgstr "Todas las carpetas y sitios"
 
 msgid "All Notifications"
 msgstr "Todas las notificaciones"
 
 msgid "All Shared Stories"
-msgstr "Todas las Historias Compartidas"
+msgstr "Todos los artículos compartidos"
 
 msgid "All Site Stories"
-msgstr "Todas las historias del sitio"
+msgstr "Artículos de todos los sitios"
 
 msgid "All Stories"
-msgstr "Todas las Historias"
+msgstr "Todos los artículos"
 
 msgid "All done!"
 msgstr "¡Todo listo!"
@@ -1207,13 +1209,13 @@ msgid "All sites in folder"
 msgstr "Todos los sitios en la carpeta"
 
 msgid "All stories"
-msgstr "Todas las historias"
+msgstr "Todos los artículos"
 
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
 "styles, and auto mark-as-read."
 msgstr ""
-"Todos los usuarios ven noticias agrupadas en los feeds populares. Premium Archive ofrece control total: "
+"Todos los usuarios ven artículos agrupados en los feeds populares. Premium Archive ofrece control total: "
 "opciones, estilos de visualización y marcado automático como leído."
 
 msgid "Allowed Domains"
@@ -1238,7 +1240,7 @@ msgid "Also works with Edge"
 msgstr "También funciona con Edge"
 
 msgid "Always show Train/Save/Share buttons below stories"
-msgstr "Mostrar siempre los botones Entrenar/Guardar/Compartir debajo de las historias"
+msgstr "Mostrar siempre los botones Entrenar/Guardar/Compartir debajo de los artículos"
 
 msgid "Always show unread counts on folders"
 msgstr "Mostrar siempre recuentos de no leídos en carpetas"
@@ -1247,7 +1249,7 @@ msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."
 msgstr ""
-"Un resumen generado por IA de tus noticias destacadas, con secciones de noticias destacadas, lecturas "
+"Un resumen generado por IA de tus artículos destacados, con secciones de artículos destacados, lecturas "
 "extensas, temas de los que se habla mucho y secciones personalizadas que tú defines."
 
 msgid "An error occurred during analysis."
@@ -1266,10 +1268,10 @@ msgid "Analyzing images..."
 msgstr "Analizando imágenes..."
 
 msgid "Analyzing page to find story patterns..."
-msgstr "Analizando la página para encontrar patrones de historias..."
+msgstr "Analizando la página para encontrar patrones de artículos..."
 
 msgid "Analyzing saved stories..."
-msgstr "Analizando historias guardadas..."
+msgstr "Analizando artículos guardados..."
 
 msgid "Analyzing your archive..."
 msgstr "Analizando tu archivo…"
@@ -1277,7 +1279,7 @@ msgstr "Analizando tu archivo…"
 #, python-format
 msgid "And you have %(count)s saved story."
 msgid_plural "And you have %(count)s saved stories."
-msgstr[0] "Y tienes %(count)s historia guardada."
+msgstr[0] "Y tienes %(count)s artículo guardado."
 msgstr[1] "Y tienes %(count)s artículos guardados."
 
 msgid "Android notifications"
@@ -1314,17 +1316,17 @@ msgstr[1] "Se aplicaron %(count)s fusiones (%(stories)s)"
 #, python-format
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
-msgstr[0] "Se aplicaron %(succeeded)s de %(count)s combinación (%(stories)s)"
-msgstr[1] "Se aplicaron %(succeeded)s de %(count)s combinaciones (%(stories)s)"
+msgstr[0] "Se aplicaron %(succeeded)s de %(count)s fusión (%(stories)s)"
+msgstr[1] "Se aplicaron %(succeeded)s de %(count)s fusiones (%(stories)s)"
 
 msgid "Apply"
 msgstr "Aplicar"
 
 msgid "Apply All Merges"
-msgstr "Aplicar Todas las Fusiones"
+msgstr "Aplicar todas las fusiones"
 
 msgid "Apply Split"
-msgstr "Aplicar División"
+msgstr "Aplicar división"
 
 msgid "Apply training across a folder"
 msgstr "Aplicar entrenamiento a una carpeta"
@@ -1342,10 +1344,10 @@ msgid "Approved"
 msgstr "Aprobado"
 
 msgid "April"
-msgstr "Abril"
+msgstr "abril"
 
 msgid "Archive"
-msgstr "Archivo"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "Asistente de Archivo"
@@ -1369,10 +1371,10 @@ msgid "Ask AI"
 msgstr "Preguntar a la IA"
 
 msgid "Ask AI & Daily Briefing"
-msgstr "Ask AI y resumen diario"
+msgstr "Preguntar a la IA y resumen diario"
 
 msgid "Ask AI about story"
-msgstr "Pregúntale a la IA sobre la noticia"
+msgstr "Preguntar a la IA sobre el artículo"
 
 msgid "Ask AI anything about your browsing history"
 msgstr "Pregúntale a la IA cualquier cosa sobre tu historial de navegación"
@@ -1412,7 +1414,7 @@ msgid "Audio not transcribed"
 msgstr "Audio sin transcribir"
 
 msgid "August"
-msgstr "Agosto"
+msgstr "agosto"
 
 msgid "Author"
 msgstr "Autor"
@@ -1425,7 +1427,7 @@ msgid "Author filters found no stories in %(context)s."
 msgstr "Los filtros de autor no encontraron artículos en %(context)s."
 
 msgid "Author filters found no stories in this view."
-msgstr "Los filtros de autor no encontraron historias en esta vista."
+msgstr "Los filtros de autor no encontraron artículos en esta vista."
 
 msgid "Author: "
 msgstr "Autor: "
@@ -1479,10 +1481,10 @@ msgstr[0] "Retroceder %(seconds)s segundo"
 msgstr[1] "Retroceder %(seconds)s segundos"
 
 msgid "Back to Categories"
-msgstr "Volver a Categorías"
+msgstr "Volver a las categorías"
 
 msgid "Back to Search"
-msgstr "Volver a Búsqueda"
+msgstr "Volver a la búsqueda"
 
 msgid "Back to classifier trainer"
 msgstr "Volver al entrenador de clasificadores"
@@ -1506,7 +1508,7 @@ msgid "Based on your interests"
 msgstr "Según tus intereses"
 
 msgid "Begin Training"
-msgstr "Comenzar Entrenamiento"
+msgstr "Comenzar entrenamiento"
 
 msgid "Bio"
 msgstr "Biografía"
@@ -1516,7 +1518,7 @@ msgid "Block %(value_1)s?"
 msgstr "¿Bloquear %(value_1)s?"
 
 msgid "Block Domain"
-msgstr "Bloquear Dominio"
+msgstr "Bloquear dominio"
 
 msgid "Block URLs matching these patterns (supports wildcards like *.example.com)."
 msgstr "Bloquear URL que coincidan con estos patrones (admite comodines como *.example.com)."
@@ -1570,7 +1572,7 @@ msgid "Briefing"
 msgstr "Resumen"
 
 msgid "Briefing Admin"
-msgstr "Administración de Briefing"
+msgstr "Administración del resumen"
 
 msgid "Briefing Preferences"
 msgstr "Preferencias del resumen"
@@ -1582,22 +1584,22 @@ msgid "Briefing generation timed out. Please try again."
 msgstr "Se agotó el tiempo para generar el resumen. Inténtalo de nuevo."
 
 msgid "Briefing length"
-msgstr "Duración del resumen"
+msgstr "Extensión del resumen"
 
 msgid "Browse Archives"
-msgstr "Explorar archivos"
+msgstr "Explorar el archivo"
 
 msgid "Browse all your stories"
-msgstr "Explora todas tus noticias"
+msgstr "Explora todos tus artículos"
 
 msgid "Browse by Category"
-msgstr "Navegar por Categoría"
+msgstr "Explorar por categoría"
 
 msgid "Browse domains from your archives and click to block them."
 msgstr "Explora dominios de tus archivos y haz clic para bloquearlos."
 
 msgid "Browse domains from your archives. Click on a domain to block it from future archiving."
-msgstr "Explora dominios de tus archivos. Haz clic en un dominio para bloquearlo de futuras archivaciones."
+msgstr "Explora los dominios de tu archivo. Haz clic en un dominio para que no se archive en el futuro."
 
 msgid "Browse goodies & integrations"
 msgstr "Explora extras e integraciones"
@@ -1620,7 +1622,7 @@ msgid "Browser"
 msgstr "Navegador"
 
 msgid "Browser Extensions"
-msgstr "Extensiones del Navegador"
+msgstr "Extensiones del navegador"
 
 msgid "Bullet points"
 msgstr "Viñetas"
@@ -1630,7 +1632,7 @@ msgstr "Viñetas"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
-msgstr "CATEGORÍAS CON MÁS DE 10 HISTORIAS (%(value_1)s)"
+msgstr "CATEGORÍAS CON 10 O MÁS ARTÍCULOS (%(value_1)s)"
 
 msgid "CLI Tool"
 msgstr "Herramienta CLI"
@@ -1639,7 +1641,7 @@ msgid "CLI access requires Premium Archive or Premium Pro."
 msgstr "El acceso a la CLI requiere Premium Archive o Premium Pro."
 
 msgid "Can I search saved stories?"
-msgstr "¿Puedo buscar historias guardadas?"
+msgstr "¿Puedo buscar artículos guardados?"
 
 msgid "Can I search the archive?"
 msgstr "¿Puedo buscar en el archivo?"
@@ -1666,7 +1668,7 @@ msgid "Cancel mute"
 msgstr "Cancelar silencio"
 
 msgid "Cancel rename"
-msgstr "Cancelar renombrar"
+msgstr "Cancelar cambio de nombre"
 
 msgid "Cancel share"
 msgstr "Cancelar compartir"
@@ -1675,7 +1677,7 @@ msgid "Cancel subscription renewal"
 msgstr "Cancelar renovación de suscripción"
 
 msgid "Cancel unfollow"
-msgstr "Cancelar seguimiento"
+msgstr "No dejar de seguir"
 
 msgid "Canceled Request"
 msgstr "Solicitud cancelada"
@@ -1687,13 +1689,13 @@ msgid "Categories"
 msgstr "Categorías"
 
 msgid "Categories &amp; Tags"
-msgstr "Categorías &amp; Etiquetas"
+msgstr "Categorías &amp; etiquetas"
 
 #, python-format
 msgid "Categorize %(count)s Uncategorized"
 msgid_plural "Categorize %(count)s Uncategorized"
-msgstr[0] "Clasificar %(count)s elemento sin clasificar"
-msgstr[1] "Categorizar %(count)s sin categoría"
+msgstr[0] "Categorizar %(count)s elemento sin categoría"
+msgstr[1] "Categorizar %(count)s elementos sin categoría"
 
 msgid "Categorizing..."
 msgstr "Categorizando..."
@@ -1709,7 +1711,7 @@ msgid "Change"
 msgstr "Cambiar"
 
 msgid "Change RSS Feed Address"
-msgstr "Cambiar dirección de fuente RSS"
+msgstr "Cambiar dirección de feed RSS"
 
 msgid "Change Website Address"
 msgstr "Cambiar dirección del sitio web"
@@ -1766,7 +1768,7 @@ msgid "Choose Your sites"
 msgstr "Elige tus sitios"
 
 msgid "Choose a story pattern"
-msgstr "Elige un patrón de historia"
+msgstr "Elige un patrón de artículo"
 
 msgid "Choose another language"
 msgstr "Elegir otro idioma"
@@ -1784,13 +1786,13 @@ msgid "Choose sites"
 msgstr "Elegir sitios"
 
 msgid "Choose when stories are marked as read"
-msgstr "Elige cuándo las historias se marcan como leídas"
+msgstr "Elige cuándo se marcan los artículos como leídos"
 
 msgid "Choose which AI model writes your briefing"
 msgstr "Elige qué modelo de IA redacta tu resumen"
 
 msgid "Choose which feeds are used to build your briefing"
-msgstr "Elige qué fuentes se usarán para crear tu resumen"
+msgstr "Elige qué feeds se usarán para crear tu resumen"
 
 msgid "Choose which feeds to include"
 msgstr "Elige qué feeds incluir"
@@ -1830,7 +1832,7 @@ msgid "Clear all filters"
 msgstr "Borrar todos los filtros"
 
 msgid "Clear all overrides"
-msgstr "Borrar todas las anulaciones"
+msgstr "Borrar todas las excepciones"
 
 msgid "Clear classifier filter"
 msgstr "Borrar filtro del clasificador"
@@ -1853,14 +1855,14 @@ msgstr "Borrar búsqueda"
 #, python-format
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
-msgstr[0] "Se eliminó %(count)s anulación."
+msgstr[0] "Se eliminó %(count)s excepción."
 msgstr[1] "Se eliminaron %(count)s excepciones."
 
 msgid "Click any source card on a clustered story to read that version instead."
-msgstr "Haz clic en cualquier tarjeta de fuente de una historia agrupada para leer esa versión."
+msgstr "Haz clic en cualquier tarjeta de fuente de un artículo agrupado para leer esa versión."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
-msgstr "Haz clic en cualquier fuente para leer esa versión, o marca todas las duplicadas como leídas de una vez"
+msgstr "Haz clic en cualquier fuente para leer esa versión, o marca todos los duplicados como leídos de una vez"
 
 msgid "Click to block"
 msgstr "Haz clic para bloquear"
@@ -1875,16 +1877,16 @@ msgid "Close player"
 msgstr "Cerrar reproductor"
 
 msgid "Cluster duplicate stories across all your feeds"
-msgstr "Agrupa historias duplicadas en todos tus feeds"
+msgstr "Agrupa artículos duplicados en todos tus feeds"
 
 msgid "Cluster preview:"
 msgstr "Vista previa del clúster:"
 
 msgid "Cluster related stories"
-msgstr "Agrupar historias relacionadas"
+msgstr "Agrupar artículos relacionados"
 
 msgid "Clustered stories in the titles view"
-msgstr "Historias agrupadas en la vista de títulos"
+msgstr "Artículos agrupados en la vista de títulos"
 
 msgid "Collapse All Folders"
 msgstr "Contraer todas las carpetas"
@@ -1896,10 +1898,10 @@ msgid "Collapse all"
 msgstr "Contraer todo"
 
 msgid "Collapse story"
-msgstr "Contraer historia"
+msgstr "Contraer artículo"
 
 msgid "Collapsed"
-msgstr "Colapsado"
+msgstr "Contraído"
 
 msgid "Color"
 msgstr "Color"
@@ -1917,10 +1919,10 @@ msgid "Commands output JSON you can pipe straight to jq."
 msgstr "Los comandos generan JSON que puedes enviar directamente a jq."
 
 msgid "Comment"
-msgstr "Comentar"
+msgstr "Comentario"
 
 msgid "Comment on stories"
-msgstr "Comentar historias"
+msgstr "Comentar artículos"
 
 msgid "Comments:"
 msgstr "Comentarios:"
@@ -1935,10 +1937,10 @@ msgid "Complete data ownership"
 msgstr "Propiedad total de los datos"
 
 msgid "Concise bullet points highlighting key takeaways from each story"
-msgstr "Puntos concisos que destacan las ideas clave de cada historia"
+msgstr "Puntos concisos que destacan las ideas clave de cada artículo"
 
 msgid "Confirming mark as read"
-msgstr "Confirmando marcado como leído"
+msgstr "Confirmación al marcar como leído"
 
 msgid "Congratulations! You're done."
 msgstr "¡Felicidades! Has terminado."
@@ -1951,7 +1953,7 @@ msgid ""
 "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
 "subscriptions from Claude Code, Codex, or any MCP-compatible tool."
 msgstr ""
-"Conecta agentes de IA a tu cuenta de NewsBlur. Lee feeds, clasifica noticias, entrena clasificadores y "
+"Conecta agentes de IA a tu cuenta de NewsBlur. Lee feeds, clasifica artículos, entrena clasificadores y "
 "gestiona suscripciones desde Claude Code, Codex o cualquier herramienta compatible con MCP."
 
 msgid "Connect AI agents with MCP server and CLI"
@@ -1974,12 +1976,12 @@ msgid "Content"
 msgstr "Contenido"
 
 msgid "Content Filter"
-msgstr "Filtro de Contenido"
+msgstr "Filtro de contenido"
 
 msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
 msgstr ""
 "Controla la agrupación de cada feed desde el menú de opciones del feed o de forma global en Preferencias > "
-"Historias."
+"Artículos."
 
 msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
 msgstr ""
@@ -2029,10 +2031,10 @@ msgid "Create Account"
 msgstr "Crear cuenta"
 
 msgid "Create Gift Link"
-msgstr "Crear Enlace de Regalo"
+msgstr "Crear enlace de regalo"
 
 msgid "Create a feed for any website, even without RSS."
-msgstr "Crea una fuente para cualquier sitio web, incluso sin RSS."
+msgstr "Crea un feed para cualquier sitio web, incluso sin RSS."
 
 msgid "Create a new subfolder"
 msgstr "Crear una subcarpeta nueva"
@@ -2050,7 +2052,7 @@ msgid "Cursors"
 msgstr "Cursores"
 
 msgid "Custom Add Site URL"
-msgstr "URL personalizada para agregar sitio"
+msgstr "URL personalizada para añadir sitios"
 
 msgid "Custom CSS"
 msgstr "CSS personalizado"
@@ -2065,10 +2067,10 @@ msgid "Custom Date Range"
 msgstr "Rango de fechas personalizado"
 
 msgid "Custom JavaScript"
-msgstr "JavaScript Personalizado"
+msgstr "JavaScript personalizado"
 
 msgid "Custom RSS feeds for saved stories"
-msgstr "Fuentes RSS personalizadas para artículos guardados"
+msgstr "Feeds RSS personalizados para artículos guardados"
 
 msgid "Custom URLs"
 msgstr "URL personalizadas"
@@ -2092,30 +2094,30 @@ msgid "Customize with Claude Code"
 msgstr "Personalizar con Claude Code"
 
 msgid "DIY"
-msgstr "DIY"
+msgstr "Hazlo tú mismo"
 
 msgid "Daily"
 msgstr "Diario"
 
 msgid "Daily Briefing"
-msgstr "Resumen Diario"
+msgstr "Resumen diario"
 
 msgid "Daily Briefing with story summaries"
-msgstr "Daily Briefing con resúmenes de artículos"
+msgstr "Resumen diario con resúmenes de cada artículo"
 
 msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"Los resúmenes diarios son una función del archivo Premium. Con tu plan puedes generar una vista previa con "
-"las 3 primeras historias de cada resumen. Mejora tu plan para ver todas las historias y recibir resúmenes "
+"Los resúmenes diarios son una función de Premium Archive. Con tu plan puedes generar una vista previa con "
+"los 3 primeros artículos de cada resumen. Mejora tu plan para ver todos los artículos y recibir resúmenes "
 "automáticos según tu horario."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "Resumen diario con tus principales historias y palabras clave"
+msgstr "Resumen diario con tus principales artículos y palabras clave"
 
 msgid "Daily distribution of stories"
-msgstr "Distribución diaria de noticias"
+msgstr "Distribución diaria de artículos"
 
 msgid "Dark"
 msgstr "Oscuro"
@@ -2158,7 +2160,7 @@ msgid "Default layout"
 msgstr "Diseño predeterminado"
 
 msgid "Default story order"
-msgstr "Orden de historias predeterminado"
+msgstr "Orden de artículos predeterminado"
 
 msgid "Default view"
 msgstr "Vista predeterminada"
@@ -2176,7 +2178,7 @@ msgid "Delete It. It Just Won't Work!"
 msgstr "¡Bórralo! ¡Simplemente no funcionará!"
 
 msgid "Delete Share"
-msgstr "Eliminar Compartir"
+msgstr "Dejar de compartir"
 
 msgid "Delete Tag"
 msgstr "Eliminar etiqueta"
@@ -2191,10 +2193,10 @@ msgid "Delete my intelligence training classifiers"
 msgstr "Eliminar mis clasificadores de entrenamiento de inteligencia"
 
 msgid "Delete my saved stories"
-msgstr "Eliminar mis historias guardadas"
+msgstr "Eliminar mis artículos guardados"
 
 msgid "Delete my shared stories"
-msgstr "Eliminar mis noticias compartidas"
+msgstr "Eliminar mis artículos compartidos"
 
 msgid "Delete saved search"
 msgstr "Eliminar búsqueda guardada"
@@ -2215,16 +2217,16 @@ msgid "Deleting..."
 msgstr "Eliminando..."
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
-msgstr "Describe una historia que estés buscando y reanalizaremos la página para encontrarla."
+msgstr "Describe un artículo que estés buscando y reanalizaremos la página para encontrarlo."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "Describe un tema y la IA puntuará cada historia según tu indicación para enfocar u ocultar coincidencias."
+msgstr "Describe un tema y la IA puntuará cada artículo según tu indicación para enfocar u ocultar coincidencias."
 
 msgid "Describe what to focus or hide"
-msgstr "Describe en qué enfocarte u ocultar"
+msgstr "Describe qué quieres enfocar u ocultar"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Describe qué quieres buscar y la IA analizará las imágenes de cada historia según tu indicación."
+msgstr "Describe qué quieres buscar y la IA analizará las imágenes de cada artículo según tu indicación."
 
 msgid "Detailed"
 msgstr "Detallado"
@@ -2239,7 +2241,7 @@ msgid "Disable social features"
 msgstr "Desactivar funciones sociales"
 
 msgid "Disable story clustering"
-msgstr "Desactivar agrupación de noticias"
+msgstr "Desactivar agrupación de artículos"
 
 msgid "Disable the highlighter"
 msgstr "Desactivar el resaltador"
@@ -2268,13 +2270,13 @@ msgid "Discover Podcasts"
 msgstr "Descubrir podcasts"
 
 msgid "Discover Sites"
-msgstr "Descubrir Sitios"
+msgstr "Descubrir sitios"
 
 msgid "Discover Subreddits"
 msgstr "Descubrir subreddits"
 
 msgid "Discover feeds organized by topic and interest."
-msgstr "Descubre fuentes organizadas por tema e interés."
+msgstr "Descubre feeds organizados por tema e interés."
 
 msgid "Discover more to read"
 msgstr "Descubre más cosas para leer"
@@ -2283,10 +2285,10 @@ msgid "Discover new feeds by topic and search your Reading Archive"
 msgstr "Descubre feeds nuevos por tema y busca en tu archivo de lectura"
 
 msgid "Discover related stories across your archive"
-msgstr "Descubre historias relacionadas en tu archivo"
+msgstr "Descubre artículos relacionados en tu archivo"
 
 msgid "Discover related stories and sites"
-msgstr "Descubre historias y sitios relacionados"
+msgstr "Descubre artículos y sitios relacionados"
 
 msgid "Discover sites"
 msgstr "Descubrir sitios"
@@ -2298,7 +2300,7 @@ msgid "Dislike "
 msgstr "No me gusta "
 
 msgid "Dislike matching stories"
-msgstr "No me gustan las historias coincidentes"
+msgstr "Marcar con No me gusta los artículos coincidentes"
 
 msgid "Dislikes"
 msgstr "No me gusta"
@@ -2313,7 +2315,7 @@ msgid "Do the apps work offline?"
 msgstr "¿Funcionan las aplicaciones sin conexión?"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "¿Ask AI funciona con audio y vídeo?"
+msgstr "¿Preguntar a la IA funciona con audio y vídeo?"
 
 msgid "Does training work across all my feeds?"
 msgstr "¿El entrenamiento funciona en todos mis feeds?"
@@ -2323,19 +2325,19 @@ msgid "Domain: %(value_1)s"
 msgstr "Dominio: %(value_1)s"
 
 msgid "Don't automatically mark stories as read"
-msgstr "No marcar automáticamente las historias como leídas"
+msgstr "No marcar automáticamente los artículos como leídos"
 
 msgid "Don't bother showing tooltips"
-msgstr "No molestar mostrando tooltips"
+msgstr "No mostrar descripciones emergentes"
 
 msgid "Don't do anything on double-clicks"
-msgstr "No hacer nada en doble clic"
+msgstr "No hacer nada al hacer doble clic"
 
 msgid "Don't see your subreddit? Subscribe directly by name."
 msgstr "¿No encuentras tu subreddit? Suscríbete directamente por nombre."
 
 msgid "Don't show a preview, only show the story title"
-msgstr "No mostrar vista previa, solo mostrar el título de la historia"
+msgstr "No mostrar vista previa, solo mostrar el título del artículo"
 
 msgid "Don't show a thumbnail"
 msgstr "No mostrar una miniatura"
@@ -2347,7 +2349,7 @@ msgid "Double-clicking a site"
 msgstr "Hacer doble clic en un sitio"
 
 msgid "Double-clicking an unread count"
-msgstr "Al hacer doble clic en el contador de no leídas"
+msgstr "Al hacer doble clic en el contador de no leídos"
 
 msgid "Download"
 msgstr "Descargar"
@@ -2368,7 +2370,7 @@ msgid ""
 "Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
 " reading."
 msgstr ""
-"Arrastra el botón a tu barra de marcadores. En cualquier sitio, se suscribe al feed o comparte la historia "
+"Arrastra el botón a tu barra de marcadores. En cualquier sitio, se suscribe al feed o comparte el artículo "
 "que estás leyendo."
 
 msgid "Drag this bookmarklet into your bookmarks bar"
@@ -2381,7 +2383,7 @@ msgid "Drag to reorder"
 msgstr "Arrastrar para reordenar"
 
 msgid "Drag to reorder priority. Only shown when matching stories are found."
-msgstr "Arrastra para reordenar la prioridad. Solo se muestra cuando se encuentran historias coincidentes."
+msgstr "Arrastra para reordenar la prioridad. Solo se muestra cuando se encuentran artículos coincidentes."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
 msgstr "Los duplicados se agrupan debajo de la versión con mayor puntuación en tu río"
@@ -2398,7 +2400,7 @@ msgid "Each newsletter sender becomes its own feed"
 msgstr "Cada remitente de boletines se convierte en un feed propio"
 
 msgid "Each selected split needs a name and at least one story"
-msgstr "Cada división seleccionada necesita un nombre y al menos una historia"
+msgstr "Cada división seleccionada necesita un nombre y al menos un artículo"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
 msgstr ""
@@ -2409,14 +2411,14 @@ msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
 msgstr "Cada etiqueta tiene su propio feed RSS para compartir o integrar con otras herramientas"
 
 msgid "Earn Free Premium"
-msgstr "Gana Premium Gratis"
+msgstr "Gana Premium gratis"
 
 msgid ""
 "Earn free time on your subscription for every person who signs up and subscribes. The credit scales with "
 "what they pick — no cap."
 msgstr ""
-"Gana tiempo libre en tu suscripción por cada persona que se registre y se suscriba. El crédito se escala "
-"con lo que elijan, sin límite."
+"Gana tiempo gratis de suscripción por cada persona que se registre y se suscriba. El crédito aumenta según "
+"el plan que elijan, sin límite."
 
 msgid "Edit Profile"
 msgstr "Editar perfil"
@@ -2449,7 +2451,7 @@ msgid "Email notifications require Premium Archive"
 msgstr "Las notificaciones por correo requieren Premium Archive"
 
 msgid "Email story"
-msgstr "Enviar historia por correo"
+msgstr "Enviar artículo por correo"
 
 msgid "Email:"
 msgstr "Correo electrónico:"
@@ -2461,15 +2463,15 @@ msgid "Emoji"
 msgstr "Emoji"
 
 msgid "Enable \"mark all as read\" so reading one version clears every duplicate."
-msgstr "Activa «marcar todo como leído» para que leer una versión elimine todas las duplicadas."
+msgstr "Activa «marcar todo como leído» para que leer una versión elimine todos los duplicados."
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "Activa el resumen diario para recibir un resumen de tus noticias más importantes generado por IA"
+msgstr "Activa el resumen diario para recibir un resumen de tus artículos más importantes generado por IA"
 
 #, python-format
 msgid "Enable all %(count)s site"
 msgid_plural "Enable all %(count)s sites"
-msgstr[0] "Activar los %(count)s sitios"
+msgstr[0] "Activar %(count)s sitio"
 msgstr[1] "Activar todos los %(count)s sitios"
 
 msgid "Enable all sites"
@@ -2491,7 +2493,7 @@ msgid "Enable social features"
 msgstr "Activar funciones sociales"
 
 msgid "Enable story clustering"
-msgstr "Activar la agrupación de noticias"
+msgstr "Activar la agrupación de artículos"
 
 msgid "Enable the sites you want"
 msgstr "Habilita los sitios que quieras"
@@ -2500,7 +2502,7 @@ msgid "English"
 msgstr "Inglés"
 
 msgid "Enter URL pattern to match..."
-msgstr "Introduce el patrón de URL a coincidir..."
+msgstr "Introduce el patrón de URL que quieres buscar..."
 
 msgid "Enter a pattern"
 msgstr "Introduce un patrón"
@@ -2516,8 +2518,8 @@ msgstr "Introduce el patrón de autor..."
 
 msgid "Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content."
 msgstr ""
-"Introduce palabras clave para crear una sección para historias coincidentes. Coincide frases exactas en "
-"títulos y contenido de historias."
+"Introduce palabras clave para crear una sección con los artículos que coincidan. Busca frases exactas en "
+"los títulos y el contenido de los artículos."
 
 msgid "Enter text above"
 msgstr "Introduce texto arriba"
@@ -2529,10 +2531,10 @@ msgid "Erase your intelligence training classifiers"
 msgstr "Borrar tus clasificadores de entrenamiento de inteligencia"
 
 msgid "Erase your saved stories"
-msgstr "Borra tus historias guardadas"
+msgstr "Borra tus artículos guardados"
 
 msgid "Erase your shared stories"
-msgstr "Borrar tus noticias compartidas"
+msgstr "Borrar tus artículos compartidos"
 
 msgid "Erase yourself"
 msgstr "Borrarme"
@@ -2544,7 +2546,7 @@ msgid "Error"
 msgstr "Error"
 
 msgid "Error - Try Again"
-msgstr "Error - Inténtalo de Nuevo"
+msgstr "Error: inténtalo de nuevo"
 
 msgid "Error - please try again"
 msgstr "Error: inténtalo de nuevo"
@@ -2573,7 +2575,7 @@ msgid "Even geekier"
 msgstr "Aún más friki"
 
 msgid "Evening"
-msgstr "Tarde"
+msgstr "Noche"
 
 msgid "Every"
 msgstr "Cada"
@@ -2582,10 +2584,10 @@ msgid "Every new story is archived permanently"
 msgstr "Todos los artículos nuevos se archivan permanentemente"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "Cada etiqueta de noticias guardadas tiene su propio feed RSS, ideal para conectarlo a IFTTT o Zapier."
+msgstr "Cada etiqueta de artículos guardados tiene su propio feed RSS, ideal para conectarlo a IFTTT o Zapier."
 
 msgid "Every story archived and searchable forever"
-msgstr "Cada historia archivada y buscable para siempre"
+msgstr "Cada artículo archivado y buscable para siempre"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Todos tus artículos, archivados y consultables para siempre. Tu base de conocimiento personal."
@@ -2606,19 +2608,19 @@ msgid "Everything has been deleted."
 msgstr "Todo ha sido eliminado."
 
 msgid "Everything in Archive, plus:"
-msgstr "Todo en Archivo, más:"
+msgstr "Todo lo de Archive, más:"
 
 msgid "Everything in Free, plus:"
 msgstr "Todo lo de Gratis, más:"
 
 msgid "Everything in Premium, plus:"
-msgstr "Todo en Premium, además:"
+msgstr "Todo lo de Premium, más:"
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
 " train classifiers. Pipe to jq or script your workflows."
 msgstr ""
-"Todo lo que puede hacer el servidor MCP, desde tu terminal. Lee feeds, busca noticias, gestiona "
+"Todo lo que puede hacer el servidor MCP, desde tu terminal. Lee feeds, busca artículos, gestiona "
 "suscripciones y entrena clasificadores. Canaliza los resultados a jq o crea scripts para tus flujos de "
 "trabajo."
 
@@ -2635,7 +2637,7 @@ msgid "Excluded from merges"
 msgstr "Excluido de fusiones"
 
 msgid "Exclusions & Advanced"
-msgstr "Exclusiones y Avanzado"
+msgstr "Exclusiones y opciones avanzadas"
 
 msgid "Exit fullscreen"
 msgstr "Salir de pantalla completa"
@@ -2650,7 +2652,7 @@ msgid "Expand all"
 msgstr "Expandir todo"
 
 msgid "Expand story"
-msgstr "Expandir historia"
+msgstr "Expandir artículo"
 
 msgid "Expanded"
 msgstr "Expandido"
@@ -2659,7 +2661,7 @@ msgid "Expire 1 YR"
 msgstr "Caduca 1 AÑO"
 
 msgid "Export trained stories from folders"
-msgstr "Exportar historias entrenadas desde carpetas"
+msgstr "Exportar artículos entrenados desde carpetas"
 
 msgid "Extras"
 msgstr "Extras"
@@ -2671,7 +2673,7 @@ msgid "Faces"
 msgstr "Caras"
 
 msgid "Fact check this story"
-msgstr "Verificar los datos de esta historia"
+msgstr "Verificar los datos de este artículo"
 
 msgid "Failed to connect to server"
 msgstr "No se pudo conectar con el servidor"
@@ -2683,7 +2685,7 @@ msgid "Failed to create Google News feed"
 msgstr "No se pudo crear el feed de Google News"
 
 msgid "Failed to create feed"
-msgstr "No se pudo crear la fuente"
+msgstr "No se pudo crear el feed"
 
 msgid "Failed to delete tag."
 msgstr "No se pudo eliminar la etiqueta."
@@ -2695,7 +2697,7 @@ msgid "Failed to load SVG image"
 msgstr "Error al cargar imagen SVG"
 
 msgid "Failed to load archives"
-msgstr "No se pudieron cargar los archivos"
+msgstr "No se pudieron cargar las páginas archivadas"
 
 msgid "Failed to load conversation"
 msgstr "No se pudo cargar la conversación"
@@ -2704,13 +2706,13 @@ msgid "Failed to load related sites"
 msgstr "No se pudieron cargar los sitios relacionados"
 
 msgid "Failed to load stories"
-msgstr "Error al cargar las noticias"
+msgstr "Error al cargar los artículos"
 
 msgid "Failed to mark as unread"
 msgstr "No se pudo marcar como no leído"
 
 msgid "Failed to merge categories"
-msgstr "No se pudieron combinar las categorías"
+msgstr "No se pudieron fusionar las categorías"
 
 msgid "Failed to rename category"
 msgstr "No se pudo cambiar el nombre de la categoría"
@@ -2752,10 +2754,10 @@ msgid "Favorites"
 msgstr "Favoritos"
 
 msgid "Features & Tips"
-msgstr "Características y Consejos"
+msgstr "Funciones y consejos"
 
 msgid "Features &amp; Tips"
-msgstr "Funciones &amp; Consejos"
+msgstr "Funciones &amp; consejos"
 
 msgid "Features and essays that readers gave real time to."
 msgstr "Artículos y ensayos a los que los lectores dedicaron tiempo de verdad."
@@ -2764,7 +2766,7 @@ msgid "February"
 msgstr "febrero"
 
 msgid "Feed"
-msgstr "Fuente"
+msgstr "Feed"
 
 #, python-format
 msgid "Feed \"%(value_1)s\" has been created."
@@ -2775,37 +2777,37 @@ msgid "Feed \"%(value_1)s\" is ready."
 msgstr "El feed «%(value_1)s» está listo."
 
 msgid "Feed Fetch"
-msgstr "Búsqueda de Feeds"
+msgstr "Recuperación del feed"
 
 msgid "Feed Icon"
-msgstr "Icono de fuente"
+msgstr "Icono de feed"
 
 msgid "Feed Push"
-msgstr "Feed Push"
+msgstr "Push del feed"
 
 msgid "Feed opens:"
-msgstr "Abre la fuente:"
+msgstr "Aperturas del feed:"
 
 msgid "Feed: "
-msgstr "Fuente: "
+msgstr "Feed: "
 
 msgid "Feeds"
-msgstr "Fuentes"
+msgstr "Feeds"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "Feeds rellenados para archivo completo"
+msgstr "Feeds completados con artículos antiguos para un archivo completo"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
-msgstr "Fuentes con lectores muy comprometidos, aún poco conocidas"
+msgstr "Feeds con lectores muy comprometidos, aún poco conocidos"
 
 msgid "Feeds:"
-msgstr "Fuentes:"
+msgstr "Feeds:"
 
 msgid "Feel comfortable connecting to these services."
-msgstr "Siéntete cómodo conectándote a estos servicios."
+msgstr "Puedes conectarte a estos servicios con total tranquilidad."
 
 msgid "Fetch Feed From Website"
-msgstr "Obtener Feed del Sitio Web"
+msgstr "Obtener feed del sitio web"
 
 #, python-format
 msgid "Fetch error: %(error)s"
@@ -2813,25 +2815,25 @@ msgstr "Error de obtención: %(error)s"
 
 #, python-format
 msgid "Fetched every %(value_1)s"
-msgstr "Obtenidos todos cada %(value_1)s"
+msgstr "Se actualiza cada %(value_1)s"
 
 msgid "Fetching page..."
 msgstr "Cargando página..."
 
 msgid "Fetching stories"
-msgstr "Cargando noticias"
+msgstr "Cargando artículos"
 
 msgid "Fetching stories..."
-msgstr "Obteniendo historias..."
+msgstr "Obteniendo artículos..."
 
 msgid "Fetching story"
-msgstr "Obteniendo historia"
+msgstr "Obteniendo artículo"
 
 msgid "Fetching text"
 msgstr "Obteniendo texto"
 
 msgid "Fetching your feeds"
-msgstr "Obteniendo tus fuentes"
+msgstr "Obteniendo tus feeds"
 
 msgid "Fetching..."
 msgstr "Obteniendo..."
@@ -2840,7 +2842,7 @@ msgid "Files"
 msgstr "Archivos"
 
 msgid "Filled Icons"
-msgstr "Iconos Rellenos"
+msgstr "Iconos rellenos"
 
 msgid "Filter by date range"
 msgstr "Filtrar por rango de fechas"
@@ -2849,7 +2851,7 @@ msgid "Filter by site or classifier..."
 msgstr "Filtrar por sitio o clasificador..."
 
 msgid "Filter channels..."
-msgstr "Canales de filtro..."
+msgstr "Filtrar canales..."
 
 msgid "Filter icons..."
 msgstr "Filtrar iconos..."
@@ -2859,7 +2861,7 @@ msgstr "Filtrar boletines..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
 msgstr ""
-"Filtra las notificaciones para recibir solo noticias destacadas y deja que tu entrenamiento decida qué "
+"Filtra las notificaciones para recibir solo artículos de Enfoque y deja que tu entrenamiento decida qué "
 "avisos recibes."
 
 msgid "Filter podcasts..."
@@ -2869,10 +2871,10 @@ msgid "Filter sites..."
 msgstr "Filtrar sitios..."
 
 msgid "Filter stories"
-msgstr "Filtrar historias"
+msgstr "Filtrar artículos"
 
 msgid "Filter stories by date range"
-msgstr "Filtrar historias por rango de fechas"
+msgstr "Filtrar artículos por rango de fechas"
 
 msgid "Filter subreddits..."
 msgstr "Filtrar subreddits..."
@@ -2931,37 +2933,37 @@ msgid "Flat"
 msgstr "Plano"
 
 msgid "Flowing narrative that connects stories into a readable digest"
-msgstr "Narrativa fluida que conecta historias en un resumen fácil de leer"
+msgstr "Narrativa fluida que conecta artículos en un resumen fácil de leer"
 
 msgid "Focus"
 msgstr "Enfoque"
 
 msgid "Focus or hide all stories from this publisher."
-msgstr "Enfoca u oculta todas las historias de este editor."
+msgstr "Enfoca u oculta todos los artículos de este editor."
 
 msgid "Folder"
 msgstr "Carpeta"
 
 msgid "Folder Icon"
-msgstr "Icono de Carpeta"
+msgstr "Icono de carpeta"
 
 msgid "Folder RSS Feed Address"
-msgstr "Dirección RSS de la fuente/carpeta"
+msgstr "Dirección del feed RSS de la carpeta"
 
 msgid "Folder Settings"
-msgstr "Configuración de Carpeta"
+msgstr "Configuración de la carpeta"
 
 msgid "Folder settings"
 msgstr "Configuración de carpeta"
 
 msgid "Folder unread counts"
-msgstr "Recuentos de no leídas de carpetas"
+msgstr "Recuentos de no leídos en carpetas"
 
 msgid "Folders"
 msgstr "Carpetas"
 
 msgid "Folders, feeds, and story titles"
-msgstr "Carpetas, fuentes y títulos de historias"
+msgstr "Carpetas, feeds y títulos de artículos"
 
 msgid "Follow"
 msgstr "Seguir"
@@ -2971,7 +2973,7 @@ msgid "Follow %(value_1)s"
 msgstr "Seguir a %(value_1)s"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
-msgstr "Sigue cualquier sitio web, incluso los que no publican una fuente RSS."
+msgstr "Sigue cualquier sitio web, incluso los que no publican un feed RSS."
 
 msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
 msgstr ""
@@ -2979,13 +2981,13 @@ msgstr ""
 " un feed."
 
 msgid "Follow to see their shared stories"
-msgstr "Sigue para ver sus historias compartidas"
+msgstr "Sigue para ver sus artículos compartidos"
 
 msgid "Follow up to 1,024 sites"
 msgstr "Sigue hasta 1.024 sitios"
 
 msgid "Follow up to 10,000 sites"
-msgstr "Sigue hasta 10,000 sitios"
+msgstr "Sigue hasta 10.000 sitios"
 
 msgid "Follow up to 4,096 sites"
 msgstr "Sigue hasta 4.096 sitios"
@@ -2994,10 +2996,10 @@ msgid "Follow up to 64 sites"
 msgstr "Sigue hasta 64 sitios"
 
 msgid "Follow up..."
-msgstr "Seguimiento..."
+msgstr "Haz otra pregunta..."
 
 msgid "Follow-ups"
-msgstr "Respuestas"
+msgstr "Seguimiento"
 
 msgid "Followers"
 msgstr "Seguidores"
@@ -3006,7 +3008,7 @@ msgid "Following"
 msgstr "Siguiendo"
 
 msgid "Following Me"
-msgstr "Me Sigue"
+msgstr "Quién me sigue"
 
 msgid "Following..."
 msgstr "Siguiendo..."
@@ -3030,7 +3032,7 @@ msgid "For Safari on Mac"
 msgstr "Para Safari en Mac"
 
 msgid "Force all tall stories to have a max height"
-msgstr "Forzar que todas las historias altas tengan una altura máxima"
+msgstr "Forzar que todos los artículos altos tengan una altura máxima"
 
 #, python-format
 msgid "Forward %(seconds)s second"
@@ -3047,11 +3049,11 @@ msgstr "Dirección de correo electrónico de reenvío"
 #, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
-msgstr[0] "Se encontró %(count)s patrón. Selecciona el que mejor coincida con las historias que quieres."
+msgstr[0] "Se encontró %(count)s patrón. Selecciona el que mejor coincida con los artículos que quieres."
 msgstr[1] "Se encontraron %(count)s patrones. Selecciona el que mejor coincida con los artículos que buscas."
 
 msgid "Found in the Account dialog"
-msgstr "Encontrado en el diálogo de Cuenta"
+msgstr "Disponible en el cuadro de diálogo Cuenta"
 
 msgid "Free"
 msgstr "Gratis"
@@ -3126,10 +3128,10 @@ msgid "Friendly note: You will be emailed a backup of your sites"
 msgstr "Nota: Te enviaremos por correo electrónico una copia de seguridad de tus sitios"
 
 msgid "Friends &amp; Followers"
-msgstr "Amigos &amp; Seguidores"
+msgstr "Amigos &amp; seguidores"
 
 msgid "Friends and Followers"
-msgstr "Amigos y Seguidores"
+msgstr "Amigos y seguidores"
 
 msgctxt "date range"
 msgid "From"
@@ -3144,8 +3146,8 @@ msgstr "Completo"
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
 msgstr ""
-"Las respuestas del Asistente de archivo completo son una %(link_start)sfunción premium de "
-"archivo%(link_end)s."
+"Las respuestas completas del Asistente de archivo son una %(link_start)sfunción de Premium "
+"Archive%(link_end)s."
 
 msgid "Full Refund"
 msgstr "Reembolso Completo"
@@ -3166,7 +3168,7 @@ msgid "Full-Text Search"
 msgstr "Búsqueda de texto completo"
 
 msgid "Full-text search across all stories"
-msgstr "Búsqueda de texto completo en todas las historias"
+msgstr "Búsqueda de texto completo en todos los artículos"
 
 msgid "Full-text search requires Premium or higher."
 msgstr "La búsqueda de texto completo requiere Premium o un plan superior."
@@ -3223,7 +3225,7 @@ msgid "Get Started with Archive"
 msgstr "Empezar con Archivo"
 
 msgid "Get a summary of your top stories, delivered on your schedule."
-msgstr "Obtén un resumen de tus principales historias, entregado según tu horario."
+msgstr "Obtén un resumen de tus principales artículos, entregado según tu horario."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
 msgstr "Recibe un resumen diario seleccionado por IA, con los artículos más destacados y lecturas extensas"
@@ -3235,7 +3237,7 @@ msgid ""
 "Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
 "Android, filtered by your training."
 msgstr ""
-"Recibe una notificación en cuanto una fuente publique un artículo nuevo. Notificaciones por fuente en web, "
+"Recibe una notificación en cuanto un feed publique un artículo nuevo. Notificaciones por feed en web, "
 "correo electrónico, iOS y Android, filtradas según tu entrenamiento."
 
 msgid "Get notified when a new briefing is ready"
@@ -3245,7 +3247,7 @@ msgid "Get started"
 msgstr "Comenzar"
 
 msgid "Get the Browser Extension"
-msgstr "Obtén la Extensión del Navegador"
+msgstr "Obtén la extensión del navegador"
 
 msgid "Get the add-on"
 msgstr "Obtener el complemento"
@@ -3264,7 +3266,7 @@ msgid "Gift"
 msgstr "Regalo"
 
 msgid "Gift a Subscription"
-msgstr "Regalar una Suscripción"
+msgstr "Regalar una suscripción"
 
 msgid "Gift link created:"
 msgstr "Enlace de regalo creado:"
@@ -3279,10 +3281,10 @@ msgid "Global"
 msgstr "Global"
 
 msgid "Global Classifiers"
-msgstr "Clasificadores Globales"
+msgstr "Clasificadores globales"
 
 msgid "Global Shared Stories"
-msgstr "Historias compartidas globales"
+msgstr "Artículos compartidos globalmente"
 
 msgid "Global settings"
 msgstr "Configuración global"
@@ -3302,13 +3304,13 @@ msgid "Go back to %(breadcrumb)s"
 msgstr "Volver a %(breadcrumb)s"
 
 msgid "Good Reads"
-msgstr "Lecturas"
+msgstr "Buenas lecturas"
 
 msgid "Good Reads on NewsBlur"
 msgstr "Buenas lecturas en NewsBlur"
 
 msgid "Goodies &amp; Extras"
-msgstr "Extras &amp; adicionales"
+msgstr "Complementos &amp; extras"
 
 msgid "Goodies &amp; Mobile Apps"
 msgstr "Extras &amp; Aplicaciones móviles"
@@ -3332,10 +3334,10 @@ msgid "Group duplicate stories across your feeds"
 msgstr "Agrupar artículos duplicados de tus feeds"
 
 msgid "Group stories that share:"
-msgstr "Agrupar historias que comparten:"
+msgstr "Agrupar artículos que comparten:"
 
 msgid "Groups similar stories from different feeds"
-msgstr "Agrupa historias similares de distintos feeds"
+msgstr "Agrupa artículos similares de distintos feeds"
 
 msgid "Hand-picked shares from across NewsBlur"
 msgstr "Selección de contenido compartido de NewsBlur"
@@ -3368,13 +3370,13 @@ msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Ocultar todas las funciones de compartir, comentarios y blurblog"
 
 msgid "Hide discover sites popover"
-msgstr "Ocultar ventana emergente de sitios descubiertos"
+msgstr "Ocultar la ventana emergente Descubrir sitios"
 
 msgid "Hide history"
 msgstr "Ocultar historial"
 
 msgid "Hide matching stories"
-msgstr "Ocultar historias coincidentes"
+msgstr "Ocultar artículos coincidentes"
 
 msgid "Hide sites"
 msgstr "Ocultar sitios"
@@ -3383,7 +3385,7 @@ msgid "Hide sites you already subscribe to"
 msgstr "Ocultar sitios a los que ya estás suscrito"
 
 msgid "Hide story changes"
-msgstr "Ocultar cambios en la historia"
+msgstr "Ocultar cambios en el artículo"
 
 msgid "Highlight"
 msgstr "Resaltar"
@@ -3395,15 +3397,15 @@ msgid "History"
 msgstr "Historial"
 
 msgid "Home"
-msgstr "Inicio"
+msgstr "Hogar"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
 msgstr ""
-"Los widgets de la pantalla de inicio muestran de un vistazo el número de artículos sin leer y las últimas "
-"noticias."
+"Los widgets de la pantalla de inicio muestran de un vistazo el número de artículos sin leer y los últimos "
+"artículos."
 
 msgid "How Gifting Works"
-msgstr "Cómo Funciona el Regalo"
+msgstr "Cómo funcionan los regalos"
 
 msgid "How are duplicates detected?"
 msgstr "¿Cómo se detectan los duplicados?"
@@ -3421,13 +3423,13 @@ msgid "How it works"
 msgstr "Cómo funciona"
 
 msgid "How many stories can I save?"
-msgstr "¿Cuántas noticias puedo guardar?"
+msgstr "¿Cuántos artículos puedo guardar?"
 
 msgid "How often"
 msgstr "¿Con qué frecuencia?"
 
 msgid "I'm Following"
-msgstr "Estoy Siguiendo"
+msgstr "A quién sigo"
 
 msgid "IFTTT & Zapier"
 msgstr "IFTTT y Zapier"
@@ -3440,12 +3442,12 @@ msgstr "Si no se encuentra ningún feed RSS, NewsBlur ofrece crear un feed web"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
 msgstr ""
-"Si ninguna opción coincide, escribe el título de una noticia que veas en la página y volveremos a "
+"Si ninguna opción coincide, escribe el título de un artículo que veas en la página y volveremos a "
 "analizarla."
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "Si fueras a %(premium_link)s,<br>este sitio se actualizaría cada"
+msgstr "Si te pasaras a %(premium_link)s,<br>este sitio se actualizaría cada"
 
 msgid "Ignore"
 msgstr "Ignorar"
@@ -3457,7 +3459,7 @@ msgid "Image"
 msgstr "Imagen"
 
 msgid "Image Filter"
-msgstr "Filtro de Imágenes"
+msgstr "Filtro de imágenes"
 
 msgid "Image Preview"
 msgstr "Vista previa de imagen"
@@ -3475,7 +3477,7 @@ msgid "Immediately"
 msgstr "Inmediatamente"
 
 msgid "Import feeds"
-msgstr "Importar fuentes"
+msgstr "Importar feeds"
 
 msgid "Import from Google Reader or upload OPML"
 msgstr "Importar desde Google Reader o subir OPML"
@@ -3489,14 +3491,14 @@ msgstr "Importando tus sitios..."
 #, python-format
 msgid "In %(count)s day, your premium trial ends and you'll return to Free"
 msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
-msgstr[0] "En %(count)s día, terminará tu prueba prémium y volverás al plan Gratis"
+msgstr[0] "En %(count)s día, terminará tu prueba premium y volverás al plan Gratis"
 msgstr[1] "En %(count)s días, terminará tu prueba Premium y volverás al plan gratuito"
 
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr ""
 "En Gmail, ve a %(settings_menu)s y haz clic en %(add_button)s. Añade tu dirección de correo personalizada "
-"NewsBlur."
+"de NewsBlur."
 
 msgid "In NewsBlur"
 msgstr "En NewsBlur"
@@ -3516,8 +3518,8 @@ msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
 msgstr ""
-"En la vista Feed, haz clic en las etiquetas y los autores directamente en el encabezado del artículo para "
-"entrenar el sistema. Cada clic alterna entre me gusta, no me gusta y neutral."
+"En la vista de feed, haz clic en las etiquetas y los autores directamente en el encabezado del artículo "
+"para entrenar el sistema. Cada clic alterna entre me gusta, no me gusta y neutral."
 
 msgid "In this window"
 msgstr "En esta ventana"
@@ -3532,7 +3534,7 @@ msgid "Independent"
 msgstr "Independiente"
 
 msgid "Index feeds for discovery"
-msgstr "Indexar fuentes para descubrimiento"
+msgstr "Indexar feeds para descubrimiento"
 
 msgid "Index remaining feeds"
 msgstr "Indexar feeds restantes"
@@ -3544,13 +3546,13 @@ msgid "Indexing..."
 msgstr "Indexando..."
 
 msgid "Infrequent Site Stories"
-msgstr "Historias infrecuentes del sitio"
+msgstr "Artículos de sitios poco activos"
 
 msgid "Infrequent stories per month"
-msgstr "Historias infrecuentes por mes"
+msgstr "Umbral de artículos al mes"
 
 msgid "Insta-fetch stories"
-msgstr "Captura historias al instante"
+msgstr "Obtener artículos al instante"
 
 msgid "Install"
 msgstr "Instalar"
@@ -3566,7 +3568,7 @@ msgid "Install with: uv pip install newsblur-cli"
 msgstr "Instala con: uv pip install newsblur-cli"
 
 msgid "Intelligence Trainer"
-msgstr "Entrenador de Inteligencia"
+msgstr "Entrenador de inteligencia"
 
 msgid "Intelligence Training"
 msgstr "Entrenamiento de inteligencia"
@@ -3600,13 +3602,13 @@ msgid "Japanese"
 msgstr "Japonés"
 
 msgid "July"
-msgstr "Julio"
+msgstr "julio"
 
 msgid "Jump immediately with no animations"
-msgstr "Salta inmediatamente sin animaciones"
+msgstr "Saltar inmediatamente sin animaciones"
 
 msgid "Jump to Folder"
-msgstr "Saltar a Carpeta"
+msgstr "Ir a la carpeta"
 
 msgid "June"
 msgstr "junio"
@@ -3615,7 +3617,7 @@ msgid "Just Delete This Feed"
 msgstr "Simplemente elimina este feed"
 
 msgid "Just now"
-msgstr "Justo ahora"
+msgstr "Ahora mismo"
 
 msgid "Just the headlines with minimal commentary"
 msgstr "Solo los titulares, con comentarios mínimos"
@@ -3624,7 +3626,7 @@ msgid "Just the headlines, no commentary"
 msgstr "Solo los titulares, sin comentarios"
 
 msgid "Keep others unread"
-msgstr "Mantener otras sin leer"
+msgstr "Mantener los demás sin leer"
 
 msgid "Keep read status"
 msgstr "Mantener estado de lectura"
@@ -3633,7 +3635,7 @@ msgid "Keep right-side buttons visible while reading"
 msgstr "Mantener los botones del lado derecho visibles mientras se lee"
 
 msgid "Keep stories separate"
-msgstr "Mantener las historias separadas"
+msgstr "Mantener los artículos separados"
 
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Mantente al día con NewsBlur"
@@ -3673,7 +3675,7 @@ msgid "Last 7 Days"
 msgstr "Últimos 7 días"
 
 msgid "Last 90 Days"
-msgstr "Últimos 90 Días"
+msgstr "Últimos 90 días"
 
 msgid "Last IP:"
 msgstr "Última IP:"
@@ -3710,10 +3712,10 @@ msgid "Like"
 msgstr "Me gusta"
 
 msgid "Like "
-msgstr "Como "
+msgstr "Me gusta "
 
 msgid "Like matching stories"
-msgstr "Me gusta las historias coincidentes"
+msgstr "Marcar con Me gusta los artículos coincidentes"
 
 msgid "Likes"
 msgstr "Me gusta"
@@ -3722,7 +3724,7 @@ msgid "Link"
 msgstr "Enlace"
 
 msgid "Link directly to the original story"
-msgstr "Enlace directo a la historia original"
+msgstr "Enlace directo al artículo original"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Enlazar a mi blurblog y comentarios compartidos"
@@ -3749,7 +3751,7 @@ msgid "Loading classifiers..."
 msgstr "Cargando clasificadores..."
 
 msgid "Loading feeds..."
-msgstr "Cargando fuentes..."
+msgstr "Cargando feeds..."
 
 msgid "Loading more briefings..."
 msgstr "Cargando más resúmenes..."
@@ -3770,7 +3772,7 @@ msgid "Locked"
 msgstr "Bloqueado"
 
 msgid "Log In or Sign Up"
-msgstr "Iniciar Sesión o Registrarse"
+msgstr "Iniciar sesión o registrarse"
 
 msgid "Logout"
 msgstr "Cerrar sesión"
@@ -3785,7 +3787,7 @@ msgid "Long reads for later"
 msgstr "Lecturas largas para más tarde"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "Artículos más largos que merecen dedicarles tiempo"
+msgstr "Artículos más largos a los que merece la pena dedicar tiempo"
 
 msgid "MCP Server"
 msgstr "Servidor MCP"
@@ -3822,41 +3824,41 @@ msgid "Manually by hitting %(first_key)s or %(second_key)s"
 msgstr "Manualmente, pulsando %(first_key)s o %(second_key)s"
 
 msgid "Manually or by clicking in the story"
-msgstr "Manualmente o haciendo clic en la historia"
+msgstr "Manualmente o haciendo clic en el artículo"
 
 msgid ""
 "Many feeds only include a summary. Text view extracts the full story from the original website and displays"
 " it right in NewsBlur, with clean formatting and no clutter."
 msgstr ""
-"Muchos feeds solo incluyen un resumen. La vista de texto extrae la historia completa del sitio web original"
-" y la muestra directamente en NewsBlur, con un formato limpio y sin elementos superfluos."
+"Muchos feeds solo incluyen un resumen. La vista de texto extrae el artículo completo del sitio web original"
+" y lo muestra directamente en NewsBlur, con un formato limpio y sin elementos superfluos."
 
 msgid "March"
-msgstr "Marzo"
+msgstr "marzo"
 
 #, python-format
 msgid "Mark %(count)s story as read?"
 msgid_plural "Mark %(count)s stories as read?"
-msgstr[0] "¿Marcar %(count)s historia como leída?"
+msgstr[0] "¿Marcar %(count)s artículo como leído?"
 msgstr[1] "¿Marcar %(count)s artículos como leídos?"
 
 msgid "Mark <b>every story</b> as read"
-msgstr "Marcar <b>cada historia</b> como leída"
+msgstr "Marcar <b>todos los artículos</b> como leídos"
 
 msgid "Mark Everything Read / Unread"
-msgstr "Marcar Todo Como Leído / No Leído"
+msgstr "Marcar todo como leído / no leído"
 
 msgid "Mark Stories as Read"
-msgstr "Marcar Historias como Leídas"
+msgstr "Marcar artículos como leídos"
 
 msgid "Mark Stories as Unread"
-msgstr "Marcar historias como no leídas"
+msgstr "Marcar artículos como no leídos"
 
 msgid "Mark a story as read"
-msgstr "Marcar una historia como leída"
+msgstr "Marcar un artículo como leído"
 
 msgid "Mark above stories read"
-msgstr "Marcar historias anteriores como leídas"
+msgstr "Marcar como leídos los artículos de arriba"
 
 msgid "Mark all as read"
 msgstr "Marcar todo como leído"
@@ -3867,8 +3869,8 @@ msgstr "¿Marcar todo como leído?"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "Marcar como leídas todas las historias con más de <b>%(value_1)s día</b>"
-msgstr[1] "Marcar como leídas todas las noticias con más de <b>%(value_1)s días</b> de antigüedad"
+msgstr[0] "Marcar como leídos todos los artículos con más de <b>%(value_1)s día</b>"
+msgstr[1] "Marcar como leídos todos los artículos con más de <b>%(value_1)s días</b> de antigüedad"
 
 msgid "Mark as read"
 msgstr "Marcar como leído"
@@ -3880,7 +3882,7 @@ msgid "Mark as unread"
 msgstr "Marcar como no leído"
 
 msgid "Mark below stories read"
-msgstr "Marcar historias debajo como leídas"
+msgstr "Marcar como leídos los artículos de abajo"
 
 msgid "Mark duplicates as read"
 msgstr "Marcar duplicados como leídos"
@@ -3892,34 +3894,34 @@ msgid "Mark folder as read"
 msgstr "Marcar carpeta como leída"
 
 msgid "Mark folder stories as unread"
-msgstr "Marcar como no leídas las historias de la carpeta"
+msgstr "Marcar como no leídos los artículos de la carpeta"
 
 msgid "Mark newer stories read"
-msgstr "Marcar historias más nuevas como leídas"
+msgstr "Marcar los artículos más recientes como leídos"
 
 msgid "Mark older stories read"
-msgstr "Marcar historias antiguas como leídas"
+msgstr "Marcar los artículos anteriores como leídos"
 
 #, python-format
 msgid "Mark older than %(count)s day as read?"
 msgid_plural "Mark older than %(count)s days as read?"
-msgstr[0] "¿Marcar como leídas las de más de %(count)s día?"
-msgstr[1] "¿Marcar como leídas las historias de hace más de %(count)s días?"
+msgstr[0] "¿Marcar como leídos los de más de %(count)s día?"
+msgstr[1] "¿Marcar como leídos los artículos de hace más de %(count)s días?"
 
 msgid "Mark stories as read when scrolled past"
-msgstr "Marcar noticias como leídas al pasar por encima"
+msgstr "Marcar artículos como leídos al desplazarse más allá de ellos"
 
 msgid "Mark stories as unread"
-msgstr "Marcar historias como no leídas"
+msgstr "Marcar artículos como no leídos"
 
 #, python-format
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
-msgstr[0] "Marcar como no leídos los artículos de los últimos <b>%(value_1)s día</b>"
+msgstr[0] "Marcar como no leídos los artículos de hace menos de <b>%(value_1)s día</b>"
 msgstr[1] "Marcar como no leídos los artículos de los últimos <b>%(value_1)s días</b>"
 
 msgid "Mark stories read on scroll"
-msgstr "Marcar historias como leídas al desplazarse"
+msgstr "Marcar artículos como leídos al desplazarse"
 
 msgid "Mark the site as read"
 msgstr "Marcar el sitio como leído"
@@ -3934,12 +3936,12 @@ msgid "Marking as unread..."
 msgstr "Marcando como no leído..."
 
 msgid "Match"
-msgstr "Coincidir"
+msgstr "Coincidencia"
 
 msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
 msgstr ""
-"Coincide historias por palabras o frases en el cuerpo. Resalta el texto en la historia y haz clic en "
-"Entrenar para autocompletar."
+"Encuentra artículos por palabras o frases del cuerpo. Resalta texto en el artículo y haz clic en Entrenar "
+"para autocompletar."
 
 msgid "Matched via a duplicate title"
 msgstr "Coincidencia por título duplicado"
@@ -3948,10 +3950,10 @@ msgid "Matched via related topics"
 msgstr "Coincidencia por temas relacionados"
 
 msgid "Matches story titles containing all keywords"
-msgstr "Coincide con títulos de historias que contienen todas las palabras clave"
+msgstr "Coincide con títulos de artículos que contienen todas las palabras clave"
 
 msgid "May"
-msgstr "Mayo"
+msgstr "mayo"
 
 msgid "Maybe later"
 msgstr "Quizás más tarde"
@@ -3968,8 +3970,8 @@ msgstr "Fusionar"
 #, python-format
 msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
-msgstr[0] "Combinar %(count)s categoría en:"
-msgstr[1] "Combinar %(count)s categorías en:"
+msgstr[0] "Fusionar %(count)s categoría en:"
+msgstr[1] "Fusionar %(count)s categorías en:"
 
 msgid "Merge into:"
 msgstr "Fusionar en:"
@@ -3977,8 +3979,8 @@ msgstr "Fusionar en:"
 #, python-format
 msgid "Merged %(count)s story into \"%(category)s\""
 msgid_plural "Merged %(count)s stories into \"%(category)s\""
-msgstr[0] "Se combinó %(count)s artículo en «%(category)s»"
-msgstr[1] "Se fusionaron %(count)s noticias en «%(category)s»"
+msgstr[0] "Se fusionó %(count)s artículo en «%(category)s»"
+msgstr[1] "Se fusionaron %(count)s artículos en «%(category)s»"
 
 msgid "Merging..."
 msgstr "Fusionando..."
@@ -3998,7 +4000,7 @@ msgid "Mon"
 msgstr "Lun"
 
 msgid "Monday"
-msgstr "Lunes"
+msgstr "lunes"
 
 msgid "Monthly spending limit"
 msgstr "Límite de gasto mensual"
@@ -4013,7 +4015,7 @@ msgid "More"
 msgstr "Más"
 
 msgid "More Features"
-msgstr "Más Funciones"
+msgstr "Más funciones"
 
 msgid "More from Reddit"
 msgstr "Más de Reddit"
@@ -4025,13 +4027,13 @@ msgid "Morning + Afternoon"
 msgstr "Mañana + tarde"
 
 msgid "Morning + Evening"
-msgstr "Mañana y tarde"
+msgstr "Mañana + noche"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "Feeds con más suscriptores esta semana"
 
 msgid "Most used at top, then alphabetical"
-msgstr "Los más usados arriba, luego alfabético"
+msgstr "Los más usados arriba, luego por orden alfabético"
 
 msgid "Move"
 msgstr "Mover"
@@ -4093,10 +4095,10 @@ msgid "Muted · unmuting soon"
 msgstr "Silenciado · se reactivará pronto"
 
 msgid "My shared stories are public and anybody can reply to me"
-msgstr "Mis historias compartidas son públicas y cualquiera puede responderme"
+msgstr "Mis artículos compartidos son públicos y cualquiera puede responderme"
 
 msgid "My shared stories are public but only people I approve can reply"
-msgstr "Mis historias compartidas son públicas, pero solo pueden responder las personas que yo apruebe"
+msgstr "Mis artículos compartidos son públicos, pero solo pueden responder las personas que yo apruebe"
 
 msgid "NEVER"
 msgstr "NUNCA"
@@ -4117,10 +4119,10 @@ msgid "Natural language classifier billing"
 msgstr "Facturación del clasificador de lenguaje natural"
 
 msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Los clasificadores de lenguaje natural se pausan hasta el próximo ciclo de facturación. "
+msgstr "Los clasificadores de lenguaje natural están en pausa hasta el próximo ciclo de facturación. "
 
 msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Los clasificadores de lenguaje natural están utilizando las claves API de su instancia."
+msgstr "Los clasificadores de lenguaje natural están usando las claves de API de tu instancia."
 
 msgid "Natural language text and image classifiers"
 msgstr "Clasificadores de texto e imágenes en lenguaje natural"
@@ -4160,7 +4162,7 @@ msgid "New Arrivals"
 msgstr "Novedades"
 
 msgid "New Chat"
-msgstr "Chat Nuevo"
+msgstr "Nuevo chat"
 
 msgid "New Conversation"
 msgstr "Nueva conversación"
@@ -4194,16 +4196,16 @@ msgid "New to me"
 msgstr "Nuevo para mí"
 
 msgid "Newer:"
-msgstr "Ejemplo"
+msgstr "Posterior a:"
 
 msgid "Newest"
 msgstr "Más recientes"
 
 msgid "Newest first"
-msgstr "Más reciente primero"
+msgstr "Más recientes primero"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "NewsBlur busca cambios y envía nuevos artículos a tu canal."
+msgstr "NewsBlur busca cambios y envía nuevos artículos a tu feed."
 
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur conectado a otros servicios"
@@ -4240,7 +4242,7 @@ msgid "Newsletters appearing as feeds"
 msgstr "Boletines que aparecen como feeds"
 
 msgid "Next Unread Story"
-msgstr "Siguiente Artículo No Leído"
+msgstr "Siguiente artículo sin leer"
 
 msgid "Next Update"
 msgstr "Próxima actualización"
@@ -4252,7 +4254,7 @@ msgid "Next step "
 msgstr "Siguiente paso "
 
 msgid "Next story"
-msgstr "Siguiente historia"
+msgstr "Siguiente artículo"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
@@ -4272,7 +4274,7 @@ msgid "No archived domains found. Start browsing to build your archive!"
 msgstr "No se encontraron dominios archivados. ¡Empieza a navegar para construir tu archivo!"
 
 msgid "No archives match your filters"
-msgstr "No hay archivos que coincidan con tus filtros"
+msgstr "No hay páginas archivadas que coincidan con tus filtros"
 
 msgid "No briefings yet."
 msgstr "Aún no hay resúmenes."
@@ -4281,7 +4283,7 @@ msgid "No categories available. Categories will appear here once they are config
 msgstr "No hay categorías disponibles. Las categorías aparecerán aquí una vez que se configuren."
 
 msgid "No categories with 10+ stories available for splitting."
-msgstr "No hay categorías con más de 10 noticias disponibles para dividir."
+msgstr "No hay categorías con 10 o más artículos disponibles para dividir."
 
 msgid "No channels found matching your filter."
 msgstr "No se encontraron canales que coincidan con tu filtro."
@@ -4296,10 +4298,10 @@ msgid "No content"
 msgstr "Sin contenido"
 
 msgid "No feeds found"
-msgstr "No se encontraron fuentes"
+msgstr "No se encontraron feeds"
 
 msgid "No feeds found in this category."
-msgstr "No se encontraron fuentes en esta categoría."
+msgstr "No se encontraron feeds en esta categoría."
 
 msgid "No gifts sent yet."
 msgstr "Aún no se han enviado regalos."
@@ -4327,7 +4329,7 @@ msgid "No match in author"
 msgstr "Sin coincidencia en autor"
 
 msgid "No match in story"
-msgstr "Sin coincidencia en la historia"
+msgstr "Sin coincidencia en el artículo"
 
 msgid "No match in title"
 msgstr "Sin coincidencia en el título"
@@ -4379,7 +4381,7 @@ msgid "No results found, but you can subscribe directly if you know the subreddi
 msgstr "No se encontraron resultados, pero puedes suscribirte directamente si conoces el nombre del subreddit."
 
 msgid "No similar stories found"
-msgstr "No se encontraron historias similares"
+msgstr "No se encontraron artículos similares"
 
 msgid "No sites available"
 msgstr "No hay sitios disponibles"
@@ -4397,32 +4399,32 @@ msgid "No split suggestions available for this category"
 msgstr "No hay sugerencias de división disponibles para esta categoría"
 
 msgid "No stories"
-msgstr "Sin historias"
+msgstr "Sin artículos"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "Aún no se han indexado historias de %(folder)s para encontrar historias relacionadas."
+msgstr "Aún no se han indexado artículos de %(folder)s para encontrar artículos relacionados."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "Aún no se han indexado historias de tu sitio %(count)s para mostrar historias relacionadas."
-msgstr[1] "Aún no se han indexado historias de tus %(count)s sitios para mostrar historias relacionadas."
+msgstr[0] "Aún no se han indexado artículos de tu %(count)s sitio para mostrar artículos relacionados."
+msgstr[1] "Aún no se han indexado artículos de tus %(count)s sitios para mostrar artículos relacionados."
 
 msgid "No stories published last month"
 msgstr "No se publicaron artículos el mes pasado"
 
 msgid "No stories to delete"
-msgstr "No hay historias para eliminar"
+msgstr "No hay artículos para eliminar"
 
 msgid "No stories to read"
-msgstr "No hay historias para leer"
+msgstr "No hay artículos para leer"
 
 msgid "No stories yet"
-msgstr "Todavía no hay noticias"
+msgstr "Todavía no hay artículos"
 
 msgid "No story patterns found on this page."
-msgstr "No se encontraron patrones de historias en esta página."
+msgstr "No se encontraron patrones de artículos en esta página."
 
 msgid "No trending sites available"
 msgstr "No hay sitios en tendencia disponibles"
@@ -4434,10 +4436,10 @@ msgid "No usage billing set up."
 msgstr "No hay facturación de uso configurada."
 
 msgid "No valid merge groups to apply"
-msgstr "No hay grupos de combinación válidos para aplicar"
+msgstr "No hay grupos de fusión válidos para aplicar"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "Nadie se ha suscrito todavía a tus historias compartidas."
+msgstr "Nadie se ha suscrito todavía a tus artículos compartidos."
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "¡No queda nadie a quien recomendar! ¡Buen trabajo!"
@@ -4458,7 +4460,7 @@ msgid "Not found in author"
 msgstr "No encontrado en autor"
 
 msgid "Not found in story"
-msgstr "No encontrado en la historia"
+msgstr "No encontrado en el artículo"
 
 msgid "Not found in title"
 msgstr "No encontrado en el título"
@@ -4467,13 +4469,13 @@ msgid "Not now"
 msgstr "Ahora no"
 
 msgid "Not redeemed in 90 days?"
-msgstr "¿No canjeado en 90 días?"
+msgstr "¿No se canjea en 90 días?"
 
 msgid "Not seeing the right stories?"
-msgstr "¿No encuentras las noticias que buscas?"
+msgstr "¿No encuentras los artículos que buscas?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
-msgstr "No es el más leído, sino el mejor valorado, y favorece a los sitios pequeños frente a los grandes."
+msgstr "No son los más leídos, sino los mejor valorados, y favorecen a los sitios pequeños frente a los grandes."
 
 msgid "Nothing"
 msgstr "Nada"
@@ -4485,7 +4487,7 @@ msgid "Nothing recorded."
 msgstr "Nada registrado."
 
 msgid "Notification Preferences"
-msgstr "Preferencias de Notificación"
+msgstr "Preferencias de notificaciones"
 
 msgid "Notifications"
 msgstr "Notificaciones"
@@ -4513,31 +4515,31 @@ msgid "Now"
 msgstr "Ahora"
 
 msgid "Number of stories to include in each briefing"
-msgstr "Número de historias que se incluirán en cada resumen"
+msgstr "Número de artículos que se incluirán en cada resumen"
 
 msgid "Numbers & Symbols"
 msgstr "Números y símbolos"
 
 msgid "OFF"
-msgstr "APAGADO"
+msgstr "DESACTIVADO"
 
 msgid "ON"
-msgstr "ENCENDIDO"
+msgstr "ACTIVADO"
 
 msgid "Objects"
 msgstr "Objetos"
 
 msgid "October"
-msgstr "Octubre"
+msgstr "octubre"
 
 msgid "Off"
-msgstr "Apagado"
+msgstr "Desactivado"
 
 msgid "Official NewsBlur Android App"
 msgstr "Aplicación oficial de Android de NewsBlur"
 
 msgid "Official NewsBlur iPhone/iPad App"
-msgstr "Aplicación oficial para NewsBlur iPhone/iPad"
+msgstr "Aplicación oficial de NewsBlur para iPhone/iPad"
 
 msgid "Official NewsBlur macOS App"
 msgstr "Aplicación oficial de NewsBlur para macOS"
@@ -4553,30 +4555,30 @@ msgstr "Contraseña antigua"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Más antiguo que: %(month)s %(day)s %(year)s"
+msgstr "Anteriores a: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
-msgstr "Anterior:"
+msgstr "Anterior a:"
 
 msgid "Oldest"
-msgstr "Más antiguo"
+msgstr "Más antiguos"
 
 msgid "Oldest first"
 msgstr "Más antiguos primero"
 
 msgid "Oldest unread story"
-msgstr "Historia no leída más antigua"
+msgstr "Artículo no leído más antiguo"
 
 msgid "On"
 msgstr "Activado"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
-msgstr "Con Premium Archive, puedes buscar todas las noticias archivadas, no solo las recientes."
+msgstr "Con Premium Archive, puedes buscar todos los artículos archivados, no solo los recientes."
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr ""
-"Con Premium, puedes buscar entre tus noticias recientes. Con Premium Archive, puedes buscar en todas las "
-"noticias archivadas."
+"Con Premium, puedes buscar entre tus artículos recientes. Con Premium Archive, puedes buscar en todos los "
+"artículos archivados."
 
 msgid "One command with Docker"
 msgstr "Un comando con Docker"
@@ -4592,7 +4594,7 @@ msgstr ""
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "Solo se ha indexado %(indexed)s de tus %(count)s sitios para encontrar historias relacionadas."
+msgstr[0] "Solo se ha indexado %(indexed)s de tu %(count)s sitio para encontrar artículos relacionados."
 msgstr[1] "Solo se ha indexado %(indexed)s de tus %(count)s sitios para encontrar artículos relacionados."
 
 #, python-format
@@ -4603,7 +4605,7 @@ msgid_plural ""
 "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
 " personalized recommendations."
 msgstr[0] ""
-"Solo %(indexed)s de tu sitio %(count)s está indexado para el descubrimiento. Mejora tu plan para indexar "
+"Solo %(indexed)s de tu %(count)s sitio está indexado para el descubrimiento. Mejora tu plan para indexar "
 "todos tus sitios y obtener recomendaciones personalizadas."
 msgstr[1] ""
 "Solo %(indexed)s de tus %(count)s sitios están indexados para el descubrimiento. Mejora tu plan para "
@@ -4616,40 +4618,40 @@ msgid "Only page down in story, do not open next unread story"
 msgstr "Solo bajar página en el artículo, no abrir el siguiente no leído"
 
 msgid "Only people I approve can see my shared stories and reply to me"
-msgstr "Solo las personas que apruebo pueden ver mis historias compartidas y responderme"
+msgstr "Solo las personas que apruebo pueden ver mis artículos compartidos y responderme"
 
 #, python-format
 msgid "Only recent stories shown from %(count)s site."
 msgid_plural "Only recent stories shown from %(count)s sites."
 msgstr[0] "Solo se muestran artículos recientes de %(count)s sitio."
-msgstr[1] "Solo se muestran historias recientes de %(count)s sitios."
+msgstr[1] "Solo se muestran artículos recientes de %(count)s sitios."
 
 #, python-format
 msgid "Only recent stories shown from %(indexed)s of %(count)s site."
 msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
-msgstr[0] "Solo se muestran historias recientes de %(indexed)s de %(count)s sitio."
-msgstr[1] "Solo se muestran noticias recientes de %(indexed)s de %(count)s sitios."
+msgstr[0] "Solo se muestran artículos recientes de %(indexed)s de %(count)s sitio."
+msgstr[1] "Solo se muestran artículos recientes de %(indexed)s de %(count)s sitios."
 
 msgid "Only recent stories shown from this site are available."
 msgstr "Solo están disponibles los artículos recientes que se muestran de este sitio."
 
 msgid "Only see the full story title"
-msgstr "Ver solo el título completo de la historia"
+msgstr "Ver solo el título completo del artículo"
 
 msgid "Only show comments from friends"
 msgstr "Mostrar solo comentarios de amigos"
 
 msgid "Only show counts on collapsed folders"
-msgstr "Mostrar solo recuentos en carpetas colapsadas"
+msgstr "Mostrar recuentos solo en carpetas contraídas"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "Solo truncar historias compartidas largas en blurblogs"
+msgstr "Solo truncar artículos compartidos largos en blurblogs"
 
 msgid "Open"
 msgstr "Abrir"
 
 msgid "Open All Site Stories"
-msgstr "Abrir todos los artículos del sitio"
+msgstr "Abrir artículos de todos los sitios"
 
 msgid "Open Everything"
 msgstr "Abrir todo"
@@ -4659,20 +4661,20 @@ msgstr "Abrir sitio"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
 msgstr ""
-"Abre el título de cualquier carpeta para leer todos sus feeds a la vez. Todas las noticias de los sitios "
+"Abre el título de cualquier carpeta para leer todos sus feeds a la vez. «Artículos de todos los sitios» "
 "reúne todo en un solo flujo."
 
 msgid "Open clustering preferences"
 msgstr "Abrir preferencias de agrupación"
 
 msgid "Open in Story view"
-msgstr "Abrir en vista de historia"
+msgstr "Abrir en vista de artículo"
 
 msgid "Open in Text view"
 msgstr "Abrir en vista de texto"
 
 msgid "Open in background tab"
-msgstr "Abrir en pestaña de fondo"
+msgstr "Abrir en pestaña en segundo plano"
 
 msgid "Open in email client"
 msgstr "Abrir en cliente de correo"
@@ -4684,13 +4686,13 @@ msgid "Open links"
 msgstr "Abrir enlaces"
 
 msgid "Open links in a background tab"
-msgstr "Abrir enlaces en una pestaña de fondo"
+msgstr "Abrir enlaces en una pestaña en segundo plano"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "Abrir siguiente historia no leída al llegar al final de la historia actual"
+msgstr "Abrir siguiente artículo no leído al llegar al final del artículo actual"
 
 msgid "Open next unread story when story is half-way up"
-msgstr "Abrir la siguiente historia no leída cuando la historia está a medio camino"
+msgstr "Abrir el siguiente artículo no leído cuando el artículo está a medio camino"
 
 msgid "Open preferences"
 msgstr "Abrir preferencias"
@@ -4699,16 +4701,16 @@ msgid "Open site/feed trainer"
 msgstr "Abrir entrenador de sitio/feed"
 
 msgid "Open story trainer"
-msgstr "Abrir entrenador de historias"
+msgstr "Abrir entrenador de artículos"
 
 msgid "Open the Intelligence Trainer"
 msgstr "Abre el Entrenador de inteligencia"
 
 msgid "Open the feed and story title menu"
-msgstr "Abrir el menú de feed y título de historia"
+msgstr "Abrir el menú del feed y del título del artículo"
 
 msgid "Open the first story"
-msgstr "Abrir la primera noticia"
+msgstr "Abrir el primer artículo"
 
 msgid "Open the next site/folder"
 msgstr "Abrir el siguiente sitio/carpeta"
@@ -4729,13 +4731,13 @@ msgid "Open your Daily Briefing"
 msgstr "Abre tu resumen diario"
 
 msgid "Open your saved stories"
-msgstr "Abrir tus noticias guardadas"
+msgstr "Abrir tus artículos guardados"
 
 msgid "Opens"
-msgstr "Abre"
+msgstr "Aperturas"
 
 msgid "Opens stories in a background tab with a customizable hotkey"
-msgstr "Abre las noticias en una pestaña en segundo plano mediante una tecla de acceso rápido configurable"
+msgstr "Abre los artículos en una pestaña en segundo plano mediante una tecla de acceso rápido configurable"
 
 msgid "Option 1:"
 msgstr "Opción 1:"
@@ -4767,7 +4769,7 @@ msgid "Original"
 msgstr "Original"
 
 msgid "Outline Icons"
-msgstr "Iconos de esquema"
+msgstr "Iconos de contorno"
 
 msgid "Override the default blocklist for these domains. These sites WILL be archived even if normally blocked."
 msgstr ""
@@ -4785,7 +4787,7 @@ msgid "Page Fetch"
 msgstr "Recuperación de página"
 
 msgid "Page down"
-msgstr "Bajar página"
+msgstr "Página abajo"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
@@ -4803,7 +4805,7 @@ msgid "Paired with full-text search, the archive doubles as a personal knowledge
 msgstr "Junto con la búsqueda de texto completo, el archivo se convierte en una base de conocimiento personal."
 
 msgid "Parse this RSS/XML Feed"
-msgstr "Analizar este Feed RSS/XML"
+msgstr "Analizar este feed RSS/XML"
 
 msgid "Parsing..."
 msgstr "Analizando..."
@@ -4843,13 +4845,13 @@ msgid "People you know"
 msgstr "Personas que conoces"
 
 msgid "Per Folder"
-msgstr "Por Carpeta"
+msgstr "Por carpeta"
 
 msgid "Per Site"
-msgstr "Por Sitio"
+msgstr "Por sitio"
 
 msgid "Per-feed notification settings"
-msgstr "Configuración de notificaciones por fuente"
+msgstr "Configuración de notificaciones por feed"
 
 msgid "Pick a tier & pay."
 msgstr "Elige un nivel y paga."
@@ -4864,10 +4866,10 @@ msgid "Platform"
 msgstr "Plataforma"
 
 msgid "Play Last"
-msgstr "Reproducir el último"
+msgstr "Reproducir al final"
 
 msgid "Play Next"
-msgstr "Reproducir siguiente"
+msgstr "Reproducir a continuación"
 
 msgid "Play in Mini Media Player"
 msgstr "Reproducir en el minirreproductor multimedia"
@@ -4912,7 +4914,7 @@ msgid "Popular"
 msgstr "Popular"
 
 msgid "Popular Shared Stories"
-msgstr "Historias compartidas populares"
+msgstr "Artículos compartidos populares"
 
 msgid "Portuguese"
 msgstr "Portugués"
@@ -4930,7 +4932,7 @@ msgid "Positive you want to delete your saved stories?"
 msgstr "¿Seguro que quieres eliminar tus artículos guardados?"
 
 msgid "Positive you want to delete your shared stories?"
-msgstr "¿Seguro que quieres eliminar tus historias compartidas?"
+msgstr "¿Seguro que quieres eliminar tus artículos compartidos?"
 
 msgid "Post"
 msgstr "Publicar"
@@ -4952,7 +4954,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "Archivo Premium"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -4964,7 +4966,7 @@ msgid "Premium Subscription"
 msgstr "Suscripción Premium"
 
 msgid "Premium Trial"
-msgstr "Prueba prémium"
+msgstr "Prueba Premium"
 
 #, python-format
 msgid "Premium Trial (%(count)s day)"
@@ -4998,10 +5000,10 @@ msgid "Press ? anytime to see the full shortcut list."
 msgstr "Pulsa ? en cualquier momento para ver la lista completa de atajos."
 
 msgid "Press s to save the story you're reading."
-msgstr "Pulsa s para guardar la historia que estás leyendo."
+msgstr "Pulsa s para guardar el artículo que estás leyendo."
 
 msgid "Press the Text tab on any story to fetch the full article."
-msgstr "Pulsa la pestaña Texto en cualquier noticia para cargar el artículo completo."
+msgstr "Pulsa la pestaña Texto en cualquier artículo para cargar el artículo completo."
 
 msgid "Press the search icon or hit the / key"
 msgstr "Pulsa el icono de búsqueda o la tecla /"
@@ -5013,11 +5015,11 @@ msgid "Preview"
 msgstr "Vista previa"
 
 msgid "Previous story"
-msgstr "Historia anterior"
+msgstr "Artículo anterior"
 
 #, python-format
 msgid "Previously Recommended on: %(date)s"
-msgstr "Recomendado anteriormente en: %(date)s"
+msgstr "Recomendado anteriormente: %(date)s"
 
 msgid "Print"
 msgstr "Imprimir"
@@ -5044,7 +5046,7 @@ msgid "Pro"
 msgstr "Pro"
 
 msgid "Processing stories..."
-msgstr "Procesando noticias..."
+msgstr "Procesando artículos..."
 
 msgid "Processing..."
 msgstr "Procesando..."
@@ -5053,7 +5055,7 @@ msgid "Profile"
 msgstr "Perfil"
 
 msgid "Profile &amp; Blurblog"
-msgstr "Blurblog del perfil &amp;"
+msgstr "Perfil &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "Detalles del perfil"
@@ -5062,13 +5064,13 @@ msgid "Profile picture"
 msgstr "Foto de perfil"
 
 msgid "Prompt"
-msgstr "Indicación"
+msgstr "Instrucción"
 
 msgid "Protected:"
 msgstr "Protegido:"
 
 msgid "Public blurblog sharing"
-msgstr "Compartir blurblog público"
+msgstr "Compartir en un blurblog público"
 
 msgid "Public comments"
 msgstr "Comentarios públicos"
@@ -5080,10 +5082,10 @@ msgid "Publisher"
 msgstr "Editor"
 
 msgid "Push Expires"
-msgstr "PushExpires"
+msgstr "Caducidad del push"
 
 msgid "Push expires"
-msgstr "La notificación push expira"
+msgstr "Caducidad del push"
 
 msgid "Questions"
 msgstr "Preguntas"
@@ -5096,8 +5098,8 @@ msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
 msgstr[0] ""
-"Se ha puesto en cola %(count)s historia para categorizar (%(remaining)s restante). Las categorías "
-"aparecerán a medida que se procesen las historias."
+"Se ha puesto en cola %(count)s artículo para categorizar (pendientes: %(remaining)s). Las categorías "
+"aparecerán a medida que se procesen los artículos."
 msgstr[1] ""
 "Se pusieron en cola %(count)s artículos para clasificar (%(remaining)s restantes). Las categorías "
 "aparecerán a medida que se procesen los artículos."
@@ -5106,8 +5108,8 @@ msgstr[1] ""
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] ""
-"Se ha puesto en cola %(count)s historia para categorizar. Las categorías aparecerán a medida que se "
-"procesen las historias."
+"Se ha puesto en cola %(count)s artículo para categorizar. Las categorías aparecerán a medida que se "
+"procesen los artículos."
 msgstr[1] ""
 "Se añadieron a la cola %(count)s artículos para clasificarlos. Las categorías aparecerán a medida que se "
 "procesen los artículos."
@@ -5119,18 +5121,18 @@ msgid "Quota exceeded"
 msgstr "Cuota excedida"
 
 msgid "Quote"
-msgstr "Cita"
+msgstr "Citar"
 
 msgid "RSS Feed"
-msgstr "Canal RSS"
+msgstr "Feed RSS"
 
 #, python-format
 msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
-msgstr "Los canales RSS de las carpetas son una función %(link_start)spremium%(link_end)s."
+msgstr "Los feeds RSS de las carpetas son una función %(link_start)spremium%(link_end)s."
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "Los feeds RSS de etiquetas de historias guardadas son una función %(link_start)spremium%(link_end)s."
+msgstr "Los feeds RSS de etiquetas de artículos guardados son una función %(link_start)spremium%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "URL RSS/XML: "
@@ -5148,7 +5150,7 @@ msgid "Re-ask"
 msgstr "Volver a preguntar"
 
 msgid "Re-ask original question"
-msgstr "Volver a preguntar la pregunta original"
+msgstr "Volver a hacer la pregunta original"
 
 msgid "Re-categorize this article"
 msgstr "Recategorizar este artículo"
@@ -5157,10 +5159,10 @@ msgid "Re-categorizing..."
 msgstr "Recategorizando..."
 
 msgid "Read Stories"
-msgstr "Leer noticias"
+msgstr "Artículos leídos"
 
 msgid "Read Stories:"
-msgstr "Historias leídas:"
+msgstr "Artículos leídos:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
@@ -5176,22 +5178,22 @@ msgid "Read offline with automatic background refresh"
 msgstr "Lee sin conexión con actualización automática en segundo plano"
 
 msgid "Read on scroll"
-msgstr "Leer al desplazarse"
+msgstr "Marcar como leído al desplazarse"
 
 msgid "Read stories by folder"
-msgstr "Leer historias por carpeta"
+msgstr "Leer artículos por carpeta"
 
 msgid "Read the whole story"
-msgstr "Leer la noticia completa"
+msgstr "Leer el artículo completo"
 
 msgid "Read unread stories with: newsblur stories list"
-msgstr "Lee noticias sin leer con: newsblur stories list"
+msgstr "Lee artículos sin leer con: newsblur stories list"
 
 msgid "Read your email newsletters in your news reader, not your inbox."
 msgstr "Lee los boletines que recibes por correo en tu lector de noticias, no en la bandeja de entrada."
 
 msgid "Read your feeds: unread stories, folders, search, and saved stories by tag"
-msgstr "Lee tus feeds: noticias sin leer, carpetas, búsquedas y noticias guardadas por etiqueta"
+msgstr "Lee tus feeds: artículos sin leer, carpetas, búsquedas y artículos guardados por etiqueta"
 
 msgid "Reading"
 msgstr "Lectura"
@@ -5201,10 +5203,10 @@ msgstr "Leyendo artículo..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "Leer historias guardadas por etiqueta es una %(link_start)sfunción Premium%(link_end)s."
+msgstr "Leer artículos guardados por etiqueta es una %(link_start)sfunción premium%(link_end)s."
 
 msgid "Reading saved story..."
-msgstr "Cargando la historia guardada..."
+msgstr "Leyendo el artículo guardado..."
 
 msgid "Reading view"
 msgstr "Vista de lectura"
@@ -5219,7 +5221,7 @@ msgid "Really delete?"
 msgstr "¿Borrar realmente?"
 
 msgid "Really unfollow?"
-msgstr "¿Dejar de seguir realmente?"
+msgstr "¿Seguro que quieres dejar de seguir?"
 
 msgid "Recency"
 msgstr "Recencia"
@@ -5258,13 +5260,13 @@ msgid "Reduce clutter in your river of stories"
 msgstr "Reduce el desorden en tu río de noticias"
 
 msgid "Refer"
-msgstr "Referir"
+msgstr "Recomendar"
 
 msgid "Refer &amp; Gift"
-msgstr "Regala &amp;"
+msgstr "Recomienda &amp; regala"
 
 msgid "Referral History"
-msgstr "Historial de Referidos"
+msgstr "Historial de referidos"
 
 msgid "Refine with a hint"
 msgstr "Refinar con una pista"
@@ -5296,13 +5298,13 @@ msgid "Related Sites"
 msgstr "Sitios relacionados"
 
 msgid "Related stories are only available for premium subscribers."
-msgstr "Las historias relacionadas solo están disponibles para suscriptores premium."
+msgstr "Los artículos relacionados solo están disponibles para suscriptores premium."
 
 msgid "Reload NewsBlur"
 msgstr "Recargar NewsBlur"
 
 msgid "Reload feed/folder"
-msgstr "Recargar fuente/carpeta"
+msgstr "Recargar feed/carpeta"
 
 msgid "Remember playback position for each episode"
 msgstr "Recordar la posición de reproducción de cada episodio"
@@ -5344,8 +5346,8 @@ msgstr "Se cambió el nombre"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "Se cambió el nombre de %(count)s historia a «%(category)s»"
-msgstr[1] "Se cambió el nombre de %(count)s historias a «%(category)s»"
+msgstr[0] "Se cambió el nombre de %(count)s artículo a «%(category)s»"
+msgstr[1] "Se cambió el nombre de %(count)s artículos a «%(category)s»"
 
 msgid "Renaming..."
 msgstr "Renombrando..."
@@ -5370,7 +5372,7 @@ msgid "Requires %(tier_link)s"
 msgstr "Requiere %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "Requiere Archivo Premium"
+msgstr "Requiere Premium Archive"
 
 msgid "Reset"
 msgstr "Restablecer"
@@ -5392,7 +5394,7 @@ msgid "Restore the player when you reload NewsBlur"
 msgstr "Restaurar el reproductor al recargar NewsBlur"
 
 msgid "Results show matching stories with highlighted terms"
-msgstr "Los resultados muestran los artículos que coinciden con los términos resaltados"
+msgstr "Los resultados muestran los artículos coincidentes con los términos resaltados"
 
 msgid "Results will appear as indexing completes"
 msgstr "Los resultados aparecerán a medida que se complete la indexación"
@@ -5416,7 +5418,7 @@ msgid "Right-clicking"
 msgstr "Clic derecho"
 
 msgid "Rising"
-msgstr "Ascendente"
+msgstr "En alza"
 
 msgid "River of News"
 msgstr "Río de noticias"
@@ -5445,7 +5447,7 @@ msgid "Sat"
 msgstr "Sáb"
 
 msgid "Saturday"
-msgstr "Sábado"
+msgstr "sábado"
 
 msgid "Save"
 msgstr "Guardar"
@@ -5463,7 +5465,7 @@ msgstr[0] "Guardar %(count)s carpeta"
 msgstr[1] "Guardar %(count)s carpetas"
 
 msgid "Save & Close"
-msgstr "Guardar y Cerrar"
+msgstr "Guardar y cerrar"
 
 #, python-format
 msgid "Save & Next %(value_1)s"
@@ -5482,16 +5484,16 @@ msgid "Save My Profile"
 msgstr "Guardar mi perfil"
 
 msgid "Save Preferences"
-msgstr "Guardar Preferencias"
+msgstr "Guardar preferencias"
 
 msgid "Save Search"
 msgstr "Guardar búsqueda"
 
 msgid "Save a search as a feed and it keeps collecting matches in your sidebar."
-msgstr "Guarda una búsqueda como fuente y seguirá recopilando coincidencias en la barra lateral."
+msgstr "Guarda una búsqueda como feed y seguirá recopilando coincidencias en la barra lateral."
 
 msgid "Save any story with one click or the s key"
-msgstr "Guarda cualquier historia con un clic o con la tecla s"
+msgstr "Guarda cualquier artículo con un clic o con la tecla s"
 
 msgid "Save comments"
 msgstr "Guardar comentarios"
@@ -5503,7 +5505,7 @@ msgid "Save searches as feeds for ongoing monitoring"
 msgstr "Guarda búsquedas como feeds para supervisarlas continuamente"
 
 msgid "Save stories for later"
-msgstr "Guarda historias para más tarde"
+msgstr "Guarda artículos para más tarde"
 
 msgid ""
 "Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
@@ -5513,13 +5515,13 @@ msgstr ""
 "de recortes, con función de búsqueda y para compartir."
 
 msgid "Save stories with searchable tags"
-msgstr "Guarda historias con etiquetas buscables"
+msgstr "Guarda artículos con etiquetas buscables"
 
 msgid "Save this story"
-msgstr "Guardar esta historia"
+msgstr "Guardar este artículo"
 
 msgid "Save/Unsave story"
-msgstr "Guardar/Desguardar historia"
+msgstr "Guardar/quitar artículo de guardados"
 
 msgid "Saved"
 msgstr "Guardado"
@@ -5528,13 +5530,13 @@ msgid "Saved Searches"
 msgstr "Búsquedas guardadas"
 
 msgid "Saved Stories"
-msgstr "Historias guardadas"
+msgstr "Artículos guardados"
 
 msgid "Saved Stories & Tags"
-msgstr "Noticias y etiquetas guardadas"
+msgstr "Artículos guardados y etiquetas"
 
 msgid "Saved Tags"
-msgstr "Etiquetas Guardadas"
+msgstr "Etiquetas guardadas"
 
 msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
 msgstr ""
@@ -5542,7 +5544,7 @@ msgstr ""
 "feeds."
 
 msgid "Saved stories organized with custom tags"
-msgstr "Historias guardadas organizadas con etiquetas personalizadas"
+msgstr "Artículos guardados organizados con etiquetas personalizadas"
 
 msgid "Saved!"
 msgstr "¡Guardado!"
@@ -5552,7 +5554,7 @@ msgstr "Guardado:"
 
 msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium or higher."
 msgstr ""
-"Guardar historias está disponible en todos los planes. Las etiquetas y sus feeds RSS requieren Premium o "
+"Guardar artículos está disponible en todos los planes. Las etiquetas y sus feeds RSS requieren Premium o "
 "superior."
 
 msgid "Saving..."
@@ -5583,25 +5585,25 @@ msgstr "Desplazarse a los comentarios"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "Desplazarse hacia arriba/abajo en la historia %(slider)s %(pixels)spx."
+msgstr "Desplazarse hacia arriba/abajo en el artículo %(slider)s %(pixels)spx."
 
 msgid "Search"
 msgstr "Buscar"
 
 msgid "Search All Site Stories"
-msgstr "Buscar todas las historias del sitio"
+msgstr "Buscar en artículos de todos los sitios"
 
 msgid "Search YouTube channels..."
 msgstr "Buscar canales de YouTube..."
 
 msgid "Search across all saved stories and tags"
-msgstr "Busca entre todas las noticias y etiquetas guardadas"
+msgstr "Busca entre todos los artículos y etiquetas guardados"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Busca en todas tus suscripciones con la búsqueda de texto completo basada en Elasticsearch."
 
 msgid "Search archives..."
-msgstr "Buscar en archivos..."
+msgstr "Buscar en el archivo..."
 
 msgid "Search by name, keyword, or paste a URL..."
 msgstr "Buscar por nombre, palabra clave o pegar una URL..."
@@ -5632,22 +5634,22 @@ msgid "Search newsletters or paste URL..."
 msgstr "Buscar boletines o pegar URL..."
 
 msgid "Search podcasts (e.g., \"technology\", \"true crime\", \"comedy\")..."
-msgstr "Busca podcasts (ej. \"tecnología\", \"true crime\", \"comedia\")..."
+msgstr "Buscar podcasts (p. ej., \"tecnología\", \"true crime\", \"comedia\")..."
 
 msgid "Search results across subscriptions"
 msgstr "Resultados de búsqueda en todas las suscripciones"
 
 msgid "Search site"
-msgstr "Buscar sitio"
+msgstr "Buscar en el sitio"
 
 msgid "Search sites and folders"
 msgstr "Busca sitios y carpetas"
 
 msgid "Search subreddits (e.g., programming, news, gaming)..."
-msgstr "Busca subreddits (ej. programación, noticias, juegos)..."
+msgstr "Buscar subreddits (p. ej., programación, noticias, juegos)..."
 
 msgid "Search the FAQ..."
-msgstr "Busca en la FAQ..."
+msgstr "Busca en las preguntas frecuentes..."
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Busca en un feed, una carpeta o en todo"
@@ -5656,21 +5658,21 @@ msgid "Search your entire archive with full-text search"
 msgstr "Busca en todo tu archivo con la búsqueda de texto completo"
 
 msgid "Search your stories"
-msgstr "Busca en tus historias"
+msgstr "Busca en tus artículos"
 
 #, python-format
 msgid "Search: \"%(value_1)s\""
-msgstr "Buscar: \"%(value_1)s\""
+msgstr "Búsqueda: \"%(value_1)s\""
 
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
-msgstr "Buscando en <b>%(feed_title)s</b> «<b>%(query)s</b>»"
+msgstr "Buscando «<b>%(query)s</b>» en <b>%(feed_title)s</b>"
 
 msgid "Searching RSS feeds..."
-msgstr "Buscando fuentes RSS..."
+msgstr "Buscando feeds RSS..."
 
 msgid "Searching saved stories..."
-msgstr "Buscando historias guardadas..."
+msgstr "Buscando artículos guardados..."
 
 msgid "Searching your archive..."
 msgstr "Buscando en tu archivo..."
@@ -5685,7 +5687,7 @@ msgid "Sections"
 msgstr "Secciones"
 
 msgid "Sections are only included when matching stories are found."
-msgstr "Las secciones solo se incluyen cuando se encuentran historias coincidentes."
+msgstr "Las secciones solo se incluyen cuando se encuentran artículos coincidentes."
 
 msgid "Security"
 msgstr "Seguridad"
@@ -5704,17 +5706,17 @@ msgid ""
 "See how a story evolves after it's first published. NewsBlur tracks revisions and shows you a diff of what "
 "changed, highlighted in green and red."
 msgstr ""
-"Descubre cómo evoluciona una noticia después de publicarse por primera vez. NewsBlur registra las "
+"Descubre cómo evoluciona un artículo después de publicarse por primera vez. NewsBlur registra las "
 "revisiones y muestra las diferencias, con los cambios resaltados en verde y rojo."
 
 msgid "See shared stories"
-msgstr "Ver historias compartidas"
+msgstr "Ver artículos compartidos"
 
 msgid "See the story title and a short content preview"
-msgstr "Ver el título de la historia y una breve vista previa del contenido"
+msgstr "Ver el título del artículo y una breve vista previa del contenido"
 
 msgid "See which feeds cover the same story"
-msgstr "Ver qué feeds cubren la misma historia"
+msgstr "Ver qué feeds cubren el mismo artículo"
 
 msgid "Select"
 msgstr "Seleccionar"
@@ -5726,7 +5728,7 @@ msgid "Select a folder"
 msgstr "Seleccionar una carpeta"
 
 msgid "Select a story to read"
-msgstr "Selecciona una noticia para leer"
+msgstr "Selecciona un artículo para leer"
 
 msgid "Select any story and click \"Ask AI\""
 msgstr "Selecciona cualquier artículo y haz clic en «Preguntar a la IA»"
@@ -5744,25 +5746,25 @@ msgid "Select title phrase"
 msgstr "Seleccionar frase del título"
 
 msgid "Selecting a story in the story titles marks it as read."
-msgstr "Seleccionar una historia en los títulos de las historias la marca como leída."
+msgstr "Seleccionar un artículo en los títulos de los artículos lo marca como leído."
 
 msgid "Self-Hosted"
 msgstr "Autoalojado"
 
 msgid "Semantic matching finds stories about the same topic with different headlines"
-msgstr "La búsqueda semántica encuentra noticias sobre el mismo tema aunque tengan titulares distintos"
+msgstr "La búsqueda semántica encuentra artículos sobre el mismo tema aunque tengan titulares distintos"
 
 msgid "Send"
 msgstr "Enviar"
 
 msgid "Send Story by Email"
-msgstr "Enviar historia por correo electrónico"
+msgstr "Enviar artículo por correo electrónico"
 
 msgid "Send me a copy of this email"
 msgstr "Envíame una copia de este correo electrónico"
 
 msgid "Send this story"
-msgstr "Enviar esta noticia"
+msgstr "Enviar este artículo"
 
 msgid "Sending…"
 msgstr "Enviando…"
@@ -5806,14 +5808,14 @@ msgstr "Compartir"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
 msgstr ""
-"Comparte una historia con un comentario y se publicará en tu blurblog, que se puede seguir por RSS o en la "
+"Comparte un artículo con un comentario y se publicará en tu blurblog, que se puede seguir por RSS o en la "
 "web."
 
 msgid "Share on NewsBlur"
 msgstr "Compartir en NewsBlur"
 
 msgid "Share stories"
-msgstr "Compartir historias"
+msgstr "Compartir artículos"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -5829,7 +5831,7 @@ msgid "Share this link. When someone signs up and subscribes to premium, you ear
 msgstr "Comparte este enlace. Cuando alguien se registre y se suscriba a premium, ganarás un año gratis."
 
 msgid "Share this story"
-msgstr "Compartir esta historia"
+msgstr "Compartir este artículo"
 
 msgid "Share to your Blurblog"
 msgstr "Compartir en tu Blurblog"
@@ -5862,7 +5864,7 @@ msgid "Sharing"
 msgstr "Compartir"
 
 msgid "Sharing Stories From These Sites"
-msgstr "Compartir historias de estos sitios"
+msgstr "Compartir artículos de estos sitios"
 
 msgid "Sharing services"
 msgstr "Servicios para compartir"
@@ -5874,10 +5876,10 @@ msgid "Shift+u hides the sidebar for distraction-free reading."
 msgstr "Shift+u oculta la barra lateral para que leas sin distracciones."
 
 msgid "Shopping"
-msgstr "Comprar"
+msgstr "Compras"
 
 msgid "Short"
-msgstr "Corto"
+msgstr "Bajo"
 
 msgid "Show"
 msgstr "Mostrar"
@@ -5886,22 +5888,22 @@ msgid "Show Folders"
 msgstr "Mostrar carpetas"
 
 msgid "Show Global Shared Stories"
-msgstr "Mostrar historias compartidas globalmente"
+msgstr "Mostrar artículos compartidos globalmente"
 
 msgid "Show Good Reads"
 msgstr "Mostrar buenas lecturas"
 
 msgid "Show Infrequent Site Stories"
-msgstr "Mostrar historias de sitios infrecuentes"
+msgstr "Mostrar artículos de sitios poco activos"
 
 msgid "Show Long Reads"
-msgstr "Mostrar Lecturas Largas"
+msgstr "Mostrar lecturas largas"
 
 msgid "Show Widely Read Stories"
-msgstr "Mostrar historias muy leídas"
+msgstr "Mostrar artículos muy leídos"
 
 msgid "Show a preview of the story"
-msgstr "Mostrar una vista previa de la historia"
+msgstr "Mostrar una vista previa del artículo"
 
 msgid "Show all animations"
 msgstr "Mostrar todas las animaciones"
@@ -5910,7 +5912,7 @@ msgid "Show all comments"
 msgstr "Mostrar todos los comentarios"
 
 msgid "Show all stories"
-msgstr "Mostrar todas las historias"
+msgstr "Mostrar todos los artículos"
 
 msgid "Show buttons on the right (when there is room)"
 msgstr "Mostrar botones a la derecha (cuando haya espacio)"
@@ -5919,16 +5921,16 @@ msgid "Show confirmation only when marking folders as read"
 msgstr "Mostrar confirmación solo al marcar carpetas como leídas"
 
 msgid "Show confirmation when marking feeds or folders as read"
-msgstr "Mostrar confirmación al marcar fuentes o carpetas como leídas"
+msgstr "Mostrar confirmación al marcar feeds o carpetas como leídos"
 
 msgid "Show discover sites popover above story titles"
-msgstr "Mostrar ventana emergente de sitios descubiertos encima de los títulos de las historias"
+msgstr "Mostrar la ventana emergente Descubrir sitios encima de los títulos de los artículos"
 
 msgid "Show every site, including ones you already follow"
 msgstr "Mostrar todos los sitios, incluidos los que ya sigues"
 
 msgid "Show every story individually without grouping"
-msgstr "Mostrar cada historia individualmente sin agrupar"
+msgstr "Mostrar cada artículo individualmente sin agrupar"
 
 msgid "Show from both friends and the public"
 msgstr "Mostrar de amigos y del público"
@@ -5940,7 +5942,7 @@ msgid "Show history"
 msgstr "Mostrar historial"
 
 msgid "Show more related stories"
-msgstr "Mostrar más historias relacionadas"
+msgstr "Mostrar más artículos relacionados"
 
 msgid "Show on Load"
 msgstr "Mostrar al cargar"
@@ -5952,13 +5954,13 @@ msgid "Show the dashboard when loading NewsBlur"
 msgstr "Mostrar el panel al cargar NewsBlur"
 
 msgid "Show the entire story, even if really, really long"
-msgstr "Mostrar la historia completa, incluso si es muy, muy larga"
+msgstr "Mostrar el artículo completo, incluso si es muy, muy largo"
 
 msgid "Show tooltips"
-msgstr "Mostrar tooltips"
+msgstr "Mostrar descripciones emergentes"
 
 msgid "Show unread counts in the window title"
-msgstr "Mostrar recuentos no leídos en el título de la ventana"
+msgstr "Mostrar recuentos de no leídos en el título de la ventana"
 
 #, python-format
 msgid "Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"
@@ -5966,7 +5968,7 @@ msgstr "Mostrando artículos entre <b>%(start_date)s</b> y <b>%(end_date)s</b>"
 
 #, python-format
 msgid "Showing stories newer than <b>%(date)s</b>"
-msgstr "Mostrando historias posteriores a <b>%(date)s</b>"
+msgstr "Mostrando artículos posteriores a <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories older than <b>%(date)s</b>"
@@ -5974,13 +5976,13 @@ msgstr "Mostrando artículos anteriores a <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "Mostrando historias en <b>%(date)s</b>"
+msgstr "Mostrando artículos del <b>%(date)s</b>"
 
 msgid "Shows a toolbar button with your unread count"
 msgstr "Muestra un botón en la barra de herramientas con el número de elementos sin leer"
 
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
-msgstr "Inicia sesión y tus feeds, entrenamiento e historias guardadas se sincronizarán al instante"
+msgstr "Inicia sesión y tus feeds, entrenamiento y artículos guardados se sincronizarán al instante"
 
 msgid "Sign up"
 msgstr "Regístrate"
@@ -5992,7 +5994,7 @@ msgid "Signup"
 msgstr "Registrarse"
 
 msgid "Single Story"
-msgstr "Historia Única"
+msgstr "Un solo artículo"
 
 msgid "Single line"
 msgstr "Línea única"
@@ -6016,7 +6018,7 @@ msgid "Site settings"
 msgstr "Configuración del sitio"
 
 msgid "Site sidebar order"
-msgstr "Orden de la barra lateral del sitio"
+msgstr "Orden de los sitios en la barra lateral"
 
 msgid "Site stats"
 msgstr "Estadísticas del sitio"
@@ -6063,16 +6065,16 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "Lo sentimos, no hay nada que coincida con «%(value_1)s»."
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "Lo sentimos, no se pudo obtener mediante proxy la historia original<br />."
+msgstr "Lo sentimos, no se pudo cargar a través del proxy<br />el artículo original."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "Lo sentimos, no se pudo extraer el texto de la historia<br />."
+msgstr "Lo sentimos, no se pudo extraer<br />el texto del artículo."
 
 msgid "Sorry, there was a problem deleting feeds."
-msgstr "Lo sentimos, hubo un problema al eliminar las fuentes."
+msgstr "Lo sentimos, hubo un problema al eliminar los feeds."
 
 msgid "Sorry, there was a problem moving feeds."
-msgstr "Lo sentimos, hubo un problema al mover las fuentes."
+msgstr "Lo sentimos, hubo un problema al mover los feeds."
 
 msgid "Sorry, there was an unhandled error."
 msgstr "Lo sentimos, se produjo un error inesperado."
@@ -6084,7 +6086,7 @@ msgid "Sorry, this reply could not be posted. Probably Adblock."
 msgstr "Lo sentimos, no se pudo publicar esta respuesta. Probablemente se deba a Adblock."
 
 msgid "Sorry, this story could not be shared. Probably Adblock."
-msgstr "Lo sentimos, no se pudo compartir esta historia. Probablemente sea Adblock."
+msgstr "Lo sentimos, no se pudo compartir este artículo. Probablemente sea Adblock."
 
 msgid "Sorry, this story could not be unshared. Probably Adblock."
 msgstr "Lo sentimos, no se pudo dejar de compartir este artículo. Probablemente sea Adblock."
@@ -6105,7 +6107,7 @@ msgid "Source feeds"
 msgstr "Feeds de origen"
 
 msgid "Spacing between feeds and story titles"
-msgstr "Espaciado entre fuentes y títulos de noticias"
+msgstr "Espaciado entre feeds y títulos de artículos"
 
 msgid "Spanish"
 msgstr "Español"
@@ -6122,7 +6124,7 @@ msgstr "Dividir"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "Dividir «%(category)s» (%(count)s historia) en:"
+msgstr[0] "Dividir «%(category)s» (%(count)s artículo) en:"
 msgstr[1] "Dividir «%(category)s» (%(count)s artículos) en:"
 
 #, python-format
@@ -6132,8 +6134,8 @@ msgstr "Dividir \"%(value_1)s\" en:"
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
 msgid_plural "Split complete: %(count)s stories recategorized"
-msgstr[0] "División completada: %(count)s historia recategorizada"
-msgstr[1] "División completada: se recategorizaron %(count)s noticias"
+msgstr[0] "División completada: %(count)s artículo recategorizado"
+msgstr[1] "División completada: se recategorizaron %(count)s artículos"
 
 msgid "Split failed to apply"
 msgstr "No se pudo aplicar la división"
@@ -6145,7 +6147,7 @@ msgstr "La función de dividir estará disponible próximamente"
 msgid "Split partially applied: %(count)s story recategorized"
 msgid_plural "Split partially applied: %(count)s stories recategorized"
 msgstr[0] "División aplicada parcialmente: %(count)s artículo recategorizado"
-msgstr[1] "División aplicada parcialmente: se recategorizaron %(count)s historias"
+msgstr[1] "División aplicada parcialmente: se recategorizaron %(count)s artículos"
 
 msgid "Split with AI"
 msgstr "Dividir con IA"
@@ -6158,14 +6160,14 @@ msgstr "Mejora el lema del sitio. Si se elige, este sitio disfrutará de una sem
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Desactualizado %(date)s"
+msgstr "Inactivo desde %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
-msgstr "Desactualizado — último artículo %(date)s"
+msgstr "Inactivo — último artículo %(date)s"
 
 msgid "Stars"
-msgstr "Destacados"
+msgstr "Estrellas"
 
 msgid "Start Training Site by Site"
 msgstr "Empezar a entrenar sitio por sitio"
@@ -6195,7 +6197,7 @@ msgid "Status"
 msgstr "Estado"
 
 msgid "Stay on the same feed/folder"
-msgstr "Permanecer en la misma fuente/carpeta"
+msgstr "Permanecer en el mismo feed/carpeta"
 
 #, python-format
 msgid "Step %(step)s of %(count)s"
@@ -6208,10 +6210,10 @@ msgid "Stop recording"
 msgstr "Dejar de grabar"
 
 msgid "Stories"
-msgstr "Historias"
+msgstr "Artículos"
 
 msgid "Stories are highlighted green (like) or hidden (dislike)"
-msgstr "Las historias se resaltan en verde (me gusta) u ocultan (no me gusta)"
+msgstr "Los artículos se resaltan en verde (me gusta) u ocultan (no me gusta)"
 
 msgid "Stories arrive in real-time"
 msgstr "Los artículos llegan en tiempo real"
@@ -6222,32 +6224,32 @@ msgstr ""
 "plano."
 
 msgid "Stories can stay unread forever"
-msgstr "Las noticias pueden permanecer sin leer para siempre"
+msgstr "Los artículos pueden permanecer sin leer para siempre"
 
 msgid "Stories covered by 3+ feeds"
 msgstr "Artículos publicados en 3 o más feeds"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
-msgstr "Artículos de %(start_date)s a %(end_date)s"
+msgstr "Artículos del %(start_date)s al %(end_date)s"
 
 msgid "Stories from feeds that rarely publish"
 msgstr "Artículos de feeds que publican con poca frecuencia"
 
 msgid "Stories in archive"
-msgstr "Historias en el archivo"
+msgstr "Artículos en el archivo"
 
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "Historias marcadas como leídas a los <b>%(days)s día</b>"
+msgstr[0] "Artículos marcados como leídos al cabo de <b>%(days)s día</b>"
 msgstr[1] "Artículos marcados como leídos a los <b>%(days)s días</b>"
 
 msgid "Stories matching your trained topics and authors"
-msgstr "Historias que coinciden con tus temas y autores entrenados"
+msgstr "Artículos que coinciden con tus temas y autores entrenados"
 
 msgid "Stories never expire or disappear"
-msgstr "Las historias nunca caducan ni desaparecen"
+msgstr "Los artículos nunca caducan ni desaparecen"
 
 #, python-format
 msgid "Stories newer than %(date)s"
@@ -6255,89 +6257,89 @@ msgstr "Artículos posteriores a %(date)s"
 
 #, python-format
 msgid "Stories older than %(date)s"
-msgstr "Historias anteriores a %(date)s"
+msgstr "Artículos anteriores a %(date)s"
 
 #, python-format
 msgid "Stories on %(date)s"
 msgstr "Artículos del %(date)s"
 
 msgid "Stories per day"
-msgstr "Historias por día"
+msgstr "Artículos por día"
 
 msgid "Stories per month"
-msgstr "Historias por mes"
+msgstr "Artículos por mes"
 
 msgid "Stories readers finished, saved, and shared"
 msgstr "Artículos que los lectores terminaron, guardaron y compartieron"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "Las historias que más atención recibieron en NewsBlur."
+msgstr "Los artículos que más atención recibieron en NewsBlur."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "Las noticias <b>nunca</b> se marcarán automáticamente como leídas"
+msgstr "Los artículos <b>nunca</b> se marcarán automáticamente como leídos"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Los artículos <b>nunca</b> se marcarán como leídos"
 
 msgid "Story"
-msgstr "Historia"
+msgstr "Artículo"
 
 msgid "Story Archive"
-msgstr "Archivo de noticias"
+msgstr "Archivo de artículos"
 
 msgid "Story Authors"
-msgstr "Autores de historias"
+msgstr "Autores de artículos"
 
 msgid "Story Categories &amp; Tags"
-msgstr "Categorías de artículos &amp; Etiquetas"
+msgstr "Categorías &amp; etiquetas de artículos"
 
 msgid "Story Clustering"
-msgstr "Agrupación de Historias"
+msgstr "Agrupación de artículos"
 
 msgid "Story Layout - Grid Columns"
-msgstr "Columnas de cuadrícula - Diseño de historias"
+msgstr "Diseño de artículo - Columnas de cuadrícula"
 
 msgid "Story Layout - Split"
-msgstr "Diseño de Historia - Dividido"
+msgstr "Diseño de artículo - Dividido"
 
 msgid "Story Text"
-msgstr "Texto de la historia"
+msgstr "Texto del artículo"
 
 msgid "Story Title"
-msgstr "Título de la noticia"
+msgstr "Título del artículo"
 
 msgid "Story Typography"
-msgstr "Tipografía de Historias"
+msgstr "Tipografía de artículos"
 
 msgid "Story URL"
-msgstr "URL de la historia"
+msgstr "URL del artículo"
 
 msgid "Story clustering"
-msgstr "Agrupación de historias"
+msgstr "Agrupación de artículos"
 
 msgid "Story content preview"
-msgstr "Vista previa del contenido de la historia"
+msgstr "Vista previa del contenido del artículo"
 
 msgid "Story is always hidden"
-msgstr "La historia está siempre oculta"
+msgstr "El artículo está siempre oculto"
 
 msgid "Story layout"
-msgstr "Diseño de historia"
+msgstr "Diseño de artículo"
 
 msgid "Story preview"
-msgstr "Vista previa de la historia"
+msgstr "Vista previa del artículo"
 
 msgid "Story shows in Focus view"
-msgstr "Las historias se muestran en la vista Focus"
+msgstr "El artículo se muestra en la vista Enfoque"
 
 msgid "Story side options"
-msgstr "Opciones del lateral de la historia"
+msgstr "Opciones del lateral del artículo"
 
 msgid "Story side options buttons"
 msgstr "Botones de opciones laterales de artículos"
 
 msgid "Story side options placement"
-msgstr "Ubicación de las opciones laterales de la noticia"
+msgstr "Ubicación de las opciones laterales del artículo"
 
 msgid "Story title styling"
 msgstr "Estilo del título del artículo"
@@ -6349,7 +6351,7 @@ msgid "Stripe Id:"
 msgstr "ID de Stripe:"
 
 msgid "Submit Payment"
-msgstr "Enviar Pago"
+msgstr "Enviar pago"
 
 msgid "Submitting..."
 msgstr "Enviando..."
@@ -6388,8 +6390,8 @@ msgstr "Suscríbete para añadir este feed a tu NewsBlur"
 
 msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
 msgstr ""
-"Suscríbete a cualquier sitio web como un feed, incluso sin RSS. Actualiza a Premium Archive para "
-"desbloquear Web Feeds."
+"Suscríbete a cualquier sitio web como un feed, incluso sin RSS. Pásate a Premium Archive para desbloquear "
+"los feeds web."
 
 msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
 msgstr "Suscríbete a boletines de Substack, Medium, Ghost, Buttondown y más."
@@ -6417,7 +6419,7 @@ msgid "Subscribed!"
 msgstr "¡Suscrito!"
 
 msgid "Subscribed! Fetching stories..."
-msgstr "¡Suscripción realizada! Obteniendo noticias..."
+msgstr "¡Suscripción realizada! Obteniendo artículos..."
 
 msgid "Subscribers"
 msgstr "Suscriptores"
@@ -6444,23 +6446,23 @@ msgid "Summarize in one sentence"
 msgstr "Resumir en una frase"
 
 msgid "Sun"
-msgstr "dom."
+msgstr "Dom"
 
 msgid "Sunday"
-msgstr "Domingo"
+msgstr "domingo"
 
 msgid "Super Dislike "
-msgstr "Súper Dislike "
+msgstr "No me gusta nada "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Complementado con comprobaciones cada %(value_1)s"
 
 msgid "Switch between views (original, feed, text, story)"
-msgstr "Cambiar entre vistas (original, fuente, texto, historia)"
+msgstr "Cambiar entre vistas (original, feed, texto, artículo)"
 
 msgid "Switch focus/unread"
-msgstr "Cambiar foco/no leído"
+msgstr "Cambiar Enfoque/no leído"
 
 msgid "Switch models per question. Each answer is labeled with the model that wrote it."
 msgstr "Cambia de modelo en cada pregunta. Cada respuesta indica qué modelo la generó."
@@ -6473,10 +6475,10 @@ msgid "Switch to %(value_1)s"
 msgstr "Cambiar a %(value_1)s"
 
 msgid "Switch to All or Unread."
-msgstr "Cambiar a Todos o No leídos."
+msgstr "Cambia a Todo o No leído."
 
 msgid "Switch to Credit Card"
-msgstr "Cambiar a Tarjeta de Crédito"
+msgstr "Cambiar a tarjeta de crédito"
 
 msgid "Switch views"
 msgstr "Cambiar vistas"
@@ -6485,14 +6487,14 @@ msgid "Tag"
 msgstr "Etiqueta"
 
 msgid "Tag RSS Feed"
-msgstr "Etiquetar fuente RSS"
+msgstr "Feed RSS de la etiqueta"
 
 msgid "Tag Settings"
 msgstr "Configuración de etiquetas"
 
 #, python-format
 msgid "Tag filters found no stories in %(context)s."
-msgstr "Los filtros por etiquetas no encontraron historias en %(context)s."
+msgstr "Los filtros por etiquetas no encontraron artículos en %(context)s."
 
 msgid "Tag filters found no stories in this view."
 msgstr "Los filtros de etiquetas no encontraron artículos en esta vista."
@@ -6543,7 +6545,7 @@ msgid "Test on this story"
 msgstr "Probar con este artículo"
 
 msgid "Testing on this story..."
-msgstr "Probando en esta historia..."
+msgstr "Probando en este artículo..."
 
 msgid "Text"
 msgstr "Texto"
@@ -6559,13 +6561,13 @@ msgstr "Vista de texto"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
-msgstr "Los filtros de texto no encontraron historias en %(context)s."
+msgstr "Los filtros de texto no encontraron artículos en %(context)s."
 
 msgid "Text filters found no stories in this view."
 msgstr "Los filtros de texto no encontraron artículos en esta vista."
 
 msgid "Text view extracts the story"
-msgstr "La vista de texto extrae la historia"
+msgstr "La vista de texto extrae el artículo"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
@@ -6573,11 +6575,11 @@ msgstr "¡Gracias! Tienes una %(bold_start)scuenta premium%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "¡Gracias! Tienes una %(bold_start)scuenta de archivo premium%(bold_end)s."
+msgstr "¡Gracias! Tienes una %(bold_start)scuenta Premium Archive%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "¡Gracias! Tienes una %(bold_start)scuenta premium pro%(bold_end)s."
+msgstr "¡Gracias! Tienes una %(bold_start)scuenta Premium Pro%(bold_end)s."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "El servicio de IA tardó demasiado en responder. Inténtalo de nuevo."
@@ -6593,7 +6595,7 @@ msgid ""
 "The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
 "custom sections you define."
 msgstr ""
-"El Daily Briefing aparece en la parte superior de la barra lateral, con secciones de noticias destacadas, "
+"El resumen diario aparece en la parte superior de la barra lateral, con secciones de artículos destacados, "
 "lecturas extensas y secciones personalizadas que tú defines."
 
 msgid ""
@@ -6611,18 +6613,18 @@ msgstr ""
 "externos. Permite que Claude, Codex y otros asistentes de IA interactúen con NewsBlur en tu nombre."
 
 msgid "The NewsBlur Blog"
-msgstr "El Blog de NewsBlur"
+msgstr "El blog de NewsBlur"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
-msgstr "La vista Texto completa de %(icon)s es una función %(link_start)spremium%(link_end)s."
+msgstr "La vista %(icon)s Texto completa es una función %(link_start)spremium%(link_end)s."
 
 msgid "The full NewsBlur API is open and documented for custom integrations."
 msgstr "La API completa de NewsBlur es abierta y está documentada para integraciones personalizadas."
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "El River of News completo es una función %(link_start)spremium%(link_end)s."
+msgstr "El Río de noticias completo es una función %(link_start)spremium%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "La lista completa de atajos"
@@ -6631,24 +6633,24 @@ msgid "The gift has been applied to your account."
 msgstr "El regalo se ha aplicado a tu cuenta."
 
 msgid "The intelligence slider filters stories."
-msgstr "El control deslizante de inteligencia filtra las historias."
+msgstr "El control deslizante de inteligencia filtra los artículos."
 
 msgid ""
 "The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
 "stories."
 msgstr ""
 "El control de inteligencia de la esquina inferior izquierda filtra entre todos los artículos, los no leídos"
-" y los artículos destacados."
+" y los de Enfoque."
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
 "anywhere except the NewsBlur API."
 msgstr ""
 "El comando de inicio de sesión abre el navegador para la autorización OAuth. El token se guarda localmente "
-"y nunca se envía a ningún sitio, salvo a la API NewsBlur."
+"y nunca se envía a ningún sitio, salvo a la API de NewsBlur."
 
 msgid "The most important stories from your feeds"
-msgstr "Las noticias más importantes de tus fuentes"
+msgstr "Los artículos más importantes de tus feeds"
 
 msgid "The original page has been disabled by the publisher."
 msgstr "El editor ha deshabilitado la página original."
@@ -6665,13 +6667,13 @@ msgid "Themes & Customization"
 msgstr "Temas y personalización"
 
 msgid "There are too many sites and stories to process. "
-msgstr "Hay demasiados sitios e historias para procesar. "
+msgstr "Hay demasiados sitios y artículos para procesar. "
 
 #, python-format
 msgid "There is %(count)s hidden story"
 msgid_plural "There are %(count)s hidden stories"
 msgstr[0] "Hay %(count)s artículo oculto"
-msgstr[1] "Hay %(count)s historias ocultas"
+msgstr[1] "Hay %(count)s artículos ocultos"
 
 #, python-format
 msgid "There is %(count)s public comment"
@@ -6683,17 +6685,17 @@ msgid ""
 "There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be "
 "fixed soon. You should probably send this manually now."
 msgstr ""
-"Hubo un problema en el backend al enviar tu correo electrónico. ¡Lo sentimos! Se ha notado y se solucionará"
-" pronto. Probablemente deberías enviarlo manualmente ahora."
+"Hubo un problema en el servidor al enviar tu correo electrónico. ¡Lo sentimos! Ya lo hemos registrado y se "
+"solucionará pronto. Probablemente deberías enviarlo manualmente ahora."
 
 msgid "There was a problem deleting your classifiers."
 msgstr "Hubo un problema al eliminar tus clasificadores."
 
 msgid "There was a problem deleting your saved stories."
-msgstr "Hubo un problema al eliminar tus historias guardadas."
+msgstr "Hubo un problema al eliminar tus artículos guardados."
 
 msgid "There was a problem deleting your shared stories."
-msgstr "Hubo un problema al eliminar tus historias compartidas."
+msgstr "Hubo un problema al eliminar tus artículos compartidos."
 
 msgid "There was a problem deleting your sites."
 msgstr "Hubo un problema al eliminar tus sitios."
@@ -6726,14 +6728,14 @@ msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
 "above to override."
 msgstr ""
-"Estos dominios están bloqueados por defecto (motores de búsqueda, redes sociales, etc.). Agrégalos a "
-"\"Dominios Permitidos\" arriba para anular."
+"Estos dominios están bloqueados por defecto (motores de búsqueda, redes sociales, etc.). Añádelos a "
+"\"Dominios permitidos\" arriba para desbloquearlos."
 
 msgid "They redeem it."
 msgstr "Lo canjean."
 
 msgid "Thinking"
-msgstr "Pensando"
+msgstr "Razonamiento"
 
 msgid "Thinking..."
 msgstr "Pensando..."
@@ -6745,37 +6747,39 @@ msgid "This Month"
 msgstr "Este mes"
 
 msgid "This Week"
-msgstr "Esta Semana"
+msgstr "Esta semana"
 
 msgid "This Year"
-msgstr "Este Año"
+msgstr "Este año"
 
 msgid "This is just the demo."
 msgstr "Esto es solo la demo."
 
 msgid "This matches the entire URL and will only match this exact story. Select a portion of the URL instead."
 msgstr ""
-"Esto coincide con toda la URL y solo coincidirá con esta historia exacta. Selecciona una porción de la URL "
+"Esto coincide con toda la URL y solo coincidirá con este artículo exacto. Selecciona una porción de la URL "
 "en su lugar."
 
 msgid ""
 "This matches the entire story text and will only match this exact story. Consider using a shorter phrase or"
 " pattern."
 msgstr ""
-"Esto coincide con todo el texto de la historia y solo coincidirá con esta historia exacta. Considera usar "
-"una frase o patrón más corto."
+"Esto coincide con todo el texto del artículo y solo coincidirá con este artículo exacto. Considera usar una"
+" frase o patrón más corto."
 
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr ""
-"Esto coincide con el título completo y solo coincidirá con esta historia exacta. Selecciona una porción del"
+"Esto coincide con el título completo y solo coincidirá con este artículo exacto. Selecciona una porción del"
 " título en su lugar."
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "Esta lista de noticias leídas es una %(link_start)sfunción prémium%(link_end)s."
+msgstr "Esta lista de artículos leídos es una %(link_start)sfunción premium%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
-msgstr "Esto elimina la etiqueta de todas las noticias guardadas. Las noticias seguirán guardadas sin esta etiqueta."
+msgstr ""
+"Esto elimina la etiqueta de todos los artículos guardados. Los artículos seguirán guardados sin esta "
+"etiqueta."
 
 msgid "This site"
 msgstr "Este sitio"
@@ -6786,41 +6790,41 @@ msgid ""
 "fetches."
 msgstr ""
 "Este sitio está lanzando excepciones y no está en un estado saludable. Mira en la parte inferior de este "
-"diálogo para ver los códigos de estado exactos de la fuente. Cuantos más errores tenga la fuente, más "
-"tiempo tardará entre recuperaciones."
+"diálogo para ver los códigos de estado exactos del feed. Cuantos más errores tenga el feed, más tiempo "
+"tardará entre recuperaciones."
 
 #, python-format
 msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors."
 msgstr "Este sitio no se ha actualizado en <b>%(time)s</b> y está dando errores."
 
 msgid "This site has not yet been indexed for related stories."
-msgstr "Este sitio aún no se ha indexado para encontrar noticias relacionadas."
+msgstr "Este sitio aún no se ha indexado para encontrar artículos relacionados."
 
 msgid ""
 "This site has published zero stories in the past month or has averaged less than a single story a month. As"
 " soon as it starts publishing at least once a month, it will automatically fetch more frequently."
 msgstr ""
-"Este sitio ha publicado cero historias en el último mes o ha promediado menos de una historia al mes. Tan "
+"Este sitio ha publicado cero artículos en el último mes o ha promediado menos de un artículo al mes. Tan "
 "pronto como comience a publicar al menos una vez al mes, se actualizará automáticamente con mayor "
 "frecuencia."
 
 msgid "This site is active and receiving stories."
-msgstr "Este sitio está activo y recibiendo historias."
+msgstr "Este sitio está activo y recibiendo artículos."
 
 msgid "This site only"
 msgstr "Solo este sitio"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "Este feed web está <b>pausado</b>. Mejora a Premium Archive para reanudar la descarga de nuevas noticias."
+msgstr "Este feed web está <b>pausado</b>. Mejora a Premium Archive para reanudar la descarga de nuevos artículos."
 
 msgid "This will erase all existing feeds and folders."
-msgstr "Esto borrará todas las fuentes y carpetas existentes."
+msgstr "Esto borrará todos los feeds y carpetas existentes."
 
 msgid "This will prevent the browser extension from archiving pages from this domain in the future."
 msgstr "Esto evitará que la extensión del navegador archive páginas de este dominio en el futuro."
 
 msgid "Thu"
-msgstr "jue"
+msgstr "Jue"
 
 msgid "Thumbs down what you don't want to see"
 msgstr "Indica qué no quieres ver con un pulgar hacia abajo"
@@ -6842,7 +6846,7 @@ msgstr "Período de tiempo"
 
 #, python-format
 msgid "Time: %(value_1)s"
-msgstr "Hora: %(value_1)s"
+msgstr "Período: %(value_1)s"
 
 msgid "Timezone"
 msgstr "Zona horaria"
@@ -6860,7 +6864,7 @@ msgid "Title Phrases"
 msgstr "Frases de título"
 
 msgid "Title Regex"
-msgstr "Regex de Título"
+msgstr "Regex de título"
 
 #, python-format
 msgid "Title filters found no stories in %(context)s."
@@ -6879,8 +6883,8 @@ msgid ""
 "Title training matches phrases, so train just the words that matter and future stories with those words "
 "follow suit."
 msgstr ""
-"El entrenamiento por título busca frases, así que entrena solo las palabras importantes y las noticias "
-"futuras que las incluyan seguirán el mismo criterio."
+"El entrenamiento por título busca frases, así que entrena solo las palabras importantes y los artículos "
+"futuros que las incluyan seguirán el mismo criterio."
 
 msgid "Title: "
 msgstr "Título: "
@@ -6889,7 +6893,7 @@ msgid "Titles"
 msgstr "Títulos"
 
 msgid "To"
-msgstr "A"
+msgstr "Para"
 
 msgctxt "date range"
 msgid "To"
@@ -6917,7 +6921,7 @@ msgid "Toggle read/unread"
 msgstr "Marcar como leído/no leído"
 
 msgid "Toggle unread/all"
-msgstr "Alternar no leídas/todas"
+msgstr "Alternar no leídos/todos"
 
 #, python-format
 msgid "Tomorrow, %(date)s %(time)s"
@@ -6937,13 +6941,13 @@ msgid "Tools"
 msgstr "Herramientas"
 
 msgid "Tooltips"
-msgstr "Tooltips"
+msgstr "Descripciones emergentes"
 
 msgid "Tooltips like this"
-msgstr "Tooltips como este"
+msgstr "Descripciones emergentes como esta"
 
 msgid "Top"
-msgstr "Superior"
+msgstr "Arriba"
 
 msgid "Top Domains"
 msgstr "Dominios principales"
@@ -6952,7 +6956,7 @@ msgid "Top Level"
 msgstr "Nivel superior"
 
 msgid "Top stories"
-msgstr "Noticias destacadas"
+msgstr "Artículos destacados"
 
 msgid "Track Changes"
 msgstr "Seguimiento de cambios"
@@ -6961,7 +6965,7 @@ msgid "Train"
 msgstr "Entrenar"
 
 msgid "Train &amp; filter"
-msgstr "Entrenar el filtro &amp;"
+msgstr "Entrenar &amp; filtrar"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr ""
@@ -6978,13 +6982,13 @@ msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
 msgstr "Entrena la inteligencia: indica si te gustan o no los autores, las etiquetas, los títulos y los feeds"
 
 msgid "Train stories by author, tag, title"
-msgstr "Entrena historias por autor, etiqueta, título"
+msgstr "Entrena artículos por autor, etiqueta, título"
 
 msgid "Train stories on full text content"
-msgstr "Entrena historias con contenido de texto completo"
+msgstr "Entrena artículos con contenido de texto completo"
 
 msgid "Train stories with regular expressions"
-msgstr "Entrenar historias con expresiones regulares"
+msgstr "Entrenar artículos con expresiones regulares"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "Entrena el sistema, busca, comparte y etiqueta igual que en la web"
@@ -6996,10 +7000,10 @@ msgid "Train this site"
 msgstr "Entrenar este sitio"
 
 msgid "Train this story"
-msgstr "Entrenar esta historia"
+msgstr "Entrenar este artículo"
 
 msgid "Train your feeds to filter stories you like and dislike."
-msgstr "Entrena tus fuentes para filtrar los artículos que te gustan y los que no."
+msgstr "Entrena tus feeds para filtrar los artículos que te gustan y los que no."
 
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Entrena, etiqueta, busca y organiza boletines como cualquier otro feed"
@@ -7023,13 +7027,13 @@ msgid "Trending"
 msgstr "Tendencias"
 
 msgid "Trending Sites"
-msgstr "Sitios de tendencia"
+msgstr "Sitios en tendencia"
 
 msgid "Truncate stories"
-msgstr "Truncar historias"
+msgstr "Truncar artículos"
 
 msgid "Try"
-msgstr "Prueba"
+msgstr "Probar"
 
 msgid "Try Again"
 msgstr "Inténtalo de nuevo"
@@ -7058,7 +7062,7 @@ msgstr "Desactivar la generación automática de resúmenes"
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
-msgstr[0] "Activa este sitio, por favor: %(count)s"
+msgstr[0] "Activa %(count)s sitio, por favor"
 msgstr[1] "Activa estos %(count)s sitios, por favor"
 
 msgid "Turning any page into a feed"
@@ -7073,7 +7077,7 @@ msgstr ""
 "titulares sean completamente distintos."
 
 msgid "Type a story title you see on the page"
-msgstr "Escribe un título de historia que veas en la página"
+msgstr "Escribe el título de un artículo que veas en la página"
 
 msgid "Type keywords, phrases, or combinations"
 msgstr "Escribe palabras clave, frases o combinaciones"
@@ -7089,7 +7093,7 @@ msgid "URL filters found no stories in %(context)s."
 msgstr "Los filtros de URL no encontraron artículos en %(context)s."
 
 msgid "URL filters found no stories in this view."
-msgstr "Los filtros de URL no encontraron historias en esta vista."
+msgstr "Los filtros de URL no encontraron artículos en esta vista."
 
 msgid "URL gives a 404 - page not found."
 msgstr "La URL devuelve un error 404: página no encontrada."
@@ -7104,7 +7108,7 @@ msgid "Uncategorized"
 msgstr "Sin categoría"
 
 msgid "Unfavorited"
-msgstr "Dejado de marcar como favorito"
+msgstr "Quitado de favoritos"
 
 msgid "Unfollow"
 msgstr "Dejar de seguir"
@@ -7122,7 +7126,7 @@ msgid "Unknown"
 msgstr "Desconocido"
 
 msgid "Unknown Feed"
-msgstr "Fuente desconocida"
+msgstr "Feed desconocido"
 
 msgid "Unknown error"
 msgstr "Error desconocido"
@@ -7143,7 +7147,7 @@ msgid "Unlocked"
 msgstr "Desbloqueado"
 
 msgid "Unmute"
-msgstr "Destruir silencio"
+msgstr "Dejar de silenciar"
 
 msgid "Unmuted"
 msgstr "No silenciado"
@@ -7161,7 +7165,7 @@ msgid "Unread stories going back months"
 msgstr "Artículos sin leer de los últimos meses"
 
 msgid "Unread stories never expire, so read at your own pace."
-msgstr "Las noticias sin leer nunca caducan, así que puedes leerlas a tu ritmo."
+msgstr "Los artículos sin leer nunca caducan, así que puedes leerlos a tu ritmo."
 
 msgid "Unread+Focus:"
 msgstr "No leídos+Enfoque:"
@@ -7247,14 +7251,14 @@ msgid "Upgrade to Premium"
 msgstr "Actualizar a Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "Actualizar a Archivo Premium"
+msgstr "Mejorar a Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "Mejora a Premium Archive para notificaciones del clasificador"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr ""
-"Actualiza a Archivo Premium para escanear todos tus feeds en busca de duplicados y así nunca te pierdas un "
+"Actualiza a Premium Archive para escanear todos tus feeds en busca de duplicados y así nunca te pierdas un "
 "grupo."
 
 msgid "Upgrade to Premium Pro"
@@ -7313,10 +7317,10 @@ msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Usa plantillas de instrucciones para clasificar la bandeja de entrada, investigar temas y auditar feeds"
 
 msgid "Use the native browser context menu"
-msgstr "Usa el menú contextual nativo del navegador"
+msgstr "Usar el menú contextual nativo del navegador"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
-msgstr "Usa esta plantilla de URL en extensiones del navegador y lectores de fuentes para suscribirte en NewsBlur."
+msgstr "Usa esta plantilla de URL en extensiones del navegador y lectores de feeds para suscribirte en NewsBlur."
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Usa widgets para ver de un vistazo los recuentos de artículos sin leer y los artículos"
@@ -7355,10 +7359,10 @@ msgstr[1] "Se usa el valor predeterminado: <b>%(days)s días</b> (de %(source)s)
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "Usando el valor predeterminado: <b>never</b> (de %(source)s)"
+msgstr "Usando el valor predeterminado: <b>nunca</b> (de %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
-msgstr "Usando el valor predeterminado: las historias <b>nunca</b> se marcarán automáticamente como leídas"
+msgstr "Usando el valor predeterminado: los artículos <b>nunca</b> se marcarán automáticamente como leídos"
 
 #, python-format
 msgid "Variant %(number)s"
@@ -7368,7 +7372,7 @@ msgid "View keyboard shortcuts"
 msgstr "Ver atajos de teclado"
 
 msgid "View matching stories"
-msgstr "Ver historias coincidentes"
+msgstr "Ver artículos coincidentes"
 
 msgid "View on GitHub"
 msgstr "Ver en GitHub"
@@ -7431,7 +7435,7 @@ msgid "Website URL: "
 msgstr "URL del sitio web: "
 
 msgid "Wed"
-msgstr "mié."
+msgstr "Mié"
 
 msgid "Wednesday"
 msgstr "miércoles"
@@ -7447,11 +7451,11 @@ msgstr "¿Cuáles son los argumentos principales?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "¿Qué %(like)s y %(dislike)s opinas de este sitio?"
+msgstr "¿Qué %(like)s y qué %(dislike)s de este sitio?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "¿Qué %(like)s y %(dislike)s de esta historia?"
+msgstr "¿Qué %(like)s y qué %(dislike)s de este artículo?"
 
 msgid "What happens if I downgrade?"
 msgstr "¿Qué ocurre si cambio a un plan inferior?"
@@ -7493,10 +7497,10 @@ msgid "When opening a site"
 msgstr "Al abrir un sitio"
 
 msgid "When reading a clustered story:"
-msgstr "Al leer una historia agrupada:"
+msgstr "Al leer un artículo agrupado:"
 
 msgid "When story content changes"
-msgstr "Cuando el contenido de la historia cambia"
+msgstr "Cuando el contenido del artículo cambia"
 
 msgid ""
 "When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
@@ -7518,13 +7522,13 @@ msgid "Why is the next update not at the normal rate?"
 msgstr "¿Por qué la próxima actualización no es a la velocidad normal?"
 
 msgid "Why so infrequently?"
-msgstr "¿Por qué tan infrecuentemente?"
+msgstr "¿Por qué con tan poca frecuencia?"
 
 msgid "Widely Read Stories"
-msgstr "Historias Ampliamente Leídas"
+msgstr "Artículos muy leídos"
 
 msgid "Widely Read on NewsBlur"
-msgstr "Leído por muchos el NewsBlur"
+msgstr "Muy leídos en NewsBlur"
 
 msgid "Widely covered"
 msgstr "Con amplia cobertura"
@@ -7533,7 +7537,7 @@ msgid "Widen pane for controls"
 msgstr "Ampliar panel para controles"
 
 msgid "Widen the story titles pane to use filter controls"
-msgstr "Ampliar el panel de títulos de las historias para usar los controles de filtro"
+msgstr "Ampliar el panel de títulos de los artículos para usar los controles de filtro"
 
 msgid "Window title"
 msgstr "Título de ventana"
@@ -7554,21 +7558,21 @@ msgid "Writing style"
 msgstr "Estilo de escritura"
 
 msgid "XPath patterns identify story blocks, headlines, links, and images."
-msgstr "Los patrones XPath identifican bloques de noticias, titulares, enlaces e imágenes."
+msgstr "Los patrones XPath identifican bloques de artículos, titulares, enlaces e imágenes."
 
 msgid "YYYY-MM-DD"
 msgstr "AAAA-MM-DD"
 
 msgid "Years Earned"
-msgstr "Años Ganados"
+msgstr "Años obtenidos"
 
 msgid "Yes"
 msgstr "Sí"
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr ""
-"Sí, todas las funciones de entrenamiento inteligente funcionan con los boletines igual que con los feeds "
-"normales."
+"Sí, todas las funciones de entrenamiento de inteligencia funcionan con los boletines igual que con los "
+"feeds normales."
 
 msgid "Yes, both apps are open source and actively developed on GitHub."
 msgstr "Sí, ambas aplicaciones son de código abierto y se desarrollan activamente en GitHub."
@@ -7581,7 +7585,7 @@ msgstr ""
 "corresponden con tu suscripción web."
 
 msgid "Yes, delete it"
-msgstr "Sí, elimínalo"
+msgstr "Sí, elimínala"
 
 msgid "Yes, email newsletters are a free feature."
 msgstr "Sí, los boletines por correo electrónico son una función gratuita."
@@ -7590,13 +7594,13 @@ msgid "Yes, every NewsBlur account has a unique email address for receiving news
 msgstr "Sí, cada cuenta de NewsBlur tiene una dirección de correo electrónico única para recibir boletines."
 
 msgid "Yes, every archived story is fully searchable."
-msgstr "Sí, se pueden buscar todas las historias archivadas."
+msgstr "Sí, se pueden buscar todos los artículos archivados."
 
 msgid "Yes, it can transcribe audio and video content and then answer questions about it."
 msgstr "Sí, puede transcribir contenido de audio y vídeo y luego responder preguntas sobre él."
 
 msgid "Yes, saved stories and their tags are fully searchable."
-msgstr "Sí, las noticias guardadas y sus etiquetas se pueden buscar por completo."
+msgstr "Sí, los artículos guardados y sus etiquetas se pueden buscar por completo."
 
 msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
 msgstr ""
@@ -7604,7 +7608,7 @@ msgstr ""
 "enlace."
 
 msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
-msgstr "Sí. Las noticias se guardan localmente en caché y se actualizan en segundo plano."
+msgstr "Sí. Los artículos se guardan localmente en caché y se actualizan en segundo plano."
 
 msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
 msgstr "Sí. Activa «Mantener los artículos separados» en el menú emergente de opciones del feed o en Preferencias."
@@ -7614,7 +7618,7 @@ msgid ""
 "Premium Archive."
 msgstr ""
 "Sí. El entrenamiento por autores, etiquetas y palabras clave del título es gratis. El entrenamiento con el "
-"texto completo de las historias requiere Premium Archive."
+"texto completo de los artículos requiere Premium Archive."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
@@ -7669,7 +7673,7 @@ msgid "You are trialing this plan"
 msgstr "Estás probando este plan"
 
 msgid "You are unsubscribed from all NewsBlur emails"
-msgstr "Estás desuscrito de todos los correos electrónicos de NewsBlur"
+msgstr "Has cancelado la suscripción a todos los correos de NewsBlur"
 
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr ""
@@ -7677,7 +7681,7 @@ msgstr ""
 "continuación y guarda para volver a suscribirte."
 
 msgid "You can also filter out stories you don't want to read."
-msgstr "También puedes filtrar las historias que no quieres leer."
+msgstr "También puedes filtrar los artículos que no quieres leer."
 
 msgid "You can change this anytime in Preferences."
 msgstr "Puedes cambiarlo en cualquier momento en Preferencias."
@@ -7687,13 +7691,13 @@ msgstr "Puedes cambiar de opinión."
 
 #, python-format
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
-msgstr "Puedes hacer clic en los botones %(like_icon)s%(dislike_icon)s junto a las historias mientras las lees."
+msgstr "Puedes hacer clic en los botones %(like_icon)s%(dislike_icon)s junto a los artículos mientras los lees."
 
 msgid "You can override this on a per-site and per-folder basis."
-msgstr "Puedes anular esto a nivel de sitio y de carpeta."
+msgstr "Puedes cambiarlo para cada sitio y carpeta."
 
 msgid "You can override this on a per-site basis."
-msgstr "Puedes anular esto por sitio."
+msgstr "Puedes cambiarlo para cada sitio."
 
 msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
 msgstr "Puedes entrenar feeds individuales gratis, o hacerlo por carpeta y de forma global con Premium Archive."
@@ -7701,8 +7705,8 @@ msgstr "Puedes entrenar feeds individuales gratis, o hacerlo por carpeta y de fo
 #, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
-msgstr[0] "Sigues %(count)s sitio. Premium mejora todos."
-msgstr[1] "Sigues %(count)s sitios. Premium mejora todos."
+msgstr[0] "Sigues %(count)s sitio. Premium lo mejora."
+msgstr[1] "Sigues %(count)s sitios. Premium los mejora todos."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -7715,20 +7719,20 @@ msgid "You have no saved stories."
 msgstr "No tienes artículos guardados."
 
 msgid "You have no unread stories in Focus mode."
-msgstr "No tienes noticias sin leer en el modo Enfoque."
+msgstr "No tienes artículos sin leer en el modo Enfoque."
 
 msgid "You have no unread stories."
-msgstr "No tienes historias sin leer."
+msgstr "No tienes artículos sin leer."
 
 msgid "You have not yet subscribed to anybody's shared stories."
-msgstr "Aún no te has suscrito a las historias compartidas de nadie."
+msgstr "Aún no te has suscrito a los artículos compartidos de nadie."
 
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Debes seguir a %(value_1)s para responder"
 
 msgid "You must be logged in to send a story over email."
-msgstr "Debes iniciar sesión para enviar una historia por correo electrónico."
+msgstr "Debes iniciar sesión para enviar un artículo por correo electrónico."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
@@ -7742,7 +7746,7 @@ msgid "You need to be logged in to reply to a comment."
 msgstr "Debes iniciar sesión para responder a un comentario."
 
 msgid "You need to be logged in to share a story."
-msgstr "Debes iniciar sesión para compartir una historia."
+msgstr "Debes iniciar sesión para compartir un artículo."
 
 msgid "You will be emailed within a minute or three."
 msgstr "Recibirás un correo electrónico en uno o tres minutos."
@@ -7754,14 +7758,14 @@ msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "Se ha limitado tu frecuencia de solicitudes.<br> Vuelve a intentarlo pronto, pero no demasiado pronto."
 
 msgid "You're presented with multiple story pattern options to choose from."
-msgstr "Se te muestran varias opciones de patrones de noticias para elegir."
+msgstr "Se te muestran varias opciones de patrones de artículos para elegir."
 
 msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
 "briefings on your schedule."
 msgstr ""
-"Estás viendo una vista previa de las primeras 3 historias de cada resumen. Mejora tu plan para desbloquear "
-"todas las historias y recibir resúmenes automáticos según tu horario."
+"Estás viendo una vista previa de los 3 primeros artículos de cada resumen. Mejora tu plan para desbloquear "
+"todos los artículos y recibir resúmenes automáticos según tu horario."
 
 msgid "You're ready to go! Hope you enjoy NewsBlur."
 msgstr "¡Estás listo! Esperamos que disfrutes NewsBlur."
@@ -7792,7 +7796,7 @@ msgid "Your %(value_1)s subscription is active"
 msgstr "Tu suscripción %(value_1)s está activa"
 
 msgid "Your Archived Domains"
-msgstr "Tus Dominios Archivados"
+msgstr "Tus dominios archivados"
 
 msgid "Your Blurblog"
 msgstr "Tu Blurblog"
@@ -7801,11 +7805,11 @@ msgid "Your Referral Link"
 msgstr "Tu enlace de referencia"
 
 msgid "Your Referral Stats"
-msgstr "Tus estadísticas de referencia"
+msgstr "Tus estadísticas de referidos"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr ""
-"Tus historias archivadas seguirán disponibles, pero las nuevas historias se regirán por la política de "
+"Tus artículos archivados seguirán disponibles, pero los nuevos artículos se regirán por la política de "
 "retención estándar."
 
 msgid "Your cookie has expired — Please login again"
@@ -7827,7 +7831,7 @@ msgid "Your premium account is paid until:"
 msgstr "Tu cuenta premium está pagada hasta:"
 
 msgid "Your premium account will downgrade on:"
-msgstr "Tu cuenta premium se degradará el:"
+msgstr "Tu cuenta premium pasará a un plan inferior el:"
 
 msgid "Your profile"
 msgstr "Tu perfil"
@@ -7842,7 +7846,7 @@ msgid "Your subscription will no longer automatically renew."
 msgstr "Tu suscripción ya no se renovará automáticamente."
 
 msgid "and auto-follow them"
-msgstr "y síguelos automáticamente"
+msgstr "y seguirlos automáticamente"
 
 msgid "artificial intelligence"
 msgstr "inteligencia artificial"
@@ -7854,7 +7858,7 @@ msgid "autonomous vehicles"
 msgstr "vehículos autónomos"
 
 msgid "beats any"
-msgstr "supera cualquier"
+msgstr "gana a cualquier"
 
 msgid "bird migration"
 msgstr "migración de aves"
@@ -7952,7 +7956,7 @@ msgid "iOS notifications"
 msgstr "Notificaciones de iOS"
 
 msgid "iOS notifications require Premium Archive"
-msgstr "Las notificaciones de iOS requieren el Archivo Premium"
+msgstr "Las notificaciones de iOS requieren Premium Archive"
 
 msgid "iPhone &amp; iPad"
 msgstr "iPhone &amp; iPad"
@@ -7974,13 +7978,13 @@ msgid "j and k move through stories; n jumps to the next unread."
 msgstr "j y k permiten recorrer los artículos; n salta al siguiente sin leer."
 
 msgid "just now"
-msgstr "justo ahora"
+msgstr "ahora mismo"
 
 msgid "labor unions"
 msgstr "sindicatos"
 
 msgid "like"
-msgstr "como"
+msgstr "me gusta"
 
 msgid "local elections"
 msgstr "elecciones locales"
@@ -7998,7 +8002,7 @@ msgid "open source"
 msgstr "código abierto"
 
 msgid "optional, appears above the story"
-msgstr "opcional, aparece encima de la noticia"
+msgstr "opcional, aparece encima del artículo"
 
 #, python-format
 msgid "or subscribe with %(paypal_button)s"
@@ -8035,13 +8039,13 @@ msgid "right to repair"
 msgstr "derecho a reparar"
 
 msgid "separate multiple addresses with commas"
-msgstr "separar múltiples direcciones con comas"
+msgstr "separa varias direcciones con comas"
 
 msgid "set up usage-based billing"
 msgstr "configurar la facturación según el uso"
 
 msgid "show hidden stories"
-msgstr "mostrar historias ocultas"
+msgstr "mostrar artículos ocultos"
 
 msgid "site-wide"
 msgstr "en todo el sitio"
@@ -8091,11 +8095,11 @@ msgstr "estándares web"
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"
 msgid_plural "✓ %(count)s of %(total)s images match this filter"
-msgstr[0] "✓ %(count)s de %(total)s imagen coincide con este filtro"
+msgstr[0] "✓ %(count)s de %(total)s imágenes coincide con este filtro"
 msgstr[1] "✓ %(count)s de %(total)s imágenes coinciden con este filtro"
 
 msgid "✓ Found in story"
-msgstr "✓ Encontrado en la historia"
+msgstr "✓ Encontrado en el artículo"
 
 msgid "✓ Image matches this filter"
 msgstr "✓ La imagen coincide con este filtro"
@@ -8116,7 +8120,7 @@ msgid "✓ Sent"
 msgstr "✓ Enviado"
 
 msgid "✓ Story matches this filter"
-msgstr "✓ La noticia coincide con este filtro"
+msgstr "✓ El artículo coincide con este filtro"
 
 msgid "✓ Valid"
 msgstr "✓ Válido"
@@ -8128,5 +8132,5 @@ msgid "✗ No images match this filter"
 msgstr "✗ Ninguna imagen coincide con este filtro"
 
 msgid "✗ Story does not match this filter"
-msgstr "✗ La historia no coincide con este filtro"
+msgstr "✗ El artículo no coincide con este filtro"
 
