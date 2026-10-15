@@ -27,7 +27,7 @@ msgid " As great as finding good stuff is, you can just as easily ignore the sto
 msgstr "发现好内容固然很棒，但你也可以轻松忽略不喜欢的文章。"
 
 msgid " Choose Premium, Archive, or Pro and check out."
-msgstr " 选择 Premium、Archive 或 Pro，然后结账。"
+msgstr " 选择高级版、归档版或专业版，然后结账。"
 
 msgid " Gift for free (staff)"
 msgstr " 免费赠送（员工）"
@@ -45,7 +45,7 @@ msgid " You can easily train individual stories as you read."
 msgstr " 阅读时，你可以轻松地训练单篇文章。"
 
 msgid " You get a full refund, automatically."
-msgstr " 您将自动获得全额退款。"
+msgstr " 你将自动获得全额退款。"
 
 #, python-format
 msgid " — \"%(first)s\" or \"%(second)s\""
@@ -122,17 +122,17 @@ msgid " — Whole word \"%(word)s\" only"
 msgstr " — 仅匹配完整单词“%(word)s”"
 
 msgid "$29/month"
-msgstr "每月 $29"
+msgstr "每月 29 美元"
 
 msgid "$36/year"
 msgstr "每年 36 美元"
 
 msgid "$99/year"
-msgstr "每年 $99"
+msgstr "每年 99 美元"
 
 #, python-format
 msgid "%(account)s disconnected."
-msgstr "%(account)s已断开连接。"
+msgstr "%(account)s 已断开连接。"
 
 #, python-format
 msgid "%(badge)s Customize days of unreads"
@@ -145,7 +145,7 @@ msgstr[0] "%(badge)s 最多持续 %(count)s 天"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s 个主题"
+msgstr "%(category)s 主题"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -183,7 +183,7 @@ msgstr[0] "%(count)s 条评论"
 #, python-format
 msgid "%(count)s content filter"
 msgid_plural "%(count)s content filters"
-msgstr[0] "%(count)s 个内容过滤器"
+msgstr[0] "%(count)s 个内容筛选器"
 
 #, python-format
 msgid "%(count)s curated story"
@@ -248,7 +248,7 @@ msgstr[0] "%(count)s 位成员"
 #, python-format
 msgid "%(count)s merge (%(categories)s categories into %(count)s)"
 msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
-msgstr[0] "%(count)s 项合并（将 %(categories)s 个分类合并到 %(count)s）"
+msgstr[0] "%(count)s 项合并（将 %(categories)s 个分类合并为 %(count)s 个）"
 
 #, python-format
 msgid "%(count)s minute ago"
@@ -268,7 +268,7 @@ msgstr[0] "%(count)s 份新闻简报"
 #, python-format
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
-msgstr[0] "%(count)s/%(limit)s个网站"
+msgstr[0] "%(count)s/%(limit)s 个网站"
 
 #, python-format
 msgid "%(count)s on all sites (%(stories)s)"
@@ -335,7 +335,7 @@ msgstr[0] "%(count)s 个可用网站"
 #, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
-msgstr[0] "超出上限的%(count)s个网站"
+msgstr[0] "超出上限 %(count)s 个网站"
 
 #, python-format
 msgid "%(count)s story"
@@ -380,7 +380,7 @@ msgstr[0] "每月 %(count)s 篇文章"
 #, python-format
 msgid "%(count)s subreddit"
 msgid_plural "%(count)s subreddits"
-msgstr[0] "%(count)s 个 Subreddit"
+msgstr[0] "%(count)s 个子版块"
 
 #, python-format
 msgid "%(count)s subscriber"
@@ -394,7 +394,7 @@ msgstr "%(count)s 位订阅者"
 #, python-format
 msgid "%(count)s video"
 msgid_plural "%(count)s videos"
-msgstr[0] "%(count)s个视频"
+msgstr[0] "%(count)s 个视频"
 
 #, python-format
 msgid "%(count)s week"
@@ -463,7 +463,7 @@ msgstr "%(icon)s 是你喜欢的文章"
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
 msgid_plural "%(indexed)s of %(count)s sites indexed"
-msgstr[0] "已索引 %(indexed)s 个站点，共 %(count)s 个"
+msgstr[0] "已索引 %(indexed)s 个网站，共 %(count)s 个"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed. Index remaining feeds to get better recommendations."
@@ -492,7 +492,7 @@ msgstr "%(price)s · iPhone、iPad &amp; Mac"
 
 #, python-format
 msgid "%(shortcut)s to send"
-msgstr "%(shortcut)s 待发送"
+msgstr "按 %(shortcut)s 发送"
 
 #, python-format
 msgid "%(slot)s — %(date)s"
@@ -530,11 +530,11 @@ msgstr "还剩 %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s 个频道"
+msgstr "%(topic)s 频道"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s 份新闻简报"
+msgstr "%(topic)s 邮件简报"
 
 #, python-format
 msgid "%(topic)s Podcasts"
@@ -542,11 +542,11 @@ msgstr "%(topic)s 播客"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s 个网站"
+msgstr "%(topic)s 网站"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s 个 Subreddit"
+msgstr "%(topic)s Reddit 子版块"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -566,7 +566,7 @@ msgstr "%(value_1)s前"
 
 #, python-format
 msgid "%(value_1)s is Premium"
-msgstr "%(value_1)s 是高级版"
+msgstr "%(value_1)s 是高级版功能"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
@@ -574,7 +574,7 @@ msgstr "%(weekday)s，%(date)s %(time)s"
 
 #, python-format
 msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
-msgstr "%(weekday)s，%(month)s %(day)s，%(year)s"
+msgstr "%(year)s年%(month)s%(day)s日 %(weekday)s"
 
 msgid "&laquo; Re-upload your sites"
 msgstr "&laquo; 重新上传你的网站"
@@ -594,10 +594,10 @@ msgid "(GMT) Greenwich Mean Time : Dublin"
 msgstr "(GMT) 格林威治标准时间：都柏林"
 
 msgid "(GMT) Greenwich Mean Time : Lisbon"
-msgstr "（GMT）格林威治标准时间：里斯本"
+msgstr "(GMT) 格林威治标准时间：里斯本"
 
 msgid "(GMT) Greenwich Mean Time : London"
-msgstr "（GMT）格林威治标准时间：伦敦"
+msgstr "(GMT) 格林威治标准时间：伦敦"
 
 msgid "(GMT) Monrovia, Reykjavik"
 msgstr "(GMT) 蒙罗维亚、雷克雅未克"
@@ -609,13 +609,13 @@ msgid "(GMT+01:00) Belgrade, Budapest, Prague"
 msgstr "(GMT+01:00) 贝尔格莱德、布达佩斯、布拉格"
 
 msgid "(GMT+01:00) Brussels, Copenhagen, Paris"
-msgstr "(GMT+01:00) 布鲁塞尔，哥本哈根，巴黎"
+msgstr "(GMT+01:00) 布鲁塞尔、哥本哈根、巴黎"
 
 msgid "(GMT+01:00) West Central Africa"
-msgstr "（GMT+01:00）中西非"
+msgstr "(GMT+01:00) 中西非"
 
 msgid "(GMT+01:00) Windhoek"
-msgstr "（GMT+01:00）温得和克"
+msgstr "(GMT+01:00) 温得和克"
 
 msgid "(GMT+02:00) Beirut"
 msgstr "(GMT+02:00) 贝鲁特"
@@ -627,10 +627,10 @@ msgid "(GMT+02:00) Gaza"
 msgstr "(GMT+02:00) 加沙"
 
 msgid "(GMT+02:00) Harare, Pretoria"
-msgstr "(GMT+02:00) 哈拉雷，比勒陀利亚"
+msgstr "(GMT+02:00) 哈拉雷、比勒陀利亚"
 
 msgid "(GMT+02:00) Jerusalem"
-msgstr "（GMT+02:00）耶路撒冷"
+msgstr "(GMT+02:00) 耶路撒冷"
 
 msgid "(GMT+02:00) Minsk, Kyiv"
 msgstr "(GMT+02:00) 明斯克、基辅"
@@ -639,25 +639,25 @@ msgid "(GMT+02:00) Syria"
 msgstr "(GMT+02:00) 叙利亚"
 
 msgid "(GMT+03:00) Moscow, St. Petersburg"
-msgstr "（GMT+03:00）莫斯科、圣彼得堡"
+msgstr "(GMT+03:00) 莫斯科、圣彼得堡"
 
 msgid "(GMT+03:00) Nairobi"
-msgstr "（GMT+03:00）内罗毕"
+msgstr "(GMT+03:00) 内罗毕"
 
 msgid "(GMT+03:30) Tehran"
 msgstr "(GMT+03:30) 德黑兰"
 
 msgid "(GMT+04:00) Abu Dhabi, Muscat"
-msgstr "(GMT+04:00) 阿布扎比，马斯喀特"
+msgstr "(GMT+04:00) 阿布扎比、马斯喀特"
 
 msgid "(GMT+04:00) Yerevan"
-msgstr "（GMT+04:00）埃里温"
+msgstr "(GMT+04:00) 埃里温"
 
 msgid "(GMT+04:30) Kabul"
 msgstr "(GMT+04:30) 喀布尔"
 
 msgid "(GMT+05:00) Ekaterinburg"
-msgstr "（GMT+05:00）叶卡捷琳堡"
+msgstr "(GMT+05:00) 叶卡捷琳堡"
 
 msgid "(GMT+05:00) Tashkent"
 msgstr "(GMT+05:00) 塔什干"
@@ -669,7 +669,7 @@ msgid "(GMT+05:45) Kathmandu"
 msgstr "(GMT+05:45) 加德满都"
 
 msgid "(GMT+06:00) Astana, Dhaka"
-msgstr "(GMT+06:00) 阿斯塔纳，达卡"
+msgstr "(GMT+06:00) 阿斯塔纳、达卡"
 
 msgid "(GMT+06:00) Novosibirsk"
 msgstr "(GMT+06:00) 新西伯利亚"
@@ -678,22 +678,22 @@ msgid "(GMT+06:30) Yangon (Rangoon)"
 msgstr "(GMT+06:30) 仰光（Rangoon）"
 
 msgid "(GMT+07:00) Bangkok, Hanoi, Jakarta"
-msgstr "（GMT+07:00）曼谷、河内、雅加达"
+msgstr "(GMT+07:00) 曼谷、河内、雅加达"
 
 msgid "(GMT+07:00) Krasnoyarsk"
-msgstr "（GMT+07:00）克拉斯诺亚尔斯克"
+msgstr "(GMT+07:00) 克拉斯诺亚尔斯克"
 
 msgid "(GMT+08:00) Beijing, Chongqing, Hong Kong"
-msgstr "（GMT+08:00）北京、重庆、香港"
+msgstr "(GMT+08:00) 北京、重庆、香港"
 
 msgid "(GMT+08:00) Irkutsk, Ulaan Bataar"
-msgstr "（GMT+08:00）伊尔库茨克、乌兰巴托"
+msgstr "(GMT+08:00) 伊尔库茨克、乌兰巴托"
 
 msgid "(GMT+08:00) Perth"
 msgstr "(GMT+08:00) 珀斯"
 
 msgid "(GMT+08:45) Eucla"
-msgstr "（GMT+08:45）尤克拉"
+msgstr "(GMT+08:45) 尤克拉"
 
 msgid "(GMT+09:00) Osaka, Sapporo, Tokyo"
 msgstr "(GMT+09:00) 大阪、札幌、东京"
@@ -702,25 +702,25 @@ msgid "(GMT+09:00) Seoul"
 msgstr "(GMT+09:00) 首尔"
 
 msgid "(GMT+09:00) Yakutsk"
-msgstr "（GMT+09:00）雅库茨克"
+msgstr "(GMT+09:00) 雅库茨克"
 
 msgid "(GMT+09:30) Adelaide"
-msgstr "（GMT+09:30）阿德莱德"
+msgstr "(GMT+09:30) 阿德莱德"
 
 msgid "(GMT+09:30) Darwin"
-msgstr "（GMT+09:30）达尔文"
+msgstr "(GMT+09:30) 达尔文"
 
 msgid "(GMT+10:00) Brisbane"
-msgstr "（GMT+10:00）布里斯班"
+msgstr "(GMT+10:00) 布里斯班"
 
 msgid "(GMT+10:00) Sydney, Hobart"
-msgstr "（GMT+10:00）悉尼、霍巴特"
+msgstr "(GMT+10:00) 悉尼、霍巴特"
 
 msgid "(GMT+10:00) Vladivostok"
 msgstr "(GMT+10:00) 符拉迪沃斯托克"
 
 msgid "(GMT+10:30) Lord Howe Island"
-msgstr "（GMT+10:30）豪勋爵岛"
+msgstr "(GMT+10:30) 豪勋爵岛"
 
 msgid "(GMT+11:00) Magadan"
 msgstr "(GMT+11:00) 马加丹"
@@ -729,16 +729,16 @@ msgid "(GMT+11:00) Solomon Is., New Caledonia"
 msgstr "(GMT+11:00) 所罗门群岛、新喀里多尼亚"
 
 msgid "(GMT+11:30) Norfolk Island"
-msgstr "（GMT+11:30）诺福克岛"
+msgstr "(GMT+11:30) 诺福克岛"
 
 msgid "(GMT+12:00) Anadyr, Kamchatka"
-msgstr "（GMT+12:00）阿纳德尔、堪察加"
+msgstr "(GMT+12:00) 阿纳德尔、堪察加"
 
 msgid "(GMT+12:00) Auckland, Wellington"
 msgstr "(GMT+12:00) 奥克兰、惠灵顿"
 
 msgid "(GMT+12:00) Fiji, Kamchatka, Marshall Is."
-msgstr "（GMT+12:00）斐济、堪察加半岛、马绍尔群岛"
+msgstr "(GMT+12:00) 斐济、堪察加半岛、马绍尔群岛"
 
 msgid "(GMT+12:45) Chatham Islands"
 msgstr "(GMT+12:45) 查塔姆群岛"
@@ -750,10 +750,10 @@ msgid "(GMT+14:00) Kiritimati"
 msgstr "(GMT+14:00) 基里蒂马蒂岛"
 
 msgid "(GMT-01:00) Azores"
-msgstr "（GMT-01:00）亚速尔群岛"
+msgstr "(GMT-01:00) 亚速尔群岛"
 
 msgid "(GMT-01:00) Cape Verde Is."
-msgstr "（GMT-01:00）佛得角群岛"
+msgstr "(GMT-01:00) 佛得角群岛"
 
 msgid "(GMT-02:00) Mid-Atlantic"
 msgstr "(GMT-02:00) 中大西洋"
@@ -762,13 +762,13 @@ msgid "(GMT-03:00) Brasilia"
 msgstr "(GMT-03:00) 巴西利亚"
 
 msgid "(GMT-03:00) Buenos Aires"
-msgstr "（GMT-03:00）布宜诺斯艾利斯"
+msgstr "(GMT-03:00) 布宜诺斯艾利斯"
 
 msgid "(GMT-03:00) Greenland"
-msgstr "（GMT-03:00）格陵兰"
+msgstr "(GMT-03:00) 格陵兰"
 
 msgid "(GMT-03:00) Miquelon, St. Pierre"
-msgstr "（GMT-03:00）米克隆岛、圣皮埃尔"
+msgstr "(GMT-03:00) 米克隆岛、圣皮埃尔"
 
 msgid "(GMT-03:00) Montevideo"
 msgstr "(GMT-03:00) 蒙得维的亚"
@@ -777,28 +777,28 @@ msgid "(GMT-03:00) UTC-3"
 msgstr "(GMT-03:00) UTC-3"
 
 msgid "(GMT-03:30) Newfoundland"
-msgstr "（GMT-03:30）纽芬兰"
+msgstr "(GMT-03:30) 纽芬兰"
 
 msgid "(GMT-04:00) Atlantic Time (Canada)"
-msgstr "（GMT-04:00）大西洋时间（加拿大）"
+msgstr "(GMT-04:00) 大西洋时间（加拿大）"
 
 msgid "(GMT-04:00) Atlantic Time (Goose Bay)"
-msgstr "（GMT-04:00）大西洋时间（古斯贝）"
+msgstr "(GMT-04:00) 大西洋时间（古斯贝）"
 
 msgid "(GMT-04:00) Brazil"
-msgstr "（GMT-04:00）巴西"
+msgstr "(GMT-04:00) 巴西"
 
 msgid "(GMT-04:00) Faukland Islands"
-msgstr "（GMT-04:00）福克兰群岛"
+msgstr "(GMT-04:00) 福克兰群岛"
 
 msgid "(GMT-04:00) La Paz"
 msgstr "(GMT-04:00) 拉巴斯"
 
 msgid "(GMT-04:00) Santiago"
-msgstr "（GMT-04:00）圣地亚哥"
+msgstr "(GMT-04:00) 圣地亚哥"
 
 msgid "(GMT-04:30) Caracas"
-msgstr "（GMT-04:30）加拉加斯"
+msgstr "(GMT-04:30) 加拉加斯"
 
 msgid "(GMT-05:00) Bogota, Lima, Quito, Rio Branco"
 msgstr "(GMT-05:00) 波哥大、利马、基多、里奥布朗库"
@@ -807,16 +807,16 @@ msgid "(GMT-05:00) Cuba"
 msgstr "(GMT-05:00) 古巴"
 
 msgid "(GMT-05:00) Eastern Time (US & Canada)"
-msgstr "(GMT-05:00) 美国和加拿大东部时间"
+msgstr "(GMT-05:00) 东部时间（美国和加拿大）"
 
 msgid "(GMT-06:00) Central Time (US & Canada)"
 msgstr "(GMT-06:00) 中部时间（美国和加拿大）"
 
 msgid "(GMT-06:00) Easter Island"
-msgstr "（GMT-06:00）复活节岛"
+msgstr "(GMT-06:00) 复活节岛"
 
 msgid "(GMT-06:00) Guadalajara, Mexico City"
-msgstr "（GMT-06:00）瓜达拉哈拉、墨西哥城"
+msgstr "(GMT-06:00) 瓜达拉哈拉、墨西哥城"
 
 msgid "(GMT-06:00) Saskatchewan, Central America"
 msgstr "(GMT-06:00) 萨斯喀彻温省、中美洲"
@@ -825,28 +825,28 @@ msgid "(GMT-07:00) Arizona"
 msgstr "(GMT-07:00) 亚利桑那州"
 
 msgid "(GMT-07:00) Chihuahua, La Paz, Mazatlan"
-msgstr "（GMT-07:00）奇瓦瓦、拉巴斯、马萨特兰"
+msgstr "(GMT-07:00) 奇瓦瓦、拉巴斯、马萨特兰"
 
 msgid "(GMT-07:00) Mountain Time (US & Canada)"
-msgstr "（GMT-07:00）山地时间（美国和加拿大）"
+msgstr "(GMT-07:00) 山地时间（美国和加拿大）"
 
 msgid "(GMT-08:00) Pacific Time (US & Canada)"
-msgstr "（GMT-08:00）太平洋时间（美国和加拿大）"
+msgstr "(GMT-08:00) 太平洋时间（美国和加拿大）"
 
 msgid "(GMT-08:00) Pitcairn Islands"
 msgstr "(GMT-08:00) 皮特凯恩群岛"
 
 msgid "(GMT-08:00) Tijuana, Baja California"
-msgstr "(GMT-08:00) 蒂华纳，南下加利福尼亚州"
+msgstr "(GMT-08:00) 蒂华纳，下加利福尼亚州"
 
 msgid "(GMT-09:00) Alaska"
-msgstr "（GMT-09:00）阿拉斯加"
+msgstr "(GMT-09:00) 阿拉斯加"
 
 msgid "(GMT-09:00) Gambier Islands"
 msgstr "(GMT-09:00) 甘比尔群岛"
 
 msgid "(GMT-09:30) Marquesas Islands"
-msgstr "（GMT-09:30）马克萨斯群岛"
+msgstr "(GMT-09:30) 马克萨斯群岛"
 
 msgid "(GMT-10:00) Hawaii"
 msgstr "(GMT-10:00) 夏威夷"
@@ -855,21 +855,21 @@ msgid "(GMT-10:00) Hawaii-Aleutian"
 msgstr "(GMT-10:00) 夏威夷-阿留申群岛"
 
 msgid "(GMT-11:00) Midway Island, Samoa"
-msgstr "（GMT-11:00）中途岛、萨摩亚"
+msgstr "(GMT-11:00) 中途岛、萨摩亚"
 
 msgid "(no title)"
 msgstr "（无标题）"
 
 msgid "(upcoming)"
-msgstr "（即将推出）"
+msgstr "（即将扣款）"
 
 #, python-format
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
-msgstr[0] "+ %(value_1)s 个网站"
+msgstr[0] "+ 另外 %(value_1)s 个网站"
 
 msgid "+ New Folder..."
-msgstr "+ 新建文件夹..."
+msgstr "+ 新建文件夹…"
 
 msgid "/day"
 msgstr "/天"
@@ -907,11 +907,11 @@ msgstr "订阅源更新速度提升 5 倍"
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "< 每月 %(count)s 篇文章"
+msgstr[0] "每月少于 %(count)s 篇文章"
 
 #, python-format
 msgid "< %(value_1)s/month"
-msgstr "< %(value_1)s/月"
+msgstr "每月少于 %(value_1)s 篇"
 
 msgid "< 30 stories/month"
 msgstr "每月少于 30 篇文章"
@@ -931,13 +931,13 @@ msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
 msgstr[0] "高级试用还剩 <strong>%(count)s 天</strong>"
 
 msgid "A blurblog of shared stories"
-msgstr "分享文章的个人博客"
+msgstr "由分享文章组成的 Blurblog"
 
 msgid "A folder of feeds read as one stream"
 msgstr "将多个订阅源合并为一个信息流的文件夹"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "每小时精选一批由 NewsBlur 位读者分享的文章。"
+msgstr "每小时精选一批 NewsBlur 读者分享的文章。"
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -947,10 +947,10 @@ msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "第二轮会根据你的提示，在页面上找到正确的模式。"
 
 msgid "A single like overrides any number of dislikes"
-msgstr "一个赞可抵消任意数量的踩"
+msgstr "一次“喜欢”胜过任意数量的“不喜欢”"
 
 msgid "A single super dislike overrides everything"
-msgstr "一个超级踩就能推翻所有判断"
+msgstr "一次“强烈不喜欢”胜过其他所有训练"
 
 msgid "A story diff with additions and deletions"
 msgstr "显示新增和删除内容的文章差异"
@@ -972,7 +972,7 @@ msgid "AI-curated summary of your top stories"
 msgstr "由 AI 精选的热门文章摘要"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
-msgstr "借助 AI 分析文章，并根据您的新闻订阅源生成个性化每日摘要。"
+msgstr "借助 AI 分析文章，并根据你的新闻订阅源生成个性化每日摘要。"
 
 #, python-format
 msgid "ALL CATEGORIES (%(value_1)s)"
@@ -994,7 +994,7 @@ msgid "Active"
 msgstr "活跃"
 
 msgid "Activities"
-msgstr "活动"
+msgstr "动态"
 
 msgid "Add"
 msgstr "添加"
@@ -1026,7 +1026,7 @@ msgid "Add any site or feed"
 msgstr "添加任意网站或订阅源"
 
 msgid "Add custom tags to organize saved stories by topic"
-msgstr "添加自定义标签，按主题整理已保存的故事"
+msgstr "添加自定义标签，按主题整理已保存的文章"
 
 msgid "Add domains you never want to archive."
 msgstr "添加你永远不想归档的域名。"
@@ -1047,7 +1047,7 @@ msgid "Add site"
 msgstr "添加网站"
 
 msgid "Add site/folder"
-msgstr "添加站点/文件夹"
+msgstr "添加网站/文件夹"
 
 msgid "Add story list"
 msgstr "添加文章列表"
@@ -1063,7 +1063,7 @@ msgstr "添加到文件夹"
 
 #, python-format
 msgid "Added %(date)s"
-msgstr "已添加 %(date)s"
+msgstr "添加于 %(date)s"
 
 msgid "Added!"
 msgstr "已添加！"
@@ -1072,7 +1072,7 @@ msgid "Adding site..."
 msgstr "正在添加网站…"
 
 msgid "Adding..."
-msgstr "正在添加..."
+msgstr "正在添加…"
 
 #, python-format
 msgid "After %(slider)s %(count)s second."
@@ -1097,7 +1097,7 @@ msgid "All Categories"
 msgstr "所有分类"
 
 msgid "All Categorized"
-msgstr "所有分类"
+msgstr "已全部分类"
 
 msgid "All Done "
 msgstr "全部完成 "
@@ -1112,7 +1112,7 @@ msgid "All Shared Stories"
 msgstr "所有分享的文章"
 
 msgid "All Site Stories"
-msgstr "此网站的所有文章"
+msgstr "所有网站的文章"
 
 msgid "All Stories"
 msgstr "所有文章"
@@ -1121,14 +1121,14 @@ msgid "All done!"
 msgstr "全部完成！"
 
 msgid "All feeds fetched every 5-15 minutes"
-msgstr "每 5–15 分钟抓取所有信息源"
+msgstr "每 5–15 分钟抓取所有订阅源"
 
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr "默认情况下，所有模式均不区分大小写。使用 %(code)s 表示单词边界，以避免部分匹配。"
 
 msgid "All sites"
-msgstr "所有站点"
+msgstr "所有网站"
 
 msgid "All sites in folder"
 msgstr "文件夹中的所有网站"
@@ -1139,7 +1139,7 @@ msgstr "所有文章"
 msgid ""
 "All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
 "styles, and auto mark-as-read."
-msgstr "所有用户都会在热门订阅源中看到聚合的文章。高级归档功能可解锁完整控制：切换选项、显示样式以及自动标记为已读。"
+msgstr "所有用户都会在热门订阅源中看到聚类的文章。高级归档版可解锁完整控制：切换选项、显示样式以及自动标记为已读。"
 
 msgid "Allowed Domains"
 msgstr "允许的域名"
@@ -1193,7 +1193,7 @@ msgid "Analyzing saved stories..."
 msgstr "正在分析已保存的文章……"
 
 msgid "Analyzing your archive..."
-msgstr "正在分析您的归档…"
+msgstr "正在分析你的归档…"
 
 #, python-format
 msgid "And you have %(count)s saved story."
@@ -1204,7 +1204,7 @@ msgid "Android notifications"
 msgstr "Android 通知"
 
 msgid "Android notifications require Premium Archive"
-msgstr "Android 通知需要高级存档"
+msgstr "Android 通知需要高级归档版"
 
 msgid "Animals"
 msgstr "动物"
@@ -1261,7 +1261,7 @@ msgid "April"
 msgstr "四月"
 
 msgid "Archive"
-msgstr "归档"
+msgstr "归档版"
 
 msgid "Archive Assistant"
 msgstr "归档助手"
@@ -1273,13 +1273,13 @@ msgid "Are the apps open source?"
 msgstr "这些应用是开源的吗？"
 
 msgid "Arrows"
-msgstr "方向键"
+msgstr "箭头"
 
 msgid "As a reminder, use the intelligence slider to select a filter:"
 msgstr "提醒一下，请使用智能度滑块选择筛选方式："
 
 msgid "Ask"
-msgstr "询问"
+msgstr "提问"
 
 msgid "Ask AI"
 msgstr "询问 AI"
@@ -1288,28 +1288,28 @@ msgid "Ask AI & Daily Briefing"
 msgstr "询问 AI 和每日简报"
 
 msgid "Ask AI about story"
-msgstr "询问 AI 关于这篇文章"
+msgstr "就这篇文章询问 AI"
 
 msgid "Ask AI anything about your browsing history"
 msgstr "询问 AI 任何有关你浏览记录的问题"
 
 msgid "Ask AI can transcribe a podcast or video first, then answer questions about it."
-msgstr "Ask AI 可以先转录播客或视频，然后回答有关内容的问题。"
+msgstr "“询问 AI”可以先转录播客或视频，然后回答有关内容的问题。"
 
 msgid "Ask AI questions about stories"
-msgstr "向 AI 提问有关故事的问题"
+msgstr "向 AI 提问有关文章的问题"
 
 msgid "Ask AI with a choice of models"
 msgstr "选择模型向 AI 提问"
 
 msgid "Ask a custom question..."
-msgstr "提出自定义问题..."
+msgstr "提出自定义问题…"
 
 msgid "Ask a question..."
 msgstr "提个问题……"
 
 msgid "Ask about your browsing history..."
-msgstr "询问您的浏览历史记录…"
+msgstr "询问有关你浏览记录的问题…"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1375,7 +1375,7 @@ msgid "Auto-selected by popularity"
 msgstr "按热度自动选择"
 
 msgid "Automatically archive every page you visit to search with AI later."
-msgstr "自动存档您访问的每个页面，以便稍后使用 AI 搜索。"
+msgstr "自动归档你访问的每个页面，以便稍后使用 AI 搜索。"
 
 msgid "Automatically generate briefings on schedule"
 msgstr "按计划自动生成简报"
@@ -1444,7 +1444,7 @@ msgid "Blocked URL Patterns"
 msgstr "已屏蔽的 URL 模式"
 
 msgid "Blocking..."
-msgstr "正在屏蔽..."
+msgstr "正在屏蔽…"
 
 msgid "Blocklist"
 msgstr "屏蔽列表"
@@ -1468,7 +1468,7 @@ msgid "Blurblog title"
 msgstr "Blurblog 标题"
 
 msgid "Blurblogs"
-msgstr "Blurblogs"
+msgstr "Blurblog"
 
 msgid "Bookmarklet"
 msgstr "书签工具"
@@ -1477,7 +1477,7 @@ msgid "Bottom"
 msgstr "底部"
 
 msgid "Brief"
-msgstr "简报"
+msgstr "简短"
 
 msgid "Briefing"
 msgstr "简报"
@@ -1501,13 +1501,13 @@ msgid "Browse Archives"
 msgstr "浏览归档"
 
 msgid "Browse all your stories"
-msgstr "浏览所有故事"
+msgstr "浏览所有文章"
 
 msgid "Browse by Category"
 msgstr "按类别浏览"
 
 msgid "Browse domains from your archives and click to block them."
-msgstr "浏览存档中的域名，点击即可屏蔽。"
+msgstr "浏览归档中的域名，点击即可屏蔽。"
 
 msgid "Browse domains from your archives. Click on a domain to block it from future archiving."
 msgstr "浏览归档中的域名。点击域名即可阻止今后对其进行归档。"
@@ -1534,32 +1534,32 @@ msgid "Browser Extensions"
 msgstr "浏览器扩展"
 
 msgid "Bullet points"
-msgstr "项目符号"
+msgstr "要点"
 
 msgid "Bullets"
-msgstr "项目符号"
+msgstr "要点"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
-msgstr "包含 10 篇以上报道的分类 (%(value_1)s)"
+msgstr "包含 10 篇以上文章的分类（%(value_1)s）"
 
 msgid "CLI Tool"
 msgstr "CLI 工具"
 
 msgid "CLI access requires Premium Archive or Premium Pro."
-msgstr "使用 CLI 需要 Premium Archive 或 Premium Pro。"
+msgstr "使用 CLI 需要高级归档版或高级专业版。"
 
 msgid "Can I search saved stories?"
 msgstr "可以搜索已保存的文章吗？"
 
 msgid "Can I search the archive?"
-msgstr "我可以搜索存档吗？"
+msgstr "我可以搜索归档吗？"
 
 msgid "Can I share tagged collections?"
 msgstr "可以分享已添加标签的合集吗？"
 
 msgid "Can I train on newsletter content?"
-msgstr "我可以用通讯内容进行训练吗？"
+msgstr "我可以用邮件简报的内容进行训练吗？"
 
 msgid "Can I turn clustering off?"
 msgstr "可以关闭聚类吗？"
@@ -1574,7 +1574,7 @@ msgid "Cancel delete"
 msgstr "取消删除"
 
 msgid "Cancel mute"
-msgstr "取消静音"
+msgstr "放弃屏蔽"
 
 msgid "Cancel rename"
 msgstr "取消重命名"
@@ -1586,13 +1586,13 @@ msgid "Cancel subscription renewal"
 msgstr "取消订阅续订"
 
 msgid "Cancel unfollow"
-msgstr "取消取消关注"
+msgstr "保持关注"
 
 msgid "Canceled Request"
 msgstr "请求已取消"
 
 msgid "Cancelling..."
-msgstr "正在取消..."
+msgstr "正在取消…"
 
 msgid "Categories"
 msgstr "分类"
@@ -1613,7 +1613,7 @@ msgstr "分类"
 
 #, python-format
 msgid "Category: %(value_1)s"
-msgstr "类别：%(value_1)s"
+msgstr "分类：%(value_1)s"
 
 msgid "Change"
 msgstr "更改"
@@ -1637,7 +1637,7 @@ msgid "Change what you like above..."
 msgstr "更改上方的偏好设置…"
 
 msgid "Change your blurblog settings above"
-msgstr "请在上方更改你的 blurblog 设置"
+msgstr "请在上方更改你的 Blurblog 设置"
 
 msgid "Change your credit card"
 msgstr "更换信用卡"
@@ -1668,13 +1668,13 @@ msgstr[0] "选择 %(count)s 个网站"
 #, python-format
 msgid "Choose Your %(count)s site"
 msgid_plural "Choose Your %(count)s sites"
-msgstr[0] "选择您的 %(count)s 个网站"
+msgstr[0] "选择你的 %(count)s 个网站"
 
 msgid "Choose Your sites"
 msgstr "选择你的网站"
 
 msgid "Choose a story pattern"
-msgstr "选择文章样式"
+msgstr "选择文章模式"
 
 msgid "Choose another language"
 msgstr "选择其他语言"
@@ -1716,7 +1716,7 @@ msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "选择你偏好的 AI 模型：Claude、GPT、Gemini 或 Grok"
 
 msgid "Choose your sites"
-msgstr "选择站点"
+msgstr "选择你的网站"
 
 msgid "Classifier filter scope"
 msgstr "分类器筛选范围"
@@ -1726,7 +1726,7 @@ msgid "Classifier scope requires %(tier_link)s"
 msgstr "分类器范围需要 %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。您可以随时切换。"
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你可以随时切换。"
 
 msgid "Cleanup and rearrange feeds"
 msgstr "整理并重新排列订阅源"
@@ -1791,7 +1791,7 @@ msgid "Cluster related stories"
 msgstr "将相关文章归为一组"
 
 msgid "Clustered stories in the titles view"
-msgstr "在标题视图中聚合文章"
+msgstr "标题视图中的聚类文章"
 
 msgid "Collapse All Folders"
 msgstr "折叠所有文件夹"
@@ -1803,7 +1803,7 @@ msgid "Collapse all"
 msgstr "全部折叠"
 
 msgid "Collapse story"
-msgstr "折叠故事"
+msgstr "折叠文章"
 
 msgid "Collapsed"
 msgstr "已折叠"
@@ -1857,7 +1857,7 @@ msgstr "连接 %(provider)s"
 msgid ""
 "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
 "subscriptions from Claude Code, Codex, or any MCP-compatible tool."
-msgstr "将 AI 代理连接到您的 NewsBlur 账户。使用 Claude Code、Codex 或任何兼容 MCP 的工具阅读订阅源、筛选故事、训练分类器并管理订阅。"
+msgstr "将 AI 代理连接到你的 NewsBlur 账户。使用 Claude Code、Codex 或任何兼容 MCP 的工具阅读订阅源、筛选文章、训练分类器并管理订阅。"
 
 msgid "Connect AI agents with MCP server and CLI"
 msgstr "通过 MCP 服务器和 CLI 连接 AI 代理"
@@ -1871,13 +1871,13 @@ msgid "Connected"
 msgstr "已连接"
 
 msgid "Connected accounts"
-msgstr "已连接的账号"
+msgstr "已连接的账户"
 
 msgid "Content"
 msgstr "内容"
 
 msgid "Content Filter"
-msgstr "内容过滤器"
+msgstr "内容筛选器"
 
 msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
 msgstr "可在订阅源选项弹出菜单中单独控制每个订阅源的聚类，也可在“偏好设置”>“文章”中全局设置。"
@@ -1919,7 +1919,7 @@ msgid "Counting is difficult"
 msgstr "计数很难"
 
 msgid "Counting..."
-msgstr "正在计数..."
+msgstr "正在计数…"
 
 msgid "Create"
 msgstr "创建"
@@ -1943,7 +1943,7 @@ msgid "Creative"
 msgstr "创意"
 
 msgid "Credit"
-msgstr "鸣谢"
+msgstr "奖励"
 
 msgid "Cursors"
 msgstr "光标"
@@ -2005,7 +2005,7 @@ msgstr "每日简报，含文章摘要"
 msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
-msgstr "每日简报是高级版存档功能。根据您的套餐，您可以预览每份简报中的前 3 篇文章。升级后即可查看所有文章，并按计划自动生成简报。"
+msgstr "每日简报是高级归档版功能。在你当前的套餐中，你可以预览每份简报的前 3 篇文章。升级后即可查看所有文章，并按你的计划自动生成简报。"
 
 msgid "Daily briefing with your top stories and keywords"
 msgstr "包含热门文章和关键词的每日简报"
@@ -2039,7 +2039,7 @@ msgid "December"
 msgstr "十二月"
 
 msgid "Deep reads the community gave real time to"
-msgstr "社区实时关注的深度阅读"
+msgstr "社区读者真正花时间读完的深度长文"
 
 msgid "Default"
 msgstr "默认"
@@ -2054,7 +2054,7 @@ msgid "Default layout"
 msgstr "默认布局"
 
 msgid "Default story order"
-msgstr "默认故事顺序"
+msgstr "默认文章顺序"
 
 msgid "Default view"
 msgstr "默认视图"
@@ -2065,7 +2065,7 @@ msgstr "删除"
 #, python-format
 msgid "Delete %(count)s site"
 msgid_plural "Delete %(count)s sites"
-msgstr[0] "删除 %(count)s 个站点"
+msgstr[0] "删除 %(count)s 个网站"
 
 msgid "Delete It. It Just Won't Work!"
 msgstr "删除它吧，根本行不通！"
@@ -2116,7 +2116,7 @@ msgid "Describe a topic and AI will score each story against your prompt to focu
 msgstr "描述一个主题，AI 会根据你的提示为每篇文章评分，帮你聚焦或隐藏匹配内容。"
 
 msgid "Describe what to focus or hide"
-msgstr "描述要关注或隐藏的内容"
+msgstr "描述要聚焦或隐藏的内容"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "描述你要查找的内容，AI 将根据你的提示分析每篇文章的图片。"
@@ -2148,7 +2148,7 @@ msgid "Disconnect %(provider)s (%(email)s)"
 msgstr "断开 %(provider)s（%(email)s）"
 
 msgid "Disconnecting..."
-msgstr "正在断开连接..."
+msgstr "正在断开连接…"
 
 msgid "Discover"
 msgstr "发现"
@@ -2157,7 +2157,7 @@ msgid "Discover Channels"
 msgstr "发现频道"
 
 msgid "Discover Newsletters"
-msgstr "发现电子报"
+msgstr "发现邮件简报"
 
 msgid "Discover Podcasts"
 msgstr "发现播客"
@@ -2166,7 +2166,7 @@ msgid "Discover Sites"
 msgstr "发现网站"
 
 msgid "Discover Subreddits"
-msgstr "发现 Subreddit"
+msgstr "发现 Reddit 子版块"
 
 msgid "Discover feeds organized by topic and interest."
 msgstr "按主题和兴趣探索分类整理的订阅源。"
@@ -2175,13 +2175,13 @@ msgid "Discover more to read"
 msgstr "发现更多阅读内容"
 
 msgid "Discover new feeds by topic and search your Reading Archive"
-msgstr "按主题发现新订阅源，并搜索您的阅读存档"
+msgstr "按主题发现新订阅源，并搜索你的阅读归档"
 
 msgid "Discover related stories across your archive"
 msgstr "在你的归档中发现相关内容"
 
 msgid "Discover related stories and sites"
-msgstr "发现相关报道和网站"
+msgstr "发现相关文章和网站"
 
 msgid "Discover sites"
 msgstr "发现网站"
@@ -2196,7 +2196,7 @@ msgid "Dislike matching stories"
 msgstr "不喜欢符合条件的文章"
 
 msgid "Dislikes"
-msgstr "踩"
+msgstr "不喜欢"
 
 msgid "Dismiss"
 msgstr "关闭"
@@ -2208,7 +2208,7 @@ msgid "Do the apps work offline?"
 msgstr "这些应用可以离线使用吗？"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "Ask AI 支持音频和视频吗？"
+msgstr "“询问 AI”支持音频和视频吗？"
 
 msgid "Does training work across all my feeds?"
 msgstr "训练设置适用于我的所有订阅源吗？"
@@ -2227,7 +2227,7 @@ msgid "Don't do anything on double-clicks"
 msgstr "双击时不执行任何操作"
 
 msgid "Don't see your subreddit? Subscribe directly by name."
-msgstr "没找到你的 subreddit？直接输入名称订阅。"
+msgstr "没找到你的子版块？直接输入名称订阅。"
 
 msgid "Don't show a preview, only show the story title"
 msgstr "不显示预览，仅显示文章标题"
@@ -2257,12 +2257,12 @@ msgid "Download this XML file as a backup"
 msgstr "下载此 XML 文件作为备份"
 
 msgid "Drag categories here to exclude them"
-msgstr "将类别拖到此处以排除"
+msgstr "将分类拖到此处以排除"
 
 msgid ""
 "Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
 " reading."
-msgstr "将按钮拖到书签工具栏。在任何网站上，点击它即可订阅该网站的源，或分享你正在阅读的文章。"
+msgstr "将按钮拖到书签工具栏。在任何网站上，点击它即可订阅该网站的订阅源，或分享你正在阅读的文章。"
 
 msgid "Drag this bookmarklet into your bookmarks bar"
 msgstr "将此书签小工具拖到书签栏"
@@ -2292,7 +2292,7 @@ msgid "Each selected split needs a name and at least one story"
 msgstr "每个选定的拆分都需要名称和至少一篇文章"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
-msgstr "每个发件人都会成为一个独立订阅源，方便您屏蔽那些没完没了的简报邮件。"
+msgstr "每个发件人都会成为一个独立订阅源，你可以通过训练过滤掉那些没完没了的邮件简报。"
 
 msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
 msgstr "每个标签都有专属 RSS 源，可用于分享或接入其他工具"
@@ -2303,13 +2303,13 @@ msgstr "赚取免费高级版"
 msgid ""
 "Earn free time on your subscription for every person who signs up and subscribes. The credit scales with "
 "what they pick — no cap."
-msgstr "每有一人注册并订阅，你就能获得订阅免费时长。赠送时长根据对方选择的方案而定，且没有上限。"
+msgstr "每有一人注册并订阅，你就能获得订阅免费时长。奖励时长根据对方选择的套餐而定，且没有上限。"
 
 msgid "Edit Profile"
 msgstr "编辑个人资料"
 
 msgid "Editorial"
-msgstr "编辑精选"
+msgstr "叙述"
 
 msgid "Education"
 msgstr "教育"
@@ -2333,10 +2333,10 @@ msgid "Email notifications"
 msgstr "电子邮件通知"
 
 msgid "Email notifications require Premium Archive"
-msgstr "邮件通知需要高级归档功能"
+msgstr "邮件通知需要高级归档版"
 
 msgid "Email story"
-msgstr "通过电子邮件发送故事"
+msgstr "通过电子邮件发送文章"
 
 msgid "Email:"
 msgstr "电子邮件："
@@ -2351,7 +2351,7 @@ msgid "Enable \"mark all as read\" so reading one version clears every duplicate
 msgstr "启用“全部标记为已读”，这样阅读一个版本就会清除所有重复项。"
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "启用每日简报，获取 AI 生成的头条故事摘要"
+msgstr "启用每日简报，获取 AI 生成的热门文章摘要"
 
 #, python-format
 msgid "Enable all %(count)s site"
@@ -2359,7 +2359,7 @@ msgid_plural "Enable all %(count)s sites"
 msgstr[0] "启用全部 %(count)s 个网站"
 
 msgid "Enable all sites"
-msgstr "启用所有站点"
+msgstr "启用所有网站"
 
 msgid "Enable captions/subtitles for YouTube videos"
 msgstr "为 YouTube 视频启用字幕"
@@ -2386,7 +2386,7 @@ msgid "English"
 msgstr "英语"
 
 msgid "Enter URL pattern to match..."
-msgstr "输入要匹配的网址模式..."
+msgstr "输入要匹配的网址模式…"
 
 msgid "Enter a pattern"
 msgstr "输入匹配模式"
@@ -2407,7 +2407,7 @@ msgid "Enter text above"
 msgstr "在上方输入文字"
 
 msgid "Enter text to match..."
-msgstr "输入要匹配的文本..."
+msgstr "输入要匹配的文本…"
 
 msgid "Erase your intelligence training classifiers"
 msgstr "清除你的智能训练分类器"
@@ -2422,7 +2422,7 @@ msgid "Erase yourself"
 msgstr "删除自己的账户"
 
 msgid "Erase yourself permanently"
-msgstr "永久删除你的账号"
+msgstr "永久删除你的账户"
 
 msgid "Error"
 msgstr "错误"
@@ -2466,13 +2466,13 @@ msgid "Every new story is archived permanently"
 msgstr "每篇新文章都会永久存档"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "每个已保存故事标签都有自己的 RSS 订阅源，非常适合接入 IFTTT 或 Zapier。"
+msgstr "每个已保存文章的标签都有自己的 RSS 订阅源，非常适合接入 IFTTT 或 Zapier。"
 
 msgid "Every story archived and searchable forever"
 msgstr "每篇文章都会永久归档并可供搜索"
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
-msgstr "所有文章永久归档并可搜索。您的个人知识库。"
+msgstr "所有文章永久归档并可搜索。你的个人知识库。"
 
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "每个标签都有自己的 RSS 订阅源。分享链接，或将其接入 IFTTT 或 Zapier。"
@@ -2490,7 +2490,7 @@ msgid "Everything has been deleted."
 msgstr "所有内容均已删除。"
 
 msgid "Everything in Archive, plus:"
-msgstr "包含 Archive 的所有功能，另外还有："
+msgstr "包含归档版的所有功能，另外还有："
 
 msgid "Everything in Free, plus:"
 msgstr "包含免费版的所有功能，另外还包括："
@@ -2534,7 +2534,7 @@ msgid "Expand story"
 msgstr "展开文章"
 
 msgid "Expanded"
-msgstr "已展开"
+msgstr "展开"
 
 msgid "Expire 1 YR"
 msgstr "1 年后过期"
@@ -2543,13 +2543,13 @@ msgid "Export trained stories from folders"
 msgstr "从文件夹导出已训练的文章"
 
 msgid "Extras"
-msgstr "其他"
+msgstr "附加功能"
 
 msgid "FAQ"
 msgstr "常见问题"
 
 msgid "Faces"
-msgstr "头像"
+msgstr "表情"
 
 msgid "Fact check this story"
 msgstr "核查这篇文章"
@@ -2558,10 +2558,10 @@ msgid "Failed to connect to server"
 msgstr "无法连接到服务器"
 
 msgid "Failed to convert newsletter URL"
-msgstr "无法转换新闻邮件网址"
+msgstr "无法转换邮件简报网址"
 
 msgid "Failed to create Google News feed"
-msgstr "创建 Google 新闻源失败"
+msgstr "创建 Google 新闻订阅源失败"
 
 msgid "Failed to create feed"
 msgstr "创建订阅源失败"
@@ -2627,7 +2627,7 @@ msgid "Faster updates. Full-text search. Read by folder."
 msgstr "更新更快。全文搜索。按文件夹阅读。"
 
 msgid "Favorited!"
-msgstr "已收藏！"
+msgstr "已点赞！"
 
 msgid "Favorites"
 msgstr "收藏"
@@ -2662,10 +2662,10 @@ msgid "Feed Icon"
 msgstr "订阅源图标"
 
 msgid "Feed Push"
-msgstr "Feed 推送"
+msgstr "订阅源推送"
 
 msgid "Feed opens:"
-msgstr "订阅源打开方式："
+msgstr "订阅源打开次数："
 
 msgid "Feed: "
 msgstr "订阅源："
@@ -2674,7 +2674,7 @@ msgid "Feeds"
 msgstr "订阅源"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "已为完整存档补齐订阅源内容"
+msgstr "回填订阅源的历史内容，形成完整归档"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
 msgstr "读者互动度高、但尚未广为人知的订阅源"
@@ -2697,7 +2697,7 @@ msgid "Fetched every %(value_1)s"
 msgstr "每 %(value_1)s 获取一次"
 
 msgid "Fetching page..."
-msgstr "正在获取页面..."
+msgstr "正在获取页面…"
 
 msgid "Fetching stories"
 msgstr "正在获取文章"
@@ -2712,7 +2712,7 @@ msgid "Fetching text"
 msgstr "正在获取文本"
 
 msgid "Fetching your feeds"
-msgstr "正在获取您的信息源"
+msgstr "正在获取你的订阅源"
 
 msgid "Fetching..."
 msgstr "正在获取…"
@@ -2730,31 +2730,31 @@ msgid "Filter by site or classifier..."
 msgstr "按网站或分类器筛选…"
 
 msgid "Filter channels..."
-msgstr "筛选频道..."
+msgstr "筛选频道…"
 
 msgid "Filter icons..."
-msgstr "筛选图标..."
+msgstr "筛选图标…"
 
 msgid "Filter newsletters..."
 msgstr "筛选新闻简报…"
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
-msgstr "将通知筛选为仅显示重点文章，让你的训练结果决定哪些内容会提醒你。"
+msgstr "将通知筛选为仅显示聚焦文章，让你的训练结果决定哪些内容会提醒你。"
 
 msgid "Filter podcasts..."
-msgstr "筛选播客..."
+msgstr "筛选播客…"
 
 msgid "Filter sites..."
-msgstr "筛选网站..."
+msgstr "筛选网站…"
 
 msgid "Filter stories"
-msgstr "筛选故事"
+msgstr "筛选文章"
 
 msgid "Filter stories by date range"
 msgstr "按日期范围筛选文章"
 
 msgid "Filter subreddits..."
-msgstr "筛选 subreddit..."
+msgstr "筛选子版块…"
 
 msgid "Filtering for"
 msgstr "筛选条件："
@@ -2771,7 +2771,7 @@ msgstr "金融"
 
 #, python-format
 msgid "Find %(value_1)s Friends"
-msgstr "查找 %(value_1)s 位好友"
+msgstr "查找 %(value_1)s 好友"
 
 msgid "Find Friends"
 msgstr "查找好友"
@@ -2780,7 +2780,7 @@ msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "在“电子邮件简报”对话框中查找你的专属 NewsBlur 邮箱地址"
 
 msgid "Finish recording..."
-msgstr "完成录制..."
+msgstr "完成录制…"
 
 msgid "First things first..."
 msgstr "先从最重要的开始……"
@@ -2803,7 +2803,7 @@ msgid "Fix this misbehaving site"
 msgstr "修复此异常网站"
 
 msgid "Flat"
-msgstr "平面"
+msgstr "平铺"
 
 msgid "Flowing narrative that connects stories into a readable digest"
 msgstr "将文章串联成流畅易读的摘要"
@@ -2849,7 +2849,7 @@ msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "关注任何网站，即使它们没有发布 RSS 订阅源。"
 
 msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
-msgstr "关注社交媒体账号、招聘网站、更新日志和从未提供信息源的产品页面。"
+msgstr "关注社交媒体账号、招聘网站、更新日志和从未提供订阅源的产品页面。"
 
 msgid "Follow to see their shared stories"
 msgstr "关注以查看他们分享的文章"
@@ -2864,10 +2864,10 @@ msgid "Follow up to 4,096 sites"
 msgstr "最多关注 4,096 个网站"
 
 msgid "Follow up to 64 sites"
-msgstr "最多关注 64 个站点"
+msgstr "最多关注 64 个网站"
 
 msgid "Follow up..."
-msgstr "后续跟进……"
+msgstr "继续追问…"
 
 msgid "Follow-ups"
 msgstr "后续内容"
@@ -2879,7 +2879,7 @@ msgid "Following"
 msgstr "正在关注"
 
 msgid "Following Me"
-msgstr "关注我"
+msgstr "关注我的人"
 
 msgid "Following..."
 msgstr "关注中…"
@@ -2903,7 +2903,7 @@ msgid "For Safari on Mac"
 msgstr "适用于 Mac 上的 Safari"
 
 msgid "Force all tall stories to have a max height"
-msgstr "强制为所有高文章设置最大高度"
+msgstr "强制为所有过长的文章设置最大高度"
 
 #, python-format
 msgid "Forward %(seconds)s second"
@@ -2911,7 +2911,7 @@ msgid_plural "Forward %(seconds)s seconds"
 msgstr[0] "快进 %(seconds)s 秒"
 
 msgid "Forward or subscribe newsletters to that address"
-msgstr "将简报转发到该地址或订阅该地址"
+msgstr "将邮件简报转发到该地址，或直接用该地址订阅"
 
 msgid "Forwarding email address"
 msgstr "转发邮箱地址"
@@ -2994,7 +2994,7 @@ msgid "Friday"
 msgstr "星期五"
 
 msgid "Friendly note: You will be emailed a backup of your sites"
-msgstr "友情提示：我们会通过电子邮件向您发送您订阅网站的备份"
+msgstr "友情提示：我们会通过电子邮件向你发送你订阅网站的备份"
 
 msgid "Friends &amp; Followers"
 msgstr "好友 &amp; 关注者"
@@ -3007,14 +3007,14 @@ msgid "From"
 msgstr "从"
 
 msgid "From infrequent sites"
-msgstr "来自不常更新的站点"
+msgstr "来自不常更新的网站"
 
 msgid "Full"
 msgstr "完整"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "完整归档助手的回复属于%(link_start)s高级归档功能%(link_end)s。"
+msgstr "归档助手的完整回复属于%(link_start)s高级归档版功能%(link_end)s。"
 
 msgid "Full Refund"
 msgstr "全额退款"
@@ -3035,13 +3035,13 @@ msgid "Full-Text Search"
 msgstr "全文搜索"
 
 msgid "Full-text search across all stories"
-msgstr "全文搜索所有故事"
+msgstr "全文搜索所有文章"
 
 msgid "Full-text search requires Premium or higher."
-msgstr "全文搜索需要 Premium 或更高级别的订阅。"
+msgstr "全文搜索需要高级版或更高套餐。"
 
 msgid "Full-text training on the Archive plan"
-msgstr "Archive 套餐的全文训练"
+msgstr "归档版套餐的全文训练"
 
 msgid "Fullscreen"
 msgstr "全屏"
@@ -3098,12 +3098,12 @@ msgid "Get an AI-curated daily briefing with top stories and long reads"
 msgstr "获取 AI 精选的每日简报，了解重要文章和长篇阅读"
 
 msgid "Get more from NewsBlur"
-msgstr "从 NewsBlur 获取更多内容"
+msgstr "让 NewsBlur 发挥更大作用"
 
 msgid ""
 "Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
 "Android, filtered by your training."
-msgstr "信息源发布新文章时立即收到通知。可在网页、电子邮件、iOS 和 Android 上设置单个信息源通知，并根据你的训练结果进行筛选。"
+msgstr "订阅源发布新文章时立即收到通知。可在网页、电子邮件、iOS 和 Android 上设置单个订阅源的通知，并根据你的训练结果进行筛选。"
 
 msgid "Get notified when a new briefing is ready"
 msgstr "有新简报时通知我"
@@ -3140,7 +3140,7 @@ msgid "Gifts Sent"
 msgstr "已送出的礼物"
 
 msgid "Give your AI agent the skill: npx skills add samuelclay/newsblur-cli-skill"
-msgstr "为你的 AI 智能体添加此技能：npx skills add samuelclay/newsblur-cli-skill"
+msgstr "为你的 AI 代理添加此技能：npx skills add samuelclay/newsblur-cli-skill"
 
 msgid "Global"
 msgstr "全局"
@@ -3149,7 +3149,7 @@ msgid "Global Classifiers"
 msgstr "全局分类器"
 
 msgid "Global Shared Stories"
-msgstr "全局共享文章"
+msgstr "全局分享的文章"
 
 msgid "Global settings"
 msgstr "全局设置"
@@ -3160,7 +3160,7 @@ msgid ""
 msgstr "Gmail 会引导你确认电子邮件地址。之后请返回 NewsBlur，在“Newsletters”文件夹中查找确认邮件。"
 
 msgid "Go Premium — $36/year"
-msgstr "升级至 Premium — 每年 36 美元"
+msgstr "升级到高级版 — 每年 36 美元"
 
 #, python-format
 msgid "Go back to %(breadcrumb)s"
@@ -3170,7 +3170,7 @@ msgid "Good Reads"
 msgstr "优质阅读"
 
 msgid "Good Reads on NewsBlur"
-msgstr "NewsBlur 上的优质读物"
+msgstr "NewsBlur 上的优质阅读"
 
 msgid "Goodies &amp; Extras"
 msgstr "好物 &amp; 附加功能"
@@ -3194,13 +3194,13 @@ msgid "Grid view"
 msgstr "网格视图"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "跨信息源合并重复文章"
+msgstr "跨订阅源合并重复文章"
 
 msgid "Group stories that share:"
 msgstr "按以下内容对文章分组："
 
 msgid "Groups similar stories from different feeds"
-msgstr "将不同信息源中的相似报道归为一组"
+msgstr "将不同订阅源中的相似文章归为一组"
 
 msgid "Hand-picked shares from across NewsBlur"
 msgstr "来自 NewsBlur 各处的精选分享"
@@ -3260,10 +3260,10 @@ msgid "History"
 msgstr "历史记录"
 
 msgid "Home"
-msgstr "首页"
+msgstr "家居"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
-msgstr "主屏幕小组件可一览未读数量和最新故事。"
+msgstr "主屏幕小组件可一览未读数量和最新文章。"
 
 msgid "How Gifting Works"
 msgstr "赠送方式"
@@ -3275,22 +3275,22 @@ msgid "How does authentication work?"
 msgstr "身份验证如何运作？"
 
 msgid "How far back does search go?"
-msgstr "搜索范围有多长？"
+msgstr "搜索能追溯到多久以前？"
 
 msgid "How far back does the archive go?"
-msgstr "存档会保留多久？"
+msgstr "归档能追溯到多久以前？"
 
 msgid "How it works"
 msgstr "运作方式"
 
 msgid "How many stories can I save?"
-msgstr "我可以保存多少个故事？"
+msgstr "我可以保存多少篇文章？"
 
 msgid "How often"
 msgstr "频率"
 
 msgid "I'm Following"
-msgstr "我正在关注"
+msgstr "我关注的人"
 
 msgid "IFTTT & Zapier"
 msgstr "IFTTT 和 Zapier"
@@ -3299,14 +3299,14 @@ msgid "Identify key people and relationships"
 msgstr "识别重要人物及其关系"
 
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
-msgstr "如果未找到 RSS 订阅源，NewsBlur 会提供创建 Web Feed 的选项"
+msgstr "如果未找到 RSS 订阅源，NewsBlur 会提供创建网页订阅源的选项"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
 msgstr "如果这些选项都不匹配，请输入页面上显示的文章标题，我们会重新分析。"
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "如果您选择了 %(premium_link)s，<br>此网站将每隔"
+msgstr "如果你选择了 %(premium_link)s，<br>此网站将每隔"
 
 msgid "Ignore"
 msgstr "忽略"
@@ -3345,19 +3345,19 @@ msgid "Import or upload sites"
 msgstr "导入或上传网站"
 
 msgid "Importing your sites..."
-msgstr "正在导入您的网站..."
+msgstr "正在导入你的网站…"
 
 #, python-format
 msgid "In %(count)s day, your premium trial ends and you'll return to Free"
 msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
-msgstr[0] "再过 %(count)s 天，您的高级版试用期将结束，届时将恢复为免费版"
+msgstr[0] "再过 %(count)s 天，你的高级版试用期将结束，届时将恢复为免费版"
 
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "在 Gmail 中，前往 %(settings_menu)s 并点击 %(add_button)s。添加你的自定义 NewsBlur 邮箱地址。"
 
 msgid "In NewsBlur"
-msgstr "位于 NewsBlur"
+msgstr "已在 NewsBlur 中"
 
 #, python-format
 msgid ""
@@ -3371,7 +3371,7 @@ msgstr "在新窗口中"
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
-msgstr "在资讯流视图中，点击文章标题栏中的标签和作者即可训练它们。每次点击都会在喜欢、不喜欢和中立之间切换。"
+msgstr "在订阅源视图中，点击文章标题栏中的标签和作者即可训练它们。每次点击都会在喜欢、不喜欢和中立之间切换。"
 
 msgid "In this window"
 msgstr "在此窗口中"
@@ -3392,7 +3392,7 @@ msgid "Index remaining feeds"
 msgstr "为剩余订阅源建立索引"
 
 msgid "Indexing your feeds for search"
-msgstr "正在为搜索建立信息源索引"
+msgstr "正在为搜索建立订阅源索引"
 
 msgid "Indexing..."
 msgstr "正在建立索引……"
@@ -3401,7 +3401,7 @@ msgid "Infrequent Site Stories"
 msgstr "低频网站文章"
 
 msgid "Infrequent stories per month"
-msgstr "每月不常见文章数"
+msgstr "低频网站的每月文章数上限"
 
 msgid "Insta-fetch stories"
 msgstr "即时抓取文章"
@@ -3412,7 +3412,7 @@ msgstr "安装"
 msgid ""
 "Install the browser extension to automatically save every page you visit. Ask AI questions about anything "
 "you've read."
-msgstr "安装浏览器扩展程序，自动保存您访问的每个页面。还可以向 AI 提问任何您读过的内容。"
+msgstr "安装浏览器扩展程序，自动保存你访问的每个页面。还可以向 AI 提问任何你读过的内容。"
 
 msgid "Install with: uv pip install newsblur-cli"
 msgstr "安装命令：uv pip install newsblur-cli"
@@ -3437,7 +3437,7 @@ msgid "Is my data safe?"
 msgstr "我的数据安全吗？"
 
 msgid "Is this available on the free plan?"
-msgstr "免费计划提供此功能吗？"
+msgstr "免费套餐提供此功能吗？"
 
 msgid "Is this different from RSS?"
 msgstr "这和 RSS 有什么不同？"
@@ -3500,7 +3500,7 @@ msgid "Keyboard shortcuts"
 msgstr "键盘快捷键"
 
 msgid "Keyword Section"
-msgstr "关键词部分"
+msgstr "关键词分区"
 
 #, python-format
 msgid "Keyword section %(value_1)s"
@@ -3519,7 +3519,7 @@ msgid "Large image thumbnail on the right"
 msgstr "右侧显示大尺寸图片缩略图"
 
 msgid "Last 30 Days"
-msgstr "过去 30 天"
+msgstr "最近 30 天"
 
 msgid "Last 7 Days"
 msgstr "最近 7 天"
@@ -3537,10 +3537,10 @@ msgid "Last seen:"
 msgstr "上次出现："
 
 msgid "Leave unread"
-msgstr "标记为未读"
+msgstr "保持未读"
 
 msgid "Left"
-msgstr "左"
+msgstr "左侧"
 
 msgid "Let's Get Started "
 msgstr "开始吧 "
@@ -3557,25 +3557,25 @@ msgid ""
 msgstr "网页、iOS 和 Android 均支持浅色、深色和自动主题。字体、文字大小、行间距、内容密度和图片预览都可按订阅源自定义。"
 
 msgid "Like"
-msgstr "赞"
+msgstr "喜欢"
 
 msgid "Like "
-msgstr "点赞 "
+msgstr "喜欢 "
 
 msgid "Like matching stories"
-msgstr "点赞匹配的故事"
+msgstr "喜欢匹配的文章"
 
 msgid "Likes"
-msgstr "点赞"
+msgstr "喜欢"
 
 msgid "Link"
 msgstr "链接"
 
 msgid "Link directly to the original story"
-msgstr "直接链接到原始故事"
+msgstr "直接链接到原文"
 
 msgid "Link to my blurblog and shared comments"
-msgstr "链接到我的 blurblog 和共享评论"
+msgstr "链接到我的 Blurblog 和分享的评论"
 
 msgid "List"
 msgstr "列表"
@@ -3590,7 +3590,7 @@ msgid "Loading PayPal..."
 msgstr "正在加载 PayPal…"
 
 msgid "Loading Training..."
-msgstr "正在加载训练数据..."
+msgstr "正在加载训练数据…"
 
 msgid "Loading checkout..."
 msgstr "正在加载结账页面…"
@@ -3605,7 +3605,7 @@ msgid "Loading more briefings..."
 msgstr "正在加载更多简报…"
 
 msgid "Loading your blocklist settings..."
-msgstr "正在加载您的屏蔽列表设置…"
+msgstr "正在加载你的屏蔽列表设置…"
 
 msgid "Loading..."
 msgstr "正在加载……"
@@ -3641,7 +3641,7 @@ msgid "MCP Server"
 msgstr "MCP 服务器"
 
 msgid "MCP server access requires Premium Archive or Premium Pro."
-msgstr "访问 MCP 服务器需要 Premium Archive 或 Premium Pro。"
+msgstr "访问 MCP 服务器需要高级归档版或高级专业版。"
 
 msgid "Magazine"
 msgstr "杂志"
@@ -3672,7 +3672,7 @@ msgid "Manually by hitting %(first_key)s or %(second_key)s"
 msgstr "手动按下 %(first_key)s 或 %(second_key)s"
 
 msgid "Manually or by clicking in the story"
-msgstr "手动操作或点击故事时"
+msgstr "手动操作或点击文章时"
 
 msgid ""
 "Many feeds only include a summary. Text view extracts the full story from the original website and displays"
@@ -3694,10 +3694,10 @@ msgid "Mark Everything Read / Unread"
 msgstr "将所有内容标记为已读 / 未读"
 
 msgid "Mark Stories as Read"
-msgstr "将故事标记为已读"
+msgstr "将文章标记为已读"
 
 msgid "Mark Stories as Unread"
-msgstr "将故事标记为未读"
+msgstr "将文章标记为未读"
 
 msgid "Mark a story as read"
 msgstr "将文章标记为已读"
@@ -3741,10 +3741,10 @@ msgid "Mark folder stories as unread"
 msgstr "将文件夹中的文章标记为未读"
 
 msgid "Mark newer stories read"
-msgstr "将较新的故事标记为已读"
+msgstr "将较新的文章标记为已读"
 
 msgid "Mark older stories read"
-msgstr "将较早的报道标记为已读"
+msgstr "将较早的文章标记为已读"
 
 #, python-format
 msgid "Mark older than %(count)s day as read?"
@@ -3821,7 +3821,7 @@ msgid_plural "Merged %(count)s stories into \"%(category)s\""
 msgstr[0] "已将 %(count)s 篇文章合并到“%(category)s”"
 
 msgid "Merging..."
-msgstr "正在合并..."
+msgstr "正在合并…"
 
 msgid "Messages"
 msgstr "消息"
@@ -3845,7 +3845,7 @@ msgid "Monthly spending limit reached. "
 msgstr "已达到每月支出限额。 "
 
 msgid "Months Earned"
-msgstr "已获得月份"
+msgstr "已获得的月数"
 
 msgid "More"
 msgstr "更多"
@@ -3857,16 +3857,16 @@ msgid "More from Reddit"
 msgstr "更多 Reddit 内容"
 
 msgid "Morning"
-msgstr "早晨"
+msgstr "早上"
 
 msgid "Morning + Afternoon"
-msgstr "上午 + 下午"
+msgstr "早上 + 下午"
 
 msgid "Morning + Evening"
-msgstr "早间 + 晚间"
+msgstr "早上 + 晚上"
 
 msgid "Most subscribed-to feeds this week"
-msgstr "本周订阅量最高的信息源"
+msgstr "本周订阅量最高的订阅源"
 
 msgid "Most used at top, then alphabetical"
 msgstr "最常用的排在顶部，其余按字母顺序排列"
@@ -3889,25 +3889,25 @@ msgid "Moved!"
 msgstr "已移动！"
 
 msgid "Moving..."
-msgstr "正在移动..."
+msgstr "正在移动…"
 
 msgid "Mute"
-msgstr "静音"
+msgstr "屏蔽"
 
 #, python-format
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
-msgstr[0] "屏蔽%(count)s个网站"
+msgstr[0] "屏蔽 %(count)s 个网站"
 
 msgid "Mute Sites"
 msgstr "屏蔽网站"
 
 #, python-format
 msgid "Mute for %(duration)s"
-msgstr "静音 %(duration)s"
+msgstr "屏蔽 %(duration)s"
 
 msgid "Mute indefinitely"
-msgstr "无限期静音"
+msgstr "无限期屏蔽"
 
 msgid "Mute sites"
 msgstr "屏蔽网站"
@@ -3916,23 +3916,23 @@ msgid "Mute this site"
 msgstr "屏蔽此网站"
 
 msgid "Muted"
-msgstr "已静音"
+msgstr "已屏蔽"
 
 msgid "Muted indefinitely."
-msgstr "已无限期静音。"
+msgstr "已无限期屏蔽。"
 
 #, python-format
 msgid "Muted · unmutes in %(time)s"
-msgstr "已静音 · 将于 %(time)s 解除静音"
+msgstr "已屏蔽 · %(time)s后解除屏蔽"
 
 msgid "Muted · unmuting soon"
-msgstr "已静音 · 即将取消静音"
+msgstr "已屏蔽 · 即将解除屏蔽"
 
 msgid "My shared stories are public and anybody can reply to me"
 msgstr "我分享的文章对所有人公开，任何人都可以回复我"
 
 msgid "My shared stories are public but only people I approve can reply"
-msgstr "我分享的故事对所有人公开，但只有我批准的人才能回复"
+msgstr "我分享的文章对所有人公开，但只有我批准的人才能回复"
 
 msgid "NEVER"
 msgstr "永不"
@@ -3970,7 +3970,7 @@ msgstr "在文章之间导航"
 msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
 "train, all from the keyboard."
-msgstr "无需触碰鼠标即可浏览所有内容。打开订阅源、滚动文章、标记为已读、收藏、分享和训练偏好，全都可以通过键盘完成。"
+msgstr "无需触碰鼠标即可浏览所有内容。打开订阅源、滚动文章、标记为已读、保存、分享和训练，全都可以通过键盘完成。"
 
 msgid "Need at least 2 categories to merge"
 msgstr "至少需要 2 个分类才能合并"
@@ -3991,7 +3991,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "永不过期。恭喜！"
 
 msgid "New Arrivals"
-msgstr "新到内容"
+msgstr "新加入"
 
 msgid "New Chat"
 msgstr "新建聊天"
@@ -4025,10 +4025,10 @@ msgid "New tag name"
 msgstr "新标签名称"
 
 msgid "New to me"
-msgstr "对我来说是新的"
+msgstr "未订阅的"
 
 msgid "Newer:"
-msgstr "较新："
+msgstr "晚于："
 
 msgid "Newest"
 msgstr "最新"
@@ -4037,10 +4037,10 @@ msgid "Newest first"
 msgstr "最新优先"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "NewsBlur会检查更新，并将新文章发送到你的订阅源。"
+msgstr "NewsBlur 会检查更新，并将新文章发送到你的订阅源。"
 
 msgid "NewsBlur connected to other services"
-msgstr "NewsBlur已连接到其他服务"
+msgstr "NewsBlur 已连接到其他服务"
 
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
@@ -4068,10 +4068,10 @@ msgid "Newsletters"
 msgstr "新闻简报"
 
 msgid "Newsletters & Substack"
-msgstr "新闻邮件与 Substack"
+msgstr "邮件简报与 Substack"
 
 msgid "Newsletters appearing as feeds"
-msgstr "简报显示为订阅源"
+msgstr "邮件简报显示为订阅源"
 
 msgid "Next Unread Story"
 msgstr "下一篇未读文章"
@@ -4113,7 +4113,7 @@ msgid "No categories available. Categories will appear here once they are config
 msgstr "没有可用的分类。配置后，分类将在此处显示。"
 
 msgid "No categories with 10+ stories available for splitting."
-msgstr "没有可拆分的类别（每个类别至少需有 10 篇文章）。"
+msgstr "没有可拆分的分类（每个分类至少需有 10 篇文章）。"
 
 msgid "No channels found matching your filter."
 msgstr "没有找到符合筛选条件的频道。"
@@ -4184,7 +4184,7 @@ msgid "No newsletters found matching your filter."
 msgstr "没有找到符合筛选条件的简报。"
 
 msgid "No newsletters found."
-msgstr "未找到新闻邮件。"
+msgstr "未找到邮件简报。"
 
 msgid "No past conversations"
 msgstr "没有过往对话"
@@ -4208,7 +4208,7 @@ msgid "No referrals yet. Share your link to get started!"
 msgstr "还没有推荐记录。分享你的链接，开始推荐吧！"
 
 msgid "No results found, but you can subscribe directly if you know the subreddit name."
-msgstr "未找到结果，但如果您知道 subreddit 名称，可以直接订阅。"
+msgstr "未找到结果，但如果你知道子版块名称，可以直接订阅。"
 
 msgid "No similar stories found"
 msgstr "未找到相似的文章"
@@ -4238,7 +4238,7 @@ msgstr "尚未为 %(folder)s 的文章建立相关文章索引。"
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
-msgstr[0] "你的 %(count)s 个站点尚无文章被编入相关故事索引。"
+msgstr[0] "你的 %(count)s 个网站尚无文章被编入相关文章索引。"
 
 msgid "No stories published last month"
 msgstr "上个月没有发布文章"
@@ -4253,7 +4253,7 @@ msgid "No stories yet"
 msgstr "暂无文章"
 
 msgid "No story patterns found on this page."
-msgstr "此页面上未找到故事模式。"
+msgstr "此页面上未找到文章模式。"
 
 msgid "No trending sites available"
 msgstr "没有可用的热门网站"
@@ -4268,7 +4268,7 @@ msgid "No valid merge groups to apply"
 msgstr "没有可应用的有效合并组"
 
 msgid "Nobody has yet subscribed to your shared stories."
-msgstr "目前还没有人订阅您分享的文章。"
+msgstr "目前还没有人订阅你分享的文章。"
 
 msgid "Nobody left to recommend. Good job!"
 msgstr "没有更多人可推荐了。做得好！"
@@ -4322,7 +4322,7 @@ msgid "Notifications"
 msgstr "通知"
 
 msgid "Notifications on trained intelligence classifiers"
-msgstr "智能分类器训练状态通知"
+msgstr "基于已训练智能分类器的通知"
 
 #, python-format
 msgid "Notifications require %(tier_link)s"
@@ -4335,7 +4335,7 @@ msgid "Notify on match"
 msgstr "匹配时通知"
 
 msgid "Notify on match. Premium Archive required"
-msgstr "匹配时通知。需要高级版归档功能"
+msgstr "匹配时通知。需要高级归档版"
 
 msgid "November"
 msgstr "十一月"
@@ -4350,13 +4350,13 @@ msgid "Numbers & Symbols"
 msgstr "数字与符号"
 
 msgid "OFF"
-msgstr "关闭"
+msgstr "关"
 
 msgid "ON"
 msgstr "开"
 
 msgid "Objects"
-msgstr "对象"
+msgstr "物品"
 
 msgid "October"
 msgstr "十月"
@@ -4384,10 +4384,10 @@ msgstr "旧密码"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "早于：%(month)s %(day)s %(year)s"
+msgstr "早于：%(year)s %(month)s %(day)s"
 
 msgid "Older:"
-msgstr "更早："
+msgstr "早于："
 
 msgid "Oldest"
 msgstr "最早"
@@ -4402,10 +4402,10 @@ msgid "On"
 msgstr "开启"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
-msgstr "在高级版归档中，搜索可以查找所有已归档的文章，而不仅限于近期文章。"
+msgstr "在高级归档版中，搜索可以查找所有已归档的文章，而不仅限于近期文章。"
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
-msgstr "Premium 可搜索近期文章。Premium Archive 则可搜索所有归档文章。"
+msgstr "高级版可搜索近期文章。高级归档版则可搜索所有已归档的文章。"
 
 msgid "One command with Docker"
 msgstr "使用 Docker 一条命令即可"
@@ -4419,7 +4419,7 @@ msgstr "在任何提供订阅源的网站上一键订阅。请使用“附加功
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "你的网站中只有 %(count)s 个里有 %(indexed)s 个已建立相关文章索引。"
+msgstr[0] "你的 %(count)s 个网站中只有 %(indexed)s 个已建立相关文章索引。"
 
 #, python-format
 msgid ""
@@ -4428,10 +4428,10 @@ msgid ""
 msgid_plural ""
 "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
 " personalized recommendations."
-msgstr[0] "目前仅有 %(count)s 个站点中的 %(indexed)s 个已编入发现索引。升级即可为所有站点建立索引，并获得个性化推荐。"
+msgstr[0] "目前仅有 %(count)s 个网站中的 %(indexed)s 个已编入发现索引。升级即可为所有网站建立索引，并获得个性化推荐。"
 
 msgid "Only Focus:"
-msgstr "仅关注："
+msgstr "仅聚焦："
 
 msgid "Only page down in story, do not open next unread story"
 msgstr "只在文章内向下翻页，不打开下一篇未读文章"
@@ -4462,13 +4462,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "仅在折叠的文件夹上显示计数"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "仅截断 blurblog 中过长的分享文章"
+msgstr "仅截断 Blurblog 中过长的分享文章"
 
 msgid "Open"
 msgstr "打开"
 
 msgid "Open All Site Stories"
-msgstr "打开该网站的所有文章"
+msgstr "打开所有网站的文章"
 
 msgid "Open Everything"
 msgstr "打开全部"
@@ -4477,13 +4477,13 @@ msgid "Open Site"
 msgstr "打开网站"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
-msgstr "打开任意文件夹标题，即可一次阅读其中的所有订阅源。“所有站点文章”汇集了全部内容。"
+msgstr "打开任意文件夹标题，即可一次阅读其中的所有订阅源。“所有网站的文章”汇集了全部内容。"
 
 msgid "Open clustering preferences"
 msgstr "打开聚类偏好设置"
 
 msgid "Open in Story view"
-msgstr "在故事视图中打开"
+msgstr "在文章视图中打开"
 
 msgid "Open in Text view"
 msgstr "在文本视图中打开"
@@ -4504,10 +4504,10 @@ msgid "Open links in a background tab"
 msgstr "在后台标签页中打开链接"
 
 msgid "Open next unread story when bottom of story is visible"
-msgstr "报道底部可见时打开下一篇未读报道"
+msgstr "文章底部可见时打开下一篇未读文章"
 
 msgid "Open next unread story when story is half-way up"
-msgstr "故事滚动到一半时打开下一篇未读故事"
+msgstr "文章滚动到一半时打开下一篇未读文章"
 
 msgid "Open preferences"
 msgstr "打开偏好设置"
@@ -4516,13 +4516,13 @@ msgid "Open site/feed trainer"
 msgstr "打开网站/订阅源训练器"
 
 msgid "Open story trainer"
-msgstr "打开故事训练器"
+msgstr "打开文章训练器"
 
 msgid "Open the Intelligence Trainer"
 msgstr "打开智能训练器"
 
 msgid "Open the feed and story title menu"
-msgstr "打开源和文章标题菜单"
+msgstr "打开订阅源和文章标题菜单"
 
 msgid "Open the first story"
 msgstr "打开第一篇文章"
@@ -4537,7 +4537,7 @@ msgid "Open the site in a new window and mark it as read"
 msgstr "在新窗口中打开网站并标记为已读"
 
 msgid "Open the trainer for any feed"
-msgstr "打开任意新闻源的训练器"
+msgstr "打开任意订阅源的训练器"
 
 msgid "Open this story in NewsBlur"
 msgstr "在 NewsBlur 中打开此文章"
@@ -4573,7 +4573,7 @@ msgid "Options"
 msgstr "选项"
 
 msgid "Organize Sites"
-msgstr "整理站点"
+msgstr "整理网站"
 
 msgid "Organize sites"
 msgstr "整理网站"
@@ -4602,7 +4602,7 @@ msgstr "向下翻页"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
-msgstr "向下翻页至屏幕的 %(slider)s %(percent)s"
+msgstr "每次向下翻动屏幕的 %(slider)s %(percent)s"
 
 msgid "Page up"
 msgstr "向上翻页"
@@ -4614,7 +4614,7 @@ msgid "Paired with full-text search, the archive doubles as a personal knowledge
 msgstr "结合全文搜索，归档功能还能变成你的个人知识库。"
 
 msgid "Parse this RSS/XML Feed"
-msgstr "解析此 RSS/XML 信息源"
+msgstr "解析此 RSS/XML 订阅源"
 
 msgid "Parsing..."
 msgstr "正在解析…"
@@ -4645,7 +4645,7 @@ msgid "Pending"
 msgstr "待处理"
 
 msgid "People"
-msgstr "用户"
+msgstr "人物"
 
 msgid "People to follow"
 msgstr "可关注的人"
@@ -4675,10 +4675,10 @@ msgid "Platform"
 msgstr "平台"
 
 msgid "Play Last"
-msgstr "播放最后一项"
+msgstr "最后播放"
 
 msgid "Play Next"
-msgstr "播放下一条"
+msgstr "接下来播放"
 
 msgid "Play in Mini Media Player"
 msgstr "在迷你媒体播放器中播放"
@@ -4711,7 +4711,7 @@ msgid "Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)"
 msgstr "请选择有效的图像文件（PNG、JPG、GIF、SVG 或 WebP）"
 
 msgid "Please select at least one category to split into"
-msgstr "请至少选择一个要拆分的类别"
+msgstr "请至少选择一个要拆分的分类"
 
 msgid "Podcasts"
 msgstr "播客"
@@ -4729,16 +4729,16 @@ msgid "Portuguese"
 msgstr "葡萄牙语"
 
 msgid "Position & Greedy"
-msgstr "位置与贪婪"
+msgstr "位置与贪婪匹配"
 
 msgid "Positive you want to delete everything?"
 msgstr "确定要删除所有内容吗？"
 
 msgid "Positive you want to delete your intelligence training classifiers?"
-msgstr "确定要删除您的智能训练分类器吗？"
+msgstr "确定要删除你的智能训练分类器吗？"
 
 msgid "Positive you want to delete your saved stories?"
-msgstr "确定要删除已保存的故事吗？"
+msgstr "确定要删除已保存的文章吗？"
 
 msgid "Positive you want to delete your shared stories?"
 msgstr "确定要删除你分享的文章吗？"
@@ -4763,13 +4763,13 @@ msgid "Premium"
 msgstr "高级版"
 
 msgid "Premium Archive"
-msgstr "高级版归档"
+msgstr "高级归档版"
 
 msgid "Premium Pro"
 msgstr "高级专业版"
 
 msgid "Premium Pro Account"
-msgstr "高级专业账户"
+msgstr "高级专业版账户"
 
 msgid "Premium Subscription"
 msgstr "高级订阅"
@@ -4799,7 +4799,7 @@ msgid "Premium status"
 msgstr "高级版状态"
 
 msgid "Premium users can make their blurblog private."
-msgstr "高级用户可以将自己的 blurblog 设为私密。"
+msgstr "高级用户可以将自己的 Blurblog 设为私密。"
 
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "在任意位置按 / 键即可直接跳转到搜索框。"
@@ -4811,7 +4811,7 @@ msgid "Press s to save the story you're reading."
 msgstr "按 s 保存正在阅读的文章。"
 
 msgid "Press the Text tab on any story to fetch the full article."
-msgstr "点击任意故事上的“文本”标签以获取全文。"
+msgstr "点击任意文章上的“文本”选项卡以获取全文。"
 
 msgid "Press the search icon or hit the / key"
 msgstr "点击搜索图标或按 / 键"
@@ -4839,7 +4839,7 @@ msgid "Privacy"
 msgstr "隐私"
 
 msgid "Privacy options for your blurblog"
-msgstr "你的 blurblog 隐私选项"
+msgstr "你的 Blurblog 隐私选项"
 
 msgid "Private by default — banking, medical, and email sites are never archived"
 msgstr "默认保护隐私——银行、医疗和电子邮件网站的内容绝不会归档"
@@ -4863,7 +4863,7 @@ msgid "Profile"
 msgstr "个人资料"
 
 msgid "Profile &amp; Blurblog"
-msgstr "个人资料 &amp; 博客"
+msgstr "个人资料 &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "个人资料详情"
@@ -4957,7 +4957,7 @@ msgid "Re-categorizing..."
 msgstr "正在重新分类…"
 
 msgid "Read Stories"
-msgstr "阅读文章"
+msgstr "已读文章"
 
 msgid "Read Stories:"
 msgstr "已读文章："
@@ -4965,13 +4965,13 @@ msgstr "已读文章："
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
-msgstr "按时间顺序，将文件夹中的所有订阅源作为一个可滚动的信息流阅读。结合训练功能，河流视图会从你的订阅中呈现最值得阅读的文章。"
+msgstr "按时间顺序，将文件夹中的所有订阅源作为一个可滚动的信息流阅读。结合训练功能，新闻流会从你的订阅中呈现最值得阅读的文章。"
 
 msgid "Read more on the NewsBlur Blog"
 msgstr "在 NewsBlur 博客上阅读更多"
 
 msgid "Read offline with automatic background refresh"
-msgstr "通过自动后台刷新离线阅读"
+msgstr "离线阅读，并在后台自动刷新"
 
 msgid "Read on scroll"
 msgstr "滚动时标记为已读"
@@ -5020,7 +5020,7 @@ msgid "Really unfollow?"
 msgstr "确定要取消关注吗？"
 
 msgid "Recency"
-msgstr "时间远近"
+msgstr "最近更新"
 
 msgid "Recent interactions"
 msgstr "近期互动"
@@ -5053,7 +5053,7 @@ msgid "Redeemed"
 msgstr "已兑换"
 
 msgid "Reduce clutter in your river of stories"
-msgstr "精简你的故事流"
+msgstr "精简你的文章流"
 
 msgid "Refer"
 msgstr "推荐"
@@ -5091,10 +5091,10 @@ msgid "Related"
 msgstr "相关文章"
 
 msgid "Related Sites"
-msgstr "相关站点"
+msgstr "相关网站"
 
 msgid "Related stories are only available for premium subscribers."
-msgstr "相关故事仅面向高级订阅用户开放。"
+msgstr "相关文章仅面向高级订阅用户开放。"
 
 msgid "Reload NewsBlur"
 msgstr "重新加载 NewsBlur"
@@ -5167,7 +5167,7 @@ msgid "Requires %(tier_link)s"
 msgstr "需要 %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "需要高级版归档功能"
+msgstr "需要高级归档版"
 
 msgid "Reset"
 msgstr "重置"
@@ -5213,7 +5213,7 @@ msgid "Right-clicking"
 msgstr "右键单击"
 
 msgid "Rising"
-msgstr "上升"
+msgstr "上升中"
 
 msgid "River of News"
 msgstr "新闻流"
@@ -5234,7 +5234,7 @@ msgstr "静默运行 — 阅读 5 秒后捕获页面"
 msgid ""
 "Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the "
 "Releases appcast in the repo."
-msgstr "Safari 应用扩展，可让 %(shortcut)s 在后台标签页中打开文章。请从代码库中的 Releases 应用播客下载该应用。"
+msgstr "Safari 应用扩展，可让 %(shortcut)s 在后台标签页中打开文章。请从代码库 Releases 中的 appcast 更新源下载该应用。"
 
 msgid "Sat"
 msgstr "周六"
@@ -5260,7 +5260,7 @@ msgstr "保存并关闭"
 
 #, python-format
 msgid "Save & Next %(value_1)s"
-msgstr "保存并前往下一篇 %(value_1)s"
+msgstr "保存并继续 %(value_1)s"
 
 msgid "Save Changes"
 msgstr "保存更改"
@@ -5301,16 +5301,16 @@ msgstr "保存文章以便稍后阅读"
 msgid ""
 "Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
 "shareable."
-msgstr "稍后阅读并用自定义标签整理文章。打造专属剪藏库，支持搜索和分享。"
+msgstr "保存文章以便稍后阅读，并用自定义标签整理。打造专属剪藏库，支持搜索和分享。"
 
 msgid "Save stories with searchable tags"
-msgstr "使用可搜索的标签保存故事"
+msgstr "使用可搜索的标签保存文章"
 
 msgid "Save this story"
 msgstr "保存这篇文章"
 
 msgid "Save/Unsave story"
-msgstr "保存/取消保存故事"
+msgstr "保存/取消保存文章"
 
 msgid "Saved"
 msgstr "已保存"
@@ -5328,7 +5328,7 @@ msgid "Saved Tags"
 msgstr "已保存的标签"
 
 msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
-msgstr "已保存的文章会永久保留，即使你之后取消订阅其信息源也一样。"
+msgstr "已保存的文章会永久保留，即使你之后取消订阅其订阅源也一样。"
 
 msgid "Saved stories organized with custom tags"
 msgstr "用自定义标签整理已保存的文章"
@@ -5351,7 +5351,7 @@ msgstr "安排简报生成时间"
 msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
-msgstr "定时简报需要 Premium Archive 订阅。你当前的套餐仅在点击“生成”按钮时生成简报。"
+msgstr "定时简报需要高级归档版订阅。你当前的套餐仅在点击“生成”按钮时生成简报。"
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "定时发送（每天一次或两次）"
@@ -5374,13 +5374,13 @@ msgid "Search"
 msgstr "搜索"
 
 msgid "Search All Site Stories"
-msgstr "搜索网站中的所有文章"
+msgstr "搜索所有网站的文章"
 
 msgid "Search YouTube channels..."
-msgstr "搜索 YouTube 频道..."
+msgstr "搜索 YouTube 频道…"
 
 msgid "Search across all saved stories and tags"
-msgstr "搜索所有已保存的故事和标签"
+msgstr "搜索所有已保存的文章和标签"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "使用 Elasticsearch 全文搜索，检索所有订阅内容。"
@@ -5392,7 +5392,7 @@ msgid "Search by name, keyword, or paste a URL..."
 msgstr "按名称或关键词搜索，或粘贴网址…"
 
 msgid "Search everything with: newsblur stories search \"machine learning\""
-msgstr "使用以下内容搜索所有内容：newsblur stories search \"machine learning\""
+msgstr "使用以下命令搜索所有内容：newsblur stories search \"machine learning\""
 
 msgid "Search failed"
 msgstr "搜索失败"
@@ -5429,7 +5429,7 @@ msgid "Search sites and folders"
 msgstr "搜索网站和文件夹"
 
 msgid "Search subreddits (e.g., programming, news, gaming)..."
-msgstr "搜索 subreddit（例如 programming、news、gaming）..."
+msgstr "搜索 Reddit 子版块（例如 programming、news、gaming）…"
 
 msgid "Search the FAQ..."
 msgstr "搜索常见问题…"
@@ -5438,7 +5438,7 @@ msgid "Search within a single feed, a folder, or across everything"
 msgstr "在单个订阅源、文件夹或所有内容中搜索"
 
 msgid "Search your entire archive with full-text search"
-msgstr "通过全文搜索查找整个存档"
+msgstr "通过全文搜索查找整个归档"
 
 msgid "Search your stories"
 msgstr "搜索你的文章"
@@ -5455,7 +5455,7 @@ msgid "Searching RSS feeds..."
 msgstr "正在搜索 RSS 源…"
 
 msgid "Searching saved stories..."
-msgstr "正在搜索已保存的故事..."
+msgstr "正在搜索已保存的文章…"
 
 msgid "Searching your archive..."
 msgstr "正在搜索你的归档…"
@@ -5491,7 +5491,7 @@ msgid ""
 msgstr "查看文章首次发布后如何演变。NewsBlur 会追踪修订记录，并以差异对比展示更改之处，用绿色和红色标出。"
 
 msgid "See shared stories"
-msgstr "查看共享故事"
+msgstr "查看分享的文章"
 
 msgid "See the story title and a short content preview"
 msgstr "查看文章标题和简短内容预览"
@@ -5545,7 +5545,7 @@ msgid "Send me a copy of this email"
 msgstr "给我发送此邮件的副本"
 
 msgid "Send this story"
-msgstr "分享这篇文章"
+msgstr "发送这篇文章"
 
 msgid "Sending…"
 msgstr "正在发送…"
@@ -5588,7 +5588,7 @@ msgid "Share"
 msgstr "分享"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
-msgstr "分享故事并附上评论，内容就会发布到你的 blurblog，可通过 RSS 或网页关注。"
+msgstr "分享文章并附上评论，它就会发布到你的 Blurblog 上，可通过 RSS 或网页关注。"
 
 msgid "Share on NewsBlur"
 msgstr "分享到 NewsBlur"
@@ -5599,7 +5599,7 @@ msgstr "分享文章"
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
-msgstr "在你的公开 blurblog 上分享文章并附上评论。关注好友，了解他们正在阅读和分享的内容。"
+msgstr "在你的公开 Blurblog 上分享文章并附上评论。关注好友，了解他们正在阅读和分享的内容。"
 
 msgid "Share the link."
 msgstr "分享链接。"
@@ -5631,7 +5631,7 @@ msgid_plural "Shared by %(count)s people"
 msgstr[0] "由 %(count)s 人分享"
 
 msgid "Shared with NewsBlur.com"
-msgstr "与 NewsBlur.com 分享"
+msgstr "通过 NewsBlur.com 分享"
 
 msgid "Shared!"
 msgstr "已分享！"
@@ -5640,13 +5640,13 @@ msgid "Sharing"
 msgstr "分享"
 
 msgid "Sharing Stories From These Sites"
-msgstr "分享来自这些站点的文章"
+msgstr "分享来自这些网站的文章"
 
 msgid "Sharing services"
 msgstr "分享服务"
 
 msgid "Sharing..."
-msgstr "正在分享..."
+msgstr "正在分享…"
 
 msgid "Shift+u hides the sidebar for distraction-free reading."
 msgstr "按 Shift+u 隐藏侧边栏，专心阅读。"
@@ -5655,7 +5655,7 @@ msgid "Shopping"
 msgstr "购物"
 
 msgid "Short"
-msgstr "简短"
+msgstr "矮"
 
 msgid "Show"
 msgstr "显示"
@@ -5667,16 +5667,16 @@ msgid "Show Global Shared Stories"
 msgstr "显示全局分享的文章"
 
 msgid "Show Good Reads"
-msgstr "显示优质推荐"
+msgstr "显示优质阅读"
 
 msgid "Show Infrequent Site Stories"
-msgstr "显示不常更新的网站故事"
+msgstr "显示低频网站文章"
 
 msgid "Show Long Reads"
 msgstr "显示长篇阅读"
 
 msgid "Show Widely Read Stories"
-msgstr "显示广泛阅读的故事"
+msgstr "显示广受阅读的文章"
 
 msgid "Show a preview of the story"
 msgstr "显示文章预览"
@@ -5688,7 +5688,7 @@ msgid "Show all comments"
 msgstr "显示所有评论"
 
 msgid "Show all stories"
-msgstr "显示所有报道"
+msgstr "显示所有文章"
 
 msgid "Show buttons on the right (when there is room)"
 msgstr "空间足够时在右侧显示按钮"
@@ -5700,7 +5700,7 @@ msgid "Show confirmation when marking feeds or folders as read"
 msgstr "将订阅源或文件夹标记为已读时显示确认提示"
 
 msgid "Show discover sites popover above story titles"
-msgstr "在文章标题上方显示“发现站点”弹出窗口"
+msgstr "在文章标题上方显示“发现网站”弹出窗口"
 
 msgid "Show every site, including ones you already follow"
 msgstr "显示所有网站，包括你已关注的网站"
@@ -5752,7 +5752,7 @@ msgstr "正在显示早于<b>%(date)s</b>的文章"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "正在显示 <b>%(date)s</b> 上的文章"
+msgstr "正在显示 <b>%(date)s</b> 的文章"
 
 msgid "Shows a toolbar button with your unread count"
 msgstr "显示带有未读数量的工具栏按钮"
@@ -5815,7 +5815,7 @@ msgid "Skip this step "
 msgstr "跳过此步骤 "
 
 msgid "Small feeds with the fastest-growing subscriber base"
-msgstr "订阅者增长最快的小型信息源"
+msgstr "订阅者增长最快的小型订阅源"
 
 msgid "Small image thumbnail on the left"
 msgstr "左侧小型图片缩略图"
@@ -5841,10 +5841,10 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "抱歉，没有与“%(value_1)s”匹配的内容。"
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "抱歉，无法代理原始文章<br />。"
+msgstr "抱歉，无法代理<br />原始文章。"
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "抱歉，无法提取这篇文章的文本<br />。"
+msgstr "抱歉，无法提取<br />这篇文章的文本。"
 
 msgid "Sorry, there was a problem deleting feeds."
 msgstr "抱歉，删除订阅源时出了问题。"
@@ -5895,7 +5895,7 @@ msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "已达到支出限额。分类器已暂停，直到下一个周期。"
 
 msgid "Split"
-msgstr "分割"
+msgstr "拆分"
 
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
@@ -5929,11 +5929,11 @@ msgid "Sports"
 msgstr "体育"
 
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
-msgstr "为网站标语润色。如果被选中，该网站将在 NewsBlur 信息面板上展示一周。"
+msgstr "为网站标语润色。如果被选中，该网站将在 NewsBlur 控制面板上展示一周。"
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "过期的 %(date)s"
+msgstr "停更于 %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
@@ -5955,7 +5955,7 @@ msgid "Starting categorization..."
 msgstr "正在开始分类……"
 
 msgid "Starting trial..."
-msgstr "正在开始试用..."
+msgstr "正在开始试用…"
 
 msgid "Statistics"
 msgstr "统计"
@@ -5989,7 +5989,7 @@ msgid "Stories are highlighted green (like) or hidden (dislike)"
 msgstr "喜欢的文章会以绿色高亮显示，不喜欢的文章会被隐藏"
 
 msgid "Stories arrive in real-time"
-msgstr "故事实时送达"
+msgstr "文章实时送达"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "缓存文章以供离线阅读，并在后台自动刷新。"
@@ -6013,10 +6013,10 @@ msgstr "归档中的文章"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "在 <b>%(days)s 天时标记为已读</b>"
+msgstr[0] "文章在 <b>%(days)s 天</b>后标记为已读"
 
 msgid "Stories matching your trained topics and authors"
-msgstr "符合您训练的主题和作者的文章"
+msgstr "符合你训练的主题和作者的文章"
 
 msgid "Stories never expire or disappear"
 msgstr "文章永不过期，也不会消失"
@@ -6031,7 +6031,7 @@ msgstr "早于 %(date)s 的文章"
 
 #, python-format
 msgid "Stories on %(date)s"
-msgstr "%(date)s 上的文章"
+msgstr "%(date)s 的文章"
 
 msgid "Stories per day"
 msgstr "每日文章数"
@@ -6046,10 +6046,10 @@ msgid "Stories that held the most attention across NewsBlur."
 msgstr "在 NewsBlur 中最受关注的文章。"
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "故事将<b>永不</b>自动标记为已读"
+msgstr "文章将<b>永不</b>自动标记为已读"
 
 msgid "Stories will <b>never</b> be marked as read"
-msgstr "文章将 <b>永远</b> 不会被标记为已读"
+msgstr "文章将<b>永远不会</b>被标记为已读"
 
 msgid "Story"
 msgstr "文章"
@@ -6064,7 +6064,7 @@ msgid "Story Categories &amp; Tags"
 msgstr "文章分类 &amp; 标签"
 
 msgid "Story Clustering"
-msgstr "故事聚类"
+msgstr "文章聚类"
 
 msgid "Story Layout - Grid Columns"
 msgstr "文章布局 - 网格列数"
@@ -6097,7 +6097,7 @@ msgid "Story layout"
 msgstr "文章布局"
 
 msgid "Story preview"
-msgstr "故事预览"
+msgstr "文章预览"
 
 msgid "Story shows in Focus view"
 msgstr "文章显示在聚焦视图中"
@@ -6106,7 +6106,7 @@ msgid "Story side options"
 msgstr "文章侧边选项"
 
 msgid "Story side options buttons"
-msgstr "故事侧边选项按钮"
+msgstr "文章侧边选项按钮"
 
 msgid "Story side options placement"
 msgstr "文章侧边选项位置"
@@ -6136,35 +6136,35 @@ msgstr[0] "订阅 %(count)s 个网站"
 
 #, python-format
 msgid "Subscribe to %(title)s via RSS"
-msgstr "通过 RSS 订阅%(title)s"
+msgstr "通过 RSS 订阅 %(title)s"
 
 #, python-format
 msgid "Subscribe to %(value_1)s"
 msgstr "订阅 %(value_1)s"
 
 msgid "Subscribe to Google News feeds by topic or custom keywords."
-msgstr "按主题或自定义关键词订阅 Google 新闻源。"
+msgstr "按主题或自定义关键词订阅 Google 新闻订阅源。"
 
 msgid "Subscribe to Premium Archive"
-msgstr "订阅高级版归档"
+msgstr "订阅高级归档版"
 
 msgid "Subscribe to YouTube channels and playlists as RSS feeds."
 msgstr "将 YouTube 频道和播放列表订阅为 RSS 订阅源。"
 
 msgid "Subscribe to a new feed and its entire available history back-fills automatically."
-msgstr "订阅新 feed 后，其所有可用历史内容都会自动回填。"
+msgstr "订阅新订阅源后，其所有可用历史内容都会自动回填。"
 
 msgid "Subscribe to add this feed to your NewsBlur"
-msgstr "订阅即可将此信息源添加到你的 NewsBlur"
+msgstr "订阅即可将此订阅源添加到你的 NewsBlur"
 
 msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
-msgstr "将任何网站订阅为信息源，即使它没有 RSS。升级到 Premium Archive 即可解锁网页信息源。"
+msgstr "将任何网站订阅为订阅源，即使它没有 RSS。升级到高级归档版即可解锁网页订阅源。"
 
 msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
 msgstr "订阅来自 Substack、Medium、Ghost、Buttondown 等平台的新闻简报。"
 
 msgid "Subscribe to newsletters with your NewsBlur address directly and they never touch your inbox."
-msgstr "直接使用你的 NewsBlur 地址订阅电子报，它们不会进入你的收件箱。"
+msgstr "直接使用你的 NewsBlur 地址订阅邮件简报，它们不会进入你的收件箱。"
 
 msgid "Subscribe to podcasts via RSS. Search by name or paste a feed URL."
 msgstr "通过 RSS 订阅播客。按名称搜索或粘贴订阅源 URL。"
@@ -6174,7 +6174,7 @@ msgid "Subscribe to r/%(value_1)s"
 msgstr "订阅 r/%(value_1)s"
 
 msgid "Subscribe to subreddits as RSS feeds."
-msgstr "订阅 subreddit 作为 RSS 订阅源。"
+msgstr "将 Reddit 子版块订阅为 RSS 订阅源。"
 
 msgid "Subscribed"
 msgstr "已订阅"
@@ -6207,7 +6207,7 @@ msgid "Summarize in a paragraph"
 msgstr "用一段话总结"
 
 msgid "Summarize in bullet points"
-msgstr "用项目符号概括"
+msgstr "用要点概括"
 
 msgid "Summarize in one sentence"
 msgstr "用一句话概括"
@@ -6219,17 +6219,17 @@ msgid "Sunday"
 msgstr "星期日"
 
 msgid "Super Dislike "
-msgstr "超级不喜欢 "
+msgstr "强烈不喜欢 "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "每隔 %(value_1)s 检查一次作为补充"
 
 msgid "Switch between views (original, feed, text, story)"
-msgstr "在视图间切换（原始、源、文本、文章）"
+msgstr "在视图间切换（原始、订阅源、文本、文章）"
 
 msgid "Switch focus/unread"
-msgstr "切换焦点/未读"
+msgstr "切换聚焦/未读"
 
 msgid "Switch models per question. Each answer is labeled with the model that wrote it."
 msgstr "每个问题都可以切换模型。每个回答都会标明生成它的模型。"
@@ -6342,11 +6342,11 @@ msgstr "谢谢！你现在拥有%(bold_start)s高级账户%(bold_end)s。"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "谢谢！您拥有一个%(bold_start)s高级归档账户%(bold_end)s。"
+msgstr "谢谢！你拥有一个%(bold_start)s高级归档版账户%(bold_end)s。"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "谢谢！你拥有一个 %(bold_start)s高级专业账户%(bold_end)s。"
+msgstr "谢谢！你拥有一个%(bold_start)s高级专业版账户%(bold_end)s。"
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 服务响应超时，请重试。"
@@ -6359,7 +6359,7 @@ msgstr "CLI 是一个可直接运行的独立终端工具。MCP 服务器可让 
 msgid ""
 "The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
 "custom sections you define."
-msgstr "每日简报显示在侧边栏顶部，包含热门文章、长篇阅读和您自定义的版块。"
+msgstr "每日简报显示在侧边栏顶部，包含热门文章、长篇阅读和你自定义的版块。"
 
 msgid ""
 "The MCP server uses OAuth, the same authentication as third-party apps. You authorize through your browser "
@@ -6389,7 +6389,7 @@ msgid "The full shortcut list"
 msgstr "完整快捷键列表"
 
 msgid "The gift has been applied to your account."
-msgstr "礼品已应用到您的账户。"
+msgstr "礼品已应用到你的账户。"
 
 msgid "The intelligence slider filters stories."
 msgstr "智能筛选滑块可筛选文章。"
@@ -6397,15 +6397,15 @@ msgstr "智能筛选滑块可筛选文章。"
 msgid ""
 "The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
 "stories."
-msgstr "左下角的智能筛选滑块可在所有文章、未读文章和重点文章之间切换。"
+msgstr "左下角的智能筛选滑块可在所有文章、未读文章和聚焦文章之间切换。"
 
 msgid ""
 "The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
 "anywhere except the NewsBlur API."
-msgstr "登录命令会打开浏览器进行 OAuth 授权。您的令牌会保存在本地，除了发送到 NewsBlur API 外，绝不会发送到其他地方。"
+msgstr "登录命令会打开浏览器进行 OAuth 授权。你的令牌会保存在本地，除了发送到 NewsBlur API 外，绝不会发送到其他地方。"
 
 msgid "The most important stories from your feeds"
-msgstr "订阅源中最重要的故事"
+msgstr "订阅源中最重要的文章"
 
 msgid "The original page has been disabled by the publisher."
 msgstr "发布者已禁用原始页面。"
@@ -6435,7 +6435,7 @@ msgstr[0] "共有 %(count)s 条公开评论"
 msgid ""
 "There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be "
 "fixed soon. You should probably send this manually now."
-msgstr "发送邮件时后端出现问题。很抱歉！我们已记录此问题，很快会修复。您现在可能需要手动发送邮件。"
+msgstr "发送邮件时后端出现问题。很抱歉！我们已记录此问题，很快会修复。你现在可能需要手动发送邮件。"
 
 msgid "There was a problem deleting your classifiers."
 msgstr "删除分类器时出了点问题。"
@@ -6444,7 +6444,7 @@ msgid "There was a problem deleting your saved stories."
 msgstr "删除已保存文章时出了点问题。"
 
 msgid "There was a problem deleting your shared stories."
-msgstr "删除您分享的文章时出了点问题。"
+msgstr "删除你分享的文章时出了点问题。"
 
 msgid "There was a problem deleting your sites."
 msgstr "删除你的网站时出现问题。"
@@ -6465,13 +6465,13 @@ msgid "There was a problem uploading your photo."
 msgstr "上传照片时出现问题。"
 
 msgid "There was an error trying to logout, ouch."
-msgstr "注销时出错了，哎呀。"
+msgstr "退出登录时出错了，哎呀。"
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
-msgstr "没有数量限制。想收藏多少篇文章都可以，而且会永久保存。"
+msgstr "没有数量限制。想保存多少篇文章都可以，而且会永久保存。"
 
 msgid "These clusters were found because other subscribers share these feeds."
-msgstr "这些聚类是根据其他订阅者共同订阅的这些源发现的。"
+msgstr "这些聚类是根据其他订阅者共同订阅的这些订阅源发现的。"
 
 msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
@@ -6479,10 +6479,10 @@ msgid ""
 msgstr "这些域名默认处于屏蔽状态（搜索引擎、社交媒体等）。将其添加到上方的“允许的域名”中即可解除屏蔽。"
 
 msgid "They redeem it."
-msgstr "他们兑换了。"
+msgstr "对方进行兑换。"
 
 msgid "Thinking"
-msgstr "正在思考"
+msgstr "深度思考"
 
 msgid "Thinking..."
 msgstr "正在思考…"
@@ -6515,7 +6515,7 @@ msgstr "这会匹配整个标题，因此只匹配这篇完全相同的文章。
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "此已读故事列表是%(link_start)s高级版功能%(link_end)s。"
+msgstr "此已读文章列表是%(link_start)s高级功能%(link_end)s。"
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "这会从所有已保存的文章中移除此标签。文章仍会保留，只是不再带有此标签。"
@@ -6542,13 +6542,13 @@ msgid ""
 msgstr "此网站过去一个月没有发布任何文章，或平均每月发布不足一篇。只要它开始至少每月发布一次，系统就会自动提高抓取频率。"
 
 msgid "This site is active and receiving stories."
-msgstr "此站点处于活跃状态，正在接收文章。"
+msgstr "此网站处于活跃状态，正在接收文章。"
 
 msgid "This site only"
 msgstr "仅此网站"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "此网页订阅源已<b>暂停</b>。升级到高级归档版即可恢复抓取新故事。"
+msgstr "此网页订阅源已<b>暂停</b>。升级到高级归档版即可恢复抓取新文章。"
 
 msgid "This will erase all existing feeds and folders."
 msgstr "这将清除所有现有订阅源和文件夹。"
@@ -6572,7 +6572,7 @@ msgid "Thursday"
 msgstr "星期四"
 
 msgid "Tier"
-msgstr "层级"
+msgstr "套餐"
 
 msgid "Time Period"
 msgstr "时间段"
@@ -6693,25 +6693,25 @@ msgid "Train"
 msgstr "训练"
 
 msgid "Train &amp; filter"
-msgstr "训练 &amp; 筛选器"
+msgstr "训练 &amp; 筛选"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr "训练 NewsBlur，让它显示你想看的内容，并隐藏你不想看的内容。由你掌控，而不是由算法决定。"
 
 msgid "Train across folders or globally on Premium Archive"
-msgstr "在文件夹范围内或全局使用高级存档进行训练"
+msgstr "使用高级归档版，可按文件夹或全局进行训练"
 
 msgid "Train and notification settings"
 msgstr "训练和通知设置"
 
 msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
-msgstr "训练智能推荐：点赞或点踩作者、标签、标题和信息源"
+msgstr "训练智能分类器：对作者、标签、标题和订阅源标记喜欢或不喜欢"
 
 msgid "Train stories by author, tag, title"
 msgstr "按作者、标签和标题训练文章"
 
 msgid "Train stories on full text content"
-msgstr "根据全文内容训练故事"
+msgstr "根据全文内容训练文章"
 
 msgid "Train stories with regular expressions"
 msgstr "使用正则表达式训练文章"
@@ -6726,13 +6726,13 @@ msgid "Train this site"
 msgstr "训练此网站"
 
 msgid "Train this story"
-msgstr "训练此故事"
+msgstr "训练此文章"
 
 msgid "Train your feeds to filter stories you like and dislike."
-msgstr "训练订阅源，以筛选你喜欢和不喜欢的故事。"
+msgstr "训练订阅源，以筛选你喜欢和不喜欢的文章。"
 
 msgid "Train, tag, search, and organize newsletters like any feed"
-msgstr "像管理任何信息源一样训练、标记、搜索和整理 newsletter"
+msgstr "像管理任何订阅源一样训练、标记、搜索和整理邮件简报"
 
 msgid "Training:"
 msgstr "训练："
@@ -6744,7 +6744,7 @@ msgid "Transcribing..."
 msgstr "正在转录…"
 
 msgid "Transport"
-msgstr "传输"
+msgstr "交通"
 
 msgid "Travel"
 msgstr "旅行"
@@ -6759,7 +6759,7 @@ msgid "Truncate stories"
 msgstr "截断文章"
 
 msgid "Try"
-msgstr "试用"
+msgstr "试读"
 
 msgid "Try Again"
 msgstr "重试"
@@ -6830,7 +6830,7 @@ msgid "Uncategorized"
 msgstr "未分类"
 
 msgid "Unfavorited"
-msgstr "已取消收藏"
+msgstr "已取消点赞"
 
 msgid "Unfollow"
 msgstr "取消关注"
@@ -6869,10 +6869,10 @@ msgid "Unlocked"
 msgstr "已解锁"
 
 msgid "Unmute"
-msgstr "取消静音"
+msgstr "取消屏蔽"
 
 msgid "Unmuted"
-msgstr "已取消静音"
+msgstr "已取消屏蔽"
 
 msgid "Unread"
 msgstr "未读"
@@ -6887,16 +6887,16 @@ msgid "Unread stories going back months"
 msgstr "可追溯数月的未读文章"
 
 msgid "Unread stories never expire, so read at your own pace."
-msgstr "未读文章不会过期，您可以按自己的节奏阅读。"
+msgstr "未读文章不会过期，你可以按自己的节奏阅读。"
 
 msgid "Unread+Focus:"
-msgstr "未读 + 重点："
+msgstr "未读 + 聚焦："
 
 msgid "Unsave this story"
-msgstr "取消收藏此文章"
+msgstr "取消保存此文章"
 
 msgid "Unshared"
-msgstr "未共享"
+msgstr "已取消分享"
 
 msgid "Untitled"
 msgstr "无标题"
@@ -6911,7 +6911,7 @@ msgid "Update History"
 msgstr "更新历史记录"
 
 msgid "Updated"
-msgstr "已更新"
+msgstr "更新时间"
 
 #, python-format
 msgid "Updated %(count)s day ago"
@@ -6963,25 +6963,25 @@ msgid "Upgrade to %(value_1)s"
 msgstr "升级到 %(value_1)s"
 
 msgid "Upgrade to Archive or Pro"
-msgstr "升级到 Archive 或 Pro"
+msgstr "升级到归档版或专业版"
 
 msgid "Upgrade to Premium"
 msgstr "升级到高级版"
 
 msgid "Upgrade to Premium Archive"
-msgstr "升级至高级归档"
+msgstr "升级至高级归档版"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
 msgstr "升级到高级归档版以接收分类器通知"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
-msgstr "升级到 Premium Archive，扫描所有订阅源以查找重复内容，不再错过任何聚类。"
+msgstr "升级到高级归档版，扫描所有订阅源以查找重复内容，不再错过任何聚类。"
 
 msgid "Upgrade to Premium Pro"
-msgstr "升级到 Premium Pro"
+msgstr "升级到高级专业版"
 
 msgid "Upgrade to a Premium Archive account"
-msgstr "升级到 Premium Archive 账户"
+msgstr "升级到高级归档版账户"
 
 msgid "Upgrade to a Premium account"
 msgstr "升级为高级账户"
@@ -7042,13 +7042,13 @@ msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "使用小组件一览未读数量和文章"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
-msgstr "适用于新闻报道的撰写、文章修订和持续更新的产品公告。"
+msgstr "适用于持续发展的新闻、经过更正的文章以及不断更新的产品公告。"
 
 msgid "User Admin"
 msgstr "用户管理"
 
 msgid "User is premium ARCHIVE, expires: "
-msgstr "用户拥有高级归档功能，到期时间："
+msgstr "用户是高级归档版会员，到期时间："
 
 msgid "User is premium, expires: "
 msgstr "用户是高级会员，到期时间："
@@ -7071,7 +7071,7 @@ msgstr[0] "使用默认值：<b>%(days)s 天</b>（来源：%(source)s）"
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "使用默认值：<b>never</b>（来自 %(source)s）"
+msgstr "使用默认值：<b>从不</b>（来自 %(source)s）"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "使用默认设置：文章<b>永不</b>自动标记为已读"
@@ -7093,7 +7093,7 @@ msgid "View profile"
 msgstr "查看个人资料"
 
 msgid "View settings"
-msgstr "查看设置"
+msgstr "视图设置"
 
 msgid "Visual"
 msgstr "视觉"
@@ -7122,10 +7122,10 @@ msgstr "任何网站的网页订阅源，即使没有 RSS"
 msgid ""
 "Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
 "fetching."
-msgstr "网页订阅源需要 Premium Archive 或 Premium Pro，因为抓取网页的资源消耗高于获取 RSS。"
+msgstr "网页订阅源需要高级归档版或高级专业版，因为抓取网页的资源消耗高于获取 RSS。"
 
 msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
-msgstr "网页信息源的检查频率与常规信息源相同；套餐等级越高，检查越频繁。"
+msgstr "网页订阅源的检查频率与常规订阅源相同；套餐等级越高，检查越频繁。"
 
 msgid "Web feeds train, search, and organize exactly like RSS feeds."
 msgstr "网页订阅源的训练、搜索和整理方式与 RSS 订阅源完全相同。"
@@ -7134,7 +7134,7 @@ msgid "Web notifications"
 msgstr "网页通知"
 
 msgid "Web notifications require Premium Archive"
-msgstr "网页通知需要高级存档"
+msgstr "网页通知需要高级归档版"
 
 msgid "Website"
 msgstr "网站"
@@ -7159,11 +7159,11 @@ msgstr "主要论点是什么？"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "你对这个站点有什么 %(like)s 和 %(dislike)s？"
+msgstr "你%(like)s和%(dislike)s这个网站的哪些方面？"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "你对这个故事有何%(like)s和%(dislike)s？"
+msgstr "你%(like)s和%(dislike)s这篇文章的哪些方面？"
 
 msgid "What happens if I downgrade?"
 msgstr "降级后会怎样？"
@@ -7178,7 +7178,7 @@ msgid "What plan do I need?"
 msgstr "我需要什么套餐？"
 
 msgid "What sites can I follow?"
-msgstr "我可以关注哪些站点？"
+msgstr "我可以关注哪些网站？"
 
 msgid "What the NewsBlur community is reading"
 msgstr "NewsBlur 社区正在阅读的内容"
@@ -7187,7 +7187,7 @@ msgid "What you like and dislike"
 msgstr "你喜欢和不喜欢的内容"
 
 msgid "What your agent can do"
-msgstr "你的智能助手可以做什么"
+msgstr "你的 AI 代理可以做什么"
 
 msgid "What's the context and background?"
 msgstr "背景和上下文是什么？"
@@ -7228,13 +7228,13 @@ msgid "Why is the next update not at the normal rate?"
 msgstr "为什么下一次更新没有按正常频率进行？"
 
 msgid "Why so infrequently?"
-msgstr "为什么这么不频繁？"
+msgstr "为什么更新频率这么低？"
 
 msgid "Widely Read Stories"
-msgstr "广受阅读的故事"
+msgstr "广受阅读的文章"
 
 msgid "Widely Read on NewsBlur"
-msgstr "NewsBlur 上广受阅读"
+msgstr "NewsBlur 上广受阅读的文章"
 
 msgid "Widely covered"
 msgstr "广泛报道"
@@ -7270,7 +7270,7 @@ msgid "YYYY-MM-DD"
 msgstr "YYYY-MM-DD"
 
 msgid "Years Earned"
-msgstr "已赚取年数"
+msgstr "已获得的年数"
 
 msgid "Yes"
 msgstr "是"
@@ -7284,7 +7284,7 @@ msgstr "是的，这两款应用都是开源的，并在 GitHub 上积极开发�
 msgid ""
 "Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
 "web."
-msgstr "是的，iOS 和 Android 应用都免费。应用中的高级功能与您在网页上的订阅相同。"
+msgstr "是的，iOS 和 Android 应用都免费。应用中的高级功能与你在网页上的订阅相同。"
 
 msgid "Yes, delete it"
 msgstr "是，删除它"
@@ -7293,7 +7293,7 @@ msgid "Yes, email newsletters are a free feature."
 msgstr "是的，电子邮件新闻简报是免费功能。"
 
 msgid "Yes, every NewsBlur account has a unique email address for receiving newsletters."
-msgstr "是的，每个 NewsBlur 账户都有一个专属邮箱地址，用于接收新闻邮件。"
+msgstr "是的，每个 NewsBlur 账户都有一个专属邮箱地址，用于接收邮件简报。"
 
 msgid "Yes, every archived story is fully searchable."
 msgstr "是的，每篇归档文章都可以完整搜索。"
@@ -7316,12 +7316,12 @@ msgstr "可以。在订阅源选项弹出菜单或“偏好设置”中开启“
 msgid ""
 "Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
 "Premium Archive."
-msgstr "可以。根据作者、标签和标题关键词进行训练是免费的。根据文章正文进行全文训练需要 Premium Archive。"
+msgstr "可以。根据作者、标签和标题关键词进行训练是免费的。根据文章正文进行全文训练需要高级归档版。"
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
 "even when sites don't offer RSS."
-msgstr "是。网页订阅会监控页面 HTML 的变化，而 RSS 则读取结构化的订阅源文件。即使网站不提供 RSS，网页订阅也能正常使用。"
+msgstr "是的。网页订阅源会监控页面 HTML 的变化，而 RSS 则读取结构化的订阅源文件。即使网站不提供 RSS，网页订阅源也能正常使用。"
 
 msgid "Yesterday"
 msgstr "昨天"
@@ -7354,7 +7354,7 @@ msgstr[0] "你关注了 %(count)s 人"
 #, python-format
 msgid "You are subscribed to %(count)s site."
 msgid_plural "You are subscribed to %(count)s sites."
-msgstr[0] "你已订阅%(count)s个网站。"
+msgstr[0] "你已订阅 %(count)s 个网站。"
 
 #, python-format
 msgid "You are subscribed to at least %(count)s site."
@@ -7362,10 +7362,10 @@ msgid_plural "You are subscribed to at least %(count)s sites."
 msgstr[0] "你至少订阅了 %(count)s 个网站。"
 
 msgid "You are trialing this plan"
-msgstr "您正在试用此方案"
+msgstr "你正在试用此套餐"
 
 msgid "You are unsubscribed from all NewsBlur emails"
-msgstr "您已取消订阅所有来自 NewsBlur 的邮件"
+msgstr "你已取消订阅所有来自 NewsBlur 的邮件"
 
 msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
 msgstr "你已取消订阅所有 NewsBlur 邮件。选择下方要接收的邮件并保存，即可重新订阅。"
@@ -7381,10 +7381,10 @@ msgstr "你可以更改自己的观点。"
 
 #, python-format
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
-msgstr "阅读文章时，您可以点击文章旁边的 %(like_icon)s%(dislike_icon)s 按钮。"
+msgstr "阅读文章时，你可以点击文章旁边的 %(like_icon)s%(dislike_icon)s 按钮。"
 
 msgid "You can override this on a per-site and per-folder basis."
-msgstr "您可以针对单个网站和文件夹覆盖此设置。"
+msgstr "你可以针对单个网站和文件夹覆盖此设置。"
 
 msgid "You can override this on a per-site basis."
 msgstr "你可以针对每个网站单独覆盖此设置。"
@@ -7395,33 +7395,33 @@ msgstr "免费版支持按订阅源训练；高级归档版还支持按文件夹
 #, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
-msgstr[0] "你关注了 %(count)s 个网站。升级 Premium 可让它们全部变得更好。"
+msgstr[0] "你关注了 %(count)s 个网站。高级版能让它们全都变得更好。"
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
 msgstr "你拥有一个%(bold_start)s免费账户%(bold_end)s。"
 
 msgid "You have no active subscriptions."
-msgstr "您没有正在生效的订阅。"
+msgstr "你没有正在生效的订阅。"
 
 msgid "You have no saved stories."
-msgstr "你没有已保存的故事。"
+msgstr "你没有已保存的文章。"
 
 msgid "You have no unread stories in Focus mode."
-msgstr "专注模式下没有未读文章。"
+msgstr "“聚焦”模式下没有未读文章。"
 
 msgid "You have no unread stories."
 msgstr "没有未读文章。"
 
 msgid "You have not yet subscribed to anybody's shared stories."
-msgstr "你尚未订阅任何人的共享文章。"
+msgstr "你尚未订阅任何人分享的文章。"
 
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "你必须关注 %(value_1)s 才能回复"
 
 msgid "You must be logged in to send a story over email."
-msgstr "您必须登录才能通过电子邮件发送文章。"
+msgstr "你必须登录才能通过电子邮件发送文章。"
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
@@ -7432,10 +7432,10 @@ msgid "You must have a %(link_start)spremium account%(link_end)s to change priva
 msgstr "你必须拥有%(link_start)s高级账户%(link_end)s才能更改隐私设置。"
 
 msgid "You need to be logged in to reply to a comment."
-msgstr "您需要登录后才能回复评论。"
+msgstr "你需要登录后才能回复评论。"
 
 msgid "You need to be logged in to share a story."
-msgstr "您需要登录后才能分享文章。"
+msgstr "你需要登录后才能分享文章。"
 
 msgid "You will be emailed within a minute or three."
 msgstr "一两分钟内你就会收到邮件。"
@@ -7447,7 +7447,7 @@ msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "你触发了频率限制。<br>请稍后再试，但别太快。"
 
 msgid "You're presented with multiple story pattern options to choose from."
-msgstr "系统会提供多个文章模式选项供您选择。"
+msgstr "系统会提供多个文章模式选项供你选择。"
 
 msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
@@ -7459,11 +7459,11 @@ msgstr "一切就绪！希望你喜欢 NewsBlur。"
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "您获赠了 %(value_1)s，共 %(value_2)s！"
+msgstr "你获赠了 %(value_1)s 的 %(value_2)s！"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
-msgstr "您已达到 %(value_1)s 个站点的上限。请静音部分站点或升级账户以添加更多站点。"
+msgstr "你已达到 %(value_1)s 个网站的上限。请屏蔽部分网站或升级账户以添加更多网站。"
 
 msgid "You:"
 msgstr "你："
@@ -7480,7 +7480,7 @@ msgstr "你的 %(value_1)s 订阅包含以上所有内容"
 
 #, python-format
 msgid "Your %(value_1)s subscription is active"
-msgstr "您的 %(value_1)s 订阅已生效"
+msgstr "你的 %(value_1)s 订阅已生效"
 
 msgid "Your Archived Domains"
 msgstr "已归档的域名"
@@ -7492,10 +7492,10 @@ msgid "Your Referral Link"
 msgstr "你的推荐链接"
 
 msgid "Your Referral Stats"
-msgstr "您的推荐统计"
+msgstr "你的推荐统计"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
-msgstr "你存档的文章仍可访问，但新文章将遵循标准保留政策。"
+msgstr "你已归档的文章仍可访问，但新文章将遵循标准保留政策。"
 
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie 已过期 — 请重新登录"
@@ -7516,7 +7516,7 @@ msgid "Your premium account is paid until:"
 msgstr "你的高级账户已付费至："
 
 msgid "Your premium account will downgrade on:"
-msgstr "您的高级账户将于以下日期降级："
+msgstr "你的高级账户将于以下日期降级："
 
 msgid "Your profile"
 msgstr "你的个人资料"
@@ -7525,7 +7525,7 @@ msgid "Your subscription is no longer active."
 msgstr "你的订阅已失效。"
 
 msgid "Your subscription will be prorated"
-msgstr "您的订阅费用将按比例计算"
+msgstr "你的订阅费用将按比例计算"
 
 msgid "Your subscription will no longer automatically renew."
 msgstr "你的订阅将不再自动续订。"
@@ -7640,17 +7640,17 @@ msgid "iOS notifications"
 msgstr "iOS 通知"
 
 msgid "iOS notifications require Premium Archive"
-msgstr "iOS 通知需要高级归档功能"
+msgstr "iOS 通知需要高级归档版"
 
 msgid "iPhone &amp; iPad"
 msgstr "iPhone &amp; iPad"
 
 msgid "in"
-msgstr "在"
+msgstr "添加到"
 
 #, python-format
 msgid "in %(time)s"
-msgstr "在 %(time)s"
+msgstr "%(time)s后"
 
 msgid "indie games"
 msgstr "独立游戏"
@@ -7659,7 +7659,7 @@ msgid "interest rates"
 msgstr "利率"
 
 msgid "j and k move through stories; n jumps to the next unread."
-msgstr "按 j 和 k 浏览报道；按 n 跳到下一篇未读报道。"
+msgstr "按 j 和 k 浏览文章；按 n 跳到下一篇未读文章。"
 
 msgid "just now"
 msgstr "刚刚"
@@ -7759,7 +7759,7 @@ msgid "typography"
 msgstr "排版"
 
 msgid "unmuting soon"
-msgstr "即将取消静音"
+msgstr "即将解除屏蔽"
 
 msgid "upload picture"
 msgstr "上传图片"
@@ -7771,7 +7771,7 @@ msgid "video"
 msgstr "视频"
 
 msgid "vintage computing"
-msgstr "复古计算"
+msgstr "复古电脑"
 
 msgid "web standards"
 msgstr "网络标准"
@@ -7794,7 +7794,7 @@ msgid "✓ Matches author"
 msgstr "✓ 作者匹配"
 
 msgid "✓ Matches story"
-msgstr "✓ 与故事匹配"
+msgstr "✓ 与文章匹配"
 
 msgid "✓ Matches title"
 msgstr "✓ 标题匹配"

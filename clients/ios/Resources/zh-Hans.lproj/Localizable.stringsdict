@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ 篇重点报道</string>
+			<string>%@ 篇聚焦文章</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -209,7 +209,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ 次搜索</string>
+			<string>%@ 个搜索</string>
 		</dict>
 	</dict>
 	<key>%@ shares</key>
@@ -517,7 +517,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>保存过去 %@ 天的内容</string>
+			<string>存储过去 %@ 天的内容</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ hours</key>
@@ -531,7 +531,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>保留过去 %@ 小时的内容</string>
+			<string>存储过去 %@ 小时的内容</string>
 		</dict>
 	</dict>
 	<key>Text from %@ days ago</key>
@@ -615,7 +615,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>你已订阅%@个网站</string>
+			<string>你已订阅 %@ 个网站</string>
 		</dict>
 	</dict>
 </dict>
