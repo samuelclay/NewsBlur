@@ -33,9 +33,9 @@
 			<key>many</key>
 			<string>%@ sites du widget</string>
 			<key>one</key>
-			<string>%@ site de widget</string>
+			<string>%@ site du widget</string>
 			<key>other</key>
-			<string>%@ sites de widgets</string>
+			<string>%@ sites du widget</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -211,11 +211,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ articles mis en avant</string>
+			<string>%@ articles prioritaires</string>
 			<key>one</key>
-			<string>%@ article sélectionné</string>
+			<string>%@ article prioritaire</string>
 			<key>other</key>
-			<string>%@ articles mis en avant</string>
+			<string>%@ articles prioritaires</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -427,11 +427,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Ajouter %1$@ flux au dossier « %2$@ »</string>
+			<string>Ajouter %1$@ flux au dossier « %2$@ »</string>
 			<key>one</key>
-			<string>Ajouter le flux %1$@ au dossier « %2$@ »</string>
+			<string>Ajouter %1$@ flux au dossier « %2$@ »</string>
 			<key>other</key>
-			<string>Ajouter %1$@ flux au dossier « %2$@ »</string>
+			<string>Ajouter %1$@ flux au dossier « %2$@ »</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -499,11 +499,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Supprimer %@ sites ?</string>
+			<string>Supprimer %@ sites ?</string>
 			<key>one</key>
-			<string>Supprimer le site %@ ?</string>
+			<string>Supprimer %@ site ?</string>
 			<key>other</key>
-			<string>Supprimer %@ sites ?</string>
+			<string>Supprimer %@ sites ?</string>
 		</dict>
 	</dict>
 	<key>Followers label</key>
@@ -535,7 +535,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Images datant de %@ jours</string>
+			<string>Images d’il y a %@ jours</string>
 			<key>one</key>
 			<string>Images datant d’il y a %@ jour</string>
 			<key>other</key>
@@ -553,11 +553,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Images datant de %@ heures</string>
+			<string>Images d’il y a %@ heures</string>
 			<key>one</key>
-			<string>Images datant de %@ heure</string>
+			<string>Images d’il y a %@ heure</string>
 			<key>other</key>
-			<string>Images datant de %@ heures</string>
+			<string>Images d’il y a %@ heures</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -589,9 +589,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Marquer comme lues ces %@ histoires</string>
+			<string>Marquer ces %@ articles comme lus</string>
 			<key>one</key>
-			<string>Marquer comme lu %@ article</string>
+			<string>Marquer %@ article comme lu</string>
 			<key>other</key>
 			<string>Marquer ces %@ articles comme lus</string>
 		</dict>
@@ -609,7 +609,7 @@
 			<key>many</key>
 			<string>Mettre en sourdine %@ sites</string>
 			<key>one</key>
-			<string>Masquer le site %@</string>
+			<string>Mettre %@ site en sourdine</string>
 			<key>other</key>
 			<string>Mettre en sourdine %@ sites</string>
 		</dict>
@@ -625,11 +625,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Plus anciennes que %@ jours</string>
+			<string>Plus anciens que %@ jours</string>
 			<key>one</key>
 			<string>Plus ancien que %@ jour</string>
 			<key>other</key>
-			<string>Antérieur à %@ jours</string>
+			<string>Plus anciens que %@ jours</string>
 		</dict>
 	</dict>
 	<key>Shared Stories label</key>
@@ -643,7 +643,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Histoires partagées</string>
+			<string>Articles partagés</string>
 			<key>one</key>
 			<string>Article partagé</string>
 			<key>other</key>
@@ -663,7 +663,7 @@
 			<key>many</key>
 			<string>Conservation des %@ derniers jours</string>
 			<key>one</key>
-			<string>Conservation des données des %@ dernier jour</string>
+			<string>Conservation sur %@ jour</string>
 			<key>other</key>
 			<string>Conservation des %@ derniers jours</string>
 		</dict>
@@ -679,9 +679,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Conserver l’historique des %@ dernières heures</string>
+			<string>Conservation des %@ dernières heures</string>
 			<key>one</key>
-			<string>Conserver les %@ dernières heures</string>
+			<string>Conservation sur %@ heure</string>
 			<key>other</key>
 			<string>Conservation des %@ dernières heures</string>
 		</dict>
@@ -697,11 +697,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Texte datant de %@ jours</string>
+			<string>Texte d’il y a %@ jours</string>
 			<key>one</key>
 			<string>Texte datant d’il y a %@ jour</string>
 			<key>other</key>
-			<string>Texte datant de %@ jours</string>
+			<string>Texte d’il y a %@ jours</string>
 		</dict>
 	</dict>
 	<key>Text from %@ hours ago</key>
