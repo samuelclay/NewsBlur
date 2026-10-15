@@ -307,6 +307,14 @@ NEWSBLUR.utils = {
     dayNames: [gettext('Sunday'), gettext('Monday'), gettext('Tuesday'), gettext('Wednesday'), gettext('Thursday'), gettext('Friday'), gettext('Saturday')],
 
     format_date: function (date) {
+        var language = document.documentElement.lang || 'en';
+        if (language.indexOf('en') !== 0) {
+            // reader_utils.js lets Intl inflect the month (Polish "15 października", Russian "15 октября"),
+            // which a translated list of nominative month names can't do. English keeps its format below.
+            return date.toLocaleDateString(language + '-u-nu-latn', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+        }
         var dayOfWeek = date.getDay();
         var month = date.getMonth();
         var year = date.getUTCFullYear();
