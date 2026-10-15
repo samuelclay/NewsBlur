@@ -168,7 +168,7 @@
     <string name="dialog_story_tags_save">儲存標籤</string>
     <string name="profile">個人檔案</string>
     <string name="profile_location_icon">位置圖示</string>
-    <string name="profile_following">正在追蹤</string>
+    <string name="profile_following">追蹤中</string>
     <string name="profile_followers">追蹤者</string>
     <string name="profile_shared">分享的文章</string>
     <string name="profile_time_ago">%1$s前</string>
@@ -1063,7 +1063,7 @@
     <string name="briefing_preferred_time">偏好時間</string>
     <string name="briefing_time_morning">早上</string>
     <string name="briefing_time_afternoon">下午</string>
-    <string name="briefing_time_evening">傍晚</string>
+    <string name="briefing_time_evening">晚上</string>
     <string name="briefing_preferred_day">偏好的星期幾</string>
     <string name="briefing_day_sunday">星期日</string>
     <string name="briefing_day_monday">星期一</string>
@@ -1137,15 +1137,15 @@
     <string name="profile_interaction_replied_user_reply">%1$s 回覆了 %2$s 的回覆</string>
     <string name="profile_interaction_reshared">%1$s 重新分享了 %2$s</string>
     <string name="briefing_section_top_stories">熱門文章</string>
-    <string name="briefing_section_top_stories_subtitle">資訊來源中最重要的文章</string>
-    <string name="briefing_section_infrequent">來自不常更新網站的文章</string>
-    <string name="briefing_section_infrequent_subtitle">來自較少發文資訊來源的文章</string>
+    <string name="briefing_section_top_stories_subtitle">訂閱來源中最重要的文章</string>
+    <string name="briefing_section_infrequent">來自不常更新的網站</string>
+    <string name="briefing_section_infrequent_subtitle">來自不常更新的訂閱來源的文章</string>
     <string name="briefing_section_long_read">留待稍後閱讀的長篇文章</string>
-    <string name="briefing_section_long_read_subtitle">值得留出時間閱讀的長篇文章</string>
+    <string name="briefing_section_long_read_subtitle">值得撥出時間閱讀的長篇文章</string>
     <string name="briefing_section_classifier_match">根據你的興趣</string>
     <string name="briefing_section_classifier_match_subtitle">符合你訓練過的主題和作者的文章</string>
-    <string name="briefing_section_follow_up">後續報導</string>
-    <string name="briefing_section_follow_up_subtitle">你最近閱讀的資訊來源的新文章</string>
-    <string name="briefing_section_widely_covered">多方報導</string>
-    <string name="briefing_section_widely_covered_subtitle">至少 3 個資訊來源報導的文章</string>
+    <string name="briefing_section_follow_up">後續追蹤</string>
+    <string name="briefing_section_follow_up_subtitle">你最近閱讀的訂閱來源發布的新文章</string>
+    <string name="briefing_section_widely_covered">廣泛報導</string>
+    <string name="briefing_section_widely_covered_subtitle">由 3 個以上訂閱來源報導的文章</string>
 </resources>

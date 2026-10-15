@@ -1604,7 +1604,7 @@ msgid "Feed ID required"
 msgstr "必須提供訂閱來源 ID"
 
 msgid "Feed Lyric, NewsBlur's hungry hound"
-msgstr "餵飽 NewsBlur 的貪吃獵犬 Lyric"
+msgstr "餵飽 NewsBlur 的飢餓獵犬 Lyric"
 
 msgid "Feed Statistics"
 msgstr "訂閱來源統計"

@@ -1603,7 +1603,7 @@ msgid "Feed ID required"
 msgstr "必须提供订阅源 ID"
 
 msgid "Feed Lyric, NewsBlur's hungry hound"
-msgstr "喂饱 Lyric，NewsBlur 的贪吃猎犬"
+msgstr "喂饱 Lyric，NewsBlur 的馋嘴猎犬"
 
 msgid "Feed Statistics"
 msgstr "订阅源统计"
@@ -1764,7 +1764,7 @@ msgid "Followers"
 msgstr "关注者"
 
 msgid "Following"
-msgstr "正在关注"
+msgstr "已关注"
 
 msgid ""
 "For power users who need precision. Write regular expressions that match against story titles, body text, "
