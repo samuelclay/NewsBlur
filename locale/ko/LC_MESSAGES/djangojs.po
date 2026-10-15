@@ -136,7 +136,7 @@ msgstr "%(account)s 연결이 끊겼습니다."
 
 #, python-format
 msgid "%(badge)s Customize days of unreads"
-msgstr "%(badge)s 안 읽은 항목 날짜 맞춤 설정"
+msgstr "%(badge)s 읽지 않은 항목 보관 기간 맞춤 설정"
 
 #, python-format
 msgid "%(badge)s for up to %(count)s day"
@@ -3679,7 +3679,7 @@ msgstr "이메일 설정 관리"
 
 #, python-format
 msgid "Manually by hitting %(first_key)s or %(second_key)s"
-msgstr "%(first_key)s 또는 %(second_key)s을 눌러 수동으로"
+msgstr "%(first_key)s 또는 %(second_key)s 키를 눌러 수동으로"
 
 msgid "Manually or by clicking in the story"
 msgstr "수동으로 또는 스토리에서 클릭하여"
@@ -3872,13 +3872,13 @@ msgid "More from Reddit"
 msgstr "Reddit의 더 많은 글"
 
 msgid "Morning"
-msgstr "오전"
+msgstr "아침"
 
 msgid "Morning + Afternoon"
-msgstr "오전 + 오후"
+msgstr "아침 + 오후"
 
 msgid "Morning + Evening"
-msgstr "오전 + 저녁"
+msgstr "아침 + 저녁"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "이번 주 구독자 수가 가장 많은 피드"
@@ -4399,7 +4399,7 @@ msgstr "이전 비밀번호"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "다음보다 오래됨: %(month)s %(day)s %(year)s"
+msgstr "%(year)s년 %(month)s %(day)s일 이전"
 
 msgid "Older:"
 msgstr "이전:"
@@ -4617,7 +4617,7 @@ msgstr "페이지 아래로"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
-msgstr "화면의 %(percent)s %(slider)s만큼 아래로 이동"
+msgstr "%(slider)s 화면의 %(percent)s만큼 아래로 이동"
 
 msgid "Page up"
 msgstr "페이지 위로"
@@ -5671,7 +5671,7 @@ msgstr "쇼핑"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "짧게"
+msgstr "낮음"
 
 msgid "Show"
 msgstr "표시"
@@ -7711,7 +7711,7 @@ msgstr "선택 사항이며 스토리 위에 표시됩니다"
 
 #, python-format
 msgid "or subscribe with %(paypal_button)s"
-msgstr "또는 %(paypal_button)s으로 구독"
+msgstr "또는 %(paypal_button)s로 구독"
 
 msgid "pending"
 msgstr "대기 중"

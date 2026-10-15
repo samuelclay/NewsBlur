@@ -1095,9 +1095,9 @@
     <string name="main_menu_export_feeds">フィードをエクスポート</string>
     <string name="discover_open">開く</string>
     <string name="discover_folder_top_level">最上位</string>
-    <string name="discover_add_to_folder">フォルダに追加</string>
+    <string name="discover_add_to_folder">フォルダーに追加</string>
     <string name="add_site_shortcut_trending">トレンド</string>
-    <string name="add_site_freshness_stale">古い%1$s</string>
+    <string name="add_site_freshness_stale">更新停止 %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="other">%d分前</item>
     </plurals>
