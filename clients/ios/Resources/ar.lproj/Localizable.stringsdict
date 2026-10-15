@@ -17,7 +17,7 @@
 			<key>many</key>
 			<string>تعذّرت إضافة %1$@ من الخلاصات إلى %2$@.</string>
 			<key>one</key>
-			<string>تعذّرت إضافة %1$@ إلى %2$@.</string>
+			<string>تعذّرت إضافة %1$@ خلاصة إلى %2$@.</string>
 			<key>other</key>
 			<string>تعذّر إضافة %1$@ من الخلاصات إلى %2$@.</string>
 			<key>two</key>
@@ -37,17 +37,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ مواقع الأدوات</string>
+			<string>%@ مواقع في الأداة</string>
 			<key>many</key>
-			<string>مواقع الأدوات المصغّرة لـ %@</string>
+			<string>%@ موقعًا في الأداة</string>
 			<key>one</key>
-			<string>%@ موقع مصغّر</string>
+			<string>%@ موقع في الأداة</string>
 			<key>other</key>
-			<string>مواقع الأدوات المصغّرة: %@</string>
+			<string>%@ موقع في الأداة</string>
 			<key>two</key>
-			<string>%@ مواقع الأدوات</string>
+			<string>%@ موقعان في الأداة</string>
 			<key>zero</key>
-			<string>%@ مواقع الأدوات</string>
+			<string>%@ موقع في الأداة</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -65,7 +65,7 @@
 			<key>many</key>
 			<string>تتوفر %@ فئة للاختيار من بينها</string>
 			<key>one</key>
-			<string>فئة واحدة للاختيار منها من أصل %@</string>
+			<string>%@ فئة للاختيار منها</string>
 			<key>other</key>
 			<string>تتوفر %@ فئة للاختيار منها</string>
 			<key>two</key>
@@ -85,13 +85,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ تعليقًا</string>
+			<string>%@ تعليقات</string>
 			<key>many</key>
 			<string>%@ تعليقًا</string>
 			<key>one</key>
 			<string>%@ تعليق</string>
 			<key>other</key>
-			<string>%@ تعليقًا</string>
+			<string>%@ تعليق</string>
 			<key>two</key>
 			<string>%@ تعليقان</string>
 			<key>zero</key>
@@ -139,7 +139,7 @@
 			<key>one</key>
 			<string>%@ يوم</string>
 			<key>other</key>
-			<string>%@ يومًا</string>
+			<string>%@ يوم</string>
 			<key>two</key>
 			<string>%@ يومان</string>
 			<key>zero</key>
@@ -161,7 +161,7 @@
 			<key>many</key>
 			<string>%@ من الخلاصات</string>
 			<key>one</key>
-			<string>خلاصة واحدة من أصل %@</string>
+			<string>%@ خلاصة</string>
 			<key>other</key>
 			<string>%@ من الخلاصات</string>
 			<key>two</key>
@@ -185,9 +185,9 @@
 			<key>many</key>
 			<string>تمت إضافة %@ من الخلاصات</string>
 			<key>one</key>
-			<string>تمت إضافة %@ موجز</string>
+			<string>تمت إضافة %@ خلاصة</string>
 			<key>other</key>
-			<string>تمت إضافة %@ موجز</string>
+			<string>تمت إضافة %@ خلاصة</string>
 			<key>two</key>
 			<string>تمت إضافة %@ من الخلاصات</string>
 			<key>zero</key>
@@ -213,7 +213,7 @@
 			<key>other</key>
 			<string>تمت إضافة %@ من الخلاصات.</string>
 			<key>two</key>
-			<string>أُضيفت خلاصتا %@.</string>
+			<string>تمت إضافة خلاصتين (%@).</string>
 			<key>zero</key>
 			<string>تمت إضافة %@ من الخلاصات.</string>
 		</dict>
@@ -237,7 +237,7 @@
 			<key>other</key>
 			<string>تعذرت إضافة %@ من الخلاصات.</string>
 			<key>two</key>
-			<string>تعذّر إضافة %@ موجزات.</string>
+			<string>تعذّرت إضافة خلاصتين (%@).</string>
 			<key>zero</key>
 			<string>تعذرت إضافة %@ من الخلاصات.</string>
 		</dict>
@@ -283,11 +283,11 @@
 			<key>one</key>
 			<string>قصة مركّز عليها: %@</string>
 			<key>other</key>
-			<string>%@ قصة مركّزة</string>
+			<string>%@ قصة مركّز عليها</string>
 			<key>two</key>
-			<string>%@ من القصص المحددة</string>
+			<string>%@ قصتان مركّز عليهما</string>
 			<key>zero</key>
-			<string>%@ قصة مركّزة</string>
+			<string>%@ قصة مركّز عليها</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -301,7 +301,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ مرة فتح</string>
+			<string>%@ مرات فتح</string>
 			<key>many</key>
 			<string>%@ مرة فتح</string>
 			<key>one</key>
@@ -349,15 +349,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>عمليات بحث %@</string>
+			<string>%@ عمليات بحث</string>
 			<key>many</key>
 			<string>%@ من عمليات البحث</string>
 			<key>one</key>
-			<string>بحث %@</string>
-			<key>other</key>
-			<string>%@ عمليات بحث</string>
-			<key>two</key>
 			<string>%@ عملية بحث</string>
+			<key>other</key>
+			<string>%@ عملية بحث</string>
+			<key>two</key>
+			<string>%@ عمليتا بحث</string>
 			<key>zero</key>
 			<string>%@ عملية بحث</string>
 		</dict>
@@ -425,7 +425,7 @@
 			<key>many</key>
 			<string>%@ قصة</string>
 			<key>one</key>
-			<string>%@ مقال</string>
+			<string>%@ قصة</string>
 			<key>other</key>
 			<string>%@ قصة</string>
 			<key>two</key>
@@ -499,7 +499,7 @@
 			<key>one</key>
 			<string>%@ مشترك</string>
 			<key>other</key>
-			<string>%@ مشتركًا</string>
+			<string>%@ مشترك</string>
 			<key>two</key>
 			<string>%@ مشتركان</string>
 			<key>zero</key>
@@ -519,7 +519,7 @@
 			<key>few</key>
 			<string>%@ قصص غير مقروءة</string>
 			<key>many</key>
-			<string>%@ قصص غير مقروءة</string>
+			<string>%@ قصة غير مقروءة</string>
 			<key>one</key>
 			<string>%@ قصة غير مقروءة</string>
 			<key>other</key>
@@ -543,11 +543,11 @@
 			<key>few</key>
 			<string>+ %@ مواقع أخرى</string>
 			<key>many</key>
-			<string>+ %@ مواقع أخرى</string>
+			<string>+ %@ موقعًا آخر</string>
 			<key>one</key>
 			<string>+ موقع آخر (%@)</string>
 			<key>other</key>
-			<string>+ %@ مواقع أخرى</string>
+			<string>+ %@ موقع آخر</string>
 			<key>two</key>
 			<string>+ %@ موقعان آخران</string>
 			<key>zero</key>
@@ -569,7 +569,7 @@
 			<key>many</key>
 			<string>أضف %1$@ من الخلاصات إلى مجلد «%2$@»</string>
 			<key>one</key>
-			<string>إضافة خلاصة %1$@ إلى مجلد «%2$@»</string>
+			<string>أضف %1$@ خلاصة إلى مجلد «%2$@»</string>
 			<key>other</key>
 			<string>إضافة %1$@ من الخلاصات إلى مجلد «%2$@»</string>
 			<key>two</key>
@@ -593,13 +593,13 @@
 			<key>many</key>
 			<string>أُضيفت %1$@ من الخلاصات إلى %2$@.</string>
 			<key>one</key>
-			<string>تمت إضافة %1$@ من الخلاصات إلى %2$@.</string>
+			<string>تمت إضافة %1$@ خلاصة إلى %2$@.</string>
 			<key>other</key>
 			<string>أُضيفت %1$@ من الخلاصات إلى %2$@.</string>
 			<key>two</key>
 			<string>أُضيفت خلاصتان (%1$@) إلى %2$@.</string>
 			<key>zero</key>
-			<string>أُضيفت %1$@ موجزات إلى %2$@.</string>
+			<string>أُضيفت %1$@ خلاصة إلى %2$@.</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -619,11 +619,11 @@
 			<key>one</key>
 			<string>تمت إضافة خلاصة واحدة (%@).</string>
 			<key>other</key>
-			<string>تمت إضافة %@ موجزات.</string>
+			<string>تمت إضافة %@ خلاصة.</string>
 			<key>two</key>
 			<string>تمت إضافة %@ من الخلاصات.</string>
 			<key>zero</key>
-			<string>تمت إضافة %@ موجز.</string>
+			<string>تمت إضافة %@ خلاصة.</string>
 		</dict>
 	</dict>
 	<key>Also published by %@ sites</key>
@@ -643,7 +643,7 @@
 			<key>one</key>
 			<string>نُشر أيضًا على %@ موقع</string>
 			<key>other</key>
-			<string>نُشر أيضًا على %@ مواقع</string>
+			<string>نُشر أيضًا على %@ موقع</string>
 			<key>two</key>
 			<string>نُشر أيضًا على موقعيْن: %@</string>
 			<key>zero</key>
@@ -665,9 +665,9 @@
 			<key>many</key>
 			<string>هل تريد حذف %@ من المواقع؟</string>
 			<key>one</key>
-			<string>هل تريد حذف الموقع %@؟</string>
+			<string>هل تريد حذف موقع واحد (%@)؟</string>
 			<key>other</key>
-			<string>هل تريد حذف %@ موقعًا؟</string>
+			<string>هل تريد حذف %@ موقع؟</string>
 			<key>two</key>
 			<string>هل تريد حذف %@ موقعين؟</string>
 			<key>zero</key>
@@ -735,15 +735,15 @@
 			<key>few</key>
 			<string>صور من %@ ساعات</string>
 			<key>many</key>
-			<string>الصور الأقدم من %@ ساعة</string>
+			<string>صور من %@ ساعة مضت</string>
 			<key>one</key>
-			<string>الصور الأقدم من %@ ساعة</string>
+			<string>صور من %@ ساعة مضت</string>
 			<key>other</key>
 			<string>صور من %@ ساعة مضت</string>
 			<key>two</key>
 			<string>صور من %@ ساعتين مضتا</string>
 			<key>zero</key>
-			<string>الصور الأقدم من %@ ساعة</string>
+			<string>صور من %@ ساعة مضت</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -759,11 +759,11 @@
 			<key>few</key>
 			<string>تم استيراد %@ مواقع</string>
 			<key>many</key>
-			<string>تم استيراد %@ مواقع</string>
+			<string>تم استيراد %@ موقعًا</string>
 			<key>one</key>
 			<string>تم استيراد %@ موقع</string>
 			<key>other</key>
-			<string>تم استيراد %@ موقعًا</string>
+			<string>تم استيراد %@ موقع</string>
 			<key>two</key>
 			<string>تم استيراد %@ موقعين</string>
 			<key>zero</key>
@@ -785,7 +785,7 @@
 			<key>many</key>
 			<string>وضع علامة «مقروءة» على هذه القصص الـ %@</string>
 			<key>one</key>
-			<string>وضع علامة «مقروءة» على القصة %@</string>
+			<string>وضع علامة «مقروءة» على %@ قصة</string>
 			<key>other</key>
 			<string>وضع علامة «مقروءة» على %@ من القصص</string>
 			<key>two</key>
@@ -807,15 +807,15 @@
 			<key>few</key>
 			<string>كتم %@ من المواقع</string>
 			<key>many</key>
-			<string>كتم صوت %@ موقعًا</string>
+			<string>كتم %@ موقعًا</string>
 			<key>one</key>
-			<string>كتم موقع %@</string>
+			<string>كتم %@ موقع</string>
 			<key>other</key>
-			<string>كتم %@ مواقع</string>
+			<string>كتم %@ موقع</string>
 			<key>two</key>
 			<string>كتم %@ موقعين</string>
 			<key>zero</key>
-			<string>كتم مواقع %@</string>
+			<string>كتم %@ موقع</string>
 		</dict>
 	</dict>
 	<key>Older than %@ days</key>
@@ -829,13 +829,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>أقدم من %@ يومًا</string>
+			<string>أقدم من %@ أيام</string>
 			<key>many</key>
 			<string>أقدم من %@ يومًا</string>
 			<key>one</key>
 			<string>أقدم من %@ يوم</string>
 			<key>other</key>
-			<string>أقدم من %@ يومًا</string>
+			<string>أقدم من %@ يوم</string>
 			<key>two</key>
 			<string>أقدم من %@ يومين</string>
 			<key>zero</key>
@@ -881,13 +881,13 @@
 			<key>many</key>
 			<string>الاحتفاظ ببيانات الأيام الـ %@ الماضية</string>
 			<key>one</key>
-			<string>الاحتفاظ بسجل الأيام %@ الماضية</string>
+			<string>الاحتفاظ ببيانات آخر %@ يوم</string>
 			<key>other</key>
 			<string>تخزين الأيام الـ %@ الماضية</string>
 			<key>two</key>
-			<string>الاحتفاظ ببيانات آخر %@ يومًا</string>
+			<string>الاحتفاظ ببيانات آخر %@ يومين</string>
 			<key>zero</key>
-			<string>الاحتفاظ بما يتجاوز %@ يومًا</string>
+			<string>الاحتفاظ ببيانات آخر %@ يوم</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ hours</key>
@@ -901,7 +901,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>الاحتفاظ ببيانات آخر %@ ساعة</string>
+			<string>الاحتفاظ ببيانات آخر %@ ساعات</string>
 			<key>many</key>
 			<string>الاحتفاظ ببيانات آخر %@ ساعة</string>
 			<key>one</key>
@@ -927,11 +927,11 @@
 			<key>few</key>
 			<string>نص من %@ أيام مضت</string>
 			<key>many</key>
-			<string>النصوص الأقدم من %@ يوم</string>
+			<string>نص من %@ يومًا مضى</string>
 			<key>one</key>
 			<string>نص منذ %@ يوم</string>
 			<key>other</key>
-			<string>نص قبل %@ أيام</string>
+			<string>نص من %@ يوم مضى</string>
 			<key>two</key>
 			<string>النص منذ %@ يومين</string>
 			<key>zero</key>
@@ -949,7 +949,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>النصوص الأقدم من %@ ساعات</string>
+			<string>نص من %@ ساعات مضت</string>
 			<key>many</key>
 			<string>نص من %@ ساعة مضت</string>
 			<key>one</key>
@@ -979,7 +979,7 @@
 			<key>one</key>
 			<string>حُدّث قبل %@ يوم</string>
 			<key>other</key>
-			<string>تم التحديث قبل %@ يومًا</string>
+			<string>تم التحديث قبل %@ يوم</string>
 			<key>two</key>
 			<string>حُدّث قبل %@ يومين</string>
 			<key>zero</key>
@@ -1003,7 +1003,7 @@
 			<key>one</key>
 			<string>تم التحديث قبل %@ شهر</string>
 			<key>other</key>
-			<string>تم التحديث قبل %@ شهرًا</string>
+			<string>تم التحديث قبل %@ شهر</string>
 			<key>two</key>
 			<string>حُدّث قبل %@ شهرين</string>
 			<key>zero</key>
@@ -1027,7 +1027,7 @@
 			<key>one</key>
 			<string>تم التحديث قبل %@ أسبوع</string>
 			<key>other</key>
-			<string>حُدّث قبل %@ أسبوعًا</string>
+			<string>حُدّث قبل %@ أسبوع</string>
 			<key>two</key>
 			<string>حُدّث قبل %@ أسبوعين</string>
 			<key>zero</key>
@@ -1049,13 +1049,13 @@
 			<key>many</key>
 			<string>أنت مشترك في %@ موقعًا</string>
 			<key>one</key>
-			<string>أنت مشترك في موقع %@</string>
+			<string>أنت مشترك في %@ موقع</string>
 			<key>other</key>
-			<string>أنت مشترك في %@ موقعًا</string>
+			<string>أنت مشترك في %@ موقع</string>
 			<key>two</key>
-			<string>أنت مشترك في %@ موقعًا</string>
+			<string>أنت مشترك في %@ موقعين</string>
 			<key>zero</key>
-			<string>أنت مشترك في %@ موقعًا</string>
+			<string>أنت مشترك في %@ موقع</string>
 		</dict>
 	</dict>
 </dict>

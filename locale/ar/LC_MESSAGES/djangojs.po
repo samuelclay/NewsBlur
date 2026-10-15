@@ -39,7 +39,7 @@ msgid " Gift for free (staff)"
 msgstr " هدية مجانية (للموظفين)"
 
 msgid " One click and they have premium."
-msgstr " بنقرة واحدة يحصلون على الاشتراك المميز."
+msgstr " بنقرة واحدة يحصلون على Premium."
 
 msgid " Send the gift link to anyone."
 msgstr " أرسل رابط الهدية إلى أي شخص."
@@ -76,7 +76,7 @@ msgstr " — أيّ من هذه الكلمات"
 msgid " — At least %(count)s character"
 msgid_plural " — At least %(count)s characters"
 msgstr[0] " — بحد أدنى %(count)s من الأحرف"
-msgstr[1] " — حرف واحد على الأقل %(count)s"
+msgstr[1] " — %(count)s حرف على الأقل"
 msgstr[2] " — بحد أدنى %(count)s من الأحرف"
 msgstr[3] " — بحد أدنى %(count)s من الأحرف"
 msgstr[4] " — بحد أدنى %(count)s من الأحرف"
@@ -98,7 +98,7 @@ msgstr " — العبارة المطابقة تمامًا \"%(phrase)s\""
 msgid " — Exactly %(count)s digit (years)"
 msgid_plural " — Exactly %(count)s digits (years)"
 msgstr[0] " — %(count)s رقمًا بالضبط (سنوات)"
-msgstr[1] " — بالضبط %(count)s رقمًا (سنوات)"
+msgstr[1] " — %(count)s رقم بالضبط (سنوات)"
 msgstr[2] " — %(count)s رقمان بالضبط (سنوات)"
 msgstr[3] " — %(count)s أرقام بالضبط (سنوات)"
 msgstr[4] " — %(count)s رقمًا بالضبط (سنوات)"
@@ -144,11 +144,11 @@ msgid "$36/year"
 msgstr "36 دولارًا سنويًا"
 
 msgid "$99/year"
-msgstr "99 دولارًا/السنة"
+msgstr "99 دولارًا سنويًا"
 
 #, python-format
 msgid "%(account)s disconnected."
-msgstr "انقطع اتصال %(account)s."
+msgstr "تم فصل %(account)s."
 
 #, python-format
 msgid "%(badge)s Customize days of unreads"
@@ -157,7 +157,7 @@ msgstr "خصّص أيام العناصر غير المقروءة: %(badge)s"
 #, python-format
 msgid "%(badge)s for up to %(count)s day"
 msgid_plural "%(badge)s for up to %(count)s days"
-msgstr[0] "%(badge)s لمدة تصل إلى %(count)s يومًا"
+msgstr[0] "%(badge)s لمدة تصل إلى %(count)s يوم"
 msgstr[1] "%(badge)s لمدة تصل إلى %(count)s يوم"
 msgstr[2] "%(badge)s لمدة تصل إلى %(count)s يومين"
 msgstr[3] "%(badge)s لمدة تصل إلى %(count)s أيام"
@@ -166,7 +166,7 @@ msgstr[5] "%(badge)s لمدة تصل إلى %(count)s يوم"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s موضوع"
+msgstr "موضوعات %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -199,12 +199,12 @@ msgstr[5] "%(count)s قناة"
 #, python-format
 msgid "%(count)s classifier has been deleted."
 msgid_plural "%(count)s classifiers have been deleted."
-msgstr[0] "تم حذف %(count)s من قواعد التصنيف."
-msgstr[1] "تم حذف المصنّف %(count)s."
-msgstr[2] "تم حذف %(count)s من قواعد التصنيف."
-msgstr[3] "تم حذف %(count)s من قواعد التصنيف."
-msgstr[4] "تم حذف %(count)s من قواعد التصنيف."
-msgstr[5] "تم حذف %(count)s من قواعد التصنيف."
+msgstr[0] "تم حذف %(count)s مصنّف."
+msgstr[1] "تم حذف %(count)s مصنّف."
+msgstr[2] "تم حذف %(count)s مصنّفين."
+msgstr[3] "تم حذف %(count)s مصنّفات."
+msgstr[4] "تم حذف %(count)s مصنّفًا."
+msgstr[5] "تم حذف %(count)s مصنّف."
 
 #, python-format
 msgid "%(count)s classifier will be deleted"
@@ -251,7 +251,7 @@ msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s يوم"
 msgstr[1] "%(count)s يوم"
-msgstr[2] "%(count)s يومان"
+msgstr[2] "%(count)s يومين"
 msgstr[3] "%(count)s أيام"
 msgstr[4] "%(count)s يومًا"
 msgstr[5] "%(count)s يوم"
@@ -279,7 +279,7 @@ msgstr[5] "%(count)s حالة عدم إعجاب"
 #, python-format
 msgid "%(count)s episode"
 msgid_plural "%(count)s episodes"
-msgstr[0] "%(count)s حلقات"
+msgstr[0] "%(count)s حلقة"
 msgstr[1] "%(count)s حلقة"
 msgstr[2] "%(count)s حلقتان"
 msgstr[3] "%(count)s حلقات"
@@ -289,8 +289,8 @@ msgstr[5] "%(count)s حلقة"
 #, python-format
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
-msgstr[0] "%(count)s خلاصات"
-msgstr[1] "%(count)s موجز"
+msgstr[0] "%(count)s خلاصة"
+msgstr[1] "%(count)s خلاصة"
 msgstr[2] "%(count)s خلاصتان"
 msgstr[3] "%(count)s خلاصات"
 msgstr[4] "%(count)s خلاصة"
@@ -302,7 +302,7 @@ msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s متابع"
 msgstr[1] "%(count)s متابع"
 msgstr[2] "%(count)s متابعان"
-msgstr[3] "%(count)s متابعًا"
+msgstr[3] "%(count)s متابعين"
 msgstr[4] "%(count)s متابعًا"
 msgstr[5] "%(count)s متابع"
 
@@ -311,7 +311,7 @@ msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s ساعة"
 msgstr[1] "%(count)s ساعة"
-msgstr[2] "%(count)s ساعتان"
+msgstr[2] "%(count)s ساعتين"
 msgstr[3] "%(count)s ساعات"
 msgstr[4] "%(count)s ساعة"
 msgstr[5] "%(count)s ساعة"
@@ -351,7 +351,7 @@ msgid "%(count)s member"
 msgid_plural "%(count)s members"
 msgstr[0] "%(count)s عضو"
 msgstr[1] "%(count)s عضو"
-msgstr[2] "%(count)s أعضاء"
+msgstr[2] "%(count)s عضوان"
 msgstr[3] "%(count)s أعضاء"
 msgstr[4] "%(count)s عضوًا"
 msgstr[5] "%(count)s عضو"
@@ -360,7 +360,7 @@ msgstr[5] "%(count)s عضو"
 msgid "%(count)s merge (%(categories)s categories into %(count)s)"
 msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s عملية دمج (%(categories)s من الفئات في %(count)s)"
-msgstr[1] "%(count)s دمج (%(categories)s فئة في %(count)s)"
+msgstr[1] "%(count)s عملية دمج (%(categories)s فئة في %(count)s)"
 msgstr[2] "%(count)s عمليتا دمج (%(categories)s من الفئات في %(count)s)"
 msgstr[3] "%(count)s عمليات دمج (%(categories)s من الفئات في %(count)s)"
 msgstr[4] "%(count)s عملية دمج (%(categories)s من الفئات في %(count)s)"
@@ -381,7 +381,7 @@ msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s شهر"
 msgstr[1] "%(count)s شهر"
-msgstr[2] "%(count)s شهران"
+msgstr[2] "%(count)s شهرين"
 msgstr[3] "%(count)s أشهر"
 msgstr[4] "%(count)s شهرًا"
 msgstr[5] "%(count)s شهر"
@@ -399,12 +399,12 @@ msgstr[5] "%(count)s نشرة"
 #, python-format
 msgid "%(count)s of %(limit)s site"
 msgid_plural "%(count)s of %(limit)s sites"
-msgstr[0] "%(count)s من أصل %(limit)s موقع"
-msgstr[1] "%(count)s من أصل %(limit)s موقع"
-msgstr[2] "%(count)s من أصل %(limit)s موقعان"
-msgstr[3] "%(count)s من أصل %(limit)s مواقع"
-msgstr[4] "%(count)s من أصل %(limit)s موقعًا"
-msgstr[5] "%(count)s من أصل %(limit)s موقع"
+msgstr[0] "%(count)s موقع من أصل %(limit)s"
+msgstr[1] "%(count)s موقع من أصل %(limit)s"
+msgstr[2] "%(count)s موقعان من أصل %(limit)s"
+msgstr[3] "%(count)s مواقع من أصل %(limit)s"
+msgstr[4] "%(count)s موقعًا من أصل %(limit)s"
+msgstr[5] "%(count)s موقع من أصل %(limit)s"
 
 #, python-format
 msgid "%(count)s on all sites (%(stories)s)"
@@ -431,7 +431,7 @@ msgstr[5] "%(count)s عملية فتح"
 #, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
-msgstr[0] "%(count)s صفحات"
+msgstr[0] "%(count)s صفحة"
 msgstr[1] "%(count)s صفحة"
 msgstr[2] "%(count)s صفحتان"
 msgstr[3] "%(count)s صفحات"
@@ -531,12 +531,12 @@ msgstr[5] "تجاوز الحد بمقدار %(count)s موقع"
 #, python-format
 msgid "%(count)s story"
 msgid_plural "%(count)s stories"
-msgstr[0] "%(count)s مقالات"
+msgstr[0] "%(count)s قصة"
 msgstr[1] "%(count)s قصة"
-msgstr[2] "%(count)s مقالان"
-msgstr[3] "%(count)s مقالات"
-msgstr[4] "%(count)s مقالًا"
-msgstr[5] "%(count)s مقال"
+msgstr[2] "%(count)s قصتان"
+msgstr[3] "%(count)s قصص"
+msgstr[4] "%(count)s قصة"
+msgstr[5] "%(count)s قصة"
 
 #, python-format
 msgid "%(count)s story has been deleted."
@@ -611,12 +611,12 @@ msgstr[5] "%(count)s قصة/شهر"
 #, python-format
 msgid "%(count)s subreddit"
 msgid_plural "%(count)s subreddits"
-msgstr[0] "%(count)s subreddit"
+msgstr[0] "%(count)s مجتمع فرعي"
 msgstr[1] "%(count)s مجتمع فرعي"
-msgstr[2] "%(count)s subreddit"
-msgstr[3] "%(count)s subreddits"
-msgstr[4] "%(count)s subreddit"
-msgstr[5] "%(count)s subreddit"
+msgstr[2] "%(count)s مجتمعان فرعيان"
+msgstr[3] "%(count)s مجتمعات فرعية"
+msgstr[4] "%(count)s مجتمعًا فرعيًا"
+msgstr[5] "%(count)s مجتمع فرعي"
 
 #, python-format
 msgid "%(count)s subscriber"
@@ -647,7 +647,7 @@ msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s أسبوع"
 msgstr[1] "%(count)s أسبوع"
-msgstr[2] "%(count)s أسبوعان"
+msgstr[2] "%(count)s أسبوعين"
 msgstr[3] "%(count)s أسابيع"
 msgstr[4] "%(count)s أسبوعًا"
 msgstr[5] "%(count)s أسبوع"
@@ -667,7 +667,7 @@ msgid "%(count)s year"
 msgid_plural "%(count)s years"
 msgstr[0] "%(count)s سنة"
 msgstr[1] "%(count)s سنة"
-msgstr[2] "%(count)s سنتان"
+msgstr[2] "%(count)s سنتين"
 msgstr[3] "%(count)s سنوات"
 msgstr[4] "%(count)s سنة"
 msgstr[5] "%(count)s سنة"
@@ -677,7 +677,7 @@ msgid "%(count)sd ago"
 msgid_plural "%(count)sd ago"
 msgstr[0] "قبل %(count)s يوم"
 msgstr[1] "منذ %(count)s يوم"
-msgstr[2] "قبل %(count)s يومًا"
+msgstr[2] "قبل %(count)s يومين"
 msgstr[3] "قبل %(count)s أيام"
 msgstr[4] "قبل %(count)s يومًا"
 msgstr[5] "قبل %(count)s يوم"
@@ -776,15 +776,15 @@ msgstr "%(name)s يشارك قصة: %(title)s"
 
 #, python-format
 msgid "%(price)s · Menu bar news ticker for Mac"
-msgstr "%(price)s · شريط أخبار لقائمة ماك"
+msgstr "%(price)s · شريط أخبار متحرّك في شريط القوائم على Mac"
 
 #, python-format
 msgid "%(price)s · iPhone &amp; iPad"
-msgstr "%(price)s · iPhone &amp; وiPad"
+msgstr "%(price)s · iPhone &amp; iPad"
 
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
-msgstr "%(price)s · iPhone وiPad و&amp; Mac"
+msgstr "%(price)s · iPhone وiPad &amp; Mac"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -799,7 +799,7 @@ msgid "%(start)s to %(end)s hour"
 msgid_plural "%(start)s to %(end)s hours"
 msgstr[0] "من %(start)s إلى %(end)s ساعة"
 msgstr[1] "من %(start)s إلى %(end)s ساعة"
-msgstr[2] "من %(start)s إلى %(end)s ساعتان"
+msgstr[2] "من %(start)s إلى %(end)s ساعتين"
 msgstr[3] "من %(start)s إلى %(end)s ساعات"
 msgstr[4] "من %(start)s إلى %(end)s ساعة"
 msgstr[5] "من %(start)s إلى %(end)s ساعة"
@@ -832,15 +832,15 @@ msgstr "منذ %(time)s"
 
 #, python-format
 msgid "%(time)s left"
-msgstr "متبقٍ %(time)s"
+msgstr "يُلغى الكتم بعد %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s قناة"
+msgstr "قنوات %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s رسالة إخبارية"
+msgstr "نشرات %(topic)s البريدية"
 
 #, python-format
 msgid "%(topic)s Podcasts"
@@ -848,7 +848,7 @@ msgstr "بودكاست %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s موقعًا"
+msgstr "مواقع %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
@@ -864,7 +864,7 @@ msgstr "%(value_1)s إعادة تدريب جميع المواقع"
 
 #, python-format
 msgid "%(value_1)s Unlock this and all premium features."
-msgstr "%(value_1)s افتح هذه الميزة وجميع الميزات المميزة."
+msgstr "%(value_1)s افتح هذه الميزة وجميع ميزات Premium."
 
 #, python-format
 msgid "%(value_1)s ago"
@@ -962,7 +962,7 @@ msgid "(GMT+04:00) Abu Dhabi, Muscat"
 msgstr "(GMT+04:00) أبوظبي، مسقط"
 
 msgid "(GMT+04:00) Yerevan"
-msgstr "(توقيت غرينتش+04:00) يريفان"
+msgstr "(GMT+04:00) يريفان"
 
 msgid "(GMT+04:30) Kabul"
 msgstr "(GMT+04:30) كابول"
@@ -1040,7 +1040,7 @@ msgid "(GMT+11:00) Solomon Is., New Caledonia"
 msgstr "(GMT+11:00) جزر سليمان، كاليدونيا الجديدة"
 
 msgid "(GMT+11:30) Norfolk Island"
-msgstr "(توقيت غرينتش+11:30) جزيرة نورفولك"
+msgstr "(GMT+11:30) جزيرة نورفولك"
 
 msgid "(GMT+12:00) Anadyr, Kamchatka"
 msgstr "(GMT+12:00) أنادير، كامتشاتكا"
@@ -1070,7 +1070,7 @@ msgid "(GMT-02:00) Mid-Atlantic"
 msgstr "(GMT-02:00) وسط الأطلسي"
 
 msgid "(GMT-03:00) Brasilia"
-msgstr "(توقيت غرينتش-03:00) برازيليا"
+msgstr "(GMT-03:00) برازيليا"
 
 msgid "(GMT-03:00) Buenos Aires"
 msgstr "(GMT-03:00) بوينس آيرس"
@@ -1232,7 +1232,7 @@ msgstr[5] "أقل من %(count)s قصة شهريًا"
 
 #, python-format
 msgid "< %(value_1)s/month"
-msgstr "< %(value_1)s/شهريًا"
+msgstr "< %(value_1)s شهريًا"
 
 msgid "< 30 stories/month"
 msgstr "أقل من 30 قصة شهريًا"
@@ -1245,7 +1245,7 @@ msgstr[1] "<b>%(value_1)s يوم</b> &mdash; يتجاوز حد خطتك البا
 msgstr[2] "<b>%(value_1)s يومين</b> &mdash; يتجاوز الحد الأقصى في خطتك البالغ %(value_3)s يومًا"
 msgstr[3] "<b>%(value_1)s أيام</b> &mdash; يتجاوز الحد الأقصى في خطتك البالغ %(value_3)s يومًا"
 msgstr[4] "<b>%(value_1)s يومًا</b> &mdash; يتجاوز الحد الأقصى في خطتك البالغ %(value_3)s يومًا"
-msgstr[5] "<b>%(value_1)s يومًا</b> &mdash; يتجاوز الحد الأقصى في خطتك البالغ %(value_3)s يومًا"
+msgstr[5] "<b>%(value_1)s يوم</b> &mdash; يتجاوز الحد الأقصى في خطتك البالغ %(value_3)s يومًا"
 
 #, python-format
 msgid "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">No matches</span>"
@@ -1254,21 +1254,21 @@ msgstr "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no
 #, python-format
 msgid "<strong>%(count)s day</strong> left in your premium trial"
 msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
-msgstr[0] "<strong>%(count)s يوم</strong> متبقٍ في الفترة التجريبية المميزة"
-msgstr[1] "<strong>%(count)s يوم</strong> متبقٍ في الفترة التجريبية المميزة"
-msgstr[2] "<strong>%(count)s يومان</strong> متبقيان في الفترة التجريبية المميزة"
-msgstr[3] "<strong>%(count)s أيام</strong> متبقية في الفترة التجريبية المميزة"
-msgstr[4] "<strong>%(count)s يومًا</strong> متبقيًا في الفترة التجريبية المميزة"
-msgstr[5] "<strong>%(count)s يوم</strong> متبقٍ في الفترة التجريبية المميزة"
+msgstr[0] "<strong>%(count)s يوم</strong> متبقٍ في فترة Premium التجريبية"
+msgstr[1] "<strong>%(count)s يوم</strong> متبقٍ في فترة Premium التجريبية"
+msgstr[2] "<strong>%(count)s يومان</strong> متبقيان في فترة Premium التجريبية"
+msgstr[3] "<strong>%(count)s أيام</strong> متبقية في فترة Premium التجريبية"
+msgstr[4] "<strong>%(count)s يومًا</strong> متبقيًا في فترة Premium التجريبية"
+msgstr[5] "<strong>%(count)s يوم</strong> متبقٍ في فترة Premium التجريبية"
 
 msgid "A blurblog of shared stories"
-msgstr "مدونة مجمّعة للقصص التي تشاركها"
+msgstr "مدونة Blurblog للقصص التي تشاركها"
 
 msgid "A folder of feeds read as one stream"
-msgstr "مجلد من الموجزات يُقرأ كتدفّق واحد"
+msgstr "مجلد من الخلاصات يُقرأ كتدفّق واحد"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "مجموعة مختارة حديثًا من القصص التي شاركها القراء NewsBlur، تُختار كل ساعة."
+msgstr "مجموعة مختارة حديثًا من القصص التي شاركها قرّاء NewsBlur، تُختار كل ساعة."
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -1281,7 +1281,7 @@ msgid "A single like overrides any number of dislikes"
 msgstr "إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب"
 
 msgid "A single super dislike overrides everything"
-msgstr "عدم إعجاب فائق واحد يتجاوز كل شيء"
+msgstr "عدم إعجاب شديد واحد يتغلب على كل شيء"
 
 msgid "A story diff with additions and deletions"
 msgstr "مقارنة تغييرات القصة مع الإضافات والحذف"
@@ -1333,8 +1333,8 @@ msgstr "إضافة"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "أضف %(count)s وسمًا للقصة"
-msgstr[1] "إضافة وسم قصة %(count)s"
+msgstr[0] "أضف %(count)s وسم للقصة"
+msgstr[1] "أضف %(count)s وسم للقصة"
 msgstr[2] "أضف %(count)s وسمين للقصة"
 msgstr[3] "أضف %(count)s وسوم للقصة"
 msgstr[4] "أضف %(count)s وسمًا للقصة"
@@ -1344,7 +1344,7 @@ msgid "Add Folder"
 msgstr "إضافة مجلد"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "إضافة موقع &amp; أداة مشاركة القصة المرجعية"
+msgstr "أداة الإشارات المرجعية لإضافة موقع &amp; مشاركة قصة"
 
 msgid "Add a forwarding address"
 msgstr "إضافة عنوان لإعادة التوجيه"
@@ -1359,7 +1359,7 @@ msgid "Add a site to this folder"
 msgstr "إضافة موقع إلى هذا المجلد"
 
 msgid "Add any site or feed"
-msgstr "أضف أي موقع أو موجز"
+msgstr "أضف أي موقع أو خلاصة"
 
 msgid "Add custom tags to organize saved stories by topic"
 msgstr "أضف وسومًا مخصصة لتنظيم القصص المحفوظة حسب الموضوع"
@@ -1374,7 +1374,7 @@ msgid "Add it to Claude Code with: claude mcp add --transport http newsblur http
 msgstr "أضِفه إلى Claude Code باستخدام: claude mcp add --transport http newsblur https://newsblur.com/mcp/"
 
 msgid "Add keyword filters that create their own briefing section. All keywords must match."
-msgstr "أضف عوامل تصفية بالكلمات المفتاحية لإنشاء قسم إحاطة خاص بها. يجب أن تتطابق جميع الكلمات المفتاحية."
+msgstr "أضف عوامل تصفية بالكلمات المفتاحية لإنشاء قسم موجز خاص بها. يجب أن تتطابق جميع الكلمات المفتاحية."
 
 msgid "Add keyword section"
 msgstr "إضافة قسم للكلمات المفتاحية"
@@ -1386,7 +1386,7 @@ msgid "Add site/folder"
 msgstr "إضافة موقع/مجلد"
 
 msgid "Add story list"
-msgstr "إضافة قائمة المقالات"
+msgstr "إضافة قائمة قصص"
 
 msgid "Add to Chrome"
 msgstr "أضف إلى Chrome"
@@ -1399,7 +1399,7 @@ msgstr "أضف إلى مجلد"
 
 #, python-format
 msgid "Added %(date)s"
-msgstr "تمت إضافة %(date)s"
+msgstr "تمت الإضافة %(date)s"
 
 msgid "Added!"
 msgstr "تمت الإضافة!"
@@ -1421,7 +1421,7 @@ msgstr[4] "بعد %(slider)s %(count)s ثانية."
 msgstr[5] "بعد %(slider)s %(count)s ثانية."
 
 msgid "After marking feed/folder read"
-msgstr "بعد وضع علامة «مقروء» على الموجز/المجلد"
+msgstr "بعد وضع علامة «مقروء» على الخلاصة/المجلد"
 
 msgid "Afternoon"
 msgstr "بعد الظهر"
@@ -1433,8 +1433,8 @@ msgstr[0] "نبّهني بعد %(value_1)s يوم دون قصص جديدة"
 msgstr[1] "أرسل تنبيهًا بعد %(value_1)s يوم دون قصص جديدة"
 msgstr[2] "تنبيه بعد %(value_1)s يومين دون قصص جديدة"
 msgstr[3] "تنبيه بعد %(value_1)s أيام دون قصص جديدة"
-msgstr[4] "تنبيه بعد %(value_1)s أيام دون قصص جديدة"
-msgstr[5] "تنبيه بعد %(value_1)s يومًا دون قصص جديدة"
+msgstr[4] "تنبيه بعد %(value_1)s يومًا دون قصص جديدة"
+msgstr[5] "تنبيه بعد %(value_1)s يوم دون قصص جديدة"
 
 msgid "All"
 msgstr "الكل"
@@ -1455,10 +1455,10 @@ msgid "All Notifications"
 msgstr "كل الإشعارات"
 
 msgid "All Shared Stories"
-msgstr "كل المقالات المتداولة"
+msgstr "كل القصص المشتركة"
 
 msgid "All Site Stories"
-msgstr "كل قصص الموقع"
+msgstr "قصص كل المواقع"
 
 msgid "All Stories"
 msgstr "كل القصص"
@@ -1467,7 +1467,7 @@ msgid "All done!"
 msgstr "اكتمل كل شيء!"
 
 msgid "All feeds fetched every 5-15 minutes"
-msgstr "يتم جلب جميع الموجزات كل 5-15 دقيقة"
+msgstr "يتم جلب جميع الخلاصات كل 5-15 دقيقة"
 
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
@@ -1498,12 +1498,12 @@ msgstr "أبجديًا"
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
-msgstr[0] "احذف أيضًا %(value_1)s أرشيفات موجودة من هذا النطاق"
+msgstr[0] "احذف أيضًا %(value_1)s أرشيف موجود من هذا النطاق"
 msgstr[1] "احذف أيضًا %(value_1)s أرشيف موجود من هذا النطاق"
 msgstr[2] "احذف أيضًا %(value_1)s أرشيفين موجودين من هذا النطاق"
 msgstr[3] "احذف أيضًا %(value_1)s أرشيفات موجودة من هذا النطاق"
 msgstr[4] "احذف أيضًا %(value_1)s أرشيفًا موجودًا من هذا النطاق"
-msgstr[5] "احذف أيضًا %(value_1)s أرشيفًا موجودًا من هذا النطاق"
+msgstr[5] "احذف أيضًا %(value_1)s أرشيف موجود من هذا النطاق"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1519,7 +1519,7 @@ msgid "Also works with Edge"
 msgstr "يعمل أيضًا مع Edge"
 
 msgid "Always show Train/Save/Share buttons below stories"
-msgstr "أظهر دائمًا أزرار التدريب والحفظ والمشاركة أسفل المقالات"
+msgstr "أظهر دائمًا أزرار التدريب والحفظ والمشاركة أسفل القصص"
 
 msgid "Always show unread counts on folders"
 msgstr "إظهار أعداد غير المقروء دائمًا على المجلدات"
@@ -1569,7 +1569,7 @@ msgid "Android notifications"
 msgstr "إشعارات Android"
 
 msgid "Android notifications require Premium Archive"
-msgstr "تتطلب إشعارات Android أرشيف Premium"
+msgstr "تتطلب إشعارات Android اشتراك Premium Archive"
 
 msgid "Animals"
 msgstr "الحيوانات"
@@ -1578,7 +1578,7 @@ msgid "Animations"
 msgstr "الرسوم المتحركة"
 
 msgid "Any"
-msgstr "أيّ"
+msgstr "أي تاريخ"
 
 msgid ""
 "Any public web page: Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
@@ -1594,7 +1594,7 @@ msgstr "في أي وقت"
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
 msgstr[0] "تم تطبيق %(count)s من عمليات الدمج (%(stories)s)"
-msgstr[1] "تم تطبيق عملية دمج %(count)s (%(stories)s)"
+msgstr[1] "تم تطبيق %(count)s عملية دمج (%(stories)s)"
 msgstr[2] "تم تطبيق %(count)s من عمليات الدمج (%(stories)s)"
 msgstr[3] "تم تطبيق %(count)s من عمليات الدمج (%(stories)s)"
 msgstr[4] "تم تطبيق %(count)s من عمليات الدمج (%(stories)s)"
@@ -1623,7 +1623,7 @@ msgid "Apply training across a folder"
 msgstr "طبّق التدريب على مجلد بأكمله"
 
 msgid "Apply training globally"
-msgstr "تطبيق التدريب على مستوى العالم"
+msgstr "تطبيق التدريب على كل المواقع"
 
 msgid "Applying..."
 msgstr "جارٍ التطبيق..."
@@ -1638,10 +1638,10 @@ msgid "April"
 msgstr "أبريل"
 
 msgid "Archive"
-msgstr "الأرشيف"
+msgstr "Archive"
 
 msgid "Archive Assistant"
-msgstr "مساعد الأرشفة"
+msgstr "مساعد الأرشيف"
 
 msgid "Are the apps free?"
 msgstr "هل التطبيقات مجانية؟"
@@ -1653,7 +1653,7 @@ msgid "Arrows"
 msgstr "الأسهم"
 
 msgid "As a reminder, use the intelligence slider to select a filter:"
-msgstr "تذكير: استخدم منزلق الذكاء لاختيار عامل التصفية:"
+msgstr "تذكير: استخدم شريط الذكاء لاختيار عامل التصفية:"
 
 msgid "Ask"
 msgstr "اسأل"
@@ -1662,10 +1662,10 @@ msgid "Ask AI"
 msgstr "اسأل الذكاء الاصطناعي"
 
 msgid "Ask AI & Daily Briefing"
-msgstr "Ask AI والإحاطة اليومية"
+msgstr "«اسأل الذكاء الاصطناعي» والموجز اليومي"
 
 msgid "Ask AI about story"
-msgstr "اسأل الذكاء الاصطناعي عن المقالة"
+msgstr "اسأل الذكاء الاصطناعي عن القصة"
 
 msgid "Ask AI anything about your browsing history"
 msgstr "اسأل الذكاء الاصطناعي أي شيء عن سجل التصفح"
@@ -1737,7 +1737,7 @@ msgid "Auto theme follows your system's light and dark schedule."
 msgstr "يتبع المظهر التلقائي جدول الوضعين الفاتح والداكن في نظامك."
 
 msgid "Auto-follow<br>my friends"
-msgstr "متابعة تلقائية<br>أصدقائي"
+msgstr "متابعة أصدقائي<br>تلقائيًا"
 
 msgid "Auto-generate"
 msgstr "إنشاء تلقائي"
@@ -1755,7 +1755,7 @@ msgid "Automatically archive every page you visit to search with AI later."
 msgstr "أرشف تلقائيًا كل صفحة تزورها لتتمكن من البحث فيها لاحقًا باستخدام الذكاء الاصطناعي."
 
 msgid "Automatically generate briefings on schedule"
-msgstr "إنشاء ملخصات تلقائيًا وفق جدول زمني"
+msgstr "إنشاء موجزات تلقائيًا وفق جدول زمني"
 
 msgid "Automatically play next item in queue"
 msgstr "تشغيل العنصر التالي في قائمة الانتظار تلقائيًا"
@@ -1786,7 +1786,7 @@ msgid "Back to feeds"
 msgstr "العودة إلى الخلاصات"
 
 msgid "Back to stories"
-msgstr "العودة إلى المقالات"
+msgstr "العودة إلى القصص"
 
 msgid "Back to trainer"
 msgstr "العودة إلى أداة التدريب"
@@ -1841,7 +1841,7 @@ msgid "Blurblog Options"
 msgstr "خيارات Blurblog"
 
 msgid "Blurblog address"
-msgstr "عنوان Blurblog"
+msgstr "رابط Blurblog"
 
 msgid "Blurblog permalinks"
 msgstr "روابط Blurblog الدائمة"
@@ -1850,17 +1850,17 @@ msgid "Blurblog title"
 msgstr "عنوان Blurblog"
 
 msgid "Blurblogs"
-msgstr "مدونات Blurblogs"
+msgstr "مدونات Blurblog"
 
 msgid "Bookmarklet"
-msgstr "أداة مرجعية"
+msgstr "أداة الإشارات المرجعية"
 
 msgid "Bottom"
 msgstr "أسفل"
 
 msgctxt "summary length"
 msgid "Brief"
-msgstr "موجز"
+msgstr "مختصر"
 
 msgid "Briefing"
 msgstr "موجز"
@@ -1869,16 +1869,16 @@ msgid "Briefing Admin"
 msgstr "إدارة الموجز اليومي"
 
 msgid "Briefing Preferences"
-msgstr "تفضيلات الملخّص"
+msgstr "تفضيلات الموجز"
 
 msgid "Briefing Settings"
-msgstr "إعدادات الملخص"
+msgstr "إعدادات الموجز"
 
 msgid "Briefing generation timed out. Please try again."
-msgstr "انتهت مهلة إنشاء الإحاطة. يُرجى المحاولة مرة أخرى."
+msgstr "انتهت مهلة إنشاء الموجز. يُرجى المحاولة مرة أخرى."
 
 msgid "Briefing length"
-msgstr "طول الإحاطة"
+msgstr "طول الموجز"
 
 msgid "Browse Archives"
 msgstr "تصفح الأرشيف"
@@ -1971,7 +1971,7 @@ msgid "Cancel subscription renewal"
 msgstr "إلغاء تجديد الاشتراك"
 
 msgid "Cancel unfollow"
-msgstr "إلغاء إلغاء المتابعة"
+msgstr "التراجع عن إلغاء المتابعة"
 
 msgid "Canceled Request"
 msgstr "طلب مُلغى"
@@ -1988,12 +1988,12 @@ msgstr "الفئات &amp; الوسوم"
 #, python-format
 msgid "Categorize %(count)s Uncategorized"
 msgid_plural "Categorize %(count)s Uncategorized"
-msgstr[0] "صنّف %(count)s ضمن غير المصنّف"
+msgstr[0] "صنّف غير المصنّفة (%(count)s)"
 msgstr[1] "صنّف %(count)s غير مصنّف"
-msgstr[2] "صنّف %(count)s ضمن غير المصنّف"
-msgstr[3] "صنّف %(count)s ضمن غير المصنّف"
-msgstr[4] "صنّف %(count)s ضمن غير المصنّف"
-msgstr[5] "صنّف %(count)s ضمن غير المصنّف"
+msgstr[2] "صنّف غير المصنّفة (%(count)s)"
+msgstr[3] "صنّف غير المصنّفة (%(count)s)"
+msgstr[4] "صنّف غير المصنّفة (%(count)s)"
+msgstr[5] "صنّف غير المصنّفة (%(count)s)"
 
 msgid "Categorizing..."
 msgstr "جارٍ التصنيف..."
@@ -2027,7 +2027,7 @@ msgid "Change what you like above..."
 msgstr "غيّر ما تريده أعلاه..."
 
 msgid "Change your blurblog settings above"
-msgstr "غيّر إعدادات مدونتك المجمّعة أعلاه"
+msgstr "غيّر إعدادات مدونتك على Blurblog أعلاه"
 
 msgid "Change your credit card"
 msgstr "تغيير بطاقتك الائتمانية"
@@ -2064,7 +2064,7 @@ msgstr[5] "اختر %(count)s موقع"
 msgid "Choose Your %(count)s site"
 msgid_plural "Choose Your %(count)s sites"
 msgstr[0] "اختر %(count)s من مواقعك"
-msgstr[1] "اختر موقعك %(count)s"
+msgstr[1] "اختر %(count)s من مواقعك"
 msgstr[2] "اختر موقعيك الـ %(count)s"
 msgstr[3] "اختر %(count)s من مواقعك"
 msgstr[4] "اختر %(count)s من مواقعك"
@@ -2098,7 +2098,7 @@ msgid "Choose which AI model writes your briefing"
 msgstr "اختر نموذج الذكاء الاصطناعي الذي يكتب موجزك"
 
 msgid "Choose which feeds are used to build your briefing"
-msgstr "اختر الموجزات التي ستُستخدم لإنشاء موجزك اليومي"
+msgstr "اختر الخلاصات التي ستُستخدم لإنشاء موجزك"
 
 msgid "Choose which feeds to include"
 msgstr "اختر الخلاصات المراد تضمينها"
@@ -2153,7 +2153,7 @@ msgid "Clear filter"
 msgstr "مسح عامل التصفية"
 
 msgid "Clear icon"
-msgstr "أيقونة المسح"
+msgstr "مسح الأيقونة"
 
 msgid "Clear search"
 msgstr "مسح البحث"
@@ -2162,10 +2162,10 @@ msgstr "مسح البحث"
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
 msgstr[0] "تمت إزالة %(count)s من التجاوزات."
-msgstr[1] "تم مسح تجاوز %(count)s."
-msgstr[2] "تمت إزالة %(count)s من التجاوزين."
+msgstr[1] "تمت إزالة %(count)s تجاوز."
+msgstr[2] "تمت إزالة %(count)s تجاوزين."
 msgstr[3] "تمت إزالة %(count)s من التجاوزات."
-msgstr[4] "تمت إزالة %(count)s من التجاوزًا."
+msgstr[4] "تمت إزالة %(count)s تجاوزًا."
 msgstr[5] "تمت إزالة %(count)s من التجاوزات."
 
 msgid "Click any source card on a clustered story to read that version instead."
@@ -2187,7 +2187,7 @@ msgid "Close player"
 msgstr "إغلاق المشغّل"
 
 msgid "Cluster duplicate stories across all your feeds"
-msgstr "اجمع القصص المكررة عبر جميع موجزاتك"
+msgstr "اجمع القصص المكررة عبر جميع خلاصاتك"
 
 msgid "Cluster preview:"
 msgstr "معاينة المجموعة:"
@@ -2263,7 +2263,7 @@ msgid ""
 "Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
 "subscriptions from Claude Code, Codex, or any MCP-compatible tool."
 msgstr ""
-"اربط وكلاء الذكاء الاصطناعي بحسابك على NewsBlur. اقرأ الخلاصات، وفرز القصص، ودرّب المصنّفات، وأدِر "
+"اربط وكلاء الذكاء الاصطناعي بحسابك على NewsBlur. اقرأ الخلاصات، وافرز القصص، ودرّب المصنّفات، وأدِر "
 "الاشتراكات من Claude Code أو Codex أو أي أداة متوافقة مع MCP."
 
 msgid "Connect AI agents with MCP server and CLI"
@@ -2289,7 +2289,7 @@ msgid "Content Filter"
 msgstr "تصفية المحتوى"
 
 msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
-msgstr "تحكّم في تجميع القصص لكل موجز من نافذة خيارات الموجز المنبثقة، أو عالميًا من التفضيلات > القصص."
+msgstr "تحكّم في تجميع القصص لكل خلاصة من نافذة خيارات الخلاصة المنبثقة، أو عالميًا من التفضيلات > القصص."
 
 msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
 msgstr "تحكّم في المواقع المؤرشفة. لن تحفظ إضافة المتصفح المواقع المحظورة."
@@ -2301,7 +2301,7 @@ msgid "Copied URL"
 msgstr "تم نسخ الرابط"
 
 msgid "Copied text"
-msgstr "النص المنسوخ"
+msgstr "تم نسخ النص"
 
 msgid "Copied!"
 msgstr "تم النسخ!"
@@ -2319,7 +2319,7 @@ msgid "Could not disconnect this account. Please try again."
 msgstr "تعذّر فصل هذا الحساب. يُرجى المحاولة مرة أخرى."
 
 msgid "Could not find RSS feed for this URL"
-msgstr "تعذّر العثور على موجز RSS لهذا الرابط"
+msgstr "تعذّر العثور على خلاصة RSS لهذا الرابط"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "تعذّر تحميل الأسئلة الشائعة. يُرجى المحاولة مجددًا."
@@ -2409,14 +2409,14 @@ msgid "Daily Briefing"
 msgstr "الموجز اليومي"
 
 msgid "Daily Briefing with story summaries"
-msgstr "إحاطة يومية مع ملخصات القصص"
+msgstr "الموجز اليومي مع ملخصات القصص"
 
 msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"الملخصات اليومية ميزة ضمن الأرشيف المميز. في خطتك، يمكنك إنشاء معاينة تتضمن أول 3 قصص من كل ملخص. رقِّ خطتك"
-" للاطلاع على جميع القصص والحصول على ملخصات تلقائية وفق جدولك."
+"الموجزات اليومية ميزة ضمن Premium Archive. في خطتك، يمكنك إنشاء معاينة تتضمن أول 3 قصص من كل موجز. رقِّ "
+"خطتك للاطلاع على جميع القصص والحصول على موجزات تلقائية وفق جدولك."
 
 msgid "Daily briefing with your top stories and keywords"
 msgstr "موجز يومي بأهم قصصك وكلماتك المفتاحية"
@@ -2444,7 +2444,7 @@ msgid "Days"
 msgstr "أيام"
 
 msgid "Days of unreads"
-msgstr "أيام المواد غير المقروءة"
+msgstr "أيام القصص غير المقروءة"
 
 msgid "December"
 msgstr "ديسمبر"
@@ -2502,7 +2502,7 @@ msgid "Delete my intelligence training classifiers"
 msgstr "حذف مصنّفات التدريب الذكي الخاصة بي"
 
 msgid "Delete my saved stories"
-msgstr "حذف مقالاتي المحفوظة"
+msgstr "حذف قصصي المحفوظة"
 
 msgid "Delete my shared stories"
 msgstr "حذف قصصي المشتركة"
@@ -2535,7 +2535,7 @@ msgid "Describe what to focus or hide"
 msgstr "صف ما تريد التركيز عليه أو إخفاءه"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "صف ما تريد البحث عنه، وسيحلل الذكاء الاصطناعي صور كل مقالة وفقًا لوصفك."
+msgstr "صف ما تريد البحث عنه، وسيحلل الذكاء الاصطناعي صور كل قصة وفقًا لوصفك."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2545,7 +2545,7 @@ msgid "Devices"
 msgstr "الأجهزة"
 
 msgid "Disable daily briefings"
-msgstr "تعطيل الملخصات اليومية"
+msgstr "تعطيل الموجزات اليومية"
 
 msgid "Disable social features"
 msgstr "تعطيل الميزات الاجتماعية"
@@ -2558,7 +2558,7 @@ msgstr "تعطيل أداة التمييز"
 
 #, python-format
 msgid "Disconnect %(account)s? You will no longer be able to use it to sign in to this NewsBlur account."
-msgstr "هل تريد فصل %(account)s؟ لن تتمكن بعد ذلك من استخدامه لتسجيل الدخول إلى هذا الحساب NewsBlur."
+msgstr "هل تريد فصل %(account)s؟ لن تتمكن بعد ذلك من استخدامه لتسجيل الدخول إلى حساب NewsBlur هذا."
 
 #, python-format
 msgid "Disconnect %(provider)s (%(email)s)"
@@ -2610,7 +2610,7 @@ msgid "Dislike "
 msgstr "لا يعجبني "
 
 msgid "Dislike matching stories"
-msgstr "عدم الإعجاب بالمقالات المطابقة"
+msgstr "عدم الإعجاب بالقصص المطابقة"
 
 msgid "Dislikes"
 msgstr "حالات عدم الإعجاب"
@@ -2625,17 +2625,17 @@ msgid "Do the apps work offline?"
 msgstr "هل تعمل التطبيقات دون اتصال بالإنترنت؟"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "هل يعمل Ask AI مع الصوت والفيديو؟"
+msgstr "هل تعمل ميزة «اسأل الذكاء الاصطناعي» مع الصوت والفيديو؟"
 
 msgid "Does training work across all my feeds?"
-msgstr "هل يعمل التدريب على جميع موجزاتي؟"
+msgstr "هل يعمل التدريب على جميع خلاصاتي؟"
 
 #, python-format
 msgid "Domain: %(value_1)s"
 msgstr "النطاق: %(value_1)s"
 
 msgid "Don't automatically mark stories as read"
-msgstr "عدم وضع علامة «مقروء» على المقالات تلقائيًا"
+msgstr "عدم وضع علامة «مقروء» على القصص تلقائيًا"
 
 msgid "Don't bother showing tooltips"
 msgstr "لا تعرض التلميحات"
@@ -2696,7 +2696,7 @@ msgid "Drag to reorder priority. Only shown when matching stories are found."
 msgstr "اسحب لإعادة ترتيب الأولوية. لا تظهر إلا عند العثور على قصص مطابقة."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
-msgstr "تُطوى القصص المكررة أسفل النسخة الأعلى تقييمًا في مجموعتك"
+msgstr "تُطوى القصص المكررة أسفل النسخة الأعلى تقييمًا في تدفّق أخبارك"
 
 msgid "EXCLUDED FROM MERGES"
 msgstr "مستثناة من عمليات الدمج"
@@ -2705,19 +2705,19 @@ msgid "Each feed can notify a different way: browser push, email, iOS, or Androi
 msgstr "يمكن لكل خلاصة إرسال إشعارات بطريقة مختلفة: إشعارات المتصفح أو البريد الإلكتروني أو iOS أو Android."
 
 msgid "Each newsletter sender becomes its own feed"
-msgstr "يصبح كل مرسل نشرة إخبارية موجزًا مستقلًا"
+msgstr "يصبح كل مرسل نشرة إخبارية خلاصةً مستقلة"
 
 msgid "Each selected split needs a name and at least one story"
 msgstr "يجب تسمية كل تقسيم محدد وأن يحتوي على قصة واحدة على الأقل"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
-msgstr "يصبح كل مُرسِل موجزًا مستقلًا، لتتمكن من تدريب النظام على استبعاد النشرات الإخبارية التي تطيل بقاءها."
+msgstr "يصبح كل مُرسِل خلاصةً مستقلة، لتتمكن من تدريب النظام على استبعاد النشرات الإخبارية التي تطيل بقاءها."
 
 msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
-msgstr "يحصل كل وسم على موجز RSS خاص به لمشاركته أو تمريره إلى أدوات أخرى"
+msgstr "يحصل كل وسم على خلاصة RSS خاصة به لمشاركتها أو تمريرها إلى أدوات أخرى"
 
 msgid "Earn Free Premium"
-msgstr "اكسب اشتراكًا Premium مجانًا"
+msgstr "اكسب اشتراك Premium مجانًا"
 
 msgid ""
 "Earn free time on your subscription for every person who signs up and subscribes. The credit scales with "
@@ -2754,7 +2754,7 @@ msgid "Email notifications"
 msgstr "إشعارات البريد الإلكتروني"
 
 msgid "Email notifications require Premium Archive"
-msgstr "تتطلب إشعارات البريد الإلكتروني أرشيف Premium"
+msgstr "تتطلب إشعارات البريد الإلكتروني اشتراك Premium Archive"
 
 msgid "Email story"
 msgstr "أرسل القصة بالبريد الإلكتروني"
@@ -2772,13 +2772,13 @@ msgid "Enable \"mark all as read\" so reading one version clears every duplicate
 msgstr "فعّل «وضع علامة مقروء على الكل» لكي تؤدي قراءة نسخة واحدة إلى مسح جميع النسخ المكررة."
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
-msgstr "فعّل الإحاطة اليومية للحصول على ملخص لقصصك الأهم من إعداد الذكاء الاصطناعي"
+msgstr "فعّل الموجز اليومي للحصول على ملخص لقصصك الأهم من إعداد الذكاء الاصطناعي"
 
 #, python-format
 msgid "Enable all %(count)s site"
 msgid_plural "Enable all %(count)s sites"
 msgstr[0] "تفعيل جميع المواقع وعددها %(count)s"
-msgstr[1] "تفعيل كل موقع من المواقع %(count)s"
+msgstr[1] "تفعيل كل المواقع (%(count)s)"
 msgstr[2] "تفعيل جميع المواقع وعددها %(count)s"
 msgstr[3] "تفعيل جميع المواقع وعددها %(count)s"
 msgstr[4] "تفعيل جميع المواقع وعددها %(count)s"
@@ -2791,7 +2791,7 @@ msgid "Enable captions/subtitles for YouTube videos"
 msgstr "تفعيل التسميات التوضيحية/الترجمة المصاحبة لمقاطع YouTube"
 
 msgid "Enable daily briefings"
-msgstr "تفعيل الملخصات اليومية"
+msgstr "تفعيل الموجزات اليومية"
 
 msgid "Enable highlighting"
 msgstr "تفعيل التمييز"
@@ -2803,7 +2803,7 @@ msgid "Enable social features"
 msgstr "تفعيل الميزات الاجتماعية"
 
 msgid "Enable story clustering"
-msgstr "تفعيل تجميع الأخبار"
+msgstr "تفعيل تجميع القصص"
 
 msgid "Enable the sites you want"
 msgstr "فعّل المواقع التي تريدها"
@@ -2901,7 +2901,7 @@ msgid "Every story archived and searchable forever. Your personal knowledge base
 msgstr "تُؤرشف كل قصة وتبقى قابلة للبحث إلى الأبد. قاعدة معارفك الشخصية."
 
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
-msgstr "لكل وسم موجز RSS خاص به. شارك الرابط أو أرسله إلى IFTTT أو Zapier."
+msgstr "لكل وسم خلاصة RSS خاصة به. شارك الرابط أو أرسله إلى IFTTT أو Zapier."
 
 msgid "Everybody"
 msgstr "الجميع"
@@ -2928,7 +2928,7 @@ msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
 " train classifiers. Pipe to jq or script your workflows."
 msgstr ""
-"نفّذ كل ما يتيحه خادم MCP من الطرفية. اقرأ الموجزات، وابحث عن القصص، وأدِر الاشتراكات، ودرّب المصنّفات. "
+"نفّذ كل ما يتيحه خادم MCP من الطرفية. اقرأ الخلاصات، وابحث عن القصص، وأدِر الاشتراكات، ودرّب المصنّفات. "
 "مرّر النتائج إلى jq أو برمج سير عملك."
 
 msgid "Exact phrase"
@@ -2989,7 +2989,7 @@ msgid "Failed to convert newsletter URL"
 msgstr "تعذّر تحويل رابط النشرة الإخبارية"
 
 msgid "Failed to create Google News feed"
-msgstr "تعذّر إنشاء موجز أخبار Google"
+msgstr "تعذّر إنشاء خلاصة أخبار Google"
 
 msgid "Failed to create feed"
 msgstr "تعذّر إنشاء الخلاصة"
@@ -3073,7 +3073,7 @@ msgid "February"
 msgstr "فبراير"
 
 msgid "Feed"
-msgstr "موجز"
+msgstr "الخلاصة"
 
 #, python-format
 msgid "Feed \"%(value_1)s\" has been created."
@@ -3087,13 +3087,13 @@ msgid "Feed Fetch"
 msgstr "جلب الخلاصة"
 
 msgid "Feed Icon"
-msgstr "أيقونة الموجز"
+msgstr "أيقونة الخلاصة"
 
 msgid "Feed Push"
 msgstr "دفع الخلاصات"
 
 msgid "Feed opens:"
-msgstr "مرات فتح الموجز:"
+msgstr "مرات فتح الخلاصة:"
 
 msgid "Feed: "
 msgstr "الخلاصة: "
@@ -3102,10 +3102,10 @@ msgid "Feeds"
 msgstr "الخلاصات"
 
 msgid "Feeds back-filled for complete archive"
-msgstr "اكتمل ملء الخلاصات بأثر رجعي للأرشيف الكامل"
+msgstr "تُملأ الخلاصات بأثر رجعي لأرشيف كامل"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
-msgstr "موجزات يتابعها قرّاء بعمق، لكنها لم تشتهر بعد"
+msgstr "خلاصات يتابعها قرّاء بعمق، لكنها لم تشتهر بعد"
 
 msgid "Feeds:"
 msgstr "الخلاصات:"
@@ -3134,7 +3134,7 @@ msgid "Fetching stories..."
 msgstr "جارٍ جلب القصص..."
 
 msgid "Fetching story"
-msgstr "جارٍ جلب المقال"
+msgstr "جارٍ جلب القصة"
 
 msgid "Fetching text"
 msgstr "جارٍ جلب النص"
@@ -3161,7 +3161,7 @@ msgid "Filter channels..."
 msgstr "تصفية القنوات..."
 
 msgid "Filter icons..."
-msgstr "أيقونات التصفية..."
+msgstr "تصفية الأيقونات..."
 
 msgid "Filter newsletters..."
 msgstr "تصفية النشرات البريدية..."
@@ -3176,13 +3176,13 @@ msgid "Filter sites..."
 msgstr "تصفية المواقع..."
 
 msgid "Filter stories"
-msgstr "تصفية الأخبار"
+msgstr "تصفية القصص"
 
 msgid "Filter stories by date range"
 msgstr "تصفية القصص حسب النطاق الزمني"
 
 msgid "Filter subreddits..."
-msgstr "تصفية مجتمعات ريديت..."
+msgstr "تصفية مجتمعات Reddit..."
 
 msgid "Filtering for"
 msgstr "تصفية حسب"
@@ -3192,14 +3192,14 @@ msgid "Filters found no stories in %(context)s."
 msgstr "لم تعثر عوامل التصفية على أي قصص في %(context)s."
 
 msgid "Filters found no stories in this view."
-msgstr "لم تعثر الفلاتر على أي مقالات في هذا العرض."
+msgstr "لم تعثر الفلاتر على أي قصص في هذا العرض."
 
 msgid "Finance"
 msgstr "التمويل"
 
 #, python-format
 msgid "Find %(value_1)s Friends"
-msgstr "العثور على %(value_1)s أصدقاء"
+msgstr "العثور على أصدقاء من %(value_1)s"
 
 msgid "Find Friends"
 msgstr "البحث عن أصدقاء"
@@ -3234,7 +3234,7 @@ msgid "Flat"
 msgstr "مسطّح"
 
 msgid "Flowing narrative that connects stories into a readable digest"
-msgstr "سرد متدفق يربط المقالات في ملخص سهل القراءة"
+msgstr "سرد متدفق يربط القصص في ملخص سهل القراءة"
 
 msgid "Focus"
 msgstr "تركيز"
@@ -3264,7 +3264,7 @@ msgid "Folders"
 msgstr "المجلدات"
 
 msgid "Folders, feeds, and story titles"
-msgstr "المجلدات والخلاصات وعناوين المقالات"
+msgstr "المجلدات والخلاصات وعناوين القصص"
 
 msgid "Follow"
 msgstr "متابعة"
@@ -3274,7 +3274,7 @@ msgid "Follow %(value_1)s"
 msgstr "متابعة %(value_1)s"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
-msgstr "تابع أي موقع، حتى المواقع التي لا تنشر موجز RSS."
+msgstr "تابع أي موقع، حتى المواقع التي لا تنشر خلاصة RSS."
 
 msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
 msgstr ""
@@ -3297,7 +3297,7 @@ msgid "Follow up to 64 sites"
 msgstr "تابع حتى 64 موقعًا"
 
 msgid "Follow up..."
-msgstr "متابعة لاحقًا..."
+msgstr "اطرح سؤال متابعة..."
 
 msgid "Follow-ups"
 msgstr "المتابعات"
@@ -3306,7 +3306,7 @@ msgid "Followers"
 msgstr "المتابعون"
 
 msgid "Following"
-msgstr "المتابَعون"
+msgstr "تتابعه"
 
 msgid "Following Me"
 msgstr "يتابعني"
@@ -3340,7 +3340,7 @@ msgid "Forward %(seconds)s second"
 msgid_plural "Forward %(seconds)s seconds"
 msgstr[0] "تقديم %(seconds)s ثانية"
 msgstr[1] "تقديم %(seconds)s ثانية"
-msgstr[2] "تقديم %(seconds)s ثانية"
+msgstr[2] "تقديم %(seconds)s ثانيتين"
 msgstr[3] "تقديم %(seconds)s ثوانٍ"
 msgstr[4] "تقديم %(seconds)s ثانية"
 msgstr[5] "تقديم %(seconds)s ثانية"
@@ -3355,7 +3355,7 @@ msgstr "عنوان البريد الإلكتروني لإعادة التوجيه
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "عُثر على %(count)s نمط. اختر النمط الذي يطابق القصص التي تريدها بأفضل شكل."
-msgstr[1] "عُثر على نمط %(count)s. اختر النمط الأنسب للقصص التي تريدها."
+msgstr[1] "عُثر على %(count)s نمط. اختر النمط الأنسب للقصص التي تريدها."
 msgstr[2] "عُثر على %(count)s نمطين. اختر النمط الذي يطابق القصص التي تريدها بأفضل شكل."
 msgstr[3] "عُثر على %(count)s أنماط. اختر النمط الذي يطابق القصص التي تريدها بأفضل شكل."
 msgstr[4] "عُثر على %(count)s نمطًا. اختر النمط الذي يطابق القصص التي تريدها بأفضل شكل."
@@ -3365,7 +3365,7 @@ msgid "Found in the Account dialog"
 msgstr "تجد هذا الخيار في نافذة الحساب"
 
 msgid "Free"
-msgstr "مجانًا"
+msgstr "مجاني"
 
 msgid "Free + subscription · Mac, iPhone &amp; iPad"
 msgstr "مجاني + اشتراك · Mac وiPhone &amp; iPad"
@@ -3374,28 +3374,28 @@ msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "مجاني + اشتراك · iPhone وiPad &amp; Mac"
 
 msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "نسخة تجريبية مجانية · Mac وiPhone و&amp; iPad"
+msgstr "نسخة تجريبية مجانية · Mac وiPhone &amp; iPad"
 
 msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "نسخة تجريبية مجانية · iPhone وiPad و&amp; Mac"
+msgstr "نسخة تجريبية مجانية · iPhone وiPad &amp; Mac"
 
 msgid "Free · Android, iPhone, iPad &amp; Mac"
-msgstr "مجاني · Android وiPhone وiPad &amp; وMac"
+msgstr "مجاني · Android وiPhone وiPad &amp; Mac"
 
 msgid "Free · Apple Watch, iPhone &amp; iPad"
-msgstr "مجانًا · Apple Watch وiPhone &amp; وiPad"
+msgstr "مجانًا · Apple Watch وiPhone &amp; iPad"
 
 msgid "Free · Made by NewsBlur"
 msgstr "مجاني · من إعداد NewsBlur"
 
 msgid "Free · Windows 10 &amp; 11"
-msgstr "مجاني · Windows 10 و&amp; 11"
+msgstr "مجاني · Windows 10 &amp; 11"
 
 msgid "Free · iPhone &amp; iPad"
 msgstr "مجاني · iPhone &amp; iPad"
 
 msgid "Free · iPhone, iPad &amp; Mac"
-msgstr "مجانًا · iPhone وiPad &amp; وMac"
+msgstr "مجانًا · iPhone وiPad &amp; Mac"
 
 msgid "Free · iPhone, iPad, Mac &amp; Android"
 msgstr "مجاني · iPhone وiPad وMac &amp; Android"
@@ -3410,13 +3410,13 @@ msgid "Free, open source · GNOME/Flathub"
 msgstr "مجاني ومفتوح المصدر · GNOME/Flathub"
 
 msgid "Free, open source · Mac, iPhone &amp; iPad"
-msgstr "مجاني ومفتوح المصدر · لأجهزة Mac وiPhone &amp; وiPad"
+msgstr "مجاني ومفتوح المصدر · لأجهزة Mac وiPhone &amp; iPad"
 
 msgid "Free, open source · Terminal (Linux, macOS, BSD)"
 msgstr "مجاني ومفتوح المصدر · الطرفية (Linux وmacOS وBSD)"
 
 msgid "Free, open source · iPhone, iPad &amp; Mac"
-msgstr "مجاني ومفتوح المصدر · iPhone وiPad و&amp; Mac"
+msgstr "مجاني ومفتوح المصدر · iPhone وiPad &amp; Mac"
 
 msgid "French"
 msgstr "الفرنسية"
@@ -3454,7 +3454,7 @@ msgstr "كامل"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "تُعدّ ردود مساعد الأرشيف الكامل ميزةً من ميزات %(link_start)sالأرشيف المميز%(link_end)s."
+msgstr "الردود الكاملة من مساعد الأرشيف ميزة من ميزات %(link_start)sPremium Archive%(link_end)s."
 
 msgid "Full Refund"
 msgstr "استرداد كامل المبلغ"
@@ -3463,7 +3463,7 @@ msgid "Full articles extracted from the original site"
 msgstr "مقالات كاملة مستخرجة من الموقع الأصلي"
 
 msgid "Full paragraph"
-msgstr "الفقرة كاملة"
+msgstr "فقرة كاملة"
 
 msgid "Full screen"
 msgstr "ملء الشاشة"
@@ -3544,11 +3544,11 @@ msgid ""
 "Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
 "Android, filtered by your training."
 msgstr ""
-"تلقَّ إشعارًا فور نشر موجز لقصة جديدة. إشعارات لكل موجز على الويب والبريد الإلكتروني وiOS وAndroid، مع "
+"تلقَّ إشعارًا فور نشر خلاصة لقصة جديدة. إشعارات لكل خلاصة على الويب والبريد الإلكتروني وiOS وAndroid، مع "
 "تصفية حسب تدريبك."
 
 msgid "Get notified when a new briefing is ready"
-msgstr "تلقَّ إشعارًا عند جهوز موجز جديد"
+msgstr "تلقَّ إشعارًا عندما يصبح موجز جديد جاهزًا"
 
 msgid "Get started"
 msgstr "ابدأ الآن"
@@ -3617,7 +3617,7 @@ msgid "Good Reads on NewsBlur"
 msgstr "قراءات جيدة على NewsBlur"
 
 msgid "Goodies &amp; Extras"
-msgstr "المزايا الإضافية &amp; والإضافات"
+msgstr "المزايا &amp; الإضافات"
 
 msgid "Goodies &amp; Mobile Apps"
 msgstr "المزايا &amp; تطبيقات الهاتف"
@@ -3638,7 +3638,7 @@ msgid "Grid view"
 msgstr "عرض الشبكة"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "تجميع المقالات المكررة عبر خلاصاتك"
+msgstr "تجميع القصص المكررة عبر خلاصاتك"
 
 msgid "Group stories that share:"
 msgstr "جمّع القصص التي تتشارك:"
@@ -3683,7 +3683,7 @@ msgid "Hide history"
 msgstr "إخفاء السجل"
 
 msgid "Hide matching stories"
-msgstr "إخفاء الأخبار المطابقة"
+msgstr "إخفاء القصص المطابقة"
 
 msgid "Hide sites"
 msgstr "إخفاء المواقع"
@@ -3704,7 +3704,7 @@ msgid "History"
 msgstr "السجل"
 
 msgid "Home"
-msgstr "الرئيسية"
+msgstr "المنزل"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
 msgstr "تعرض أدوات الشاشة الرئيسية أعداد العناصر غير المقروءة وأحدث القصص بنظرة سريعة."
@@ -3740,13 +3740,13 @@ msgid "IFTTT & Zapier"
 msgstr "IFTTT وZapier"
 
 msgid "Identify key people and relationships"
-msgstr "تعرّف على الأشخاص الرئيسيين والعلاقات بينهم"
+msgstr "حدّد الأشخاص الرئيسيين والعلاقات بينهم"
 
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
-msgstr "إذا لم يُعثر على موجز RSS، يعرض NewsBlur إنشاء موجز ويب"
+msgstr "إذا لم يُعثر على خلاصة RSS، يعرض NewsBlur إنشاء خلاصة ويب"
 
 msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
-msgstr "إذا لم يطابق أي من الخيارات، فاكتب عنوان خبر تراه على الصفحة وسنعيد التحليل."
+msgstr "إذا لم يطابق أي من الخيارات، فاكتب عنوان قصة تراه على الصفحة وسنعيد التحليل."
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
@@ -3794,12 +3794,12 @@ msgstr "جارٍ استيراد مواقعك..."
 #, python-format
 msgid "In %(count)s day, your premium trial ends and you'll return to Free"
 msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
-msgstr[0] "خلال %(count)s يوم، تنتهي الفترة التجريبية المميزة وتعود إلى الخطة المجانية"
-msgstr[1] "ينتهي الإصدار التجريبي المميز خلال %(count)s يوم، وستعود إلى الخطة المجانية"
-msgstr[2] "خلال %(count)s يومين، تنتهي الفترة التجريبية المميزة وتعود إلى الخطة المجانية"
-msgstr[3] "خلال %(count)s أيام، تنتهي الفترة التجريبية المميزة وتعود إلى الخطة المجانية"
-msgstr[4] "خلال %(count)s يومًا، تنتهي الفترة التجريبية المميزة وتعود إلى الخطة المجانية"
-msgstr[5] "خلال %(count)s يوم، تنتهي الفترة التجريبية المميزة وتعود إلى الخطة المجانية"
+msgstr[0] "خلال %(count)s يوم، تنتهي فترة Premium التجريبية وتعود إلى الخطة المجانية"
+msgstr[1] "تنتهي فترة Premium التجريبية خلال %(count)s يوم، وستعود إلى الخطة المجانية"
+msgstr[2] "خلال %(count)s يومين، تنتهي فترة Premium التجريبية وتعود إلى الخطة المجانية"
+msgstr[3] "خلال %(count)s أيام، تنتهي فترة Premium التجريبية وتعود إلى الخطة المجانية"
+msgstr[4] "خلال %(count)s يومًا، تنتهي فترة Premium التجريبية وتعود إلى الخطة المجانية"
+msgstr[5] "خلال %(count)s يوم، تنتهي فترة Premium التجريبية وتعود إلى الخطة المجانية"
 
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
@@ -3823,7 +3823,7 @@ msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
 msgstr ""
-"في عرض الموجز، انقر على الوسوم وأسماء الكتّاب في رأس القصة لتدريبها. تتناوب كل نقرة بين الإعجاب وعدم "
+"في عرض الخلاصة، انقر على الوسوم وأسماء الكتّاب في رأس القصة لتدريبها. تتناوب كل نقرة بين الإعجاب وعدم "
 "الإعجاب والمحايد."
 
 msgid "In this window"
@@ -3842,7 +3842,7 @@ msgid "Index feeds for discovery"
 msgstr "فهرسة الخلاصات لاكتشافها"
 
 msgid "Index remaining feeds"
-msgstr "فهرسة الموجزات المتبقية"
+msgstr "فهرسة الخلاصات المتبقية"
 
 msgid "Indexing your feeds for search"
 msgstr "جارٍ فهرسة خلاصاتك للبحث"
@@ -3851,10 +3851,10 @@ msgid "Indexing..."
 msgstr "جارٍ الفهرسة..."
 
 msgid "Infrequent Site Stories"
-msgstr "مقالات المواقع غير المتكررة"
+msgstr "قصص المواقع قليلة التحديث"
 
 msgid "Infrequent stories per month"
-msgstr "القصص قليلة التكرار شهريًا"
+msgstr "حد القصص الشهري للمواقع قليلة التحديث"
 
 msgid "Insta-fetch stories"
 msgstr "جلب القصص فورًا"
@@ -3929,7 +3929,7 @@ msgid "Just the headlines, no commentary"
 msgstr "العناوين فقط، بلا تعليق"
 
 msgid "Keep others unread"
-msgstr "إبقاء المقالات الأخرى غير مقروءة"
+msgstr "إبقاء القصص الأخرى غير مقروءة"
 
 msgid "Keep read status"
 msgstr "الإبقاء على حالة القراءة"
@@ -4030,7 +4030,7 @@ msgid "Link directly to the original story"
 msgstr "الربط مباشرةً بالقصة الأصلية"
 
 msgid "Link to my blurblog and shared comments"
-msgstr "رابط إلى مدونة blurblog الخاصة بي والتعليقات التي شاركتها"
+msgstr "رابط إلى مدونتي على Blurblog والتعليقات التي شاركتها"
 
 msgid "List"
 msgstr "قائمة"
@@ -4054,10 +4054,10 @@ msgid "Loading classifiers..."
 msgstr "جارٍ تحميل المصنّفات..."
 
 msgid "Loading feeds..."
-msgstr "جارٍ تحميل الموجزات..."
+msgstr "جارٍ تحميل الخلاصات..."
 
 msgid "Loading more briefings..."
-msgstr "جارٍ تحميل المزيد من الإحاطات..."
+msgstr "جارٍ تحميل المزيد من الموجزات..."
 
 msgid "Loading your blocklist settings..."
 msgstr "جارٍ تحميل إعدادات قائمة الحظر..."
@@ -4084,7 +4084,7 @@ msgid "Long Reads"
 msgstr "قراءات طويلة"
 
 msgid "Long Reads on NewsBlur"
-msgstr "قراءات مطوّلة على NewsBlur"
+msgstr "قراءات طويلة على NewsBlur"
 
 msgid "Long reads for later"
 msgstr "مقالات طويلة لقراءتها لاحقًا"
@@ -4096,7 +4096,7 @@ msgid "MCP Server"
 msgstr "خادم MCP"
 
 msgid "MCP server access requires Premium Archive or Premium Pro."
-msgstr "يتطلب الوصول إلى خادم MCP أرشيف Premium أو Premium Pro."
+msgstr "يتطلب الوصول إلى خادم MCP اشتراك Premium Archive أو Premium Pro."
 
 msgid "Magazine"
 msgstr "مجلة"
@@ -4165,7 +4165,7 @@ msgid "Mark a story as read"
 msgstr "وضع علامة «مقروءة» على قصة"
 
 msgid "Mark above stories read"
-msgstr "وضع علامة مقروء على المقالات أعلاه"
+msgstr "وضع علامة «مقروءة» على القصص أعلاه"
 
 msgid "Mark all as read"
 msgstr "وضع علامة مقروء على الكل"
@@ -4176,12 +4176,12 @@ msgstr "هل تريد وضع علامة «مقروء» على الكل؟"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "وضع علامة «مقروءة» على كل المقالات الأقدم من <b>%(value_1)s يوم</b>"
+msgstr[0] "وضع علامة «مقروءة» على كل القصص الأقدم من <b>%(value_1)s يوم</b>"
 msgstr[1] "وضع علامة «مقروء» على كل القصص الأقدم من <b>%(value_1)s يوم</b>"
-msgstr[2] "وضع علامة «مقروءة» على كل المقالات الأقدم من <b>%(value_1)s يوم</b>"
-msgstr[3] "وضع علامة «مقروءة» على كل المقالات الأقدم من <b>%(value_1)s أيام</b>"
-msgstr[4] "وضع علامة «مقروءة» على كل المقالات الأقدم من <b>%(value_1)s يومًا</b>"
-msgstr[5] "وضع علامة «مقروءة» على كل المقالات الأقدم من <b>%(value_1)s يوم</b>"
+msgstr[2] "وضع علامة «مقروءة» على كل القصص الأقدم من <b>%(value_1)s يومين</b>"
+msgstr[3] "وضع علامة «مقروءة» على كل القصص الأقدم من <b>%(value_1)s أيام</b>"
+msgstr[4] "وضع علامة «مقروءة» على كل القصص الأقدم من <b>%(value_1)s يومًا</b>"
+msgstr[5] "وضع علامة «مقروءة» على كل القصص الأقدم من <b>%(value_1)s يوم</b>"
 
 msgid "Mark as read"
 msgstr "وضع علامة «مقروء»"
@@ -4232,12 +4232,12 @@ msgstr "وضع علامة «غير مقروءة» على القصص"
 #, python-format
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
-msgstr[0] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s أيام</b>"
+msgstr[0] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يوم</b>"
 msgstr[1] "وضع علامة «غير مقروء» على قصص آخر <b>%(value_1)s يوم</b>"
-msgstr[2] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s أيام</b>"
+msgstr[2] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يومين</b>"
 msgstr[3] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s أيام</b>"
-msgstr[4] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s أيام</b>"
-msgstr[5] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s أيام</b>"
+msgstr[4] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يومًا</b>"
+msgstr[5] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يوم</b>"
 
 msgid "Mark stories read on scroll"
 msgstr "تحديد القصص كمقروءة عند التمرير"
@@ -4293,7 +4293,7 @@ msgstr "دمج"
 msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "دمج %(count)s فئة في:"
-msgstr[1] "دمج فئة %(count)s في:"
+msgstr[1] "دمج %(count)s فئة في:"
 msgstr[2] "دمج %(count)s فئتين في:"
 msgstr[3] "دمج %(count)s فئات في:"
 msgstr[4] "دمج %(count)s فئة في:"
@@ -4370,7 +4370,7 @@ msgstr "نقل"
 msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "نقل %(count)s موقع"
-msgstr[1] "نقل موقع %(count)s"
+msgstr[1] "نقل %(count)s موقع"
 msgstr[2] "نقل %(count)s موقعين"
 msgstr[3] "نقل %(count)s مواقع"
 msgstr[4] "نقل %(count)s موقعًا"
@@ -4409,7 +4409,7 @@ msgid "Mute for %(duration)s"
 msgstr "كتم لمدة %(duration)s"
 
 msgid "Mute indefinitely"
-msgstr "كتم الصوت إلى أجل غير مسمى"
+msgstr "الكتم إلى أجل غير مسمى"
 
 msgid "Mute sites"
 msgstr "كتم المواقع"
@@ -4428,7 +4428,7 @@ msgid "Muted · unmutes in %(time)s"
 msgstr "تم الكتم · سيُلغى الكتم خلال %(time)s"
 
 msgid "Muted · unmuting soon"
-msgstr "تم كتمه · ستتم إعادة الصوت قريبًا"
+msgstr "تم الكتم · سيُلغى الكتم قريبًا"
 
 msgid "My shared stories are public and anybody can reply to me"
 msgstr "قصصي المشتركة عامة ويمكن لأي شخص الرد عليّ"
@@ -4467,7 +4467,7 @@ msgid "Nature"
 msgstr "الطبيعة"
 
 msgid "Navigate between stories"
-msgstr "التنقل بين المقالات"
+msgstr "التنقل بين القصص"
 
 msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
@@ -4523,7 +4523,7 @@ msgid "New password"
 msgstr "كلمة المرور الجديدة"
 
 msgid "New posts from feeds you recently read"
-msgstr "منشورات جديدة من الموجزات التي قرأتها مؤخرًا"
+msgstr "منشورات جديدة من الخلاصات التي قرأتها مؤخرًا"
 
 msgid "New tag name"
 msgstr "اسم الوسم الجديد"
@@ -4532,7 +4532,7 @@ msgid "New to me"
 msgstr "جديد بالنسبة إليّ"
 
 msgid "Newer:"
-msgstr "الأحدث:"
+msgstr "بعد تاريخ:"
 
 msgid "Newest"
 msgstr "الأحدث"
@@ -4541,14 +4541,14 @@ msgid "Newest first"
 msgstr "الأحدث أولًا"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "يتحقق NewsBlur من وجود تحديثات ويضيف القصص الجديدة إلى موجزك."
+msgstr "يتحقق NewsBlur من وجود تحديثات ويضيف القصص الجديدة إلى خلاصتك."
 
 msgid "NewsBlur connected to other services"
 msgstr "يتصل NewsBlur بخدمات أخرى"
 
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
-msgstr "اكتشف NewsBlur %(language)s من متصفحك."
+msgstr "اكتشف NewsBlur أن لغة متصفحك هي %(language)s."
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur متوقف حاليًا. <br> حاول مرة أخرى قريبًا."
@@ -4563,7 +4563,7 @@ msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur على iOS بكامل الميزات"
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
-msgstr "سيعثر NewsBlur تلقائيًا على موجز RSS لهذا الموقع."
+msgstr "سيعثر NewsBlur تلقائيًا على خلاصة RSS لهذا الموقع."
 
 msgid "Newsletter"
 msgstr "النشرة الإخبارية"
@@ -4575,10 +4575,10 @@ msgid "Newsletters & Substack"
 msgstr "النشرات البريدية وSubstack"
 
 msgid "Newsletters appearing as feeds"
-msgstr "ظهور النشرات الإخبارية كموجزات"
+msgstr "ظهور النشرات الإخبارية كخلاصات"
 
 msgid "Next Unread Story"
-msgstr "المقالة التالية غير المقروءة"
+msgstr "القصة التالية غير المقروءة"
 
 msgid "Next Update"
 msgstr "التحديث التالي"
@@ -4611,7 +4611,7 @@ msgid "No archives match your filters"
 msgstr "لا توجد أرشيفات تطابق عوامل التصفية"
 
 msgid "No briefings yet."
-msgstr "لا توجد ملخصات بعد."
+msgstr "لا توجد موجزات بعد."
 
 msgid "No categories available. Categories will appear here once they are configured."
 msgstr "لا تتوفر فئات. ستظهر الفئات هنا بعد إعدادها."
@@ -4635,7 +4635,7 @@ msgid "No feeds found"
 msgstr "لم يتم العثور على خلاصات"
 
 msgid "No feeds found in this category."
-msgstr "لم يتم العثور على موجزات في هذه الفئة."
+msgstr "لم يتم العثور على خلاصات في هذه الفئة."
 
 msgid "No gifts sent yet."
 msgstr "لم تُرسل أي هدايا بعد."
@@ -4663,7 +4663,7 @@ msgid "No match in author"
 msgstr "لا توجد مطابقة في الكاتب"
 
 msgid "No match in story"
-msgstr "لا توجد مطابقة في المقالة"
+msgstr "لا توجد مطابقة في القصة"
 
 msgid "No match in title"
 msgstr "لا توجد مطابقة في العنوان"
@@ -4715,7 +4715,7 @@ msgid "No results found, but you can subscribe directly if you know the subreddi
 msgstr "لم يُعثر على نتائج، ولكن يمكنك الاشتراك مباشرةً إذا كنت تعرف اسم المنتدى الفرعي."
 
 msgid "No similar stories found"
-msgstr "لم يُعثر على مقالات مشابهة"
+msgstr "لم يُعثر على قصص مشابهة"
 
 msgid "No sites available"
 msgstr "لا توجد مواقع متاحة"
@@ -4743,11 +4743,11 @@ msgstr "لم تتم فهرسة أي قصص من %(folder)s حتى الآن لل�
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
 msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
 msgstr[0] "لم تتم فهرسة أي قصص من موقعك وعدده %(count)s بعدُ للعثور على قصص ذات صلة."
-msgstr[1] "لم تُفهرس بعد أي قصص من موقعك %(count)s للعثور على القصص ذات الصلة."
+msgstr[1] "لم تُفهرس بعد أي قصص من %(count)s موقع لديك للعثور على القصص ذات الصلة."
 msgstr[2] "لم تتم فهرسة أي قصص من موقعيك وعددهما %(count)s بعدُ للعثور على قصص ذات صلة."
 msgstr[3] "لم تتم فهرسة أي قصص من مواقعك وعددها %(count)s بعدُ للعثور على قصص ذات صلة."
 msgstr[4] "لم تُفهرس بعد أي قصص من %(count)s موقعًا من مواقعك للقصص ذات الصلة."
-msgstr[5] "لم تُفهرس بعد أي قصص من %(count)s موقعًا من مواقعك للقصص ذات الصلة."
+msgstr[5] "لم تُفهرس بعد أي قصص من %(count)s موقع من مواقعك للقصص ذات الصلة."
 
 msgid "No stories published last month"
 msgstr "لم تُنشر أي قصص الشهر الماضي"
@@ -4807,7 +4807,7 @@ msgid "Not now"
 msgstr "ليس الآن"
 
 msgid "Not redeemed in 90 days?"
-msgstr "لم تستردّه خلال ٩٠ يومًا؟"
+msgstr "لم يُستردّ خلال 90 يومًا؟"
 
 msgid "Not seeing the right stories?"
 msgstr "ألا تظهر لك القصص المناسبة؟"
@@ -4831,7 +4831,7 @@ msgid "Notifications"
 msgstr "الإشعارات"
 
 msgid "Notifications on trained intelligence classifiers"
-msgstr "إشعارات بشأن المصنّفات المدرّبة للذكاء"
+msgstr "إشعارات حسب مصنّفات الذكاء المدرّبة"
 
 #, python-format
 msgid "Notifications require %(tier_link)s"
@@ -4844,7 +4844,7 @@ msgid "Notify on match"
 msgstr "الإشعار عند التطابق"
 
 msgid "Notify on match. Premium Archive required"
-msgstr "أرسل إشعارًا عند التطابق. يتطلب الأرشيف المميز"
+msgstr "أرسل إشعارًا عند التطابق. يتطلب اشتراك Premium Archive"
 
 msgid "November"
 msgstr "نوفمبر"
@@ -4853,16 +4853,16 @@ msgid "Now"
 msgstr "الآن"
 
 msgid "Number of stories to include in each briefing"
-msgstr "عدد المقالات التي تُضمّن في كل ملخص"
+msgstr "عدد القصص التي يتضمنها كل موجز"
 
 msgid "Numbers & Symbols"
 msgstr "الأرقام والرموز"
 
 msgid "OFF"
-msgstr "إيقاف"
+msgstr "معطّل"
 
 msgid "ON"
-msgstr "تشغيل"
+msgstr "مفعّل"
 
 msgid "Objects"
 msgstr "كائنات"
@@ -4871,7 +4871,7 @@ msgid "October"
 msgstr "أكتوبر"
 
 msgid "Off"
-msgstr "إيقاف"
+msgstr "معطّل"
 
 msgid "Official NewsBlur Android App"
 msgstr "تطبيق Android الرسمي من NewsBlur"
@@ -4896,7 +4896,7 @@ msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "أقدم من: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
-msgstr "الأقدم:"
+msgstr "قبل تاريخ:"
 
 msgid "Oldest"
 msgstr "الأقدم"
@@ -4905,10 +4905,10 @@ msgid "Oldest first"
 msgstr "الأقدم أولًا"
 
 msgid "Oldest unread story"
-msgstr "أقدم مقال غير مقروء"
+msgstr "أقدم قصة غير مقروءة"
 
 msgid "On"
-msgstr "تشغيل"
+msgstr "مفعّل"
 
 msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
 msgstr "في Premium Archive، يشمل البحث كل قصة أُرشفت على الإطلاق، وليس القصص الحديثة فقط."
@@ -4923,13 +4923,13 @@ msgid "One sentence"
 msgstr "جملة واحدة"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
-msgstr "اشترك بنقرة واحدة في أي موقع لديه موجز. استخدم رابط إضافة موقع مخصص من علامة تبويب الإضافات."
+msgstr "اشترك بنقرة واحدة في أي موقع لديه خلاصة. استخدم رابط إضافة موقع مخصص من علامة تبويب الإضافات."
 
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
 msgstr[0] "فُهرس %(indexed)s فقط من أصل %(count)s من مواقعك للعثور على القصص ذات الصلة."
-msgstr[1] "تمت فهرسة %(indexed)s فقط من موقعك %(count)s للقصص ذات الصلة."
+msgstr[1] "تمت فهرسة %(indexed)s فقط من أصل %(count)s موقع لديك للقصص ذات الصلة."
 msgstr[2] "فُهرس %(indexed)s فقط من أصل %(count)s من مواقعك للعثور على القصص ذات الصلة."
 msgstr[3] "فُهرس %(indexed)s فقط من أصل %(count)s من مواقعك للعثور على القصص ذات الصلة."
 msgstr[4] "لم تتم فهرسة سوى %(indexed)s من أصل %(count)s من مواقعك للقصص ذات الصلة."
@@ -4962,10 +4962,10 @@ msgstr[5] ""
 "توصيات مخصصة."
 
 msgid "Only Focus:"
-msgstr "التركيز على:"
+msgstr "التركيز فقط:"
 
 msgid "Only page down in story, do not open next unread story"
-msgstr "انتقل لأسفل داخل المقالة فقط، ولا تفتح المقالة التالية غير المقروءة"
+msgstr "انتقل لأسفل داخل القصة فقط، ولا تفتح القصة التالية غير المقروءة"
 
 msgid "Only people I approve can see my shared stories and reply to me"
 msgstr "لا يمكن سوى للأشخاص الذين أوافق عليهم رؤية قصصي المشتركة والرد عليّ"
@@ -5003,13 +5003,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "إظهار الأعداد في المجلدات المطوية فقط"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "اقتصر على اقتطاع القصص الطويلة المشتركة في blurblogs"
+msgstr "اقتصر على اقتطاع القصص الطويلة المشتركة في مدونات Blurblog"
 
 msgid "Open"
 msgstr "فتح"
 
 msgid "Open All Site Stories"
-msgstr "فتح كل قصص الموقع"
+msgstr "فتح قصص كل المواقع"
 
 msgid "Open Everything"
 msgstr "فتح الكل"
@@ -5018,7 +5018,7 @@ msgid "Open Site"
 msgstr "فتح الموقع"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
-msgstr "افتح عنوان أي مجلد لقراءة جميع موجزاته دفعة واحدة. «كل قصص المواقع» هو مجرى كل الأخبار."
+msgstr "افتح عنوان أي مجلد لقراءة جميع خلاصاته دفعة واحدة. «كل قصص المواقع» هو مجرى كل الأخبار."
 
 msgid "Open clustering preferences"
 msgstr "فتح تفضيلات التجميع"
@@ -5054,7 +5054,7 @@ msgid "Open preferences"
 msgstr "فتح التفضيلات"
 
 msgid "Open site/feed trainer"
-msgstr "فتح الموقع/مدرّب الخلاصات"
+msgstr "فتح مدرّب الموقع/الخلاصة"
 
 msgid "Open story trainer"
 msgstr "فتح مدرّب القصص"
@@ -5063,7 +5063,7 @@ msgid "Open the Intelligence Trainer"
 msgstr "افتح مدرّب الذكاء"
 
 msgid "Open the feed and story title menu"
-msgstr "افتح قائمة الخلاصة وعنوان المقال"
+msgstr "افتح قائمة الخلاصة وعنوان القصة"
 
 msgid "Open the first story"
 msgstr "افتح القصة الأولى"
@@ -5078,13 +5078,13 @@ msgid "Open the site in a new window and mark it as read"
 msgstr "افتح الموقع في نافذة جديدة وعلّمه كمقروء"
 
 msgid "Open the trainer for any feed"
-msgstr "افتح أداة التدريب لأي موجز"
+msgstr "افتح أداة التدريب لأي خلاصة"
 
 msgid "Open this story in NewsBlur"
-msgstr "افتح هذا المقال في NewsBlur"
+msgstr "افتح هذه القصة في NewsBlur"
 
 msgid "Open your Daily Briefing"
-msgstr "افتح الإحاطة اليومية"
+msgstr "افتح الموجز اليومي"
 
 msgid "Open your saved stories"
 msgstr "افتح قصصك المحفوظة"
@@ -5149,19 +5149,19 @@ msgid "Page up"
 msgstr "الصفحة للأعلى"
 
 msgid "Pages are re-checked on a configurable schedule and diffed for new content."
-msgstr "تُعاد فحص الصفحات وفق جدول زمني قابل للضبط، وتُقارن لاكتشاف المحتوى الجديد."
+msgstr "يُعاد فحص الصفحات وفق جدول زمني قابل للضبط، وتُقارن لاكتشاف المحتوى الجديد."
 
 msgid "Paired with full-text search, the archive doubles as a personal knowledge base."
 msgstr "وبالاقتران مع البحث في النص الكامل، يصبح الأرشيف قاعدة معرفة شخصية."
 
 msgid "Parse this RSS/XML Feed"
-msgstr "تحليل موجز RSS/XML هذا"
+msgstr "تحليل خلاصة RSS/XML هذه"
 
 msgid "Parsing..."
 msgstr "جارٍ التحليل..."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
-msgstr "ألصق أي رابط، وسيُنشئ NewsBlur موجزًا من الصفحة حتى دون RSS."
+msgstr "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة حتى دون RSS."
 
 msgid "Paste any URL into the \"Add Site\" dialog"
 msgstr "الصق أي رابط في مربع الحوار «إضافة موقع»"
@@ -5201,7 +5201,7 @@ msgid "Per Site"
 msgstr "حسب الموقع"
 
 msgid "Per-feed notification settings"
-msgstr "إعدادات الإشعارات لكل موجز"
+msgstr "إعدادات الإشعارات لكل خلاصة"
 
 msgid "Pick a tier & pay."
 msgstr "اختر الباقة وادفع."
@@ -5216,10 +5216,10 @@ msgid "Platform"
 msgstr "المنصة"
 
 msgid "Play Last"
-msgstr "تشغيل الأخير"
+msgstr "التشغيل في آخر القائمة"
 
 msgid "Play Next"
-msgstr "تشغيل التالي"
+msgstr "التشغيل تاليًا"
 
 msgid "Play in Mini Media Player"
 msgstr "التشغيل في مشغل الوسائط المصغر"
@@ -5303,10 +5303,10 @@ msgid "Preferences"
 msgstr "التفضيلات"
 
 msgid "Premium"
-msgstr "مميز"
+msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "أرشيف Premium"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -5318,33 +5318,33 @@ msgid "Premium Subscription"
 msgstr "اشتراك Premium"
 
 msgid "Premium Trial"
-msgstr "تجربة بريميوم"
+msgstr "تجربة Premium"
 
 #, python-format
 msgid "Premium Trial (%(count)s day)"
 msgid_plural "Premium Trial (%(count)s days)"
-msgstr[0] "تجربة مميزة (%(count)s يومًا)"
-msgstr[1] "الفترة التجريبية المميزة (%(count)s يوم)"
-msgstr[2] "تجربة مميزة لمدة يومين (%(count)s)"
-msgstr[3] "تجربة مميزة لمدة %(count)s أيام"
-msgstr[4] "تجربة مميزة لمدة %(count)s يومًا"
-msgstr[5] "تجربة مميزة لمدة %(count)s يوم"
+msgstr[0] "تجربة Premium (%(count)s يوم)"
+msgstr[1] "تجربة Premium (%(count)s يوم)"
+msgstr[2] "تجربة Premium (%(count)s يومان)"
+msgstr[3] "تجربة Premium (%(count)s أيام)"
+msgstr[4] "تجربة Premium (%(count)s يومًا)"
+msgstr[5] "تجربة Premium (%(count)s يوم)"
 
 msgid "Premium details"
 msgstr "تفاصيل Premium"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
-msgstr "الخطوط المميزة تتطلب %(link_start)sحسابًا مميزًا%(link_end)s"
+msgstr "خطوط Premium تتطلب %(link_start)sحساب Premium%(link_end)s"
 
 msgid "Premium renewal"
-msgstr "تجديد الاشتراك المميز"
+msgstr "تجديد اشتراك Premium"
 
 msgid "Premium renewal: "
-msgstr "تجديد الاشتراك المميز: "
+msgstr "تجديد اشتراك Premium: "
 
 msgid "Premium status"
-msgstr "حالة الاشتراك المميز"
+msgstr "حالة اشتراك Premium"
 
 msgid "Premium users can make their blurblog private."
 msgstr "يمكن لمستخدمي Premium جعل مدونة blurblog الخاصة بهم خاصة."
@@ -5375,7 +5375,7 @@ msgstr "القصة السابقة"
 
 #, python-format
 msgid "Previously Recommended on: %(date)s"
-msgstr "سبق أن أوصى به: %(date)s"
+msgstr "سبقت التوصية به في: %(date)s"
 
 msgid "Print"
 msgstr "طباعة"
@@ -5387,7 +5387,7 @@ msgid "Privacy"
 msgstr "الخصوصية"
 
 msgid "Privacy options for your blurblog"
-msgstr "خيارات الخصوصية لمدونتك المجمّعة"
+msgstr "خيارات الخصوصية لمدونتك على Blurblog"
 
 msgid "Private by default — banking, medical, and email sites are never archived"
 msgstr "الخصوصية افتراضيًا — لا تُؤرشف أبدًا مواقع الخدمات المصرفية والطبية والبريد الإلكتروني"
@@ -5399,10 +5399,10 @@ msgid "Private:"
 msgstr "خاص:"
 
 msgid "Pro"
-msgstr "احترافي"
+msgstr "Pro"
 
 msgid "Processing stories..."
-msgstr "جارٍ معالجة الأخبار..."
+msgstr "جارٍ معالجة القصص..."
 
 msgid "Processing..."
 msgstr "جارٍ المعالجة..."
@@ -5411,7 +5411,7 @@ msgid "Profile"
 msgstr "الملف الشخصي"
 
 msgid "Profile &amp; Blurblog"
-msgstr "مدونة Blurblog الخاصة بـ &amp;"
+msgstr "الملف الشخصي &amp; Blurblog"
 
 msgid "Profile Details"
 msgstr "تفاصيل الملف الشخصي"
@@ -5426,7 +5426,7 @@ msgid "Protected:"
 msgstr "محمي:"
 
 msgid "Public blurblog sharing"
-msgstr "مشاركة المدونة الضبابية علنًا"
+msgstr "مشاركة علنية عبر Blurblog"
 
 msgid "Public comments"
 msgstr "التعليقات العامة"
@@ -5465,8 +5465,8 @@ msgid "Queued %(count)s story for categorization. Categories will appear as stor
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] "تمت إضافة %(count)s قصة إلى قائمة انتظار التصنيف. ستظهر الفئات أثناء معالجة القصص."
 msgstr[1] "تمت إضافة %(count)s قصة إلى قائمة انتظار التصنيف. ستظهر الفئات عند معالجة القصص."
-msgstr[2] "تم وضع %(count)s قصة في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
-msgstr[3] "تم وضع %(count)s قصة في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
+msgstr[2] "تم وضع %(count)s قصتين في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
+msgstr[3] "تم وضع %(count)s قصص في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
 msgstr[4] "تم وضع %(count)s قصة في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
 msgstr[5] "تم وضع %(count)s قصة في قائمة الانتظار لتصنيفها. ستظهر الفئات أثناء معالجة القصص."
 
@@ -5480,7 +5480,7 @@ msgid "Quote"
 msgstr "اقتباس"
 
 msgid "RSS Feed"
-msgstr "موجز RSS"
+msgstr "خلاصة RSS"
 
 #, python-format
 msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
@@ -5488,7 +5488,7 @@ msgstr "خلاصات RSS للمجلدات ميزة %(link_start)sمدفوعة%(l
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "خلاصات RSS لوسوم القصص المحفوظة هي ميزة %(link_start)sمميزة%(link_end)s."
+msgstr "خلاصات RSS لوسوم القصص المحفوظة هي ميزة %(link_start)sمدفوعة%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "عنوان URL لـ RSS/XML: "
@@ -5515,7 +5515,7 @@ msgid "Re-categorizing..."
 msgstr "جارٍ إعادة التصنيف..."
 
 msgid "Read Stories"
-msgstr "قراءة القصص"
+msgstr "القصص المقروءة"
 
 msgid "Read Stories:"
 msgstr "القصص المقروءة:"
@@ -5524,8 +5524,8 @@ msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
 msgstr ""
-"اقرأ جميع خلاصات مجلد واحد ضمن تدفق قابل للتمرير، بترتيب زمني. وبالاقتران مع التدريب، يُظهر لك نهر الأخبار "
-"أفضل القصص من اشتراكاتك."
+"اقرأ جميع خلاصات مجلد واحد ضمن تدفق قابل للتمرير، بترتيب زمني. وبالاقتران مع التدريب، يُظهر لك تدفّق "
+"الأخبار أفضل القصص من اشتراكاتك."
 
 msgid "Read more on the NewsBlur Blog"
 msgstr "اقرأ المزيد في مدونة NewsBlur"
@@ -5534,16 +5534,16 @@ msgid "Read offline with automatic background refresh"
 msgstr "اقرأ دون اتصال بالإنترنت مع تحديث تلقائي في الخلفية"
 
 msgid "Read on scroll"
-msgstr "القراءة أثناء التمرير"
+msgstr "تعليم كمقروءة عند التمرير"
 
 msgid "Read stories by folder"
-msgstr "اقرأ المقالات حسب المجلد"
+msgstr "اقرأ القصص حسب المجلد"
 
 msgid "Read the whole story"
 msgstr "اقرأ القصة كاملة"
 
 msgid "Read unread stories with: newsblur stories list"
-msgstr "لقراءة القصص غير المقروءة باستخدام: newsblur stories list"
+msgstr "اقرأ القصص غير المقروءة باستخدام: newsblur stories list"
 
 msgid "Read your email newsletters in your news reader, not your inbox."
 msgstr "اقرأ نشراتك البريدية في قارئ الأخبار، لا في صندوق الوارد."
@@ -5559,7 +5559,7 @@ msgstr "جارٍ قراءة المقال..."
 
 #, python-format
 msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
-msgstr "قراءة القصص المحفوظة حسب الوسم هي %(link_start)sميزة مميزة%(link_end)s."
+msgstr "قراءة القصص المحفوظة حسب الوسم هي %(link_start)sميزة مدفوعة%(link_end)s."
 
 msgid "Reading saved story..."
 msgstr "جارٍ قراءة القصة المحفوظة..."
@@ -5619,7 +5619,7 @@ msgid "Refer"
 msgstr "إحالة"
 
 msgid "Refer &amp; Gift"
-msgstr "أحِل &amp; هدية"
+msgstr "إحالة &amp; هدية"
 
 msgid "Referral History"
 msgstr "سجل الإحالات"
@@ -5638,7 +5638,7 @@ msgid "Refunded $%(amount)s"
 msgstr "تم ردّ $%(amount)s"
 
 msgid "Regenerate Briefing"
-msgstr "إنشاء ملخص جديد"
+msgstr "إعادة إنشاء الموجز"
 
 msgid "Regex"
 msgstr "تعبير نمطي"
@@ -5654,7 +5654,7 @@ msgid "Related Sites"
 msgstr "مواقع ذات صلة"
 
 msgid "Related stories are only available for premium subscribers."
-msgstr "القصص ذات الصلة متاحة للمشتركين المميزين فقط."
+msgstr "القصص ذات الصلة متاحة لمشتركي Premium فقط."
 
 msgid "Reload NewsBlur"
 msgstr "إعادة تحميل NewsBlur"
@@ -5702,12 +5702,12 @@ msgstr "تمت إعادة التسمية"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "تم تغيير اسم %(count)s قصة إلى \"%(category)s\""
-msgstr[1] "تمت إعادة تسمية %(count)s قصة إلى \"%(category)s\""
-msgstr[2] "تم تغيير اسم %(count)s قصتين إلى \"%(category)s\""
-msgstr[3] "تمت إعادة تسمية %(count)s قصص إلى \"%(category)s\""
-msgstr[4] "تمت إعادة تسمية %(count)s قصة إلى \"%(category)s\""
-msgstr[5] "تمت إعادة تسمية %(count)s قصة إلى \"%(category)s\""
+msgstr[0] "تغيّرت فئة %(count)s قصة إلى \"%(category)s\""
+msgstr[1] "تغيّرت فئة %(count)s قصة إلى \"%(category)s\""
+msgstr[2] "تغيّرت فئة %(count)s قصتين إلى \"%(category)s\""
+msgstr[3] "تغيّرت فئة %(count)s قصص إلى \"%(category)s\""
+msgstr[4] "تغيّرت فئة %(count)s قصة إلى \"%(category)s\""
+msgstr[5] "تغيّرت فئة %(count)s قصة إلى \"%(category)s\""
 
 msgid "Renaming..."
 msgstr "جارٍ إعادة التسمية..."
@@ -5722,7 +5722,7 @@ msgid "Request timed out. The AI service took too long to respond. Please try ag
 msgstr "انتهت مهلة الطلب. استغرقت خدمة الذكاء الاصطناعي وقتًا طويلًا للرد. يُرجى المحاولة مرة أخرى."
 
 msgid "Requested"
-msgstr "مطلوب"
+msgstr "تم الطلب"
 
 msgid "Requests to Follow You"
 msgstr "طلبات متابعتك"
@@ -5732,7 +5732,7 @@ msgid "Requires %(tier_link)s"
 msgstr "يتطلب %(tier_link)s"
 
 msgid "Requires Premium Archive"
-msgstr "يتطلب أرشيف Premium"
+msgstr "يتطلب Premium Archive"
 
 msgid "Reset"
 msgstr "إعادة تعيين"
@@ -5846,7 +5846,7 @@ msgid "Save My Account"
 msgstr "حفظ حسابي"
 
 msgid "Save My Blurblog Settings"
-msgstr "حفظ إعدادات مدونتي المجمّعة"
+msgstr "حفظ إعدادات Blurblog"
 
 msgid "Save My Profile"
 msgstr "حفظ ملفي الشخصي"
@@ -5858,7 +5858,7 @@ msgid "Save Search"
 msgstr "حفظ البحث"
 
 msgid "Save a search as a feed and it keeps collecting matches in your sidebar."
-msgstr "احفظ عملية بحث كموجز، وسيواصل جمع النتائج المطابقة في الشريط الجانبي."
+msgstr "احفظ عملية بحث كخلاصة، وستواصل جمع النتائج المطابقة في الشريط الجانبي."
 
 msgid "Save any story with one click or the s key"
 msgstr "احفظ أي قصة بنقرة واحدة أو بالضغط على مفتاح s"
@@ -5870,10 +5870,10 @@ msgid "Save my profile"
 msgstr "حفظ ملفي الشخصي"
 
 msgid "Save searches as feeds for ongoing monitoring"
-msgstr "احفظ عمليات البحث كموجزات لمتابعتها باستمرار"
+msgstr "احفظ عمليات البحث كخلاصات لمتابعتها باستمرار"
 
 msgid "Save stories for later"
-msgstr "احفظ المقالات لقراءتها لاحقًا"
+msgstr "احفظ القصص لقراءتها لاحقًا"
 
 msgid ""
 "Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
@@ -5881,7 +5881,7 @@ msgid ""
 msgstr "احفظ القصص لقراءتها لاحقًا ونظّمها باستخدام وسوم مخصصة. مكتبتك الشخصية للقصاصات، قابلة للبحث والمشاركة."
 
 msgid "Save stories with searchable tags"
-msgstr "احفظ المقالات بوسوم قابلة للبحث"
+msgstr "احفظ القصص بوسوم قابلة للبحث"
 
 msgid "Save this story"
 msgstr "احفظ هذه القصة"
@@ -5928,7 +5928,7 @@ msgstr "حدّد موعد إنشاء موجزك"
 msgid ""
 "Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
 " you use the Generate button."
-msgstr "تتطلب الإحاطات المجدولة اشتراك Premium Archive. في باقتك، لا تُنشأ الإحاطات إلا عند استخدام زر «إنشاء»."
+msgstr "تتطلب الموجزات المجدولة اشتراك Premium Archive. في باقتك، لا تُنشأ الموجزات إلا عند استخدام زر «إنشاء»."
 
 msgid "Scheduled delivery (daily or twice daily)"
 msgstr "التسليم المجدول (يوميًا أو مرتين يوميًا)"
@@ -5938,20 +5938,20 @@ msgstr "علوم"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
-msgstr "المصنفات المحددة متاحة فقط لمشتركي %(plan)s."
+msgstr "المصنّفات ذات النطاق المخصص متاحة فقط لمشتركي %(plan)s."
 
 msgid "Scroll to comments"
 msgstr "انتقل إلى التعليقات"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "التمرير لأعلى/لأسفل داخل المقال بمقدار %(slider)s %(pixels)s بكسل."
+msgstr "التمرير لأعلى/لأسفل داخل القصة بمقدار %(slider)s %(pixels)s بكسل."
 
 msgid "Search"
 msgstr "بحث"
 
 msgid "Search All Site Stories"
-msgstr "البحث في جميع أخبار الموقع"
+msgstr "البحث في قصص كل المواقع"
 
 msgid "Search YouTube channels..."
 msgstr "ابحث عن قنوات YouTube..."
@@ -5960,7 +5960,7 @@ msgid "Search across all saved stories and tags"
 msgstr "ابحث في جميع القصص والوسوم المحفوظة"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
-msgstr "ابحث في جميع اشتراكاتك بنص كامل مدعوم من Elasticsearch."
+msgstr "ابحث في جميع اشتراكاتك باستخدام البحث في النص الكامل المدعوم بـ Elasticsearch."
 
 msgid "Search archives..."
 msgstr "البحث في الأرشيف..."
@@ -5975,7 +5975,7 @@ msgid "Search failed"
 msgstr "فشل البحث"
 
 msgid "Search feed"
-msgstr "البحث في الموجز"
+msgstr "البحث في الخلاصة"
 
 msgid "Search folder"
 msgstr "البحث في المجلد"
@@ -5985,13 +5985,13 @@ msgstr "ابحث عن أصدقاء"
 
 #, python-format
 msgid "Search is a %(link_start)spremium feature%(link_end)s."
-msgstr "البحث ميزة %(link_start)sمميزة%(link_end)s."
+msgstr "البحث ميزة %(link_start)sمدفوعة%(link_end)s."
 
 msgid "Search keywords"
 msgstr "كلمات البحث"
 
 msgid "Search newsletters or paste URL..."
-msgstr "ابحث في النشرات البريدية أو ألصق عنوان URL..."
+msgstr "ابحث في النشرات البريدية أو الصق عنوان URL..."
 
 msgid "Search podcasts (e.g., \"technology\", \"true crime\", \"comedy\")..."
 msgstr "ابحث في البودكاست (مثل \"التكنولوجيا\" و\"الجريمة الحقيقية\" و\"الكوميديا\")..."
@@ -6012,7 +6012,7 @@ msgid "Search the FAQ..."
 msgstr "ابحث في الأسئلة الشائعة..."
 
 msgid "Search within a single feed, a folder, or across everything"
-msgstr "ابحث ضمن موجز واحد أو مجلد أو في كل المحتوى"
+msgstr "ابحث ضمن خلاصة واحدة أو مجلد أو في كل المحتوى"
 
 msgid "Search your entire archive with full-text search"
 msgstr "ابحث في أرشيفك بالكامل باستخدام البحث في النص الكامل"
@@ -6029,7 +6029,7 @@ msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "جارٍ البحث في <b>%(feed_title)s</b> عن \"<b>%(query)s</b>\""
 
 msgid "Searching RSS feeds..."
-msgstr "جارٍ البحث عن موجزات RSS..."
+msgstr "جارٍ البحث عن خلاصات RSS..."
 
 msgid "Searching saved stories..."
 msgstr "جارٍ البحث في القصص المحفوظة..."
@@ -6088,7 +6088,7 @@ msgid "Select a folder"
 msgstr "اختر مجلدًا"
 
 msgid "Select a story to read"
-msgstr "اختر مقالة لقراءتها"
+msgstr "اختر قصة لقراءتها"
 
 msgid "Select any story and click \"Ask AI\""
 msgstr "حدّد أي قصة وانقر على «اسأل الذكاء الاصطناعي»"
@@ -6118,7 +6118,7 @@ msgid "Send"
 msgstr "إرسال"
 
 msgid "Send Story by Email"
-msgstr "إرسال المقالة بالبريد الإلكتروني"
+msgstr "إرسال القصة بالبريد الإلكتروني"
 
 msgid "Send me a copy of this email"
 msgstr "أرسل إليّ نسخة من هذا البريد الإلكتروني"
@@ -6167,24 +6167,24 @@ msgid "Share"
 msgstr "مشاركة"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
-msgstr "شارك قصة مع تعليق، وستُنشر على مدونتك المجمّعة، ويمكن متابعتها عبر RSS أو الويب."
+msgstr "شارك قصة مع تعليق، وستُنشر على مدونتك في Blurblog، ويمكن متابعتها عبر RSS أو الويب."
 
 msgid "Share on NewsBlur"
 msgstr "مشاركة على NewsBlur"
 
 msgid "Share stories"
-msgstr "مشاركة الأخبار"
+msgstr "مشاركة القصص"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
 "and sharing."
-msgstr "شارك القصص مع تعليقاتك على مدونتك العامة blurblog. تابع أصدقاءك لمعرفة ما يقرؤونه وما يشاركونه."
+msgstr "شارك القصص مع تعليقاتك على مدونتك العامة في Blurblog. تابع أصدقاءك لمعرفة ما يقرؤونه وما يشاركونه."
 
 msgid "Share the link."
 msgstr "شارك الرابط."
 
 msgid "Share this link. When someone signs up and subscribes to premium, you earn a free year."
-msgstr "شارك هذا الرابط. عندما يسجّل شخص ما ويشترك في الخدمة المميزة، ستحصل على سنة مجانية."
+msgstr "شارك هذا الرابط. عندما يسجّل شخص ما ويشترك في Premium، ستحصل على سنة مجانية."
 
 msgid "Share this story"
 msgstr "شارك هذه القصة"
@@ -6215,7 +6215,7 @@ msgstr[4] "شاركها %(count)s شخصًا"
 msgstr[5] "شاركها %(count)s شخص"
 
 msgid "Shared with NewsBlur.com"
-msgstr "تمت المشاركة مع NewsBlur.com"
+msgstr "تمت المشاركة عبر NewsBlur.com"
 
 msgid "Shared!"
 msgstr "تمت المشاركة!"
@@ -6249,22 +6249,22 @@ msgid "Show Folders"
 msgstr "إظهار المجلدات"
 
 msgid "Show Global Shared Stories"
-msgstr "إظهار القصص المشتركة العامة"
+msgstr "إظهار القصص المشتركة عالميًا"
 
 msgid "Show Good Reads"
-msgstr "إظهار المقالات الجيدة"
+msgstr "إظهار قراءات جيدة"
 
 msgid "Show Infrequent Site Stories"
 msgstr "إظهار قصص المواقع قليلة التحديث"
 
 msgid "Show Long Reads"
-msgstr "أظهر المقالات الطويلة"
+msgstr "إظهار القراءات الطويلة"
 
 msgid "Show Widely Read Stories"
-msgstr "عرض القصص واسعة الانتشار"
+msgstr "إظهار القصص الأكثر قراءة"
 
 msgid "Show a preview of the story"
-msgstr "عرض معاينة للمقال"
+msgstr "عرض معاينة للقصة"
 
 msgid "Show all animations"
 msgstr "إظهار كل الرسوم المتحركة"
@@ -6282,7 +6282,7 @@ msgid "Show confirmation only when marking folders as read"
 msgstr "إظهار التأكيد عند وضع علامة «مقروء» على المجلدات فقط"
 
 msgid "Show confirmation when marking feeds or folders as read"
-msgstr "إظهار رسالة تأكيد عند وضع علامة «مقروء» على الموجزات أو المجلدات"
+msgstr "إظهار رسالة تأكيد عند وضع علامة «مقروء» على الخلاصات أو المجلدات"
 
 msgid "Show discover sites popover above story titles"
 msgstr "عرض نافذة اكتشاف المواقع فوق عناوين القصص"
@@ -6337,7 +6337,7 @@ msgstr "عرض القصص الأقدم من <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "عرض القصص على <b>%(date)s</b>"
+msgstr "عرض القصص في <b>%(date)s</b>"
 
 msgid "Shows a toolbar button with your unread count"
 msgstr "يعرض زرًا في شريط الأدوات مع عدد العناصر غير المقروءة"
@@ -6400,7 +6400,7 @@ msgid "Skip this step "
 msgstr "تخطَّ هذه الخطوة "
 
 msgid "Small feeds with the fastest-growing subscriber base"
-msgstr "موجزات صغيرة ذات أسرع قاعدة مشتركين نموًا"
+msgstr "خلاصات صغيرة ذات أسرع قاعدة مشتركين نموًا"
 
 msgid "Small image thumbnail on the left"
 msgstr "صورة مصغّرة صغيرة على اليسار"
@@ -6426,10 +6426,10 @@ msgid "Sorry, nothing matches \"%(value_1)s\"."
 msgstr "عذرًا، لا شيء يطابق \"%(value_1)s\"."
 
 msgid "Sorry, the original story<br />could not be proxied."
-msgstr "عذرًا، تعذّر إنشاء وسيط للقصة الأصلية<br />."
+msgstr "عذرًا، تعذّر عرض القصة الأصلية<br />عبر الخادم الوسيط."
 
 msgid "Sorry, the story's text<br />could not be extracted."
-msgstr "عذرًا، تعذّر استخراج نص القصة<br />."
+msgstr "عذرًا، تعذّر استخراج<br />نص القصة."
 
 msgid "Sorry, there was a problem deleting feeds."
 msgstr "عذرًا، حدثت مشكلة أثناء حذف الخلاصات."
@@ -6459,7 +6459,7 @@ msgid "Sort By"
 msgstr "ترتيب حسب"
 
 msgid "Sort the river oldest-first or newest-first from the feed options popover."
-msgstr "رتّب نهر الأخبار من الأقدم إلى الأحدث أو العكس من قائمة خيارات الخلاصة المنبثقة."
+msgstr "رتّب تدفّق الأخبار من الأقدم إلى الأحدث أو العكس من قائمة خيارات الخلاصة المنبثقة."
 
 msgid "Sort, filter, and display options"
 msgstr "خيارات الترتيب والتصفية والعرض"
@@ -6468,7 +6468,7 @@ msgid "Source feeds"
 msgstr "الخلاصات المصدرية"
 
 msgid "Spacing between feeds and story titles"
-msgstr "المسافة بين الخلاصات وعناوين المقالات"
+msgstr "المسافة بين الخلاصات وعناوين القصص"
 
 msgid "Spanish"
 msgstr "الإسبانية"
@@ -6486,8 +6486,8 @@ msgstr "تقسيم"
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
 msgstr[0] "قسّم «%(category)s» (عددها %(count)s من القصص) إلى:"
-msgstr[1] "قسّم \"%(category)s\" (قصة واحدة %(count)s) إلى:"
-msgstr[2] "قسّم «%(category)s» (عددها %(count)s قصتان) إلى:"
+msgstr[1] "قسّم \"%(category)s\" (%(count)s قصة) إلى:"
+msgstr[2] "قسّم «%(category)s» (%(count)s قصتان) إلى:"
 msgstr[3] "قسّم «%(category)s» (عددها %(count)s قصص) إلى:"
 msgstr[4] "قسّم «%(category)s» (عددها %(count)s قصة) إلى:"
 msgstr[5] "قسّم «%(category)s» (عددها %(count)s قصة) إلى:"
@@ -6549,7 +6549,7 @@ msgid "Starting analysis..."
 msgstr "جارٍ بدء التحليل..."
 
 msgid "Starting briefing generation..."
-msgstr "جارٍ إنشاء الملخص..."
+msgstr "جارٍ بدء إنشاء الموجز..."
 
 msgid "Starting categorization..."
 msgstr "جارٍ بدء التصنيف..."
@@ -6598,7 +6598,7 @@ msgid "Stories can stay unread forever"
 msgstr "يمكن أن تظل القصص غير مقروءة إلى الأبد"
 
 msgid "Stories covered by 3+ feeds"
-msgstr "قصص تغطيها 3 موجزات أو أكثر"
+msgstr "قصص تغطيها 3 خلاصات أو أكثر"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
@@ -6615,7 +6615,7 @@ msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
 msgstr[0] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s يوم</b>"
 msgstr[1] "القصص التي تم تحديدها كمقروءة بعد <b>%(days)s يوم</b>"
-msgstr[2] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s يوم</b>"
+msgstr[2] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s يومين</b>"
 msgstr[3] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s أيام</b>"
 msgstr[4] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s يومًا</b>"
 msgstr[5] "قصص تم وضع علامة مقروء عليها عند <b>%(days)s يوم</b>"
@@ -6639,7 +6639,7 @@ msgid "Stories on %(date)s"
 msgstr "القصص في %(date)s"
 
 msgid "Stories per day"
-msgstr "المقالات يوميًا"
+msgstr "القصص يوميًا"
 
 msgid "Stories per month"
 msgstr "القصص شهريًا"
@@ -6648,7 +6648,7 @@ msgid "Stories readers finished, saved, and shared"
 msgstr "القصص التي أنهى القراء قراءتها وحفظوها وشاركوها"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "القصص التي حظيت بأكبر قدر من الاهتمام خلال NewsBlur."
+msgstr "القصص التي حظيت بأكبر قدر من الاهتمام عبر NewsBlur."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
 msgstr "لن يتم <b>أبدًا</b> وضع علامة «مقروء» على القصص تلقائيًا"
@@ -6657,7 +6657,7 @@ msgid "Stories will <b>never</b> be marked as read"
 msgstr "لن <b>يتم أبدًا</b> وضع علامة «مقروء» على القصص"
 
 msgid "Story"
-msgstr "خبر"
+msgstr "القصة"
 
 msgid "Story Archive"
 msgstr "أرشيف القصص"
@@ -6717,7 +6717,7 @@ msgid "Story side options placement"
 msgstr "موضع خيارات جانب القصة"
 
 msgid "Story title styling"
-msgstr "تنسيق عنوان المقالة"
+msgstr "تنسيق عنوان القصة"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "انقطع الاتصال. لم نتلقَّ أي استجابة خلال 10 ثوانٍ."
@@ -6738,7 +6738,7 @@ msgstr "اشتراك"
 msgid "Subscribe to %(count)s site"
 msgid_plural "Subscribe to %(count)s sites"
 msgstr[0] "اشترك في %(count)s موقع"
-msgstr[1] "اشترك في موقع %(count)s"
+msgstr[1] "اشترك في %(count)s موقع"
 msgstr[2] "اشترك في %(count)s موقعين"
 msgstr[3] "اشترك في %(count)s مواقع"
 msgstr[4] "اشترك في %(count)s موقعًا"
@@ -6753,13 +6753,13 @@ msgid "Subscribe to %(value_1)s"
 msgstr "اشترك في %(value_1)s"
 
 msgid "Subscribe to Google News feeds by topic or custom keywords."
-msgstr "اشترك في موجزات أخبار Google حسب الموضوع أو الكلمات المفتاحية المخصصة."
+msgstr "اشترك في خلاصات أخبار Google حسب الموضوع أو الكلمات المفتاحية المخصصة."
 
 msgid "Subscribe to Premium Archive"
-msgstr "اشترك في الأرشيف المميز"
+msgstr "اشترك في Premium Archive"
 
 msgid "Subscribe to YouTube channels and playlists as RSS feeds."
-msgstr "اشترك في قنوات YouTube وقوائم التشغيل كموجزات RSS."
+msgstr "اشترك في قنوات YouTube وقوائم التشغيل كخلاصات RSS."
 
 msgid "Subscribe to a new feed and its entire available history back-fills automatically."
 msgstr "اشترك في خلاصة جديدة، وسيُسترجع تلقائيًا سجلها المتاح بالكامل."
@@ -6768,7 +6768,7 @@ msgid "Subscribe to add this feed to your NewsBlur"
 msgstr "اشترك لإضافة هذه الخلاصة إلى NewsBlur الخاص بك"
 
 msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
-msgstr "اشترك في أي موقع إلكتروني كموجز، حتى من دون RSS. رقِّ إلى الأرشيف المميز لفتح الموجزات عبر الويب."
+msgstr "اشترك في أي موقع إلكتروني كخلاصة، حتى من دون RSS. رقِّ إلى Premium Archive لفتح خلاصات الويب."
 
 msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
 msgstr "اشترك في النشرات البريدية من Substack وMedium وGhost وButtondown وغيرها."
@@ -6796,7 +6796,7 @@ msgid "Subscribed!"
 msgstr "تم الاشتراك!"
 
 msgid "Subscribed! Fetching stories..."
-msgstr "تم الاشتراك! جارٍ جلب الأخبار..."
+msgstr "تم الاشتراك! جارٍ جلب القصص..."
 
 msgid "Subscribers"
 msgstr "المشتركون"
@@ -6871,7 +6871,7 @@ msgstr "إعدادات الوسوم"
 
 #, python-format
 msgid "Tag filters found no stories in %(context)s."
-msgstr "لم تعثر فلاتر الوسوم على أي مقالات في %(context)s."
+msgstr "لم تعثر فلاتر الوسوم على أي قصص في %(context)s."
 
 msgid "Tag filters found no stories in this view."
 msgstr "لم تعثر مرشحات الوسوم على أي قصص في هذا العرض."
@@ -6945,19 +6945,19 @@ msgid "Text filters found no stories in this view."
 msgstr "لم تعثر فلاتر النص على أي قصص في هذا العرض."
 
 msgid "Text view extracts the story"
-msgstr "يعرض عرض النص مقتطفًا من المقالة"
+msgstr "يستخرج عرض النص القصة كاملة"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
-msgstr "شكرًا لك! لديك %(bold_start)sحساب مميز%(bold_end)s."
+msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "شكرًا لك! لديك %(bold_start)sحساب أرشيف مميز%(bold_end)s."
+msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Archive%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "شكرًا لك! لديك حساب %(bold_start)sاحترافي مميز%(bold_end)s."
+msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Pro%(bold_end)s."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "استغرق رد خدمة الذكاء الاصطناعي وقتًا طويلًا. يُرجى المحاولة مرة أخرى."
@@ -6995,14 +6995,14 @@ msgstr "مدونة NewsBlur"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
-msgstr "عرض النص الكامل لـ%(icon)s هو ميزة %(link_start)sمدفوعة%(link_end)s."
+msgstr "عرض %(icon)s النص الكامل ميزة %(link_start)sمدفوعة%(link_end)s."
 
 msgid "The full NewsBlur API is open and documented for custom integrations."
 msgstr "واجهة NewsBlur API الكاملة مفتوحة وموثقة لعمليات التكامل المخصصة."
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "نهر الأخبار الكامل ميزة %(link_start)sمدفوعة%(link_end)s."
+msgstr "تدفّق الأخبار الكامل ميزة %(link_start)sمدفوعة%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "قائمة الاختصارات كاملة"
@@ -7026,7 +7026,7 @@ msgstr ""
 "NewsBlur البرمجية."
 
 msgid "The most important stories from your feeds"
-msgstr "أهم الأخبار من خلاصاتك"
+msgstr "أهم القصص من خلاصاتك"
 
 msgid "The original page has been disabled by the publisher."
 msgstr "عطّل الناشر الصفحة الأصلية."
@@ -7035,7 +7035,7 @@ msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "يُجلب HTML الصفحة ويُحلل لاستخراج بنية المحتوى."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
-msgstr "يُحفظ العرض الذي تختاره لكل موقع، لذا يمكن ضبط الموجزات التي تعرض الملخصات فقط على عرض النص افتراضيًا."
+msgstr "يُحفظ العرض الذي تختاره لكل موقع، لذا يمكن ضبط الخلاصات التي تعرض الملخصات فقط على عرض النص افتراضيًا."
 
 msgid "Themes & Customization"
 msgstr "السمات والتخصيص"
@@ -7046,7 +7046,7 @@ msgstr "هناك عدد كبير جدًا من المواقع والقصص لم�
 #, python-format
 msgid "There is %(count)s hidden story"
 msgid_plural "There are %(count)s hidden stories"
-msgstr[0] "هناك %(count)s قصص مخفية"
+msgstr[0] "هناك %(count)s قصة مخفية"
 msgstr[1] "هناك %(count)s قصة مخفية"
 msgstr[2] "هناك %(count)s قصتان مخفيتان"
 msgstr[3] "هناك %(count)s قصص مخفية"
@@ -7117,7 +7117,7 @@ msgid "They redeem it."
 msgstr "يستردّونه."
 
 msgid "Thinking"
-msgstr "جارٍ التفكير"
+msgstr "تفكير معمّق"
 
 msgid "Thinking..."
 msgstr "جارٍ التفكير..."
@@ -7150,7 +7150,7 @@ msgstr "يطابق هذا العنوان بالكامل، ولن يطابق سو
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "قائمة القصص المقروءة هذه من %(link_start)sميزات الاشتراك المميز%(link_end)s."
+msgstr "قائمة القصص المقروءة هذه من %(link_start)sميزات Premium%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "سيؤدي هذا إلى إزالة الوسم من جميع القصص المحفوظة. ستظل القصص محفوظة من دون هذا الوسم."
@@ -7171,7 +7171,7 @@ msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors.
 msgstr "لم يتم جلب هذا الموقع منذ <b>%(time)s</b> وهو يواجه أخطاء."
 
 msgid "This site has not yet been indexed for related stories."
-msgstr "لم تتم فهرسة هذا الموقع بعد للعثور على الأخبار ذات الصلة."
+msgstr "لم تتم فهرسة هذا الموقع بعد للعثور على القصص ذات الصلة."
 
 msgid ""
 "This site has published zero stories in the past month or has averaged less than a single story a month. As"
@@ -7187,7 +7187,7 @@ msgid "This site only"
 msgstr "هذا الموقع فقط"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "هذا الموجز متوقف مؤقتًا <b>paused</b>. رقِّ إلى Premium Archive لاستئناف جلب القصص الجديدة."
+msgstr "خلاصة الويب هذه <b>متوقفة مؤقتًا</b>. رقِّ إلى Premium Archive لاستئناف جلب القصص الجديدة."
 
 msgid "This will erase all existing feeds and folders."
 msgstr "سيؤدي هذا إلى محو جميع الخلاصات والمجلدات الحالية."
@@ -7199,7 +7199,7 @@ msgid "Thu"
 msgstr "الخميس"
 
 msgid "Thumbs down what you don't want to see"
-msgstr "استخدم الإعجاب السلبي لما لا تريد رؤيته"
+msgstr "امنح عدم إعجابك لما لا تريد رؤيته"
 
 msgid "Thumbs up and down on authors, tags, and titles"
 msgstr "قيّم الكتّاب والوسوم والعناوين بإعجاب أو عدم إعجاب"
@@ -7211,7 +7211,7 @@ msgid "Thursday"
 msgstr "الخميس"
 
 msgid "Tier"
-msgstr "الفئة"
+msgstr "الباقة"
 
 msgid "Time Period"
 msgstr "الفترة الزمنية"
@@ -7339,13 +7339,13 @@ msgid "Train"
 msgstr "درّب"
 
 msgid "Train &amp; filter"
-msgstr "درّب عامل التصفية &amp;"
+msgstr "التدريب &amp; التصفية"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr "درّب NewsBlur على عرض ما تريده وإخفاء ما لا تريده. أنت المتحكم، لا خوارزمية."
 
 msgid "Train across folders or globally on Premium Archive"
-msgstr "درّب عبر المجلدات أو على مستوى عام باستخدام الأرشيف المميز"
+msgstr "درّب عبر المجلدات أو على مستوى عام مع Premium Archive"
 
 msgid "Train and notification settings"
 msgstr "إعدادات التدريب والإشعارات"
@@ -7360,7 +7360,7 @@ msgid "Train stories on full text content"
 msgstr "درّب القصص باستخدام محتوى النص الكامل"
 
 msgid "Train stories with regular expressions"
-msgstr "درّب المقالات باستخدام التعابير النمطية"
+msgstr "درّب القصص باستخدام التعابير النمطية"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "درّب القصص وابحث وشارك وأضف الوسوم كما تفعل على الويب"
@@ -7375,7 +7375,7 @@ msgid "Train this story"
 msgstr "درّب على هذه القصة"
 
 msgid "Train your feeds to filter stories you like and dislike."
-msgstr "درّب موجزاتك لتصفية القصص التي تعجبك أو لا تعجبك."
+msgstr "درّب خلاصاتك لتصفية القصص التي تعجبك أو لا تعجبك."
 
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "درّب النشرات الإخبارية ووسّمها وابحث فيها ونظّمها كأي خلاصة"
@@ -7402,7 +7402,7 @@ msgid "Trending Sites"
 msgstr "المواقع الرائجة"
 
 msgid "Truncate stories"
-msgstr "اقتطاع المقالات"
+msgstr "اقتطاع القصص"
 
 msgid "Try"
 msgstr "جرّب"
@@ -7429,20 +7429,20 @@ msgid "Tuesday"
 msgstr "الثلاثاء"
 
 msgid "Turn off automatic briefing generation"
-msgstr "إيقاف إنشاء الإحاطة تلقائيًا"
+msgstr "إيقاف إنشاء الموجز تلقائيًا"
 
 #, python-format
 msgid "Turn on this %(count)s site, please"
 msgid_plural "Turn on these %(count)s sites, please"
 msgstr[0] "يرجى تفعيل %(count)s موقع"
-msgstr[1] "يرجى تفعيل هذا الموقع البالغ عدده %(count)s"
+msgstr[1] "يرجى تفعيل %(count)s موقع"
 msgstr[2] "يرجى تفعيل %(count)s موقعين"
 msgstr[3] "يرجى تفعيل %(count)s مواقع"
 msgstr[4] "يرجى تفعيل %(count)s موقعًا"
 msgstr[5] "يرجى تفعيل %(count)s موقع"
 
 msgid "Turning any page into a feed"
-msgstr "تحويل أي صفحة إلى موجز"
+msgstr "تحويل أي صفحة إلى خلاصة"
 
 msgid ""
 "Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
@@ -7501,7 +7501,7 @@ msgid "Unknown"
 msgstr "غير معروف"
 
 msgid "Unknown Feed"
-msgstr "موجز غير معروف"
+msgstr "خلاصة غير معروفة"
 
 msgid "Unknown error"
 msgstr "خطأ غير معروف"
@@ -7522,10 +7522,10 @@ msgid "Unlocked"
 msgstr "مفتوح"
 
 msgid "Unmute"
-msgstr "إلغاء كتم الصوت"
+msgstr "إلغاء الكتم"
 
 msgid "Unmuted"
-msgstr "إلغاء الكتم"
+msgstr "تم إلغاء الكتم"
 
 msgid "Unread"
 msgstr "غير مقروء"
@@ -7543,7 +7543,7 @@ msgid "Unread stories never expire, so read at your own pace."
 msgstr "لا تنتهي صلاحية القصص غير المقروءة، لذا اقرأها بالوتيرة التي تناسبك."
 
 msgid "Unread+Focus:"
-msgstr "غير المقروءة + المميزة:"
+msgstr "غير المقروءة + التركيز:"
 
 msgid "Unsave this story"
 msgstr "إلغاء حفظ هذه القصة"
@@ -7564,7 +7564,7 @@ msgid "Update History"
 msgstr "سجل التحديثات"
 
 msgid "Updated"
-msgstr "تم التحديث"
+msgstr "آخر تحديث"
 
 #, python-format
 msgid "Updated %(count)s day ago"
@@ -7589,7 +7589,7 @@ msgstr[5] "حُدّث منذ %(count)s شهر"
 #, python-format
 msgid "Updated %(count)s week ago"
 msgid_plural "Updated %(count)s weeks ago"
-msgstr[0] "تم التحديث قبل %(count)s أسابيع"
+msgstr[0] "تم التحديث قبل %(count)s أسبوع"
 msgstr[1] "تم التحديث قبل %(count)s أسبوع"
 msgstr[2] "تم التحديث قبل %(count)s أسبوعين"
 msgstr[3] "تم التحديث قبل %(count)s أسابيع"
@@ -7642,10 +7642,10 @@ msgid "Upgrade to Premium"
 msgstr "الترقية إلى Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "الترقية إلى الأرشيف المميز"
+msgstr "الترقية إلى Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
-msgstr "رقِّ إلى الأرشيف المميز لتلقي إشعارات التصنيف"
+msgstr "رقِّ إلى Premium Archive لتلقي إشعارات التصنيف"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr "رقِّ إلى Premium Archive لفحص جميع خلاصاتك بحثًا عن التكرارات، حتى لا تفوتك أي مجموعة متشابهة."
@@ -7654,13 +7654,13 @@ msgid "Upgrade to Premium Pro"
 msgstr "الترقية إلى Premium Pro"
 
 msgid "Upgrade to a Premium Archive account"
-msgstr "الترقية إلى حساب الأرشيف المميز"
+msgstr "الترقية إلى حساب Premium Archive"
 
 msgid "Upgrade to a Premium account"
 msgstr "الترقية إلى حساب Premium"
 
 msgid "Upgrade to premium"
-msgstr "الترقية إلى المميزة"
+msgstr "الترقية إلى Premium"
 
 msgid "Upgrade your reading"
 msgstr "ارتقِ بتجربة القراءة"
@@ -7697,7 +7697,7 @@ msgid "Use %(language)s"
 msgstr "استخدم %(language)s"
 
 msgid "Use 12-hour clock"
-msgstr "استخدام تنسيق ١٢ ساعة"
+msgstr "استخدام تنسيق 12 ساعة"
 
 msgid "Use 24-hour clock"
 msgstr "استخدم تنسيق 24 ساعة"
@@ -7709,22 +7709,22 @@ msgid "Use the native browser context menu"
 msgstr "استخدم قائمة سياق المتصفح الأصلية"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
-msgstr "استخدم قالب عنوان URL هذا في إضافات المتصفح وقارئات الموجزات للاشتراك في NewsBlur."
+msgstr "استخدم قالب عنوان URL هذا في إضافات المتصفح وقارئات الخلاصات للاشتراك في NewsBlur."
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "استخدم الأدوات المصغّرة للاطلاع على أعداد غير المقروء والقصص بنظرة سريعة"
 
 msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
-msgstr "مفيد لتطوير القصص الإخبارية والمقالات المصححة والإعلانات المتجددة عن المنتجات."
+msgstr "مفيد لمتابعة القصص الإخبارية المتطورة والمقالات المصحّحة والإعلانات المتجددة عن المنتجات."
 
 msgid "User Admin"
 msgstr "إدارة المستخدمين"
 
 msgid "User is premium ARCHIVE, expires: "
-msgstr "المستخدم مشترك في الأرشيف المميز، تنتهي صلاحيته في: "
+msgstr "المستخدم مشترك في Premium Archive، تنتهي صلاحيته في: "
 
 msgid "User is premium, expires: "
-msgstr "المستخدم مشترك مميز، تنتهي الصلاحية: "
+msgstr "المستخدم مشترك في Premium، تنتهي الصلاحية: "
 
 msgid "Username"
 msgstr "اسم المستخدم"
@@ -7735,7 +7735,7 @@ msgstr "اسم المستخدم أو البريد الإلكتروني..."
 #, python-format
 msgid "Using default: <b>%(days)s day</b>"
 msgid_plural "Using default: <b>%(days)s days</b>"
-msgstr[0] "باستخدام الإعداد الافتراضي: <b>%(days)s يومًا</b>"
+msgstr[0] "باستخدام الإعداد الافتراضي: <b>%(days)s يوم</b>"
 msgstr[1] "باستخدام الافتراضي: <b>%(days)s يوم</b>"
 msgstr[2] "باستخدام الإعداد الافتراضي: <b>%(days)s يومان</b>"
 msgstr[3] "باستخدام الإعداد الافتراضي: <b>%(days)s أيام</b>"
@@ -7745,7 +7745,7 @@ msgstr[5] "باستخدام الإعداد الافتراضي: <b>%(days)s يو�
 #, python-format
 msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
 msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
-msgstr[0] "استخدام القيمة الافتراضية: <b>%(days)s يومًا</b> (من %(source)s)"
+msgstr[0] "استخدام القيمة الافتراضية: <b>%(days)s يوم</b> (من %(source)s)"
 msgstr[1] "باستخدام الافتراضي: <b>%(days)s يوم</b> (من %(source)s)"
 msgstr[2] "استخدام القيمة الافتراضية: <b>%(days)s يومين</b> (من %(source)s)"
 msgstr[3] "استخدام القيمة الافتراضية: <b>%(days)s أيام</b> (من %(source)s)"
@@ -7754,7 +7754,7 @@ msgstr[5] "استخدام القيمة الافتراضية: <b>%(days)s يوم<
 
 #, python-format
 msgid "Using default: <b>never</b> (from %(source)s)"
-msgstr "استخدام الافتراضي: <b>never</b> (من %(source)s)"
+msgstr "استخدام الإعداد الافتراضي: <b>أبدًا</b> (من %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
 msgstr "استخدام الإعداد الافتراضي: <b>لن</b> تُعلَّم القصص كمقروءة تلقائيًا"
@@ -7794,7 +7794,7 @@ msgid "Web"
 msgstr "الويب"
 
 msgid "Web Feed"
-msgstr "موجز ويب"
+msgstr "خلاصة ويب"
 
 msgid "Web Feeds"
 msgstr "خلاصات الويب"
@@ -7806,20 +7806,20 @@ msgid ""
 "Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
 "fetching."
 msgstr ""
-"تتطلب موجزات الويب الأرشيف المميز أو Premium Pro، لأن استخراج المحتوى من الصفحات يستهلك موارد أكثر من جلب "
+"تتطلب خلاصات الويب Premium Archive أو Premium Pro، لأن استخراج المحتوى من الصفحات يستهلك موارد أكثر من جلب "
 "RSS."
 
 msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
 msgstr "يتم التحقق من خلاصات الويب وفق الجدول نفسه للخلاصات العادية، وبوتيرة أسرع في الخطط الأعلى."
 
 msgid "Web feeds train, search, and organize exactly like RSS feeds."
-msgstr "يمكن تدريب موجزات الويب والبحث فيها وتنظيمها تمامًا مثل موجزات RSS."
+msgstr "يمكن تدريب خلاصات الويب والبحث فيها وتنظيمها تمامًا مثل خلاصات RSS."
 
 msgid "Web notifications"
 msgstr "إشعارات الويب"
 
 msgid "Web notifications require Premium Archive"
-msgstr "تتطلب الإشعارات عبر الويب الأرشيف المميز"
+msgstr "تتطلب إشعارات الويب اشتراك Premium Archive"
 
 msgid "Website"
 msgstr "موقع الويب"
@@ -7844,11 +7844,11 @@ msgstr "ما الحجج الرئيسية؟"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "ما الذي %(like)s و%(dislike)s بشأن هذا الموقع؟"
+msgstr "ما الذي %(like)s وما الذي %(dislike)s في هذا الموقع؟"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "ما الذي %(like)s و%(dislike)s بشأن هذه القصة؟"
+msgstr "ما الذي %(like)s وما الذي %(dislike)s في هذه القصة؟"
 
 msgid "What happens if I downgrade?"
 msgstr "ماذا يحدث إذا انتقلت إلى خطة أدنى؟"
@@ -7881,7 +7881,7 @@ msgid "What's the difference between CLI and MCP?"
 msgstr "ما الفرق بين CLI وMCP؟"
 
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
-msgstr "عند تحديث موجز، يتحقق NewsBlur من التكرارات عبر جميع اشتراكاتك"
+msgstr "عند تحديث خلاصة، يتحقق NewsBlur من التكرارات عبر جميع اشتراكاتك"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "عندما تغطي عدة خلاصات القصة نفسها، يجمعها NewsBlur معًا لتراها مرة واحدة فقط."
@@ -7901,7 +7901,7 @@ msgid ""
 msgstr "عند الاشتراك في خلاصة، يسترجع NewsBlur كامل سجلها المتاح. ومن الآن فصاعدًا، تُحفظ كل قصة إلى الأبد."
 
 msgid "When you subscribe to a new feed, its history is back-filled"
-msgstr "عند الاشتراك في موجز جديد، يُستكمل سجله السابق تلقائيًا"
+msgstr "عند الاشتراك في خلاصة جديدة، يُستكمل سجلها السابق تلقائيًا"
 
 msgid "Which AI models are available?"
 msgstr "ما نماذج الذكاء الاصطناعي المتاحة؟"
@@ -7928,7 +7928,7 @@ msgid "Widen pane for controls"
 msgstr "وسّع اللوحة لإظهار عناصر التحكم"
 
 msgid "Widen the story titles pane to use filter controls"
-msgstr "وسّع لوحة عناوين الأخبار لاستخدام عناصر التحكم في التصفية"
+msgstr "وسّع لوحة عناوين القصص لاستخدام عناصر التحكم في التصفية"
 
 msgid "Window title"
 msgstr "عنوان النافذة"
@@ -7961,7 +7961,7 @@ msgid "Yes"
 msgstr "نعم"
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
-msgstr "نعم، تعمل جميع ميزات التدريب الذكي مع النشرات الإخبارية كما تعمل مع الموجزات العادية."
+msgstr "نعم، تعمل جميع ميزات التدريب الذكي مع النشرات الإخبارية كما تعمل مع الخلاصات العادية."
 
 msgid "Yes, both apps are open source and actively developed on GitHub."
 msgstr "نعم، كلا التطبيقين مفتوح المصدر ويُطوَّران باستمرار على GitHub."
@@ -7996,14 +7996,14 @@ msgid "Yes. Stories are cached locally and background refresh keeps them up to d
 msgstr "نعم. تُخزَّن القصص مؤقتًا على جهازك، ويُبقي التحديث في الخلفية محتواها محدّثًا."
 
 msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
-msgstr "نعم. فعّل خيار «إبقاء القصص منفصلة» في قائمة خيارات الموجز المنبثقة أو في التفضيلات."
+msgstr "نعم. فعّل خيار «إبقاء القصص منفصلة» في قائمة خيارات الخلاصة المنبثقة أو في التفضيلات."
 
 msgid ""
 "Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
 "Premium Archive."
 msgstr ""
 "نعم. التدريب على الكتّاب والوسوم والكلمات المفتاحية في العناوين مجاني. يتطلب التدريب على النص الكامل لمحتوى"
-" القصص أرشيف Premium."
+" القصص Premium Archive."
 
 msgid ""
 "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
@@ -8058,12 +8058,12 @@ msgstr[1] "أنت مشترك في %(count)s موقع."
 msgstr[2] "أنت مشترك في %(count)s موقعين."
 msgstr[3] "أنت مشترك في %(count)s مواقع."
 msgstr[4] "أنت مشترك في %(count)s موقعًا."
-msgstr[5] "أنت مشترك في %(count)s موقعًا."
+msgstr[5] "أنت مشترك في %(count)s موقع."
 
 #, python-format
 msgid "You are subscribed to at least %(count)s site."
 msgid_plural "You are subscribed to at least %(count)s sites."
-msgstr[0] "أنت مشترك في ما لا يقل عن %(count)s موقعًا."
+msgstr[0] "أنت مشترك في ما لا يقل عن %(count)s موقع."
 msgstr[1] "أنت مشترك في %(count)s موقع على الأقل."
 msgstr[2] "أنت مشترك في ما لا يقل عن %(count)s موقعين."
 msgstr[3] "أنت مشترك في ما لا يقل عن %(count)s مواقع."
@@ -8101,17 +8101,17 @@ msgid "You can override this on a per-site basis."
 msgstr "يمكنك تجاوز هذا الإعداد لكل موقع على حدة."
 
 msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
-msgstr "يمكنك التدريب لكل موجز مجانًا، أو لكل مجلد وعلى مستوى عام مع Premium Archive."
+msgstr "يمكنك التدريب لكل خلاصة مجانًا، أو لكل مجلد وعلى مستوى عام مع Premium Archive."
 
 #, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
-msgstr[0] "تتابع %(count)s من المواقع. تجعل العضوية المميزة جميعها أفضل."
-msgstr[1] "تتابع %(count)s موقع. تجعل العضوية المميزة جميعها أفضل."
-msgstr[2] "تتابع %(count)s من المواقع. تجعل العضوية المميزة جميعها أفضل."
-msgstr[3] "تتابع %(count)s من المواقع. تجعل العضوية المميزة جميعها أفضل."
-msgstr[4] "تتابع %(count)s من المواقع. تجعل العضوية المميزة جميعها أفضل."
-msgstr[5] "تتابع %(count)s من المواقع. تجعل العضوية المميزة جميعها أفضل."
+msgstr[0] "تتابع %(count)s من المواقع. ومع Premium تصبح جميعها أفضل."
+msgstr[1] "تتابع %(count)s موقع. ومع Premium تصبح جميعها أفضل."
+msgstr[2] "تتابع %(count)s من المواقع. ومع Premium تصبح جميعها أفضل."
+msgstr[3] "تتابع %(count)s من المواقع. ومع Premium تصبح جميعها أفضل."
+msgstr[4] "تتابع %(count)s من المواقع. ومع Premium تصبح جميعها أفضل."
+msgstr[5] "تتابع %(count)s من المواقع. ومع Premium تصبح جميعها أفضل."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8130,7 +8130,7 @@ msgid "You have no unread stories."
 msgstr "ليس لديك قصص غير مقروءة."
 
 msgid "You have not yet subscribed to anybody's shared stories."
-msgstr "لم تشترك بعد في الأخبار المشتركة لأي شخص."
+msgstr "لم تشترك بعد في القصص المشتركة لأي شخص."
 
 #, python-format
 msgid "You must be following %(value_1)s to reply"
@@ -8141,7 +8141,7 @@ msgstr "يجب تسجيل الدخول لإرسال قصة عبر البريد �
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
-msgstr "يجب أن يكون لديك %(link_start)sحساب مميز%(link_end)s لتغيير اختصارات لوحة المفاتيح."
+msgstr "يجب أن يكون لديك %(link_start)sحساب Premium%(link_end)s لتغيير اختصارات لوحة المفاتيح."
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
@@ -8163,7 +8163,7 @@ msgid "You're being rate limited.<br> Try again soon, but not too soon."
 msgstr "تم تقييد معدل طلباتك.<br> حاول مجددًا بعد قليل، ولكن ليس بسرعة كبيرة."
 
 msgid "You're presented with multiple story pattern options to choose from."
-msgstr "ستظهر لك خيارات متعددة لأنماط الأخبار لتختار منها."
+msgstr "ستظهر لك خيارات متعددة لأنماط القصص لتختار منها."
 
 msgid ""
 "You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
@@ -8175,7 +8175,7 @@ msgstr "أنت جاهز للبدء! نأمل أن تستمتع بـ NewsBlur."
 
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
-msgstr "أُهديت %(value_1)s من أصل %(value_2)s!"
+msgstr "لقد أُهديت %(value_1)s من اشتراك %(value_2)s!"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8229,10 +8229,10 @@ msgid "Your name"
 msgstr "اسمك"
 
 msgid "Your premium account is paid until:"
-msgstr "حسابك Premium مدفوع حتى:"
+msgstr "حساب Premium الخاص بك مدفوع حتى:"
 
 msgid "Your premium account will downgrade on:"
-msgstr "سيتم تخفيض مستوى حسابك المميز في:"
+msgstr "سيتم تخفيض مستوى حساب Premium الخاص بك في:"
 
 msgid "Your profile"
 msgstr "ملفك الشخصي"
@@ -8286,7 +8286,7 @@ msgid "climate change"
 msgstr "تغيّر المناخ"
 
 msgid "connect"
-msgstr "اتصل"
+msgstr "ربط"
 
 msgid "coral reefs"
 msgstr "الشعاب المرجانية"
@@ -8301,7 +8301,7 @@ msgid "data privacy"
 msgstr "خصوصية البيانات"
 
 msgid "dislike"
-msgstr "لا يعجبني"
+msgstr "لا يعجبك"
 
 #, python-format
 msgid "e.g. %(example)s"
@@ -8335,7 +8335,7 @@ msgid_plural "followers"
 msgstr[0] "متابع"
 msgstr[1] "متابع"
 msgstr[2] "متابعان"
-msgstr[3] "متابعون"
+msgstr[3] "متابعين"
 msgstr[4] "متابعًا"
 msgstr[5] "متابع"
 
@@ -8349,7 +8349,7 @@ msgid "gene therapy"
 msgstr "العلاج الجيني"
 
 msgid "hide hidden stories"
-msgstr "إخفاء المقالات المخفية"
+msgstr "إخفاء القصص المخفية"
 
 msgid "housing market"
 msgstr "سوق الإسكان"
@@ -8361,17 +8361,17 @@ msgid "iOS notifications"
 msgstr "إشعارات iOS"
 
 msgid "iOS notifications require Premium Archive"
-msgstr "تتطلب إشعارات iOS الأرشيف المميز"
+msgstr "تتطلب إشعارات iOS اشتراك Premium Archive"
 
 msgid "iPhone &amp; iPad"
-msgstr "iPhone و&amp; iPad"
+msgstr "iPhone &amp; iPad"
 
 msgid "in"
 msgstr "في"
 
 #, python-format
 msgid "in %(time)s"
-msgstr "في %(time)s"
+msgstr "بعد %(time)s"
 
 msgid "indie games"
 msgstr "ألعاب مستقلة"
@@ -8389,7 +8389,7 @@ msgid "labor unions"
 msgstr "النقابات العمالية"
 
 msgid "like"
-msgstr "أعجبني"
+msgstr "يعجبك"
 
 msgid "local elections"
 msgstr "الانتخابات المحلية"
@@ -8420,7 +8420,7 @@ msgid "podcast industry"
 msgstr "قطاع البودكاست"
 
 msgid "premium"
-msgstr "مميز"
+msgstr "Premium"
 
 msgid "public transit"
 msgstr "النقل العام"
@@ -8450,7 +8450,7 @@ msgid "set up usage-based billing"
 msgstr "إعداد الفوترة حسب الاستخدام"
 
 msgid "show hidden stories"
-msgstr "إظهار المقالات المخفية"
+msgstr "إظهار القصص المخفية"
 
 msgid "site-wide"
 msgstr "على مستوى الموقع"
@@ -8480,7 +8480,7 @@ msgid "typography"
 msgstr "الطباعة"
 
 msgid "unmuting soon"
-msgstr "سيُلغى كتم الصوت قريبًا"
+msgstr "سيُلغى الكتم قريبًا"
 
 msgid "upload picture"
 msgstr "تحميل صورة"
@@ -8508,7 +8508,7 @@ msgstr[4] "✓ تطابق هذه الصور هذا المرشح: %(count)s من 
 msgstr[5] "✓ تطابق هذه الصور هذا المرشح: %(count)s من أصل %(total)s"
 
 msgid "✓ Found in story"
-msgstr "✓ عُثر عليه في المقالة"
+msgstr "✓ عُثر عليه في القصة"
 
 msgid "✓ Image matches this filter"
 msgstr "✓ الصورة تطابق هذا المرشح"
