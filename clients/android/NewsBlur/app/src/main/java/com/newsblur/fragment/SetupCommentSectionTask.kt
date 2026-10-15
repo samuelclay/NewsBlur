@@ -155,7 +155,7 @@ class SetupCommentSectionTask(
                 }
                 if (reply.shortDate != null) {
                     val replySharedDate = replyView.findViewById<View>(R.id.reply_shareddate) as TextView
-                    replySharedDate.text = reply.shortDate + " ago"
+                    replySharedDate.text = context.getString(R.string.profile_time_ago, reply.shortDate)
                 }
                 val editIcon = replyView.findViewById<View>(R.id.reply_edit_icon) as ImageView
                 if (TextUtils.equals(reply.userId, user.id)) {

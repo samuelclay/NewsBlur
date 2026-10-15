@@ -148,7 +148,8 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
-        var date_str = date.toLocaleDateString(undefined, {
+        // briefing_group_view.js formats in the interface language, not the browser's, with Latin digits.
+        var date_str = date.toLocaleDateString((document.documentElement.lang || 'en') + '-u-nu-latn', {
             month: 'long', day: 'numeric', year: 'numeric'
         });
 
