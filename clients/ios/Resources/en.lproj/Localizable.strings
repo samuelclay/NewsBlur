@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ shared %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ Widget Sites";
 "%@ ago" = "%@ ago";
+"%@ comments" = "%@ comments";
+"%@ days" = "%@ days";
 "%@ feed" = "%@ feed";
 "%@ focused stories" = "%@ focused stories";
 "%@ folder" = "%@ folder";
 "%@ is now following you." = "%@ is now following you.";
 "%@ opens" = "%@ opens";
+"%@ or search" = "%@ or search";
+"%@ public comments" = "%@ public comments";
 "%@ searches" = "%@ searches";
+"%@ shares" = "%@ shares";
 "%@ stories" = "%@ stories";
 "%@ stories left" = "%@ stories left";
 "%@ stories/month" = "%@ stories/month";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ldh ago";
 "%ldm ago" = "%ldm ago";
 "%ldw ago" = "%ldw ago";
+"+ %@ more sites" = "+ %@ more sites";
 "..." = "...";
 "1 Widget Site" = "1 Widget Site";
 "1,000 stories" = "1,000 stories";
@@ -66,6 +72,7 @@
 "Add Story List" = "Add Story List";
 "Add Story List After" = "Add Story List After";
 "Add Story List Before" = "Add Story List Before";
+"Add Tag" = "Add Tag";
 "Add To" = "Add To";
 "Add custom keyword filters that become their own briefing sections" = "Add custom keyword filters that become their own briefing sections";
 "Add feed" = "Add feed";
@@ -111,6 +118,7 @@
 "All stories" = "All stories";
 "Alphabetical" = "Alphabetical";
 "Already have feeds?" = "Already have feeds?";
+"Also published by %@ sites" = "Also published by %@ sites";
 "Analyze" = "Analyze";
 "App Badge" = "App Badge";
 "App Icon" = "App Icon";
@@ -235,6 +243,7 @@
 "Download stories" = "Download stories";
 "Download text" = "Download text";
 "Download using" = "Download using";
+"Edit" = "Edit";
 "Edit NewsBlur share…" = "Edit NewsBlur share…";
 "Edit your comment" = "Edit your comment";
 "Edit your reply" = "Edit your reply";
@@ -270,6 +279,8 @@
 "Feed source" = "Feed source";
 "Feeds" = "Feeds";
 "Feeds that support paging are back-filled in for a complete archive" = "Feeds that support paging are back-filled in for a complete archive";
+"Fetching recent stories..." = "Fetching recent stories...";
+"Fetching stories from this site..." = "Fetching stories from this site...";
 "Fetching text..." = "Fetching text...";
 "Filter" = "Filter";
 "Filter stories by date range" = "Filter stories by date range";
@@ -327,6 +338,7 @@
 "Grid Height" = "Grid Height";
 "Headlines" = "Headlines";
 "Hidden" = "Hidden";
+"Hide Changes" = "Hide Changes";
 "Hide Story Titles" = "Hide Story Titles";
 "Hide status bar" = "Hide status bar";
 "Hide toolbars when reading" = "Hide toolbars when reading";
@@ -376,6 +388,7 @@
 "Loading image…" = "Loading image…";
 "Loading interests" = "Loading interests";
 "Loading settings…" = "Loading settings…";
+"Loading your feeds…" = "Loading your feeds…";
 "Loading..." = "Loading...";
 "Loading…" = "Loading…";
 "Log In" = "Log In";
@@ -492,6 +505,7 @@
 "No longer saved" = "No longer saved";
 "No notifications yet." = "No notifications yet.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "No stories to display. No stories to display. No stories to display. No stories to display.";
+"No stories yet" = "No stories yet";
 "No story selected" = "No story selected";
 "No unread stories" = "No unread stories";
 "None" = "None";
@@ -610,6 +624,7 @@
 "Rename this site" = "Rename this site";
 "Renaming..." = "Renaming...";
 "Replied" = "Replied";
+"Reply" = "Reply";
 "Reply to %@" = "Reply to %@";
 "Resize sidebar" = "Resize sidebar";
 "Restore" = "Restore";
@@ -637,6 +652,7 @@
 "Saved" = "Saved";
 "Saved Searches" = "Saved Searches";
 "Saved Stories" = "Saved Stories";
+"Saved on %@" = "Saved on %@";
 "Saving search..." = "Saving search...";
 "Schedule" = "Schedule";
 "Scroll horizontally" = "Scroll horizontally";
@@ -677,6 +693,7 @@
 "Short" = "Short";
 "Show" = "Show";
 "Show Ask AI" = "Show Ask AI";
+"Show Changes" = "Show Changes";
 "Show Global Shared Stories" = "Show Global Shared Stories";
 "Show Good Reads" = "Show Good Reads";
 "Show Infrequent Site Stories" = "Show Infrequent Site Stories";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
 "Sources" = "Sources";
 "Spacing" = "Spacing";
+"Stale — last story %@" = "Stale — last story %@";
 "Standard" = "Standard";
 "Start reading" = "Start reading";
 "Statistics" = "Statistics";
@@ -783,6 +801,7 @@
 "Text View" = "Text View";
 "Text view" = "Text view";
 "Text view conveniently extracts the story" = "Text view conveniently extracts the story";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "The iOS simulator could not change the Home Screen icon. Try this on a device.";
 "The icon follows your device's light and dark appearance." = "The icon follows your device's light and dark appearance.";
 "The most important stories from your feeds" = "The most important stories from your feeds";
@@ -810,6 +829,7 @@
 "Top" = "Top";
 "Top Level" = "Top Level";
 "Top stories" = "Top stories";
+"Train" = "Train";
 "Train This Story…" = "Train This Story…";
 "Train intelligence" = "Train intelligence";
 "Train intelligence…" = "Train intelligence…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Unsave This Story";
 "Unsave story" = "Unsave story";
 "Unsave this story" = "Unsave this story";
+"Updated %@ days ago" = "Updated %@ days ago";
+"Updated %@ months ago" = "Updated %@ months ago";
+"Updated %@ weeks ago" = "Updated %@ weeks ago";
+"Updated today" = "Updated today";
 "Updates come to you" = "Updates come to you";
 "Updating..." = "Updating...";
 "Upgrade from Archive" = "Upgrade from Archive";
@@ -864,6 +888,7 @@
 "User info" = "User info";
 "Username" = "Username";
 "Username or Email" = "Username or Email";
+"Variant %@" = "Variant %@";
 "Version" = "Version";
 "View mode" = "View mode";
 "Warm" = "Warm";

@@ -3131,8 +3131,9 @@ msgstr "Amigos &amp; Seguidores"
 msgid "Friends and Followers"
 msgstr "Amigos y Seguidores"
 
+msgctxt "date range"
 msgid "From"
-msgstr "De"
+msgstr "Desde"
 
 msgid "From infrequent sites"
 msgstr "De sitios con poca actividad"
@@ -6889,6 +6890,10 @@ msgstr "Títulos"
 
 msgid "To"
 msgstr "A"
+
+msgctxt "date range"
+msgid "To"
+msgstr "Hasta"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

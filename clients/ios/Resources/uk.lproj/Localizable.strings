@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ поширив(-ла) %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ сайти віджетів";
 "%@ ago" = "%@ тому";
+"%@ comments" = "%@ коментарів";
+"%@ days" = "%@ днів";
 "%@ feed" = "стрічка %@";
 "%@ focused stories" = "%@ вибраних статей";
 "%@ folder" = "Папка %@";
 "%@ is now following you." = "Тепер %@ стежить за вами.";
 "%@ opens" = "%@ відкриттів";
+"%@ or search" = "%@ або пошук";
+"%@ public comments" = "%@ публічних коментарів";
 "%@ searches" = "%@ пошук";
+"%@ shares" = "%@ поширень";
 "%@ stories" = "%@ статей";
 "%@ stories left" = "Залишилося історій: %@";
 "%@ stories/month" = "%@ публікацій на місяць";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld год тому";
 "%ldm ago" = "%ld хв тому";
 "%ldw ago" = "%ld тиж. тому";
+"+ %@ more sites" = "+ ще %@ сайтів";
 "..." = "...";
 "1 Widget Site" = "1 сайт віджета";
 "1,000 stories" = "1 000 історій";
@@ -66,6 +72,7 @@
 "Add Story List" = "Додати список історій";
 "Add Story List After" = "Додати список статей після";
 "Add Story List Before" = "Додати список статей перед";
+"Add Tag" = "Додати тег";
 "Add To" = "Додати до";
 "Add custom keyword filters that become their own briefing sections" = "Додавайте власні фільтри за ключовими словами, які стануть окремими розділами дайджесту";
 "Add feed" = "Додати стрічку";
@@ -111,6 +118,7 @@
 "All stories" = "Усі матеріали";
 "Alphabetical" = "За абеткою";
 "Already have feeds?" = "Уже маєте стрічки?";
+"Also published by %@ sites" = "Також опубліковано на %@ сайтах";
 "Analyze" = "Аналізувати";
 "App Badge" = "Значок програми";
 "App Icon" = "Іконка застосунку";
@@ -235,6 +243,7 @@
 "Download stories" = "Завантажити історії";
 "Download text" = "Завантажити текст";
 "Download using" = "Завантажити за допомогою";
+"Edit" = "Редагувати";
 "Edit NewsBlur share…" = "Редагувати поширення NewsBlur…";
 "Edit your comment" = "Редагувати коментар";
 "Edit your reply" = "Редагувати свою відповідь";
@@ -270,6 +279,8 @@
 "Feed source" = "Джерело стрічки";
 "Feeds" = "Стрічки";
 "Feeds that support paging are back-filled in for a complete archive" = "Стрічки з підтримкою посторінкового завантаження доповнюються попередніми матеріалами, щоб створити повний архів";
+"Fetching recent stories..." = "Завантаження останніх публікацій...";
+"Fetching stories from this site..." = "Завантаження публікацій із цього сайту...";
 "Fetching text..." = "Завантаження тексту...";
 "Filter" = "Фільтр";
 "Filter stories by date range" = "Фільтрувати статті за діапазоном дат";
@@ -327,6 +338,7 @@
 "Grid Height" = "Висота сітки";
 "Headlines" = "Заголовки";
 "Hidden" = "Приховано";
+"Hide Changes" = "Приховати зміни";
 "Hide Story Titles" = "Приховати заголовки статей";
 "Hide status bar" = "Приховати рядок стану";
 "Hide toolbars when reading" = "Приховувати панелі інструментів під час читання";
@@ -376,6 +388,7 @@
 "Loading image…" = "Завантаження зображення…";
 "Loading interests" = "Завантаження інтересів";
 "Loading settings…" = "Завантаження налаштувань…";
+"Loading your feeds…" = "Завантаження ваших стрічок…";
 "Loading..." = "Завантаження...";
 "Loading…" = "Завантаження…";
 "Log In" = "Увійти";
@@ -492,6 +505,7 @@
 "No longer saved" = "Більше не збережено";
 "No notifications yet." = "Сповіщень поки немає.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Немає статей для показу. Немає статей для показу. Немає статей для показу. Немає статей для показу.";
+"No stories yet" = "Публікацій поки немає";
 "No story selected" = "Статтю не вибрано";
 "No unread stories" = "Немає непрочитаних статей";
 "None" = "Немає";
@@ -610,6 +624,7 @@
 "Rename this site" = "Перейменувати цей сайт";
 "Renaming..." = "Перейменування...";
 "Replied" = "Відповіли";
+"Reply" = "Відповісти";
 "Reply to %@" = "Відповісти %@";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
@@ -637,6 +652,7 @@
 "Saved" = "Збережено";
 "Saved Searches" = "Збережені пошукові запити";
 "Saved Stories" = "Збережені статті";
+"Saved on %@" = "Збережено %@";
 "Saving search..." = "Збереження пошуку...";
 "Schedule" = "Розклад";
 "Scroll horizontally" = "Прокручувати горизонтально";
@@ -677,6 +693,7 @@
 "Short" = "Короткий";
 "Show" = "Показати";
 "Show Ask AI" = "Показати «Запитати ШІ»";
+"Show Changes" = "Показати зміни";
 "Show Global Shared Stories" = "Показувати спільні матеріали з усього світу";
 "Show Good Reads" = "Показати Good Reads";
 "Show Infrequent Site Stories" = "Показувати рідкісні статті сайту";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Не вдалося завантажити деякі значки стрічок.";
 "Sources" = "Джерела";
 "Spacing" = "Інтервали";
+"Stale — last story %@" = "Неактивний — остання публікація %@";
 "Standard" = "Стандартний";
 "Start reading" = "Почати читання";
 "Statistics" = "Статистика";
@@ -783,6 +801,7 @@
 "Text View" = "Текстовий вигляд";
 "Text view" = "Текстовий вигляд";
 "Text view conveniently extracts the story" = "Режим перегляду тексту зручно витягує текст статті";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Повний перегляд тексту — це <a href=\"http://ios.newsblur.com/premium\">преміумфункція</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Симулятор iOS не зміг змінити іконку на головному екрані. Спробуйте зробити це на пристрої.";
 "The icon follows your device's light and dark appearance." = "Піктограма відповідає світлому чи темному оформленню вашого пристрою.";
 "The most important stories from your feeds" = "Найважливіші статті з ваших стрічок";
@@ -810,6 +829,7 @@
 "Top" = "Верх";
 "Top Level" = "Верхній рівень";
 "Top stories" = "Головні статті";
+"Train" = "Навчити";
 "Train This Story…" = "Навчити на цій статті…";
 "Train intelligence" = "Навчання інтелектуальних фільтрів";
 "Train intelligence…" = "Навчити інтелект…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Видалити цю статтю зі збережених";
 "Unsave story" = "Прибрати зі збережених";
 "Unsave this story" = "Прибрати цю статтю зі збережених";
+"Updated %@ days ago" = "Оновлено %@ днів тому";
+"Updated %@ months ago" = "Оновлено %@ місяців тому";
+"Updated %@ weeks ago" = "Оновлено %@ тижнів тому";
+"Updated today" = "Оновлено сьогодні";
 "Updates come to you" = "Оновлення надходять до вас";
 "Updating..." = "Оновлення...";
 "Upgrade from Archive" = "Перейти з Архіву";
@@ -864,6 +888,7 @@
 "User info" = "Інформація про користувача";
 "Username" = "Ім’я користувача";
 "Username or Email" = "Ім’я користувача або електронна пошта";
+"Variant %@" = "Варіант %@";
 "Version" = "Версія";
 "View mode" = "Режим перегляду";
 "Warm" = "Теплий";

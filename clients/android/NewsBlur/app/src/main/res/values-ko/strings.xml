@@ -12,7 +12,7 @@
     <string name="gesture_share">공유</string>
     <string name="gesture_toggle_save">저장 / 저장 취소</string>
     <string name="gesture_ask_ai">AI에게 질문</string>
-    <string name="gesture_train">지능 학습</string>
+    <string name="gesture_train">인텔리전스 학습</string>
     <string name="gesture_notifications">알림</string>
     <string name="gesture_read_range">읽음으로 표시할 기간을 선택하세요</string>
     <string name="gesture_feed_list">피드 목록</string>
@@ -28,16 +28,16 @@
     <string name="gesture_left_edge">왼쪽 가장자리에서 스와이프</string>
     <string name="gesture_edge_footer">왼쪽 가장자리에서 스와이프하면 스토리 스와이프가 꺼져 있어도 항상 피드로 돌아갑니다.</string>
     <string name="gesture_mark_all">모든 스토리를 읽음으로 표시</string>
-    <string name="gesture_original">원문 기사 열기</string>
+    <string name="gesture_original">원본 스토리 열기</string>
     <string name="gesture_text">원문 표시</string>
     <string name="gesture_unread">읽지 않음으로 표시</string>
     <string name="gesture_back_titles">스토리 제목으로 돌아가기</string>
     <string name="gesture_previous">이전 스토리</string>
     <string name="gesture_off">끔</string>
-    <string name="gesture_unread_stories">읽지 않은 기사</string>
-    <string name="gesture_focus_stories">기사에 집중</string>
+    <string name="gesture_unread_stories">읽지 않은 스토리</string>
+    <string name="gesture_focus_stories">집중 스토리</string>
     <string name="story_title_mark_story_read">스토리 읽음으로 표시…</string>
-    <string name="story_title_list_font_size">피드 및 기사 제목 글꼴 크기</string>
+    <string name="story_title_list_font_size">피드 및 스토리 제목 글꼴 크기</string>
     <string name="language_title">언어</string>
     <string name="settings_cat_general">일반</string>
     <string name="language_current">언어: %1$s</string>
@@ -47,7 +47,7 @@
     <string name="reader_exit_fullscreen">스토리 목록 표시</string>
     <string name="try_feed_instafetching">스토리 즉시 가져오는 중…</string>
     <string name="try_feed_fetch_failed">스토리를 가져오지 못했습니다. 탭하여 다시 시도하세요.</string>
-    <string name="try_feed_empty">아직 이 사이트에서 볼 수 있는 글이 없습니다. 탭하여 새로고침하세요.</string>
+    <string name="try_feed_empty">아직 이 사이트에서 볼 수 있는 스토리가 없습니다. 탭하여 새로고침하세요.</string>
     <string name="image_viewer_close">이미지 닫기</string>
     <string name="image_viewer_loading">이미지 불러오는 중…</string>
     <string name="image_viewer_failed">전체 이미지를 불러올 수 없습니다.</string>
@@ -87,7 +87,7 @@
     <string name="login_logged_in">스플라인을 연결하는 중…</string>
     <string name="login_retrieving_feeds">피드 가져오는 중…</string>
     <string name="login_next">다음</string>
-    <string name="login_custom_server_scheme_error">사용자 지정 서버 URL에 \'https://\'이 있어야 합니다</string>
+    <string name="login_custom_server_scheme_error">사용자 지정 서버 URL에 \'https://\'가 포함되어야 합니다</string>
     <string name="login_custom_server_invalid">올바른 사용자 지정 서버 URL을 입력하세요.</string>
     <string name="login_tagline">사람들을 하나로 모아
 세상에 대해 이야기하게 하는 개인 뉴스 리더.</string>
@@ -111,24 +111,24 @@
     <string name="description_menu">메뉴</string>
     <string name="story_settings">스토리 설정</string>
     <string name="title_choose_folders">피드 %s의 폴더 선택</string>
-    <string name="title_rename_feed">피드 이름 변경 %s</string>
+    <string name="title_rename_feed">피드 %s 이름 변경</string>
     <string name="title_rename_folder">폴더 %s 이름 바꾸기</string>
-    <string name="all_stories_title">모든 사이트의 글</string>
+    <string name="all_stories_title">모든 사이트 스토리</string>
     <string name="daily_briefing_title">데일리 브리핑</string>
-    <string name="infrequent_title">자주 업데이트되지 않는 사이트의 기사</string>
-    <string name="widely_read_stories_title">많이 읽은 스토리</string>
+    <string name="infrequent_title">업데이트가 드문 사이트의 스토리</string>
+    <string name="widely_read_stories_title">많이 읽힌 스토리</string>
     <string name="long_reads_title">긴 글</string>
-    <string name="good_reads_title">추천 도서</string>
+    <string name="good_reads_title">좋은 글</string>
     <string name="all_shared_stories_title">공유된 모든 스토리</string>
     <string name="global_shared_stories_title">전체 공유 스토리</string>
-    <string name="read_stories_title">기사 읽기</string>
+    <string name="read_stories_title">읽은 스토리</string>
     <string name="saved_stories_title">저장한 스토리</string>
     <string name="saved_searches_title">저장된 검색</string>
     <string name="feed_list">피드 목록</string>
     <string name="bottom_next_unread_site">다음 읽지 않은 사이트, %1$s</string>
-    <string name="bottom_next_unread_folder">다음 미읽음 폴더, %1$s</string>
+    <string name="bottom_next_unread_folder">다음 읽지 않은 폴더, %1$s</string>
     <string name="top_level">최상위</string>
-    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nNewsBlur와 공유</string>
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nNewsBlur로 공유함</string>
     <string name="share_comment_hint">공유 댓글 (선택 사항)</string>
     <string name="share_save_newsblur">“%s”을(를) Blurblog에 공유하거나 저장할까요?</string>
     <string name="share_this">공유</string>
@@ -143,15 +143,15 @@
     <string name="train_this">학습</string>
     <string name="ask_ai">AI에 질문</string>
     <string name="story_mark_unread_state">읽음</string>
-    <string name="story_mark_read_state">글 읽음으로 표시</string>
+    <string name="story_mark_read_state">스토리 읽음으로 표시</string>
     <string name="overlay_next">다음</string>
     <string name="overlay_done">완료</string>
-    <string name="overlay_count_toast_N">읽지 않은 기사 %d개</string>
+    <string name="overlay_count_toast_N">읽지 않은 스토리 %d개</string>
     <string name="overlay_count_toast_1">읽지 않은 스토리 1개</string>
     <string name="overlay_text">텍스트</string>
-    <string name="overlay_story">기사</string>
+    <string name="overlay_story">스토리</string>
     <string name="orig_text_failed">죄송합니다. 스토리의 텍스트를 추출할 수 없습니다.</string>
-    <string name="state_all">모두</string>
+    <string name="state_all">전체</string>
     <string name="state_unread">읽지 않음</string>
     <string name="state_focus">집중</string>
     <string name="state_saved">저장됨</string>
@@ -173,7 +173,7 @@
     <string name="profile_shared">공유한 스토리</string>
     <string name="profile_ago">전</string>
     <string name="profile_recent_actvity">활동</string>
-    <string name="profile_recent_interactions">활동</string>
+    <string name="profile_recent_interactions">상호작용</string>
     <string name="profile_button_follow">팔로우</string>
     <string name="profile_button_unfollow">팔로우 취소</string>
     <string name="profile_feed_not_available">이 피드 구독이 취소되었습니다</string>
@@ -192,7 +192,7 @@
     <string name="menu_choose_folders">폴더 선택</string>
     <string name="menu_notifications_choose">알림</string>
     <string name="menu_notifications_disable">알림 끄기</string>
-    <string name="menu_notifications_focus">새로운 관심 스토리 알림</string>
+    <string name="menu_notifications_focus">새 집중 스토리 알림</string>
     <string name="menu_notifications_unread">새 스토리가 올라올 때마다 알림</string>
     <string name="menu_mark_folder_as_read">폴더를 읽음으로 표시</string>
     <string name="menu_sharenewsblur">이 스토리 공유</string>
@@ -201,11 +201,11 @@
     <string name="menu_text_size_s">S</string>
     <string name="menu_text_size_m">M</string>
     <string name="menu_text_size_l">L</string>
-    <string name="menu_text_size_xl">특대</string>
-    <string name="menu_text_size_xxl">특특대</string>
+    <string name="menu_text_size_xl">XL</string>
+    <string name="menu_text_size_xxl">XXL</string>
     <string name="menu_font">글꼴</string>
     <string name="menu_save_story">이 스토리 저장</string>
-    <string name="menu_unsave_story">이 기사 저장 취소</string>
+    <string name="menu_unsave_story">이 스토리 저장 취소</string>
     <string name="menu_newest_mark_older_stories_as_read">이전 항목 읽음으로 표시</string>
     <string name="menu_newest_mark_newer_stories_as_read">더 최신 항목 읽음으로 표시</string>
     <string name="menu_oldest_mark_older_stories_as_read">더 오래된 항목 읽음으로 표시</string>
@@ -224,7 +224,7 @@
     <string name="menu_rename_folder">폴더 이름 변경</string>
     <string name="menu_instafetch_feed">스토리 즉시 가져오기</string>
     <string name="feed_menu_back_to_actions">피드 작업으로 돌아가기</string>
-    <string name="menu_infrequent_cutoff">월간 비정기 기사 수</string>
+    <string name="menu_infrequent_cutoff">업데이트가 드문 사이트 기준(월 스토리 수)</string>
     <string name="menu_intel">인텔리전스 트레이너</string>
     <string name="menu_rename_feed">피드 이름 변경</string>
     <string name="menu_story_list_style_choose">목록 스타일</string>
@@ -234,12 +234,12 @@
     <string name="list_style_list">목록</string>
     <string name="list_style_grid_f">그리드(촘촘하게)</string>
     <string name="list_style_grid_m">그리드(중간)</string>
-    <string name="list_style_grid_c">그리드(성긴)</string>
+    <string name="list_style_grid_c">그리드(넓게)</string>
     <string name="story_content_preview_none">제목만 (없음)</string>
     <string name="story_content_preview_small">2줄(작게)</string>
     <string name="story_content_preview_medium">4줄(중간)</string>
     <string name="story_content_preview_large">6줄 (크게)</string>
-    <string name="mark_read_on_scroll_disabled">읽지 않음으로 표시</string>
+    <string name="mark_read_on_scroll_disabled">읽지 않은 상태로 두기</string>
     <string name="mark_read_on_scroll_enabled">스크롤할 때 읽음으로 표시</string>
     <string name="menu_sort_by">정렬 기준</string>
     <string name="menu_sort_by_name">이름</string>
@@ -252,7 +252,7 @@
     <string name="menu_sort_order_descending">내림차순</string>
     <string name="menu_folder_view">폴더 보기</string>
     <string name="menu_folder_view_nested">중첩</string>
-    <string name="menu_folder_view_flat">플랫</string>
+    <string name="menu_folder_view_flat">평면</string>
     <string name="menu_mute_all">모두 음소거</string>
     <string name="menu_mute_none">음소거 해제</string>
     <string name="menu_select_all">모두 선택</string>
@@ -269,7 +269,7 @@
     <string name="story_saved_timestamp">%s 저장됨</string>
     <string name="your_feeds_search_hint">피드 검색</string>
     <string name="feed_list_clear_search">검색 지우기</string>
-    <string name="story_search_hint">기사 검색</string>
+    <string name="story_search_hint">스토리 검색</string>
     <string name="discover_related_sites_title">관련 사이트</string>
     <string name="discover_show_grid">격자 보기</string>
     <string name="discover_show_list">목록 보기</string>
@@ -281,14 +281,14 @@
     <string name="discover_add">추가</string>
     <string name="discover_subscribed">구독 중</string>
     <string name="discover_updated_today">오늘 업데이트됨</string>
-    <string name="discover_updated_relative">업데이트됨 %s</string>
+    <string name="discover_updated_relative">%s 업데이트됨</string>
     <string name="discover_stale_updated_relative">오래됨 — %s 업데이트</string>
     <string name="discover_stale_date">오래된 피드. 마지막 스토리 %s</string>
     <string name="discover_last_fetched_relative">%s 가져옴</string>
     <string name="try_feed_banner_subtitle">미리보기. 아직 구독하지 않았습니다.</string>
     <string name="try_feed_subscribe_button">구독</string>
     <string name="empty_search_notice">검색어를 입력해 시작하세요</string>
-    <string name="menu_add_feed">피드 추가 + 사이트 탐색</string>
+    <string name="menu_add_feed">사이트 추가 + 탐색</string>
     <string name="adding_feed_progress">피드 추가 중…</string>
     <string name="feed_list_search_hint">피드 검색</string>
     <string name="add_folder_name">폴더 이름을 입력하세요</string>
@@ -317,7 +317,7 @@
     <string name="menu_theme_choose">테마</string>
     <string name="menu_spacing">간격</string>
     <string name="menu_subscription">구독…</string>
-    <string name="description_add_new_folder_icon">새 폴더 아이콘 추가</string>
+    <string name="description_add_new_folder_icon">새 폴더 추가 아이콘</string>
     <string name="menu_loginas">다음 계정으로 로그인…</string>
     <string name="loginas_title">사용자로 로그인</string>
     <string name="empty_list_view_loading">불러오는 중…</string>
@@ -326,7 +326,7 @@
     <string name="empty_list_view_no_stories_unread">읽지 않은 스토리가 없습니다</string>
     <string name="reading_placeholder_select_story">읽을 스토리를 선택하세요</string>
     <string name="empty_list_view_no_unread_stories">읽지 않은 스토리가 없습니다.</string>
-    <string name="empty_list_view_no_focus_stories">Focus에 읽지 않은 기사가 없습니다.\n\n전체 또는 읽지 않음으로 전환하세요.</string>
+    <string name="empty_list_view_no_focus_stories">집중 모드에 읽지 않은 스토리가 없습니다.\n\n전체 또는 읽지 않음으로 전환하세요.</string>
     <string name="empty_list_view_no_saved_stories">저장한 스토리가 없습니다.\n\n전체 또는 읽지 않음으로 전환하세요.</string>
     <string name="login_registration_custom_server">사용자 지정 서버 설정</string>
     <string name="login_registration_reset_url">재설정</string>
@@ -356,10 +356,10 @@
     <string name="setup_instructions_details">NewsBlur에서 이메일 뉴스레터를 읽으려면 위에 표시된 나만의 이메일 주소로 뉴스레터를 전달하세요.\n\nGmail에서 설정 &gt; 전달 및 POP/IMAP으로 이동한 다음 전달 주소 추가를 클릭하세요. 나만의 NewsBlur 이메일 주소를 추가하세요.\n\nGmail에서 이메일 주소 확인 절차를 안내합니다. NewsBlur로 돌아와 \"뉴스레터\" 폴더에서 확인 이메일을 찾으세요.\n\n그런 다음 모든 뉴스레터를 포함하는 필터를 만들고 NewsBlur의 나만의 주소로 전달되도록 설정하세요.</string>
     <string name="copy_email">이메일 복사</string>
     <string name="stories_shortcuts">스토리 단축키</string>
-    <string name="feeds_shortcuts">피드 바로가기</string>
+    <string name="feeds_shortcuts">피드 단축키</string>
     <string name="import_export">가져오기/내보내기…</string>
     <string name="settings">환경설정…</string>
-    <string name="menu_mute_sites">사이트 숨기기…</string>
+    <string name="menu_mute_sites">사이트 음소거…</string>
     <string name="mute_sites">사이트 음소거</string>
     <string name="menu_widget">위젯…</string>
     <string name="menu_notifications">알림…</string>
@@ -375,7 +375,7 @@
     <string name="main_menu_notifications">알림</string>
     <string name="main_menu_interactions">상호작용</string>
     <string name="main_menu_upgrade_premium">프리미엄으로 업그레이드</string>
-    <string name="main_menu_upgrade_archive">Archive로 업그레이드</string>
+    <string name="main_menu_upgrade_archive">아카이브로 업그레이드</string>
     <string name="main_menu_premium_archive">프리미엄 아카이브</string>
     <string name="main_menu_premium_pro">프리미엄 프로</string>
     <string name="main_menu_support_forum">지원 포럼</string>
@@ -383,9 +383,9 @@
     <string name="newsbluropml">NewsBlur-OPML</string>
     <string name="import_export_title">OPML 가져오기/내보내기</string>
     <string name="notifications_title">알림</string>
-    <string name="premium_subscribers_folder">전체 뉴스 피드는 프리미엄 기능입니다</string>
-    <string name="premium_subscribers_allstories">전체 사이트 스토리 읽기는 프리미엄 기능입니다</string>
-    <string name="premium_subscribers_saved_tag">태그별로 저장된 기사를 읽으려면 프리미엄 구독이 필요합니다</string>
+    <string name="premium_subscribers_folder">전체 뉴스 스트림은 프리미엄 기능입니다</string>
+    <string name="premium_subscribers_allstories">모든 사이트 스토리 읽기는 프리미엄 기능입니다</string>
+    <string name="premium_subscribers_saved_tag">태그별로 저장된 스토리를 읽으려면 프리미엄 구독이 필요합니다</string>
     <string name="premium_subscribers_search">검색은 프리미엄 기능입니다</string>
     <string name="premium_subscribers">프리미엄 구독자</string>
     <string name="premium_upgrade_button">프리미엄으로 업그레이드</string>
@@ -394,49 +394,49 @@
     <string name="premium_subscription_renewal">구독이 %s에 갱신됩니다</string>
     <string name="premium_subscription_expiration">구독이 %s에 만료됩니다</string>
     <string name="premium_subscription_no_expiration">구독이 만료되지 않도록 설정되어 있습니다. 와우!</string>
-    <string name="premium_policies">자세한 내용은 NewsBlur의 \'&lt;a href=\"https://newsblur.com/privacy\"&gt;개인정보 처리방침&lt;/a&gt;\' 및 \'&lt;a href=\"https://newsblur.com/tos\"&gt;이용 약관&lt;/a&gt;\'을 참조하세요.</string>
+    <string name="premium_policies">자세한 내용은 NewsBlur의 &lt;a href=\"https://newsblur.com/privacy\"&gt;개인정보 처리방침&lt;/a&gt; 및 &lt;a href=\"https://newsblur.com/tos\"&gt;이용 약관&lt;/a&gt;을 참조하세요.</string>
     <string name="premium_subscription_header">프리미엄 구독</string>
     <string name="archive_subscription_header">프리미엄 아카이브</string>
-    <string name="pro_subscription_header">Premium Pro</string>
+    <string name="pro_subscription_header">프리미엄 프로</string>
     <string name="premium_subscription_title">NewsBlur 프리미엄 구독</string>
     <string name="archive_subscription_title">NewsBlur 프리미엄 아카이브</string>
     <string name="pro_subscription_title">NewsBlur 프리미엄 프로</string>
     <string name="premium_subscription_price">연 $35.99 (월 $3.00)</string>
     <string name="premium_subscription_active">프리미엄 구독이 활성화되어 있습니다</string>
     <string name="archive_subscription_active">프리미엄 아카이브 구독이 활성화되어 있습니다</string>
-    <string name="pro_subscription_active">프리미엄 Pro 구독이 활성화되어 있습니다</string>
+    <string name="pro_subscription_active">프리미엄 프로 구독이 활성화되어 있습니다</string>
     <string name="subscription_manage">구독 관리</string>
     <string name="subscription_details_error">구독 세부정보를 가져오는 중 오류 발생</string>
     <string name="no_subscription_available">사용 가능한 구독이 없습니다</string>
     <string name="subscription_unavailable">현재 Android에서는 사용할 수 없습니다</string>
     <string name="subscription_coming_soon">출시 예정</string>
-    <string name="subscription_upgrade_from_premium">Premium에서 업그레이드</string>
+    <string name="subscription_upgrade_from_premium">프리미엄에서 업그레이드</string>
     <string name="subscription_upgrade_from_archive">아카이브에서 업그레이드</string>
     <string name="subscription_price_yearly">%1$s/년 (%2$s/월)</string>
     <string name="subscription_price_monthly">%1$s/월</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
     <string name="premium_archive_includes_above">프리미엄 아카이브 구독에는 위의 모든 항목이 포함됩니다</string>
-    <string name="premium_pro_includes_above">프리미엄 Pro 구독에는 위의 모든 항목이 포함됩니다</string>
+    <string name="premium_pro_includes_above">프리미엄 프로 구독에는 위의 모든 항목이 포함됩니다</string>
     <string name="premium_enable_sites">최대 1,024개 사이트 팔로우</string>
     <string name="premium_sync">사이트 업데이트 빈도 최대 5배 증가</string>
-    <string name="premium_read_by_folder">뉴스 피드 스트림(폴더별로 읽기)</string>
+    <string name="premium_read_by_folder">뉴스 스트림(폴더별로 읽기)</string>
     <string name="premium_search">사이트 및 폴더 검색</string>
     <string name="premium_searchable_tags">검색 가능한 태그로 스토리 저장</string>
-    <string name="premium_privacy_options">블러그의 개인정보 옵션</string>
+    <string name="premium_privacy_options">Blurblog 개인정보 보호 옵션</string>
     <string name="premium_custom_rss">저장한 스토리용 맞춤 RSS 피드</string>
     <string name="premium_text_view">텍스트 보기에서 스토리 내용을 편리하게 추출합니다</string>
-    <string name="premium_discover_related">관련 글과 사이트 찾아보기</string>
-    <string name="premium_shiloh">Lyric, NewsBlur의 배고픈 사냥개에게 6일 동안 먹이를 줍니다</string>
+    <string name="premium_discover_related">관련 스토리와 사이트 찾아보기</string>
+    <string name="premium_shiloh">NewsBlur의 배고픈 사냥개 Lyric에게 6일 동안 먹이를 줍니다</string>
     <string name="archive_everything_premium">물론 프리미엄 구독의 모든 기능 포함</string>
     <string name="archive_enable_sites">최대 4,096개 사이트 팔로우</string>
-    <string name="archive_marked_as_read">기사를 자동으로 읽음으로 표시할 시점 선택</string>
+    <string name="archive_marked_as_read">스토리를 자동으로 읽음으로 표시할 시점 선택</string>
     <string name="archive_customize_auto_read">사이트 또는 폴더별 자동 읽음 설정</string>
     <string name="archive_story_searchable_forever">모든 사이트의 모든 스토리를 영구 보관하고 검색할 수 있습니다</string>
     <string name="archive_back_filled">페이지 나누기를 지원하는 피드는 완전한 아카이브를 위해 이전 항목도 채워집니다</string>
-    <string name="archive_train_full_text">전체 텍스트 콘텐츠로 기사 학습하기</string>
-    <string name="archive_discover_related">보관함에서 관련 이야기를 찾아보세요</string>
-    <string name="archive_export_trained_stories">폴더의 학습된 글을 RSS 피드로 내보내기</string>
-    <string name="archive_stories_unread_forever">기사를 읽지 않은 상태로 계속 보관할 수 있습니다</string>
+    <string name="archive_train_full_text">전체 텍스트 콘텐츠로 스토리 학습하기</string>
+    <string name="archive_discover_related">아카이브에서 관련 스토리를 찾아보세요</string>
+    <string name="archive_export_trained_stories">폴더의 학습된 스토리를 RSS 피드로 내보내기</string>
+    <string name="archive_stories_unread_forever">스토리를 읽지 않은 상태로 계속 둘 수 있습니다</string>
     <string name="archive_ask_ai">스토리에 대해 AI에 질문하기</string>
     <string name="archive_filter_by_date_range">날짜 범위로 스토리 필터링</string>
     <string name="archive_train_folder">폴더 전체에 학습 적용</string>
@@ -449,11 +449,11 @@
     <string name="pro_natural_language_filters">자연어 필터</string>
     <string name="pro_natural_language_search">자연어 검색</string>
     <string name="settings_cat_offline">오프라인 읽기</string>
-    <string name="settings_enable_offline">글 다운로드</string>
-    <string name="settings_enable_offline_sum">백그라운드에서 주기적으로 글 가져오기</string>
+    <string name="settings_enable_offline">스토리 다운로드</string>
+    <string name="settings_enable_offline_sum">백그라운드에서 주기적으로 스토리 가져오기</string>
     <string name="settings_enable_image_prefetch">이미지 다운로드</string>
     <string name="settings_enable_image_prefetch_sum">오프라인에서 읽을 수 있도록 이미지를 미리 가져오기</string>
-    <string name="settings_keep_old_stories">읽은 후에도 글 보관</string>
+    <string name="settings_keep_old_stories">읽은 후에도 스토리 보관</string>
     <string name="settings_keep_old_stories_sum">저장 공간 사용량을 줄이려면 사용 중지하세요</string>
     <string name="mute_config_title">무료 일반 계정으로 최대 64개 사이트를 팔로우할 수 있습니다</string>
     <string name="mute_config_message">%d개 사이트를 음소거하거나 가장 인기 있는 사이트로 초기화하세요.</string>
@@ -464,7 +464,7 @@
     <string name="mute_config_sites">%1$d/%2$d</string>
     <string name="mute_config_sites_available">사용 가능한 사이트 %d개</string>
     <string name="mute_config_sites_over">%d개 초과</string>
-    <string name="menu_network_select">다음으로 다운로드…</string>
+    <string name="menu_network_select">다운로드에 사용할 네트워크…</string>
     <string name="menu_network_select_sum">선택한 네트워크에서만 백그라운드 데이터 사용</string>
     <string name="menu_network_select_opt_any">모든 네트워크</string>
     <string name="menu_network_select_opt_nomo">모든 Wi-Fi 또는 이더넷</string>
@@ -492,26 +492,26 @@
     <string name="settings_cat_feed_list">피드 목록</string>
     <string name="setting_feed_list_order">피드 목록 순서…</string>
     <string name="settings_enable_row_global_shared">전체 공유 스토리 표시</string>
-    <string name="settings_enable_row_global_shared_sum">전 세계 공유 스토리 폴더 표시</string>
-    <string name="settings_enable_row_infrequent_stories">드물게 업데이트되는 스토리 표시</string>
-    <string name="settings_enable_row_infrequent_stories_sum">자주 업데이트되지 않는 사이트 기사 폴더 표시</string>
-    <string name="settings_enable_row_daily_briefing">일일 브리핑 표시</string>
+    <string name="settings_enable_row_global_shared_sum">전체 공유 스토리 폴더 표시</string>
+    <string name="settings_enable_row_infrequent_stories">업데이트가 드문 사이트의 스토리 표시</string>
+    <string name="settings_enable_row_infrequent_stories_sum">업데이트가 드문 사이트의 스토리 폴더 표시</string>
+    <string name="settings_enable_row_daily_briefing">데일리 브리핑 표시</string>
     <string name="settings_enable_row_daily_briefing_sum">데일리 브리핑 폴더 표시</string>
     <string name="settings_enable_row_widely_read_stories">많이 읽힌 스토리 표시</string>
     <string name="settings_enable_row_widely_read_stories_sum">많이 읽힌 스토리 폴더 표시</string>
-    <string name="settings_enable_row_long_reads">긴 기사 표시</string>
+    <string name="settings_enable_row_long_reads">긴 글 표시</string>
     <string name="settings_enable_row_long_reads_sum">긴 글 폴더 표시</string>
-    <string name="settings_enable_row_good_reads">추천 읽을거리 표시</string>
-    <string name="settings_enable_row_good_reads_sum">좋은 스토리 폴더 표시</string>
+    <string name="settings_enable_row_good_reads">좋은 글 표시</string>
+    <string name="settings_enable_row_good_reads_sum">좋은 글 폴더 표시</string>
     <string name="settings_cat_story_list">스토리 목록</string>
     <string name="settings_cat_story_layout">스토리 레이아웃</string>
     <string name="settings_app_icon">앱 아이콘</string>
     <string name="settings_app_icon_choose">아이콘 선택</string>
     <string name="settings_app_icon_summary">밝은 모드와 어두운 모드로 제공되는 12가지 색상 스타일입니다.</string>
-    <string name="settings_app_icon_footer">Premium 구독자는 원하는 NewsBlur 아이콘을 선택할 수 있습니다. 각 스타일에는 밝은 테마와 어두운 테마가 포함됩니다.</string>
+    <string name="settings_app_icon_footer">프리미엄 구독자는 원하는 NewsBlur 아이콘을 선택할 수 있습니다. 각 스타일에는 밝은 테마와 어두운 테마가 포함됩니다.</string>
     <string name="settings_app_icon_premium">프리미엄</string>
     <string name="settings_app_icon_light">밝게</string>
-    <string name="settings_app_icon_dark">다크</string>
+    <string name="settings_app_icon_dark">어둡게</string>
     <string name="settings_app_icon_save_failed">앱 아이콘을 변경할 수 없습니다</string>
     <string name="settings_app_icon_appearance_light">밝게</string>
     <string name="settings_app_icon_appearance_auto">둘 다 사용</string>
@@ -519,10 +519,10 @@
     <string name="settings_app_icon_appearance_light_caption">기기 설정과 관계없이 밝은 아이콘을 유지합니다.</string>
     <string name="settings_app_icon_appearance_auto_caption">아이콘은 기기의 라이트 및 다크 모드를 따릅니다.</string>
     <string name="settings_app_icon_appearance_dark_caption">기기 설정과 관계없이 어두운 아이콘을 유지합니다.</string>
-    <string name="oldest">가장 오래된 순</string>
+    <string name="oldest">오래된순</string>
     <string name="newest">최신순</string>
     <string name="menu_story_order">스토리 순서</string>
-    <string name="settings_story_order">글 정렬 순서…</string>
+    <string name="settings_story_order">스토리 순서…</string>
     <string name="story_header_options">옵션</string>
     <string name="story_header_search">검색</string>
     <string name="story_header_related_sites">관련 사이트</string>
@@ -543,9 +543,9 @@
     <string name="menu_story_content_preview">스토리 콘텐츠 미리보기</string>
     <string name="menu_story_thumbnail_preview">썸네일 미리보기</string>
     <string name="menu_mark_read_on_scroll">스크롤 시 읽음으로 표시</string>
-    <string name="settings_read_filter">읽은 스토리 필터…</string>
-    <string name="settings_read_filter_title">표시된 스토리</string>
-    <string name="menu_read_filter">읽은 스토리 필터</string>
+    <string name="settings_read_filter">읽음 상태 필터…</string>
+    <string name="settings_read_filter_title">표시할 스토리</string>
+    <string name="menu_read_filter">읽음 상태 필터</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
@@ -555,7 +555,7 @@
         <item>취소</item>
     </string-array>
     <string-array name="mark_older_read_options">
-        <item>이전 글 읽음으로 표시</item>
+        <item>이전 스토리를 읽음으로 표시</item>
         <item>취소</item>
     </string-array>
     <plurals name="story_header_mark_read_older_than_days">
@@ -574,24 +574,24 @@
         <item quantity="other">+ %d개 사이트 더 보기</item>
     </plurals>
     <string-array name="mark_newer_read_options">
-        <item>최신 기사 읽음으로 표시</item>
+        <item>이후 스토리를 읽음으로 표시</item>
         <item>취소</item>
     </string-array>
     <string name="settings_auto_open_first_unread">첫 번째 스토리 자동 열기</string>
-    <string name="settings_auto_open_first_unread_sum">기사 목록에서 읽지 않은 첫 번째 기사를 자동으로 엽니다</string>
+    <string name="settings_auto_open_first_unread_sum">스토리 목록에서 읽지 않은 첫 번째 스토리를 자동으로 엽니다</string>
     <string name="settings_mark_read_on_feed_scroll">스크롤할 때 스토리 제목을 읽음으로 표시</string>
     <string name="settings_mark_read_on_feed_scroll_sum">스크롤해 지나간 스토리를 자동으로 읽음으로 표시</string>
     <string name="settings_story_clustering">관련 스토리 묶기</string>
     <string name="settings_story_clustering_summary">스토리 제목 아래에 다른 피드의 중복 스토리 표시</string>
     <string name="settings_cluster_matches">클러스터 일치 항목</string>
-    <string name="settings_cluster_matches_summary">클러스터에 중복 제목만 표시할지, 관련 기사도 표시할지 선택하세요</string>
+    <string name="settings_cluster_matches_summary">클러스터에 중복 제목만 표시할지, 관련 스토리도 표시할지 선택하세요</string>
     <string name="settings_story_clustering_save_failed">스토리 그룹화 설정을 저장하지 못했습니다</string>
     <string name="settings_story_clustering_title_only">제목만</string>
     <string name="settings_cluster_mode_title_match_only">제목만 일치</string>
-    <string name="settings_cluster_mode_title_match_plus_related">제목 일치 항목 및 관련 기사</string>
+    <string name="settings_cluster_mode_title_match_plus_related">제목 일치 + 관련 스토리</string>
     <string name="settings_cluster_mark_read_matches">일치하는 스토리를 읽음으로 표시</string>
     <string name="settings_cluster_mark_read_related">관련 스토리를 읽음으로 표시</string>
-    <string name="settings_cluster_mark_read_matches_summary">기사를 읽으면 일치하는 기사도 읽음으로 표시합니다.</string>
+    <string name="settings_cluster_mark_read_matches_summary">스토리를 읽으면 일치하는 스토리도 읽음으로 표시합니다.</string>
     <string name="settings_cluster_mark_read_related_summary">스토리를 읽으면 일치하는 스토리와 관련 스토리도 읽음으로 표시합니다.</string>
     <string name="settings_cluster_mark_read_save_failed">관련 스토리 읽음 설정을 저장하지 못했습니다</string>
     <string name="settings_story_clustering_title">제목</string>
@@ -599,7 +599,7 @@
     <string name="settings_story_clustering_plus">+</string>
     <string name="story_cluster_badge_match">일치</string>
     <string name="story_cluster_badge_related">관련</string>
-    <string name="settings_mark_story_read">기사를 읽음으로 표시…</string>
+    <string name="settings_mark_story_read">스토리를 읽음으로 표시…</string>
     <string name="settings_mark_story_read_title">스토리를 읽음으로 표시</string>
     <string name="mark_story_read_immediately">선택한 경우에만</string>
     <string name="mark_story_read_on_scroll">스크롤하거나 선택할 때</string>
@@ -627,20 +627,20 @@
         <item>@string/mark_story_read_60_seconds</item>
         <item>@string/mark_story_read_manually</item>
     </string-array>
-    <string name="settings_social">기사 공유</string>
+    <string name="settings_social">스토리 공유</string>
     <string name="settings_show_public_comments">공개 댓글 표시</string>
     <string name="settings_reading">읽기</string>
     <string name="settings_always_show_reading_controls">읽기 컨트롤 항상 표시</string>
     <string name="settings_always_show_reading_controls_sum">스크롤하는 동안 이전, 다음 등의 읽기 컨트롤을 계속 표시합니다.</string>
-    <string name="settings_show_ask_ai">Ask AI 표시</string>
+    <string name="settings_show_ask_ai">AI에게 질문 표시</string>
     <string name="settings_content_preview">콘텐츠 미리보기 텍스트…</string>
     <string name="settings_thumbnails_style">이미지 미리보기 썸네일…</string>
     <string name="settings_preview_images_title">이미지 미리보기</string>
-    <string name="settings_preview_images_segment_off">끄기</string>
+    <string name="settings_preview_images_segment_off">끔</string>
     <string name="settings_preview_images_segment_left_small">L 작게</string>
-    <string name="settings_preview_images_segment_left_large">L 큰 이미지</string>
+    <string name="settings_preview_images_segment_left_large">L 크게</string>
     <string name="settings_preview_images_segment_right_small">R 작게</string>
-    <string name="settings_preview_images_segment_right_large">오른쪽 크게</string>
+    <string name="settings_preview_images_segment_right_large">R 크게</string>
     <string name="settings_notifications">알림</string>
     <string name="settings_enable_notifications">알림 활성화</string>
     <string name="ask_ai_upgrade_archive">프리미엄 아카이브로 업그레이드</string>
@@ -653,7 +653,7 @@
     <string name="ask_ai_transcribing">받아쓰는 중…</string>
     <string name="ask_ai_microphone_permission_denied">마이크 권한이 거부되었습니다</string>
     <string name="ask_ai_microphone_error">오디오를 녹음할 수 없습니다</string>
-    <string name="settings_confirm_mark_all_read_note">사이트의 모든 스토리를 읽음으로 표시할 때는 항상 확인을 요청합니다. 읽음 표시 버튼을 길게 눌러 더 많은 옵션을 확인하세요.</string>
+    <string name="settings_confirm_mark_all_read_note">모든 사이트 스토리를 읽음으로 표시할 때는 항상 확인을 요청합니다. 읽음 표시 버튼을 길게 눌러 더 많은 옵션을 확인하세요.</string>
     <string name="settings_confirm_mark_all_read_segment_both">둘 다</string>
     <string name="settings_confirm_mark_all_read_segment_folders">폴더</string>
     <string name="settings_confirm_mark_all_read_segment_never">안 함</string>
@@ -670,9 +670,9 @@
         <item>@string/story_content_preview_medium</item>
         <item>@string/story_content_preview_large</item>
     </string-array>
-    <string name="story_thumbnail_left_hand_small">왼쪽 - 작게</string>
+    <string name="story_thumbnail_left_hand_small">왼쪽 작게</string>
     <string name="story_thumbnail_left_hand_large">왼쪽 크게</string>
-    <string name="story_thumbnail_right_hand_small">오른쪽 작은 크기</string>
+    <string name="story_thumbnail_right_hand_small">오른쪽 작게</string>
     <string name="story_thumbnail_right_hand_large">오른쪽 크게</string>
     <string name="story_thumbnail_no_image_preview">이미지 미리보기 없음</string>
     <string-array name="thumbnail_style_entries">
@@ -687,12 +687,12 @@
     <string name="infrequent_15">월 15개 미만의 스토리</string>
     <string name="infrequent_30">월 30개 미만의 스토리</string>
     <string name="infrequent_60">월 60개 미만 스토리</string>
-    <string name="infrequent_90">월 90개 미만의 기사</string>
+    <string name="infrequent_90">월 90개 미만의 스토리</string>
     <string name="story_intel_dialog_title">이 스토리에서 마음에 드는 점과 마음에 들지 않는 점은 무엇인가요?</string>
     <string name="feed_intel_dialog_title">이 사이트에서 마음에 드는 점과 마음에 들지 않는 점은 무엇인가요?</string>
     <string name="intel_title_header">스토리 제목</string>
     <string name="feed_intel_title_header">제목</string>
-    <string name="intel_tag_header">기사 태그</string>
+    <string name="intel_tag_header">스토리 태그</string>
     <string name="feed_intel_tag_header">태그</string>
     <string name="intel_author_header">스토리 작성자</string>
     <string name="feed_intel_author_header">작성자</string>
@@ -701,10 +701,10 @@
     <string name="explainer_super_dislike">매우 싫어요</string>
     <string name="explainer_like">좋아요</string>
     <string name="explainer_dislike">싫어요</string>
-    <string name="explainer_beats">비트</string>
+    <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">좋아요 하나가 싫어요 여러 개를 무효화합니다</string>
-    <string name="explainer_example1_result">포커스 보기에서 스토리가 표시됩니다</string>
-    <string name="explainer_example2_header">슈퍼 싫어요 하나가 모든 설정을 덮어씁니다</string>
+    <string name="explainer_example1_result">집중 보기에 스토리가 표시됩니다</string>
+    <string name="explainer_example2_header">매우 싫어요 하나는 다른 모든 것보다 우선합니다</string>
     <string name="explainer_example2_result">스토리는 항상 숨김 처리됩니다</string>
     <string name="auto">자동</string>
     <string name="light">밝게</string>
@@ -715,19 +715,19 @@
     <string name="sync_status_housekeeping">정리 중…</string>
     <string name="sync_status_actions">읽기 작업 %d개 동기화 중…</string>
     <string name="sync_status_recounts">읽음 처리 동기화 중…</string>
-    <string name="sync_status_ffsync">전송 중…</string>
+    <string name="sync_status_ffsync">불러오는 중…</string>
     <string name="sync_status_cleanup">정리 중…</string>
     <string name="sync_status_starred">저장된 스토리 작업 동기화 중…</string>
-    <string name="sync_status_stories">새 글을 가져오는 중…</string>
-    <string name="sync_status_unreads">읽지 않은 기사를%s저장하는 중…</string>
+    <string name="sync_status_stories">새 스토리를 가져오는 중…</string>
+    <string name="sync_status_unreads">읽지 않은 스토리%s저장 중…</string>
     <string name="sync_status_images">%d개 이미지 저장 중…</string>
     <string name="sync_status_offline">오프라인</string>
     <string name="sync_status_feed_add">피드 추가 중</string>
     <string name="sync_status_done">모두 완료</string>
     <string name="volume_key_navigation">볼륨 키 탐색…</string>
-    <string name="off">끄기</string>
-    <string name="volume_up_next">위쪽 키 = 다음 게시물</string>
-    <string name="volume_down_next">아래쪽 화살표 = 다음 스토리</string>
+    <string name="off">끔</string>
+    <string name="volume_up_next">볼륨 높이기 = 다음 스토리</string>
+    <string name="volume_down_next">볼륨 낮추기 = 다음 스토리</string>
     <string-array name="volume_key_navigation_entries">
         <item>@string/off</item>
         <item>@string/volume_up_next</item>
@@ -750,7 +750,7 @@
     <string name="gest_action_back">이전 목록으로 돌아가기</string>
     <string name="gest_action_toggle_read">스토리 읽음 상태 전환</string>
     <string name="gest_action_markread">스토리를 읽음으로 표시</string>
-    <string name="gest_action_markunread">기사를 읽지 않음으로 표시</string>
+    <string name="gest_action_markunread">스토리를 읽지 않음으로 표시</string>
     <string name="gest_action_save">스토리 저장</string>
     <string name="gest_action_unsave">스토리 저장 취소</string>
     <string name="gest_action_statistics">사이트 통계</string>
@@ -801,7 +801,7 @@
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string name="story_notification_channel_name">새 기사</string>
+    <string name="story_notification_channel_name">새 스토리</string>
     <string name="go_to_feed">피드로 이동</string>
     <string name="js_get_selection">(function(){return window.getSelection().toString()})()</string>
     <string name="search">검색</string>
@@ -813,21 +813,21 @@
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">피드 알림 없음</string>
     <string name="notification_permissions_context">알림을 게시하려면 권한이 필요합니다</string>
-    <string name="notification_permissions_rationale">알림을 사용 설정하려면 다시 시도하기 전에 앱\' 설정에서 알림 권한을 수동으로 추가해야 합니다</string>
+    <string name="notification_permissions_rationale">알림을 사용 설정하려면 다시 시도하기 전에 앱 설정에서 알림 권한을 수동으로 추가해야 합니다</string>
     <string name="write_storage_permission_opml">OPML 내보내기에는 저장소 쓰기 권한이 필요합니다</string>
-    <string name="story_saved">게시물을 저장됨으로 표시</string>
-    <string name="story_unsaved">스토리를 저장 취소된 것으로 표시했습니다</string>
+    <string name="story_saved">스토리를 저장했습니다</string>
+    <string name="story_unsaved">스토리 저장을 취소했습니다</string>
     <string name="story_read">스토리를 읽음으로 표시함</string>
     <string name="story_unread">스토리를 읽지 않음으로 표시했습니다</string>
     <string name="unread_stories">읽지 않은 스토리</string>
-    <string name="focused_stories">집중해서 볼 스토리</string>
+    <string name="focused_stories">집중 스토리</string>
     <string name="saved_stories">저장한 스토리</string>
     <string name="short_next_story">다음 스토리</string>
-    <string name="short_previous_story">이전 기사</string>
+    <string name="short_previous_story">이전 스토리</string>
     <string name="short_text_view">텍스트 보기</string>
     <string name="short_page_down">페이지 아래로</string>
     <string name="short_page_down_key">스페이스</string>
-    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up">페이지 위로</string>
     <string name="short_page_up_key">\u21E7 스페이스</string>
     <string name="short_next_unread_story">다음 읽지 않은 스토리</string>
     <string name="short_toggle_read_unread">읽음/읽지 않음 전환</string>
@@ -835,13 +835,13 @@
     <string name="short_open_in_browser">브라우저에서 열기</string>
     <string name="short_share_this_story">이 스토리 공유</string>
     <string name="short_scroll_to_comments">댓글로 이동</string>
-    <string name="short_open_story_trainer">기사 트레이너 열기</string>
+    <string name="short_open_story_trainer">스토리 트레이너 열기</string>
     <string name="short_open_all_stories">모든 사이트 스토리 열기</string>
     <string name="short_switch_views">보기 전환</string>
     <string name="short_add_site">사이트 추가</string>
     <string name="registering">등록 중...</string>
-    <string name="renaming_feed_message">피드 이름 변경 중 %s</string>
-    <string name="renaming_folder_message">폴더 이름 변경 중 %s</string>
+    <string name="renaming_feed_message">피드 %s 이름 변경 중</string>
+    <string name="renaming_folder_message">폴더 %s 이름 변경 중</string>
     <string name="parent_folder">상위 폴더</string>
     <string name="folder_added">폴더가 추가되었습니다</string>
     <string name="new_folder_parent">위치: %1$s</string>
@@ -864,19 +864,19 @@
     <string name="ui_753a22b2eb61">알림</string>
     <string name="ui_771ee100da2b">키워드 섹션</string>
     <string name="ui_7c522fb68f07">원하는 시간에 주요 스토리 요약을 받아보세요.</string>
-    <string name="ui_7f7e956b2244">매일 브리핑을 설정해 가장 중요한 기사를 요약해 보세요.</string>
+    <string name="ui_7f7e956b2244">데일리 브리핑을 설정해 가장 중요한 스토리의 요약을 받아 보세요.</string>
     <string name="ui_7ff5a6dafd80">섹션</string>
     <string name="ui_80f7bcbc57b0">브리핑 생성 빈도와 시간을 선택하세요</string>
     <string name="ui_a4d5830966af">원하는 일정에 맞춰 브리핑 자동 생성</string>
     <string name="ui_a92076d4b9e3">데일리 브리핑을 작성할 모델을 선택하세요</string>
     <string name="ui_a970fbbd6df8">자동 생성</string>
-    <string name="ui_a9dc7e4dcba7">일일 브리핑 설정</string>
+    <string name="ui_a9dc7e4dcba7">데일리 브리핑 설정</string>
     <string name="ui_bbfa773e5a63">닫기</string>
     <string name="ui_c2d462f8f6da">데일리 브리핑에 포함할 스토리 선택</string>
-    <string name="ui_d521ea8640b5">일일 브리핑 생성</string>
+    <string name="ui_d521ea8640b5">데일리 브리핑 생성</string>
     <string name="ui_df174a3f2faa">사용 설정됨</string>
     <string name="ui_df2164622bcf">데일리 브리핑을 불러올 수 없습니다</string>
-    <string name="ui_eaed56ec84ae">일일 브리핑</string>
+    <string name="ui_eaed56ec84ae">데일리 브리핑</string>
     <string name="ui_efc007a393f6">저장</string>
     <string name="ui_f530db58b3e5">키워드</string>
     <string name="ui_fdafe86c10a4">일치하는 스토리가 있는 섹션만 포함됩니다</string>
@@ -901,17 +901,17 @@
     <string name="i18n_sponsored">스폰서</string>
     <string name="i18n_discover_more_to_read">읽을거리를 더 찾아보세요</string>
     <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">사이트를 찾을 수 없습니다. URL로 사이트를 추가할 수도 있습니다.</string>
-    <string name="i18n_add_discover_sites">사이트 추가 + 검색</string>
+    <string name="i18n_add_discover_sites">사이트 추가 + 탐색</string>
     <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">RSS가 없는 페이지에서 피드를 만드세요. NewsBlur가 페이지의 스토리를 찾아 업데이트를 확인합니다. 프리미엄 아카이브가 필요합니다.</string>
     <string name="onboarding_delete_account">계정 삭제</string>
     <string name="onboarding_your_account_has_been_deleted">계정이 삭제되었습니다.</string>
-    <string name="onboarding_disconnect_newsblur_from_sign_in_with_apple_in_your_apple_account">권한 삭제를 완료하려면 Apple 계정 설정에서 NewsBlur을(를) Apple로 로그인에서 연결 해제하세요.</string>
+    <string name="onboarding_disconnect_newsblur_from_sign_in_with_apple_in_your_apple_account">권한 삭제를 완료하려면 Apple 계정 설정에서 NewsBlur를 Apple로 로그인에서 연결 해제하세요.</string>
     <string name="onboarding_apple_account_settings">Apple 계정 설정</string>
     <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">계정을 삭제하면 피드, 저장한 스토리, 계정 데이터가 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.</string>
     <string name="onboarding_confirm_your_password">비밀번호 확인</string>
-    <string name="onboarding_type_delete_to_permanently_delete_your_account">계정을 영구적으로 삭제하려면 %1$s을 입력하세요.</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">계정을 영구적으로 삭제하려면 %1$s을(를) 입력하세요.</string>
     <string name="onboarding_permanently_delete_account">계정 영구 삭제</string>
-    <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">사람들을 \n 하나로 모아 세상에 대해 이야기하는 개인 뉴스 리더입니다.</string>
+    <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">사람들을 하나로 모아\n세상에 대해 이야기하게 하는 개인 뉴스 리더입니다.</string>
     <string name="onboarding_or">또는</string>
     <string name="onboarding_enter_your_existing_newsblur_username_or_email_and_newsblur_passw">기존 NewsBlur 사용자 이름 또는 이메일과 NewsBlur 비밀번호를 입력하세요. Apple 또는 Google 이메일은 다를 수 있습니다.</string>
     <string name="onboarding_signing_in">로그인 중…</string>
@@ -922,7 +922,7 @@
     <string name="onboarding_last_used">최근 사용</string>
     <string name="onboarding_loading_interests">관심사 불러오는 중</string>
     <string name="onboarding_finding_feeds_for_you_to_explore">둘러볼 피드를 찾는 중</string>
-    <string name="onboarding_retry_icons">아이콘 다시 시도</string>
+    <string name="onboarding_retry_icons">아이콘 다시 불러오기</string>
     <string name="onboarding_search_all_sites">모든 사이트 검색</string>
     <string name="onboarding_no_interests_or_sites_found_try_another_search">관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.</string>
     <string name="onboarding_try_search_again">다시 검색</string>
@@ -948,9 +948,9 @@
     <string name="onboarding_create_account">계정 만들기</string>
     <string name="onboarding_sign_in">로그인</string>
     <string name="onboarding_already_have_an_account_sign_in">이미 계정이 있으신가요? 로그인</string>
-    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlur을(를) 처음 이용하시나요? 계정 만들기</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">NewsBlur를 처음 이용하시나요? 계정 만들기</string>
     <string name="onboarding_use_a_custom_server">사용자 지정 서버 사용</string>
-    <string name="onboarding_verify_with_provider">%1$s으로 인증</string>
+    <string name="onboarding_verify_with_provider">%1$s 계정으로 인증</string>
     <string name="setup_close_setup">설정 닫기</string>
     <string name="setup_start_reading">읽기 시작</string>
     <string name="setup_continue">계속</string>
@@ -978,7 +978,7 @@
     </plurals>
     <string name="setup_included_in_bundle">번들에 포함됨</string>
     <string name="setup_include_in_bundle">번들에 포함</string>
-    <string name="setup_reader_ready_add_feeds_anytime">리더가 준비되었습니다. 언제든지 피드 추가에서 사이트 둘러보기를 통해 피드를 추가하세요.</string>
+    <string name="setup_reader_ready_add_feeds_anytime">리더가 준비되었습니다. 언제든지 ‘사이트 추가 + 탐색’에서 피드를 추가하세요.</string>
     <string name="setup_reading_list_yours">나만의 읽기 목록. 내가 선택한 모든 항목을 한곳에.</string>
     <plurals name="setup_feed_count">
         <item quantity="other">피드 %1$d개</item>
@@ -986,13 +986,13 @@
     <string name="setup_newsblur_forum">NewsBlur 포럼</string>
     <string name="setup_newsblur_forum_description">질문하고 아이디어를 나누세요</string>
     <string name="setup_handle_on_x">X에서 %1$s</string>
-    <string name="setup_samuelclay_on_x_description">NewsBlur의 제작자가 만든</string>
+    <string name="setup_samuelclay_on_x_description">NewsBlur 제작자의 소식</string>
     <string name="setup_newsblur_on_x_description">뉴스 및 업데이트</string>
     <plurals name="setup_feeds_could_not_be_added">
         <item quantity="other">%1$d개의 피드를 %2$s에 추가할 수 없습니다. %3$s</item>
     </plurals>
     <plurals name="setup_stories_per_month">
-        <item quantity="other">%1$d개 스토리/월</item>
+        <item quantity="other">월 %1$d개 스토리</item>
     </plurals>
     <string name="setup_feed_stale_last_story">오래됨 · 마지막 스토리 %1$s</string>
     <string name="add_site_url_or_search">%1$s 또는 검색</string>
@@ -1010,7 +1010,7 @@
     <string name="discover_tab_popular">인기</string>
     <string name="discover_tab_newsletters">뉴스레터</string>
     <string name="discover_tab_podcasts">팟캐스트</string>
-    <string name="discover_tab_heading">%1$s 발견하기</string>
+    <string name="discover_tab_heading">%1$s 둘러보기</string>
     <string name="discover_hint_search">사이트 검색 또는 URL 붙여넣기</string>
     <string name="discover_hint_popular">인기 사이트 검색</string>
     <string name="discover_hint_youtube">채널을 검색하거나 URL 붙여넣기</string>
@@ -1075,7 +1075,7 @@
     <string name="briefing_story_count">스토리 수</string>
     <string name="briefing_writing_style">글쓰기 스타일</string>
     <string name="briefing_style_bullets">글머리 기호</string>
-    <string name="briefing_style_editorial">편집</string>
+    <string name="briefing_style_editorial">서술형</string>
     <string name="briefing_style_headlines">헤드라인</string>
     <string name="briefing_filter">필터</string>
     <string name="briefing_keyword_section">키워드 섹션 %1$d</string>

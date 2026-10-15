@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ đã chia sẻ %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ Trang web tiện ích";
 "%@ ago" = "%@ trước";
+"%@ comments" = "%@ bình luận";
+"%@ days" = "%@ ngày";
 "%@ feed" = "%@ nguồn cấp dữ liệu";
 "%@ focused stories" = "%@ bài viết được chú ý";
 "%@ folder" = "Thư mục %@";
 "%@ is now following you." = "%@ hiện đang theo dõi bạn.";
 "%@ opens" = "%@ lượt mở";
+"%@ or search" = "%@ hoặc tìm kiếm";
+"%@ public comments" = "%@ bình luận công khai";
 "%@ searches" = "%@ lượt tìm kiếm";
+"%@ shares" = "%@ lượt chia sẻ";
 "%@ stories" = "%@ bài viết";
 "%@ stories left" = "Còn %@ bài viết";
 "%@ stories/month" = "%@ bài/tháng";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld giờ trước";
 "%ldm ago" = "%ld phút trước";
 "%ldw ago" = "%ld tuần trước";
+"+ %@ more sites" = "+ %@ trang khác";
 "..." = "...";
 "1 Widget Site" = "1 trang web tiện ích";
 "1,000 stories" = "1.000 bài viết";
@@ -66,6 +72,7 @@
 "Add Story List" = "Thêm danh sách bài viết";
 "Add Story List After" = "Thêm danh sách tin phía sau";
 "Add Story List Before" = "Thêm danh sách tin phía trước";
+"Add Tag" = "Thêm thẻ";
 "Add To" = "Thêm vào";
 "Add custom keyword filters that become their own briefing sections" = "Thêm bộ lọc từ khóa tùy chỉnh để tạo các mục riêng trong bản tin tổng hợp";
 "Add feed" = "Thêm nguồn tin";
@@ -111,6 +118,7 @@
 "All stories" = "Tất cả bài viết";
 "Alphabetical" = "Theo thứ tự bảng chữ cái";
 "Already have feeds?" = "Bạn đã có nguồn tin?";
+"Also published by %@ sites" = "Cũng được đăng trên %@ trang";
 "Analyze" = "Phân tích";
 "App Badge" = "Huy hiệu ứng dụng";
 "App Icon" = "Biểu tượng ứng dụng";
@@ -235,6 +243,7 @@
 "Download stories" = "Tải bài viết xuống";
 "Download text" = "Tải văn bản xuống";
 "Download using" = "Tải xuống bằng";
+"Edit" = "Chỉnh sửa";
 "Edit NewsBlur share…" = "Chỉnh sửa chia sẻ NewsBlur…";
 "Edit your comment" = "Chỉnh sửa bình luận của bạn";
 "Edit your reply" = "Chỉnh sửa câu trả lời của bạn";
@@ -270,6 +279,8 @@
 "Feed source" = "Nguồn cấp dữ liệu";
 "Feeds" = "Nguồn tin";
 "Feeds that support paging are back-filled in for a complete archive" = "Các nguồn cấp dữ liệu hỗ trợ phân trang được bổ sung ngược để tạo thành kho lưu trữ đầy đủ";
+"Fetching recent stories..." = "Đang tải các bài viết mới nhất...";
+"Fetching stories from this site..." = "Đang tải bài viết từ trang này...";
 "Fetching text..." = "Đang tải văn bản...";
 "Filter" = "Lọc";
 "Filter stories by date range" = "Lọc tin bài theo khoảng thời gian";
@@ -327,6 +338,7 @@
 "Grid Height" = "Chiều cao lưới";
 "Headlines" = "Tiêu đề";
 "Hidden" = "Đã ẩn";
+"Hide Changes" = "Ẩn thay đổi";
 "Hide Story Titles" = "Ẩn tiêu đề bài viết";
 "Hide status bar" = "Ẩn thanh trạng thái";
 "Hide toolbars when reading" = "Ẩn thanh công cụ khi đọc";
@@ -376,6 +388,7 @@
 "Loading image…" = "Đang tải hình ảnh…";
 "Loading interests" = "Đang tải sở thích";
 "Loading settings…" = "Đang tải cài đặt…";
+"Loading your feeds…" = "Đang tải các nguồn tin của bạn…";
 "Loading..." = "Đang tải...";
 "Loading…" = "Đang tải…";
 "Log In" = "Đăng nhập";
@@ -492,6 +505,7 @@
 "No longer saved" = "Không còn được lưu";
 "No notifications yet." = "Chưa có thông báo nào.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị. Không có bài viết nào để hiển thị.";
+"No stories yet" = "Chưa có bài viết nào";
 "No story selected" = "Chưa chọn bài viết nào";
 "No unread stories" = "Không có bài viết chưa đọc";
 "None" = "Không có";
@@ -610,6 +624,7 @@
 "Rename this site" = "Đổi tên trang web này";
 "Renaming..." = "Đang đổi tên...";
 "Replied" = "Đã trả lời";
+"Reply" = "Trả lời";
 "Reply to %@" = "Trả lời %@";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
@@ -637,6 +652,7 @@
 "Saved" = "Đã lưu";
 "Saved Searches" = "Tìm kiếm đã lưu";
 "Saved Stories" = "Bài viết đã lưu";
+"Saved on %@" = "Đã lưu vào %@";
 "Saving search..." = "Đang lưu tìm kiếm...";
 "Schedule" = "Lịch";
 "Scroll horizontally" = "Cuộn ngang";
@@ -677,6 +693,7 @@
 "Short" = "Ngắn";
 "Show" = "Hiển thị";
 "Show Ask AI" = "Hiển thị Hỏi AI";
+"Show Changes" = "Hiện thay đổi";
 "Show Global Shared Stories" = "Hiện bài viết được chia sẻ toàn cầu";
 "Show Good Reads" = "Hiện bài đọc hay";
 "Show Infrequent Site Stories" = "Hiển thị bài viết từ các trang ít cập nhật";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Không thể tải một số biểu tượng nguồn tin.";
 "Sources" = "Nguồn";
 "Spacing" = "Khoảng cách";
+"Stale — last story %@" = "Đã cũ — bài viết cuối cùng %@";
 "Standard" = "Tiêu chuẩn";
 "Start reading" = "Bắt đầu đọc";
 "Statistics" = "Thống kê";
@@ -783,6 +801,7 @@
 "Text View" = "Chế độ xem văn bản";
 "Text view" = "Chế độ xem văn bản";
 "Text view conveniently extracts the story" = "Chế độ xem Văn bản trích xuất nội dung bài viết một cách tiện lợi";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Chế độ xem toàn văn là một <a href=\"http://ios.newsblur.com/premium\">tính năng cao cấp</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Trình mô phỏng iOS không thể thay đổi biểu tượng Màn hình chính. Hãy thử trên thiết bị thật.";
 "The icon follows your device's light and dark appearance." = "Biểu tượng sẽ phù hợp với giao diện sáng hoặc tối trên thiết bị của bạn.";
 "The most important stories from your feeds" = "Những tin quan trọng nhất từ các nguồn cấp dữ liệu của bạn";
@@ -810,6 +829,7 @@
 "Top" = "Trên cùng";
 "Top Level" = "Cấp cao nhất";
 "Top stories" = "Bài viết hàng đầu";
+"Train" = "Huấn luyện";
 "Train This Story…" = "Huấn luyện bài viết này…";
 "Train intelligence" = "Huấn luyện trí tuệ";
 "Train intelligence…" = "Huấn luyện trí tuệ…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Bỏ lưu bài viết này";
 "Unsave story" = "Bỏ lưu bài viết";
 "Unsave this story" = "Bỏ lưu bài viết này";
+"Updated %@ days ago" = "Cập nhật %@ ngày trước";
+"Updated %@ months ago" = "Cập nhật %@ tháng trước";
+"Updated %@ weeks ago" = "Cập nhật %@ tuần trước";
+"Updated today" = "Cập nhật hôm nay";
 "Updates come to you" = "Bản cập nhật sẽ tự đến với bạn";
 "Updating..." = "Đang cập nhật...";
 "Upgrade from Archive" = "Nâng cấp từ Archive";
@@ -864,6 +888,7 @@
 "User info" = "Thông tin người dùng";
 "Username" = "Tên người dùng";
 "Username or Email" = "Tên người dùng hoặc email";
+"Variant %@" = "Biến thể %@";
 "Version" = "Phiên bản";
 "View mode" = "Chế độ xem";
 "Warm" = "Ấm";

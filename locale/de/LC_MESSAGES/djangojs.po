@@ -3141,6 +3141,7 @@ msgstr "Freunde &amp; Follower"
 msgid "Friends and Followers"
 msgstr "Freunde und Follower"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Von"
 
@@ -6902,6 +6903,10 @@ msgstr "Titel"
 
 msgid "To"
 msgstr "An"
+
+msgctxt "date range"
+msgid "To"
+msgstr "Bis"
 
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "

@@ -18,12 +18,17 @@
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ поделился(-ась) %2$@:\n \n%3$@";
 "%@ Widget Sites" = "%@ сайтов с виджетами";
 "%@ ago" = "%@ назад";
+"%@ comments" = "%@ комментариев";
+"%@ days" = "%@ дней";
 "%@ feed" = "Лента %@";
 "%@ focused stories" = "%@ публикаций с фокусом";
 "%@ folder" = "Папка %@";
 "%@ is now following you." = "Теперь на вас подписан %@.";
 "%@ opens" = "%@ открытий";
+"%@ or search" = "%@ или поиск";
+"%@ public comments" = "%@ публичных комментариев";
 "%@ searches" = "%@ поисковых запросов";
+"%@ shares" = "%@ репостов";
 "%@ stories" = "%@ статей";
 "%@ stories left" = "Осталось %@ публикаций";
 "%@ stories/month" = "%@ статей в месяц";
@@ -33,6 +38,7 @@
 "%ldh ago" = "%ld ч. назад";
 "%ldm ago" = "%ld мин. назад";
 "%ldw ago" = "%ld нед. назад";
+"+ %@ more sites" = "+ ещё %@ сайтов";
 "..." = "…";
 "1 Widget Site" = "1 сайт виджета";
 "1,000 stories" = "1 000 историй";
@@ -66,6 +72,7 @@
 "Add Story List" = "Добавить список историй";
 "Add Story List After" = "Добавить список статей после";
 "Add Story List Before" = "Добавить список статей перед";
+"Add Tag" = "Добавить тег";
 "Add To" = "Добавить в";
 "Add custom keyword filters that become their own briefing sections" = "Добавляйте фильтры по ключевым словам и выводите их в отдельные разделы сводки";
 "Add feed" = "Добавить ленту";
@@ -111,6 +118,7 @@
 "All stories" = "Все статьи";
 "Alphabetical" = "По алфавиту";
 "Already have feeds?" = "У вас уже есть ленты?";
+"Also published by %@ sites" = "Также опубликовано на %@ сайтах";
 "Analyze" = "Анализировать";
 "App Badge" = "Значок приложения";
 "App Icon" = "Значок приложения";
@@ -235,6 +243,7 @@
 "Download stories" = "Скачать истории";
 "Download text" = "Скачать текст";
 "Download using" = "Скачать с помощью";
+"Edit" = "Изменить";
 "Edit NewsBlur share…" = "Изменить подборку NewsBlur…";
 "Edit your comment" = "Изменить комментарий";
 "Edit your reply" = "Изменить свой ответ";
@@ -270,6 +279,8 @@
 "Feed source" = "Источник ленты";
 "Feeds" = "Ленты";
 "Feeds that support paging are back-filled in for a complete archive" = "Ленты с поддержкой постраничной загрузки заполняются задним числом, формируя полный архив";
+"Fetching recent stories..." = "Загрузка последних статей...";
+"Fetching stories from this site..." = "Загрузка статей с этого сайта...";
 "Fetching text..." = "Загрузка текста...";
 "Filter" = "Фильтр";
 "Filter stories by date range" = "Фильтровать статьи по диапазону дат";
@@ -327,6 +338,7 @@
 "Grid Height" = "Высота сетки";
 "Headlines" = "Заголовки";
 "Hidden" = "Скрытые";
+"Hide Changes" = "Скрыть изменения";
 "Hide Story Titles" = "Скрыть заголовки статей";
 "Hide status bar" = "Скрыть строку состояния";
 "Hide toolbars when reading" = "Скрывать панели инструментов при чтении";
@@ -376,6 +388,7 @@
 "Loading image…" = "Загрузка изображения…";
 "Loading interests" = "Загрузка интересов";
 "Loading settings…" = "Загрузка настроек…";
+"Loading your feeds…" = "Загрузка ваших лент…";
 "Loading..." = "Загрузка...";
 "Loading…" = "Загрузка…";
 "Log In" = "Войти";
@@ -492,6 +505,7 @@
 "No longer saved" = "Больше не сохранено";
 "No notifications yet." = "Уведомлений пока нет.";
 "No stories to display. No stories to display. No stories to display. No stories to display." = "Нет статей для отображения. Нет статей для отображения. Нет статей для отображения. Нет статей для отображения.";
+"No stories yet" = "Пока нет статей";
 "No story selected" = "Статья не выбрана";
 "No unread stories" = "Нет непрочитанных статей";
 "None" = "Нет";
@@ -610,6 +624,7 @@
 "Rename this site" = "Переименовать этот сайт";
 "Renaming..." = "Переименование...";
 "Replied" = "Получен ответ";
+"Reply" = "Ответить";
 "Reply to %@" = "Ответить %@";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
@@ -637,6 +652,7 @@
 "Saved" = "Сохранено";
 "Saved Searches" = "Сохранённые поисковые запросы";
 "Saved Stories" = "Сохранённые статьи";
+"Saved on %@" = "Сохранено %@";
 "Saving search..." = "Сохранение поиска…";
 "Schedule" = "Расписание";
 "Scroll horizontally" = "Прокручивать по горизонтали";
@@ -677,6 +693,7 @@
 "Short" = "Короткий";
 "Show" = "Показать";
 "Show Ask AI" = "Показывать «Спросить AI»";
+"Show Changes" = "Показать изменения";
 "Show Global Shared Stories" = "Показывать общие истории со всего мира";
 "Show Good Reads" = "Показывать хорошие статьи";
 "Show Infrequent Site Stories" = "Показывать редкие публикации сайта";
@@ -718,6 +735,7 @@
 "Some feed icons couldn’t load." = "Не удалось загрузить некоторые значки лент.";
 "Sources" = "Источники";
 "Spacing" = "Интервалы";
+"Stale — last story %@" = "Неактивен — последняя публикация %@";
 "Standard" = "Стандартный";
 "Start reading" = "Начать чтение";
 "Statistics" = "Статистика";
@@ -783,6 +801,7 @@
 "Text View" = "Текстовый вид";
 "Text view" = "Текстовый вид";
 "Text view conveniently extracts the story" = "Вид «Текст» удобно извлекает текст статьи";
+"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Полная версия текста — <a href=\"http://ios.newsblur.com/premium\">премиум-функция</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Симулятор iOS не смог изменить значок на главном экране. Попробуйте сделать это на устройстве.";
 "The icon follows your device's light and dark appearance." = "Значок подстраивается под светлое и тёмное оформление устройства.";
 "The most important stories from your feeds" = "Самые важные статьи из ваших лент";
@@ -810,6 +829,7 @@
 "Top" = "Верх";
 "Top Level" = "Верхний уровень";
 "Top stories" = "Главные истории";
+"Train" = "Обучить";
 "Train This Story…" = "Обучить на этой статье…";
 "Train intelligence" = "Обучить интеллектуальные фильтры";
 "Train intelligence…" = "Обучить алгоритм…";
@@ -850,6 +870,10 @@
 "Unsave This Story" = "Убрать статью из сохранённых";
 "Unsave story" = "Убрать из сохранённых";
 "Unsave this story" = "Убрать статью из сохранённых";
+"Updated %@ days ago" = "Обновлено %@ дней назад";
+"Updated %@ months ago" = "Обновлено %@ месяцев назад";
+"Updated %@ weeks ago" = "Обновлено %@ недель назад";
+"Updated today" = "Обновлено сегодня";
 "Updates come to you" = "Обновления приходят к вам";
 "Updating..." = "Обновление…";
 "Upgrade from Archive" = "Перейти с Archive";
@@ -864,6 +888,7 @@
 "User info" = "Информация о пользователе";
 "Username" = "Имя пользователя";
 "Username or Email" = "Имя пользователя или адрес электронной почты";
+"Variant %@" = "Вариант %@";
 "Version" = "Версия";
 "View mode" = "Режим просмотра";
 "Warm" = "Тёплый";

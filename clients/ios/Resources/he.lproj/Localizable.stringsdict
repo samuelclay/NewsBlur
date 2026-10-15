@@ -20,6 +20,42 @@
 			<string>%@ אתרי Widget</string>
 		</dict>
 	</dict>
+	<key>%@ comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@comment_count@</string>
+		<key>comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ תגובות</string>
+			<key>other</key>
+			<string>%@ תגובות</string>
+			<key>two</key>
+			<string>%@ תגובות</string>
+		</dict>
+	</dict>
+	<key>%@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@day_count@</string>
+		<key>day_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ יום</string>
+			<key>other</key>
+			<string>%@ ימים</string>
+			<key>two</key>
+			<string>%@ ימים</string>
+		</dict>
+	</dict>
 	<key>%@ focused stories</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -56,6 +92,24 @@
 			<string>%@ פתיחות</string>
 		</dict>
 	</dict>
+	<key>%@ public comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@public_comment_count@</string>
+		<key>public_comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ תגובה ציבורית</string>
+			<key>other</key>
+			<string>%@ תגובות ציבוריות</string>
+			<key>two</key>
+			<string>%@ תגובות ציבוריות</string>
+		</dict>
+	</dict>
 	<key>%@ searches</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -72,6 +126,24 @@
 			<string>%@ חיפושים</string>
 			<key>two</key>
 			<string>%@ חיפושים</string>
+		</dict>
+	</dict>
+	<key>%@ shares</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@share_count@</string>
+		<key>share_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ שיתוף</string>
+			<key>other</key>
+			<string>%@ שיתופים</string>
+			<key>two</key>
+			<string>%@ שיתופים</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -162,6 +234,42 @@
 			<string>%@ כתבות שלא נקראו</string>
 			<key>two</key>
 			<string>%@ כתבות שלא נקראו</string>
+		</dict>
+	</dict>
+	<key>+ %@ more sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hidden_cluster_site_count@</string>
+		<key>hidden_cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>+ עוד אתר אחד (%@)</string>
+			<key>other</key>
+			<string>+ עוד %@ אתרים</string>
+			<key>two</key>
+			<string>+ עוד שני אתרים (%@)</string>
+		</dict>
+	</dict>
+	<key>Also published by %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@cluster_site_count@</string>
+		<key>cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>פורסם גם באתר %@</string>
+			<key>other</key>
+			<string>פורסם גם ב־%@ אתרים</string>
+			<key>two</key>
+			<string>פורסם גם ב־%@ אתרים</string>
 		</dict>
 	</dict>
 	<key>Followers label</key>
@@ -306,6 +414,60 @@
 			<string>שמירת %@ השעות האחרונות</string>
 			<key>two</key>
 			<string>שמירת היסטוריה של %@ השעות האחרונות</string>
+		</dict>
+	</dict>
+	<key>Updated %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_days_ago@</string>
+		<key>updated_days_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>עודכן לפני %@ יום</string>
+			<key>other</key>
+			<string>עודכן לפני %@ ימים</string>
+			<key>two</key>
+			<string>עודכן לפני %@ ימים</string>
+		</dict>
+	</dict>
+	<key>Updated %@ months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_months_ago@</string>
+		<key>updated_months_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>עודכן לפני %@ חודש</string>
+			<key>other</key>
+			<string>עודכן לפני %@ חודשים</string>
+			<key>two</key>
+			<string>עודכן לפני %@ חודשים</string>
+		</dict>
+	</dict>
+	<key>Updated %@ weeks ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_weeks_ago@</string>
+		<key>updated_weeks_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>עודכן לפני %@ שבוע</string>
+			<key>other</key>
+			<string>עודכן לפני %@ שבועות</string>
+			<key>two</key>
+			<string>עודכן לפני %@ שבועות</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

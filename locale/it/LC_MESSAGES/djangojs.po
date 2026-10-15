@@ -3130,6 +3130,7 @@ msgstr "Amici &amp; follower"
 msgid "Friends and Followers"
 msgstr "Amici e follower"
 
+msgctxt "date range"
 msgid "From"
 msgstr "Da"
 
@@ -6890,6 +6891,10 @@ msgstr "Titolo: "
 msgid "Titles"
 msgstr "Titoli"
 
+msgid "To"
+msgstr "A"
+
+msgctxt "date range"
 msgid "To"
 msgstr "A"
 

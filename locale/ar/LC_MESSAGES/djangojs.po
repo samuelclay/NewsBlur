@@ -3440,6 +3440,7 @@ msgstr "الأصدقاء &amp; المتابعون"
 msgid "Friends and Followers"
 msgstr "الأصدقاء والمتابعون"
 
+msgctxt "date range"
 msgid "From"
 msgstr "من"
 
@@ -7254,6 +7255,10 @@ msgstr "العنوان: "
 msgid "Titles"
 msgstr "العناوين"
 
+msgid "To"
+msgstr "إلى"
+
+msgctxt "date range"
 msgid "To"
 msgstr "إلى"
 
