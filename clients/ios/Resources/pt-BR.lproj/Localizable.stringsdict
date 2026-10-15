@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%1$@ feeds couldn’t be added to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@unadded_feeds_in_folder@</string>
+		<key>unadded_feeds_in_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Não foi possível adicionar %1$@ feeds a %2$@.</string>
+			<key>one</key>
+			<string>Não foi possível adicionar %1$@ feed a %2$@.</string>
+			<key>other</key>
+			<string>Não foi possível adicionar %1$@ feeds a %2$@.</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -18,6 +36,24 @@
 			<string>%@ site de widget</string>
 			<key>other</key>
 			<string>%@ sites de widgets</string>
+		</dict>
+	</dict>
+	<key>%@ categories to choose from</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@category_count@</string>
+		<key>category_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ categorias para escolher</string>
+			<key>one</key>
+			<string>%@ categoria para escolher</string>
+			<key>other</key>
+			<string>%@ categorias disponíveis</string>
 		</dict>
 	</dict>
 	<key>%@ comments</key>
@@ -38,6 +74,24 @@
 			<string>%@ comentários</string>
 		</dict>
 	</dict>
+	<key>%@ could not be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed_feed_count@</string>
+		<key>failed_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Não foi possível adicionar %@.</string>
+			<key>one</key>
+			<string>Não foi possível adicionar %@.</string>
+			<key>other</key>
+			<string>Não foi possível adicionar %@.</string>
+		</dict>
+	</dict>
 	<key>%@ days</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -54,6 +108,96 @@
 			<string>%@ dia</string>
 			<key>other</key>
 			<string>%@ dias</string>
+		</dict>
+	</dict>
+	<key>%@ feeds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_count@</string>
+		<key>feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ feeds</string>
+			<key>one</key>
+			<string>%@ feed</string>
+			<key>other</key>
+			<string>%@ feeds</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feed_count@</string>
+		<key>added_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ feeds adicionados</string>
+			<key>one</key>
+			<string>%@ feed adicionado</string>
+			<key>other</key>
+			<string>%@ feeds adicionados</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_label@</string>
+		<key>added_feeds_label</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ feeds adicionados.</string>
+			<key>one</key>
+			<string>%@ feed adicionado.</string>
+			<key>other</key>
+			<string>%@ feeds adicionados.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds couldn’t be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unadded_feed_count@</string>
+		<key>unadded_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Não foi possível adicionar %@ feeds.</string>
+			<key>one</key>
+			<string>Não foi possível adicionar %@ feed.</string>
+			<key>other</key>
+			<string>Não foi possível adicionar %@ feeds.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds selected</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@selected_feed_count@</string>
+		<key>selected_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ feeds selecionados</string>
+			<key>one</key>
+			<string>%@ feed selecionado</string>
+			<key>other</key>
+			<string>%@ feeds selecionados</string>
 		</dict>
 	</dict>
 	<key>%@ focused stories</key>
@@ -144,6 +288,24 @@
 			<string>%@ compartilhamento</string>
 			<key>other</key>
 			<string>%@ compartilhamentos</string>
+		</dict>
+	</dict>
+	<key>%@ sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@source_count@</string>
+		<key>source_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ fontes</string>
+			<key>one</key>
+			<string>%@ fonte</string>
+			<key>other</key>
+			<string>%@ fontes</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -254,6 +416,60 @@
 			<string>+ %@ outros sites</string>
 		</dict>
 	</dict>
+	<key>Add %1$@ feeds to “%2$@” folder</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@add_feeds_to_folder@</string>
+		<key>add_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Adicionar %1$@ feeds à pasta “%2$@”</string>
+			<key>one</key>
+			<string>Adicionar %1$@ feed à pasta “%2$@”</string>
+			<key>other</key>
+			<string>Adicionar %1$@ feeds à pasta “%2$@”</string>
+		</dict>
+	</dict>
+	<key>Added %1$@ feeds to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@added_feeds_to_folder@</string>
+		<key>added_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Adicionados %1$@ feeds a %2$@.</string>
+			<key>one</key>
+			<string>%1$@ feed adicionado a %2$@.</string>
+			<key>other</key>
+			<string>Adicionados %1$@ feeds a %2$@.</string>
+		</dict>
+	</dict>
+	<key>Added %@ feeds.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_sentence@</string>
+		<key>added_feeds_sentence</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Adicionados %@ feeds.</string>
+			<key>one</key>
+			<string>%@ feed adicionado.</string>
+			<key>other</key>
+			<string>%@ feeds adicionados.</string>
+		</dict>
+	</dict>
 	<key>Also published by %@ sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -272,6 +488,24 @@
 			<string>Também publicado por %@ sites</string>
 		</dict>
 	</dict>
+	<key>Delete %@ sites?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@delete_site_count@</string>
+		<key>delete_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Excluir %@ sites?</string>
+			<key>one</key>
+			<string>Excluir %@ site?</string>
+			<key>other</key>
+			<string>Excluir %@ sites?</string>
+		</dict>
+	</dict>
 	<key>Followers label</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -288,6 +522,42 @@
 			<string>Seguidor</string>
 			<key>other</key>
 			<string>Seguidores</string>
+		</dict>
+	</dict>
+	<key>Images from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_days@</string>
+		<key>image_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Imagens de %@ dias atrás</string>
+			<key>one</key>
+			<string>Imagens de %@ dia atrás</string>
+			<key>other</key>
+			<string>Imagens de %@ dias atrás</string>
+		</dict>
+	</dict>
+	<key>Images from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_hours@</string>
+		<key>image_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Imagens de %@ horas atrás</string>
+			<key>one</key>
+			<string>Imagens de %@ hora atrás</string>
+			<key>other</key>
+			<string>Imagens de %@ horas atrás</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -414,6 +684,42 @@
 			<string>Armazenando as últimas %@ hora</string>
 			<key>other</key>
 			<string>Armazenando as últimas %@ horas</string>
+		</dict>
+	</dict>
+	<key>Text from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_days@</string>
+		<key>text_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Texto de %@ dias atrás</string>
+			<key>one</key>
+			<string>Texto de %@ dia atrás</string>
+			<key>other</key>
+			<string>Texto de %@ dias atrás</string>
+		</dict>
+	</dict>
+	<key>Text from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_hours@</string>
+		<key>text_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>Texto de %@ horas atrás</string>
+			<key>one</key>
+			<string>Texto de %@ hora atrás</string>
+			<key>other</key>
+			<string>Texto de %@ horas atrás</string>
 		</dict>
 	</dict>
 	<key>Updated %@ days ago</key>
