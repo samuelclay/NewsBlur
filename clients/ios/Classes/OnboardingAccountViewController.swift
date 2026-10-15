@@ -40,13 +40,13 @@ import SwiftUI
             return
         }
         pendingAppleRevocationNotice = false
-        let alert = UIAlertController(title: "Finish disconnecting Apple",
-                                      message: "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it.",
+        let alert = UIAlertController(title: NBLocalization.text("Finish disconnecting Apple"),
+                                      message: NBLocalization.text("Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it."),
                                       preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "View instructions", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NBLocalization.text("View instructions"), style: .default) { _ in
             UIApplication.shared.open(URL(string: "https://support.apple.com/en-us/102571")!)
         })
-        alert.addAction(UIAlertAction(title: "Done", style: .cancel))
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Done"), style: .cancel))
         present(alert, animated: true)
     }
 }
@@ -444,7 +444,7 @@ private struct AccountDeletionView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Image(systemName: model.isVerified ? "person.crop.circle.badge.checkmark" : "person.crop.circle.badge.minus")
                         .font(.system(size: 42, weight: .light)).foregroundStyle(DiscoverColors.textSecondary).accessibilityHidden(true)
-                    Text(model.isVerified ? "Your identity is verified" : "Verify your identity first")
+                    Text(model.isVerified ? NBLocalization.text("Your identity is verified") : NBLocalization.text("Verify your identity first"))
                         .font(.title3.weight(.semibold))
                     Text(NBLocalization.text("Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone."))
                         .foregroundStyle(DiscoverColors.textSecondary)
@@ -468,7 +468,7 @@ private struct AccountDeletionView: View {
                                 HStack(spacing: 12) {
                                     if provider == "apple" { Image(systemName: "apple.logo").font(.title2) }
                                     else { Image("google-signin").resizable().frame(width: 22, height: 22) }
-                                    Text(provider == "apple" ? "Verify with Apple" : "Verify with Google").fontWeight(.semibold)
+                                    Text(provider == "apple" ? NBLocalization.text("Verify with Apple") : NBLocalization.text("Verify with Google")).fontWeight(.semibold)
                                     Spacer()
                                 }.padding(16).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
                             }.buttonStyle(.plain).disabled(authentication.busy)
@@ -523,7 +523,7 @@ private struct OnboardingAccountView: View {
                             .shadow(color: .black.opacity(0.3), radius: 0, y: 1)
                     }.padding(.top, 16)
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(continuation ? (model.needsLink ? "Connect your account" : "Choose your username") : (model.signup ? "Create an account" : "Welcome back"))
+                        Text(continuation ? (model.needsLink ? NBLocalization.text("Connect your account") : NBLocalization.text("Choose your username")) : (model.signup ? NBLocalization.text("Create an account") : NBLocalization.text("Welcome back")))
                             .font(.custom("GothamNarrow-Medium", size: 24, relativeTo: .title2))
                         if !continuation {
                             VStack(alignment: .trailing, spacing: 6) {
@@ -531,7 +531,7 @@ private struct OnboardingAccountView: View {
                                     .signInWithAppleButtonStyle(.white).frame(height: 50)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
-                                    .overlay { Button { model.social("apple") } label: { Color.clear.contentShape(Rectangle()) }.accessibilityLabel("Sign in with Apple") }
+                                    .overlay { Button { model.social("apple") } label: { Color.clear.contentShape(Rectangle()) }.accessibilityLabel(NBLocalization.text("Sign in with Apple")) }
                                 if model.lastUsed == "apple" { badge }
                             }
                             VStack(alignment: .trailing, spacing: 6) {
@@ -553,12 +553,12 @@ private struct OnboardingAccountView: View {
                         field(model.needsUsername || (model.signup && !continuation) ? "Username" : "Username or email", text: $model.username).textContentType(.username)
                         if !model.needsUsername {
                             SecureField(model.needsLink ? "NewsBlur password" : "Password", text: $model.password,
-                                        prompt: Text(model.needsLink ? "NewsBlur password" : "Password").foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
+                                        prompt: Text(model.needsLink ? NBLocalization.text("NewsBlur password") : NBLocalization.text("Password")).foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
                                 .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         if !continuation && model.lastUsed == "email" { HStack { Spacer(); badge } }
                         if let message = model.message { Text(message).font(.subheadline).foregroundColor(Color(red: 1, green: 0.84, blue: 0.60)).fixedSize(horizontal: false, vertical: true) }
-                        Button(continuation ? "Continue" : model.signup ? "Create account" : "Sign in") { model.emailSignIn() }
+                        Button(continuation ? NBLocalization.text("Continue") : model.signup ? NBLocalization.text("Create account") : NBLocalization.text("Sign in")) { model.emailSignIn() }
                             .buttonStyle(OnboardingAccountButtonStyle())
                         if model.busy { ProgressView("Signing in…").tint(.white).frame(maxWidth: .infinity) }
                         if model.needsUsername {
@@ -571,7 +571,7 @@ private struct OnboardingAccountView: View {
                         }
                         if continuation { Button(NBLocalization.text("Use another sign-in method")) { model.cancelContinuation() } }
                         if model.needsLink || (!continuation && !model.signup) {
-                            Link("Forgot your password?", destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
+                            Link(NBLocalization.text("Forgot your password?"), destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
                         }
                     }.padding(22)
                         .background {
@@ -582,7 +582,7 @@ private struct OnboardingAccountView: View {
                         .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.15), lineWidth: 0.5))
                         .disabled(model.busy)
                     if !continuation {
-                        Button(model.signup ? "Already have an account? Sign in" : "New to NewsBlur? Create an account") {
+                        Button(model.signup ? NBLocalization.text("Already have an account? Sign in") : NBLocalization.text("New to NewsBlur? Create an account")) {
                             model.signup.toggle(); model.message = nil
                         }.disabled(model.busy)
                     }

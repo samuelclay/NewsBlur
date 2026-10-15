@@ -290,7 +290,7 @@ struct GoogleNewsTabView: View {
                                 .scaleEffect(0.8)
                         }
 
-                        Text(viewModel.googleNewsState.isSubscribing ? "Subscribing..." : "Subscribe")
+                        Text(viewModel.googleNewsState.isSubscribing ? NBLocalization.text("Subscribing...") : NBLocalization.text("Subscribe"))
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.white)
                     }

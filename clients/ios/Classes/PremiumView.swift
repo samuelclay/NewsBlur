@@ -416,11 +416,11 @@ struct PremiumView: View {
             if viewModel.isPremium {
                 let message: String = {
                     if viewModel.isPremiumPro {
-                        return "Your premium pro subscription includes everything above"
+                        return NBLocalization.text("Your premium pro subscription includes everything above")
                     } else if viewModel.isPremiumArchive {
-                        return "Your premium archive subscription includes everything above"
+                        return NBLocalization.text("Your premium archive subscription includes everything above")
                     } else {
-                        return "Your premium subscription is active"
+                        return NBLocalization.text("Your premium subscription is active")
                     }
                 }()
                 subscribedView(
@@ -555,7 +555,7 @@ struct PremiumView: View {
             if let product = product {
                 Button(action: { viewModel.purchase(product) }) {
                     VStack(spacing: 4) {
-                        Text(product.localizedTitle.isEmpty ? "NewsBlur Premium" : product.localizedTitle)
+                        Text(product.localizedTitle.isEmpty ? NBLocalization.text("NewsBlur Premium") : product.localizedTitle)
                             .font(.system(size: 17, weight: .bold))
 
                         Text(isMonthly ? priceTextMonthly(for: product) : priceText(for: product))

@@ -25,7 +25,7 @@ struct DiscoverFeedsView: View {
         VStack(spacing: 0) {
             headerView
             if cardActions.isAdding || cardActions.isPreparingPreview {
-                ProgressView(cardActions.isAdding ? "Adding site…" : "Opening site…")
+                ProgressView(cardActions.isAdding ? NBLocalization.text("Adding site…") : NBLocalization.text("Opening site…"))
                     .font(.subheadline)
                     .foregroundColor(DiscoverColors.textPrimary)
                     .padding(12)
@@ -170,7 +170,8 @@ struct DiscoverFeedsView: View {
                                     .cornerRadius(3)
                             }
 
-                            Text("Only \(indexedCount) of your \(feedCount) sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.")
+                            Text(String(format: NBLocalization.text("Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations."),
+                                        NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
                                 .font(.system(size: 12))
                                 .foregroundColor(DiscoverColors.textSecondary)
                                 .lineSpacing(2)
@@ -200,7 +201,8 @@ struct DiscoverFeedsView: View {
                         }
                         .frame(height: 6)
 
-                        Text("\(indexedCount) of \(feedCount) sites indexed")
+                        Text(String(format: NBLocalization.text("%1$@ of %2$@ sites indexed"),
+                                    NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
                             .font(.system(size: 11))
                             .foregroundColor(DiscoverColors.bannerProgressLabel)
                     }

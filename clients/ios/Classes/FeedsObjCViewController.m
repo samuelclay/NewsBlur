@@ -1970,9 +1970,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)showLoginAsDialog {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Login as..." message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NBLocalization text:@"Login as..."] message:nil preferredStyle:UIAlertControllerStyleAlert];
     [alertController addTextFieldWithConfigurationHandler:nil];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Login" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Login"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         NSString *username = alertController.textFields[0].text;
         NSString *urlString = [NSString stringWithFormat:@"%@/reader/login_as?user=%@",
@@ -1992,7 +1992,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.appDelegate.feedsViewController.view animated:YES];
         HUD.labelText = [NSString stringWithFormat:[NBLocalization text:@"Login: %@"], username];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [appDelegate.feedsViewController presentViewController:alertController animated:YES completion:nil];
 }
@@ -2361,7 +2361,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         if (self.appDelegate.clearingOfflineCache) return;
         self.appDelegate.clearingOfflineCache = YES;
         [self.appDelegate cancelOfflineQueue];
-        [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:key];
+        // FeedsObjCViewController.m stores the translated status that PreferencesView.swift shows on the button.
+        [[NSUserDefaults standardUserDefaults] setObject:[NBLocalization text:@"Deleting..."] forKey:key];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             __block BOOL success = NO;
             [self.appDelegate.database inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -2374,7 +2375,7 @@ static BOOL NBBoolPreferenceValue(id value) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (databaseCleared) [self.appDelegate.activeCachedImages removeAllObjects];
                     self.appDelegate.clearingOfflineCache = NO;
-                    NSString *message = success ? @"Cleared all stories and images!" : @"Could not completely clear the cache. Please try again.";
+                    NSString *message = success ? [NBLocalization text:@"Cleared all stories and images!"] : [NBLocalization text:@"Could not completely clear the cache. Please try again."];
                     [[NSUserDefaults standardUserDefaults] setObject:message forKey:key];
                 });
             };
@@ -4546,11 +4547,11 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = [NBLocalization text:@"User info"];
 #if TARGET_OS_MACCATALYST
-    userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
+    userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-click for information about your account."];
     userAvatarButton.frame = CGRectMake(0, yOffset, 38, 38);
     int avatarXOffset = 48; // avatar width (38) + padding (10)
 #else
-    userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
+    userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-tap for information about your account."];
     userAvatarButton.frame = CGRectMake(scrollingHeader ? 16 : -10, yOffset, 38, 38);
     int avatarXOffset = scrollingHeader ? 64 : 38; // FeedsObjCViewController.m keeps 10 points between avatar and account text.
 #endif
@@ -4780,7 +4781,7 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)updateOnboardingFeedLoading {
     if ([OnboardingFeedLoading shared].loading) {
-        [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Loading your feeds…"];
+        [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:[NBLocalization text:@"Loading your feeds…"]];
     } else {
         [self.syncNotifier hideAfter:0.25];
         [self finishRefresh];
@@ -4831,15 +4832,21 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours {
     if ([OnboardingFeedLoading shared].loading) { [self updateOnboardingFeedLoading]; return; }
+    // FeedsObjCViewController.m words each offline caching step as a complete translated sentence; the prefix
+    // identifies what is being cached ("Images" or "Text").
+    BOOL images = [prefix isEqualToString:@"Images"];
     NSString *title;
     if (hours < 2) {
-        title = [NSString stringWithFormat:@"%@ from last hour", prefix];
+        title = images ? [NBLocalization text:@"Images from last hour"] : [NBLocalization text:@"Text from last hour"];
     } else if (hours < 24) {
-        title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
+        title = images ? [NBLocalization plural:@"Images from %@ hours ago" count:@(hours)]
+                       : [NBLocalization plural:@"Text from %@ hours ago" count:@(hours)];
     } else if (hours < 48) {
-        title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
+        title = images ? [NBLocalization text:@"Images from yesterday"] : [NBLocalization text:@"Text from yesterday"];
     } else {
-        title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
+        NSNumber *days = @((int)round(hours / 24.f));
+        title = images ? [NBLocalization plural:@"Images from %@ days ago" count:days]
+                       : [NBLocalization plural:@"Text from %@ days ago" count:days];
     }
     [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }

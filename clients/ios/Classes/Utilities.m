@@ -198,7 +198,12 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
         otherFormatter.doesRelativeDateFormatting = YES;
     }
     
-    return [otherFormatter stringFromDate:date];
+    // Utilities.m writes a non-English interface's story dates in its language (NBLocalization.swift); English
+    // keeps the device-locale format it always had.
+    NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterLongStyle
+                                                                                   timeStyle:NSDateFormatterShortStyle
+                                                                                    relative:YES];
+    return [interfaceFormatter ?: otherFormatter stringFromDate:date];
     
     
     
@@ -274,10 +279,17 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
         otherFormatter.doesRelativeDateFormatting = YES;
     }
     
+    // Utilities.m writes a non-English interface's dates in its language (NBLocalization.swift).
     if ([calendar isDateInToday:date]) {
-        return [todayFormatter stringFromDate:date];
+        NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterNoStyle
+                                                                                       timeStyle:NSDateFormatterShortStyle
+                                                                                        relative:NO];
+        return [interfaceFormatter ?: todayFormatter stringFromDate:date];
     } else {
-        return [otherFormatter stringFromDate:date];
+        NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterMediumStyle
+                                                                                       timeStyle:NSDateFormatterShortStyle
+                                                                                        relative:YES];
+        return [interfaceFormatter ?: otherFormatter stringFromDate:date];
     }
     
     /*
@@ -365,8 +377,12 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     });
 
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)timestamp];
+    // Utilities.m writes a non-English interface's cluster dates in its language (NBLocalization.swift).
+    NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterShortStyle
+                                                                                   timeStyle:NSDateFormatterNoStyle
+                                                                                    relative:NO];
 
-    return [formatter stringFromDate:date];
+    return [interfaceFormatter ?: formatter stringFromDate:date];
 }
 
 /*

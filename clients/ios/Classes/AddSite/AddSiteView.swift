@@ -237,7 +237,7 @@ struct AddSiteView: View {
                     )
             }
             .buttonStyle(.plain)
-            .help("Dismiss")
+            .help(NBLocalization.text("Dismiss"))
             .accessibilityLabel(NBLocalization.text("Dismiss"))
 #endif
         }
@@ -250,6 +250,12 @@ struct AddSiteView: View {
 
     // MARK: - URL Input Row (bottom)
 
+    // AddSiteView.swift translates the whole placeholder around the URL scheme, which stays an isolated
+    // left-to-right run (NBLocalization.isolateLeftToRight), like Android's AddSiteSheet.kt.
+    static var urlPlaceholder: String {
+        String(format: NBLocalization.text("%@ or search"), NBLocalization.isolateLeftToRight("https://"))
+    }
+
     private var urlInputRow: some View {
         HStack(spacing: 8) {
             HStack(spacing: 6) {
@@ -259,7 +265,8 @@ struct AddSiteView: View {
                     .frame(width: 16, height: 16)
                     .foregroundColor(AddSiteColors.textSecondary)
 
-                TextField("https:// or search", text: $viewModel.searchText)
+                // AddSiteView.swift isolates the URL scheme so "https://" reads left to right inside Arabic and Hebrew.
+                TextField(AddSiteView.urlPlaceholder, text: $viewModel.searchText)
                     .font(.system(size: 15))
                     .foregroundColor(AddSiteColors.textPrimary)
                     .autocapitalization(.none)

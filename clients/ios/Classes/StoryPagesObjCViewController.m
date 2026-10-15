@@ -202,7 +202,7 @@
 
     self.storyTitlesEdgeRevealGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
                                                                                           action:@selector(handleStoryTitlesEdgeReveal:)];
-    self.storyTitlesEdgeRevealGesture.edges = UIRectEdgeLeft;
+    self.storyTitlesEdgeRevealGesture.edges = [StoryPagerDirection leadingScreenEdgeWithRightToLeft:NBLocalization.isRightToLeft];
     self.storyTitlesEdgeRevealGesture.maximumNumberOfTouches = 1;
     self.storyTitlesEdgeRevealGesture.delegate = self;
     [self.view addGestureRecognizer:self.storyTitlesEdgeRevealGesture];
@@ -245,10 +245,15 @@
         }
     }
     // StoryPagesObjCViewController.m lets UIKit's native ancestor edge win before reader pans or article taps begin.
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
     for (UIView *ancestor = self.view.superview; ancestor; ancestor = ancestor.superview) {
         for (UIGestureRecognizer *gesture in ancestor.gestureRecognizers) {
+            UIRectEdge gestureEdges = [gesture isKindOfClass:UIScreenEdgePanGestureRecognizer.class] ?
+                ((UIScreenEdgePanGestureRecognizer *)gesture).edges : UIRectEdgeNone;
+            // StoryPagesObjCViewController.m also lets a right-edge native gesture lead a right-to-left interface.
+            BOOL leadingEdge = gestureEdges == UIRectEdgeLeft || (rightToLeft && gestureEdges == UIRectEdgeRight);
             if (![gesture isKindOfClass:UIScreenEdgePanGestureRecognizer.class] || !gesture.enabled ||
-                ((UIScreenEdgePanGestureRecognizer *)gesture).edges != UIRectEdgeLeft ||
+                !leadingEdge ||
                 gesture == navigation.interactivePopGestureRecognizer || gesture == contentPop) continue;
             for (UIGestureRecognizer *readerGesture in readerGestures) {
                 NSHashTable *edges = [self.duoNativeEdgePriorities objectForKey:readerGesture];
@@ -354,6 +359,7 @@
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     self.scrollView.contentInset = UIEdgeInsetsZero;
     [self setupStoryTitlesEdgeRevealGesture];
+    [self updateReaderDirection];
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
@@ -538,6 +544,7 @@
     [self applyToolbarButtonTint];
     [self updateTheme];
     [self updateStoryTitleNavigationButtons];
+    [self updateReaderDirection];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -1579,7 +1586,9 @@
     if (gestureRecognizer == self.fullScreenPopGesture) {
         UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint velocity = [pan velocityInView:self.view];
-        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+        // StoryPagesObjCViewController.m goes back with a swipe away from the leading edge, which is leftward in Arabic and Hebrew.
+        CGFloat backVelocity = [StoryPagerDirection velocityAwayFromLeadingEdge:velocity rightToLeft:NBLocalization.isRightToLeft];
+        if (backVelocity <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
             return NO;
         }
         UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
@@ -1593,7 +1602,8 @@
         UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint velocity = [pan velocityInView:self.view];
         BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
-        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+        CGFloat revealVelocity = [StoryPagerDirection velocityAwayFromLeadingEdge:velocity rightToLeft:NBLocalization.isRightToLeft];
+        if (revealVelocity <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
             return NO;
         }
 
@@ -1889,16 +1899,16 @@
     if (self.verticalAutoscrollButton) {
         self.verticalAutoscrollButton.hidden = !self.autoscrollAvailable;
         __weak typeof(self) weakSelf = self;
-        UIAction *pause = [UIAction actionWithTitle:self.autoscrollActive ? @"Pause" : @"Resume"
+        UIAction *pause = [UIAction actionWithTitle:self.autoscrollActive ? [NBLocalization text:@"Pause"] : [NBLocalization text:@"Resume"]
                                              image:[UIImage systemImageNamed:self.autoscrollActive ? @"pause" : @"play"]
                                         identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollPauseResume:nil]; }];
-        UIAction *slower = [UIAction actionWithTitle:@"Slower" image:[UIImage systemImageNamed:@"tortoise"]
+        UIAction *slower = [UIAction actionWithTitle:[NBLocalization text:@"Slower"] image:[UIImage systemImageNamed:@"tortoise"]
                                          identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollSlower:nil]; }];
-        UIAction *faster = [UIAction actionWithTitle:@"Faster" image:[UIImage systemImageNamed:@"hare"]
+        UIAction *faster = [UIAction actionWithTitle:[NBLocalization text:@"Faster"] image:[UIImage systemImageNamed:@"hare"]
                                          identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollFaster:nil]; }];
-        UIAction *stop = [UIAction actionWithTitle:@"Stop autoscroll" image:[UIImage systemImageNamed:@"stop"]
+        UIAction *stop = [UIAction actionWithTitle:[NBLocalization text:@"Stop autoscroll"] image:[UIImage systemImageNamed:@"stop"]
                                        identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollDisable:nil]; }];
-        self.verticalAutoscrollButton.menu = [UIMenu menuWithTitle:@"Autoscroll" children:@[pause, slower, faster, stop]];
+        self.verticalAutoscrollButton.menu = [UIMenu menuWithTitle:[NBLocalization text:@"Autoscroll"] children:@[pause, slower, faster, stop]];
     }
 }
 
@@ -2534,7 +2544,9 @@
         CGRect frame = self.scrollView.frame;
         
         if (self.isHorizontal) {
-            frame.origin.x = frame.size.width;
+            // StoryPagesObjCViewController.m slides the reader in from the trailing edge, the left in Arabic and Hebrew.
+            BOOL mirrored = [StoryPagerDirection mirrorsPagesWithHorizontal:YES rightToLeft:NBLocalization.isRightToLeft];
+            frame.origin.x = mirrored ? -frame.size.width : frame.size.width;
         } else {
             frame.origin.y = frame.size.height;
         }
@@ -2915,6 +2927,9 @@
     host.userInteractionEnabled = NO;
     host.accessibilityElementsHidden = YES;
     host.backgroundColor = self.scrollView.backgroundColor;
+    // StoryPagesObjCViewController.m mirrors the transition like the pager, so a later story arrives from the left in
+    // Arabic and Hebrew; the pages keep their own flip and read normally (StoryPagesViewController.swift).
+    host.transform = self.scrollView.transform;
     [parent insertSubview:host aboveSubview:self.scrollView];
     self.storySelectionTransitionHost = host;
     self.storySelectionTransitionPages = ordered;
@@ -3446,7 +3461,7 @@
     originalStoryButton.enabled = enabled;
     self.verticalTextButton.enabled = enabled;
     self.verticalTextButton.selected = storyViewController.inTextView;
-    self.verticalTextButton.title = storyViewController.inTextView ? @"Story view" : @"Text view";
+    self.verticalTextButton.title = storyViewController.inTextView ? [NBLocalization text:@"Story view"] : [NBLocalization text:@"Text view"];
     self.verticalTextButton.accessibilityLabel = self.verticalTextButton.title;
     self.verticalSendButton.enabled = enabled;
     self.verticalSettingsButton.enabled = enabled;
@@ -3686,6 +3701,7 @@
     [self setWebViewsScrollEnabled:YES];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self updateReaderDirection];
     [self reorientPages];
     [self updatePopGestureForScrollOrientation];
 }
@@ -3739,6 +3755,22 @@
     [self.currentPage updateStoryDirection];
     [self.nextPage updateStoryDirection];
     [self.previousPage updateStoryDirection];
+    [self updateReaderDirection];
+}
+
+// StoryPagesObjCViewController.m mirrors horizontal paging and the story titles edge swipe for Arabic and Hebrew
+// (StoryPagesViewController.swift). Page locations and content offsets stay measured from the left, so next/previous
+// buttons, keyboard shortcuts, programmatic jumps and mark-read on page change are unaffected.
+- (void)updateReaderDirection {
+    if (!self.isViewLoaded) return;
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    CGAffineTransform transform = [StoryPagerDirection pagerTransformWithHorizontal:self.isHorizontal rightToLeft:rightToLeft];
+    [StoryPagerDirection apply:transform to:self.scrollView];
+    StoryDetailViewController *pages[] = {currentPage, nextPage, previousPage};
+    for (NSInteger index = 0; index < 3; index++) {
+        [StoryPagerDirection apply:transform to:pages[index].viewIfLoaded];
+    }
+    self.storyTitlesEdgeRevealGesture.edges = [StoryPagerDirection leadingScreenEdgeWithRightToLeft:rightToLeft];
 }
 
 - (void)updateStatusBarTheme {

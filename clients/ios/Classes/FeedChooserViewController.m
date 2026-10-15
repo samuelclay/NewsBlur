@@ -814,7 +814,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         NSString *iconName = @"menu_icn_move.png";
         
         if (!title.length) {
-            title = @"Top Level";
+            title = [NBLocalization text:@"Top Level"];
             iconName = @"menu_icn_all.png";
         } else {
             NSArray *components = [title componentsSeparatedByString:@" ▸ "];
@@ -861,7 +861,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)deleteFeeds {
     MenuViewController *viewController = [MenuViewController new];
     NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
-    NSString *title = count == 1 ? @"Delete selected site?" : [NSString stringWithFormat:@"Delete %@ sites?", @(count)];
+    // FeedChooserViewController.m asks with the interface language's plural rules for more than one site.
+    NSString *title = count == 1 ? [NBLocalization text:@"Delete selected site?"] : [NBLocalization plural:@"Delete %@ sites?" groupedCount:count];
     
     [viewController addTitle:title iconName:@"menu_icn_delete.png" destructive:YES selectionShouldDismiss:YES handler:^{
         [self performDeleteFeeds];

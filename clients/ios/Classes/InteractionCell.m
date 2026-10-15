@@ -85,9 +85,16 @@
     [super updateConstraints];
 }
 
+// InteractionCell.m measures the avatar from the left edge and mirrors it for Arabic and Hebrew, where the label's
+// leading constraint already starts from the right (NBLocalization.swift).
+- (CGRect)avatarFrame {
+    return [self.contentView nb_directionalRect:CGRectMake(leftMargin, topMargin, avatarSize, avatarSize)
+                                         within:self.contentView.bounds];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.avatarView.frame = [self avatarFrame];
 }
 
 
@@ -97,7 +104,7 @@
 
 - (void)setInteraction:(NSDictionary *)interaction {
     [self setNeedsUpdateConstraints];
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.avatarView.frame = [self avatarFrame];
     
     // this is for the rare instance when the with_user doesn't return anything
     if ([InteractionCell shouldCollapseInteraction:interaction]) {
@@ -139,6 +146,11 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
+    if (NBLocalization.isRightToLeft) {
+        // InteractionCell.m starts each translated sentence at the right, even when it begins with a Latin username.
+        paragraphStyle.alignment = NSTextAlignmentRight;
+        paragraphStyle.baseWritingDirection = NSWritingDirectionRightToLeft;
+    }
     paragraphStyle.lineSpacing = 1.0f;
     [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
                      range:NSMakeRange(0, [txtWithTime length])];

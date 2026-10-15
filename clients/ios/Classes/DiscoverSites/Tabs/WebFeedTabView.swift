@@ -386,7 +386,7 @@ struct WebFeedTabView: View {
 
                     Spacer()
 
-                    Text("\(Int(viewModel.webFeedState.stalenessDays)) \(Int(viewModel.webFeedState.stalenessDays) == 1 ? "day" : "days")")
+                    Text(NBLocalization.plural("%@ days", groupedCount: Int(viewModel.webFeedState.stalenessDays)))
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(DiscoverColors.accent)
                 }
@@ -433,7 +433,7 @@ struct WebFeedTabView: View {
                             .scaleEffect(0.8)
                     }
 
-                    Text(viewModel.webFeedState.isSubscribing ? "Subscribing..." : "Subscribe")
+                    Text(viewModel.webFeedState.isSubscribing ? NBLocalization.text("Subscribing...") : NBLocalization.text("Subscribe"))
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.white)
                 }

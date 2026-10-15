@@ -30,6 +30,18 @@
 @synthesize rightMargin;
 @synthesize avatarSize;
 
+// ActivityCell.m measures the avatar from the left edge and mirrors it for Arabic and Hebrew, where the label's
+// leading constraint already starts from the right (NBLocalization.swift).
+- (void)setFaviconLeftToRightFrame:(CGRect)frame {
+    _faviconLeftToRightFrame = frame;
+    self.faviconView.frame = [self.contentView nb_directionalRect:frame within:self.contentView.bounds];
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.faviconView.frame = [self.contentView nb_directionalRect:self.faviconLeftToRightFrame within:self.contentView.bounds];
+}
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
@@ -90,7 +102,7 @@
 
 - (void)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile {
     [self setNeedsUpdateConstraints];
-    self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.faviconLeftToRightFrame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 
     NSString *category = [activity objectForKey:@"category"];
     NSString *content = [self plainTextComment:[activity objectForKey:@"content"]];
@@ -108,7 +120,7 @@
         [category isEqualToString:@"signup"]) {
         // this is for the rare instance when the with_user doesn't return anything
         if ([ActivityCell shouldCollapseActivity:activity]) {
-            self.faviconView.frame = CGRectZero;
+            self.faviconLeftToRightFrame = CGRectZero;
             self.activityLabel.attributedText = nil;
             return;
         }
@@ -141,7 +153,7 @@
             [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl]
                              placeholderImage:nil];
             self.faviconView.contentMode = UIViewContentModeScaleAspectFit;
-            self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
+            self.faviconLeftToRightFrame = CGRectMake(leftMargin+16, topMargin, 16, 16);
         }
     }
     
@@ -194,6 +206,11 @@
     [attrStr addAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Book" size:12]} range:[txtWithTime rangeOfString:time]];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    if (NBLocalization.isRightToLeft) {
+        // ActivityCell.m starts each translated sentence at the right, even when it begins with a Latin username.
+        paragraphStyle.alignment = NSTextAlignmentRight;
+        paragraphStyle.baseWritingDirection = NSWritingDirectionRightToLeft;
+    }
     [attrStr addAttributes:@{NSParagraphStyleAttributeName: paragraphStyle} range:NSMakeRange(0, [txtWithTime length])];
     
     NSRange commentRange = [txtWithTime rangeOfString:comment];

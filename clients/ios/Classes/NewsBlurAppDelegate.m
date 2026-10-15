@@ -1135,7 +1135,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     [self hidePopover];
 
-    [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
+    [[NSUserDefaults standardUserDefaults] setObject:[NBLocalization text:@"Delete offline stories..."]
                                               forKey:@"offline_cache_empty_stories"];
 
     if (@available(iOS 15.0, *)) {
@@ -1676,10 +1676,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }];
     } else {
         // iOS 14 fallback - show alert that feature requires iOS 15
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ask AI"
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NBLocalization text:@"Ask AI"]
                                                                        message:[NBLocalization text:@"This feature requires iOS 15 or later."]
                                                                 preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"OK"] style:UIAlertActionStyleDefault handler:nil]];
         [self.feedsNavigationController presentViewController:alert animated:YES completion:nil];
     }
 }
@@ -3224,11 +3224,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     
     if (!url) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Nowhere to go"
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NBLocalization text:@"Nowhere to go"]
                                                                        message:[NBLocalization text:@"The story doesn't link anywhere."]
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"Oh well" style:UIAlertActionStyleDefault
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:[NBLocalization text:@"Oh well"] style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {}];
         
         [alert addAction:defaultAction];

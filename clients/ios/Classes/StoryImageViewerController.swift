@@ -29,7 +29,7 @@ struct StoryImageSource {
         self.url = url
         originalURL = Self.browserURL(body["originalURL"] as? String)
         link = Self.browserURL(body["link"] as? String)
-        title = (body["title"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "Story image"
+        title = (body["title"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? NBLocalization.text("Story image")
         hoverText = (body["hoverText"] as? String).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .flatMap { $0.isEmpty ? nil : $0 }
         showActions = body["showActions"] as? Bool == true

@@ -33,7 +33,7 @@ import UIKit
         await fulfillment(of: [cacheStarted], timeout: 10)
 
         XCTAssertEqual(fixture.count("stories"), 0)
-        XCTAssertEqual(defaults.string(forKey: key), "Deleting...")
+        XCTAssertEqual(defaults.string(forKey: key), NBLocalization.text("Deleting..."))
         XCTAssertTrue(fixture.app.clearingOfflineCache)
         let completion = try XCTUnwrap(fixture.app.pendingCacheCompletion)
         completion(true)
@@ -42,7 +42,7 @@ import UIKit
             try await Task.sleep(nanoseconds: 20_000_000)
         }
         XCTAssertFalse(fixture.app.clearingOfflineCache)
-        XCTAssertEqual(defaults.string(forKey: key), "Cleared all stories and images!")
+        XCTAssertEqual(defaults.string(forKey: key), NBLocalization.text("Cleared all stories and images!"))
     }
 
     private func verifyManualDeletion(wal: Bool, imageCleanupSucceeds: Bool = true) async throws {
@@ -71,7 +71,8 @@ import UIKit
 
         controller.perform(NSSelectorFromString("preferencesButtonTappedWithKey:action:"), with: key, with: "deleteOfflineStories")
 
-        let expectedMessage = imageCleanupSucceeds ? "Cleared all stories and images!" : "Could not completely clear the cache. Please try again."
+        let expectedMessage = imageCleanupSucceeds ? NBLocalization.text("Cleared all stories and images!")
+            : NBLocalization.text("Could not completely clear the cache. Please try again.")
         let deadline = Date().addingTimeInterval(10)
         while defaults.string(forKey: key) != expectedMessage, Date() < deadline {
             try await Task.sleep(nanoseconds: 20_000_000)
@@ -135,10 +136,10 @@ import UIKit
         controller.perform(NSSelectorFromString("preferencesButtonTappedWithKey:action:"), with: key, with: "deleteOfflineStories")
 
         let deadline = Date().addingTimeInterval(10)
-        while ["Waiting for deletion", "Deleting..."].contains(defaults.string(forKey: key) ?? ""), Date() < deadline {
+        while ["Waiting for deletion", NBLocalization.text("Deleting...")].contains(defaults.string(forKey: key) ?? ""), Date() < deadline {
             try await Task.sleep(nanoseconds: 20_000_000)
         }
-        XCTAssertEqual(defaults.string(forKey: key), "Could not completely clear the cache. Please try again.")
+        XCTAssertEqual(defaults.string(forKey: key), NBLocalization.text("Could not completely clear the cache. Please try again."))
         XCTAssertEqual(fixture.count("stories"), 8, "A failed cache deletion must roll back")
         XCTAssertEqual(fixture.count("cached_text"), 8)
         XCTAssertEqual(fixture.count("queued_read_hashes"), 1)

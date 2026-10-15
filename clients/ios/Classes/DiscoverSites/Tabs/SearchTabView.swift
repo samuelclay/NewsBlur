@@ -30,7 +30,7 @@ struct SearchTabView: View {
                         Button {
                             viewModel.addFeed(url: query)
                         } label: {
-                            Label(viewModel.isAdding ? "Adding site…" : "Add this site", systemImage: "plus.circle.fill")
+                            Label(viewModel.isAdding ? NBLocalization.text("Adding site…") : NBLocalization.text("Add this site"), systemImage: "plus.circle.fill")
                                 .font(.headline).frame(minHeight: 44)
                         }
                         .buttonStyle(.borderedProminent)

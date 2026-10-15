@@ -86,6 +86,8 @@
     }
     
     self.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    // ProfileBadge.m mirrors only the views this refresh adds; a refresh with a new width keeps earlier views.
+    NSArray<UIView *> *earlierSubviews = [self.contentView.subviews copy];
     
     if (showStats) {
         shouldShowStats = showStats;
@@ -298,7 +300,18 @@
         [self.contentView addSubview:followersLabel];
     }
 
-    
+    // ProfileBadge.m lays the badge out from the left edge, then mirrors it for Arabic and Hebrew so the avatar and
+    // the first statistic lead on the right (NBLocalization.swift).
+    if (NBLocalization.isRightToLeft) {
+        CGRect badgeBounds = CGRectMake(0, 0, width, 0);
+        for (UIView *subview in self.contentView.subviews) {
+            if ([earlierSubviews containsObject:subview]) continue;
+            subview.frame = [NBLocalization directionalRect:subview.frame within:badgeBounds rightToLeft:YES];
+        }
+        self.username.textAlignment = NSTextAlignmentRight;
+        self.userLocation.textAlignment = NSTextAlignmentRight;
+        self.userDescription.textAlignment = NSTextAlignmentNatural;
+    }
 }
 
 - (void)initProfile {

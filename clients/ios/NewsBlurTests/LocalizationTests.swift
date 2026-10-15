@@ -262,6 +262,197 @@ final class Test_Localization: XCTestCase {
         XCTAssertEqual(NBLocalization.formattedCount(18259), device.string(from: 18259))
     }
 
+    func test_rightToLeftHorizontalPagingBringsTheNextStoryInFromTheLeft() throws {
+        let restore = rememberLanguage()
+        defer { restore() }
+        let fixture = makePagerFixture()
+        let width = fixture.pages.view.bounds.width
+        func screenMinX(_ page: StoryDetailViewController) -> CGFloat {
+            page.view.convert(page.view.bounds, to: fixture.pages.view).minX
+        }
+        // LocalizationTests.swift lays out the previous, current and next stories (locations 1, 2 and 3) at story 2,
+        // the way StoryPagesObjCViewController.m positions its pages.
+        func layOut(language: String, horizontal: Bool = true) {
+            UserDefaults.standard.set(language, forKey: NBLocalization.preferenceKey)
+            fixture.pages.horizontal = horizontal
+            fixture.pages.updateStoriesDirection()
+            for (offset, page) in fixture.articles.enumerated() {
+                fixture.pages.applyNewIndex(offset + 1, pageController: page, supressRedraw: true)
+            }
+            fixture.pages.scrollView.contentSize = CGSize(width: 5 * width, height: fixture.pages.view.bounds.height)
+            fixture.pages.scrollView.contentOffset = CGPoint(x: 2 * width, y: 0)
+        }
+
+        layOut(language: "ar")
+        let (previous, current, next) = (fixture.articles[0], fixture.articles[1], fixture.articles[2])
+        XCTAssertEqual(screenMinX(current), 0, accuracy: 0.5)
+        XCTAssertEqual(screenMinX(next), -width, accuracy: 0.5, "Arabic's next story waits on the left, beside the Next chevron")
+        XCTAssertEqual(screenMinX(previous), width, accuracy: 0.5)
+        XCTAssertEqual(next.view.frame.minX, 3 * width, accuracy: 0.5, "Story locations keep their left-to-right offsets")
+        // A finger moving right moves left through the flipped pager, increasing its offset toward the next story.
+        let start = fixture.pages.scrollView.convert(CGPoint(x: 100, y: 300), from: fixture.pages.view)
+        let end = fixture.pages.scrollView.convert(CGPoint(x: 300, y: 300), from: fixture.pages.view)
+        XCTAssertLessThan(end.x - start.x, 0)
+        // Each page is flipped back, so its own content still reads left to right on screen.
+        XCTAssertEqual(current.view.convert(CGPoint(x: 10, y: 10), to: fixture.pages.view).x, 10, accuracy: 0.5)
+        // StoryPagesObjCViewController.m's frame writes (rounding, slide-in) keep the pager's offset and size.
+        fixture.pages.scrollView.frame = CGRect(x: -width, y: 0, width: width, height: fixture.pages.view.bounds.height)
+        XCTAssertEqual(fixture.pages.scrollView.frame.minX, -width, accuracy: 0.5)
+        XCTAssertEqual(fixture.pages.scrollView.bounds.size.width, width, accuracy: 0.5)
+        XCTAssertEqual(fixture.pages.scrollView.contentOffset.x, 2 * width, accuracy: 0.5)
+        fixture.pages.scrollView.frame = fixture.pages.view.bounds
+
+        for (language, horizontal) in [("en", true), ("ar", false), ("fr", true)] {
+            layOut(language: language, horizontal: horizontal)
+            XCTAssertTrue(fixture.pages.scrollView.transform.isIdentity, "\(language), horizontal: \(horizontal)")
+            XCTAssertTrue(current.view.transform.isIdentity)
+            if horizontal {
+                XCTAssertEqual(screenMinX(next), width, accuracy: 0.5, "Left-to-right paging keeps the next story on the right")
+                XCTAssertEqual(screenMinX(previous), -width, accuracy: 0.5)
+            }
+        }
+    }
+
+    func test_storyHeaderDateUsesTheInterfaceLanguageAndKeepsEnglishUnchanged() {
+        let restore = rememberLanguage()
+        defer { restore() }
+        // LocalizationTests.swift uses October 14, 2025 at noon UTC.
+        let timestamp = 1_760_443_200
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+        let device = DateFormatter()
+        device.dateStyle = .long
+        device.timeStyle = .short
+        device.doesRelativeDateFormatting = true
+        XCTAssertEqual(Utilities.formatLongDate(fromTimestamp: timestamp),
+                       device.string(from: Date(timeIntervalSince1970: TimeInterval(timestamp))),
+                       "English keeps the device's own story date format")
+        UserDefaults.standard.set("de", forKey: NBLocalization.preferenceKey)
+        XCTAssertTrue(Utilities.formatLongDate(fromTimestamp: timestamp)?.contains("Oktober 2025") == true)
+        UserDefaults.standard.set("ar", forKey: NBLocalization.preferenceKey)
+        let arabic = Utilities.formatLongDate(fromTimestamp: timestamp) ?? ""
+        XCTAssertTrue(arabic.contains("أكتوبر") && arabic.contains("2025"), "Arabic keeps Latin digits like the web: \(arabic)")
+    }
+
+    func test_storyShareBarAndClusterBadgesUseTranslatedWords() {
+        let restore = rememberLanguage()
+        defer { restore() }
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+        let page = LocalizationShareBarPage()
+        page.appDelegate = NewsBlurAppDelegate()
+        page.activeStory = ["story_hash": "localization-share-bar", "comment_count": 1, "share_count": 2]
+        let shareBar = page.getShareBar() ?? ""
+        XCTAssertTrue(shareBar.contains("<b>1 comment</b>"), shareBar)
+        XCTAssertTrue(shareBar.contains("<b>2 shares</b>"), shareBar)
+        XCTAssertEqual(NBLocalization.plural("Also published by %@ sites", groupedCount: 1), "Also published by 1 site")
+        XCTAssertEqual(NBLocalization.plural("+ %@ more sites", groupedCount: 1240), "+ 1,240 more sites")
+        XCTAssertEqual(StoryClusterDisplayDecision.clusterTierBadgeText(forValue: "title"), "MATCH")
+        // LocalizationTests.swift checks plural forms that also name a folder (OnboardingViewController.swift).
+        XCTAssertEqual(NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: 1, with: "Science"),
+                       "Add 1 feed to “Science” folder")
+        XCTAssertEqual(NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: 4, with: "Parenting"),
+                       "Add 4 feeds to “Parenting” folder")
+        XCTAssertEqual(NBLocalization.plural("Delete %@ sites?", groupedCount: 2), "Delete 2 sites?")
+
+        // LocalizationTests.swift catches the Turkish badge losing its dotted capital I.
+        UserDefaults.standard.set("tr", forKey: NBLocalization.preferenceKey)
+        let related = StoryClusterDisplayDecision.clusterTierBadgeText(forValue: "related")
+        XCTAssertEqual(related, NBLocalization.text("Related").uppercased(with: Locale(identifier: "tr")))
+        XCTAssertNotEqual(related, "RELATED")
+    }
+
+    func test_addSitePlaceholderKeepsTheURLSchemeLeftToRight() {
+        let restore = rememberLanguage()
+        defer { restore() }
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+        XCTAssertEqual(AddSiteView.urlPlaceholder, "\u{2066}https://\u{2069} or search")
+        UserDefaults.standard.set("he", forKey: NBLocalization.preferenceKey)
+        XCTAssertTrue(AddSiteView.urlPlaceholder.contains("\u{2066}https://\u{2069}"),
+                      "Hebrew must not reorder the slashes of https://")
+    }
+
+    func test_profileActivityAndBadgeLeadOnTheRightInArabic() throws {
+        let restore = rememberLanguage()
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        defer {
+            window.isHidden = true
+            restore()
+            NBLocalization.configureDirection()
+        }
+        UserDefaults.standard.set("ar", forKey: NBLocalization.preferenceKey)
+        NBLocalization.configureDirection()
+        window.frame = CGRect(x: 0, y: 0, width: 320, height: 300)
+        window.rootViewController = UIViewController()
+        window.isHidden = false
+        // LocalizationTests.swift reproduces InteractionCell.m drawing the avatar on the left under a right-aligned sentence.
+        let interaction = InteractionCell(style: .default, reuseIdentifier: nil)
+        interaction.frame = CGRect(x: 0, y: 0, width: 320, height: 100)
+        window.rootViewController?.view.addSubview(interaction)
+        interaction.setNeedsLayout()
+        interaction.layoutIfNeeded()
+        XCTAssertEqual(interaction.avatarView.frame.maxX, interaction.contentView.bounds.width - CGFloat(interaction.leftMargin),
+                       accuracy: 0.5)
+        let activity = ActivityCell(style: .default, reuseIdentifier: nil)
+        activity.frame = CGRect(x: 0, y: 100, width: 320, height: 100)
+        window.rootViewController?.view.addSubview(activity)
+        activity.faviconLeftToRightFrame = CGRect(x: 20, y: 15, width: 48, height: 48)
+        activity.setNeedsLayout()
+        activity.layoutIfNeeded()
+        XCTAssertEqual(activity.faviconView.frame.maxX, activity.contentView.bounds.width - 20, accuracy: 0.5)
+
+        let badge = ProfileBadge(style: .default, reuseIdentifier: nil)
+        let profile: NSDictionary = ["user_id": 42, "username": "localization-fixture", "followed_by_you": 0,
+                                     "photo_url": "https://localization-fixture.invalid/avatar.png", "bio": NSNull(),
+                                     "location": NSNull()]
+        badge.refresh(withProfile: profile as? [AnyHashable: Any], showStats: false, withWidth: 320)
+        let follow = try XCTUnwrap(badge.followButton)
+        XCTAssertEqual(follow.frame.maxX, 310, accuracy: 0.5, "Arabic's follow button sits under the avatar on the right")
+        XCTAssertEqual(badge.username.frame.minX, 10, accuracy: 0.5)
+        XCTAssertEqual(badge.username.textAlignment, .right)
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+        let english = ProfileBadge(style: .default, reuseIdentifier: nil)
+        english.refresh(withProfile: profile as? [AnyHashable: Any], showStats: false, withWidth: 320)
+        XCTAssertEqual(english.followButton.frame.minX, 10, accuracy: 0.5)
+    }
+
+    // LocalizationTests.swift restores the account language each test changes.
+    private func rememberLanguage() -> () -> Void {
+        let previous = UserDefaults.standard.object(forKey: NBLocalization.preferenceKey)
+        return {
+            if let previous {
+                UserDefaults.standard.set(previous, forKey: NBLocalization.preferenceKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: NBLocalization.preferenceKey)
+            }
+        }
+    }
+
+    private func makePagerFixture() -> (pages: LocalizationPagerPages, articles: [LocalizationPagerPage]) {
+        let app = LocalizationPagerApp()
+        let collection = StoriesCollection()
+        collection.appDelegate = app
+        collection.activeFeedStories = (0..<5).map { ["story_hash": "rtl-paging:\($0)"] as [String: Any] }
+        collection.activeFeedStoryLocations = NSMutableArray(array: Array(0..<5))
+        collection.storyCount = 5
+        collection.storyLocationsCount = 5
+        app.storiesCollection = collection
+        let pages = LocalizationPagerPages()
+        pages.appDelegate = app
+        pages.loadViewIfNeeded()
+        let articles = (1...3).map { index -> LocalizationPagerPage in
+            let page = LocalizationPagerPage()
+            page.appDelegate = app
+            page.loadViewIfNeeded()
+            page.pageIndex = index
+            pages.scrollView.addSubview(page.view)
+            return page
+        }
+        pages.previousPage = articles[0]
+        pages.currentPage = articles[1]
+        pages.nextPage = articles[2]
+        return (pages, articles)
+    }
+
     private func isCountGreen(_ image: UIImage, x: Int, y: Int) -> Bool {
         // UnreadCountView.m fills focus counts with 0x6EA74A.
         isColor(image, x: x, y: y, red: 0x6E, green: 0xA7, blue: 0x4A)
@@ -298,4 +489,38 @@ private final class LocalizationRecordingAppDelegate: NewsBlurAppDelegate {
     override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
         postedURLs.append(urlString)
     }
+}
+
+// LocalizationTests.swift measures StoryPagesObjCViewController.m's page geometry without loading articles.
+@MainActor private final class LocalizationPagerPages: StoryPagesViewController {
+    var horizontal = true
+    override var isHorizontal: Bool { horizontal }
+    override func loadView() {
+        view = UIView(frame: CGRect(x: 0, y: 0, width: 474, height: 600))
+        scrollView = UIScrollView(frame: view.bounds)
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.isPagingEnabled = true
+        view.addSubview(scrollView)
+    }
+    override func viewDidLoad() {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+    override func viewSafeAreaInsetsDidChange() {}
+}
+
+@MainActor private final class LocalizationPagerPage: StoryDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 474, height: 600)) }
+    override func viewDidLoad() {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
+}
+
+private final class LocalizationPagerApp: NewsBlurAppDelegate {
+    override var feedDetailViewController: FeedDetailViewController! { nil }
+}
+
+// LocalizationTests.swift builds the real share bar markup without WebKit.
+@MainActor private final class LocalizationShareBarPage: StoryDetailViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
 }
