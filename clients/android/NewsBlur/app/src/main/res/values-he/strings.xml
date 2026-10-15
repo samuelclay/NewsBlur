@@ -171,7 +171,7 @@
     <string name="profile_following">במעקב</string>
     <string name="profile_followers">עוקבים</string>
     <string name="profile_shared">כתבות ששותפו</string>
-    <string name="profile_ago">לפני</string>
+    <string name="profile_time_ago">לפני %1$s</string>
     <string name="profile_recent_actvity">פעילויות</string>
     <string name="profile_recent_interactions">אינטראקציות</string>
     <string name="profile_button_follow">עקוב</string>

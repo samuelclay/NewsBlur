@@ -171,7 +171,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_following">Folgt</string>
     <string name="profile_followers">Follower</string>
     <string name="profile_shared">Geteilte Artikel</string>
-    <string name="profile_ago">zuvor</string>
+    <string name="profile_time_ago">vor %1$s</string>
     <string name="profile_recent_actvity">Aktivitäten</string>
     <string name="profile_recent_interactions">Interaktionen</string>
     <string name="profile_button_follow">Folgen</string>

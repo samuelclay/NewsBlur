@@ -110,7 +110,7 @@ msgstr "%(date)s, %(time)s"
 msgid "%(number)d day"
 msgid_plural "%(number)d days"
 msgstr[0] "%(number)d Tag"
-msgstr[1] "%(number)d Tg."
+msgstr[1] "%(number)d Tagen"
 
 #, python-format
 msgid "%(number)d hour"

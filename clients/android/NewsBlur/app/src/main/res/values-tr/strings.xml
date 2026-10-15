@@ -171,7 +171,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_following">Takip ediyor</string>
     <string name="profile_followers">Takipçiler</string>
     <string name="profile_shared">Paylaşılan hikâyeler</string>
-    <string name="profile_ago">önce</string>
+    <string name="profile_time_ago">%1$s önce</string>
     <string name="profile_recent_actvity">Etkinlikler</string>
     <string name="profile_recent_interactions">Etkileşimler</string>
     <string name="profile_button_follow">Takip et</string>

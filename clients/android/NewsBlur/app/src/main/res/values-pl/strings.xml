@@ -171,7 +171,7 @@
     <string name="profile_following">Obserwowani</string>
     <string name="profile_followers">Obserwujący</string>
     <string name="profile_shared">Udostępnione artykuły</string>
-    <string name="profile_ago">temu</string>
+    <string name="profile_time_ago">%1$s temu</string>
     <string name="profile_recent_actvity">Aktywność</string>
     <string name="profile_recent_interactions">Interakcje</string>
     <string name="profile_button_follow">Obserwuj</string>
