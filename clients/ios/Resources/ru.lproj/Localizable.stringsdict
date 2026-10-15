@@ -2,6 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%1$@ feeds couldn’t be added to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@unadded_feeds_in_folder@</string>
+		<key>unadded_feeds_in_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Не удалось добавить ленты %1$@ в %2$@.</string>
+			<key>many</key>
+			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
+			<key>one</key>
+			<string>Не удалось добавить ленту %1$@ в %2$@.</string>
+			<key>other</key>
+			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -20,6 +40,26 @@
 			<string>%@ сайт с виджетами</string>
 			<key>other</key>
 			<string>Сайтов-виджетов: %@</string>
+		</dict>
+	</dict>
+	<key>%@ categories to choose from</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@category_count@</string>
+		<key>category_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Доступно категорий: %@</string>
+			<key>many</key>
+			<string>Категории на выбор: %@</string>
+			<key>one</key>
+			<string>Категория на выбор: %@</string>
+			<key>other</key>
+			<string>На выбор %@ категорий</string>
 		</dict>
 	</dict>
 	<key>%@ comments</key>
@@ -42,6 +82,26 @@
 			<string>%@ комментариев</string>
 		</dict>
 	</dict>
+	<key>%@ could not be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed_feed_count@</string>
+		<key>failed_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Не удалось добавить %@.</string>
+			<key>many</key>
+			<string>Не удалось добавить %@.</string>
+			<key>one</key>
+			<string>Не удалось добавить: %@.</string>
+			<key>other</key>
+			<string>Не удалось добавить: %@.</string>
+		</dict>
+	</dict>
 	<key>%@ days</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -60,6 +120,106 @@
 			<string>%@ день</string>
 			<key>other</key>
 			<string>%@ дней</string>
+		</dict>
+	</dict>
+	<key>%@ feeds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_count@</string>
+		<key>feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ ленты</string>
+			<key>many</key>
+			<string>%@ лент</string>
+			<key>one</key>
+			<string>Лента %@</string>
+			<key>other</key>
+			<string>Лент: %@</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feed_count@</string>
+		<key>added_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Добавлено %@ ленты</string>
+			<key>many</key>
+			<string>Добавлено лент: %@</string>
+			<key>one</key>
+			<string>Добавлена %@ лента</string>
+			<key>other</key>
+			<string>Добавлено %@ лент</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_label@</string>
+		<key>added_feeds_label</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Добавлено %@ ленты.</string>
+			<key>many</key>
+			<string>Добавлено лент: %@.</string>
+			<key>one</key>
+			<string>Добавлена лента: %@.</string>
+			<key>other</key>
+			<string>Добавлено лент: %@.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds couldn’t be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unadded_feed_count@</string>
+		<key>unadded_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Не удалось добавить ленты: %@.</string>
+			<key>many</key>
+			<string>Не удалось добавить ленты: %@.</string>
+			<key>one</key>
+			<string>Не удалось добавить %@ ленту.</string>
+			<key>other</key>
+			<string>Не удалось добавить лент: %@.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds selected</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@selected_feed_count@</string>
+		<key>selected_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Выбрано лент: %@</string>
+			<key>many</key>
+			<string>Выбрано %@ лент</string>
+			<key>one</key>
+			<string>Выбрана %@ лента</string>
+			<key>other</key>
+			<string>Выбрано %@ лент</string>
 		</dict>
 	</dict>
 	<key>%@ focused stories</key>
@@ -160,6 +320,26 @@
 			<string>%@ репост</string>
 			<key>other</key>
 			<string>%@ репостов</string>
+		</dict>
+	</dict>
+	<key>%@ sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@source_count@</string>
+		<key>source_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Источников: %@</string>
+			<key>many</key>
+			<string>%@ источников</string>
+			<key>one</key>
+			<string>%@ источник</string>
+			<key>other</key>
+			<string>%@ источников</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -282,6 +462,66 @@
 			<string>+ ещё %@ сайтов</string>
 		</dict>
 	</dict>
+	<key>Add %1$@ feeds to “%2$@” folder</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@add_feeds_to_folder@</string>
+		<key>add_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+			<key>many</key>
+			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+			<key>one</key>
+			<string>Добавить %1$@ ленту в папку «%2$@»</string>
+			<key>other</key>
+			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+		</dict>
+	</dict>
+	<key>Added %1$@ feeds to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@added_feeds_to_folder@</string>
+		<key>added_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Добавлено лент: %1$@ в %2$@.</string>
+			<key>many</key>
+			<string>В папку «%2$@» добавлено лент: %1$@.</string>
+			<key>one</key>
+			<string>Добавлена лента %1$@ в %2$@.</string>
+			<key>other</key>
+			<string>Добавлено лент: %1$@ в %2$@.</string>
+		</dict>
+	</dict>
+	<key>Added %@ feeds.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_sentence@</string>
+		<key>added_feeds_sentence</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Добавлено лент: %@.</string>
+			<key>many</key>
+			<string>Добавлено лент: %@.</string>
+			<key>one</key>
+			<string>Добавлена лента: %@.</string>
+			<key>other</key>
+			<string>Добавлено %@ лент.</string>
+		</dict>
+	</dict>
 	<key>Also published by %@ sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -302,6 +542,26 @@
 			<string>Также опубликовано на %@ других сайтах</string>
 		</dict>
 	</dict>
+	<key>Delete %@ sites?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@delete_site_count@</string>
+		<key>delete_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Удалить %@ сайта?</string>
+			<key>many</key>
+			<string>Удалить сайтов: %@?</string>
+			<key>one</key>
+			<string>Удалить сайт %@?</string>
+			<key>other</key>
+			<string>Удалить %@ сайтов?</string>
+		</dict>
+	</dict>
 	<key>Followers label</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -320,6 +580,46 @@
 			<string>Подписчик</string>
 			<key>other</key>
 			<string>Подписчики</string>
+		</dict>
+	</dict>
+	<key>Images from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_days@</string>
+		<key>image_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Изображения за %@ дня назад</string>
+			<key>many</key>
+			<string>Изображения за %@ дней назад</string>
+			<key>one</key>
+			<string>Изображения за %@ день назад</string>
+			<key>other</key>
+			<string>Изображения за %@ дн. назад</string>
+		</dict>
+	</dict>
+	<key>Images from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_hours@</string>
+		<key>image_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Изображения за %@ ч. назад</string>
+			<key>many</key>
+			<string>Изображения за %@ ч. назад</string>
+			<key>one</key>
+			<string>Изображения за %@ ч. назад</string>
+			<key>other</key>
+			<string>Изображения за %@ часов назад</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -460,6 +760,46 @@
 			<string>Хранить за последний %@ час</string>
 			<key>other</key>
 			<string>Хранить за последние %@ ч.</string>
+		</dict>
+	</dict>
+	<key>Text from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_days@</string>
+		<key>text_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Текст за %@ дня</string>
+			<key>many</key>
+			<string>Текст за %@ дн. назад</string>
+			<key>one</key>
+			<string>Текст за %@ день назад</string>
+			<key>other</key>
+			<string>Текст за %@ дн. назад</string>
+		</dict>
+	</dict>
+	<key>Text from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_hours@</string>
+		<key>text_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Текст за %@ ч. назад</string>
+			<key>many</key>
+			<string>Текст %@ ч. назад</string>
+			<key>one</key>
+			<string>Текст за %@ час назад</string>
+			<key>other</key>
+			<string>Текст %@ ч. назад</string>
 		</dict>
 	</dict>
 	<key>Updated %@ days ago</key>

@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%1$@ feeds couldn’t be added to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@unadded_feeds_in_folder@</string>
+		<key>unadded_feeds_in_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>לא ניתן היה להוסיף את ההזנה %1$@ אל %2$@.</string>
+			<key>other</key>
+			<string>לא ניתן להוסיף את %1$@ ההזנות אל %2$@.</string>
+			<key>two</key>
+			<string>לא ניתן להוסיף %1$@ פידים אל %2$@.</string>
+		</dict>
+	</dict>
 	<key>%@ Widget Sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -18,6 +36,24 @@
 			<string>%@ אתרי ווידג'טים</string>
 			<key>two</key>
 			<string>%@ אתרי Widget</string>
+		</dict>
+	</dict>
+	<key>%@ categories to choose from</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@category_count@</string>
+		<key>category_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>קטגוריה %@ לבחירה</string>
+			<key>other</key>
+			<string>%@ קטגוריות לבחירה</string>
+			<key>two</key>
+			<string>יש %@ קטגוריות לבחירה</string>
 		</dict>
 	</dict>
 	<key>%@ comments</key>
@@ -38,6 +74,24 @@
 			<string>%@ תגובות</string>
 		</dict>
 	</dict>
+	<key>%@ could not be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed_feed_count@</string>
+		<key>failed_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>לא ניתן היה להוסיף את %@.</string>
+			<key>other</key>
+			<string>לא ניתן להוסיף את %@.</string>
+			<key>two</key>
+			<string>לא ניתן היה להוסיף את %@.</string>
+		</dict>
+	</dict>
 	<key>%@ days</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -54,6 +108,96 @@
 			<string>%@ ימים</string>
 			<key>two</key>
 			<string>%@ ימים</string>
+		</dict>
+	</dict>
+	<key>%@ feeds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_count@</string>
+		<key>feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>הזנה %@</string>
+			<key>other</key>
+			<string>%@ פידים</string>
+			<key>two</key>
+			<string>%@ עדכונים</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feed_count@</string>
+		<key>added_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוסף %@ פיד</string>
+			<key>other</key>
+			<string>נוספו %@ פידים</string>
+			<key>two</key>
+			<string>נוספו %@ הזנות</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_label@</string>
+		<key>added_feeds_label</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוסף פיד אחד: %@</string>
+			<key>other</key>
+			<string>נוספו %@ עדכונים.</string>
+			<key>two</key>
+			<string>נוספו %@ הזנות.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds couldn’t be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unadded_feed_count@</string>
+		<key>unadded_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>לא ניתן להוסיף %@ פיד.</string>
+			<key>other</key>
+			<string>לא ניתן להוסיף %@ פידים.</string>
+			<key>two</key>
+			<string>לא ניתן היה להוסיף %@ פידים.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds selected</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@selected_feed_count@</string>
+		<key>selected_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ פיד נבחר</string>
+			<key>other</key>
+			<string>נבחרו %@ הזנות</string>
+			<key>two</key>
+			<string>נבחרו %@ פידים</string>
 		</dict>
 	</dict>
 	<key>%@ focused stories</key>
@@ -144,6 +288,24 @@
 			<string>%@ שיתופים</string>
 			<key>two</key>
 			<string>%@ שיתופים</string>
+		</dict>
+	</dict>
+	<key>%@ sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@source_count@</string>
+		<key>source_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ מקור</string>
+			<key>other</key>
+			<string>%@ מקורות</string>
+			<key>two</key>
+			<string>%@ מקורות</string>
 		</dict>
 	</dict>
 	<key>%@ stories</key>
@@ -254,6 +416,60 @@
 			<string>+ עוד שני אתרים (%@)</string>
 		</dict>
 	</dict>
+	<key>Add %1$@ feeds to “%2$@” folder</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@add_feeds_to_folder@</string>
+		<key>add_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>הוספת פיד %1$@ לתיקייה „%2$@”</string>
+			<key>other</key>
+			<string>הוספת %1$@ עדכונים לתיקייה „%2$@”</string>
+			<key>two</key>
+			<string>הוספת %1$@ הזנות לתיקייה „%2$@”</string>
+		</dict>
+	</dict>
+	<key>Added %1$@ feeds to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@added_feeds_to_folder@</string>
+		<key>added_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוסף עדכון %1$@ אל %2$@.</string>
+			<key>other</key>
+			<string>נוספו %1$@ הזנות אל %2$@.</string>
+			<key>two</key>
+			<string>נוספו %1$@ פידים אל %2$@.</string>
+		</dict>
+	</dict>
+	<key>Added %@ feeds.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_sentence@</string>
+		<key>added_feeds_sentence</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>נוספה הזנה אחת: %@.</string>
+			<key>other</key>
+			<string>נוספו %@ פידים.</string>
+			<key>two</key>
+			<string>נוספו %@ הזנות.</string>
+		</dict>
+	</dict>
 	<key>Also published by %@ sites</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -272,6 +488,24 @@
 			<string>פורסם גם ב־%@ אתרים</string>
 		</dict>
 	</dict>
+	<key>Delete %@ sites?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@delete_site_count@</string>
+		<key>delete_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>למחוק אתר %@?</string>
+			<key>other</key>
+			<string>למחוק %@ אתרים?</string>
+			<key>two</key>
+			<string>למחוק %@ אתרים?</string>
+		</dict>
+	</dict>
 	<key>Followers label</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -288,6 +522,42 @@
 			<string>עוקבים</string>
 			<key>two</key>
 			<string>עוקבים</string>
+		</dict>
+	</dict>
+	<key>Images from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_days@</string>
+		<key>image_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>תמונות מלפני %@ יום</string>
+			<key>other</key>
+			<string>תמונות מלפני %@ ימים</string>
+			<key>two</key>
+			<string>תמונות מלפני %@ ימים</string>
+		</dict>
+	</dict>
+	<key>Images from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_hours@</string>
+		<key>image_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>תמונות מלפני %@ שעה</string>
+			<key>other</key>
+			<string>תמונות מלפני %@ שעות</string>
+			<key>two</key>
+			<string>תמונות מלפני %@ שעות</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -414,6 +684,42 @@
 			<string>שמירת %@ השעות האחרונות</string>
 			<key>two</key>
 			<string>שמירת היסטוריה של %@ השעות האחרונות</string>
+		</dict>
+	</dict>
+	<key>Text from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_days@</string>
+		<key>text_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>טקסט מלפני %@ יום</string>
+			<key>other</key>
+			<string>טקסט מלפני %@ ימים</string>
+			<key>two</key>
+			<string>טקסט מלפני %@ ימים</string>
+		</dict>
+	</dict>
+	<key>Text from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_hours@</string>
+		<key>text_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>טקסט מלפני %@ שעה</string>
+			<key>other</key>
+			<string>טקסט מלפני %@ שעות</string>
+			<key>two</key>
+			<string>טקסט מלפני %@ שעות</string>
 		</dict>
 	</dict>
 	<key>Updated %@ days ago</key>
