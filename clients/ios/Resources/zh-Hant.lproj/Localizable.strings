@@ -123,7 +123,7 @@
 "After 60 seconds" = "60 秒後";
 "After mark read" = "標記為已讀後";
 "Afternoon" = "下午";
-"Afternoon Briefing" = "午後簡報";
+"Afternoon Briefing" = "下午簡報";
 "Alert after no new stories for" = "多久沒有新文章後發出提醒";
 "All" = "全部";
 "All Done" = "全部完成";
@@ -311,13 +311,13 @@
 "Export Preferences" = "匯出偏好設定";
 "Export trained stories from folders as RSS feeds" = "將資料夾中已訓練的文章匯出為 RSS 訂閱來源";
 "Extra Large" = "特大";
-"Extra Short [grid height]" = "極短";
+"Extra Short [grid height]" = "特矮";
 "Extra Small" = "特小";
-"Extra Tall" = "特別高";
+"Extra Tall" = "特高";
 "Extra small" = "特小";
 "Faster" = "更快";
 "Favorited" = "已加入最愛";
-"Favoriting" = "加入收藏中";
+"Favoriting" = "正在加入最愛";
 "Feed List" = "訂閱來源清單";
 "Feed Title" = "訂閱來源標題";
 "Feed and story list" = "訂閱來源與文章清單";
@@ -358,7 +358,7 @@
 "Followed" = "已追蹤";
 "Followers label" = "追蹤者標籤";
 "Following [button state]" = "追蹤中";
-"Following [in progress]" = "追蹤中";
+"Following [in progress]" = "正在追蹤…";
 "Following [label under the number of people this profile follows]" = "追蹤中";
 "Font" = "字型";
 "Font Size" = "字型大小";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "中";
 "Medium [preview length]" = "中";
 "Medium [text size]" = "中";
-"Medium [theme]" = "中";
+"Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "更多文章會占用更多磁碟空間，但除此之外，不會對效能造成明顯影響。";
@@ -807,7 +807,7 @@
 "Shared" = "已分享";
 "Shared Stories label" = "分享文章標籤";
 "Sharing" = "分享中";
-"Short [grid height]" = "短";
+"Short [grid height]" = "矮";
 "Short [preview length]" = "短";
 "Show" = "顯示";
 "Show Ask AI" = "顯示「詢問 AI」";

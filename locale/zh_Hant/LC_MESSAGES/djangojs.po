@@ -3009,7 +3009,7 @@ msgid "From"
 msgstr "從"
 
 msgid "From infrequent sites"
-msgstr "來自更新較少的網站"
+msgstr "來自不常更新的網站"
 
 msgid "Full"
 msgstr "完整"
@@ -3809,7 +3809,7 @@ msgstr "中"
 
 msgctxt "summary length"
 msgid "Medium"
-msgstr "中"
+msgstr "中等"
 
 msgid "Merge"
 msgstr "合併"
@@ -5663,7 +5663,7 @@ msgstr "購物"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "短"
+msgstr "矮"
 
 msgid "Show"
 msgstr "顯示"

@@ -2878,7 +2878,7 @@ msgid "Followers"
 msgstr "关注者"
 
 msgid "Following"
-msgstr "正在关注"
+msgstr "已关注"
 
 msgid "Following Me"
 msgstr "关注我的人"
@@ -5663,7 +5663,7 @@ msgstr "购物"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "短"
+msgstr "矮"
 
 msgid "Show"
 msgstr "显示"
