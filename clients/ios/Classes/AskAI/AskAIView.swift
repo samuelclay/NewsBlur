@@ -186,7 +186,7 @@ struct AskAIView: View {
                         )
                 }
                 .buttonStyle(.plain)
-                .help("Dismiss")
+                .help(NBLocalization.text("Dismiss"))
                 .accessibilityLabel(NBLocalization.text("Dismiss"))
 #endif
             }
@@ -366,7 +366,7 @@ struct AskAIView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: NewsBlurColors.accent))
                         .scaleEffect(0.8)
-                    Text(viewModel.isRecording ? "Recording..." : "Transcribing...")
+                    Text(viewModel.isRecording ? NBLocalization.text("Recording...") : NBLocalization.text("Transcribing..."))
                         .font(.system(size: 12))
                         .foregroundColor(NewsBlurColors.textSecondary)
                 }

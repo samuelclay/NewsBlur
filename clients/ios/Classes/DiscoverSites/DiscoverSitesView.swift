@@ -20,7 +20,7 @@ struct DiscoverSitesView: View {
             DiscoverTabBarView(activeTab: $viewModel.activeTab)
 
             if viewModel.isAdding || viewModel.isPreparingPreview {
-                ProgressView(viewModel.isAdding ? "Adding site…" : "Opening site…")
+                ProgressView(viewModel.isAdding ? NBLocalization.text("Adding site…") : NBLocalization.text("Opening site…"))
                     .font(.subheadline)
                     .foregroundColor(DiscoverColors.textPrimary)
                     .frame(maxWidth: .infinity, minHeight: 44)
@@ -116,16 +116,16 @@ struct DiscoverResultsStatusView: View {
     var body: some View {
         VStack(spacing: 12) {
             if isLoading {
-                ProgressView(isSearching ? "Searching…" : "Finding sites…")
+                ProgressView(isSearching ? NBLocalization.text("Searching…") : NBLocalization.text("Finding sites…"))
             } else if let error {
                 Image(systemName: "wifi.exclamationmark").font(.title2)
                 Text(error).multilineTextAlignment(.center)
                 Button(NBLocalization.text("Try again"), action: retry).frame(minHeight: 44)
             } else if isEmpty {
                 Image(systemName: "magnifyingglass").font(.title2)
-                Text(isSearching ? "No matching sites" : "No sites in this category")
+                Text(isSearching ? NBLocalization.text("No matching sites") : NBLocalization.text("No sites in this category"))
                     .font(.headline)
-                Text(isSearching ? "Try another name, or paste a site URL in Search." : "Choose another category to discover more.")
+                Text(isSearching ? NBLocalization.text("Try another name, or paste a site URL in Search.") : NBLocalization.text("Choose another category to discover more."))
                     .font(.subheadline).multilineTextAlignment(.center)
             }
         }

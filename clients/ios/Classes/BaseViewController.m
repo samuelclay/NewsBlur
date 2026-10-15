@@ -439,7 +439,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         BOOL isSidebarVisible = !self.appDelegate.splitViewController.isFeedsListHidden;
-        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
+        command.title = isSidebarVisible ? [NBLocalization text:@"Hide Sidebar"] : [NBLocalization text:@"Show Sidebar"];
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];

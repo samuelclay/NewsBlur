@@ -95,10 +95,11 @@ import QuartzCore
 
     func configure(kind: String, title: String?, icon: UIImage?, progress: CGFloat, ready: Bool) {
         let hasTarget = title?.isEmpty == false
-        let destination = kind == "folder" ? "folder" : "site"
+        // FeedDetailViewController.swift names the next folder or site in a complete translated sentence.
+        let nextUnread = kind == "folder" ? NBLocalization.text("Next unread folder, %@") : NBLocalization.text("Next unread site, %@")
 
-        titleLabel.text = hasTarget ? title : "Feed list"
-        accessibilityLabel = hasTarget ? "Next unread \(destination), \(title ?? "")" : "Feed list"
+        titleLabel.text = hasTarget ? title : NBLocalization.text("Feed list")
+        accessibilityLabel = hasTarget ? String(format: nextUnread, title ?? "") : NBLocalization.text("Feed list")
 
         if let icon {
             targetIconView.image = icon.withRenderingMode(.alwaysOriginal)
@@ -285,7 +286,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         isOnline = true
         isShowingFetching = true
         messageView.isHidden = true
-        showFetchingBanner("Fetching stories from this site...", isOffline: false)
+        showFetchingBanner(NBLocalization.text("Fetching stories from this site..."), isOffline: false)
 
         let timeout = DispatchWorkItem { [weak self, weak refresh] in
             guard let self, let refresh, self.isCurrentTryFeedRefresh(refresh) else { return }
@@ -357,8 +358,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         if storiesCollection.storyCount == 0 {
             pageFinished = true
             messageLabel.text = response == nil
-                ? "Unable to fetch stories. Pull to refresh to try again."
-                : "No stories are available from this site yet."
+                ? NBLocalization.text("Unable to fetch stories. Pull to refresh to try again.")
+                : NBLocalization.text("No stories are available from this site yet.")
             messageView.isHidden = false
         }
     }
@@ -1544,7 +1545,7 @@ private final class DailyBriefingStore: ObservableObject {
             callback?()
         }, failure: { [weak self] _, error in
             guard let self else { return }
-            self.finishFailedRequest(message: Self.errorDescription(error, fallback: "Unable to load Daily Briefing."), callback: callback)
+            self.finishFailedRequest(message: Self.errorDescription(error, fallback: NBLocalization.text("Unable to load Daily Briefing.")), callback: callback)
         })
     }
 
@@ -1556,7 +1557,7 @@ private final class DailyBriefingStore: ObservableObject {
 
         guard let url = requestURL(path: "/briefing/preferences") else {
             isSaving = false
-            errorMessage = "Unable to save Daily Briefing settings."
+            errorMessage = NBLocalization.text("Unable to save Daily Briefing settings.")
             completion?()
             return
         }
@@ -1583,7 +1584,7 @@ private final class DailyBriefingStore: ObservableObject {
             guard let self else { return }
 
             self.isSaving = false
-            self.errorMessage = Self.errorDescription(error, fallback: "Unable to save Daily Briefing settings.")
+            self.errorMessage = Self.errorDescription(error, fallback: NBLocalization.text("Unable to save Daily Briefing settings."))
             completion?()
         })
     }
@@ -1600,7 +1601,7 @@ private final class DailyBriefingStore: ObservableObject {
             isLoadingPreferences = false
             isLoading = false
             isLoadingInitialData = false
-            errorMessage = "Unable to load Daily Briefing settings."
+            errorMessage = NBLocalization.text("Unable to load Daily Briefing settings.")
             runPendingPreferenceCompletions()
             return
         }
@@ -1625,7 +1626,7 @@ private final class DailyBriefingStore: ObservableObject {
             self.controller?.pageFinished = true
             self.controller?.isShowingFetching = false
             self.controller?.hideFetchingBanner()
-            self.errorMessage = Self.errorDescription(error, fallback: "Unable to load Daily Briefing settings.")
+            self.errorMessage = Self.errorDescription(error, fallback: NBLocalization.text("Unable to load Daily Briefing settings."))
             self.controller?.refreshDailyBriefingPresentation()
             self.runPendingPreferenceCompletions()
         })
@@ -1639,13 +1640,13 @@ private final class DailyBriefingStore: ObservableObject {
 
     private func generateBriefing(from draft: Preferences, completion: (() -> Void)?) {
         isGenerating = true
-        progressMessage = "Generating your Daily Briefing..."
+        progressMessage = NBLocalization.text("Generating your Daily Briefing...")
 
         guard let url = requestURL(path: "/briefing/generate") else {
             isSaving = false
             isGenerating = false
             progressMessage = nil
-            errorMessage = "Unable to generate Daily Briefing."
+            errorMessage = NBLocalization.text("Unable to generate Daily Briefing.")
             completion?()
             return
         }
@@ -1673,7 +1674,7 @@ private final class DailyBriefingStore: ObservableObject {
             self.isSaving = false
             self.isGenerating = false
             self.progressMessage = nil
-            self.errorMessage = Self.errorDescription(error, fallback: "Unable to generate Daily Briefing.")
+            self.errorMessage = Self.errorDescription(error, fallback: NBLocalization.text("Unable to generate Daily Briefing."))
             completion?()
         })
     }
@@ -1682,7 +1683,7 @@ private final class DailyBriefingStore: ObservableObject {
         guard remainingAttempts > 0 else {
             isGenerating = false
             progressMessage = nil
-            errorMessage = "Daily Briefing generation timed out. Please try again."
+            errorMessage = NBLocalization.text("Daily Briefing generation timed out. Please try again.")
             return
         }
 
@@ -1720,7 +1721,7 @@ private final class DailyBriefingStore: ObservableObject {
         appDelegate.post(url, parameters: parameters, success: { _, _ in
             completion()
         }, failure: { [weak self] _, error in
-            self?.errorMessage = Self.errorDescription(error, fallback: "Unable to save notification settings.")
+            self?.errorMessage = Self.errorDescription(error, fallback: NBLocalization.text("Unable to save notification settings."))
             completion()
         })
     }
@@ -2212,13 +2213,13 @@ private final class DailyBriefingStore: ObservableObject {
     private static func formattedBriefingTitle(from slot: String?) -> String {
         switch slot?.lowercased() {
         case "morning":
-            return "Morning Briefing"
+            return NBLocalization.text("Morning Briefing")
         case "afternoon":
-            return "Afternoon Briefing"
+            return NBLocalization.text("Afternoon Briefing")
         case "evening":
-            return "Evening Briefing"
+            return NBLocalization.text("Evening Briefing")
         default:
-            return "Daily Briefing"
+            return NBLocalization.text("Daily Briefing")
         }
     }
 }
@@ -2434,7 +2435,7 @@ private struct DailyBriefingSettingsForm: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             DailyBriefingSettingsCard(title: NBLocalization.text("Auto-generate"), subtitle: NBLocalization.text("Automatically create briefings on your schedule")) {
-                Toggle("Enabled", isOn: $draft.enabled)
+                Toggle(NBLocalization.text("Enabled"), isOn: $draft.enabled)
                     .toggleStyle(.switch)
             }
 
@@ -2463,7 +2464,7 @@ private struct DailyBriefingSettingsForm: View {
                     }
                 )
                 DailyBriefingMenuRow(title: NBLocalization.text("Filter"), selection: $draft.readFilter, options: readFilterOptions)
-                Toggle("Include already-read stories", isOn: $draft.includeRead)
+                Toggle(NBLocalization.text("Include already-read stories"), isOn: $draft.includeRead)
             }
 
             DailyBriefingSettingsCard(title: NBLocalization.text("Sections"), subtitle: NBLocalization.text("Only sections with matching stories will be included")) {
@@ -2487,7 +2488,7 @@ private struct DailyBriefingSettingsForm: View {
                 ForEach(Array(draft.customSectionPrompts.indices), id: \.self) { index in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Toggle("Keyword section \(index + 1)", isOn: Binding(
+                            Toggle(String(format: NBLocalization.text("Keyword section %@"), NBLocalization.formattedCount(index + 1)), isOn: Binding(
                                 get: { draft.customSectionEnabled.indices.contains(index) ? draft.customSectionEnabled[index] : true },
                                 set: { newValue in
                                     if draft.customSectionEnabled.indices.contains(index) {
@@ -2555,7 +2556,7 @@ private struct DailyBriefingSettingsForm: View {
                     .buttonStyle(DailyBriefingSecondaryButtonStyle())
                 }
 
-                Button(showsSaveButton ? "Generate Now" : "Generate Daily Briefing") {
+                Button(showsSaveButton ? NBLocalization.text("Generate Now") : NBLocalization.text("Generate Daily Briefing")) {
                     store.save(preferences: draft, generate: true)
                 }
                 .buttonStyle(DailyBriefingPrimaryButtonStyle())
@@ -2565,7 +2566,7 @@ private struct DailyBriefingSettingsForm: View {
             if store.isSaving || store.isGenerating {
                 HStack(spacing: 12) {
                     ProgressView()
-                    Text(store.progressMessage ?? "Saving Daily Briefing settings…")
+                    Text(store.progressMessage ?? NBLocalization.text("Saving Daily Briefing settings…"))
                         .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 14))
                 }
                 .padding(.top, 4)
@@ -2592,7 +2593,7 @@ private struct DailyBriefingGroupView: View {
                     Text(group.title)
                         .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 18))
                     Spacer()
-                    Text("\(group.curatedCount) \(group.curatedCount == 1 ? "story" : "stories")")
+                    Text(NBLocalization.plural("%@ stories", groupedCount: group.curatedCount))
                         .font(dailyBriefingFont(named: "WhitneySSm-Medium", size: 13))
                         .foregroundColor(Color.themed([0x6E6E73, 0x8B7B6B, 0xAEAEB2, 0x98989D]))
                 }

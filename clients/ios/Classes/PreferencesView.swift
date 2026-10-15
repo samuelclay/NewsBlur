@@ -1108,13 +1108,16 @@ class PreferencesViewModel: ObservableObject {
         func swipe(_ direction: String, onFeeds: Bool) -> PreferenceItem {
             let right = direction == "right"
             return PreferenceItem(
-                title: "Swipe \(direction)", icon: "arrow.\(direction)", iconColor: .indigo,
+                title: right ? NBLocalization.text("Swipe right") : NBLocalization.text("Swipe left"),
+                icon: "arrow.\(direction)", iconColor: .indigo,
                 type: .multiValue(
                     key: "\(onFeeds ? "feed" : "story")_title_swipe_\(direction)",
                     titles: onFeeds ? GesturePreferences.feedActionTitles : StoryTitleSwipePreference.actions.map { $0.title },
                     values: onFeeds ? GesturePreferences.feedActions : StoryTitleSwipePreference.actions.map { $0.value },
                     defaultValue: onFeeds ? (right ? "notifications" : "read") : (right ? "back" : "read")
-                ), pickerTitle: "Swipe \(direction) on \(onFeeds ? "feeds" : "story titles")"
+                ), pickerTitle: onFeeds
+                    ? (right ? NBLocalization.text("Swipe right on feeds") : NBLocalization.text("Swipe left on feeds"))
+                    : (right ? NBLocalization.text("Swipe right on story titles") : NBLocalization.text("Swipe left on story titles"))
             )
         }
         let tapTitles = [NBLocalization.text("Open original story"), NBLocalization.text("Show original text"), NBLocalization.text("Mark as unread"), NBLocalization.text("Save story"), NBLocalization.text("Do nothing")]
@@ -1132,7 +1135,7 @@ class PreferencesViewModel: ObservableObject {
                                                  defaultValue: "show_actions"),
                                pickerTitle: NBLocalization.text("Long press on feeds and folders"))
             ]),
-            PreferenceGroup(title: NBLocalization.text("Story titles"), footer: "Swiping from the left edge always returns to feeds, even when story swipes are off.", items: [
+            PreferenceGroup(title: NBLocalization.text("Story titles"), footer: NBLocalization.text("Swiping from the left edge always returns to feeds, even when story swipes are off."), items: [
                 PreferenceItem(title: NBLocalization.text("Swipe on stories"), icon: "arrow.left.arrow.right", iconColor: .indigo,
                                type: .toggle(key: "enable_story_swipes", defaultValue: true)),
                 swipe("left", onFeeds: false),

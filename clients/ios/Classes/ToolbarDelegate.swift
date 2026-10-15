@@ -110,7 +110,7 @@ extension ToolbarDelegate: NSToolbarDelegate {
             ? "arrow.down.right.and.arrow.up.left"
             : "arrow.up.left.and.arrow.down.right"
         fullScreenToolbarItem?.image = UIImage(systemName: iconName)
-        fullScreenToolbarItem?.label = isFullScreen ? "Exit Full Screen" : "Full Screen"
+        fullScreenToolbarItem?.label = isFullScreen ? NBLocalization.text("Exit Full Screen") : NBLocalization.text("Full Screen")
     }
 }
 #endif

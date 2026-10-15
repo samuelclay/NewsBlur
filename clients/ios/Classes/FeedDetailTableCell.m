@@ -116,32 +116,38 @@ static UIFont *indicatorFont = nil;
     [self setNeedsDisplay];
 }
 
+// FeedDetailTableCell.m reads each part of the row as a translated phrase for VoiceOver.
 - (NSString *)accessibilityLabel {
+    NSString *siteTitle = self.siteTitle ?: [NBLocalization text:@"no site"];
+    NSString *storyTitle = self.storyTitle ?: [NBLocalization text:@"no story"];
+    NSString *storyDate = self.storyDate ?: [NBLocalization text:@"no date"];
     if (self.isClusterStory) {
         NSString *tierLabel = [StoryClusterDisplayDecision clusterTierLabelForValue:self.clusterTier];
         return [NSString stringWithFormat:@"%@, \"%@\", %@, %@",
-                self.siteTitle ?: @"no site",
-                self.storyTitle ?: @"no story",
-                tierLabel ?: @"related",
-                self.storyDate ?: @"no date"];
+                siteTitle,
+                storyTitle,
+                tierLabel ?: [NBLocalization text:@"Related"],
+                storyDate];
     }
 
-    NSMutableString *output = [NSMutableString stringWithString:self.siteTitle ?: @"no site"];
+    NSMutableString *output = [NSMutableString stringWithString:siteTitle];
     
-    [output appendFormat:@", \"%@\"", self.storyTitle ?: @"no story"];
+    [output appendFormat:@", \"%@\"", storyTitle];
     
     if (self.storyAuthor.length) {
-        [output appendFormat:@", by %@", self.storyAuthor ?: @"no author"];
+        [output appendFormat:@", %@", [NSString stringWithFormat:[NBLocalization text:@"by %@"], self.storyAuthor]];
     }
     
-    [output appendFormat:@", at %@", self.storyDate ?: @"no date"];
-    [output appendFormat:@". %@", self.storyContent ?: @"no content"];
+    [output appendFormat:@", %@", [NSString stringWithFormat:[NBLocalization text:@"at %@"], storyDate]];
+    [output appendFormat:@". %@", self.storyContent ?: [NBLocalization text:@"no content"]];
     
     return output;
 }
 
 - (NSString *)accessibilityValue {
-    return [NSString stringWithFormat:@"%@, %@", self.isRead ? @"Read" : @"Unread", self.isSaved ? @"Saved" : @"Unsaved"];
+    return [NSString stringWithFormat:@"%@, %@",
+            self.isRead ? [NBLocalization text:@"Read"] : [NBLocalization text:@"Unread"],
+            self.isSaved ? [NBLocalization text:@"Saved"] : [NBLocalization text:@"Unsaved"]];
 }
 
 - (void)setupGestures {
@@ -503,7 +509,7 @@ static UIFont *indicatorFont = nil;
 
         CGFloat titleX = CGRectGetMinX(clusterRect) + 50.0;
         CGRect badgeFrame = CGRectZero;
-        NSString *badgeText = [[StoryClusterDisplayDecision clusterTierLabelForValue:cell.clusterTier].uppercaseString
+        NSString *badgeText = [[StoryClusterDisplayDecision clusterTierBadgeTextForValue:cell.clusterTier]
             stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if (badgeText.length) {
             UIFont *badgeFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:9];

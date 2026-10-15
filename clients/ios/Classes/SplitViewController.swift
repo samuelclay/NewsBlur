@@ -194,7 +194,7 @@ class SplitViewController: UISplitViewController {
         feedsDividerView.isAccessibilityElement = true
         feedsDividerView.accessibilityIdentifier = "feeds-sidebar-resize-handle"
         feedsDividerView.accessibilityLabel = NBLocalization.text("Resize sidebar")
-        feedsDividerView.accessibilityHint = "Drag to change the feed and story list width."
+        feedsDividerView.accessibilityHint = NBLocalization.text("Drag to change the feed and story list width.")
         view.addSubview(feedsDividerView)
 
         // Use a pan gesture on the divider view itself so it captures the drag

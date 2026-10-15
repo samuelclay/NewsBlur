@@ -179,16 +179,16 @@ struct TrainerRegexInput: View {
         HStack(spacing: 6) {
             switch validationResult {
             case .valid:
-                badge(text: "\u{2713} Valid", style: .valid)
+                badge(text: "\u{2713} " + NBLocalization.text("Valid"), style: .valid)
                 if let matchResult = storyMatchResult {
                     if matchResult {
-                        badge(text: "\u{2713} Matches story", style: .valid)
+                        badge(text: "\u{2713} " + NBLocalization.text("Matches story"), style: .valid)
                     } else {
-                        badge(text: "No match in story", style: .noMatch)
+                        badge(text: NBLocalization.text("No match in story"), style: .noMatch)
                     }
                 }
             case .invalid(let error):
-                badge(text: "Invalid: \(error)", style: .error)
+                badge(text: String(format: NBLocalization.text("Invalid: %@"), error), style: .error)
             case .empty:
                 EmptyView()
             }
@@ -287,17 +287,17 @@ struct TrainerRegexInput: View {
     var placeholder: String {
         if isRegex {
             switch sectionType {
-            case .title: return "e.g. \\bbreaking\\b"
-            case .text: return "e.g. sponsored|advertisement"
-            case .url: return "e.g. /blog/\\d{4}/"
-            case .author: return "e.g. ^Sam|smith"
+            case .title: return String(format: NBLocalization.text("e.g. %@"), "\\bbreaking\\b")
+            case .text: return String(format: NBLocalization.text("e.g. %@"), "sponsored|advertisement")
+            case .url: return String(format: NBLocalization.text("e.g. %@"), "/blog/\\d{4}/")
+            case .author: return String(format: NBLocalization.text("e.g. %@"), "^Sam|smith")
             }
         } else {
             switch sectionType {
-            case .title: return "Enter title phrase..."
-            case .text: return "Enter text phrase..."
-            case .url: return "Enter URL phrase..."
-            case .author: return "Enter author phrase..."
+            case .title: return NBLocalization.text("Enter title phrase...")
+            case .text: return NBLocalization.text("Enter text phrase...")
+            case .url: return NBLocalization.text("Enter URL phrase...")
+            case .author: return NBLocalization.text("Enter author phrase...")
             }
         }
     }

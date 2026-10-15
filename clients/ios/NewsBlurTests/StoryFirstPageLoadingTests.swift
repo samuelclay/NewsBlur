@@ -144,7 +144,7 @@ import XCTest
         fixture.app.dictSocialProfile = ["id": "social:1", "user_id": 1, "username": "preview-test"]
         await startEmptyTryFeed(fixture)
         XCTAssertEqual(fixture.app.requests.count, 2, "An empty preview must force a feed refresh")
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         XCTAssertTrue(fixture.controller.pageFetching)
         guard fixture.app.requests.count == 2 else { return }
         XCTAssertEqual(URLComponents(string: fixture.app.requests[1].url)?.path, "/reader/refresh_feed/1")
@@ -230,7 +230,7 @@ import XCTest
         fixture.app.reply(to: 1, with: pending)
         await settle()
         XCTAssertEqual(fixture.app.requests.count, 3)
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         guard fixture.app.requests.count == 3 else { return }
         XCTAssertEqual(URLComponents(string: fixture.app.requests[2].url)?.path, "/reader/feed/1")
         XCTAssertEqual(fixture.app.requests[2].parameters?["insta_fetch"] as? Bool, true)
@@ -256,7 +256,7 @@ import XCTest
         fixture.controller.testRefreshTimeout = 60
         fixture.controller.instafetchFeed()
         XCTAssertEqual(fixture.app.requests.count, 3)
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         XCTAssertTrue(fixture.controller.pageFetching)
         fixture.app.reply(to: 2, with: response(stories: makeStories(30..<34)))
         await settle()

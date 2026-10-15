@@ -2273,7 +2273,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
             self.isOnline = NO;
-            [self showFetchingBanner:@"Fetching recent stories..." isOffline:NO];
+            [self showFetchingBanner:[NBLocalization text:@"Fetching recent stories..."] isOffline:NO];
             [self loadOfflineStories];
         }
     });
@@ -2493,7 +2493,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     hud.mode = MBProgressHUDModeText;
     hud.removeFromSuperViewOnHide = YES;
     
-    hud.labelText = [NSString stringWithFormat:@"< %ld stories/month", (long)infrequent];;
+    hud.labelText = [NSString stringWithFormat:@"< %@", [NBLocalization plural:@"%@ stories/month" count:@(infrequent)]];
     
     [hud hide:YES afterDelay:0.5];
 }
@@ -3104,7 +3104,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         }
         else [self loadOfflineStories];
         if (!self.isShowingFetching) {
-            [self showFetchingBanner:@"Offline" isOffline:YES];
+            [self showFetchingBanner:[NBLocalization text:@"Offline"] isOffline:YES];
         }
         return;
     } else {
@@ -3148,7 +3148,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
         else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
         else [self testForTryFeed];
-        [self showFetchingBanner:@"Offline" isOffline:YES];
+        [self showFetchingBanner:[NBLocalization text:@"Offline"] isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
@@ -3221,7 +3221,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
                     [self renderStories:offlineStories];
                 }
                 if (!self.isShowingFetching) {
-                    [self showFetchingBanner:@"Offline" isOffline:YES];
+                    [self showFetchingBanner:[NBLocalization text:@"Offline"] isOffline:YES];
                 }
             });
         }];
@@ -3341,7 +3341,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         if (feedPage == 1 && firstPageLoad.defersSnapshotUntilOffline) [self loadCachedFirstPage:firstPageLoad fallbackToOffline:YES];
         else if (feedPage > 1 || !firstPageLoad.displayedSnapshot) [self loadOfflineStories];
         else [self testForTryFeed];
-        [self showFetchingBanner:@"Offline" isOffline:YES];
+        [self showFetchingBanner:[NBLocalization text:@"Offline"] isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
@@ -5124,7 +5124,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     BOOL isUnread = [storiesCollection isStoryUnread:story];
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
     
-    NSString *readTitle = isUnread ? @"Mark Read" : @"Mark Unread";
+    NSString *readTitle = isUnread ? [NBLocalization text:@"Mark Read"] : [NBLocalization text:@"Mark Unread"];
     UIImage *readImage = [Utilities templateImageNamed:(isUnread ? @"indicator-read" : @"indicator-unread") sized:18];
     UIColor *readColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traitCollection) {
         if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
@@ -5145,7 +5145,7 @@ leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     readAction.backgroundColor = readColor;
     readAction.image = readImage;
 
-    NSString *saveTitle = isSaved ? @"Unsave" : @"Save";
+    NSString *saveTitle = isSaved ? [NBLocalization text:@"Unsave"] : [NBLocalization text:@"Save"];
     UIImage *saveImage = [Utilities templateImageNamed:@"saved-stories" sized:18];
     UIColor *saveColor = isSaved
         ? UIColorFromLightSepiaMediumDarkRGB(0x00838F, 0x007A86, 0x00636E, 0x004A52)
@@ -6237,15 +6237,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableArray *items = [NSMutableArray array];
     BOOL isSaved = [[story objectForKey:@"starred"] boolValue];
     
-    [items addObject:[self itemWithTitle:isSaved ? @"Unsave This Story" : @"Save This Story" iconName:@"saved-stories" iconColor:UIColorFromRGB(0xD58B4F) handler:^{
+    [items addObject:[self itemWithTitle:isSaved ? [NBLocalization text:@"Unsave This Story"] : [NBLocalization text:@"Save This Story"] iconName:@"saved-stories" iconColor:UIColorFromRGB(0xD58B4F) handler:^{
         [self.storiesCollection toggleStorySaved:story];
     }]];
     
-    [items addObject:[self itemWithTitle:@"Send This Story To..." iconName:@"menu_icn_mail.png" handler:^{
+    [items addObject:[self itemWithTitle:[NBLocalization text:@"Send This Story To..."] iconName:@"menu_icn_mail.png" handler:^{
         [self.appDelegate showSendTo:self sender:cell];
     }]];
     
-    [items addObject:[self itemWithTitle:@"Train This Story" iconName:@"menu_icn_train.png" handler:^{
+    [items addObject:[self itemWithTitle:[NBLocalization text:@"Train This Story"] iconName:@"menu_icn_train.png" handler:^{
         [self.appDelegate openTrainStory:cell];
     }]];
     
@@ -6465,7 +6465,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
         
         if ([appDelegate.storiesCollection.activeFeed[@"ng"] integerValue] > 0) {
-            NSString *title =  appDelegate.storiesCollection.showHiddenStories ? @"Hide hidden stories" : @"Show hidden stories";
+            NSString *title =  appDelegate.storiesCollection.showHiddenStories ? [NBLocalization text:@"Hide hidden stories"] : [NBLocalization text:@"Show hidden stories"];
             
             [viewController addTitle:title iconName:@"menu_icn_all.png" selectionShouldDismiss:YES handler:^{
                 [self toggleHiddenStories];
@@ -7158,15 +7158,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)performNewFolder {
-    NSString *title = @"Move to New Folder";
-    NSString *subtitle = @"Enter the name of the new folder.";
+    NSString *title = [NBLocalization text:@"Move to New Folder"];
+    NSString *subtitle = [NBLocalization text:@"Enter the name of the new folder."];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:subtitle preferredStyle:UIAlertControllerStyleAlert];
     [alert setModalPresentationStyle:UIModalPresentationPopover];
-    UIAlertAction *move = [UIAlertAction actionWithTitle:@"Move" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *move = [UIAlertAction actionWithTitle:[NBLocalization text:@"Move"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         NSString *name = alert.textFields.firstObject.text;
         [self addNewFolderWithName:name];
     }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"] style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
@@ -7263,7 +7263,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         
         if (![title hasPrefix:@"river_"] && ![title hasSuffix:@"_stories"] && ![title hasPrefix:@"saved_"]) {
             if ([title isEqualToString:@"everything"]) {
-                title = @"Top Level";
+                title = [NBLocalization text:@"Top Level"];
                 iconName = @"menu_icn_all.png";
             } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"] ||
                        [title isEqualToString:@"discover_sites"] || [title isEqualToString:@"daily_briefing"]) {
@@ -7322,11 +7322,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
                           nil : [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_address"]);
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:subtitle preferredStyle:UIAlertControllerStyleAlert];
     [alert setModalPresentationStyle:UIModalPresentationPopover];
-    UIAlertAction *rename = [UIAlertAction actionWithTitle:@"Rename" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *rename = [UIAlertAction actionWithTitle:[NBLocalization text:@"Rename"] style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         NSString *newTitle = alert.textFields[0].text;
         [self renameTo:newTitle];
     }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"] style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {

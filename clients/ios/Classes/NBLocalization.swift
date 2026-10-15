@@ -76,6 +76,10 @@ import UIKit
         guard let digits = text.range(of: String(count)) else { return text }
         return text.replacingCharacters(in: digits, with: formattedCount(count))
     }
+    // NBLocalization.swift formats a plural message whose forms also name something else, such as a folder (%2$@).
+    static func plural(_ source: String, count: Int, with argument: String) -> String {
+        String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [NSNumber(value: count), argument])
+    }
     // NBLocalization.swift remembers the newest requested language so an older save can't override it.
     @MainActor private static var latestRequest: String?
     @MainActor static func apply(_ value: String, pending: Bool) {
@@ -110,6 +114,39 @@ import UIKit
             formatter.locale = Locale(identifier: "\(code)@numbers=latn")
         }
         return formatter.string(from: NSNumber(value: count)) ?? "\(count)"
+    }
+    // NBLocalization.swift formats dates in a non-English interface language with Latin digits (like formattedCount)
+    // and the Gregorian calendar the web and the server's story dates use. English keeps the device's locale, so
+    // English dates look exactly as they always have.
+    static var formattingLocale: Locale {
+        let code = resolvedLanguage
+        return code.hasPrefix("en") ? .current : Locale(identifier: "\(code)@numbers=latn")
+    }
+    private static let dateFormatterLock = NSLock()
+    private static var dateFormatters: [String: DateFormatter] = [:]
+    // NBLocalization.swift returns nil for English so Utilities.m keeps the device-locale formatters it always used.
+    @objc(interfaceDateFormatterWithDateStyle:timeStyle:relative:)
+    static func interfaceDateFormatter(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style,
+                                       relative: Bool) -> DateFormatter? {
+        let code = resolvedLanguage
+        guard !code.hasPrefix("en") else { return nil }
+        let key = "\(code) \(dateStyle.rawValue) \(timeStyle.rawValue) \(relative)"
+        dateFormatterLock.lock()
+        defer { dateFormatterLock.unlock() }
+        if let formatter = dateFormatters[key] { return formatter }
+        let formatter = DateFormatter()
+        formatter.locale = formattingLocale
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.dateStyle = dateStyle
+        formatter.timeStyle = timeStyle
+        formatter.doesRelativeDateFormatting = relative
+        dateFormatters[key] = formatter
+        return formatter
+    }
+    // NBLocalization.swift keeps a URL such as "https://" in its own left-to-right run inside a translated sentence
+    // (U+2066 LEFT-TO-RIGHT ISOLATE ... U+2069 POP DIRECTIONAL ISOLATE), so Arabic and Hebrew don't reorder its slashes.
+    static func isolateLeftToRight(_ text: String) -> String {
+        "\u{2066}\(text)\u{2069}"
     }
     // NewsBlurAppDelegate.m clears the previous account's language on login, but keeps a choice made on
     // the login screen; syncProfile saves that pending choice to the new account.

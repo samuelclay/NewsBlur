@@ -31,8 +31,8 @@ struct DiscoverFeedCardView: View {
             }
             .buttonStyle(DiscoverBundleSelectionButtonStyle())
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selection.wrappedValue)
-            .accessibilityLabel("Include \(feed.feedTitle)")
-            .accessibilityValue(selection.wrappedValue ? "Included in bundle" : "Not included in bundle")
+            .accessibilityLabel(String(format: NBLocalization.text("Include %@"), feed.feedTitle))
+            .accessibilityValue(selection.wrappedValue ? NBLocalization.text("Included in bundle") : NBLocalization.text("Not included in bundle"))
             .accessibilityAddTraits(selection.wrappedValue ? .isSelected : [])
             .accessibilityIdentifier("discover-bundle-feed-\(feed.id)")
         } else {
@@ -90,7 +90,7 @@ struct DiscoverFeedCardView: View {
                             .frame(minWidth: 62, minHeight: 44)
                     }
                     .fixedSize(horizontal: true, vertical: false)
-                    .accessibilityLabel("Try \(feed.feedTitle)")
+                    .accessibilityLabel(String(format: NBLocalization.text("Try %@"), feed.feedTitle))
                     .accessibilityIdentifier("discover-try-feed-\(feed.id)")
                     .disabled(discovery.isPreparingPreview)
                     .foregroundColor(DiscoverColors.tryButtonText)
@@ -100,7 +100,7 @@ struct DiscoverFeedCardView: View {
                         Label(selectionStatus, systemImage: "checkmark.circle.fill")
                             .foregroundColor(DiscoverColors.accent).frame(minHeight: 44)
                     } else {
-                        Label(selection.wrappedValue ? "Included in bundle" : "Include in bundle",
+                        Label(selection.wrappedValue ? NBLocalization.text("Included in bundle") : NBLocalization.text("Include in bundle"),
                               systemImage: selection.wrappedValue ? "checkmark.circle.fill" : "circle")
                             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                             .foregroundColor(DiscoverColors.accent)
@@ -122,7 +122,7 @@ struct DiscoverFeedCardView: View {
                             .background(DiscoverColors.accent, in: RoundedRectangle(cornerRadius: 10))
                     }
                     .fixedSize(horizontal: true, vertical: false)
-                    .accessibilityLabel("Add \(feed.feedTitle)")
+                    .accessibilityLabel(String(format: NBLocalization.text("Add %@"), feed.feedTitle))
                     .accessibilityIdentifier("discover-add-feed-\(feed.id)")
                     .disabled(discovery.isAdding)
                 }
@@ -370,7 +370,7 @@ struct DiscoverFolderPicker: View {
             }
         } label: {
             HStack(spacing: 6) {
-                Text(viewModel.selectedFolder.isEmpty ? "Top Level" : viewModel.displayFolder)
+                Text(viewModel.selectedFolder.isEmpty ? NBLocalization.text("Top Level") : viewModel.displayFolder)
                     .font(.subheadline)
                     .lineLimit(1)
                     .truncationMode(.tail)

@@ -205,25 +205,25 @@ struct DashListActionMenu: View {
     
     var moveEarlierTitle: String {
         if isHorizontal {
-            return "Move This List Left"
+            return NBLocalization.text("Move This List Left")
         } else {
-            return "Move This List Up"
+            return NBLocalization.text("Move This List Up")
         }
     }
     
     var moveLaterTitle: String {
         if isHorizontal {
-            return "Move This List Right"
+            return NBLocalization.text("Move This List Right")
         } else {
-            return "Move This List Down"
+            return NBLocalization.text("Move This List Down")
         }
     }
     
     var moveBetweenSidesTitle: String {
         if isHorizontal {
-            return "Move This List \(dash.side == .left ? "Down" : "Up")"
+            return dash.side == .left ? NBLocalization.text("Move This List Down") : NBLocalization.text("Move This List Up")
         } else {
-            return "Move This List \(dash.side == .left ? "Right" : "Left")"
+            return dash.side == .left ? NBLocalization.text("Move This List Right") : NBLocalization.text("Move This List Left")
         }
     }
 }

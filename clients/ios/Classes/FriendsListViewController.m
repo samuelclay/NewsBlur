@@ -286,6 +286,12 @@ viewForHeaderInSection:(NSInteger)section {
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];    
+    // FriendsListViewController.m lays the header out from the left edge and mirrors it for Arabic and Hebrew.
+    if (NBLocalization.isRightToLeft) {
+        headerLabel.frame = [NBLocalization directionalRect:headerLabel.frame within:customView.bounds rightToLeft:YES];
+        headerLabel.textAlignment = NSTextAlignmentRight;
+        folderImageView.frame = [NBLocalization directionalRect:folderImageView.frame within:customView.bounds rightToLeft:YES];
+    }
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
@@ -335,7 +341,7 @@ viewForHeaderInSection:(NSInteger)section {
     } else {
         UILabel *message = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
         message.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        message.text = self.inSearch_ ? @"No results." : @"No friends to suggest.";
+        message.text = self.inSearch_ ? [NBLocalization text:@"No results."] : [NBLocalization text:@"No friends to suggest."];
         message.textColor = UIColorFromRGB(0x7a7a7a);
         message.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:vb.size.width > 320 ? 21.0 : 15.0];
         message.textAlignment = NSTextAlignmentCenter;

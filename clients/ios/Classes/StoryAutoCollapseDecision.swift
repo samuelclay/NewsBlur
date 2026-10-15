@@ -786,9 +786,17 @@ public enum StoryScrollReadDecision {
         normalizedClusterTier(from: value)
     }
 
+    // StoryAutoCollapseDecision.swift translates the badge shown on cluster rows, cards and the story detail.
     @objc(clusterTierLabelForValue:)
     public class func clusterTierLabel(forValue value: Any?) -> String {
-        normalizedClusterTier(from: value) == "title" ? "Match" : "Related"
+        normalizedClusterTier(from: value) == "title" ? NBLocalization.text("Match") : NBLocalization.text("Related")
+    }
+
+    // StoryAutoCollapseDecision.swift capitalizes the badge with the interface language's casing rules, so Turkish
+    // keeps its dotted capital I.
+    @objc(clusterTierBadgeTextForValue:)
+    public class func clusterTierBadgeText(forValue value: Any?) -> String {
+        clusterTierLabel(forValue: value).uppercased(with: Locale(identifier: NBLocalization.resolvedLanguage))
     }
 
     @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)
