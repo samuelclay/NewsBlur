@@ -136,7 +136,7 @@ msgstr "%(account)sが切断されました。"
 
 #, python-format
 msgid "%(badge)s Customize days of unreads"
-msgstr "未読の日数を%(badge)sカスタマイズ"
+msgstr "%(badge)s 未読日数をカスタマイズ"
 
 #, python-format
 msgid "%(badge)s for up to %(count)s day"
@@ -450,15 +450,15 @@ msgstr "%(feed_title)sの通知を設定しました"
 
 #, python-format
 msgid "%(icon)s are stories you don't like"
-msgstr "%(icon)sは好みではないストーリーです"
+msgstr "%(icon)sは好みではない記事です"
 
 #, python-format
 msgid "%(icon)s are stories you have not yet rated"
-msgstr "%(icon)sはまだ評価していないストーリーです"
+msgstr "%(icon)sはまだ評価していない記事です"
 
 #, python-format
 msgid "%(icon)s are stories you like"
-msgstr "%(icon)sは好みのストーリーです"
+msgstr "%(icon)sは好みの記事です"
 
 #, python-format
 msgid "%(indexed)s of %(count)s site indexed"
@@ -2459,7 +2459,7 @@ msgid "Even geekier"
 msgstr "さらにマニアック"
 
 msgid "Evening"
-msgstr "夜"
+msgstr "夕方"
 
 msgid "Every"
 msgstr "更新間隔"
@@ -3671,7 +3671,7 @@ msgstr "メール設定を管理"
 
 #, python-format
 msgid "Manually by hitting %(first_key)s or %(second_key)s"
-msgstr "%(first_key)sまたは%(second_key)sを押して手動で操作"
+msgstr "手動で、%(first_key)sまたは%(second_key)sを押したとき"
 
 msgid "Manually or by clicking in the story"
 msgstr "手動、または記事内をクリックしたとき"
@@ -3809,7 +3809,7 @@ msgstr "中"
 
 msgctxt "summary length"
 msgid "Medium"
-msgstr "中"
+msgstr "標準"
 
 msgid "Merge"
 msgstr "統合"
@@ -3870,7 +3870,7 @@ msgid "Morning + Afternoon"
 msgstr "朝＋午後"
 
 msgid "Morning + Evening"
-msgstr "朝＋夜"
+msgstr "朝＋夕方"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "今週最も購読されたフィード"
@@ -4391,7 +4391,7 @@ msgstr "古いパスワード"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "次の日付より古い: %(month)s %(day)s %(year)s"
+msgstr "%(year)s年%(month)s%(day)s日より前"
 
 msgid "Older:"
 msgstr "この日以前："
@@ -4609,7 +4609,7 @@ msgstr "ページダウン"
 
 #, python-format
 msgid "Page down by %(slider)s %(percent)s of the screen"
-msgstr "画面の%(percent)s分だけ下へスクロール（%(slider)s）"
+msgstr "ページ送りの幅：%(slider)s 画面の%(percent)s"
 
 msgid "Page up"
 msgstr "ページアップ"
@@ -5375,7 +5375,7 @@ msgstr "コメントまでスクロール"
 
 #, python-format
 msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
-msgstr "ストーリー内を%(slider)s %(pixels)spxスクロールします。"
+msgstr "記事内を上下に%(slider)s %(pixels)spxずつスクロールします。"
 
 msgid "Search"
 msgstr "検索"
@@ -5663,7 +5663,7 @@ msgstr "ショッピング"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "短"
+msgstr "低"
 
 msgid "Show"
 msgstr "表示"

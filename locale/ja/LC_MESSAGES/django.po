@@ -4311,7 +4311,7 @@ msgstr "記事のクラスタリング - NewsBlur"
 
 msgid "Story Shared"
 msgid_plural "Stories Shared"
-msgstr[0] "記事を共有しました"
+msgstr[0] "共有された記事"
 
 msgid "Story Tagging"
 msgstr "記事のタグ付け"
