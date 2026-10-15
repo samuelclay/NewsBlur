@@ -4053,7 +4053,7 @@ msgstr "Średni"
 
 msgctxt "summary length"
 msgid "Medium"
-msgstr "Średnia"
+msgstr "Średnie"
 
 msgid "Merge"
 msgstr "Scal"
@@ -4112,13 +4112,13 @@ msgid "More from Reddit"
 msgstr "Więcej z Reddita"
 
 msgid "Morning"
-msgstr "Rano"
+msgstr "Poranek"
 
 msgid "Morning + Afternoon"
-msgstr "Rano + po południu"
+msgstr "Poranek + popołudnie"
 
 msgid "Morning + Evening"
-msgstr "Rano i wieczorem"
+msgstr "Poranek + wieczór"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "Najczęściej subskrybowane kanały w tym tygodniu"

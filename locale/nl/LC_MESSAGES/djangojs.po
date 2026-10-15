@@ -1565,7 +1565,7 @@ msgstr "Onder"
 
 msgctxt "summary length"
 msgid "Brief"
-msgstr "Beknopt"
+msgstr "Kort"
 
 msgid "Briefing"
 msgstr "Briefing"
@@ -4545,7 +4545,7 @@ msgstr "Oud wachtwoord"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Ouder dan: %(month)s %(day)s %(year)s"
+msgstr "Ouder dan: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "Ouder dan:"
@@ -5864,7 +5864,7 @@ msgstr "Winkelen"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Kort"
+msgstr "Laag"
 
 msgid "Show"
 msgstr "Weergeven"
@@ -6939,7 +6939,7 @@ msgid "Top Level"
 msgstr "Hoofdniveau"
 
 msgid "Top stories"
-msgstr "Belangrijkste artikelen"
+msgstr "Topartikelen"
 
 msgid "Track Changes"
 msgstr "Wijzigingen bijhouden"
@@ -7511,7 +7511,7 @@ msgid "Widely Read on NewsBlur"
 msgstr "Veel gelezen op NewsBlur"
 
 msgid "Widely covered"
-msgstr "Veel besproken"
+msgstr "Veelbesproken"
 
 msgid "Widen pane for controls"
 msgstr "Maak het paneel breder voor bedieningselementen"

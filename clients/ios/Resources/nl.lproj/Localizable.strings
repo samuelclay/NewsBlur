@@ -359,7 +359,7 @@
 "Followers label" = "Volgers";
 "Following [button state]" = "Volgend";
 "Following [in progress]" = "Volgen...";
-"Following [label under the number of people this profile follows]" = "Volgt";
+"Following [label under the number of people this profile follows]" = "Volgend";
 "Font" = "Lettertype";
 "Font Size" = "Tekengrootte";
 "Font..." = "Lettertype...";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Gemiddeld";
 "Medium [preview length]" = "Gemiddeld";
 "Medium [text size]" = "Gemiddeld";
-"Medium [theme]" = "Gemiddeld";
+"Medium [theme]" = "Grijs";
 "Model" = "Model";
 "Monday" = "maandag";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Meer artikelen nemen meer schijfruimte in beslag, maar hebben verder geen merkbare invloed op de prestaties.";
@@ -807,7 +807,7 @@
 "Shared" = "Gedeeld";
 "Shared Stories label" = "Gedeelde artikelen";
 "Sharing" = "Delen";
-"Short [grid height]" = "Kort";
+"Short [grid height]" = "Laag";
 "Short [preview length]" = "Kort";
 "Show" = "Tonen";
 "Show Ask AI" = "Vraag AI tonen";
@@ -1058,7 +1058,7 @@
 "WiFi + Cellular" = "Wifi + mobiel netwerk";
 "WiFi only" = "Alleen wifi";
 "Widely Read Stories" = "Veelgelezen artikelen";
-"Widely covered" = "Veel besproken";
+"Widely covered" = "Veelbesproken";
 "Widget Site Stories" = "Artikelen van widgetsites";
 "Widget Sites" = "Widgetsites";
 "Widget Stories" = "Widgetartikelen";
