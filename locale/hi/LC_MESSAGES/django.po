@@ -4477,9 +4477,6 @@ msgstr "यह लेख साझा करें"
 msgid "Share to blurblog"
 msgstr "ब्लरब्लॉग पर साझा करें"
 
-msgid "Shared"
-msgstr "साझा किया गया"
-
 msgid "Shared Stories"
 msgstr "साझा की गई कहानियाँ"
 
@@ -4704,6 +4701,11 @@ msgstr "कहानियों का समूह बनाना"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "कहानी क्लस्टरिंग - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "साझा की गई ख़बर"
+msgstr[1] "साझा की गई ख़बरें"
 
 msgid "Story Tagging"
 msgstr "कहानियों पर टैग लगाना"

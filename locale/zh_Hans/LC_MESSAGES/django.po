@@ -4144,9 +4144,6 @@ msgstr "分享这篇文章"
 msgid "Share to blurblog"
 msgstr "分享到 Blurblog"
 
-msgid "Shared"
-msgstr "已分享"
-
 msgid "Shared Stories"
 msgstr "分享的文章"
 
@@ -4361,6 +4358,10 @@ msgstr "文章聚类"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "文章聚类 - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "已分享的文章"
 
 msgid "Story Tagging"
 msgstr "文章标签"

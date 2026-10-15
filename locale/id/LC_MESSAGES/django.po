@@ -4513,9 +4513,6 @@ msgstr "Bagikan cerita ini"
 msgid "Share to blurblog"
 msgstr "Bagikan ke blurblog"
 
-msgid "Shared"
-msgstr "Dibagikan"
-
 msgid "Shared Stories"
 msgstr "Artikel yang Dibagikan"
 
@@ -4738,6 +4735,11 @@ msgstr "Pengelompokan Berita"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Pengelompokan Cerita - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Artikel Dibagikan"
+msgstr[1] "Artikel Dibagikan"
 
 msgid "Story Tagging"
 msgstr "Pemberian Tag pada Berita"

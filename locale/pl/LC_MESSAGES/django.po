@@ -4558,9 +4558,6 @@ msgstr "Udostępnij artykuł"
 msgid "Share to blurblog"
 msgstr "Udostępnij w blurblogu"
 
-msgid "Shared"
-msgstr "Udostępnione"
-
 msgid "Shared Stories"
 msgstr "Udostępnione artykuły"
 
@@ -4787,6 +4784,12 @@ msgstr "Grupowanie artykułów"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Grupowanie artykułów — NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Udostępniony artykuł"
+msgstr[1] "Udostępnione artykuły"
+msgstr[2] "Udostępnionych artykułów"
 
 msgid "Story Tagging"
 msgstr "Tagowanie artykułów"

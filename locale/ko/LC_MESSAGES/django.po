@@ -4238,9 +4238,6 @@ msgstr "이 스토리 공유"
 msgid "Share to blurblog"
 msgstr "Blurblog에 공유"
 
-msgid "Shared"
-msgstr "공유됨"
-
 msgid "Shared Stories"
 msgstr "공유된 스토리"
 
@@ -4455,6 +4452,10 @@ msgstr "스토리 클러스터링"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "스토리 클러스터링 - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "공유된 글"
 
 msgid "Story Tagging"
 msgstr "스토리 태그 지정"

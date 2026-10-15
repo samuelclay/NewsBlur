@@ -4475,9 +4475,6 @@ msgstr "Chia sẻ bài viết này"
 msgid "Share to blurblog"
 msgstr "Chia sẻ lên blurblog"
 
-msgid "Shared"
-msgstr "Đã chia sẻ"
-
 msgid "Shared Stories"
 msgstr "Bài viết đã chia sẻ"
 
@@ -4698,6 +4695,10 @@ msgstr "Phân nhóm bài viết"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Phân cụm bài viết - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Bài viết đã chia sẻ"
 
 msgid "Story Tagging"
 msgstr "Gắn thẻ bài viết"

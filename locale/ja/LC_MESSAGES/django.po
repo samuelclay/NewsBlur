@@ -4096,9 +4096,6 @@ msgstr "この記事を共有"
 msgid "Share to blurblog"
 msgstr "Blurblogに共有"
 
-msgid "Shared"
-msgstr "共有済み"
-
 msgid "Shared Stories"
 msgstr "共有記事"
 
@@ -4311,6 +4308,10 @@ msgstr "記事のクラスタリング"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "記事のクラスタリング - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "記事を共有しました"
 
 msgid "Story Tagging"
 msgstr "記事のタグ付け"

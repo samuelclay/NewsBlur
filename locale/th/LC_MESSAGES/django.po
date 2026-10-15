@@ -4436,9 +4436,6 @@ msgstr "แชร์เรื่องนี้"
 msgid "Share to blurblog"
 msgstr "แชร์ไปยัง blurblog"
 
-msgid "Shared"
-msgstr "แชร์แล้ว"
-
 msgid "Shared Stories"
 msgstr "เรื่องราวที่แชร์"
 
@@ -4656,6 +4653,10 @@ msgstr "การจัดกลุ่มเรื่องราว"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "การจัดกลุ่มเรื่องราว - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "แชร์เรื่องราวแล้ว"
 
 msgid "Story Tagging"
 msgstr "การติดแท็กเรื่องราว"

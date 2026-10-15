@@ -4529,9 +4529,6 @@ msgstr "Поділитися цією статтею"
 msgid "Share to blurblog"
 msgstr "Поділитися у blurblog"
 
-msgid "Shared"
-msgstr "Спільне"
-
 msgid "Shared Stories"
 msgstr "Спільні статті"
 
@@ -4758,6 +4755,12 @@ msgstr "Групування новин"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Групування матеріалів — NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Публікація поширена"
+msgstr[1] "Публікації поширено"
+msgstr[2] "Публікацій поширено"
 
 msgid "Story Tagging"
 msgstr "Теги статей"

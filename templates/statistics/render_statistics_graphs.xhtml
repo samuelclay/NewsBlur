@@ -65,7 +65,7 @@
             </div>
             <div class="NB-module-stats-count-number">{{ statistics.total_stories_shared|commify }}</div>
             <div class="NB-module-stats-count-description">
-                {% if statistics.latest_stories_shared == 1 %}{% trans "Story" %}{% else %}{% trans "Stories" %}{% endif %} {% trans "Shared" %}
+                {% blocktrans count counter=statistics.total_stories_shared trimmed %}Story Shared{% plural %}Stories Shared{% endblocktrans %}
             </div>
           </div>
       </div>

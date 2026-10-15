@@ -4476,9 +4476,6 @@ msgstr "شارك هذه القصة"
 msgid "Share to blurblog"
 msgstr "المشاركة على blurblog"
 
-msgid "Shared"
-msgstr "تمت المشاركة"
-
 msgid "Shared Stories"
 msgstr "القصص المشتركة"
 
@@ -4710,6 +4707,15 @@ msgstr "تجميع القصص"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "تجميع القصص - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "قصص تمت مشاركتها"
+msgstr[1] "قصة تمت مشاركتها"
+msgstr[2] "قصتان تمت مشاركتهما"
+msgstr[3] "قصص تمت مشاركتها"
+msgstr[4] "قصة تمت مشاركتها"
+msgstr[5] "قصة تمت مشاركتها"
 
 msgid "Story Tagging"
 msgstr "وسم القصص"
