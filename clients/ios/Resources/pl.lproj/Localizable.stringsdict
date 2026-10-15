@@ -17,7 +17,7 @@
 			<key>many</key>
 			<string>Nie udało się dodać %1$@ kanałów do %2$@.</string>
 			<key>one</key>
-			<string>Nie udało się dodać kanału %1$@ do %2$@.</string>
+			<string>Nie udało się dodać %1$@ kanału do %2$@.</string>
 			<key>other</key>
 			<string>Nie udało się dodać %1$@ kanałów do %2$@.</string>
 		</dict>
@@ -33,13 +33,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ witryny widżetów</string>
+			<string>%@ witryny w widżecie</string>
 			<key>many</key>
-			<string>%@ witryn widżetu</string>
+			<string>%@ witryn w widżecie</string>
 			<key>one</key>
-			<string>%@ witryna z widżetami</string>
+			<string>%@ witryna w widżecie</string>
 			<key>other</key>
-			<string>%@ witryn z widżetami</string>
+			<string>%@ witryny w widżecie</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -53,7 +53,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ kategorii do wyboru</string>
+			<string>%@ kategorie do wyboru</string>
 			<key>many</key>
 			<string>%@ kategorii do wyboru</string>
 			<key>one</key>
@@ -175,7 +175,7 @@
 			<key>few</key>
 			<string>Dodano %@ kanały.</string>
 			<key>many</key>
-			<string>Dodano %@ kanałów</string>
+			<string>Dodano %@ kanałów.</string>
 			<key>one</key>
 			<string>Dodano %@ kanał.</string>
 			<key>other</key>
@@ -233,7 +233,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ wybranych artykułów</string>
+			<string>%@ wyróżnione artykuły</string>
 			<key>many</key>
 			<string>%@ wyróżnionych artykułów</string>
 			<key>one</key>
@@ -333,7 +333,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ źródeł</string>
+			<string>%@ źródła</string>
 			<key>many</key>
 			<string>%@ źródeł</string>
 			<key>one</key>
@@ -353,7 +353,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ artykułów</string>
+			<string>%@ artykuły</string>
 			<key>many</key>
 			<string>%@ artykułów</string>
 			<key>one</key>
@@ -373,7 +373,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Pozostało %@ artykułów</string>
+			<string>Pozostały %@ artykuły</string>
 			<key>many</key>
 			<string>Pozostało %@ artykułów</string>
 			<key>one</key>
@@ -473,13 +473,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Dodaj %1$@ kanałów do folderu „%2$@”</string>
+			<string>Dodaj %1$@ kanały do folderu „%2$@”</string>
 			<key>many</key>
 			<string>Dodaj %1$@ kanałów do folderu „%2$@”</string>
 			<key>one</key>
 			<string>Dodaj %1$@ kanał do folderu „%2$@”</string>
 			<key>other</key>
-			<string>Dodaj kanały %1$@ do folderu „%2$@”</string>
+			<string>Dodaj %1$@ kanałów do folderu „%2$@”</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -493,13 +493,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Dodano kanały %1$@ do %2$@.</string>
+			<string>Dodano %1$@ kanały do %2$@.</string>
 			<key>many</key>
 			<string>Dodano %1$@ kanałów do %2$@.</string>
 			<key>one</key>
-			<string>Dodano kanał %1$@ do %2$@.</string>
+			<string>Dodano %1$@ kanał do %2$@.</string>
 			<key>other</key>
-			<string>Dodano kanały %1$@ do %2$@.</string>
+			<string>Dodano %1$@ kanałów do %2$@.</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -513,7 +513,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Dodano %@ kanałów.</string>
+			<string>Dodano %@ kanały.</string>
 			<key>many</key>
 			<string>Dodano %@ kanałów.</string>
 			<key>one</key>
@@ -557,7 +557,7 @@
 			<key>many</key>
 			<string>Usunąć %@ witryn?</string>
 			<key>one</key>
-			<string>Usunąć witrynę %@?</string>
+			<string>Usunąć %@ witrynę?</string>
 			<key>other</key>
 			<string>Usunąć %@ witryn?</string>
 		</dict>
@@ -653,7 +653,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Oznacz te %@ artykułów jako przeczytane</string>
+			<string>Oznacz te %@ artykuły jako przeczytane</string>
 			<key>many</key>
 			<string>Oznacz te %@ artykułów jako przeczytane</string>
 			<key>one</key>
@@ -677,9 +677,9 @@
 			<key>many</key>
 			<string>Wycisz %@ witryn</string>
 			<key>one</key>
-			<string>Wycisz witrynę %@</string>
+			<string>Wycisz %@ witrynę</string>
 			<key>other</key>
-			<string>Wycisz %@ witryn z widżetami</string>
+			<string>Wycisz %@ witryn</string>
 		</dict>
 	</dict>
 	<key>Older than %@ days</key>
@@ -719,7 +719,7 @@
 			<key>one</key>
 			<string>Udostępniony artykuł</string>
 			<key>other</key>
-			<string>Udostępnione historie</string>
+			<string>Udostępnione artykuły</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -755,7 +755,7 @@
 			<key>few</key>
 			<string>Przechowywanie z ostatnich %@ godzin</string>
 			<key>many</key>
-			<string>Przechowuj dane z ostatnich %@ godzin</string>
+			<string>Przechowywanie danych z ostatnich %@ godzin</string>
 			<key>one</key>
 			<string>Przechowywanie z ostatniej %@ godziny</string>
 			<key>other</key>
@@ -873,7 +873,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Subskrybujesz %@ witryn</string>
+			<string>Subskrybujesz %@ witryny</string>
 			<key>many</key>
 			<string>Subskrybujesz %@ witryn</string>
 			<key>one</key>
