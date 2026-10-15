@@ -189,9 +189,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ geselecteerd artikel</string>
+			<string>%@ focusartikel</string>
 			<key>other</key>
-			<string>%@ uitgelichte artikelen</string>
+			<string>%@ focusartikelen</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -205,9 +205,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ opening</string>
+			<string>%@ keer geopend</string>
 			<key>other</key>
-			<string>%@ openingen</string>
+			<string>%@ keer geopend</string>
 		</dict>
 	</dict>
 	<key>%@ public comments</key>
@@ -253,9 +253,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ gedeelde berichten</string>
+			<string>%@ keer gedeeld</string>
 			<key>other</key>
-			<string>%@ gedeelde berichten</string>
+			<string>%@ keer gedeeld</string>
 		</dict>
 	</dict>
 	<key>%@ sources</key>
@@ -285,7 +285,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ verhaal</string>
+			<string>%@ artikel</string>
 			<key>other</key>
 			<string>%@ artikelen</string>
 		</dict>
@@ -301,7 +301,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ artikel over</string>
+			<string>Nog %@ artikel</string>
 			<key>other</key>
 			<string>Nog %@ artikelen</string>
 		</dict>
@@ -349,9 +349,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ ongelezen verhaal</string>
+			<string>%@ ongelezen artikel</string>
 			<key>other</key>
-			<string>%@ ongelezen verhalen</string>
+			<string>%@ ongelezen artikelen</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -381,7 +381,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Voeg %1$@ feed toe aan map ‘%2$@’</string>
+			<string>%1$@ feed toevoegen aan map ‘%2$@’</string>
 			<key>other</key>
 			<string>%1$@ feeds toevoegen aan map ‘%2$@’</string>
 		</dict>
@@ -525,9 +525,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Markeer %@ verhaal als gelezen</string>
+			<string>%@ artikel als gelezen markeren</string>
 			<key>other</key>
-			<string>Markeer deze %@ artikelen als gelezen</string>
+			<string>Deze %@ artikelen als gelezen markeren</string>
 		</dict>
 	</dict>
 	<key>Mute %@ Sites</key>
@@ -541,7 +541,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Site %@ dempen</string>
+			<string>%@ site dempen</string>
 			<key>other</key>
 			<string>%@ sites dempen</string>
 		</dict>
@@ -573,7 +573,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Gedeeld verhaal</string>
+			<string>Gedeeld artikel</string>
 			<key>other</key>
 			<string>Gedeelde artikelen</string>
 		</dict>

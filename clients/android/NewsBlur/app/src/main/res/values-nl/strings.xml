@@ -10,7 +10,7 @@
     <string name="gesture_statistics">Statistieken</string>
     <string name="gesture_menu">Acties tonen</string>
     <string name="gesture_share">Delen</string>
-    <string name="gesture_toggle_save">Opslaan / opslaan ongedaan maken</string>
+    <string name="gesture_toggle_save">Opslaan / niet meer opslaan</string>
     <string name="gesture_ask_ai">AI vragen</string>
     <string name="gesture_train">Intelligentie trainen</string>
     <string name="gesture_notifications">Meldingen</string>
@@ -19,7 +19,7 @@
     <string name="gesture_story_titles">Artikeltitels</string>
     <string name="gesture_reading_story">Een artikel lezen</string>
     <string name="gesture_swipe_feeds">Over feeds vegen</string>
-    <string name="gesture_swipe_stories">Vegen op artikelen</string>
+    <string name="gesture_swipe_stories">Over artikelen vegen</string>
     <string name="gesture_left">Veeg naar links</string>
     <string name="gesture_right">Veeg naar rechts</string>
     <string name="gesture_long_press">Lang indrukken</string>
@@ -32,12 +32,12 @@
     <string name="gesture_text">Originele tekst weergeven</string>
     <string name="gesture_unread">Markeren als ongelezen</string>
     <string name="gesture_back_titles">Terug naar artikeltitels</string>
-    <string name="gesture_previous">Vorig verhaal</string>
+    <string name="gesture_previous">Vorig artikel</string>
     <string name="gesture_off">Uit</string>
     <string name="gesture_unread_stories">Ongelezen artikelen</string>
-    <string name="gesture_focus_stories">Verhalen uitlichten</string>
+    <string name="gesture_focus_stories">Focusartikelen</string>
     <string name="story_title_mark_story_read">Artikel als gelezen markeren…</string>
-    <string name="story_title_list_font_size">Lettergrootte van feeds en verhaal titels</string>
+    <string name="story_title_list_font_size">Lettergrootte van feed- en artikeltitels</string>
     <string name="language_title">Taal</string>
     <string name="settings_cat_general">Algemeen</string>
     <string name="language_current">Taal: %1$s</string>
@@ -45,8 +45,8 @@
     <string name="language_save_failed">Je taalinstelling kon niet worden opgeslagen. Probeer het opnieuw.</string>
     <string name="reader_enter_fullscreen">Lezen op volledig scherm</string>
     <string name="reader_exit_fullscreen">Artikellijst weergeven</string>
-    <string name="try_feed_instafetching">Verhalen direct ophalen…</string>
-    <string name="try_feed_fetch_failed">Verhalen ophalen is niet gelukt. Tik om het opnieuw te proberen.</string>
+    <string name="try_feed_instafetching">Artikelen direct ophalen…</string>
+    <string name="try_feed_fetch_failed">Artikelen ophalen is niet gelukt. Tik om het opnieuw te proberen.</string>
     <string name="try_feed_empty">Er zijn nog geen artikelen beschikbaar op deze site. Tik om te vernieuwen.</string>
     <string name="image_viewer_close">Afbeelding sluiten</string>
     <string name="image_viewer_loading">Afbeelding laden…</string>
@@ -74,20 +74,20 @@
     <string name="login_registration_email_hint">e-mailadres</string>
     <string name="login_button_login">Inloggen</string>
     <string name="login_segment_sign_in">Inloggen</string>
-    <string name="login_segment_sign_up">Aanmelden</string>
+    <string name="login_segment_sign_up">Registreren</string>
     <string name="login_forgot_password">Wachtwoord vergeten</string>
     <string name="login_custom_server">Zelfgehoste aangepaste server</string>
     <string name="login_custom_server_subtitle">Gebruik je eigen NewsBlur-installatie</string>
     <string name="login_custom_server_active">Aangepaste server: %1$s</string>
     <string name="login_custom_server_edit">Tik om je server-URL te bewerken of opnieuw in te stellen</string>
     <string name="login_custom_server_dialog_title">Aangepaste server</string>
-    <string name="login_custom_server_dialog_body">Laat dit leeg om NewsBlur te gebruiken, of voer de URL van je zelfgehoste installatie in. Dit wordt direct toegepast voor inloggen en aanmelden.</string>
+    <string name="login_custom_server_dialog_body">Laat dit leeg om NewsBlur te gebruiken, of voer de URL van je zelfgehoste installatie in. Dit wordt direct toegepast voor inloggen en registreren.</string>
     <string name="login_message_error">Er is een probleem opgetreden bij het inloggen op NewsBlur.</string>
     <string name="login_logging_in">Bezig met inloggen…</string>
     <string name="login_logged_in">Bezig met het herberekenen van splines…</string>
     <string name="login_retrieving_feeds">Feeds ophalen…</string>
     <string name="login_next">Volgende</string>
-    <string name="login_custom_server_scheme_error">Verwachtte \'https://\' in de aangepaste server-URL</string>
+    <string name="login_custom_server_scheme_error">De URL van de aangepaste server moet \'https://\' bevatten</string>
     <string name="login_custom_server_invalid">Voer een geldige URL voor een aangepaste server in.</string>
     <string name="login_tagline">Een persoonlijke nieuwslezer die mensen samenbrengt
 om over de wereld te praten.</string>
@@ -101,7 +101,7 @@ om over de wereld te praten.</string>
     <string name="description_login_button">Druk om in te loggen</string>
     <string name="description_login_logo">NewsBlur-logo</string>
     <string name="description_profile_picture">Profielfoto van de gebruiker</string>
-    <string name="description_row_folder_icon">mapicoon</string>
+    <string name="description_row_folder_icon">mappictogram</string>
     <string name="description_row_feed_icon">feedpictogram</string>
     <string name="description_row_feed_mute_toggle">feed dempen aan/uit</string>
     <string name="description_activity_icon">Een pictogram dat de activiteit van de gebruiker weergeeft</string>
@@ -113,15 +113,15 @@ om over de wereld te praten.</string>
     <string name="title_choose_folders">Kies mappen voor feed %s</string>
     <string name="title_rename_feed">Feed %s hernoemen</string>
     <string name="title_rename_folder">Map %s hernoemen</string>
-    <string name="all_stories_title">Alle verhalen van de site</string>
+    <string name="all_stories_title">Artikelen van alle sites</string>
     <string name="daily_briefing_title">Dagelijkse briefing</string>
-    <string name="infrequent_title">Minder frequente artikelen van sites</string>
+    <string name="infrequent_title">Artikelen van weinig actieve sites</string>
     <string name="widely_read_stories_title">Veelgelezen artikelen</string>
     <string name="long_reads_title">Lange artikelen</string>
     <string name="good_reads_title">Goede leestips</string>
     <string name="all_shared_stories_title">Alle gedeelde artikelen</string>
     <string name="global_shared_stories_title">Wereldwijd gedeelde artikelen</string>
-    <string name="read_stories_title">Artikelen lezen</string>
+    <string name="read_stories_title">Gelezen artikelen</string>
     <string name="saved_stories_title">Opgeslagen artikelen</string>
     <string name="saved_searches_title">Opgeslagen zoekopdrachten</string>
     <string name="feed_list">Feedlijst</string>
@@ -135,11 +135,11 @@ om over de wereld te praten.</string>
     <string name="already_shared">Gedeeld</string>
     <string name="share_this_story">Delen</string>
     <string name="share_with_comment">Delen met opmerking</string>
-    <string name="unshare">Delen verwijderen</string>
+    <string name="unshare">Delen ongedaan maken</string>
     <string name="update_shared">Opmerking bijwerken</string>
     <string name="rename">Naam wijzigen</string>
     <string name="save_this">Opslaan</string>
-    <string name="unsave_this">Opslaan ongedaan maken</string>
+    <string name="unsave_this">Niet meer opslaan</string>
     <string name="train_this">Trainen</string>
     <string name="ask_ai">Vraag AI</string>
     <string name="story_mark_unread_state">Gelezen</string>
@@ -147,7 +147,7 @@ om over de wereld te praten.</string>
     <string name="overlay_next">Volgende</string>
     <string name="overlay_done">Klaar</string>
     <string name="overlay_count_toast_N">%d ongelezen artikelen</string>
-    <string name="overlay_count_toast_1">1 ongelezen verhaal</string>
+    <string name="overlay_count_toast_1">1 ongelezen artikel</string>
     <string name="overlay_text">Tekst</string>
     <string name="overlay_story">Artikel</string>
     <string name="orig_text_failed">Sorry, de tekst van het artikel kon niet worden opgehaald.</string>
@@ -158,7 +158,7 @@ om over de wereld te praten.</string>
     <string name="reply_to">Reageer op \"%s\"</string>
     <string name="edit_reply">Reactie bewerken</string>
     <string name="edit_reply_update">Reactie bijwerken</string>
-    <string name="edit_reply_delete">ReactieY verwijderen</string>
+    <string name="edit_reply_delete">Reactie verwijderen</string>
     <string name="alert_dialog_ok">Oké</string>
     <string name="alert_dialog_done">Gereed</string>
     <string name="alert_dialog_openlink">Link openen</string>
@@ -224,7 +224,7 @@ om over de wereld te praten.</string>
     <string name="menu_rename_folder">Map hernoemen</string>
     <string name="menu_instafetch_feed">Artikelen direct ophalen</string>
     <string name="feed_menu_back_to_actions">Terug naar feedacties</string>
-    <string name="menu_infrequent_cutoff">Onregelmatige verhalen per maand</string>
+    <string name="menu_infrequent_cutoff">Grens voor weinig actieve sites</string>
     <string name="menu_intel">Intelligentietrainer</string>
     <string name="menu_rename_feed">Feed hernoemen</string>
     <string name="menu_story_list_style_choose">Lijststijl</string>
@@ -245,7 +245,7 @@ om over de wereld te praten.</string>
     <string name="menu_sort_by_name">Naam</string>
     <string name="menu_sort_by_subs">Abonnees</string>
     <string name="menu_sort_by_stories_month">Artikelen per maand</string>
-    <string name="menu_sort_by_recent_story">Meest recente verhaal</string>
+    <string name="menu_sort_by_recent_story">Meest recente artikel</string>
     <string name="menu_sort_by_number_opens">Aantal keer geopend</string>
     <string name="menu_sort_order">Sorteervolgorde</string>
     <string name="menu_sort_order_ascending">Oplopend</string>
@@ -262,7 +262,7 @@ om over de wereld te praten.</string>
     <string name="menu_widget_background_transparent">Transparant</string>
     <string name="toast_hold_to_select">Houd ingedrukt om tekst te selecteren</string>
     <string name="logout_warning">Weet je zeker dat je wilt uitloggen?</string>
-    <string name="search_mark_read_warning">Let op! Alle verhalen in de feed/map worden als gelezen gemarkeerd, niet alleen de zoekresultaten. Wil je echt alle verhalen als gelezen markeren, wis dan je zoekopdracht om dit te bevestigen.</string>
+    <string name="search_mark_read_warning">Let op! Alle artikelen in de feed/map worden als gelezen gemarkeerd, niet alleen de zoekresultaten. Wil je echt alle artikelen als gelezen markeren, wis dan je zoekopdracht om dit te bevestigen.</string>
     <string name="story_show_changes">Wijzigingen in artikel weergeven</string>
     <string name="story_hide_changes">Wijzigingen in artikel verbergen</string>
     <string name="story_changes_loading">Wijzigingen in artikelen laden …</string>
@@ -282,13 +282,13 @@ om over de wereld te praten.</string>
     <string name="discover_subscribed">Geabonneerd</string>
     <string name="discover_updated_today">Vandaag bijgewerkt</string>
     <string name="discover_updated_relative">Bijgewerkt %s</string>
-    <string name="discover_stale_updated_relative">Verouderd — bijgewerkt %s</string>
-    <string name="discover_stale_date">Verouderd. Laatste artikel %s</string>
+    <string name="discover_stale_updated_relative">Inactief — bijgewerkt %s</string>
+    <string name="discover_stale_date">Inactief. Laatste artikel %s</string>
     <string name="discover_last_fetched_relative">Opgehaald %s</string>
     <string name="try_feed_banner_subtitle">Voorbeeld. Nog niet geabonneerd.</string>
     <string name="try_feed_subscribe_button">Abonneren</string>
     <string name="empty_search_notice">Typ een zoekterm om te beginnen</string>
-    <string name="menu_add_feed">Toevoegen + sites ontdekken</string>
+    <string name="menu_add_feed">Sites toevoegen + ontdekken</string>
     <string name="adding_feed_progress">Feed toevoegen…</string>
     <string name="feed_list_search_hint">Feeds zoeken</string>
     <string name="add_folder_name">Voer een mapnaam in</string>
@@ -347,12 +347,12 @@ om over de wereld te praten.</string>
     <string name="delete_folder_message">Map \"%s\" verwijderen en je afmelden voor alle feeds erin?</string>
     <string name="deleting_folder_message">Map \"%s\" verwijderen</string>
     <string name="add_saved_search_message">Zoekopdracht \"%s\" opslaan?</string>
-    <string name="unfollow_message">\"%s\" niet meer volgen?</string>
+    <string name="unfollow_message">“%s” niet meer volgen?</string>
     <string name="feed_subscribers">%s abonnees</string>
     <string name="feed_opens">%d keer geopend</string>
     <string name="feed_stories_per_month">%d artikelen/maand</string>
-    <string name="forwarding_email_address">Doorschakel-e-mailadres</string>
-    <string name="setup_instructions">Installatie-instructies \u25bc</string>
+    <string name="forwarding_email_address">E-mailadres voor doorsturen</string>
+    <string name="setup_instructions">Instructies voor het instellen \u25bc</string>
     <string name="setup_instructions_details">Als je je e-mailnieuwsbrieven in NewsBlur wilt lezen, stuur je ze door naar het hierboven vermelde aangepaste e-mailadres.\n\nGa in Gmail naar Instellingen &gt; Doorsturen en klik op Een doorstuuradres toevoegen. Voeg je aangepaste NewsBlur-e-mailadres toe.\n\nGmail begeleidt je bij het bevestigen van het e-mailadres. Ga daarna terug naar NewsBlur en zoek de bevestigingsmail in de map ‘Nieuwsbrieven’.\n\nMaak vervolgens een filter voor al je nieuwsbrieven, zodat ze worden doorgestuurd naar het aangepaste adres van NewsBlur.</string>
     <string name="copy_email">E-mail kopiëren</string>
     <string name="stories_shortcuts">Sneltoetsen voor artikelen</string>
@@ -375,8 +375,8 @@ om over de wereld te praten.</string>
     <string name="main_menu_notifications">Meldingen</string>
     <string name="main_menu_interactions">Interacties</string>
     <string name="main_menu_upgrade_premium">Upgraden naar Premium</string>
-    <string name="main_menu_upgrade_archive">Upgraden naar Archief</string>
-    <string name="main_menu_premium_archive">Premiumarchief</string>
+    <string name="main_menu_upgrade_archive">Upgraden naar Archive</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Supportforum</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -394,16 +394,16 @@ om over de wereld te praten.</string>
     <string name="premium_subscription_renewal">Je abonnement wordt verlengd op %s</string>
     <string name="premium_subscription_expiration">Je abonnement verloopt op %s</string>
     <string name="premium_subscription_no_expiration">Je abonnement verloopt nooit. Wauw!</string>
-    <string name="premium_policies">Raadpleeg NewsBlur\'s &lt;a href=\"https://newsblur.com/privacy\"&gt;privacybeleid&lt;/a&gt; en &lt;a href=\"https://newsblur.com/tos\"&gt;gebruiksvoorwaarden&lt;/a&gt; voor meer informatie.</string>
+    <string name="premium_policies">Raadpleeg het &lt;a href=\"https://newsblur.com/privacy\"&gt;privacybeleid&lt;/a&gt; en de &lt;a href=\"https://newsblur.com/tos\"&gt;gebruiksvoorwaarden&lt;/a&gt; van NewsBlur voor meer informatie.</string>
     <string name="premium_subscription_header">Premiumabonnement</string>
-    <string name="archive_subscription_header">Premiumarchief</string>
+    <string name="archive_subscription_header">Premium Archive</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium-abonnement</string>
-    <string name="archive_subscription_title">NewsBlur Premiumarchief</string>
+    <string name="archive_subscription_title">NewsBlur Premium Archive</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
-    <string name="premium_subscription_price">$35.99 per jaar ($3.00/maand)</string>
+    <string name="premium_subscription_price">$35,99 per jaar ($3,00/maand)</string>
     <string name="premium_subscription_active">Je premiumabonnement is actief</string>
-    <string name="archive_subscription_active">Je Premium-archiefabonnement is actief</string>
+    <string name="archive_subscription_active">Je Premium Archive-abonnement is actief</string>
     <string name="pro_subscription_active">Je Premium Pro-abonnement is actief</string>
     <string name="subscription_manage">Abonnement beheren</string>
     <string name="subscription_details_error">Fout bij het ophalen van abonnementsgegevens</string>
@@ -416,12 +416,12 @@ om over de wereld te praten.</string>
     <string name="subscription_price_monthly">%1$s/maand</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
     <string name="premium_archive_includes_above">Je Premium Archive-abonnement bevat alles hierboven</string>
-    <string name="premium_pro_includes_above">Je premium pro-abonnement bevat alles hierboven</string>
+    <string name="premium_pro_includes_above">Je Premium Pro-abonnement bevat alles hierboven</string>
     <string name="premium_enable_sites">Volg tot 1.024 sites</string>
     <string name="premium_sync">Sites worden tot 5× vaker bijgewerkt</string>
-    <string name="premium_read_by_folder">Nieuwsfeed (lezen per map)</string>
+    <string name="premium_read_by_folder">Nieuwsstroom (lezen per map)</string>
     <string name="premium_search">Zoek in sites en mappen</string>
-    <string name="premium_searchable_tags">Bewaar verhalen met doorzoekbare tags</string>
+    <string name="premium_searchable_tags">Sla artikelen op met doorzoekbare tags</string>
     <string name="premium_privacy_options">Privacyopties voor je blurblog</string>
     <string name="premium_custom_rss">Aangepaste RSS-feeds voor opgeslagen artikelen</string>
     <string name="premium_text_view">De tekstweergave haalt het artikel handig op</string>
@@ -434,14 +434,14 @@ om over de wereld te praten.</string>
     <string name="archive_story_searchable_forever">Elk artikel van elke site wordt voor altijd gearchiveerd en doorzoekbaar</string>
     <string name="archive_back_filled">Feeds die paginering ondersteunen, worden met oudere items aangevuld voor een compleet archief</string>
     <string name="archive_train_full_text">Artikelen trainen op de volledige tekstinhoud</string>
-    <string name="archive_discover_related">Ontdek verwante verhalen in je archief</string>
-    <string name="archive_export_trained_stories">Getrainde verhalen uit mappen exporteren als RSS-feeds</string>
+    <string name="archive_discover_related">Ontdek verwante artikelen in je archief</string>
+    <string name="archive_export_trained_stories">Getrainde artikelen uit mappen exporteren als RSS-feeds</string>
     <string name="archive_stories_unread_forever">Artikelen kunnen voor altijd ongelezen blijven</string>
     <string name="archive_ask_ai">Stel AI vragen over artikelen</string>
     <string name="archive_filter_by_date_range">Artikelen filteren op datumbereik</string>
     <string name="archive_train_folder">Training toepassen op een map</string>
     <string name="archive_train_globally">Training overal toepassen</string>
-    <string name="pro_everything_archive">Natuurlijk alles uit het archiefabonnement</string>
+    <string name="pro_everything_archive">Natuurlijk alles uit het Archive-abonnement</string>
     <string name="pro_enable_sites">Volg maximaal 10.000 sites</string>
     <string name="pro_all_feeds_fetched">Alle feeds worden elke 5–15 minuten opgehaald</string>
     <string name="pro_regex_train">Artikelen trainen met reguliere expressies</string>
@@ -475,10 +475,10 @@ om over de wereld te praten.</string>
         <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
     <string name="menu_delete_offline_stories">Offline artikelen verwijderen…</string>
-    <string name="menu_delete_offline_stories_sum">Maak ruimte vrij door opgeslagen verhalen en afbeeldingen te wissen</string>
+    <string name="menu_delete_offline_stories_sum">Maak ruimte vrij door lokaal bewaarde artikelen en afbeeldingen te wissen</string>
     <string name="menu_delete_offline_stories_confirmation">Alle artikelen en afbeeldingen gewist!</string>
     <string name="menu_cache_age_select">Hoe lang artikelen bewaren…</string>
-    <string name="menu_cache_age_select_sum">Opgeslagen verhalen wissen voor offline lezen</string>
+    <string name="menu_cache_age_select_sum">Lokaal bewaarde artikelen voor offline lezen wissen</string>
     <string name="menu_cache_age_select_opt_2d">2 dagen (minder opslagruimte gebruiken)</string>
     <string name="menu_cache_age_select_opt_7d">7 dagen</string>
     <string name="menu_cache_age_select_opt_14d">14 dagen</string>
@@ -491,18 +491,18 @@ om over de wereld te praten.</string>
     </string-array>
     <string name="settings_cat_feed_list">Feedlijst</string>
     <string name="setting_feed_list_order">Volgorde van de feedlijst…</string>
-    <string name="settings_enable_row_global_shared">Wereldwijd gedeelde verhalen weergeven</string>
+    <string name="settings_enable_row_global_shared">Wereldwijd gedeelde artikelen weergeven</string>
     <string name="settings_enable_row_global_shared_sum">De map Wereldwijd gedeelde artikelen weergeven</string>
-    <string name="settings_enable_row_infrequent_stories">Minder frequente artikelen tonen</string>
-    <string name="settings_enable_row_infrequent_stories_sum">De map \'Artikelen van weinig bezochte sites\' weergeven</string>
+    <string name="settings_enable_row_infrequent_stories">Artikelen van weinig actieve sites tonen</string>
+    <string name="settings_enable_row_infrequent_stories_sum">De map ‘Artikelen van weinig actieve sites’ weergeven</string>
     <string name="settings_enable_row_daily_briefing">Dagelijkse briefing weergeven</string>
     <string name="settings_enable_row_daily_briefing_sum">Map Dagelijkse briefing weergeven</string>
     <string name="settings_enable_row_widely_read_stories">Veelgelezen artikelen tonen</string>
-    <string name="settings_enable_row_widely_read_stories_sum">De map \'Veel gelezen artikelen\' weergeven</string>
+    <string name="settings_enable_row_widely_read_stories_sum">De map ‘Veelgelezen artikelen’ weergeven</string>
     <string name="settings_enable_row_long_reads">Lange artikelen weergeven</string>
     <string name="settings_enable_row_long_reads_sum">Map Lange artikelen weergeven</string>
-    <string name="settings_enable_row_good_reads">Interessante verhalen tonen</string>
-    <string name="settings_enable_row_good_reads_sum">De map \'Goede artikelen\' weergeven</string>
+    <string name="settings_enable_row_good_reads">Goede leestips tonen</string>
+    <string name="settings_enable_row_good_reads_sum">De map ‘Goede leestips’ weergeven</string>
     <string name="settings_cat_story_list">Artikellijst</string>
     <string name="settings_cat_story_layout">Artikelweergave</string>
     <string name="settings_app_icon">App-pictogram</string>
@@ -512,7 +512,7 @@ om over de wereld te praten.</string>
     <string name="settings_app_icon_premium">Premium</string>
     <string name="settings_app_icon_light">Licht</string>
     <string name="settings_app_icon_dark">Donker</string>
-    <string name="settings_app_icon_save_failed">Kon het app-icoon niet wijzigen</string>
+    <string name="settings_app_icon_save_failed">Kon het app-pictogram niet wijzigen</string>
     <string name="settings_app_icon_appearance_light">Licht</string>
     <string name="settings_app_icon_appearance_auto">Beide gebruiken</string>
     <string name="settings_app_icon_appearance_dark">Donker</string>
@@ -543,7 +543,7 @@ om over de wereld te praten.</string>
     <string name="menu_story_content_preview">Voorbeeld van artikelinhoud</string>
     <string name="menu_story_thumbnail_preview">Miniatuurvoorbeeld</string>
     <string name="menu_mark_read_on_scroll">Bij scrollen als gelezen markeren</string>
-    <string name="settings_read_filter">Leesverhaalfiter…</string>
+    <string name="settings_read_filter">Leesstatusfilter…</string>
     <string name="settings_read_filter_title">Getoonde artikelen</string>
     <string name="menu_read_filter">Filter voor gelezen artikelen</string>
     <string-array name="default_read_filter_entries">
@@ -555,7 +555,7 @@ om over de wereld te praten.</string>
         <item>Annuleren</item>
     </string-array>
     <string-array name="mark_older_read_options">
-        <item>Oudere verhalen als gelezen markeren</item>
+        <item>Oudere artikelen als gelezen markeren</item>
         <item>Annuleren</item>
     </string-array>
     <plurals name="story_header_mark_read_older_than_days">
@@ -585,20 +585,20 @@ om over de wereld te praten.</string>
     <string name="settings_auto_open_first_unread">Eerste artikel automatisch openen</string>
     <string name="settings_auto_open_first_unread_sum">Eerste ongelezen artikel in de artikelenlijst automatisch openen</string>
     <string name="settings_mark_read_on_feed_scroll">Artikeltitels als gelezen markeren tijdens het scrollen</string>
-    <string name="settings_mark_read_on_feed_scroll_sum">Verhalen automatisch als gelezen markeren zodra je er voorbij scrolt</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Artikelen automatisch als gelezen markeren zodra je er voorbij scrolt</string>
     <string name="settings_story_clustering">Gerelateerde artikelen groeperen</string>
     <string name="settings_story_clustering_summary">Toon dubbele artikelen van andere feeds onder een artikeltitel</string>
     <string name="settings_cluster_matches">Overeenkomsten clusteren</string>
-    <string name="settings_cluster_matches_summary">Kies of clusters alleen dubbele titels tonen of ook verwante verhalen</string>
-    <string name="settings_story_clustering_save_failed">Voorkeur voor verhaalclustering kon niet worden opgeslagen</string>
+    <string name="settings_cluster_matches_summary">Kies of clusters alleen dubbele titels of ook verwante artikelen tonen</string>
+    <string name="settings_story_clustering_save_failed">Voorkeur voor het groeperen van artikelen kon niet worden opgeslagen</string>
     <string name="settings_story_clustering_title_only">Alleen titel</string>
     <string name="settings_cluster_mode_title_match_only">Alleen overeenkomende titels</string>
-    <string name="settings_cluster_mode_title_match_plus_related">Titelovereenkomst plus gerelateerde verhalen</string>
-    <string name="settings_cluster_mark_read_matches">Overeenkomende verhalen als gelezen markeren</string>
-    <string name="settings_cluster_mark_read_related">Gerelateerde verhalen als gelezen markeren</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Titelovereenkomst plus gerelateerde artikelen</string>
+    <string name="settings_cluster_mark_read_matches">Overeenkomende artikelen als gelezen markeren</string>
+    <string name="settings_cluster_mark_read_related">Gerelateerde artikelen als gelezen markeren</string>
     <string name="settings_cluster_mark_read_matches_summary">Markeer bij het lezen van een artikel ook overeenkomende artikelen als gelezen.</string>
     <string name="settings_cluster_mark_read_related_summary">Wanneer je een artikel leest, markeer dan ook overeenkomende en verwante artikelen als gelezen.</string>
-    <string name="settings_cluster_mark_read_save_failed">De voorkeur voor het lezen van gerelateerde artikelen kon niet worden opgeslagen</string>
+    <string name="settings_cluster_mark_read_save_failed">De voorkeur voor het als gelezen markeren van gerelateerde artikelen kon niet worden opgeslagen</string>
     <string name="settings_story_clustering_title">Titel</string>
     <string name="settings_story_clustering_only">alleen</string>
     <string name="settings_story_clustering_plus">+</string>
@@ -637,7 +637,7 @@ om over de wereld te praten.</string>
     <string name="settings_reading">Lezen</string>
     <string name="settings_always_show_reading_controls">Leesknoppen altijd weergeven</string>
     <string name="settings_always_show_reading_controls_sum">Houd Vorige, Volgende en andere leesknoppen zichtbaar tijdens het scrollen.</string>
-    <string name="settings_show_ask_ai">Ask AI weergeven</string>
+    <string name="settings_show_ask_ai">Vraag AI weergeven</string>
     <string name="settings_content_preview">Voorbeeldtekst van inhoud…</string>
     <string name="settings_thumbnails_style">Voorbeeldminiaturen van afbeeldingen…</string>
     <string name="settings_preview_images_title">Afbeeldingen vooraf bekijken</string>
@@ -658,7 +658,7 @@ om over de wereld te praten.</string>
     <string name="ask_ai_transcribing">Bezig met transcriberen…</string>
     <string name="ask_ai_microphone_permission_denied">Microfoontoegang geweigerd</string>
     <string name="ask_ai_microphone_error">Kan geen audio opnemen</string>
-    <string name="settings_confirm_mark_all_read_note">Bij het markeren van alle artikelen op een site als gelezen wordt altijd om bevestiging gevraagd. Houd de knop \'Markeren als gelezen\' ingedrukt voor meer opties.</string>
+    <string name="settings_confirm_mark_all_read_note">Bij het markeren van ‘Artikelen van alle sites’ als gelezen wordt altijd om bevestiging gevraagd. Houd de knop ‘Markeren als gelezen’ ingedrukt voor meer opties.</string>
     <string name="settings_confirm_mark_all_read_segment_both">Beide</string>
     <string name="settings_confirm_mark_all_read_segment_folders">Mappen</string>
     <string name="settings_confirm_mark_all_read_segment_never">Nooit</string>
@@ -668,7 +668,7 @@ om over de wereld te praten.</string>
     <string name="settings_when_opening_site_title">Bij het openen van een website</string>
     <string name="settings_when_opening_site_stories">Artikelen weergeven</string>
     <string name="settings_when_opening_site_first_story">Eerste artikel openen</string>
-    <string name="story_cluster_upgrade_archive">Premiumarchief</string>
+    <string name="story_cluster_upgrade_archive">Premium Archive</string>
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
         <item>@string/story_content_preview_small</item>
@@ -677,7 +677,7 @@ om over de wereld te praten.</string>
     </string-array>
     <string name="story_thumbnail_left_hand_small">Klein links</string>
     <string name="story_thumbnail_left_hand_large">Groot links</string>
-    <string name="story_thumbnail_right_hand_small">Rechts, klein</string>
+    <string name="story_thumbnail_right_hand_small">Klein rechts</string>
     <string name="story_thumbnail_right_hand_large">Groot rechts</string>
     <string name="story_thumbnail_no_image_preview">Geen afbeeldingsvoorbeeld</string>
     <string-array name="thumbnail_style_entries">
@@ -688,11 +688,11 @@ om over de wereld te praten.</string>
         <item>@string/story_thumbnail_no_image_preview</item>
     </string-array>
     <string name="infrequent_choice_title">Artikelen van sites met</string>
-    <string name="infrequent_5">&lt; 5 verhalen/maand</string>
+    <string name="infrequent_5">&lt; 5 artikelen/maand</string>
     <string name="infrequent_15">&lt; 15 artikelen/maand</string>
     <string name="infrequent_30">&lt; 30 artikelen/maand</string>
-    <string name="infrequent_60">&lt; 60 verhalen/maand</string>
-    <string name="infrequent_90">&lt; 90 verhalen/maand</string>
+    <string name="infrequent_60">&lt; 60 artikelen/maand</string>
+    <string name="infrequent_90">&lt; 90 artikelen/maand</string>
     <string name="story_intel_dialog_title">Wat vind je goed en minder goed aan dit artikel?</string>
     <string name="feed_intel_dialog_title">Wat vind je goed en minder goed aan deze site?</string>
     <string name="intel_title_header">Artikeltitels</string>
@@ -701,15 +701,15 @@ om over de wereld te praten.</string>
     <string name="feed_intel_tag_header">Tags</string>
     <string name="intel_author_header">Auteurs van artikelen</string>
     <string name="feed_intel_author_header">Auteurs</string>
-    <string name="intel_feed_header">Alles op uitgever</string>
-    <string name="intel_super_dislike">Helemaal niet leuk</string>
-    <string name="explainer_super_dislike">Extra sterk niet-leuk</string>
+    <string name="intel_feed_header">Alles van deze uitgever</string>
+    <string name="intel_super_dislike">Vind ik helemaal niet leuk</string>
+    <string name="explainer_super_dislike">Vind ik helemaal niet leuk</string>
     <string name="explainer_like">Vind ik leuk</string>
     <string name="explainer_dislike">Vind ik niet leuk</string>
-    <string name="explainer_beats">beats</string>
+    <string name="explainer_beats">wint van</string>
     <string name="explainer_example1_header">Eén like weegt zwaarder dan elk aantal dislikes</string>
     <string name="explainer_example1_result">Artikel wordt weergegeven in de focusweergave</string>
-    <string name="explainer_example2_header">Eén superafkeer overschrijft alles</string>
+    <string name="explainer_example2_header">Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles</string>
     <string name="explainer_example2_result">Artikel is altijd verborgen</string>
     <string name="auto">Automatisch</string>
     <string name="light">Licht</string>
@@ -727,11 +727,11 @@ om over de wereld te praten.</string>
     <string name="sync_status_unreads">%s ongelezen artikelen opslaan…</string>
     <string name="sync_status_images">%d afbeeldingen opslaan…</string>
     <string name="sync_status_offline">Offline</string>
-    <string name="sync_status_feed_add">Feed toevoegen</string>
+    <string name="sync_status_feed_add">Feed wordt toegevoegd…</string>
     <string name="sync_status_done">Klaar</string>
     <string name="volume_key_navigation">Navigatie met volumetoetsen…</string>
     <string name="off">Uit</string>
-    <string name="volume_up_next">Omhoog = volgend verhaal</string>
+    <string name="volume_up_next">Omhoog = volgend artikel</string>
     <string name="volume_down_next">Omlaag = volgend artikel</string>
     <string-array name="volume_key_navigation_entries">
         <item>@string/off</item>
@@ -754,7 +754,7 @@ om over de wereld te praten.</string>
     <string name="gest_action_none">Geen actie</string>
     <string name="gest_action_back">Terug naar de vorige lijst</string>
     <string name="gest_action_toggle_read">Leesstatus van artikel omschakelen</string>
-    <string name="gest_action_markread">Verhaal als gelezen markeren</string>
+    <string name="gest_action_markread">Artikel als gelezen markeren</string>
     <string name="gest_action_markunread">Artikel markeren als ongelezen</string>
     <string name="gest_action_save">Artikel opslaan</string>
     <string name="gest_action_unsave">Artikel niet meer opslaan</string>
@@ -817,31 +817,31 @@ om over de wereld te praten.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Geen feedmeldingen</string>
-    <string name="notification_permissions_context">Machtigingen zijn vereist om meldingen te plaatsen</string>
-    <string name="notification_permissions_rationale">Je moet de toestemming voor meldingen handmatig toevoegen in de instellingen van de app\'s voordat je opnieuw probeert meldingen in te schakelen</string>
+    <string name="notification_permissions_context">Toestemming is vereist om meldingen te tonen</string>
+    <string name="notification_permissions_rationale">Je moet de toestemming voor meldingen handmatig toevoegen in de instellingen van de app voordat je opnieuw probeert meldingen in te schakelen</string>
     <string name="write_storage_permission_opml">Toestemming voor schrijven naar opslag is vereist voor OPML-export</string>
     <string name="story_saved">Artikel gemarkeerd als opgeslagen</string>
     <string name="story_unsaved">Artikel gemarkeerd als niet-opgeslagen</string>
     <string name="story_read">Artikel gemarkeerd als gelezen</string>
     <string name="story_unread">Artikel gemarkeerd als ongelezen</string>
     <string name="unread_stories">Ongelezen artikelen</string>
-    <string name="focused_stories">Gefocuste verhalen</string>
+    <string name="focused_stories">Focusartikelen</string>
     <string name="saved_stories">Opgeslagen artikelen</string>
     <string name="short_next_story">Volgend artikel</string>
     <string name="short_previous_story">Vorig artikel</string>
     <string name="short_text_view">Tekstweergave</string>
     <string name="short_page_down">Pagina omlaag</string>
     <string name="short_page_down_key">spatie</string>
-    <string name="short_page_up">Page Up</string>
+    <string name="short_page_up">Pagina omhoog</string>
     <string name="short_page_up_key">\u21E7 spatie</string>
-    <string name="short_next_unread_story">Volgend ongelezen verhaal</string>
+    <string name="short_next_unread_story">Volgend ongelezen artikel</string>
     <string name="short_toggle_read_unread">Gelezen/ongelezen omschakelen</string>
     <string name="short_save_unsave_story">Artikel opslaan/niet meer opslaan</string>
     <string name="short_open_in_browser">Openen in browser</string>
     <string name="short_share_this_story">Dit artikel delen</string>
     <string name="short_scroll_to_comments">Naar reacties scrollen</string>
     <string name="short_open_story_trainer">Artikeltrainer openen</string>
-    <string name="short_open_all_stories">Alle verhalen van de site openen</string>
+    <string name="short_open_all_stories">Artikelen van alle sites openen</string>
     <string name="short_switch_views">Weergaven wisselen</string>
     <string name="short_add_site">Site toevoegen</string>
     <string name="registering">Registreren...</string>
@@ -850,7 +850,7 @@ om over de wereld te praten.</string>
     <string name="parent_folder">Bovenliggende map</string>
     <string name="folder_added">Map toegevoegd</string>
     <string name="new_folder_parent">In: %1$s</string>
-    <string name="ui_014f8b8d982f">Voeg aangepaste zoekwoordfilters toe die eigen secties in je briefing vormen</string>
+    <string name="ui_014f8b8d982f">Voeg aangepaste trefwoordfilters toe die eigen secties in je briefing vormen</string>
     <string name="ui_05392d13e2f2">Nog geen briefings</string>
     <string name="ui_0a4444676244">Opslaan mislukt</string>
     <string name="ui_0a8adac9d6d5">Plannen</string>
@@ -859,17 +859,17 @@ om over de wereld te praten.</string>
     <string name="ui_314ef761a08f">Trefwoordsectie toevoegen</string>
     <string name="ui_3af014d03229">Feedbron</string>
     <string name="ui_3e4a49541e18">Ook al gelezen artikelen opnemen</string>
-    <string name="ui_4a24ff492222">Ontvang dagelijks een overzicht met al je belangrijkste artikelen</string>
-    <string name="ui_4e9f59082144">Premiumarchief</string>
+    <string name="ui_4a24ff492222">Ontvang dagelijkse briefings met al je belangrijkste artikelen</string>
+    <string name="ui_4e9f59082144">Premium Archive</string>
     <string name="ui_5b170811b992">Upgraden naar Premium Archive</string>
     <string name="ui_67a31d6fa581">Kies waar meldingen voor de dagelijkse briefing naartoe moeten</string>
     <string name="ui_67d0be0dd546">Bepaal hoeveel er wordt opgenomen en hoe het wordt geschreven</string>
     <string name="ui_68c2cc7f0cea">Model</string>
     <string name="ui_710089545189">Lengte en stijl</string>
     <string name="ui_753a22b2eb61">Meldingen</string>
-    <string name="ui_771ee100da2b">Zoekwoordsecties</string>
+    <string name="ui_771ee100da2b">Trefwoordsecties</string>
     <string name="ui_7c522fb68f07">Ontvang een samenvatting van je belangrijkste artikelen, op een moment dat jou uitkomt.</string>
-    <string name="ui_7f7e956b2244">Stel de Dagelijkse briefing in om een samenvatting te maken van de artikelen die voor jou het belangrijkst zijn.</string>
+    <string name="ui_7f7e956b2244">Stel de dagelijkse briefing in om een samenvatting te maken van de artikelen die voor jou het belangrijkst zijn.</string>
     <string name="ui_7ff5a6dafd80">Secties</string>
     <string name="ui_80f7bcbc57b0">Kies hoe vaak en wanneer je briefing wordt gegenereerd</string>
     <string name="ui_a4d5830966af">Automatisch briefings maken volgens jouw planning</string>
@@ -889,7 +889,7 @@ om over de wereld te praten.</string>
     <string name="ui_244fd5e426f0">OPML exporteren</string>
     <string name="ui_768e0c1c6957">Titel</string>
     <string name="ui_e17c700c2575">Opgeslagen tags</string>
-    <string name="ui_6e914f494515">Artikel-tags</string>
+    <string name="ui_6e914f494515">Artikeltags</string>
     <string name="ui_e912ab619a72">Overige tags</string>
     <string name="i18n_add_site">Site toevoegen</string>
     <string name="i18n_add">Toevoegen</string>
@@ -927,7 +927,7 @@ om over de wereld te praten.</string>
     <string name="onboarding_last_used">Laatst gebruikt</string>
     <string name="onboarding_loading_interests">Interesses laden</string>
     <string name="onboarding_finding_feeds_for_you_to_explore">Feeds zoeken om te ontdekken</string>
-    <string name="onboarding_retry_icons">Pictogrammen opnieuw proberen</string>
+    <string name="onboarding_retry_icons">Pictogrammen opnieuw laden</string>
     <string name="onboarding_search_all_sites">Alle sites doorzoeken</string>
     <string name="onboarding_no_interests_or_sites_found_try_another_search">Geen interesses of sites gevonden. Probeer een andere zoekopdracht.</string>
     <string name="onboarding_try_search_again">Zoek opnieuw</string>
@@ -943,7 +943,7 @@ om over de wereld te praten.</string>
     <string name="onboarding_choose_your_username">Kies je gebruikersnaam</string>
     <string name="onboarding_create_an_account">Account aanmaken</string>
     <string name="onboarding_welcome_back">Welkom terug</string>
-    <string name="onboarding_signing_in_with_provider">Aanmelden met %1$s</string>
+    <string name="onboarding_signing_in_with_provider">Inloggen met %1$s</string>
     <string name="onboarding_sign_in_with_provider">Inloggen met %1$s</string>
     <string name="onboarding_email">E-mail</string>
     <string name="onboarding_username">Gebruikersnaam</string>
@@ -951,8 +951,8 @@ om over de wereld te praten.</string>
     <string name="onboarding_password">Wachtwoord</string>
     <string name="onboarding_continue">Doorgaan</string>
     <string name="onboarding_create_account">Account aanmaken</string>
-    <string name="onboarding_sign_in">Aanmelden</string>
-    <string name="onboarding_already_have_an_account_sign_in">Heb je al een account? Aanmelden</string>
+    <string name="onboarding_sign_in">Inloggen</string>
+    <string name="onboarding_already_have_an_account_sign_in">Heb je al een account? Inloggen</string>
     <string name="onboarding_new_to_newsblur_create_an_account">Nieuw bij NewsBlur? Maak een account aan</string>
     <string name="onboarding_use_a_custom_server">Aangepaste server gebruiken</string>
     <string name="onboarding_verify_with_provider">Verifiëren met %1$s</string>
@@ -968,7 +968,7 @@ om over de wereld te praten.</string>
     <string name="setup_select_feeds_to_add">Selecteer feeds om toe te voegen</string>
     <string name="setup_name_your_folder_to_continue">Geef je map een naam om door te gaan</string>
     <plurals name="setup_add_feeds_to_folder">
-        <item quantity="one">Voeg de feed %1$d toe aan de map ‘%2$s’</item>
+        <item quantity="one">%1$d feed toevoegen aan map ‘%2$s’</item>
         <item quantity="other">%1$d feeds toevoegen aan map ‘%2$s’</item>
     </plurals>
     <string name="setup_importing">Importeren…</string>
@@ -999,23 +999,23 @@ om over de wereld te praten.</string>
     <string name="setup_samuelclay_on_x_description">Van de maker van NewsBlur</string>
     <string name="setup_newsblur_on_x_description">Nieuws en updates</string>
     <plurals name="setup_feeds_could_not_be_added">
-        <item quantity="one">Feed %1$d kon niet worden toegevoegd aan %2$s. %3$s</item>
+        <item quantity="one">%1$d feed kon niet worden toegevoegd aan %2$s. %3$s</item>
         <item quantity="other">%1$d feeds konden niet worden toegevoegd aan %2$s. %3$s</item>
     </plurals>
     <plurals name="setup_stories_per_month">
-        <item quantity="one">%1$d verhaal/maand</item>
+        <item quantity="one">%1$d artikel/maand</item>
         <item quantity="other">%1$d artikelen/maand</item>
     </plurals>
-    <string name="setup_feed_stale_last_story">Verouderd · laatste artikel %1$s</string>
+    <string name="setup_feed_stale_last_story">Inactief · laatste artikel %1$s</string>
     <string name="add_site_url_or_search">%1$s of zoeken</string>
     <string name="add_site_choose_folder">Map kiezen</string>
     <string name="add_site_top_level">— Hoofdniveau —</string>
-    <string name="add_site_adding_site">Site toevoegen</string>
+    <string name="add_site_adding_site">Site wordt toegevoegd</string>
     <string name="add_site_add_folder">Map toevoegen</string>
     <string name="add_site_cancel_new_folder">Nieuwe map annuleren</string>
     <string name="add_site_create_new_folder">Nieuwe map maken</string>
     <string name="add_site_new_folder_name">Naam van nieuwe map</string>
-    <string name="add_site_searching_sites">Sites zoeken</string>
+    <string name="add_site_searching_sites">Sites worden gezocht</string>
     <string name="discover_quick_add">Site of map snel toevoegen</string>
     <string name="discover_tab_search">Zoeken</string>
     <string name="discover_tab_web_feed">Webfeed</string>
@@ -1049,27 +1049,27 @@ om over de wereld te praten.</string>
     <string name="discover_added">Toegevoegd</string>
     <string name="discover_web_pattern">Patroon %1$d</string>
     <string name="discover_feed_title">Feedtitel</string>
-    <string name="discover_keep_stories">Verhalen bewaren</string>
+    <string name="discover_keep_stories">Artikelen bewaren</string>
     <plurals name="discover_keep_stories_days">
         <item quantity="one">%d dag</item>
         <item quantity="other">%d dagen</item>
     </plurals>
     <string name="discover_create_web_feed">Webfeed maken</string>
     <string name="discover_search_news_topic">Zoek een nieuwsonderwerp</string>
-    <string name="discover_top_stories">Topverhalen</string>
+    <string name="discover_top_stories">Topartikelen</string>
     <string name="discover_choose_a_topic">Kies een onderwerp</string>
     <string name="discover_choose_a_category">Kies een categorie</string>
     <string name="discover_add_google_news_feed">Google Nieuws-feed toevoegen</string>
     <string name="discover_news_topic_world">Wereld</string>
-    <string name="discover_news_topic_nation">Land</string>
-    <string name="discover_news_topic_business">Zakelijk</string>
+    <string name="discover_news_topic_nation">Binnenland</string>
+    <string name="discover_news_topic_business">Bedrijfsleven</string>
     <string name="discover_news_topic_technology">Technologie</string>
     <string name="discover_news_topic_entertainment">Entertainment</string>
     <string name="discover_news_topic_sports">Sport</string>
     <string name="discover_news_topic_science">Wetenschap</string>
     <string name="discover_news_topic_health">Gezondheid</string>
     <string name="briefing_frequency">Frequentie</string>
-    <string name="briefing_frequency_thrice_daily">3× per dag</string>
+    <string name="briefing_frequency_thrice_daily">3 keer per dag</string>
     <string name="briefing_frequency_twice_daily">2 keer per dag</string>
     <string name="briefing_frequency_daily">Dagelijks</string>
     <string name="briefing_frequency_weekly">Wekelijks</string>
@@ -1081,11 +1081,11 @@ om over de wereld te praten.</string>
     <string name="briefing_day_sunday">zondag</string>
     <string name="briefing_day_monday">maandag</string>
     <string name="briefing_day_tuesday">dinsdag</string>
-    <string name="briefing_day_wednesday">Woensdag</string>
+    <string name="briefing_day_wednesday">woensdag</string>
     <string name="briefing_day_thursday">donderdag</string>
-    <string name="briefing_day_friday">Vrijdag</string>
+    <string name="briefing_day_friday">vrijdag</string>
     <string name="briefing_day_saturday">zaterdag</string>
-    <string name="briefing_story_count">Aantal verhalen</string>
+    <string name="briefing_story_count">Aantal artikelen</string>
     <string name="briefing_writing_style">Schrijfstijl</string>
     <string name="briefing_style_bullets">Opsommingstekens</string>
     <string name="briefing_style_editorial">Redactioneel</string>
@@ -1096,7 +1096,7 @@ om over de wereld te praten.</string>
     <string name="briefing_generate_now">Nu genereren</string>
     <string name="briefing_saving_settings">Instellingen van de dagelijkse briefing opslaan…</string>
     <plurals name="briefing_group_story_count">
-        <item quantity="one">%d verhaal</item>
+        <item quantity="one">%d artikel</item>
         <item quantity="other">%d artikelen</item>
     </plurals>
     <string name="language_dialog_title">Kies je taal</string>
@@ -1111,7 +1111,7 @@ om over de wereld te praten.</string>
     <string name="discover_folder_top_level">Hoofdniveau</string>
     <string name="discover_add_to_folder">Toevoegen aan map</string>
     <string name="add_site_shortcut_trending">Populair</string>
-    <string name="add_site_freshness_stale">Verouderde %1$s</string>
+    <string name="add_site_freshness_stale">Inactief sinds %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="one">%d min geleden</item>
         <item quantity="other">%d min geleden</item>
@@ -1140,8 +1140,8 @@ om over de wereld te praten.</string>
     <string name="profile_activity_user_signed_up">%1$s heeft zich aangemeld voor Newsblur</string>
     <string name="profile_activity_you_followed">Je bent nu een volger van %1$s</string>
     <string name="profile_activity_user_followed">%1$s is %2$s gaan volgen</string>
-    <string name="profile_activity_you_favorited_comments">Je hebt %1$s reacties op %2$s aan je favorieten toegevoegd</string>
-    <string name="profile_activity_user_favorited_comments">%1$s heeft %2$s reacties op %3$s als favoriet gemarkeerd</string>
+    <string name="profile_activity_you_favorited_comments">Je hebt de reacties van %1$s op %2$s als favoriet gemarkeerd</string>
+    <string name="profile_activity_user_favorited_comments">%1$s heeft de reacties van %2$s op %3$s als favoriet gemarkeerd</string>
     <string name="profile_activity_you_replied">Je hebt gereageerd op %1$s</string>
     <string name="profile_activity_user_replied">%1$s heeft op %2$s gereageerd</string>
     <string name="profile_activity_you_shared">Je hebt %1$s gedeeld</string>

@@ -45,7 +45,7 @@ msgid " Sites will be ordered by popularity. Click on what you like and don't li
 msgstr " Sites worden gerangschikt op populariteit. Klik op wat je wel en niet leuk vindt."
 
 msgid " You can easily train individual stories as you read."
-msgstr " Je kunt afzonderlijke verhalen eenvoudig trainen terwijl je leest."
+msgstr " Je kunt afzonderlijke artikelen eenvoudig trainen terwijl je leest."
 
 msgid " You get a full refund, automatically."
 msgstr " Je krijgt automatisch het volledige bedrag terug."
@@ -90,7 +90,7 @@ msgstr " — Exacte woordgroep \"%(phrase)s\""
 #, python-format
 msgid " — Exactly %(count)s digit (years)"
 msgid_plural " — Exactly %(count)s digits (years)"
-msgstr[0] " — Precies %(count)s cijfer (jaren)"
+msgstr[0] " — Precies %(count)s cijfer (jaartallen)"
 msgstr[1] " — Precies %(count)s cijfers (jaartallen)"
 
 #, python-format
@@ -103,7 +103,7 @@ msgstr " — Vermeldingen (%(examples)s)"
 
 #, python-format
 msgid " — NOT containing \"%(text)s\""
-msgstr " — BEVAT NIET \"%(text)s\""
+msgstr " — bevat NIET \"%(text)s\""
 
 #, python-format
 msgid " — NOT containing word \"%(word)s\""
@@ -137,11 +137,11 @@ msgstr "$99/jaar"
 
 #, python-format
 msgid "%(account)s disconnected."
-msgstr "%(account)s verbinding verbroken."
+msgstr "%(account)s losgekoppeld."
 
 #, python-format
 msgid "%(badge)s Customize days of unreads"
-msgstr "%(badge)s Dagen met ongelezen berichten aanpassen"
+msgstr "%(badge)s Dagen met ongelezen artikelen aanpassen"
 
 #, python-format
 msgid "%(badge)s for up to %(count)s day"
@@ -151,7 +151,7 @@ msgstr[1] "%(badge)s maximaal %(count)s dagen"
 
 #, python-format
 msgid "%(category)s topics"
-msgstr "%(category)s onderwerpen"
+msgstr "Onderwerpen in %(category)s"
 
 #, python-format
 msgid "%(comments)s and %(replies)s"
@@ -177,7 +177,7 @@ msgstr[1] "%(count)s kanalen"
 msgid "%(count)s classifier has been deleted."
 msgid_plural "%(count)s classifiers have been deleted."
 msgstr[0] "%(count)s classifier is verwijderd."
-msgstr[1] "%(count)s classificaties verwijderd."
+msgstr[1] "%(count)s classifiers zijn verwijderd."
 
 #, python-format
 msgid "%(count)s classifier will be deleted"
@@ -218,8 +218,8 @@ msgstr[1] "%(count)s dagen geleden"
 #, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
-msgstr[0] "%(count)s vind-ik-niet-leuk"
-msgstr[1] "%(count)s dislikes"
+msgstr[0] "%(count)s keer niet leuk"
+msgstr[1] "%(count)s keer niet leuk"
 
 #, python-format
 msgid "%(count)s episode"
@@ -260,8 +260,8 @@ msgstr[1] "%(count)s afbeeldingsfilters"
 #, python-format
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
-msgstr[0] "%(count)s vind-ik-leuk"
-msgstr[1] "%(count)s likes"
+msgstr[0] "%(count)s keer leuk"
+msgstr[1] "%(count)s keer leuk"
 
 #, python-format
 msgid "%(count)s member"
@@ -357,7 +357,7 @@ msgstr[1] "%(count)s keer gedeeld"
 msgid "%(count)s shared story"
 msgid_plural "%(count)s shared stories"
 msgstr[0] "%(count)s gedeeld artikel"
-msgstr[1] "%(count)s gedeelde verhalen"
+msgstr[1] "%(count)s gedeelde artikelen"
 
 #, python-format
 msgid "%(count)s site"
@@ -381,7 +381,7 @@ msgstr[1] "%(count)s sites boven de limiet"
 msgid "%(count)s story"
 msgid_plural "%(count)s stories"
 msgstr[0] "%(count)s artikel"
-msgstr[1] "%(count)s verhalen"
+msgstr[1] "%(count)s artikelen"
 
 #, python-format
 msgid "%(count)s story has been deleted."
@@ -392,32 +392,32 @@ msgstr[1] "%(count)s artikelen zijn verwijderd."
 #, python-format
 msgid "%(count)s story in archive"
 msgid_plural "%(count)s stories in archive"
-msgstr[0] "%(count)s verhaal in archief"
+msgstr[0] "%(count)s artikel in archief"
 msgstr[1] "%(count)s artikelen in archief"
 
 #, python-format
 msgid "%(count)s story per day"
 msgid_plural "%(count)s stories per day"
 msgstr[0] "%(count)s artikel per dag"
-msgstr[1] "%(count)s verhalen per dag"
+msgstr[1] "%(count)s artikelen per dag"
 
 #, python-format
 msgid "%(count)s story per month"
 msgid_plural "%(count)s stories per month"
-msgstr[0] "%(count)s verhaal per maand"
+msgstr[0] "%(count)s artikel per maand"
 msgstr[1] "%(count)s artikelen per maand"
 
 #, python-format
 msgid "%(count)s story will be deleted"
 msgid_plural "%(count)s stories will be deleted"
-msgstr[0] "%(count)s verhaal wordt verwijderd"
+msgstr[0] "%(count)s artikel wordt verwijderd"
 msgstr[1] "%(count)s artikelen worden verwijderd"
 
 #, python-format
 msgid "%(count)s story/mo"
 msgid_plural "%(count)s stories/mo"
-msgstr[0] "%(count)s verhaal/mnd"
-msgstr[1] "%(count)s artikelen/maand"
+msgstr[0] "%(count)s artikel/mnd"
+msgstr[1] "%(count)s artikelen/mnd"
 
 #, python-format
 msgid "%(count)s story/month"
@@ -468,31 +468,31 @@ msgstr[1] "%(count)s jaar"
 #, python-format
 msgid "%(count)sd ago"
 msgid_plural "%(count)sd ago"
-msgstr[0] "%(count)sd geleden"
-msgstr[1] "%(count)sd geleden"
+msgstr[0] "%(count)s d geleden"
+msgstr[1] "%(count)s d geleden"
 
 #, python-format
 msgid "%(count)sh ago"
 msgid_plural "%(count)sh ago"
-msgstr[0] "%(count)su geleden"
+msgstr[0] "%(count)s u geleden"
 msgstr[1] "%(count)s uur geleden"
 
 #, python-format
 msgid "%(count)sm ago"
 msgid_plural "%(count)sm ago"
-msgstr[0] "%(count)sm geleden"
+msgstr[0] "%(count)s min. geleden"
 msgstr[1] "%(count)s min. geleden"
 
 #, python-format
 msgid "%(count)smo ago"
 msgid_plural "%(count)smo ago"
-msgstr[0] "%(count)s maanden geleden"
+msgstr[0] "%(count)s mnd geleden"
 msgstr[1] "%(count)s mnd geleden"
 
 #, python-format
 msgid "%(count)sw ago"
 msgid_plural "%(count)sw ago"
-msgstr[0] "%(count)sw geleden"
+msgstr[0] "%(count)s w geleden"
 msgstr[1] "%(count)s w geleden"
 
 #, python-format
@@ -593,23 +593,23 @@ msgstr "nog %(time)s"
 
 #, python-format
 msgid "%(topic)s Channels"
-msgstr "%(topic)s kanalen"
+msgstr "Kanalen over %(topic)s"
 
 #, python-format
 msgid "%(topic)s Newsletters"
-msgstr "%(topic)s nieuwsbrieven"
+msgstr "Nieuwsbrieven over %(topic)s"
 
 #, python-format
 msgid "%(topic)s Podcasts"
-msgstr "%(topic)s podcasts"
+msgstr "Podcasts over %(topic)s"
 
 #, python-format
 msgid "%(topic)s Sites"
-msgstr "%(topic)s sites"
+msgstr "Sites over %(topic)s"
 
 #, python-format
 msgid "%(topic)s Subreddits"
-msgstr "%(topic)s subreddits"
+msgstr "Subreddits over %(topic)s"
 
 #, python-format
 msgid "%(value_1)s Back"
@@ -637,7 +637,7 @@ msgstr "%(weekday)s, %(date)s %(time)s"
 
 #, python-format
 msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
-msgstr "%(weekday)s, %(month)s %(day)s, %(year)s"
+msgstr "%(weekday)s %(day)s %(month)s %(year)s"
 
 msgid "&laquo; Re-upload your sites"
 msgstr "&laquo; Je sites opnieuw uploaden"
@@ -655,7 +655,7 @@ msgid "(GMT) Greenwich Mean Time : Belfast"
 msgstr "(GMT) Greenwich Mean Time: Belfast"
 
 msgid "(GMT) Greenwich Mean Time : Dublin"
-msgstr "(GMT) Greenwich Mean Time : Dublin"
+msgstr "(GMT) Greenwich Mean Time: Dublin"
 
 msgid "(GMT) Greenwich Mean Time : Lisbon"
 msgstr "(GMT) Greenwich Mean Time: Lissabon"
@@ -793,7 +793,7 @@ msgid "(GMT+11:00) Solomon Is., New Caledonia"
 msgstr "(GMT+11:00) Salomonseilanden, Nieuw-Caledonië"
 
 msgid "(GMT+11:30) Norfolk Island"
-msgstr "(GMT+11:30) Norfolk Island"
+msgstr "(GMT+11:30) Norfolkeiland"
 
 msgid "(GMT+12:00) Anadyr, Kamchatka"
 msgstr "(GMT+12:00) Anadyr, Kamtsjatka"
@@ -931,7 +931,7 @@ msgstr "(binnenkort)"
 msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s extra site"
-msgstr[1] "+ %(value_1)s meer sites"
+msgstr[1] "+ %(value_1)s extra sites"
 
 msgid "+ New Folder..."
 msgstr "+ Nieuwe map..."
@@ -958,7 +958,7 @@ msgid "28 tools are available, covering reading, actions, training, and discover
 msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
 
 msgid "2x daily"
-msgstr "2× per dag"
+msgstr "2 keer per dag"
 
 msgid "3x daily"
 msgstr "3 keer per dag"
@@ -972,7 +972,7 @@ msgstr "5× snellere feedupdates"
 #, python-format
 msgid "< %(count)s story/month"
 msgid_plural "< %(count)s stories/month"
-msgstr[0] "< %(count)s verhaal/maand"
+msgstr[0] "< %(count)s artikel/maand"
 msgstr[1] "< %(count)s artikelen/maand"
 
 #, python-format
@@ -985,7 +985,7 @@ msgstr "< 30 artikelen/maand"
 #, python-format
 msgid "<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days"
 msgid_plural "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days"
-msgstr[0] "<b>%(value_1)s dag</b> &mdash; overschrijdt je plannimiet van %(value_3)s dagen"
+msgstr[0] "<b>%(value_1)s dag</b> &mdash; overschrijdt de limiet van je abonnement van %(value_3)s dagen"
 msgstr[1] "<b>%(value_1)s dagen</b> &mdash; overschrijdt de limiet van je abonnement van %(value_3)s dagen"
 
 #, python-format
@@ -995,17 +995,17 @@ msgstr "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no
 #, python-format
 msgid "<strong>%(count)s day</strong> left in your premium trial"
 msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
-msgstr[0] "Er zijn nog <strong>%(count)s dag</strong> van je premiumproefperiode over"
-msgstr[1] "<strong>%(count)s dagen</strong> resterend in je premiumproefperiode"
+msgstr[0] "Nog <strong>%(count)s dag</strong> over in je premiumproefperiode"
+msgstr[1] "Nog <strong>%(count)s dagen</strong> over in je premiumproefperiode"
 
 msgid "A blurblog of shared stories"
-msgstr "Een blurblog met gedeelde verhalen"
+msgstr "Een blurblog met gedeelde artikelen"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Een map met feeds die als één stroom worden gelezen"
 
 msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
-msgstr "Een verse selectie van de verhalen die NewsBlur lezers hebben gedeeld, elk uur gekozen."
+msgstr "Een verse selectie van de artikelen die NewsBlur-lezers hebben gedeeld, elk uur gekozen."
 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
@@ -1018,7 +1018,7 @@ msgid "A single like overrides any number of dislikes"
 msgstr "Eén like weegt zwaarder dan een willekeurig aantal dislikes"
 
 msgid "A single super dislike overrides everything"
-msgstr "Eén superafkeer overschrijft alles"
+msgstr "Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles"
 
 msgid "A story diff with additions and deletions"
 msgstr "Een vergelijking van een artikel met toevoegingen en verwijderingen"
@@ -1037,7 +1037,7 @@ msgid "AI finds the stories"
 msgstr "AI vindt de artikelen"
 
 msgid "AI-curated summary of your top stories"
-msgstr "Door AI samengestelde samenvatting van je topverhalen"
+msgstr "Door AI samengestelde samenvatting van je topartikelen"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
 msgstr "AI-gestuurde analyse van artikelen en gepersonaliseerde dagelijkse samenvattingen van je nieuwsfeeds."
@@ -1070,14 +1070,14 @@ msgstr "Toevoegen"
 #, python-format
 msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
-msgstr[0] "%(count)s artikellabel toevoegen"
-msgstr[1] "%(count)s verhaal-tags toevoegen"
+msgstr[0] "%(count)s artikeltag toevoegen"
+msgstr[1] "%(count)s artikeltags toevoegen"
 
 msgid "Add Folder"
 msgstr "Map toevoegen"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
-msgstr "Site toevoegen &amp; Verhaal delen Bookmarklet"
+msgstr "Bookmarklet voor site toevoegen &amp; artikel delen"
 
 msgid "Add a forwarding address"
 msgstr "Een doorstuuradres toevoegen"
@@ -1119,7 +1119,7 @@ msgid "Add site/folder"
 msgstr "Site/map toevoegen"
 
 msgid "Add story list"
-msgstr "Verhalenlijst toevoegen"
+msgstr "Artikellijst toevoegen"
 
 msgid "Add to Chrome"
 msgstr "Toevoegen aan Chrome"
@@ -1158,7 +1158,7 @@ msgstr "Middag"
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
 msgid_plural "Alert after %(value_1)s days without new stories"
-msgstr[0] "Waarschuw na %(value_1)s dag zonder nieuwe artikelen"
+msgstr[0] "Melding na %(value_1)s dag zonder nieuwe artikelen"
 msgstr[1] "Melding na %(value_1)s dagen zonder nieuwe artikelen"
 
 msgid "All"
@@ -1168,7 +1168,7 @@ msgid "All Categories"
 msgstr "Alle categorieën"
 
 msgid "All Categorized"
-msgstr "Alle categorieën"
+msgstr "Alles gecategoriseerd"
 
 msgid "All Done "
 msgstr "Helemaal klaar "
@@ -1183,7 +1183,7 @@ msgid "All Shared Stories"
 msgstr "Alle gedeelde artikelen"
 
 msgid "All Site Stories"
-msgstr "Alle artikelen van sites"
+msgstr "Artikelen van alle sites"
 
 msgid "All Stories"
 msgstr "Alle artikelen"
@@ -1225,7 +1225,7 @@ msgstr "Alfabetisch"
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
-msgstr[0] "Verwijder ook het bestaande archief van %(value_1)s van dit domein"
+msgstr[0] "Verwijder ook %(value_1)s bestaand archief van dit domein"
 msgstr[1] "Verwijder ook %(value_1)s bestaande archieven van dit domein"
 
 #, python-format
@@ -1241,7 +1241,7 @@ msgid "Always show Train/Save/Share buttons below stories"
 msgstr "Knoppen Trainen/Opslaan/Delen altijd onder artikelen weergeven"
 
 msgid "Always show unread counts on folders"
-msgstr "Toon altijd ongelezen aantallen bij mappen"
+msgstr "Altijd ongelezen aantallen tonen bij mappen"
 
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
@@ -1260,13 +1260,13 @@ msgid "An error occurred. Please try again."
 msgstr "Er is een fout opgetreden. Probeer het opnieuw."
 
 msgid "Analysis timed out. Please try again."
-msgstr "Analyse is verlopen. Probeer het opnieuw."
+msgstr "Time-out bij de analyse. Probeer het opnieuw."
 
 msgid "Analyzing images..."
 msgstr "Afbeeldingen analyseren..."
 
 msgid "Analyzing page to find story patterns..."
-msgstr "Pagina analyseren om verhaalpatronen te vinden..."
+msgstr "Pagina analyseren om artikelpatronen te vinden..."
 
 msgid "Analyzing saved stories..."
 msgstr "Opgeslagen artikelen analyseren..."
@@ -1277,7 +1277,7 @@ msgstr "Je archief wordt geanalyseerd..."
 #, python-format
 msgid "And you have %(count)s saved story."
 msgid_plural "And you have %(count)s saved stories."
-msgstr[0] "En je hebt %(count)s opgeslagen verhaal."
+msgstr[0] "En je hebt %(count)s opgeslagen artikel."
 msgstr[1] "En je hebt %(count)s opgeslagen artikelen."
 
 msgid "Android notifications"
@@ -1345,7 +1345,7 @@ msgid "April"
 msgstr "april"
 
 msgid "Archive"
-msgstr "Archief"
+msgstr "Archive"
 
 msgid "Archive Assistant"
 msgstr "Archiefassistent"
@@ -1357,7 +1357,7 @@ msgid "Are the apps open source?"
 msgstr "Zijn de apps open source?"
 
 msgid "Arrows"
-msgstr "Pijltjestoetsen"
+msgstr "Pijlen"
 
 msgid "As a reminder, use the intelligence slider to select a filter:"
 msgstr "Gebruik ter herinnering de intelligentieschuifregelaar om een filter te kiezen:"
@@ -1366,10 +1366,10 @@ msgid "Ask"
 msgstr "Vragen"
 
 msgid "Ask AI"
-msgstr "Vraag het aan AI"
+msgstr "Vraag AI"
 
 msgid "Ask AI & Daily Briefing"
-msgstr "AI vragen & Dagelijkse briefing"
+msgstr "Vraag AI & dagelijkse briefing"
 
 msgid "Ask AI about story"
 msgstr "AI vragen over artikel"
@@ -1384,7 +1384,7 @@ msgid "Ask AI questions about stories"
 msgstr "Stel AI vragen over artikelen"
 
 msgid "Ask AI with a choice of models"
-msgstr "Ask AI met keuze uit verschillende modellen"
+msgstr "Vraag AI met keuze uit verschillende modellen"
 
 msgid "Ask a custom question..."
 msgstr "Stel een aangepaste vraag..."
@@ -1446,7 +1446,7 @@ msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Automatisch thema volgt het schema voor lichte en donkere weergave van je systeem."
 
 msgid "Auto-follow<br>my friends"
-msgstr "Automatisch volgen<br>mijn vrienden"
+msgstr "Mijn vrienden<br>automatisch volgen"
 
 msgid "Auto-generate"
 msgstr "Automatisch genereren"
@@ -1455,7 +1455,7 @@ msgid "Auto-play"
 msgstr "Automatisch afspelen"
 
 msgid "Auto-select top sites"
-msgstr "Beste sites automatisch selecteren"
+msgstr "Populairste sites automatisch selecteren"
 
 msgid "Auto-selected by popularity"
 msgstr "Automatisch geselecteerd op populariteit"
@@ -1464,7 +1464,7 @@ msgid "Automatically archive every page you visit to search with AI later."
 msgstr "Archiveer automatisch elke pagina die je bezoekt, zodat je er later met AI in kunt zoeken."
 
 msgid "Automatically generate briefings on schedule"
-msgstr "Automatisch overzichten volgens schema genereren"
+msgstr "Automatisch briefings volgens schema genereren"
 
 msgid "Automatically play next item in queue"
 msgstr "Volgend item in de wachtrij automatisch afspelen"
@@ -1579,7 +1579,7 @@ msgid "Briefing Settings"
 msgstr "Briefinginstellingen"
 
 msgid "Briefing generation timed out. Please try again."
-msgstr "Het genereren van de briefing is verlopen. Probeer het opnieuw."
+msgstr "Het genereren van de briefing duurde te lang. Probeer het opnieuw."
 
 msgid "Briefing length"
 msgstr "Lengte van de briefing"
@@ -1597,7 +1597,7 @@ msgid "Browse domains from your archives and click to block them."
 msgstr "Bekijk domeinen uit je archieven en klik erop om ze te blokkeren."
 
 msgid "Browse domains from your archives. Click on a domain to block it from future archiving."
-msgstr "Blader door domeinen in je archieven. Klik op een domein om het blokkeren van toekomstige archivering."
+msgstr "Blader door domeinen in je archieven. Klik op een domein om het uit te sluiten van toekomstige archivering."
 
 msgid "Browse goodies & integrations"
 msgstr "Bekijk extra's en integraties"
@@ -1623,10 +1623,10 @@ msgid "Browser Extensions"
 msgstr "Browserextensies"
 
 msgid "Bullet points"
-msgstr "Opsommingstekens"
+msgstr "Opsomming"
 
 msgid "Bullets"
-msgstr "Opsommingstekens"
+msgstr "Opsomming"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1639,7 +1639,7 @@ msgid "CLI access requires Premium Archive or Premium Pro."
 msgstr "Voor CLI-toegang is Premium Archive of Premium Pro vereist."
 
 msgid "Can I search saved stories?"
-msgstr "Kan ik opgeslagen verhalen doorzoeken?"
+msgstr "Kan ik opgeslagen artikelen doorzoeken?"
 
 msgid "Can I search the archive?"
 msgstr "Kan ik het archief doorzoeken?"
@@ -1692,8 +1692,8 @@ msgstr "Categorieën &amp; tags"
 #, python-format
 msgid "Categorize %(count)s Uncategorized"
 msgid_plural "Categorize %(count)s Uncategorized"
-msgstr[0] "Categoriseer %(count)s ongecategoriseerd"
-msgstr[1] "Categoriseer %(count)s niet-gecategoriseerde"
+msgstr[0] "%(count)s ongecategoriseerd artikel categoriseren"
+msgstr[1] "%(count)s ongecategoriseerde artikelen categoriseren"
 
 msgid "Categorizing..."
 msgstr "Categoriseren..."
@@ -1766,7 +1766,7 @@ msgid "Choose Your sites"
 msgstr "Kies je sites"
 
 msgid "Choose a story pattern"
-msgstr "Kies een verhaalpatroon"
+msgstr "Kies een artikelpatroon"
 
 msgid "Choose another language"
 msgstr "Kies een andere taal"
@@ -1784,7 +1784,7 @@ msgid "Choose sites"
 msgstr "Sites kiezen"
 
 msgid "Choose when stories are marked as read"
-msgstr "Kies wanneer verhalen als gelezen worden gemarkeerd"
+msgstr "Kies wanneer artikelen als gelezen worden gemarkeerd"
 
 msgid "Choose which AI model writes your briefing"
 msgstr "Kies welk AI-model je briefing schrijft"
@@ -1811,11 +1811,11 @@ msgid "Choose your sites"
 msgstr "Kies je sites"
 
 msgid "Classifier filter scope"
-msgstr "Filterbereik van de classificatie"
+msgstr "Filterbereik van de classifier"
 
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
-msgstr "De scope van de classificatie vereist %(tier_link)s"
+msgstr "Het bereik van de classifier vereist %(tier_link)s"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -1832,10 +1832,10 @@ msgid "Clear all filters"
 msgstr "Alle filters wissen"
 
 msgid "Clear all overrides"
-msgstr "Alle overschrijvingen wissen"
+msgstr "Alle uitzonderingen wissen"
 
 msgid "Clear classifier filter"
-msgstr "Classificatiefilter wissen"
+msgstr "Classifierfilter wissen"
 
 msgid "Clear custom range"
 msgstr "Aangepast bereik wissen"
@@ -1856,7 +1856,7 @@ msgstr "Zoekopdracht wissen"
 msgid "Cleared %(count)s override."
 msgid_plural "Cleared %(count)s overrides."
 msgstr[0] "%(count)s uitzondering gewist."
-msgstr[1] "%(count)s overschrijvingen gewist."
+msgstr[1] "%(count)s uitzonderingen gewist."
 
 msgid "Click any source card on a clustered story to read that version instead."
 msgstr "Klik op een bronkaart bij een gegroepeerd artikel om die versie te lezen."
@@ -1880,13 +1880,13 @@ msgid "Cluster duplicate stories across all your feeds"
 msgstr "Dubbele artikelen in al je feeds groeperen"
 
 msgid "Cluster preview:"
-msgstr "Cluster voorbeeld:"
+msgstr "Clustervoorbeeld:"
 
 msgid "Cluster related stories"
 msgstr "Gerelateerde artikelen groeperen"
 
 msgid "Clustered stories in the titles view"
-msgstr "Gegroepeerde verhalen in de titelweergave"
+msgstr "Gegroepeerde artikelen in de titelweergave"
 
 msgid "Collapse All Folders"
 msgstr "Alle mappen samenvouwen"
@@ -1898,7 +1898,7 @@ msgid "Collapse all"
 msgstr "Alles samenvouwen"
 
 msgid "Collapse story"
-msgstr "Verhaal inklappen"
+msgstr "Artikel inklappen"
 
 msgid "Collapsed"
 msgstr "Ingeklapt"
@@ -1913,13 +1913,13 @@ msgid "Comfortable"
 msgstr "Comfortabel"
 
 msgid "Comfortable spacing: less dense"
-msgstr "Comfortabele tussenruimte: minder dicht op elkaar"
+msgstr "Comfortabele afstand: minder dicht op elkaar"
 
 msgid "Commands output JSON you can pipe straight to jq."
 msgstr "Opdrachten geven JSON als uitvoer, die je rechtstreeks kunt doorsturen naar jq."
 
 msgid "Comment"
-msgstr "Reageren"
+msgstr "Opmerking"
 
 msgid "Comment on stories"
 msgstr "Reageren op artikelen"
@@ -2044,7 +2044,7 @@ msgid "Creative"
 msgstr "Creatief"
 
 msgid "Credit"
-msgstr "Credit"
+msgstr "Tegoed"
 
 msgid "Cursors"
 msgstr "Cursors"
@@ -2074,7 +2074,7 @@ msgid "Custom URLs"
 msgstr "Aangepaste URL's"
 
 msgid "Custom date range"
-msgstr "Aangepaste datumbereik"
+msgstr "Aangepast datumbereik"
 
 msgid "Custom icon"
 msgstr "Aangepast pictogram"
@@ -2083,7 +2083,7 @@ msgid "Customizable writing style and length"
 msgstr "Aanpasbare schrijfstijl en lengte"
 
 msgid "Customize auto-read by site or folder"
-msgstr "Automatisch lezen aanpassen per site of map"
+msgstr "Automatisch als gelezen markeren per site of map aanpassen"
 
 msgid "Customize briefing sections and delivery schedule"
 msgstr "Briefingsecties en bezorgschema aanpassen"
@@ -2107,12 +2107,12 @@ msgid ""
 "Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
 "stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
 msgstr ""
-"Dagelijkse briefings zijn een functie van het Premium-archief. Met je abonnement kun je een voorbeeld "
-"genereren met de eerste 3 artikelen van elke briefing. Upgrade voor alle artikelen en automatische "
-"briefings volgens je planning."
+"Dagelijkse briefings zijn een functie van Premium Archive. Met je abonnement kun je een voorbeeld genereren"
+" met de eerste 3 artikelen van elke briefing. Upgrade voor alle artikelen en automatische briefings volgens"
+" je planning."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "Dagelijkse briefing met je belangrijkste verhalen en trefwoorden"
+msgstr "Dagelijkse briefing met je belangrijkste artikelen en trefwoorden"
 
 msgid "Daily distribution of stories"
 msgstr "Dagelijkse verdeling van artikelen"
@@ -2176,7 +2176,7 @@ msgid "Delete It. It Just Won't Work!"
 msgstr "Verwijderen. Het gaat gewoon niet werken!"
 
 msgid "Delete Share"
-msgstr "Deel verwijderen"
+msgstr "Delen ongedaan maken"
 
 msgid "Delete Tag"
 msgstr "Tag verwijderen"
@@ -2188,7 +2188,7 @@ msgid "Delete my account"
 msgstr "Mijn account verwijderen"
 
 msgid "Delete my intelligence training classifiers"
-msgstr "Mijn intelligentietrainingsclassificaties verwijderen"
+msgstr "Mijn classifiers voor intelligentietraining verwijderen"
 
 msgid "Delete my saved stories"
 msgstr "Mijn opgeslagen artikelen verwijderen"
@@ -2223,7 +2223,7 @@ msgstr ""
 "kunt uitlichten of verbergen."
 
 msgid "Describe what to focus or hide"
-msgstr "Beschrijf waarop je wilt focussen of wat je wilt verbergen"
+msgstr "Beschrijf wat je wilt uitlichten of verbergen"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen van elk artikel op basis van je prompt."
@@ -2235,13 +2235,13 @@ msgid "Devices"
 msgstr "Apparaten"
 
 msgid "Disable daily briefings"
-msgstr "Dagelijkse overzichten uitschakelen"
+msgstr "Dagelijkse briefings uitschakelen"
 
 msgid "Disable social features"
 msgstr "Sociale functies uitschakelen"
 
 msgid "Disable story clustering"
-msgstr "Verhaalgroepering uitschakelen"
+msgstr "Groeperen van artikelen uitschakelen"
 
 msgid "Disable the highlighter"
 msgstr "Markeerstift uitschakelen"
@@ -2297,13 +2297,13 @@ msgid "Dislike"
 msgstr "Vind ik niet leuk"
 
 msgid "Dislike "
-msgstr "Niet leuk vinden "
+msgstr "Vind ik niet leuk "
 
 msgid "Dislike matching stories"
-msgstr "Overeenkomstige artikelen afkeuren"
+msgstr "Overeenkomende artikelen niet leuk vinden"
 
 msgid "Dislikes"
-msgstr "Dislikes"
+msgstr "Niet leuk"
 
 msgid "Dismiss"
 msgstr "Sluiten"
@@ -2315,7 +2315,7 @@ msgid "Do the apps work offline?"
 msgstr "Werken de apps offline?"
 
 msgid "Does Ask AI work with audio and video?"
-msgstr "Werkt Ask AI met audio en video?"
+msgstr "Werkt Vraag AI met audio en video?"
 
 msgid "Does training work across all my feeds?"
 msgstr "Werkt training voor al mijn feeds?"
@@ -2349,7 +2349,7 @@ msgid "Double-clicking a site"
 msgstr "Dubbelklikken op een site"
 
 msgid "Double-clicking an unread count"
-msgstr "Dubbelklikken op een aantal ongelezen artikelen"
+msgstr "Dubbelklikken op het aantal ongelezen artikelen"
 
 msgid "Download"
 msgstr "Downloaden"
@@ -2386,7 +2386,7 @@ msgid "Drag to reorder priority. Only shown when matching stories are found."
 msgstr "Sleep om de prioriteit aan te passen. Alleen weergegeven als er overeenkomende artikelen zijn gevonden."
 
 msgid "Duplicates fold underneath the highest-scoring version in your river"
-msgstr "Dubbele artikelen worden onder de versie met de hoogste score in je rivier samengevoegd"
+msgstr "Dubbele artikelen worden onder de versie met de hoogste score in je nieuwsstroom samengevoegd"
 
 msgid "EXCLUDED FROM MERGES"
 msgstr "UITGESLOTEN VAN SAMENVOEGINGEN"
@@ -2398,7 +2398,7 @@ msgid "Each newsletter sender becomes its own feed"
 msgstr "Elke nieuwsbriefafzender wordt een eigen feed"
 
 msgid "Each selected split needs a name and at least one story"
-msgstr "Elke geselecteerde splitsing moet een naam en minstens één verhaal hebben"
+msgstr "Elke geselecteerde splitsing moet een naam en minstens één artikel hebben"
 
 msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
 msgstr "Elke afzender krijgt een eigen feed, zodat je nieuwsbrieven die te lang blijven komen kunt wegtrainen."
@@ -2438,7 +2438,7 @@ msgid "Email me 3 days before my subscription renews"
 msgstr "Stuur me 3 dagen voordat mijn abonnement wordt verlengd een e-mail"
 
 msgid "Email me replies, re-shares, new followers, and account notices"
-msgstr "Stuur me een e-mail over reacties, gedeelde berichten, nieuwe volgers en accountmeldingen"
+msgstr "Stuur me een e-mail over reacties, opnieuw gedeelde artikelen, nieuwe volgers en accountmeldingen"
 
 msgid "Email notifications"
 msgstr "E-mailmeldingen"
@@ -2489,7 +2489,7 @@ msgid "Enable social features"
 msgstr "Sociale functies inschakelen"
 
 msgid "Enable story clustering"
-msgstr "Verhaalclustering inschakelen"
+msgstr "Groeperen van artikelen inschakelen"
 
 msgid "Enable the sites you want"
 msgstr "Schakel de gewenste sites in"
@@ -2510,7 +2510,7 @@ msgid "Enter author pattern above"
 msgstr "Voer hierboven het auteurspatroon in"
 
 msgid "Enter author pattern..."
-msgstr "Voer een auteurs patroon in..."
+msgstr "Voer een auteurspatroon in..."
 
 msgid "Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content."
 msgstr ""
@@ -2530,7 +2530,7 @@ msgid "Erase your saved stories"
 msgstr "Verwijder je opgeslagen artikelen"
 
 msgid "Erase your shared stories"
-msgstr "Je gedeelde verhalen wissen"
+msgstr "Je gedeelde artikelen wissen"
 
 msgid "Erase yourself"
 msgstr "Je gegevens wissen"
@@ -2548,7 +2548,7 @@ msgid "Error - please try again"
 msgstr "Fout - probeer het opnieuw"
 
 msgid "Error Loading Classifiers"
-msgstr "Classificaties laden mislukt"
+msgstr "Classifiers laden mislukt"
 
 msgid "Error saving"
 msgstr "Fout bij opslaan"
@@ -2580,7 +2580,7 @@ msgid "Every new story is archived permanently"
 msgstr "Elk nieuw artikel wordt permanent gearchiveerd"
 
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
-msgstr "Elke tag voor bewaarde artikelen heeft een eigen RSS-feed, ideaal om te koppelen aan IFTTT of Zapier."
+msgstr "Elke tag voor opgeslagen artikelen heeft een eigen RSS-feed, ideaal om te koppelen aan IFTTT of Zapier."
 
 msgid "Every story archived and searchable forever"
 msgstr "Elk artikel voor altijd gearchiveerd en doorzoekbaar"
@@ -2604,7 +2604,7 @@ msgid "Everything has been deleted."
 msgstr "Alles is verwijderd."
 
 msgid "Everything in Archive, plus:"
-msgstr "Alles uit Archief, plus:"
+msgstr "Alles van Archive, plus:"
 
 msgid "Everything in Free, plus:"
 msgstr "Alles van Free, plus:"
@@ -2617,7 +2617,7 @@ msgid ""
 " train classifiers. Pipe to jq or script your workflows."
 msgstr ""
 "Alles wat de MCP-server kan, vanaf je terminal. Lees feeds, zoek artikelen, beheer abonnementen en train "
-"classificatiemodellen. Gebruik jq of script je workflows."
+"classifiers. Gebruik jq of script je workflows."
 
 msgid "Exact phrase"
 msgstr "Exacte woordgroep"
@@ -2641,13 +2641,13 @@ msgid "Expand All Folders"
 msgstr "Alle mappen uitvouwen"
 
 msgid "Expand Folder"
-msgstr "Map uitvouwen"
+msgstr "Map uitklappen"
 
 msgid "Expand all"
 msgstr "Alles uitklappen"
 
 msgid "Expand story"
-msgstr "Verhaal uitklappen"
+msgstr "Artikel uitklappen"
 
 msgid "Expanded"
 msgstr "Uitgevouwen"
@@ -2781,7 +2781,7 @@ msgid "Feed Push"
 msgstr "Feed Push"
 
 msgid "Feed opens:"
-msgstr "Feed wordt geopend:"
+msgstr "Keer geopend:"
 
 msgid "Feed: "
 msgstr "Feed: "
@@ -2810,7 +2810,7 @@ msgstr "Ophaalfout: %(error)s"
 
 #, python-format
 msgid "Fetched every %(value_1)s"
-msgstr "Opgehaald elke %(value_1)s"
+msgstr "Om de %(value_1)s opgehaald"
 
 msgid "Fetching page..."
 msgstr "Pagina ophalen..."
@@ -2819,10 +2819,10 @@ msgid "Fetching stories"
 msgstr "Artikelen ophalen"
 
 msgid "Fetching stories..."
-msgstr "Verhalen ophalen..."
+msgstr "Artikelen ophalen..."
 
 msgid "Fetching story"
-msgstr "Verhaal ophalen"
+msgstr "Artikel ophalen"
 
 msgid "Fetching text"
 msgstr "Tekst ophalen"
@@ -2843,7 +2843,7 @@ msgid "Filter by date range"
 msgstr "Filteren op datumbereik"
 
 msgid "Filter by site or classifier..."
-msgstr "Filteren op site of classificatie..."
+msgstr "Filteren op site of classifier..."
 
 msgid "Filter channels..."
 msgstr "Kanalen filteren..."
@@ -2855,9 +2855,7 @@ msgid "Filter newsletters..."
 msgstr "Nieuwsbrieven filteren..."
 
 msgid "Filter notifications to focus-only stories so your training decides what pings you."
-msgstr ""
-"Filter meldingen zodat je alleen artikelen ziet die bij je interesses passen. Je training bepaalt welke "
-"meldingen je krijgt."
+msgstr "Filter meldingen op focusartikelen, zodat je training bepaalt waarover je een melding krijgt."
 
 msgid "Filter podcasts..."
 msgstr "Podcasts filteren..."
@@ -2987,10 +2985,10 @@ msgid "Follow up to 64 sites"
 msgstr "Volg maximaal 64 sites"
 
 msgid "Follow up..."
-msgstr "Opvolgen..."
+msgstr "Stel een vervolgvraag..."
 
 msgid "Follow-ups"
-msgstr "Vervolgreacties"
+msgstr "Vervolgartikelen"
 
 msgid "Followers"
 msgstr "Volgers"
@@ -2999,7 +2997,7 @@ msgid "Following"
 msgstr "Volgend"
 
 msgid "Following Me"
-msgstr "Volgt mij"
+msgstr "Mijn volgers"
 
 msgid "Following..."
 msgstr "Volgen..."
@@ -3040,7 +3038,7 @@ msgstr "Doorstuur-e-mailadres"
 #, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
-msgstr[0] "%(count)s patroon gevonden. Selecteer het patroon dat het beste past bij de verhalen die je wilt."
+msgstr[0] "%(count)s patroon gevonden. Selecteer het patroon dat het best overeenkomt met de artikelen die je zoekt."
 msgstr[1] "%(count)s patronen gevonden. Selecteer het patroon dat het best overeenkomt met de artikelen die je zoekt."
 
 msgid "Found in the Account dialog"
@@ -3129,14 +3127,14 @@ msgid "From"
 msgstr "Van"
 
 msgid "From infrequent sites"
-msgstr "Van sites die je minder vaak bezoekt"
+msgstr "Van weinig actieve sites"
 
 msgid "Full"
 msgstr "Volledig"
 
 #, python-format
 msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
-msgstr "Antwoorden van de volledige Archiefassistent zijn een %(link_start)spremiumarchiefunctie%(link_end)s."
+msgstr "Antwoorden van de volledige Archiefassistent zijn een %(link_start)sPremium Archive-functie%(link_end)s."
 
 msgid "Full Refund"
 msgstr "Volledige terugbetaling"
@@ -3154,7 +3152,7 @@ msgid "Full width"
 msgstr "Volledige breedte"
 
 msgid "Full-Text Search"
-msgstr "Volledige-tekstzoekopdracht"
+msgstr "Zoeken in volledige tekst"
 
 msgid "Full-text search across all stories"
 msgstr "Zoeken in de volledige tekst van alle artikelen"
@@ -3217,7 +3215,7 @@ msgid "Get a summary of your top stories, delivered on your schedule."
 msgstr "Ontvang een overzicht van je belangrijkste artikelen, op een moment dat jou uitkomt."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
-msgstr "Ontvang dagelijks een door AI samengestelde briefing met topverhalen en lange artikelen"
+msgstr "Ontvang dagelijks een door AI samengestelde briefing met topartikelen en lange artikelen"
 
 msgid "Get more from NewsBlur"
 msgstr "Haal meer uit NewsBlur"
@@ -3270,7 +3268,7 @@ msgid "Global"
 msgstr "Wereldwijd"
 
 msgid "Global Classifiers"
-msgstr "Algemene classificaties"
+msgstr "Globale classifiers"
 
 msgid "Global Shared Stories"
 msgstr "Wereldwijd gedeelde artikelen"
@@ -3286,14 +3284,14 @@ msgstr ""
 "bevestigingsmail in de map ‘Nieuwsbrieven’."
 
 msgid "Go Premium — $36/year"
-msgstr "Neem Premium — $36/jaar"
+msgstr "Upgrade naar Premium — $36/jaar"
 
 #, python-format
 msgid "Go back to %(breadcrumb)s"
 msgstr "Terug naar %(breadcrumb)s"
 
 msgid "Good Reads"
-msgstr "Goede artikelen"
+msgstr "Goede leestips"
 
 msgid "Good Reads on NewsBlur"
 msgstr "Goede leestips op NewsBlur"
@@ -3320,13 +3318,13 @@ msgid "Grid view"
 msgstr "Rasterweergave"
 
 msgid "Group duplicate stories across your feeds"
-msgstr "Groepeer dubbele verhalen uit je feeds"
+msgstr "Groepeer dubbele artikelen uit je feeds"
 
 msgid "Group stories that share:"
 msgstr "Artikelen groeperen die het volgende delen:"
 
 msgid "Groups similar stories from different feeds"
-msgstr "Groepeert vergelijkbare verhalen uit verschillende feeds"
+msgstr "Groepeert vergelijkbare artikelen uit verschillende feeds"
 
 msgid "Hand-picked shares from across NewsBlur"
 msgstr "Met zorg geselecteerde gedeelde artikelen uit heel NewsBlur"
@@ -3359,7 +3357,7 @@ msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Alle functies voor delen, reacties en Blurblog verbergen"
 
 msgid "Hide discover sites popover"
-msgstr "Pop-over met ontdekkingssites verbergen"
+msgstr "Pop-over ‘Sites ontdekken’ verbergen"
 
 msgid "Hide history"
 msgstr "Geschiedenis verbergen"
@@ -3386,10 +3384,10 @@ msgid "History"
 msgstr "Geschiedenis"
 
 msgid "Home"
-msgstr "Startpagina"
+msgstr "Wonen"
 
 msgid "Home-screen widgets show unread counts and the latest stories at a glance."
-msgstr "Widgets op het startscherm tonen in één oogopslag het aantal ongelezen artikelen en de nieuwste berichten."
+msgstr "Widgets op het startscherm tonen in één oogopslag het aantal ongelezen artikelen en de nieuwste artikelen."
 
 msgid "How Gifting Works"
 msgstr "Zo werkt schenken"
@@ -3434,7 +3432,7 @@ msgstr ""
 
 #, python-format
 msgid "If you went %(premium_link)s,<br>this site would update every"
-msgstr "Als je %(premium_link)s ging,<br>zou deze site elke keer worden bijgewerkt"
+msgstr "Als je overstapt op %(premium_link)s,<br>wordt deze site bijgewerkt om de"
 
 msgid "Ignore"
 msgstr "Negeren"
@@ -3483,7 +3481,7 @@ msgstr[1] "Over %(count)s dagen eindigt je Premium-proefperiode en keer je terug
 
 #, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
-msgstr "Ga in Gmail naar %(settings_menu)s en klik op %(add_button)s. Voeg je aangepaste e-mailadres NewsBlur toe."
+msgstr "Ga in Gmail naar %(settings_menu)s en klik op %(add_button)s. Voeg je aangepaste NewsBlur-e-mailadres toe."
 
 msgid "In NewsBlur"
 msgstr "In NewsBlur"
@@ -3531,10 +3529,10 @@ msgid "Indexing..."
 msgstr "Indexeren..."
 
 msgid "Infrequent Site Stories"
-msgstr "Artikelen van minder actieve sites"
+msgstr "Artikelen van weinig actieve sites"
 
 msgid "Infrequent stories per month"
-msgstr "Onregelmatige artikelen per maand"
+msgstr "Grens voor weinig actieve sites"
 
 msgid "Insta-fetch stories"
 msgstr "Artikelen direct ophalen"
@@ -3620,7 +3618,7 @@ msgid "Keep right-side buttons visible while reading"
 msgstr "Knoppen aan de rechterkant zichtbaar houden tijdens het lezen"
 
 msgid "Keep stories separate"
-msgstr "Verhalen gescheiden houden"
+msgstr "Artikelen gescheiden houden"
 
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Blijf op de hoogte van NewsBlur"
@@ -3700,10 +3698,10 @@ msgid "Like "
 msgstr "Vind ik leuk "
 
 msgid "Like matching stories"
-msgstr "Bij overeenkomende verhalen vind ik dit leuk"
+msgstr "Overeenkomende artikelen leuk vinden"
 
 msgid "Likes"
-msgstr "Vind-ik-leuks"
+msgstr "Leuk"
 
 msgid "Link"
 msgstr "Link"
@@ -3730,10 +3728,10 @@ msgid "Loading Training..."
 msgstr "Training laden..."
 
 msgid "Loading checkout..."
-msgstr "Afrekenen laden..."
+msgstr "Betaalpagina laden..."
 
 msgid "Loading classifiers..."
-msgstr "Classificaties laden..."
+msgstr "Classifiers laden..."
 
 msgid "Loading feeds..."
 msgstr "Feeds laden..."
@@ -3757,7 +3755,7 @@ msgid "Locked"
 msgstr "Vergrendeld"
 
 msgid "Log In or Sign Up"
-msgstr "Inloggen of aanmelden"
+msgstr "Inloggen of registreren"
 
 msgid "Logout"
 msgstr "Uitloggen"
@@ -3769,7 +3767,7 @@ msgid "Long Reads on NewsBlur"
 msgstr "Lange artikelen op NewsBlur"
 
 msgid "Long reads for later"
-msgstr "Uitgebreide artikelen voor later"
+msgstr "Lange artikelen voor later"
 
 msgid "Longer articles worth setting time aside for"
 msgstr "Langere artikelen waar je tijd voor wilt vrijmaken"
@@ -3815,20 +3813,20 @@ msgid ""
 "Many feeds only include a summary. Text view extracts the full story from the original website and displays"
 " it right in NewsBlur, with clean formatting and no clutter."
 msgstr ""
-"Veel feeds bevatten alleen een samenvatting. De tekstweergave haalt het volledige verhaal op van de "
+"Veel feeds bevatten alleen een samenvatting. De tekstweergave haalt het volledige artikel op van de "
 "oorspronkelijke website en toont het direct in NewsBlur, met nette opmaak en zonder rommel."
 
 msgid "March"
-msgstr "Maart"
+msgstr "maart"
 
 #, python-format
 msgid "Mark %(count)s story as read?"
 msgid_plural "Mark %(count)s stories as read?"
-msgstr[0] "%(count)s verhaal als gelezen markeren?"
-msgstr[1] "%(count)s verhalen als gelezen markeren?"
+msgstr[0] "%(count)s artikel als gelezen markeren?"
+msgstr[1] "%(count)s artikelen als gelezen markeren?"
 
 msgid "Mark <b>every story</b> as read"
-msgstr "Markeer <b>elk artikel</b> als gelezen"
+msgstr "<b>Elk artikel</b> als gelezen markeren"
 
 msgid "Mark Everything Read / Unread"
 msgstr "Alles als gelezen / ongelezen markeren"
@@ -3854,8 +3852,8 @@ msgstr "Alles als gelezen markeren?"
 #, python-format
 msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
 msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
-msgstr[0] "Alle verhalen ouder dan <b>%(value_1)s dag</b> als gelezen markeren"
-msgstr[1] "Markeer alle verhalen ouder dan <b>%(value_1)s dagen</b> als gelezen"
+msgstr[0] "Alle artikelen ouder dan <b>%(value_1)s dag</b> als gelezen markeren"
+msgstr[1] "Alle artikelen ouder dan <b>%(value_1)s dagen</b> als gelezen markeren"
 
 msgid "Mark as read"
 msgstr "Markeren als gelezen"
@@ -3867,7 +3865,7 @@ msgid "Mark as unread"
 msgstr "Als ongelezen markeren"
 
 msgid "Mark below stories read"
-msgstr "Markeer onderstaande artikelen als gelezen"
+msgstr "Artikelen hieronder als gelezen markeren"
 
 msgid "Mark duplicates as read"
 msgstr "Dubbele items als gelezen markeren"
@@ -3890,11 +3888,11 @@ msgstr "Oudere artikelen als gelezen markeren"
 #, python-format
 msgid "Mark older than %(count)s day as read?"
 msgid_plural "Mark older than %(count)s days as read?"
-msgstr[0] "Markeer als gelezen als ouder dan %(count)s dag?"
+msgstr[0] "Ouder dan %(count)s dag als gelezen markeren?"
 msgstr[1] "Ouder dan %(count)s dagen als gelezen markeren?"
 
 msgid "Mark stories as read when scrolled past"
-msgstr "Verhalen als gelezen markeren zodra je er voorbij scrolt"
+msgstr "Artikelen als gelezen markeren zodra je er voorbij scrolt"
 
 msgid "Mark stories as unread"
 msgstr "Artikelen als ongelezen markeren"
@@ -3902,7 +3900,7 @@ msgstr "Artikelen als ongelezen markeren"
 #, python-format
 msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
-msgstr[0] "Markeer artikelen van de afgelopen <b>%(value_1)s dag</b> als ongelezen"
+msgstr[0] "Artikelen van de afgelopen <b>%(value_1)s dag</b> als ongelezen markeren"
 msgstr[1] "Artikelen van de afgelopen <b>%(value_1)s dagen</b> als ongelezen markeren"
 
 msgid "Mark stories read on scroll"
@@ -4013,7 +4011,7 @@ msgid "Morning + Evening"
 msgstr "Ochtend + avond"
 
 msgid "Most subscribed-to feeds this week"
-msgstr "Meest geabonneerde feeds deze week"
+msgstr "Feeds met de meeste nieuwe abonnees deze week"
 
 msgid "Most used at top, then alphabetical"
 msgstr "Meest gebruikt bovenaan, daarna alfabetisch"
@@ -4045,7 +4043,7 @@ msgstr "Dempen"
 #, python-format
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
-msgstr[0] "Dempen: %(count)s site"
+msgstr[0] "%(count)s site dempen"
 msgstr[1] "%(count)s sites dempen"
 
 msgid "Mute Sites"
@@ -4096,19 +4094,19 @@ msgid "Natural Language Image Classifier"
 msgstr "Beeldclassifier voor natuurlijke taal"
 
 msgid "Natural Language Text Classifier"
-msgstr "Classificator voor natuurlijke taal"
+msgstr "Tekstclassifier in natuurlijke taal"
 
 msgid "Natural language classifier billing"
 msgstr "Facturering van de classifier voor natuurlijke taal"
 
 msgid "Natural language classifiers are paused until next billing cycle. "
-msgstr "Classificaties in natuurlijke taal zijn gepauzeerd tot de volgende factureringscyclus. "
+msgstr "Classifiers in natuurlijke taal zijn gepauzeerd tot de volgende factureringscyclus. "
 
 msgid "Natural language classifiers are using your instance's API keys."
-msgstr "Classificaties in natuurlijke taal gebruiken de API-sleutels van je instantie."
+msgstr "Classifiers in natuurlijke taal gebruiken de API-sleutels van je instantie."
 
 msgid "Natural language text and image classifiers"
-msgstr "Classificaties voor natuurlijke taal en afbeeldingen"
+msgstr "Classifiers in natuurlijke taal voor tekst en afbeeldingen"
 
 msgid "Nature"
 msgstr "Natuur"
@@ -4120,8 +4118,8 @@ msgid ""
 "Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
 "train, all from the keyboard."
 msgstr ""
-"Navigeer overal zonder de muis aan te raken. Open feeds, blader door verhalen, markeer ze als gelezen, sla "
-"ze op, deel ze en train, allemaal met het toetsenbord."
+"Navigeer overal zonder de muis aan te raken. Open feeds, blader door artikelen, markeer ze als gelezen, sla"
+" ze op, deel ze en train, allemaal met het toetsenbord."
 
 msgid "Need at least 2 categories to merge"
 msgstr "Je hebt minstens 2 categorieën nodig om samen te voegen"
@@ -4179,7 +4177,7 @@ msgid "New to me"
 msgstr "Nieuw voor mij"
 
 msgid "Newer:"
-msgstr "Nieuwer:"
+msgstr "Nieuwer dan:"
 
 msgid "Newest"
 msgstr "Nieuwste"
@@ -4188,7 +4186,7 @@ msgid "Newest first"
 msgstr "Nieuwste eerst"
 
 msgid "NewsBlur checks for changes and delivers new stories to your feed."
-msgstr "NewsBlur controleert op wijzigingen en bezorgt nieuwe verhalen in je feed."
+msgstr "NewsBlur controleert op wijzigingen en bezorgt nieuwe artikelen in je feed."
 
 msgid "NewsBlur connected to other services"
 msgstr "NewsBlur gekoppeld aan andere diensten"
@@ -4251,7 +4249,7 @@ msgid "No Changes"
 msgstr "Geen wijzigingen"
 
 msgid "No Trained Classifiers Yet"
-msgstr "Nog geen getrainde classificaties"
+msgstr "Nog geen getrainde classifiers"
 
 msgid "No archived domains found. Start browsing to build your archive!"
 msgstr "Geen gearchiveerde domeinen gevonden. Begin met browsen om je archief op te bouwen!"
@@ -4355,7 +4353,7 @@ msgid "No questions match that search."
 msgstr "Geen vragen komen overeen met deze zoekopdracht."
 
 msgid "No recency filter"
-msgstr "Geen actualiteitsfilter"
+msgstr "Geen datumfilter"
 
 msgid "No referrals yet. Share your link to get started!"
 msgstr "Nog geen doorverwijzingen. Deel je link om te beginnen!"
@@ -4386,7 +4384,7 @@ msgstr "Geen artikelen"
 
 #, python-format
 msgid "No stories from %(folder)s have yet been indexed for related stories."
-msgstr "Er zijn nog geen verhalen van %(folder)s geïndexeerd voor gerelateerde verhalen."
+msgstr "Er zijn nog geen artikelen van %(folder)s geïndexeerd voor gerelateerde artikelen."
 
 #, python-format
 msgid "No stories from your %(count)s site have yet been indexed for related stories."
@@ -4398,7 +4396,7 @@ msgid "No stories published last month"
 msgstr "Vorige maand zijn er geen artikelen gepubliceerd"
 
 msgid "No stories to delete"
-msgstr "Geen verhalen om te verwijderen"
+msgstr "Geen artikelen om te verwijderen"
 
 msgid "No stories to read"
 msgstr "Geen artikelen om te lezen"
@@ -4416,7 +4414,7 @@ msgid "No usage billing invoices yet."
 msgstr "Er zijn nog geen gebruiksfacturen."
 
 msgid "No usage billing set up."
-msgstr "Er zijn geen gebruikskosten ingesteld."
+msgstr "Er is geen facturering op basis van gebruik ingesteld."
 
 msgid "No valid merge groups to apply"
 msgstr "Geen geldige samenvoeggroepen om toe te passen"
@@ -4455,7 +4453,7 @@ msgid "Not redeemed in 90 days?"
 msgstr "Niet binnen 90 dagen ingewisseld?"
 
 msgid "Not seeing the right stories?"
-msgstr "Zie je niet de juiste verhalen?"
+msgstr "Zie je niet de juiste artikelen?"
 
 msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
 msgstr "Niet het meest gelezen, maar wel het best ontvangen, met een voorkeur voor kleine sites boven grote."
@@ -4476,7 +4474,7 @@ msgid "Notifications"
 msgstr "Meldingen"
 
 msgid "Notifications on trained intelligence classifiers"
-msgstr "Meldingen over getrainde intelligentieclassificaties"
+msgstr "Meldingen over getrainde intelligentieclassifiers"
 
 #, python-format
 msgid "Notifications require %(tier_link)s"
@@ -4489,7 +4487,7 @@ msgid "Notify on match"
 msgstr "Melding bij overeenkomst"
 
 msgid "Notify on match. Premium Archive required"
-msgstr "Melding bij overeenkomst. Premium-archief vereist"
+msgstr "Melding bij overeenkomst. Premium Archive vereist"
 
 msgid "November"
 msgstr "november"
@@ -4498,7 +4496,7 @@ msgid "Now"
 msgstr "Nu"
 
 msgid "Number of stories to include in each briefing"
-msgstr "Aantal verhalen dat in elke briefing wordt opgenomen"
+msgstr "Aantal artikelen dat in elke briefing wordt opgenomen"
 
 msgid "Numbers & Symbols"
 msgstr "Cijfers en symbolen"
@@ -4543,7 +4541,7 @@ msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Ouder dan: %(month)s %(day)s %(year)s"
 
 msgid "Older:"
-msgstr "Ouder:"
+msgstr "Ouder dan:"
 
 msgid "Oldest"
 msgstr "Oudste"
@@ -4579,8 +4577,8 @@ msgstr ""
 #, python-format
 msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
 msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
-msgstr[0] "Slechts %(indexed)s van je %(count)s site is geïndexeerd voor gerelateerde verhalen."
-msgstr[1] "Slechts %(indexed)s van je %(count)s sites is geïndexeerd voor gerelateerde artikelen."
+msgstr[0] "Slechts %(indexed)s van je %(count)s site is geïndexeerd voor gerelateerde artikelen."
+msgstr[1] "Slechts %(indexed)s van je %(count)s sites zijn geïndexeerd voor gerelateerde artikelen."
 
 #, python-format
 msgid ""
@@ -4614,14 +4612,14 @@ msgstr[1] "Alleen recente artikelen van %(count)s sites worden getoond."
 #, python-format
 msgid "Only recent stories shown from %(indexed)s of %(count)s site."
 msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
-msgstr[0] "Alleen recente verhalen weergegeven van %(indexed)s van %(count)s site."
+msgstr[0] "Er worden alleen recente artikelen getoond van %(indexed)s van %(count)s site."
 msgstr[1] "Er worden alleen recente artikelen getoond van %(indexed)s van de %(count)s sites."
 
 msgid "Only recent stories shown from this site are available."
 msgstr "Alleen recente artikelen van deze site zijn beschikbaar."
 
 msgid "Only see the full story title"
-msgstr "Alleen de volledige titel van het verhaal tonen"
+msgstr "Alleen de volledige artikeltitel tonen"
 
 msgid "Only show comments from friends"
 msgstr "Alleen reacties van vrienden tonen"
@@ -4630,13 +4628,13 @@ msgid "Only show counts on collapsed folders"
 msgstr "Alleen aantallen tonen bij ingeklapte mappen"
 
 msgid "Only truncate long shared stories in blurblogs"
-msgstr "Alleen lange gedeelde verhalen in blurblogs afkappen"
+msgstr "Alleen lange gedeelde artikelen in blurblogs afkappen"
 
 msgid "Open"
 msgstr "Openen"
 
 msgid "Open All Site Stories"
-msgstr "Alle artikelen van sites openen"
+msgstr "Artikelen van alle sites openen"
 
 msgid "Open Everything"
 msgstr "Alles openen"
@@ -4645,7 +4643,7 @@ msgid "Open Site"
 msgstr "Site openen"
 
 msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
-msgstr "Open een mapnaam om alle feeds erin tegelijk te lezen. Alle siteartikelen is de stroom van alles."
+msgstr "Open een mapnaam om alle feeds erin tegelijk te lezen. ‘Artikelen van alle sites’ is de stroom met alles."
 
 msgid "Open clustering preferences"
 msgstr "Clusteringsvoorkeuren openen"
@@ -4687,13 +4685,13 @@ msgid "Open story trainer"
 msgstr "Artikeltrainer openen"
 
 msgid "Open the Intelligence Trainer"
-msgstr "Open de Intelligence Trainer"
+msgstr "Open de intelligentietrainer"
 
 msgid "Open the feed and story title menu"
 msgstr "Open het menu voor de feed en de artikeltitel"
 
 msgid "Open the first story"
-msgstr "Open het eerste artikel"
+msgstr "Het eerste artikel openen"
 
 msgid "Open the next site/folder"
 msgstr "Open de volgende site/map"
@@ -4714,10 +4712,10 @@ msgid "Open your Daily Briefing"
 msgstr "Je dagelijkse briefing openen"
 
 msgid "Open your saved stories"
-msgstr "Je bewaarde artikelen openen"
+msgstr "Je opgeslagen artikelen openen"
 
 msgid "Opens"
-msgstr "Opent"
+msgstr "Meest geopend"
 
 msgid "Opens stories in a background tab with a customizable hotkey"
 msgstr "Opent artikelen in een achtergrondtabblad met een aanpasbare sneltoets"
@@ -4736,7 +4734,7 @@ msgstr "Optie 4:"
 
 msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
 msgstr ""
-"Optioneel. Classificaties worden gepauzeerd zodra de limiet is bereikt en hervat in de volgende "
+"Optioneel. Classifiers worden gepauzeerd zodra de limiet is bereikt en hervat in de volgende "
 "factureringscyclus."
 
 msgid "Options"
@@ -4847,10 +4845,10 @@ msgid "Platform"
 msgstr "Platform"
 
 msgid "Play Last"
-msgstr "Laatste afspelen"
+msgstr "Als laatste afspelen"
 
 msgid "Play Next"
-msgstr "Volgende afspelen"
+msgstr "Hierna afspelen"
 
 msgid "Play in Mini Media Player"
 msgstr "Afspelen in Mini Media Player"
@@ -4901,22 +4899,22 @@ msgid "Portuguese"
 msgstr "Portugees"
 
 msgid "Position & Greedy"
-msgstr "Positie & hebzuchtig"
+msgstr "Positie & gulzig"
 
 msgid "Positive you want to delete everything?"
 msgstr "Weet je zeker dat je alles wilt verwijderen?"
 
 msgid "Positive you want to delete your intelligence training classifiers?"
-msgstr "Weet je zeker dat je je intelligentietrainingsclassificaties wilt verwijderen?"
+msgstr "Weet je zeker dat je je classifiers voor intelligentietraining wilt verwijderen?"
 
 msgid "Positive you want to delete your saved stories?"
-msgstr "Weet je zeker dat je je opgeslagen verhalen wilt verwijderen?"
+msgstr "Weet je zeker dat je je opgeslagen artikelen wilt verwijderen?"
 
 msgid "Positive you want to delete your shared stories?"
 msgstr "Weet je zeker dat je je gedeelde artikelen wilt verwijderen?"
 
 msgid "Post"
-msgstr "Bericht"
+msgstr "Plaatsen"
 
 #, python-format
 msgid "Post to %(service)s"
@@ -4937,7 +4935,7 @@ msgid "Premium"
 msgstr "Premium"
 
 msgid "Premium Archive"
-msgstr "Premiumarchief"
+msgstr "Premium Archive"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -4954,7 +4952,7 @@ msgstr "Premium-proefperiode"
 #, python-format
 msgid "Premium Trial (%(count)s day)"
 msgid_plural "Premium Trial (%(count)s days)"
-msgstr[0] "Premiumproefperiode (%(count)s dag)"
+msgstr[0] "Premium-proefperiode (%(count)s dag)"
 msgstr[1] "Premium-proefperiode (%(count)s dagen)"
 
 msgid "Premium details"
@@ -4962,7 +4960,7 @@ msgstr "Premiumdetails"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
-msgstr "Premiumlettertypen vereisen een %(link_start)spremium account%(link_end)s"
+msgstr "Premiumlettertypen vereisen een %(link_start)spremiumaccount%(link_end)s"
 
 msgid "Premium renewal"
 msgstr "Verlenging van Premium"
@@ -4983,10 +4981,10 @@ msgid "Press ? anytime to see the full shortcut list."
 msgstr "Druk op elk gewenst moment op ? om de volledige lijst met sneltoetsen te bekijken."
 
 msgid "Press s to save the story you're reading."
-msgstr "Druk op s om het verhaal dat je leest op te slaan."
+msgstr "Druk op s om het artikel dat je leest op te slaan."
 
 msgid "Press the Text tab on any story to fetch the full article."
-msgstr "Tik bij een artikel op het tabblad Tekst om het volledige artikel op te halen."
+msgstr "Klik bij een artikel op het tabblad Tekst om het volledige artikel op te halen."
 
 msgid "Press the search icon or hit the / key"
 msgstr "Druk op het zoekpictogram of de /-toets"
@@ -5081,8 +5079,8 @@ msgid_plural ""
 "Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
 "are processed."
 msgstr[0] ""
-"%(count)s verhaal in de wachtrij geplaatst voor categorisering (%(remaining)s resterend). Categorieën "
-"verschijnen zodra de verhalen zijn verwerkt."
+"%(count)s artikel in de wachtrij geplaatst voor categorisering (%(remaining)s resterend). Categorieën "
+"verschijnen zodra de artikelen zijn verwerkt."
 msgstr[1] ""
 "%(count)s artikelen in de wachtrij voor categorisering (%(remaining)s resterend). Categorieën verschijnen "
 "terwijl artikelen worden verwerkt."
@@ -5091,7 +5089,7 @@ msgstr[1] ""
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] ""
-"%(count)s verhaal in de wachtrij geplaatst voor categorisering. Categorieën verschijnen zodra de verhalen "
+"%(count)s artikel in de wachtrij geplaatst voor categorisering. Categorieën verschijnen zodra de artikelen "
 "zijn verwerkt."
 msgstr[1] ""
 "%(count)s artikelen in de wachtrij voor categorisering. Categorieën verschijnen terwijl artikelen worden "
@@ -5115,13 +5113,13 @@ msgstr "RSS-feeds voor mappen zijn een %(link_start)spremiumfunctie%(link_end)s.
 
 #, python-format
 msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
-msgstr "RSS-feeds voor tags van opgeslagen verhalen zijn een %(link_start)spremiumfunctie%(link_end)s."
+msgstr "RSS-feeds voor tags van opgeslagen artikelen zijn een %(link_start)spremiumfunctie%(link_end)s."
 
 msgid "RSS/XML URL: "
 msgstr "RSS/XML-URL: "
 
 msgid "Re-analysis timed out. Please try again."
-msgstr "De heranalyse is verlopen. Probeer het opnieuw."
+msgstr "Time-out bij de heranalyse. Probeer het opnieuw."
 
 msgid "Re-analyze"
 msgstr "Opnieuw analyseren"
@@ -5142,17 +5140,17 @@ msgid "Re-categorizing..."
 msgstr "Opnieuw categoriseren..."
 
 msgid "Read Stories"
-msgstr "Artikelen lezen"
+msgstr "Gelezen artikelen"
 
 msgid "Read Stories:"
-msgstr "Artikelen lezen:"
+msgstr "Gelezen artikelen:"
 
 msgid ""
 "Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
 "river surfaces the best stories across your subscriptions."
 msgstr ""
-"Lees alle feeds in een map als één doorlopende stream, op chronologische volgorde. In combinatie met "
-"training toont de rivier de beste artikelen uit al je abonnementen."
+"Lees alle feeds in een map als één doorlopende stroom, in chronologische volgorde. In combinatie met "
+"training toont de nieuwsstroom de beste artikelen uit al je abonnementen."
 
 msgid "Read more on the NewsBlur Blog"
 msgstr "Lees meer op de NewsBlur-blog"
@@ -5161,7 +5159,7 @@ msgid "Read offline with automatic background refresh"
 msgstr "Lees offline met automatische verversing op de achtergrond"
 
 msgid "Read on scroll"
-msgstr "Lezen tijdens scrollen"
+msgstr "Gelezen bij scrollen"
 
 msgid "Read stories by folder"
 msgstr "Artikelen per map lezen"
@@ -5207,7 +5205,7 @@ msgid "Really unfollow?"
 msgstr "Wil je echt niet meer volgen?"
 
 msgid "Recency"
-msgstr "Actualiteit"
+msgstr "Meest recent"
 
 msgid "Recent interactions"
 msgstr "Recente interacties"
@@ -5262,7 +5260,7 @@ msgstr "Terugbetaald"
 
 #, python-format
 msgid "Refunded $%(amount)s"
-msgstr "__$%(amount)s terugbetaald"
+msgstr "$%(amount)s terugbetaald"
 
 msgid "Regenerate Briefing"
 msgstr "Briefing opnieuw genereren"
@@ -5278,7 +5276,7 @@ msgid "Related"
 msgstr "Verwant"
 
 msgid "Related Sites"
-msgstr "Verwante sites"
+msgstr "Gerelateerde sites"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "Gerelateerde artikelen zijn alleen beschikbaar voor Premium-abonnees."
@@ -5329,7 +5327,7 @@ msgstr "Hernoemd"
 #, python-format
 msgid "Renamed %(count)s story to \"%(category)s\""
 msgid_plural "Renamed %(count)s stories to \"%(category)s\""
-msgstr[0] "%(count)s verhaal hernoemd naar \"%(category)s\""
+msgstr[0] "%(count)s artikel hernoemd naar \"%(category)s\""
 msgstr[1] "%(count)s artikelen hernoemd naar \"%(category)s\""
 
 msgid "Renaming..."
@@ -5368,7 +5366,7 @@ msgstr "Wordt gereset..."
 
 #, python-format
 msgid "Restart your %(value_1)s subscription"
-msgstr "Herstart je %(value_1)s-abonnement"
+msgstr "Hervat je %(value_1)s-abonnement"
 
 msgid "Restart your subscription"
 msgstr "Je abonnement hervatten"
@@ -5404,10 +5402,10 @@ msgid "Rising"
 msgstr "Stijgend"
 
 msgid "River of News"
-msgstr "Nieuwsoversicht"
+msgstr "Nieuwsstroom"
 
 msgid "River of News (reading by folder)"
-msgstr "Nieuwsfeed (lezen per map)"
+msgstr "Nieuwsstroom (lezen per map)"
 
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "Voer newsblur auth login uit om via OAuth te autoriseren"
@@ -5423,14 +5421,14 @@ msgid ""
 "Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the "
 "Releases appcast in the repo."
 msgstr ""
-"Safari-app-extensie waarmee %(shortcut)s verhalen op de achtergrond in een tabblad kan openen. Download de "
-"app via de Releases-appcast in de repo."
+"Safari-app-extensie waarmee %(shortcut)s artikelen op de achtergrond in een tabblad kan openen. Download de"
+" app via de Releases-appcast in de repo."
 
 msgid "Sat"
 msgstr "za"
 
 msgid "Saturday"
-msgstr "Zaterdag"
+msgstr "zaterdag"
 
 msgid "Save"
 msgstr "Opslaan"
@@ -5438,13 +5436,13 @@ msgstr "Opslaan"
 #, python-format
 msgid "Save %(count)s classifier"
 msgid_plural "Save %(count)s classifiers"
-msgstr[0] "Sla %(count)s classifier op"
+msgstr[0] "%(count)s classifier opslaan"
 msgstr[1] "%(count)s classifiers opslaan"
 
 #, python-format
 msgid "Save %(count)s folder"
 msgid_plural "Save %(count)s folders"
-msgstr[0] "Sla %(count)s map op"
+msgstr[0] "%(count)s map opslaan"
 msgstr[1] "%(count)s mappen opslaan"
 
 msgid "Save & Close"
@@ -5488,7 +5486,7 @@ msgid "Save searches as feeds for ongoing monitoring"
 msgstr "Zoekopdrachten opslaan als feeds voor doorlopende monitoring"
 
 msgid "Save stories for later"
-msgstr "Bewaar artikelen voor later"
+msgstr "Artikelen opslaan voor later"
 
 msgid ""
 "Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
@@ -5498,7 +5496,7 @@ msgstr ""
 "en deelbaar."
 
 msgid "Save stories with searchable tags"
-msgstr "Bewaar artikelen met doorzoekbare tags"
+msgstr "Artikelen opslaan met doorzoekbare tags"
 
 msgid "Save this story"
 msgstr "Dit artikel opslaan"
@@ -5572,7 +5570,7 @@ msgid "Search"
 msgstr "Zoeken"
 
 msgid "Search All Site Stories"
-msgstr "Alle artikelen op de site doorzoeken"
+msgstr "Artikelen van alle sites doorzoeken"
 
 msgid "Search YouTube channels..."
 msgstr "YouTube-kanalen zoeken..."
@@ -5636,7 +5634,7 @@ msgid "Search within a single feed, a folder, or across everything"
 msgstr "Zoek in één feed, een map of alles tegelijk"
 
 msgid "Search your entire archive with full-text search"
-msgstr "Doorzoek je volledige archief met volledige-tekstzoekfunctie"
+msgstr "Doorzoek je volledige archief met zoeken in de volledige tekst"
 
 msgid "Search your stories"
 msgstr "Je artikelen doorzoeken"
@@ -5647,13 +5645,13 @@ msgstr "Zoeken: \"%(value_1)s\""
 
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
-msgstr "<b>%(feed_title)s</b> doorzoekt \"<b>%(query)s</b>\""
+msgstr "Zoeken in <b>%(feed_title)s</b> naar \"<b>%(query)s</b>\""
 
 msgid "Searching RSS feeds..."
 msgstr "RSS-feeds zoeken..."
 
 msgid "Searching saved stories..."
-msgstr "Opgeslagen verhalen zoeken..."
+msgstr "Opgeslagen artikelen doorzoeken..."
 
 msgid "Searching your archive..."
 msgstr "Je archief doorzoeken..."
@@ -5668,7 +5666,7 @@ msgid "Sections"
 msgstr "Secties"
 
 msgid "Sections are only included when matching stories are found."
-msgstr "Secties worden alleen opgenomen als er overeenkomende verhalen zijn gevonden."
+msgstr "Secties worden alleen opgenomen als er overeenkomende artikelen zijn gevonden."
 
 msgid "Security"
 msgstr "Beveiliging"
@@ -5694,7 +5692,7 @@ msgid "See shared stories"
 msgstr "Gedeelde artikelen bekijken"
 
 msgid "See the story title and a short content preview"
-msgstr "Bekijk de titel en een korte inhoudsvoorvertoning"
+msgstr "De artikeltitel en een kort voorbeeld van de inhoud tonen"
 
 msgid "See which feeds cover the same story"
 msgstr "Bekijk welke feeds hetzelfde verhaal behandelen"
@@ -5709,13 +5707,13 @@ msgid "Select a folder"
 msgstr "Selecteer een map"
 
 msgid "Select a story to read"
-msgstr "Selecteer een verhaal om te lezen"
+msgstr "Selecteer een artikel om te lezen"
 
 msgid "Select any story and click \"Ask AI\""
-msgstr "Selecteer een artikel en klik op \"Ask AI\""
+msgstr "Selecteer een artikel en klik op \"Vraag AI\""
 
 msgid "Select classifiers to remove"
-msgstr "Selecteer classificaties om te verwijderen"
+msgstr "Selecteer classifiers om te verwijderen"
 
 msgid "Select folders"
 msgstr "Mappen selecteren"
@@ -5724,7 +5722,7 @@ msgid "Select part of the URL to match patterns like sections or categories."
 msgstr "Selecteer een deel van de URL om patronen zoals secties of categorieën te herkennen."
 
 msgid "Select title phrase"
-msgstr "Selecteer een titelzin"
+msgstr "Selecteer een woordgroep in de titel"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Als je een artikel in de artikeltitels selecteert, wordt het als gelezen gemarkeerd."
@@ -5788,9 +5786,7 @@ msgid "Share"
 msgstr "Delen"
 
 msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
-msgstr ""
-"Deel een verhaal met een opmerking en het wordt gepubliceerd op je blurblog, te volgen via RSS of op het "
-"web."
+msgstr "Deel een artikel met een reactie en het wordt gepubliceerd op je blurblog, te volgen via RSS of op het web."
 
 msgid "Share on NewsBlur"
 msgstr "Delen op NewsBlur"
@@ -5845,7 +5841,7 @@ msgid "Sharing"
 msgstr "Delen"
 
 msgid "Sharing Stories From These Sites"
-msgstr "Verhalen van deze sites delen"
+msgstr "Artikelen van deze sites delen"
 
 msgid "Sharing services"
 msgstr "Deeldiensten"
@@ -5860,7 +5856,7 @@ msgid "Shopping"
 msgstr "Winkelen"
 
 msgid "Short"
-msgstr "Kort"
+msgstr "Laag"
 
 msgid "Show"
 msgstr "Weergeven"
@@ -5872,10 +5868,10 @@ msgid "Show Global Shared Stories"
 msgstr "Wereldwijd gedeelde artikelen weergeven"
 
 msgid "Show Good Reads"
-msgstr "Goede recensies weergeven"
+msgstr "Goede leestips weergeven"
 
 msgid "Show Infrequent Site Stories"
-msgstr "Verhalen van weinig bijgewerkte sites tonen"
+msgstr "Artikelen van weinig actieve sites tonen"
 
 msgid "Show Long Reads"
 msgstr "Lange artikelen tonen"
@@ -5905,7 +5901,7 @@ msgid "Show confirmation when marking feeds or folders as read"
 msgstr "Bevestiging tonen wanneer feeds of mappen als gelezen worden gemarkeerd"
 
 msgid "Show discover sites popover above story titles"
-msgstr "Toon de pop-over met ontdeksites boven de titels van verhalen"
+msgstr "Pop-over ‘Sites ontdekken’ boven de artikeltitels tonen"
 
 msgid "Show every site, including ones you already follow"
 msgstr "Alle sites tonen, ook sites die je al volgt"
@@ -5914,7 +5910,7 @@ msgid "Show every story individually without grouping"
 msgstr "Toon elk artikel afzonderlijk, zonder groepering"
 
 msgid "Show from both friends and the public"
-msgstr "Berichten van zowel vrienden als het publiek tonen"
+msgstr "Reacties van zowel vrienden als het publiek tonen"
 
 msgid "Show highlighter when selecting text"
 msgstr "Markeerstift tonen bij tekstselectie"
@@ -5923,7 +5919,7 @@ msgid "Show history"
 msgstr "Geschiedenis weergeven"
 
 msgid "Show more related stories"
-msgstr "Meer gerelateerde verhalen weergeven"
+msgstr "Meer gerelateerde artikelen weergeven"
 
 msgid "Show on Load"
 msgstr "Bij laden tonen"
@@ -5949,7 +5945,7 @@ msgstr "Artikelen van <b>%(start_date)s</b> tot <b>%(end_date)s</b>"
 
 #, python-format
 msgid "Showing stories newer than <b>%(date)s</b>"
-msgstr "Artikelen weergeven die nieuwer zijn dan <b>%(date)s</b>"
+msgstr "Artikelen nieuwer dan <b>%(date)s</b>"
 
 #, python-format
 msgid "Showing stories older than <b>%(date)s</b>"
@@ -5957,7 +5953,7 @@ msgstr "Artikelen ouder dan <b>%(date)s</b> worden weergegeven"
 
 #, python-format
 msgid "Showing stories on <b>%(date)s</b>"
-msgstr "Artikelen weergeven op <b>%(date)s</b>"
+msgstr "Artikelen van <b>%(date)s</b>"
 
 msgid "Shows a toolbar button with your unread count"
 msgstr "Toont een werkbalkknop met het aantal ongelezen items"
@@ -5972,7 +5968,7 @@ msgid "Sign up to read your own feeds."
 msgstr "Meld je aan om je eigen feeds te lezen."
 
 msgid "Signup"
-msgstr "Aanmelden"
+msgstr "Registreren"
 
 msgid "Single Story"
 msgstr "Eén artikel"
@@ -6002,7 +5998,7 @@ msgid "Site sidebar order"
 msgstr "Volgorde van de sitezijbalk"
 
 msgid "Site stats"
-msgstr "Sitesstatistieken"
+msgstr "Sitestatistieken"
 
 msgid "Sites"
 msgstr "Websites"
@@ -6011,10 +6007,10 @@ msgid "Sites updated up to 5x more often"
 msgstr "Sites worden tot 5 keer vaker bijgewerkt"
 
 msgid "Skip Back"
-msgstr "Terug"
+msgstr "Terugspoelen"
 
 msgid "Skip Forward"
-msgstr "Vooruit overslaan"
+msgstr "Vooruitspoelen"
 
 msgid "Skip this step "
 msgstr "Deze stap overslaan "
@@ -6023,7 +6019,7 @@ msgid "Small feeds with the fastest-growing subscriber base"
 msgstr "Kleine feeds met het snelst groeiende aantal abonnees"
 
 msgid "Small image thumbnail on the left"
-msgstr "Kleine afbeeldingsminiatuur links"
+msgstr "Kleine miniatuurafbeelding links"
 
 msgid "Small image thumbnail on the right"
 msgstr "Kleine miniatuurafbeelding rechts"
@@ -6079,7 +6075,7 @@ msgid "Sort By"
 msgstr "Sorteren op"
 
 msgid "Sort the river oldest-first or newest-first from the feed options popover."
-msgstr "Sorteer de rivier van oud naar nieuw of van nieuw naar oud via het feedoptiesmenu."
+msgstr "Sorteer de nieuwsstroom van oud naar nieuw of van nieuw naar oud via het feedoptiesmenu."
 
 msgid "Sort, filter, and display options"
 msgstr "Sorteer-, filter- en weergaveopties"
@@ -6088,7 +6084,7 @@ msgid "Source feeds"
 msgstr "Bronfeeds"
 
 msgid "Spacing between feeds and story titles"
-msgstr "Ruimte tussen feeds en verhaaltitels"
+msgstr "Ruimte tussen feeds en artikeltitels"
 
 msgid "Spanish"
 msgstr "Spaans"
@@ -6097,7 +6093,7 @@ msgid "Special Folders"
 msgstr "Speciale mappen"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
-msgstr "Bestedingslimiet bereikt. Classificaties gepauzeerd tot de volgende cyclus."
+msgstr "Bestedingslimiet bereikt. Classifiers gepauzeerd tot de volgende cyclus."
 
 msgid "Split"
 msgstr "Splitsen"
@@ -6105,7 +6101,7 @@ msgstr "Splitsen"
 #, python-format
 msgid "Split \"%(category)s\" (%(count)s story) into:"
 msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
-msgstr[0] "\"%(category)s\" (%(count)s verhaal) opsplitsen in:"
+msgstr[0] "Splits \"%(category)s\" (%(count)s artikel) op in:"
 msgstr[1] "Splits \"%(category)s\" (%(count)s artikelen) op in:"
 
 #, python-format
@@ -6128,7 +6124,7 @@ msgstr "Splitsfunctionaliteit komt binnenkort"
 msgid "Split partially applied: %(count)s story recategorized"
 msgid_plural "Split partially applied: %(count)s stories recategorized"
 msgstr[0] "Splitsing gedeeltelijk toegepast: %(count)s artikel opnieuw gecategoriseerd"
-msgstr[1] "Splitsing gedeeltelijk toegepast: %(count)s verhalen opnieuw ingedeeld"
+msgstr[1] "Splitsing gedeeltelijk toegepast: %(count)s artikelen opnieuw gecategoriseerd"
 
 msgid "Split with AI"
 msgstr "Splitsen met AI"
@@ -6143,11 +6139,11 @@ msgstr ""
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Verouderde %(date)s"
+msgstr "Inactief sinds %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"
-msgstr "Verouderd — laatste artikel %(date)s"
+msgstr "Inactief — laatste artikel %(date)s"
 
 msgid "Stars"
 msgstr "Sterren"
@@ -6223,14 +6219,14 @@ msgstr "Artikelen in archief"
 #, python-format
 msgid "Stories marked as read at <b>%(days)s day</b>"
 msgid_plural "Stories marked as read at <b>%(days)s days</b>"
-msgstr[0] "Verhalen gemarkeerd als gelezen na <b>%(days)s dag</b>"
-msgstr[1] "Verhalen worden als gelezen gemarkeerd na <b>%(days)s dagen</b>"
+msgstr[0] "Artikelen worden als gelezen gemarkeerd na <b>%(days)s dag</b>"
+msgstr[1] "Artikelen worden als gelezen gemarkeerd na <b>%(days)s dagen</b>"
 
 msgid "Stories matching your trained topics and authors"
 msgstr "Artikelen die overeenkomen met je getrainde onderwerpen en auteurs"
 
 msgid "Stories never expire or disappear"
-msgstr "Verhalen verlopen of verdwijnen nooit"
+msgstr "Artikelen verlopen of verdwijnen nooit"
 
 #, python-format
 msgid "Stories newer than %(date)s"
@@ -6254,13 +6250,13 @@ msgid "Stories readers finished, saved, and shared"
 msgstr "Artikelen die lezers hebben uitgelezen, opgeslagen en gedeeld"
 
 msgid "Stories that held the most attention across NewsBlur."
-msgstr "Verhalen die de meeste aandacht trokken op NewsBlur."
+msgstr "Artikelen die de meeste aandacht trokken op NewsBlur."
 
 msgid "Stories will <b>never</b> be auto-marked as read"
-msgstr "Verhalen worden <b>nooit</b> automatisch als gelezen gemarkeerd"
+msgstr "Artikelen worden <b>nooit</b> automatisch als gelezen gemarkeerd"
 
 msgid "Stories will <b>never</b> be marked as read"
-msgstr "Verhalen worden <b>nooit</b> als gelezen gemarkeerd"
+msgstr "Artikelen worden <b>nooit</b> als gelezen gemarkeerd"
 
 msgid "Story"
 msgstr "Artikel"
@@ -6269,7 +6265,7 @@ msgid "Story Archive"
 msgstr "Artikelarchief"
 
 msgid "Story Authors"
-msgstr "Auteurs van verhalen"
+msgstr "Auteurs van artikelen"
 
 msgid "Story Categories &amp; Tags"
 msgstr "Artikelcategorieën &amp; tags"
@@ -6278,16 +6274,16 @@ msgid "Story Clustering"
 msgstr "Artikelen groeperen"
 
 msgid "Story Layout - Grid Columns"
-msgstr "Artikelweergave - rasterkolommen"
+msgstr "Artikelindeling - rasterkolommen"
 
 msgid "Story Layout - Split"
-msgstr "Verhaalindeling - gesplitst"
+msgstr "Artikelindeling - gesplitst"
 
 msgid "Story Text"
 msgstr "Artikeltekst"
 
 msgid "Story Title"
-msgstr "Verhaaltitel"
+msgstr "Artikeltitel"
 
 msgid "Story Typography"
 msgstr "Typografie van artikelen"
@@ -6296,7 +6292,7 @@ msgid "Story URL"
 msgstr "URL van artikel"
 
 msgid "Story clustering"
-msgstr "Verhalen groeperen"
+msgstr "Artikelen groeperen"
 
 msgid "Story content preview"
 msgstr "Voorbeeld van artikelinhoud"
@@ -6314,7 +6310,7 @@ msgid "Story shows in Focus view"
 msgstr "Artikel wordt weergegeven in de focusweergave"
 
 msgid "Story side options"
-msgstr "Opties aan de zijkant van het verhaal"
+msgstr "Opties aan de zijkant van het artikel"
 
 msgid "Story side options buttons"
 msgstr "Knoppen voor artikelopties aan de zijkant"
@@ -6323,7 +6319,7 @@ msgid "Story side options placement"
 msgstr "Plaatsing van opties aan de zijkant van artikelen"
 
 msgid "Story title styling"
-msgstr "Opmaak van de verhaalstitel"
+msgstr "Opmaak van artikeltitels"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Stream onderbroken. 10 seconden lang geen antwoord ontvangen."
@@ -6400,7 +6396,7 @@ msgid "Subscribed!"
 msgstr "Geabonneerd!"
 
 msgid "Subscribed! Fetching stories..."
-msgstr "Geabonneerd! Verhalen worden opgehaald..."
+msgstr "Geabonneerd! Artikelen worden opgehaald..."
 
 msgid "Subscribers"
 msgstr "Abonnees"
@@ -6421,7 +6417,7 @@ msgid "Summarize in a paragraph"
 msgstr "Vat samen in een alinea"
 
 msgid "Summarize in bullet points"
-msgstr "Samenvatten in opsommingstekens"
+msgstr "Vat samen in een opsomming"
 
 msgid "Summarize in one sentence"
 msgstr "Vat samen in één zin"
@@ -6433,7 +6429,7 @@ msgid "Sunday"
 msgstr "zondag"
 
 msgid "Super Dislike "
-msgstr "Zeer sterk afkeuren "
+msgstr "Vind ik helemaal niet leuk "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
@@ -6468,7 +6464,7 @@ msgid "Tag"
 msgstr "Tag"
 
 msgid "Tag RSS Feed"
-msgstr "RSS-feed taggen"
+msgstr "RSS-feed van tag"
 
 msgid "Tag Settings"
 msgstr "Taginstellingen"
@@ -6478,7 +6474,7 @@ msgid "Tag filters found no stories in %(context)s."
 msgstr "Tagfilters hebben geen artikelen gevonden in %(context)s."
 
 msgid "Tag filters found no stories in this view."
-msgstr "Tagfilters hebben in deze weergave geen verhalen gevonden."
+msgstr "Tagfilters hebben in deze weergave geen artikelen gevonden."
 
 msgid "Tag name must be 128 characters or less."
 msgstr "De tagnaam mag maximaal 128 tekens bevatten."
@@ -6526,13 +6522,13 @@ msgid "Test on this story"
 msgstr "Op dit artikel testen"
 
 msgid "Testing on this story..."
-msgstr "Dit verhaal testen..."
+msgstr "Testen op dit artikel..."
 
 msgid "Text"
 msgstr "Tekst"
 
 msgid "Text Phrases"
-msgstr "Tekstzinnen"
+msgstr "Woordgroepen in tekst"
 
 msgid "Text Regex"
 msgstr "Tekstregex"
@@ -6542,13 +6538,13 @@ msgstr "Tekstweergave"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
-msgstr "Tekstfilters hebben geen verhalen gevonden in %(context)s."
+msgstr "Tekstfilters hebben geen artikelen gevonden in %(context)s."
 
 msgid "Text filters found no stories in this view."
 msgstr "Tekstfilters hebben geen artikelen in deze weergave gevonden."
 
 msgid "Text view extracts the story"
-msgstr "De tekstweergave haalt het verhaal op"
+msgstr "De tekstweergave haalt het volledige artikel op"
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
@@ -6556,11 +6552,11 @@ msgstr "Bedankt! Je hebt een %(bold_start)spremiumaccount%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
-msgstr "Bedankt! Je hebt een %(bold_start)spremiumarchiefaccount%(bold_end)s."
+msgstr "Bedankt! Je hebt een %(bold_start)sPremium Archive-account%(bold_end)s."
 
 #, python-format
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
-msgstr "Bedankt! Je hebt een %(bold_start)spremium pro-account%(bold_end)s."
+msgstr "Bedankt! Je hebt een %(bold_start)sPremium Pro-account%(bold_end)s."
 
 msgid "The AI service took too long to respond. Please try again."
 msgstr "De AI-dienst deed er te lang over om te reageren. Probeer het opnieuw."
@@ -6576,7 +6572,7 @@ msgid ""
 "The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
 "custom sections you define."
 msgstr ""
-"De dagelijkse briefing staat bovenaan je zijbalk, met secties voor topverhalen, lange artikelen en zelf "
+"De dagelijkse briefing staat bovenaan je zijbalk, met secties voor topartikelen, lange artikelen en zelf "
 "samengestelde secties."
 
 msgid ""
@@ -6605,7 +6601,7 @@ msgstr "De volledige NewsBlur-API is openbaar en gedocumenteerd voor aangepaste 
 
 #, python-format
 msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
-msgstr "De volledige River of News is een %(link_start)spremiumfunctie%(link_end)s."
+msgstr "De volledige Nieuwsstroom is een %(link_start)spremiumfunctie%(link_end)s."
 
 msgid "The full shortcut list"
 msgstr "De volledige lijst met sneltoetsen"
@@ -6652,7 +6648,7 @@ msgstr "Er zijn te veel sites en artikelen om te verwerken. "
 msgid "There is %(count)s hidden story"
 msgid_plural "There are %(count)s hidden stories"
 msgstr[0] "Er is %(count)s verborgen artikel"
-msgstr[1] "Er zijn %(count)s verborgen verhalen"
+msgstr[1] "Er zijn %(count)s verborgen artikelen"
 
 #, python-format
 msgid "There is %(count)s public comment"
@@ -6668,7 +6664,7 @@ msgstr ""
 "genoteerd en lossen het snel op. Je kunt dit nu waarschijnlijk het beste zelf versturen."
 
 msgid "There was a problem deleting your classifiers."
-msgstr "Er is een probleem opgetreden bij het verwijderen van je classificaties."
+msgstr "Er is een probleem opgetreden bij het verwijderen van je classifiers."
 
 msgid "There was a problem deleting your saved stories."
 msgstr "Er is een probleem opgetreden bij het verwijderen van je opgeslagen artikelen."
@@ -6743,7 +6739,7 @@ msgid ""
 "This matches the entire story text and will only match this exact story. Consider using a shorter phrase or"
 " pattern."
 msgstr ""
-"Dit komt overeen met de volledige tekst van het verhaal en vindt alleen dit exacte verhaal. Gebruik "
+"Dit komt overeen met de volledige tekst van het artikel en vindt alleen dit exacte artikel. Gebruik "
 "eventueel een kortere frase of patroon."
 
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
@@ -6753,7 +6749,7 @@ msgstr ""
 
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
-msgstr "Deze lijst met gelezen verhalen is een %(link_start)sPremium-functie%(link_end)s."
+msgstr "Deze lijst met gelezen artikelen is een %(link_start)spremiumfunctie%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr ""
@@ -6776,7 +6772,7 @@ msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors.
 msgstr "Deze site is al <b>%(time)s</b> niet opgehaald en geeft fouten."
 
 msgid "This site has not yet been indexed for related stories."
-msgstr "Deze site is nog niet geïndexeerd voor gerelateerde verhalen."
+msgstr "Deze site is nog niet geïndexeerd voor gerelateerde artikelen."
 
 msgid ""
 "This site has published zero stories in the past month or has averaged less than a single story a month. As"
@@ -6793,7 +6789,7 @@ msgid "This site only"
 msgstr "Alleen deze site"
 
 msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
-msgstr "Deze webfeed is <b>gepauzeerd</b>. Upgrade naar Premium Archive om weer nieuwe verhalen op te halen."
+msgstr "Deze webfeed is <b>gepauzeerd</b>. Upgrade naar Premium Archive om weer nieuwe artikelen op te halen."
 
 msgid "This will erase all existing feeds and folders."
 msgstr "Hierdoor worden alle bestaande feeds en mappen verwijderd."
@@ -6814,7 +6810,7 @@ msgid "Thumbs up authors, tags, or title keywords you like"
 msgstr "Geef auteurs, tags of trefwoorden in titels die je leuk vindt een duimpje omhoog"
 
 msgid "Thursday"
-msgstr "Donderdag"
+msgstr "donderdag"
 
 msgid "Tier"
 msgstr "Niveau"
@@ -6839,7 +6835,7 @@ msgid "Title"
 msgstr "Titel"
 
 msgid "Title Phrases"
-msgstr "Titelzinnen"
+msgstr "Woordgroepen in titel"
 
 msgid "Title Regex"
 msgstr "Titelregex"
@@ -6922,10 +6918,10 @@ msgid "Tooltips"
 msgstr "Tooltips"
 
 msgid "Tooltips like this"
-msgstr "Zoals deze tooltips"
+msgstr "Tooltips zoals deze"
 
 msgid "Top"
-msgstr "Bovenaan"
+msgstr "Boven"
 
 msgid "Top Domains"
 msgstr "Belangrijkste domeinen"
@@ -6943,7 +6939,7 @@ msgid "Train"
 msgstr "Trainen"
 
 msgid "Train &amp; filter"
-msgstr "Train &amp; filter"
+msgstr "Trainen &amp; filteren"
 
 msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
 msgstr ""
@@ -6960,13 +6956,13 @@ msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
 msgstr "Train de intelligentie: geef auteurs, tags, titels en feeds een like of dislike"
 
 msgid "Train stories by author, tag, title"
-msgstr "Verhalen trainen op auteur, tag en titel"
+msgstr "Artikelen trainen op auteur, tag en titel"
 
 msgid "Train stories on full text content"
 msgstr "Train artikelen op basis van de volledige tekst"
 
 msgid "Train stories with regular expressions"
-msgstr "Train verhalen met reguliere expressies"
+msgstr "Train artikelen met reguliere expressies"
 
 msgid "Train stories, search, share, and tag just like on the web"
 msgstr "Train artikelen, zoek, deel en tag net als op het web"
@@ -6978,7 +6974,7 @@ msgid "Train this site"
 msgstr "Deze site trainen"
 
 msgid "Train this story"
-msgstr "Train dit artikel"
+msgstr "Dit artikel trainen"
 
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Train je feeds om artikelen te filteren die je wel of niet leuk vindt."
@@ -7032,7 +7028,7 @@ msgid "Tue"
 msgstr "di"
 
 msgid "Tuesday"
-msgstr "Dinsdag"
+msgstr "dinsdag"
 
 msgid "Turn off automatic briefing generation"
 msgstr "Automatische briefinggeneratie uitschakelen"
@@ -7067,10 +7063,10 @@ msgstr "URL-regex"
 
 #, python-format
 msgid "URL filters found no stories in %(context)s."
-msgstr "URL-filters hebben geen verhalen gevonden in %(context)s."
+msgstr "URL-filters hebben geen artikelen gevonden in %(context)s."
 
 msgid "URL filters found no stories in this view."
-msgstr "URL-filters hebben in deze weergave geen verhalen gevonden."
+msgstr "URL-filters hebben in deze weergave geen artikelen gevonden."
 
 msgid "URL gives a 404 - page not found."
 msgstr "URL geeft een 404-fout - pagina niet gevonden."
@@ -7091,7 +7087,7 @@ msgid "Unfollow"
 msgstr "Niet meer volgen"
 
 msgid "Unfollowed"
-msgstr "Niet meer volgen"
+msgstr "Ontvolgd"
 
 msgid "Unfollowing..."
 msgstr "Ontvolgen..."
@@ -7124,7 +7120,7 @@ msgid "Unlocked"
 msgstr "Ontgrendeld"
 
 msgid "Unmute"
-msgstr "Geluid inschakelen"
+msgstr "Niet meer dempen"
 
 msgid "Unmuted"
 msgstr "Niet meer gedempt"
@@ -7139,7 +7135,7 @@ msgid "Unread stories"
 msgstr "Ongelezen artikelen"
 
 msgid "Unread stories going back months"
-msgstr "Oudere ongelezen artikelen"
+msgstr "Ongelezen artikelen van maanden terug"
 
 msgid "Unread stories never expire, so read at your own pace."
 msgstr "Ongelezen artikelen verlopen nooit, dus lees ze in je eigen tempo."
@@ -7148,10 +7144,10 @@ msgid "Unread+Focus:"
 msgstr "Ongelezen + focus:"
 
 msgid "Unsave this story"
-msgstr "Opslaan van dit artikel ongedaan maken"
+msgstr "Dit artikel niet meer opslaan"
 
 msgid "Unshared"
-msgstr "Niet gedeeld"
+msgstr "Niet meer gedeeld"
 
 msgid "Untitled"
 msgstr "Naamloos"
@@ -7228,10 +7224,10 @@ msgid "Upgrade to Premium"
 msgstr "Upgrade naar Premium"
 
 msgid "Upgrade to Premium Archive"
-msgstr "Upgraden naar Premiumarchief"
+msgstr "Upgraden naar Premium Archive"
 
 msgid "Upgrade to Premium Archive for classifier notifications"
-msgstr "Upgrade naar Premium Archive voor meldingen van classificaties"
+msgstr "Upgrade naar Premium Archive voor meldingen van classifiers"
 
 msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
 msgstr "Upgrade naar Premium Archive om al je feeds op duplicaten te scannen, zodat je nooit een cluster mist."
@@ -7286,13 +7282,13 @@ msgid "Use 12-hour clock"
 msgstr "12-uursnotatie gebruiken"
 
 msgid "Use 24-hour clock"
-msgstr "24-uursklok gebruiken"
+msgstr "24-uursnotatie gebruiken"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Gebruik promptsjablonen voor inboxbeheer, onderzoek naar onderwerpen en feedcontroles"
 
 msgid "Use the native browser context menu"
-msgstr "Het oorspronkelijke contextmenu van de browser gebruiken"
+msgstr "Het eigen contextmenu van de browser gebruiken"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "Gebruik deze URL-sjabloon in browserextensies en feedlezers om je op NewsBlur te abonneren."
@@ -7323,13 +7319,13 @@ msgstr "Gebruikersnaam of e-mailadres..."
 #, python-format
 msgid "Using default: <b>%(days)s day</b>"
 msgid_plural "Using default: <b>%(days)s days</b>"
-msgstr[0] "Standaard gebruiken: <b>%(days)s dag</b>"
+msgstr[0] "Standaardinstelling: <b>%(days)s dag</b>"
 msgstr[1] "Standaardinstelling: <b>%(days)s dagen</b>"
 
 #, python-format
 msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
 msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
-msgstr[0] "Standaard gebruiken: <b>%(days)s dag</b> (van %(source)s)"
+msgstr[0] "Standaardinstelling: <b>%(days)s dag</b> (van %(source)s)"
 msgstr[1] "Standaardinstelling: <b>%(days)s dagen</b> (van %(source)s)"
 
 #, python-format
@@ -7337,7 +7333,7 @@ msgid "Using default: <b>never</b> (from %(source)s)"
 msgstr "Standaardinstelling: <b>nooit</b> (van %(source)s)"
 
 msgid "Using default: stories will <b>never</b> be auto-marked as read"
-msgstr "Standaardinstelling: verhalen worden <b>nooit</b> automatisch als gelezen gemarkeerd"
+msgstr "Standaardinstelling: artikelen worden <b>nooit</b> automatisch als gelezen gemarkeerd"
 
 #, python-format
 msgid "Variant %(number)s"
@@ -7426,11 +7422,11 @@ msgstr "Wat zijn de belangrijkste argumenten?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this site?"
-msgstr "Wat %(like)s en %(dislike)s je van deze site?"
+msgstr "Wat vind je %(like)s en %(dislike)s aan deze site?"
 
 #, python-format
 msgid "What do you %(like)s and %(dislike)s about this story?"
-msgstr "Wat %(like)s je van dit artikel en wat %(dislike)s je ervan?"
+msgstr "Wat vind je %(like)s en %(dislike)s aan dit artikel?"
 
 msgid "What happens if I downgrade?"
 msgstr "Wat gebeurt er als ik downgrade?"
@@ -7497,7 +7493,7 @@ msgid "Why is the next update not at the normal rate?"
 msgstr "Waarom is de volgende update niet volgens het normale schema?"
 
 msgid "Why so infrequently?"
-msgstr "Waarom zo weinig?"
+msgstr "Waarom zo zelden?"
 
 msgid "Widely Read Stories"
 msgstr "Veelgelezen artikelen"
@@ -7713,13 +7709,13 @@ msgstr "Je hebt een %(link_start)spremiumaccount%(link_end)s nodig om sneltoetse
 
 #, python-format
 msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
-msgstr "Je hebt een %(link_start)spremium account%(link_end)s nodig om de privacy te wijzigen."
+msgstr "Je hebt een %(link_start)spremiumaccount%(link_end)s nodig om de privacy te wijzigen."
 
 msgid "You need to be logged in to reply to a comment."
 msgstr "Je moet ingelogd zijn om op een reactie te antwoorden."
 
 msgid "You need to be logged in to share a story."
-msgstr "Je moet ingelogd zijn om een verhaal te delen."
+msgstr "Je moet ingelogd zijn om een artikel te delen."
 
 msgid "You will be emailed within a minute or three."
 msgstr "Je ontvangt binnen een minuut of drie een e-mail."
@@ -7783,7 +7779,7 @@ msgid "Your Referral Stats"
 msgstr "Je verwijzingsstatistieken"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
-msgstr "Je gearchiveerde verhalen blijven toegankelijk, maar voor nieuwe verhalen geldt het standaardbewaarbeleid."
+msgstr "Je gearchiveerde artikelen blijven toegankelijk, maar voor nieuwe artikelen geldt het standaardbewaarbeleid."
 
 msgid "Your cookie has expired — Please login again"
 msgstr "Je cookie is verlopen — log opnieuw in"
@@ -7873,7 +7869,7 @@ msgid "data privacy"
 msgstr "privacy van gegevens"
 
 msgid "dislike"
-msgstr "niet leuk vinden"
+msgstr "niet leuk"
 
 #, python-format
 msgid "e.g. %(example)s"
@@ -7917,7 +7913,7 @@ msgid "gene therapy"
 msgstr "gentherapie"
 
 msgid "hide hidden stories"
-msgstr "verborgen verhalen verbergen"
+msgstr "verborgen artikelen verbergen"
 
 msgid "housing market"
 msgstr "woningmarkt"
@@ -7957,7 +7953,7 @@ msgid "labor unions"
 msgstr "vakbonden"
 
 msgid "like"
-msgstr "zoals"
+msgstr "leuk"
 
 msgid "local elections"
 msgstr "lokale verkiezingen"
@@ -8048,7 +8044,7 @@ msgid "typography"
 msgstr "typografie"
 
 msgid "unmuting soon"
-msgstr "binnenkort weer hoorbaar"
+msgstr "binnenkort niet meer gedempt"
 
 msgid "upload picture"
 msgstr "afbeelding uploaden"
@@ -8068,7 +8064,7 @@ msgstr "webstandaarden"
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"
 msgid_plural "✓ %(count)s of %(total)s images match this filter"
-msgstr[0] "✓ %(count)s van %(total)s afbeelding komt overeen met dit filter"
+msgstr[0] "✓ %(count)s van %(total)s afbeeldingen voldoet aan dit filter"
 msgstr[1] "✓ %(count)s van %(total)s afbeeldingen voldoen aan dit filter"
 
 msgid "✓ Found in story"
