@@ -171,7 +171,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="profile_following">Đang theo dõi</string>
     <string name="profile_followers">Người theo dõi</string>
     <string name="profile_shared">Bài viết đã chia sẻ</string>
-    <string name="profile_ago">trước</string>
+    <string name="profile_time_ago">cách đây %1$s</string>
     <string name="profile_recent_actvity">Hoạt động</string>
     <string name="profile_recent_interactions">Tương tác</string>
     <string name="profile_button_follow">Theo dõi</string>

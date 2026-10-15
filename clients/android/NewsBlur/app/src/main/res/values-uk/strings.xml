@@ -171,7 +171,7 @@
     <string name="profile_following">Стежить</string>
     <string name="profile_followers">Підписники</string>
     <string name="profile_shared">Поширені статті</string>
-    <string name="profile_ago">тому</string>
+    <string name="profile_time_ago">%1$s тому</string>
     <string name="profile_recent_actvity">Активність</string>
     <string name="profile_recent_interactions">Взаємодії</string>
     <string name="profile_button_follow">Стежити</string>

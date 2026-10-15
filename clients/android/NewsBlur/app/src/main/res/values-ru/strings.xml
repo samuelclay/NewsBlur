@@ -171,7 +171,7 @@
     <string name="profile_following">Подписки</string>
     <string name="profile_followers">Подписчики</string>
     <string name="profile_shared">Публикации, которыми поделились</string>
-    <string name="profile_ago">назад</string>
+    <string name="profile_time_ago">%1$s назад</string>
     <string name="profile_recent_actvity">Активность</string>
     <string name="profile_recent_interactions">Взаимодействия</string>
     <string name="profile_button_follow">Подписаться</string>

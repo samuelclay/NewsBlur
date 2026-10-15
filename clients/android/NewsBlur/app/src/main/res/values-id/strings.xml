@@ -171,7 +171,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="profile_following">Mengikuti</string>
     <string name="profile_followers">Pengikut</string>
     <string name="profile_shared">Artikel yang dibagikan</string>
-    <string name="profile_ago">yang lalu</string>
+    <string name="profile_time_ago">%1$s yang lalu</string>
     <string name="profile_recent_actvity">Aktivitas</string>
     <string name="profile_recent_interactions">Interaksi</string>
     <string name="profile_button_follow">Ikuti</string>

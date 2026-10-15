@@ -171,7 +171,7 @@
     <string name="profile_following">正在追蹤</string>
     <string name="profile_followers">追蹤者</string>
     <string name="profile_shared">分享的文章</string>
-    <string name="profile_ago">前</string>
+    <string name="profile_time_ago">%1$s前</string>
     <string name="profile_recent_actvity">動態</string>
     <string name="profile_recent_interactions">互動</string>
     <string name="profile_button_follow">追蹤</string>

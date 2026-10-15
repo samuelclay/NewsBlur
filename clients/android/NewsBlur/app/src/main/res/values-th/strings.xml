@@ -171,7 +171,7 @@
     <string name="profile_following">กำลังติดตาม</string>
     <string name="profile_followers">ผู้ติดตาม</string>
     <string name="profile_shared">เรื่องราวที่แชร์</string>
-    <string name="profile_ago">ที่แล้ว</string>
+    <string name="profile_time_ago">%1$s ที่แล้ว</string>
     <string name="profile_recent_actvity">กิจกรรม</string>
     <string name="profile_recent_interactions">การโต้ตอบ</string>
     <string name="profile_button_follow">ติดตาม</string>

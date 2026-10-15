@@ -171,7 +171,7 @@
     <string name="profile_following">フォロー中</string>
     <string name="profile_followers">フォロワー</string>
     <string name="profile_shared">共有した記事</string>
-    <string name="profile_ago">前</string>
+    <string name="profile_time_ago">%1$s前</string>
     <string name="profile_recent_actvity">アクティビティ</string>
     <string name="profile_recent_interactions">やり取り</string>
     <string name="profile_button_follow">フォロー</string>

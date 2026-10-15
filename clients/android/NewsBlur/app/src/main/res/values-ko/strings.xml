@@ -171,7 +171,7 @@
     <string name="profile_following">팔로잉</string>
     <string name="profile_followers">팔로워</string>
     <string name="profile_shared">공유한 스토리</string>
-    <string name="profile_ago">전</string>
+    <string name="profile_time_ago">%1$s 전</string>
     <string name="profile_recent_actvity">활동</string>
     <string name="profile_recent_interactions">상호작용</string>
     <string name="profile_button_follow">팔로우</string>

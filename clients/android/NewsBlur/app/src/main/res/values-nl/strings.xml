@@ -171,7 +171,7 @@ om over de wereld te praten.</string>
     <string name="profile_following">Volgend</string>
     <string name="profile_followers">Volgers</string>
     <string name="profile_shared">Gedeelde artikelen</string>
-    <string name="profile_ago">geleden</string>
+    <string name="profile_time_ago">%1$s geleden</string>
     <string name="profile_recent_actvity">Activiteiten</string>
     <string name="profile_recent_interactions">Interacties</string>
     <string name="profile_button_follow">Volgen</string>

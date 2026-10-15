@@ -171,7 +171,7 @@ personas para hablar sobre el mundo.</string>
     <string name="profile_following">Siguiendo</string>
     <string name="profile_followers">Seguidores</string>
     <string name="profile_shared">Historias compartidas</string>
-    <string name="profile_ago">hace</string>
+    <string name="profile_time_ago">hace %1$s</string>
     <string name="profile_recent_actvity">Actividades</string>
     <string name="profile_recent_interactions">Interacciones</string>
     <string name="profile_button_follow">Seguir</string>

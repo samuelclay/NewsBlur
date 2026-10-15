@@ -171,7 +171,7 @@ le persone per parlare del mondo.</string>
     <string name="profile_following">Follower</string>
     <string name="profile_followers">Follower</string>
     <string name="profile_shared">Notizie condivise</string>
-    <string name="profile_ago">fa</string>
+    <string name="profile_time_ago">%1$s fa</string>
     <string name="profile_recent_actvity">Attività</string>
     <string name="profile_recent_interactions">Interazioni</string>
     <string name="profile_button_follow">Segui</string>

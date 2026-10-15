@@ -171,7 +171,7 @@
     <string name="profile_following">फ़ॉलो कर रहे हैं</string>
     <string name="profile_followers">फ़ॉलोअर</string>
     <string name="profile_shared">साझा की गई कहानियाँ</string>
-    <string name="profile_ago">पहले</string>
+    <string name="profile_time_ago">%1$s पहले</string>
     <string name="profile_recent_actvity">गतिविधियाँ</string>
     <string name="profile_recent_interactions">गतिविधियाँ</string>
     <string name="profile_button_follow">फ़ॉलो करें</string>
