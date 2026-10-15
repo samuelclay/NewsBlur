@@ -175,6 +175,7 @@
 "Bullets" = "Poin-poin";
 "Bundle folder name" = "Nama folder bundel";
 "Cancel" = "Batal";
+"Cannot reply to this story" = "Tidak dapat membalas cerita ini";
 "Change Story List" = "Ubah Daftar Cerita";
 "Choose Icon" = "Pilih Ikon";
 "Choose Story List" = "Pilih Daftar Artikel";
@@ -316,6 +317,7 @@
 "Extra small" = "Ekstra kecil";
 "Faster" = "Lebih cepat";
 "Favorited" = "Difavoritkan";
+"Favoriting" = "Menambahkan ke favorit";
 "Feed List" = "Daftar Feed";
 "Feed Title" = "Judul Feed";
 "Feed and story list" = "Feed dan daftar artikel";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Tindak lanjut";
 "Followed" = "Diikuti";
 "Followers label" = "Label pengikut";
-"Following" = "Mengikuti";
+"Following [button state]" = "Mengikuti";
+"Following [in progress]" = "Mengikuti";
+"Following [label under the number of people this profile follows]" = "Mengikuti";
 "Font" = "Font";
 "Font Size" = "Ukuran Font";
 "Font..." = "Font...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Pelanggan Premium dapat memilih ikon NewsBlur khusus. Setiap varian mencakup versi terang dan gelap.";
 "Preview images" = "Gambar pratinjau";
 "Preview — not yet subscribed" = "Pratinjau — belum berlangganan";
+"Previewing..." = "Mempratinjau...";
 "Previous Folder" = "Folder Sebelumnya";
 "Previous Site" = "Situs Sebelumnya";
 "Previous Story" = "Cerita Sebelumnya";
@@ -729,6 +734,7 @@
 "Replied" = "Dibalas";
 "Reply" = "Balas";
 "Reply to %@" = "Balas kepada %@";
+"Replying" = "Membalas";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
 "Resume" = "Lanjutkan";
@@ -800,6 +806,7 @@
 "Share with comment" = "Bagikan dengan komentar";
 "Shared" = "Dibagikan";
 "Shared Stories label" = "Label Berita yang Dibagikan";
+"Sharing" = "Membagikan";
 "Short [grid height]" = "Pendek";
 "Short [preview length]" = "Pendek";
 "Show" = "Tampilkan";

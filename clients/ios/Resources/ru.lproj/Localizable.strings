@@ -175,6 +175,7 @@
 "Bullets" = "Маркеры";
 "Bundle folder name" = "Название папки подборки";
 "Cancel" = "Отмена";
+"Cannot reply to this story" = "На эту запись нельзя ответить";
 "Change Story List" = "Изменить список статей";
 "Choose Icon" = "Выбрать значок";
 "Choose Story List" = "Выбрать список статей";
@@ -316,6 +317,7 @@
 "Extra small" = "Очень маленький";
 "Faster" = "Быстрее";
 "Favorited" = "В избранном";
+"Favoriting" = "Добавление в избранное";
 "Feed List" = "Список лент";
 "Feed Title" = "Название ленты";
 "Feed and story list" = "Список лент и статей";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Продолжения";
 "Followed" = "Вы подписались";
 "Followers label" = "Подписчики";
-"Following" = "Читаю";
+"Following [button state]" = "Читаю";
+"Following [in progress]" = "Подписка...";
+"Following [label under the number of people this profile follows]" = "Подписки";
 "Font" = "Шрифт";
 "Font Size" = "Размер шрифта";
 "Font..." = "Шрифт...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Подписчики Premium могут выбрать собственный значок NewsBlur. Для каждого варианта доступны светлая и тёмная версии.";
 "Preview images" = "Миниатюры изображений";
 "Preview — not yet subscribed" = "Предварительный просмотр — подписка ещё не оформлена";
+"Previewing..." = "Предварительный просмотр...";
 "Previous Folder" = "Предыдущая папка";
 "Previous Site" = "Предыдущий сайт";
 "Previous Story" = "Предыдущая статья";
@@ -729,6 +734,7 @@
 "Replied" = "Ответ отправлен";
 "Reply" = "Ответить";
 "Reply to %@" = "Ответить %@";
+"Replying" = "Ответ";
 "Resize sidebar" = "Изменить размер боковой панели";
 "Restore" = "Восстановить";
 "Resume" = "Продолжить";
@@ -800,6 +806,7 @@
 "Share with comment" = "Поделиться с комментарием";
 "Shared" = "Опубликовано";
 "Shared Stories label" = "Метка «Общие статьи»";
+"Sharing" = "Публикация";
 "Short [grid height]" = "Низкая";
 "Short [preview length]" = "Краткий";
 "Show" = "Показать";

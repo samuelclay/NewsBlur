@@ -175,6 +175,7 @@
 "Bullets" = "箇条書き";
 "Bundle folder name" = "バンドルフォルダー名";
 "Cancel" = "キャンセル";
+"Cannot reply to this story" = "この記事には返信できません";
 "Change Story List" = "記事一覧を変更";
 "Choose Icon" = "アイコンを選択";
 "Choose Story List" = "記事リストを選択";
@@ -316,6 +317,7 @@
 "Extra small" = "極小";
 "Faster" = "高速";
 "Favorited" = "お気に入りに追加済み";
+"Favoriting" = "お気に入り登録中";
 "Feed List" = "フィード一覧";
 "Feed Title" = "フィードのタイトル";
 "Feed and story list" = "フィードと記事一覧";
@@ -355,7 +357,9 @@
 "Follow-ups" = "続報";
 "Followed" = "フォロー中";
 "Followers label" = "フォロワー";
-"Following" = "フォロー中";
+"Following [button state]" = "フォロー中";
+"Following [in progress]" = "フォロー中";
+"Following [label under the number of people this profile follows]" = "フォロー中";
 "Font" = "フォント";
 "Font Size" = "フォントサイズ";
 "Font..." = "フォント...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "プレミアム購読者はNewsBlurアイコンをカスタマイズできます。各デザインにはライト版とダーク版があります。";
 "Preview images" = "プレビュー画像";
 "Preview — not yet subscribed" = "プレビュー — まだ購読していません";
+"Previewing..." = "プレビュー中...";
 "Previous Folder" = "前のフォルダー";
 "Previous Site" = "前のサイト";
 "Previous Story" = "前の記事";
@@ -729,6 +734,7 @@
 "Replied" = "返信済み";
 "Reply" = "返信";
 "Reply to %@" = "%@に返信";
+"Replying" = "返信中";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
 "Resume" = "再開";
@@ -800,6 +806,7 @@
 "Share with comment" = "コメントを添えて共有";
 "Shared" = "共有";
 "Shared Stories label" = "共有記事ラベル";
+"Sharing" = "共有中";
 "Short [grid height]" = "低";
 "Short [preview length]" = "短";
 "Show" = "表示";

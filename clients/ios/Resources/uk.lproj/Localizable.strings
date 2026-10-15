@@ -175,6 +175,7 @@
 "Bullets" = "Маркери";
 "Bundle folder name" = "Назва папки добірки";
 "Cancel" = "Скасувати";
+"Cannot reply to this story" = "Не можна відповісти на цю публікацію";
 "Change Story List" = "Змінити список історій";
 "Choose Icon" = "Вибрати значок";
 "Choose Story List" = "Вибрати список статей";
@@ -316,6 +317,7 @@
 "Extra small" = "Дуже малий";
 "Faster" = "Швидше";
 "Favorited" = "Додано до вибраного";
+"Favoriting" = "Додавання в обране";
 "Feed List" = "Список стрічок";
 "Feed Title" = "Назва стрічки";
 "Feed and story list" = "Список стрічок і статей";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Продовження";
 "Followed" = "Ви стежите";
 "Followers label" = "Підписники";
-"Following" = "Відстеження";
+"Following [button state]" = "Стежите";
+"Following [in progress]" = "Стеження";
+"Following [label under the number of people this profile follows]" = "Підписки";
 "Font" = "Шрифт";
 "Font Size" = "Розмір шрифту";
 "Font..." = "Шрифт...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Передплатники Premium можуть вибрати власну іконку NewsBlur. Для кожного варіанта доступні світла й темна версії.";
 "Preview images" = "Попередній перегляд зображень";
 "Preview — not yet subscribed" = "Попередній перегляд — ще не підписано";
+"Previewing..." = "Попередній перегляд...";
 "Previous Folder" = "Попередня папка";
 "Previous Site" = "Попередній сайт";
 "Previous Story" = "Попередня публікація";
@@ -729,6 +734,7 @@
 "Replied" = "Відповіли";
 "Reply" = "Відповісти";
 "Reply to %@" = "Відповісти %@";
+"Replying" = "Відповідь";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
 "Resume" = "Продовжити";
@@ -800,6 +806,7 @@
 "Share with comment" = "Поділитися з коментарем";
 "Shared" = "Спільне";
 "Shared Stories label" = "Мітка «Поширені статті»";
+"Sharing" = "Поширення";
 "Short [grid height]" = "Низький";
 "Short [preview length]" = "Короткий";
 "Show" = "Показати";

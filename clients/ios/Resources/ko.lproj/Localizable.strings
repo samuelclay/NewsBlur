@@ -175,6 +175,7 @@
 "Bullets" = "글머리 기호";
 "Bundle folder name" = "번들 폴더 이름";
 "Cancel" = "취소";
+"Cannot reply to this story" = "이 스토리에 답글을 달 수 없습니다";
 "Change Story List" = "스토리 목록 변경";
 "Choose Icon" = "아이콘 선택";
 "Choose Story List" = "스토리 목록 선택";
@@ -316,6 +317,7 @@
 "Extra small" = "아주 작음";
 "Faster" = "더 빠르게";
 "Favorited" = "즐겨찾기됨";
+"Favoriting" = "즐겨찾기 추가 중";
 "Feed List" = "피드 목록";
 "Feed Title" = "피드 제목";
 "Feed and story list" = "피드 및 스토리 목록";
@@ -355,7 +357,9 @@
 "Follow-ups" = "후속 항목";
 "Followed" = "팔로우 중";
 "Followers label" = "팔로워";
-"Following" = "팔로잉";
+"Following [button state]" = "팔로우 중";
+"Following [in progress]" = "팔로우 중";
+"Following [label under the number of people this profile follows]" = "팔로잉";
 "Font" = "글꼴";
 "Font Size" = "글꼴 크기";
 "Font..." = "글꼴...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "프리미엄 구독자는 NewsBlur 아이콘을 직접 선택할 수 있습니다. 각 스타일에는 밝은 테마와 어두운 테마가 포함됩니다.";
 "Preview images" = "미리보기 이미지";
 "Preview — not yet subscribed" = "미리보기 — 아직 구독하지 않음";
+"Previewing..." = "미리 보는 중...";
 "Previous Folder" = "이전 폴더";
 "Previous Site" = "이전 사이트";
 "Previous Story" = "이전 스토리";
@@ -729,6 +734,7 @@
 "Replied" = "답글 작성함";
 "Reply" = "답글";
 "Reply to %@" = "%@에게 답글";
+"Replying" = "답글 작성 중";
 "Resize sidebar" = "사이드바 크기 조정";
 "Restore" = "복원";
 "Resume" = "다시 시작";
@@ -800,6 +806,7 @@
 "Share with comment" = "댓글과 함께 공유";
 "Shared" = "공유됨";
 "Shared Stories label" = "공유한 스토리";
+"Sharing" = "공유 중";
 "Short [grid height]" = "낮음";
 "Short [preview length]" = "짧게";
 "Show" = "표시";

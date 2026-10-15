@@ -175,6 +175,7 @@
 "Bullets" = "หัวข้อย่อย";
 "Bundle folder name" = "ชื่อโฟลเดอร์ชุด";
 "Cancel" = "ยกเลิก";
+"Cannot reply to this story" = "ไม่สามารถตอบกลับเรื่องนี้ได้";
 "Change Story List" = "เปลี่ยนรายการเรื่องราว";
 "Choose Icon" = "เลือกไอคอน";
 "Choose Story List" = "เลือกรายการเรื่องราว";
@@ -316,6 +317,7 @@
 "Extra small" = "เล็กพิเศษ";
 "Faster" = "เร็วขึ้น";
 "Favorited" = "รายการโปรด";
+"Favoriting" = "กำลังเพิ่มในรายการโปรด";
 "Feed List" = "รายการฟีด";
 "Feed Title" = "ชื่อฟีด";
 "Feed and story list" = "ฟีดและรายการเรื่องราว";
@@ -355,7 +357,9 @@
 "Follow-ups" = "เรื่องติดตาม";
 "Followed" = "ติดตามแล้ว";
 "Followers label" = "ป้ายผู้ติดตาม";
-"Following" = "กำลังติดตาม";
+"Following [button state]" = "กำลังติดตาม";
+"Following [in progress]" = "กำลังติดตาม";
+"Following [label under the number of people this profile follows]" = "กำลังติดตาม";
 "Font" = "แบบอักษร";
 "Font Size" = "ขนาดตัวอักษร";
 "Font..." = "แบบอักษร...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "สมาชิก Premium เลือกไอคอน NewsBlur แบบกำหนดเองได้ แต่ละแบบมีทั้งเวอร์ชันสว่างและมืด";
 "Preview images" = "ภาพตัวอย่าง";
 "Preview — not yet subscribed" = "ดูตัวอย่าง — ยังไม่ได้สมัครรับข้อมูล";
+"Previewing..." = "กำลังดูตัวอย่าง...";
 "Previous Folder" = "โฟลเดอร์ก่อนหน้า";
 "Previous Site" = "เว็บไซต์ก่อนหน้า";
 "Previous Story" = "เรื่องก่อนหน้า";
@@ -729,6 +734,7 @@
 "Replied" = "ตอบกลับแล้ว";
 "Reply" = "ตอบกลับ";
 "Reply to %@" = "ตอบกลับ %@";
+"Replying" = "กำลังตอบกลับ";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
 "Resume" = "ดำเนินการต่อ";
@@ -800,6 +806,7 @@
 "Share with comment" = "แชร์พร้อมความคิดเห็น";
 "Shared" = "แชร์แล้ว";
 "Shared Stories label" = "ป้ายเรื่องที่แชร์";
+"Sharing" = "กำลังแชร์";
 "Short [grid height]" = "สั้น";
 "Short [preview length]" = "สั้น";
 "Show" = "แสดง";

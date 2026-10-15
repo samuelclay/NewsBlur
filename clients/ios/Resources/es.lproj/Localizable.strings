@@ -175,6 +175,7 @@
 "Bullets" = "Viñetas";
 "Bundle folder name" = "Nombre de la carpeta del paquete";
 "Cancel" = "Cancelar";
+"Cannot reply to this story" = "No se puede responder a esta noticia";
 "Change Story List" = "Cambiar lista de artículos";
 "Choose Icon" = "Elegir icono";
 "Choose Story List" = "Elegir lista de artículos";
@@ -316,6 +317,7 @@
 "Extra small" = "Extrapequeño";
 "Faster" = "Más rápido";
 "Favorited" = "Añadido a favoritos";
+"Favoriting" = "Añadiendo a favoritos";
 "Feed List" = "Lista de feeds";
 "Feed Title" = "Título del feed";
 "Feed and story list" = "Lista de feeds y artículos";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Seguimientos";
 "Followed" = "Seguido";
 "Followers label" = "Seguidores";
-"Following" = "Siguiendo";
+"Following [button state]" = "Siguiendo";
+"Following [in progress]" = "Siguiendo";
+"Following [label under the number of people this profile follows]" = "Siguiendo";
 "Font" = "Fuente";
 "Font Size" = "Tamaño de fuente";
 "Font..." = "Fuente...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Los suscriptores Premium pueden elegir un icono personalizado de NewsBlur. Cada estilo incluye variantes claras y oscuras.";
 "Preview images" = "Imágenes de vista previa";
 "Preview — not yet subscribed" = "Vista previa — aún no suscrito";
+"Previewing..." = "Vista previa...";
 "Previous Folder" = "Carpeta anterior";
 "Previous Site" = "Sitio anterior";
 "Previous Story" = "Artículo anterior";
@@ -729,6 +734,7 @@
 "Replied" = "Respondido";
 "Reply" = "Responder";
 "Reply to %@" = "Responder a %@";
+"Replying" = "Respondiendo";
 "Resize sidebar" = "Cambiar el tamaño de la barra lateral";
 "Restore" = "Restaurar";
 "Resume" = "Reanudar";
@@ -800,6 +806,7 @@
 "Share with comment" = "Compartir con comentario";
 "Shared" = "Compartido";
 "Shared Stories label" = "Etiqueta Artículos compartidos";
+"Sharing" = "Compartiendo";
 "Short [grid height]" = "Bajo";
 "Short [preview length]" = "Breve";
 "Show" = "Mostrar";

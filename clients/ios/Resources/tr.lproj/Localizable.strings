@@ -175,6 +175,7 @@
 "Bullets" = "Madde işaretleri";
 "Bundle folder name" = "Paket klasörünün adı";
 "Cancel" = "İptal";
+"Cannot reply to this story" = "Bu habere yanıt verilemiyor";
 "Change Story List" = "Hikâye listesini değiştir";
 "Choose Icon" = "Simge seç";
 "Choose Story List" = "Haber Listesini Seç";
@@ -316,6 +317,7 @@
 "Extra small" = "Çok küçük";
 "Faster" = "Daha hızlı";
 "Favorited" = "Favorilere eklendi";
+"Favoriting" = "Favorilere ekleniyor";
 "Feed List" = "Akış Listesi";
 "Feed Title" = "Akış Başlığı";
 "Feed and story list" = "Akış ve hikâye listesi";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Takip ettikleriniz";
 "Followed" = "Takip ediliyor";
 "Followers label" = "Takipçiler etiketi";
-"Following" = "Takip ediliyor";
+"Following [button state]" = "Takip ediliyor";
+"Following [in progress]" = "Takip ediliyor";
+"Following [label under the number of people this profile follows]" = "Takip ediyor";
 "Font" = "Yazı tipi";
 "Font Size" = "Yazı tipi boyutu";
 "Font..." = "Yazı tipi...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium aboneleri özel bir NewsBlur simgesi seçebilir. Her tasarımın açık ve koyu sürümleri vardır.";
 "Preview images" = "Önizleme görselleri";
 "Preview — not yet subscribed" = "Önizleme — henüz abone olunmadı";
+"Previewing..." = "Önizleniyor...";
 "Previous Folder" = "Önceki Klasör";
 "Previous Site" = "Önceki Site";
 "Previous Story" = "Önceki Hikâye";
@@ -729,6 +734,7 @@
 "Replied" = "Yanıtlandı";
 "Reply" = "Yanıtla";
 "Reply to %@" = "%@ kullanıcısına yanıt ver";
+"Replying" = "Yanıtlanıyor";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
 "Resume" = "Devam et";
@@ -800,6 +806,7 @@
 "Share with comment" = "Yorumla paylaş";
 "Shared" = "Paylaşıldı";
 "Shared Stories label" = "Paylaşılan Haberler etiketi";
+"Sharing" = "Paylaşılıyor";
 "Short [grid height]" = "Kısa";
 "Short [preview length]" = "Kısa";
 "Show" = "Göster";

@@ -175,6 +175,7 @@
 "Bullets" = "Opsommingstekens";
 "Bundle folder name" = "Naam van bundelmap";
 "Cancel" = "Annuleren";
+"Cannot reply to this story" = "Je kunt niet reageren op dit artikel";
 "Change Story List" = "Artikellijst wijzigen";
 "Choose Icon" = "Pictogram kiezen";
 "Choose Story List" = "Artikellijst kiezen";
@@ -316,6 +317,7 @@
 "Extra small" = "Extra klein";
 "Faster" = "Sneller";
 "Favorited" = "Aan favorieten toegevoegd";
+"Favoriting" = "Toevoegen aan favorieten";
 "Feed List" = "Feedlijst";
 "Feed Title" = "Feedtitel";
 "Feed and story list" = "Feed- en artikellijst";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Vervolgartikelen";
 "Followed" = "Gevolgd";
 "Followers label" = "Volgers";
-"Following" = "Volgend";
+"Following [button state]" = "Volgend";
+"Following [in progress]" = "Volgen...";
+"Following [label under the number of people this profile follows]" = "Volgt";
 "Font" = "Lettertype";
 "Font Size" = "Tekengrootte";
 "Font..." = "Lettertype...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium-abonnees kunnen een aangepast NewsBlur-pictogram kiezen. Elke variant bevat een lichte en donkere versie.";
 "Preview images" = "Voorbeeldafbeeldingen";
 "Preview — not yet subscribed" = "Voorbeeld — nog niet geabonneerd";
+"Previewing..." = "Voorbeeld laden...";
 "Previous Folder" = "Vorige map";
 "Previous Site" = "Vorige site";
 "Previous Story" = "Vorig artikel";
@@ -729,6 +734,7 @@
 "Replied" = "Beantwoord";
 "Reply" = "Reageren";
 "Reply to %@" = "Reageren op %@";
+"Replying" = "Reageren";
 "Resize sidebar" = "Zijbalkformaat wijzigen";
 "Restore" = "Herstellen";
 "Resume" = "Hervatten";
@@ -800,6 +806,7 @@
 "Share with comment" = "Delen met opmerking";
 "Shared" = "Gedeeld";
 "Shared Stories label" = "Gedeelde artikelen";
+"Sharing" = "Delen";
 "Short [grid height]" = "Kort";
 "Short [preview length]" = "Kort";
 "Show" = "Tonen";

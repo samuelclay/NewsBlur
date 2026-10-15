@@ -175,6 +175,7 @@
 "Bullets" = "Marcadores";
 "Bundle folder name" = "Nome da pasta do pacote";
 "Cancel" = "Cancelar";
+"Cannot reply to this story" = "Não é possível responder a esta notícia";
 "Change Story List" = "Alterar lista de artigos";
 "Choose Icon" = "Escolher ícone";
 "Choose Story List" = "Escolher lista de artigos";
@@ -316,6 +317,7 @@
 "Extra small" = "Extra pequeno";
 "Faster" = "Mais rápido";
 "Favorited" = "Curtido";
+"Favoriting" = "Favoritando";
 "Feed List" = "Lista de feeds";
 "Feed Title" = "Título do feed";
 "Feed and story list" = "Lista de feeds e de artigos";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Acompanhamentos";
 "Followed" = "Seguindo";
 "Followers label" = "Seguidores";
-"Following" = "Seguindo";
+"Following [button state]" = "Seguindo";
+"Following [in progress]" = "Seguindo";
+"Following [label under the number of people this profile follows]" = "Seguindo";
 "Font" = "Fonte";
 "Font Size" = "Tamanho da fonte";
 "Font..." = "Fonte...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Assinantes Premium podem escolher um ícone personalizado do NewsBlur. Cada estilo inclui variantes claras e escuras.";
 "Preview images" = "Imagens de pré-visualização";
 "Preview — not yet subscribed" = "Prévia — ainda não assinado";
+"Previewing..." = "Visualizando prévia...";
 "Previous Folder" = "Pasta anterior";
 "Previous Site" = "Site anterior";
 "Previous Story" = "Artigo anterior";
@@ -729,6 +734,7 @@
 "Replied" = "Respondido";
 "Reply" = "Responder";
 "Reply to %@" = "Responder a %@";
+"Replying" = "Respondendo";
 "Resize sidebar" = "Redimensionar barra lateral";
 "Restore" = "Restaurar";
 "Resume" = "Retomar";
@@ -800,6 +806,7 @@
 "Share with comment" = "Compartilhar com comentário";
 "Shared" = "Compartilhado";
 "Shared Stories label" = "Artigos compartilhados";
+"Sharing" = "Compartilhando";
 "Short [grid height]" = "Baixo";
 "Short [preview length]" = "Curto";
 "Show" = "Mostrar";

@@ -175,6 +175,7 @@
 "Bullets" = "Wypunktowania";
 "Bundle folder name" = "Nazwa folderu pakietu";
 "Cancel" = "Anuluj";
+"Cannot reply to this story" = "Nie można odpowiedzieć na tę historię";
 "Change Story List" = "Zmień listę artykułów";
 "Choose Icon" = "Wybierz ikonę";
 "Choose Story List" = "Wybierz listę artykułów";
@@ -316,6 +317,7 @@
 "Extra small" = "Bardzo mały";
 "Faster" = "Szybciej";
 "Favorited" = "Dodano do ulubionych";
+"Favoriting" = "Dodawanie do ulubionych";
 "Feed List" = "Lista kanałów";
 "Feed Title" = "Tytuł kanału";
 "Feed and story list" = "Lista kanałów i artykułów";
@@ -355,7 +357,9 @@
 "Follow-ups" = "Dalsze artykuły";
 "Followed" = "Obserwujesz";
 "Followers label" = "Etykieta obserwujących";
-"Following" = "Obserwujesz";
+"Following [button state]" = "Obserwujesz";
+"Following [in progress]" = "Obserwowanie";
+"Following [label under the number of people this profile follows]" = "Obserwowani";
 "Font" = "Czcionka";
 "Font Size" = "Rozmiar czcionki";
 "Font..." = "Czcionka...";
@@ -671,6 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Subskrybenci Premium mogą wybrać własną ikonę NewsBlur. Każdy wariant zawiera jasną i ciemną wersję.";
 "Preview images" = "Podglądy obrazów";
 "Preview — not yet subscribed" = "Podgląd — jeszcze bez subskrypcji";
+"Previewing..." = "Podgląd...";
 "Previous Folder" = "Poprzedni folder";
 "Previous Site" = "Poprzednia witryna";
 "Previous Story" = "Poprzedni artykuł";
@@ -729,6 +734,7 @@
 "Replied" = "Odpowiedziano";
 "Reply" = "Odpowiedz";
 "Reply to %@" = "Odpowiedz użytkownikowi %@";
+"Replying" = "Odpowiadanie";
 "Resize sidebar" = "Zmień rozmiar panelu bocznego";
 "Restore" = "Przywróć";
 "Resume" = "Wznów";
@@ -800,6 +806,7 @@
 "Share with comment" = "Udostępnij z komentarzem";
 "Shared" = "Udostępnione";
 "Shared Stories label" = "Etykieta udostępnionych artykułów";
+"Sharing" = "Udostępnianie";
 "Short [grid height]" = "Niski";
 "Short [preview length]" = "Krótki";
 "Show" = "Pokaż";
