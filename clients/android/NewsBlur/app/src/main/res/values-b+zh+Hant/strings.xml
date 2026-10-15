@@ -1136,4 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s 回覆了 %2$s 的留言</string>
     <string name="profile_interaction_replied_user_reply">%1$s 回覆了 %2$s 的回覆</string>
     <string name="profile_interaction_reshared">%1$s 重新分享了 %2$s</string>
+    <string name="briefing_section_top_stories">熱門文章</string>
+    <string name="briefing_section_top_stories_subtitle">資訊來源中最重要的文章</string>
+    <string name="briefing_section_infrequent">來自不常更新網站的文章</string>
+    <string name="briefing_section_infrequent_subtitle">來自較少發文資訊來源的文章</string>
+    <string name="briefing_section_long_read">留待稍後閱讀的長篇文章</string>
+    <string name="briefing_section_long_read_subtitle">值得留出時間閱讀的長篇文章</string>
+    <string name="briefing_section_classifier_match">根據你的興趣</string>
+    <string name="briefing_section_classifier_match_subtitle">符合你訓練過的主題和作者的文章</string>
+    <string name="briefing_section_follow_up">後續報導</string>
+    <string name="briefing_section_follow_up_subtitle">你最近閱讀的資訊來源的新文章</string>
+    <string name="briefing_section_widely_covered">多方報導</string>
+    <string name="briefing_section_widely_covered_subtitle">至少 3 個資訊來源報導的文章</string>
 </resources>

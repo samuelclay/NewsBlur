@@ -1155,4 +1155,16 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_interaction_replied_user_comment">%1$s, %2$s kullanıcısının yorumuna yanıt verdi</string>
     <string name="profile_interaction_replied_user_reply">%1$s, %2$s kullanıcısının yanıtına yanıt verdi</string>
     <string name="profile_interaction_reshared">%1$s yeniden paylaştı: %2$s</string>
+    <string name="briefing_section_top_stories">Öne çıkan haberler</string>
+    <string name="briefing_section_top_stories_subtitle">Akışlarınızdaki en önemli haberler</string>
+    <string name="briefing_section_infrequent">Nadiren yayın yapan sitelerden</string>
+    <string name="briefing_section_infrequent_subtitle">Nadiren yayın yapan akışlardan haberler</string>
+    <string name="briefing_section_long_read">Daha sonra okumak için uzun yazılar</string>
+    <string name="briefing_section_long_read_subtitle">Zaman ayırmaya değer uzun yazılar</string>
+    <string name="briefing_section_classifier_match">İlgi alanlarınıza göre</string>
+    <string name="briefing_section_classifier_match_subtitle">Öğrendiğiniz konular ve yazarlarla eşleşen haberler</string>
+    <string name="briefing_section_follow_up">Devam haberleri</string>
+    <string name="briefing_section_follow_up_subtitle">Son zamanlarda okuduğunuz akışlardan yeni yazılar</string>
+    <string name="briefing_section_widely_covered">Birçok yerde yer alanlar</string>
+    <string name="briefing_section_widely_covered_subtitle">3 veya daha fazla akışta yer alan haberler</string>
 </resources>

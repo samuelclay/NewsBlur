@@ -1136,4 +1136,16 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="profile_interaction_replied_user_comment">%1$s đã trả lời bình luận của %2$s\'</string>
     <string name="profile_interaction_replied_user_reply">%1$s đã trả lời phản hồi của %2$s\'</string>
     <string name="profile_interaction_reshared">%1$s đã chia sẻ lại %2$s</string>
+    <string name="briefing_section_top_stories">Tin nổi bật</string>
+    <string name="briefing_section_top_stories_subtitle">Những tin quan trọng nhất từ các nguồn của bạn</string>
+    <string name="briefing_section_infrequent">Từ các trang ít đăng bài</string>
+    <string name="briefing_section_infrequent_subtitle">Tin từ các nguồn hiếm khi đăng bài</string>
+    <string name="briefing_section_long_read">Bài dài để đọc sau</string>
+    <string name="briefing_section_long_read_subtitle">Bài viết dài đáng để dành thời gian đọc</string>
+    <string name="briefing_section_classifier_match">Dựa trên sở thích của bạn</string>
+    <string name="briefing_section_classifier_match_subtitle">Tin phù hợp với chủ đề và tác giả bạn đã chọn</string>
+    <string name="briefing_section_follow_up">Tin cập nhật</string>
+    <string name="briefing_section_follow_up_subtitle">Bài viết mới từ các nguồn bạn vừa đọc</string>
+    <string name="briefing_section_widely_covered">Được đưa tin rộng rãi</string>
+    <string name="briefing_section_widely_covered_subtitle">Tin được đăng trên ít nhất 3 nguồn</string>
 </resources>

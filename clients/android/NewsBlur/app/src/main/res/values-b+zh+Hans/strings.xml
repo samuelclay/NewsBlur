@@ -1136,4 +1136,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s 回复了 %2$s 的评论</string>
     <string name="profile_interaction_replied_user_reply">%1$s 回复了 %2$s 的回复</string>
     <string name="profile_interaction_reshared">%1$s 重新分享了 %2$s</string>
+    <string name="briefing_section_top_stories">头条文章</string>
+    <string name="briefing_section_top_stories_subtitle">订阅源中最重要的文章</string>
+    <string name="briefing_section_infrequent">来自低频更新网站</string>
+    <string name="briefing_section_infrequent_subtitle">来自很少发布内容的订阅源的文章</string>
+    <string name="briefing_section_long_read">稍后阅读的长文</string>
+    <string name="briefing_section_long_read_subtitle">值得留出时间阅读的长文</string>
+    <string name="briefing_section_classifier_match">根据你的兴趣</string>
+    <string name="briefing_section_classifier_match_subtitle">与你训练过的话题和作者匹配的文章</string>
+    <string name="briefing_section_follow_up">后续报道</string>
+    <string name="briefing_section_follow_up_subtitle">你最近阅读过的订阅源发布的新文章</string>
+    <string name="briefing_section_widely_covered">多方报道</string>
+    <string name="briefing_section_widely_covered_subtitle">至少被 3 个订阅源报道的文章</string>
 </resources>

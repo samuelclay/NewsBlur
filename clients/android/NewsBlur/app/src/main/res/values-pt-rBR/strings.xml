@@ -1174,4 +1174,16 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="profile_interaction_replied_user_comment">%1$s respondeu ao comentário de %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s respondeu à resposta de %2$s</string>
     <string name="profile_interaction_reshared">%1$s compartilhou novamente %2$s</string>
+    <string name="briefing_section_top_stories">Principais notícias</string>
+    <string name="briefing_section_top_stories_subtitle">As notícias mais importantes dos seus feeds</string>
+    <string name="briefing_section_infrequent">De sites que publicam raramente</string>
+    <string name="briefing_section_infrequent_subtitle">Matérias de feeds que raramente publicam</string>
+    <string name="briefing_section_long_read">Leituras longas para depois</string>
+    <string name="briefing_section_long_read_subtitle">Artigos mais longos que valem a pena ler com calma</string>
+    <string name="briefing_section_classifier_match">Com base nos seus interesses</string>
+    <string name="briefing_section_classifier_match_subtitle">Matérias relacionadas aos tópicos e autores que você treinou</string>
+    <string name="briefing_section_follow_up">Acompanhamentos</string>
+    <string name="briefing_section_follow_up_subtitle">Novas publicações de feeds que você leu recentemente</string>
+    <string name="briefing_section_widely_covered">Amplamente repercutidas</string>
+    <string name="briefing_section_widely_covered_subtitle">Matérias publicadas por 3 ou mais feeds</string>
 </resources>

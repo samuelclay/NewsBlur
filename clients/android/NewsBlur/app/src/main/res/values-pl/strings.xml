@@ -1193,4 +1193,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s odpowiada na komentarz użytkownika %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s odpowiada na odpowiedź użytkownika %2$s</string>
     <string name="profile_interaction_reshared">%1$s ponownie udostępnia %2$s</string>
+    <string name="briefing_section_top_stories">Najważniejsze artykuły</string>
+    <string name="briefing_section_top_stories_subtitle">Najważniejsze artykuły z Twoich kanałów</string>
+    <string name="briefing_section_infrequent">Z rzadko publikujących stron</string>
+    <string name="briefing_section_infrequent_subtitle">Artykuły z kanałów, które rzadko publikują</string>
+    <string name="briefing_section_long_read">Dłuższe teksty na później</string>
+    <string name="briefing_section_long_read_subtitle">Dłuższe artykuły, na które warto znaleźć czas</string>
+    <string name="briefing_section_classifier_match">Na podstawie Twoich zainteresowań</string>
+    <string name="briefing_section_classifier_match_subtitle">Artykuły pasujące do wytrenowanych tematów i autorów</string>
+    <string name="briefing_section_follow_up">Dalszy ciąg</string>
+    <string name="briefing_section_follow_up_subtitle">Nowe wpisy z kanałów, które ostatnio czytano</string>
+    <string name="briefing_section_widely_covered">Szeroko omawiane</string>
+    <string name="briefing_section_widely_covered_subtitle">Artykuły omawiane przez co najmniej 3 kanały</string>
 </resources>

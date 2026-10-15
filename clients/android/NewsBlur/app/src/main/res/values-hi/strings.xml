@@ -1155,4 +1155,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s ने %2$s की टिप्पणी का जवाब दिया</string>
     <string name="profile_interaction_replied_user_reply">%1$s ने %2$s के जवाब का जवाब दिया</string>
     <string name="profile_interaction_reshared">%1$s ने %2$s फिर से साझा किया</string>
+    <string name="briefing_section_top_stories">प्रमुख खबरें</string>
+    <string name="briefing_section_top_stories_subtitle">आपके फ़ीड की सबसे अहम खबरें</string>
+    <string name="briefing_section_infrequent">कम प्रकाशित होने वाली साइटों से</string>
+    <string name="briefing_section_infrequent_subtitle">कम प्रकाशित होने वाले फ़ीड की खबरें</string>
+    <string name="briefing_section_long_read">बाद में पढ़ने के लिए लंबे लेख</string>
+    <string name="briefing_section_long_read_subtitle">लंबे लेख, जिन्हें पढ़ने के लिए समय निकालना सार्थक है</string>
+    <string name="briefing_section_classifier_match">आपकी रुचियों के आधार पर</string>
+    <string name="briefing_section_classifier_match_subtitle">आपके प्रशिक्षित विषयों और लेखकों से मेल खाती खबरें</string>
+    <string name="briefing_section_follow_up">आगे की खबरें</string>
+    <string name="briefing_section_follow_up_subtitle">हाल ही में पढ़े गए फ़ीड की नई पोस्ट</string>
+    <string name="briefing_section_widely_covered">कई फ़ीड में प्रकाशित</string>
+    <string name="briefing_section_widely_covered_subtitle">3 या अधिक फ़ीड में प्रकाशित खबरें</string>
 </resources>

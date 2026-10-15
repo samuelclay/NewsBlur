@@ -1174,4 +1174,16 @@ a personas para hablar del mundo.</string>
     <string name="profile_interaction_replied_user_comment">%1$s respondió al comentario de %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s respondió a la respuesta de %2$s</string>
     <string name="profile_interaction_reshared">%1$s volvió a compartir %2$s</string>
+    <string name="briefing_section_top_stories">Artículos destacados</string>
+    <string name="briefing_section_top_stories_subtitle">Los artículos más importantes de tus fuentes</string>
+    <string name="briefing_section_infrequent">De sitios que publican poco</string>
+    <string name="briefing_section_infrequent_subtitle">Artículos de fuentes que publican poco</string>
+    <string name="briefing_section_long_read">Lecturas largas para más tarde</string>
+    <string name="briefing_section_long_read_subtitle">Artículos extensos que merecen que les dediques tiempo</string>
+    <string name="briefing_section_classifier_match">Según tus intereses</string>
+    <string name="briefing_section_classifier_match_subtitle">Artículos sobre temas y autores que has entrenado</string>
+    <string name="briefing_section_follow_up">Novedades</string>
+    <string name="briefing_section_follow_up_subtitle">Nuevas publicaciones de fuentes que has leído hace poco</string>
+    <string name="briefing_section_widely_covered">Con amplia cobertura</string>
+    <string name="briefing_section_widely_covered_subtitle">Artículos cubiertos por 3 o más fuentes</string>
 </resources>

@@ -1174,4 +1174,16 @@
     <string name="profile_interaction_replied_user_comment">%1$s השיב/ה לתגובה של %2$s\'</string>
     <string name="profile_interaction_replied_user_reply">%1$s השיב/ה לתשובה של %2$s</string>
     <string name="profile_interaction_reshared">%1$s שיתף/ה מחדש את %2$s</string>
+    <string name="briefing_section_top_stories">כתבות מובילות</string>
+    <string name="briefing_section_top_stories_subtitle">הכתבות החשובות ביותר מהמקורות שלך</string>
+    <string name="briefing_section_infrequent">ממקורות שמפרסמים לעיתים רחוקות</string>
+    <string name="briefing_section_infrequent_subtitle">כתבות ממקורות שמפרסמים לעיתים רחוקות</string>
+    <string name="briefing_section_long_read">כתבות ארוכות לקריאה בהמשך</string>
+    <string name="briefing_section_long_read_subtitle">כתבות ארוכות ששווה לפנות להן זמן</string>
+    <string name="briefing_section_classifier_match">בהתאם לתחומי העניין שלך</string>
+    <string name="briefing_section_classifier_match_subtitle">כתבות שתואמות לנושאים ולכותבים שאימנת את המערכת לזהות</string>
+    <string name="briefing_section_follow_up">עדכונים נוספים</string>
+    <string name="briefing_section_follow_up_subtitle">פוסטים חדשים ממקורות שקראת לאחרונה</string>
+    <string name="briefing_section_widely_covered">סיקור נרחב</string>
+    <string name="briefing_section_widely_covered_subtitle">כתבות שסוקרו ב־3 מקורות או יותר</string>
 </resources>

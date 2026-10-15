@@ -1174,4 +1174,16 @@ le persone per parlare del mondo.</string>
     <string name="profile_interaction_replied_user_comment">%1$s ha risposto al commento di %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s ha risposto alla risposta di %2$s</string>
     <string name="profile_interaction_reshared">%1$s ha ricondiviso %2$s</string>
+    <string name="briefing_section_top_stories">Articoli principali</string>
+    <string name="briefing_section_top_stories_subtitle">Gli articoli più importanti dei tuoi feed</string>
+    <string name="briefing_section_infrequent">Da siti che pubblicano raramente</string>
+    <string name="briefing_section_infrequent_subtitle">Articoli da feed che pubblicano raramente</string>
+    <string name="briefing_section_long_read">Articoli lunghi da leggere più tardi</string>
+    <string name="briefing_section_long_read_subtitle">Articoli lunghi per cui vale la pena ritagliarsi del tempo</string>
+    <string name="briefing_section_classifier_match">In base ai tuoi interessi</string>
+    <string name="briefing_section_classifier_match_subtitle">Articoli che corrispondono agli argomenti e agli autori che hai selezionato</string>
+    <string name="briefing_section_follow_up">Aggiornamenti</string>
+    <string name="briefing_section_follow_up_subtitle">Nuovi post dai feed che hai letto di recente</string>
+    <string name="briefing_section_widely_covered">Ripresi da più fonti</string>
+    <string name="briefing_section_widely_covered_subtitle">Articoli ripresi da almeno 3 feed</string>
 </resources>

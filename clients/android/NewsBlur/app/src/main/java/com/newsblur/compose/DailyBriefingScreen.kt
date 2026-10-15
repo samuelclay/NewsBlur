@@ -1047,12 +1047,12 @@ private fun SectionToggle(
     val palette = rememberDailyBriefingPalette()
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         ToggleRow(
-            title = definition.name,
+            title = stringResource(definition.nameRes),
             checked = checked,
             onCheckedChange = onCheckedChange,
         )
         Text(
-            text = definition.subtitle,
+            text = stringResource(definition.subtitleRes),
             style = MaterialTheme.typography.bodySmall,
             color = palette.body,
         )

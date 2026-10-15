@@ -1155,4 +1155,16 @@ om over de wereld te praten.</string>
     <string name="profile_interaction_replied_user_comment">%1$s heeft gereageerd op de reactie van %2$s</string>
     <string name="profile_interaction_replied_user_reply">%1$s heeft gereageerd op de reactie van %2$s</string>
     <string name="profile_interaction_reshared">%1$s heeft %2$s opnieuw gedeeld</string>
+    <string name="briefing_section_top_stories">Belangrijkste artikelen</string>
+    <string name="briefing_section_top_stories_subtitle">De belangrijkste artikelen uit je feeds</string>
+    <string name="briefing_section_infrequent">Van sites die zelden publiceren</string>
+    <string name="briefing_section_infrequent_subtitle">Artikelen van feeds die zelden publiceren</string>
+    <string name="briefing_section_long_read">Langere artikelen voor later</string>
+    <string name="briefing_section_long_read_subtitle">Langere artikelen waarvoor je wat tijd wilt vrijmaken</string>
+    <string name="briefing_section_classifier_match">Op basis van je interesses</string>
+    <string name="briefing_section_classifier_match_subtitle">Artikelen over onderwerpen en auteurs die je hebt getraind</string>
+    <string name="briefing_section_follow_up">Vervolgartikelen</string>
+    <string name="briefing_section_follow_up_subtitle">Nieuwe berichten van feeds die je onlangs hebt gelezen</string>
+    <string name="briefing_section_widely_covered">Veelbesproken</string>
+    <string name="briefing_section_widely_covered_subtitle">Artikelen die door 3 of meer feeds worden behandeld</string>
 </resources>
