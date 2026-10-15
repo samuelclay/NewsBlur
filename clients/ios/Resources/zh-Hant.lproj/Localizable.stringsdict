@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>無法將 %1$@ 個動態消息來源新增至 %2$@。</string>
+			<string>無法將 %1$@ 個訂閱來源新增至 %2$@。</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ 個資訊來源</string>
+			<string>%@ 個訂閱來源</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已新增 %@ 個訂閱源</string>
+			<string>已新增 %@ 個訂閱來源</string>
 		</dict>
 	</dict>
 	<key>%@ feeds added.</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已新增 %@ 個資訊來源。</string>
+			<string>已新增 %@ 個訂閱來源。</string>
 		</dict>
 	</dict>
 	<key>%@ feeds couldn’t be added.</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>有 %@ 個資訊來源無法新增。</string>
+			<string>有 %@ 個訂閱來源無法新增。</string>
 		</dict>
 	</dict>
 	<key>%@ feeds selected</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已選取 %@ 個訂閱源</string>
+			<string>已選取 %@ 個訂閱來源</string>
 		</dict>
 	</dict>
 	<key>%@ focused stories</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ 篇焦點故事</string>
+			<string>%@ 篇焦點文章</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -335,7 +335,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>將 %1$@ 個動態消息來源新增至「%2$@」資料夾</string>
+			<string>將 %1$@ 個訂閱來源新增至「%2$@」資料夾</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -349,7 +349,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已將 %1$@ 個動態消息來源新增至 %2$@。</string>
+			<string>已將 %1$@ 個訂閱來源新增至 %2$@。</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -363,7 +363,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已新增 %@ 個訂閱源。</string>
+			<string>已新增 %@ 個訂閱來源。</string>
 		</dict>
 	</dict>
 	<key>Also published by %@ sites</key>
