@@ -1117,8 +1117,8 @@
     <string name="profile_activity_user_subscribed">%1$sさんが%2$sを購読しました</string>
     <string name="profile_activity_you_saved">%1$sを保存しました</string>
     <string name="profile_activity_user_saved">%1$sが%2$sを保存しました</string>
-    <string name="profile_activity_you_signed_up">Newsblurに登録しました</string>
-    <string name="profile_activity_user_signed_up">%1$sがNewsblurに登録しました</string>
+    <string name="profile_activity_you_signed_up">NewsBlurに登録しました</string>
+    <string name="profile_activity_user_signed_up">%1$sがNewsBlurに登録しました</string>
     <string name="profile_activity_you_followed">%1$sをフォローしました</string>
     <string name="profile_activity_user_followed">%1$sが%2$sをフォローしました</string>
     <string name="profile_activity_you_favorited_comments">%2$sへの%1$sのコメントをお気に入りに追加しました</string>

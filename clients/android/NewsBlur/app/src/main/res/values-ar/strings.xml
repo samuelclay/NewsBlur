@@ -1212,8 +1212,8 @@
     <string name="profile_activity_user_subscribed">اشترك %1$s في %2$s</string>
     <string name="profile_activity_you_saved">حفظتَ %1$s</string>
     <string name="profile_activity_user_saved">%1$s حفظ %2$s</string>
-    <string name="profile_activity_you_signed_up">أنشأتَ حسابًا في Newsblur</string>
-    <string name="profile_activity_user_signed_up">أنشأ %1$s حسابًا في Newsblur</string>
+    <string name="profile_activity_you_signed_up">سجّلتَ في NewsBlur</string>
+    <string name="profile_activity_user_signed_up">سجّل %1$s في NewsBlur</string>
     <string name="profile_activity_you_followed">بدأتَ بمتابعة %1$s</string>
     <string name="profile_activity_user_followed">تابع %1$s %2$s</string>
     <string name="profile_activity_you_favorited_comments">أضفتَ تعليقات %1$s على %2$s إلى المفضلة</string>

@@ -1117,8 +1117,8 @@
     <string name="profile_activity_user_subscribed">%1$s สมัครรับข้อมูลจาก %2$s</string>
     <string name="profile_activity_you_saved">คุณบันทึก %1$s แล้ว</string>
     <string name="profile_activity_user_saved">%1$s บันทึก %2$s</string>
-    <string name="profile_activity_you_signed_up">คุณสมัครใช้งาน Newsblur แล้ว</string>
-    <string name="profile_activity_user_signed_up">%1$s สมัครใช้งาน Newsblur แล้ว</string>
+    <string name="profile_activity_you_signed_up">คุณสมัคร NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s สมัคร NewsBlur</string>
     <string name="profile_activity_you_followed">คุณติดตาม %1$s แล้ว</string>
     <string name="profile_activity_user_followed">%1$s ติดตาม %2$s</string>
     <string name="profile_activity_you_favorited_comments">คุณถูกใจความคิดเห็นของ %1$s ใน %2$s</string>

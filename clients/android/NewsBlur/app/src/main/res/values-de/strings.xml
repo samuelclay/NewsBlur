@@ -1136,8 +1136,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_activity_user_subscribed">%1$s hat %2$s abonniert</string>
     <string name="profile_activity_you_saved">Du hast %1$s gespeichert</string>
     <string name="profile_activity_user_saved">%1$s hat %2$s gespeichert</string>
-    <string name="profile_activity_you_signed_up">Du hast dich bei Newsblur registriert</string>
-    <string name="profile_activity_user_signed_up">%1$s hat sich bei Newsblur registriert</string>
+    <string name="profile_activity_you_signed_up">Du hast dich für NewsBlur angemeldet</string>
+    <string name="profile_activity_user_signed_up">%1$s hat sich für NewsBlur angemeldet</string>
     <string name="profile_activity_you_followed">Du folgst jetzt %1$s</string>
     <string name="profile_activity_user_followed">%1$s folgt jetzt %2$s</string>
     <string name="profile_activity_you_favorited_comments">Du hast den Kommentar von %1$s zu %2$s favorisiert</string>

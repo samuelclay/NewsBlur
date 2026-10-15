@@ -1174,8 +1174,8 @@
     <string name="profile_activity_user_subscribed">%1$s підписується на %2$s</string>
     <string name="profile_activity_you_saved">Ви зберегли %1$s</string>
     <string name="profile_activity_user_saved">%1$s зберігає %2$s</string>
-    <string name="profile_activity_you_signed_up">Ви зареєструвалися в Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s тепер у Newsblur</string>
+    <string name="profile_activity_you_signed_up">Ви зареєструвалися на NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s зареєструвався(-лася) на NewsBlur</string>
     <string name="profile_activity_you_followed">Ви почали стежити за %1$s</string>
     <string name="profile_activity_user_followed">%1$s тепер стежить за %2$s</string>
     <string name="profile_activity_you_favorited_comments">Ви додали в обране коментарі користувача %1$s до %2$s</string>

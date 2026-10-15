@@ -1117,8 +1117,8 @@
     <string name="profile_activity_user_subscribed">%1$s님이 %2$s을(를) 구독했습니다</string>
     <string name="profile_activity_you_saved">%1$s을(를) 저장했습니다</string>
     <string name="profile_activity_user_saved">%1$s님이 %2$s을(를) 저장했습니다</string>
-    <string name="profile_activity_you_signed_up">Newsblur에 가입했습니다</string>
-    <string name="profile_activity_user_signed_up">%1$s님이 Newsblur에 가입했습니다</string>
+    <string name="profile_activity_you_signed_up">NewsBlur에 가입했습니다</string>
+    <string name="profile_activity_user_signed_up">%1$s님이 NewsBlur에 가입했습니다</string>
     <string name="profile_activity_you_followed">%1$s님을 팔로우했습니다</string>
     <string name="profile_activity_user_followed">%1$s님이 %2$s님을 팔로우했습니다</string>
     <string name="profile_activity_you_favorited_comments">%2$s에서 %1$s님의 댓글에 좋아요를 표시했습니다</string>

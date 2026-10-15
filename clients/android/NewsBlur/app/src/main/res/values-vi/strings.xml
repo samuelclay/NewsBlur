@@ -1117,8 +1117,8 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="profile_activity_user_subscribed">%1$s đã đăng ký theo dõi %2$s</string>
     <string name="profile_activity_you_saved">Bạn đã lưu %1$s</string>
     <string name="profile_activity_user_saved">%1$s đã lưu %2$s</string>
-    <string name="profile_activity_you_signed_up">Bạn đã đăng ký Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s đã đăng ký Newsblur</string>
+    <string name="profile_activity_you_signed_up">Bạn đã đăng ký NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s đã đăng ký NewsBlur</string>
     <string name="profile_activity_you_followed">Bạn đã theo dõi %1$s</string>
     <string name="profile_activity_user_followed">%1$s đã theo dõi %2$s</string>
     <string name="profile_activity_you_favorited_comments">Bạn đã yêu thích bình luận của %1$s về %2$s</string>

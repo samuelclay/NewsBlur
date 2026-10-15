@@ -1136,8 +1136,8 @@
     <string name="profile_activity_user_subscribed">%1$s ने %2$s की सदस्यता ली</string>
     <string name="profile_activity_you_saved">आपने %1$s सहेजा</string>
     <string name="profile_activity_user_saved">%1$s ने %2$s सहेजा</string>
-    <string name="profile_activity_you_signed_up">आपने Newsblur पर साइन अप किया</string>
-    <string name="profile_activity_user_signed_up">%1$s ने Newsblur पर साइन अप किया</string>
+    <string name="profile_activity_you_signed_up">आपने NewsBlur के लिए साइन अप किया</string>
+    <string name="profile_activity_user_signed_up">%1$s ने NewsBlur के लिए साइन अप किया</string>
     <string name="profile_activity_you_followed">आपने %1$s को फ़ॉलो किया</string>
     <string name="profile_activity_user_followed">%1$s ने %2$s को फ़ॉलो किया</string>
     <string name="profile_activity_you_favorited_comments">आपने %2$s पर %1$s की टिप्पणियों को पसंदीदा बनाया</string>

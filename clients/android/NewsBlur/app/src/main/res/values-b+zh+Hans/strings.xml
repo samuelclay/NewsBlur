@@ -1117,8 +1117,8 @@
     <string name="profile_activity_user_subscribed">%1$s 订阅了 %2$s</string>
     <string name="profile_activity_you_saved">你保存了 %1$s</string>
     <string name="profile_activity_user_saved">%1$s 保存了 %2$s</string>
-    <string name="profile_activity_you_signed_up">你注册了 Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s 注册了 Newsblur</string>
+    <string name="profile_activity_you_signed_up">你注册了 NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s 注册了 NewsBlur</string>
     <string name="profile_activity_you_followed">你关注了 %1$s</string>
     <string name="profile_activity_user_followed">%1$s 关注了 %2$s</string>
     <string name="profile_activity_you_favorited_comments">你赞了 %1$s 在 %2$s 上的评论</string>
