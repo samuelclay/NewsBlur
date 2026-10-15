@@ -4540,9 +4540,6 @@ msgstr "Поделиться публикацией"
 msgid "Share to blurblog"
 msgstr "Поделиться в blurblog"
 
-msgid "Shared"
-msgstr "Общий доступ"
-
 msgid "Shared Stories"
 msgstr "Общие истории"
 
@@ -4767,6 +4764,12 @@ msgstr "Группировка историй"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Группировка статей — NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Запись опубликована"
+msgstr[1] "Записи опубликованы"
+msgstr[2] "Записей опубликовано"
 
 msgid "Story Tagging"
 msgstr "Теги статей"

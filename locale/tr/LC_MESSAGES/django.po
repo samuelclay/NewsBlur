@@ -4500,9 +4500,6 @@ msgstr "Bu haberi paylaş"
 msgid "Share to blurblog"
 msgstr "Blurblog'da paylaş"
 
-msgid "Shared"
-msgstr "Paylaşılan"
-
 msgid "Shared Stories"
 msgstr "Paylaşılan Haberler"
 
@@ -4723,6 +4720,10 @@ msgstr "Haberleri Gruplandırma"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Haber Kümelendirme - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Haber Paylaşıldı"
 
 msgid "Story Tagging"
 msgstr "Haberleri etiketleme"

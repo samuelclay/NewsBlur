@@ -4378,9 +4378,6 @@ msgstr "שתפו את הכתבה"
 msgid "Share to blurblog"
 msgstr "שיתוף בבלוג הערפול"
 
-msgid "Shared"
-msgstr "משותף"
-
 msgid "Shared Stories"
 msgstr "כתבות משותפות"
 
@@ -4600,6 +4597,11 @@ msgstr "קיבוץ כתבות"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "קיבוץ כתבות - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "כתבה ששותפה"
+msgstr[1] "כתבות ששותפו"
 
 msgid "Story Tagging"
 msgstr "תיוג כתבות"

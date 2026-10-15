@@ -4540,9 +4540,6 @@ msgstr "Condividi questa notizia"
 msgid "Share to blurblog"
 msgstr "Condividi su Blurblog"
 
-msgid "Shared"
-msgstr "Condiviso"
-
 msgid "Shared Stories"
 msgstr "Articoli condivisi"
 
@@ -4766,6 +4763,11 @@ msgstr "Raggruppamento delle notizie"
 
 msgid "Story Clustering - NewsBlur"
 msgstr "Raggruppamento delle notizie - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "Storia condivisa"
+msgstr[1] "Storie condivise"
 
 msgid "Story Tagging"
 msgstr "Tag degli articoli"
