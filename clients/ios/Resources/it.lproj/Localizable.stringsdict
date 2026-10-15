@@ -211,11 +211,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ storie in evidenza</string>
+			<string>%@ articoli in evidenza</string>
 			<key>one</key>
-			<string>%@ storia selezionata</string>
+			<string>%@ articolo in evidenza</string>
 			<key>other</key>
-			<string>%@ storie in evidenza</string>
+			<string>%@ articoli in evidenza</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -231,7 +231,7 @@
 			<key>many</key>
 			<string>%@ aperture</string>
 			<key>one</key>
-			<string>%@ aperture</string>
+			<string>%@ apertura</string>
 			<key>other</key>
 			<string>%@ aperture</string>
 		</dict>
@@ -323,7 +323,7 @@
 			<key>one</key>
 			<string>%@ articolo</string>
 			<key>other</key>
-			<string>%@ notizie</string>
+			<string>%@ articoli</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -339,9 +339,9 @@
 			<key>many</key>
 			<string>%@ articoli rimasti</string>
 			<key>one</key>
-			<string>Rimane %@ storia</string>
+			<string>Resta %@ articolo</string>
 			<key>other</key>
-			<string>%@ storie rimanenti</string>
+			<string>Restano %@ articoli</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -391,11 +391,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ storie non lette</string>
+			<string>%@ articoli non letti</string>
 			<key>one</key>
-			<string>%@ storia non letta</string>
+			<string>%@ articolo non letto</string>
 			<key>other</key>
-			<string>%@ storie non lette</string>
+			<string>%@ articoli non letti</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -411,7 +411,7 @@
 			<key>many</key>
 			<string>+ altri %@ siti</string>
 			<key>one</key>
-			<string>+ altri %@ siti</string>
+			<string>+ %@ altro sito</string>
 			<key>other</key>
 			<string>+ altri %@ siti</string>
 		</dict>
@@ -589,9 +589,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Segna come lette queste %@ storie</string>
+			<string>Segna come letti questi %@ articoli</string>
 			<key>one</key>
-			<string>Segna come letta %@ storia</string>
+			<string>Segna come letto %@ articolo</string>
 			<key>other</key>
 			<string>Segna come letti questi %@ articoli</string>
 		</dict>
@@ -643,11 +643,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Storie condivise</string>
+			<string>Articoli condivisi</string>
 			<key>one</key>
-			<string>Storia condivisa</string>
+			<string>Articolo condiviso</string>
 			<key>other</key>
-			<string>Notizie condivise</string>
+			<string>Articoli condivisi</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -663,7 +663,7 @@
 			<key>many</key>
 			<string>Conservazione degli ultimi %@ giorni</string>
 			<key>one</key>
-			<string>Conservazione dei giorni precedenti: %@</string>
+			<string>Conservazione dell’ultimo %@ giorno</string>
 			<key>other</key>
 			<string>Conservazione degli ultimi %@ giorni</string>
 		</dict>
@@ -681,7 +681,7 @@
 			<key>many</key>
 			<string>Conservazione delle ultime %@ ore</string>
 			<key>one</key>
-			<string>Memorizzazione delle ultime %@ ore</string>
+			<string>Conservazione dell’ultima %@ ora</string>
 			<key>other</key>
 			<string>Conservazione delle ultime %@ ore</string>
 		</dict>
@@ -787,11 +787,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Hai sottoscritto %@ siti</string>
+			<string>Sei iscritto a %@ siti</string>
 			<key>one</key>
-			<string>Sei abbonato a %@ sito</string>
+			<string>Sei iscritto a %@ sito</string>
 			<key>other</key>
-			<string>Hai effettuato l’iscrizione a %@ siti</string>
+			<string>Sei iscritto a %@ siti</string>
 		</dict>
 	</dict>
 </dict>
