@@ -13,11 +13,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Не удалось добавить ленты %1$@ в %2$@.</string>
+			<string>Не удалось добавить %1$@ ленты в %2$@.</string>
 			<key>many</key>
 			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
 			<key>one</key>
-			<string>Не удалось добавить ленту %1$@ в %2$@.</string>
+			<string>Не удалось добавить %1$@ ленту в %2$@.</string>
 			<key>other</key>
 			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
 		</dict>
@@ -33,11 +33,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ сайта виджетов</string>
+			<string>%@ сайта в виджете</string>
 			<key>many</key>
 			<string>%@ сайтов в виджете</string>
 			<key>one</key>
-			<string>%@ сайт с виджетами</string>
+			<string>%@ сайт в виджете</string>
 			<key>other</key>
 			<string>Сайтов-виджетов: %@</string>
 		</dict>
@@ -137,7 +137,7 @@
 			<key>many</key>
 			<string>%@ лент</string>
 			<key>one</key>
-			<string>Лента %@</string>
+			<string>%@ лента</string>
 			<key>other</key>
 			<string>Лент: %@</string>
 		</dict>
@@ -233,13 +233,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ отобранных записей</string>
+			<string>%@ статьи в фокусе</string>
 			<key>many</key>
-			<string>%@ историй в фокусе</string>
+			<string>%@ статей в фокусе</string>
 			<key>one</key>
-			<string>%@ выбранная статья</string>
+			<string>%@ статья в фокусе</string>
 			<key>other</key>
-			<string>%@ важных историй</string>
+			<string>%@ статей в фокусе</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -353,11 +353,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ статей</string>
+			<string>%@ статьи</string>
 			<key>many</key>
-			<string>%@ историй</string>
+			<string>%@ статей</string>
 			<key>one</key>
-			<string>%@ история</string>
+			<string>%@ статья</string>
 			<key>other</key>
 			<string>%@ статей</string>
 		</dict>
@@ -373,13 +373,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Осталось %@ публикаций</string>
+			<string>Осталось %@ статьи</string>
 			<key>many</key>
-			<string>Осталось записей: %@</string>
+			<string>Осталось %@ статей</string>
 			<key>one</key>
 			<string>Осталась %@ статья</string>
 			<key>other</key>
-			<string>Осталось историй: %@</string>
+			<string>Осталось %@ статей</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -393,13 +393,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ публикации в месяц</string>
+			<string>%@ статьи в месяц</string>
 			<key>many</key>
-			<string>%@ публикаций в месяц</string>
+			<string>%@ статей в месяц</string>
 			<key>one</key>
-			<string>%@ публикация в месяц</string>
+			<string>%@ статья в месяц</string>
 			<key>other</key>
-			<string>%@ публикаций в месяц</string>
+			<string>%@ статей в месяц</string>
 		</dict>
 	</dict>
 	<key>%@ subscribers</key>
@@ -433,13 +433,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>%@ непрочитанная запись</string>
+			<string>%@ непрочитанные статьи</string>
 			<key>many</key>
 			<string>Непрочитанных статей: %@</string>
 			<key>one</key>
 			<string>%@ непрочитанная статья</string>
 			<key>other</key>
-			<string>%@ непрочитанных историй</string>
+			<string>%@ непрочитанных статей</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -473,13 +473,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+			<string>Добавить %1$@ ленты в папку «%2$@»</string>
 			<key>many</key>
-			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+			<string>Добавить %1$@ лент в папку «%2$@»</string>
 			<key>one</key>
 			<string>Добавить %1$@ ленту в папку «%2$@»</string>
 			<key>other</key>
-			<string>Добавить ленты %1$@ в папку «%2$@»</string>
+			<string>Добавить %1$@ лент в папку «%2$@»</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -493,13 +493,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Добавлено лент: %1$@ в %2$@.</string>
+			<string>В папку «%2$@» добавлено %1$@ ленты.</string>
 			<key>many</key>
 			<string>В папку «%2$@» добавлено лент: %1$@.</string>
 			<key>one</key>
-			<string>Добавлена лента %1$@ в %2$@.</string>
+			<string>В папку «%2$@» добавлена %1$@ лента.</string>
 			<key>other</key>
-			<string>Добавлено лент: %1$@ в %2$@.</string>
+			<string>В папку «%2$@» добавлено лент: %1$@.</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -557,7 +557,7 @@
 			<key>many</key>
 			<string>Удалить сайтов: %@?</string>
 			<key>one</key>
-			<string>Удалить сайт %@?</string>
+			<string>Удалить %@ сайт?</string>
 			<key>other</key>
 			<string>Удалить %@ сайтов?</string>
 		</dict>
@@ -593,13 +593,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Изображения за %@ дня назад</string>
+			<string>Изображения за последние %@ дня</string>
 			<key>many</key>
-			<string>Изображения за %@ дней назад</string>
+			<string>Изображения за последние %@ дней</string>
 			<key>one</key>
-			<string>Изображения за %@ день назад</string>
+			<string>Изображения за последний %@ день</string>
 			<key>other</key>
-			<string>Изображения за %@ дн. назад</string>
+			<string>Изображения за последние %@ дней</string>
 		</dict>
 	</dict>
 	<key>Images from %@ hours ago</key>
@@ -613,13 +613,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Изображения за %@ ч. назад</string>
+			<string>Изображения за последние %@ часа</string>
 			<key>many</key>
-			<string>Изображения за %@ ч. назад</string>
+			<string>Изображения за последние %@ часов</string>
 			<key>one</key>
-			<string>Изображения за %@ ч. назад</string>
+			<string>Изображения за последний %@ час</string>
 			<key>other</key>
-			<string>Изображения за %@ часов назад</string>
+			<string>Изображения за последние %@ часов</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -653,11 +653,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Отметить эти %@ записей как прочитанные</string>
+			<string>Отметить эти %@ статьи как прочитанные</string>
 			<key>many</key>
-			<string>Отметить эти %@ историй как прочитанные</string>
+			<string>Отметить эти %@ статей как прочитанные</string>
 			<key>one</key>
-			<string>Отметить %@ историю как прочитанную</string>
+			<string>Отметить %@ статью как прочитанную</string>
 			<key>other</key>
 			<string>Отметить эти %@ статьи как прочитанные</string>
 		</dict>
@@ -673,11 +673,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Не показывать сайты %@</string>
+			<string>Отключить %@ сайта</string>
 			<key>many</key>
-			<string>Игнорировать сайты (%@)</string>
+			<string>Отключить %@ сайтов</string>
 			<key>one</key>
-			<string>Заглушить %@ сайт</string>
+			<string>Отключить %@ сайт</string>
 			<key>other</key>
 			<string>Отключить %@ сайтов</string>
 		</dict>
@@ -697,7 +697,7 @@
 			<key>many</key>
 			<string>Старше %@ дней</string>
 			<key>one</key>
-			<string>Старше чем %@ день</string>
+			<string>Старше %@ дня</string>
 			<key>other</key>
 			<string>Старше чем %@ дней</string>
 		</dict>
@@ -713,13 +713,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Истории, которыми поделились</string>
+			<string>Статьи, которыми поделились</string>
 			<key>many</key>
-			<string>Истории, которыми поделились</string>
+			<string>Статьи, которыми поделились</string>
 			<key>one</key>
-			<string>Публикация, которой поделились</string>
+			<string>Статья, которой поделились</string>
 			<key>other</key>
-			<string>Истории, которыми поделились</string>
+			<string>Статьи, которыми поделились</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -733,11 +733,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Хранение за последние %@ дней</string>
+			<string>Хранение за последние %@ дня</string>
 			<key>many</key>
 			<string>Хранение за последние %@ дней</string>
 			<key>one</key>
-			<string>Хранить за прошедший %@ день</string>
+			<string>Хранение за последний %@ день</string>
 			<key>other</key>
 			<string>Хранение данных за последние %@ дней</string>
 		</dict>
@@ -753,13 +753,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Хранить за последние %@ часов</string>
+			<string>Хранение за последние %@ часа</string>
 			<key>many</key>
-			<string>Хранить за последние %@ ч.</string>
+			<string>Хранение за последние %@ часов</string>
 			<key>one</key>
-			<string>Хранить за последний %@ час</string>
+			<string>Хранение за последний %@ час</string>
 			<key>other</key>
-			<string>Хранить за последние %@ ч.</string>
+			<string>Хранение за последние %@ часов</string>
 		</dict>
 	</dict>
 	<key>Text from %@ days ago</key>
@@ -773,13 +773,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Текст за %@ дня</string>
+			<string>Текст за последние %@ дня</string>
 			<key>many</key>
-			<string>Текст за %@ дн. назад</string>
+			<string>Текст за последние %@ дней</string>
 			<key>one</key>
-			<string>Текст за %@ день назад</string>
+			<string>Текст за последний %@ день</string>
 			<key>other</key>
-			<string>Текст за %@ дн. назад</string>
+			<string>Текст за последние %@ дней</string>
 		</dict>
 	</dict>
 	<key>Text from %@ hours ago</key>
@@ -793,13 +793,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Текст за %@ ч. назад</string>
+			<string>Текст за последние %@ часа</string>
 			<key>many</key>
-			<string>Текст %@ ч. назад</string>
+			<string>Текст за последние %@ часов</string>
 			<key>one</key>
-			<string>Текст за %@ час назад</string>
+			<string>Текст за последний %@ час</string>
 			<key>other</key>
-			<string>Текст %@ ч. назад</string>
+			<string>Текст за последние %@ часов</string>
 		</dict>
 	</dict>
 	<key>Updated %@ days ago</key>
