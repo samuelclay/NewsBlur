@@ -5,8 +5,8 @@
     <string name="gesture_toggle_read">Gelesen / ungelesen</string>
     <string name="gesture_markread">Als gelesen markieren</string>
     <string name="gesture_markunread">Als ungelesen markieren</string>
-    <string name="gesture_save">Story speichern</string>
-    <string name="gesture_unsave">Artikel aus gespeicherten Artikeln entfernen</string>
+    <string name="gesture_save">Artikel speichern</string>
+    <string name="gesture_unsave">Artikel nicht mehr speichern</string>
     <string name="gesture_statistics">Statistiken</string>
     <string name="gesture_menu">Aktionen anzeigen</string>
     <string name="gesture_share">Teilen</string>
@@ -26,16 +26,16 @@
     <string name="gesture_double_tap">Doppeltippen</string>
     <string name="gesture_two_finger_double_tap">Doppeltippen mit zwei Fingern</string>
     <string name="gesture_left_edge">Vom linken Bildschirmrand wischen</string>
-    <string name="gesture_edge_footer">Wischst du vom linken Rand, gelangst du immer zu den Feeds zurück – auch wenn Wischgesten für Storys deaktiviert sind.</string>
-    <string name="gesture_mark_all">Alle Beiträge als gelesen markieren</string>
+    <string name="gesture_edge_footer">Wischst du vom linken Rand, gelangst du immer zu den Feeds zurück – auch wenn Wischgesten für Artikel deaktiviert sind.</string>
+    <string name="gesture_mark_all">Alle Artikel als gelesen markieren</string>
     <string name="gesture_original">Originalartikel öffnen</string>
     <string name="gesture_text">Originaltext anzeigen</string>
     <string name="gesture_unread">Als ungelesen markieren</string>
-    <string name="gesture_back_titles">Zurück zu den Story-Titeln</string>
+    <string name="gesture_back_titles">Zurück zu den Artikeltiteln</string>
     <string name="gesture_previous">Vorheriger Artikel</string>
     <string name="gesture_off">Aus</string>
     <string name="gesture_unread_stories">Ungelesene Artikel</string>
-    <string name="gesture_focus_stories">Artikel fokussieren</string>
+    <string name="gesture_focus_stories">Fokus-Artikel</string>
     <string name="story_title_mark_story_read">Artikel als gelesen markieren…</string>
     <string name="story_title_list_font_size">Schriftgröße für Feeds und Artikeltitel</string>
     <string name="language_title">Sprache</string>
@@ -87,7 +87,7 @@
     <string name="login_logged_in">Splines werden retikuliert…</string>
     <string name="login_retrieving_feeds">Feeds werden abgerufen …</string>
     <string name="login_next">Weiter</string>
-    <string name="login_custom_server_scheme_error">Erwartet \'https://\' in der benutzerdefinierten Server-URL</string>
+    <string name="login_custom_server_scheme_error">Die benutzerdefinierte Server-URL muss mit „https://“ beginnen</string>
     <string name="login_custom_server_invalid">Gib eine gültige benutzerdefinierte Server-URL ein.</string>
     <string name="login_tagline">Ein persönlicher Newsreader, der
 Menschen zusammenbringt, um über die Welt zu sprechen.</string>
@@ -113,15 +113,15 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="title_choose_folders">Ordner für Feed %s auswählen</string>
     <string name="title_rename_feed">Feed %s umbenennen</string>
     <string name="title_rename_folder">Ordner %s umbenennen</string>
-    <string name="all_stories_title">Alle Artikel der Website</string>
-    <string name="daily_briefing_title">Tägliche Zusammenfassung</string>
-    <string name="infrequent_title">Seltene Beiträge von Websites</string>
-    <string name="widely_read_stories_title">Meistgelesene Stories</string>
+    <string name="all_stories_title">Alle Website-Artikel</string>
+    <string name="daily_briefing_title">Tagesbriefing</string>
+    <string name="infrequent_title">Artikel selten aktiver Websites</string>
+    <string name="widely_read_stories_title">Viel gelesene Artikel</string>
     <string name="long_reads_title">Lange Artikel</string>
     <string name="good_reads_title">Gute Lektüre</string>
-    <string name="all_shared_stories_title">Alle geteilten Stories</string>
-    <string name="global_shared_stories_title">Global geteilte Stories</string>
-    <string name="read_stories_title">Artikel lesen</string>
+    <string name="all_shared_stories_title">Alle geteilten Artikel</string>
+    <string name="global_shared_stories_title">Global geteilte Artikel</string>
+    <string name="read_stories_title">Gelesene Artikel</string>
     <string name="saved_stories_title">Gespeicherte Artikel</string>
     <string name="saved_searches_title">Gespeicherte Suchen</string>
     <string name="feed_list">Feedliste</string>
@@ -147,7 +147,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="overlay_next">Weiter</string>
     <string name="overlay_done">Fertig</string>
     <string name="overlay_count_toast_N">%d ungelesene Artikel</string>
-    <string name="overlay_count_toast_1">1 ungelesene Story</string>
+    <string name="overlay_count_toast_1">1 ungelesener Artikel</string>
     <string name="overlay_text">Text</string>
     <string name="overlay_story">Artikel</string>
     <string name="orig_text_failed">Der Text des Artikels konnte leider nicht extrahiert werden.</string>
@@ -158,7 +158,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="reply_to">Auf „%s“ antworten</string>
     <string name="edit_reply">Antwort bearbeiten</string>
     <string name="edit_reply_update">Antwort aktualisieren</string>
-    <string name="edit_reply_delete">AntwortY löschen</string>
+    <string name="edit_reply_delete">Antwort löschen</string>
     <string name="alert_dialog_ok">Okay</string>
     <string name="alert_dialog_done">Fertig</string>
     <string name="alert_dialog_openlink">Link öffnen</string>
@@ -192,10 +192,10 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_choose_folders">Ordner auswählen</string>
     <string name="menu_notifications_choose">Benachrichtigungen</string>
     <string name="menu_notifications_disable">Benachrichtigungen deaktivieren</string>
-    <string name="menu_notifications_focus">Bei neuen hervorgehobenen Stories benachrichtigen</string>
+    <string name="menu_notifications_focus">Bei neuen Fokus-Artikeln benachrichtigen</string>
     <string name="menu_notifications_unread">Bei allen neuen Artikeln benachrichtigen</string>
     <string name="menu_mark_folder_as_read">Ordner als gelesen markieren</string>
-    <string name="menu_sharenewsblur">Diese Story teilen</string>
+    <string name="menu_sharenewsblur">Diesen Artikel teilen</string>
     <string name="menu_text_size">Textgröße</string>
     <string name="menu_text_size_xs">XS</string>
     <string name="menu_text_size_s">S</string>
@@ -222,10 +222,10 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_unmute_folder">Ordner nicht mehr stummschalten</string>
     <string name="menu_delete_folder">Ordner löschen</string>
     <string name="menu_rename_folder">Ordner umbenennen</string>
-    <string name="menu_instafetch_feed">Stories sofort abrufen</string>
+    <string name="menu_instafetch_feed">Artikel sofort abrufen</string>
     <string name="feed_menu_back_to_actions">Zurück zu den Feed-Aktionen</string>
-    <string name="menu_infrequent_cutoff">Seltene Artikel pro Monat</string>
-    <string name="menu_intel">Intelligence Trainer</string>
+    <string name="menu_infrequent_cutoff">Grenze für selten aktive Websites</string>
+    <string name="menu_intel">Intelligenz-Trainer</string>
     <string name="menu_rename_feed">Feed umbenennen</string>
     <string name="menu_story_list_style_choose">Listenstil</string>
     <string name="menu_save_search">Suche speichern</string>
@@ -244,9 +244,9 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_sort_by">Sortieren nach</string>
     <string name="menu_sort_by_name">Name</string>
     <string name="menu_sort_by_subs">Abonnenten</string>
-    <string name="menu_sort_by_stories_month">Stories pro Monat</string>
-    <string name="menu_sort_by_recent_story">Neueste Story</string>
-    <string name="menu_sort_by_number_opens">Anzahl der Öffnungen</string>
+    <string name="menu_sort_by_stories_month">Artikel pro Monat</string>
+    <string name="menu_sort_by_recent_story">Neuester Artikel</string>
+    <string name="menu_sort_by_number_opens">Anzahl der Aufrufe</string>
     <string name="menu_sort_order">Sortierreihenfolge</string>
     <string name="menu_sort_order_ascending">Aufsteigend</string>
     <string name="menu_sort_order_descending">Absteigend</string>
@@ -254,7 +254,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_folder_view_nested">Verschachtelt</string>
     <string name="menu_folder_view_flat">Flach</string>
     <string name="menu_mute_all">Alle stummschalten</string>
-    <string name="menu_mute_none">Nichts stummschalten</string>
+    <string name="menu_mute_none">Keine stummschalten</string>
     <string name="menu_select_all">Alle auswählen</string>
     <string name="menu_select_none">Keine auswählen</string>
     <string name="menu_widget_background">Widget-Hintergrund</string>
@@ -262,10 +262,10 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_widget_background_transparent">Transparent</string>
     <string name="toast_hold_to_select">Gedrückt halten, um Text auszuwählen</string>
     <string name="logout_warning">Möchtest du dich wirklich abmelden?</string>
-    <string name="search_mark_read_warning">Achtung! Alle Stories im Feed/Ordner würden als gelesen markiert, nicht nur die Suchergebnisse. Wenn du wirklich alle Stories als gelesen markieren möchtest, leere bitte deine Suchanfrage zur Bestätigung.</string>
-    <string name="story_show_changes">Story-Änderungen anzeigen</string>
+    <string name="search_mark_read_warning">Achtung! Alle Artikel im Feed/Ordner würden als gelesen markiert, nicht nur die Suchergebnisse. Wenn du wirklich alle Artikel als gelesen markieren möchtest, leere bitte deine Suchanfrage zur Bestätigung.</string>
+    <string name="story_show_changes">Artikeländerungen anzeigen</string>
     <string name="story_hide_changes">Änderungen am Artikel ausblenden</string>
-    <string name="story_changes_loading">Story-Änderungen werden geladen …</string>
+    <string name="story_changes_loading">Artikeländerungen werden geladen …</string>
     <string name="story_saved_timestamp">Gespeichert %s</string>
     <string name="your_feeds_search_hint">Feeds durchsuchen</string>
     <string name="feed_list_clear_search">Suche löschen</string>
@@ -283,12 +283,12 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="discover_updated_today">Heute aktualisiert</string>
     <string name="discover_updated_relative">Aktualisiert %s</string>
     <string name="discover_stale_updated_relative">Veraltet — aktualisiert %s</string>
-    <string name="discover_stale_date">Veraltet. Letzter Beitrag %s</string>
+    <string name="discover_stale_date">Veraltet. Letzter Artikel %s</string>
     <string name="discover_last_fetched_relative">Abgerufen %s</string>
     <string name="try_feed_banner_subtitle">Vorschau. Noch nicht abonniert.</string>
     <string name="try_feed_subscribe_button">Abonnieren</string>
     <string name="empty_search_notice">Gib einen Suchbegriff ein, um zu beginnen</string>
-    <string name="menu_add_feed">Hinzufügen + Websites entdecken</string>
+    <string name="menu_add_feed">Websites hinzufügen + entdecken</string>
     <string name="adding_feed_progress">Feed wird hinzugefügt…</string>
     <string name="feed_list_search_hint">Feeds suchen</string>
     <string name="add_folder_name">Bitte gib einen Ordnernamen ein</string>
@@ -310,7 +310,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="contact_open_website">Website besuchen</string>
     <string name="contact_back">Zurück</string>
     <string name="contact_no_email_app">Es ist keine E-Mail-App installiert. Du kannst die E-Mail-Adresse auf dieser Seite markieren und kopieren.</string>
-    <string name="contact_no_browser">Es ist kein Webbrowser installiert. Sie können die Website-Adresse auf dieser Seite auswählen und kopieren.</string>
+    <string name="contact_no_browser">Es ist kein Webbrowser installiert. Du kannst die Website-Adresse auf dieser Seite auswählen und kopieren.</string>
     <string name="menu_feedback">App-Feedback senden</string>
     <string name="menu_feedback_post">Feedback-Beitrag erstellen</string>
     <string name="menu_feedback_email">Fehlerbericht per E-Mail senden</string>
@@ -322,12 +322,12 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="loginas_title">Als Benutzer anmelden</string>
     <string name="empty_list_view_loading">Wird geladen…</string>
     <string name="story_loading_description">Artikel werden geladen</string>
-    <string name="empty_list_view_no_stories">Keine Beiträge zum Lesen</string>
+    <string name="empty_list_view_no_stories">Keine Artikel zum Lesen</string>
     <string name="empty_list_view_no_stories_unread">Keine ungelesenen Artikel</string>
-    <string name="reading_placeholder_select_story">Wählen Sie einen Artikel zum Lesen aus</string>
+    <string name="reading_placeholder_select_story">Wähle einen Artikel zum Lesen aus</string>
     <string name="empty_list_view_no_unread_stories">Du hast keine ungelesenen Artikel.</string>
-    <string name="empty_list_view_no_focus_stories">Du hast keine ungelesenen Beiträge in Focus.\n\nWechsle zu „Alle“ oder „Ungelesen“.</string>
-    <string name="empty_list_view_no_saved_stories">Du hast keine gespeicherten Storys.\n\nWechsle zu „Alle“ oder „Ungelesen“.</string>
+    <string name="empty_list_view_no_focus_stories">Du hast keine ungelesenen Artikel in „Fokus“.\n\nWechsle zu „Alle“ oder „Ungelesen“.</string>
+    <string name="empty_list_view_no_saved_stories">Du hast keine gespeicherten Artikel.\n\nWechsle zu „Alle“ oder „Ungelesen“.</string>
     <string name="login_registration_custom_server">Benutzerdefinierten Server festlegen</string>
     <string name="login_registration_reset_url">Zurücksetzen</string>
     <string name="login_registration_register">Registrieren</string>
@@ -340,12 +340,12 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     </string>
     <string name="public_comment_count">%d öffentliche Kommentare</string>
     <string name="friends_comments_count">%d Kommentare</string>
-    <string name="friends_shares_count">%d Teilungen</string>
+    <string name="friends_shares_count">%d Shares</string>
     <string name="unknown_user">Unbekannter Benutzer</string>
-    <string name="delete_feed_message">Feed \"%s\" löschen?</string>
+    <string name="delete_feed_message">Feed „%s“ löschen?</string>
     <string name="delete_saved_search_message">Gespeicherte Suche %s löschen?</string>
     <string name="delete_folder_message">Ordner „%s“ löschen und alle darin enthaltenen Feeds abbestellen?</string>
-    <string name="deleting_folder_message">Ordner \"%s\" wird gelöscht</string>
+    <string name="deleting_folder_message">Ordner „%s“ wird gelöscht</string>
     <string name="add_saved_search_message">Suche „%s“ speichern?</string>
     <string name="unfollow_message">„%s“ nicht mehr folgen?</string>
     <string name="feed_subscribers">%s Abonnenten</string>
@@ -376,15 +376,15 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="main_menu_interactions">Interaktionen</string>
     <string name="main_menu_upgrade_premium">Auf Premium upgraden</string>
     <string name="main_menu_upgrade_archive">Auf Archive upgraden</string>
-    <string name="main_menu_premium_archive">Premium-Archiv</string>
+    <string name="main_menu_premium_archive">Premium Archive</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Support-Forum</string>
     <string name="newsblur_opml">NewsBlur-OPML</string>
     <string name="newsbluropml">NewsBlur-OPML</string>
     <string name="import_export_title">OPML importieren/exportieren</string>
     <string name="notifications_title">Benachrichtigungen</string>
-    <string name="premium_subscribers_folder">Der vollständige Nachrichtenstrom ist ein Premium-Feature</string>
-    <string name="premium_subscribers_allstories">Das Lesen aller Artikel einer Website ist eine Premium-Funktion</string>
+    <string name="premium_subscribers_folder">Der vollständige Nachrichtenstrom ist eine Premium-Funktion</string>
+    <string name="premium_subscribers_allstories">Das Lesen aller Website-Artikel ist eine Premium-Funktion</string>
     <string name="premium_subscribers_saved_tag">Das Lesen gespeicherter Artikel nach Tag ist eine Premium-Funktion</string>
     <string name="premium_subscribers_search">Die Suche ist eine Premium-Funktion</string>
     <string name="premium_subscribers">Premium-Abonnenten</string>
@@ -394,54 +394,54 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="premium_subscription_renewal">Dein Abonnement verlängert sich am %s</string>
     <string name="premium_subscription_expiration">Dein Abonnement läuft am %s ab</string>
     <string name="premium_subscription_no_expiration">Dein Abonnement läuft nie ab. Wow!</string>
-    <string name="premium_policies">Weitere Informationen findest du in der NewsBlur\'s &lt;a href=\"https://newsblur.com/privacy\"&gt;Datenschutzerklärung&lt;/a&gt; und den &lt;a href=\"https://newsblur.com/tos\"&gt;Nutzungsbedingungen&lt;/a&gt;.</string>
+    <string name="premium_policies">Weitere Informationen findest du in der &lt;a href=\"https://newsblur.com/privacy\"&gt;Datenschutzerklärung&lt;/a&gt; und den &lt;a href=\"https://newsblur.com/tos\"&gt;Nutzungsbedingungen&lt;/a&gt; von NewsBlur.</string>
     <string name="premium_subscription_header">Premium-Abo</string>
-    <string name="archive_subscription_header">Premium-Archiv</string>
+    <string name="archive_subscription_header">Premium Archive</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur-Premium-Abonnement</string>
-    <string name="archive_subscription_title">NewsBlur Premium-Archiv</string>
+    <string name="archive_subscription_title">NewsBlur Premium Archive</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35,99 $ pro Jahr (3,00 $/Monat)</string>
     <string name="premium_subscription_active">Dein Premium-Abonnement ist aktiv</string>
-    <string name="archive_subscription_active">Dein Premium-Archivabonnement ist aktiv</string>
+    <string name="archive_subscription_active">Dein Premium-Archive-Abonnement ist aktiv</string>
     <string name="pro_subscription_active">Dein Premium-Pro-Abonnement ist aktiv</string>
     <string name="subscription_manage">Abonnement verwalten</string>
     <string name="subscription_details_error">Fehler beim Abrufen der Abonnementdetails</string>
     <string name="no_subscription_available">Kein Abonnement verfügbar</string>
     <string name="subscription_unavailable">Derzeit auf Android nicht verfügbar</string>
     <string name="subscription_coming_soon">Demnächst verfügbar</string>
-    <string name="subscription_upgrade_from_premium">Von Premium wechseln</string>
-    <string name="subscription_upgrade_from_archive">Vom Archiv upgraden</string>
+    <string name="subscription_upgrade_from_premium">Von Premium upgraden</string>
+    <string name="subscription_upgrade_from_archive">Von Archive upgraden</string>
     <string name="subscription_price_yearly">%1$s/Jahr (%2$s/Monat)</string>
     <string name="subscription_price_monthly">%1$s/Monat</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
-    <string name="premium_archive_includes_above">Dein Premium-Archiv-Abo umfasst alles oben Genannte</string>
+    <string name="premium_archive_includes_above">Dein Premium-Archive-Abo umfasst alles oben Genannte</string>
     <string name="premium_pro_includes_above">Dein Premium-Pro-Abonnement umfasst alles oben Genannte</string>
     <string name="premium_enable_sites">Folge bis zu 1.024 Websites</string>
     <string name="premium_sync">Websites werden bis zu 5-mal häufiger aktualisiert</string>
-    <string name="premium_read_by_folder">Nachrichtenfluss (Lesen nach Ordner)</string>
+    <string name="premium_read_by_folder">Nachrichtenstrom (Lesen nach Ordnern)</string>
     <string name="premium_search">Websites und Ordner durchsuchen</string>
-    <string name="premium_searchable_tags">Artikel mit durchsuchbaren Schlagwörtern speichern</string>
+    <string name="premium_searchable_tags">Artikel mit durchsuchbaren Tags speichern</string>
     <string name="premium_privacy_options">Datenschutzoptionen für deinen Blurblog</string>
-    <string name="premium_custom_rss">Benutzerdefinierte RSS-Feeds für gespeicherte Storys</string>
+    <string name="premium_custom_rss">Benutzerdefinierte RSS-Feeds für gespeicherte Artikel</string>
     <string name="premium_text_view">Die Textansicht extrahiert den Artikel bequem</string>
     <string name="premium_discover_related">Entdecke verwandte Artikel und Websites</string>
-    <string name="premium_shiloh">Du fütterst Lyric, den hungrigen Hund von NewsBlur\'s, seit 6 Tagen</string>
+    <string name="premium_shiloh">Du fütterst Lyric, den hungrigen Hund von NewsBlur, 6 Tage lang</string>
     <string name="archive_everything_premium">Natürlich alles aus dem Premium-Abonnement</string>
     <string name="archive_enable_sites">Bis zu 4.096 Websites folgen</string>
-    <string name="archive_marked_as_read">Lege fest, wann Stories automatisch als gelesen markiert werden</string>
+    <string name="archive_marked_as_read">Lege fest, wann Artikel automatisch als gelesen markiert werden</string>
     <string name="archive_customize_auto_read">Automatisches Als-gelesen-Markieren für Websites oder Ordner anpassen</string>
-    <string name="archive_story_searchable_forever">Jede Story von jeder Website wird dauerhaft archiviert und ist durchsuchbar.</string>
+    <string name="archive_story_searchable_forever">Jeder Artikel von jeder Website wird dauerhaft archiviert und ist durchsuchbar.</string>
     <string name="archive_back_filled">Feeds mit Paging-Unterstützung werden rückwirkend aufgefüllt, um ein vollständiges Archiv zu erstellen</string>
-    <string name="archive_train_full_text">Stories anhand des vollständigen Textinhalts trainieren</string>
+    <string name="archive_train_full_text">Artikel anhand des vollständigen Textinhalts trainieren</string>
     <string name="archive_discover_related">Entdecke verwandte Artikel in deinem Archiv</string>
     <string name="archive_export_trained_stories">Trainierte Artikel aus Ordnern als RSS-Feeds exportieren</string>
-    <string name="archive_stories_unread_forever">Stories können unbegrenzt ungelesen bleiben</string>
+    <string name="archive_stories_unread_forever">Artikel können unbegrenzt ungelesen bleiben</string>
     <string name="archive_ask_ai">Stelle der KI Fragen zu Artikeln</string>
     <string name="archive_filter_by_date_range">Artikel nach Zeitraum filtern</string>
     <string name="archive_train_folder">Training auf einen Ordner anwenden</string>
     <string name="archive_train_globally">Training global anwenden</string>
-    <string name="pro_everything_archive">Natürlich alles aus dem Archiv-Abo</string>
+    <string name="pro_everything_archive">Natürlich alles aus dem Archive-Abo</string>
     <string name="pro_enable_sites">Bis zu 10.000 Websites folgen</string>
     <string name="pro_all_feeds_fetched">Alle Feeds werden alle 5–15 Minuten abgerufen</string>
     <string name="pro_regex_train">Artikel mit regulären Ausdrücken trainieren</string>
@@ -453,7 +453,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_enable_offline_sum">Artikel regelmäßig im Hintergrund abrufen</string>
     <string name="settings_enable_image_prefetch">Bilder herunterladen</string>
     <string name="settings_enable_image_prefetch_sum">Bilder für das Offline-Lesen vorab laden</string>
-    <string name="settings_keep_old_stories">Gelesene Beiträge behalten</string>
+    <string name="settings_keep_old_stories">Gelesene Artikel behalten</string>
     <string name="settings_keep_old_stories_sum">Deaktivieren, um Speicherplatz zu sparen</string>
     <string name="mute_config_title">Mit einem kostenlosen Standardkonto kannst du bis zu 64 Websites folgen</string>
     <string name="mute_config_message">Bitte schalte %d Websites stumm oder setze die Auswahl auf die beliebtesten Websites zurück.</string>
@@ -474,10 +474,10 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/menu_network_select_opt_nomo</item>
         <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
-    <string name="menu_delete_offline_stories">Offline-Stories löschen…</string>
+    <string name="menu_delete_offline_stories">Offline-Artikel löschen…</string>
     <string name="menu_delete_offline_stories_sum">Gib Speicherplatz frei, indem du gespeicherte Artikel und Bilder löschst</string>
     <string name="menu_delete_offline_stories_confirmation">Alle Artikel und Bilder wurden gelöscht!</string>
-    <string name="menu_cache_age_select">Wie lange sollen Stories aufbewahrt werden…</string>
+    <string name="menu_cache_age_select">Wie lange sollen Artikel aufbewahrt werden…</string>
     <string name="menu_cache_age_select_sum">Gespeicherte Artikel für das Offline-Lesen löschen</string>
     <string name="menu_cache_age_select_opt_2d">2 Tage (Speicherplatz sparen)</string>
     <string name="menu_cache_age_select_opt_7d">7 Tage</string>
@@ -493,18 +493,18 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="setting_feed_list_order">Reihenfolge der Feedliste…</string>
     <string name="settings_enable_row_global_shared">Global geteilte Artikel anzeigen</string>
     <string name="settings_enable_row_global_shared_sum">Ordner „Global geteilte Artikel“ anzeigen</string>
-    <string name="settings_enable_row_infrequent_stories">Seltene Stories anzeigen</string>
-    <string name="settings_enable_row_infrequent_stories_sum">Ordner „Seltene Artikel“ anzeigen</string>
-    <string name="settings_enable_row_daily_briefing">Tagesüberblick anzeigen</string>
+    <string name="settings_enable_row_infrequent_stories">Artikel selten aktiver Websites anzeigen</string>
+    <string name="settings_enable_row_infrequent_stories_sum">Ordner „Artikel selten aktiver Websites“ anzeigen</string>
+    <string name="settings_enable_row_daily_briefing">Tagesbriefing anzeigen</string>
     <string name="settings_enable_row_daily_briefing_sum">Den Ordner „Tagesbriefing“ anzeigen</string>
-    <string name="settings_enable_row_widely_read_stories">Weit verbreitete Storys anzeigen</string>
-    <string name="settings_enable_row_widely_read_stories_sum">Den Ordner „Weit verbreitete Artikel“ anzeigen</string>
+    <string name="settings_enable_row_widely_read_stories">Viel gelesene Artikel anzeigen</string>
+    <string name="settings_enable_row_widely_read_stories_sum">Den Ordner „Viel gelesene Artikel“ anzeigen</string>
     <string name="settings_enable_row_long_reads">Lange Artikel anzeigen</string>
     <string name="settings_enable_row_long_reads_sum">Ordner „Lange Artikel“ anzeigen</string>
     <string name="settings_enable_row_good_reads">Gute Lektüre anzeigen</string>
     <string name="settings_enable_row_good_reads_sum">Den Ordner „Gute Lektüre“ anzeigen</string>
     <string name="settings_cat_story_list">Artikelliste</string>
-    <string name="settings_cat_story_layout">Beitragslayout</string>
+    <string name="settings_cat_story_layout">Artikellayout</string>
     <string name="settings_app_icon">App-Symbol</string>
     <string name="settings_app_icon_choose">Symbol auswählen</string>
     <string name="settings_app_icon_summary">12 Farbvarianten mit hellen und dunklen Versionen.</string>
@@ -517,7 +517,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_app_icon_appearance_auto">Beides verwenden</string>
     <string name="settings_app_icon_appearance_dark">Dunkel</string>
     <string name="settings_app_icon_appearance_light_caption">Behält das helle Symbol unabhängig von den Geräteeinstellungen bei.</string>
-    <string name="settings_app_icon_appearance_auto_caption">Das Symbol passt sich dem hellen oder dunklen Erscheinungsbild Ihres Geräts an.</string>
+    <string name="settings_app_icon_appearance_auto_caption">Das Symbol passt sich dem hellen oder dunklen Erscheinungsbild deines Geräts an.</string>
     <string name="settings_app_icon_appearance_dark_caption">Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.</string>
     <string name="oldest">Älteste</string>
     <string name="newest">Neueste</string>
@@ -544,8 +544,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="menu_story_thumbnail_preview">Vorschaubild</string>
     <string name="menu_mark_read_on_scroll">Beim Scrollen als gelesen markieren</string>
     <string name="settings_read_filter">Gelesene Artikel filtern…</string>
-    <string name="settings_read_filter_title">Angezeigte Stories</string>
-    <string name="menu_read_filter">Filter für gelesene Stories</string>
+    <string name="settings_read_filter_title">Angezeigte Artikel</string>
+    <string name="menu_read_filter">Filter für gelesene Artikel</string>
     <string-array name="default_read_filter_entries">
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
@@ -567,7 +567,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item quantity="other">%s Abonnenten</item>
     </plurals>
     <plurals name="discover_stories_per_month">
-        <item quantity="one">%s Story/Monat</item>
+        <item quantity="one">%s Artikel/Monat</item>
         <item quantity="other">%s Artikel/Monat</item>
     </plurals>
     <plurals name="story_cluster_header">
@@ -579,25 +579,25 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item quantity="other">+ %d weitere Websites</item>
     </plurals>
     <string-array name="mark_newer_read_options">
-        <item>Neuere Beiträge als gelesen markieren</item>
+        <item>Neuere Artikel als gelesen markieren</item>
         <item>Abbrechen</item>
     </string-array>
     <string name="settings_auto_open_first_unread">Ersten ungelesenen Artikel automatisch öffnen</string>
     <string name="settings_auto_open_first_unread_sum">Den ersten ungelesenen Artikel in der Artikelliste automatisch öffnen</string>
     <string name="settings_mark_read_on_feed_scroll">Artikeltitel beim Scrollen als gelesen markieren</string>
-    <string name="settings_mark_read_on_feed_scroll_sum">Stories automatisch als gelesen markieren, sobald du daran vorbeiscrollst</string>
-    <string name="settings_story_clustering">Verwandte Stories gruppieren</string>
-    <string name="settings_story_clustering_summary">Doppelte Stories aus anderen Feeds unter einem Story-Titel anzeigen</string>
+    <string name="settings_mark_read_on_feed_scroll_sum">Artikel automatisch als gelesen markieren, sobald du daran vorbeiscrollst</string>
+    <string name="settings_story_clustering">Verwandte Artikel gruppieren</string>
+    <string name="settings_story_clustering_summary">Doppelte Artikel aus anderen Feeds unter einem Artikeltitel anzeigen</string>
     <string name="settings_cluster_matches">Cluster-Treffer</string>
-    <string name="settings_cluster_matches_summary">Lege fest, ob Cluster nur doppelte Titel oder auch verwandte Stories anzeigen</string>
+    <string name="settings_cluster_matches_summary">Lege fest, ob Cluster nur doppelte Titel oder auch verwandte Artikel anzeigen</string>
     <string name="settings_story_clustering_save_failed">Einstellung zur Gruppierung von Artikeln konnte nicht gespeichert werden</string>
     <string name="settings_story_clustering_title_only">Nur Titel</string>
     <string name="settings_cluster_mode_title_match_only">Nur Titelübereinstimmungen</string>
-    <string name="settings_cluster_mode_title_match_plus_related">Titelübereinstimmung plus verwandte Beiträge</string>
+    <string name="settings_cluster_mode_title_match_plus_related">Titelübereinstimmung plus verwandte Artikel</string>
     <string name="settings_cluster_mark_read_matches">Übereinstimmende Artikel als gelesen markieren</string>
     <string name="settings_cluster_mark_read_related">Verwandte Artikel als gelesen markieren</string>
-    <string name="settings_cluster_mark_read_matches_summary">Wenn du einen Beitrag liest, markiere auch die passenden Beiträge als gelesen.</string>
-    <string name="settings_cluster_mark_read_related_summary">Wenn du eine Story liest, markiere auch passende und verwandte Stories als gelesen.</string>
+    <string name="settings_cluster_mark_read_matches_summary">Wenn du einen Artikel liest, werden auch passende Artikel als gelesen markiert.</string>
+    <string name="settings_cluster_mark_read_related_summary">Wenn du einen Artikel liest, werden auch passende und verwandte Artikel als gelesen markiert.</string>
     <string name="settings_cluster_mark_read_save_failed">Die Einstellung zum Markieren ähnlicher Artikel als gelesen konnte nicht gespeichert werden</string>
     <string name="settings_story_clustering_title">Titel</string>
     <string name="settings_story_clustering_only">nur</string>
@@ -605,7 +605,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="story_cluster_badge_match">Treffer</string>
     <string name="story_cluster_badge_related">Ähnliche</string>
     <string name="settings_mark_story_read">Artikel als gelesen markieren…</string>
-    <string name="settings_mark_story_read_title">Stories als gelesen markieren</string>
+    <string name="settings_mark_story_read_title">Artikel als gelesen markieren</string>
     <string name="mark_story_read_immediately">Nur bei Auswahl</string>
     <string name="mark_story_read_on_scroll">Beim Scrollen oder Auswählen</string>
     <string name="mark_story_read_1_second">Nach 1 Sekunde</string>
@@ -632,12 +632,12 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/mark_story_read_60_seconds</item>
         <item>@string/mark_story_read_manually</item>
     </string-array>
-    <string name="settings_social">Beiträge teilen</string>
+    <string name="settings_social">Artikel teilen</string>
     <string name="settings_show_public_comments">Öffentliche Kommentare anzeigen</string>
     <string name="settings_reading">Lesen</string>
     <string name="settings_always_show_reading_controls">Lesesteuerungen immer anzeigen</string>
     <string name="settings_always_show_reading_controls_sum">Vorherige, Nächste und andere Lesesteuerungen beim Scrollen sichtbar lassen.</string>
-    <string name="settings_show_ask_ai">„Ask AI“ anzeigen</string>
+    <string name="settings_show_ask_ai">„KI fragen“ anzeigen</string>
     <string name="settings_content_preview">Text der Inhaltsvorschau…</string>
     <string name="settings_thumbnails_style">Vorschaubilder…</string>
     <string name="settings_preview_images_title">Bildervorschau</string>
@@ -648,7 +648,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_preview_images_segment_right_large">R groß</string>
     <string name="settings_notifications">Benachrichtigungen</string>
     <string name="settings_enable_notifications">Benachrichtigungen aktivieren</string>
-    <string name="ask_ai_upgrade_archive">Auf Premium-Archiv upgraden</string>
+    <string name="ask_ai_upgrade_archive">Auf Premium Archive upgraden</string>
     <string name="ask_ai_ask_question">Stelle eine Frage…</string>
     <string name="ask_ai_follow_up">Nachfrage…</string>
     <string name="ask_ai_ask">Fragen</string>
@@ -658,7 +658,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ask_ai_transcribing">Wird transkribiert …</string>
     <string name="ask_ai_microphone_permission_denied">Mikrofonberechtigung verweigert</string>
     <string name="ask_ai_microphone_error">Audio konnte nicht aufgenommen werden</string>
-    <string name="settings_confirm_mark_all_read_note">Beim Markieren aller Stories einer Website als gelesen wird immer eine Bestätigung angefordert. Halte die Schaltfläche zum Markieren als gelesen gedrückt, um weitere Optionen anzuzeigen.</string>
+    <string name="settings_confirm_mark_all_read_note">Beim Markieren aller Website-Artikel als gelesen wird immer eine Bestätigung angefordert. Halte die Schaltfläche zum Markieren als gelesen gedrückt, um weitere Optionen anzuzeigen.</string>
     <string name="settings_confirm_mark_all_read_segment_both">Beide</string>
     <string name="settings_confirm_mark_all_read_segment_folders">Ordner</string>
     <string name="settings_confirm_mark_all_read_segment_never">Nie</string>
@@ -667,17 +667,17 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_after_mark_read_stay">Hier bleiben</string>
     <string name="settings_when_opening_site_title">Beim Öffnen einer Website</string>
     <string name="settings_when_opening_site_stories">Artikel anzeigen</string>
-    <string name="settings_when_opening_site_first_story">Erste Story öffnen</string>
-    <string name="story_cluster_upgrade_archive">Premium-Archiv</string>
+    <string name="settings_when_opening_site_first_story">Ersten Artikel öffnen</string>
+    <string name="story_cluster_upgrade_archive">Premium Archive</string>
     <string-array name="show_content_preview_entries">
         <item>@string/story_content_preview_none</item>
         <item>@string/story_content_preview_small</item>
         <item>@string/story_content_preview_medium</item>
         <item>@string/story_content_preview_large</item>
     </string-array>
-    <string name="story_thumbnail_left_hand_small">Klein, links</string>
-    <string name="story_thumbnail_left_hand_large">Groß links</string>
-    <string name="story_thumbnail_right_hand_small">Klein, rechts</string>
+    <string name="story_thumbnail_left_hand_small">Links, klein</string>
+    <string name="story_thumbnail_left_hand_large">Links, groß</string>
+    <string name="story_thumbnail_right_hand_small">Rechts, klein</string>
     <string name="story_thumbnail_right_hand_large">Rechts, groß</string>
     <string name="story_thumbnail_no_image_preview">Keine Bildvorschau</string>
     <string-array name="thumbnail_style_entries">
@@ -687,29 +687,29 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/story_thumbnail_right_hand_large</item>
         <item>@string/story_thumbnail_no_image_preview</item>
     </string-array>
-    <string name="infrequent_choice_title">Stories von Websites mit</string>
-    <string name="infrequent_5">&lt; 5 Stories/Monat</string>
+    <string name="infrequent_choice_title">Artikel von Websites mit</string>
+    <string name="infrequent_5">&lt; 5 Artikel/Monat</string>
     <string name="infrequent_15">&lt; 15 Artikel/Monat</string>
-    <string name="infrequent_30">&lt; 30 Stories/Monat</string>
+    <string name="infrequent_30">&lt; 30 Artikel/Monat</string>
     <string name="infrequent_60">&lt; 60 Artikel/Monat</string>
     <string name="infrequent_90">&lt; 90 Artikel/Monat</string>
-    <string name="story_intel_dialog_title">Was gefällt Ihnen an diesem Beitrag, und was nicht?</string>
+    <string name="story_intel_dialog_title">Was gefällt dir an diesem Artikel und was nicht?</string>
     <string name="feed_intel_dialog_title">Was gefällt dir an dieser Website und was nicht?</string>
-    <string name="intel_title_header">Story-Titel</string>
+    <string name="intel_title_header">Artikeltitel</string>
     <string name="feed_intel_title_header">Titel</string>
     <string name="intel_tag_header">Artikel-Tags</string>
     <string name="feed_intel_tag_header">Tags</string>
     <string name="intel_author_header">Autoren der Artikel</string>
     <string name="feed_intel_author_header">Autoren</string>
     <string name="intel_feed_header">Alles vom Herausgeber</string>
-    <string name="intel_super_dislike">Stark ablehnen</string>
-    <string name="explainer_super_dislike">Stark ablehnen</string>
+    <string name="intel_super_dislike">Gefällt mir gar nicht</string>
+    <string name="explainer_super_dislike">Gefällt mir gar nicht</string>
     <string name="explainer_like">Gefällt mir</string>
     <string name="explainer_dislike">Gefällt mir nicht</string>
-    <string name="explainer_beats">Beats</string>
+    <string name="explainer_beats">schlägt</string>
     <string name="explainer_example1_header">Ein einziges „Gefällt mir“ hebt beliebig viele „Gefällt mir nicht“ auf</string>
     <string name="explainer_example1_result">Artikel wird in der Fokusansicht angezeigt</string>
-    <string name="explainer_example2_header">Ein einziges starkes Dislike setzt alles andere außer Kraft</string>
+    <string name="explainer_example2_header">Ein einziges „Gefällt mir gar nicht“ setzt alles andere außer Kraft</string>
     <string name="explainer_example2_result">Artikel wird immer ausgeblendet</string>
     <string name="auto">Automatisch</string>
     <string name="light">Hell</string>
@@ -722,17 +722,17 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="sync_status_recounts">Leseaktionen werden nachgeholt…</string>
     <string name="sync_status_ffsync">Wird geladen…</string>
     <string name="sync_status_cleanup">Bereinigung läuft…</string>
-    <string name="sync_status_starred">Aktionen für gespeicherte Stories synchronisieren…</string>
-    <string name="sync_status_stories">Neue Stories werden abgerufen…</string>
+    <string name="sync_status_starred">Aktionen für gespeicherte Artikel werden synchronisiert…</string>
+    <string name="sync_status_stories">Neue Artikel werden abgerufen…</string>
     <string name="sync_status_unreads">%sungelesene Artikel werden gespeichert…</string>
-    <string name="sync_status_images">%d-Bilder werden gespeichert…</string>
+    <string name="sync_status_images">%d Bilder werden gespeichert…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Feed wird hinzugefügt</string>
     <string name="sync_status_done">Alles erledigt</string>
     <string name="volume_key_navigation">Navigation mit Lautstärketasten…</string>
     <string name="off">Aus</string>
-    <string name="volume_up_next">Pfeil nach oben = nächster Artikel</string>
-    <string name="volume_down_next">Abwärts = nächste Story</string>
+    <string name="volume_up_next">Lauter = nächster Artikel</string>
+    <string name="volume_down_next">Leiser = nächster Artikel</string>
     <string-array name="volume_key_navigation_entries">
         <item>@string/off</item>
         <item>@string/volume_up_next</item>
@@ -740,7 +740,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     </string-array>
     <string name="settings_load_next_on_mark_read">Nach dem Lesen den nächsten Feed/Ordner öffnen</string>
     <string name="settings_load_next_on_mark_read_summary">Nach dem Markieren als gelesen den nächsten Feed/Ordner laden</string>
-    <string name="settings_confirm_mark_all_read">Bestätigen, dass alles als gelesen markiert wird für…</string>
+    <string name="settings_confirm_mark_all_read">Bestätigung für „Alle als gelesen markieren“ bei…</string>
     <string name="none">Keines von beiden</string>
     <string name="feed_and_folder">Feeds und Ordner</string>
     <string name="folder_only">Nur Ordner</string>
@@ -749,15 +749,15 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/folder_only</item>
         <item>@string/none</item>
     </string-array>
-    <string name="settings_confirm_mark_range_read">Bestätigen, dass ältere/neuere Beiträge als gelesen markiert werden</string>
+    <string name="settings_confirm_mark_range_read">Bestätigung für „Ältere/Neuere als gelesen markieren“</string>
     <string name="settings_ltr_gesture_action">Nach rechts wischen in der Artikelliste…</string>
     <string name="gest_action_none">Keine Aktion</string>
     <string name="gest_action_back">Zur vorherigen Liste zurückkehren</string>
-    <string name="gest_action_toggle_read">Gelesen-Status der Story umschalten</string>
+    <string name="gest_action_toggle_read">Gelesen-Status des Artikels umschalten</string>
     <string name="gest_action_markread">Artikel als gelesen markieren</string>
     <string name="gest_action_markunread">Artikel als ungelesen markieren</string>
-    <string name="gest_action_save">Story speichern</string>
-    <string name="gest_action_unsave">Story nicht mehr speichern</string>
+    <string name="gest_action_save">Artikel speichern</string>
+    <string name="gest_action_unsave">Artikel nicht mehr speichern</string>
     <string name="gest_action_statistics">Website-Statistiken</string>
     <string-array name="ltr_gesture_action_entries">
         <item>@string/gest_action_back</item>
@@ -769,7 +769,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item>@string/gest_action_unsave</item>
         <item>@string/gest_action_statistics</item>
     </string-array>
-    <string name="settings_rtl_gesture_action">Nach links wischen beim Story-Titel…</string>
+    <string name="settings_rtl_gesture_action">Nach links wischen auf dem Artikeltitel…</string>
     <string-array name="rtl_gesture_action_entries">
         <item>@string/gest_action_toggle_read</item>
         <item>@string/gest_action_none</item>
@@ -821,11 +821,11 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="notification_permissions_rationale">Bevor du erneut versuchst, Benachrichtigungen zu aktivieren, musst du die Berechtigung für Benachrichtigungen manuell in den Einstellungen der App hinzufügen</string>
     <string name="write_storage_permission_opml">Für den OPML-Export ist eine Schreibberechtigung für den Speicher erforderlich</string>
     <string name="story_saved">Artikel als gespeichert markiert</string>
-    <string name="story_unsaved">Story als nicht gespeichert markiert</string>
-    <string name="story_read">Story als gelesen markiert</string>
+    <string name="story_unsaved">Artikel als nicht gespeichert markiert</string>
+    <string name="story_read">Artikel als gelesen markiert</string>
     <string name="story_unread">Artikel als ungelesen markiert</string>
     <string name="unread_stories">Ungelesene Artikel</string>
-    <string name="focused_stories">Fokussierte Artikel</string>
+    <string name="focused_stories">Fokus-Artikel</string>
     <string name="saved_stories">Gespeicherte Artikel</string>
     <string name="short_next_story">Nächster Artikel</string>
     <string name="short_previous_story">Vorheriger Artikel</string>
@@ -834,14 +834,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="short_page_down_key">Leertaste</string>
     <string name="short_page_up">Bild auf</string>
     <string name="short_page_up_key">\u21E7 Leertaste</string>
-    <string name="short_next_unread_story">Nächste ungelesene Story</string>
+    <string name="short_next_unread_story">Nächster ungelesener Artikel</string>
     <string name="short_toggle_read_unread">Gelesen/Ungelesen umschalten</string>
     <string name="short_save_unsave_story">Artikel speichern/nicht mehr speichern</string>
     <string name="short_open_in_browser">Im Browser öffnen</string>
-    <string name="short_share_this_story">Diesen Beitrag teilen</string>
+    <string name="short_share_this_story">Diesen Artikel teilen</string>
     <string name="short_scroll_to_comments">Zu den Kommentaren scrollen</string>
     <string name="short_open_story_trainer">Artikel-Trainer öffnen</string>
-    <string name="short_open_all_stories">Alle Stories der Website öffnen</string>
+    <string name="short_open_all_stories">Alle Website-Artikel öffnen</string>
     <string name="short_switch_views">Ansichten wechseln</string>
     <string name="short_add_site">Website hinzufügen</string>
     <string name="registering">Registrierung läuft …</string>
@@ -850,46 +850,46 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="parent_folder">Übergeordneter Ordner</string>
     <string name="folder_added">Ordner hinzugefügt</string>
     <string name="new_folder_parent">In: %1$s</string>
-    <string name="ui_014f8b8d982f">Füge benutzerdefinierte Stichwortfilter hinzu, die zu eigenen Abschnitten der Zusammenfassung werden</string>
+    <string name="ui_014f8b8d982f">Füge benutzerdefinierte Stichwortfilter hinzu, die zu eigenen Abschnitten des Briefings werden</string>
     <string name="ui_05392d13e2f2">Noch keine Briefings</string>
     <string name="ui_0a4444676244">Speichern fehlgeschlagen</string>
     <string name="ui_0a8adac9d6d5">Zeitplan</string>
     <string name="ui_13b7bfcac438">Wird verarbeitet…</string>
     <string name="ui_2eb56be3c2d9">Quellen</string>
-    <string name="ui_314ef761a08f">Schlüsselwortbereich hinzufügen</string>
+    <string name="ui_314ef761a08f">Stichwortabschnitt hinzufügen</string>
     <string name="ui_3af014d03229">Feedquelle</string>
     <string name="ui_3e4a49541e18">Bereits gelesene Artikel einschließen</string>
-    <string name="ui_4a24ff492222">Erhalte täglich eine Übersicht mit deinen wichtigsten Artikeln</string>
-    <string name="ui_4e9f59082144">Premium-Archiv</string>
+    <string name="ui_4a24ff492222">Erhalte tägliche Briefings mit all deinen wichtigsten Artikeln</string>
+    <string name="ui_4e9f59082144">Premium Archive</string>
     <string name="ui_5b170811b992">Auf Premium Archive upgraden</string>
-    <string name="ui_67a31d6fa581">Lege fest, wohin Benachrichtigungen zur Tagesübersicht gesendet werden sollen</string>
+    <string name="ui_67a31d6fa581">Lege fest, wohin Benachrichtigungen zum Tagesbriefing gesendet werden sollen</string>
     <string name="ui_67d0be0dd546">Lege fest, wie viel enthalten sein soll und wie es formuliert wird</string>
     <string name="ui_68c2cc7f0cea">Modell</string>
     <string name="ui_710089545189">Länge &amp; Stil</string>
     <string name="ui_753a22b2eb61">Benachrichtigungen</string>
     <string name="ui_771ee100da2b">Stichwortabschnitte</string>
     <string name="ui_7c522fb68f07">Erhalte eine Zusammenfassung deiner wichtigsten Artikel – zu den von dir gewünschten Zeiten.</string>
-    <string name="ui_7f7e956b2244">Richte das tägliche Briefing ein, um eine Zusammenfassung der für dich wichtigsten Artikel zu erstellen.</string>
+    <string name="ui_7f7e956b2244">Richte das Tagesbriefing ein, um eine Zusammenfassung der für dich wichtigsten Artikel zu erstellen.</string>
     <string name="ui_7ff5a6dafd80">Abschnitte</string>
     <string name="ui_80f7bcbc57b0">Lege fest, wie oft und wann dein Briefing erstellt wird</string>
     <string name="ui_a4d5830966af">Erstelle automatisch Briefings nach deinem Zeitplan</string>
-    <string name="ui_a92076d4b9e3">Wähle das Modell für dein tägliches Briefing</string>
+    <string name="ui_a92076d4b9e3">Wähle das Modell für dein Tagesbriefing</string>
     <string name="ui_a970fbbd6df8">Automatisch generieren</string>
-    <string name="ui_a9dc7e4dcba7">Einstellungen für die tägliche Übersicht</string>
+    <string name="ui_a9dc7e4dcba7">Tagesbriefing-Einstellungen</string>
     <string name="ui_bbfa773e5a63">Schließen</string>
-    <string name="ui_c2d462f8f6da">Wähle aus, welche Artikel für das tägliche Briefing infrage kommen</string>
-    <string name="ui_d521ea8640b5">Tägliche Zusammenfassung erstellen</string>
+    <string name="ui_c2d462f8f6da">Wähle aus, welche Artikel für das Tagesbriefing infrage kommen</string>
+    <string name="ui_d521ea8640b5">Tagesbriefing erstellen</string>
     <string name="ui_df174a3f2faa">Aktiviert</string>
-    <string name="ui_df2164622bcf">Tagesübersicht kann nicht geladen werden</string>
-    <string name="ui_eaed56ec84ae">Tägliche Zusammenfassung</string>
+    <string name="ui_df2164622bcf">Tagesbriefing kann nicht geladen werden</string>
+    <string name="ui_eaed56ec84ae">Tagesbriefing</string>
     <string name="ui_efc007a393f6">Speichern</string>
-    <string name="ui_f530db58b3e5">Schlagwörter</string>
-    <string name="ui_fdafe86c10a4">Es werden nur Bereiche mit passenden Beiträgen aufgenommen</string>
+    <string name="ui_f530db58b3e5">Stichwörter</string>
+    <string name="ui_fdafe86c10a4">Es werden nur Abschnitte mit passenden Artikeln aufgenommen</string>
     <string name="ui_690910f6ed17">OPML importieren</string>
     <string name="ui_244fd5e426f0">OPML exportieren</string>
     <string name="ui_768e0c1c6957">Titel</string>
     <string name="ui_e17c700c2575">Gespeicherte Tags</string>
-    <string name="ui_6e914f494515">Beitrags-Tags</string>
+    <string name="ui_6e914f494515">Artikel-Tags</string>
     <string name="ui_e912ab619a72">Weitere Tags</string>
     <string name="i18n_add_site">Website hinzufügen</string>
     <string name="i18n_add">Hinzufügen</string>
@@ -987,8 +987,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     </plurals>
     <string name="setup_included_in_bundle">Im Paket enthalten</string>
     <string name="setup_include_in_bundle">Ins Paket aufnehmen</string>
-    <string name="setup_reader_ready_add_feeds_anytime">Dein Reader ist bereit. Füge jederzeit Feeds über „Hinzufügen + Websites entdecken“ hinzu.</string>
-    <string name="setup_reading_list_yours">Eine Leseliste ganz nach Ihrem Geschmack. Alles, was Sie ausgewählt haben, an einem Ort.</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Dein Reader ist bereit. Füge jederzeit Feeds über „Websites hinzufügen + entdecken“ hinzu.</string>
+    <string name="setup_reading_list_yours">Eine Leseliste ganz nach deinem Geschmack. Alles, was du ausgewählt hast, an einem Ort.</string>
     <plurals name="setup_feed_count">
         <item quantity="one">%1$d Feed</item>
         <item quantity="other">%1$d Feeds</item>
@@ -999,14 +999,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="setup_samuelclay_on_x_description">Vom Ersteller von NewsBlur</string>
     <string name="setup_newsblur_on_x_description">Neuigkeiten und Updates</string>
     <plurals name="setup_feeds_could_not_be_added">
-        <item quantity="one">Feed %1$d konnte nicht zu %2$s hinzugefügt werden. %3$s</item>
+        <item quantity="one">%1$d Feed konnte nicht zu %2$s hinzugefügt werden. %3$s</item>
         <item quantity="other">%1$d Feeds konnten nicht zu %2$s hinzugefügt werden. %3$s</item>
     </plurals>
     <plurals name="setup_stories_per_month">
-        <item quantity="one">%1$d Story/Monat</item>
+        <item quantity="one">%1$d Artikel/Monat</item>
         <item quantity="other">%1$d Artikel/Monat</item>
     </plurals>
-    <string name="setup_feed_stale_last_story">Veraltet · letzte Story %1$s</string>
+    <string name="setup_feed_stale_last_story">Veraltet · letzter Artikel %1$s</string>
     <string name="add_site_url_or_search">%1$s oder suchen</string>
     <string name="add_site_choose_folder">Ordner auswählen</string>
     <string name="add_site_top_level">— Oberste Ebene —</string>
@@ -1054,14 +1054,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
         <item quantity="one">%d Tag</item>
         <item quantity="other">%d Tage</item>
     </plurals>
-    <string name="discover_create_web_feed">Webfeed erstellen</string>
+    <string name="discover_create_web_feed">Web-Feed erstellen</string>
     <string name="discover_search_news_topic">Nach einem Nachrichtenthema suchen</string>
     <string name="discover_top_stories">Top-Artikel</string>
     <string name="discover_choose_a_topic">Thema auswählen</string>
     <string name="discover_choose_a_category">Kategorie auswählen</string>
     <string name="discover_add_google_news_feed">Google-News-Feed hinzufügen</string>
     <string name="discover_news_topic_world">Welt</string>
-    <string name="discover_news_topic_nation">Land</string>
+    <string name="discover_news_topic_nation">Inland</string>
     <string name="discover_news_topic_business">Wirtschaft</string>
     <string name="discover_news_topic_technology">Technologie</string>
     <string name="discover_news_topic_entertainment">Unterhaltung</string>
@@ -1091,12 +1091,12 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="briefing_style_editorial">Redaktionell</string>
     <string name="briefing_style_headlines">Schlagzeilen</string>
     <string name="briefing_filter">Filter</string>
-    <string name="briefing_keyword_section">Schlüsselwortabschnitt %1$d</string>
+    <string name="briefing_keyword_section">Stichwortabschnitt %1$d</string>
     <string name="briefing_remove_keyword_section">Entfernen</string>
     <string name="briefing_generate_now">Jetzt erstellen</string>
     <string name="briefing_saving_settings">Einstellungen des Tagesbriefings werden gespeichert …</string>
     <plurals name="briefing_group_story_count">
-        <item quantity="one">%d Beitrag</item>
+        <item quantity="one">%d Artikel</item>
         <item quantity="other">%d Artikel</item>
     </plurals>
     <string name="language_dialog_title">Sprache auswählen</string>
@@ -1111,7 +1111,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="discover_folder_top_level">Oberste Ebene</string>
     <string name="discover_add_to_folder">Zum Ordner hinzufügen</string>
     <string name="add_site_shortcut_trending">Im Trend</string>
-    <string name="add_site_freshness_stale">Veraltet %1$s</string>
+    <string name="add_site_freshness_stale">Veraltet seit %1$s</string>
     <plurals name="compact_minutes_ago">
         <item quantity="one">vor %d Min.</item>
         <item quantity="other">vor %d Min.</item>
@@ -1140,8 +1140,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_activity_user_signed_up">%1$s hat sich bei Newsblur registriert</string>
     <string name="profile_activity_you_followed">Du folgst jetzt %1$s</string>
     <string name="profile_activity_user_followed">%1$s folgt jetzt %2$s</string>
-    <string name="profile_activity_you_favorited_comments">Du hast %1$s Kommentare zu %2$s favorisiert</string>
-    <string name="profile_activity_user_favorited_comments">%1$s gefällt %2$s Kommentare zu %3$s</string>
+    <string name="profile_activity_you_favorited_comments">Du hast den Kommentar von %1$s zu %2$s favorisiert</string>
+    <string name="profile_activity_user_favorited_comments">%1$s hat den Kommentar von %2$s zu %3$s favorisiert</string>
     <string name="profile_activity_you_replied">Du hast %1$s geantwortet</string>
     <string name="profile_activity_user_replied">%1$s hat auf %2$s geantwortet</string>
     <string name="profile_activity_you_shared">Du hast %1$s geteilt</string>
@@ -1149,7 +1149,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="profile_interaction_following_you">%1$s folgt dir jetzt</string>
     <string name="profile_interaction_following_user">%1$s folgt jetzt %2$s</string>
     <string name="profile_interaction_favorited_your_comments">%1$s gefällt dein Kommentar zu %2$s</string>
-    <string name="profile_interaction_favorited_user_comments">%1$s gefällt %2$s\'s Kommentare zu %3$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s hat den Kommentar von %2$s zu %3$s favorisiert</string>
     <string name="profile_interaction_replied_your_comment">%1$s hat auf deinen Kommentar geantwortet</string>
     <string name="profile_interaction_replied_your_reply">%1$s hat auf deine Antwort geantwortet</string>
     <string name="profile_interaction_replied_user_comment">%1$s hat auf den Kommentar von %2$s geantwortet</string>
