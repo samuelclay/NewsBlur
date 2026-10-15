@@ -85,11 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Impossibile aggiungere %@.</string>
+			<string>Impossibile aggiungere %@ feed.</string>
 			<key>one</key>
-			<string>Impossibile aggiungere %@.</string>
+			<string>Impossibile aggiungere %@ feed.</string>
 			<key>other</key>
-			<string>Impossibile aggiungere %@.</string>
+			<string>Impossibile aggiungere %@ feed.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

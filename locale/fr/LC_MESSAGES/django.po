@@ -1937,7 +1937,7 @@ msgid "Followers"
 msgstr "Abonnés"
 
 msgid "Following"
-msgstr "Abonnements"
+msgstr "Abonné"
 
 msgid ""
 "For power users who need precision. Write regular expressions that match against story titles, body text, "

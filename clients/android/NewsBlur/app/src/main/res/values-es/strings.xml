@@ -1088,8 +1088,8 @@ a personas para hablar del mundo.</string>
     <string name="briefing_frequency_weekly">Semanal</string>
     <string name="briefing_preferred_time">Hora preferida</string>
     <string name="briefing_time_morning">Mañana</string>
-    <string name="briefing_time_afternoon">Tarde</string>
-    <string name="briefing_time_evening">Noche</string>
+    <string name="briefing_time_afternoon">Mediodía</string>
+    <string name="briefing_time_evening">Tarde</string>
     <string name="briefing_preferred_day">Día preferido</string>
     <string name="briefing_day_sunday">Domingo</string>
     <string name="briefing_day_monday">Lunes</string>
@@ -1175,15 +1175,15 @@ a personas para hablar del mundo.</string>
     <string name="profile_interaction_replied_user_reply">%1$s respondió a la respuesta de %2$s</string>
     <string name="profile_interaction_reshared">%1$s volvió a compartir %2$s</string>
     <string name="briefing_section_top_stories">Artículos destacados</string>
-    <string name="briefing_section_top_stories_subtitle">Los artículos más importantes de tus fuentes</string>
-    <string name="briefing_section_infrequent">De sitios que publican poco</string>
-    <string name="briefing_section_infrequent_subtitle">Artículos de fuentes que publican poco</string>
+    <string name="briefing_section_top_stories_subtitle">Los artículos más importantes de tus feeds</string>
+    <string name="briefing_section_infrequent">De sitios poco activos</string>
+    <string name="briefing_section_infrequent_subtitle">Artículos de feeds que publican con poca frecuencia</string>
     <string name="briefing_section_long_read">Lecturas largas para más tarde</string>
-    <string name="briefing_section_long_read_subtitle">Artículos extensos que merecen que les dediques tiempo</string>
+    <string name="briefing_section_long_read_subtitle">Artículos más largos a los que merece la pena dedicar tiempo</string>
     <string name="briefing_section_classifier_match">Según tus intereses</string>
-    <string name="briefing_section_classifier_match_subtitle">Artículos sobre temas y autores que has entrenado</string>
-    <string name="briefing_section_follow_up">Novedades</string>
-    <string name="briefing_section_follow_up_subtitle">Nuevas publicaciones de fuentes que has leído hace poco</string>
+    <string name="briefing_section_classifier_match_subtitle">Artículos que coinciden con tus temas y autores entrenados</string>
+    <string name="briefing_section_follow_up">Seguimiento</string>
+    <string name="briefing_section_follow_up_subtitle">Nuevas publicaciones de los feeds que has leído recientemente</string>
     <string name="briefing_section_widely_covered">Con amplia cobertura</string>
-    <string name="briefing_section_widely_covered_subtitle">Artículos cubiertos por 3 o más fuentes</string>
+    <string name="briefing_section_widely_covered_subtitle">Artículos cubiertos por 3 o más feeds</string>
 </resources>

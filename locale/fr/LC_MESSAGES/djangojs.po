@@ -5908,7 +5908,7 @@ msgstr "Achats"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Court"
+msgstr "Bas"
 
 msgid "Show"
 msgstr "Afficher"
@@ -7575,7 +7575,7 @@ msgid "Widely Read on NewsBlur"
 msgstr "Les plus lus sur NewsBlur"
 
 msgid "Widely covered"
-msgstr "Largement couvert"
+msgstr "Largement relayés"
 
 msgid "Widen pane for controls"
 msgstr "Élargir le volet pour afficher les commandes"

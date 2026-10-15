@@ -655,7 +655,7 @@ le persone per parlare del mondo.</string>
     <string name="settings_enable_notifications">Attiva le notifiche</string>
     <string name="ask_ai_upgrade_archive">Passa a Premium Archive</string>
     <string name="ask_ai_ask_question">Fai una domanda…</string>
-    <string name="ask_ai_follow_up">Domanda successiva…</string>
+    <string name="ask_ai_follow_up">Fai un\'altra domanda…</string>
     <string name="ask_ai_ask">Chiedi</string>
     <string name="ask_ai_send">Invia</string>
     <string name="ask_ai_reask">Chiedi di nuovo</string>
@@ -1155,8 +1155,8 @@ le persone per parlare del mondo.</string>
     <string name="profile_activity_user_subscribed">%1$s si è iscritto a %2$s</string>
     <string name="profile_activity_you_saved">Hai salvato %1$s</string>
     <string name="profile_activity_user_saved">%1$s ha salvato %2$s</string>
-    <string name="profile_activity_you_signed_up">Ti sei iscritto a NewsBlur</string>
-    <string name="profile_activity_user_signed_up">%1$s si è iscritto a NewsBlur</string>
+    <string name="profile_activity_you_signed_up">Ti sei registrato a NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s si è registrato a NewsBlur</string>
     <string name="profile_activity_you_followed">Hai iniziato a seguire %1$s</string>
     <string name="profile_activity_user_followed">%1$s ha iniziato a seguire %2$s</string>
     <string name="profile_activity_you_favorited_comments">Hai aggiunto ai preferiti i commenti di %1$s su %2$s</string>
@@ -1176,14 +1176,14 @@ le persone per parlare del mondo.</string>
     <string name="profile_interaction_reshared">%1$s ha ricondiviso %2$s</string>
     <string name="briefing_section_top_stories">Articoli principali</string>
     <string name="briefing_section_top_stories_subtitle">Gli articoli più importanti dei tuoi feed</string>
-    <string name="briefing_section_infrequent">Da siti che pubblicano raramente</string>
-    <string name="briefing_section_infrequent_subtitle">Articoli da feed che pubblicano raramente</string>
+    <string name="briefing_section_infrequent">Dai siti aggiornati di rado</string>
+    <string name="briefing_section_infrequent_subtitle">Articoli dei feed che pubblicano raramente</string>
     <string name="briefing_section_long_read">Articoli lunghi da leggere più tardi</string>
-    <string name="briefing_section_long_read_subtitle">Articoli lunghi per cui vale la pena ritagliarsi del tempo</string>
+    <string name="briefing_section_long_read_subtitle">Articoli più lunghi che meritano di essere letti con calma</string>
     <string name="briefing_section_classifier_match">In base ai tuoi interessi</string>
-    <string name="briefing_section_classifier_match_subtitle">Articoli che corrispondono agli argomenti e agli autori che hai selezionato</string>
-    <string name="briefing_section_follow_up">Aggiornamenti</string>
-    <string name="briefing_section_follow_up_subtitle">Nuovi post dai feed che hai letto di recente</string>
-    <string name="briefing_section_widely_covered">Ripresi da più fonti</string>
-    <string name="briefing_section_widely_covered_subtitle">Articoli ripresi da almeno 3 feed</string>
+    <string name="briefing_section_classifier_match_subtitle">Articoli che corrispondono agli argomenti e agli autori del tuo addestramento</string>
+    <string name="briefing_section_follow_up">Sviluppi</string>
+    <string name="briefing_section_follow_up_subtitle">Nuovi articoli dai feed che hai letto di recente</string>
+    <string name="briefing_section_widely_covered">Ampia copertura</string>
+    <string name="briefing_section_widely_covered_subtitle">Articoli presenti in almeno 3 feed</string>
 </resources>

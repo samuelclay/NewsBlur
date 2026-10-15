@@ -1569,7 +1569,7 @@ msgstr "Inferior"
 
 msgctxt "summary length"
 msgid "Brief"
-msgstr "Resumido"
+msgstr "Breve"
 
 msgid "Briefing"
 msgstr "Resumo"
@@ -5096,8 +5096,8 @@ msgstr[0] ""
 "%(count)s artigo adicionado à fila para categorização (restantes: %(remaining)s). As categorias aparecerão "
 "conforme os artigos forem processados."
 msgstr[1] ""
-"%(count)s artigos adicionados à fila para categorização (%(remaining)s restantes). As categorias aparecerão"
-" conforme os artigos forem processados."
+"%(count)s artigos adicionados à fila para categorização (restantes: %(remaining)s). As categorias "
+"aparecerão conforme os artigos forem processados."
 
 #, python-format
 msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
@@ -5871,7 +5871,7 @@ msgstr "Compras"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Curto"
+msgstr "Baixo"
 
 msgid "Show"
 msgstr "Mostrar"
