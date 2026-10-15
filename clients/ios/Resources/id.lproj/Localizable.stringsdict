@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%@ tidak dapat ditambahkan.</string>
+			<string>%@ feed tidak dapat ditambahkan.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

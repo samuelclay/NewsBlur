@@ -190,7 +190,7 @@ msgstr "%(username)s แชร์ <span class=\"NB-interaction-sharedstory-title
 
 #, python-format
 msgid "%(username)s signed up for NewsBlur."
-msgstr "%(username)s สมัครใช้ NewsBlur"
+msgstr "%(username)s สมัครใช้งาน NewsBlur แล้ว"
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"

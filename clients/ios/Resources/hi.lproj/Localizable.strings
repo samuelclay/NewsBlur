@@ -23,7 +23,7 @@
 "%@ ago" = "%@ पहले";
 "%@ categories to choose from" = "चुनने के लिए %@ श्रेणियाँ";
 "%@ comments" = "%@ टिप्पणियाँ";
-"%@ could not be added." = "%@ जोड़ा नहीं जा सका।";
+"%@ could not be added." = "%@ फ़ीड नहीं जोड़ी जा सकीं।";
 "%@ days" = "%@ दिन";
 "%@ feed" = "%@ फ़ीड";
 "%@ feeds" = "%@ फ़ीड";
@@ -311,12 +311,12 @@
 "Export Preferences" = "प्राथमिकताएँ एक्सपोर्ट करें";
 "Export trained stories from folders as RSS feeds" = "फ़ोल्डरों से प्रशिक्षित लेखों को RSS फ़ीड के रूप में निर्यात करें";
 "Extra Large" = "अतिरिक्त बड़ा";
-"Extra Short [grid height]" = "बहुत छोटा";
+"Extra Short [grid height]" = "अतिरिक्त छोटा";
 "Extra Small" = "अतिरिक्त छोटा";
 "Extra Tall" = "अतिरिक्त लंबा";
-"Extra small" = "अत्यंत छोटा";
+"Extra small" = "अतिरिक्त छोटा";
 "Faster" = "तेज़";
-"Favorited" = "पसंदीदा";
+"Favorited" = "पसंदीदा में जोड़ा गया";
 "Favoriting" = "पसंद किया जा रहा है";
 "Feed List" = "फ़ीड सूची";
 "Feed Title" = "फ़ीड का शीर्षक";
@@ -369,7 +369,7 @@
 "Frequency" = "आवृत्ति";
 "Friday" = "शुक्रवार";
 "Friends" = "मित्र";
-"From infrequent sites" = "कम अपडेट होने वाली साइटों से";
+"From infrequent sites" = "कम प्रकाशित होने वाली साइटों से";
 "Full Screen" = "पूर्ण स्क्रीन";
 "Full screen" = "पूर्ण स्क्रीन";
 "Full window" = "पूरी विंडो";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "मध्यम";
 "Medium [preview length]" = "मध्यम";
 "Medium [text size]" = "मध्यम";
-"Medium [theme]" = "मध्यम";
+"Medium [theme]" = "धूसर";
 "Model" = "मॉडल";
 "Monday" = "सोमवार";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "ज़्यादा लेखों में डिस्क की जगह ज़्यादा लगती है, लेकिन इसके अलावा प्रदर्शन पर कोई ध्यान देने योग्य असर नहीं पड़ता।";

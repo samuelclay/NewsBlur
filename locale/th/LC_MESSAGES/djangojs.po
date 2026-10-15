@@ -1085,7 +1085,7 @@ msgid "After marking feed/folder read"
 msgstr "หลังจากทำเครื่องหมายว่าฟีด/โฟลเดอร์อ่านแล้ว"
 
 msgid "Afternoon"
-msgstr "ช่วงบ่าย"
+msgstr "ช่วงเที่ยง"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -2479,7 +2479,7 @@ msgid "Even geekier"
 msgstr "สายกี๊กยิ่งกว่า"
 
 msgid "Evening"
-msgstr "เย็น"
+msgstr "ช่วงเย็น"
 
 msgid "Every"
 msgstr "ทุก"
@@ -3254,7 +3254,7 @@ msgid "Here's what to do:"
 msgstr "สิ่งที่ต้องทำมีดังนี้:"
 
 msgid "Hidden Gems"
-msgstr "เพชรในตม"
+msgstr "ของดีที่ซ่อนอยู่"
 
 msgid "Hide"
 msgstr "ซ่อน"
@@ -3671,7 +3671,7 @@ msgid "Long reads for later"
 msgstr "บทความยาวไว้อ่านทีหลัง"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "บทความที่ยาวขึ้นซึ่งควรหาเวลาอ่าน"
+msgstr "บทความยาวที่ควรหาเวลาอ่าน"
 
 msgid "MCP Server"
 msgstr "เซิร์ฟเวอร์ MCP"
@@ -3900,10 +3900,10 @@ msgid "More from Reddit"
 msgstr "เพิ่มเติมจาก Reddit"
 
 msgid "Morning"
-msgstr "ตอนเช้า"
+msgstr "ช่วงเช้า"
 
 msgid "Morning + Afternoon"
-msgstr "เช้า + บ่าย"
+msgstr "เช้า + เที่ยง"
 
 msgid "Morning + Evening"
 msgstr "เช้า + เย็น"

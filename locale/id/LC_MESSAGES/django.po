@@ -200,7 +200,7 @@ msgstr "%(username)s membagikan <span class=\"NB-interaction-sharedstory-title N
 
 #, python-format
 msgid "%(username)s signed up for NewsBlur."
-msgstr "%(username)s mendaftar untuk NewsBlur."
+msgstr "%(username)s mendaftar ke NewsBlur."
 
 #, python-format
 msgid "%(weekday)s, %(date)s %(time)s"
