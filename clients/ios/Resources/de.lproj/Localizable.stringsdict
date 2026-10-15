@@ -477,9 +477,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Bilder von vor %@ Tag</string>
+			<string>Bilder des letzten %@ Tages</string>
 			<key>other</key>
-			<string>Bilder von vor %@ Tagen</string>
+			<string>Bilder der letzten %@ Tage</string>
 		</dict>
 	</dict>
 	<key>Images from %@ hours ago</key>
@@ -493,9 +493,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Bilder von vor %@ Stunde</string>
+			<string>Bilder der letzten %@ Stunde</string>
 			<key>other</key>
-			<string>Bilder von vor %@ Stunden</string>
+			<string>Bilder der letzten %@ Stunden</string>
 		</dict>
 	</dict>
 	<key>Imported %@ sites</key>
@@ -621,9 +621,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Text von vor %@ Tag</string>
+			<string>Text des letzten %@ Tages</string>
 			<key>other</key>
-			<string>Text von vor %@ Tagen</string>
+			<string>Text der letzten %@ Tage</string>
 		</dict>
 	</dict>
 	<key>Text from %@ hours ago</key>
@@ -637,9 +637,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Text von vor %@ Stunde</string>
+			<string>Text der letzten %@ Stunde</string>
 			<key>other</key>
-			<string>Text von vor %@ Stunden</string>
+			<string>Text der letzten %@ Stunden</string>
 		</dict>
 	</dict>
 	<key>Updated %@ days ago</key>

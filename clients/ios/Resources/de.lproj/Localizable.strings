@@ -398,9 +398,9 @@
 "Ignore system theme, use screen brightness instead" = "Systemdesign ignorieren und stattdessen die Bildschirmhelligkeit verwenden";
 "Image Preview" = "Bildvorschau";
 "Image actions" = "Bildaktionen";
-"Images from %@ days ago" = "Bilder von vor %@ Tagen";
-"Images from %@ hours ago" = "Bilder von vor %@ Stunden";
-"Images from last hour" = "Bilder aus der letzten Stunde";
+"Images from %@ days ago" = "Bilder der letzten %@ Tage";
+"Images from %@ hours ago" = "Bilder der letzten %@ Stunden";
+"Images from last hour" = "Bilder der letzten Stunde";
 "Images from yesterday" = "Bilder von gestern";
 "Import & Export" = "Importieren & Exportieren";
 "Import OPML" = "OPML importieren";
@@ -921,8 +921,8 @@
 "Text" = "Text";
 "Text Size" = "Textgröße";
 "Text View" = "Textansicht";
-"Text from %@ days ago" = "Text von vor %@ Tagen";
-"Text from %@ hours ago" = "Text von vor %@ Stunden";
+"Text from %@ days ago" = "Text der letzten %@ Tage";
+"Text from %@ hours ago" = "Text der letzten %@ Stunden";
 "Text from last hour" = "Text der letzten Stunde";
 "Text from yesterday" = "Text von gestern";
 "Text view" = "Textansicht";
