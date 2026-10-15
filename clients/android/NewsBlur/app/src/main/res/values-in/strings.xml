@@ -1117,8 +1117,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="profile_activity_user_subscribed">%1$s berlangganan %2$s</string>
     <string name="profile_activity_you_saved">Anda menyimpan %1$s</string>
     <string name="profile_activity_user_saved">%1$s menyimpan %2$s</string>
-    <string name="profile_activity_you_signed_up">Anda mendaftar ke Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s mendaftar ke Newsblur</string>
+    <string name="profile_activity_you_signed_up">Anda mendaftar untuk NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s mendaftar untuk NewsBlur</string>
     <string name="profile_activity_you_followed">Anda mengikuti %1$s</string>
     <string name="profile_activity_user_followed">%1$s mengikuti %2$s</string>
     <string name="profile_activity_you_favorited_comments">Anda memfavoritkan komentar %1$s di %2$s</string>

@@ -1136,8 +1136,8 @@ om over de wereld te praten.</string>
     <string name="profile_activity_user_subscribed">%1$s heeft zich geabonneerd op %2$s</string>
     <string name="profile_activity_you_saved">Je hebt %1$s opgeslagen</string>
     <string name="profile_activity_user_saved">%1$s heeft %2$s opgeslagen</string>
-    <string name="profile_activity_you_signed_up">Je hebt je aangemeld voor Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s heeft zich aangemeld voor Newsblur</string>
+    <string name="profile_activity_you_signed_up">Je hebt je aangemeld voor NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s heeft zich aangemeld voor NewsBlur</string>
     <string name="profile_activity_you_followed">Je bent nu een volger van %1$s</string>
     <string name="profile_activity_user_followed">%1$s is %2$s gaan volgen</string>
     <string name="profile_activity_you_favorited_comments">Je hebt de reacties van %1$s op %2$s als favoriet gemarkeerd</string>

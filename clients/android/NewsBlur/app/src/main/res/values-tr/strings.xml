@@ -1136,8 +1136,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="profile_activity_user_subscribed">%1$s, %2$s akışına abone oldu</string>
     <string name="profile_activity_you_saved">Bir haber kaydettiniz: %1$s</string>
     <string name="profile_activity_user_saved">%1$s bir haber kaydetti: %2$s</string>
-    <string name="profile_activity_you_signed_up">Newsblur\'a kaydoldunuz</string>
-    <string name="profile_activity_user_signed_up">%1$s, Newsblur\'a kaydoldu</string>
+    <string name="profile_activity_you_signed_up">NewsBlur için kaydoldunuz</string>
+    <string name="profile_activity_user_signed_up">%1$s, NewsBlur için kaydoldu</string>
     <string name="profile_activity_you_followed">%1$s kişisini takip ettiniz</string>
     <string name="profile_activity_user_followed">%1$s, %2$s kişisini takip etmeye başladı</string>
     <string name="profile_activity_you_favorited_comments">%2$s üzerindeki %1$s kullanıcısının yorumlarını favorilerinize eklediniz</string>

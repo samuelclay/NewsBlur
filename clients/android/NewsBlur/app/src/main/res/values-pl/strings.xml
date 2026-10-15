@@ -1174,8 +1174,8 @@
     <string name="profile_activity_user_subscribed">%1$s subskrybuje %2$s</string>
     <string name="profile_activity_you_saved">Zapisano %1$s</string>
     <string name="profile_activity_user_saved">%1$s zapisuje %2$s</string>
-    <string name="profile_activity_you_signed_up">Zarejestrowano konto w Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s dołącza do Newsblur</string>
+    <string name="profile_activity_you_signed_up">Zarejestrowałeś(-aś) się w NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s zarejestrował(-a) się w NewsBlur</string>
     <string name="profile_activity_you_followed">Zaczęto obserwować %1$s</string>
     <string name="profile_activity_user_followed">%1$s zaczyna obserwować %2$s</string>
     <string name="profile_activity_you_favorited_comments">Dodano do ulubionych komentarze użytkownika %1$s do %2$s</string>

@@ -1155,8 +1155,8 @@ a personas para hablar del mundo.</string>
     <string name="profile_activity_user_subscribed">%1$s se suscribió a %2$s</string>
     <string name="profile_activity_you_saved">Guardaste %1$s</string>
     <string name="profile_activity_user_saved">%1$s guardó %2$s</string>
-    <string name="profile_activity_you_signed_up">Te registraste en Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s se registró en Newsblur</string>
+    <string name="profile_activity_you_signed_up">Te registraste en NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s se registró en NewsBlur</string>
     <string name="profile_activity_you_followed">Has empezado a seguir a %1$s</string>
     <string name="profile_activity_user_followed">%1$s siguió a %2$s</string>
     <string name="profile_activity_you_favorited_comments">Marcaste como favoritos los comentarios de %1$s en %2$s</string>

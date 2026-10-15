@@ -1155,8 +1155,8 @@
     <string name="profile_activity_user_subscribed">%1$s נרשם/ה לקבלת עדכונים מ־%2$s</string>
     <string name="profile_activity_you_saved">שמרת את %1$s</string>
     <string name="profile_activity_user_saved">%1$s שמר/ה את %2$s</string>
-    <string name="profile_activity_you_signed_up">נרשמת ל-Newsblur</string>
-    <string name="profile_activity_user_signed_up">%1$s נרשם/ה ל-Newsblur</string>
+    <string name="profile_activity_you_signed_up">נרשמת ל־NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s נרשם ל־NewsBlur</string>
     <string name="profile_activity_you_followed">התחלת לעקוב אחר %1$s</string>
     <string name="profile_activity_user_followed">%1$s התחיל/ה לעקוב אחרי %2$s</string>
     <string name="profile_activity_you_favorited_comments">הוספת למועדפים את התגובות של %1$s על %2$s</string>
