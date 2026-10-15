@@ -3784,7 +3784,7 @@ msgid "Long reads for later"
 msgstr "Articoli lunghi da leggere più tardi"
 
 msgid "Longer articles worth setting time aside for"
-msgstr "Articoli più lunghi che meritano di dedicare del tempo alla lettura"
+msgstr "Articoli più lunghi che meritano di essere letti con calma"
 
 msgid "MCP Server"
 msgstr "Server MCP"
@@ -4187,7 +4187,7 @@ msgid "New password"
 msgstr "Nuova password"
 
 msgid "New posts from feeds you recently read"
-msgstr "Nuovi post dai feed che hai letto di recente"
+msgstr "Nuovi articoli dai feed che hai letto di recente"
 
 msgid "New tag name"
 msgstr "Nuovo nome del tag"
@@ -5884,7 +5884,7 @@ msgstr "Shopping"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Corto"
+msgstr "Basso"
 
 msgid "Show"
 msgstr "Mostra"

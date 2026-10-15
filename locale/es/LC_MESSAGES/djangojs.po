@@ -1155,7 +1155,7 @@ msgid "After marking feed/folder read"
 msgstr "Después de marcar el feed/carpeta como leído"
 
 msgid "Afternoon"
-msgstr "Tarde"
+msgstr "Mediodía"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -2577,7 +2577,7 @@ msgid "Even geekier"
 msgstr "Aún más friki"
 
 msgid "Evening"
-msgstr "Noche"
+msgstr "Tarde"
 
 msgid "Every"
 msgstr "Cada"
@@ -2998,7 +2998,7 @@ msgid "Follow up to 64 sites"
 msgstr "Sigue hasta 64 sitios"
 
 msgid "Follow up..."
-msgstr "Haz otra pregunta..."
+msgstr "Pregunta de seguimiento..."
 
 msgid "Follow-ups"
 msgstr "Seguimiento"
@@ -3140,7 +3140,7 @@ msgid "From"
 msgstr "Desde"
 
 msgid "From infrequent sites"
-msgstr "De sitios con poca actividad"
+msgstr "De sitios poco activos"
 
 msgid "Full"
 msgstr "Completo"
@@ -3965,7 +3965,7 @@ msgstr "Medios"
 
 msgctxt "card height"
 msgid "Medium"
-msgstr "Mediana"
+msgstr "Medio"
 
 msgctxt "summary length"
 msgid "Medium"
@@ -4031,10 +4031,10 @@ msgid "Morning"
 msgstr "Mañana"
 
 msgid "Morning + Afternoon"
-msgstr "Mañana + tarde"
+msgstr "Mañana + mediodía"
 
 msgid "Morning + Evening"
-msgstr "Mañana + noche"
+msgstr "Mañana + tarde"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "Feeds con más suscriptores esta semana"
@@ -5887,7 +5887,7 @@ msgstr "Compras"
 
 msgctxt "card height"
 msgid "Short"
-msgstr "Baja"
+msgstr "Bajo"
 
 msgid "Show"
 msgstr "Mostrar"
@@ -6235,7 +6235,7 @@ msgid "Stories can stay unread forever"
 msgstr "Los artículos pueden permanecer sin leer para siempre"
 
 msgid "Stories covered by 3+ feeds"
-msgstr "Artículos publicados en 3 o más feeds"
+msgstr "Artículos cubiertos por 3 o más feeds"
 
 #, python-format
 msgid "Stories from %(start_date)s to %(end_date)s"
@@ -6527,7 +6527,7 @@ msgstr "Actúa: marca como leído, guarda con etiquetas y notas, suscríbete o c
 
 msgctxt "card height"
 msgid "Tall"
-msgstr "Alta"
+msgstr "Alto"
 
 msgid "Target category name"
 msgstr "Nombre de categoría destino"

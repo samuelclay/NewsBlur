@@ -4751,8 +4751,8 @@ msgstr "Agrupamento de artigos - NewsBlur"
 
 msgid "Story Shared"
 msgid_plural "Stories Shared"
-msgstr[0] "Notícia compartilhada"
-msgstr[1] "Notícias compartilhadas"
+msgstr[0] "Artigo compartilhado"
+msgstr[1] "Artigos compartilhados"
 
 msgid "Story Tagging"
 msgstr "Tags de artigos"

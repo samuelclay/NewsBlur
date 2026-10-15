@@ -23,7 +23,7 @@
 "%@ ago" = "hace %@";
 "%@ categories to choose from" = "%@ categorías entre las que elegir";
 "%@ comments" = "%@ comentarios";
-"%@ could not be added." = "No se pudo añadir %@.";
+"%@ could not be added." = "No se pudieron añadir %@ feeds.";
 "%@ days" = "%@ días";
 "%@ feed" = "feed de %@";
 "%@ feeds" = "%@ feeds";
@@ -122,8 +122,8 @@
 "After 60 Seconds" = "Después de 60 segundos";
 "After 60 seconds" = "Después de 60 segundos";
 "After mark read" = "Después de marcar como leído";
-"Afternoon" = "Tarde";
-"Afternoon Briefing" = "Resumen de la tarde";
+"Afternoon" = "Mediodía";
+"Afternoon Briefing" = "Resumen del mediodía";
 "Alert after no new stories for" = "Avisar si no hay artículos nuevos durante";
 "All" = "Todos";
 "All Done" = "Listo";
@@ -175,7 +175,7 @@
 "Bullets" = "Viñetas";
 "Bundle folder name" = "Nombre de la carpeta del paquete";
 "Cancel" = "Cancelar";
-"Cannot reply to this story" = "No se puede responder a esta noticia";
+"Cannot reply to this story" = "No se puede responder a este artículo";
 "Change Story List" = "Cambiar lista de artículos";
 "Choose Icon" = "Elegir icono";
 "Choose Story List" = "Elegir lista de artículos";
@@ -299,8 +299,8 @@
 "Enter the name of the new folder." = "Introduce el nombre de la nueva carpeta.";
 "Enter title phrase..." = "Introduce una frase del título...";
 "Enter your existing NewsBlur username or email and NewsBlur password." = "Introduce tu nombre de usuario o correo electrónico de NewsBlur y tu contraseña de NewsBlur.";
-"Evening" = "Noche";
-"Evening Briefing" = "Resumen vespertino";
+"Evening" = "Tarde";
+"Evening Briefing" = "Resumen de la tarde";
 "Every story from every site is archived and searchable forever" = "Todos los artículos de todos los sitios se archivan y se pueden buscar para siempre";
 "Everything in the archive subscription, of course" = "Todo lo incluido en Premium Archive, por supuesto";
 "Everything in the premium subscription, of course" = "Todo lo que incluye la suscripción premium, por supuesto";
@@ -310,11 +310,11 @@
 "Explore interests" = "Explorar intereses";
 "Export Preferences" = "Exportar preferencias";
 "Export trained stories from folders as RSS feeds" = "Exportar artículos entrenados de las carpetas como feeds RSS";
-"Extra Large" = "Extra grande";
+"Extra Large" = "Muy grande";
 "Extra Short [grid height]" = "Muy bajo";
 "Extra Small" = "Muy pequeño";
-"Extra Tall" = "Extra alto";
-"Extra small" = "Extrapequeño";
+"Extra Tall" = "Muy alto";
+"Extra small" = "Muy pequeño";
 "Faster" = "Más rápido";
 "Favorited" = "Añadido a favoritos";
 "Favoriting" = "Añadiendo a favoritos";
@@ -354,7 +354,7 @@
 "Follow up to 10,000 sites" = "Sigue hasta 10.000 sitios";
 "Follow up to 4,096 sites" = "Seguir hasta 4096 sitios";
 "Follow up..." = "Pregunta de seguimiento...";
-"Follow-ups" = "Seguimientos";
+"Follow-ups" = "Seguimiento";
 "Followed" = "Seguido";
 "Followers label" = "Seguidores";
 "Following [button state]" = "Siguiendo";
@@ -474,8 +474,8 @@
 "Long press" = "Mantener pulsado";
 "Long press on feeds and folders" = "Mantén pulsados los feeds y las carpetas";
 "Long press on story titles" = "Mantener pulsados los títulos de los artículos";
-"Long reads for later" = "Lecturas largas para después";
-"Longer articles worth setting time aside for" = "Artículos más extensos que merecen que les dediques tiempo";
+"Long reads for later" = "Lecturas largas para más tarde";
+"Longer articles worth setting time aside for" = "Artículos más largos a los que merece la pena dedicar tiempo";
 "Magazine" = "Revista";
 "Manage" = "Administrar";
 "Manage Account on the Web" = "Gestionar cuenta en la web";
@@ -527,12 +527,12 @@
 "Medium [grid height]" = "Medio";
 "Medium [preview length]" = "Medio";
 "Medium [text size]" = "Mediano";
-"Medium [theme]" = "Medio";
+"Medium [theme]" = "Gris";
 "Model" = "Modelo";
 "Monday" = "Lunes";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Más noticias ocupan más espacio en disco, pero no afectan notablemente al rendimiento.";
 "Morning" = "Mañana";
-"Morning Briefing" = "Resumen matutino";
+"Morning Briefing" = "Resumen de la mañana";
 "Most Recent Story" = "Artículo más reciente";
 "Most used first" = "Más usados primero";
 "Move" = "Mover";
@@ -675,7 +675,7 @@
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Los suscriptores Premium pueden elegir un icono personalizado de NewsBlur. Cada estilo incluye variantes claras y oscuras.";
 "Preview images" = "Imágenes de vista previa";
 "Preview — not yet subscribed" = "Vista previa — aún no suscrito";
-"Previewing..." = "Vista previa...";
+"Previewing..." = "Cargando vista previa...";
 "Previous Folder" = "Carpeta anterior";
 "Previous Site" = "Sitio anterior";
 "Previous Story" = "Artículo anterior";
@@ -808,7 +808,7 @@
 "Shared Stories label" = "Etiqueta Artículos compartidos";
 "Sharing" = "Compartiendo";
 "Short [grid height]" = "Bajo";
-"Short [preview length]" = "Breve";
+"Short [preview length]" = "Corto";
 "Show" = "Mostrar";
 "Show Ask AI" = "Mostrar «Preguntar a la IA»";
 "Show Changes" = "Mostrar cambios";
@@ -871,7 +871,7 @@
 "Stories from feeds that rarely publish" = "Artículos de feeds que publican con poca frecuencia";
 "Stories in a folder" = "Artículos de una carpeta";
 "Stories in a site" = "Artículos de un sitio";
-"Stories matching your trained topics and authors" = "Artículos que coinciden con los temas y autores que has entrenado";
+"Stories matching your trained topics and authors" = "Artículos que coinciden con tus temas y autores entrenados";
 "Stories per Month" = "Artículos al mes";
 "Stories to store" = "Artículos para almacenar";
 "Storing past %@ days" = "Almacenando los últimos %@ días";

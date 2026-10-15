@@ -23,7 +23,7 @@
 "%@ ago" = "há %@";
 "%@ categories to choose from" = "%@ categorias para escolher";
 "%@ comments" = "%@ comentários";
-"%@ could not be added." = "Não foi possível adicionar %@.";
+"%@ could not be added." = "Não foi possível adicionar %@ feeds.";
 "%@ days" = "%@ dias";
 "%@ feed" = "feed %@";
 "%@ feeds" = "%@ feeds";
@@ -175,7 +175,7 @@
 "Bullets" = "Marcadores";
 "Bundle folder name" = "Nome da pasta do pacote";
 "Cancel" = "Cancelar";
-"Cannot reply to this story" = "Não é possível responder a esta notícia";
+"Cannot reply to this story" = "Não é possível responder a este artigo";
 "Change Story List" = "Alterar lista de artigos";
 "Choose Icon" = "Escolher ícone";
 "Choose Story List" = "Escolher lista de artigos";
@@ -313,11 +313,11 @@
 "Extra Large" = "Extra grande";
 "Extra Short [grid height]" = "Muito baixo";
 "Extra Small" = "Extra pequeno";
-"Extra Tall" = "Extra alto";
+"Extra Tall" = "Muito alto";
 "Extra small" = "Extra pequeno";
 "Faster" = "Mais rápido";
 "Favorited" = "Curtido";
-"Favoriting" = "Favoritando";
+"Favoriting" = "Curtindo";
 "Feed List" = "Lista de feeds";
 "Feed Title" = "Título do feed";
 "Feed and story list" = "Lista de feeds e de artigos";
@@ -354,7 +354,7 @@
 "Follow up to 10,000 sites" = "Acompanhe até 10.000 sites";
 "Follow up to 4,096 sites" = "Acompanhe até 4.096 sites";
 "Follow up..." = "Pergunta complementar...";
-"Follow-ups" = "Acompanhamentos";
+"Follow-ups" = "Desdobramentos";
 "Followed" = "Seguindo";
 "Followers label" = "Seguidores";
 "Following [button state]" = "Seguindo";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Médio";
 "Medium [preview length]" = "Médio";
 "Medium [text size]" = "Médio";
-"Medium [theme]" = "Médio";
+"Medium [theme]" = "Cinza";
 "Model" = "Modelo";
 "Monday" = "Segunda-feira";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mais artigos ocupam mais espaço em disco, mas não afetam o desempenho de forma perceptível.";
@@ -1048,7 +1048,7 @@
 "Warm" = "Quente";
 "Web" = "Web";
 "Web Feeds from any website, even without RSS" = "Feeds da web de qualquer site, mesmo sem RSS";
-"Wednesday" = "quarta-feira";
+"Wednesday" = "Quarta-feira";
 "Weekly" = "Semanal";
 "Welcome back" = "Bem-vindo de volta";
 "What do you 👍 %1$@ and 👎 %2$@ about this site?" = "Do que você 👍 %1$@ e do que 👎 %2$@ neste site?";

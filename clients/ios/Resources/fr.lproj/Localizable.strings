@@ -23,7 +23,7 @@
 "%@ ago" = "il y a %@";
 "%@ categories to choose from" = "%@ catégories au choix";
 "%@ comments" = "%@ commentaires";
-"%@ could not be added." = "Impossible d’ajouter %@.";
+"%@ could not be added." = "Impossible d’ajouter %@ flux.";
 "%@ days" = "%@ jours";
 "%@ feed" = "flux %@";
 "%@ feeds" = "%@ flux";
@@ -166,7 +166,7 @@
 "BRIEFING SETTINGS" = "PARAMÈTRES DU BRIEFING";
 "Back" = "Retour";
 "Back to story titles" = "Retour aux titres des articles";
-"Based on your interests" = "En fonction de vos centres d’intérêt";
+"Based on your interests" = "Selon vos centres d’intérêt";
 "Black" = "Noir";
 "Bottom" = "Bas";
 "Brightness Override" = "Forcer la luminosité";
@@ -175,7 +175,7 @@
 "Bullets" = "Puces";
 "Bundle folder name" = "Nom du dossier de la collection";
 "Cancel" = "Annuler";
-"Cannot reply to this story" = "Impossible de répondre à cette publication";
+"Cannot reply to this story" = "Impossible de répondre à cet article";
 "Change Story List" = "Modifier la liste des articles";
 "Choose Icon" = "Choisir une icône";
 "Choose Story List" = "Choisir la liste des articles";
@@ -354,7 +354,7 @@
 "Follow up to 10,000 sites" = "Suivez jusqu’à 10 000 sites";
 "Follow up to 4,096 sites" = "Suivez jusqu’à 4 096 sites";
 "Follow up..." = "Question complémentaire…";
-"Follow-ups" = "Suivis";
+"Follow-ups" = "Suivi";
 "Followed" = "Suivi";
 "Followers label" = "Libellé des abonnés";
 "Following [button state]" = "Abonné";
@@ -474,7 +474,7 @@
 "Long press" = "Appui long";
 "Long press on feeds and folders" = "Appuyez longuement sur les flux et les dossiers";
 "Long press on story titles" = "Appui long sur les titres des articles";
-"Long reads for later" = "Articles longs à lire plus tard";
+"Long reads for later" = "Lectures longues pour plus tard";
 "Longer articles worth setting time aside for" = "Des articles plus longs qui méritent qu’on leur consacre du temps";
 "Magazine" = "Magazine";
 "Manage" = "Gérer";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Moyen";
 "Medium [preview length]" = "Moyen";
 "Medium [text size]" = "Moyen";
-"Medium [theme]" = "Moyen";
+"Medium [theme]" = "Gris";
 "Model" = "Modèle";
 "Monday" = "Lundi";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Afficher plus d’articles utilise davantage d’espace disque, sans effet notable sur les performances.";
@@ -806,8 +806,8 @@
 "Share with comment" = "Partager avec un commentaire";
 "Shared" = "Partagé";
 "Shared Stories label" = "Libellé « Articles partagés »";
-"Sharing" = "Partage";
-"Short [grid height]" = "Court";
+"Sharing" = "Partage en cours";
+"Short [grid height]" = "Bas";
 "Short [preview length]" = "Court";
 "Show" = "Afficher";
 "Show Ask AI" = "Afficher « Demander à l’IA »";
@@ -1058,7 +1058,7 @@
 "WiFi + Cellular" = "Wi-Fi + réseau cellulaire";
 "WiFi only" = "Wi-Fi uniquement";
 "Widely Read Stories" = "Articles les plus lus";
-"Widely covered" = "Largement couvert";
+"Widely covered" = "Largement relayés";
 "Widget Site Stories" = "Articles des sites du widget";
 "Widget Sites" = "Sites du widget";
 "Widget Stories" = "Articles du widget";
