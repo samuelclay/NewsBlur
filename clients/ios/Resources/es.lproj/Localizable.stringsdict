@@ -15,7 +15,7 @@
 			<key>many</key>
 			<string>No se pudieron añadir %1$@ feeds a %2$@.</string>
 			<key>one</key>
-			<string>No se pudo añadir %1$@ fuente a %2$@.</string>
+			<string>No se pudo añadir %1$@ feed a %2$@.</string>
 			<key>other</key>
 			<string>No se pudieron añadir %1$@ feeds a %2$@.</string>
 		</dict>
@@ -33,9 +33,9 @@
 			<key>many</key>
 			<string>%@ sitios del widget</string>
 			<key>one</key>
-			<string>Sitio de widgets %@</string>
+			<string>%@ sitio del widget</string>
 			<key>other</key>
-			<string>%@ sitios de widgets</string>
+			<string>%@ sitios del widget</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -51,7 +51,7 @@
 			<key>many</key>
 			<string>%@ categorías entre las que elegir</string>
 			<key>one</key>
-			<string>%@ categoría entre las que elegir</string>
+			<string>%@ categoría para elegir</string>
 			<key>other</key>
 			<string>%@ categorías disponibles</string>
 		</dict>
@@ -123,7 +123,7 @@
 			<key>many</key>
 			<string>%@ feeds</string>
 			<key>one</key>
-			<string>%@ fuente</string>
+			<string>%@ feed</string>
 			<key>other</key>
 			<string>%@ feeds</string>
 		</dict>
@@ -211,11 +211,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ artículos destacados</string>
+			<string>%@ artículos de Enfoque</string>
 			<key>one</key>
-			<string>%@ noticia seleccionada</string>
+			<string>%@ artículo de Enfoque</string>
 			<key>other</key>
-			<string>%@ artículos destacados</string>
+			<string>%@ artículos de Enfoque</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -283,7 +283,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ compartidos</string>
+			<string>%@ veces compartido</string>
 			<key>one</key>
 			<string>%@ vez compartido</string>
 			<key>other</key>
@@ -321,9 +321,9 @@
 			<key>many</key>
 			<string>%@ artículos</string>
 			<key>one</key>
-			<string>%@ historia</string>
+			<string>%@ artículo</string>
 			<key>other</key>
-			<string>%@ historias</string>
+			<string>%@ artículos</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -337,9 +337,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Quedan %@ historias</string>
+			<string>Quedan %@ artículos</string>
 			<key>one</key>
-			<string>Queda %@ historia</string>
+			<string>Queda %@ artículo</string>
 			<key>other</key>
 			<string>Quedan %@ artículos</string>
 		</dict>
@@ -391,11 +391,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ historias sin leer</string>
+			<string>%@ artículos sin leer</string>
 			<key>one</key>
-			<string>%@ noticia sin leer</string>
+			<string>%@ artículo sin leer</string>
 			<key>other</key>
-			<string>%@ historias sin leer</string>
+			<string>%@ artículos sin leer</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -431,7 +431,7 @@
 			<key>one</key>
 			<string>Añadir %1$@ feed a la carpeta «%2$@»</string>
 			<key>other</key>
-			<string>Añadir %1$@ fuentes a la carpeta «%2$@»</string>
+			<string>Añadir %1$@ feeds a la carpeta «%2$@»</string>
 		</dict>
 	</dict>
 	<key>Added %1$@ feeds to %2$@.</key>
@@ -445,11 +445,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Se añadieron %1$@ fuentes a %2$@.</string>
+			<string>Se añadieron %1$@ feeds a %2$@.</string>
 			<key>one</key>
 			<string>Se añadió %1$@ feed a %2$@.</string>
 			<key>other</key>
-			<string>Se añadieron %1$@ fuentes a %2$@.</string>
+			<string>Se añadieron %1$@ feeds a %2$@.</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -463,7 +463,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Se añadieron %@ fuentes.</string>
+			<string>Se añadieron %@ feeds.</string>
 			<key>one</key>
 			<string>Se añadió %@ feed.</string>
 			<key>other</key>
@@ -501,7 +501,7 @@
 			<key>many</key>
 			<string>¿Eliminar %@ sitios?</string>
 			<key>one</key>
-			<string>¿Eliminar el sitio %@?</string>
+			<string>¿Eliminar %@ sitio?</string>
 			<key>other</key>
 			<string>¿Eliminar %@ sitios?</string>
 		</dict>
@@ -589,9 +589,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Marcar como leídas estas %@ historias</string>
+			<string>Marcar como leídos estos %@ artículos</string>
 			<key>one</key>
-			<string>Marcar como leídas %@ historias</string>
+			<string>Marcar %@ artículo como leído</string>
 			<key>other</key>
 			<string>Marcar como leídos estos %@ artículos</string>
 		</dict>
@@ -609,9 +609,9 @@
 			<key>many</key>
 			<string>Silenciar %@ sitios</string>
 			<key>one</key>
-			<string>Silenciar %@ sitios</string>
+			<string>Silenciar %@ sitio</string>
 			<key>other</key>
-			<string>Silenciar sitios %@</string>
+			<string>Silenciar %@ sitios</string>
 		</dict>
 	</dict>
 	<key>Older than %@ days</key>
@@ -643,11 +643,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Historias compartidas</string>
+			<string>Artículos compartidos</string>
 			<key>one</key>
-			<string>Historia compartida</string>
+			<string>Artículo compartido</string>
 			<key>other</key>
-			<string>Historias compartidas</string>
+			<string>Artículos compartidos</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -663,7 +663,7 @@
 			<key>many</key>
 			<string>Conservando los últimos %@ días</string>
 			<key>one</key>
-			<string>Almacenar los últimos %@ días</string>
+			<string>Almacenando desde hace %@ día</string>
 			<key>other</key>
 			<string>Conservando los últimos %@ días</string>
 		</dict>
@@ -681,9 +681,9 @@
 			<key>many</key>
 			<string>Almacenando las últimas %@ horas</string>
 			<key>one</key>
-			<string>Almacenar las últimas %@ horas</string>
+			<string>Almacenando desde hace %@ hora</string>
 			<key>other</key>
-			<string>Conservar las últimas %@ horas</string>
+			<string>Almacenando las últimas %@ horas</string>
 		</dict>
 	</dict>
 	<key>Text from %@ days ago</key>
