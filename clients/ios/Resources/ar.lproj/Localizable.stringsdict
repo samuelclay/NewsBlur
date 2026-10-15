@@ -109,17 +109,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>تعذّر إضافة %@.</string>
+			<string>تعذّرت إضافة %@ خلاصات.</string>
 			<key>many</key>
-			<string>تعذّرت إضافة %@.</string>
+			<string>تعذّرت إضافة %@ خلاصة.</string>
 			<key>one</key>
-			<string>تعذّرت إضافة %@.</string>
+			<string>تعذّرت إضافة خلاصة واحدة (%@).</string>
 			<key>other</key>
-			<string>تعذّرت إضافة %@.</string>
+			<string>تعذّرت إضافة %@ خلاصة.</string>
 			<key>two</key>
-			<string>تعذّر إضافة %@.</string>
+			<string>تعذّرت إضافة %@ خلاصتين.</string>
 			<key>zero</key>
-			<string>تعذّرت إضافة %@.</string>
+			<string>تعذّرت إضافة %@ خلاصة.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

@@ -4355,7 +4355,7 @@ msgid "Morning + Afternoon"
 msgstr "الصباح + بعد الظهر"
 
 msgid "Morning + Evening"
-msgstr "الصباح والمساء"
+msgstr "الصباح + المساء"
 
 msgid "Most subscribed-to feeds this week"
 msgstr "الخلاصات الأكثر اشتراكًا هذا الأسبوع"
@@ -4893,7 +4893,7 @@ msgstr "كلمة المرور القديمة"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "أقدم من: %(month)s %(day)s %(year)s"
+msgstr "أقدم من: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "قبل تاريخ:"
@@ -6533,7 +6533,7 @@ msgstr "حسّن العبارة التعريفية للموقع. إذا تم ا�
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "قديم %(date)s"
+msgstr "قديم منذ %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"

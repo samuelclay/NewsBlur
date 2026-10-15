@@ -23,7 +23,7 @@
 "%@ ago" = "%@ önce";
 "%@ categories to choose from" = "Aralarından seçim yapabileceğiniz %@ kategori";
 "%@ comments" = "%@ yorum";
-"%@ could not be added." = "%@ eklenemedi.";
+"%@ could not be added." = "%@ akış eklenemedi.";
 "%@ days" = "%@ gün";
 "%@ feed" = "%@ akışı";
 "%@ feeds" = "%@ akış";
@@ -310,10 +310,10 @@
 "Explore interests" = "İlgi alanlarını keşfet";
 "Export Preferences" = "Tercihleri Dışa Aktar";
 "Export trained stories from folders as RSS feeds" = "Klasörlerdeki eğitilmiş haberleri RSS akışları olarak dışa aktar";
-"Extra Large" = "Ekstra büyük";
+"Extra Large" = "Çok büyük";
 "Extra Short [grid height]" = "Çok kısa";
-"Extra Small" = "Çok Küçük";
-"Extra Tall" = "Ekstra uzun";
+"Extra Small" = "Çok küçük";
+"Extra Tall" = "Çok uzun";
 "Extra small" = "Çok küçük";
 "Faster" = "Daha hızlı";
 "Favorited" = "Favorilere eklendi";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Orta";
 "Medium [preview length]" = "Orta";
 "Medium [text size]" = "Orta";
-"Medium [theme]" = "Orta";
+"Medium [theme]" = "Gri";
 "Model" = "Model";
 "Monday" = "Pazartesi";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Daha fazla haber daha çok disk alanı kaplar; bunun dışında performansı fark edilir biçimde etkilemez.";

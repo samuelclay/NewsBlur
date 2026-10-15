@@ -1938,7 +1938,7 @@ msgid "Followers"
 msgstr "Подписчики"
 
 msgid "Following"
-msgstr "Подписки"
+msgstr "Вы подписаны"
 
 msgid ""
 "For power users who need precision. Write regular expressions that match against story titles, body text, "
@@ -4773,9 +4773,9 @@ msgstr "Группировка статей — NewsBlur"
 
 msgid "Story Shared"
 msgid_plural "Stories Shared"
-msgstr[0] "Статья опубликована"
-msgstr[1] "Статьи опубликованы"
-msgstr[2] "Статей опубликовано"
+msgstr[0] "Поделились статьёй"
+msgstr[1] "Поделились статьями"
+msgstr[2] "Поделились статьями"
 
 msgid "Story Tagging"
 msgstr "Теги статей"

@@ -4726,7 +4726,7 @@ msgstr "Haber Kümelendirme - NewsBlur"
 
 msgid "Story Shared"
 msgid_plural "Stories Shared"
-msgstr[0] "Haber Paylaşıldı"
+msgstr[0] "Paylaşılan haberler"
 
 msgid "Story Tagging"
 msgstr "Haberleri etiketleme"

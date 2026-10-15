@@ -3057,7 +3057,7 @@ msgid "From"
 msgstr "Başlangıç"
 
 msgid "From infrequent sites"
-msgstr "Nadiren güncellenen sitelerden"
+msgstr "Seyrek güncellenen sitelerden"
 
 msgid "Full"
 msgstr "Tam"
@@ -6045,7 +6045,7 @@ msgstr ""
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Güncelliğini yitirmiş %(date)s"
+msgstr "Güncel değil · %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"

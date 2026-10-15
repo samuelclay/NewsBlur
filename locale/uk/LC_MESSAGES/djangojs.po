@@ -1226,7 +1226,7 @@ msgid "After marking feed/folder read"
 msgstr "Після позначення стрічки/папки як прочитаної"
 
 msgid "Afternoon"
-msgstr "Після обіду"
+msgstr "День"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -4647,7 +4647,7 @@ msgstr "Старий пароль"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
-msgstr "Старіші за: %(month)s %(day)s %(year)s"
+msgstr "Старіші за: %(day)s %(month)s %(year)s"
 
 msgid "Older:"
 msgstr "Старіші:"
@@ -6263,7 +6263,7 @@ msgstr "Оновіть слоган сайту. Якщо його виберут
 
 #, python-format
 msgid "Stale %(date)s"
-msgstr "Застарілий %(date)s"
+msgstr "Без оновлень з %(date)s"
 
 #, python-format
 msgid "Stale — last story %(date)s"

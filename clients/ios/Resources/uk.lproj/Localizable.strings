@@ -23,7 +23,7 @@
 "%@ ago" = "%@ тому";
 "%@ categories to choose from" = "На вибір %@ категорій";
 "%@ comments" = "%@ коментарів";
-"%@ could not be added." = "Не вдалося додати %@.";
+"%@ could not be added." = "Не вдалося додати стрічок: %@.";
 "%@ days" = "%@ днів";
 "%@ feed" = "стрічка %@";
 "%@ feeds" = "%@ стрічок";
@@ -122,8 +122,8 @@
 "After 60 Seconds" = "Через 60 секунд";
 "After 60 seconds" = "Через 60 секунд";
 "After mark read" = "Після позначення як прочитаного";
-"Afternoon" = "Після обіду";
-"Afternoon Briefing" = "Післяобідній огляд";
+"Afternoon" = "День";
+"Afternoon Briefing" = "Денний огляд";
 "Alert after no new stories for" = "Сповіщати, якщо нових статей немає протягом";
 "All" = "Усі";
 "All Done" = "Готово";
@@ -167,7 +167,7 @@
 "Back" = "Назад";
 "Back to story titles" = "Назад до заголовків статей";
 "Based on your interests" = "На основі ваших інтересів";
-"Black" = "Чорний";
+"Black" = "Чорна";
 "Bottom" = "Унизу";
 "Brightness Override" = "Перевизначення яскравості";
 "Brightness threshold" = "Поріг яскравості";
@@ -175,7 +175,7 @@
 "Bullets" = "Маркери";
 "Bundle folder name" = "Назва папки добірки";
 "Cancel" = "Скасувати";
-"Cannot reply to this story" = "Не можна відповісти на цю публікацію";
+"Cannot reply to this story" = "Не можна відповісти на цю статтю";
 "Change Story List" = "Змінити список статей";
 "Choose Icon" = "Вибрати значок";
 "Choose Story List" = "Вибрати список статей";
@@ -260,7 +260,7 @@
 "Deleting saved search..." = "Видалення збереженого пошуку...";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Після видалення облікового запису назавжди буде видалено ваші стрічки, збережені статті та дані облікового запису. Цю дію не можна скасувати.";
 "Deleting..." = "Видалення...";
-"Discover" = "Огляд";
+"Discover" = "Знайти сайти";
 "Discover more to read" = "Знайдіть ще більше цікавого";
 "Discover related sites" = "Знайти схожі сайти";
 "Discover related stories across your archive" = "Знаходьте пов’язані статті у своєму архіві";
@@ -316,7 +316,7 @@
 "Extra Tall" = "Дуже високий";
 "Extra small" = "Дуже малий";
 "Faster" = "Швидше";
-"Favorited" = "Додано до вибраного";
+"Favorited" = "Додано до обраного";
 "Favoriting" = "Додавання в обране";
 "Feed List" = "Список стрічок";
 "Feed Title" = "Назва стрічки";
@@ -357,9 +357,9 @@
 "Follow-ups" = "Продовження";
 "Followed" = "Ви стежите";
 "Followers label" = "Підписники";
-"Following [button state]" = "Стежите";
-"Following [in progress]" = "Стеження";
-"Following [label under the number of people this profile follows]" = "Підписки";
+"Following [button state]" = "Ви стежите";
+"Following [in progress]" = "Підписка...";
+"Following [label under the number of people this profile follows]" = "Стежить";
 "Font" = "Шрифт";
 "Font Size" = "Розмір шрифту";
 "Font..." = "Шрифт...";
@@ -386,7 +386,7 @@
 "Go to the %@ feed in NewsBlur." = "Перейти до стрічки %@ у NewsBlur.";
 "Go to the %@ folder in NewsBlur." = "Перейдіть до папки %@ у NewsBlur.";
 "Good Reads" = "Хороші статті";
-"Gray" = "Сірий";
+"Gray" = "Сіра";
 "Grid" = "Сітка";
 "Grid Columns" = "Стовпці сітки";
 "Grid Height" = "Висота сітки";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "Середній";
 "Medium [preview length]" = "Середній";
 "Medium [text size]" = "Середній";
-"Medium [theme]" = "Середня";
+"Medium [theme]" = "Сіра";
 "Model" = "Модель";
 "Monday" = "Понеділок";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість статей займає більше місця на диску, але майже не впливає на продуктивність.";
@@ -568,7 +568,7 @@
 "New Folder" = "Нова папка";
 "New Site" = "Новий сайт";
 "New folder name" = "Назва нової папки";
-"New posts from feeds you recently read" = "Нові публікації зі стрічок, які ви нещодавно читали";
+"New posts from feeds you recently read" = "Нові статті зі стрічок, які ви нещодавно читали";
 "New to NewsBlur? Create an account" = "Вперше в NewsBlur? Створіть обліковий запис";
 "Newest first" = "Від найновіших";
 "NewsBlur Dashboard" = "Панель керування NewsBlur";
@@ -734,7 +734,7 @@
 "Replied" = "Відповіли";
 "Reply" = "Відповісти";
 "Reply to %@" = "Відповісти %@";
-"Replying" = "Відповідь";
+"Replying" = "Надсилання відповіді";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
 "Resume" = "Продовжити";

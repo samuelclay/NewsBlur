@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ eklenemedi.</string>
+			<string>%@ akış eklenemedi.</string>
 			<key>other</key>
-			<string>%@ eklenemedi.</string>
+			<string>%@ akış eklenemedi.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

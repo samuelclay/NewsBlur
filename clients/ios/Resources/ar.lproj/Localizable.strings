@@ -23,7 +23,7 @@
 "%@ ago" = "قبل %@";
 "%@ categories to choose from" = "فئات للاختيار من بينها: %@";
 "%@ comments" = "%@ تعليق";
-"%@ could not be added." = "تعذّرت إضافة %@.";
+"%@ could not be added." = "تعذّرت إضافة %@ من الخلاصات.";
 "%@ days" = "%@ يومًا";
 "%@ feed" = "موجز %@";
 "%@ feeds" = "%@ من الخلاصات";
@@ -316,7 +316,7 @@
 "Extra Tall" = "طويل جدًا";
 "Extra small" = "صغير جدًا";
 "Faster" = "أسرع";
-"Favorited" = "مفضّلة";
+"Favorited" = "تمت الإضافة إلى المفضّلة";
 "Favoriting" = "جارٍ الإضافة إلى المفضّلة";
 "Feed List" = "قائمة الخلاصات";
 "Feed Title" = "عنوان الخلاصة";
@@ -357,7 +357,7 @@
 "Follow-ups" = "المتابعات";
 "Followed" = "تمت المتابعة";
 "Followers label" = "تسمية المتابعين";
-"Following [button state]" = "تتابع";
+"Following [button state]" = "تتابعه";
 "Following [in progress]" = "جارٍ المتابعة";
 "Following [label under the number of people this profile follows]" = "يتابع";
 "Font" = "الخط";
@@ -527,7 +527,7 @@
 "Medium [grid height]" = "متوسط";
 "Medium [preview length]" = "متوسط";
 "Medium [text size]" = "متوسط";
-"Medium [theme]" = "متوسط";
+"Medium [theme]" = "رمادي";
 "Model" = "النموذج";
 "Monday" = "الاثنين";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "تستهلك القصص الإضافية مساحة أكبر على القرص، لكنها لا تؤثر بشكل ملحوظ في الأداء.";
@@ -568,7 +568,7 @@
 "New Folder" = "مجلد جديد";
 "New Site" = "موقع جديد";
 "New folder name" = "اسم مجلد جديد";
-"New posts from feeds you recently read" = "مقالات جديدة من الخلاصات التي قرأتها مؤخرًا";
+"New posts from feeds you recently read" = "منشورات جديدة من الخلاصات التي قرأتها مؤخرًا";
 "New to NewsBlur? Create an account" = "هل أنت جديد على NewsBlur؟ أنشئ حسابًا";
 "Newest first" = "الأحدث أولًا";
 "NewsBlur Dashboard" = "لوحة تحكم NewsBlur";

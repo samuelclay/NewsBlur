@@ -99,7 +99,7 @@
 			<key>one</key>
 			<string>Не вдалося додати %@ стрічку.</string>
 			<key>other</key>
-			<string>Не вдалося додати %@.</string>
+			<string>Не вдалося додати %@ стрічки.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>

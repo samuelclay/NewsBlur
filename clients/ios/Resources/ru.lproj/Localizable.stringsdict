@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Не удалось добавить %@.</string>
+			<string>Не удалось добавить %@ ленты.</string>
 			<key>many</key>
-			<string>Не удалось добавить %@.</string>
+			<string>Не удалось добавить %@ лент.</string>
 			<key>one</key>
-			<string>Не удалось добавить: %@.</string>
+			<string>Не удалось добавить %@ ленту.</string>
 			<key>other</key>
-			<string>Не удалось добавить: %@.</string>
+			<string>Не удалось добавить %@ ленты.</string>
 		</dict>
 	</dict>
 	<key>%@ days</key>
