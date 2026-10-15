@@ -33,9 +33,9 @@
 			<key>many</key>
 			<string>%@ sites do widget</string>
 			<key>one</key>
-			<string>%@ site de widget</string>
+			<string>%@ site do widget</string>
 			<key>other</key>
-			<string>%@ sites de widgets</string>
+			<string>%@ sites do widget</string>
 		</dict>
 	</dict>
 	<key>%@ categories to choose from</key>
@@ -211,11 +211,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ matérias em foco</string>
+			<string>%@ artigos em foco</string>
 			<key>one</key>
-			<string>%@ matéria em foco</string>
+			<string>%@ artigo em foco</string>
 			<key>other</key>
-			<string>%@ histórias em destaque</string>
+			<string>%@ artigos em foco</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
@@ -319,11 +319,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ matérias</string>
+			<string>%@ artigos</string>
 			<key>one</key>
-			<string>%@ notícia</string>
+			<string>%@ artigo</string>
 			<key>other</key>
-			<string>%@ histórias</string>
+			<string>%@ artigos</string>
 		</dict>
 	</dict>
 	<key>%@ stories left</key>
@@ -337,11 +337,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ notícias restantes</string>
+			<string>Restam %@ artigos</string>
 			<key>one</key>
 			<string>Falta %@ artigo</string>
 			<key>other</key>
-			<string>Restam %@ matérias</string>
+			<string>Restam %@ artigos</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -355,11 +355,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ matérias/mês</string>
+			<string>%@ artigos/mês</string>
 			<key>one</key>
-			<string>%@ matéria/mês</string>
+			<string>%@ artigo/mês</string>
 			<key>other</key>
-			<string>%@ matérias/mês</string>
+			<string>%@ artigos/mês</string>
 		</dict>
 	</dict>
 	<key>%@ subscribers</key>
@@ -391,11 +391,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%@ matérias não lidas</string>
+			<string>%@ artigos não lidos</string>
 			<key>one</key>
-			<string>%@ notícia não lida</string>
+			<string>%@ artigo não lido</string>
 			<key>other</key>
-			<string>%@ histórias não lidas</string>
+			<string>%@ artigos não lidos</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
@@ -409,7 +409,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>+ %@ sites</string>
+			<string>+ %@ outros sites</string>
 			<key>one</key>
 			<string>+ %@ outro site</string>
 			<key>other</key>
@@ -445,11 +445,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Adicionados %1$@ feeds a %2$@.</string>
+			<string>%1$@ feeds adicionados a %2$@.</string>
 			<key>one</key>
 			<string>%1$@ feed adicionado a %2$@.</string>
 			<key>other</key>
-			<string>Adicionados %1$@ feeds a %2$@.</string>
+			<string>%1$@ feeds adicionados a %2$@.</string>
 		</dict>
 	</dict>
 	<key>Added %@ feeds.</key>
@@ -463,7 +463,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Adicionados %@ feeds.</string>
+			<string>%@ feeds adicionados.</string>
 			<key>one</key>
 			<string>%@ feed adicionado.</string>
 			<key>other</key>
@@ -589,11 +589,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Marcar estas %@ notícias como lidas</string>
+			<string>Marcar estes %@ artigos como lidos</string>
 			<key>one</key>
-			<string>Marcar %@ história como lida</string>
+			<string>Marcar %@ artigo como lido</string>
 			<key>other</key>
-			<string>Marcar estas %@ histórias como lidas</string>
+			<string>Marcar estes %@ artigos como lidos</string>
 		</dict>
 	</dict>
 	<key>Mute %@ Sites</key>
@@ -609,7 +609,7 @@
 			<key>many</key>
 			<string>Silenciar %@ sites</string>
 			<key>one</key>
-			<string>Silenciar site %@</string>
+			<string>Silenciar %@ site</string>
 			<key>other</key>
 			<string>Silenciar %@ sites</string>
 		</dict>
@@ -625,11 +625,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Mais antigos que %@ dias</string>
+			<string>Com mais de %@ dias</string>
 			<key>one</key>
-			<string>Mais antigo que %@ dia</string>
+			<string>Com mais de %@ dia</string>
 			<key>other</key>
-			<string>Mais antigos que %@ dias</string>
+			<string>Com mais de %@ dias</string>
 		</dict>
 	</dict>
 	<key>Shared Stories label</key>
@@ -643,11 +643,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Notícias compartilhadas</string>
+			<string>Artigos compartilhados</string>
 			<key>one</key>
-			<string>História compartilhada</string>
+			<string>Artigo compartilhado</string>
 			<key>other</key>
-			<string>Histórias compartilhadas</string>
+			<string>Artigos compartilhados</string>
 		</dict>
 	</dict>
 	<key>Storing past %@ days</key>
@@ -663,7 +663,7 @@
 			<key>many</key>
 			<string>Armazenando os últimos %@ dias</string>
 			<key>one</key>
-			<string>Armazenando os últimos %@ dias</string>
+			<string>Armazenando %@ dia</string>
 			<key>other</key>
 			<string>Armazenando os últimos %@ dias</string>
 		</dict>
@@ -679,9 +679,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Armazenar as últimas %@ horas</string>
+			<string>Armazenando as últimas %@ horas</string>
 			<key>one</key>
-			<string>Armazenando as últimas %@ hora</string>
+			<string>Armazenando %@ hora</string>
 			<key>other</key>
 			<string>Armazenando as últimas %@ horas</string>
 		</dict>
@@ -787,11 +787,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Você está inscrito em %@ sites</string>
+			<string>Você assina %@ sites</string>
 			<key>one</key>
-			<string>Você está inscrito em %@ site</string>
+			<string>Você assina %@ site</string>
 			<key>other</key>
-			<string>Você está inscrito em %@ sites</string>
+			<string>Você assina %@ sites</string>
 		</dict>
 	</dict>
 </dict>
