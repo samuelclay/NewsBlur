@@ -19,33 +19,40 @@
   },
   "automatic_release_after_approval": true,
   "main_creative_attachments": {
-    "verified_complete_languages": [
+    "verified_complete_languages": [],
+    "verified_header_only": [],
+    "remaining_languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "pt-BR",
+      "it",
+      "nl",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "ar",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "note": "Earlier en/ar/zh-Hans/zh-Hant views showed 1 of 1 in both slots, but those observations did not prove persistence. English showed 0 after reload. Asset Library Save returned a red error, and a direct English search upload also errored. The persisted attachment set is unknown; verify each locale after a fresh reload before claiming completion.",
+    "persistence_status": "unknown_requires_reload_verification",
+    "previously_observed_unverified_languages": [
       "en",
       "ar",
       "zh-Hans",
       "zh-Hant"
     ],
-    "verified_header_only": [],
-    "remaining_languages": [
-      "nl",
-      "fr",
-      "de",
-      "he",
-      "hi",
-      "id",
-      "it",
-      "ja",
-      "ko",
-      "pl",
-      "pt-BR",
-      "ru",
-      "es",
-      "th",
-      "tr",
-      "uk",
-      "vi"
-    ],
-    "note": "Both slots assigned and observed 1 of 1 asset after save for en, ar, zh-Hans, zh-Hant. Current page is Dutch, with empty slots. Host overload and browser control failures interrupted the remaining assignments."
+    "save_error_proof": "proof/main-artwork-save-error.jpg"
   },
   "capture_status": "All simulators shut down and backed-up iPhone preferences checksum-verified restored. English native assets complete; French capture completeness under review. Further capture/encoding deferred while syspolicyd exceeds 600% CPU.",
   "progress_proof": "proof/main-artwork-partial.jpg"
