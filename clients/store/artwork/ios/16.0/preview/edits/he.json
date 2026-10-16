@@ -18,8 +18,26 @@
         5
       ],
       "notes": "Native Hebrew RTL iPad UI. Includes the actual fullscreen article scroll and a settled Saved Stories collection; no English interface fallback."
+    },
+    "iphone": {
+      "source_ui_locale": "he",
+      "source_sha256": "5da96010b9847c5662c16949caf3144aa71c9862f7df7f243205b0ffb701d580",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        14,
+        26,
+        39
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Fresh Hebrew RTL iPhone recording after successful reader readiness. Includes native article scrolling and a settled four-item Saved collection; all four scenes have loaded content."
     }
   },
   "status": "encoded_playback_review_passed",
-  "remaining": "Store placement and submission are tracked separately by the release coordinator; each encoded device passed normal-speed playback. Unencoded devices remain pending."
+  "remaining": "iPad playback passed; fresh iPhone edit awaits encoding, final visual review and normal-speed playback. Store placement tracked separately."
 }
