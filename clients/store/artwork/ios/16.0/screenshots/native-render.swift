@@ -95,7 +95,14 @@ func textLines(_ text: String, font: NSFont, tracking: CGFloat, maxWidth: CGFloa
     var lines: [CTLine] = []
     while start < string.length {
         let count = max(1, CTTypesetterSuggestLineBreak(typesetter, start, Double(maxWidth)))
-        let end = min(start + count, string.length)
+        var end = min(start + count, string.length)
+        // CoreText balancing must keep Thai repetition marks and closing punctuation off line starts.
+        let closing = CharacterSet(charactersIn: "ๆฯ,.;:!?%)]}、。，．？！：；）》」』】〕〉")
+        while end < string.length {
+            let next = string.substring(with: NSRange(location: end, length: 1))
+            guard next.unicodeScalars.allSatisfy({ closing.contains($0) }) else { break }
+            end += 1
+        }
         let trimmed = string.substring(with: NSRange(location: start, length: end - start)).trimmingCharacters(in: .whitespaces)
         lines.append(CTLineCreateWithAttributedString(NSAttributedString(string: trimmed, attributes: attributes(font, tracking, rgb, rightToLeft))))
         start = end
