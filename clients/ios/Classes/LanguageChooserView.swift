@@ -334,9 +334,10 @@ struct LanguageChooserView: View {
 
     private var grid: some View {
         VStack(alignment: .leading, spacing: 0) {
-            intro(code: model.current, muted: false)
-            // LanguageChooserView.swift repeats the introduction in English below the interface language.
-            if model.current != "en" {
+            // LanguageChooserView.swift previews the selected language in the introduction, and repeats it in
+            // English below so the way back stays readable.
+            intro(code: model.selection, muted: false)
+            if model.selection != "en" {
                 intro(code: "en", muted: true).padding(.top, 18)
             }
             options.padding(.top, 22)
@@ -401,8 +402,10 @@ struct LanguageChooserView: View {
     private var gridActions: some View {
         VStack(alignment: .leading, spacing: 2) {
             Button { model.choose(model.selection, then: onFinish) } label: {
-                savingLabel(String(format: NBLocalization.text("Use %@"), Self.nativeName(model.selection)),
-                            code: model.current, saving: model.savingCode != nil)
+                // LanguageChooserView.swift words the button entirely in the selected language.
+                savingLabel(String(format: NBLocalization.text("Use %@", language: model.selection),
+                                   Self.nativeName(model.selection)),
+                            code: model.selection, saving: model.savingCode != nil)
             }
             .buttonStyle(LanguageChooserButtonStyle(fontSize: bodySize, minHeight: controlHeight))
             .fixedSize(horizontal: false, vertical: true)

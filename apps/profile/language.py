@@ -25,8 +25,9 @@ from django.urls import reverse
 from django.utils import translation
 from django.utils.cache import get_conditional_response, patch_vary_headers
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
-from django.utils.translation.trans_real import parse_accept_lang_header
+from django.utils.translation.trans_real import DjangoTranslation, parse_accept_lang_header
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.i18n import JavaScriptCatalog
@@ -48,6 +49,14 @@ FLIPPED_STYLESHEET_PATTERN = r"^rtl/(?P<bundle>[a-z]+)/(?P<version>[a-f0-9]{16})
 # "common" (templates/base.html and the pages that extend it) and "blurblog" (social_page.xhtml).
 FLIPPED_STYLESHEET_BUNDLES = ("common", "blurblog")
 UI_LANGUAGES = list(LANGUAGES.items())
+# language.py sends the language chooser's own wording in every language, so the web grid previews a
+# selected language before the page reloads into it (reader_language.js). These are djangojs msgids.
+LANGUAGE_CHOOSER_MESSAGES = {
+    "title": "Choose your language",
+    "pick": "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.",
+    "use": "Use %(language)s",
+}
+SCRIPT_ESCAPES = {ord("<"): "\\u003C", ord(">"): "\\u003E", ord("&"): "\\u0026"}
 
 
 def preference(request):
@@ -148,6 +157,7 @@ def language_context(request):
         "ui_language_auto_label": auto_label,
         "ui_language_auto_short": auto_short,
         "ui_catalog_url": reverse("javascript-catalog", kwargs={"language": language, "version": version}),
+        "ui_language_chooser_copy": language_chooser_copy_script(),
         # language.py: {% include_stylesheets %} (utils/templatetags/utils_tags.py) links these mirrored
         # bundles instead of the LTR ones. LTR pages get an empty mapping and never build a flip.
         "ui_flipped_stylesheets": FlippedStylesheetUrls() if rtl else {},
@@ -203,6 +213,27 @@ def _flipped_stylesheet_build(sources):
             stylesheets.append(absolutize_urls(stylesheet.read(), url))
     content = flip_stylesheet("\n".join(stylesheets)).encode("utf-8")
     return content, hashlib.sha256(content).hexdigest()[:16]
+
+
+@lru_cache(maxsize=1)
+def language_chooser_copy():
+    """Each language's title, prompt and button for the chooser, read from that language's djangojs catalog."""
+    copy = {}
+    for code, name in UI_LANGUAGES:
+        if code == "en":
+            messages = dict(LANGUAGE_CHOOSER_MESSAGES)
+        else:
+            catalog = DjangoTranslation(code.lower(), domain="djangojs")
+            messages = {key: catalog.gettext(message) for key, message in LANGUAGE_CHOOSER_MESSAGES.items()}
+        messages["use"] = messages["use"] % {"language": name}
+        copy[code] = messages
+    return copy
+
+
+@lru_cache(maxsize=1)
+def language_chooser_copy_script():
+    """The chooser copy as a JavaScript literal that is safe inside templates/base.html's script block."""
+    return mark_safe(json.encode(language_chooser_copy()).translate(SCRIPT_ESCAPES))
 
 
 @lru_cache(maxsize=len(LANGUAGES))

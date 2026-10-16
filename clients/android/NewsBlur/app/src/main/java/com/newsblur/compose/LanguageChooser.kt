@@ -439,6 +439,9 @@ private fun LanguageGrid(
 ) {
     val current = local.language
     var selected by rememberSaveable { mutableStateOf(current) }
+    // LanguageChooser.kt previews the selected language: the introduction and the button read entirely in it.
+    val context = LocalContext.current
+    val preview = remember(context, selected, current) { if (selected == current) local else chooserCopy(context, selected, current) }
     val columns = if (wide) 3 else 2
     val apply = { if (selected == current) onKeep() else onChoose(selected) }
     Column(Modifier.fillMaxWidth()) {
@@ -446,15 +449,15 @@ private fun LanguageGrid(
         val scrollState = rememberScrollState()
         val scroll = if (scrolls) Modifier.weight(1f, fill = false).verticalScroll(scrollState) else Modifier
         Column(scroll.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = if (scrolls) 16.dp else 0.dp)) {
-            InLanguage(local.language) {
+            InLanguage(preview.language) {
                 Column(Modifier.fillMaxWidth()) {
-                    Text(tagged(local.title, local.language), style = ChooserType.title(wide), color = colors.title)
+                    Text(tagged(preview.title, preview.language), style = ChooserType.title(wide), color = colors.title)
                     Spacer(Modifier.height(BodyGap))
-                    Text(tagged(local.pick, local.language), style = ChooserType.body, color = colors.body)
+                    Text(tagged(preview.pick, preview.language), style = ChooserType.body, color = colors.body)
                 }
             }
-            if (local.language != english.language) {
-                // The English source follows the interface language, so the grid keeps the bilingual promise.
+            if (preview.language != english.language) {
+                // The English source follows the selected language, so the grid keeps the bilingual promise.
                 InLanguage(english.language) {
                     Column(Modifier.fillMaxWidth().padding(top = 14.dp)) {
                         Text(tagged(english.title, english.language), style = ChooserType.echoTitle, color = colors.muted)
@@ -476,17 +479,16 @@ private fun LanguageGrid(
         }
         // A hairline marks where the options pass under the pinned button.
         if (scrolls && scrollState.maxValue > 0) HorizontalDivider(thickness = 1.dp, color = colors.rule)
-        val label = remember(local, selected) { local.localized.getString(R.string.language_dialog_use, nativeName(selected)) }
         InLanguage(local.language) {
             if (wide) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     onBack?.let { Link(local.back, local.language, colors, it) }
                     Spacer(Modifier.weight(1f))
-                    ChooserButton(label, local.language, colors, apply, Modifier.widthIn(min = 240.dp))
+                    ChooserButton(preview.use, preview.language, colors, apply, Modifier.widthIn(min = 240.dp))
                 }
             } else {
                 Column(Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = if (onBack != null) 10.dp else 24.dp)) {
-                    ChooserButton(label, local.language, colors, apply, Modifier.fillMaxWidth())
+                    ChooserButton(preview.use, preview.language, colors, apply, Modifier.fillMaxWidth())
                     onBack?.let {
                         Spacer(Modifier.height(LinkGap))
                         Link(local.back, local.language, colors, it)
