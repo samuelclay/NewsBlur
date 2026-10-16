@@ -53,6 +53,7 @@ locales.each do |locale|
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   else
     sidebar = rtl ? 996 : 36
+    close_sidebar = rtl ? 750 : 282
     expand = rtl ? 142 : 890
     story_x = rtl ? 872 : 160
     folder_x = rtl ? 922 : 110
@@ -67,7 +68,7 @@ locales.each do |locale|
                                                  "tap:#{expand},54", *list_ready, *article_ready, "sleep:2",
                                                  "tap:#{sidebar},54", "waittext:Breakfast Notebook", "sleep:2")
     actions = ["capture:#{footage}", "checkpoint:feeds", screenshot.call("feeds"), "sleep:5",
-               "tap:#{folder_x},248", *list_ready, *article_ready, "sleep:2", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
+               "tap:#{close_sidebar},54", *list_ready, *article_ready, "sleep:2", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
                "tap:#{story_x},145", "sleep:2", "tap:#{expand},54", "sleep:2",
                "waitphoto:#{fullscreen_photo_x},0.45,0.20,0.40",
                "checkpoint:reader", screenshot.call("reader"), "sleep:5",
