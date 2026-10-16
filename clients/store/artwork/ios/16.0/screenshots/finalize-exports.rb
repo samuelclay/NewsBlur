@@ -6,6 +6,7 @@ require 'json'
 require 'open3'
 require 'optparse'
 require 'time'
+require_relative 'verify-native-pixels'
 
 root = File.expand_path(__dir__)
 options = { raw_root: '/tmp/newsblur-store-screenshot-renders', sizes: %w[1320x2868 1206x2622 2064x2752] }
@@ -29,6 +30,8 @@ end
 
 records = options[:sizes].flat_map do |size|
   width, height = size.split('x').map(&:to_i)
+  evidence_path = File.join(root, 'exports', language, "render-checks-#{size}.json")
+  evidence = File.exist?(evidence_path) ? JSON.parse(File.read(evidence_path)) : []
   (1..4).map do |panel|
     destination = File.join(root, 'exports', language, size, "panel-#{panel}.png")
     unless options[:validate_only]
@@ -49,8 +52,16 @@ records = options[:sizes].flat_map do |size|
     abort "Invalid PNG dimensions: #{destination}" unless bytes[16, 8].unpack('NN') == [width, height]
     properties = image_properties(destination)
     abort "Alpha channel is not allowed: #{destination}" unless properties[:opaque]
+    render = evidence.find { |entry| entry['panel'] == panel }
+    pixel_check = { status: 'not_available_requires_visual_review' }
+    if render && render['capture_bounds']
+      capture = File.join(root, render.fetch('capture'))
+      abort "Native capture changed since rendering: #{capture}" unless Digest::SHA256.file(capture).hexdigest == render.fetch('capture_sha256')
+      pixel_check = NativePixelCheck.check(destination, capture, render.fetch('capture_bounds'))
+    end
     { path: destination.delete_prefix(root + '/'), panel: panel, **properties,
-      bytes: bytes.bytesize, sha256: Digest::SHA256.hexdigest(bytes), visual_review: 'required', store_upload: 'unverified' }
+      bytes: bytes.bytesize, sha256: Digest::SHA256.hexdigest(bytes), native_pixel_check: pixel_check,
+      visual_review: 'required', store_upload: 'unverified' }
   end
 end
 manifest = { language: language, checked_at: Time.now.utc.iso8601,

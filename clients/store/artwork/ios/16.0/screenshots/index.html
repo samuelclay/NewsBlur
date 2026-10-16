@@ -164,6 +164,9 @@ async function render(){
  document.documentElement.dataset.fontFit=String(fontFits);
  if(wrongSize.length)throw new Error(`Export blocked: native ${device} captures must be ${expectedCapture.join('×')} pixels.`);
  if(!fontFits)throw new Error('Export blocked: localized headline or label does not fit.');
+ // Text fitting changes layout. Allow the completed composition to paint before export readiness.
+ await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ if(generation!==renderGeneration)return;
  if(exporting&&(innerWidth!==width||innerHeight!==height))throw new Error(`Export blocked: use an exact ${width}×${height} viewport at device scale 1.`);
  if(exporting&&devicePixelRatio!==1)throw new Error('Export blocked: use device scale 1 for exact output dimensions.');
  document.documentElement.dataset.ready=failed.length?'false':'true';
