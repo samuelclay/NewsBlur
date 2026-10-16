@@ -19,6 +19,14 @@ The existing iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`,
 | Turkish | Pending | Four stills and finalized raw video, `4c95477a1` |
 | Russian | Pending | Four stills and finalized raw video, `5be4f9107` |
 | Ukrainian | Pending | Four stills and finalized raw video, `c52de3fb2` |
+| Hindi | Pending | Four stills and finalized raw video, refreshed in `d28522135` |
+| Indonesian | Pending | Four stills and finalized raw video, `c72ceee53` |
+| Vietnamese | Pending | Four stills and finalized raw video, `c0b1d82c2` |
+| Thai | Pending | Four stills and finalized raw video, `36d45eced` |
+| Japanese | Pending | Four stills and finalized raw video, `8f19cc5d6` |
+| Korean | Pending | Four stills and finalized raw video, `beb55c757` |
+| Chinese (Simplified) | Pending | Pending |
+| Chinese (Traditional) | Pending | Pending |
 
 Canonical English stills are in `../captures/`. Localized native stills are in `../captures/localized/<locale>/`. Raw videos and checkpoints are in `../footage/<device>/` for English and `../footage/localized/<locale>/<device>/` for localized takes. Raw videos require editing and visual timing review before upload. Video time can diverge from wall-clock checkpoints when CoreSimulator stalls.
 
@@ -41,3 +49,5 @@ The script uses standard story layout and the DEBUG simulator cooking fixture. I
 All app builds are reused. A stale idb HID connection after simulator shutdown may require reconnecting only this target’s companion with the existing `/tmp/newsblur-idb-xcode/Developer` shim; normal simulator commands use the regular Xcode environment.
 
 Final localized rendering, App Preview editing, store upload, and resubmission are separate workstreams owned by the coordinator and preview agent.
+
+Hindi exposed an additional native transition: selecting the already-open Cooking folder reloaded the WebKit reader at a smaller initial size. The capture now closes the sidebar with its native button, preserving the normalized reader. The replacement Hindi take passed all four visual checks. Indonesian Saved retains the pasta article with four saved items; its final decoded frame is fully loaded and can be held explicitly by the preview editor.
