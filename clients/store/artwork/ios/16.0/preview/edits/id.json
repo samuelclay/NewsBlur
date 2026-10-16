@@ -1,0 +1,13 @@
+{
+  "locale": "id",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "id",
+      "source_sha256": "0da826eba832dcfd7124c3e50e12d314145267783b3948f77e9175dc2623cb77",
+      "source_intervals_reviewed": false,
+      "notes": "Native interface and stills are valid, but source ends at 78.93 seconds with Saved Stories only settled near 78 seconds. A four-second disclosure scene would be dominated by sidebar/loading. Requires a real recording with at least five seconds of settled Saved Stories; no still-frame extension."
+    }
+  },
+  "status": "hold_for_settled_saved_footage",
+  "remaining": "Capture coordinator notified. Preserve current valid screenshots; refresh native recording before selecting final cuts."
+}
