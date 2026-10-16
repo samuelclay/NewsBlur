@@ -13,6 +13,8 @@ ruby clients/store/export.rb 16.0 --output /tmp/newsblur-store-16.0
 
 The exporter validates all inputs before writing and requires a new output directory. `--store-dir` and `--languages` support isolated fixtures. Validation checks exact language, field, and product coverage, nonempty text, store length limits, keywords in UTF-8 bytes, forbidden control characters, the brand, and canonical description URLs. Product benefits must match the English count, with at most four benefits of 40 characters each. It does not prove translation quality or replace independent review.
 
+Apple auto-renewable subscription names allow 35 characters and descriptions allow 55, matching the [product-page guide](https://developer.apple.com/app-store/product-page/) and the live App Store Connect forms checked on 2026-10-16. The [In-App Purchase reference](https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/in-app-purchase-information/) still lists 30/45; do not apply those stricter values to the observed subscription fields. Subscription-group display names allow 35 characters and custom app names allow 30 in the live forms. Group display names are customer-facing, separate from internal reference names. `locales.json` records these limits and their provenance; recheck the actual fields when Apple changes them.
+
 Exports:
 
 - `google/listings.json`: API Listing objects with `language`, `title`, `shortDescription`, and `fullDescription`.

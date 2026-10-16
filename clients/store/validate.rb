@@ -200,9 +200,10 @@ module StoreMetadata
                 next
               end
               limits = if kind == 'subscription_groups'
-                         { 'name' => 75, 'app_name' => 30 }
+                         # locales.json records the live display-field limits, not internal reference names.
+                         { 'name' => 35, 'app_name' => 30 }
                        elsif platform == 'ios'
-                         { 'name' => 30, 'description' => 45 }
+                         { 'name' => 35, 'description' => 55 }
                        else
                          { 'title' => 55, 'description' => 200, 'benefits' => 40 }
                        end
