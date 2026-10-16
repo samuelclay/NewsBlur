@@ -1,0 +1,25 @@
+{
+  "locale": "it",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "it",
+      "source_sha256": "a755c322b26b0be3b4486568ace62835f97686e96900d3df0f73d50b48af8203",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        34,
+        46
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native Italian iPad UI. Initial split-reader text is smaller than other locales; capture owner is refreshing those stills. Actual fullscreen scrolling and brief navigation into Saved Stories are retained. End before the later article-selection animation."
+    }
+  },
+  "status": "hold_for_capture_quality_decision",
+  "remaining": "Encoding, visual review, normal-speed playback and store upload pending."
+}

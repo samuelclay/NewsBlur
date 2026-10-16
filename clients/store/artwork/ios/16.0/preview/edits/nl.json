@@ -1,0 +1,25 @@
+{
+  "locale": "nl",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "nl",
+      "source_sha256": "6b73c290f28242c68cf6eca34fccd1d56f823132015df7b6713ea171ea83cf03",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        36,
+        48.2
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native Dutch iPad UI, with actual fullscreen article scrolling and brief native navigation into Saved Stories. End on the settled collection before the later article-selection animation."
+    }
+  },
+  "status": "ipad_source_intervals_reviewed",
+  "remaining": "Encoding, visual review, normal-speed playback and store upload pending."
+}
