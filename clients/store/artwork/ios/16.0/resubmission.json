@@ -69,7 +69,7 @@
         "panel-3.png",
         "panel-4.png"
       ],
-      "placement_status": "not_persisted",
+      "placement_status": "readback_hidden_by_pagination_cleanup_pending",
       "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement.",
       "native_retry": {
         "files": [
@@ -81,6 +81,16 @@
         "initial_result": "Two displayed, two returned An error occurred during upload",
         "after_full_reload": "0 of 10 App Screenshots",
         "proof": "proof/en-native-upload-error.jpg"
+      },
+      "diagnosis": {
+        "error": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "visible_records": 50,
+        "total_records": 81,
+        "note": "All visible records are legacy groups. The modern medium group already contains ten placements; zero in UI did not establish failed persistence. Remove obsolete draft placements through UI, then inspect and deduplicate modern sets.",
+        "proof": [
+          "proof/en-placement-limit-errors.json",
+          "proof/en-placement-pagination.json"
+        ]
       }
     },
     "fr": {
@@ -134,7 +144,7 @@
       ]
     }
   },
-  "app_preview_status": "English iPhone/iPad and French iPhone playback passed. French iPhone uploaded and persisted after reload. Other localized videos in progress.",
+  "app_preview_status": "Ten encoded previews passed technical, sampled and normal-speed playback checks and are staged. French iPhone verified saved; remaining uploads pending.",
   "app_preview_uploads": {
     "fr": {
       "iphone": {
