@@ -58,8 +58,11 @@ class Test_Language(SimpleTestCase):
         )
         request.user = SimpleNamespace(is_authenticated=authenticated)
         if authenticated:
+            # The account already remembers this device's language; test_email_language.py covers the write.
             request.user.profile = SimpleNamespace(
-                preferences=json.encode({"language": language or "auto"}), save=Mock()
+                preferences=json.encode({"language": language or "auto"}),
+                last_seen_language=detect_language(header),
+                save=Mock(),
             )
         if cookie:
             request.COOKIES["newsblur_language"] = cookie

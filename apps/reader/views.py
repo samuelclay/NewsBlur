@@ -48,7 +48,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import feedgenerator
 from django.utils.encoding import smart_str
-from django.utils.translation import gettext
+from django.utils.translation import gettext, gettext_lazy, ngettext
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
@@ -4150,7 +4150,9 @@ def delete_folder(request):
     feed_ids_in_folder = [int(f) for f in feed_ids_in_folder if f]
 
     request.user.profile.send_opml_export_email(
-        reason="You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4177,7 +4179,9 @@ def delete_feeds_by_folder(request):
     feeds_by_folder = json.decode(request.POST["feeds_by_folder"])
 
     request.user.profile.send_opml_export_email(
-        reason="You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     # Works piss poor with duplicate folder titles, if they are both in the same folder.
@@ -4383,7 +4387,9 @@ def move_feeds_by_folder_to_folder(request):
     new_folder = request.POST.get("new_folder", None)
 
     request.user.profile.send_opml_export_email(
-        reason="You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
@@ -5604,9 +5610,15 @@ def send_story_email(request):
     if share_user_profile.over_story_email_quota(quota=quota):
         code = -1
         if user.profile.is_premium:
-            message = "You can only send %s stories per day by email." % quota
+            message = ngettext(
+                "You can only send %(count)s story per day by email.",
+                "You can only send %(count)s stories per day by email.",
+                quota,
+            ) % {"count": quota}
         else:
-            message = "Upgrade to a premium subscription to send more than one story per day by email."
+            message = gettext(
+                "Upgrade to a premium subscription to send more than one story per day by email."
+            )
         logging.user(
             request,
             "~BRNOT ~BMSharing story by email to %s recipient, over quota: %s/%s"
@@ -5614,16 +5626,16 @@ def send_story_email(request):
         )
     elif not to_addresses:
         code = -1
-        message = "Please provide at least one email address."
+        message = gettext("Please provide at least one email address.")
     elif not all(validate_email_as_bool(to_address) for to_address in to_addresses if to_addresses):
         code = -1
-        message = "You need to send the email to a valid email address."
+        message = gettext("You need to send the email to a valid email address.")
     elif not validate_email_as_bool(from_email):
         code = -1
-        message = "You need to provide your email address."
+        message = gettext("You need to provide your email address.")
     elif not from_name:
         code = -1
-        message = "You need to provide your name."
+        message = gettext("You need to provide your name.")
     else:
         story, _ = MStory.find_story(feed_id, story_id)
         story = Feed.format_story(story, feed_id, text=True)

@@ -1,20 +1,22 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Hi {{ username }},
+{% load i18n %}
 
-I'm reaching out because your NewsBlur account has {{ feed_count }} active sites, and I wanted to give you a heads up about an upcoming change.
+{% block body %}{% blocktrans %}Hi {{ username }},{% endblocktrans %}
 
-To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites.
+{% blocktrans with feed_count=feed_count count counter=feed_count_number %}I'm reaching out because your NewsBlur account has {{ feed_count }} active site, and I wanted to give you a heads up about an upcoming change.{% plural %}I'm reaching out because your NewsBlur account has {{ feed_count }} active sites, and I wanted to give you a heads up about an upcoming change.{% endblocktrans %}
 
-On {{ deadline_date }}, when your subscription renews, you'll need to choose one of these options:
+{% trans "To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites." %}
 
-  1. Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access to your complete story archive. You can upgrade here: https://newsblur.com/?next=premium
+{% blocktrans %}On {{ deadline_date }}, when your subscription renews, you'll need to choose one of these options:{% endblocktrans %}
 
-  2. Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want to continue following.
+  1. {% trans "Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access to your complete story archive." %} {% trans "You can upgrade here:" %} https://newsblur.com/?next=premium
 
-Until then, nothing changes for you. All {{ feed_count }} of your sites will continue working normally.
+  2. {% trans "Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want to continue following." %}
 
-Thanks for being a long-time NewsBlur subscriber. I really appreciate your support.
+{% blocktrans with feed_count=feed_count count counter=feed_count_number %}Until then, nothing changes for you. Your {{ feed_count }} site will continue working normally.{% plural %}Until then, nothing changes for you. All {{ feed_count }} of your sites will continue working normally.{% endblocktrans %}
+
+{% trans "Thanks for being a long-time NewsBlur subscriber. I really appreciate your support." %}
 
 - Samuel{% endblock body %}
 
