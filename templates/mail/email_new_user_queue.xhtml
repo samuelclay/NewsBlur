@@ -1,15 +1,15 @@
 {% extends "mail/email_base.xhtml" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
 {% block body %}
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
-        Your free account is ready, {{ user.username }}.
+        {% blocktrans trimmed with username=user.username %}Your free account is ready, {{ username }}.{% endblocktrans %}
     </h2>
-    <p style="line-height: 20px;">Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading.</p>
+    <p style="line-height: 20px;">{% trans "Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading." %}</p>
     <p style="line-height: 20px;">https://{% current_domain dev=True %}{{ user.profile.autologin_url }}</p>
-    <p style="line-height: 20px;">I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too.</p>
+    <p style="line-height: 20px;">{% trans "I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too." %}</p>
     <p style="line-height: 20px;">- Sam Clay</p>
 {% endblock %}
 
-{% block resources_header %}If you enjoy using NewsBlur, these resources might be of interest to you:{% endblock resources_header %}
+{% block resources_header %}{% trans "If you enjoy using NewsBlur, these resources might be of interest to you:" %}{% endblock resources_header %}

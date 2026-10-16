@@ -1,14 +1,16 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}{{ reshare_user_profile.username }} re-shared "{{ shared_story.story_title }}"{% if story_feed %} from {{ story_feed.feed_title }}{% endif %}:
+{% load i18n %}
 
-{{ comment.user.username }} ({{ comment.shared_date }} ago):
+{% block body %}{% if story_feed %}{% blocktrans with username=reshare_user_profile.username story_title=shared_story.story_title feed_title=story_feed.feed_title %}{{ username }} re-shared "{{ story_title }}" from {{ feed_title }}:{% endblocktrans %}{% else %}{% blocktrans with username=reshare_user_profile.username story_title=shared_story.story_title %}{{ username }} re-shared "{{ story_title }}":{% endblocktrans %}{% endif %}
+
+{{ comment.user.username }} ({% blocktrans with time=comment.shared_date %}{{ time }} ago{% endblocktrans %}):
 {{ comment.comments|linebreaksbr }}
 {% for reply in comment.replies %}
-    {{ reply.user.username }} ({{ reply.publish_date }} ago):
+    {{ reply.user.username }} ({% blocktrans with time=reply.publish_date %}{{ time }} ago{% endblocktrans %}):
     {{ reply.comments }}
 {% endfor %}
 
-View this conversation: {{ shared_story.blurblog_permalink }}
+{% trans "View this conversation:" %} {{ shared_story.blurblog_permalink }}
 
-Don't want any more emails? Mute everything from this story: {{ mute_url }}{% endblock %}
+{% trans "Don't want any more emails? Mute everything from this story:" %} {{ mute_url }}{% endblock %}

@@ -44,6 +44,21 @@ class Test_Translation(unittest.TestCase):
             Translator(0).translate("fr", [("title", "Read stories", "button")], [])
         request.assert_not_called()
 
+    def test_an_invented_masking_token_is_rejected(self):
+        # A model once returned a third __NB_TOKEN__ for a string with two, and it reached a subject line.
+        with self.assertRaises(ValueError):
+            validate(
+                "Your NewsBlur %(tier_name)s gift is ready to share!",
+                "Dein NewsBlur-Geschenk für %(tier_name)s __NB_TOKEN_2__ kann jetzt geteilt werden!",
+            )
+
+    def test_markup_must_still_nest_after_reordering(self):
+        source = 'You have <a href="%(url)s">email notifications for %(feed_title)s</a>.'
+        # Japanese moved the feed title, and its closing tag, ahead of the link it closes.
+        with self.assertRaises(ValueError):
+            validate(source, '%(feed_title)s</a>に関する<a href="%(url)s">メール通知を設定しています。')
+        validate(source, '<a href="%(url)s">%(feed_title)sのメール通知</a>を設定しています。')
+
     def test_stray_percent_in_a_format_string_is_rejected(self):
         with self.assertRaises(ValueError):
             validate("Only 1.9%% of users", "Yalnızca %1,9%%'u")
@@ -119,3 +134,26 @@ class Test_Translation(unittest.TestCase):
         memory = {"k": "Du hast dich bei NewsBlur angemeldet"}
         self.assertFalse(is_valid("You signed up for NewsBlur", memory, "k", "de"))
         self.assertTrue(is_valid("You signed up for NewsBlur", memory, "k"))
+
+    @patch("localization.manage.load_glossary")
+    def test_glossary_ignores_placeholders_markup_and_urls(self, glossary):
+        import re
+
+        # Identifiers a translation must copy verbatim can contain a word the glossary avoids.
+        term = {
+            "concept": "classifier",
+            "en": r"\bclassifier\b",
+            "use": "pengklasifikasi",
+            "avoid": ["classifier"],
+        }
+        spaces = {"concept": "typography", "en": None, "use": None, "avoid": ["  "]}
+        glossary.return_value = ("", [(re.compile(term["en"], re.I), term), (None, spaces)])
+        source = (
+            'A classifier match (%(classifier_match_desc)s) on <a href="https://x.com/classifier">%(t)s</a>'
+        )
+        good = 'Kecocokan pengklasifikasi (%(classifier_match_desc)s) di <a href="https://x.com/classifier">%(t)s</a>'
+        self.assertIsNone(glossary_violation("id", source, good))
+        self.assertTrue(glossary_violation("id", source, good.replace("pengklasifikasi", "classifier")))
+        self.assertIsNone(
+            glossary_violation("id", "A classifier: %(a)s %(b)s", "Pengklasifikasi: %(a)s %(b)s")
+        )

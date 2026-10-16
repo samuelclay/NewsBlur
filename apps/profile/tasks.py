@@ -6,12 +6,15 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Count
 from django.template.loader import render_to_string
+from django.utils.translation import gettext, gettext_lazy, ngettext
 
 from apps.profile.models import MGiftCode, MSentEmail, Profile, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.social.models import MActivity, MInteraction, MSocialServices
 from newsblur_web.celeryapp import app
 from utils import log as logging
+from utils.languages import account_translation, localized_number
+from utils.story_functions import localized_date
 
 
 @app.task(name="email-new-user")
@@ -300,18 +303,25 @@ def EmailFeedLimitNotifications():
         deadline = profile.grandfather_expires
         if deadline.tzinfo is None:
             deadline = deadline.replace(tzinfo=datetime.timezone.utc)
-        deadline_date = deadline.strftime("%B %d, %Y")
 
-        # Send email
-        params = {
-            "user": user,
-            "username": user.username,
-            "feed_count": f"{feed_count:,}",
-            "deadline_date": deadline_date,
-        }
-        text = render_to_string("mail/email_feed_limit_notification.txt", params)
-        html = render_to_string("mail/email_feed_limit_notification.xhtml", params)
-        subject = f"Your NewsBlur subscription and your {feed_count:,} sites"
+        # Send email, with its date and numbers written the recipient's way
+        with account_translation(profile):
+            deadline_date = localized_date(deadline, "%B %d, %Y")
+            params = {
+                "user": user,
+                "username": user.username,
+                "feed_count": localized_number(feed_count),
+                # The plain number picks each language's plural form; feed_count is what readers see.
+                "feed_count_number": feed_count,
+                "deadline_date": deadline_date,
+            }
+            text = render_to_string("mail/email_feed_limit_notification.txt", params)
+            html = render_to_string("mail/email_feed_limit_notification.xhtml", params)
+            subject = ngettext(
+                "Your NewsBlur subscription and your %(count)s site",
+                "Your NewsBlur subscription and your %(count)s sites",
+                feed_count,
+            ) % {"count": localized_number(feed_count)}
 
         msg = EmailMultiAlternatives(
             subject,
@@ -360,6 +370,27 @@ def RefundUnredeemedGifts():
             logging.debug(" ---> Failed to auto-refund gift %s: %s" % (gift.gift_code, e))
 
 
+# Lazy plan names read in the recipient's language inside their email and in English for staff notifications.
+# They reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
+TIER_NAMES = {
+    "premium": gettext_lazy("Premium"),
+    "archive": gettext_lazy("Premium Archive"),
+    "pro": gettext_lazy("Premium Pro"),
+}
+
+
+def referral_credit_text(credit_days):
+    """profile/tasks.py describes referral credit in the active language: the referrer's for their email,
+    English for the staff notification."""
+    if credit_days >= 365:
+        years = credit_days // 365
+        return ngettext("%(count)s year", "%(count)s years", years) % {"count": years}
+    if credit_days >= 30:
+        months = credit_days // 30
+        return ngettext("%(count)s month", "%(count)s months", months) % {"count": months}
+    return ngettext("%(count)s day", "%(count)s days", credit_days) % {"count": credit_days}
+
+
 @app.task(name="email-referral-credit")
 def EmailReferralCredit(referrer_user_id, referred_username, credit_days, referrer_tier):
     try:
@@ -367,25 +398,19 @@ def EmailReferralCredit(referrer_user_id, referred_username, credit_days, referr
     except Profile.DoesNotExist:
         return
 
-    tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
-    tier_name = tier_names.get(referrer_tier, "Premium")
+    tier_name = TIER_NAMES.get(referrer_tier, TIER_NAMES["premium"])
+    credit_text = referral_credit_text(credit_days)
 
-    if credit_days >= 365:
-        credit_text = "%s year%s" % (credit_days // 365, "s" if credit_days >= 730 else "")
-    elif credit_days >= 30:
-        credit_text = "%s month%s" % (credit_days // 30, "s" if credit_days >= 60 else "")
-    else:
-        credit_text = "%s day%s" % (credit_days, "s" if credit_days != 1 else "")
-
-    params = {
-        "username": profile.user.username,
-        "referred_username": referred_username,
-        "credit_text": credit_text,
-        "tier_name": tier_name,
-    }
-    text = render_to_string("mail/email_referral_credit.txt", params)
-    html = render_to_string("mail/email_referral_credit.xhtml", params)
-    subject = "You earned free %s from a referral!" % tier_name
+    with account_translation(profile):
+        params = {
+            "username": profile.user.username,
+            "referred_username": referred_username,
+            "credit_text": referral_credit_text(credit_days),
+            "tier_name": tier_name,
+        }
+        text = render_to_string("mail/email_referral_credit.txt", params)
+        html = render_to_string("mail/email_referral_credit.xhtml", params)
+        subject = gettext("You earned free %(tier_name)s from a referral!") % {"tier_name": tier_name}
     msg = EmailMultiAlternatives(
         subject,
         text,
@@ -419,18 +444,25 @@ def EmailGiftCreated(gifter_user_id, gift_url, gift_tier):
     except Profile.DoesNotExist:
         return
 
-    tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
-    tier_name = tier_names.get(gift_tier, "Premium")
+    tier_name = TIER_NAMES.get(gift_tier, TIER_NAMES["premium"])
 
-    subject = "Your NewsBlur %s gift is ready to share!" % tier_name
-    text = (
-        "Hi %s,\n\n"
-        "Your %s gift subscription is ready. Share this link with the lucky recipient:\n\n"
-        "%s\n\n"
-        "They'll be able to sign up or log in and activate their subscription instantly.\n\n"
-        "If the gift isn't redeemed within 90 days, you'll receive a full refund automatically.\n\n"
-        "Sam\n"
-    ) % (profile.user.username, tier_name, gift_url)
+    with account_translation(profile):
+        subject = gettext("Your NewsBlur %(tier_name)s gift is ready to share!") % {"tier_name": tier_name}
+        text = "\n\n".join(
+            [
+                gettext("Hi %(username)s,") % {"username": profile.user.username},
+                gettext(
+                    "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"
+                )
+                % {"tier_name": tier_name},
+                gift_url,
+                gettext("They'll be able to sign up or log in and activate their subscription instantly."),
+                gettext(
+                    "If the gift isn't redeemed within 90 days, you'll receive a full refund automatically."
+                ),
+                "Sam\n",
+            ]
+        )
 
     msg = EmailMultiAlternatives(
         subject,

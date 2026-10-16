@@ -1,7 +1,7 @@
 {% extends "mail/email_base.txt" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}Good news! NewsBlur has finished importing your starred stories from Google Reader. You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }} and have <b>{{ starred_count }}</b> saved stor{{ starred_count|pluralize:"y,ies" }}.
+{% block body %}{% trans "Good news! NewsBlur has finished importing your starred stories from Google Reader." %} {% if feed_count == 1 %}{% blocktrans count counter=starred_count %}You are now subscribed to <b>{{ feed_count }}</b> site and have <b>{{ counter }}</b> saved story.{% plural %}You are now subscribed to <b>{{ feed_count }}</b> site and have <b>{{ counter }}</b> saved stories.{% endblocktrans %}{% else %}{% blocktrans count counter=starred_count %}You are now subscribed to <b>{{ feed_count }}</b> sites and have <b>{{ counter }}</b> saved story.{% plural %}You are now subscribed to <b>{{ feed_count }}</b> sites and have <b>{{ counter }}</b> saved stories.{% endblocktrans %}{% endif %}
 
-Head over to NewsBlur and get reading: https://{% current_domain %}{% endblock body %}
+{% trans "Head over to NewsBlur and get reading:" %} https://{% current_domain %}{% endblock body %}

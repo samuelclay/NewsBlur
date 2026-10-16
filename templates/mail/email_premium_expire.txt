@@ -1,11 +1,11 @@
 {% extends "mail/email_base.txt" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}Hey {{ user.username }}, your premium account has just expired.
+{% block body %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hey {{ username }}, your premium account has just expired.{% endblocktrans %}
 
-You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur.
+{% trans "You now have a free account with all the limitations of a free account. But that doesn't mean you can't renew your premium subscription and enjoy the many benefits of using NewsBlur." %}
 
-Renew now: https://{% current_domain %}{{ user.profile.autologin_url }}?next=premium
+{% trans "Renew now:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=premium
 
-Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}
+{% trans "Spend a few days trying out NewsBlur again. We hope you love it." %}{% endblock body %}

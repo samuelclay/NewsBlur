@@ -6,14 +6,16 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, NoResolverConfiguration, query
 
-from apps.profile.models import RNewUserQueue, blank_authenticate
+from apps.profile.models import Profile, RNewUserQueue, blank_authenticate
 from apps.profile.tasks import EmailNewUser
 from apps.reader.models import Feature
 from apps.social.models import MActivity
 from utils import log as logging
+from utils.languages import match_language
 
 
 class LoginForm(forms.Form):
@@ -196,7 +198,13 @@ class SignupForm(forms.Form):
             new_user.is_active = False
         new_user.email = email
         new_user.last_login = datetime.datetime.now()
-        new_user.save()
+        # forms.py records the language this signup arrived in, since the anonymous signup request never
+        # reaches apps/profile/language.py:remember_device_language. One transaction holds back the trial
+        # welcome email that create_profile queues on commit until the language is stored.
+        with transaction.atomic():
+            new_user.save()
+            signup_language = match_language(translation.get_language() or "en") or "en"
+            Profile.objects.filter(user=new_user).update(last_seen_language=signup_language)
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
 
