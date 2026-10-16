@@ -1,0 +1,25 @@
+{
+  "locale": "hi",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "hi",
+      "source_sha256": "44452ccced9f064d0b4ffcaeaa8ef30a351f99f51f65600243ac7fb2795fc641",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        42,
+        60
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Refreshed native Hindi iPad capture. Source contact sheet confirms normal split-reader text and loaded photos. Includes real fullscreen article scrolling, then the settled Saved collection with the bread article selected."
+    }
+  },
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated recording gap, then inspect all captions/glyphs and normal-speed playback before staging."
+}
