@@ -1,19 +1,33 @@
 # Native capture checkpoint, 2026-10-16
 
-Capture resumed after host recovery. Our iPhone 18 Pro Max is active for localized capture; another task’s iPhone 17e is untouched. A fresh three-file preference backup is at `/tmp/newsblur-iphone-capture-resume-backup`. Before this resumed batch, all capture simulators were shut down. The iPhone's three preference files were restored and SHA-256 verified against `/tmp/newsblur-iphone-capture-final-backup`; the iPad's five files were restored from `/tmp/newsblur-ipad-capture-final-backup`. No production account was used.
+The existing iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`, is active for localized capture. The capture iPhone 18 Pro Max is shut down; its three preference files were restored and SHA-256 verified against `/tmp/newsblur-iphone-capture-resume-backup`. The iPad has a fresh five-file backup at `/tmp/newsblur-ipad-capture-resume-backup` to restore after shutdown. Another task’s iPhone 17e is untouched. No production account is used.
 
-English has four verified iPhone and four verified iPad screenshots in `../captures/`. The iPhone story list retains the earlier experimental-layout capture because it has all five photo thumbnails. The refreshed iPhone feed list, article reader, and Saved Stories use standard layout; standard avoids clipped Saved Stories margins. iPad uses standard throughout. These are unretouched native captures of actual supported layouts.
+## Verified complete native groups
 
-Raw English footage is finalized in `../footage/iphone/scroll.mp4` (116.36 seconds) and `../footage/ipad/scroll.mp4` (27.75 seconds). Checkpoints and session timestamps accompany each recording. Long pauses in the iPhone recording reflect host stalls. Editors must visually verify usable segments and completed thumbnails before producing the 20-second preview. Raw footage is not an upload-ready App Preview.
+| Locale | iPhone | iPad |
+| --- | --- | --- |
+| English | Four stills and finalized raw video | Four stills and finalized raw video; story list refreshed at 3:38 PM |
+| French | Four stills and finalized raw video, `bdb0a7fc6` | Four stills and finalized raw video, `4953ca956` |
+| Arabic | Four stills and finalized raw video, `454438c1a` | Four stills and finalized raw video, `f790aeaef` |
+| German | Four stills and finalized raw video, `aca5de841` | Pending |
+| Hebrew | Incomplete article capture | Four stills and finalized raw video, visually verified |
 
-French iPhone has four visually verified native screenshots and finalized 72.05-second raw footage in `../footage/localized/fr/iphone/`, committed in `bdb0a7fc6`. All five story thumbnails loaded, reader controls are localized, and Saved Stories margins are clean. Interrupted earlier takes remain outside deliverable paths under `/tmp/newsblur-capture-interrupted-2026-10-16/` and `/tmp/newsblur-fr-resume-hid-interrupted/`.
+Canonical English stills are in `../captures/`. Localized native stills are in `../captures/localized/<locale>/`. Raw videos and checkpoints are in `../footage/<device>/` for English and `../footage/localized/<locale>/<device>/` for localized takes. Raw videos require editing and visual timing review before upload. Video time can diverge from wall-clock checkpoints when CoreSimulator stalls.
 
-The remaining 20-language iPad and 19-language iPhone batches are in progress. The canonical English iPad story-list capture will be refreshed before that device’s localized batch. Native RTL navigation coordinates in `capture_locales.rb` are provisional and require a first Arabic/Hebrew visual check before unattended capture. The iPad choreography was verified manually in English, but has not yet run through the locale script. The script waits for real fixture accessibility content and refuses to overwrite an existing recording. Inspect each screenshot for loaded thumbnails; a time delay alone cannot prove all image downloads finished under host contention.
+Hebrew iPhone has valid feed/story/Saved states but its article remained blank through a bounded 90-second readiness check. It is incomplete and not promoted. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. The remaining iPad locales are next, in serial groups of three or four. Other supported locales remain pending.
 
-Run from the repository root after backing up both app and shared preferences, using one booted simulator at a time:
+The native Arabic/Hebrew Saved title has an existing clock-icon overlap at its left end; captures preserve the actual app UI. This is separate from the fixed capture-coordinate error: RTL reader Back uses x420, while the story-list All button requires x390.
+
+## Reproduction and readiness
+
+Run from repository root after backing up simulator app and shared preferences. Use only `clients/ios/run_ios.py` for simulator interaction, one capture simulator at a time, and restore preferences after shutdown. Keep preview encoding out of active recording windows.
 
 ```sh
-ruby clients/store/artwork/ios/16.0/screenshots/scripts/capture_locales.rb iphone fr
+ruby clients/store/artwork/ios/16.0/screenshots/scripts/capture_locales.rb ipad he
 ```
 
-Capture and encoding stopped when severe macOS host contention delayed shell, browser, and simulator operations. The coordinator confirmed host recovery and authorized resuming the full native localized capture scope. Final localized rendering, App Preview encoding, uploads, and resubmission remain separate outstanding steps.
+The script uses standard story layout and the DEBUG simulator cooking fixture. It refuses to overwrite an existing recording. Both device branches wait for actual accessibility state and loaded photo pixels before capturing. `run_ios.py waitphoto` compiles the small macOS `ScreenshotReadiness.swift` helper once into the temporary directory; it reads captured pixels without changing images. The helper rejected the blank Hebrew article at 0% colored pixels and accepted a loaded reader at 64%. Each wait is bounded to 90 seconds. Visual review still checks all four states and every visible thumbnail before a group is marked verified.
+
+All app builds are reused. A stale idb HID connection after simulator shutdown may require reconnecting only this target’s companion with the existing `/tmp/newsblur-idb-xcode/Developer` shim; normal simulator commands use the regular Xcode environment.
+
+Final localized rendering, App Preview editing, store upload, and resubmission are separate workstreams owned by the coordinator and preview agent.
