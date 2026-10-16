@@ -1,0 +1,87 @@
+---
+# deploy_migrate.yml migrates the database from the code being deployed, in a throwaway container, before any
+# server pulls that code or restarts. No release ever runs against a schema older than its models, and
+# make deploy, make celery and make staging can run in any order. In exchange, every migration must keep the
+# previous release working while it is still running (apps/test_migration_safety.py, "Database Migrations"
+# in AGENTS.md).
+- name: DEPLOY -> Migrate the database before restarting servers
+  hosts: app,staging,task
+  gather_facts: false
+  # deploy_migrate.yml stops the whole deploy when migrating fails, so no server restarts onto new models.
+  any_errors_fatal: true
+  vars_files:
+    - ../env_vars/base.yml
+  vars:
+    migrate_checkout: /srv/newsblur_migrate
+    # The throwaway container joins the network this host's own NewsBlur containers use.
+    migrate_docker_network: "{{ '--network host -v /etc/hosts:/etc/hosts' if 'task' in group_names else '--network newsblurnet' }}"
+
+  tasks:
+    - name: Ensure the migration checkout directory exists
+      run_once: true
+      become: yes
+      file:
+        path: "{{ migrate_checkout }}"
+        state: directory
+        # nb is ansible.cfg's remote_user, which runs the git checkout below.
+        owner: nb
+      tags: [migrate, static]
+
+    - name: Check out the code being deployed, apart from the running checkout
+      run_once: true
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: "{{ migrate_checkout }}"
+        version: "{{ git_branch }}"
+        depth: 1
+        force: yes
+      tags: [migrate, static]
+
+    - name: Copy common secrets into the migration checkout
+      run_once: true
+      copy:
+        src: /srv/secrets-newsblur/settings/common_settings.py
+        dest: "{{ migrate_checkout }}/newsblur_web/local_settings.py"
+      no_log: true
+      tags: [migrate, static]
+
+    - name: Copy app env into the migration checkout
+      run_once: true
+      copy:
+        src: /srv/secrets-newsblur/settings/app_env.py
+        dest: "{{ migrate_checkout }}/newsblur_web/app_env.py"
+      no_log: true
+      tags: [migrate, static]
+
+    - name: Name this server in the migration checkout's app env
+      run_once: true
+      lineinfile:
+        path: "{{ migrate_checkout }}/newsblur_web/app_env.py"
+        line: 'SERVER_NAME = "{{ inventory_hostname }}"'
+      tags: [migrate, static]
+
+    - name: Pull the NewsBlur Python image the new code runs on
+      run_once: true
+      become: yes
+      docker_image:
+        name: newsblur/newsblur_python3
+        source: pull
+      tags: [migrate, static]
+
+    - name: Run database migrations from the new code
+      run_once: true
+      become: yes
+      command: >-
+        docker run --rm {{ migrate_docker_network }}
+        -v {{ migrate_checkout }}:/srv/newsblur -w /srv/newsblur
+        -e DOCKERBUILD= --user 1000:1001
+        newsblur/newsblur_python3 python manage.py migrate --noinput
+      register: migration_result
+      tags: [migrate, static]
+
+    - name: Show migration output
+      run_once: true
+      debug:
+        msg: "{{ migration_result.stdout_lines }}"
+      when: migration_result.stdout_lines | length > 0
+      tags: [migrate, static]
