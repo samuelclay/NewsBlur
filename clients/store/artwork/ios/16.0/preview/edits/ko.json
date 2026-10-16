@@ -1,0 +1,25 @@
+{
+  "locale": "ko",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "ko",
+      "source_sha256": "6ec5f981bfdd8de3688b814c82cec59a3f9fc3d5a0192cf9a53e03cf4793b68b",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        34,
+        49
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Matching native iPad UI with loaded photographs. Includes actual fullscreen reader scroll and a real bread-article selection within the Saved collection near the ending."
+    }
+  },
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated recording gap, then inspect CJK glyphs, settled ending and normal-speed playback before staging."
+}
