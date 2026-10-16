@@ -23,6 +23,8 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils.text import format_lazy
+from django.utils.translation import pgettext_lazy
 from pyapns_client import (
     APNSClient,
     APNSDeviceException,
@@ -49,8 +51,21 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from utils import log as logging
 from utils import mongoengine_fields
+from utils.languages import account_translation
 from utils.story_functions import truncate_chars
 from utils.view_functions import is_true
+
+# notifications/models.py names the classifier behind a notification email in the recipient's language, since
+# the email renders after the match is described.
+CLASSIFIER_MATCH_LABELS = {
+    "title": pgettext_lazy("notification email classifier match", "Title"),
+    "author": pgettext_lazy("notification email classifier match", "Author"),
+    "tag": pgettext_lazy("notification email classifier match", "Tag"),
+    "text": pgettext_lazy("notification email classifier match", "Text"),
+    "url": pgettext_lazy("notification email classifier match", "URL"),
+    "prompt": pgettext_lazy("notification email classifier match", "AI text filter"),
+    "image_prompt": pgettext_lazy("notification email classifier match", "AI image filter"),
+}
 
 
 class NotificationFrequency(enum.Enum):
@@ -539,8 +554,9 @@ class MUserFeedNotification(mongo.Document):
         }
         from_address = "notifications@newsblur.com"
         to_address = "%s <%s>" % (usersub.user.username, usersub.user.email)
-        text = render_to_string("mail/email_story_notification.txt", params)
-        html = render_to_string("mail/email_story_notification.xhtml", params)
+        with account_translation(usersub.user.profile):
+            text = render_to_string("mail/email_story_notification.txt", params)
+            html = render_to_string("mail/email_story_notification.xhtml", params)
         if feed.is_daily_briefing:
             subject = story["story_title"]
         else:
@@ -1070,19 +1086,19 @@ class MUserClassifierNotification(mongo.Document):
                 # Build match description for notification body
                 match_parts = []
                 for notif in matched:
+                    label = CLASSIFIER_MATCH_LABELS.get(notif.classifier_type, notif.classifier_type)
                     if notif.classifier_type in ("prompt", "image_prompt"):
-                        kind = (
-                            "AI image filter" if notif.classifier_type == "image_prompt" else "AI text filter"
-                        )
-                        match_parts.append("%s: %s" % (kind, truncate_chars(notif.classifier_value, 80)))
+                        value = truncate_chars(notif.classifier_value, 80)
                     else:
-                        match_parts.append("%s: %s" % (notif.classifier_type, notif.classifier_value))
-                match_desc = ", ".join(match_parts)
+                        value = notif.classifier_value
+                    match_parts.append(format_lazy("{}: {}", label, value))
+                # Lazy, so send_email's template writes the labels in the recipient's language.
+                match_desc = format_lazy(", ".join(["{}"] * len(match_parts)), *match_parts)
 
                 logging.user(
                     user,
                     "~FCSending classifier notification: %s/%s (matched: %s)"
-                    % (story["story_title"][:40], story_hash, match_desc[:60]),
+                    % (story["story_title"][:40], story_hash, str(match_desc)[:60]),
                 )
 
                 # Send notifications using a temporary MUserFeedNotification-like sender

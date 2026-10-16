@@ -199,6 +199,8 @@ def common_entries():
 
     for base, extension, method in [
         ("templates", "*html", "python"),
+        # manage.py reads the plain-text halves of the emails too (templates/mail/*.txt).
+        ("templates/mail", "*.txt", "python"),
         ("media/js/newsblur", "*.js", "javascript"),
         ("apps", "*.py", "python"),
         ("utils", "*.py", "python"),
@@ -207,7 +209,7 @@ def common_entries():
             if "/tests/" in str(path) or path.name.startswith("test"):
                 continue
             content = path.read_text()
-            if base == "templates":
+            if base.startswith("templates"):
                 try:
                     content = templatize(content, origin=str(path))
                     content = "\n".join(line.lstrip() for line in content.splitlines())

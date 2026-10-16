@@ -1,9 +1,11 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Your email newsletters are now being sent to NewsBlur
+{% load i18n %}
 
-You have just received your first email newsletter in NewsBlur. You can find your newsletters under the Newsletters folder.
+{% block body %}{% trans "Your email newsletters are now being sent to NewsBlur" %}
 
-Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they should be the name of the organization. Easy to change!
+{% blocktrans with folder="Newsletters" %}You have just received your first email newsletter in NewsBlur. You can find your newsletters under the {{ folder }} folder.{% endblocktrans %}
 
-You can also move and delete newsletters just as if they were independent feeds. Training even works on newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do.{% endblock body %}
+{% trans "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they should be the name of the organization. Easy to change!" %}
+
+{% trans "You can also move and delete newsletters just as if they were independent feeds. Training even works on newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do." %}{% endblock body %}

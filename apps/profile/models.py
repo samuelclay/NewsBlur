@@ -28,6 +28,7 @@ from django.db.models.signals import post_save
 from django.db.utils import DatabaseError
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.translation import gettext, ngettext
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
 from zebra.signals import (
@@ -48,6 +49,7 @@ from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
+from utils.languages import in_account_language, localized_number
 from utils.user_functions import generate_secret_token
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from vendor.paypalapi.interface import PayPalInterface
@@ -80,6 +82,9 @@ class Profile(models.Model):
     has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
     last_seen_on = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip = models.CharField(max_length=50, blank=True, null=True)
+    # The language this account's devices last asked for, kept by apps/profile/language.py so emails reach
+    # Automatic users in it (utils/languages.py:account_language).
+    last_seen_language = models.CharField(max_length=16, blank=True, null=True)
     dashboard_date = models.DateTimeField(default=datetime.datetime.now)
     timezone = TimeZoneField(default="America/New_York")
     secret_token = models.CharField(max_length=12, blank=True, null=True)
@@ -3070,6 +3075,7 @@ class Profile(models.Model):
                         pipeline.zrem(pro_key, user.pk)
                 pipeline.execute()
 
+    @in_account_language
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return
@@ -3077,7 +3083,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_account.txt", locals())
         html = render_to_string("mail/email_new_account.xhtml", locals())
-        subject = "Welcome to NewsBlur, %s" % (self.user.username)
+        subject = gettext("Welcome to NewsBlur, %(username)s") % {"username": self.user.username}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3090,6 +3096,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
 
+    @in_account_language
     def send_opml_export_email(self, reason=None, force=False):
         if not self.user.email:
             return
@@ -3113,7 +3120,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_opml_export.txt", params)
         html = render_to_string("mail/email_opml_export.xhtml", params)
-        subject = "Backup OPML file of your NewsBlur sites"
+        subject = gettext("Backup OPML file of your NewsBlur sites")
         filename = "NewsBlur Subscriptions - %s.xml" % datetime.datetime.now().strftime("%Y-%m-%d")
         msg = EmailMultiAlternatives(
             subject,
@@ -3132,6 +3139,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending OPML backup email to: %s" % self.user.email)
 
+    @in_account_language
     def send_first_share_to_blurblog_email(self, force=False):
         from apps.social.models import MSharedStory, MSocialProfile
 
@@ -3156,7 +3164,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_first_share_to_blurblog.txt", params)
         html = render_to_string("mail/email_first_share_to_blurblog.xhtml", params)
-        subject = "Your shared stories on NewsBlur are available on your Blurblog"
+        subject = gettext("Your shared stories on NewsBlur are available on your Blurblog")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3169,6 +3177,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -3185,7 +3194,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium.txt", locals())
         html = render_to_string("mail/email_new_premium.xhtml", locals())
-        subject = "Thank you for subscribing to NewsBlur Premium!"
+        subject = gettext("Thank you for subscribing to NewsBlur Premium!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3198,6 +3207,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new premium: %s" % self.user.email)
 
+    @in_account_language
     def send_new_premium_archive_email(self, total_story_count, pre_archive_count, force=False):
         if not self.user.email:
             return
@@ -3220,9 +3230,17 @@ class Profile(models.Model):
         text = render_to_string("mail/email_new_premium_archive.txt", locals())
         html = render_to_string("mail/email_new_premium_archive.xhtml", locals())
         if total_story_count > pre_archive_count:
-            subject = f"NewsBlur archive backfill is complete: from {pre_archive_count:,} to {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s story",
+                "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories",
+                total_story_count,
+            ) % {"before": localized_number(pre_archive_count), "after": localized_number(total_story_count)}
         else:
-            subject = f"NewsBlur archive backfill is complete: {total_story_count:,} stories"
+            subject = ngettext(
+                "NewsBlur archive backfill is complete: %(count)s story",
+                "NewsBlur archive backfill is complete: %(count)s stories",
+                total_story_count,
+            ) % {"count": localized_number(total_story_count)}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3239,6 +3257,7 @@ class Profile(models.Model):
             % (self.user.email, pre_archive_count, total_story_count),
         )
 
+    @in_account_language
     def send_new_premium_pro_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -3255,7 +3274,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_premium_pro.txt", locals())
         html = render_to_string("mail/email_new_premium_pro.xhtml", locals())
-        subject = "Thanks for subscribing to NewsBlur Premium Pro!"
+        subject = gettext("Thanks for subscribing to NewsBlur Premium Pro!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3459,6 +3478,7 @@ class Profile(models.Model):
             "~BB~FM~SBSending staff WOULD-CANCEL email: %s ($%s/yr)" % (user.username, old_amount),
         )
 
+    @in_account_language
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
             print("Please provide an email address.")
@@ -3471,7 +3491,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_forgot_password.txt", locals())
         html = render_to_string("mail/email_forgot_password.xhtml", locals())
-        subject = "Forgot your password on NewsBlur?"
+        subject = gettext("Forgot your password on NewsBlur?")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3484,6 +3504,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
 
+    @in_account_language
     def send_new_user_queue_email(self, force=False):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3501,7 +3522,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_new_user_queue.txt", locals())
         html = render_to_string("mail/email_new_user_queue.xhtml", locals())
-        subject = "Your free account is now ready to go on NewsBlur"
+        subject = gettext("Your free account is now ready to go on NewsBlur")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3514,6 +3535,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for new user queue: %s" % self.user.email)
 
+    @in_account_language
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3522,7 +3544,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_upload_opml_finished.txt", locals())
         html = render_to_string("mail/email_upload_opml_finished.xhtml", locals())
-        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        subject = gettext("Your OPML upload is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3535,6 +3557,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_finished_email(self, feed_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3543,7 +3566,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_finished.xhtml", locals())
-        subject = "Your Google Reader import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3556,6 +3579,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending email for Google Reader import: %s" % self.user.email)
 
+    @in_account_language
     def send_import_reader_starred_finished_email(self, feed_count, starred_count):
         if not self.user.email:
             print("Please provide an email address.")
@@ -3564,7 +3588,7 @@ class Profile(models.Model):
         user = self.user
         text = render_to_string("mail/email_import_reader_starred_finished.txt", locals())
         html = render_to_string("mail/email_import_reader_starred_finished.xhtml", locals())
-        subject = "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+        subject = gettext("Your Google Reader starred stories import is complete. Get going with NewsBlur!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3730,6 +3754,7 @@ class Profile(models.Model):
                 logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return True
 
+    @in_account_language
     def send_premium_expire_grace_period_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3750,7 +3775,7 @@ class Profile(models.Model):
         data = dict(user=user, months_ago=months_ago)
         text = render_to_string("mail/email_premium_expire_grace.txt", data)
         html = render_to_string("mail/email_premium_expire_grace.xhtml", data)
-        subject = "Your premium account on NewsBlur has one more month!"
+        subject = gettext("Your premium account on NewsBlur has one more month!")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3768,6 +3793,7 @@ class Profile(models.Model):
             % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_expire_email(self, force=False):
         if not self.user.email:
             logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire for user: %s" % (self.user))
@@ -3786,7 +3812,7 @@ class Profile(models.Model):
         data = dict(user=user, months_ago=months_ago)
         text = render_to_string("mail/email_premium_expire.txt", data)
         html = render_to_string("mail/email_premium_expire.xhtml", data)
-        subject = "Your premium account on NewsBlur has expired"
+        subject = gettext("Your premium account on NewsBlur has expired")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3803,6 +3829,7 @@ class Profile(models.Model):
             "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email),
         )
 
+    @in_account_language
     def send_premium_trial_welcome_email(self, force=False):
         """Send welcome email for new premium trial users."""
         if not self.user.email or not self.send_emails:
@@ -3822,7 +3849,7 @@ class Profile(models.Model):
         data = dict(user=user, days_remaining=days_remaining)
         text = render_to_string("mail/email_premium_trial_welcome.txt", data)
         html = render_to_string("mail/email_premium_trial_welcome.xhtml", data)
-        subject = "Welcome to NewsBlur! Your 30-day premium trial has started"
+        subject = gettext("Welcome to NewsBlur! Your 30-day premium trial has started")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3835,6 +3862,7 @@ class Profile(models.Model):
 
         logging.user(self.user, "~BB~FM~SBSending trial welcome email: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_trial_expire_email(self, force=False):
         """Send email when premium trial expires."""
         if not self.user.email:
@@ -3854,7 +3882,7 @@ class Profile(models.Model):
         data = dict(user=user)
         text = render_to_string("mail/email_premium_trial_expire.txt", data)
         html = render_to_string("mail/email_premium_trial_expire.xhtml", data)
-        subject = "Your 30-day NewsBlur premium trial has ended"
+        subject = gettext("Your 30-day NewsBlur premium trial has ended")
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3868,6 +3896,7 @@ class Profile(models.Model):
         MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
         logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
 
+    @in_account_language
     def send_premium_renewal_notice_email(self, force=False):
         if not self.user.email:
             logging.user(
@@ -3888,15 +3917,16 @@ class Profile(models.Model):
                 )
                 return
 
+        # Plan names reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
         if self.is_pro:
-            tier_name = "Premium Pro"
-            amount = "$29/month"
+            tier_name = gettext("Premium Pro")
+            amount = gettext("$29/month")
         elif self.is_archive:
-            tier_name = "Premium Archive"
-            amount = "$99/year"
+            tier_name = gettext("Premium Archive")
+            amount = gettext("$99/year")
         else:
-            tier_name = "Premium"
-            amount = "$36/year"
+            tier_name = gettext("Premium")
+            amount = gettext("$36/year")
 
         user = self.user
         renewal_date = self.premium_expire
@@ -3910,7 +3940,7 @@ class Profile(models.Model):
         )
         text = render_to_string("mail/email_premium_renewal_notice.txt", data)
         html = render_to_string("mail/email_premium_renewal_notice.xhtml", data)
-        subject = "Your %s subscription renews soon" % tier_name
+        subject = gettext("Your %(tier_name)s subscription renews soon") % {"tier_name": tier_name}
         msg = EmailMultiAlternatives(
             subject,
             text,
@@ -3938,6 +3968,7 @@ class Profile(models.Model):
         )
         return payment.payment_amount if payment else None
 
+    @in_account_language
     def send_premium_pricing_upgrade_email(
         self,
         old_amount=None,
@@ -4001,7 +4032,7 @@ class Profile(models.Model):
             )
             text = render_to_string("mail/email_premium_pricing_upgrade_%s.txt" % v, data)
             html = render_to_string("mail/email_premium_pricing_upgrade_%s.xhtml" % v, data)
-            subject = "After years at the old price, NewsBlur Premium is moving to $36/year"
+            subject = gettext("After years at the old price, NewsBlur Premium is moving to $36/year")
             if preview:
                 subject = "[%s preview] %s" % (v, subject)
             msg = EmailMultiAlternatives(

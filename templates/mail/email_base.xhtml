@@ -1,7 +1,8 @@
-{% load utils_tags %}
+{% load i18n utils_tags %}
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <style type="text/css" data-premailer="ignore">
@@ -257,12 +258,25 @@
         padding-top: 0 !important;
     }
 
+    {% if LANGUAGE_BIDI %}
+    /* email_base.xhtml mirrors the left-aligned pieces for Arabic and Hebrew readers. */
+    .content-td h2 {
+        text-align: right;
+    }
+    .footer-logo {
+        float: right;
+    }
+    .optout {
+        float: left;
+    }
+    {% endif %}
+
     </style>
 
 
 
 </head>
-<body>
+<body dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 
 
 <table cellpadding="0" cellspacing="0" border="0" class="bgtc personal" align="center" style="background: #f9f9f9; border-collapse: collapse; line-height: 100% !important; margin: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt; padding: 0; width: 100% !important" bgcolor="#f9f9f9">
@@ -305,28 +319,28 @@
                                         {% block footer %}
                                         <tr>
                                             <td class="comment_body_td content-td" style="-webkit-background-clip: padding-box; -webkit-border-radius: 0 0 3px 3px; background: white; background-clip: padding-box; border-radius: 0 0 3px 3px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); color: #525252; font-family: 'Helvetica Neue',Arial,sans-serif; font-size: 15px; line-height: 22px; overflow: hidden; padding: 40px 40px 30px; border-top: 2px solid #2d5273; " bgcolor="white">
-                                                <p style="line-height:20px;">NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument.</p>
-                                                <p style="line-height:20px;">Stay up to date and in touch with a few different ways:</p>
+                                                <p style="line-height:20px;">{% trans "NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." %}</p>
+                                                <p style="line-height:20px;">{% trans "Stay up to date and in touch with a few different ways:" %}</p>
                                                 <p style="line-height: 20px;">
                                                     <ul style="list-style: none;">
-                                                        <li style="line-height:22px;"><a href="https://twitter.com/newsblur/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @newsblur on Twitter</a></li>
-                                                        <li style="line-height:22px;"><a href="https://twitter.com/samuelclay/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Follow @samuelclay on Twitter</a></li>
+                                                        <li style="line-height:22px;"><a href="https://twitter.com/newsblur/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% blocktrans with handle="@newsblur" %}Follow {{ handle }} on Twitter{% endblocktrans %}</a></li>
+                                                        <li style="line-height:22px;"><a href="https://twitter.com/samuelclay/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/story_share_twitter_active.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% blocktrans with handle="@samuelclay" %}Follow {{ handle }} on Twitter{% endblocktrans %}</a></li>
                                                     </ul>
                                                 </p>
-                                                <p style="line-height: 20px;">{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}</p>
+                                                <p style="line-height: 20px;">{% block resources_header %}{% trans "To get the most out of NewsBlur, here are a few resources:" %}{% endblock resources_header %}</p>
                                                 <p style="line-height: 20px;">
                                                     <ul style="list-style: none;">
-                                                        <li style="line-height:22px;"><a href="https://www.newsblur.com/faq" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/g_modal_tutorial.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Check the FAQ</a></li>
-                                                        <li style="line-height:22px;"><a href="https://blog.newsblur.com" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Read the NewsBlur Blog</a></li>
-                                                        <li style="line-height:22px;"><a href="https://forum.newsblur.com" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/discourse.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Get support on NewsBlur's support forum</a></li>
+                                                        <li style="line-height:22px;"><a href="https://www.newsblur.com/faq" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/circular/g_modal_tutorial.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Check the FAQ" %}</a></li>
+                                                        <li style="line-height:22px;"><a href="https://blog.newsblur.com" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/favicon_32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Read the NewsBlur Blog" %}</a></li>
+                                                        <li style="line-height:22px;"><a href="https://forum.newsblur.com" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/discourse.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Get support on NewsBlur's support forum" %}</a></li>
                                                     </ul>
                                                 </p>
-                                                <p style="line-height: 20px;">There are plenty of ways to use NewsBlur beyond the web:</p>
+                                                <p style="line-height: 20px;">{% trans "There are plenty of ways to use NewsBlur beyond the web:" %}</p>
                                                 <p style="line-height: 20px;">
                                                     <ul style="list-style: none;">
-                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}/ios/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free iOS App</a></li>
-                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}/android/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download the free Android App</a></li>
-                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}?next=goodies" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> Download browser extensions for Safari, Firefox, and Chrome</a></li>
+                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}/ios/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/iphone_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Download the free iOS App" %}</a></li>
+                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}/android/" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/reader/android_icon.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Download the free Android App" %}</a></li>
+                                                        <li style="line-height:22px;"><a href="https://{% current_domain %}?next=goodies" style="text-decoration:none"><img src="https://{% current_domain %}/media/img/icons/silk/package_green.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;" alt=""> {% trans "Download browser extensions for Safari, Firefox, and Chrome" %}</a></li>
                                                     </ul>
                                                 </p>
                                             </td>
@@ -362,9 +376,9 @@
                         {% block optout %}
                         <div class="optout">
                             {% if user.profile.email_optout_url %}
-                            <a href="https://{% current_domain %}{{ user.profile.email_optout_url }}" style="text-decoration:none;color: #84919B">Unsubscribe from NewsBlur emails</a>
+                            <a href="https://{% current_domain %}{{ user.profile.email_optout_url }}" style="text-decoration:none;color: #84919B">{% trans "Unsubscribe from NewsBlur emails" %}</a>
                             {% else %}
-                            <a href="https://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;color: #84919B">Unsubscribe from NewsBlur emails</a>
+                            <a href="https://{% current_domain %}{% url "profile-email-optout" %}" style="text-decoration:none;color: #84919B">{% trans "Unsubscribe from NewsBlur emails" %}</a>
                             {% endif %}
                         </div>
                         {% endblock %}

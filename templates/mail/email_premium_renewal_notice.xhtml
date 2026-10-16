@@ -1,27 +1,28 @@
 {% extends "mail/email_base.xhtml" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
 {% block body %}
+    {% current_domain as domain %}
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
-        Hey {{ user.username }}, just a heads up
+        {% blocktrans trimmed with username=user.username %}Hey {{ username }}, just a heads up{% endblocktrans %}
     </h2>
 
-    <p style="line-height: 20px;">Your <b>{{ tier_name }}</b> subscription renews on <b>{{ renewal_date|date:"F j, Y" }}</b>.</p>
-    <p style="line-height: 20px;">You'll be charged <b>{{ amount }}</b> to continue your {{ tier_name }} account on NewsBlur. No action needed on your part.</p>
+    <p style="line-height: 20px;">{% blocktrans with date=renewal_date|language_date:"F j, Y" %}Your <b>{{ tier_name }}</b> subscription renews on <b>{{ date }}</b>.{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% blocktrans %}You'll be charged <b>{{ amount }}</b> to continue your {{ tier_name }} account on NewsBlur. No action needed on your part.{% endblocktrans %}</p>
 
     {% if not is_pro and is_archive %}
     <p style="line-height: 20px; margin-top: 16px; padding: 12px 16px; background-color: #f0f7f0; border-radius: 6px;">
-        <b>Ready to take your reading to the next level?</b><br>
-        <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites, and priority support.
+        <b>{% trans "Ready to take your reading to the next level?" %}</b><br>
+        {% blocktrans trimmed with autologin_url=user.profile.autologin_url %}<a href="https://{{ domain }}{{ autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites, and priority support.{% endblocktrans %}
     </p>
     {% elif not is_archive %}
     <p style="line-height: 20px; margin-top: 16px; padding: 12px 16px; background-color: #f0f7f0; border-radius: 6px;">
-        <b>Want to unlock even more?</b><br>
-        <a href="https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Archive</a> ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, up to 4,096 sites, and custom auto-read settings.
+        <b>{% trans "Want to unlock even more?" %}</b><br>
+        {% blocktrans trimmed with autologin_url=user.profile.autologin_url %}<a href="https://{{ domain }}{{ autologin_url }}?next=renew" style="text-decoration: none; color: #366944;">Premium Archive</a> ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, up to 4,096 sites, and custom auto-read settings.{% endblocktrans %}
     </p>
     {% endif %}
 
-    <p style="line-height: 20px; font-size: 12px; color: #909090; margin-top: 16px;">You're receiving this because you opted into renewal notifications. You can turn this off in Account &gt; Payments.</p>
+    <p style="line-height: 20px; font-size: 12px; color: #909090; margin-top: 16px;">{% trans "You're receiving this because you opted into renewal notifications. You can turn this off in Account &gt; Payments." %}</p>
     <p style="line-height: 20px;">- Sam</p>
 {% endblock %}

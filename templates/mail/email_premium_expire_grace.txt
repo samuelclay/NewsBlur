@@ -1,19 +1,19 @@
 {% extends "mail/email_base.txt" %}
 
-{% load utils_tags %}
+{% load i18n utils_tags %}
 
-{% block body %}Hey {{ user.username }}, your premium account is about to expire...
+{% block body %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hey {{ username }}, your premium account is about to expire...{% endblocktrans %}
 
-Your premium account was set to expire today, but you've been given a free month grace period, so you can continue using your premium account to try out NewsBlur.
+{% trans "Your premium account was set to expire today, but you've been given a free month grace period, so you can continue using your premium account to try out NewsBlur." %}
 
-{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% else %}You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe you just need to renew your premium account. Let's help you do that.{% endif %}
+{% if months_ago >= 1 %}{% blocktrans count counter=months_ago %}It's been {{ counter }} month since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% plural %}It's been {{ counter }} months since you last saw NewsBlur. A lot has changed since then. We just launched a full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the old Google Reader features, you'll love the new NewsBlur.{% endblocktrans %}{% else %}{% trans "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe you just need to renew your premium account. Let's help you do that." %}{% endif %}
 
-Renew now: https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew
+{% trans "Renew now:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=renew
 
-Here are some easy ways to have a great time on NewsBlur:
+{% trans "Here are some easy ways to have a great time on NewsBlur:" %}
 
-    * Follow friends from Twitter, Facebook, and NewsBlur: https://{% current_domain %}{{ user.profile.autologin_url }}
-    * Visit the popular blurblog, The People Have Spoken: https://popular.newsblur.com
-    * Renew your premium account for only $36/year: https://{% current_domain %}{{ user.profile.autologin_url }}?next=renew
+    * {% trans "Follow friends from Twitter, Facebook, and NewsBlur" %}: https://{{ domain }}{{ user.profile.autologin_url }}
+    * {% trans "Visit the popular blurblog, The People Have Spoken" %}: https://popular.newsblur.com
+    * {% trans "Renew your premium account for only $36/year" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=renew
 
-Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}
+{% trans "Spend a few days trying out NewsBlur again. We hope you love it." %}{% endblock body %}
