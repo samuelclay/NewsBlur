@@ -1,0 +1,80 @@
+{
+  "language": "de",
+  "checked_at": "2026-10-16T22:54:49Z",
+  "capture_format": "CUA JPEG screenshot converted to opaque PNG without resizing",
+  "note": "Encoding checks do not establish correct native content, visual approval, or store persistence.",
+  "files": [
+    {
+      "path": "exports/de/1206x2622/panel-1.png",
+      "panel": 1,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1196623,
+      "sha256": "12739d024aa8506f3e7f8a3b79163ee81fd6af1251f45cbe3cfdfa8d617ff75b",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.593,
+        "largest_tile_error": 2.4479,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/de/1206x2622/panel-2.png",
+      "panel": 2,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 581809,
+      "sha256": "bd4199315ad1ef1fd63fa460dffa64dc74006acb249cdde8de086183d432cc2a",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.4967,
+        "largest_tile_error": 0.9805,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/de/1206x2622/panel-3.png",
+      "panel": 3,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1769963,
+      "sha256": "f234b93e57189c3150887e5e97c7c9e8f2277db8836e691430bed2bcf5e35346",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 3.4478,
+        "largest_tile_error": 7.4883,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/de/1206x2622/panel-4.png",
+      "panel": 4,
+      "width": 1206,
+      "height": 2622,
+      "opaque": true,
+      "bytes": 1022540,
+      "sha256": "6b267670bbdb8f2c5b695f570c85e73946773acc7cf5e360e576fcc4c52c37bf",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.4624,
+        "largest_tile_error": 2.2448,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

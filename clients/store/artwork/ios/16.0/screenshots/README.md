@@ -30,6 +30,8 @@ New render evidence includes the native screen's exact DOM rectangle. `finalize-
 
 `export-cua.mjs` provides the repeatable capture loop for the approved CUA REPL. Import it there and call `exportScreenshots({tab, viewport, language: 'fr', sizes: ['1320x2868', '1206x2622']})` using an already selected dedicated rendering tab and the documented browser viewport capability. It uses only those CUA handles, checks rendered copy and readiness, rejects captures changed during rendering, records source/checksum evidence, and resets the temporary viewport. Omit `sizes` for all three formats. Do not run this helper with an external browser driver. Its default local server URL is the one above; the server must already be running.
 
+For slow browser sessions, add `panels: [1]` and export one panel per CUA call. Evidence is saved after each successful panel. Resuming retains only records whose renderer, copy, native image, and raw screenshot hashes still match. The finalizer requires all four evidence records before producing a complete validated set. Partial work must not be staged or uploaded.
+
 After visually checking all four exact PNGs, run `ruby clients/store/artwork/ios/16.0/screenshots/stage-uploads.rb --language fr --size 1206x2622 --reviewed`. It verifies the validation checksums and stages uniquely named files such as `newsblur-16.0-fr-1206x2622-01.png` in `/tmp/newsblur-ios16-ready-uploads/`, merging their entries into that directory's existing manifest without removing videos or creative artwork. Changed images reset their placement to unverified. Staging files or seeing them in the store's asset library does not establish persisted attachment to a locale.
 
 ## Editable sources

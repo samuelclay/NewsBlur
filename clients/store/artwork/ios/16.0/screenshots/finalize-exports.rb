@@ -32,12 +32,15 @@ records = options[:sizes].flat_map do |size|
   width, height = size.split('x').map(&:to_i)
   evidence_path = File.join(root, 'exports', language, "render-checks-#{size}.json")
   evidence = File.exist?(evidence_path) ? JSON.parse(File.read(evidence_path)) : []
+  abort "Incomplete render evidence for #{language} #{size}." unless evidence.empty? || evidence.map { |entry| entry['panel'] }.sort == [1, 2, 3, 4]
   (1..4).map do |panel|
     destination = File.join(root, 'exports', language, size, "panel-#{panel}.png")
     unless options[:validate_only]
       source = File.join(options[:raw_root], language, size, "panel-#{panel}.jpg")
       abort "Missing CUA screenshot: #{source}" unless File.file?(source)
       abort "Expected genuine JPEG bytes: #{source}" unless File.binread(source, 3).bytes == [255, 216, 255]
+      source_evidence = evidence.find { |entry| entry['panel'] == panel }
+      abort "Raw screenshot differs from its recorded render: #{source}" if source_evidence && Digest::SHA256.file(source).hexdigest != source_evidence.fetch('screenshot_sha256')
       source_properties = image_properties(source)
       abort "Wrong CUA screenshot dimensions: #{source}" unless source_properties.values_at(:width, :height) == [width, height]
       FileUtils.mkdir_p(File.dirname(destination))

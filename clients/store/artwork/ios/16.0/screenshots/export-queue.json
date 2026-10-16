@@ -1,93 +1,77 @@
 {
   "created_at": "2026-10-16T22:43:31Z",
-  "browser_status": "extension_disconnected_waiting_for_coordinator_handoff",
-  "jobs": [
-    {
-      "language": "en",
-      "device": "ipad",
-      "sizes": [
-        "2064x2752"
-      ],
-      "status": "native_reviewed_pending_browser_export",
-      "captures": [
-        {
-          "path": "captures/ipad-stories.png",
-          "sha256": "e23d1b979a611986b26ce7796067fc488703e80b919d7508e528864e3683875b"
-        },
-        {
-          "path": "captures/ipad-feeds.png",
-          "sha256": "06a4faca95e421e6257c3637c61e4efce5402815b6befa0b3bf796a236c41600"
-        },
-        {
-          "path": "captures/ipad-reader.png",
-          "sha256": "ec5fae92213702f9e3fd4f671b58d27552522efe70cd0a7e6e510805c7483d72"
-        },
-        {
-          "path": "captures/ipad-saved.png",
-          "sha256": "1b87dbda9f30d65f9f53b24b6298596a1167d85455d61e07f583d8b8dba607a5"
-        }
-      ]
-    },
-    {
-      "language": "ar",
-      "device": "iphone",
-      "sizes": [
-        "1320x2868",
-        "1206x2622"
-      ],
-      "status": "native_reviewed_pending_browser_export",
-      "captures": [
-        {
-          "path": "captures/localized/ar/iphone-stories.png",
-          "sha256": "b3086c273e7ba8b941d1a92a4b98fd785b24aef5f503b31b544d17d086945bd2"
-        },
-        {
-          "path": "captures/localized/ar/iphone-feeds.png",
-          "sha256": "1bb6f6635435ab178b0be2d4a4915a8486a689666646ee3d615b4b9d55b220f8"
-        },
-        {
-          "path": "captures/localized/ar/iphone-reader.png",
-          "sha256": "a81540daba39c0d467612d72d427f0f5beeb9f6f2de1eeb5953e6ca12689f64e"
-        },
-        {
-          "path": "captures/localized/ar/iphone-saved.png",
-          "sha256": "22502c4c9c558e3d9f75bb5313e92c373e22e2362e8bd5d07708d0c11fdd2fe9"
-        }
-      ]
-    },
-    {
-      "language": "de",
-      "device": "iphone",
-      "sizes": [
-        "1320x2868",
-        "1206x2622"
-      ],
-      "status": "native_reviewed_pending_browser_export",
-      "captures": [
-        {
-          "path": "captures/localized/de/iphone-stories.png",
-          "sha256": "66bbbdfe671e10b7ab1f6b181b4c9ddacc514d24d240007447c1b7ad8504b059"
-        },
-        {
-          "path": "captures/localized/de/iphone-feeds.png",
-          "sha256": "95ef2cc70911b165ce4f7fce4c35b6809205636e7fb64ff8687351688537dead"
-        },
-        {
-          "path": "captures/localized/de/iphone-reader.png",
-          "sha256": "784d199363fbdb4e08dc1c3eac45a2b968b51cc94b40b369fdf6f8f18265dc9c"
-        },
-        {
-          "path": "captures/localized/de/iphone-saved.png",
-          "sha256": "787c79996005c7e0ea8ddaa983916641c6749c9b6c7cc2273294f8153ca9929e"
-        }
-      ]
-    }
-  ],
+  "browser_status": "handed_back_to_coordinator_after_bounded_batch",
   "required_next_steps": [
     "Export via CUA with viewport and render readiness checks",
     "Convert and validate native screen pixel correspondence",
     "Visually inspect all four panels per size",
     "Stage with locale, size and panel in upload filename"
   ],
-  "store_placement": "unverified"
+  "store_placement": "unverified",
+  "updated_at": "2026-10-16T22:57:43Z",
+  "completed_sets": [
+    {
+      "language": "en",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "fr",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "ar",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1320x2868-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "ar",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1206x2622-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "de",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1320x2868-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "de",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1206x2622-0[1-4].png",
+      "store_placement": "unverified"
+    }
+  ],
+  "remaining_batch": [
+    {
+      "language": "ar",
+      "device": "ipad",
+      "size": "2064x2752",
+      "status": "pending_browser_export",
+      "reason": "Browser timed out and reset the kernel during export; resume one panel per CUA call."
+    }
+  ]
 }
