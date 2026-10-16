@@ -194,7 +194,7 @@ msgstr[1] "%(number)d secondi"
 
 #, python-format
 msgid "%(referred_username)s just signed up for a premium subscription through your referral link."
-msgstr "%(referred_username)s si è appena abbonato a Premium tramite il tuo link di referral."
+msgstr "%(referred_username)s si è appena abbonato a Premium tramite il tuo link di invito."
 
 #, python-format
 msgid "%(shares)s Share"
@@ -260,7 +260,7 @@ msgstr "%(username)s ha chiesto di seguire il tuo Blurblog su NewsBlur"
 
 #, python-format
 msgid "%(username)s is now following your Blurblog on NewsBlur!"
-msgstr "%(username)s ora segue il tuo blurblog su NewsBlur!"
+msgstr "%(username)s ora segue il tuo Blurblog su NewsBlur!"
 
 #, python-format
 msgid "%(username)s re-shared \"%(story_title)s\" from %(feed_title)s:"
@@ -296,7 +296,7 @@ msgstr ""
 
 #, python-format
 msgid "%(username)s replied to you on \"%(story_title)s\" on NewsBlur"
-msgstr "%(username)s ti ha risposto su “%(story_title)s” il NewsBlur"
+msgstr "%(username)s ti ha risposto su “%(story_title)s” su NewsBlur"
 
 #, python-format
 msgid "%(username)s replied to you:"
@@ -449,7 +449,7 @@ msgstr[1] "<b>%(followers)s</b> follower"
 
 #, python-format
 msgid "<b>%(referred_username)s</b> just signed up for a premium subscription through your referral link."
-msgstr "<b>%(referred_username)s</b> ha appena attivato un abbonamento Premium tramite il tuo link di referral."
+msgstr "<b>%(referred_username)s</b> ha appena attivato un abbonamento Premium tramite il tuo link di invito."
 
 #, python-format
 msgid "<b>%(stories)s</b> story"
@@ -552,11 +552,11 @@ msgid ""
 "A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the "
 "machines which store and process your archive."
 msgstr ""
-"Un <b>enorme</b> grazie per esserti iscritto al piano Premium Archive. Il tuo abbonamento contribuisce a "
+"Grazie <b>di cuore</b> per esserti abbonato al piano Premium Archive. Il tuo abbonamento contribuisce a "
 "pagare i server che archiviano ed elaborano il tuo archivio."
 
 msgid "A <b>huge</b> thanks for going premium."
-msgstr "Un <b>grandissimo</b> grazie per essere passato a Premium."
+msgstr "Grazie <b>di cuore</b> per aver scelto Premium."
 
 msgid "A Note about OAuth"
 msgstr "Una nota su OAuth"
@@ -602,14 +602,14 @@ msgstr "IA integrata in ogni articolo"
 
 msgctxt "notification email classifier match"
 msgid "AI image filter"
-msgstr "Filtro immagini AI"
+msgstr "Filtro immagini IA"
 
 msgid "AI skill"
 msgstr "Skill per agenti IA"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
-msgstr "filtro di testo AI"
+msgstr "Filtro di testo IA"
 
 msgid "AI-based topic prioritization"
 msgstr "Priorità degli argomenti basata sull'IA"
@@ -839,9 +839,7 @@ msgid "Analyzing page"
 msgstr "Analisi della pagina"
 
 msgid "And a huge thanks for going premium. I'm a solo developer, so it goes a long way."
-msgstr ""
-"E grazie di cuore per aver scelto Premium. Sono uno sviluppatore indipendente, quindi il tuo sostegno conta"
-" molto."
+msgstr "E grazie di cuore per aver scelto Premium. Sono l'unico sviluppatore, quindi il tuo sostegno conta molto."
 
 msgid "And all the other premium features"
 msgstr "E tutte le altre funzionalità Premium"
@@ -851,7 +849,7 @@ msgid ""
 "developer, so it goes a long way."
 msgstr ""
 "E se ti piace usare NewsBlur, valuta di passare a Premium per contribuire a finanziare lo sviluppo futuro. "
-"Sono uno sviluppatore indipendente, quindi il tuo aiuto fa davvero la differenza."
+"Sono l'unico sviluppatore, quindi il tuo aiuto fa davvero la differenza."
 
 msgid "Android support"
 msgstr "Supporto Android"
@@ -1046,7 +1044,7 @@ msgid "Back to login"
 msgstr "Torna al login"
 
 msgid "Backup OPML file of your NewsBlur sites"
-msgstr "File OPML di backup dei tuoi NewsBlur siti"
+msgstr "File OPML di backup dei tuoi siti su NewsBlur"
 
 msgid "Basic"
 msgstr "Base"
@@ -1702,7 +1700,7 @@ msgid "Don't want any more emails? <a href=\"%(mute_url)s\">Mute everything from
 msgstr "Non vuoi più ricevere email? <a href=\"%(mute_url)s\">Silenzia tutto su questo articolo</a>."
 
 msgid "Don't want any more emails? Mute everything from this story:"
-msgstr "Non vuoi più ricevere email? Silenzia tutto a partire da questo articolo:"
+msgstr "Non vuoi più ricevere email? Silenzia tutto su questo articolo:"
 
 msgid "Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur:"
 msgstr "Non vuoi ricevere notifiche relative a NewsBlur? Annulla l'iscrizione alle email di NewsBlur:"
@@ -2106,8 +2104,8 @@ msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
 msgstr ""
-"Puoi rinominare le newsletter come preferisci. A volte arrivano con il nome della newsletter, quando invece"
-" dovrebbero riportare quello dell'organizzazione. È facile cambiarlo!"
+"Puoi rinominare le newsletter per dare loro un nome più adatto. A volte arrivano con il nome di una "
+"persona, quando invece dovrebbero riportare quello dell'organizzazione. È facile cambiarlo!"
 
 msgid "Fetching your feeds"
 msgstr "Recupero dei tuoi feed"
@@ -2631,7 +2629,7 @@ msgstr "Ciao %(username)s, volevo avvisarti"
 
 #, python-format
 msgid "Hey %(username)s, just a heads up -- your %(tier_name)s subscription renews on %(date)s."
-msgstr "Ciao %(username)s, ti ricordiamo che il tuo abbonamento %(tier_name)s si rinnova il %(date)s."
+msgstr "Ciao %(username)s, volevo avvisarti che il tuo abbonamento %(tier_name)s si rinnova il %(date)s."
 
 #, python-format
 msgid "Hey %(username)s, your 30-day trial premium subscription has ended."
@@ -2722,7 +2720,7 @@ msgid ""
 "I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
 "$36 per year, and your subscription will renew at that rate on %(date)s."
 msgstr ""
-"Voglio avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di 36 $ "
+"Volevo avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di 36 $ "
 "all’anno e il tuo abbonamento si rinnoverà a questa tariffa il %(date)s."
 
 #, python-format
@@ -2731,8 +2729,8 @@ msgid ""
 "$36 per year. You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful "
 "you have stuck with NewsBlur for so long."
 msgstr ""
-"Voglio avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di 36 $ "
-"all’anno. Finora hai pagato la vecchia tariffa riservata di $%(old_amount)s all’anno e ti sono grato per "
+"Volevo avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di 36 $ "
+"all’anno. Finora hai pagato una vecchia tariffa agevolata di %(old_amount)s $ all’anno e ti sono grato per "
 "aver continuato a usare NewsBlur così a lungo."
 
 #, python-format
@@ -2740,8 +2738,8 @@ msgid ""
 "I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
 "<b>$36 per year</b>, and your subscription will renew at that rate on <b>%(date)s</b>."
 msgstr ""
-"Volevo avvisarti prima del prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di <b>$36 "
-"all'anno</b>, e il tuo abbonamento si rinnoverà a tale tariffa il <b>%(date)s</b>."
+"Volevo avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di <b>36 $ "
+"all'anno</b> e il tuo abbonamento si rinnoverà a questa tariffa il <b>%(date)s</b>."
 
 #, python-format
 msgid ""
@@ -2749,9 +2747,9 @@ msgid ""
 "<b>$36 per year</b>. You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and "
 "I am grateful you have stuck with NewsBlur for so long."
 msgstr ""
-"Volevo avvisarti prima del prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di <b>36 $ "
-"all'anno</b>. Finora hai usufruito di una vecchia tariffa bloccata di <b>$%(old_amount)s all'anno</b>, e ti"
-" sono grato per essere rimasto con NewsBlur così a lungo."
+"Volevo avvisarti prima del tuo prossimo rinnovo. NewsBlur Premium passerà alla tariffa attuale di <b>36 $ "
+"all'anno</b>. Finora hai pagato una vecchia tariffa agevolata di <b>%(old_amount)s $ all'anno</b> e ti sono"
+" grato per aver continuato a usare NewsBlur così a lungo."
 
 #, python-format
 msgid ""
@@ -3653,9 +3651,9 @@ msgid ""
 "NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured"
 " that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur."
 msgstr ""
-"NewsBlur è un archivio del web che segui. Cercalo, salva estratti e condividi note: i tuoi dati resteranno "
-"al sicuro anche se il web da cui provengono dovesse scomparire. Grazie ancora per il tuo sostegno a "
-"NewsBlur."
+"NewsBlur è un archivio del web che segui. Fai ricerche al suo interno, salva estratti e condividi note: i "
+"tuoi dati resteranno al sicuro anche se il web da cui provengono dovesse scomparire. Grazie ancora per il "
+"tuo sostegno a NewsBlur."
 
 msgid ""
 "NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
@@ -4108,14 +4106,14 @@ msgstr ""
 
 #, python-format
 msgid "On a story entitled \"%(story_title)s\" from %(feed_title)s, %(username)s replied to you:"
-msgstr "In risposta a un articolo intitolato “%(story_title)s” da %(feed_title)s, %(username)s ti ha risposto:"
+msgstr "Su un articolo intitolato “%(story_title)s” da %(feed_title)s, %(username)s ti ha risposto:"
 
 #, python-format
 msgid ""
 "On a story entitled \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
 "style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s..."
 msgstr ""
-"Per un articolo intitolato “<a href=\"%(permalink)s\">%(story_title)s</a>” da <img src=\"%(favicon_url)s\" "
+"Su un articolo intitolato “<a href=\"%(permalink)s\">%(story_title)s</a>” da <img src=\"%(favicon_url)s\" "
 "style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s..."
 
 msgid "On first use, a browser window opens for you to log in and authorize access."
@@ -4639,7 +4637,7 @@ msgid "Reading news is better with friends. Share stories on your public blurblo
 msgstr "Leggere le notizie è più bello con gli amici. Condividi gli articoli sul tuo blurblog pubblico"
 
 msgid "Reading stories across folders with River of News"
-msgstr "Leggere articoli tra cartelle con il Flusso di notizie"
+msgstr "Leggere gli articoli di intere cartelle con il Flusso di notizie"
 
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
@@ -5739,8 +5737,8 @@ msgid ""
 "The honest reason for the change is that it costs real money to run and keep improving NewsBlur, and moving"
 " everyone to the sustainable $36 rate is how I can keep building it."
 msgstr ""
-"Il motivo sincero del cambiamento è che gestire e continuare a migliorare NewsBlur costa davvero, e portare"
-" tutti alla tariffa sostenibile di 36 $ è ciò che mi permette di continuare a svilupparlo."
+"In tutta sincerità, il motivo del cambiamento è che gestire NewsBlur e continuare a migliorarlo ha costi "
+"reali, e portare tutti alla tariffa sostenibile di 36 $ è ciò che mi permette di continuare a svilupparlo."
 
 msgid ""
 "The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value "
@@ -5828,8 +5826,8 @@ msgid ""
 "There's still a ton of great work to be done, and you are personally keeping the dream alive. Thanks again,"
 " paying users like you make this entire endeavor worthwhile."
 msgstr ""
-"C'è ancora tantissimo da fare e sei proprio tu a tenere vivo il sogno. Grazie ancora: il sostegno di utenti"
-" paganti come te rende possibile tutto questo."
+"C'è ancora tantissimo da fare e sei proprio tu a tenere vivo il sogno. Grazie ancora: sono gli utenti "
+"paganti come te a dare un senso a tutta questa impresa."
 
 msgid "They'll be able to sign up or log in and activate their subscription instantly."
 msgstr "Potranno registrarsi o accedere e attivare subito il loro abbonamento."
@@ -6115,13 +6113,13 @@ msgstr "Lingua non supportata"
 #, python-format
 msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
 msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
-msgstr[0] "Fino ad allora, per te non cambia nulla. Il tuo sito %(feed_count)s continuerà a funzionare normalmente."
+msgstr[0] "Fino ad allora, per te non cambia nulla. Il tuo %(feed_count)s sito continuerà a funzionare normalmente."
 msgstr[1] ""
 "Fino ad allora, per te non cambia nulla. Tutti i tuoi %(feed_count)s siti continueranno a funzionare "
 "normalmente."
 
 msgid "Upgrade here:"
-msgstr "Passa a un piano qui:"
+msgstr "Passa a un piano superiore qui:"
 
 msgid "Upgrade now"
 msgstr "Passa subito a un piano superiore"
@@ -6706,7 +6704,7 @@ msgstr[1] "Ora sei iscritto a <b>%(counter)s</b> siti."
 msgid "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved story."
 msgid_plural "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved stories."
 msgstr[0] "Ora segui <b>%(feed_count)s</b> sito e hai <b>%(counter)s</b> articolo salvato."
-msgstr[1] "Ora segui <b>%(feed_count)s</b> siti e hai <b>%(counter)s</b> articoli salvati."
+msgstr[1] "Ora segui <b>%(feed_count)s</b> sito e hai <b>%(counter)s</b> articoli salvati."
 
 #, python-format
 msgid "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved story."
@@ -6759,7 +6757,7 @@ msgstr "Decidi tu su cosa concentrarti e cosa nascondere"
 
 #, python-format
 msgid "You earned free %(tier_name)s from a referral!"
-msgstr "Hai guadagnato %(tier_name)s gratis grazie a una segnalazione!"
+msgstr "Hai guadagnato %(tier_name)s gratis grazie a un invito!"
 
 #, python-format
 msgid "You earned free %(tier_name)s!"
@@ -6811,10 +6809,10 @@ msgid ""
 " with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep "
 "improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
 msgstr ""
-"Finora hai usufruito di una vecchia tariffa bloccata di $%(old_amount)s all'anno, e ti sono grato per "
-"essere rimasto con NewsBlur così a lungo. Il motivo sincero del cambiamento è che gestire e continuare a "
-"migliorare NewsBlur costa davvero, e portare tutti alla tariffa sostenibile di 36 $ è ciò che mi permette "
-"di continuare a svilupparlo."
+"Finora hai pagato una vecchia tariffa agevolata di %(old_amount)s $ all'anno e ti sono grato per aver "
+"continuato a usare NewsBlur così a lungo. In tutta sincerità, il motivo del cambiamento è che gestire "
+"NewsBlur e continuare a migliorarlo ha costi reali, e portare tutti alla tariffa sostenibile di 36 $ è ciò "
+"che mi permette di continuare a svilupparlo."
 
 #, python-format
 msgid ""
@@ -6822,10 +6820,10 @@ msgid ""
 "have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run "
 "and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
 msgstr ""
-"Hai pagato per anni la vecchia tariffa riservata di <b>$%(old_amount)s all'anno</b>, e ti sono grato per "
-"essere rimasto con NewsBlur così a lungo. Il motivo per cui cambio è semplice: gestire e migliorare "
-"continuamente NewsBlur ha costi reali, e portare tutti alla tariffa sostenibile di 36 $ mi permette di "
-"continuare a svilupparlo."
+"Finora hai pagato una vecchia tariffa agevolata di <b>%(old_amount)s $ all'anno</b> e ti sono grato per "
+"aver continuato a usare NewsBlur così a lungo. In tutta sincerità, il motivo del cambiamento è che gestire "
+"NewsBlur e continuare a migliorarlo ha costi reali, e portare tutti alla tariffa sostenibile di 36 $ è ciò "
+"che mi permette di continuare a svilupparlo."
 
 msgid "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
 msgstr ""
@@ -6933,9 +6931,9 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"Hai ricevuto questa email perché hai <a "
+"Hai ricevuto questa email perché hai attivato <a "
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\">notifiche email per %(feed_title)s</a>."
+"decoration:none;\">le notifiche email per %(feed_title)s</a>."
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."
@@ -6991,7 +6989,9 @@ msgstr "Riceverai a breve un’email con il backup delle tue iscrizioni in alleg
 msgid ""
 "You'll be charged %(amount)s to continue your %(tier_name)s account on NewsBlur. No action needed on your "
 "part."
-msgstr "Ti verrà addebitato %(amount)s per mantenere il tuo account %(tier_name)s su NewsBlur. Non devi fare nulla."
+msgstr ""
+"Ti verranno addebitati %(amount)s per continuare a usare il tuo account %(tier_name)s su NewsBlur. Non devi"
+" fare nulla."
 
 #, python-format
 msgid ""
@@ -7047,7 +7047,7 @@ msgid ""
 "You've earned <b>%(credit_text)s</b> of free %(tier_name)s as a thank you for spreading the word about "
 "NewsBlur."
 msgstr ""
-"Hai guadagnato <b>%(credit_text)s</b> di %(tier_name)s gratuiti come ringraziamento per aver parlato di "
+"Hai guadagnato <b>%(credit_text)s</b> di %(tier_name)s gratis come ringraziamento per aver parlato di "
 "NewsBlur."
 
 msgid ""
@@ -7069,7 +7069,7 @@ msgid "Your %(tier_name)s subscription renews soon"
 msgstr "Il tuo abbonamento a %(tier_name)s si rinnova a breve"
 
 msgid "Your 30-day NewsBlur premium trial has ended"
-msgstr "La tua prova Premium di 30 giorni NewsBlur è terminata"
+msgstr "La tua prova di 30 giorni di NewsBlur Premium è terminata"
 
 msgid "Your 30-day trial premium subscription has started. You now have full access to all premium features:"
 msgstr ""
@@ -7086,7 +7086,7 @@ msgstr ""
 "tutte le funzionalità Premium:"
 
 msgid "Your Blurblog also has an RSS feed:"
-msgstr "Anche il tuo blurblog ha un feed RSS:"
+msgstr "Anche il tuo Blurblog ha un feed RSS:"
 
 msgid "Your Gift is Ready!"
 msgstr "Il tuo regalo è pronto!"
@@ -7104,7 +7104,7 @@ msgstr "Il tuo regalo NewsBlur %(tier_name)s è pronto da condividere!"
 #, python-format
 msgid "Your NewsBlur subscription and your %(count)s site"
 msgid_plural "Your NewsBlur subscription and your %(count)s sites"
-msgstr[0] "Il tuo abbonamento NewsBlur e il tuo sito %(count)s"
+msgstr[0] "Il tuo abbonamento NewsBlur e il tuo %(count)s sito"
 msgstr[1] "Il tuo abbonamento NewsBlur e i tuoi %(count)s siti"
 
 msgid "Your OPML export is being processed"
@@ -7136,7 +7136,7 @@ msgid ""
 "<b>$36/year</b>."
 msgstr ""
 "Il tuo account è ora passato al piano gratuito, con alcune limitazioni. Ma puoi sbloccare di nuovo tutte le"
-" funzionalità a soli <b>$36/anno</b>."
+" funzionalità a soli <b>36 $/anno</b>."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
@@ -7222,7 +7222,7 @@ msgid "Your premium account on NewsBlur has expired"
 msgstr "Il tuo account Premium su NewsBlur è scaduto"
 
 msgid "Your premium account on NewsBlur has one more month!"
-msgstr "Il tuo account Premium su NewsBlur ha un altro mese!"
+msgstr "Il tuo account Premium su NewsBlur resta attivo per un altro mese!"
 
 msgid ""
 "Your premium account was set to expire today, but you've been given a free month grace period, so you can "
@@ -7238,7 +7238,7 @@ msgstr[0] "La prova Premium termina tra <strong class=\"NB-trial-days\">%(days)s
 msgstr[1] "La prova Premium termina tra <strong class=\"NB-trial-days\">%(days)s giorni</strong>"
 
 msgid "Your shared stories on NewsBlur are available on your Blurblog"
-msgstr "I tuoi articoli condivisi su NewsBlur sono disponibili sul tuo blurblog"
+msgstr "I tuoi articoli condivisi su NewsBlur sono disponibili sul tuo Blurblog"
 
 msgid "Your shared story is now on your Blurblog"
 msgstr "L'articolo che hai condiviso è ora sul tuo Blurblog"
