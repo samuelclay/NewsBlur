@@ -1980,8 +1980,8 @@ msgid "Follow %(handle)s on GitHub"
 msgstr "GitHubで%(handle)sをフォロー"
 
 #, python-format
-msgid "Follow %(handle)s on Twitter"
-msgstr "Twitterで%(handle)sをフォロー"
+msgid "Follow %(handle)s on X"
+msgstr "Xで%(handle)sをフォロー"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2005,8 +2005,8 @@ msgid ""
 " delivers new content to you."
 msgstr "RSSがなくても、あらゆるウェブサイトをフォローできます。NewsBlurは任意のページからフィードを生成し、更新を監視して新しいコンテンツをお届けします。"
 
-msgid "Follow friends from Twitter, Facebook, and NewsBlur"
-msgstr "Twitter、Facebook、NewsBlurで友達をフォロー"
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "X、Facebook、NewsBlurで友達をフォロー"
 
 msgid "Follow friends, shared items"
 msgstr "友達や共有アイテムをフォロー"

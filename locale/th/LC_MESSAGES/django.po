@@ -2118,8 +2118,8 @@ msgid "Follow %(handle)s on GitHub"
 msgstr "ติดตาม %(handle)s บน GitHub"
 
 #, python-format
-msgid "Follow %(handle)s on Twitter"
-msgstr "ติดตาม %(handle)s บน Twitter"
+msgid "Follow %(handle)s on X"
+msgstr "ติดตาม %(handle)s บน X"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2150,8 +2150,8 @@ msgstr ""
 "ติดตามเว็บไซต์ใดก็ได้ แม้ไม่มี RSS NewsBlur จะสร้างฟีดจากหน้าเว็บใดก็ได้ ตรวจสอบการเปลี่ยนแปลง "
 "และส่งเนื้อหาใหม่ให้คุณ"
 
-msgid "Follow friends from Twitter, Facebook, and NewsBlur"
-msgstr "ติดตามเพื่อนจาก Twitter, Facebook และ NewsBlur"
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "ติดตามเพื่อนจาก X, Facebook และ NewsBlur"
 
 msgid "Follow friends, shared items"
 msgstr "ติดตามเพื่อนและรายการที่แชร์"

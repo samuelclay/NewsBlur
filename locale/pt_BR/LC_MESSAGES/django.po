@@ -2163,8 +2163,8 @@ msgid "Follow %(handle)s on GitHub"
 msgstr "Siga %(handle)s no GitHub"
 
 #, python-format
-msgid "Follow %(handle)s on Twitter"
-msgstr "Siga %(handle)s no Twitter"
+msgid "Follow %(handle)s on X"
+msgstr "Siga %(handle)s no X"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2195,8 +2195,8 @@ msgstr ""
 "Acompanhe qualquer site, mesmo sem RSS. O NewsBlur gera um feed a partir de qualquer página, monitora "
 "alterações e entrega conteúdo novo para você."
 
-msgid "Follow friends from Twitter, Facebook, and NewsBlur"
-msgstr "Siga amigos do Twitter, Facebook e NewsBlur"
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "Siga amigos do X, do Facebook e do NewsBlur"
 
 msgid "Follow friends, shared items"
 msgstr "Acompanhe amigos e itens compartilhados"

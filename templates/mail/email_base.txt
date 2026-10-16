@@ -6,7 +6,7 @@
 
 {% trans "Stay up to date and in touch with a few different ways:" %}
 
-    * {% blocktrans with handle="@newsblur" %}Follow {{ handle }} on Twitter{% endblocktrans %}: https://twitter.com/newsblur
+    * {% blocktrans with handle="@newsblur" %}Follow {{ handle }} on X{% endblocktrans %}: https://x.com/newsblur
     * {% blocktrans with handle="@samuelclay" %}Follow {{ handle }} on GitHub{% endblocktrans %}: https://github.com/samuelclay
 
 {% block resources_header %}{% trans "To get the most out of NewsBlur, here are a few resources:" %}{% endblock resources_header %}
