@@ -1,0 +1,52 @@
+{
+  "language": "fr",
+  "checked_at": "2026-10-16T22:12:56Z",
+  "capture_format": "CUA JPEG screenshot converted to opaque PNG without resizing",
+  "note": "Encoding checks do not establish correct native content, visual approval, or store persistence.",
+  "files": [
+    {
+      "path": "exports/fr/1320x2868/panel-1.png",
+      "panel": 1,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 1374810,
+      "sha256": "716638768c2ec6683a98f432a6e96eda651d4b7960d9b7049d512751e224053e",
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/fr/1320x2868/panel-2.png",
+      "panel": 2,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 652112,
+      "sha256": "7b5e5673df0f59cb192c9662f722c7eb18c34c7f6d0e8b5b205ea1064b9d52f4",
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/fr/1320x2868/panel-3.png",
+      "panel": 3,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 2061547,
+      "sha256": "3a2379102fee8c5b967a6992a24ad75c9e0efec4f30d20368247bbf3f8c308aa",
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/fr/1320x2868/panel-4.png",
+      "panel": 4,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 1166833,
+      "sha256": "c10cbeb74d63035cc0d2d2a3fe77a8de8c24db70517694c19ab0ce308760bc0c",
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}
