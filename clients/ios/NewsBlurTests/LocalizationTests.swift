@@ -54,7 +54,9 @@ final class Test_Localization: XCTestCase {
                                          "photo_url": "https://localization-fixture.invalid/avatar.png"]
             unsafeBitCast(badge.method(for: refreshSelector), to: Refresh.self)(badge, refreshSelector, profile, false, 320)
             let button = try XCTUnwrap(badge.value(forKey: "followButton") as? UIButton)
-            XCTAssertEqual(button.currentTitle, NBLocalization.text(followed == 1 ? "Following" : "Follow"))
+            // ProfileBadge.m titles the followed state with the "button state" context of "Following".
+            let expected = followed == 1 ? NBLocalization.text("Following", context: "button state") : NBLocalization.text("Follow")
+            XCTAssertEqual(button.currentTitle, expected)
             XCTAssertNotEqual(button.currentTitle, "Follow", "The fixture must render a translated title")
             // ProfileBadge.m reads the shared app delegate while rendering, so the recorder replaces it afterwards.
             let app = LocalizationRecordingAppDelegate()
