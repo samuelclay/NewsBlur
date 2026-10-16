@@ -23,7 +23,6 @@ export async function exportScreenshots({ tab, viewport, language, sizes = suppo
     for (const size of sizes) {
       const [width, height] = size.split('x').map(Number);
       const device = size === '2064x2752' ? 'ipad' : 'iphone';
-      await viewport.set({ width, height });
       const evidence = [];
       for (let panel = 1; panel <= 4; panel++) {
         const capture = `captures/${language === 'en' ? '' : `localized/${language}/`}${device}-${views[panel - 1]}.png`;
@@ -31,7 +30,21 @@ export async function exportScreenshots({ tab, viewport, language, sizes = suppo
         const url = new URL(baseUrl);
         url.search = new URLSearchParams({ concept: '01', device, lang: language, panel: String(panel), export: '1', size });
         await tab.goto(url.href);
-        await tab.playwright.locator('html[data-ready="true"][data-missing-images="0"][data-font-fit="true"]').waitFor({ state: 'attached', timeoutMs: 12000 });
+        // Set dimensions on the newly navigated rendering tab, then let index.html's resize handler remeasure.
+        await viewport.set({ width, height });
+        // CUA can cap each locator wait at three seconds even with a longer timeout.
+        // Keep the viewport intact while inspecting slow renders before another bounded wait.
+        for (let attempt = 0; attempt < 4; attempt++) {
+          try {
+            await tab.playwright.locator('html[data-ready="true"][data-missing-images="0"][data-font-fit="true"]').waitFor({ state: 'attached', timeoutMs: 12000 });
+            break;
+          } catch (error) {
+            const readiness = await tab.playwright.evaluate(() => ({ ...document.documentElement.dataset }));
+            if (readiness.ready === 'true' && readiness.missingImages === '0' && readiness.fontFit === 'true') break;
+            const resizing = readiness.error?.startsWith('Export blocked: use an exact ');
+            if ((readiness.error && !resizing) || attempt === 3) throw error;
+          }
+        }
         const state = await tab.playwright.evaluate(() => ({
           headline: document.querySelector('.headline').textContent,
           viewport: [innerWidth, innerHeight], scale: devicePixelRatio,

@@ -170,6 +170,8 @@ async function render(){
 }
 document.querySelectorAll('[data-device]').forEach(b=>b.addEventListener('click',()=>{device=b.dataset.device;const q=new URLSearchParams(location.search);q.set('device',device);history.replaceState(null,'','?'+q);render().catch(error=>showError(error.message))}));
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{location.search=url({device,mode:b.dataset.mode})}));
+// CUA viewport changes can settle after navigation; remeasure instead of retaining a stale export error.
+window.addEventListener('resize',()=>{if(exporting)render().catch(error=>showError(error.message))});
 render().catch(error=>showError(error.message));
 </script>
 </body>
