@@ -22,11 +22,10 @@
     "verified_complete_languages": [
       "en",
       "ar",
-      "zh-Hans"
-    ],
-    "verified_header_only": [
+      "zh-Hans",
       "zh-Hant"
     ],
+    "verified_header_only": [],
     "remaining_languages": [
       "nl",
       "fr",
@@ -46,7 +45,8 @@
       "uk",
       "vi"
     ],
-    "note": "Assigned through App Store Connect Asset Library and observed 1 of 1 asset after each save. Traditional Chinese search remains pending. Browser became unavailable during host overload."
+    "note": "Both slots assigned and observed 1 of 1 asset after save for en, ar, zh-Hans, zh-Hant. Current page is Dutch, with empty slots. Host overload and browser control failures interrupted the remaining assignments."
   },
-  "capture_status": "English iPhone/iPad complete; localized batch paused for host resource relief"
+  "capture_status": "All simulators shut down and backed-up iPhone preferences checksum-verified restored. English native assets complete; French capture completeness under review. Further capture/encoding deferred while syspolicyd exceeds 600% CPU.",
+  "progress_proof": "proof/main-artwork-partial.jpg"
 }
