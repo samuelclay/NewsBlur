@@ -69,7 +69,7 @@ locales.each do |locale|
                "waitphoto:#{fullscreen_photo_x},0.45,0.20,0.40",
                "checkpoint:reader", screenshot.call("reader"), "sleep:5",
                "swipe:750,1050,750,730,0.8", "sleep:2", "tap:#{expand},54",
-               "sleep:2", "tap:#{sidebar},54", "waittext:Breakfast Notebook", "tap:#{folder_x},662",
+               "waittext:A generous salad for a sunny afternoon", "sleep:2", "tap:#{sidebar},54", "waittext:Breakfast Notebook", "tap:#{folder_x},662",
                "waittext:What to cook when autumn arrives", *list_ready, "tap:#{story_x},540", *article_ready, "sleep:3",
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   end
