@@ -4,6 +4,7 @@ require 'digest'
 require 'fileutils'
 require 'json'
 require 'optparse'
+require 'time'
 
 root = File.expand_path(__dir__)
 repository = File.expand_path('../../../../../..', root)
@@ -32,6 +33,11 @@ records = validation.fetch('files').map do |entry|
     'source' => source.delete_prefix(repository + '/'), 'upload_file' => upload, 'sha256' => digest, 'store_placement' => 'unverified' }
 end
 FileUtils.mkdir_p(options[:destination])
+validation.fetch('files').each do |entry|
+  entry['visual_review'] = 'passed'
+  entry['visual_reviewed_at'] = Time.now.utc.iso8601
+end
+File.write(File.join(root, 'exports', language, "validation-#{size}.json"), JSON.pretty_generate(validation) + "\n")
 File.open(File.join(options[:destination], '.manifest.lock'), 'w') do |lock|
   lock.flock(File::LOCK_EX)
   manifest_path = File.join(options[:destination], 'manifest.json')

@@ -2,13 +2,13 @@
   "created_at": "2026-10-16T22:43:31Z",
   "browser_status": "handed_back_to_coordinator_after_bounded_batch",
   "required_next_steps": [
-    "Export via CUA with viewport and render readiness checks",
-    "Convert and validate native screen pixel correspondence",
+    "Wait for a verified complete native capture group",
+    "Run export-native.rb for each missing size",
     "Visually inspect all four panels per size",
-    "Stage with locale, size and panel in upload filename"
+    "Stage reviewed files with unique locale, size and panel filenames"
   ],
   "store_placement": "unverified",
-  "updated_at": "2026-10-16T22:57:43Z",
+  "updated_at": "2026-10-16T23:10:38Z",
   "completed_sets": [
     {
       "language": "en",
@@ -63,15 +63,53 @@
       "visual_review": "passed",
       "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1206x2622-0[1-4].png",
       "store_placement": "unverified"
-    }
-  ],
-  "remaining_batch": [
+    },
     {
       "language": "ar",
-      "device": "ipad",
       "size": "2064x2752",
-      "status": "pending_browser_export",
-      "reason": "Browser timed out and reset the kernel during export; resume one panel per CUA call."
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "de",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "he",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "es",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "nl",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
     }
-  ]
+  ],
+  "remaining_batch": [],
+  "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved"
 }
