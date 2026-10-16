@@ -1,6 +1,6 @@
 {
   "language": "fr",
-  "checked_at": "2026-10-16T22:12:58Z",
+  "checked_at": "2026-10-16T22:14:27Z",
   "capture_format": "CUA JPEG screenshot converted to opaque PNG without resizing",
   "note": "Encoding checks do not establish correct native content, visual approval, or store persistence.",
   "files": [
@@ -10,8 +10,8 @@
       "width": 1206,
       "height": 2622,
       "opaque": true,
-      "bytes": 1221521,
-      "sha256": "7d8f0345d7d899db4a4af4cd19a7503b5f28ce23f0ec929b72bc0d0f62c0ca50",
+      "bytes": 1199231,
+      "sha256": "eb703bbe1151325a61edb19f5e6ee589e40d12f4a2944361700794dd7d600e6f",
       "visual_review": "required",
       "store_upload": "unverified"
     },
@@ -21,8 +21,8 @@
       "width": 1206,
       "height": 2622,
       "opaque": true,
-      "bytes": 580060,
-      "sha256": "48ca9e811455b032ada9a352f945a64006b5b79a1c2f582b5d85367f88a7f320",
+      "bytes": 580064,
+      "sha256": "cc5afb52dd15e7b10f2922069b51ee7993cbd4c29449af04647b1df8c0f470ff",
       "visual_review": "required",
       "store_upload": "unverified"
     },
@@ -32,8 +32,8 @@
       "width": 1206,
       "height": 2622,
       "opaque": true,
-      "bytes": 1773875,
-      "sha256": "d0aa528f9e6cc50087ce7e669b03a449994acdc859eeb58016710fa2e2ddf9a7",
+      "bytes": 1773864,
+      "sha256": "109339f4b2f721bd67dc8039bbddc3c1888b78eaa5119729064c96141ef04e58",
       "visual_review": "required",
       "store_upload": "unverified"
     },
@@ -43,8 +43,8 @@
       "width": 1206,
       "height": 2622,
       "opaque": true,
-      "bytes": 1025180,
-      "sha256": "1c04936b2751f6d3ca0fb16ae46bc80f89be00cc07874c262fd9dd881d9e0b0a",
+      "bytes": 1025205,
+      "sha256": "781ac4a029ede2b82b8d7e0eed17e8206095f910e528c65911bbcc5de8861886",
       "visual_review": "required",
       "store_upload": "unverified"
     }
