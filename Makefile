@@ -574,6 +574,9 @@ deploy_task:
 	ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
 celery: deploy_task
+# Makefile: deploy, celery and staging already migrate first (ansible/playbooks/deploy_migrate.yml); this runs only that step.
+deploy_migrate:
+	ansible-playbook ansible/deploy.yml -l app --tags migrate
 deploy_www:
 	ansible-playbook ansible/deploy.yml -l haproxy
 www: deploy_www

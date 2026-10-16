@@ -92,17 +92,6 @@
   delay: 5
   until: result.status == 200
 
-- name: Run database migrations
-  run_once: true
-  command: docker exec -t newsblur_web python manage.py migrate --noinput
-  register: migration_result
-
-- name: Show migration output
-  run_once: true
-  debug:
-    msg: "{{ migration_result.stdout_lines }}"
-  when: migration_result.stdout_lines | length > 0
-
 - name: Re-enable servers in HAProxy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
   shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
