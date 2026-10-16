@@ -209,7 +209,7 @@ msgstr[2] "%(number)d секунд"
 
 #, python-format
 msgid "%(referred_username)s just signed up for a premium subscription through your referral link."
-msgstr "%(referred_username)s только что оформил подписку Premium по вашей реферальной ссылке."
+msgstr "Пользователь %(referred_username)s только что оформил подписку Premium по вашей реферальной ссылке."
 
 #, python-format
 msgid "%(shares)s Share"
@@ -273,7 +273,7 @@ msgstr ""
 
 #, python-format
 msgid "%(username)s has requested to follow your Blurblog on NewsBlur"
-msgstr "%(username)s запросил подписку на ваш Blurblog NewsBlur"
+msgstr "%(username)s хочет подписаться на ваш Blurblog в NewsBlur"
 
 #, python-format
 msgid "%(username)s is now following your Blurblog on NewsBlur!"
@@ -281,27 +281,27 @@ msgstr "%(username)s подписывается на ваш Blurblog в NewsBlur
 
 #, python-format
 msgid "%(username)s re-shared \"%(story_title)s\" from %(feed_title)s:"
-msgstr "%(username)s снова поделился статьёй «%(story_title)s» от %(feed_title)s:"
+msgstr "%(username)s снова делится статьёй «%(story_title)s» с сайта %(feed_title)s:"
 
 #, python-format
 msgid "%(username)s re-shared \"%(story_title)s\" from you on NewsBlur"
-msgstr "%(username)s снова поделился статьёй «%(story_title)s» от вас NewsBlur"
+msgstr "%(username)s делится статьёй «%(story_title)s» вслед за вами в NewsBlur"
 
 #, python-format
 msgid "%(username)s re-shared \"%(story_title)s\":"
-msgstr "%(username)s снова поделился «%(story_title)s»:"
+msgstr "%(username)s снова делится статьёй «%(story_title)s»:"
 
 #, python-format
 msgid ""
 "%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
 "style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
 msgstr ""
-"%(username)s поделился повторно статьёй «<a href=\"%(permalink)s\">%(story_title)s</a>» из <img "
+"%(username)s снова делится статьёй «<a href=\"%(permalink)s\">%(story_title)s</a>» с сайта <img "
 "src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
 
 #, python-format
 msgid "%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\":"
-msgstr "%(username)s снова поделился «<a href=\"%(permalink)s\">%(story_title)s</a>»:"
+msgstr "%(username)s снова делится статьёй «<a href=\"%(permalink)s\">%(story_title)s</a>»:"
 
 #, python-format
 msgid ""
@@ -313,11 +313,11 @@ msgstr ""
 
 #, python-format
 msgid "%(username)s replied to you on \"%(story_title)s\" on NewsBlur"
-msgstr "%(username)s ответил вам на «%(story_title)s» — NewsBlur"
+msgstr "%(username)s отвечает вам в обсуждении статьи «%(story_title)s» в NewsBlur"
 
 #, python-format
 msgid "%(username)s replied to you:"
-msgstr "%(username)s ответил вам:"
+msgstr "%(username)s отвечает вам:"
 
 #, python-format
 msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
@@ -435,9 +435,9 @@ msgid ""
 "daily briefings, up to 4,096 sites, and custom auto-read settings."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Archive</a> ($99 в год) даёт доступ ко всем статьям в архиве с возможностью поиска "
-"навсегда, функции «Спросить ИИ», ежедневным сводкам, 4 096 сайтам и настройкам автоматической отметки как "
-"прочитанного."
+"#366944;\">Premium Archive</a> ($99 в год) навсегда сохраняет все статьи в архиве с возможностью поиска, а "
+"также даёт функцию «Спросить ИИ», ежедневные сводки, до 4 096 сайтов и настройку автоматической отметки "
+"статей как прочитанных."
 
 #, python-format
 msgid ""
@@ -447,7 +447,7 @@ msgid ""
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29 в месяц) обеспечивает обновление всех лент каждые 5–15 минут, обучение с "
-"помощью регулярных выражений, поддержку до 10 000 сайтов и приоритетную поддержку."
+"помощью регулярных выражений, до 10 000 сайтов и приоритетную поддержку."
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -460,7 +460,7 @@ msgstr[2] "<b>%(counter)s</b> подписчиков"
 msgid "<b>%(counter)s</b> shared story"
 msgid_plural "<b>%(counter)s</b> shared stories"
 msgstr[0] "<b>%(counter)s</b> статья, которой поделились"
-msgstr[1] "<b>%(counter)s</b> статьями, которыми поделились"
+msgstr[1] "<b>%(counter)s</b> статьи, которыми поделились"
 msgstr[2] "<b>%(counter)s</b> статей, которыми поделились"
 
 #, python-format
@@ -472,7 +472,7 @@ msgstr[2] "<b>%(followers)s</b> подписчиков"
 
 #, python-format
 msgid "<b>%(referred_username)s</b> just signed up for a premium subscription through your referral link."
-msgstr "<b>%(referred_username)s</b> только что оформил(а) подписку Premium по вашей реферальной ссылке."
+msgstr "Пользователь <b>%(referred_username)s</b> только что оформил подписку Premium по вашей реферальной ссылке."
 
 #, python-format
 msgid "<b>%(stories)s</b> story"
@@ -499,20 +499,20 @@ msgid ""
 "<b>Choose which 1,024 sites to keep active</b> - You can use the Mute Sites feature to select which sites "
 "you want to continue following."
 msgstr ""
-"<b>Выберите, какие 1 024 сайта оставить активными</b> — с помощью функции «Отключить сайты» вы можете "
-"выбрать сайты, на которые хотите продолжать подписываться."
+"<b>Выберите, какие 1 024 сайта оставить активными</b> — с помощью функции «Отключить сайты» можно указать, "
+"за какими сайтами вы хотите следить и дальше."
 
 msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying these features for just $36/year."
 msgstr ""
-"<b>Кредитная карта не требуется.</b> Через 30 дней вы сможете пользоваться этими возможностями всего за $36"
-" в год."
+"<b>Банковская карта не требуется.</b> Через 30 дней вы сможете пользоваться этими возможностями всего за "
+"$36 в год."
 
 msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
-"<b>Перейти на Premium Archive ($99 в год)</b> — это даёт доступ к 4 096 сайтам, полнотекстовому поиску и "
-"полному архиву статей."
+"<b>Перейти на Premium Archive ($99 в год)</b> — сюда входят до 4 096 сайтов, полнотекстовый поиск и доступ "
+"ко всему архиву статей."
 
 #, python-format
 msgid ""
@@ -569,10 +569,10 @@ msgstr ""
 "отвечает на ваш ответ:"
 
 msgid "A *huge* thanks for going premium."
-msgstr "Огромное спасибо за переход на Premium."
+msgstr "*Огромное* спасибо за переход на Premium."
 
 msgid "A *huge* thanks for subscribing to the premium archive tier!"
-msgstr "Огромное спасибо за подписку на план Premium Archive!"
+msgstr "*Огромное* спасибо за подписку на тариф Premium Archive!"
 
 msgid ""
 "A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the "
@@ -582,7 +582,7 @@ msgstr ""
 " которых хранится и обрабатывается ваш архив."
 
 msgid "A <b>huge</b> thanks for going premium."
-msgstr "Огромное <b>спасибо</b> за переход на Premium."
+msgstr "<b>Огромное</b> спасибо за переход на Premium."
 
 msgid "A Note about OAuth"
 msgstr "Примечание об OAuth"
@@ -876,8 +876,8 @@ msgid ""
 "And if you like using NewsBlur, consider going premium to help fund further development. I'm a solo "
 "developer, so it goes a long way."
 msgstr ""
-"Если вам нравится пользоваться NewsBlur, рассмотрите возможность перейти на Premium, чтобы поддержать "
-"дальнейшую разработку. Я разрабатываю сервис один, поэтому ваша помощь очень важна."
+"Если вам нравится пользоваться NewsBlur, подумайте о переходе на Premium, чтобы поддержать дальнейшую "
+"разработку. Я разрабатываю сервис один, поэтому ваша помощь очень важна."
 
 msgid "Android support"
 msgstr "Поддержка Android"
@@ -913,14 +913,14 @@ msgstr "Одобрить"
 #, python-format
 msgid "Approve or ignore this follow request <a href=\"https://%(domain)s%(autologin_url)s\">on NewsBlur</a>."
 msgstr ""
-"Одобрите или отклоните этот запрос на подписку <a href=\"https://%(domain)s%(autologin_url)s\">от "
+"Одобрите или проигнорируйте этот запрос на подписку <a href=\"https://%(domain)s%(autologin_url)s\">в "
 "NewsBlur</a>."
 
 msgid "Approve or ignore this follow request on NewsBlur:"
-msgstr "Одобрите или отклоните этот запрос на подписку на NewsBlur:"
+msgstr "Одобрите или проигнорируйте этот запрос на подписку в NewsBlur:"
 
 msgid "Approve the new $36/year rate"
-msgstr "Подтвердить новую ставку — 36 долларов в год"
+msgstr "Подтвердить новую цену — $36 в год"
 
 msgid "Archive"
 msgstr "Archive"
@@ -1083,8 +1083,8 @@ msgid ""
 "Because your subscription runs through PayPal, PayPal needs you to approve the new rate yourself, so I "
 "cannot make the change for you. It takes a few seconds:"
 msgstr ""
-"Поскольку подписка оплачивается через PayPal, вам нужно самостоятельно подтвердить новую ставку — я не могу"
-" сделать это за вас. Это займёт всего несколько секунд:"
+"Поскольку подписка оплачивается через PayPal, вам нужно самостоятельно подтвердить новую цену — я не могу "
+"сделать это за вас. Это займёт всего несколько секунд:"
 
 msgid ""
 "Because your subscription runs through PayPal, PayPal would not let NewsBlur move this older subscription "
@@ -1314,8 +1314,8 @@ msgid ""
 "Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want"
 " to continue following."
 msgstr ""
-"Выберите, какие 1 024 сайта оставить активными. С помощью функции «Отключить сайты» выберите сайты, за "
-"которыми хотите продолжить следить."
+"Выберите, какие 1 024 сайта оставить активными — с помощью функции «Отключить сайты» можно указать, за "
+"какими сайтами вы хотите следить и дальше."
 
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "Выберите предпочитаемую модель ИИ: Claude, GPT, Gemini или Grok"
@@ -1709,8 +1709,8 @@ msgstr "Обучение работает для всех моих лент?"
 #, python-format
 msgid "Don't want any more emails from this story? <a href=\"%(mute_url)s\">Mute this conversation</a>."
 msgstr ""
-"Не хотите больше получать письма по поводу этой статьи? <a href=\"%(mute_url)s\">Отключить уведомления об "
-"этой переписке</a>."
+"Не хотите больше получать письма об этой статье? <a href=\"%(mute_url)s\">Отключите уведомления об этой "
+"переписке</a>."
 
 msgid "Don't want any more emails from this story? Mute this conversation:"
 msgstr "Не хотите больше получать письма об этой статье? Отключите уведомления об этой переписке:"
@@ -1723,7 +1723,7 @@ msgid "Don't want any more emails? Mute everything from this story:"
 msgstr "Не хотите больше получать письма? Отключите все уведомления об этой статье:"
 
 msgid "Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur:"
-msgstr "Не хотите получать письма о NewsBlur? Откажитесь от писем от NewsBlur:"
+msgstr "Не хотите получать никаких писем, связанных с NewsBlur? Отпишитесь от писем NewsBlur:"
 
 msgid "Download NewsBlur from the App Store or Google Play"
 msgstr "Скачайте NewsBlur в App Store или Google Play"
@@ -2126,8 +2126,8 @@ msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
 msgstr ""
-"Вы можете переименовать рассылки, чтобы их названия лучше соответствовали содержанию. Иногда вместо "
-"названия организации в качестве названия указывают саму рассылку. Это легко исправить!"
+"Рассылки можно переименовывать, чтобы название лучше им подходило. Иногда рассылка приходит под именем "
+"человека, хотя должна называться по имени организации. Это легко исправить!"
 
 msgid "Fetching your feeds"
 msgstr "Загрузка ваших лент"
@@ -2196,7 +2196,7 @@ msgstr "Дерево папок с числом непрочитанных"
 
 #, python-format
 msgid "Follow %(handle)s on GitHub"
-msgstr "Подписаться на %(handle)s на GitHub"
+msgstr "Подпишитесь на %(handle)s на GitHub"
 
 #, python-format
 msgid "Follow %(handle)s on Twitter"
@@ -2292,7 +2292,7 @@ msgid "Forgot password?"
 msgstr "Забыли пароль?"
 
 msgid "Forgot your password on NewsBlur?"
-msgstr "Забыли пароль в NewsBlur?"
+msgstr "Забыли пароль от NewsBlur?"
 
 msgid "Forgot your password? No problem."
 msgstr "Забыли пароль? Ничего страшного."
@@ -2643,15 +2643,15 @@ msgstr "Вот резервная копия всех ваших подписо�
 
 #, python-format
 msgid "Hey %(username)s, just a heads up"
-msgstr "Привет, %(username)s, небольшое предупреждение"
+msgstr "Здравствуйте, %(username)s! Небольшое напоминание"
 
 #, python-format
 msgid "Hey %(username)s, just a heads up -- your %(tier_name)s subscription renews on %(date)s."
-msgstr "Здравствуйте, %(username)s! Напоминаем: срок действия вашей подписки %(tier_name)s продлевается %(date)s."
+msgstr "Здравствуйте, %(username)s! Небольшое напоминание: ваша подписка %(tier_name)s будет продлена %(date)s."
 
 #, python-format
 msgid "Hey %(username)s, your 30-day trial premium subscription has ended."
-msgstr "Привет, %(username)s, ваша 30-дневная пробная подписка Premium завершилась."
+msgstr "Здравствуйте, %(username)s! Ваша 30-дневная пробная подписка Premium завершилась."
 
 #, python-format
 msgid "Hey %(username)s, your premium account has just expired."
@@ -2663,7 +2663,7 @@ msgstr "Здравствуйте, %(username)s! Срок действия ваш
 
 #, python-format
 msgid "Hi %(username)s,"
-msgstr "Здравствуйте, %(username)s,"
+msgstr "Здравствуйте, %(username)s!"
 
 msgid "Hide"
 msgstr "Скрыть"
@@ -2739,8 +2739,8 @@ msgid ""
 "I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
 "$36 per year, and your subscription will renew at that rate on %(date)s."
 msgstr ""
-"Перед следующим продлением хочу сообщить вам об изменении. Стоимость подписки NewsBlur Premium составит 36 "
-"долларов в год, и %(date)s ваша подписка продлится по этой цене."
+"Перед следующим продлением хочу сообщить вам об изменении. Стоимость подписки NewsBlur Premium составит $36"
+" в год, и %(date)s ваша подписка будет продлена по этой цене."
 
 #, python-format
 msgid ""
@@ -2748,17 +2748,17 @@ msgid ""
 "$36 per year. You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful "
 "you have stuck with NewsBlur for so long."
 msgstr ""
-"Хочу заранее предупредить вас о следующем продлении. Цена Premium для NewsBlur повышается до текущих $36 в "
-"год. До сих пор вы платили по старой льготной цене — $%(old_amount)s в год. Я благодарен вам за то, что вы "
-"так долго оставались с NewsBlur."
+"Хочу заранее предупредить вас о следующем продлении. Цена NewsBlur Premium повышается до текущих $36 в год."
+" До сих пор вы платили по старой льготной цене — $%(old_amount)s в год. Я благодарен вам за то, что вы так "
+"долго остаётесь с NewsBlur."
 
 #, python-format
 msgid ""
 "I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
 "<b>$36 per year</b>, and your subscription will renew at that rate on <b>%(date)s</b>."
 msgstr ""
-"Хотим заранее сообщить вам о следующем продлении. NewsBlur стоимость подписки Premium изменится и составит "
-"<b>$36 в год</b>. Подписка будет продлена по этой цене <b>%(date)s</b>."
+"Перед следующим продлением хочу сообщить вам об изменении. Стоимость подписки NewsBlur Premium составит "
+"<b>$36 в год</b>, и <b>%(date)s</b> ваша подписка будет продлена по этой цене."
 
 #, python-format
 msgid ""
@@ -2766,9 +2766,9 @@ msgid ""
 "<b>$36 per year</b>. You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and "
 "I am grateful you have stuck with NewsBlur for so long."
 msgstr ""
-"Хочу заранее предупредить вас о следующем продлении. Цена Premium для NewsBlur повышается до текущих <b>$36"
-" в год</b>. До сих пор вы платили по старой льготной цене — <b>$%(old_amount)s в год</b>. Я благодарен вам "
-"за то, что вы так долго оставались с NewsBlur."
+"Хочу заранее предупредить вас о следующем продлении. Цена NewsBlur Premium повышается до текущих <b>$36 в "
+"год</b>. До сих пор вы платили по старой льготной цене — <b>$%(old_amount)s в год</b>. Я благодарен вам за "
+"то, что вы так долго остаётесь с NewsBlur."
 
 #, python-format
 msgid ""
@@ -2778,7 +2778,7 @@ msgid_plural ""
 "I'm reaching out because your NewsBlur account has %(feed_count)s active sites, and I wanted to give you a "
 "heads up about an upcoming change."
 msgstr[0] ""
-"Пишу вам, потому что в вашем аккаунте NewsBlur активно %(feed_count)s сайт. Хотел предупредить вас о "
+"Пишу вам, потому что в вашем аккаунте NewsBlur активен %(feed_count)s сайт. Хотел предупредить вас о "
 "предстоящем изменении."
 msgstr[1] ""
 "Пишу вам, потому что в вашем аккаунте NewsBlur активно %(feed_count)s сайта. Хотел предупредить вас о "
@@ -2795,11 +2795,11 @@ msgid_plural ""
 "I'm reaching out because your NewsBlur account has <b>%(feed_count)s</b> active sites, and I wanted to give"
 " you a heads up about an upcoming change."
 msgstr[0] ""
-"Пишу вам, потому что в вашем аккаунте NewsBlur активно <b>%(feed_count)s</b> сайта. Хочу заранее сообщить "
-"вам о предстоящих изменениях."
+"Пишу вам, потому что в вашем аккаунте NewsBlur активен <b>%(feed_count)s</b> сайт. Хотел предупредить вас о"
+" предстоящем изменении."
 msgstr[1] ""
-"Пишу вам, потому что в вашем аккаунте NewsBlur активно <b>%(feed_count)s</b> сайта. Хочу заранее сообщить "
-"вам о предстоящих изменениях."
+"Пишу вам, потому что в вашем аккаунте NewsBlur активно <b>%(feed_count)s</b> сайта. Хотел предупредить вас "
+"о предстоящем изменении."
 msgstr[2] ""
 "Пишу вам, потому что в вашем аккаунте NewsBlur активно <b>%(feed_count)s</b> сайтов. Хотел предупредить вас"
 " о предстоящем изменении."
@@ -3068,11 +3068,11 @@ msgstr[2] ""
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
 msgstr ""
-"Просто перейдите в <a href=\"https://%(domain)s/?next=opml\">Управление NewsBlur > Импорт или загрузка "
-"сайтов</a>."
+"Просто перейдите в <a href=\"https://%(domain)s/?next=opml\">Управление NewsBlur > Импортировать или "
+"загрузить сайты</a>."
 
 msgid "Just go to Manage NewsBlur > Import or upload sites."
-msgstr "Просто перейдите в раздел «Управление NewsBlur» > «Импорт или загрузка сайтов»."
+msgstr "Просто перейдите в раздел «Управление NewsBlur» > «Импортировать или загрузить сайты»."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
@@ -3570,9 +3570,9 @@ msgstr[2] "Заполнение архива NewsBlur завершено: %(coun
 #, python-format
 msgid "NewsBlur archive backfill is complete: from %(before)s to %(after)s story"
 msgid_plural "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories"
-msgstr[0] "NewsBlur Заполнение архива завершено: с %(before)s по %(after)s статью"
-msgstr[1] "NewsBlur Заполнение архива завершено: с %(before)s по %(after)s статьи"
-msgstr[2] "NewsBlur Заполнение архива завершено: с %(before)s по %(after)s статей"
+msgstr[0] "Заполнение архива NewsBlur завершено: теперь %(after)s статья вместо %(before)s"
+msgstr[1] "Заполнение архива NewsBlur завершено: теперь %(after)s статьи вместо %(before)s"
+msgstr[2] "Заполнение архива NewsBlur завершено: теперь %(after)s статей вместо %(before)s"
 
 msgid ""
 "NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
@@ -4107,17 +4107,17 @@ msgstr ""
 "исчезнет."
 
 msgid "Now that you have premium access, you may want to follow a few resources:"
-msgstr "Теперь, когда у вас есть премиум-доступ, возможно, вы захотите подписаться на несколько сайтов:"
+msgstr "Теперь, когда у вас есть премиум-доступ, возможно, вы захотите следить за несколькими ресурсами:"
 
 msgid "Now that you're premium, you may want to follow a few resources:"
-msgstr "Теперь, когда у вас премиум-аккаунт, возможно, вы захотите подписаться на несколько сайтов:"
+msgstr "Теперь, когда у вас премиум-аккаунт, возможно, вы захотите следить за несколькими ресурсами:"
 
 msgid ""
 "OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your daily reading more personal "
 "and intelligent."
 msgstr ""
-"Итак, прежде всего спасибо, что попробовали NewsBlur. Надеюсь, NewsBlur сделает чтение новостей каждый день"
-" более персонализированным и интеллектуальным."
+"Итак, прежде всего спасибо, что попробовали NewsBlur. Надеюсь, с NewsBlur ваше ежедневное чтение станет "
+"более персональным и умным."
 
 msgid "OPML Import & Export"
 msgstr "Импорт и экспорт OPML"
@@ -4148,7 +4148,7 @@ msgstr ""
 
 #, python-format
 msgid "On a story entitled \"%(story_title)s\" from %(feed_title)s, %(username)s replied to you:"
-msgstr "На статью «%(story_title)s» с сайта %(feed_title)s %(username)s ответил вам:"
+msgstr "%(username)s отвечает вам в обсуждении статьи «%(story_title)s» с сайта %(feed_title)s:"
 
 #, python-format
 msgid ""
@@ -4369,9 +4369,9 @@ msgid ""
 "Premium Archive ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, "
 "up to 4,096 sites, and custom auto-read settings."
 msgstr ""
-"План Premium Archive (99 $ в год) позволяет навсегда архивировать и искать все статьи, пользоваться "
-"функцией «Спросить ИИ» и ежедневными сводками, подписываться на 4 096 сайтов и настраивать автоматическую "
-"отметку статей как прочитанных."
+"План Premium Archive (99 $ в год) навсегда сохраняет все статьи в архиве с возможностью поиска, а также "
+"даёт функцию «Спросить ИИ», ежедневные сводки, до 4 096 сайтов и настройку автоматической отметки статей "
+"как прочитанных."
 
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive — тарифы NewsBlur"
@@ -4569,7 +4569,7 @@ msgid "Re-analyzing page"
 msgstr "Повторный анализ страницы"
 
 msgid "Re-subscribe at the new $36/year rate"
-msgstr "Оформить подписку повторно по новой цене — 36 $ в год"
+msgstr "Оформить подписку повторно по новой цене — $36 в год"
 
 msgid "Read Stories"
 msgstr "Прочитанные статьи"
@@ -5611,7 +5611,7 @@ msgid "Text view extracts the story"
 msgstr "Текстовый режим извлекает текст статьи"
 
 msgid "Thank you for being a premium member. It genuinely keeps NewsBlur going."
-msgstr "Спасибо, что стали участником Premium. Благодаря вам NewsBlur продолжает работать."
+msgstr "Спасибо, что пользуетесь подпиской Premium. Благодаря вам NewsBlur продолжает работать."
 
 msgid "Thank you for subscribing to NewsBlur"
 msgstr "Спасибо за подписку на NewsBlur"
@@ -5648,8 +5648,8 @@ msgstr "Спасибо, что попробовали NewsBlur!"
 
 msgid "Thanks for trying out NewsBlur! I hope NewsBlur can make your daily reading more personal and intelligent."
 msgstr ""
-"Спасибо, что попробовали NewsBlur! Надеюсь, NewsBlur сделает чтение новостей каждый день более "
-"персонализированным и интеллектуальным."
+"Спасибо, что попробовали NewsBlur! Надеюсь, с NewsBlur ваше ежедневное чтение станет более персональным и "
+"умным."
 
 msgid "Thanks!"
 msgstr "Спасибо!"
@@ -5870,7 +5870,7 @@ msgstr ""
 "пользователям, как вы, всё это имеет смысл."
 
 msgid "They'll be able to sign up or log in and activate their subscription instantly."
-msgstr "Они смогут зарегистрироваться или войти в аккаунт и сразу активировать подписку."
+msgstr "Получатель сможет зарегистрироваться или войти в аккаунт и сразу активировать подписку."
 
 msgid "Third-Party App Support"
 msgstr "Поддержка сторонних приложений"
@@ -5946,7 +5946,7 @@ msgid "To complete the import,<br />just choose a username."
 msgstr "Чтобы завершить импорт,<br />выберите имя пользователя."
 
 msgid "To get the most out of NewsBlur, here are a few resources:"
-msgstr "Чтобы получить максимум от NewsBlur, вот несколько полезных ресурсов:"
+msgstr "Несколько полезных ресурсов, которые помогут получить максимум от NewsBlur:"
 
 msgid ""
 "To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now "
@@ -5957,8 +5957,8 @@ msgstr ""
 
 msgid "To keep Premium after your current paid period, re-subscribe at the new $36/year rate:"
 msgstr ""
-"Чтобы сохранить Premium после окончания оплаченного периода, оформите подписку повторно по новой ставке — "
-"36 долларов в год:"
+"Чтобы сохранить Premium после окончания оплаченного периода, оформите подписку повторно по новой цене — $36"
+" в год:"
 
 #, python-format
 msgid ""
@@ -6154,7 +6154,9 @@ msgstr "Язык не поддерживается"
 #, python-format
 msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
 msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
-msgstr[0] "До этого момента для вас ничего не изменится. Ваш сайт %(feed_count)s продолжит работать как обычно."
+msgstr[0] ""
+"До этого момента для вас ничего не изменится. Все ваши сайты — %(feed_count)s — продолжат работать как "
+"обычно."
 msgstr[1] ""
 "До этого момента для вас ничего не изменится. Все ваши сайты — %(feed_count)s — продолжат работать как "
 "обычно."
@@ -6166,10 +6168,10 @@ msgid "Upgrade here:"
 msgstr "Перейти на другой план:"
 
 msgid "Upgrade now"
-msgstr "Перейти на платный тариф"
+msgstr "Перейти на Premium Archive"
 
 msgid "Upgrade now:"
-msgstr "Перейти на план:"
+msgstr "Перейти на Premium сейчас:"
 
 msgid "Upgrade to Premium"
 msgstr "Перейти на Premium"
@@ -6721,7 +6723,7 @@ msgstr "Вчера, %(time)s"
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
 msgstr[0] "Вы и %(username)s подписаны на %(counter)s пользователя:"
-msgstr[1] "Вы и %(username)s подписаны на %(counter)s пользователей:"
+msgstr[1] "Вы и %(username)s подписаны на %(counter)s пользователя:"
 msgstr[2] "Вы и %(username)s подписаны на %(counter)s пользователей:"
 
 msgid ""
@@ -6757,9 +6759,9 @@ msgstr[2] "Теперь вы подписаны на <b>%(feed_count)s</b> са�
 #, python-format
 msgid "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved story."
 msgid_plural "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved stories."
-msgstr[0] "Теперь вы подписаны на <b>%(feed_count)s</b> сайтов и у вас <b>%(counter)s</b> сохранённая статья."
-msgstr[1] "Теперь вы подписаны на <b>%(feed_count)s</b> сайта и у вас <b>%(counter)s</b> сохранённые статьи."
-msgstr[2] "Теперь вы подписаны на <b>%(feed_count)s</b> сайтов и у вас <b>%(counter)s</b> сохранённых статей."
+msgstr[0] "Теперь в ваших подписках сайтов: <b>%(feed_count)s</b>, сохранённых статей: <b>%(counter)s</b>."
+msgstr[1] "Теперь в ваших подписках сайтов: <b>%(feed_count)s</b>, сохранённых статей: <b>%(counter)s</b>."
+msgstr[2] "Теперь в ваших подписках сайтов: <b>%(feed_count)s</b>, сохранённых статей: <b>%(counter)s</b>."
 
 msgid ""
 "You can also move and delete newsletters just as if they were independent feeds. Training even works on "
@@ -6826,14 +6828,14 @@ msgstr ""
 msgid "You follow %(counter)s person that %(username)s also follows:"
 msgid_plural "You follow %(counter)s people that %(username)s also follows:"
 msgstr[0] "Вы подписаны на %(counter)s человека, на которого также подписан %(username)s:"
-msgstr[1] "Вы подписаны на %(counter)s человек, на которых также подписан %(username)s:"
+msgstr[1] "Вы подписаны на %(counter)s человека, на которых также подписан %(username)s:"
 msgstr[2] "Вы подписаны на %(counter)s человек, на которых также подписан %(username)s:"
 
 #, python-format
 msgid "You follow %(counter)s person who follows %(username)s:"
 msgid_plural "You follow %(counter)s people who follow %(username)s:"
 msgstr[0] "Вы подписаны на %(counter)s человека, который подписан на %(username)s:"
-msgstr[1] "Вы подписаны на %(counter)s человек, которые подписаны на %(username)s:"
+msgstr[1] "Вы подписаны на %(counter)s человека, которые подписаны на %(username)s:"
 msgstr[2] "Вы подписаны на %(counter)s человек, которые подписаны на %(username)s:"
 
 #, python-format
@@ -6860,9 +6862,9 @@ msgid ""
 " with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep "
 "improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
 msgstr ""
-"Вы давно платите по прежней цене — $%(old_amount)s в год, и я благодарен за то, что вы так долго остаётесь "
-"с NewsBlur. Скажу честно: запуск и дальнейшее развитие NewsBlur требуют реальных затрат, а переход всех "
-"пользователей на устойчивую цену в $36 позволит мне продолжать работу над сервисом."
+"Вы давно платите по прежней льготной цене — $%(old_amount)s в год, и я благодарен за то, что вы так долго "
+"остаётесь с NewsBlur. Скажу честно: поддерживать работу NewsBlur и развивать его стоит реальных денег, а "
+"переход всех пользователей на устойчивую цену в $36 позволит мне продолжать работу над сервисом."
 
 #, python-format
 msgid ""
@@ -6870,14 +6872,12 @@ msgid ""
 "have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run "
 "and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
 msgstr ""
-"Вы так долго пользовались прежней льготной ценой — <b>$%(old_amount)s в год</b>, и я благодарен вам за это."
-" Причина изменения проста: работа над NewsBlur и его развитие требуют реальных затрат, а единая цена 36 $ "
-"позволит мне и дальше его развивать. Спасибо, что так долго поддерживаете NewsBlur."
+"Вы давно платите по прежней льготной цене — <b>$%(old_amount)s в год</b>, и я благодарен за то, что вы так "
+"долго остаётесь с NewsBlur. Скажу честно: поддерживать работу NewsBlur и развивать его стоит реальных "
+"денег, а переход всех пользователей на устойчивую цену в $36 позволит мне продолжать работу над сервисом."
 
 msgid "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
-msgstr ""
-"Вы удалили сразу несколько лент, поэтому на всякий случай здесь сохранена резервная копия всех ваших "
-"подписок."
+msgstr "Вы удалили сразу несколько лент, поэтому на всякий случай вот резервная копия всех ваших подписок."
 
 msgid "You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
 msgstr "Вы удалили все свои сайты, поэтому на всякий случай вот резервная копия всех ваших подписок."
@@ -7112,10 +7112,10 @@ msgstr "Ваша подарочная подписка %(tier_name)s готов�
 
 #, python-format
 msgid "Your %(tier_name)s subscription renews soon"
-msgstr "Срок вашей подписки %(tier_name)s скоро закончится"
+msgstr "Ваша подписка %(tier_name)s скоро будет продлена"
 
 msgid "Your 30-day NewsBlur premium trial has ended"
-msgstr "Пробный период Premium на 30 дней для NewsBlur завершён"
+msgstr "Ваш 30-дневный пробный период NewsBlur Premium завершён"
 
 msgid "Your 30-day trial premium subscription has started. You now have full access to all premium features:"
 msgstr "Начался пробный период подписки Premium на 30 дней. Теперь вам доступны все функции Premium:"
