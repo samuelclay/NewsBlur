@@ -1,0 +1,86 @@
+- log
+- log
+- banner "App Store Connect":
+  - heading "App Store Connect" [level=1]:
+    - link "App Store Connect":
+      - /url: /
+  - navigation "Global":
+    - list:
+      - link "Apps":
+        - /url: /apps
+      - link "Xcode Cloud":
+        - /url: /teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/xcode-cloud
+      - link "Trends":
+        - /url: /trends
+      - link "Reports":
+        - /url: /itc/payments_and_financial_reports
+      - link "Business":
+        - /url: /business
+      - link "Users and Access":
+        - /url: /access/users
+  - button "Samuel Clay NewsBlur, Inc. Account name menu":
+    - generic: Samuel Clay
+    - generic: NewsBlur, Inc.
+- 'button "Apps menu, NewsBlur: RSS News Reader, selected"':
+  - 'generic "NewsBlur: RSS News Reader"':
+    - 'img "NewsBlur: RSS News Reader"'
+  - generic: "NewsBlur: RSS News Reader"
+- navigation "Apps":
+  - list:
+    - link "Distribution":
+      - /url: /apps/463981119/distribution
+    - link "Analytics":
+      - /url: /apps/463981119/analytics
+    - link "TestFlight":
+      - /url: /teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/apps/463981119/testflight
+- main:
+  - link "App Review":
+    - /url: /apps/463981119/distribution/reviewsubmissions
+    - text: App Review
+  - heading "iOS Submission" [level=2]
+  - paragraph:
+    - text: Waiting for Review
+  - heading "Items Submitted (1)" [level=3]
+  - table:
+    - rowgroup:
+      - row "Item Type Review Status":
+        - columnheader "Item":
+          - generic: Item
+        - columnheader "Type":
+          - generic: Type
+        - columnheader "Review Status":
+          - generic: Review Status
+        - columnheader
+        - columnheader
+    - rowgroup:
+      - row "Daily reading • 16.0 Custom Product Pages Waiting for Review":
+        - cell "Daily reading • 16.0":
+          - paragraph: Daily reading • 16.0
+        - cell "Custom Product Pages":
+          - generic: Custom Product Pages
+        - cell "Waiting for Review":
+          - text: Waiting for Review
+        - cell
+        - cell
+  - generic: Date Submitted
+  - generic: Oct 16, 2026 at 12:42 PM
+  - generic: Submission ID
+  - generic: 095b78c7-53b0-4c44-816b-b6962f83cf94
+  - generic: Submitted By
+  - generic: Samuel Clay
+  - button "Cancel Submission"
+- contentinfo:
+  - list:
+    - link "App Store Connect":
+      - /url: /apps
+  - list:
+    - listitem: Copyright © 2026 Apple Inc. All rights reserved. |
+    - link "Terms of Service":
+      - /url: /WebObjects/iTunesConnect.woa/wa/termsOfService
+    - text: "|"
+    - link "Privacy Policy":
+      - /url: https://www.apple.com/legal/privacy
+    - text: "|"
+    - link "Contact Us":
+      - /url: /contact-us
+- status: 1Password menu is available. Press down arrow to select.
