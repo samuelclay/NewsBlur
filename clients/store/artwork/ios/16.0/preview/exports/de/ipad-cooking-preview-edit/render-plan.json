@@ -660,8 +660,9 @@
       "Final frame is settled"
     ],
     "notes": "Native German iPad UI. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending on the settled collection before the later article-selection animation.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "efa158e9c4130d7dfc26db887dae2e32b7143bca396126abbb7642e6456fa822"
 }

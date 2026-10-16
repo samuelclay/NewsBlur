@@ -38,6 +38,6 @@
       "notes": "Native German iPad UI. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending on the settled collection before the later article-selection animation."
     }
   },
-  "status": "encoded_sampled_visual_review_passed",
-  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
+  "status": "encoded_playback_review_passed",
+  "remaining": "Store placement and submission are tracked separately by the release coordinator; each encoded device passed normal-speed playback. Unencoded devices remain pending."
 }

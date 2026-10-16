@@ -11,3 +11,5 @@ Localized folders use the same half-second contact-sheet sampling. Their `*-titl
 French and Arabic iPad contact sheets cover 20 and 22 seconds respectively. French’s ending image is at 19.9 seconds, after the real article-selection transition; Arabic’s is at 21.5 seconds. Native transitions remain in the videos and are not retouched.
 
 German, Hebrew and Spanish iPad exports run 20, 21 and 20 seconds. Their ending images are extracted 0.1 seconds before completion and confirm settled Saved Stories. German and Spanish retain a brief native navigation transition at the start of that scene.
+
+Normal-speed QuickTime playback also passed for French, Arabic and German iPhone and French, Arabic, German, Hebrew and Spanish iPad. The seven latest checks observed native screen progression and the settled Saved ending. French iPad showed black only at the player’s beyond-end position; stepping left displayed its valid final Saved frame, matching the extracted ending image. These playback checks do not establish store upload, processing or submission.

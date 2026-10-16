@@ -660,8 +660,9 @@
       "Final frame is settled"
     ],
     "notes": "Native Spanish iPad UI. Includes actual article scrolling and brief navigation into Saved Stories. Ends on the settled collection before the later article-selection animation.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "614b3e1b56282906885a8eb4ca5e94aa32e9ba5d62cd2dab75c50affb91ba464"
 }

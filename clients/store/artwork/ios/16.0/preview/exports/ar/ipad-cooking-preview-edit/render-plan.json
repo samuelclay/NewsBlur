@@ -659,8 +659,9 @@
       "Saved Stories and account/subscription disclosure visible"
     ],
     "notes": "Native Arabic RTL iPad UI. Includes the real fullscreen article scroll; Saved Stories remains loaded and settled throughout the final interval.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "df818f3072bae648883d0c79dfc5aa90dc29f3d6fd29e88ca4e3b4a3c704f692"
 }

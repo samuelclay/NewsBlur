@@ -658,8 +658,9 @@
       "Settled Saved Stories ending"
     ],
     "notes": "RTL sentence ordering and punctuation verified after Encoding=-1 correction; continuous caption backgrounds verified. Brief native Saved navigation retained.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "fadd50267f4a1a55acfdd7b559b8229b6e0447be95ee4743883e545fd9a75aea"
 }
