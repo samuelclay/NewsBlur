@@ -2745,11 +2745,11 @@ msgstr[0] ""
 " Readerの機能が懐かしい方にも、新しいNewsBlurをきっと気に入っていただけます。"
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "<a href=\"https://%(domain)s/?next=opml\">管理 > インポート > OPMLをアップロード</a>に進んでください。"
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "<a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > サイトをインポートまたはアップロード</a>に移動してください。"
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "［管理］>［インポート］>［OPMLをアップロード］に進んでください。"
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Manage NewsBlur > サイトをインポートまたはアップロードに移動してください。"
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "紹介リンクを共有し続けると、無料のサブスクリプション期間を延長できます。紹介するたびに加算されます。"

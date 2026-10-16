@@ -5,4 +5,4 @@
 {% block body %}{% if reason %}{{ reason }}{% else %}{% trans "Here's a backup of all of your subscriptions on NewsBlur." %}{% endif %} {% blocktrans count counter=feed_count %}It contains {{ counter }} site.{% plural %}It contains {{ counter }} sites.{% endblocktrans %} 
 
 {% trans "You can re-upload the attached file to NewsBlur and get all of your sites back." %} 
-{% trans "Just go to Manage > Import > Upload OPML." %}{% endblock body %}
+{% trans "Just go to Manage NewsBlur > Import or upload sites." %}{% endblock body %}

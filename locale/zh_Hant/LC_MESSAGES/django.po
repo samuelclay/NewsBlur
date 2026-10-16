@@ -2756,11 +2756,11 @@ msgstr[0] ""
 "App。如果你懷念舊版 Google Reader 的功能，一定會喜歡全新的 NewsBlur。"
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "前往 <a href=\"https://%(domain)s/?next=opml\">管理 > 匯入 > 上傳 OPML</a> 即可。"
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "只要前往 <a href=\"https://%(domain)s/?next=opml\">管理 NewsBlur > 匯入或上傳網站</a>。"
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "前往「管理」>「匯入」>「上傳 OPML」即可。"
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "只要前往管理 NewsBlur > 匯入或上傳網站。"
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "持續分享你的推薦連結，即可獲得更多免費訂閱時間。每次推薦都會累積！"

@@ -2971,11 +2971,11 @@ msgstr[0] ""
 "mới."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Chỉ cần vào <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "Chỉ cần vào <a href=\"https://%(domain)s/?next=opml\">Quản lý NewsBlur > Nhập hoặc tải trang web lên</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Chỉ cần vào Manage > Import > Upload OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Chỉ cần vào Quản lý NewsBlur > Nhập hoặc tải trang web lên."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
