@@ -27,13 +27,15 @@ Export verification covered 21 listing/release locales, 63 Apple subscription lo
 
 ### iOS
 
-Submitted on October 16, 2026 at 11:05 AM PDT. [App Review submission 7d9b11c7-4321-47a3-a56c-57c0c21edb67](https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/7d9b11c7-4321-47a3-a56c-57c0c21edb67) shows **Waiting for Review** for all five items:
+Submitted on October 16, 2026 at 11:05 AM PDT. [App Review submission 7d9b11c7-4321-47a3-a56c-57c0c21edb67](https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/7d9b11c7-4321-47a3-a56c-57c0c21edb67) was submitted with all five items and was subsequently **Removed** at the user's request on October 16, 2026 to add updated store artwork:
 
 - iOS 16.0, build 343.
 - Premium, Archive, and Pro subscriptions.
 - Subscription group `20421002`.
 
 All 21 app and version localizations, all 63 subscription localizations, and all 21 subscription-group localizations were saved and read back against the canonical files. The existing British English Premium localization was also updated. Product identifiers, billing periods, prices, and offers were preserved. Automatic release after approval is selected, with immediate availability to all users rather than phased release. Submission does not mean approval or public availability.
+
+The app version is now **Developer Rejected**, editable, with build 343 still attached. The main-page header/search artwork, localized Sage screenshots, and a short cooking-demo App Preview are being prepared. Resubmission is pending; all five original review items must be included again. See `../../artwork/ios/16.0/resubmission.json` and its removal screenshot for this later state. The separate Daily reading custom product page remains Waiting for Review.
 
 ### Android
 
