@@ -40,11 +40,12 @@ locales.each do |locale|
   screenshot = ->(state) { "screenshot:#{captures}/#{device}-#{state}.png" }
   if device == "iphone"
     back = rtl ? 420 : 25
+    list_back = rtl ? 390 : 25
     actions = ["capture:#{footage}", "checkpoint:feeds", screenshot.call("feeds"), "sleep:5",
                "tap:120,240", "sleep:8", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
                "tap:150,160", "sleep:3", "checkpoint:reader", screenshot.call("reader"), "sleep:5",
                "swipe:300,700,300,500,0.8", "sleep:2", "tap:#{back},85", "sleep:1",
-               "tap:#{back},85", "sleep:1", "tap:150,655", "sleep:3",
+               "tap:#{list_back},85", "sleep:1", "tap:150,655", "sleep:3",
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   else
     sidebar = rtl ? 996 : 36
