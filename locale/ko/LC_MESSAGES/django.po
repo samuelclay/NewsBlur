@@ -98,8 +98,65 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d분 전"
 
 #, python-format
+msgid "%(count)s day"
+msgid_plural "%(count)s days"
+msgstr[0] "%(count)s일"
+
+#, python-format
+msgid "%(count)s month"
+msgid_plural "%(count)s months"
+msgstr[0] "%(count)s개월"
+
+#, python-format
+msgid "%(count)s year"
+msgid_plural "%(count)s years"
+msgstr[0] "%(count)s년"
+
+#, python-format
+msgid "%(counter)s follower"
+msgid_plural "%(counter)s followers"
+msgstr[0] "팔로워 %(counter)s명"
+
+#, python-format
+msgid "%(counter)s shared story"
+msgid_plural "%(counter)s shared stories"
+msgstr[0] "공유한 스토리 %(counter)s개"
+
+#, python-format
 msgid "%(date)s, %(time)s"
 msgstr "%(date)s, %(time)s"
+
+#, python-format
+msgid "%(from_name)s shares \"%(story_title)s\" from %(feed_title)s."
+msgstr "%(from_name)s님이 %(feed_title)s의 “%(story_title)s”을(를) 공유했습니다."
+
+#, python-format
+msgid "%(from_name)s shares \"%(story_title)s\" from %(feed_title)s:"
+msgstr "%(from_name)s님이 %(feed_title)s에서 “%(story_title)s”을 공유했습니다:"
+
+#, python-format
+msgid "%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\""
+msgstr "%(from_name)s님이 “<a href=\"%(permalink)s\">%(story_title)s</a>”을(를) 공유했습니다"
+
+#, python-format
+msgid ""
+"%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s"
+msgstr ""
+"%(from_name)s님이 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\">에서 "
+"“<a href=\"%(permalink)s\">%(story_title)s</a>”을 공유했습니다 %(feed_title)s"
+
+#, python-format
+msgid ""
+"%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
+msgstr ""
+"%(from_name)s님이 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\">에서 "
+"“<a href=\"%(permalink)s\">%(story_title)s</a>”을 공유했습니다 %(feed_title)s:"
+
+#, python-format
+msgid "%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\":"
+msgstr "%(from_name)s님이 “<a href=\"%(permalink)s\">%(story_title)s</a>”을 공유했습니다:"
 
 #, python-format
 msgid "%(number)d day"
@@ -122,9 +179,18 @@ msgid_plural "%(number)d seconds"
 msgstr[0] "%(number)d초"
 
 #, python-format
+msgid "%(referred_username)s just signed up for a premium subscription through your referral link."
+msgstr "%(referred_username)s님이 추천 링크를 통해 프리미엄 구독을 시작했습니다."
+
+#, python-format
 msgid "%(shares)s Share"
 msgid_plural "%(shares)s Shares"
 msgstr[0] "%(shares)s회 공유"
+
+#, python-format
+msgid "%(story_count)s story across %(site_count)s sites"
+msgid_plural "%(story_count)s stories across %(site_count)s sites"
+msgstr[0] "%(story_count)s개 스토리, %(site_count)s개 사이트"
 
 #, python-format
 msgid "%(time)s ago"
@@ -173,12 +239,52 @@ msgstr ""
 "id=\"%(user_id)s\">%(other_username)s</span>님을 팔로우했습니다."
 
 #, python-format
+msgid "%(username)s has requested to follow your Blurblog on NewsBlur"
+msgstr "%(username)s님이 NewsBlur에 회원님의 Blurblog를 팔로우해 달라고 요청했습니다"
+
+#, python-format
+msgid "%(username)s is now following your Blurblog on NewsBlur!"
+msgstr "%(username)s님이 이제 NewsBlur에서 회원님의 Blurblog을 팔로우합니다!"
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\" from %(feed_title)s:"
+msgstr "%(username)s님이 %(feed_title)s에서 “%(story_title)s”을 다시 공유했습니다:"
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\" from you on NewsBlur"
+msgstr "%(username)s님이 NewsBlur에 회원님의 “%(story_title)s”을 다시 공유했습니다"
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\":"
+msgstr "%(username)s님이 “%(story_title)s”을(를) 다시 공유했습니다:"
+
+#, python-format
+msgid ""
+"%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
+msgstr ""
+"%(username)s님이 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\"> "
+"%(feed_title)s의 “<a href=\"%(permalink)s\">%(story_title)s</a>”을(를) 다시 공유했습니다:"
+
+#, python-format
+msgid "%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\":"
+msgstr "%(username)s님이 “<a href=\"%(permalink)s\">%(story_title)s</a>”을(를) 다시 공유했습니다:"
+
+#, python-format
 msgid ""
 "%(username)s replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>:"
 msgstr ""
 "%(username)s님이 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>님에게 답글을 남겼습니다:"
+
+#, python-format
+msgid "%(username)s replied to you on \"%(story_title)s\" on NewsBlur"
+msgstr "%(username)s님이 NewsBlur에 “%(story_title)s”에서 답글을 남겼습니다"
+
+#, python-format
+msgid "%(username)s replied to you:"
+msgstr "%(username)s님이 답글을 보냈습니다:"
 
 #, python-format
 msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
@@ -279,9 +385,42 @@ msgstr ""
 " 자동으로 전달합니다."
 
 #, python-format
+msgid ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Archive</a> ($99/year) gives you every story archived and searchable forever, Ask AI, "
+"daily briefings, up to 4,096 sites, and custom auto-read settings."
+msgstr ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Archive</a> ($99/year)을 이용하면 모든 스토리를 영구적으로 아카이브하고 검색할 수 있으며, AI에게 질문, 데일리 브리핑, 최대 4,096개"
+" 사이트, 사용자 지정 자동 읽음 설정을 이용할 수 있습니다."
+
+#, python-format
+msgid ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
+"to 10,000 sites, and priority support."
+msgstr ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">프리미엄 프로</a>($29/월)를 이용하면 모든 피드를 5~15분마다 가져오고, 정규식 학습, 최대 10,000개 사이트 이용, 우선 지원을 받을 수 있습니다."
+
+#, python-format
+msgid "<b>%(counter)s</b> follower"
+msgid_plural "<b>%(counter)s</b> followers"
+msgstr[0] "<b>%(counter)s</b> 팔로워"
+
+#, python-format
+msgid "<b>%(counter)s</b> shared story"
+msgid_plural "<b>%(counter)s</b> shared stories"
+msgstr[0] "<b>%(counter)s</b>개의 공유한 스토리"
+
+#, python-format
 msgid "<b>%(followers)s</b> follower"
 msgid_plural "<b>%(followers)s</b> followers"
 msgstr[0] "<b>%(followers)s</b>명의 팔로워"
+
+#, python-format
+msgid "<b>%(referred_username)s</b> just signed up for a premium subscription through your referral link."
+msgstr "<b>%(referred_username)s</b>님이 추천 링크를 통해 프리미엄 구독에 가입했습니다."
 
 #, python-format
 msgid "<b>%(stories)s</b> story"
@@ -297,6 +436,19 @@ msgstr[0] "월 <b>%(stories)s</b>개 스토리"
 msgid "<b>%(subscribers)s</b> subscriber"
 msgid_plural "<b>%(subscribers)s</b> subscribers"
 msgstr[0] "구독자 <b>%(subscribers)s</b>명"
+
+msgid ""
+"<b>Choose which 1,024 sites to keep active</b> - You can use the Mute Sites feature to select which sites "
+"you want to continue following."
+msgstr "<b>계속 활성화할 사이트 1,024개를 선택하세요</b> - 음소거 사이트 기능으로 계속 팔로우할 사이트를 선택할 수 있습니다."
+
+msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying these features for just $36/year."
+msgstr "<b>신용카드는 필요하지 않습니다.</b> 30일 후에도 연 $36에 이 기능을 계속 이용하실 수 있습니다."
+
+msgid ""
+"<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
+"access to your complete story archive."
+msgstr "<b>프리미엄 아카이브로 업그레이드 ($99/년)</b> - 사이트 최대 4,096개, 전체 텍스트 검색, 전체 스토리 아카이브 이용이 포함됩니다."
 
 #, python-format
 msgid ""
@@ -352,6 +504,20 @@ msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span>님이"
 " 회원님의 답글에 답했습니다:"
 
+msgid "A *huge* thanks for going premium."
+msgstr "프리미엄을 이용해 주셔서 정말 감사합니다."
+
+msgid "A *huge* thanks for subscribing to the premium archive tier!"
+msgstr "프리미엄 아카이브 요금제를 구독해 주셔서 정말 감사합니다!"
+
+msgid ""
+"A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the "
+"machines which store and process your archive."
+msgstr "프리미엄 아카이브 요금제를 구독해 주셔서 <b>정말</b> 감사합니다. 구독료는 아카이브를 저장하고 처리하는 서버 비용에 사용됩니다."
+
+msgid "A <b>huge</b> thanks for going premium."
+msgstr "프리미엄을 이용해 주셔서 <b>진심으로</b> 감사합니다."
+
 msgid "A Note about OAuth"
 msgstr "OAuth에 관한 참고 사항"
 
@@ -392,8 +558,16 @@ msgstr "AI 기능"
 msgid "AI built into every story"
 msgstr "모든 스토리에 내장된 AI"
 
+msgctxt "notification email classifier match"
+msgid "AI image filter"
+msgstr "AI 이미지 필터"
+
 msgid "AI skill"
 msgstr "AI 스킬"
+
+msgctxt "notification email classifier match"
+msgid "AI text filter"
+msgstr "AI 텍스트 필터"
 
 msgid "AI-based topic prioritization"
 msgstr "AI 기반 주제 우선순위 지정"
@@ -482,6 +656,9 @@ msgid ""
 msgstr ""
 "Y Combinator에 합류한 후 Samuel은 Blurblog와 iPad 및 Android 앱을 출시하고 인텔리전스 학습 기능을 개선했습니다. Samuel과 반려견 Shiloh는 샴페인과 "
 "비스킷으로 축하했습니다."
+
+msgid "After years at the old price, NewsBlur Premium is moving to $36/year"
+msgstr "오랜 기간 기존 가격을 유지해 온 NewsBlur 프리미엄이 연 $36로 변경됩니다"
 
 msgid "Algorithm decides for you"
 msgstr "알고리즘이 대신 결정"
@@ -598,6 +775,17 @@ msgstr "오래도록 쓸 수 있도록 만든 RSS 리더"
 msgid "Analyzing page"
 msgstr "페이지 분석 중"
 
+msgid "And a huge thanks for going premium. I'm a solo developer, so it goes a long way."
+msgstr "프리미엄으로 전환해 주셔서 정말 감사합니다. 저는 1인 개발자라 큰 힘이 됩니다."
+
+msgid "And all the other premium features"
+msgstr "그 밖의 모든 프리미엄 기능"
+
+msgid ""
+"And if you like using NewsBlur, consider going premium to help fund further development. I'm a solo "
+"developer, so it goes a long way."
+msgstr "NewsBlur을 즐겨 사용하신다면, 개발을 지원하기 위해 프리미엄으로 업그레이드해 보세요. 저는 혼자 개발하고 있어 큰 도움이 됩니다."
+
 msgid "Android support"
 msgstr "Android 지원"
 
@@ -625,6 +813,16 @@ msgstr "학습 설정을 전체에 적용"
 
 msgid "Approve"
 msgstr "승인"
+
+#, python-format
+msgid "Approve or ignore this follow request <a href=\"https://%(domain)s%(autologin_url)s\">on NewsBlur</a>."
+msgstr "<a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur</a>의 팔로우 요청을 승인하거나 무시하세요."
+
+msgid "Approve or ignore this follow request on NewsBlur:"
+msgstr "NewsBlur에서 이 팔로우 요청을 승인하거나 무시하세요:"
+
+msgid "Approve the new $36/year rate"
+msgstr "연간 $36의 새 요금을 승인하세요"
 
 msgid "Archive"
 msgstr "아카이브"
@@ -661,6 +859,9 @@ msgstr "애플리케이션을 삭제하시겠습니까?"
 
 msgid "Artificial Intelligence"
 msgstr "인공지능"
+
+msgid "As always, you have access to a number of resources:"
+msgstr "늘 그렇듯 다양한 자료를 이용하실 수 있습니다:"
 
 msgid "Ask AI"
 msgstr "AI에 질문하기"
@@ -725,6 +926,10 @@ msgstr "인증에는 OAuth 2.0을 사용합니다 &mdash; 클라이언트가 인
 msgid "Author"
 msgstr "작가"
 
+msgctxt "notification email classifier match"
+msgid "Author"
+msgstr "작성자"
+
 msgid "Author & Journalist"
 msgstr "작가 및 기자"
 
@@ -762,11 +967,27 @@ msgstr "계정으로 돌아가기"
 msgid "Back to login"
 msgstr "로그인으로 돌아가기"
 
+msgid "Backup OPML file of your NewsBlur sites"
+msgstr "NewsBlur개 사이트의 OPML 백업 파일"
+
 msgid "Basic"
 msgstr "기본"
 
 msgid "Basic filters"
 msgstr "기본 필터"
+
+msgid ""
+"Because your subscription runs through PayPal, PayPal needs you to approve the new rate yourself, so I "
+"cannot make the change for you. It takes a few seconds:"
+msgstr "구독이 PayPal을 통해 처리되므로 PayPal에서 새 요금을 직접 승인해야 합니다. 제가 대신 변경할 수는 없습니다. 몇 초면 완료됩니다:"
+
+msgid ""
+"Because your subscription runs through PayPal, PayPal would not let NewsBlur move this older subscription "
+"to the current rate. I cancelled the old PayPal subscription before it renews again at the grandfathered "
+"price."
+msgstr ""
+"구독이 PayPal을 통해 진행되므로, PayPal에서는 NewsBlur가 이 기존 구독을 현재 요금으로 변경하도록 허용하지 않았습니다. 기존 PayPal 구독이 기존 가격으로 다시 갱신되기 "
+"전에 취소했습니다."
 
 msgid ""
 "Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in "
@@ -804,6 +1025,11 @@ msgstr "Blurblog 프로필"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid ""
+"Blurblogs were built so you would have a way to share stories with people who aren't on NewsBlur and don't "
+"want to load the entire reader just to read and comment on your shared stories."
+msgstr "Blurblog는 NewsBlur에 가입하지 않았고, 공유한 스토리를 읽고 댓글을 달기 위해 리더 전체를 불러오고 싶지 않은 사람들과 스토리를 공유할 수 있도록 만들어졌습니다."
 
 msgid "Bookmarklet to easily add sites"
 msgstr "사이트를 간편하게 추가하는 북마클릿"
@@ -953,6 +1179,9 @@ msgstr "마음이 바뀌셨나요? 이메일 설정 관리"
 msgid "Cheapest Paid Plan"
 msgstr "가장 저렴한 유료 요금제"
 
+msgid "Check the FAQ"
+msgstr "FAQ를 확인하세요"
+
 msgid "Chief Morale Officer"
 msgstr "최고 사기 책임자"
 
@@ -961,6 +1190,11 @@ msgstr "64개 선택"
 
 msgid "Choose when stories are marked as read"
 msgstr "스토리를 읽음으로 표시할 시점 선택"
+
+msgid ""
+"Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want"
+" to continue following."
+msgstr "활성 상태로 유지할 사이트 1,024개를 선택하세요. 음소거 기능을 사용해 계속 팔로우할 사이트를 선택할 수 있습니다."
 
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "선호하는 AI 모델을 선택하세요: Claude, GPT, Gemini 또는 Grok"
@@ -1342,8 +1576,31 @@ msgstr "프로에는 아카이브의 모든 기능이 포함되나요?"
 msgid "Does training work across all my feeds?"
 msgstr "학습 설정은 모든 피드에 적용되나요?"
 
+#, python-format
+msgid "Don't want any more emails from this story? <a href=\"%(mute_url)s\">Mute this conversation</a>."
+msgstr "이 스토리와 관련된 이메일을 더 이상 받고 싶지 않으신가요? <a href=\"%(mute_url)s\">이 대화 음소거</a>."
+
+msgid "Don't want any more emails from this story? Mute this conversation:"
+msgstr "이 스토리에서 더 이상 이메일을 받고 싶지 않으신가요? 이 대화를 음소거하세요:"
+
+#, python-format
+msgid "Don't want any more emails? <a href=\"%(mute_url)s\">Mute everything from this story</a>."
+msgstr "이메일을 더 이상 받고 싶지 않으신가요? <a href=\"%(mute_url)s\">이 스토리의 모든 항목 음소거</a>."
+
+msgid "Don't want any more emails? Mute everything from this story:"
+msgstr "더 이상 이메일을 받고 싶지 않으신가요? 이 스토리와 관련된 모든 항목을 음소거하세요:"
+
+msgid "Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur:"
+msgstr "NewsBlur 관련 알림을 전혀 받고 싶지 않으신가요? NewsBlur에서 보내는 이메일을 수신 거부하세요:"
+
 msgid "Download NewsBlur from the App Store or Google Play"
 msgstr "App Store 또는 Google Play에서 NewsBlur 다운로드"
+
+msgid "Download browser extensions for Safari, Firefox, and Chrome"
+msgstr "Safari, Firefox, Chrome용 브라우저 확장 프로그램 다운로드"
+
+msgid "Download the free Android App"
+msgstr "무료 Android 앱 다운로드"
 
 #, python-format
 msgid "Download the free NewsBlur Android app on <br /><span class=\"NB-big\">%(store)s</span>"
@@ -1352,6 +1609,12 @@ msgstr "무료 NewsBlur Android 앱을 <br /><span class=\"NB-big\">%(store)s</s
 #, python-format
 msgid "Download the free NewsBlur iOS app on the<br /><span class=\"NB-big\">%(store)s</span>"
 msgstr "무료 NewsBlur iOS 앱을 <br /><span class=\"NB-big\">%(store)s</span>에서 다운로드하세요"
+
+msgid "Download the free iOS App"
+msgstr "무료 iOS 앱 다운로드"
+
+msgid "Download the free iPad/iPhone App"
+msgstr "무료 iPad/iPhone 앱 다운로드"
 
 msgid "Download the latest version of the NewsBlur iOS app"
 msgstr "최신 버전의 NewsBlur iOS 앱 다운로드"
@@ -1414,6 +1677,9 @@ msgstr "NewsBlur에서 피드로 표시되는 이메일 뉴스레터"
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
 msgstr "AI가 생성한 주요 스토리 요약을 받으려면 데일리 브리핑을 활성화하세요"
+
+msgid "Enable unlimited sites (up to 1,024 feeds)"
+msgstr "사이트 무제한 이용 (피드 최대 1,024개)"
 
 msgid "Engineer"
 msgstr "엔지니어"
@@ -1555,6 +1821,9 @@ msgstr "네트워크를 확장하세요"
 msgid "Explore Archive"
 msgstr "아카이브 둘러보기"
 
+msgid "Explore NewsBlur:"
+msgstr "NewsBlur 둘러보기:"
+
 msgid "Explore Premium"
 msgstr "프리미엄 둘러보기"
 
@@ -1606,6 +1875,9 @@ msgstr "팟캐스트 검색 실패"
 
 msgid "Familiar roots, different trajectory"
 msgstr "익숙한 뿌리, 다른 방향"
+
+msgid "Faster feed updates"
+msgstr "더 빠른 피드 업데이트"
 
 msgid "Feature"
 msgstr "기능"
@@ -1687,6 +1959,11 @@ msgstr "완전한 아카이브를 위해 피드의 과거 스토리까지 수집
 msgid "Feeds fetched"
 msgstr "피드 가져옴"
 
+msgid ""
+"Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
+"should be the name of the organization. Easy to change!"
+msgstr "뉴스레터 이름을 더 적절하게 바꿔도 됩니다. 뉴스레터 이름이 조직의 이름이어야 하는데 뉴스레터의 이름으로 표시되는 경우가 있습니다. 쉽게 변경할 수 있습니다!"
+
 msgid "Fetching your feeds"
 msgstr "피드를 가져오는 중"
 
@@ -1744,6 +2021,14 @@ msgstr "폴더 제목이 필요합니다"
 msgid "Folder tree with unread counts"
 msgstr "읽지 않은 스토리 수가 표시되는 폴더 트리"
 
+#, python-format
+msgid "Follow %(handle)s on GitHub"
+msgstr "GitHub에서 %(handle)s 팔로우하기"
+
+#, python-format
+msgid "Follow %(handle)s on Twitter"
+msgstr "Twitter에서 %(handle)s님을 팔로우하세요"
+
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
 "delivers new content automatically."
@@ -1767,6 +2052,9 @@ msgid ""
 "Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and"
 " delivers new content to you."
 msgstr "RSS가 없는 웹사이트도 팔로우하세요. NewsBlur는 어떤 페이지에서든 피드를 생성하고 변경 사항을 확인해 새 콘텐츠를 전달합니다."
+
+msgid "Follow friends from Twitter, Facebook, and NewsBlur"
+msgstr "Twitter, Facebook, NewsBlur에서 친구를 팔로우하세요"
 
 msgid "Follow friends, shared items"
 msgstr "친구 및 공유 항목 팔로우"
@@ -1818,6 +2106,12 @@ msgstr ""
 
 msgid "Forgot password?"
 msgstr "비밀번호를 잊으셨나요?"
+
+msgid "Forgot your password on NewsBlur?"
+msgstr "NewsBlur의 비밀번호를 잊으셨나요?"
+
+msgid "Forgot your password? No problem."
+msgstr "비밀번호를 잊으셨나요? 걱정하지 마세요."
 
 msgid "Forward or subscribe newsletters to that address"
 msgstr "뉴스레터를 해당 주소로 전달하거나 구독하세요"
@@ -1915,6 +2209,9 @@ msgstr "전체 텍스트 기사"
 msgid "Full-text search"
 msgstr "전체 텍스트 검색"
 
+msgid "Full-text search across all your sites"
+msgstr "모든 사이트에서 전문 검색"
+
 msgid ""
 "Full-text search every page the browser extension captured from your web browsing, or ask the Archive "
 "Assistant AI about what you've read"
@@ -2002,6 +2299,9 @@ msgstr "피드에 새 스토리가 올라오면 알림을 받으세요. 학습 �
 msgid "Get started"
 msgstr "시작하기"
 
+msgid "Get support on NewsBlur's support forum"
+msgstr "NewsBlur 지원 포럼에서 도움을 받으세요"
+
 msgid ""
 "Get unread stories from any feed or folder, list all your folders and feeds, search across all "
 "subscriptions, retrieve saved stories by tag"
@@ -2050,6 +2350,15 @@ msgstr "계정 설정에서 나만의 NewsBlur 이메일 주소를 확인하세�
 msgid "Good Reads"
 msgstr "좋은 글"
 
+msgid "Good news! NewsBlur has finished importing your OPML file."
+msgstr "좋은 소식입니다! NewsBlur에서 OPML 파일 가져오기를 완료했습니다."
+
+msgid "Good news! NewsBlur has finished importing your sites from Google Reader."
+msgstr "좋은 소식입니다! NewsBlur에서 Google Reader 사이트 가져오기를 완료했습니다."
+
+msgid "Good news! NewsBlur has finished importing your starred stories from Google Reader."
+msgstr "좋은 소식입니다! NewsBlur에서 Google Reader의 별표 표시한 스토리를 모두 가져왔습니다."
+
 msgid "Goodies & Apps"
 msgstr "유용한 기능 및 앱"
 
@@ -2075,6 +2384,10 @@ msgstr "확인했습니다!<br>이메일은 몇 분 안에 발송됩니다."
 
 msgid "Graceful iFrame Busting"
 msgstr "원활한 iFrame 차단"
+
+#, python-format
+msgid "Great news, %(username)s!"
+msgstr "좋은 소식입니다, %(username)s!"
 
 msgctxt "story layout"
 msgid "Grid"
@@ -2106,8 +2419,48 @@ msgstr ""
 "새로운 도구나 워크플로에 대한 아이디어가 있나요? <a href=\"https://forum.newsblur.com\">NewsBlur 지원 포럼</a>에 게시해 주세요. 향후 릴리스에 반영할"
 " 수 있도록 검토하겠습니다."
 
+#, python-format
+msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
+msgstr "<a href=\"https://%(domain)s\">NewsBlur</a>에 방문해 읽어 보세요."
+
+msgid "Head over to NewsBlur and get reading:"
+msgstr "NewsBlur에 방문해 읽어 보세요:"
+
 msgid "Health Economist, NY Times"
 msgstr "뉴욕타임스 건강 경제학자"
+
+msgid "Here are some easy ways to have a great time on NewsBlur:"
+msgstr "NewsBlur을(를) 즐겁게 이용하는 몇 가지 쉬운 방법을 소개합니다:"
+
+msgid "Here are some ways to make NewsBlur work for you:"
+msgstr "NewsBlur를 유용하게 활용하는 몇 가지 방법을 소개합니다:"
+
+msgid "Here's a backup of all of your subscriptions on NewsBlur."
+msgstr "NewsBlur의 모든 구독 사이트 백업입니다."
+
+#, python-format
+msgid "Hey %(username)s, just a heads up"
+msgstr "안녕하세요, %(username)s님. 알려드릴 내용이 있습니다."
+
+#, python-format
+msgid "Hey %(username)s, just a heads up -- your %(tier_name)s subscription renews on %(date)s."
+msgstr "%(username)s님, 안내드립니다. %(tier_name)s 구독이 %(date)s에 갱신됩니다."
+
+#, python-format
+msgid "Hey %(username)s, your 30-day trial premium subscription has ended."
+msgstr "안녕하세요, %(username)s님. 30일 무료 체험 프리미엄 구독이 종료되었습니다."
+
+#, python-format
+msgid "Hey %(username)s, your premium account has just expired."
+msgstr "%(username)s님, 프리미엄 계정이 방금 만료되었습니다."
+
+#, python-format
+msgid "Hey %(username)s, your premium account is about to expire..."
+msgstr "안녕하세요, %(username)s님. 프리미엄 계정이 곧 만료됩니다..."
+
+#, python-format
+msgid "Hi %(username)s,"
+msgstr "안녕하세요, %(username)s님."
 
 msgid "Hide"
 msgstr "숨기기"
@@ -2129,6 +2482,11 @@ msgstr "홈"
 
 msgid "Hook NewsBlur up to nearly every service on the web"
 msgstr "NewsBlur를 웹상의 거의 모든 서비스와 연결하세요"
+
+msgid ""
+"Hope everything on NewsBlur is working well for you. Let me know if you see any issues. I rely on folks "
+"like you who know how to email me to be my eyes and ears on the site."
+msgstr "NewsBlur의 모든 기능이 잘 작동하고 있기를 바랍니다. 문제가 있으면 알려주세요. 사이트를 잘 아는 분들이 이메일로 알려 주시면 사이트의 눈과 귀가 되어 주시기에 큰 도움이 됩니다."
 
 msgid "Hosted Service"
 msgstr "호스팅 서비스"
@@ -2163,6 +2521,59 @@ msgstr "스토리를 몇 개까지 저장할 수 있나요?"
 msgid "How often are Web Feeds checked?"
 msgstr "웹 피드는 얼마나 자주 확인되나요?"
 
+msgid ""
+"I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you "
+"love it, too."
+msgstr "사람들과 뉴스를 읽고 이야기할 더 나은 방법을 원해 NewsBlur을 만들었습니다. 여러분도 마음에 드셨으면 좋겠습니다."
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"$36 per year, and your subscription will renew at that rate on %(date)s."
+msgstr "다음 갱신 전에 미리 알려드립니다. NewsBlur 프리미엄 요금이 현재 연간 $36로 변경되며, %(date)s에 해당 요금으로 구독이 갱신됩니다."
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"$36 per year. You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful "
+"you have stuck with NewsBlur for so long."
+msgstr ""
+"다음 갱신 전에 미리 안내해 드립니다. NewsBlur 프리미엄 요금이 현재 연간 36달러로 변경됩니다. 지금까지는 기존 가격인 연간 $%(old_amount)s로 이용하셨습니다. 오랫동안 "
+"NewsBlur를 이용해 주셔서 감사합니다."
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"<b>$36 per year</b>, and your subscription will renew at that rate on <b>%(date)s</b>."
+msgstr "다음 갱신 전에 미리 안내드립니다. NewsBlur 프리미엄 요금이 현재 요금인 연간 <b>$36</b>로 변경되며, 구독은 <b>%(date)s</b>에 해당 요금으로 갱신됩니다."
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"<b>$36 per year</b>. You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and "
+"I am grateful you have stuck with NewsBlur for so long."
+msgstr ""
+"다음 갱신 전에 미리 알려드립니다. NewsBlur 프리미엄 요금이 <b>$36 per year</b>로 변경됩니다. 지금까지 <b>$%(old_amount)s per year</b>의 기존 "
+"요금을 이용해 오셨습니다. 오랫동안 함께해 주셔서 감사합니다. NewsBlur"
+
+#, python-format
+msgid ""
+"I'm reaching out because your NewsBlur account has %(feed_count)s active site, and I wanted to give you a "
+"heads up about an upcoming change."
+msgid_plural ""
+"I'm reaching out because your NewsBlur account has %(feed_count)s active sites, and I wanted to give you a "
+"heads up about an upcoming change."
+msgstr[0] "NewsBlur 계정에 활성 사이트가 %(feed_count)s개 있어 연락드렸습니다. 곧 변경 사항이 있을 예정임을 미리 알려드립니다."
+
+#, python-format
+msgid ""
+"I'm reaching out because your NewsBlur account has <b>%(feed_count)s</b> active site, and I wanted to give "
+"you a heads up about an upcoming change."
+msgid_plural ""
+"I'm reaching out because your NewsBlur account has <b>%(feed_count)s</b> active sites, and I wanted to give"
+" you a heads up about an upcoming change."
+msgstr[0] "NewsBlur 계정에 활성 사이트가 <b>%(feed_count)s</b>개 있어 곧 변경될 사항을 미리 알려드리려고 연락드립니다."
+
 msgid "IFTTT & Zapier"
 msgstr "IFTTT 및 Zapier"
 
@@ -2178,6 +2589,12 @@ msgstr "내가 새라면 비둘기였을 거야."
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "RSS 피드를 찾을 수 없으면 NewsBlur에서 웹 피드 생성을 제안합니다"
 
+msgid "If the gift isn't redeemed within 90 days, you'll receive a full refund automatically."
+msgstr "선물이 90일 이내에 사용되지 않으면 전액 환불이 자동으로 처리됩니다."
+
+msgid "If you enjoy using NewsBlur, these resources might be of interest to you:"
+msgstr "NewsBlur을(를) 즐겨 사용하신다면 다음 자료에도 관심이 있으실 수 있습니다:"
+
 msgid ""
 "If you used Google Reader, you'll feel at home in NewsBlur. Folder-based organization, keyboard shortcuts "
 "for navigating and managing stories, a clean reading interface, and full OPML import and export are all "
@@ -2185,6 +2602,14 @@ msgid ""
 msgstr ""
 "Google 리더를 사용했다면 NewsBlur에서도 익숙함을 느끼실 겁니다. 폴더 기반 구성, 스토리를 탐색하고 관리하는 키보드 단축키, 깔끔한 읽기 인터페이스, 완전한 OPML 가져오기 및 "
 "내보내기를 모두 이용할 수 있습니다. NewsBlur는 Google 리더를 훌륭하게 만들었던 핵심적인 읽기 경험을 그대로 보존했습니다."
+
+msgid ""
+"If you would rather not, that is completely fine. Your current subscription will simply come to an end at "
+"your renewal, and you are welcome to resubscribe anytime at the current rate. Either way, nothing changes "
+"today and your account stays exactly as it is."
+msgstr ""
+"원하지 않으셔도 전혀 괜찮습니다. 현재 구독은 다음 갱신일에 종료되며, 언제든 현재 요금으로 다시 구독하실 수 있습니다. 어느 쪽이든 오늘은 아무것도 바뀌지 않으며 계정은 지금 상태 그대로 "
+"유지됩니다."
 
 msgid ""
 "If you've been searching for a Google Reader replacement, you've found it. NewsBlur isn't just an "
@@ -2360,6 +2785,39 @@ msgstr "RSS와 어떻게 다른가요?"
 
 msgid "Is training available on the free plan?"
 msgstr "무료 요금제에서도 학습 기능을 사용할 수 있나요?"
+
+#, python-format
+msgid "It contains %(counter)s site."
+msgid_plural "It contains %(counter)s sites."
+msgstr[0] "사이트가 %(counter)s개 포함되어 있습니다."
+
+#, python-format
+msgid "It contains <b style=\"#484F53\">%(counter)s</b> site."
+msgid_plural "It contains <b style=\"#484F53\">%(counter)s</b> sites."
+msgstr[0] "사이트 <b style=\"#484F53\">%(counter)s</b>개가 포함되어 있습니다."
+
+#, python-format
+msgid ""
+"It's been %(counter)s month since you last saw NewsBlur. A lot has changed since then. We just launched a "
+"full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the"
+" old Google Reader features, you'll love the new NewsBlur."
+msgid_plural ""
+"It's been %(counter)s months since you last saw NewsBlur. A lot has changed since then. We just launched a "
+"full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the"
+" old Google Reader features, you'll love the new NewsBlur."
+msgstr[0] ""
+"NewsBlur을 마지막으로 본 지 %(counter)s개월이 지났습니다. 그사이 많은 것이 바뀌었습니다. 공유 스토리(Blurblog)와 iOS/Android 네이티브 앱을 포함한 전면적인 "
+"재설계를 출시했습니다. 예전 Google Reader 기능이 그립다면 새 NewsBlur도 마음에 드실 겁니다."
+
+#, python-format
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
+msgstr "<a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>로 이동하면 됩니다."
+
+msgid "Just go to Manage > Import > Upload OPML."
+msgstr "관리 > 가져오기 > OPML 업로드로 이동하세요."
+
+msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
+msgstr "추천 링크를 계속 공유하고 무료 구독 기간을 더 받으세요. 추천이 쌓일수록 혜택이 커집니다!"
 
 msgid "Keep the signal, lose the noise."
 msgstr "핵심은 남기고 잡음은 덜어내세요."
@@ -2812,6 +3270,16 @@ msgstr ""
 " 신념을 공유합니다. 핵심적인 차이는 기능의 깊이입니다. Feedbin은 깔끔하고 간결한 읽기 경험에 집중합니다. NewsBlur는 비슷하게 깔끔한 인터페이스에 지능형 학습, AI 기능, 소셜"
 " 공유, 네이티브 모바일 앱을 더합니다. 최대한 단순한 리더를 원한다면 Feedbin이 탁월합니다. 사용성을 해치지 않으면서 더 많은 기능을 원한다면 NewsBlur가 제격입니다."
 
+#, python-format
+msgid "NewsBlur archive backfill is complete: %(count)s story"
+msgid_plural "NewsBlur archive backfill is complete: %(count)s stories"
+msgstr[0] "NewsBlur 아카이브 백필이 완료되었습니다: 스토리 %(count)s개"
+
+#, python-format
+msgid "NewsBlur archive backfill is complete: from %(before)s to %(after)s story"
+msgid_plural "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories"
+msgstr[0] "NewsBlur 아카이브 백필 완료: 스토리 %(before)s개부터 %(after)s개까지"
+
 msgid ""
 "NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
 "intelligence training, blurblog sharing, and text view. Feedbin relies entirely on third-party apps like "
@@ -2896,6 +3364,18 @@ msgstr ""
 
 msgid "NewsBlur is a news reader and aggregator developed by Samuel Clay at NewsBlur, Inc."
 msgstr "NewsBlur는 Samuel Clay가 NewsBlur, Inc.에서 개발한 뉴스 리더 및 애그리게이터입니다."
+
+msgid ""
+"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an "
+"old instrument."
+msgstr "NewsBlur은 사람들을 한데 모아 세상에 관해 이야기하는 개인용 뉴스 리더입니다. 오래된 악기의 새로운 소리입니다."
+
+msgid ""
+"NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured"
+" that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur."
+msgstr ""
+"NewsBlur는 팔로우하는 웹을 위한 아카이브입니다. 검색하고, 하이라이트를 저장하고 메모를 공유하세요. 여기에서 가져오는 웹 콘텐츠가 사라지더라도 데이터는 계속 보존되니 안심하세요. 다시 "
+"한번 NewsBlur를 후원해 주셔서 감사합니다."
 
 msgid ""
 "NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
@@ -3196,6 +3676,9 @@ msgstr "저장할 분류기가 없습니다"
 msgid "No credit card required"
 msgstr "신용카드가 필요하지 않습니다"
 
+msgid "No credit card required. After 30 days, you can continue enjoying these features for just $36/year."
+msgstr "신용카드가 필요하지 않습니다. 30일 후에도 연 $36만 내면 이 기능을 계속 이용할 수 있습니다."
+
 msgid "No feed found for this URL."
 msgstr "이 URL에 해당하는 피드를 찾을 수 없습니다."
 
@@ -3254,6 +3737,20 @@ msgstr "알림"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "학습된 지능형 분류기의 알림"
 
+msgid "Now everything you read on the web is archived, searchable, shareable, and not going anywhere"
+msgstr "이제 웹에서 읽는 모든 콘텐츠를 아카이브하고, 검색하고, 공유할 수 있으며, 사라질 염려도 없습니다."
+
+msgid "Now that you have premium access, you may want to follow a few resources:"
+msgstr "이제 프리미엄을 이용하실 수 있습니다. 몇 가지 리소스를 팔로우해 보세요:"
+
+msgid "Now that you're premium, you may want to follow a few resources:"
+msgstr "이제 프리미엄 회원이 되셨습니다. 몇 가지 리소스를 팔로우해 보세요:"
+
+msgid ""
+"OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your daily reading more personal "
+"and intelligent."
+msgstr "우선, NewsBlur를 사용해 주셔서 감사합니다. NewsBlur가 매일의 읽기를 더 개인화되고 똑똑하게 만들어 드리길 바랍니다."
+
 msgid "OPML Import & Export"
 msgstr "OPML 가져오기 및 내보내기"
 
@@ -3266,8 +3763,28 @@ msgstr "다른 리더에서 피드를 가져오는 OPML 가져오기 대화상�
 msgid "Official Hosted Option"
 msgstr "공식 호스팅 옵션"
 
+#, python-format
+msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
+msgstr "%(deadline_date)s에 구독이 갱신되면 다음 옵션 중 하나를 선택해야 합니다:"
+
+#, python-format
+msgid "On <b>%(deadline_date)s</b>, when your subscription renews, you'll need to choose one of these options:"
+msgstr "<b>%(deadline_date)s</b>에 구독이 갱신되면 다음 옵션 중 하나를 선택해야 합니다:"
+
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "프리미엄에서는 최근 스토리를 검색할 수 있습니다. 프리미엄 아카이브에서는 보관된 모든 스토리를 검색할 수 있습니다."
+
+#, python-format
+msgid "On a story entitled \"%(story_title)s\" from %(feed_title)s, %(username)s replied to you:"
+msgstr "%(feed_title)s의 “%(story_title)s” 스토리에 %(username)s님이 답글을 남겼습니다:"
+
+#, python-format
+msgid ""
+"On a story entitled \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s..."
+msgstr ""
+"<img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s의 “<a"
+" href=\"%(permalink)s\">%(story_title)s</a>” 스토리에서..."
 
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "처음 사용하면 브라우저 창이 열려 로그인하고 접근을 승인할 수 있습니다."
@@ -3421,6 +3938,9 @@ msgstr "뉴스레터 URL을 입력하세요."
 msgid "Please provide a search query."
 msgstr "검색어를 입력해 주세요."
 
+msgid "Please provide at least one email address."
+msgstr "이메일 주소를 하나 이상 입력하세요."
+
 msgid "Please type \"DELETE\" to confirm deletion."
 msgstr "삭제를 확인하려면 \"DELETE\"를 입력하세요."
 
@@ -3473,6 +3993,11 @@ msgstr "프리미엄 - NewsBlur 요금"
 msgid "Premium Archive"
 msgstr "프리미엄 아카이브"
 
+msgid ""
+"Premium Archive ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, "
+"up to 4,096 sites, and custom auto-read settings."
+msgstr "프리미엄 아카이브($99/년)에서는 모든 스토리를 영구적으로 보관하고 검색할 수 있으며, AI에게 질문, 데일리 브리핑, 최대 4,096개 사이트, 맞춤 자동 읽음 설정을 이용할 수 있습니다."
+
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "프리미엄 아카이브 - NewsBlur 요금제"
 
@@ -3490,6 +4015,11 @@ msgstr "프리미엄 아카이브 구독"
 
 msgid "Premium Pro"
 msgstr "프리미엄 프로"
+
+msgid ""
+"Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
+" and priority support."
+msgstr "프리미엄 프로(월 $29)를 이용하면 모든 피드를 5~15분마다 가져오고, 정규식 학습, 최대 10,000개 사이트, 우선 지원을 이용할 수 있습니다."
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "프리미엄 프로 - NewsBlur 요금제"
@@ -3653,6 +4183,9 @@ msgstr "RSS/Atom만"
 msgid "Re-analyzing page"
 msgstr "페이지 재분석 중"
 
+msgid "Re-subscribe at the new $36/year rate"
+msgstr "새 요금인 연 $36로 다시 구독하세요"
+
 msgid "Read Stories"
 msgstr "읽은 스토리"
 
@@ -3697,6 +4230,9 @@ msgstr ""
 
 msgid "Read the Full Story"
 msgstr "전체 스토리 읽기"
+
+msgid "Read the NewsBlur Blog"
+msgstr "NewsBlur 블로그 읽기"
 
 msgid "Read the community"
 msgstr "커뮤니티 읽기"
@@ -3748,6 +4284,9 @@ msgstr "검색 기능이 있는 읽기 기록"
 msgid "Reading news is better with friends. Share stories on your public blurblog"
 msgstr "친구와 함께라면 뉴스를 읽는 일이 더 즐겁습니다. 공개 Blurblog에 스토리를 공유하세요."
 
+msgid "Reading stories across folders with River of News"
+msgstr "뉴스 스트림으로 폴더 전체의 스토리 읽기"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -3758,6 +4297,9 @@ msgstr ""
 "Readwise Reader는 RSS 피드, 나중에 읽을 기사, PDF, EPUB, 이메일 뉴스레터를 한곳에 모으고, 세밀한 하이라이트와 주석 기능을 제공하는 올인원 독서 앱입니다. 읽은 "
 "내용에 메모하는 것을 중요하게 여기고 모든 것을 한곳에서 관리하고 싶은 사람들을 위해 만들어졌습니다. NewsBlur는 많은 피드를 구독하고 지능형 필터링으로 중요한 내용을 골라내려는 사람들을"
 " 위한 전용 RSS 리더입니다. 강력한 학습 및 필터링 기능을 갖춘 RSS가 주된 필요라면 NewsBlur가 더 적합한 도구입니다."
+
+msgid "Ready to take your reading to the next level?"
+msgstr "한 단계 더 나아간 독서를 시작할 준비가 되셨나요?"
 
 msgid "Real examples of what it looks like when an AI agent connects to your NewsBlur."
 msgstr "AI 에이전트가 NewsBlur에 연결될 때의 실제 예시입니다."
@@ -3832,6 +4374,12 @@ msgstr "구독 삭제"
 msgid "Renders original website"
 msgstr "원본 웹사이트 렌더링"
 
+msgid "Renew now:"
+msgstr "지금 갱신하세요:"
+
+msgid "Renew your premium account for only $36/year"
+msgstr "연 $36에 프리미엄 계정을 갱신하세요"
+
 msgid "Reply comments cannot be empty."
 msgstr "답글을 비워 둘 수 없습니다."
 
@@ -3886,6 +4434,9 @@ msgstr "뉴스 스트림"
 
 msgid "River of News (reading by folder)"
 msgstr "뉴스 스트림(폴더별로 읽기)"
+
+msgid "River of News - read all stories from folders"
+msgstr "뉴스 스트림 - 폴더의 모든 스토리 읽기"
 
 msgid "River of News showing stories from multiple feeds in one stream"
 msgstr "여러 피드의 스토리를 한 스트림에 표시하는 뉴스 스트림"
@@ -4016,6 +4567,13 @@ msgstr "저장한 스토리 태그"
 msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium ($36/year) or higher."
 msgstr "모든 요금제에서 스토리를 저장할 수 있습니다. 태그 및 태그 RSS 피드는 프리미엄(연 $36) 이상에서 이용할 수 있습니다."
 
+msgid "Say hello to your newest follower:"
+msgstr "새로 팔로우한 분을 환영해 주세요:"
+
+#, python-format
+msgid "Say hello to your newest follower: %(username)s."
+msgstr "새 팔로워를 환영하세요: %(username)s."
+
 msgid "Screenshots"
 msgstr "스크린샷"
 
@@ -4090,6 +4648,9 @@ msgstr "브라우저로 읽은 페이지의 읽기 아카이브 검색"
 
 msgid "Search your entire archive with full-text search"
 msgstr "전체 아카이브를 전문 검색으로 검색"
+
+msgid "Searching your sites and saved stories"
+msgstr "사이트와 저장한 스토리 검색 중"
 
 msgid "Security Engineer"
 msgstr "보안 엔지니어"
@@ -4195,6 +4756,11 @@ msgid ""
 "Sending stories to third-party services now uses full Text if available. Useful for storing full story text"
 " in Evernote or Pocket."
 msgstr "이제 스토리를 타사 서비스로 보낼 때 가능한 경우 전체 텍스트를 사용합니다. Evernote나 Pocket에 스토리 전문을 저장할 때 유용합니다."
+
+msgid ""
+"Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the "
+"world."
+msgstr "NewsBlur에서 보냄 - www.newsblur.com - 사람들을 연결해 세상에 관해 이야기하는 개인 뉴스 리더."
 
 msgid "Seriously, fuck off spammer."
 msgstr "정말이지, 스패머는 꺼져 주세요."
@@ -4351,6 +4917,15 @@ msgstr "출처:"
 msgid "Specify a search 'term'."
 msgstr "검색어 'term'을 지정하세요."
 
+#, python-format
+msgid ""
+"Spend a few days trying out <a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur</a> again. We hope you"
+" love it."
+msgstr "며칠 동안 <a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur</a>를 다시 이용해 보세요. 마음에 드시길 바랍니다."
+
+msgid "Spend a few days trying out NewsBlur again. We hope you love it."
+msgstr "며칠 동안 다시 NewsBlur을(를) 사용해 보세요. 마음에 드시길 바랍니다."
+
 msgctxt "story layout"
 msgid "Split"
 msgstr "분할"
@@ -4375,6 +4950,9 @@ msgstr "계속 스마트하게"
 
 msgid "Stay tuned..."
 msgstr "계속 지켜봐 주세요..."
+
+msgid "Stay up to date and in touch with a few different ways:"
+msgstr "몇 가지 방법으로 최신 소식을 확인하고 소통하세요:"
 
 msgid "Still have questions?"
 msgstr "아직 궁금한 점이 있으신가요?"
@@ -4535,11 +5113,18 @@ msgstr "1분도 안 돼 전환"
 msgid "Switch to this Credit Card"
 msgstr "이 신용카드로 전환"
 
+msgctxt "notification email classifier match"
+msgid "Tag"
+msgstr "태그"
+
 msgid "Tag name is required."
 msgstr "태그 이름은 필수입니다."
 
 msgid "Tag name must be 128 characters or less."
 msgstr "태그 이름은 128자 이하여야 합니다."
+
+msgid "Tagging and organizing saved stories"
+msgstr "저장한 스토리에 태그를 지정하고 정리하기"
 
 msgid "Take action"
 msgstr "조치하기"
@@ -4565,6 +5150,10 @@ msgstr "기술 전문가, BYU 교수"
 msgid "Terms of Service"
 msgstr "서비스 이용약관"
 
+msgctxt "notification email classifier match"
+msgid "Text"
+msgstr "텍스트"
+
 msgctxt "story view mode"
 msgid "Text"
 msgstr "텍스트"
@@ -4581,8 +5170,14 @@ msgstr "텍스트 보기에서 스토리를 편리하게 추출합니다"
 msgid "Text view extracting full article content from a website"
 msgstr "웹사이트에서 전체 기사 내용을 추출하는 텍스트 보기"
 
+msgid "Text view extracts full story content"
+msgstr "텍스트 보기에서는 스토리 전체 내용을 추출합니다"
+
 msgid "Text view extracts the story"
 msgstr "텍스트 보기에서는 스토리 내용을 추출합니다"
+
+msgid "Thank you for being a premium member. It genuinely keeps NewsBlur going."
+msgstr "프리미엄 회원이 되어 주셔서 감사합니다. 덕분에 NewsBlur를 계속 운영할 수 있습니다."
 
 msgid "Thank you for subscribing to NewsBlur"
 msgstr "NewsBlur를 구독해 주셔서 감사합니다"
@@ -4593,11 +5188,32 @@ msgstr "NewsBlur 프리미엄 아카이브를 구독해 주셔서 감사합니�
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "NewsBlur 프리미엄 프로를 구독해 주셔서 감사합니다"
 
+msgid "Thank you for subscribing to NewsBlur Premium!"
+msgstr "NewsBlur 프리미엄을 구독해 주셔서 감사합니다!"
+
 msgid "Thank you for supporting NewsBlur!"
 msgstr "NewsBlur를 후원해 주셔서 감사합니다!"
 
 msgid "Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:"
 msgstr "NewsBlur에 관심을 가져 주셔서 감사합니다. NewsBlur는 1인 개발자가 만들었습니다:"
+
+msgid "Thank you, thank you, thank you!"
+msgstr "정말 감사합니다, 감사합니다, 감사합니다!"
+
+msgid "Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading."
+msgstr "NewsBlur을 사용해 주셔서 다시 한번 감사합니다! 계정이 준비되었습니다. 로그인하고 바로 읽기를 시작하세요."
+
+msgid "Thanks for being a long-time NewsBlur subscriber. I really appreciate your support."
+msgstr "오랫동안 NewsBlur를 구독해 주셔서 감사합니다. 보내 주신 성원에 진심으로 감사드립니다."
+
+msgid "Thanks for subscribing to NewsBlur Premium Pro!"
+msgstr "NewsBlur 프리미엄 프로를 구독해 주셔서 감사합니다!"
+
+msgid "Thanks for trying NewsBlur!"
+msgstr "NewsBlur을(를) 이용해 주셔서 감사합니다!"
+
+msgid "Thanks for trying out NewsBlur! I hope NewsBlur can make your daily reading more personal and intelligent."
+msgstr "NewsBlur를 사용해 주셔서 감사합니다! NewsBlur가 매일의 읽기를 더 개인화되고 똑똑하게 만들어 드리길 바랍니다."
 
 msgid "Thanks!"
 msgstr "감사합니다!"
@@ -4711,6 +5327,11 @@ msgid "The highest limit available. Monitor everything."
 msgstr "이용 가능한 가장 높은 한도입니다. 모든 항목을 모니터링하세요."
 
 msgid ""
+"The honest reason for the change is that it costs real money to run and keep improving NewsBlur, and moving"
+" everyone to the sustainable $36 rate is how I can keep building it."
+msgstr "변경의 솔직한 이유는 NewsBlur를 운영하고 계속 개선하는 데 실제 비용이 들기 때문입니다. 모두가 지속 가능한 연간 36달러 요금으로 전환해야 계속해서 서비스를 발전시킬 수 있습니다."
+
+msgid ""
 "The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value "
 "it, it can disappear overnight. Google shut down Reader not because it was unpopular, but because it didn't"
 " align with their business priorities."
@@ -4742,6 +5363,15 @@ msgstr "테마"
 msgid "Themes & Customization"
 msgstr "테마 및 맞춤 설정"
 
+msgid "There are a couple resources you can use if you end up loving NewsBlur:"
+msgstr "NewsBlur을(를) 정말 좋아하게 되신다면 이용하실 수 있는 자료가 몇 가지 있습니다:"
+
+msgid "There are plenty of ways to use NewsBlur beyond the web:"
+msgstr "웹 외에도 NewsBlur을(를) 이용하는 방법은 다양합니다:"
+
+msgid "There are plenty of ways to use NewsBlur beyond the website:"
+msgstr "웹사이트 외에도 NewsBlur을(를) 다양하게 이용할 수 있습니다:"
+
 #, python-format
 msgid ""
 "There is %(position_display)s person in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
@@ -4762,8 +5392,22 @@ msgid_plural ""
 "on NewsBlur."
 msgstr[0] "앞에 %(position_display)s명이 NewsBlur 무료 계정을<br /> 기다리고 있습니다."
 
+msgid ""
+"There is nothing you need to do. The new rate takes effect automatically at your next renewal. Your "
+"account, your sites, and everything you have saved stay exactly as they are. You can adjust your "
+"subscription anytime in your account settings."
+msgstr "별도로 하실 일은 없습니다. 새로운 요금은 다음 갱신 시 자동으로 적용됩니다. 계정과 사이트, 저장한 모든 항목은 그대로 유지됩니다. 계정 설정에서 언제든지 구독을 변경하실 수 있습니다."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "제한이 없습니다. 원하는 만큼 스토리를 저장하고 영구적으로 보관하세요."
+
+msgid ""
+"There's still a ton of great work to be done, and you are personally keeping the dream alive. Thanks again,"
+" paying users like you make this entire endeavor worthwhile."
+msgstr "아직도 훌륭한 일을 많이 해낼 수 있으며, 여러분이 직접 이 꿈을 이어가고 있습니다. 다시 한번 감사드립니다. 여러분처럼 유료로 이용해 주시는 분들이 이 모든 노력을 가치 있게 만들어 줍니다."
+
+msgid "They'll be able to sign up or log in and activate their subscription instantly."
+msgstr "가입하거나 로그인하면 구독을 즉시 활성화할 수 있습니다."
 
 msgid "Third-Party App Support"
 msgstr "타사 앱 지원"
@@ -4795,6 +5439,11 @@ msgstr "이 기능을 사용하려면 아카이브 구독이 필요합니다"
 msgid "This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded."
 msgstr "이 선물 링크는 90일 후 만료됩니다. 사용되지 않으면 자동으로 환불됩니다."
 
+msgid ""
+"This is a personal website made for you that you can customize. You can also share out links to your "
+"blurblog, where friends and followers can reply and re-share your stories."
+msgstr "이곳은 나만을 위해 만들어진 맞춤 설정 가능한 개인 웹사이트입니다. Blurblog 링크를 공유하면 친구와 팔로워가 답글을 달고 스토리를 다시 공유할 수도 있습니다."
+
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "이미 RSS 피드입니다. 바로 구독합니다."
 
@@ -4816,6 +5465,10 @@ msgstr "좋아하는 작성자, 태그 또는 제목 키워드에 좋아요를 �
 msgid "Tips"
 msgstr "팁"
 
+msgctxt "notification email classifier match"
+msgid "Title"
+msgstr "제목"
+
 msgid "Title matching catches exact and fuzzy duplicates using significant-word overlap"
 msgstr "제목 일치 기능은 주요 단어의 중복도를 바탕으로 정확히 일치하거나 유사한 중복 항목을 찾아냅니다"
 
@@ -4824,6 +5477,19 @@ msgstr "제목, 텍스트 및 URL 패턴(Pro)"
 
 msgid "To complete the import,<br />just choose a username."
 msgstr "가져오기를 완료하려면 <br />사용자 이름만 선택하면 됩니다."
+
+msgid "To get the most out of NewsBlur, here are a few resources:"
+msgstr "NewsBlur을(를) 최대한 활용하실 수 있도록 몇 가지 자료를 준비했습니다:"
+
+msgid ""
+"To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now "
+"include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites."
+msgstr ""
+"서버 부하를 분산하고 모두가 NewsBlur을 원활하게 이용할 수 있도록 프리미엄 구독에는 이제 사이트를 최대 1,024개까지 포함합니다. 프리미엄 아카이브 구독에는 사이트를 최대 "
+"4,096개까지 포함합니다."
+
+msgid "To keep Premium after your current paid period, re-subscribe at the new $36/year rate:"
+msgstr "현재 유료 이용 기간이 끝난 후에도 프리미엄을 계속 이용하려면 새 연간 $36 요금으로 다시 구독하세요:"
 
 #, python-format
 msgid ""
@@ -4972,6 +5638,10 @@ msgstr "확인하려면 \"Delete\"를 입력하세요"
 msgid "Type keywords, phrases, or combinations"
 msgstr "키워드, 구문 또는 조합 입력"
 
+msgctxt "notification email classifier match"
+msgid "URL"
+msgstr "URL"
+
 msgid "URL is blocked"
 msgstr "URL이 차단되었습니다"
 
@@ -5002,8 +5672,36 @@ msgstr "구독 취소됨"
 msgid "Unsupported language"
 msgstr "지원되지 않는 언어"
 
+#, python-format
+msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
+msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
+msgstr[0] "그때까지 변경되는 사항은 없습니다. %(feed_count)s개 사이트는 계속 정상적으로 작동합니다."
+
+msgid "Upgrade here:"
+msgstr "여기에서 업그레이드하세요:"
+
+msgid "Upgrade now"
+msgstr "지금 업그레이드"
+
+msgid "Upgrade now:"
+msgstr "지금 업그레이드하세요:"
+
 msgid "Upgrade to Premium"
 msgstr "프리미엄으로 업그레이드"
+
+msgid ""
+"Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
+"to your complete story archive."
+msgstr "프리미엄 아카이브로 업그레이드($99/년) - 사이트 최대 4,096개, 전체 텍스트 검색 및 전체 스토리 아카이브 이용이 포함됩니다."
+
+msgid "Upgrade to a premium account for only $36/year"
+msgstr "연 $36만 내고 프리미엄 계정으로 업그레이드하세요"
+
+msgid "Upgrade to a premium account for only $36/year, and get access to an unlimited number of RSS feeds"
+msgstr "연 $36에 프리미엄 계정으로 업그레이드하고 RSS 피드를 무제한으로 이용하세요"
+
+msgid "Upgrade to a premium subscription to send more than one story per day by email."
+msgstr "이메일로 하루에 스토리를 한 개 넘게 보내려면 프리미엄 구독으로 업그레이드하세요."
 
 msgid "Upgrade to premium archive"
 msgstr "프리미엄 아카이브로 업그레이드"
@@ -5065,6 +5763,16 @@ msgstr "GitHub에서 보기"
 msgid "View on NewsBlur"
 msgstr "NewsBlur에서 보기"
 
+msgid "View this conversation:"
+msgstr "이 대화를 확인하세요:"
+
+msgid ""
+"Visit <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The People Have Spoken</a>, "
+"our blog of the most popular and talked-about articles posted by NewsBlur readers"
+msgstr ""
+"NewsBlur 독자가 게시한 가장 인기 있고 화제가 된 글을 모아 둔 블로그, <a href=\"https://popular.newsblur.com\" style=\"text-"
+"decoration:none\">사람들의 선택</a>을 방문하세요."
+
 msgid ""
 "Visit the <a href=\"https://forum.newsblur.com\">NewsBlur support forum</a> to ask questions, report "
 "problems, or suggest features."
@@ -5072,6 +5780,16 @@ msgstr "질문하거나 문제를 신고하거나 기능을 제안하려면 <a h
 
 msgid "Visit the forum"
 msgstr "포럼 방문"
+
+msgid "Visit the popular blurblog, The People Have Spoken"
+msgstr "인기 Blurblog인 The People Have Spoken을 방문하세요"
+
+msgid ""
+"Visit the popular blurblog: <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The "
+"People Have Spoken</a>."
+msgstr ""
+"인기 Blurblog를 방문해 보세요: <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The People "
+"Have Spoken</a>."
 
 msgid "Visual Training (Thumbs Up/Down)"
 msgstr "시각적 학습 (좋아요/싫어요)"
@@ -5084,6 +5802,9 @@ msgstr "CLI 기능을 더 원하시나요?"
 
 msgid "Want more MCP features?"
 msgstr "MCP 기능을 더 원하시나요?"
+
+msgid "Want to unlock even more?"
+msgstr "더 많은 기능을 잠금 해제하시겠습니까?"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett은 RAM 64바이트로 BASIC 인터프리터를 작성했습니다. 최대 9줄, 64개 기호, 정수 0&ndash;99."
@@ -5166,6 +5887,24 @@ msgstr "웹 전용"
 
 msgid "Web page monitoring (Pro)"
 msgstr "웹페이지 모니터링 (Pro)"
+
+msgid "Welcome aboard!"
+msgstr "환영합니다!"
+
+msgid "Welcome to NewsBlur! Your 30-day premium trial has started"
+msgstr "NewsBlur에 오신 것을 환영합니다! 30일 프리미엄 무료 체험이 시작되었습니다."
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s"
+msgstr "NewsBlur에 오신 것을 환영합니다, %(username)s님."
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s!"
+msgstr "NewsBlur에 오신 것을 환영합니다, %(username)s님!"
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s."
+msgstr "NewsBlur에 오신 것을 환영합니다, %(username)s님."
 
 msgid "Welcome to your premium trial!"
 msgstr "프리미엄 체험을 시작합니다!"
@@ -5430,6 +6169,11 @@ msgstr "어제, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "어제, %(time)s"
 
+#, python-format
+msgid "You and %(username)s both follow %(counter)s person:"
+msgid_plural "You and %(username)s both follow %(counter)s people:"
+msgstr[0] "회원님과 %(username)s님은 모두 %(counter)s명을 팔로우합니다:"
+
 msgid ""
 "You are at the front of the line! Just a few more minutes<br />until you receive your free invite to use "
 "NewsBlur."
@@ -5446,8 +6190,48 @@ msgstr ""
 msgid "You are not subscribed to this feed"
 msgstr "이 피드를 구독하고 있지 않습니다"
 
+#, python-format
+msgid "You are now subscribed to <b>%(counter)s</b> site."
+msgid_plural "You are now subscribed to <b>%(counter)s</b> sites."
+msgstr[0] "이제 사이트 <b>%(counter)s</b>개를 구독합니다."
+
+#, python-format
+msgid "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved story."
+msgid_plural "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved stories."
+msgstr[0] "이제 사이트 <b>%(feed_count)s</b>개를 구독하고 저장한 스토리 <b>%(counter)s</b>개가 있습니다."
+
+#, python-format
+msgid "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved story."
+msgid_plural "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved stories."
+msgstr[0] "이제 <b>%(feed_count)s</b>개 사이트를 구독하고 저장한 스토리 <b>%(counter)s</b>개가 있습니다."
+
+msgid ""
+"You can also move and delete newsletters just as if they were independent feeds. Training even works on "
+"newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do."
+msgstr "뉴스레터도 독립된 피드처럼 이동하거나 삭제할 수 있습니다. 뉴스레터에도 학습 기능이 적용되므로 읽고 싶지 않은 뉴스레터는 숨기고 원하는 뉴스레터는 강조 표시할 수 있습니다."
+
+msgid "You can change your password by visiting this link:"
+msgstr "다음 링크를 방문하여 비밀번호를 변경할 수 있습니다:"
+
+#, python-format
+msgid "You can only send %(count)s story per day by email."
+msgid_plural "You can only send %(count)s stories per day by email."
+msgstr[0] "이메일로 하루에 스토리 %(count)s개만 보낼 수 있습니다."
+
+msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
+msgstr "첨부 파일을 NewsBlur에 다시 업로드하면 모든 사이트를 복구할 수 있습니다."
+
+msgid "You can re-upload the attached file to NewsBlur and immediately get any deleted sites back."
+msgstr "첨부 파일을 NewsBlur에 다시 업로드하면 삭제된 사이트를 즉시 복구할 수 있습니다."
+
 msgid "You can train per-feed, per-folder (Archive), or globally (Archive). Per-feed training is free."
 msgstr "피드별, 폴더별(아카이브) 또는 전체(아카이브)로 학습시킬 수 있습니다. 피드별 학습은 무료입니다."
+
+msgid "You can upgrade here:"
+msgstr "여기에서 업그레이드할 수 있습니다:"
+
+msgid "You can view your Blurblog here:"
+msgstr "여기에서 Blurblog를 볼 수 있습니다:"
 
 msgid "You cannot favorite your own shared story comment."
 msgstr "자신이 공유한 스토리의 댓글에는 좋아요를 표시할 수 없습니다."
@@ -5457,6 +6241,14 @@ msgstr "뉴스레터는 공유할 수 없습니다. 다른 사람이 구독을 �
 
 msgid "You decide what to focus and hide"
 msgstr "집중할 항목과 숨길 항목을 직접 결정하세요"
+
+#, python-format
+msgid "You earned free %(tier_name)s from a referral!"
+msgstr "추천으로 무료 %(tier_name)s을(를) 받으셨습니다!"
+
+#, python-format
+msgid "You earned free %(tier_name)s!"
+msgstr "무료 %(tier_name)s을(를) 획득하셨습니다!"
 
 #, python-format
 msgid ""
@@ -5469,6 +6261,16 @@ msgstr ""
 "link\">%(title)s</span>에 남긴 댓글에 좋아요를 표시했습니다:"
 
 #, python-format
+msgid "You follow %(counter)s person that %(username)s also follows:"
+msgid_plural "You follow %(counter)s people that %(username)s also follows:"
+msgstr[0] "%(username)s도 팔로우하는 사람 %(counter)s명을 팔로우하고 있습니다:"
+
+#, python-format
+msgid "You follow %(counter)s person who follows %(username)s:"
+msgid_plural "You follow %(counter)s people who follow %(username)s:"
+msgstr[0] "%(username)s을 팔로우하는 사람 %(counter)s명을 팔로우하고 있습니다:"
+
+#, python-format
 msgid ""
 "You followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
@@ -5476,8 +6278,60 @@ msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>을(를) 팔로우했습니다."
 
+msgid "You have a follow request:"
+msgstr "팔로우 요청이 있습니다:"
+
+#, python-format
+msgid "You have a follow request: %(username)s."
+msgstr "팔로우 요청이 있습니다: %(username)s."
+
 msgid "You have a lot of subscriptions! We're preparing your OPML export file now."
 msgstr "구독 항목이 많습니다! 지금 OPML 내보내기 파일을 준비하고 있습니다."
+
+#, python-format
+msgid ""
+"You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful you have stuck"
+" with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep "
+"improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
+msgstr ""
+"오랫동안 연간 $%(old_amount)s의 기존 특별 요금으로 이용해 주셔서 감사합니다. 요금 변경의 솔직한 이유는 NewsBlur를 운영하고 계속 개선하는 데 실제 비용이 들기 때문입니다."
+" 모두가 지속 가능한 $36 요금제로 전환해야 계속 서비스를 발전시킬 수 있습니다. 오랫동안 NewsBlur를 이용해 주셔서 감사합니다."
+
+#, python-format
+msgid ""
+"You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and I am grateful you "
+"have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run "
+"and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
+msgstr ""
+"연간 <b>$%(old_amount)s의 기존 특별 가격을 적용받아 오셨습니다</b>. 오랫동안 NewsBlur를 이용해 주셔서 감사합니다. 가격을 변경하는 솔직한 이유는 NewsBlur를 "
+"운영하고 계속 개선하는 데 실제 비용이 들기 때문이며, 모두에게 지속 가능한 $36 요금을 적용해야 계속 서비스를 발전시킬 수 있습니다."
+
+msgid "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+msgstr "피드를 한꺼번에 여러 개 삭제하셨으므로, 만일을 대비해 모든 구독 목록을 백업해 두었습니다."
+
+msgid "You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+msgstr "모든 사이트를 삭제하셔서, 혹시 필요하실까 봐 모든 구독 목록의 백업을 보내드립니다."
+
+msgid "You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+msgstr "피드 폴더 전체를 삭제하셨습니다. 혹시 몰라 모든 구독의 백업을 보내드립니다."
+
+#, python-format
+msgid ""
+"You have just received your first email newsletter in NewsBlur. You can find your newsletters under the "
+"%(folder)s folder."
+msgstr "NewsBlur에서 첫 이메일 뉴스레터를 받았습니다. 뉴스레터는 %(folder)s 폴더에서 확인할 수 있습니다."
+
+#, python-format
+msgid ""
+"You have just received your first email newsletter in NewsBlur. You can find your newsletters under the "
+"<b>%(folder)s</b> folder."
+msgstr "NewsBlur에서 첫 이메일 뉴스레터를 받았습니다. 뉴스레터는 <b>%(folder)s</b> 폴더에서 확인할 수 있습니다."
+
+msgid "You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+msgstr "한 번에 여러 피드를 이동하셨으므로, 혹시 모를 상황에 대비해 모든 구독 목록의 백업을 준비했습니다."
+
+msgid "You just shared your first story on NewsBlur. All of your shared stories are available on your Blurblog."
+msgstr "NewsBlur에서 첫 스토리를 공유했습니다. 공유한 스토리는 모두 Blurblog에서 확인할 수 있습니다."
 
 msgid ""
 "You may use the API commercially, by which we mean you may charge people money to use your project which "
@@ -5487,6 +6341,64 @@ msgid ""
 msgstr ""
 "API를 상업적으로 사용할 수 있습니다. 즉, API를 사용하는 프로젝트의 이용료를 청구해도 됩니다. 단, NewsBlur API에서 가져온 데이터에 광고를 게재하여 판매할 수는 없습니다. "
 "요컨대 애플리케이션이나 서비스에 요금을 청구할 수 있지만, NewsBlur에 광고를 덧붙여 제공할 수는 없습니다."
+
+msgid "You need to provide your email address."
+msgstr "이메일 주소를 입력해 주세요."
+
+msgid "You need to provide your name."
+msgstr "이름을 입력해야 합니다."
+
+msgid "You need to send the email to a valid email address."
+msgstr "유효한 이메일 주소로 이메일을 보내야 합니다."
+
+msgid ""
+"You now have a free account with all the limitations of a free account. But that doesn't mean you can't "
+"renew your premium subscription and enjoy the many benefits of using NewsBlur."
+msgstr "이제 무료 계정이 되었습니다. 무료 계정의 모든 제한이 적용됩니다. 하지만 프리미엄 구독을 갱신하고 NewsBlur을(를) 이용하며 누릴 수 있는 다양한 혜택을 즐길 수 없다는 뜻은 아닙니다."
+
+#, python-format
+msgid "You received this because of a classifier match (%(classifier_match_desc)s) on %(feed_title)s."
+msgstr "%(feed_title)s에서 분류기 일치(%(classifier_match_desc)s)가 발생해 이 메시지를 받았습니다."
+
+#, python-format
+msgid ""
+"You received this because of a classifier match (%(classifier_match_desc)s) on <a "
+"href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>."
+msgstr ""
+"<a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>에서 분류기(%(classifier_match_desc)s)가 일치하여 이 이메일을 받으셨습니다."
+
+#, python-format
+msgid ""
+"You received this because of a classifier match (%(classifier_match_desc)s) on <a "
+"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>."
+msgstr ""
+"<a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>에서 분류기 일치(%(classifier_match_desc)s)가 발생해 이 알림을 받았습니다."
+
+#, python-format
+msgid ""
+"You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
+"style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
+msgstr ""
+"%(feed_title)s</a>에 대한 <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">이메일 알림을 설정해 두셔서 이 알림을 받았습니다."
+
+#, python-format
+msgid ""
+"You received this because you have <a "
+"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">email notifications for %(feed_title)s</a>."
+msgstr ""
+"%(feed_title)s</a>에 대한 이메일 알림을 <a "
+"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\"> 받고 계시므로 이 메시지를 받았습니다."
+
+#, python-format
+msgid "You received this because you have email notifications for %(feed_title)s."
+msgstr "%(feed_title)s에 대한 이메일 알림을 설정해 두셔서 이 알림을 받았습니다."
 
 #, python-format
 msgid ""
@@ -5518,6 +6430,9 @@ msgstr "<span class=\"NB-interaction-feed-title NB-splash-link\">%(feed_title)s<
 msgid "You train the reader, not the other way around"
 msgstr "리더가 나를 길들이는 게 아니라, 내가 리더를 학습시킵니다"
 
+msgid "You will be auto-logged into your account and presented with a form to change your password."
+msgstr "자동으로 계정에 로그인되며 비밀번호를 변경할 수 있는 양식이 표시됩니다."
+
 msgid "You will no longer receive any emails from NewsBlur."
 msgstr "이제 NewsBlur에서 보내는 이메일을 받지 않습니다."
 
@@ -5531,17 +6446,105 @@ msgstr "%(date)s까지는 요금이 청구되지 않습니다"
 msgid "You will receive an email shortly with your subscription backup attached."
 msgstr "구독 백업 파일이 첨부된 이메일이 곧 도착합니다."
 
+#, python-format
+msgid ""
+"You'll be charged %(amount)s to continue your %(tier_name)s account on NewsBlur. No action needed on your "
+"part."
+msgstr "NewsBlur에 %(tier_name)s 계정을 계속 이용하시려면 %(amount)s이 청구됩니다. 별도로 하실 일은 없습니다."
+
+#, python-format
+msgid ""
+"You'll be charged <b>%(amount)s</b> to continue your %(tier_name)s account on NewsBlur. No action needed on"
+" your part."
+msgstr "NewsBlur에 %(tier_name)s 계정을 계속 이용하려면 <b>%(amount)s</b>이(가) 청구됩니다. 별도로 하실 일은 없습니다."
+
 msgid "You're in control, not an algorithm"
 msgstr "알고리즘이 아닌 내가 직접 관리합니다"
+
+msgid ""
+"You're receiving this because you opted into renewal notifications. You can turn this off in Account &gt; "
+"Payments."
+msgstr "갱신 알림 수신을 선택하셨기 때문에 이 이메일을 받으셨습니다. 계정 &gt; 결제에서 알림을 끌 수 있습니다."
+
+msgid ""
+"You're receiving this because you opted into renewal notifications. You can turn this off in Account > "
+"Payments."
+msgstr "갱신 알림 수신에 동의하셨기 때문에 이 이메일을 받으셨습니다. 계정 > 결제에서 알림을 끌 수 있습니다."
+
+#, python-format
+msgid ""
+"You've already shared %(counter)s story, but you may not have known that your shared stories are on your "
+"Blurblog."
+msgid_plural ""
+"You've already shared %(counter)s stories, but you may not have known that your shared stories are on your "
+"Blurblog."
+msgstr[0] "이미 스토리 %(counter)s개를 공유하셨지만, 공유한 스토리가 Blurblog에 표시된다는 사실은 모르셨을 수도 있습니다."
+
+msgid "You've been enjoying NewsBlur's premium features. We hope you loved:"
+msgstr "NewsBlur의 프리미엄 기능을 즐겨 이용하셨습니다. 다음 기능들이 마음에 드셨기를 바랍니다:"
 
 msgid "You've been gifted a premium subscription! Sign up to claim it."
 msgstr "프리미엄 구독을 선물로 받으셨습니다! 가입하고 선물을 받으세요."
 
+#, python-format
+msgid "You've earned %(credit_text)s of free %(tier_name)s as a thank you for spreading the word about NewsBlur."
+msgstr "NewsBlur를 널리 알려 주신 데 대한 감사로 %(tier_name)s을(를) %(credit_text)s 무료로 이용하실 수 있게 되었습니다."
+
+#, python-format
+msgid ""
+"You've earned <b>%(credit_text)s</b> of free %(tier_name)s as a thank you for spreading the word about "
+"NewsBlur."
+msgstr "<b>%(credit_text)s</b>의 입소문을 내 주신 데 대한 감사의 표시로 %(tier_name)s 무료 NewsBlur을(를) 받으셨습니다."
+
+msgid ""
+"You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
+"you just need to renew your premium account. Let's help you do that."
+msgstr "최근 NewsBlur에 접속하셨습니다. 무료 계정으로 전환하려던 것이 아니신가요? 프리미엄 계정을 갱신하기만 하면 될 수도 있습니다. 갱신을 도와드리겠습니다."
+
 msgid "YouTube search request failed."
 msgstr "YouTube 검색 요청에 실패했습니다."
 
+#, python-format
+msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"
+msgstr "%(tier_name)s 선물 구독이 준비되었습니다. 이 링크를 선물을 받을 분께 공유하세요:"
+
+#, python-format
+msgid "Your %(tier_name)s subscription renews soon"
+msgstr "%(tier_name)s 구독이 곧 갱신됩니다"
+
+msgid "Your 30-day NewsBlur premium trial has ended"
+msgstr "30일 NewsBlur 프리미엄 무료 체험이 종료되었습니다."
+
+msgid "Your 30-day trial premium subscription has started. You now have full access to all premium features:"
+msgstr "30일 무료 체험 프리미엄 구독이 시작되었습니다. 이제 모든 프리미엄 기능을 제한 없이 이용하실 수 있습니다:"
+
+#, python-format
+msgid "Your <b>%(tier_name)s</b> subscription renews on <b>%(date)s</b>."
+msgstr "<b>%(tier_name)s</b> 구독이 <b>%(date)s</b>에 갱신됩니다."
+
+msgid "Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:"
+msgstr "<b>30일 무료 체험 프리미엄 구독</b>이 시작되었습니다. 이제 모든 프리미엄 기능을 이용할 수 있습니다:"
+
+msgid "Your Blurblog also has an RSS feed:"
+msgstr "Blurblog에는 RSS 피드도 있습니다:"
+
 msgid "Your Gift is Ready!"
 msgstr "선물이 준비되었습니다!"
+
+msgid "Your Google Reader import is complete. Get going with NewsBlur!"
+msgstr "Google Reader 가져오기가 완료되었습니다. NewsBlur와 함께 시작해 보세요!"
+
+msgid "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+msgstr "Google Reader에서 별표 표시한 스토리 가져오기가 완료되었습니다. NewsBlur을(를) 시작해 보세요!"
+
+#, python-format
+msgid "Your NewsBlur %(tier_name)s gift is ready to share!"
+msgstr "NewsBlur %(tier_name)s __NB_TOKEN_2__ 선물을 공유할 준비가 되었습니다!"
+
+#, python-format
+msgid "Your NewsBlur subscription and your %(count)s site"
+msgid_plural "Your NewsBlur subscription and your %(count)s sites"
+msgstr[0] "NewsBlur 구독 및 사이트 %(count)s개"
 
 msgid "Your OPML export is being processed"
 msgstr "OPML 내보내기를 처리 중입니다"
@@ -5549,16 +6552,39 @@ msgstr "OPML 내보내기를 처리 중입니다"
 msgid "Your OPML export is being processed. You will receive an email shortly with your subscription backup."
 msgstr "OPML 내보내기를 처리 중입니다. 구독 백업이 포함된 이메일을 곧 보내드립니다."
 
+msgid "Your OPML export is ready."
+msgstr "OPML 내보내기가 준비되었습니다."
+
+msgid "Your OPML upload is complete. Get going with NewsBlur!"
+msgstr "OPML 업로드가 완료되었습니다. NewsBlur에서 시작하세요!"
+
 msgid "Your account"
 msgstr "내 계정"
+
+msgid ""
+"Your account is now on the free plan with some limitations. But you can unlock everything again for just "
+"$36/year."
+msgstr "계정이 일부 제한이 있는 무료 요금제로 전환되었습니다. 연 $36만 내면 모든 기능을 다시 이용할 수 있습니다."
+
+msgid ""
+"Your account is now on the free plan with some limitations. But you can unlock everything again for just "
+"<b>$36/year</b>."
+msgstr "일부 제한이 있는 무료 요금제로 계정이 전환되었습니다. 연 <b>$36/year</b>만 내면 모든 기능을 다시 이용할 수 있습니다."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
 "data is deleted. Upgrade again anytime and everything is restored."
 msgstr "계정이 무료 등급으로 전환됩니다. 모든 피드(최대 64개), 학습 설정, 저장한 스토리는 그대로 유지됩니다. 데이터는 삭제되지 않습니다. 언제든 다시 업그레이드하면 모든 항목이 복원됩니다."
 
+#, python-format
+msgid "Your account stays Premium through %(date)s. Nothing else changes today."
+msgstr "계정은 %(date)s까지 프리미엄으로 유지됩니다. 오늘 달라지는 사항은 없습니다."
+
 msgid "Your applications"
 msgstr "내 애플리케이션"
+
+msgid "Your archive sits in the cloud"
+msgstr "아카이브는 클라우드에 저장됩니다"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "보관된 스토리는 계속 이용할 수 있지만, 새 스토리에는 기본 보관 기간 정책이 적용됩니다."
@@ -5574,6 +6600,12 @@ msgstr "AI 기반 지능형 기능을 갖춘 완벽한 뉴스 아카이브. 4,09
 msgid "Your email address"
 msgstr "이메일 주소"
 
+msgid "Your email newsletters are now being sent to NewsBlur"
+msgstr "이제 이메일 뉴스레터가 NewsBlur로 전송됩니다"
+
+msgid "Your email newsletters are now being sent to NewsBlur."
+msgstr "이제 이메일 뉴스레터가 NewsBlur로 전송됩니다."
+
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
 " appear in search results but will be available again if you re-upgrade. If you exceed the feed limit of a "
@@ -5581,6 +6613,13 @@ msgid ""
 msgstr ""
 "피드와 저장한 스토리는 삭제되지 않습니다. 아카이브에서 다운그레이드하면 오래된 스토리는 검색 결과에 더 이상 표시되지 않지만, 다시 업그레이드하면 다시 이용할 수 있습니다. 낮은 요금제의 피드"
 " 한도를 초과하면 일부 피드를 음소거하라는 안내가 표시됩니다."
+
+msgid "Your free account is now ready to go on NewsBlur"
+msgstr "NewsBlur에서 무료 계정을 사용할 준비가 되었습니다."
+
+#, python-format
+msgid "Your free account is ready, %(username)s."
+msgstr "무료 계정이 준비되었습니다, %(username)s."
 
 msgid "Your gift code is invalid. Check it for errors."
 msgstr "선물 코드가 유효하지 않습니다. 입력 내용을 확인해 주세요."
@@ -5603,10 +6642,36 @@ msgstr "비밀번호가 일치하지 않습니다."
 msgid "Your payment is being processed. Your gift link will be available shortly."
 msgstr "결제가 처리 중입니다. 선물 링크를 곧 이용할 수 있습니다."
 
+msgid "Your premium account on NewsBlur has expired"
+msgstr "NewsBlur의 프리미엄 계정이 만료되었습니다"
+
+msgid "Your premium account on NewsBlur has one more month!"
+msgstr "NewsBlur의 프리미엄 계정이 한 달 더 연장되었습니다!"
+
+msgid ""
+"Your premium account was set to expire today, but you've been given a free month grace period, so you can "
+"continue using your premium account to try out NewsBlur."
+msgstr "프리미엄 계정이 오늘 만료될 예정이었지만, 무료 유예 기간으로 한 달이 추가되어 NewsBlur을(를) 계속 이용해 보실 수 있습니다."
+
 #, python-format
 msgid "Your premium trial has <strong class=\"NB-trial-days\">%(days)s day</strong> remaining"
 msgid_plural "Your premium trial has <strong class=\"NB-trial-days\">%(days)s days</strong> remaining"
 msgstr[0] "프리미엄 체험 기간이 <strong class=\"NB-trial-days\">%(days)s일</strong> 남았습니다"
+
+msgid "Your shared stories on NewsBlur are available on your Blurblog"
+msgstr "NewsBlur에서 공유한 스토리를 Blurblog에서 확인할 수 있습니다."
+
+msgid "Your shared story is now on your Blurblog"
+msgstr "공유한 스토리가 이제 Blurblog에 게시되었습니다"
+
+msgid "Your shared story is now on your Blurblog."
+msgstr "공유한 스토리가 이제 Blurblog에 게시되었습니다."
+
+msgid "Your subscription goes a long way towards funding the further development of NewsBlur."
+msgstr "구독해 주신 덕분에 NewsBlur의 지속적인 개발에 큰 도움이 됩니다."
+
+msgid "Your subscription helps pay for the machines which store and process your archive."
+msgstr "구독료는 아카이브를 저장하고 처리하는 서버 비용에 보탬이 됩니다."
 
 msgctxt "joins the comment count and the share count"
 msgid "and"
