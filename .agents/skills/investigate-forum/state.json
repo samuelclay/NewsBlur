@@ -328,6 +328,20 @@
       "note": "AnthonySanders (premium, uid 509034) subscribes to 7 IEEE TOC feeds. Feed.number_of_stories_to_store caps feeds with no fR reads in recent weeks at 10, and the fetch trims right after saving; IEEE posts each issue as ~50 items with front matter dated newest and articles dated weeks earlier, so the issue was cut to mostly front matter on arrival (TOC63 feed 4428935: 8 stored vs 50 in feed, log 'Trimming down to 10 (instead of 200)'). Feeds he reads keep 53/196. Sam chose a PR; review rounds: v1 cap=response size; round 1 Sam picked 'protect only new' for storage; round 2 showed it unsound (trimmed stories return as 'new' and unread feeds flip-flop), Sam picked keeping the current response under the no-reads cap only, ranked first, read/archive feeds trim by date. Prod sample: ~56K publishing unread feeds grow from 10 to response size, ~4-18 GB. Round 3 clean (5 threads resolved). Only red check is the iOS push run (flaky WebKit waits on a Python-only PR; pull_request iOS run passed; fixed by #2171). Deploy: make celery + make deploy. Reply assumes deployed; also notes IEEE dating vs Premium's 30 day unread window. Merged 2026-10-12 (eaadb8f4f), not yet deployed: needs make celery and make deploy before the reply is posted.",
       "reply": "Found it. NewsBlur trims a feed nobody has read in a few weeks down to its 10 newest stories. IEEE posts each issue as about 50 items at once, and the front matter (Table of Contents, society pages) has the newest date, so the trim kept those and threw away most of the articles. The IEEE feeds you read often kept everything, which is why it looked inconsistent. That's fixed and will be live in the next deploy, and the missing articles come back the next time IEEE updates each feed.\n\nOne more thing: IEEE dates each article by when it first went online, often weeks before the issue. Many arrive older than Premium's 30 day unread window, so they show up as already read. Premium Archive keeps them unread.",
       "question": null
+    },
+    "13896": {
+      "title": "Android: don't move next button around",
+      "url": "https://forum.newsblur.com/t/android-dont-move-next-button-around/13896",
+      "status": "pr-open",
+      "tier": 1,
+      "handled_at": "2026-10-16T15:59:50Z",
+      "last_posted_at": "2026-10-16T13:07:50.090Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2175",
+      "branch": "forum-13896-android-next-button",
+      "worktree": ".worktree/forum-13896-android-next-button",
+      "note": "Reproduced on Samsung Galaxy S22, NB Alpha 15.1: Next moved 332 px between consecutive Hacker News stories because ReaderEndControls reparented navigation into article footers. Fixed position, Next/Done width, and full stationary page-transition backdrop. PR #2175 is ready for review at db8983ce4 with before/after screenshot sets, four-theme checks, Next/Done and scrolling evidence, and final-build recording. 837 unit tests passed initially; 27 focused tests and Alpha build passed after the review fix. Both Android CI runs, Django CI, and both automated reviews passed, with zero unresolved review threads. Localization validation fails on an unrelated hardcoded web chooser title introduced by main 3a887b707; main itself fails the same audit. Final head db8983ce4 verified; localization is the only red check. Not merged, released, or posted. Original theme preferences and login retained.",
+      "reply": "Found it. The controls were moving to the bottom of each story, so short articles and related stories changed where Next appeared. The fix keeps it at the bottom of the screen, including when it changes to Done. It is waiting to be merged and released in an Android update.",
+      "question": null
     }
   }
 }
