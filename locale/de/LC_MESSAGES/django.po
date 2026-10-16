@@ -7138,7 +7138,7 @@ msgstr "Der Import deiner mit Stern markierten Artikel aus Google Reader ist abg
 
 #, python-format
 msgid "Your NewsBlur %(tier_name)s gift is ready to share!"
-msgstr "Dein NewsBlur-Geschenk für %(tier_name)s __NB_TOKEN_2__ kann jetzt geteilt werden!"
+msgstr ""
 
 #, python-format
 msgid "Your NewsBlur subscription and your %(count)s site"

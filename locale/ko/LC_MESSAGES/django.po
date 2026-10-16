@@ -6539,7 +6539,7 @@ msgstr "Google Reader에서 별표 표시한 스토리 가져오기가 완료되
 
 #, python-format
 msgid "Your NewsBlur %(tier_name)s gift is ready to share!"
-msgstr "NewsBlur %(tier_name)s __NB_TOKEN_2__ 선물을 공유할 준비가 되었습니다!"
+msgstr "NewsBlur %(tier_name)s 선물이 공유할 준비가 되었습니다!"
 
 #, python-format
 msgid "Your NewsBlur subscription and your %(count)s site"

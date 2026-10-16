@@ -256,6 +256,9 @@ def validate(source, translated):
         raise ValueError("Reordered unnumbered format arguments")
     if "\x00" in translated:
         raise ValueError("NUL in translation")
+    if "__NB_TOKEN_" in translated and "__NB_TOKEN_" not in source:
+        # manage.py unmasks only the markers it made, so one a model invented would reach readers verbatim.
+        raise ValueError(f"Leftover masking token: {translated!r}")
     if translated.count('"') > source.count('"'):
         # Django's trans output isn't escaped, so a new double quote would end an HTML attribute.
         raise ValueError(f"Added double quote: {translated!r}")
