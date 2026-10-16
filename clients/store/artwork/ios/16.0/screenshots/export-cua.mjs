@@ -9,9 +9,9 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const supportedSizes = ['1320x2868', '1206x2622', '2064x2752'];
 const views = ['stories', 'feeds', 'reader', 'saved'];
 
-export async function exportScreenshots({ tab, viewport, language, sizes = supportedSizes,
+export async function exportScreenshots({ tab, viewport, language, sizes = supportedSizes, panels = [1, 2, 3, 4],
   rawRoot = '/tmp/newsblur-store-screenshot-renders', baseUrl = 'http://127.0.0.1:8768/screenshots/' }) {
-  if (!/^[A-Za-z-]+$/.test(language) || sizes.some(size => !supportedSizes.includes(size))) {
+  if (!/^[A-Za-z-]+$/.test(language) || sizes.some(size => !supportedSizes.includes(size)) || !panels.length || panels.some(panel => ![1, 2, 3, 4].includes(panel))) {
     throw new Error('Invalid locale or screenshot dimensions.');
   }
   const copyBytes = await fs.readFile(path.join(root, 'copy', `${language}.json`));
@@ -23,8 +23,21 @@ export async function exportScreenshots({ tab, viewport, language, sizes = suppo
     for (const size of sizes) {
       const [width, height] = size.split('x').map(Number);
       const device = size === '2064x2752' ? 'ipad' : 'iphone';
-      const evidence = [];
-      for (let panel = 1; panel <= 4; panel++) {
+      const destination = path.join(root, 'exports', language);
+      const evidencePath = path.join(destination, `render-checks-${size}.json`);
+      let evidence = [];
+      try { evidence = JSON.parse(await fs.readFile(evidencePath)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      const currentEvidence = [];
+      for (const entry of evidence) {
+        if (entry.language !== language || entry.size !== size || entry.renderer_sha256 !== rendererHash || entry.copy_sha256 !== hash(copyBytes)) continue;
+        try {
+          const currentCapture = hash(await fs.readFile(path.join(root, entry.capture)));
+          const currentScreenshot = hash(await fs.readFile(path.join(rawRoot, language, size, `panel-${entry.panel}.jpg`)));
+          if (currentCapture === entry.capture_sha256 && currentScreenshot === entry.screenshot_sha256) currentEvidence.push(entry);
+        } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      }
+      evidence = currentEvidence;
+      for (const panel of panels) {
         const capture = `captures/${language === 'en' ? '' : `localized/${language}/`}${device}-${views[panel - 1]}.png`;
         const captureHash = hash(await fs.readFile(path.join(root, capture)));
         const url = new URL(baseUrl);
@@ -60,13 +73,14 @@ export async function exportScreenshots({ tab, viewport, language, sizes = suppo
         const directory = path.join(rawRoot, language, size);
         await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(path.join(directory, `panel-${panel}.jpg`), bytes);
+        evidence = evidence.filter(entry => entry.panel !== panel);
         evidence.push({ language, size, panel, captured_at: new Date().toISOString(), capture, capture_sha256: captureHash,
           renderer_sha256: rendererHash, copy_sha256: hash(copyBytes), screenshot_sha256: hash(bytes), ...state });
+        evidence.sort((a, b) => a.panel - b.panel);
+        await fs.mkdir(destination, { recursive: true });
+        await fs.writeFile(evidencePath, JSON.stringify(evidence, null, 2) + '\n');
       }
-      const destination = path.join(root, 'exports', language);
-      await fs.mkdir(destination, { recursive: true });
-      await fs.writeFile(path.join(destination, `render-checks-${size}.json`), JSON.stringify(evidence, null, 2) + '\n');
-      completed.push({ language, size, panels: evidence.length });
+      completed.push({ language, size, panels_exported: panels, recorded_panels: evidence.length });
     }
     return completed;
   } finally {
