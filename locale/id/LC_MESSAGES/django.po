@@ -3016,11 +3016,11 @@ msgstr[1] ""
 " yang baru."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Buka <a href=\"https://%(domain)s/?next=opml\">Kelola > Impor > Unggah OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "Cukup buka <a href=\"https://%(domain)s/?next=opml\">Kelola NewsBlur > Impor atau unggah situs</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Buka Kelola > Impor > Unggah OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Cukup buka Kelola NewsBlur > Impor atau unggah situs."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""

@@ -2921,11 +2921,11 @@ msgstr[1] ""
 "את NewsBlur החדש."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "פשוט היכנסו אל <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "פשוט עברו אל <a href=\"https://%(domain)s/?next=opml\">ניהול NewsBlur > ייבוא או העלאת אתרים</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "פשוט היכנסו אל Manage > Import > Upload OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "פשוט עברו אל ניהול NewsBlur > ייבוא או העלאת אתרים."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "המשיכו לשתף את קישור ההפניה שלכם כדי לצבור עוד זמן מינוי בחינם. כל הפניה מצטברת!"

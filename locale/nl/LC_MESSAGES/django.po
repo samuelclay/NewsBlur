@@ -3014,11 +3014,13 @@ msgstr[1] ""
 "en Android-apps. Mis je de oude functies van Google Reader, dan zul je de nieuwe NewsBlur geweldig vinden."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Ga naar <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr ""
+"Ga gewoon naar <a href=\"https://%(domain)s/?next=opml\">Beheren NewsBlur > Sites importeren of "
+"uploaden</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Ga naar Manage > Import > Upload OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Ga gewoon naar Beheren NewsBlur > Sites importeren of uploaden."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "Blijf je doorverwijzingslink delen om extra gratis abonnementstijd te verdienen. Elke doorverwijzing telt!"

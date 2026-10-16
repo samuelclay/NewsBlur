@@ -3052,11 +3052,13 @@ msgstr[2] ""
 " бракує функцій старого Google Reader, вам сподобається новий NewsBlur."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Перейдіть до <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr ""
+"Просто перейдіть до <a href=\"https://%(domain)s/?next=opml\">Керування NewsBlur > Імпорт або завантаження "
+"сайтів</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Перейдіть до Manage > Import > Upload OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Просто перейдіть до Керування NewsBlur > Імпорт або завантаження сайтів."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""

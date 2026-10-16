@@ -2994,11 +2994,13 @@ msgstr[1] ""
 "Google Reader की सुविधाएँ याद आती हैं, तो आपको नया NewsBlur पसंद आएगा।"
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "बस <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a> पर जाएँ।"
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr ""
+"बस <a href=\"https://%(domain)s/?next=opml\">प्रबंधित करें NewsBlur > साइटें इंपोर्ट करें या अपलोड करें</a>"
+" पर जाएँ।"
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "बस Manage > Import > Upload OPML पर जाएँ।"
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "बस प्रबंधित करें NewsBlur > साइटें इंपोर्ट करें या अपलोड करें पर जाएँ।"
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "ज़्यादा मुफ़्त सदस्यता समय पाने के लिए अपना रेफ़रल लिंक साझा करते रहें। हर रेफ़रल से लाभ बढ़ता है!"

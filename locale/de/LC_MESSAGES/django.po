@@ -3038,11 +3038,13 @@ msgstr[1] ""
 "lieben."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Gehe einfach zu <a href=\"https://%(domain)s/?next=opml\">Verwalten > Import > OPML hochladen</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr ""
+"Gehe einfach zu <a href=\"https://%(domain)s/?next=opml\">„NewsBlur verwalten“ > „Websites importieren oder"
+" hochladen“</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Gehe einfach zu „Verwalten“ > „Import“ > „OPML hochladen“."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Gehe einfach zu „NewsBlur verwalten“ > „Websites importieren oder hochladen“."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "Teile weiterhin deinen Empfehlungslink, um mehr kostenlose Abo-Zeit zu erhalten. Jede Empfehlung zählt!"

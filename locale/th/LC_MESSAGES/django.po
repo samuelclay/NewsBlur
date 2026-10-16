@@ -2941,11 +2941,11 @@ msgstr[0] ""
 "หากคิดถึงฟีเจอร์เดิมของ Google Reader คุณจะต้องชอบ NewsBlur เวอร์ชันใหม่"
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "ไปที่ <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a> ได้เลย"
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "ไปที่ <a href=\"https://%(domain)s/?next=opml\">จัดการ NewsBlur > นำเข้าหรืออัปโหลดเว็บไซต์</a>"
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "ไปที่ Manage > Import > Upload OPML"
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "ไปที่ จัดการ NewsBlur > นำเข้าหรืออัปโหลดเว็บไซต์"
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "แชร์ลิงก์แนะนำของคุณต่อไปเพื่อรับเวลาสมัครใช้งานฟรีเพิ่ม ทุกการแนะนำมีค่า!"

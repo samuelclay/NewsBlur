@@ -3013,11 +3013,11 @@ msgstr[1] ""
 " você sente falta dos antigos recursos do Google Reader, vai adorar o novo NewsBlur."
 
 #, python-format
-msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage > Import > Upload OPML</a>."
-msgstr "Acesse <a href=\"https://%(domain)s/?next=opml\">Gerenciar > Importar > Enviar OPML</a>."
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "Basta acessar <a href=\"https://%(domain)s/?next=opml\">Gerenciar NewsBlur > Importar ou enviar sites</a>."
 
-msgid "Just go to Manage > Import > Upload OPML."
-msgstr "Acesse Gerenciar > Importar > Enviar OPML."
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "Basta acessar Gerenciar NewsBlur > Importar ou enviar sites."
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
