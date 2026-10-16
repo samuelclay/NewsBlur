@@ -659,8 +659,10 @@
       "Saved Stories and account/subscription disclosure visible"
     ],
     "notes": "Native French iPad UI with loaded article photos. Includes the real article scroll and brief native navigation into Saved Stories, then a bread article selection near the ending.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately.",
+    "playback_note": "QuickTime showed black after reaching its beyond-end position. Stepping left restored the valid final Saved Stories frame, matching the extracted encoded ending; this was a player end position, not an encoded black ending."
   },
   "output_sha256": "245eac143a9385cf29531bb9d57f2c05dfb18c7d2e3a8ae0451914abc0761df2"
 }

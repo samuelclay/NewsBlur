@@ -658,8 +658,9 @@
       "Settled Saved Stories ending"
     ],
     "notes": "German two-line disclosure fits without clipping. Brief native Saved navigation retained.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "bad6e396f476014552426b0e0b6876327fa8e49e96aea3331843d4c5380770dd"
 }

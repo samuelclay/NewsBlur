@@ -660,8 +660,9 @@
       "Final frame is settled"
     ],
     "notes": "Native Hebrew RTL iPad UI. Includes the actual fullscreen article scroll and a settled Saved Stories collection; no English interface fallback.",
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed native screen progression and settled Saved Stories ending. Full-timeline sampled review was completed separately."
   },
   "output_sha256": "0ea3844f5438a525eaf3a479654e223ffded4151c2636ab81761135efab95b2e"
 }

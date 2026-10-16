@@ -38,6 +38,6 @@
       "notes": "Native French iPad UI with loaded article photos. Includes the real article scroll and brief native navigation into Saved Stories, then a bread article selection near the ending."
     }
   },
-  "status": "encoded_sampled_visual_review_passed",
-  "remaining": "iPad normal-speed playback and both store uploads pending. iPhone normal-speed playback passed."
+  "status": "encoded_playback_review_passed",
+  "remaining": "Store placement and submission are tracked separately by the release coordinator; each encoded device passed normal-speed playback. Unencoded devices remain pending."
 }
