@@ -1,0 +1,25 @@
+{
+  "status": "planned_awaiting_recordings",
+  "duration_seconds": 20,
+  "frame_rate": 30,
+  "orientation": "portrait",
+  "audio": {"content": "silence", "codec": "aac", "channels": 2, "sample_rate": 48000, "target_bit_rate": 256000},
+  "video": {"codec": "h264", "profile": "high", "level": "4.0", "pixel_format": "yuv420p", "target_bit_rate": 11000000, "max_bit_rate": 12000000},
+  "devices": {
+    "iphone": {"width": 886, "height": 1920, "expected_raw_width": 1320, "expected_raw_height": 2868},
+    "ipad": {"width": 1200, "height": 1600, "expected_raw_width": 2064, "expected_raw_height": 2752}
+  },
+  "scenes": [
+    {"key": "feeds", "start": 0, "duration": 5, "fixture_state": "reader", "action": "A short real scroll through the cooking sources, ending settled."},
+    {"key": "stories", "start": 5, "duration": 5, "fixture_state": "reader-folder-tech", "action": "A short real scroll through the cooking story list or cards."},
+    {"key": "reader", "start": 10, "duration": 5, "fixture_state": "reader-story-swift-1", "action": "A real article scroll through text and food photography."},
+    {"key": "saved", "start": 15, "duration": 5, "fixture_state": "cooking-saved", "action": "A short real scroll through saved stories, then a settled ending."}
+  ],
+  "poster_candidate_seconds": 12,
+  "sources": [
+    "https://developer.apple.com/help/app-store-connect/reference/app-information/app-preview-specifications/",
+    "https://developer.apple.com/app-store/app-previews/",
+    "https://ffmpeg.org/ffmpeg-filters.html#ass"
+  ],
+  "specifications_verified": "2026-10-16"
+}
