@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ObjectiveC
 import UIKit
 
 @available(iOS 16.0, *)
@@ -27,6 +28,7 @@ final class NewsBlurUITestHarness {
         case swiftStoryOne
         case swiftClusterFeed
         case swiftClusterStoryOne
+        case cookingSaved
     }
 
     private static var didPrepareLaunchEnvironment = false
@@ -451,6 +453,7 @@ final class NewsBlurUITestHarness {
             }
         }
         ReaderUITestURLProtocol.installIfNeeded()
+        CookingMarketingFixtures.installDefaultSessionProtocolIfNeeded()
         appDelegate.setCustomDomainForTesting(ReaderUITestFixtures.baseURL.absoluteString)
         appDelegate.setNetworkProtocolClassesForTesting([ReaderUITestURLProtocol.self])
         appDelegate.resetNetworkManagerForTesting()
@@ -482,13 +485,15 @@ final class NewsBlurUITestHarness {
             appDelegate.feedsViewController.reloadFeedTitlesTable()
             appDelegate.feedsViewController.view.layoutIfNeeded()
         case .techFolder:
-            appDelegate.feedsViewController.selectFolder("Tech")
+            appDelegate.feedsViewController.selectFolder(CookingMarketingFixtures.enabled ? "Cooking" : "Tech")
         case .cultureFolder:
             appDelegate.feedsViewController.selectFolder("Culture")
         case .swiftFeed:
-            appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: "Tech ▸ Swift")
+            appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: CookingMarketingFixtures.enabled ? "Cooking" : "Tech ▸ Swift")
         case .swiftStoryOne:
-            appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: "ui-story-swift-1", animated: false)
+            appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: CookingMarketingFixtures.enabled ? "cooking-pasta-1" : "ui-story-swift-1", animated: false)
+        case .cookingSaved:
+            appDelegate.loadStarredDetailView(withStory: nil, showFindingStory: false)
         case .swiftClusterFeed:
             appDelegate.loadFeed(ReaderUITestFixtures.swiftClusterFeedId, withStory: nil, animated: false)
         case .swiftClusterStoryOne:
@@ -518,6 +523,8 @@ final class NewsBlurUITestHarness {
             return .swiftClusterFeed
         case "reader-story-swift-cluster-1":
             return .swiftClusterStoryOne
+        case "cooking-saved" where CookingMarketingFixtures.enabled:
+            return .cookingSaved
         default:
             return nil
         }
@@ -537,7 +544,7 @@ final class NewsBlurUITestHarness {
 private enum ReaderUITestFixtures {
     static let baseURL = URL(string: "https://ui-test.newsblur.example")!
     // NewsBlurUITestHarness.swift gives StoryFirstPageCache a fresh account namespace on every launch.
-    static let username = "ui-test-\(UUID().uuidString)"
+    static let username = CookingMarketingFixtures.enabled ? "Alex" : "ui-test-\(UUID().uuidString)"
     private static let mutationPaths: Set<String> = [
         "/reader/mark_story_hashes_as_read", "/reader/mark_story_as_unread",
         "/reader/mark_story_as_starred", "/reader/mark_story_as_unstarred",
@@ -606,7 +613,7 @@ private enum ReaderUITestFixtures {
         bulkReadLock.unlock()
     }
 
-    static func prepareAppState(for appDelegate: NewsBlurAppDelegate) {
+    @MainActor static func prepareAppState(for appDelegate: NewsBlurAppDelegate) {
         let defaults = UserDefaults.standard
 
         [
@@ -638,6 +645,9 @@ private enum ReaderUITestFixtures {
 
         cacheFixtureImages(on: appDelegate)
         cachePagingImages(on: appDelegate)
+        if CookingMarketingFixtures.enabled {
+            CookingMarketingFixtures.prepareImages(on: appDelegate)
+        }
     }
 
     private static func cachePagingImages(on appDelegate: NewsBlurAppDelegate) {
@@ -677,7 +687,8 @@ private enum ReaderUITestFixtures {
     }
 
     static func unreadCountRows() -> [[String: Any]] {
-        [
+        if CookingMarketingFixtures.enabled { return CookingMarketingFixtures.unreadCountRows() }
+        return [
             ["feed_id": techFeedId, "ps": 0, "nt": 2, "ng": 0],
             ["feed_id": swiftFeedId, "ps": 0, "nt": swiftUnreadCount, "ng": 0],
             ["feed_id": cultureFeedId, "ps": 0, "nt": 1, "ng": 0],
@@ -686,6 +697,7 @@ private enum ReaderUITestFixtures {
     }
 
     static func feedListResponse() -> [String: Any] {
+        if CookingMarketingFixtures.enabled { return CookingMarketingFixtures.feedListResponse(username: username) }
         let response: [String: Any] = [
             "user": username,
             "share_ext_token": "ui-test-token",
@@ -748,6 +760,7 @@ private enum ReaderUITestFixtures {
     }
 
     static func response(for request: URLRequest) throws -> (HTTPURLResponse, Data) {
+        if CookingMarketingFixtures.enabled { return try CookingMarketingFixtures.response(for: request, username: username) }
         guard let url = request.url else {
             throw URLError(.badURL)
         }
@@ -1250,6 +1263,281 @@ private enum ReaderUITestFixtures {
         }
     }
 }
+
+// NewsBlurUITestHarness.swift loads this opt-in editorial dataset only in a Debug simulator.
+// MarketingCooking/README.md documents the fixture account and licensed photographs.
+private enum CookingMarketingFixtures {
+    static var enabled: Bool {
+#if DEBUG && targetEnvironment(simulator)
+        return ProcessInfo.processInfo.arguments.contains("-newsblur-marketing-cooking") &&
+            ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing")
+#else
+        return false
+#endif
+    }
+
+    @MainActor private static var didInstallDefaultSessionProtocol = false
+
+    @MainActor static func installDefaultSessionProtocolIfNeeded() {
+#if DEBUG && targetEnvironment(simulator)
+        guard enabled, !didInstallDefaultSessionProtocol else { return }
+        // OfflineSyncUnreads.m and FeedDetailObjCViewController.m create their own default sessions.
+        // URLProtocol.registerClass alone does not install the fixture protocol in those configurations.
+        guard let original = class_getClassMethod(URLSessionConfiguration.self,
+                                                  #selector(getter: URLSessionConfiguration.default)),
+              let replacement = class_getClassMethod(URLSessionConfiguration.self,
+                                                     #selector(URLSessionConfiguration.newsblurMarketingDefaultConfiguration)) else {
+            preconditionFailure("Unable to install the isolated cooking fixture network")
+        }
+        method_exchangeImplementations(original, replacement)
+        didInstallDefaultSessionProtocol = true
+#endif
+    }
+
+    private static let lock = NSRecursiveLock()
+    private static let directory: URL = {
+        let args = ProcessInfo.processInfo.arguments
+        if let index = args.firstIndex(of: "-newsblur-marketing-assets"), index + 1 < args.count {
+            return URL(fileURLWithPath: args[index + 1], isDirectory: true)
+        }
+        return Bundle.main.bundleURL.appendingPathComponent("MarketingCooking", isDirectory: true)
+    }()
+    private static let dataset: [String: Any] = {
+        do {
+            let data = try Data(contentsOf: directory.appendingPathComponent("cooking.json"))
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  json["feeds"] is [[String: Any]], json["stories"] is [[String: Any]] else {
+                preconditionFailure("MarketingCooking/cooking.json must contain feeds and stories")
+            }
+            return json
+        } catch {
+            preconditionFailure("Install MarketingCooking beside the simulator app before launching: \(error)")
+        }
+    }()
+    private static var feeds: [[String: Any]] { dataset["feeds"] as! [[String: Any]] }
+    private static var recipes: [[String: Any]] { dataset["stories"] as! [[String: Any]] }
+    private static var saved: Set<String> = Set(recipes.filter { $0["saved"] as? Bool == true }.compactMap { $0["id"] as? String })
+    private static var read: Set<String> = []
+    private static var training: [String: [String: [String: Int]]] = [:]
+    private static let epoch = Int(Date().timeIntervalSince1970)
+    private static let photoData: [String: Data] = {
+        var result: [String: Data] = [:]
+        for recipe in recipes {
+            guard let name = recipe["photo"] as? String, result[name] == nil else { continue }
+            do { result[name] = try Data(contentsOf: directory.appendingPathComponent("photos/\(name).jpg")) }
+            catch { preconditionFailure("Missing cooking photograph \(name): \(error)") }
+        }
+        return result
+    }()
+
+    @MainActor static func prepareImages(on appDelegate: NewsBlurAppDelegate) {
+        for recipe in recipes {
+            guard let hash = recipe["id"] as? String, let name = recipe["photo"] as? String,
+                  let data = photoData[name], let image = UIImage(data: data) else { continue }
+            appDelegate.cacheStoryImage(image, forStoryHash: hash)
+        }
+        for feed in feeds {
+            guard let id = feed["id"] as? String, let title = feed["title"] as? String,
+                  let hex = feed["color"] as? String, let rgb = UInt32(hex, radix: 16) else { continue }
+            let icon = UIGraphicsImageRenderer(size: CGSize(width: 48, height: 48)).image { context in
+                UIColor(red: CGFloat((rgb >> 16) & 255) / 255, green: CGFloat((rgb >> 8) & 255) / 255,
+                        blue: CGFloat(rgb & 255) / 255, alpha: 1).setFill()
+                context.fill(CGRect(x: 0, y: 0, width: 48, height: 48))
+                (String(title.prefix(1)) as NSString).draw(at: CGPoint(x: 12, y: 6), withAttributes: [
+                    .font: UIFont.systemFont(ofSize: 28, weight: .semibold), .foregroundColor: UIColor.white
+                ])
+            }
+            appDelegate.saveFavicon(icon, feedId: id)
+        }
+    }
+
+    static func unreadCountRows() -> [[String: Any]] {
+        lock.lock(); defer { lock.unlock() }
+        return feeds.map { feed in
+            let id = feed["id"] as! String
+            let count = recipes.filter { $0["feed_id"] as? String == id && !read.contains($0["id"] as! String) }.count
+            return ["feed_id": id, "ps": 0, "nt": count, "ng": 0]
+        }
+    }
+
+    static func feedListResponse(username: String) -> [String: Any] {
+        lock.lock(); defer { lock.unlock() }
+        let counts = unreadCountRows()
+        var feedMap: [String: Any] = [:]
+        for feed in feeds {
+            let id = feed["id"] as! String
+            let color = feed["color"] as! String
+            feedMap[id] = ["id": Int(id)!, "feed_title": feed["title"]!,
+                           "feed_address": "https://ui-test.newsblur.example/\(id).xml",
+                           "feed_link": "https://ui-test.newsblur.example/\(id)", "active": true,
+                           "feed_opens": 12, "ps": 0, "nt": counts.first { $0["feed_id"] as? String == id }?["nt"] ?? 0,
+                           "ng": 0, "favicon_color": color, "favicon_fade": color]
+        }
+        let args = ProcessInfo.processInfo.arguments
+        let languageIndex = args.firstIndex(of: "-newsblur_language")
+        let language = languageIndex.flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil } ?? "en"
+        return [
+            "user": username, "share_ext_token": "cooking-demo-token",
+            "social_profile": ["id": "social:1", "user_id": 1, "username": username, "shared_stories_count": 0],
+            "social_services": [:], "activities": [], "dashboard_rivers": [], "social_feeds": [],
+            "user_profile": ["is_premium": 1, "is_archive": 1, "is_pro": 0, "premium_expire": NSNull(),
+                             "preferences": ["language": language, "story_clustering": false]],
+            "flat_folders_with_inactive": ["Cooking": feeds.map { Int($0["id"] as! String)! }],
+            "inactive_feeds": [:], "feeds": feedMap, "folder_icons": [:], "feed_icons": [:],
+            "saved_searches": [], "starred_count": saved.count, "starred_counts": []
+        ]
+    }
+
+    private static func story(_ recipe: [String: Any], index: Int) -> [String: Any] {
+        let id = recipe["id"] as! String
+        let feedID = recipe["feed_id"] as! String
+        let photo = recipe["photo"] as! String
+        let title = recipe["title"] as! String
+        let data = photoData[photo]!.base64EncodedString()
+        let paragraphs = recipe["paragraphs"] as! [String]
+        let html = "<p>\(paragraphs[0])</p><p><img src=\"data:image/jpeg;base64,\(data)\" alt=\"\(title)\" style=\"width:100%;height:auto;\"></p>" +
+            paragraphs.dropFirst().map { "<p>\($0)</p>" }.joined()
+        let imageURL = "https://ui-test.newsblur.example/cooking-photo/\(photo).jpg"
+        return [
+            "id": id, "story_hash": id, "story_feed_id": Int(feedID)!, "story_title": title,
+            "story_content": html, "story_permalink": "https://ui-test.newsblur.example/story/\(id)",
+            "story_authors": recipe["author"]!, "story_tags": recipe["tags"]!,
+            "short_parsed_date": "\((index + 1) * 7)m", "story_timestamp": epoch - (index + 1) * 420,
+            "read_status": read.contains(id) ? 1 : 0, "starred": saved.contains(id), "shared": false,
+            "sticky": false, "comment_count": 0, "public_comments": [], "friend_comments": [],
+            "shared_by_public": [], "shared_by_friends": [], "user_tags": [],
+            "image_urls": [imageURL], "secure_image_thumbnails": [imageURL: imageURL],
+            "intelligence": ["title": 0, "author": 0, "tags": 0, "feed": 0]
+        ]
+    }
+
+    private static func classifiers(for feedID: String) -> [String: [String: Int]] {
+        var result: [String: [String: Int]] = ["titles": [:], "authors": [:], "tags": [:], "feeds": [:],
+                                             "texts": [:], "urls": [:], "title_regex": [:], "author_regex": [:],
+                                             "text_regex": [:], "url_regex": [:]]
+        for (key, value) in training[feedID] ?? [:] { result[key] = value }
+        return result
+    }
+
+    private static func storiesResponse(_ selected: [[String: Any]], feedID: String?) -> [String: Any] {
+        let stories = selected.map { recipe in story(recipe, index: recipes.firstIndex { $0["id"] as? String == recipe["id"] as? String } ?? 0) }
+        let allClassifiers = Dictionary(uniqueKeysWithValues: feeds.map { ($0["id"] as! String, classifiers(for: $0["id"] as! String)) })
+        let responseClassifiers: Any
+        if let feedID { responseClassifiers = classifiers(for: feedID) }
+        else { responseClassifiers = allClassifiers }
+        return ["feed_id": feedID ?? "river", "stories": stories,
+                "classifiers": responseClassifiers,
+                "feed_tags": [["Weeknight", 6], ["Seasonal", 4], ["Baking", 3]],
+                "feed_authors": Array(Set(selected.compactMap { $0["author"] as? String })).sorted().map { [$0, 3] as [Any] },
+                "user_profiles": []]
+    }
+
+    private static func queryItems(for request: URLRequest) -> [URLQueryItem] {
+        var items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        var body = request.httpBody
+        if body == nil, let stream = request.httpBodyStream {
+            stream.open(); defer { stream.close() }
+            var collected = Data()
+            var buffer = [UInt8](repeating: 0, count: 4096)
+            while stream.hasBytesAvailable {
+                let count = stream.read(&buffer, maxLength: buffer.count)
+                guard count > 0 else { break }
+                collected.append(buffer, count: count)
+            }
+            body = collected
+        }
+        if let body, let text = String(data: body, encoding: .utf8) {
+            items += URLComponents(string: "https://fixture.example/?\(text.replacingOccurrences(of: "+", with: "%20"))")?.queryItems ?? []
+        }
+        return items
+    }
+
+    static func response(for request: URLRequest, username: String) throws -> (HTTPURLResponse, Data) {
+        lock.lock(); defer { lock.unlock() }
+        guard let url = request.url, url.host == "ui-test.newsblur.example" else { throw URLError(.unsupportedURL) }
+        let items = queryItems(for: request)
+        func value(_ name: String) -> String? { items.first { $0.name == name }?.value }
+        let path = url.path
+        if path.hasPrefix("/cooking-photo/") {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let data = photoData[name] else { throw URLError(.fileDoesNotExist) }
+            return (HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "image/jpeg"])!, data)
+        }
+        let payload: [String: Any]
+        if path == "/rss_feeds/original_text" {
+            let recipe = recipes.first { $0["id"] as? String == (value("story_id") ?? value("story_hash")) } ?? recipes[0]
+            payload = ["original_text": story(recipe, index: 0)["story_content"]!, "code": 1]
+        } else if request.httpMethod == "POST" {
+            let hashes = items.filter { ["story_hash", "story_hashes", "story_hashes[]", "story_id"].contains($0.name) }.compactMap(\.value)
+            switch path {
+            case "/reader/mark_story_as_starred": saved.formUnion(hashes)
+            case "/reader/mark_story_as_unstarred": saved.subtract(hashes)
+            case "/reader/mark_story_hashes_as_read": read.formUnion(hashes)
+            case "/reader/mark_story_as_unread": read.subtract(hashes)
+            case "/reader/mark_feed_as_read", "/reader/mark_feed_stories_as_read":
+                read.formUnion(recipes.filter { $0["feed_id"] as? String == value("feed_id") }.compactMap { $0["id"] as? String })
+            case "/reader/mark_all_as_read": read.formUnion(recipes.compactMap { $0["id"] as? String })
+            case "/classifier/save":
+                let feedID = value("feed_id") ?? "910002"
+                var rules = training[feedID] ?? [:]
+                for item in items {
+                    guard let name = item.value else { continue }
+                    let prefixes = [("super_dislike_", -2), ("dislike_", -1), ("remove_like_", 0), ("remove_dislike_", 0), ("like_", 1)]
+                    guard let (prefix, score) = prefixes.first(where: { item.name.hasPrefix($0.0) }) else { continue }
+                    let kind = String(item.name.dropFirst(prefix.count))
+                    let key = ["author": "authors", "tag": "tags", "title": "titles", "feed": "feeds", "text": "texts", "url": "urls"][kind] ?? kind
+                    var values = rules[key] ?? [:]
+                    if score == 0 { values.removeValue(forKey: name) } else { values[name] = score }
+                    rules[key] = values
+                }
+                training[feedID] = rules
+            case "/profile/set_preference", "/reader/logout": break
+            default: throw URLError(.unsupportedURL)
+            }
+            payload = ["code": 1]
+        } else if path == "/reader/feeds" {
+            payload = feedListResponse(username: username)
+        } else if path == "/reader/unread_story_hashes" {
+            // OfflineSyncUnreads.m needs feed-keyed hash/timestamp tuples to finish syncing and start its local fetch queue.
+            var hashes = Dictionary(uniqueKeysWithValues: feeds.map { ($0["id"] as! String, [[Any]]()) })
+            for (index, recipe) in recipes.enumerated() {
+                let hash = recipe["id"] as! String
+                guard !read.contains(hash) else { continue }
+                hashes[recipe["feed_id"] as! String, default: []].append([hash, epoch - (index + 1) * 420])
+            }
+            payload = ["unread_feed_story_hashes": hashes]
+        } else if path == "/reader/refresh_feeds" || path == "/reader/feed_unread_count" {
+            payload = ["feeds": Dictionary(uniqueKeysWithValues: unreadCountRows().map { ($0["feed_id"] as! String, ["ps": $0["ps"]!, "nt": $0["nt"]!, "ng": $0["ng"]!]) }), "social_feeds": [:]]
+        } else if path == "/reader/favicons" {
+            payload = Dictionary(uniqueKeysWithValues: feeds.map { ($0["id"] as! String, NSNull()) })
+        } else if path.hasPrefix("/reader/feed/") || path.hasPrefix("/reader/river_stories") || path.hasPrefix("/reader/starred_stories") {
+            let feedID = path.hasPrefix("/reader/feed/") ? url.pathComponents.last : nil
+            let selectedIDs = Set(items.filter { ["f", "f[]", "feeds", "feeds[]"].contains($0.name) }.compactMap(\.value))
+            let hashes = Set(items.filter { ["h", "h[]"].contains($0.name) }.compactMap(\.value))
+            let selected = (Int(value("page") ?? "1") ?? 1) > 1 ? [] : recipes.filter { recipe in
+                let id = recipe["id"] as! String
+                let source = recipe["feed_id"] as! String
+                return (feedID == nil || source == feedID) && (selectedIDs.isEmpty || selectedIDs.contains(source)) &&
+                    (hashes.isEmpty || hashes.contains(id)) && (!path.hasPrefix("/reader/starred_stories") || saved.contains(id))
+            }
+            payload = storiesResponse(selected, feedID: feedID)
+        } else { throw URLError(.unsupportedURL) }
+        return (HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!,
+                try JSONSerialization.data(withJSONObject: payload))
+    }
+}
+
+#if DEBUG && targetEnvironment(simulator)
+private extension URLSessionConfiguration {
+    @objc class func newsblurMarketingDefaultConfiguration() -> URLSessionConfiguration {
+        // NewsBlurUITestHarness.swift exchanges this method only for an opted-in cooking capture process.
+        let configuration = newsblurMarketingDefaultConfiguration()
+        configuration.protocolClasses = [ReaderUITestURLProtocol.self] +
+            (configuration.protocolClasses ?? []).filter { $0 != ReaderUITestURLProtocol.self }
+        return configuration
+    }
+}
+#endif
 
 private final class ReaderUITestURLProtocol: URLProtocol {
     private static var isInstalled = false
