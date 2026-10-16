@@ -13,6 +13,7 @@ if (!args.length || args.includes('--help')) {
 const options = {};
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--execute') options.execute = true;
+  else if (args[i] === '--saved-final-frame-hold') options.saved_final_frame_hold = true;
   else {
     if (!/^--(device|locale|feeds|stories|reader|saved|starts|durations|output)$/.test(args[i]) || !args[i + 1]) throw Error('Unknown or incomplete argument: ' + args[i]);
     options[args[i].slice(2)] = args[++i];
@@ -46,9 +47,12 @@ const inputs = editScenes.map((scene, i) => {
   const info = probe(file);
   const video = info.streams.find(s => s.codec_type === 'video');
   const duration = Number(video?.duration || info.format.duration);
-  if (!video || !(duration >= starts[scene.source_index] + scene.duration)) throw Error('Recording is too short for selected interval: ' + file);
+  const finalFrameHold = scene.key === 'saved' && options.saved_final_frame_hold;
+  const finalFrameIndex = Number(video?.nb_frames) - 1;
+  if (finalFrameHold && (!Number.isInteger(finalFrameIndex) || finalFrameIndex < 0)) throw Error('Final-frame hold requires an exact decoded frame count.');
+  if (!video || (!finalFrameHold && !(duration >= starts[scene.source_index] + scene.duration))) throw Error('Recording is too short for selected interval: ' + file);
   if (video.width !== device.expected_raw_width || video.height !== device.expected_raw_height) throw Error('Unexpected raw recording dimensions: ' + file + ` (${video.width}x${video.height})`);
-  return {scene: scene.key, file, start: starts[scene.source_index], duration: scene.duration, bytes: fs.statSync(file).size, probe: info};
+  return {scene: scene.key, file, start: starts[scene.source_index], duration: scene.duration, ...(finalFrameHold ? {final_frame_hold: true, final_frame_index: finalFrameIndex} : {}), bytes: fs.statSync(file).size, probe: info};
 });
 const folder = path.dirname(output);
 const stem = path.basename(output, '.mp4');
@@ -76,7 +80,13 @@ const ffmpegArgs = ['-hide_banner', '-nostdin', '-n', '-filter_complex_threads',
 for (const input of inputs) ffmpegArgs.push('-threads', '1', '-i', input.file);
 ffmpegArgs.push('-f', 'lavfi', '-t', String(totalDuration), '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
 // encode.cjs must preserve held VFR frames: normalize the full timeline before cutting.
-const filters = inputs.map((input, i) => `[${i}:v]fps=30:start_time=0,trim=start=${input.start}:duration=${input.duration},setpts=PTS-STARTPTS,scale=${device.width}:${device.height}:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=${device.width}:${device.height}:(ow-iw)/2:(oh-ih)/2:color=0xedefeb,setsar=1,settb=AVTB[v${i}]`);
+const filters = inputs.map((input, i) => {
+  // encode.cjs holds only an explicitly reviewed final Saved frame; it invents no interaction.
+  const timeline = input.final_frame_hold
+    ? `select=eq(n\\,${input.final_frame_index}),setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${input.duration},fps=30:start_time=0,trim=duration=${input.duration}`
+    : `fps=30:start_time=0,trim=start=${input.start}:duration=${input.duration},setpts=PTS-STARTPTS`;
+  return `[${i}:v]${timeline},scale=${device.width}:${device.height}:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=${device.width}:${device.height}:(ow-iw)/2:(oh-ih)/2:color=0xedefeb,setsar=1,settb=AVTB[v${i}]`;
+});
 filters.push(inputs.map((_, i) => `[v${i}]`).join('') + `concat=n=${inputs.length}:v=1:a=0,ass=filename=captions.ass:shaping=complex[v]`);
 ffmpegArgs.push('-filter_complex', filters.join(';'), '-map', '[v]', '-map', `${inputs.length}:a:0`, '-t', String(totalDuration), '-c:v', 'libx264', '-preset', 'fast', '-threads', '2', '-profile:v', 'high', '-level:v', '4.0', '-pix_fmt', 'yuv420p', '-b:v', '11M', '-maxrate', '12M', '-bufsize', '24M', '-r', '30', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2', '-disposition:a:0', 'default', '-movflags', '+faststart', '-map_metadata', '-1', output);
 const plan = {status: 'prepared_not_encoded', locale: options.locale, device: options.device, output, source_copy: copyPath, inputs, scenes: editScenes, expected: device, duration: totalDuration, encoder: 'ffmpeg', encoder_args: ffmpegArgs, working_directory: work, poster_candidate_seconds: storyboard.poster_candidate_seconds, visual_review: 'pending', submission: 'not_submitted'};
