@@ -19,12 +19,13 @@
   },
   "automatic_release_after_approval": true,
   "main_creative_attachments": {
-    "verified_complete_languages": [],
+    "verified_complete_languages": [
+      "fr"
+    ],
     "verified_header_only": [],
     "remaining_languages": [
       "en",
       "es",
-      "fr",
       "de",
       "pt-BR",
       "it",
@@ -44,16 +45,51 @@
       "zh-Hans",
       "zh-Hant"
     ],
-    "note": "Earlier en/ar/zh-Hans/zh-Hant views showed 1 of 1 in both slots, but those observations did not prove persistence. English showed 0 after reload. Asset Library Save returned a red error, and a direct English search upload also errored. The persisted attachment set is unknown; verify each locale after a fresh reload before claiming completion.",
-    "persistence_status": "unknown_requires_reload_verification",
+    "note": "French header and search placements both verified after a full reload and reselecting French. All other non-English placements observed at 1 of 1; fresh readback pending. English primary locale remains empty after reload and its creative-asset Save returns an error, including a newly uploaded Prepare for Submission asset. Reload resets the selected locale to English (U.S.); reselect the intended locale before readback.",
+    "persistence_status": "french_verified_other_non_english_readback_pending_english_failing",
     "previously_observed_unverified_languages": [
       "en",
       "ar",
       "zh-Hans",
       "zh-Hant"
     ],
-    "save_error_proof": "proof/main-artwork-save-error.jpg"
+    "save_error_proof": "proof/main-artwork-save-error.jpg",
+    "assigned_pending_readback_languages": [
+      "de",
+      "nl",
+      "it",
+      "es",
+      "pt-BR",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "ar",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "verified_proof": "proof/fr-main-search-persisted.jpg"
   },
-  "capture_status": "All simulators shut down and backed-up iPhone preferences checksum-verified restored. English native assets complete; French capture completeness under review. Further capture/encoding deferred while syspolicyd exceeds 600% CPU.",
-  "progress_proof": "proof/main-artwork-partial.jpg"
+  "capture_status": "Serial native capture resumed on the dedicated iPhone with preference backup; only this task device is active for capture. English, French and Arabic iPhone sets complete; Hebrew finalizing. English iPad stories requires recapture because visual export review found a blank app area. Remaining localized iPad captures pending.",
+  "progress_proof": "proof/main-artwork-partial.jpg",
+  "main_screenshot_uploads": {
+    "en": {
+      "size": "1206x2622",
+      "asset_library_files": [
+        "panel-1.png",
+        "panel-2.png",
+        "panel-3.png",
+        "panel-4.png"
+      ],
+      "placement_status": "not_persisted",
+      "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement."
+    }
+  }
 }
