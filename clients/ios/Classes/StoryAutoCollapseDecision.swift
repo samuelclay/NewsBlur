@@ -8,6 +8,15 @@
 import CoreGraphics
 import Foundation
 
+#if SWIFT_PACKAGE
+// StoryAutoCollapseDecision.swift is also built by clients/ios/Package.swift for its unit tests, without the app's
+// NBLocalization.swift (which needs the app delegate), so the package build reads the English badge text.
+private enum NBLocalization {
+    static var resolvedLanguage: String { "en" }
+    static func text(_ source: String) -> String { source }
+}
+#endif
+
 public enum StoryAutoCollapseBehavior: String {
     case auto
     case tile
