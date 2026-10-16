@@ -1,0 +1,377 @@
+{
+  "language": "vi",
+  "register": "Address the user as «bạn» (662 uses; no anh/chị, quý khách or quý vị anywhere), buttons and menu items are bare verbs («Lưu», «Hủy», «Xong», «Xóa»); FAQ questions in the user's voice use «Tôi»; sentence case throughout, new-style tone placement (hủy, tùy, xóa, hóa) is used consistently and is kept.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "bài viết",
+      "avoid": [
+        "câu chuyện",
+        "truyện"
+      ],
+      "note": "Catalog: ~793 bài viết, ~238 tin (story sense), 22 tin bài, 17 câu chuyện, 1 truyện. «bài» alone is an accepted short form (Số bài chưa đọc, các bài trùng lặp). «tin»/«tin bài» → medium in labels, buttons, menu items, titles, folder/view names, counts, toasts and short error/empty lines; low in prose. «câu chuyện»/«truyện» (a tale) → medium; high when it misleads. «tin tức» stays where the English says news (news reader, news archive). Also avoid where it means this concept: tin, tin bài."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "nguồn cấp",
+      "avoid": [
+        "nguồn tin"
+      ],
+      "note": "Catalog: ~309 nguồn cấp (206 as the long form «nguồn cấp dữ liệu», accepted, especially in prose and for RSS feed), ~174 nguồn tin. «nguồn tin» (news source) → medium in labels, low in prose. Do not flag nguồn cấp dữ liệu vs nguồn cấp. Also avoid where it means this concept: trang tin, feed."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "trang web",
+      "avoid": [
+        "trang (where it reads as 'page')"
+      ],
+      "note": "Bare «trang» is a natural short form when context makes it clear (Tắt tiếng trang này, trang ít cập nhật). Flag only where it reads as 'page': Next/Previous site (Trang tiếp theo/Trang trước = next/previous page), New Site (Trang mới), a bare 'Site' label → medium. Also avoid where it means this concept: trang tin."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "thư mục",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread / read",
+      "en": "(?:\\bunread\\b)|(?:\\bread\\b)",
+      "use": "chưa đọc / đã đọc; Mark as read → Đánh dấu (là) đã đọc",
+      "avoid": [],
+      "note": "Both «Đánh dấu đã đọc» and «Đánh dấu là đã đọc» are fine; not flagged."
+    },
+    {
+      "concept": "Read Stories (folder)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "Bài viết đã đọc",
+      "avoid": [],
+      "note": "Imperative readings (read stories) → high. Siri/Spotlight 'Read %@' = open a feed → «Đọc %@» is right. Also avoid where it means this concept: Đọc bài viết, Đọc tin."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Bài viết từ mọi trang web",
+      "avoid": [
+        "Tất cả bài viết trên trang (web)",
+        "Tất cả bài viết từ trang web",
+        "Tất cả câu chuyện trên trang web"
+      ],
+      "note": "The catalog's «Tất cả bài viết trên trang (web)» says 'all stories on the site' (one site) → high. Open All Site Stories → «Mở bài viết từ mọi trang web». Search All Site Stories → «Tìm trong bài viết từ mọi trang web»."
+    },
+    {
+      "concept": "Saved Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "Bài viết đã lưu",
+      "avoid": [
+        "Tin đã lưu"
+      ],
+      "note": "Save → Lưu; Unsave → Bỏ lưu; Saved → Đã lưu."
+    },
+    {
+      "concept": "Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "Bài viết đã chia sẻ",
+      "avoid": [
+        "Tin đã chia sẻ"
+      ],
+      "note": "Share → Chia sẻ."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "Bài viết được chia sẻ toàn cầu",
+      "avoid": [
+        "chia sẻ công khai"
+      ],
+      "note": "«công khai» (publicly) → low."
+    },
+    {
+      "concept": "Widely Read Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bread stories\\b)|(?:\\bwidely read\\b)",
+      "use": "Bài viết được đọc nhiều",
+      "avoid": [
+        "Câu chuyện được đọc nhiều"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Bài viết từ trang ít cập nhật",
+      "avoid": [
+        "Bài viết ít xuất hiện trên trang web",
+        "Bài viết ít thường xuyên"
+      ],
+      "note": "Stories from sites that rarely publish. «ít xuất hiện trên trang web» (rarely appear on the website) → medium meaning."
+    },
+    {
+      "concept": "Good Reads / Long Reads",
+      "en": "(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Bài đọc hay / Bài đọc dài",
+      "avoid": [
+        "Good Reads (English)",
+        "Tin đọc hay"
+      ],
+      "note": "English left → medium."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Dòng tin",
+      "avoid": [
+        "River of News (English)"
+      ],
+      "note": "«Dòng tin tức» also fine. English left → low."
+    },
+    {
+      "concept": "Focus",
+      "en": "\\bfocus\\b",
+      "use": "Tập trung",
+      "avoid": [
+        "Tiêu điểm",
+        "Ưu tiên",
+        "trọng tâm"
+      ],
+      "note": "Matches the iOS/Android Vietnamese Focus mode name. Focus stories → «bài viết Tập trung» (label) / «bài viết trong mục Tập trung». Other words in labels → medium; «(ưu tiên)» in color-legend prose left alone. «Tập trung vào câu chuyện» (focus on the tale) → high."
+    },
+    {
+      "concept": "intelligence / trainer / train",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "trí tuệ (feature), Huấn luyện (train), trình huấn luyện (trainer)",
+      "avoid": [
+        "Công cụ hướng dẫn",
+        "phần hướng dẫn",
+        "Đào tạo"
+      ],
+      "note": "Catalog: 47 trí tuệ, 16 thông minh; both accepted («bộ lọc thông minh» in prose is fine). Huấn luyện 185 vs Đào tạo 8: «Đào tạo» → low. Trainer as «hướng dẫn» (guide/tutorial) → medium meaning."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "bộ phân loại",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Like / Dislike / Super Dislike",
+      "en": "\\b(super )?(dis)?lik(e|ed|es)\\b",
+      "use": "Thích / Không thích / Rất không thích",
+      "avoid": [
+        "Không thích mạnh"
+      ],
+      "note": "«Không thích mạnh» → low. Neutral → trung lập."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro (kept Latin; «gói Premium Archive», «gói Archive» fine)",
+      "avoid": [
+        "Kho lưu trữ Premium",
+        "Kho lưu trữ cao cấp",
+        "Gói lưu trữ Premium",
+        "Gói lưu trữ cao cấp",
+        "Gói lưu trữ (for the Archive plan)"
+      ],
+      "note": "Translated plan names read as 'the premium storage/archive' → medium in labels, buttons, titles, short error lines; low in prose. Lowercase descriptive premium («tính năng cao cấp», «người dùng cao cấp») left alone. The story archive (not the plan) → «kho lưu trữ»."
+    },
+    {
+      "concept": "Preferences / Settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Tùy chọn (NewsBlur Preferences, every platform) / Cài đặt (generic settings, OS)",
+      "avoid": [],
+      "note": "Consistent already."
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Bản tin hằng ngày; Briefing alone → bản tin (bản tin tóm tắt acceptable)",
+      "avoid": [
+        "Điểm tin hằng ngày",
+        "Tóm tắt hằng ngày",
+        "Briefing (English)"
+      ],
+      "note": "58 uses of Bản tin hằng ngày. iOS «Điểm tin hằng ngày» → medium (feature named differently per platform). Newsletters stay «Bản tin email» so the two do not collide."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Hỏi AI",
+      "avoid": [
+        "Ask AI (English)"
+      ],
+      "note": "English in a short label → medium, in prose → low."
+    },
+    {
+      "concept": "Blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [],
+      "note": "Kept as a NewsBlur product name."
+    },
+    {
+      "concept": "Web Feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Nguồn cấp web",
+      "avoid": [
+        "Web Feeds (English)",
+        "Nguồn tin web",
+        "Nguồn web"
+      ],
+      "note": "English in labels → medium, prose → low."
+    },
+    {
+      "concept": "Newsletters",
+      "en": "\\bnewsletters?\\b",
+      "use": "Bản tin email",
+      "avoid": [],
+      "note": "Server-created folder name 'Newsletters' is created in English (apps/newsletters/models.py)."
+    },
+    {
+      "concept": "Mute / Unmute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Tắt tiếng / Bỏ tắt tiếng (Bật tiếng accepted)",
+      "avoid": [],
+      "note": "«Tắt tiếng» is X/Twitter and Messenger Vietnamese for muting accounts/conversations; it is the established metaphor, not a meaning error. Unmute as «Bỏ tắt tiếng» or «Bật tiếng» both accepted."
+    },
+    {
+      "concept": "Follow / Following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Theo dõi; I'm Following → Tôi đang theo dõi; Following Me → Đang theo dõi tôi; Followers → Người theo dõi",
+      "avoid": [],
+      "note": "People to follow → «Người nên theo dõi» («Người để theo dõi» → low unnatural)."
+    },
+    {
+      "concept": "Follow up (Ask AI) / Follow-ups (briefing)",
+      "en": "(?:\\bask ai\\b)|(?:\\bbriefings?\\b)|(?:\\bfollow[- ]?ups?\\b)",
+      "use": "Hỏi tiếp… / Tin cập nhật",
+      "avoid": [
+        "Theo dõi…",
+        "Theo dõi sau…",
+        "Bài viết tiếp theo (= Next story)",
+        "Các nội dung tiếp theo"
+      ],
+      "note": "Ask AI follow-up as «Theo dõi» (follow a user) → high. Briefing Follow-ups (new posts from feeds you recently read) → Android's «Tin cập nhật» (an idiom for 'updates', not the story term); iOS «Bài viết tiếp theo» collides with Next Story → medium."
+    },
+    {
+      "concept": "Subscribe / subscription",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Đăng ký (theo dõi) / gói đăng ký",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Bảng điều khiển",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Discover / Related sites",
+      "en": "(?:\\bsites?\\b)|(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Khám phá / Trang web liên quan",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Text / Story / Original view",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(original|text|story|feed) view\\b)",
+      "use": "Chế độ xem văn bản / Chế độ xem bài viết / Chế độ xem gốc",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Story clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Nhóm bài viết (gom nhóm)",
+      "avoid": [
+        "Phân cụm câu chuyện"
+      ],
+      "note": "phân nhóm / gom nhóm / nhóm all fine."
+    },
+    {
+      "concept": "Positive?",
+      "en": "\\bpositive\\?",
+      "use": "Bạn chắc chứ?",
+      "avoid": [
+        "Tích cực?"
+      ],
+      "note": "An 'Are you sure?' title."
+    },
+    {
+      "concept": "numbers",
+      "en": null,
+      "use": "period thousands separator (1.024, 4.096)",
+      "avoid": [
+        "1,024"
+      ],
+      "note": "Comma → low typography."
+    },
+    {
+      "concept": "relative time",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "%(time)s trước / %@ trước with bare units («3 ngày»)",
+      "avoid": [],
+      "note": "No case or plural change in Vietnamese; 'in %(time)s' → «sau %(time)s» (or «trong» for durations)."
+    },
+    {
+      "concept": "plurals",
+      "en": null,
+      "use": "single form",
+      "avoid": [],
+      "note": "Web gettext is nplurals=1 (the :0 form covers every count); iOS ios_plural uses CLDR other only. No grammatical plural: never flag a missing plural; flag các/những only where it reads wrong (e.g. after a number)."
+    },
+    {
+      "concept": "beats / like wins",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "use": "thắng; beats any → thắng mọi; (like wins) → (thích được ưu tiên)",
+      "avoid": [
+        "nhịp",
+        "BEATS (English)",
+        "như lượt thích"
+      ],
+      "note": "«nhịp» is a musical beat and «(như lượt thích)» means 'like a like' → high."
+    },
+    {
+      "concept": "Editorial (briefing style)",
+      "en": "(?:\\bbriefings?\\b)|(?:\\beditorial\\b)",
+      "use": "Tường thuật",
+      "avoid": [
+        "Biên tập"
+      ],
+      "note": "Narrative style next to Bullets/Headlines; «Biên tập» means editing → medium."
+    },
+    {
+      "concept": "theme",
+      "en": "\\bthemes?\\b",
+      "use": "giao diện",
+      "avoid": [
+        "chủ đề"
+      ],
+      "note": "«chủ đề» means topic → medium."
+    },
+    {
+      "concept": "Goodies",
+      "en": "\\bgoodies\\b",
+      "use": "Tiện ích / Công cụ",
+      "avoid": [
+        "Ưu đãi",
+        "Quà tặng"
+      ],
+      "note": "Apps and browser tools, not deals or gifts → medium."
+    },
+    {
+      "concept": "Unsaved (status)",
+      "en": "(?:\\b(un)?sav(e|ed|es|ing)\\b)|(?:\\bunsaved\\b)",
+      "use": "Đã bỏ lưu",
+      "avoid": [
+        "Chưa lưu"
+      ],
+      "note": "low."
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "language": "ko",
+  "register": "Polite formal style: -습니다/-ㅂ니다 for statements and messages, -하세요 for instructions, -할까요?/-하시겠습니까? for confirmations, and bare noun phrases (사이트 추가, 저장) for buttons, menus and labels; this is what the catalog mostly uses and what Korean consumer apps use. Plain/blunt endings (-한다, -해, -함 in full sentences) are flagged.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "스토리",
+      "avoid": [
+        "이야기",
+        "항목 (when it means story)"
+      ],
+      "note": "Catalog majority (about 720 of 1,040 story strings) uses 스토리; 기사 (~230), 글, 게시물 and 이야기 are inconsistencies. 스토리 also fits blog posts and newsletters that are not news articles. English 'article' may stay 기사. Particles do not change (스토리를/가/는/와/로). Verifier: kept 스토리. 기사 would be natural for news articles but wrong for blog posts, newsletters, podcasts and videos, and the catalog majority already uses 스토리; 글 is the only generic alternative and is too informal for labels. Also avoid where it means this concept: 기사, 게시물, 글."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "사이트",
+      "avoid": [],
+      "note": "Counts: 사이트 N개 or N개 사이트 both fine."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "피드",
+      "avoid": [],
+      "note": "Never food. Don't use 뉴스 피드 for River of News."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "폴더",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "읽지 않음 / 읽지 않은 스토리",
+      "avoid": [
+        "미읽은",
+        "안 읽은 (tolerated only in very tight labels)"
+      ],
+      "note": "미읽은 is not a Korean word."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "읽음으로 표시",
+      "avoid": [],
+      "note": "'Read Stories' (the folder of stories already read) is 읽은 스토리, never 스토리 읽기/기사 읽기 (imperative 'read stories'). Siri/Spotlight 'Read %@' opens the feed to read it: '%@ 읽기', not '읽음으로 표시'."
+    },
+    {
+      "concept": "saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "저장한 스토리",
+      "avoid": [],
+      "note": "저장된 스토리 tolerated. Save (button) → 저장; never 구하기."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "공유",
+      "avoid": [],
+      "note": "Shared Stories → 공유한 스토리 (공유된 스토리 tolerated); re-share → 다시 공유."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "블러그",
+        "블로그",
+        "블로그 피드",
+        "blurblog (lowercase)",
+        "Blurblogs"
+      ],
+      "note": "Product name kept in Latin script with a capital B, as the plurality of the catalog does; 블로그 loses the product name and 블러그 reads as a misspelling of 블로그. Korean has no plural, so Blurblogs → Blurblog."
+    },
+    {
+      "concept": "intelligence trainer",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "인텔리전스 트레이너",
+      "avoid": [
+        "지능형 학습 도구",
+        "학습기",
+        "지능 학습"
+      ],
+      "note": "Train (button) → 학습; train a site/story → 학습시키기; training → 학습 (avoid 교육, 훈련, 트레이닝); Intelligence Training → 인텔리전스 학습. 지능형 학습 is tolerated in marketing prose, but 지능 학습 ('intelligence learning') is flagged in UI labels."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "집중",
+      "avoid": [
+        "관심 (as the level name)",
+        "포커스",
+        "초점",
+        "중점",
+        "Focus"
+      ],
+      "note": "Catalog majority, and matches Apple's Korean 집중 모드. Focus is the green intelligence level and the third slider position (전체/읽지 않음/집중). Focus stories → 집중 스토리. The verb 'focus or hide' may stay 강조하거나 숨기기 in prose. Also avoid where it means this concept: 중요."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "좋아요 / 싫어요",
+      "avoid": [
+        "별로예요",
+        "싫어함",
+        "비추천"
+      ],
+      "note": "Super dislike → 매우 싫어요. Thumbs up/down in prose → 좋아요/싫어요."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "숨기기 / 숨김",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "분류기",
+      "avoid": [
+        "분류자"
+      ],
+      "note": "Prompt classifier → 프롬프트 분류기; Regex classifiers → 정규식 분류기."
+    },
+    {
+      "concept": "Premium",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "프리미엄",
+      "avoid": [
+        "Premium (Latin)"
+      ],
+      "note": "Premium Archive → 프리미엄 아카이브 (avoid 프리미엄 보관함, Premium Archive); Premium Pro → 프리미엄 프로; Archive plan/tier → 아카이브 요금제; Pro plan → 프로 요금제. Plain 'archive' of stories → 아카이브; 보관 for the verb 'archive' is fine."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "환경설정 / 설정",
+      "avoid": [],
+      "note": "Preferences → 환경설정 (환경 설정 spacing tolerated); Settings → 설정."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "구독",
+      "avoid": [],
+      "note": "Subscribers → 구독자; paid subscription → 구독."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "뉴스 스트림",
+      "avoid": [
+        "뉴스 피드",
+        "리버",
+        "river"
+      ],
+      "note": "뉴스 피드 collides with 'feed' and reads as the generic social news feed; lowercase 'your river' → 뉴스 스트림 or 스토리 스트림."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "모든 사이트 스토리",
+      "avoid": [],
+      "note": "The reversed order reads as 'all stories of one site'. Also avoid where it means this concept: 사이트의 모든 스토리."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "대시보드",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "데일리 브리핑",
+      "avoid": [
+        "Daily Briefing (Latin)"
+      ],
+      "note": "Catalog majority for the feature name; lowercase descriptive 'daily briefing' in prose may be 일일 브리핑."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "태그 / 작성자",
+      "avoid": [
+        "저자"
+      ],
+      "note": "Also avoid where it means this concept: 작가."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "뉴스레터 / 이메일 뉴스레터",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "discover",
+      "en": "\\bdiscover\\b",
+      "use": "찾기 / 둘러보기 / 탐색",
+      "avoid": [
+        "발견하기"
+      ],
+      "note": "All three read fine in context."
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "댓글 / 답글",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "favorite (a comment)",
+      "en": "(?:\\bcomments?\\b)|(?:\\bfavorit(e|ed|es|ing)\\b)",
+      "use": "좋아요 / 좋아요 표시",
+      "avoid": [
+        "즐겨찾기 (in activity sentences)"
+      ],
+      "note": "Favoriting a friend's shared-story comment is a like, not a bookmark; the web error message already says 좋아요를 표시할 수 없습니다. The short Favorited/Unfavorited toasts that say 즐겨찾기 are tolerated."
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "팔로우 / 팔로잉 / 팔로워 / 친구",
+      "avoid": [],
+      "note": "The two friends-modal tabs are the standard Korean social pair: I'm Following → 팔로잉, Following Me → 팔로워 (distinguishable, as on Instagram/X). In full sentences 내가 팔로우하는 사람 / 나를 팔로우하는 사람 remain fine. Ask AI follow-up → 추가 질문."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "음소거",
+      "avoid": [
+        "뮤트",
+        "숨기기"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "알림",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "업데이트가 드문 사이트의 스토리",
+      "avoid": [
+        "자주 방문하지 않는 사이트",
+        "비정기",
+        "사이트의 드문 게시물"
+      ],
+      "note": "These are sites that publish rarely, not sites the reader rarely visits. 자주 업데이트되지 않는 사이트 is tolerated."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "좋은 글 / 긴 글 / 많이 읽힌 스토리",
+      "avoid": [
+        "추천 도서",
+        "Good Reads (Latin)"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "전체 공유 스토리",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "피드 보기 / 텍스트 보기 / 스토리 보기 / 원본 보기",
+      "avoid": [],
+      "note": "Original site → 원본 사이트; 원문 보기 tolerated."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "AI에게 질문",
+      "avoid": [
+        "Ask AI (Latin)"
+      ],
+      "note": "AI에 질문(하기) tolerated."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "가져오기 / 내보내기",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "로그인 / 로그아웃 / 가입 / 계정 만들기",
+      "avoid": [],
+      "note": "Sign in → 로그인."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "이메일 / 이메일 주소 / 비밀번호",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "무료 체험 / 업그레이드",
+      "avoid": [],
+      "note": "체험판 tolerated."
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "키보드 단축키 / 단축키",
+      "avoid": [
+        "바로가기 (for keyboard shortcuts)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "웹 피드",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "스토리 클러스터링 / 클러스터 / 묶기",
+      "avoid": [],
+      "note": "Clustering is described as 묶기/그룹화 in prose; all are understandable, only misleading renderings are flagged."
+    },
+    {
+      "concept": "NewsBlur particles",
+      "en": "NewsBlur",
+      "use": "NewsBlur는 / NewsBlur가 / NewsBlur를 / NewsBlur에서",
+      "avoid": [
+        "NewsBlur은(는)",
+        "NewsBlur이(가)"
+      ],
+      "note": "NewsBlur (뉴스블러) ends in a vowel, so the particle is known."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "ASCII . , ? ! : with Korean spacing; typographic quotes “ ” ‘ ’",
+      "avoid": [],
+      "note": "Ellipsis … or ... both tolerated. Particles after placeholders whose final sound is unknown use 을(를), 이(가), 은(는), (으)로, 와(과)."
+    }
+  ]
+}

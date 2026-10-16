@@ -1,0 +1,352 @@
+{
+  "language": "ru",
+  "register": "Polite вы, lowercase inside sentences (вы, ваш, вас, вам): the catalog uses it in ~420 strings, never capitalizes it mid-sentence and never uses ты (the one ты string is an admin-only spam reply). Buttons and menu items use the infinitive (Сохранить, Добавить сайт, Отметить как прочитанное); instructions and hints use the вы imperative (Выберите, Нажмите, Перейдите); confirmation titles use the infinitive question (Удалить папку?). The user's own past actions use the вы plural past, which is gender neutral (Вы подписаны, Вы поделились); never hedges like подписан(а), добавил(а). Other users' actions in activity lists use the present tense or a noun construction (%1$s делится статьёй, %1$s подписывается на %2$s).",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "статья (статья, статьи, статей; Следующая статья, Сохранённые статьи; counts 1 статья / 2–4 статьи / 5+ статей)",
+      "avoid": [
+        "история (calque; reads as history)",
+        "публикация (collides with sharing: опубликовать)",
+        "запись"
+      ],
+      "note": "Catalog: статья ~690, история ~250, публикация ~130, запись ~95, материал 17, сюжет 9. Drift is low terminology; medium when the word changes the meaning (история read as history, публикация read as a share). История stays where the English says history (reading history, feed history, Hide history). Fix agreement whenever the noun changes gender (история/статья are feminine, материал/сюжет masculine, публикация feminine, запись feminine). Also avoid where it means this concept: материал, сюжет."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "сайт",
+      "avoid": [
+        "источник (for a subscribed site)"
+      ],
+      "note": "Consistent. Also avoid where it means this concept: ресурс."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "лента (лента, ленты, лент; Добавить ленту, RSS-лента)",
+      "avoid": [
+        "канал (for a feed; канал stays for YouTube channels)"
+      ],
+      "note": "Consistent (~550). Also avoid where it means this concept: фид."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "папка",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "непрочитанные (agreeing: непрочитанная статья, непрочитанные статьи); slider/filter labels Все / Непрочитанные / Фокус",
+      "avoid": [],
+      "note": "Непрочитанное (collective neuter) is acceptable as a label; do not churn."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Отметить как прочитанное / прочитанные; the Read Stories folder → Прочитанные статьи",
+      "avoid": [
+        "Читать статьи / Прочитать статьи (imperative) for the Read Stories folder"
+      ],
+      "note": "Imperative for the folder is high severity. Siri/Handoff \"Read …\" titles open a feed → Читать …, never Отметить … как прочитанное. Пометить vs отметить: do not churn."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "Сохранить; Saved Stories → Сохранённые статьи; Saved (feedback) → Сохранено; Unsave → Убрать из сохранённых",
+      "avoid": [
+        "Сохранить for Unsave (opposite action)",
+        "сохранённые статьи for the offline cache (use кэш / загруженные для офлайн-чтения)"
+      ],
+      "note": "ё is the catalog norm (сохранённ ~100 vs 1)."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "Поделиться; Shared stories → статьи, которыми поделились (or Общие статьи as a short folder label); Share story → Поделиться статьёй; Unshare / Delete share → Отменить публикацию / Удалить публикацию",
+      "avoid": [
+        "история in these labels (low)",
+        "Поделились записями (broken)"
+      ],
+      "note": "Опубликовать/публикация stays acceptable for the act of sharing to the blurblog (Отменить публикацию)."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (Latin product name, not declined: в своём Blurblog, настройки Blurblog)",
+      "avoid": [
+        "Блог Blur",
+        "Блогблюры",
+        "блёрблог / блурблог / бларг / блурглог",
+        "блог Blurblog (redundant)"
+      ],
+      "note": "Garbled transliterations are medium terminology; the redundant блог Blurblog is low."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Intelligence Trainer → Тренер интеллектуальной фильтрации (catalog's own term); intelligence training → обучение интеллектуальной фильтрации; Train → Обучить; training → обучение; trained → обученный; story/site trainer → обучение по статье / по сайту",
+      "avoid": [
+        "тренажёр (exercise machine)",
+        "Обучить этому сайту (teach someone the site)",
+        "Обучение интеллектуального анализа"
+      ],
+      "note": "Do not churn обучение wording when it is clear."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Фокус (slider/filter label and mode name: режим «Фокус»); Focus stories → статьи в фокусе; Focus only → Только в фокусе; verb (training: focus or hide) → выделять / выделить",
+      "avoid": [
+        "избранное / избранные (reads as favorites, collides with saved)",
+        "важные (for the Focus filter)",
+        "фокусировка"
+      ],
+      "note": "Catalog: Фокус 15, избранное 4, важн 7. Избранное is medium terminology."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Нравится; Dislike → Не нравится; Super dislike → Очень не нравится; inserted trainer words like → нравится, dislike → не нравится",
+      "avoid": [
+        "Супер-не нравится (broken)",
+        "Отмечать (for Like)"
+      ],
+      "note": "beats (trainer separator) → сильнее / > ; (like wins) → («Нравится» важнее)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "Скрыть / скрытые",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "классификатор",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro stay in Latin script (подписка Premium Archive, план Archive, Перейти на Premium Archive)",
+      "avoid": [
+        "Премиум-архив / архив Premium / Архив (as the plan name)",
+        "Премиум (Cyrillic plan name, low)",
+        "Перейти на Архив"
+      ],
+      "note": "Generic adjective compounds like премиум-функция / премиум-аккаунт are acceptable and not churned; renaming the Archive plan is medium terminology."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Перейти на … (Перейти на Premium Archive); Upgrade from Premium/Archive (subtitle on a higher plan's purchase button, PremiumView.swift and Android subscription_upgrade_from_*) → Переход с Premium на этот план / Переход с Archive на этот план",
+      "avoid": [
+        "Перейти с Premium (reads as leaving Premium, high)",
+        "Повысить план с Premium (not idiomatic)",
+        "Перейти на платный тариф for a bare Upgrade button is acceptable"
+      ],
+      "note": "The findings already applied the «Переход с … на этот план» wording consistently on Android and iOS; the glossary entry is aligned to it."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Настройки on web, iOS and Android (Preferences and Settings both); OS words: Отмена, Готово, Удалить, Поделиться, ОК",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Подписаться; Subscribed → Вы подписаны (state) / Подписка оформлена (feedback); subscription → подписка; subscribers → подписчики; Unsubscribe → Отписаться",
+      "avoid": [
+        "Подписан / подписан(а) (gendered or hedged)"
+      ],
+      "note": "Same verb as Follow, which is normal Russian UI usage (feeds and paid plans too)."
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Follow → Подписаться; Unfollow → Отписаться; Following (button state) → Вы подписаны; Following (people) → Подписки; Followers → Подписчики; I'm Following / Following Me → Мои подписки / Мои подписчики",
+      "avoid": [
+        "Я подписан(а) (hedge)",
+        "Читаю (Twitter-ism, low)",
+        "Подписка оформлена for the people list"
+      ],
+      "note": "The two social tabs must stay distinguishable."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Mute (site/feed/folder) → Отключить; Unmute → Включить; Muted → Отключён / Отключено / Отключённые сайты; Mute Sites (chooser) → Отключить сайты",
+      "avoid": [
+        "Без звука / отключение звука (sound; medium)",
+        "Заглушить / заглушение (sound metaphor, low)",
+        "Скрыть (Hide is a different NewsBlur concept; medium)",
+        "Включить звук for Unmute"
+      ],
+      "note": "NewsBlur muting deactivates the site entirely (it stops being fetched and shown), so Отключить/Включить is accurate. Catalog: заглушить 22, отключить 14, игнорировать 4. Muting a user (social) → Скрыть пользователя / Не показывать is fine since that hides their shares."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Поток новостей",
+      "avoid": [
+        "Лента новостей (collides with лента = feed, medium)",
+        "Река новостей"
+      ],
+      "note": "Catalog: поток 7, лента новостей 8."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Статьи со всех сайтов (stories from all sites)",
+      "avoid": [
+        "Все статьи сайта / Все публикации сайта / статьи на сайте (one site, high)"
+      ],
+      "note": "Every current rendering reads as one site: high meaning."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Статьи с редко обновляемых сайтов (short label: Редко обновляемые сайты); From infrequent sites → С редко обновляемых сайтов; the stories-per-month preference title (Android menu_infrequent_cutoff, iOS, web feed_options_popover) → Порог редко обновляемых сайтов; its options stay «< 5 статей в месяц»",
+      "avoid": [
+        "Редкие статьи / редкие публикации (the sites are infrequent, not the stories)",
+        "редкие новости с сайта (one site)",
+        "Порог редкости: статей в месяц (not an idiom)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Widely Read Stories → Популярные статьи; Long Reads → Длинные статьи; Good Reads → Хорошие статьи; Global Shared Stories → Общие статьи сообщества",
+      "avoid": [
+        "Хорошие книги (books, high)",
+        "Хорошее чтение / хорошие чтения (unnatural)",
+        "Большие статьи (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Панель управления",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Daily Briefing → Ежедневная сводка; Briefing → Сводка; Morning/Afternoon/Evening Briefing → Утренняя / Дневная / Вечерняя сводка; Weekly → Еженедельная сводка",
+      "avoid": [
+        "обзор / дайджест (low)",
+        "Daily Briefing (English)"
+      ],
+      "note": "Catalog: сводка 76, обзор 16, дайджест 12."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Спросить ИИ (функция «Спросить ИИ»)",
+      "avoid": [
+        "Ask AI (English) inside Russian text (medium untranslated)",
+        "AI for ИИ"
+      ],
+      "note": "Model names (Claude, GPT…) stay."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "тег / автор",
+      "avoid": [
+        "метка (for a story tag, low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "рассылка",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Discover → Найти / Обзор (tab); Related Sites → Похожие сайты",
+      "avoid": [
+        "Связанные сайты (low)"
+      ],
+      "note": "Do not churn Найти vs Находите."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Feed view → Режим ленты / Вид ленты; Text view → Текстовый режим; Story view → Просмотр статьи; Original view → Исходный сайт / исходный вид",
+      "avoid": [],
+      "note": "Do not churn вид vs режим."
+    },
+    {
+      "concept": "web feeds",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Web Feed → веб-лента",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Story clustering → группировка статей; cluster → группа",
+      "avoid": [
+        "кластер / кластеризация (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "relative ages",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "Clients wrap the server units in «%(time)s назад» / «%@ назад» / «%1$s назад» and «через %(time)s»; назад and через take the accusative, so the server one forms of feminine units must be accusative: %(number)d минуту, %(number)d секунду, %(number)d неделю (час, день, месяц, год are unchanged).",
+      "avoid": [
+        "%(number)d минута / секунда / неделя"
+      ],
+      "note": "Check every bare unit string; few/many forms are fine as nominative/genitive."
+    },
+    {
+      "concept": "language names",
+      "en": "\\blanguages?\\b",
+      "use": "The language dialog inserts the native name (Русский): keep it nominative after a colon, e.g. «Язык: %(language)s» / «Выбрать язык: %(language)s»",
+      "avoid": [
+        "Использовать %(language)s (→ Использовать Русский)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "«…» quotes (also replacing Android \\\"%s\\\"), ё as the catalog does (сохранённые, удалён, ещё), sentence case for labels and titles, em dash with spaces, 1 024 / 4 096 with a space, abbreviated units without a period for ч, мин, с and with a period for дн., нед., мес.",
+      "avoid": [
+        "English Title Case",
+        "\"…\" ASCII quotes around inserted names",
+        "1,024 (reads as a decimal)"
+      ],
+      "note": "Do not churn мин. vs мин."
+    },
+    {
+      "concept": "site limits",
+      "en": "\\blimits?\\b",
+      "use": "Follow up to N sites (plan bullets) → Отслеживайте до N сайтов (Android premium/archive bullets, pricing pages); in the web premium modal match its unflagged free bullet: Подписаться максимум на N сайтов; iOS keeps Следите за обновлениями до N сайтов",
+      "avoid": [
+        "Подписка на сайты — до N (clunky)",
+        "Подпишитесь на N сайтов (loses 'up to')"
+      ],
+      "note": "Keep the thousands space (1 024, 4 096, 10 000)."
+    }
+  ]
+}
