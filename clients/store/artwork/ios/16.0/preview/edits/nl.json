@@ -20,6 +20,6 @@
       "notes": "Native Dutch iPad UI, with actual fullscreen article scrolling and brief native navigation into Saved Stories. End on the settled collection before the later article-selection animation."
     }
   },
-  "status": "ipad_source_intervals_reviewed",
-  "remaining": "Encoding, visual review, normal-speed playback and store upload pending."
+  "status": "hold_for_capture_quality_decision",
+  "remaining": "Resolve smaller initial split-reader body text before encoding. Reader and Saved footage are usable."
 }
