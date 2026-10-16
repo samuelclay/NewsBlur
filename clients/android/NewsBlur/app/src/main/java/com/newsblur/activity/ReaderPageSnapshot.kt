@@ -34,16 +34,11 @@ internal class ReaderPageSnapshot(
                 if (generation != requestGeneration) return@post
                 val location = IntArray(2)
                 binding.content.getLocationInWindow(location)
-                val bounds = Rect(
-                    location[0], location[1],
-                    location[0] + binding.content.width, location[1] + binding.content.height,
-                )
-                // ReaderPageSnapshot.kt excludes the fixed controls from the window capture so their
-                // pixels cannot become a second, sliding navigation strip during the page animation.
-                if (listOf(binding.readingOverlayLeftGroup, binding.readingOverlayRightGroup).any { it.isShown && it.alpha > 0f }) {
-                    val overlayLocation = IntArray(2)
-                    binding.contentBottomOverlay.getLocationInWindow(overlayLocation)
-                    bounds.bottom = minOf(bounds.bottom, overlayLocation[1])
+                val bounds = Rect().apply {
+                    left = location[0]
+                    top = location[1]
+                    right = left + binding.content.width
+                    bottom = top + binding.content.height
                 }
                 val decor = activity.window.decorView
                 if (!decor.isAttachedToWindow || bounds.isEmpty || !bounds.intersect(0, 0, decor.width, decor.height)) {
@@ -97,14 +92,15 @@ internal class ReaderPageSnapshot(
             return
         }
         pager.translationX = distance
+        // ReaderPageSnapshot.kt keeps the complete outgoing article stationary while the prepared
+        // page slides over it. Captured controls stay aligned beneath the live fixed controls.
+        pager.bringToFront()
         val interpolator = DecelerateInterpolator()
-        snapshot?.animate()?.translationX(-distance)?.setDuration(180L)?.setInterpolator(interpolator)?.start()
         pager.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).withEndAction(completion).start()
     }
 
     fun freezeForExit() {
         generation++
-        snapshot?.animate()?.cancel()
         pager.animate().cancel()
     }
 
