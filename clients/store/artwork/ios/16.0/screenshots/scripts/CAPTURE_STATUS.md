@@ -9,14 +9,24 @@ The existing iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`,
 | English | Four stills and finalized raw video | Four stills and finalized raw video; story list refreshed at 3:38 PM |
 | French | Four stills and finalized raw video, `bdb0a7fc6` | Four stills and finalized raw video, `4953ca956` |
 | Arabic | Four stills and finalized raw video, `454438c1a` | Four stills and finalized raw video, `f790aeaef` |
-| German | Four stills and finalized raw video, `aca5de841` | Pending |
+| German | Four stills and finalized raw video, `aca5de841` | Four stills and finalized raw video, `4057de826` |
+| Spanish | Pending | Four stills and finalized raw video, `da506fae3` |
 | Hebrew | Incomplete article capture | Four stills and finalized raw video, visually verified |
+| Dutch | Pending | Four stills and finalized raw video, `08829b4f2` |
+| Portuguese (Brazil) | Pending | Four stills and finalized raw video, `25f4e43a0` |
+| Polish | Pending | Four stills and finalized raw video, `b7e702377` |
+| Italian | Pending | Four stills and finalized raw video, refreshed in `44849203b` |
+| Turkish | Pending | Four stills and finalized raw video, `4c95477a1` |
+| Russian | Pending | Four stills and finalized raw video, `5be4f9107` |
+| Ukrainian | Pending | Four stills and finalized raw video, `c52de3fb2` |
 
 Canonical English stills are in `../captures/`. Localized native stills are in `../captures/localized/<locale>/`. Raw videos and checkpoints are in `../footage/<device>/` for English and `../footage/localized/<locale>/<device>/` for localized takes. Raw videos require editing and visual timing review before upload. Video time can diverge from wall-clock checkpoints when CoreSimulator stalls.
 
 Hebrew iPhone has valid feed/story/Saved states but its article remained blank through a bounded 90-second readiness check. It is incomplete and not promoted. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. The remaining iPad locales are next, in serial groups of three or four. Other supported locales remain pending.
 
 The native Arabic/Hebrew Saved title has an existing clock-icon overlap at its left end; captures preserve the actual app UI. This is separate from the fixed capture-coordinate error: RTL reader Back uses x420, while the story-list All button requires x390.
+
+An Italian iPad attempt missed the sidebar tap during the reader-collapse transition. Its readiness gate rejected the incomplete sequence; the failed raw take is preserved at `/tmp/newsblur-it-sidebar-timeout-take`. The script now waits for the story list to become accessible before opening the sidebar. Its next take completed, but initial split-reader text remained at the app's smaller first-load size. That take is preserved at `/tmp/newsblur-it-small-text-take`. A native expand/collapse cycle now normalizes the initial reader layout; the replacement Italian take and all four stills passed visual review. No pixels or native controls are retouched.
 
 ## Reproduction and readiness
 
