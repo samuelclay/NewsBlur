@@ -35,6 +35,24 @@
         version: "{{ git_branch }}"
         depth: 1
         force: yes
+      register: migrate_checkout_result
+      tags: [migrate, static]
+
+    # deploy_migrate.yml pins every server to the commit it migrated (deploy_app_group.yml, deploy_task.yml), so
+    # a merge during the deploy can't put models on a server before their migration runs. A run_once result
+    # applies to every host in the play.
+    - name: Remember the migrated branch and commit
+      run_once: true
+      set_fact:
+        migrated_branch: "{{ git_branch }}"
+        migrated_commit: "{{ migrate_checkout_result.after }}"
+      tags: [migrate, static]
+
+    - name: Deploy exactly the migrated commit
+      set_fact:
+        deploy_commit: "{{ migrated_commit }}"
+      # A full apd with staging on another branch leaves staging on its own branch.
+      when: git_branch == migrated_branch
       tags: [migrate, static]
 
     - name: Copy common secrets into the migration checkout
@@ -66,6 +84,8 @@
       docker_image:
         name: newsblur/newsblur_python3
         source: pull
+        # The host already has an older image; the new code may need the newer one's packages.
+        force_source: true
       tags: [migrate, static]
 
     - name: Run database migrations from the new code
