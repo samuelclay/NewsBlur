@@ -41,24 +41,36 @@ locales.each do |locale|
   if device == "iphone"
     back = rtl ? 420 : 25
     list_back = rtl ? 390 : 25
+    photo_x = rtl ? 0.02 : 0.84
+    list_ready = ["waittext:A generous salad for a sunny afternoon", "waitphoto:#{photo_x},0.18,0.14,0.60"]
+    reader_ready = ["waittext:story-reader-back", "waitphoto:0.25,0.50,0.50,0.30"]
     actions = ["capture:#{footage}", "checkpoint:feeds", screenshot.call("feeds"), "sleep:5",
-               "tap:120,240", "sleep:8", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
-               "tap:150,160", "sleep:3", "checkpoint:reader", screenshot.call("reader"), "sleep:5",
+               "tap:120,240", *list_ready, "sleep:2", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
+               "tap:150,160", *reader_ready, "sleep:2", "checkpoint:reader", screenshot.call("reader"), "sleep:5",
                "swipe:300,700,300,500,0.8", "sleep:2", "tap:#{back},85", "sleep:1",
-               "tap:#{list_back},85", "sleep:1", "tap:150,655", "sleep:3",
+               "tap:#{list_back},85", "waittext:Breakfast Notebook", "sleep:1", "tap:150,655",
+               "waittext:What to cook when autumn arrives", *list_ready, "sleep:2",
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   else
     sidebar = rtl ? 996 : 36
     expand = rtl ? 142 : 890
     story_x = rtl ? 872 : 160
     folder_x = rtl ? 922 : 110
-    abort "iPad preparation failed" unless system(env, *wrapper, "tap:#{story_x},145", "sleep:3", "tap:#{sidebar},54", "sleep:1")
+    list_photo_x = rtl ? 0.63 : 0.32
+    article_photo_x = rtl ? 0.10 : 0.60
+    fullscreen_photo_x = rtl ? 0.70 : 0.10
+    list_ready = ["waittext:A generous salad for a sunny afternoon", "waitphoto:#{list_photo_x},0.38,0.05,0.40"]
+    article_ready = ["waitphoto:#{article_photo_x},0.40,0.30,0.40"]
+    abort "iPad preparation failed" unless system(env, *wrapper, *list_ready, *article_ready,
+                                                 "tap:#{sidebar},54", "waittext:Breakfast Notebook", "sleep:2")
     actions = ["capture:#{footage}", "checkpoint:feeds", screenshot.call("feeds"), "sleep:5",
-               "tap:#{folder_x},248", "sleep:3", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
+               "tap:#{folder_x},248", *list_ready, *article_ready, "sleep:2", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
                "tap:#{story_x},145", "sleep:2", "tap:#{expand},54", "sleep:2",
+               "waitphoto:#{fullscreen_photo_x},0.45,0.20,0.40",
                "checkpoint:reader", screenshot.call("reader"), "sleep:5",
                "swipe:750,1050,750,730,0.8", "sleep:2", "tap:#{expand},54",
-               "tap:#{sidebar},54", "tap:#{folder_x},662", "sleep:3", "tap:#{story_x},540", "sleep:2",
+               "sleep:2", "tap:#{sidebar},54", "waittext:Breakfast Notebook", "tap:#{folder_x},662",
+               "waittext:What to cook when autumn arrives", *list_ready, "tap:#{story_x},540", *article_ready, "sleep:3",
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   end
   abort "Capture failed: #{locale}" unless system(env, *wrapper, *actions)

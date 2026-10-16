@@ -28,6 +28,8 @@ Actions:
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     pagerfuzz:<seed>,<count>[,forward] - Consecutive swipes over one HID connection; forward advances steadily
     describe              - Print simulator accessibility elements
+    waittext:<text>        - Wait up to 90 seconds for accessibility content
+    waitphoto:<x>,<y>,<w>,<h> - Wait for a photo in a normalized screenshot region
     crashes               - Show recent app exception messages from the simulator
     logs                  - Show recent NewsBlur logs from the simulator
     push:<payload.apns>    - Deliver a local notification payload to the selected app
@@ -62,6 +64,7 @@ import signal
 import subprocess
 import sys
 import time
+import tempfile
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "")
@@ -192,6 +195,42 @@ def do_swipe(coords):
     print(f"  Swipe: ({x1},{y1}) -> ({x2},{y2})")
     subprocess.run(["idb", "ui", "swipe", "--udid", UDID, x1, y1, x2, y2,
                     "--duration", str(duration)], check=True)
+
+
+def do_wait_text(text):
+    """run_ios.py waits for actual accessibility state, not a guessed animation delay."""
+    deadline = time.monotonic() + 90
+    while time.monotonic() < deadline:
+        output = subprocess.check_output(
+            ["idb", "ui", "describe-all", "--udid", UDID, "--json"], text=True
+        )
+        if text in output:
+            print(f"  Ready accessibility: {text}", flush=True)
+            return
+        time.sleep(2)
+    raise RuntimeError(f"Accessibility content did not appear: {text}")
+
+
+def do_wait_photo(region):
+    """run_ios.py rejects blank frames by inspecting real captured pixels."""
+    coordinates = region.split(",")
+    if len(coordinates) != 4:
+        raise ValueError("waitphoto requires normalized x,y,width,height")
+    source = os.path.join(os.path.dirname(__file__), "ScreenshotReadiness.swift")
+    executable = os.path.join(tempfile.gettempdir(), "newsblur-screenshot-readiness")
+    if not os.path.exists(executable) or os.path.getmtime(source) > os.path.getmtime(executable):
+        subprocess.run(["xcrun", "swiftc", source, "-o", executable], check=True)
+    deadline = time.monotonic() + 90
+    with tempfile.TemporaryDirectory(prefix="newsblur-frame-") as directory:
+        path = os.path.join(directory, "frame.png")
+        while time.monotonic() < deadline:
+            do_screenshot(path)
+            fraction = float(subprocess.check_output([executable, path, *coordinates], text=True))
+            if fraction > 0.20:
+                print(f"  Ready photo: {fraction:.3f} colored pixels", flush=True)
+                return
+            time.sleep(2)
+    raise RuntimeError(f"Photo did not render in screenshot region {region}")
 
 
 def do_capture(path, cold=False):
@@ -437,6 +476,10 @@ def parse_and_execute(action):
         do_pager_fuzz(arg)
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
+    elif cmd == "waittext":
+        do_wait_text(arg)
+    elif cmd == "waitphoto":
+        do_wait_photo(arg)
     elif cmd == "push":
         subprocess.run(["xcrun", "simctl", "push", UDID, BUNDLE_ID, arg], check=True)
     elif cmd == "logs":
