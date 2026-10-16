@@ -1,6 +1,6 @@
 # Cooking App Preview
 
-Status: English iPhone and iPad previews are encoded from real native recordings and pass technical checks. The edits have been inspected using contact sheets at two frames per second and larger frames around cuts, captions and the ending. Real-time playback review and store upload are still pending. The default storyboard is a 20-second demonstration of the actual native app; final edits may run 15–30 seconds to match usable footage. The screenshot direction is approved as 01, Sage panels.
+Status: English iPhone and iPad previews are encoded from real native recordings and pass technical checks. The edits have been inspected using contact sheets at two frames per second and larger frames around cuts, captions and the ending. Both played through in QuickTime at normal speed, with UI observations of the beginning, reader progression and Saved Stories ending. Store upload and processing are still pending. The default storyboard is a 20-second demonstration of the actual native app; final edits may run 15–30 seconds to match usable footage. The screenshot direction is approved as 01, Sage panels.
 
 ## Verified delivery specification
 
@@ -67,6 +67,6 @@ Captions use libass with font fallback for complex scripts. The installed FFmpeg
 
 Produce one iPhone and one iPad preview for each of the 21 supported locales once the capture workflow supplies native UI recordings and reviewed caption files. `copy/<locale>.json` must have exactly `feeds`, `stories`, `reader`, `saved`, and `disclosure`. Record translation review separately; filenames alone do not prove a translated interface.
 
-French and Arabic iPhone source intervals have been visually inspected and their dry-run caption/edit plans are prepared. They are not encoded or upload-ready yet. Their iPad edits await corresponding native recordings. Hebrew is held for a corrected capture after delayed screen transitions were found. The remaining locale captions are ready, while their native capture and timing review proceed separately.
+French, Arabic and German iPhone source intervals have been visually inspected and their dry-run caption/edit plans are prepared. They are not encoded or upload-ready yet. Their iPad edits await corresponding native recordings. Hebrew is held for a corrected capture after delayed screen transitions were found. The remaining locale captions are ready, while their native capture and timing review proceed separately.
 
 The script checks technical output properties and writes a probe report. It cannot prove useful motion, correct language, missing glyphs, readable captions, clean scene cuts, settled sync state, lack of personal data, or a good poster frame. Review the entire actual video before upload. Verify processing and App Review submission independently; a local valid video is not a submitted preview.
