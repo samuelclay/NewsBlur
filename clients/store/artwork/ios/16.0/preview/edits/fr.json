@@ -1,0 +1,25 @@
+{
+  "locale": "fr",
+  "devices": {
+    "iphone": {
+      "source_ui_locale": "fr",
+      "source_sha256": "042ff6af0fa1082a32041db28fcf5448e7ccab4302d9d9ef6ffc1f88c7accf8e",
+      "source_intervals_reviewed": true,
+      "starts": [
+        20,
+        35,
+        59.5,
+        68
+      ],
+      "durations": [
+        4,
+        4,
+        6,
+        4
+      ],
+      "notes": "Native French UI. Includes actual article scroll near source 62–64 seconds, and navigation into Saved Stories at the beginning of the last interval."
+    }
+  },
+  "status": "intervals_prepared_not_encoded",
+  "remaining": "Encode only during a capture gap, review final captions and cuts, then perform real-time playback. iPad capture/edit pending."
+}

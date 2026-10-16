@@ -2,6 +2,7 @@
 // render.cjs uses reviewed per-locale cuts and the matching native capture directory.
 const fs = require('node:fs');
 const path = require('node:path');
+const {createHash} = require('node:crypto');
 const {spawnSync} = require('node:child_process');
 const args = process.argv.slice(2);
 const locale = args[args.indexOf('--locale') + 1];
@@ -20,6 +21,8 @@ if (edit.locale !== locale || !cut || cut.source_ui_locale !== locale || cut.sou
 }
 const source = path.resolve(__dirname, '../screenshots/footage', locale === 'en' ? device : `localized/${locale}/${device}`, 'scroll.mp4');
 if (!fs.existsSync(source)) throw Error('Native footage is missing: ' + source);
+const sourceHash = createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+if (cut.source_sha256 !== sourceHash) throw Error('The recording changed after interval review; inspect the current native footage before rendering.');
 const output = path.join(__dirname, 'exports', locale, `${device}-cooking-preview.mp4`);
 const command = [path.join(__dirname, 'encode.cjs'), '--device', device, '--locale', locale];
 for (const key of ['feeds', 'stories', 'reader', 'saved']) command.push('--' + key, source);

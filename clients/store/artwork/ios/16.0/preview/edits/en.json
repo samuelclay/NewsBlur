@@ -16,7 +16,8 @@
         7,
         5
       ],
-      "notes": "Includes the genuine article scroll at source 88–91 seconds; cuts exclude long host stalls and loading intervals. Source offsets were inspected against decoded frames."
+      "notes": "Includes the genuine article scroll at source 88–91 seconds; cuts exclude long host stalls and loading intervals. Source offsets were inspected against decoded frames.",
+      "source_sha256": "be4cd6b08c3a33ccfcc8c47abad151acaecad5af6baad45fc4004bcdee571f1c"
     },
     "ipad": {
       "source_ui_locale": "en",
@@ -33,7 +34,8 @@
         8.5,
         4.5
       ],
-      "notes": "Initial feed sidebar and empty loading interval omitted. Includes genuine split-view expansion, article scrolling and navigation to a saved bread story."
+      "notes": "Initial feed sidebar and empty loading interval omitted. Includes genuine split-view expansion, article scrolling and navigation to a saved bread story.",
+      "source_sha256": "54e0bcf8366034a66ea7bb3a587e60041675789b2a171a954849d87c79dda670"
     }
   }
 }
