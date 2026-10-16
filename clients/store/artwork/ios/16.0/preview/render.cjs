@@ -28,6 +28,10 @@ const output = path.join(__dirname, 'exports', locale, `${device}-cooking-previe
 const command = [path.join(__dirname, 'encode.cjs'), '--device', device, '--locale', locale];
 for (const key of ['feeds', 'stories', 'reader', 'saved']) command.push('--' + key, source);
 command.push('--starts', cut.starts.join(','), '--durations', cut.durations.join(','), '--output', output);
+if (cut.saved_final_frame_hold === true) {
+  if (cut.saved_final_frame_reviewed !== true) throw Error('The exact final Saved frame must be reviewed before holding it.');
+  command.push('--saved-final-frame-hold');
+}
 if (args.includes('--execute')) command.push('--execute');
 const result = spawnSync(process.execPath, command, {stdio: 'inherit'});
 if (result.error || result.status !== 0) throw result.error || Error('Preview preparation failed: ' + result.status);
