@@ -688,7 +688,7 @@
     <string name="infrequent_30">月30件未満</string>
     <string name="infrequent_60">月60件未満</string>
     <string name="infrequent_90">月90件未満</string>
-    <string name="story_intel_dialog_title">この記事の好きなところ、嫌いなところを教えてください。</string>
+    <string name="story_intel_dialog_title">この記事の気に入っている点、気に入らない点を教えてください。</string>
     <string name="feed_intel_dialog_title">このサイトの気に入っている点、気に入らない点を教えてください。</string>
     <string name="intel_title_header">記事のタイトル</string>
     <string name="feed_intel_title_header">タイトル</string>
@@ -901,7 +901,7 @@
     <string name="i18n_sponsored">スポンサー提供</string>
     <string name="i18n_discover_more_to_read">ほかの記事を見つける</string>
     <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">サイトが見つかりません。URLを入力してサイトを追加することもできます。</string>
-    <string name="i18n_add_discover_sites">サイトを追加＋発見</string>
+    <string name="i18n_add_discover_sites">追加 + サイトを探す</string>
     <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">RSSのないページからフィードを作成します。NewsBlurが記事を見つけ、更新を確認します。プレミアムアーカイブが必要です。</string>
     <string name="onboarding_delete_account">アカウントを削除</string>
     <string name="onboarding_your_account_has_been_deleted">アカウントを削除しました。</string>

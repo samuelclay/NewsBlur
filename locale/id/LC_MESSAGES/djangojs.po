@@ -420,8 +420,8 @@ msgstr[1] "%(count)s artikel/bln"
 #, python-format
 msgid "%(count)s story/month"
 msgid_plural "%(count)s stories/month"
-msgstr[0] "%(count)s cerita/bulan"
-msgstr[1] "%(count)s cerita/bulan"
+msgstr[0] "%(count)s artikel/bulan"
+msgstr[1] "%(count)s artikel/bulan"
 
 #, python-format
 msgid "%(count)s subreddit"

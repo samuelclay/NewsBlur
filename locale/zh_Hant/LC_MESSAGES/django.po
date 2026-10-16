@@ -223,7 +223,7 @@ msgid "100 feeds"
 msgstr "100 個訂閱來源"
 
 msgid "100 sources, 3 feeds"
-msgstr "100 個來源，3 個資訊來源"
+msgstr "100 個來源，3 個訂閱來源"
 
 msgid "12 sites"
 msgstr "12 個網站"

@@ -894,7 +894,7 @@
     <string name="i18n_follow_any_website">关注任何网站</string>
     <string name="i18n_mark_updated_stories_unread">将已更新的文章标记为未读</string>
     <string name="i18n_follow_news_that_matters_to_you">关注与你有关的新闻</string>
-    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">选择一个主题，或为任意搜索创建 Google 新闻源。</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">选择一个主题，或为任意搜索创建 Google 新闻订阅源。</string>
     <string name="i18n_subscribe">订阅</string>
     <string name="i18n_tech">科技</string>
     <string name="i18n_review">评测</string>

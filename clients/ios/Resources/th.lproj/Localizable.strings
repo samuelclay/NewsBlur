@@ -19,7 +19,7 @@
 "%1$@ shared %2$@." = "%1$@ แชร์ %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ แชร์ %2$@:\n \n%3$@";
 "%1$@, %2$@" = "%1$@, %2$@";
-"%@ Widget Sites" = "%@ เว็บไซต์วิดเจ็ต";
+"%@ Widget Sites" = "เว็บไซต์ในวิดเจ็ต %@ แห่ง";
 "%@ ago" = "%@ ที่แล้ว";
 "%@ categories to choose from" = "มีหมวดหมู่ให้เลือก %@ หมวด";
 "%@ comments" = "%@ ความคิดเห็น";
@@ -31,7 +31,7 @@
 "%@ feeds added." = "เพิ่มฟีดแล้ว %@ รายการ";
 "%@ feeds couldn’t be added." = "เพิ่มฟีดไม่ได้ %@ รายการ";
 "%@ feeds selected" = "เลือกฟีดแล้ว %@ รายการ";
-"%@ focused stories" = "%@ เรื่องราวที่เน้น";
+"%@ focused stories" = "บทความโฟกัส %@ รายการ";
 "%@ folder" = "โฟลเดอร์ %@";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ opens" = "เปิด %@ ครั้ง";
@@ -633,7 +633,7 @@
 "Only Title" = "เฉพาะชื่อเรื่อง";
 "Only on Selection" = "เฉพาะเมื่อเลือก";
 "Only on selection" = "เฉพาะเมื่อเลือก";
-"Only sections with matching stories will be included" = "รวมเฉพาะส่วนที่มีเรื่องราวตรงกัน";
+"Only sections with matching stories will be included" = "รวมเฉพาะส่วนที่มีบทความตรงกัน";
 "Open %@" = "เปิด %@";
 "Open All Site Stories" = "เปิดบทความจากทุกเว็บไซต์";
 "Open All Stories" = "เปิดบทความทั้งหมด";
@@ -1076,7 +1076,7 @@
 "You have successfully connected to Facebook." = "เชื่อมต่อกับ Facebook สำเร็จแล้ว";
 "You have successfully connected to Twitter." = "เชื่อมต่อกับ Twitter สำเร็จแล้ว";
 "You saved \"%@\"." = "คุณบันทึก \"%@\" แล้ว";
-"You signed up for NewsBlur." = "คุณสมัคร NewsBlur แล้ว";
+"You signed up for NewsBlur." = "คุณสมัครใช้งาน NewsBlur แล้ว";
 "You subscribed to %@." = "คุณสมัครรับ %@ แล้ว";
 "You're presented with multiple story pattern options to choose from." = "ระบบจะแสดงรูปแบบบทความหลายแบบให้คุณเลือก";
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "บัญชี NewsBlur ของคุณถูกลบแล้ว นำ NewsBlur ออกจากการลงชื่อเข้าใช้ด้วย Apple ในการตั้งค่าบัญชี Apple เพื่อยกเลิกการเชื่อมต่อให้เสร็จสิ้น";

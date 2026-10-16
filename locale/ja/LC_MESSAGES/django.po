@@ -3355,7 +3355,7 @@ msgid "Premium Archive required for classifier notifications"
 msgstr "分類器の通知にはプレミアムアーカイブが必要です"
 
 msgid "Premium Archive required for folder and global classifiers"
-msgstr "フォルダーおよび全体の分類ルールにはプレミアムアーカイブが必要です"
+msgstr "フォルダー分類器とグローバル分類器にはプレミアムアーカイブが必要です"
 
 msgid "Premium Archive showing unread stories going back months"
 msgstr "プレミアムアーカイブで、数か月前までさかのぼって未読記事を表示"

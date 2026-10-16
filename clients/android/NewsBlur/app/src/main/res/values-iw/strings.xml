@@ -180,7 +180,7 @@
     <string name="profile_do_not_follow">המשתמש הזה לא נמצא במעקב שלך</string>
     <string name="profile_no_interactions">אין אינטראקציות</string>
     <string name="menu_profile">פרופיל</string>
-    <string name="menu_search_feeds">חיפוש במקורות החדשות שלך</string>
+    <string name="menu_search_feeds">חיפוש בפידים שלך</string>
     <string name="menu_original">הצגת המקור</string>
     <string name="menu_send_story">שליחת קישור אל…</string>
     <string name="menu_send_story_full">שליחת הכתבה אל…</string>

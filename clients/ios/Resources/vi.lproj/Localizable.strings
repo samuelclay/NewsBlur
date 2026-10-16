@@ -6,7 +6,7 @@
 "%1$@ favorited %2$@'s comment on %3$@:\n \n%4$@" = "%1$@ đã yêu thích bình luận của %2$@ về %3$@:\n \n%4$@";
 "%1$@ favorited your comments on %2$@." = "%1$@ đã yêu thích bình luận của bạn về %2$@.";
 "%1$@ feed, %2$@" = "Nguồn cấp %1$@, %2$@";
-"%1$@ feeds couldn’t be added to %2$@." = "Không thể thêm %1$@ nguồn tin vào %2$@.";
+"%1$@ feeds couldn’t be added to %2$@." = "Không thể thêm %1$@ nguồn cấp dữ liệu vào %2$@.";
 "%1$@ folder, %2$@" = "Thư mục %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Thư mục %1$@, đã thu gọn, %2$@";
 "%1$@ followed %2$@." = "%1$@ đã theo dõi %2$@.";
@@ -26,11 +26,11 @@
 "%@ could not be added." = "Không thể thêm %@ nguồn cấp.";
 "%@ days" = "%@ ngày";
 "%@ feed" = "%@ nguồn cấp dữ liệu";
-"%@ feeds" = "%@ nguồn tin";
-"%@ feeds added" = "Đã thêm %@ nguồn tin";
-"%@ feeds added." = "Đã thêm %@ nguồn tin.";
-"%@ feeds couldn’t be added." = "Không thể thêm %@ nguồn tin.";
-"%@ feeds selected" = "Đã chọn %@ nguồn tin";
+"%@ feeds" = "%@ nguồn cấp";
+"%@ feeds added" = "Đã thêm %@ nguồn cấp";
+"%@ feeds added." = "Đã thêm %@ nguồn cấp.";
+"%@ feeds couldn’t be added." = "Không thể thêm %@ nguồn cấp.";
+"%@ feeds selected" = "Đã chọn %@ nguồn cấp";
 "%@ focused stories" = "%@ bài viết được chú ý";
 "%@ folder" = "Thư mục %@";
 "%@ is now following you." = "%@ hiện đang theo dõi bạn.";
@@ -44,7 +44,7 @@
 "%@ stories left" = "Còn %@ bài viết";
 "%@ stories/month" = "%@ bài/tháng";
 "%@ subscribers" = "%@ người đăng ký";
-"%@ unread stories" = "%@ tin chưa đọc";
+"%@ unread stories" = "%@ bài viết chưa đọc";
 "%ldd ago" = "%ld ngày trước";
 "%ldh ago" = "%ld giờ trước";
 "%ldm ago" = "%ld phút trước";
@@ -95,7 +95,7 @@
 "Add this site" = "Thêm trang web này";
 "Add to folder" = "Thêm vào thư mục";
 "Added" = "Đã thêm";
-"Added %1$@ feeds to %2$@." = "Đã thêm %1$@ nguồn tin vào %2$@.";
+"Added %1$@ feeds to %2$@." = "Đã thêm %1$@ nguồn cấp dữ liệu vào %2$@.";
 "Added %@ feeds." = "Đã thêm %@ nguồn cấp dữ liệu.";
 "Adding %@…" = "Đang thêm %@…";
 "Adding folder..." = "Đang thêm thư mục...";
@@ -517,7 +517,7 @@
 "Mark stories as unread on change" = "Đánh dấu bài viết là chưa đọc khi có thay đổi";
 "Mark stories read" = "Đánh dấu bài viết là đã đọc";
 "Mark story read…" = "Đánh dấu bài viết đã đọc…";
-"Mark these %@ stories read" = "Đánh dấu đã đọc %@ tin bài này";
+"Mark these %@ stories read" = "Đánh dấu %@ bài viết này là đã đọc";
 "Mark this list as read" = "Đánh dấu danh sách này là đã đọc";
 "Mark this site as read" = "Đánh dấu trang web này là đã đọc";
 "Mark this story as read" = "Đánh dấu bài viết này là đã đọc";
@@ -1000,7 +1000,7 @@
 "Unable to generate Daily Briefing." = "Không thể tạo Bản tin hằng ngày.";
 "Unable to load Daily Briefing" = "Không thể tải Bản tin hằng ngày";
 "Unable to load Daily Briefing settings." = "Không thể tải cài đặt Bản tin hằng ngày.";
-"Unable to load Daily Briefing." = "Không thể tải Điểm tin hằng ngày.";
+"Unable to load Daily Briefing." = "Không thể tải Bản tin hằng ngày.";
 "Unable to save Daily Briefing settings." = "Không thể lưu cài đặt Bản tin hằng ngày.";
 "Unable to save notification settings." = "Không thể lưu cài đặt thông báo.";
 "Understand" = "Tìm hiểu";
