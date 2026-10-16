@@ -17,9 +17,9 @@
         7,
         4
       ],
-      "notes": "Native Dutch iPad UI, with actual fullscreen article scrolling and brief native navigation into Saved Stories. End on the settled collection before the later article-selection animation."
+      "notes": "Matching native iPad interface. Full-size source frame at 18 seconds confirms normal readable split-reader text, without clipping. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending before the later article-selection animation."
     }
   },
-  "status": "hold_for_capture_quality_decision",
-  "remaining": "Resolve smaller initial split-reader body text before encoding. Reader and Saved footage are usable."
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated capture gap, then inspect the final export and perform normal-speed playback before staging."
 }
