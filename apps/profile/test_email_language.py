@@ -3,7 +3,7 @@ asked for (apps/profile/language.py records it), else English (utils/languages.p
 
 import datetime
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -16,7 +16,8 @@ from django.utils.translation import gettext, ngettext
 from apps.notifications.models import CLASSIFIER_MATCH_LABELS
 from apps.profile.language import NewsBlurLocaleMiddleware
 from apps.profile.models import Profile
-from apps.profile.tasks import EmailGiftCreated, referral_credit_text
+from apps.profile.tasks import EmailGiftCreated, EmailNewUser, referral_credit_text
+from apps.reader.forms import SignupForm
 from utils import json_functions as json
 from utils.languages import account_language
 
@@ -131,6 +132,19 @@ class Test_EmailLanguage(TestCase):
         email = mail.outbox[0]
         self.assertEqual(email.subject, "Welcome to NewsBlur, lectora")
         self.assertIn('<html lang="en" dir="ltr">', email.alternatives[0][0])
+
+    @patch("apps.reader.forms.query", return_value=True)
+    def test_a_signup_records_its_language_for_the_welcome_email(self, mx_lookup):
+        # The signup request is anonymous, and the welcome email can run before the reader's next request.
+        with translation.override("de"):
+            form = SignupForm(data={"username": "leserin", "email": "leserin@test.com", "password": "secret"})
+            self.assertTrue(form.is_valid(), form.errors)
+            user = form.save()
+        EmailNewUser(user.pk)
+        self.assertEqual(
+            mail.outbox[-1].subject,
+            self.translated("de", "Welcome to NewsBlur, %(username)s", username="leserin"),
+        )
 
     def test_gift_email_names_the_plan_in_the_readers_language(self):
         self.set_language("ja")
