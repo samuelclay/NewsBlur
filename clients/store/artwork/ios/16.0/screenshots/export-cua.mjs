@@ -48,6 +48,7 @@ export async function exportScreenshots({ tab, viewport, language, sizes = suppo
         const state = await tab.playwright.evaluate(() => ({
           headline: document.querySelector('.headline').textContent,
           viewport: [innerWidth, innerHeight], scale: devicePixelRatio,
+          capture_bounds: (() => { const r = document.querySelector('.display .capture').getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })(),
           images: Array.from(document.images).map(image => ({ src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight })),
         }));
         if (state.headline !== copy.headlines[panel - 1] || state.viewport[0] !== width || state.viewport[1] !== height || state.scale !== 1) {
