@@ -1,0 +1,25 @@
+{
+  "locale": "ar",
+  "devices": {
+    "iphone": {
+      "source_ui_locale": "ar",
+      "source_sha256": "91bc92ea4d8d88f753b3ad70412350ac712f762e2777b1bc714fb7ef365e2c5f",
+      "source_intervals_reviewed": true,
+      "starts": [
+        7,
+        20,
+        39,
+        47.1
+      ],
+      "durations": [
+        4,
+        5,
+        6,
+        4
+      ],
+      "notes": "Native Arabic RTL UI. Includes actual article scroll near source 41–43 seconds. The last interval includes brief native navigation into Saved Stories; final collection is verified."
+    }
+  },
+  "status": "intervals_prepared_not_encoded",
+  "remaining": "Encode only during a capture gap, review final captions and cuts, then perform real-time playback. iPad capture/edit pending."
+}
