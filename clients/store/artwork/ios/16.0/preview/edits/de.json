@@ -27,7 +27,7 @@
         5,
         23,
         44,
-        56.2
+        55.6
       ],
       "durations": [
         4,
@@ -35,7 +35,7 @@
         7,
         4
       ],
-      "notes": "Native German iPad UI. Includes the actual fullscreen article scroll, then a settled Saved Stories collection."
+      "notes": "Native German iPad UI. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending on the settled collection before the later article-selection animation."
     }
   },
   "status": "ipad_source_intervals_reviewed",
