@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updated_at": "2026-10-16",
-  "status": "english_proofs_ready_for_playback_review",
+  "status": "english_previews_reviewed_not_submitted",
   "localization": {
     "supported_locales": 21,
     "reviewed_caption_files": 21,
@@ -44,7 +44,7 @@
       "poster_seconds": 8,
       "technical_checks": "passed",
       "sampled_visual_review": "passed",
-      "real_time_playback": "pending",
+      "real_time_playback": "passed",
       "submission": "not_submitted"
     },
     {
@@ -80,7 +80,7 @@
       "poster_seconds": 8,
       "technical_checks": "passed",
       "sampled_visual_review": "passed",
-      "real_time_playback": "pending",
+      "real_time_playback": "passed",
       "submission": "not_submitted"
     }
   ],

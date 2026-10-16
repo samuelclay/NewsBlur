@@ -4,4 +4,4 @@
 
 The full-resolution `*-poster.png` files are actual encoded frames at 8 seconds. The `*-ending.png` files show the final Saved Stories screen and disclosure (19 seconds on iPhone, 16.5 seconds on iPad). These images were extracted directly from the final videos without retouching.
 
-The review checked the entire timeline through these sampled frames, with larger frames for readability. Real-time playback and App Store processing remain separate checks. Their status is recorded in `../exports/manifest.json`; this folder does not establish submission or approval.
+The review checked the entire timeline through these sampled frames, with larger frames for readability. Both English exports also played through in QuickTime at normal speed, with UI observations of the beginning, reader progression and Saved Stories ending. App Store processing remains a separate check. Their status is recorded in `../exports/manifest.json`; this folder does not establish submission or approval.

@@ -1,0 +1,25 @@
+{
+  "locale": "de",
+  "devices": {
+    "iphone": {
+      "source_ui_locale": "de",
+      "source_sha256": "ec903f4bbf6c3dfe4c1521cfc7b859734c04598042ebe66f0f1fd0b917ca0fd2",
+      "source_intervals_reviewed": true,
+      "starts": [
+        7,
+        21,
+        40,
+        49
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native German UI. Source intervals exclude initial thumbnail loading and include the actual article scroll near seconds 44–46. The last interval shows navigation into the verified Saved Stories collection."
+    }
+  },
+  "status": "intervals_prepared_not_encoded",
+  "remaining": "Encode during a capture gap, review final captions and cuts, then perform real-time playback. iPad capture/edit pending."
+}

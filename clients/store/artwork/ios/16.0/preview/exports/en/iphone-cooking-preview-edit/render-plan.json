@@ -658,8 +658,9 @@
       "Caption and disclosure legibility",
       "Settled Saved Stories ending"
     ],
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "QuickTime Player, normal-speed playback from the beginning through the Saved Stories ending; UI observations of start, reader progression and ending supplement the whole-timeline contact sheet."
   },
   "output_sha256": "0a127ed02831575c40365d4bc94bc790237434afce343e55c4c0667f1235f7d3"
 }
