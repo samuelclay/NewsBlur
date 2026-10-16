@@ -332,15 +332,15 @@
     "13896": {
       "title": "Android: don't move next button around",
       "url": "https://forum.newsblur.com/t/android-dont-move-next-button-around/13896",
-      "status": "pr-open",
+      "status": "merged",
       "tier": 1,
       "handled_at": "2026-10-16T15:59:50Z",
       "last_posted_at": "2026-10-16T13:07:50.090Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2175",
       "branch": "forum-13896-android-next-button",
       "worktree": ".worktree/forum-13896-android-next-button",
-      "note": "Reproduced on Samsung Galaxy S22, NB Alpha 15.1: Next moved 332 px between consecutive Hacker News stories because ReaderEndControls reparented navigation into article footers. Fixed position, Next/Done width, and full stationary page-transition backdrop. PR #2175 is ready for review at db8983ce4 with before/after screenshot sets, four-theme checks, Next/Done and scrolling evidence, and final-build recording. 837 unit tests passed initially; 27 focused tests and Alpha build passed after the review fix. Both Android CI runs, Django CI, and both automated reviews passed, with zero unresolved review threads. Localization validation fails on an unrelated hardcoded web chooser title introduced by main 3a887b707; main itself fails the same audit. Final head db8983ce4 verified; localization is the only red check. Not merged, released, or posted. Original theme preferences and login retained.",
-      "reply": "Found it. The controls were moving to the bottom of each story, so short articles and related stories changed where Next appeared. The fix keeps it at the bottom of the screen, including when it changes to Done. It is waiting to be merged and released in an Android update.",
+      "note": "Reproduced on Samsung Galaxy S22, NB Alpha 15.1: Next moved 332 px between consecutive Hacker News stories because ReaderEndControls reparented navigation into article footers. Fixed position, Next/Done width, and full stationary page-transition backdrop. PR #2175 includes before/after screenshot sets, four-theme checks, Next/Done and scrolling evidence, and final-build recording. 837 unit tests passed initially; 27 focused tests and Alpha build passed after the review fix. Both Android CI runs, Django CI, and both automated reviews passed, with zero unresolved review threads. Localization validation fails on an unrelated hardcoded web chooser title introduced by main 3a887b707; main itself fails the same audit. Final head db8983ce4 verified; localization was the only red check. Merged at Sam's explicit request before the v16 i18n release on 2026-10-16T16:10:27Z as 4d0a09e900da210a9f383455c5ce92998410c65f. Not released or posted. Original theme preferences and login retained.",
+      "reply": "Found it. The controls were moving to the bottom of each story, so short articles and related stories changed where Next appeared. The fix keeps it at the bottom of the screen, including when it changes to Done. It is merged and waiting for an Android release.",
       "question": null
     }
   }
