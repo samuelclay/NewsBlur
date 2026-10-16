@@ -62,6 +62,9 @@ locales.each do |locale|
     list_ready = ["waittext:A generous salad for a sunny afternoon", "waitphoto:#{list_photo_x},0.38,0.05,0.40"]
     article_ready = ["waitphoto:#{article_photo_x},0.40,0.30,0.40"]
     abort "iPad preparation failed" unless system(env, *wrapper, *list_ready, *article_ready,
+                                                 "tap:#{expand},54", "sleep:2",
+                                                 "waitphoto:#{fullscreen_photo_x},0.45,0.20,0.40",
+                                                 "tap:#{expand},54", *list_ready, *article_ready, "sleep:2",
                                                  "tap:#{sidebar},54", "waittext:Breakfast Notebook", "sleep:2")
     actions = ["capture:#{footage}", "checkpoint:feeds", screenshot.call("feeds"), "sleep:5",
                "tap:#{folder_x},248", *list_ready, *article_ready, "sleep:2", "checkpoint:stories", screenshot.call("stories"), "sleep:5",
