@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 from django.contrib.auth.models import User
 from django.core import mail
 from django.template import engines
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import translation
 from django.utils.text import format_lazy
 from django.utils.translation import gettext, ngettext
@@ -16,7 +16,7 @@ from django.utils.translation import gettext, ngettext
 from apps.notifications.models import CLASSIFIER_MATCH_LABELS
 from apps.profile.language import NewsBlurLocaleMiddleware
 from apps.profile.models import Profile
-from apps.profile.tasks import EmailGiftCreated, EmailNewUser, referral_credit_text
+from apps.profile.tasks import EmailGiftCreated, EmailNewPremiumTrial, EmailNewUser, referral_credit_text
 from apps.reader.forms import SignupForm
 from utils import json_functions as json
 from utils.languages import account_language
@@ -163,6 +163,33 @@ class Test_EmailLanguage(TestCase):
         with translation.override("fr"):
             self.user.profile.send_new_user_email()
             self.assertEqual(translation.get_language(), "fr")
+
+
+class Test_SignupEmailLanguage(TransactionTestCase):
+    """Real commits, so the emails signup queues with transaction.on_commit run when a worker could."""
+
+    def setUp(self):
+        self.addCleanup(translation.deactivate)
+
+    @patch("apps.reader.forms.query", return_value=True)
+    def test_both_signup_emails_use_the_signup_language(self, mx_lookup):
+        # Each task runs the moment it is queued, as an idle worker would, before the reader's next request.
+        with patch.object(
+            EmailNewPremiumTrial, "delay", side_effect=lambda user_id: EmailNewPremiumTrial(user_id)
+        ):
+            with patch.object(EmailNewUser, "delay", side_effect=lambda user_id: EmailNewUser(user_id)):
+                with translation.override("de"):
+                    form = SignupForm(
+                        data={"username": "leserin", "email": "leserin@test.com", "password": "secret"}
+                    )
+                    self.assertTrue(form.is_valid(), form.errors)
+                    form.save()
+        with translation.override("de"):
+            expected = {
+                gettext("Welcome to NewsBlur, %(username)s") % {"username": "leserin"},
+                gettext("Welcome to NewsBlur! Your 30-day premium trial has started"),
+            }
+        self.assertEqual({email.subject for email in mail.outbox}, expected)
 
 
 class Test_EmailFragments(SimpleTestCase):
