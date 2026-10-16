@@ -58,7 +58,7 @@
     "verified_proof": "proof/fr-main-search-persisted.jpg",
     "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "English, French, Arabic and German iPhone/iPad captures complete; Hebrew, Spanish and Dutch iPad complete. Italian initial still normalization pending. Further locales in progress, one task capture simulator.",
+  "capture_status": "All 21 iPad languages have verified native captures and 84 rendered/staged screenshots. English, French, Arabic and German iPhone captures and both size exports complete. Remaining 17 iPhone languages in progress using one task simulator; iPad shut down and five preference backups restored with SHA verification.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -69,8 +69,8 @@
         "panel-3.png",
         "panel-4.png"
       ],
-      "placement_status": "readback_hidden_by_pagination_cleanup_pending",
-      "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement.",
+      "placement_status": "persisted_after_full_reload",
+      "note": "Removed obsolete legacy placements through Media Manager while retaining library files. This revealed duplicated medium iPhone uploads. Replaced all three current sets with exactly four uniquely named approved Sage panels each; verified filenames and counts after full reload. Cleared older English device overrides for inheritance.",
       "native_retry": {
         "files": [
           "newsblur-16.0-en-1206x2622-01.png",
@@ -91,7 +91,17 @@
           "proof/en-placement-limit-errors.json",
           "proof/en-placement-pagination.json"
         ]
-      }
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "proof": [
+        "proof/en-iphone-screenshots-persisted.jpg",
+        "proof/en-ipad-screenshots-persisted.jpg"
+      ]
     },
     "fr": {
       "size": "1206x2622",
