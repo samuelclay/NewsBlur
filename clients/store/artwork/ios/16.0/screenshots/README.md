@@ -26,6 +26,8 @@ Arabic and Hebrew headlines and labels run right to left. The composition and sc
 
 The supported CUA browser screenshot API currently returns JPEG bytes. Save those bytes as `/tmp/newsblur-store-screenshot-renders/<language>/<size>/panel-<1..4>.jpg`, then run `ruby clients/store/artwork/ios/16.0/screenshots/finalize-exports.rb --language en`. This converts the decoded screenshot to a genuine opaque PNG without resizing, checks its signature and dimensions, and records SHA-256 checksums beside the exports. It does not restore detail lost during the browser's JPEG encoding. Use `--size 1206x2622` for one size, or `--validate-only` to check existing PNGs. Each result still requires visual review against the native capture. The script does not drive a browser or upload files.
 
+`export-cua.mjs` provides the repeatable capture loop for the approved CUA REPL. Import it there and call `exportScreenshots({tab, viewport, language: 'fr', sizes: ['1320x2868', '1206x2622']})` using an already selected dedicated rendering tab and the documented browser viewport capability. It uses only those CUA handles, checks rendered copy and readiness, rejects captures changed during rendering, records source/checksum evidence, and resets the temporary viewport. Omit `sizes` for all three formats. Do not run this helper with an external browser driver. Its default local server URL is the one above; the server must already be running.
+
 ## Editable sources
 
 - `index.html`: composition CSS, the eight concept descriptions, capture selection, text fitting, and gallery/export behavior. The selected concept loads canonical locale copy; other studies retain their English copy in the `concepts` array.

@@ -1,0 +1,138 @@
+[
+  {
+    "language": "fr",
+    "size": "1206x2622",
+    "panel": 1,
+    "captured_at": "2026-10-16T22:14:18.572Z",
+    "capture": "captures/localized/fr/iphone-stories.png",
+    "capture_sha256": "bdb1a8d45e4c1d446283f1fc760ca94b7a98505d845f72f375b3c19b8fee728d",
+    "renderer_sha256": "f5aaaff5722dfeb782897c010b704519fc137a89d703e526fb5532984129cc64",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "797627ec73bc38fecb351c6d9404098a96de349995a2a74c4139d6083d3cbff6",
+    "headline": "Vos lectures quotidiennes, au même endroit.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/fr/iphone-stories.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1206,
+      2622
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "1206x2622",
+    "panel": 2,
+    "captured_at": "2026-10-16T22:14:19.182Z",
+    "capture": "captures/localized/fr/iphone-feeds.png",
+    "capture_sha256": "acfafe7c909cf807de9d2fd65c4aa80e7443f5e78b5f6f51ebcc41d8043b6086",
+    "renderer_sha256": "f5aaaff5722dfeb782897c010b704519fc137a89d703e526fb5532984129cc64",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "a8bf1fd6afd086c337936e12ba77b899fceb84bc73deb4c49aeac1394bcbf63a",
+    "headline": "Un lieu pour vos sources préférées.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/fr/iphone-feeds.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1206,
+      2622
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "1206x2622",
+    "panel": 3,
+    "captured_at": "2026-10-16T22:14:20.442Z",
+    "capture": "captures/localized/fr/iphone-reader.png",
+    "capture_sha256": "6267e0b208e9b02554dbaeb1b42a68a9914f892da8616bcc0d675c5c5cf16497",
+    "renderer_sha256": "f5aaaff5722dfeb782897c010b704519fc137a89d703e526fb5532984129cc64",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "633684021d02c26978243a66af88bbea70d5e0f657f681785f879aad0e5b1a07",
+    "headline": "Installez-vous pour une bonne lecture.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/fr/iphone-reader.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1206,
+      2622
+    ]
+  },
+  {
+    "language": "fr",
+    "size": "1206x2622",
+    "panel": 4,
+    "captured_at": "2026-10-16T22:14:21.048Z",
+    "capture": "captures/localized/fr/iphone-saved.png",
+    "capture_sha256": "027302555540c5ea990c9ae0e0e3b5abd663580dbcd234a58f2096ad628a013a",
+    "renderer_sha256": "f5aaaff5722dfeb782897c010b704519fc137a89d703e526fb5532984129cc64",
+    "copy_sha256": "a4106a9ea0ef8b0cf4a22331ea6a57ab1dafcf758557832b35ff36e38f935086",
+    "screenshot_sha256": "ee58fb7434749a5d435fed814fd55dfc2f7e29a098f8ec0bcebda63d990dc391",
+    "headline": "Gardez une bonne lecture pour plus tard.",
+    "images": [
+      {
+        "height": 1024,
+        "src": "../selected/assets/icon.png",
+        "width": 1024
+      },
+      {
+        "height": 2868,
+        "src": "captures/localized/fr/iphone-saved.png",
+        "width": 1320
+      },
+      {
+        "height": 3000,
+        "src": "../selected/assets/iphone-18-pro-max.png",
+        "width": 1470
+      }
+    ],
+    "scale": 1,
+    "viewport": [
+      1206,
+      2622
+    ]
+  }
+]
