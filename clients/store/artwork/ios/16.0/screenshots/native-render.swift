@@ -96,6 +96,18 @@ func textLines(_ text: String, font: NSFont, tracking: CGFloat, maxWidth: CGFloa
     while start < string.length {
         let count = max(1, CTTypesetterSuggestLineBreak(typesetter, start, Double(maxWidth)))
         var end = min(start + count, string.length)
+        // Korean headlines wrap at spaces rather than splitting Hangul words into syllables.
+        if language == "ko" && end < string.length {
+            func isSpace(_ position: Int) -> Bool {
+                string.substring(with: NSRange(location: position, length: 1)).unicodeScalars.allSatisfy { CharacterSet.whitespaces.contains($0) }
+            }
+            if !isSpace(end - 1) && !isSpace(end) {
+                var boundary = end
+                while boundary > start && !isSpace(boundary - 1) { boundary -= 1 }
+                if boundary > start { end = boundary }
+                else { while end < string.length && !isSpace(end) { end += 1 } }
+            }
+        }
         // CoreText balancing must keep Thai repetition marks and closing punctuation off line starts.
         let closing = CharacterSet(charactersIn: "ๆฯ,.;:!?%)]}、。，．？！：；）》」』】〕〉")
         while end < string.length {
