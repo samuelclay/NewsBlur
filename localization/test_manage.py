@@ -119,3 +119,26 @@ class Test_Translation(unittest.TestCase):
         memory = {"k": "Du hast dich bei NewsBlur angemeldet"}
         self.assertFalse(is_valid("You signed up for NewsBlur", memory, "k", "de"))
         self.assertTrue(is_valid("You signed up for NewsBlur", memory, "k"))
+
+    @patch("localization.manage.load_glossary")
+    def test_glossary_ignores_placeholders_markup_and_urls(self, glossary):
+        import re
+
+        # Identifiers a translation must copy verbatim can contain a word the glossary avoids.
+        term = {
+            "concept": "classifier",
+            "en": r"\bclassifier\b",
+            "use": "pengklasifikasi",
+            "avoid": ["classifier"],
+        }
+        spaces = {"concept": "typography", "en": None, "use": None, "avoid": ["  "]}
+        glossary.return_value = ("", [(re.compile(term["en"], re.I), term), (None, spaces)])
+        source = (
+            'A classifier match (%(classifier_match_desc)s) on <a href="https://x.com/classifier">%(t)s</a>'
+        )
+        good = 'Kecocokan pengklasifikasi (%(classifier_match_desc)s) di <a href="https://x.com/classifier">%(t)s</a>'
+        self.assertIsNone(glossary_violation("id", source, good))
+        self.assertTrue(glossary_violation("id", source, good.replace("pengklasifikasi", "classifier")))
+        self.assertIsNone(
+            glossary_violation("id", "A classifier: %(a)s %(b)s", "Pengklasifikasi: %(a)s %(b)s")
+        )

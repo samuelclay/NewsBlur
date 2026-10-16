@@ -47,6 +47,13 @@ TOKENS = re.compile(
     r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|&(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
 )
 PROTECTED = re.compile(PRINTF.pattern + "|" + TOKENS.pattern)
+# manage.py checks glossary "avoid" forms against a translation's own words, not the placeholders, markup and
+# URLs it must copy verbatim (%(classifier_match_desc)s, /briefing?next=...). NewsBlur stays, since glossary
+# forms like Korean particles attach to it.
+COPIED_VERBATIM = re.compile(
+    PRINTF.pattern
+    + r"|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
+)
 APPLE_STRING = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
 EXTRACTION_KEYWORDS = {
     **DEFAULT_KEYWORDS,
@@ -281,10 +288,12 @@ def load_glossary(code):
 
 def glossary_violation(code, source, translated):
     """Name the audited term a translation breaks by using one of its "avoid" forms, if any."""
+    # A NUL stands in for each copied span, so removing one can't join words or create double spaces.
+    words = COPIED_VERBATIM.sub("\x00", translated)
     for pattern, term in load_glossary(code)[1]:
         if pattern is None or pattern.search(source):
             for form in term.get("avoid") or []:
-                if form in translated:
+                if form in words:
                     return f"{term.get('concept') or term.get('en')}: use {term.get('use')!r}, not {form!r}"
     return None
 
