@@ -11,13 +11,13 @@
     <p style="line-height: 20px;">{% trans "Here are some ways to make NewsBlur work for you:" %}</p>
     <p style="line-height: 20px;">
         <ul style="list-style: none;">
-            <li style="line-height:22px;"><img src="https://{{ domain }}/media/img/icons/nouns/share.svg" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=friends" style="text-decoration:none">{% trans "Follow friends from Twitter, Facebook, and NewsBlur" %}</a></li>
+            <li style="line-height:22px;"><img src="https://{{ domain }}/media/img/icons/nouns/share.svg" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=friends" style="text-decoration:none">{% trans "Follow friends from X, Facebook, and NewsBlur" %}</a></li>
             <li style="line-height:22px;"><img src="https://{{ domain }}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> {% blocktrans trimmed %}Visit <a href="https://popular.newsblur.com" style="text-decoration:none">The People Have Spoken</a>, our blog of the most popular and talked-about articles posted by NewsBlur readers{% endblocktrans %}</li>
             <li style="line-height:22px;"><img src="https://{{ domain }}/media/img/icons/circular/g_icn_coffeecup_gold32.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=premium" style="text-decoration:none">{% trans "Upgrade to a premium account for only $36/year, and get access to an unlimited number of RSS feeds" %}</a></li>
         </ul>
     </p>
     <p style="line-height: 20px;">{% trans "I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you love it, too." %}</p>
-    <p>- <a href="https://twitter.com/samuelclay">Sam Clay</a></p>
+    <p>- <a href="https://x.com/samuelclay">Sam Clay</a></p>
 {% endblock %}
 
 {% block resources_header %}{% trans "If you enjoy using NewsBlur, these resources might be of interest to you:" %}{% endblock resources_header %}

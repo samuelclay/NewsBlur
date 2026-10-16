@@ -2026,8 +2026,8 @@ msgid "Follow %(handle)s on GitHub"
 msgstr "GitHub에서 %(handle)s 팔로우하기"
 
 #, python-format
-msgid "Follow %(handle)s on Twitter"
-msgstr "Twitter에서 %(handle)s 팔로우하기"
+msgid "Follow %(handle)s on X"
+msgstr "X에서 %(handle)s 팔로우하기"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2053,8 +2053,8 @@ msgid ""
 " delivers new content to you."
 msgstr "RSS가 없는 웹사이트도 팔로우하세요. NewsBlur는 어떤 페이지에서든 피드를 생성하고 변경 사항을 확인해 새 콘텐츠를 전달합니다."
 
-msgid "Follow friends from Twitter, Facebook, and NewsBlur"
-msgstr "Twitter, Facebook, NewsBlur에서 친구를 팔로우하세요"
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "X, Facebook, NewsBlur에서 친구를 팔로우하세요"
 
 msgid "Follow friends, shared items"
 msgstr "친구 및 공유 항목 팔로우"

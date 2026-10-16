@@ -8,7 +8,7 @@
 
 {% trans "Here are some easy ways to have a great time on NewsBlur:" %}
 
-    * {% trans "Follow friends from Twitter, Facebook, and NewsBlur" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=friends
+    * {% trans "Follow friends from X, Facebook, and NewsBlur" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=friends
     * {% trans "Visit the popular blurblog, The People Have Spoken" %}: https://popular.newsblur.com
     * {% trans "Upgrade to a premium account for only $36/year" %}: https://{{ domain }}{{ user.profile.autologin_url }}?next=premium
 

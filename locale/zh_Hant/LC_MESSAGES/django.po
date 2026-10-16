@@ -1993,8 +1993,8 @@ msgid "Follow %(handle)s on GitHub"
 msgstr "在 GitHub 追蹤 %(handle)s"
 
 #, python-format
-msgid "Follow %(handle)s on Twitter"
-msgstr "在 Twitter 上追蹤 %(handle)s"
+msgid "Follow %(handle)s on X"
+msgstr "在 X 上追蹤 %(handle)s"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2020,8 +2020,8 @@ msgid ""
 " delivers new content to you."
 msgstr "追蹤任何網站，即使沒有 RSS。NewsBlur 會從任何頁面產生訂閱來源、監控更新，並將新內容送達給你。"
 
-msgid "Follow friends from Twitter, Facebook, and NewsBlur"
-msgstr "追蹤來自 Twitter、Facebook 和 NewsBlur 的朋友"
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "追蹤來自 X、Facebook 和 NewsBlur 的朋友"
 
 msgid "Follow friends, shared items"
 msgstr "追蹤朋友和分享項目"
