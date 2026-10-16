@@ -1,0 +1,25 @@
+{
+  "locale": "he",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "he",
+      "source_sha256": "ff65a8ffc1b93fb1d976653e90b51cba9ed55e796b260b1dd892f2d1428ff363",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        24,
+        58,
+        74
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        5
+      ],
+      "notes": "Native Hebrew RTL iPad UI. Includes the actual fullscreen article scroll and a settled Saved Stories collection; no English interface fallback."
+    }
+  },
+  "status": "ipad_source_intervals_reviewed",
+  "remaining": "iPad encoding, visual review, normal-speed playback and store upload pending. Existing iPhone status is recorded in exports/manifest.json."
+}
