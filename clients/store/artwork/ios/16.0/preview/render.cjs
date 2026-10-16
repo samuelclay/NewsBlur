@@ -15,6 +15,7 @@ if (!Object.hasOwn(languages, locale)) throw Error('Unsupported locale: ' + loca
 const editPath = path.join(__dirname, 'edits', locale + '.json');
 if (!fs.existsSync(editPath)) throw Error('No reviewed edit exists for ' + locale + '. Inspect its native footage and record source offsets first.');
 const edit = JSON.parse(fs.readFileSync(editPath));
+if (edit.status?.startsWith('hold_')) throw Error('This edit is held for capture review: ' + edit.status);
 const cut = edit.devices[device];
 if (edit.locale !== locale || !cut || cut.source_ui_locale !== locale || cut.source_intervals_reviewed !== true) {
   throw Error('Matching native-language footage and reviewed source intervals are required.');
