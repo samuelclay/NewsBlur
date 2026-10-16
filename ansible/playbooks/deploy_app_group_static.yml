@@ -74,7 +74,7 @@
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: "{{ git_branch }}"
+    version: "{{ deploy_commit | default(git_branch) }}"
   register: pulled
   tags: always
 
