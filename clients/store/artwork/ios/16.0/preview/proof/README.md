@@ -9,3 +9,5 @@ The review checked the entire timeline through these sampled frames, with larger
 Localized folders use the same half-second contact-sheet sampling. Their `*-title.png`, `*-reader.png` and `*-ending.png` images show full-resolution caption layout from the actual encoded video. Each export's playback status is recorded separately in the manifest; English playback verification does not establish localized playback verification.
 
 French and Arabic iPad contact sheets cover 20 and 22 seconds respectively. French’s ending image is at 19.9 seconds, after the real article-selection transition; Arabic’s is at 21.5 seconds. Native transitions remain in the videos and are not retouched.
+
+German, Hebrew and Spanish iPad exports run 20, 21 and 20 seconds. Their ending images are extracted 0.1 seconds before completion and confirm settled Saved Stories. German and Spanish retain a brief native navigation transition at the start of that scene.
