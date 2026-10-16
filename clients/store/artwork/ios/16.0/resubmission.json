@@ -20,21 +20,16 @@
   "automatic_release_after_approval": true,
   "main_creative_attachments": {
     "verified_complete_languages": [
-      "fr"
-    ],
-    "verified_header_only": [],
-    "remaining_languages": [
-      "en",
-      "es",
+      "fr",
       "de",
-      "pt-BR",
-      "it",
       "nl",
+      "it",
+      "es",
+      "pt-BR",
       "pl",
       "tr",
       "ru",
       "uk",
-      "ar",
       "he",
       "hi",
       "id",
@@ -42,11 +37,16 @@
       "th",
       "ja",
       "ko",
+      "ar",
       "zh-Hans",
       "zh-Hant"
     ],
-    "note": "French header and search placements both verified after a full reload and reselecting French. All other non-English placements observed at 1 of 1; fresh readback pending. English primary locale remains empty after reload and its creative-asset Save returns an error, including a newly uploaded Prepare for Submission asset. Reload resets the selected locale to English (U.S.); reselect the intended locale before readback.",
-    "persistence_status": "french_verified_other_non_english_readback_pending_english_failing",
+    "verified_header_only": [],
+    "remaining_languages": [
+      "en"
+    ],
+    "note": "All 20 non-English header/search pairs verified after a full page reload and explicit locale selection. English still returns An error has occurred. Try again later. after explicitly switching French to English and selecting the library header. Primary-locale workaround did not resolve it.",
+    "persistence_status": "all_20_non_english_verified_english_save_failing",
     "previously_observed_unverified_languages": [
       "en",
       "ar",
@@ -54,30 +54,11 @@
       "zh-Hant"
     ],
     "save_error_proof": "proof/main-artwork-save-error.jpg",
-    "assigned_pending_readback_languages": [
-      "de",
-      "nl",
-      "it",
-      "es",
-      "pt-BR",
-      "pl",
-      "tr",
-      "ru",
-      "uk",
-      "he",
-      "hi",
-      "id",
-      "vi",
-      "th",
-      "ja",
-      "ko",
-      "ar",
-      "zh-Hans",
-      "zh-Hant"
-    ],
-    "verified_proof": "proof/fr-main-search-persisted.jpg"
+    "assigned_pending_readback_languages": [],
+    "verified_proof": "proof/fr-main-search-persisted.jpg",
+    "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "Serial native capture resumed on the dedicated iPhone with preference backup; only this task device is active for capture. English, French and Arabic iPhone sets complete; Hebrew finalizing. English iPad stories requires recapture because visual export review found a blank app area. Remaining localized iPad captures pending.",
+  "capture_status": "English, French, Arabic and German native iPhone sets verified. Hebrew capture stopped safely when article did not render. Fresh English iPad stories is verified; French iPad capture in progress. Only one task capture simulator active.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -91,5 +72,6 @@
       "placement_status": "not_persisted",
       "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement."
     }
-  }
+  },
+  "app_preview_status": "English iPhone and iPad final videos passed real-time playback; French, Arabic and German iPhone encoded and sampled QA passed, playback review pending."
 }
