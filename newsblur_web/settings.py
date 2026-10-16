@@ -608,8 +608,16 @@ CELERY_IMPORTS = (
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
+# newsblur_web/settings.py: Each pool process is replaced after this many tasks. At 10, a busy fetch
+# server forked a new process every couple of seconds, and on the 4 CPU servers some of those new
+# processes couldn't get the CPU to report in before CELERY_WORKER_PROC_ALIVE_TIMEOUT and were
+# SIGKILLed (most of the worker SIGKILLs in Sentry). CELERY_WORKER_MAX_MEMORY_PER_CHILD still
+# recycles any process that grows too large.
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 750 * 1024
+# newsblur_web/settings.py: How long a freshly forked pool process has to report it's ready before
+# celery kills it. The 4 second default is too short on a CPU-saturated server.
+CELERY_WORKER_PROC_ALIVE_TIMEOUT = 30
 CELERY_TASK_TIME_LIMIT = 12 * 30
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
@@ -860,6 +868,16 @@ if DOCKERBUILD:
     CELERY_WORKER_CONCURRENCY = 2
 elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY = 4
+elif (os.cpu_count() or 0) <= 4:
+    # newsblur_web/settings.py: The 4 CPU, 7 GB fetch servers (htask-celery-01 through 10) ran CPU
+    # saturated at 24 processes and are the only ones the kernel OOM killer and the slow-start
+    # SIGKILLs hit. The memory cap is measured on RSS, which counts the ~190 MB a pool process
+    # shares with its parent: processes measured ~355 MB RSS, ~160 MB of it their own. 16 at the
+    # usual size use ~3 GB; 16 all at the 600 MB cap would use ~7 GB of the 7.7 GB, which is why
+    # the cap is lower here than on the 15 GB servers. Chosen by the CPU count the worker sees, so
+    # a server that's resized picks up the right setting.
+    CELERY_WORKER_CONCURRENCY = 16
+    CELERY_WORKER_MAX_MEMORY_PER_CHILD = 600 * 1024
 else:
     CELERY_WORKER_CONCURRENCY = 24
 
