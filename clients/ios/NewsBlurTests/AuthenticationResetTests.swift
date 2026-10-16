@@ -34,6 +34,56 @@ import WebKit
         XCTAssertNil(releasedWebView, "Each fixture's nonpersistent WebKit store must be released after the test")
     }
 
+    func test_loginKeepsTheLanguageChosenOnTheLoginScreen() throws {
+        try assertLanguageAfterLogin(chosenOnLoginScreen: true)
+    }
+
+    func test_loginClearsThePreviousAccountsSyncedLanguage() throws {
+        try assertLanguageAfterLogin(chosenOnLoginScreen: false)
+    }
+
+    func test_accountLanguageSyncTranslatesTheFeedSearchPlaceholder() throws {
+        // AuthenticationResetTests.swift reproduces an account language arriving after the feed list was built,
+        // which left "Search feeds" in English until the next launch.
+        let fixture = AuthenticationFixture(compact: false)
+        defer {
+            fixture.close()
+            NBLocalization.configureDirection()
+            NotificationCenter.default.post(name: NBLocalization.changed, object: nil)
+        }
+        try fixture.configure()
+        // The fixture skips FeedsObjCViewController.m's viewDidLoad, so the test supplies its English search field
+        // and delivers the language notification that viewDidLoad subscribes to.
+        let searchField = UITextField()
+        searchField.placeholder = "Search feeds"
+        fixture.feeds.searchField = searchField
+        UserDefaults.standard.set(false, forKey: NBLocalization.pendingKey)
+        NBLocalization.syncProfile(["preferences": ["language": "es"]])
+        XCTAssertEqual(NBLocalization.language, "es")
+        fixture.feeds.perform(NSSelectorFromString("languageDidChange:"), with: nil)
+        XCTAssertEqual(searchField.placeholder, NBLocalization.text("Search feeds", language: "es"))
+        XCTAssertNotEqual(searchField.placeholder, "Search feeds")
+    }
+
+    private func assertLanguageAfterLogin(chosenOnLoginScreen: Bool) throws {
+        // AuthenticationResetTests.swift snapshots preferences before choosing a language, so close() restores the device's choice.
+        let fixture = AuthenticationFixture(compact: false)
+        defer {
+            fixture.close()
+            NBLocalization.configureDirection()
+            NotificationCenter.default.post(name: NBLocalization.changed, object: nil)
+        }
+        // OnboardingAccountViewController.swift applies a login-screen choice as pending; FeedsObjCViewController.m applies a synced one.
+        NBLocalization.apply("fr", pending: chosenOnLoginScreen)
+        try fixture.configure()
+        fixture.login.checkPassword()
+        try fixture.app.completePOST(["code": 1])
+        XCTAssertEqual(fixture.app.getRequests.filter { $0.url.contains("/reader/feeds?") }.count, 1, "The real finishAuthentication ran")
+        XCTAssertEqual(NBLocalization.language, chosenOnLoginScreen ? "fr" : "auto")
+        XCTAssertEqual(UserDefaults.standard.bool(forKey: NBLocalization.pendingKey), chosenOnLoginScreen,
+                       "A login-screen choice stays pending until FeedsObjCViewController.m saves it to the new account")
+    }
+
     func test_showLoginClearsMountedDiscoveryBeforeAnotherAccountSignsIn() async throws {
         try await assertDiscoveryCleared(showLogin: true, preview: false)
     }

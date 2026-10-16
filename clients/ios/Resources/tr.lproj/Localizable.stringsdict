@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%1$@ feeds couldn’t be added to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@unadded_feeds_in_folder@</string>
+		<key>unadded_feeds_in_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%1$@ akış, %2$@ klasörüne eklenemedi.</string>
+			<key>other</key>
+			<string>%1$@ akış %2$@ konumuna eklenemedi.</string>
+		</dict>
+	</dict>
+	<key>%@ Widget Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ Widget Sitesi</string>
+			<key>other</key>
+			<string>%@ Widget Sitesi</string>
+		</dict>
+	</dict>
+	<key>%@ categories to choose from</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@category_count@</string>
+		<key>category_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Aralarından seçilebilecek %@ kategori</string>
+			<key>other</key>
+			<string>Seçebileceğiniz %@ kategori</string>
+		</dict>
+	</dict>
+	<key>%@ comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@comment_count@</string>
+		<key>comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ yorum</string>
+			<key>other</key>
+			<string>%@ yorum</string>
+		</dict>
+	</dict>
+	<key>%@ could not be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed_feed_count@</string>
+		<key>failed_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış eklenemedi.</string>
+			<key>other</key>
+			<string>%@ akış eklenemedi.</string>
+		</dict>
+	</dict>
+	<key>%@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@day_count@</string>
+		<key>day_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ gün</string>
+			<key>other</key>
+			<string>%@ gün</string>
+		</dict>
+	</dict>
+	<key>%@ feeds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_count@</string>
+		<key>feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış</string>
+			<key>other</key>
+			<string>%@ akış</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feed_count@</string>
+		<key>added_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış eklendi</string>
+			<key>other</key>
+			<string>%@ akış eklendi</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_label@</string>
+		<key>added_feeds_label</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış eklendi.</string>
+			<key>other</key>
+			<string>%@ akış eklendi.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds couldn’t be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unadded_feed_count@</string>
+		<key>unadded_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış eklenemedi.</string>
+			<key>other</key>
+			<string>%@ akış eklenemedi.</string>
+		</dict>
+	</dict>
+	<key>%@ feeds selected</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@selected_feed_count@</string>
+		<key>selected_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış seçildi</string>
+			<key>other</key>
+			<string>%@ akış seçildi</string>
+		</dict>
+	</dict>
+	<key>%@ focused stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@focused_count@</string>
+		<key>focused_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ odaktaki haber</string>
+			<key>other</key>
+			<string>%@ odaktaki haber</string>
+		</dict>
+	</dict>
+	<key>%@ opens</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_opens@</string>
+		<key>feed_opens</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ açılma</string>
+			<key>other</key>
+			<string>%@ açılma</string>
+		</dict>
+	</dict>
+	<key>%@ public comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@public_comment_count@</string>
+		<key>public_comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ herkese açık yorum</string>
+			<key>other</key>
+			<string>%@ herkese açık yorum</string>
+		</dict>
+	</dict>
+	<key>%@ searches</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@search_count@</string>
+		<key>search_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ arama</string>
+			<key>other</key>
+			<string>%@ arama</string>
+		</dict>
+	</dict>
+	<key>%@ shares</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@share_count@</string>
+		<key>share_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ paylaşım</string>
+			<key>other</key>
+			<string>%@ paylaşım</string>
+		</dict>
+	</dict>
+	<key>%@ sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@source_count@</string>
+		<key>source_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ kaynak</string>
+			<key>other</key>
+			<string>%@ kaynak</string>
+		</dict>
+	</dict>
+	<key>%@ stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@story_count@</string>
+		<key>story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ haber</string>
+			<key>other</key>
+			<string>%@ haber</string>
+		</dict>
+	</dict>
+	<key>%@ stories left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ haber kaldı</string>
+			<key>other</key>
+			<string>%@ haber kaldı</string>
+		</dict>
+	</dict>
+	<key>%@ stories/month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@average_stories_per_month@</string>
+		<key>average_stories_per_month</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Ayda %@ haber</string>
+			<key>other</key>
+			<string>Ayda %@ haber</string>
+		</dict>
+	</dict>
+	<key>%@ subscribers</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@num_subscribers@</string>
+		<key>num_subscribers</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ abone</string>
+			<key>other</key>
+			<string>%@ abone</string>
+		</dict>
+	</dict>
+	<key>%@ unread stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ okunmamış haber</string>
+			<key>other</key>
+			<string>%@ okunmamış haber</string>
+		</dict>
+	</dict>
+	<key>+ %@ more sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hidden_cluster_site_count@</string>
+		<key>hidden_cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>+ %@ site daha</string>
+			<key>other</key>
+			<string>+ %@ site daha</string>
+		</dict>
+	</dict>
+	<key>Add %1$@ feeds to “%2$@” folder</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@add_feeds_to_folder@</string>
+		<key>add_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>“%2$@” klasörüne %1$@ akış ekle</string>
+			<key>other</key>
+			<string>“%2$@” klasörüne %1$@ akış ekle</string>
+		</dict>
+	</dict>
+	<key>Added %1$@ feeds to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@added_feeds_to_folder@</string>
+		<key>added_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%1$@ akış %2$@ klasörüne eklendi.</string>
+			<key>other</key>
+			<string>%1$@ akış, %2$@ klasörüne eklendi.</string>
+		</dict>
+	</dict>
+	<key>Added %@ feeds.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_sentence@</string>
+		<key>added_feeds_sentence</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ akış eklendi.</string>
+			<key>other</key>
+			<string>%@ akış eklendi.</string>
+		</dict>
+	</dict>
+	<key>Also published by %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@cluster_site_count@</string>
+		<key>cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ sitede de yayımlandı</string>
+			<key>other</key>
+			<string>%@ başka sitede de yayımlandı</string>
+		</dict>
+	</dict>
+	<key>Delete %@ sites?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@delete_site_count@</string>
+		<key>delete_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ site silinsin mi?</string>
+			<key>other</key>
+			<string>%@ site silinsin mi?</string>
+		</dict>
+	</dict>
+	<key>Followers label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@follower_count@</string>
+		<key>follower_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Takipçi</string>
+			<key>other</key>
+			<string>Takipçi</string>
+		</dict>
+	</dict>
+	<key>Images from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_days@</string>
+		<key>image_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ gün önceki görseller</string>
+			<key>other</key>
+			<string>%@ gün önceki görseller</string>
+		</dict>
+	</dict>
+	<key>Images from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_hours@</string>
+		<key>image_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ saat önceki görseller</string>
+			<key>other</key>
+			<string>%@ saat önceki görseller</string>
+		</dict>
+	</dict>
+	<key>Imported %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@imported_count@</string>
+		<key>imported_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ site içe aktarıldı</string>
+			<key>other</key>
+			<string>İçe aktarılan %@ site</string>
+		</dict>
+	</dict>
+	<key>Mark these %@ stories read</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@visible_unread_count@</string>
+		<key>visible_unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ haberi okundu olarak işaretle</string>
+			<key>other</key>
+			<string>Bu %@ haberi okundu olarak işaretle</string>
+		</dict>
+	</dict>
+	<key>Mute %@ Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ siteyi sessize al</string>
+			<key>other</key>
+			<string>%@ Siteyi Sessize Al</string>
+		</dict>
+	</dict>
+	<key>Older than %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ günden eski</string>
+			<key>other</key>
+			<string>%@ günden eski</string>
+		</dict>
+	</dict>
+	<key>Shared Stories label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@shared_stories_count@</string>
+		<key>shared_stories_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Paylaşılan haber</string>
+			<key>other</key>
+			<string>Paylaşılan haber</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Geçmiş %@ gün saklanıyor</string>
+			<key>other</key>
+			<string>Son %@ günün verileri saklanıyor</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hours@</string>
+		<key>hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>Son %@ saat saklanıyor</string>
+			<key>other</key>
+			<string>Son %@ saatin verileri saklanıyor</string>
+		</dict>
+	</dict>
+	<key>Text from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_days@</string>
+		<key>text_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ gün önceki metin</string>
+			<key>other</key>
+			<string>%@ gün önceki metin</string>
+		</dict>
+	</dict>
+	<key>Text from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_hours@</string>
+		<key>text_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ saat önceki metin</string>
+			<key>other</key>
+			<string>%@ saat önceki metin</string>
+		</dict>
+	</dict>
+	<key>Updated %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_days_ago@</string>
+		<key>updated_days_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ gün önce güncellendi</string>
+			<key>other</key>
+			<string>%@ gün önce güncellendi</string>
+		</dict>
+	</dict>
+	<key>Updated %@ months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_months_ago@</string>
+		<key>updated_months_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ ay önce güncellendi</string>
+			<key>other</key>
+			<string>%@ ay önce güncellendi</string>
+		</dict>
+	</dict>
+	<key>Updated %@ weeks ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_weeks_ago@</string>
+		<key>updated_weeks_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ hafta önce güncellendi</string>
+			<key>other</key>
+			<string>%@ hafta önce güncellendi</string>
+		</dict>
+	</dict>
+	<key>You are subscribed to %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@subscription_count@</string>
+		<key>subscription_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ siteye abonesiniz</string>
+			<key>other</key>
+			<string>%@ siteye abonesiniz</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

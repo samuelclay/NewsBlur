@@ -8,13 +8,10 @@ import struct
 from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.utils import formats
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from pipeline.templatetags.pipeline import (
-    JavascriptNode,
-    StylesheetNode,
-    javascript,
-    stylesheet,
-)
+from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
 
 from apps.ask_ai.prompts import get_prompts_for_frontend
 from apps.ask_ai.providers import get_models_for_frontend
@@ -22,6 +19,7 @@ from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
 from utils import log as logging
+from utils.story_functions import localized_date, uses_english_dates
 from utils.user_functions import get_user
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -44,6 +42,13 @@ def localdatetime(context, date, date_format):
     user = get_user(context["user"])
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
+
+
+@register.simple_tag(takes_context=True)
+def localdate(context, date, english_format):
+    """utils_tags.py shows a calendar date in the viewer's timezone and language."""
+    user = get_user(context["user"])
+    return localized_date(localtime_for_timezone(date, user.profile.timezone), english_format)
 
 
 @register.inclusion_tag("reader/feeds_skeleton.xhtml", takes_context=True)
@@ -198,10 +203,15 @@ def render_manage_module(context):
 
 
 @register.inclusion_tag("reader/footer.xhtml", takes_context=True)
-def render_footer(context, page=None):
+def render_footer(context, page=None, show_language=True):
     return {
         "page": page,
+        "show_language": show_language,
         "MEDIA_URL": settings.MEDIA_URL,
+        "request": context.get("request"),
+        "user": context.get("user"),
+        # utils_tags.py hands every language_context value to the footer's language selector.
+        **{key: value for key, value in context.flatten().items() if key.startswith("ui_")},
     }
 
 
@@ -279,6 +289,9 @@ def commify(n):
     """
     if n is None:
         return None
+    if not uses_english_dates():
+        # utils_tags.py groups digits like the active language; English keeps its original commas.
+        return formats.number_format(n, use_l10n=True, force_grouping=True)
     n = str(n)
     if "." in n:
         dollars, cents = n.split(".")
@@ -403,15 +416,32 @@ def include_stylesheets_raw(parser, token):
 
 
 class DebugAssetsAwareStylesheetNode(StylesheetNode):
-    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG."""
+    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG, and links mirrored CSS on RTL pages."""
 
     def render(self, context):
+        # utils_tags.py: a right-to-left page links the mirrored copy of "common" or "blurblog"
+        # (utils/rtl_css.py, served by apps/profile/language.py) instead of the LTR bundle, so every
+        # template that includes one, including pages that include "common" twice, stays mirrored.
+        flipped_stylesheets = context.get("ui_flipped_stylesheets")
+        if flipped_stylesheets:
+            flipped_url = flipped_stylesheets.get(template.Variable(self.name).resolve(context))
+            if flipped_url:
+                return format_html(
+                    '<link href="{}" rel="stylesheet" type="text/css" media="all" />', flipped_url
+                )
         # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
         original_debug = settings.DEBUG
         try:
             if hasattr(settings, "DEBUG_ASSETS"):
                 settings.DEBUG = settings.DEBUG_ASSETS
             return super().render(context)
+        except ValueError as error:
+            # utils_tags.py keeps right-to-left pages up when code ships before its static build:
+            # the hand-written rtl overrides are optional, the mirrored common sheet still loads.
+            if template.Variable(self.name).resolve(context) != "rtl":
+                raise
+            logging.error(" ***> Missing the rtl stylesheet bundle, run deploy_static: %s" % error)
+            return ""
         finally:
             settings.DEBUG = original_debug
 

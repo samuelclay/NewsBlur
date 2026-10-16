@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FirstTimeUserViewController.m
 //  NewsBlur
@@ -50,7 +51,7 @@
     
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Get Started" style:UIBarButtonItemStylePlain target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:[NBLocalization text:@"Get Started"] style:UIBarButtonItemStylePlain target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
         

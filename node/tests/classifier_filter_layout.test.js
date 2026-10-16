@@ -7,6 +7,13 @@ function repo_file(relative_path) {
     return fs.readFileSync(path.join(__dirname, '..', '..', relative_path), 'utf8');
 }
 
+// classifier_filter_layout.test.js: UI text may be a plain literal or wrapped in gettext() for
+// localization, so match either form of the same English string.
+function ui_text(text) {
+    const escaped = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return '(?:gettext\\(\\s*)?[\'"]' + escaped + '[\'"]\\)?';
+}
+
 function css_rule(css, selector) {
     const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const match = css.match(new RegExp(escaped + '\\s*\\{([^}]*)\\}', 'm'));
@@ -24,7 +31,7 @@ test('trainer matching-stories control is an accessible sibling of the classifie
     );
 
     assert.match(js, /\$filter_view_button\s*=\s*has_filter_view\s*&&\s*\$\.make\('button'/);
-    assert.match(js, /'aria-label':\s*'View matching stories'/);
+    assert.match(js, new RegExp("'aria-label':\\s*" + ui_text('View matching stories')));
     assert.match(js, /\$filter_view_button\s*\n?\s*\]\);/);
     assert.match(item_rule, /display:\s*inline-flex;/);
     assert.match(button_rule, /position:\s*static;/);
@@ -53,7 +60,7 @@ test('story trainer classifier rows include the matching-stories button', functi
     assert.notEqual(function_start, -1);
     assert.notEqual(function_end, -1);
     assert.match(make_classifier, /\$filter_view_button\s*=\s*has_filter_view/);
-    assert.match(make_classifier, /'aria-label':\s*'View matching stories'/);
+    assert.match(make_classifier, new RegExp("'aria-label':\\s*" + ui_text('View matching stories')));
     assert.match(make_classifier, /\$filter_view_button[\s\S]*classifier_count/);
     assert.match(
         make_classifier,
@@ -95,8 +102,9 @@ test('story classifier pills embed browse buttons for matching-story views', fun
     assert.match(js, /classifier_filter_button_html\("author",\s*story\.story_authors\(\)\)/);
     assert.match(js, /classifier_filter_button_html\("tag",\s*tag\)/);
     assert.match(js, /classifier_filter_button_html\("url",\s*story\.get\("story_permalink"\)\)/);
-    assert.match(js, /title="View matching stories"/);
-    assert.match(js, /aria-label="View matching stories"/);
+    assert.match(js, /escaped_label\s*=\s*_\.escape\(gettext\('View matching stories'\)\)/);
+    assert.match(js, /title="' \+ escaped_label \+ '"/);
+    assert.match(js, /aria-label="' \+ escaped_label \+ '"/);
     assert.match(js, /data-classifier-type=/);
     assert.match(js, /data-classifier-value=/);
     assert.match(js, /NEWSBLUR\.ClassifierConstants\.MATCHING_STORIES_ICON \+/);
@@ -112,12 +120,13 @@ test('story classifier pills embed browse buttons for matching-story views', fun
     assert.match(js, /show_classifier_filter_tooltip:\s*function[\s\S]*?tippy\(e\.currentTarget/);
     assert.match(js, /trigger:\s*'manual'/);
 
-    const author_start = js.indexOf('<span class="NB-feed-story-author');
+    // classifier_filter_layout.test.js allows attributes such as dir="auto" before the class.
+    const author_start = js.search(/<span[^>]*class="NB-feed-story-author/);
     const author_button = js.indexOf('classifier_filter_button_html("author"', author_start);
     const author_end = js.indexOf('</span>', author_start);
     assert.ok(author_button > author_start && author_button < author_end);
 
-    const tag_start = js.indexOf('<div class="NB-feed-story-tag ');
+    const tag_start = js.search(/<div[^>]*class="NB-feed-story-tag /);
     const tag_button = js.indexOf('classifier_filter_button_html("tag"', tag_start);
     const tag_end = js.indexOf('</div>', tag_start);
     assert.ok(tag_button > tag_start && tag_button < tag_end);
@@ -140,13 +149,13 @@ test('filter banner labels each segment and keeps the clear action icon-only', f
     assert.doesNotMatch(js, /format_result_summary/);
     assert.doesNotMatch(js, /NB-classifier-filter-banner-subtext/);
     assert.doesNotMatch(css, /\.NB-classifier-filter-banner-subtext/);
-    assert.match(js, /'aria-label':\s*'Clear classifier filter'/);
-    assert.match(js, /feed:\s*'Site'/);
-    assert.match(js, /folder:\s*'Folder'/);
-    assert.match(js, /global:\s*'All'/);
-    assert.match(js, /short_label:\s*'Like'/);
-    assert.match(js, /short_label:\s*'Dislike'/);
-    assert.match(js, /short_label:\s*'Hide'/);
+    assert.match(js, new RegExp("'aria-label':\\s*" + ui_text('Clear classifier filter')));
+    assert.match(js, new RegExp('feed:\\s*' + ui_text('Site')));
+    assert.match(js, new RegExp('folder:\\s*' + ui_text('Folder')));
+    assert.match(js, new RegExp('global:\\s*' + ui_text('All')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Like')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Dislike')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Hide')));
     assert.match(js, /NB-classifier-filter-super-dislike-icon/);
     assert.doesNotMatch(js, /M3 3l18 18/);
     assert.match(js, /className:\s*'NB-classifier-filter-button-label'/);
@@ -232,11 +241,11 @@ test('filter banner renders notification channels inline with Premium Archive ga
     assert.doesNotMatch(js, /_make_notification_bell:\s*function/);
     assert.doesNotMatch(js, /_show_notification_popover:\s*function/);
     assert.match(js, /"click \.NB-classifier-filter-notification-button":\s*"toggle_notification"/);
-    assert.match(js, /className:\s*'NB-classifier-filter-tool-label'\s*},\s*'Notify on'/);
-    assert.match(js, /short_label:\s*'Email'/);
-    assert.match(js, /short_label:\s*'Web'/);
-    assert.match(js, /short_label:\s*'iOS'/);
-    assert.match(js, /short_label:\s*'Android'/);
+    assert.match(js, new RegExp("className:\\s*'NB-classifier-filter-tool-label'\\s*},\\s*" + ui_text('Notify on')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Email')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Web')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('iOS')));
+    assert.match(js, new RegExp('short_label:\\s*' + ui_text('Android')));
     assert.match(js, /NEWSBLUR\.Globals\.is_archive/);
     assert.match(js, /Upgrade to Premium Archive/);
     assert.match(js, /highlight_feature:\s*'notifications'/);

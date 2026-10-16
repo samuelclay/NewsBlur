@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  InteractionCell.m
 //  NewsBlur
@@ -84,9 +85,16 @@
     [super updateConstraints];
 }
 
+// InteractionCell.m measures the avatar from the left edge and mirrors it for Arabic and Hebrew, where the label's
+// leading constraint already starts from the right (NBLocalization.swift).
+- (CGRect)avatarFrame {
+    return [self.contentView nb_directionalRect:CGRectMake(leftMargin, topMargin, avatarSize, avatarSize)
+                                         within:self.contentView.bounds];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.avatarView.frame = [self avatarFrame];
 }
 
 
@@ -96,7 +104,7 @@
 
 - (void)setInteraction:(NSDictionary *)interaction {
     [self setNeedsUpdateConstraints];
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.avatarView.frame = [self avatarFrame];
     
     // this is for the rare instance when the with_user doesn't return anything
     if ([InteractionCell shouldCollapseInteraction:interaction]) {
@@ -112,24 +120,24 @@
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
     NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-    NSString *time = [NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]];
+    NSString *time = [NSString stringWithFormat:[NBLocalization text:@"%@ ago"], [interaction objectForKey:@"time_since"]];
     NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
     NSString *txt;
     
     if ([category isEqualToString:@"follow"]) {        
-        txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%@ is now following you."], username];
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n \n%@", username, title, comment];          
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your comment on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n \n%@", username, title, comment];  
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ replied to your reply on %2$@:\n \n%3$@"], username, title, comment];
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@."], username, title];
         } else {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n \n%@", username, title, comment];
+            txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ re-shared %2$@:\n \n%3$@"], username, title, comment];
         }
     } else if ([category isEqualToString:@"comment_like"]) {
-        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@.", username, title];
+        txt = [NSString stringWithFormat:[NBLocalization text:@"%1$@ favorited your comments on %2$@."], username, title];
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n \n%@", txt, time];
@@ -138,6 +146,11 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
     paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
     paragraphStyle.alignment = NSTextAlignmentLeft;
+    if (NBLocalization.isRightToLeft) {
+        // InteractionCell.m starts each translated sentence at the right, even when it begins with a Latin username.
+        paragraphStyle.alignment = NSTextAlignmentRight;
+        paragraphStyle.baseWritingDirection = NSWritingDirectionRightToLeft;
+    }
     paragraphStyle.lineSpacing = 1.0f;
     [attrStr setAttributes:@{NSParagraphStyleAttributeName: paragraphStyle}
                      range:NSMakeRange(0, [txtWithTime length])];

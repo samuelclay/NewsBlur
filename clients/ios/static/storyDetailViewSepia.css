@@ -112,6 +112,10 @@ a:active {
     border-left-color: #D4C8B8;
     background-color: #EDE0D0;
 }
+/* storyDetailViewSepia.css colors the right-hand quote border of right-to-left story text (storyDetailView.css). */
+html[dir="rtl"] .NB-story blockquote:dir(rtl) {
+    border-right-color: #D4C8B8;
+}
 
 .NB-story blockquote p {
     background-color: #EDE0D0;

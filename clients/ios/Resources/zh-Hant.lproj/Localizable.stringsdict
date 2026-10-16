@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%1$@ feeds couldn’t be added to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@unadded_feeds_in_folder@</string>
+		<key>unadded_feeds_in_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>無法將 %1$@ 個訂閱來源新增至 %2$@。</string>
+		</dict>
+	</dict>
+	<key>%@ Widget Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 個小工具網站</string>
+		</dict>
+	</dict>
+	<key>%@ categories to choose from</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@category_count@</string>
+		<key>category_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>共有 %@ 個類別可供選擇</string>
+		</dict>
+	</dict>
+	<key>%@ comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@comment_count@</string>
+		<key>comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 則留言</string>
+		</dict>
+	</dict>
+	<key>%@ could not be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@failed_feed_count@</string>
+		<key>failed_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>無法新增 %@。</string>
+		</dict>
+	</dict>
+	<key>%@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@day_count@</string>
+		<key>day_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 天</string>
+		</dict>
+	</dict>
+	<key>%@ feeds</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_count@</string>
+		<key>feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 個訂閱來源</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feed_count@</string>
+		<key>added_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已新增 %@ 個訂閱來源</string>
+		</dict>
+	</dict>
+	<key>%@ feeds added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_label@</string>
+		<key>added_feeds_label</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已新增 %@ 個訂閱來源。</string>
+		</dict>
+	</dict>
+	<key>%@ feeds couldn’t be added.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unadded_feed_count@</string>
+		<key>unadded_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>有 %@ 個訂閱來源無法新增。</string>
+		</dict>
+	</dict>
+	<key>%@ feeds selected</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@selected_feed_count@</string>
+		<key>selected_feed_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已選取 %@ 個訂閱來源</string>
+		</dict>
+	</dict>
+	<key>%@ focused stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@focused_count@</string>
+		<key>focused_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 篇焦點文章</string>
+		</dict>
+	</dict>
+	<key>%@ opens</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@feed_opens@</string>
+		<key>feed_opens</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 次開啟</string>
+		</dict>
+	</dict>
+	<key>%@ public comments</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@public_comment_count@</string>
+		<key>public_comment_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 則公開留言</string>
+		</dict>
+	</dict>
+	<key>%@ searches</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@search_count@</string>
+		<key>search_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 次搜尋</string>
+		</dict>
+	</dict>
+	<key>%@ shares</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@share_count@</string>
+		<key>share_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 次分享</string>
+		</dict>
+	</dict>
+	<key>%@ sources</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@source_count@</string>
+		<key>source_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 個來源</string>
+		</dict>
+	</dict>
+	<key>%@ stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@story_count@</string>
+		<key>story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 篇文章</string>
+		</dict>
+	</dict>
+	<key>%@ stories left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>還有 %@ 篇文章</string>
+		</dict>
+	</dict>
+	<key>%@ stories/month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@average_stories_per_month@</string>
+		<key>average_stories_per_month</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>每月 %@ 篇文章</string>
+		</dict>
+	</dict>
+	<key>%@ subscribers</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@num_subscribers@</string>
+		<key>num_subscribers</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 位訂閱者</string>
+		</dict>
+	</dict>
+	<key>%@ unread stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@unread_count@</string>
+		<key>unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 篇未讀文章</string>
+		</dict>
+	</dict>
+	<key>+ %@ more sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hidden_cluster_site_count@</string>
+		<key>hidden_cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>+ 另有 %@ 個網站</string>
+		</dict>
+	</dict>
+	<key>Add %1$@ feeds to “%2$@” folder</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@add_feeds_to_folder@</string>
+		<key>add_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>將 %1$@ 個訂閱來源新增至「%2$@」資料夾</string>
+		</dict>
+	</dict>
+	<key>Added %1$@ feeds to %2$@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@added_feeds_to_folder@</string>
+		<key>added_feeds_to_folder</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已將 %1$@ 個訂閱來源新增至 %2$@。</string>
+		</dict>
+	</dict>
+	<key>Added %@ feeds.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@added_feeds_sentence@</string>
+		<key>added_feeds_sentence</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已新增 %@ 個訂閱來源。</string>
+		</dict>
+	</dict>
+	<key>Also published by %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@cluster_site_count@</string>
+		<key>cluster_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>另有 %@ 個網站刊載</string>
+		</dict>
+	</dict>
+	<key>Delete %@ sites?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@delete_site_count@</string>
+		<key>delete_site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>要刪除 %@ 個網站嗎？</string>
+		</dict>
+	</dict>
+	<key>Followers label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@follower_count@</string>
+		<key>follower_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>追蹤者</string>
+		</dict>
+	</dict>
+	<key>Images from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_days@</string>
+		<key>image_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 天前的圖片</string>
+		</dict>
+	</dict>
+	<key>Images from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_cache_hours@</string>
+		<key>image_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 小時前的圖片</string>
+		</dict>
+	</dict>
+	<key>Imported %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@imported_count@</string>
+		<key>imported_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>已匯入 %@ 個網站</string>
+		</dict>
+	</dict>
+	<key>Mark these %@ stories read</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@visible_unread_count@</string>
+		<key>visible_unread_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>將這 %@ 篇文章標記為已讀</string>
+		</dict>
+	</dict>
+	<key>Mute %@ Sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@site_count@</string>
+		<key>site_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>靜音 %@ 個網站</string>
+		</dict>
+	</dict>
+	<key>Older than %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>超過 %@ 天</string>
+		</dict>
+	</dict>
+	<key>Shared Stories label</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@shared_stories_count@</string>
+		<key>shared_stories_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>分享的文章</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ days</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@days@</string>
+		<key>days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>保留過去 %@ 天的資料</string>
+		</dict>
+	</dict>
+	<key>Storing past %@ hours</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@hours@</string>
+		<key>hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>保留過去 %@ 小時的資料</string>
+		</dict>
+	</dict>
+	<key>Text from %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_days@</string>
+		<key>text_cache_days</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 天前的文字</string>
+		</dict>
+	</dict>
+	<key>Text from %@ hours ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text_cache_hours@</string>
+		<key>text_cache_hours</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 小時前的文字</string>
+		</dict>
+	</dict>
+	<key>Updated %@ days ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_days_ago@</string>
+		<key>updated_days_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 天前更新</string>
+		</dict>
+	</dict>
+	<key>Updated %@ months ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_months_ago@</string>
+		<key>updated_months_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 個月前更新</string>
+		</dict>
+	</dict>
+	<key>Updated %@ weeks ago</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@updated_weeks_ago@</string>
+		<key>updated_weeks_ago</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>%@ 週前更新</string>
+		</dict>
+	</dict>
+	<key>You are subscribed to %@ sites</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@subscription_count@</string>
+		<key>subscription_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>你已訂閱 %@ 個網站</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

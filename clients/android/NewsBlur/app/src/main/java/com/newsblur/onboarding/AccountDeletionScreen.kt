@@ -33,11 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.util.PrefConstants.ThemeValue
 
@@ -63,25 +65,23 @@ fun AccountDeletionScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Delete account", Modifier.weight(1f), color = colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
-                TextButton(onClick = if (state.deleted) onDeleted else onClose) { Text("Done", color = colors.siteLink) }
+                Text(stringResource(R.string.onboarding_delete_account), Modifier.weight(1f), color = colors.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                TextButton(onClick = if (state.deleted) onDeleted else onClose) { Text(stringResource(R.string.alert_dialog_done), color = colors.siteLink) }
             }
             Icon(Icons.Outlined.DeleteOutline, null, Modifier.size(42.dp), tint = colors.textSecondary)
             if (state.deleted) {
-                Text("Your account has been deleted.", color = colors.textPrimary, fontSize = 20.sp)
+                Text(stringResource(R.string.onboarding_your_account_has_been_deleted), color = colors.textPrimary, fontSize = 20.sp)
                 if (state.revocationRequired) {
-                    Text(
-                        "Disconnect NewsBlur from Sign in with Apple in your Apple Account settings to finish removing its authorization.",
+                    Text(stringResource(R.string.onboarding_disconnect_newsblur_from_sign_in_with_apple_in_your_apple_account),
                         color = colors.textSecondary,
                     )
                     TextButton(onClick = {
                         links.openUri("https://support.apple.com/en-us/102571")
-                    }) { Text("Apple Account settings", color = colors.siteLink) }
+                    }) { Text(stringResource(R.string.onboarding_apple_account_settings), color = colors.siteLink) }
                 }
-                Button(onClick = onDeleted) { Text("Done") }
+                Button(onClick = onDeleted) { Text(stringResource(R.string.alert_dialog_done)) }
             } else {
-                Text(
-                    "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.",
+                Text(stringResource(R.string.onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie),
                     color = colors.textSecondary,
                 )
                 if (state.accountLoaded && (state.verified || state.providers.isEmpty())) {
@@ -92,7 +92,7 @@ fun AccountDeletionScreen(
                                 password = it
                             },
                             label = {
-                                Text("Confirm your password")
+                                Text(stringResource(R.string.onboarding_confirm_your_password))
                             },
                             visualTransformation = PasswordVisualTransformation(),
                             singleLine = true,
@@ -104,30 +104,32 @@ fun AccountDeletionScreen(
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
-                    Text("Type Delete to permanently delete your account.", color = colors.textPrimary)
+                    val confirmationWord = stringResource(R.string.account_deletion_confirmation_word)
+                    Text(stringResource(R.string.onboarding_type_delete_to_permanently_delete_your_account, confirmationWord), color = colors.textPrimary)
                     OutlinedTextField(confirmation, {
                         confirmation = it
-                    }, label = { Text("Delete") }, singleLine = true, enabled = !state.busy, modifier = Modifier.fillMaxWidth())
+                    }, label = { Text(confirmationWord) }, singleLine = true, enabled = !state.busy, modifier = Modifier.fillMaxWidth())
                     Button(
                         onClick = { model.deleteAccount(confirmation, password) },
                         enabled =
-                            !state.busy && confirmation == "Delete" && (state.verified || password.isNotEmpty()),
+                            !state.busy && confirmation == confirmationWord && (state.verified || password.isNotEmpty()),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB74444)),
                         modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Permanently delete account") }
+                    ) { Text(stringResource(R.string.onboarding_permanently_delete_account)) }
                 } else if (state.accountLoaded) {
                     state.providers.forEach { provider ->
                         OutlinedButton(onClick = {
                             model.social(provider)
                         }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
-                            Text("Verify with ${if (provider == "apple") "Apple" else "Google"}", color = colors.textPrimary)
+                            val providerName = if (provider == "apple") "Apple" else "Google"
+                            Text(stringResource(R.string.onboarding_verify_with_provider, providerName), color = colors.textPrimary)
                         }
                     }
                 }
                 if (state.busy) CircularProgressIndicator(color = colors.textSecondary)
                 state.error?.let {
                     Text(it, color = colors.textPrimary)
-                    if (!state.accountLoaded) TextButton(onClick = model::loadAccount) { Text("Try again") }
+                    if (!state.accountLoaded) TextButton(onClick = model::loadAccount) { Text(stringResource(R.string.image_viewer_retry)) }
                 }
             }
         }

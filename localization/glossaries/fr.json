@@ -1,0 +1,439 @@
+{
+  "language": "fr",
+  "register": "Vous throughout (about 770 strings use vous/votre/vos, none use tu), which matches Feedly, Inoreader, Apple and Google in French; buttons and menu items use the infinitive or a noun phrase (Enregistrer, Ajouter un site, Marquer comme lu), instructions in running text use the vous imperative (Saisissez, Choisissez, Cliquez), and strings that drop into tu are flagged (medium).",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "article (l’article, les articles)",
+      "avoid": [
+        "story / stories (English)",
+        "actualité (for a NewsBlur story)",
+        "publication (for a story)"
+      ],
+      "note": "Catalog majority (about 1,085 of 1,120 strings). Story view → vue Article; Story title → titre de l’article; Story trainer → entraîneur d’articles. Also avoid where it means this concept: histoire."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "site (site web in prose)",
+      "avoid": [],
+      "note": "A subscription is a site in UI labels; feed is the technical feed."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "flux (le flux, les flux)",
+      "avoid": [
+        "feed (English)",
+        "fil (for a single feed)",
+        "source (for a feed)"
+      ],
+      "note": "Invariable plural. RSS feed → flux RSS; feed list → liste des flux; feed view → vue Flux."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "dossier",
+      "avoid": [],
+      "note": "Parent folder → dossier parent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "non lu / non lus (agreeing with articles)",
+      "avoid": [
+        "inédit"
+      ],
+      "note": "Unread only → Non lus uniquement; Next unread story → Article non lu suivant. Slider label Unread → Non lus."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Marquer comme lu / Articles lus",
+      "avoid": [
+        "Lire les articles / Lire des articles (for the Read Stories folder)"
+      ],
+      "note": "Read Stories is the folder of stories already read: Articles lus, never the imperative. Siri/Spotlight 'Read %@' opens a feed to read it: Lire %@. Mark newer/older as read → Marquer les plus récents / les plus anciens comme lus."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "enregistrer / Articles enregistrés",
+      "avoid": [
+        "sauvegarder (for saving a story)",
+        "sauver"
+      ],
+      "note": "Unsave → Retirer des articles enregistrés (short: Retirer des enregistrés); Saved Stories folder → Articles enregistrés."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "partager / Articles partagés / partage (noun)",
+      "avoid": [],
+      "note": "%d shares → %d partages."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog / blurblog (le blurblog, masculine)",
+      "avoid": [],
+      "note": "Product name, never translated; follow the English capitalization of each string."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Entraîneur d’intelligence / entraînement / entraîner",
+      "avoid": [
+        "Intelligence Trainer / Story Trainer (English)",
+        "formation (for training)",
+        "apprentissage (for training)",
+        "classer / classés (for trained)"
+      ],
+      "note": "Matches the catalog and the German/Spanish decisions. Intelligence training → entraînement de l’intelligence (tolerated: entraînement intelligent); Train this story/site → Entraîner sur cet article / Entraîner ce site; Story trainer → entraîneur d’articles; Site trainer → entraîneur du site."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Prioritaires (the level) / articles prioritaires",
+      "avoid": [
+        "Concentration",
+        "Se concentrer",
+        "favoris (clashes with saved/bookmarks)",
+        "à la une",
+        "à suivre",
+        "ciblés",
+        "sélectionnés",
+        "Focus (English) for the level"
+      ],
+      "note": "The catalog had seven different words for the Focus level. Slider: Tous / Non lus / Prioritaires. Focus stories → articles prioritaires; Unread + Focus → Non lus + prioritaires; 'in Focus mode/view' → parmi les articles prioritaires (or: en mode Prioritaires where a mode name is needed). Verbs in prose: focus or hide → mettre en avant ou masquer."
+    },
+    {
+      "concept": "like / dislike / super dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "J’aime / Je n’aime pas / Je déteste",
+      "avoid": [
+        "Super déplaisir",
+        "Très peu apprécié",
+        "Super-aversion",
+        "super désaccord",
+        "Très forte désapprobation",
+        "aimer (as a button label)"
+      ],
+      "note": "Super dislike → Je déteste (one level above Je n’aime pas). The trainer's 'beats' means Like outranks Dislike: l’emporte sur (or a > sign); '(like wins)' → (J’aime l’emporte). 'Positive?' is an 'Are you sure?' title → Vous êtes sûr ?"
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "masquer / masqué",
+      "avoid": [
+        "cacher (in UI labels)"
+      ],
+      "note": "Reserved for hiding stories; do not use it for muting sites."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "classificateur",
+      "avoid": [
+        "filtre (for a classifier)",
+        "règle de classement"
+      ],
+      "note": "Prompt classifier → classificateur par consigne; Regex classifiers → classificateurs regex / par expressions régulières."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "Archive Premium / Archives Premium / l’archive Premium (for the plan)",
+        "Archives (for the Archive plan)",
+        "premium lowercase as the plan name"
+      ],
+      "note": "Plan names stay in English as product names, matching the App Store and Play Store products and the German and Spanish decisions. Use them without an article (Passer à Premium Archive) or with offre/abonnement (l’offre Premium Archive, un abonnement Premium Archive). The story archive feature itself (not the plan) is l’archive / les archives. Generic 'premium feature/account' → fonctionnalité Premium / compte Premium."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Passer à (plan) / passer à une offre supérieure / Mettre à niveau (button)",
+      "avoid": [
+        "Mettre à jour (for upgrade)",
+        "Améliorer (for a plan upgrade)"
+      ],
+      "note": "Upgrade from Premium → Passer à une offre supérieure."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Préférences (NewsBlur's Preferences) / Paramètres (Settings)",
+      "avoid": [],
+      "note": "Réglages is Apple's own word for Settings on iOS and is tolerated there; do not churn between Paramètres and Réglages."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "s’abonner / abonnement / abonné",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "fil d’actualité",
+      "avoid": [
+        "River of News (English)",
+        "rivière",
+        "flux d’actualités (clashes with flux = feed)",
+        "Fil continu"
+      ],
+      "note": "Sentence case. Fil d’actualités (plural) is tolerated."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Articles de tous les sites",
+      "avoid": [
+        "Tous les articles du site (= all stories of one site)",
+        "Tous les articles des sites"
+      ],
+      "note": "It means stories from all sites, not all stories of this site. Open All Site Stories → Ouvrir les articles de tous les sites."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Articles des sites peu actifs",
+      "avoid": [
+        "Articles peu fréquents",
+        "Articles occasionnels du site",
+        "articles rares du site",
+        "sites peu fréquents",
+        "sites peu fréquentés (= rarely visited)"
+      ],
+      "note": "Stories from sites that publish rarely (below a stories-per-month threshold); the stories are not infrequent and it is not one site."
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Articles les plus lus / Lectures longues / Bonnes lectures / Articles partagés à l’échelle mondiale",
+      "avoid": [
+        "Articles très lus / largement lus",
+        "Good Reads (English)",
+        "actualités partagées"
+      ],
+      "note": "Good Reads is a folder of good stories, not books. Long Reads: Lectures longues is the catalog plurality; longs formats in prose is fine."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "tableau de bord",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Briefing quotidien / briefing",
+      "avoid": [
+        "Résumé quotidien (for the feature)",
+        "résumé (for a briefing)",
+        "Daily Briefing (English)"
+      ],
+      "note": "Catalog plurality (briefing 76 vs résumé 36). Résumé is reserved for summaries (Ask AI summaries, the briefing's summary style and length). Morning/Afternoon/Evening Briefing → Briefing du matin / de l’après-midi / du soir; Weekly → Briefing hebdomadaire; Twice-daily → Briefing biquotidien. 'Brief' (a summary length next to Medium/Detailed) → Bref / Court; 'Editorial' (a narrative style) → Éditorial."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "tag (le tag, les tags) / auteur",
+      "avoid": [
+        "étiquette (for a NewsBlur tag)"
+      ],
+      "note": "Catalog majority (93 vs 29). Story tags → tags de l’article; Saved story tags → tags des articles enregistrés."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "newsletter (la newsletter) / newsletter par e-mail",
+      "avoid": [
+        "infolettre (Quebec usage, 2 strings)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Découvrir / sites similaires or sites associés",
+      "avoid": [],
+      "note": "Both similaires and associés are fine; do not churn between them."
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "commentaire, commenter / réponse, répondre",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "suivre / abonné (follower) / abonnements (following) / amis",
+      "avoid": [
+        "Me suit (singular, for the Following Me tab)"
+      ],
+      "note": "Friends tabs, as on Twitter and Instagram in French: I'm Following → Mes abonnements; Following Me → Mes abonnés (must be distinguishable). Follow-up (Ask AI) → question complémentaire."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "mettre en sourdine / en sourdine / réactiver (unmute)",
+      "avoid": [
+        "Masquer (for mute: clashes with hiding stories)",
+        "Ignorer",
+        "Désactiver (for mute)"
+      ],
+      "note": "Catalog plurality. Mute Sites → Mettre des sites en sourdine; Muted → En sourdine; Unmute → Réactiver."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "notifications",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "vue Flux / vue Texte / vue Article / vue Originale (vue du site d’origine)",
+      "avoid": [
+        "Story view (English)",
+        "vue Histoire"
+      ],
+      "note": "Original site → site d’origine. Affichage texte is tolerated in prose."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Demander à l’IA",
+      "avoid": [
+        "Ask AI (English)",
+        "Interroger l’IA as the feature name"
+      ],
+      "note": "The button on every platform already says Demander à l’IA, so the feature is named the same way in prose: la fonction « Demander à l’IA ». Full sentences like 'Posez vos questions à l’IA' are fine when not naming the feature."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "importer / exporter / importation / exportation / OPML",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "compte / Se connecter / Se déconnecter / S’inscrire / Créer un compte / Connexion (noun)",
+      "avoid": [
+        "Se Connecter (title case)"
+      ],
+      "note": "The welcome page buttons were fixed to Se connecter; keep sentence case."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "e-mail / adresse e-mail / mot de passe",
+      "avoid": [
+        "courriel",
+        "email (without hyphen)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "trial / renew",
+      "en": "(?:\\btrials?\\b)|(?:\\brenew(al|als|ed|s|ing)?\\b)",
+      "use": "essai / renouveler / renouvellement",
+      "avoid": [],
+      "note": "Premium trial → essai Premium."
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "raccourcis clavier",
+      "avoid": [],
+      "note": "'%(shortcut)s to send' means press the shortcut to send: %(shortcut)s pour envoyer."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "flux web (feature name: Flux web)",
+      "avoid": [
+        "Web Feed (English)"
+      ],
+      "note": "Flux Web with a capital W is also correct French; do not churn between Web and web."
+    },
+    {
+      "concept": "story clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "regroupement des articles / groupe",
+      "avoid": [
+        "cluster (English) in UI labels"
+      ],
+      "note": "Clustered story → article regroupé."
+    },
+    {
+      "concept": "archive date filter",
+      "en": "\\b(newer|older)\\b",
+      "use": "Plus récents que : / Plus anciens que :",
+      "avoid": [
+        "sort-order wording (Plus récent d’abord)"
+      ],
+      "note": "Newer:/Older: are date bounds. '< 5/month' means fewer than 5 stories a month, not a price."
+    },
+    {
+      "concept": "relative times",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "il y a %s",
+      "avoid": [],
+      "note": "French 'il y a' takes the bare unit unchanged (il y a 3 jours), so the server's bare units and the clients' wrappers combine correctly."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "French guillemets « … » for quotation; sentence case labels; ’ apostrophe; space before ? ! : ; and inside « »",
+      "avoid": [
+        "ASCII \"…\" quotation marks",
+        "“…” English quotes",
+        "missing space before ? ! : ;",
+        "English Title Case (Ajouter + Découvrir)"
+      ],
+      "note": "The catalog consistently uses a regular space before ? ! : ; and inside « » (about 450 strings, one non-breaking). Converting those to U+202F/U+00A0 is a mechanical global pass, not per-string findings, so regular spaces are not flagged on their own; missing spaces are. ASCII apostrophes (33 strings) are tolerated and fixed only in passing. Thousands separator is a space (1 024), decimal comma, currency after the number (36 $/an). Ellipsis follows the English."
+    },
+    {
+      "concept": "plural forms",
+      "en": null,
+      "use": "count first, singular noun for 0 and 1",
+      "avoid": [
+        "count read as a name"
+      ],
+      "note": "French uses the singular for 0 and 1 (0 article, 1 article)."
+    },
+    {
+      "concept": "split layout",
+      "en": "\\bsplit\\b",
+      "use": "Partagé (vue partagée / écran partagé)",
+      "avoid": [
+        "Fractionné",
+        "En colonnes",
+        "Divisé"
+      ],
+      "note": "Layout option next to Liste, Grille, Magazine. Partagé is the consumer French for split view (écran partagé) and is what the welcome page already uses; it is only ambiguous with 'partagés' (shared stories) out of context, never in the layout picker."
+    },
+    {
+      "concept": "prompt (AI)",
+      "en": "\\bprompts?\\b",
+      "use": "consigne (the text a prompt classifier or image classifier scores stories against)",
+      "avoid": [
+        "invite (= command prompt)",
+        "prompt in UI labels for classifiers"
+      ],
+      "note": "Classifier UI and server errors say consigne (classificateur par consigne, Consigne manquante). The MCP feature's 'prompt templates' is a different concept kept as 'modèles de prompts', since prompts is the MCP primitive name."
+    }
+  ]
+}

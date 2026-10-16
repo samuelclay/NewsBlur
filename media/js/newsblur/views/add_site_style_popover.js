@@ -49,38 +49,38 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
         this.$el.html($.make('div', { className: 'NB-style-popover-content' }, [
             // Shared: Sort By (applies to both views)
             $.make('div', { className: 'NB-style-row' }, [
-                $.make('div', { className: 'NB-style-label' }, 'Sort By'),
+                $.make('div', { className: 'NB-style-label' }, gettext('Sort By')),
                 $.make('ul', { className: 'segmented-control NB-options-sort-order' }, [
-                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-subscribers', role: "button" }, 'Subscribers'),
-                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-stories', role: "button" }, 'Stories'),
-                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-name', role: "button" }, 'Name')
+                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-subscribers', role: "button" }, gettext('Subscribers')),
+                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-stories', role: "button" }, gettext('Stories')),
+                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-name', role: "button" }, gettext('Name'))
                 ])
             ]),
             // Shared: Show — hide sites the user already subscribes to
             $.make('div', { className: 'NB-style-row' }, [
-                $.make('div', { className: 'NB-style-label' }, 'Show'),
+                $.make('div', { className: 'NB-style-label' }, gettext('Show')),
                 $.make('ul', { className: 'segmented-control NB-options-show-subscribed' }, [
-                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-all', role: "button", title: 'Show every site, including ones you already follow' }, 'All sites'),
-                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-hide', role: "button", title: 'Hide sites you already subscribe to' }, 'New to me')
+                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-all', role: "button", title: gettext('Show every site, including ones you already follow') }, gettext('All sites')),
+                    $.make('li', { className: 'NB-show-subscribed-option NB-options-show-subscribed-hide', role: "button", title: gettext('Hide sites you already subscribe to') }, gettext('New to me'))
                 ])
             ]),
             // Shared: Updated — hide sites that have not published recently
             $.make('div', { className: 'NB-style-row' }, [
-                $.make('div', { className: 'NB-style-label' }, 'Updated'),
+                $.make('div', { className: 'NB-style-label' }, gettext('Updated')),
                 $.make('ul', { className: 'segmented-control NB-options-staleness' }, [
-                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-any', role: "button", title: 'No recency filter' }, 'Any time'),
-                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-5years', role: "button", title: 'Updated within the last 5 years' }, '5 years'),
-                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-year', role: "button", title: 'Updated within the last year' }, '1 year'),
-                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-month', role: "button", title: 'Updated within the last month' }, '1 month')
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-any', role: "button", title: gettext('No recency filter') }, gettext('Any time')),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-5years', role: "button", title: gettext('Updated within the last 5 years') }, gettext('5 years')),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-year', role: "button", title: gettext('Updated within the last year') }, gettext('1 year')),
+                    $.make('li', { className: 'NB-staleness-option NB-options-staleness-month', role: "button", title: gettext('Updated within the last month') }, gettext('1 month'))
                 ])
             ]),
             // Grid View Section
             $.make('div', { className: 'NB-style-section NB-style-section-grid' }, [
-                $.make('div', { className: 'NB-style-section-header' }, 'Grid View'),
+                $.make('div', { className: 'NB-style-section-header' }, gettext('Grid View')),
                 $.make('div', { className: 'NB-style-row' }, [
-                    $.make('div', { className: 'NB-style-label' }, 'Columns'),
+                    $.make('div', { className: 'NB-style-label' }, gettext('Columns')),
                     $.make('ul', { className: 'segmented-control NB-options-columns' }, [
-                        $.make('li', { className: 'NB-columns-option NB-options-columns-auto', role: "button" }, 'Auto'),
+                        $.make('li', { className: 'NB-columns-option NB-options-columns-auto', role: "button" }, gettext('Auto')),
                         $.make('li', { className: 'NB-columns-option NB-options-columns-1', role: "button" }, '1'),
                         $.make('li', { className: 'NB-columns-option NB-options-columns-2', role: "button" }, '2'),
                         $.make('li', { className: 'NB-columns-option NB-options-columns-3', role: "button" }, '3'),
@@ -90,9 +90,9 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             // List View Section
             $.make('div', { className: 'NB-style-section NB-style-section-list' }, [
-                $.make('div', { className: 'NB-style-section-header' }, 'List View'),
+                $.make('div', { className: 'NB-style-section-header' }, gettext('List View')),
                 $.make('div', { className: 'NB-style-row' }, [
-                    $.make('div', { className: 'NB-style-label' }, 'Stories'),
+                    $.make('div', { className: 'NB-style-label' }, gettext('Stories')),
                     $.make('ul', { className: 'segmented-control NB-options-stories-count' }, [
                         $.make('li', { className: 'NB-stories-count-option NB-options-stories-count-0', role: "button" }, '0'),
                         $.make('li', { className: 'NB-stories-count-option NB-options-stories-count-1', role: "button" }, '1'),
@@ -101,9 +101,9 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
                     ])
                 ]),
                 $.make('div', { className: 'NB-style-row' }, [
-                    $.make('div', { className: 'NB-style-label' }, 'Image Preview'),
+                    $.make('div', { className: 'NB-style-label' }, gettext('Image Preview')),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-imagepreview NB-options-image-preview' }, [
-                        $.make('li', { className: 'NB-image-preview-option NB-view-setting-imagepreview-none', role: "button" }, 'None'),
+                        $.make('li', { className: 'NB-image-preview-option NB-view-setting-imagepreview-none', role: "button" }, gettext('None')),
                         $.make('li', { className: 'NB-image-preview-option NB-view-setting-imagepreview-small-left', role: "button" }, [
                             $.make('img', { className: 'NB-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/image_preview_small_left.png' })
                         ]),
@@ -119,9 +119,9 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
                     ])
                 ]),
                 $.make('div', { className: 'NB-style-row' }, [
-                    $.make('div', { className: 'NB-style-label' }, 'Story Text'),
+                    $.make('div', { className: 'NB-style-label' }, gettext('Story Text')),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-contentpreview NB-options-content-preview' }, [
-                        $.make('li', { className: 'NB-content-preview-option NB-view-setting-contentpreview-title', role: "button" }, 'Title'),
+                        $.make('li', { className: 'NB-content-preview-option NB-view-setting-contentpreview-title', role: "button" }, gettext('Title')),
                         $.make('li', { className: 'NB-content-preview-option NB-view-setting-contentpreview-small', role: "button" }, $.make('div', { className: 'NB-icon' })),
                         $.make('li', { className: 'NB-content-preview-option NB-view-setting-contentpreview-medium', role: "button" }, $.make('div', { className: 'NB-icon' })),
                         $.make('li', { className: 'NB-content-preview-option NB-view-setting-contentpreview-large', role: "button" }, $.make('div', { className: 'NB-icon' }))

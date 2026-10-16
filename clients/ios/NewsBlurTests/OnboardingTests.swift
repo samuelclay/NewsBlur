@@ -906,13 +906,14 @@ import Combine
         XCTAssertEqual(bundles.feeds.first?.preview.stories.first?.imageUrls, ["https://example.com/story.jpg"])
         XCTAssertEqual(bundles.feeds.first?.preview.faviconUrl, "https://example.com/icon.png")
         let addition = bundles.queueSubscriptions(interest: "Science")
-        XCTAssertEqual(bundles.categoryStatus("Science"), "5 feeds selected")
+        XCTAssertEqual(bundles.categoryStatus("Science"), NBLocalization.plural("%@ feeds selected", groupedCount: 5))
         XCTAssertEqual(bundles.folderSummaries.map(\.title), ["Science"])
         XCTAssertEqual(bundles.summaryFeedCount, 5)
         XCTAssertNil(bundles.categoryStatus("Technology"))
         await addition?.value
         XCTAssertEqual(bundles.added.count, 4)
-        XCTAssertEqual(bundles.categoryStatus("Science"), "4 feeds added", "Failed requests must not count as added.")
+        XCTAssertEqual(bundles.categoryStatus("Science"), NBLocalization.plural("%@ feeds added", groupedCount: 4),
+                       "Failed requests must not count as added.")
         XCTAssertEqual(bundles.summaryFeedCount, 4)
         XCTAssertEqual(bundles.selection, ["https://example.com/youtube"])
         XCTAssertTrue(attempted.allSatisfy { $0.contains("new_folder=Science") && $0.removingPercentEncoding!.contains("folder_path=[]") })
@@ -920,7 +921,7 @@ import Combine
         await bundles.queueSubscriptions(interest: "Science")?.value
         XCTAssertEqual(attempted.count, 6)
         XCTAssertEqual(bundles.added.count, 5)
-        XCTAssertEqual(bundles.categoryStatus("Science"), "5 feeds added")
+        XCTAssertEqual(bundles.categoryStatus("Science"), NBLocalization.plural("%@ feeds added", groupedCount: 5))
         XCTAssertEqual(bundles.folderSummaries.first?.feeds.count, 5)
         XCTAssertTrue(bundles.selection.isEmpty)
     }

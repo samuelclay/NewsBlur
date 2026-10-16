@@ -28,7 +28,7 @@ struct TrainerView: View {
     var body: some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
+                Text(trainerQuestion)
                     .font(font(named: "WhitneySSm-Medium", size: 16))
                     .foregroundColor(textColor)
 
@@ -40,7 +40,7 @@ struct TrainerView: View {
                 Section(content: {
                     VStack(alignment: .leading) {
                         if interaction.isStoryTrainer {
-                            Text("Choose one or more words from the title:")
+                            Text(NBLocalization.text("Choose one or more words from the title:"))
                                 .font(font(named: "WhitneySSm-Medium", size: 12))
                                 .foregroundColor(secondaryTextColor)
                                 .padding([.top], 10)
@@ -348,11 +348,11 @@ struct TrainerView: View {
 
     var explainerHierarchyChain: some View {
         HStack(spacing: 0) {
-            explainerPill("Super dislike", color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
+            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
             explainerSeparator
-            explainerPill("Like", color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
+            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
             explainerSeparator
-            explainerPill("Dislike", color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
+            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
         }
     }
 
@@ -380,7 +380,7 @@ struct TrainerView: View {
     var explainerSeparator: some View {
         HStack(spacing: 3) {
             Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
-            Text("BEATS")
+            Text(NBLocalization.text("BEATS"))
                 .font(.system(size: 7, weight: .medium))
                 .tracking(0.5)
                 .foregroundColor(separatorTextColor)
@@ -395,7 +395,7 @@ struct TrainerView: View {
                 .padding(.top, 6)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Like beats any number of dislikes:")
+                Text(NBLocalization.text("Like beats any number of dislikes:"))
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(textColor)
 
@@ -409,7 +409,7 @@ struct TrainerView: View {
                     Text("\u{2192}")
                         .font(.system(size: 12))
                         .foregroundColor(explainerBodyColor)
-                    Text("Story is shown (like wins)")
+                    Text(NBLocalization.text("Story is shown (like wins)"))
                         .font(.system(size: 10, weight: .medium))
                         .italic()
                         .foregroundColor(likeColor)
@@ -417,7 +417,7 @@ struct TrainerView: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Super dislike beats any number of likes:")
+                Text(NBLocalization.text("Super dislike beats any number of likes:"))
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(textColor)
 
@@ -431,7 +431,7 @@ struct TrainerView: View {
                     Text("\u{2192}")
                         .font(.system(size: 12))
                         .foregroundColor(explainerBodyColor)
-                    Text("Story is hidden (super dislike wins)")
+                    Text(NBLocalization.text("Story is hidden (super dislike wins)"))
                         .font(.system(size: 10, weight: .medium))
                         .italic()
                         .foregroundColor(superDislikeColor)
@@ -462,8 +462,21 @@ struct TrainerView: View {
         )
     }
 
-    var feedOrStoryLowercase: String {
-        return interaction.isStoryTrainer ? "story" : "site"
+    /// TrainerView.swift translates the whole question, then colors the two inserted verbs wherever the language places them.
+    var trainerQuestion: AttributedString {
+        let template = interaction.isStoryTrainer
+            ? NBLocalization.text("What do you 👍 %1$@ and 👎 %2$@ about this story?")
+            : NBLocalization.text("What do you 👍 %1$@ and 👎 %2$@ about this site?")
+        let likeMarker = "\u{E000}"
+        let dislikeMarker = "\u{E001}"
+        var question = AttributedString(String(format: template, likeMarker, dislikeMarker))
+        for (marker, word, color) in [(likeMarker, NBLocalization.text("like"), Color.green), (dislikeMarker, NBLocalization.text("dislike"), Color.red)] {
+            guard let range = question.range(of: marker) else { continue }
+            var replacement = AttributedString(word)
+            replacement.foregroundColor = color
+            question.replaceSubrange(range, with: replacement)
+        }
+        return question
     }
 
     var listBackground: Color {

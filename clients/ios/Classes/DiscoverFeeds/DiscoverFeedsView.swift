@@ -25,7 +25,7 @@ struct DiscoverFeedsView: View {
         VStack(spacing: 0) {
             headerView
             if cardActions.isAdding || cardActions.isPreparingPreview {
-                ProgressView(cardActions.isAdding ? "Adding site…" : "Opening site…")
+                ProgressView(cardActions.isAdding ? NBLocalization.text("Adding site…") : NBLocalization.text("Opening site…"))
                     .font(.subheadline)
                     .foregroundColor(DiscoverColors.textPrimary)
                     .padding(12)
@@ -37,7 +37,7 @@ struct DiscoverFeedsView: View {
                     .padding(12)
             }
             if cardActions.addedSuccess {
-                Label("Site added", systemImage: "checkmark.circle.fill")
+                Label(NBLocalization.text("Site added"), systemImage: "checkmark.circle.fill")
                     .font(.subheadline)
                     .foregroundColor(DiscoverColors.accent)
                     .padding(12)
@@ -94,7 +94,7 @@ struct DiscoverFeedsView: View {
                 .resizable()
                 .frame(width: 16, height: 16)
                 .foregroundColor(DiscoverColors.textSecondary)
-            Text("Related sites")
+            Text(NBLocalization.text("Related sites"))
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
         }
@@ -115,7 +115,7 @@ struct DiscoverFeedsView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Close Related Sites")
+        .accessibilityLabel(NBLocalization.text("Close Related Sites"))
         .hoverEffect(.highlight)
     }
 
@@ -148,11 +148,11 @@ struct DiscoverFeedsView: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 8) {
-                                Text("Unlock full discovery")
+                                Text(NBLocalization.text("Unlock full discovery"))
                                     .font(.system(size: 13, weight: .semibold))
                                     .foregroundColor(DiscoverColors.textPrimary)
 
-                                Text("Premium Archive")
+                                Text(NBLocalization.text("Premium Archive"))
                                     .font(.system(size: 9, weight: .semibold))
                                     .textCase(.uppercase)
                                     .tracking(0.5)
@@ -170,7 +170,8 @@ struct DiscoverFeedsView: View {
                                     .cornerRadius(3)
                             }
 
-                            Text("Only \(indexedCount) of your \(feedCount) sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.")
+                            Text(String(format: NBLocalization.text("Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations."),
+                                        NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
                                 .font(.system(size: 12))
                                 .foregroundColor(DiscoverColors.textSecondary)
                                 .lineSpacing(2)
@@ -200,13 +201,14 @@ struct DiscoverFeedsView: View {
                         }
                         .frame(height: 6)
 
-                        Text("\(indexedCount) of \(feedCount) sites indexed")
+                        Text(String(format: NBLocalization.text("%1$@ of %2$@ sites indexed"),
+                                    NBLocalization.formattedCount(indexedCount), NBLocalization.formattedCount(feedCount)))
                             .font(.system(size: 11))
                             .foregroundColor(DiscoverColors.bannerProgressLabel)
                     }
 
                     // CTA button
-                    Text("Upgrade to Premium Archive")
+                    Text(NBLocalization.text("Upgrade to Premium Archive"))
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -275,7 +277,7 @@ struct DiscoverFeedsView: View {
             Spacer()
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: DiscoverColors.accent))
-            Text("Finding related sites...")
+            Text(NBLocalization.text("Finding related sites..."))
                 .font(.system(size: 14))
                 .foregroundColor(DiscoverColors.textSecondary)
             Spacer()

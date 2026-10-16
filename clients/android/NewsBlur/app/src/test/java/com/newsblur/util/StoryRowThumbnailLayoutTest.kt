@@ -58,13 +58,13 @@ class StoryRowThumbnailLayoutTest {
 
         assertEquals(96, rightSmall.widthPx)
         assertNull(rightSmall.fixedHeightPx)
-        assertEquals(8, rightSmall.rightMarginPx)
+        assertEquals(8, rightSmall.endMarginPx)
         assertEquals(StoryRowThumbnailVerticalMode.CENTERED, rightSmall.verticalMode)
         assertEquals(0.8f, rightSmall.rowHeightFraction)
 
         assertEquals(96, leftSmall.widthPx)
         assertNull(leftSmall.fixedHeightPx)
-        assertEquals(8, leftSmall.leftMarginPx)
+        assertEquals(8, leftSmall.startMarginPx)
         assertEquals(StoryRowThumbnailVerticalMode.CENTERED, leftSmall.verticalMode)
         assertEquals(0.8f, leftSmall.rowHeightFraction)
     }

@@ -138,7 +138,7 @@ struct AddSiteView: View {
             if viewModel.searchText.isEmpty, let onDiscover {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Discover more to read").font(.subheadline.weight(.semibold))
+                        Text(NBLocalization.text("Discover more to read")).font(.subheadline.weight(.semibold))
                             .foregroundColor(AddSiteColors.textSecondary)
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), spacing: 8)], spacing: 8) {
                             ForEach(DiscoverTab.allCases.filter { $0 != .search }) { tab in
@@ -215,7 +215,7 @@ struct AddSiteView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(AddSiteColors.textSecondary)
 
-            Text("Add site")
+            Text(NBLocalization.text("Add site"))
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(AddSiteColors.textPrimary)
 
@@ -237,8 +237,8 @@ struct AddSiteView: View {
                     )
             }
             .buttonStyle(.plain)
-            .help("Dismiss")
-            .accessibilityLabel("Dismiss")
+            .help(NBLocalization.text("Dismiss"))
+            .accessibilityLabel(NBLocalization.text("Dismiss"))
 #endif
         }
         
@@ -250,6 +250,12 @@ struct AddSiteView: View {
 
     // MARK: - URL Input Row (bottom)
 
+    // AddSiteView.swift translates the whole placeholder around the URL scheme, which stays an isolated
+    // left-to-right run (NBLocalization.isolateLeftToRight), like Android's AddSiteSheet.kt.
+    static var urlPlaceholder: String {
+        String(format: NBLocalization.text("%@ or search"), NBLocalization.isolateLeftToRight("https://"))
+    }
+
     private var urlInputRow: some View {
         HStack(spacing: 8) {
             HStack(spacing: 6) {
@@ -259,7 +265,8 @@ struct AddSiteView: View {
                     .frame(width: 16, height: 16)
                     .foregroundColor(AddSiteColors.textSecondary)
 
-                TextField("https:// or search", text: $viewModel.searchText)
+                // AddSiteView.swift isolates the URL scheme so "https://" reads left to right inside Arabic and Hebrew.
+                TextField(AddSiteView.urlPlaceholder, text: $viewModel.searchText)
                     .font(.system(size: 15))
                     .foregroundColor(AddSiteColors.textPrimary)
                     .autocapitalization(.none)
@@ -299,7 +306,7 @@ struct AddSiteView: View {
         HStack(spacing: 0) {
             Menu {
                 Button(action: { viewModel.selectedFolder = "" }) {
-                    Label("Top Level", systemImage: viewModel.selectedFolder.isEmpty ? "checkmark" : "folder")
+                    Label(NBLocalization.text("Top Level"), systemImage: viewModel.selectedFolder.isEmpty ? "checkmark" : "folder")
                 }
 
                 ForEach(viewModel.folders, id: \.self) { folder in
@@ -342,7 +349,7 @@ struct AddSiteView: View {
             Spacer().frame(width: 8)
 
             Button(action: { viewModel.addSite() }) {
-                Text("Add site")
+                Text(NBLocalization.text("Add site"))
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
@@ -389,7 +396,7 @@ struct AddSiteView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(AddSiteColors.textSecondary)
 
-            TextField("New folder name", text: $viewModel.newFolderName)
+            TextField(NBLocalization.text("New folder name"), text: $viewModel.newFolderName)
                 .font(.system(size: 14))
                 .foregroundColor(AddSiteColors.textPrimary)
                 .focused($focusedField, equals: .folder)
@@ -433,7 +440,7 @@ struct AddSiteView: View {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: AddSiteColors.accent))
 
-            Text("Adding site...")
+            Text(NBLocalization.text("Adding site..."))
                 .font(.system(size: 14))
                 .foregroundColor(AddSiteColors.textSecondary)
         }
@@ -477,7 +484,8 @@ struct AddSiteView: View {
 
                 VStack(alignment: .trailing, spacing: 2) {
                     let subs = result.numSubscribers
-                    Text("\(formatNumber(subs)) subscriber\(subs == 1 ? "" : "s")")
+                    // AddSiteView.swift uses the language's plural rules instead of appending an English "s".
+                    Text(verbatim: NBLocalization.plural("%@ subscribers", groupedCount: subs))
                         .font(.system(size: 11))
                         .foregroundColor(AddSiteColors.textSecondary)
 
@@ -566,11 +574,5 @@ struct AddSiteView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(AddSiteColors.textSecondary)
         }
-    }
-
-    private func formatNumber(_ number: Int) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
     }
 }

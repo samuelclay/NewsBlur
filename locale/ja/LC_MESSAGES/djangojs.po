@@ -1,0 +1,7830 @@
+# Japanese translations for NewsBlur.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the NewsBlur project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NewsBlur VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid " (%(count)s domain)"
+msgid_plural " (%(count)s domains)"
+msgstr[0] "（%(count)sドメイン）"
+
+msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
+msgstr "良い情報を見つけるのも素晴らしいことですが、気に入らない記事は簡単に無視できます。"
+
+msgid " Choose Premium, Archive, or Pro and check out."
+msgstr " プレミアム、アーカイブ、またはProを選択して、購入手続きに進んでください。"
+
+msgid " Gift for free (staff)"
+msgstr " 無料ギフト（スタッフ）"
+
+msgid " One click and they have premium."
+msgstr " ワンクリックでプレミアム会員に。"
+
+msgid " Send the gift link to anyone."
+msgstr " ギフトリンクを誰にでも送れます。"
+
+msgid " Sites will be ordered by popularity. Click on what you like and don't like."
+msgstr "サイトは人気順に並びます。好きなもの、好きでないものをクリックしてください。"
+
+msgid " You can easily train individual stories as you read."
+msgstr " 読みながら記事ごとに簡単に学習させることができます。"
+
+msgid " You get a full refund, automatically."
+msgstr " 全額が自動的に返金されます。"
+
+#, python-format
+msgid " — \"%(first)s\" or \"%(second)s\""
+msgstr " — 「%(first)s」または「%(second)s」"
+
+#, python-format
+msgid " — \"%(first)s\" or \"%(second)s\" (optional letter)"
+msgstr " — 「%(first)s」または「%(second)s」（任意の文字）"
+
+#, python-format
+msgid " — \"%(first)s\" then anything then \"%(second)s\""
+msgstr " — 「%(first)s」の後に任意の文字列、続いて「%(second)s」"
+
+#, python-format
+msgid " — \"%(prefix)s\" followed by numbers (%(examples)s)"
+msgstr " — 「%(prefix)s」の後に数字が続く（%(examples)s）"
+
+msgid " — Any of these words"
+msgstr " — 次のいずれかの単語"
+
+#, python-format
+msgid " — At least %(count)s character"
+msgid_plural " — At least %(count)s characters"
+msgstr[0] " — %(count)s 文字以上"
+
+#, python-format
+msgid " — Dollar amounts (%(examples)s)"
+msgstr " — 金額（%(examples)s）"
+
+#, python-format
+msgid " — Ends with \"%(text)s\""
+msgstr " — 「%(text)s」で終わる"
+
+#, python-format
+msgid " — Exact phrase \"%(phrase)s\""
+msgstr " — 完全一致フレーズ「%(phrase)s」"
+
+#, python-format
+msgid " — Exactly %(count)s digit (years)"
+msgid_plural " — Exactly %(count)s digits (years)"
+msgstr[0] " — 数字がちょうど %(count)s 桁（年）"
+
+#, python-format
+msgid " — Hashtags (%(examples)s)"
+msgstr " — ハッシュタグ (%(examples)s)"
+
+#, python-format
+msgid " — Mentions (%(examples)s)"
+msgstr " — メンション（%(examples)s）"
+
+#, python-format
+msgid " — NOT containing \"%(text)s\""
+msgstr " — 「%(text)s」を含まない"
+
+#, python-format
+msgid " — NOT containing word \"%(word)s\""
+msgstr " — 単語「%(word)s」を含まない"
+
+msgid " — Non-greedy: each quoted phrase"
+msgstr " — 非貪欲：引用符で囲まれた各フレーズ"
+
+#, python-format
+msgid " — Starts with \"%(text)s\""
+msgstr " — 「%(text)s」で始まる"
+
+msgid " — Starts with number and period"
+msgstr " — 数字とピリオドで始まる"
+
+msgid " — Two or more capital letters"
+msgstr " — 大文字が2文字以上"
+
+#, python-format
+msgid " — Whole word \"%(word)s\" only"
+msgstr " — 単語「%(word)s」全体のみ"
+
+msgid "$29/month"
+msgstr "月額29ドル"
+
+msgid "$36/year"
+msgstr "年額36ドル"
+
+msgid "$99/year"
+msgstr "年額99ドル"
+
+#, python-format
+msgid "%(account)s disconnected."
+msgstr "%(account)sが切断されました。"
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s 未読日数をカスタマイズ"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s（最大%(count)s日間）"
+
+#, python-format
+msgid "%(category)s topics"
+msgstr "%(category)sのトピック"
+
+#, python-format
+msgid "%(comments)s and %(replies)s"
+msgstr "%(comments)s と %(replies)s"
+
+#, python-format
+msgid "%(cost)s/story"
+msgstr "%(cost)s / 記事"
+
+#, python-format
+msgid "%(count)s byte"
+msgid_plural "%(count)s bytes"
+msgstr[0] "%(count)s バイト"
+
+#, python-format
+msgid "%(count)s channel"
+msgid_plural "%(count)s channels"
+msgstr[0] "%(count)sチャンネル"
+
+#, python-format
+msgid "%(count)s classifier has been deleted."
+msgid_plural "%(count)s classifiers have been deleted."
+msgstr[0] "%(count)s 件の分類器を削除しました。"
+
+#, python-format
+msgid "%(count)s classifier will be deleted"
+msgid_plural "%(count)s classifiers will be deleted"
+msgstr[0] "%(count)s件の分類器が削除されます"
+
+#, python-format
+msgid "%(count)s comment"
+msgid_plural "%(count)s comments"
+msgstr[0] "%(count)s件のコメント"
+
+#, python-format
+msgid "%(count)s content filter"
+msgid_plural "%(count)s content filters"
+msgstr[0] "%(count)s件のコンテンツフィルター"
+
+#, python-format
+msgid "%(count)s curated story"
+msgid_plural "%(count)s curated stories"
+msgstr[0] "厳選記事%(count)s件"
+
+#, python-format
+msgid "%(count)s day"
+msgid_plural "%(count)s days"
+msgstr[0] "%(count)s日"
+
+#, python-format
+msgid "%(count)s day ago"
+msgid_plural "%(count)s days ago"
+msgstr[0] "%(count)s日前"
+
+#, python-format
+msgid "%(count)s dislike"
+msgid_plural "%(count)s dislikes"
+msgstr[0] "%(count)s件の低評価"
+
+#, python-format
+msgid "%(count)s episode"
+msgid_plural "%(count)s episodes"
+msgstr[0] "%(count)sエピソード"
+
+#, python-format
+msgid "%(count)s feed"
+msgid_plural "%(count)s feeds"
+msgstr[0] "%(count)s件のフィード"
+
+#, python-format
+msgid "%(count)s follower"
+msgid_plural "%(count)s followers"
+msgstr[0] "%(count)s人のフォロワー"
+
+#, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s時間"
+
+#, python-format
+msgid "%(count)s hour ago"
+msgid_plural "%(count)s hours ago"
+msgstr[0] "%(count)s時間前"
+
+#, python-format
+msgid "%(count)s image filter"
+msgid_plural "%(count)s image filters"
+msgstr[0] "%(count)s個の画像フィルター"
+
+#, python-format
+msgid "%(count)s like"
+msgid_plural "%(count)s likes"
+msgstr[0] "%(count)s件の「いいね」"
+
+#, python-format
+msgid "%(count)s member"
+msgid_plural "%(count)s members"
+msgstr[0] "%(count)s人のメンバー"
+
+#, python-format
+msgid "%(count)s merge (%(categories)s categories into %(count)s)"
+msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
+msgstr[0] "%(count)s件を統合（%(categories)sカテゴリを%(count)sに）"
+
+#, python-format
+msgid "%(count)s minute ago"
+msgid_plural "%(count)s minutes ago"
+msgstr[0] "%(count)s 分前"
+
+#, python-format
+msgid "%(count)s month"
+msgid_plural "%(count)s months"
+msgstr[0] "%(count)sか月"
+
+#, python-format
+msgid "%(count)s newsletter"
+msgid_plural "%(count)s newsletters"
+msgstr[0] "%(count)s 件のニュースレター"
+
+#, python-format
+msgid "%(count)s of %(limit)s site"
+msgid_plural "%(count)s of %(limit)s sites"
+msgstr[0] "%(count)s / %(limit)sサイト"
+
+#, python-format
+msgid "%(count)s on all sites (%(stories)s)"
+msgstr "すべてのサイトで%(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s on folder (%(stories)s)"
+msgstr "フォルダーの%(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s on this site (%(stories)s)"
+msgstr "このサイトの%(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s open"
+msgid_plural "%(count)s opens"
+msgstr[0] "%(count)s回開かれました"
+
+#, python-format
+msgid "%(count)s page"
+msgid_plural "%(count)s pages"
+msgstr[0] "%(count)sページ"
+
+#, python-format
+msgid "%(count)s podcast"
+msgid_plural "%(count)s podcasts"
+msgstr[0] "%(count)s件のポッドキャスト"
+
+#, python-format
+msgid "%(count)s public comment"
+msgid_plural "%(count)s public comments"
+msgstr[0] "公開コメント%(count)s件"
+
+#, python-format
+msgid "%(count)s reply"
+msgid_plural "%(count)s replies"
+msgstr[0] "%(count)s件の返信"
+
+#, python-format
+msgid "%(count)s selected"
+msgid_plural "%(count)s selected"
+msgstr[0] "%(count)s件を選択中"
+
+#, python-format
+msgid "%(count)s share"
+msgid_plural "%(count)s shares"
+msgstr[0] "%(count)s件の共有"
+
+#, python-format
+msgid "%(count)s shared story"
+msgid_plural "%(count)s shared stories"
+msgstr[0] "共有した記事%(count)s件"
+
+#, python-format
+msgid "%(count)s site"
+msgid_plural "%(count)s sites"
+msgstr[0] "%(count)s 件のサイト"
+
+#, python-format
+msgid "%(count)s site available"
+msgid_plural "%(count)s sites available"
+msgstr[0] "利用可能なサイト：%(count)s件"
+
+#, python-format
+msgid "%(count)s site over limit"
+msgid_plural "%(count)s sites over limit"
+msgstr[0] "上限を超過したサイト%(count)s件"
+
+#, python-format
+msgid "%(count)s story"
+msgid_plural "%(count)s stories"
+msgstr[0] "%(count)s 件の記事"
+
+#, python-format
+msgid "%(count)s story has been deleted."
+msgid_plural "%(count)s stories have been deleted."
+msgstr[0] "%(count)s件の記事を削除しました。"
+
+#, python-format
+msgid "%(count)s story in archive"
+msgid_plural "%(count)s stories in archive"
+msgstr[0] "アーカイブに%(count)s件の記事"
+
+#, python-format
+msgid "%(count)s story per day"
+msgid_plural "%(count)s stories per day"
+msgstr[0] "1日あたり%(count)s件の記事"
+
+#, python-format
+msgid "%(count)s story per month"
+msgid_plural "%(count)s stories per month"
+msgstr[0] "月あたり%(count)s件の記事"
+
+#, python-format
+msgid "%(count)s story will be deleted"
+msgid_plural "%(count)s stories will be deleted"
+msgstr[0] "%(count)s件の記事が削除されます"
+
+#, python-format
+msgid "%(count)s story/mo"
+msgid_plural "%(count)s stories/mo"
+msgstr[0] "月あたり %(count)s 件"
+
+#, python-format
+msgid "%(count)s story/month"
+msgid_plural "%(count)s stories/month"
+msgstr[0] "%(count)s 件/月"
+
+#, python-format
+msgid "%(count)s subreddit"
+msgid_plural "%(count)s subreddits"
+msgstr[0] "%(count)s件のサブレディット"
+
+#, python-format
+msgid "%(count)s subscriber"
+msgid_plural "%(count)s subscribers"
+msgstr[0] "%(count)s人の購読者"
+
+#, python-format
+msgid "%(count)s subscribers"
+msgstr "%(count)s人の購読者"
+
+#, python-format
+msgid "%(count)s video"
+msgid_plural "%(count)s videos"
+msgstr[0] "%(count)s本の動画"
+
+#, python-format
+msgid "%(count)s week"
+msgid_plural "%(count)s weeks"
+msgstr[0] "%(count)s週間"
+
+#, python-format
+msgid "%(count)s word"
+msgid_plural "%(count)s words"
+msgstr[0] "%(count)s語"
+
+#, python-format
+msgid "%(count)s year"
+msgid_plural "%(count)s years"
+msgstr[0] "%(count)s年"
+
+#, python-format
+msgid "%(count)sd ago"
+msgid_plural "%(count)sd ago"
+msgstr[0] "%(count)s日前"
+
+#, python-format
+msgid "%(count)sh ago"
+msgid_plural "%(count)sh ago"
+msgstr[0] "%(count)s時間前"
+
+#, python-format
+msgid "%(count)sm ago"
+msgid_plural "%(count)sm ago"
+msgstr[0] "%(count)s分前"
+
+#, python-format
+msgid "%(count)smo ago"
+msgid_plural "%(count)smo ago"
+msgstr[0] "%(count)sか月前"
+
+#, python-format
+msgid "%(count)sw ago"
+msgid_plural "%(count)sw ago"
+msgstr[0] "%(count)s週間前"
+
+#, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s、%(time)s"
+
+#, python-format
+msgid "%(date_from)s → %(date_to)s"
+msgstr "%(date_from)s → %(date_to)s"
+
+#, python-format
+msgid "%(feed_title)s notifications are set up"
+msgstr "%(feed_title)sの通知を設定しました"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)sは好みではない記事です"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)sはまだ評価していない記事です"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)sは好みの記事です"
+
+#, python-format
+msgid "%(indexed)s of %(count)s site indexed"
+msgid_plural "%(indexed)s of %(count)s sites indexed"
+msgstr[0] "%(indexed)s / %(count)s件のサイトをインデックス済み"
+
+#, python-format
+msgid "%(indexed)s of %(count)s site indexed. Index remaining feeds to get better recommendations."
+msgid_plural "%(indexed)s of %(count)s sites indexed. Index remaining feeds to get better recommendations."
+msgstr[0] "%(count)s件中%(indexed)s件のサイトをインデックスしました。おすすめ精度を高めるには、残りのフィードもインデックスしてください。"
+
+#, python-format
+msgid "%(message)s Upgrade to see related stories from your entire archive."
+msgstr "%(message)s アップグレードすると、アーカイブ全体から関連記事を表示できます。"
+
+#, python-format
+msgid "%(name)s is sharing a story: %(title)s"
+msgstr "%(name)sが記事を共有しています: %(title)s"
+
+#, python-format
+msgid "%(price)s · Menu bar news ticker for Mac"
+msgstr "%(price)s · Mac用メニューバーのニュースティッカー"
+
+#, python-format
+msgid "%(price)s · iPhone &amp; iPad"
+msgstr "%(price)s · iPhone &amp; iPad"
+
+#, python-format
+msgid "%(price)s · iPhone, iPad &amp; Mac"
+msgstr "%(price)s · iPhone、iPad &amp; Mac"
+
+#, python-format
+msgid "%(shortcut)s to send"
+msgstr "%(shortcut)sで送信"
+
+#, python-format
+msgid "%(slot)s — %(date)s"
+msgstr "%(slot)s — %(date)s"
+
+#, python-format
+msgid "%(start)s to %(end)s hour"
+msgid_plural "%(start)s to %(end)s hours"
+msgstr[0] "%(start)s～%(end)s時間"
+
+#, python-format
+msgid "%(start)s to %(end)s minute"
+msgid_plural "%(start)s to %(end)s minutes"
+msgstr[0] "%(start)s～%(end)s分"
+
+#, python-format
+msgid "%(start)s – %(end)s"
+msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)sまたは%(cancel_link)s"
+
+#, python-format
+msgid "%(tier)s (staff)"
+msgstr "%(tier)s（スタッフ）"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "%(time)s前"
+
+#, python-format
+msgid "%(time)s left"
+msgstr "残り%(time)s"
+
+#, python-format
+msgid "%(topic)s Channels"
+msgstr "%(topic)sのチャンネル"
+
+#, python-format
+msgid "%(topic)s Newsletters"
+msgstr "%(topic)sのニュースレター"
+
+#, python-format
+msgid "%(topic)s Podcasts"
+msgstr "%(topic)sのポッドキャスト"
+
+#, python-format
+msgid "%(topic)s Sites"
+msgstr "%(topic)sのサイト"
+
+#, python-format
+msgid "%(topic)s Subreddits"
+msgstr "%(topic)sのサブレディット"
+
+#, python-format
+msgid "%(value_1)s Back"
+msgstr "%(value_1)s 戻る"
+
+#, python-format
+msgid "%(value_1)s Retrain all sites"
+msgstr "%(value_1)s すべてのサイトを再学習"
+
+#, python-format
+msgid "%(value_1)s Unlock this and all premium features."
+msgstr "%(value_1)s これとすべてのプレミアム機能を利用できます。"
+
+#, python-format
+msgid "%(value_1)s ago"
+msgstr "%(value_1)s前"
+
+#, python-format
+msgid "%(value_1)s is Premium"
+msgstr "%(value_1)sはプレミアム機能です"
+
+#, python-format
+msgid "%(weekday)s, %(date)s %(time)s"
+msgstr "%(weekday)s、%(date)s %(time)s"
+
+#, python-format
+msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
+msgstr "%(year)s年%(month)s%(day)s日（%(weekday)s）"
+
+msgid "&laquo; Re-upload your sites"
+msgstr "&laquo; サイトを再アップロード"
+
+msgid "&raquo; Want credit? Enter your Twitter username: "
+msgstr "&raquo; クレジット表記をご希望ですか？Twitterのユーザー名を入力してください： "
+
+#, python-format
+msgid "(%(count)s item)"
+msgid_plural "(%(count)s items)"
+msgstr[0] "（%(count)s件）"
+
+msgid "(GMT) Greenwich Mean Time : Belfast"
+msgstr "(GMT) グリニッジ標準時 : ベルファスト"
+
+msgid "(GMT) Greenwich Mean Time : Dublin"
+msgstr "(GMT) グリニッジ標準時 : ダブリン"
+
+msgid "(GMT) Greenwich Mean Time : Lisbon"
+msgstr "(GMT) グリニッジ標準時：リスボン"
+
+msgid "(GMT) Greenwich Mean Time : London"
+msgstr "(GMT) グリニッジ標準時 : ロンドン"
+
+msgid "(GMT) Monrovia, Reykjavik"
+msgstr "(GMT) モンロビア、レイキャビク"
+
+msgid "(GMT+01:00) Amsterdam, Berlin, Stockholm"
+msgstr "(GMT+01:00) アムステルダム、ベルリン、ストックホルム"
+
+msgid "(GMT+01:00) Belgrade, Budapest, Prague"
+msgstr "(GMT+01:00) ベオグラード、ブダペスト、プラハ"
+
+msgid "(GMT+01:00) Brussels, Copenhagen, Paris"
+msgstr "（GMT+01:00）ブリュッセル、コペンハーゲン、パリ"
+
+msgid "(GMT+01:00) West Central Africa"
+msgstr "(GMT+01:00) 中央アフリカ西部"
+
+msgid "(GMT+01:00) Windhoek"
+msgstr "(GMT+01:00) ウィントフック"
+
+msgid "(GMT+02:00) Beirut"
+msgstr "(GMT+02:00) ベイルート"
+
+msgid "(GMT+02:00) Cairo"
+msgstr "(GMT+02:00) カイロ"
+
+msgid "(GMT+02:00) Gaza"
+msgstr "(GMT+02:00) ガザ"
+
+msgid "(GMT+02:00) Harare, Pretoria"
+msgstr "（GMT+02:00）ハラレ、プレトリア"
+
+msgid "(GMT+02:00) Jerusalem"
+msgstr "(GMT+02:00) エルサレム"
+
+msgid "(GMT+02:00) Minsk, Kyiv"
+msgstr "(GMT+02:00) ミンスク、キーウ"
+
+msgid "(GMT+02:00) Syria"
+msgstr "(GMT+02:00) シリア"
+
+msgid "(GMT+03:00) Moscow, St. Petersburg"
+msgstr "（GMT+03:00）モスクワ、サンクトペテルブルク"
+
+msgid "(GMT+03:00) Nairobi"
+msgstr "(GMT+03:00) ナイロビ"
+
+msgid "(GMT+03:30) Tehran"
+msgstr "(GMT+03:30) テヘラン"
+
+msgid "(GMT+04:00) Abu Dhabi, Muscat"
+msgstr "(GMT+04:00) アブダビ、マスカット"
+
+msgid "(GMT+04:00) Yerevan"
+msgstr "(GMT+04:00) エレバン"
+
+msgid "(GMT+04:30) Kabul"
+msgstr "(GMT+04:30) カブール"
+
+msgid "(GMT+05:00) Ekaterinburg"
+msgstr "(GMT+05:00) エカテリンブルク"
+
+msgid "(GMT+05:00) Tashkent"
+msgstr "(GMT+05:00) タシケント"
+
+msgid "(GMT+05:30) Chennai, Mumbai, New Delhi"
+msgstr "(GMT+05:30) チェンナイ、ムンバイ、ニューデリー"
+
+msgid "(GMT+05:45) Kathmandu"
+msgstr "(GMT+05:45) カトマンズ"
+
+msgid "(GMT+06:00) Astana, Dhaka"
+msgstr "（GMT+06:00）アスタナ、ダッカ"
+
+msgid "(GMT+06:00) Novosibirsk"
+msgstr "(GMT+06:00) ノボシビルスク"
+
+msgid "(GMT+06:30) Yangon (Rangoon)"
+msgstr "（GMT+06:30）ヤンゴン（ラングーン）"
+
+msgid "(GMT+07:00) Bangkok, Hanoi, Jakarta"
+msgstr "(GMT+07:00) バンコク、ハノイ、ジャカルタ"
+
+msgid "(GMT+07:00) Krasnoyarsk"
+msgstr "(GMT+07:00) クラスノヤルスク"
+
+msgid "(GMT+08:00) Beijing, Chongqing, Hong Kong"
+msgstr "(GMT+08:00) 北京、重慶、香港"
+
+msgid "(GMT+08:00) Irkutsk, Ulaan Bataar"
+msgstr "(GMT+08:00) イルクーツク、ウランバートル"
+
+msgid "(GMT+08:00) Perth"
+msgstr "(GMT+08:00) パース"
+
+msgid "(GMT+08:45) Eucla"
+msgstr "(GMT+08:45) ユークラ"
+
+msgid "(GMT+09:00) Osaka, Sapporo, Tokyo"
+msgstr "(GMT+09:00) 大阪、札幌、東京"
+
+msgid "(GMT+09:00) Seoul"
+msgstr "(GMT+09:00) ソウル"
+
+msgid "(GMT+09:00) Yakutsk"
+msgstr "(GMT+09:00) ヤクーツク"
+
+msgid "(GMT+09:30) Adelaide"
+msgstr "(GMT+09:30) アデレード"
+
+msgid "(GMT+09:30) Darwin"
+msgstr "(GMT+09:30) ダーウィン"
+
+msgid "(GMT+10:00) Brisbane"
+msgstr "(GMT+10:00) ブリスベン"
+
+msgid "(GMT+10:00) Sydney, Hobart"
+msgstr "(GMT+10:00) シドニー、ホバート"
+
+msgid "(GMT+10:00) Vladivostok"
+msgstr "（GMT+10:00）ウラジオストク"
+
+msgid "(GMT+10:30) Lord Howe Island"
+msgstr "(GMT+10:30) ロード・ハウ島"
+
+msgid "(GMT+11:00) Magadan"
+msgstr "(GMT+11:00) マガダン"
+
+msgid "(GMT+11:00) Solomon Is., New Caledonia"
+msgstr "(GMT+11:00) ソロモン諸島、ニューカレドニア"
+
+msgid "(GMT+11:30) Norfolk Island"
+msgstr "(GMT+11:30) ノーフォーク島"
+
+msgid "(GMT+12:00) Anadyr, Kamchatka"
+msgstr "(GMT+12:00) アナディリ、カムチャツカ"
+
+msgid "(GMT+12:00) Auckland, Wellington"
+msgstr "(GMT+12:00) オークランド、ウェリントン"
+
+msgid "(GMT+12:00) Fiji, Kamchatka, Marshall Is."
+msgstr "（GMT+12:00）フィジー、カムチャツカ、マーシャル諸島"
+
+msgid "(GMT+12:45) Chatham Islands"
+msgstr "（GMT+12:45）チャタム諸島"
+
+msgid "(GMT+13:00) Nuku'alofa"
+msgstr "(GMT+13:00) ヌクアロファ"
+
+msgid "(GMT+14:00) Kiritimati"
+msgstr "(GMT+14:00) キリスィマスィ島"
+
+msgid "(GMT-01:00) Azores"
+msgstr "(GMT-01:00) アゾレス諸島"
+
+msgid "(GMT-01:00) Cape Verde Is."
+msgstr "(GMT-01:00) カーボベルデ諸島"
+
+msgid "(GMT-02:00) Mid-Atlantic"
+msgstr "(GMT-02:00) 中部大西洋"
+
+msgid "(GMT-03:00) Brasilia"
+msgstr "(GMT-03:00) ブラジリア"
+
+msgid "(GMT-03:00) Buenos Aires"
+msgstr "(GMT-03:00) ブエノスアイレス"
+
+msgid "(GMT-03:00) Greenland"
+msgstr "（GMT-03:00）グリーンランド"
+
+msgid "(GMT-03:00) Miquelon, St. Pierre"
+msgstr "(GMT-03:00) ミクロン島、サンピエール島"
+
+msgid "(GMT-03:00) Montevideo"
+msgstr "(GMT-03:00) モンテビデオ"
+
+msgid "(GMT-03:00) UTC-3"
+msgstr "(GMT-03:00) UTC-3"
+
+msgid "(GMT-03:30) Newfoundland"
+msgstr "(GMT-03:30) ニューファンドランド"
+
+msgid "(GMT-04:00) Atlantic Time (Canada)"
+msgstr "(GMT-04:00) 大西洋時間（カナダ）"
+
+msgid "(GMT-04:00) Atlantic Time (Goose Bay)"
+msgstr "(GMT-04:00) 大西洋時間（グースベイ）"
+
+msgid "(GMT-04:00) Brazil"
+msgstr "(GMT-04:00) ブラジル"
+
+msgid "(GMT-04:00) Faukland Islands"
+msgstr "(GMT-04:00) フォークランド諸島"
+
+msgid "(GMT-04:00) La Paz"
+msgstr "(GMT-04:00) ラパス"
+
+msgid "(GMT-04:00) Santiago"
+msgstr "(GMT-04:00) サンティアゴ"
+
+msgid "(GMT-04:30) Caracas"
+msgstr "(GMT-04:30) カラカス"
+
+msgid "(GMT-05:00) Bogota, Lima, Quito, Rio Branco"
+msgstr "(GMT-05:00) ボゴタ、リマ、キト、リオブランコ"
+
+msgid "(GMT-05:00) Cuba"
+msgstr "(GMT-05:00) キューバ"
+
+msgid "(GMT-05:00) Eastern Time (US & Canada)"
+msgstr "(GMT-05:00) 東部時間（米国・カナダ）"
+
+msgid "(GMT-06:00) Central Time (US & Canada)"
+msgstr "(GMT-06:00) 中部時間（米国・カナダ）"
+
+msgid "(GMT-06:00) Easter Island"
+msgstr "(GMT-06:00) イースター島"
+
+msgid "(GMT-06:00) Guadalajara, Mexico City"
+msgstr "(GMT-06:00) グアダラハラ、メキシコシティ"
+
+msgid "(GMT-06:00) Saskatchewan, Central America"
+msgstr "(GMT-06:00) サスカチュワン、中米"
+
+msgid "(GMT-07:00) Arizona"
+msgstr "(GMT-07:00) アリゾナ"
+
+msgid "(GMT-07:00) Chihuahua, La Paz, Mazatlan"
+msgstr "(GMT-07:00) チワワ、ラパス、マサトラン"
+
+msgid "(GMT-07:00) Mountain Time (US & Canada)"
+msgstr "(GMT-07:00) 山岳部時間（米国・カナダ）"
+
+msgid "(GMT-08:00) Pacific Time (US & Canada)"
+msgstr "(GMT-08:00) 太平洋時間（米国・カナダ）"
+
+msgid "(GMT-08:00) Pitcairn Islands"
+msgstr "(GMT-08:00) ピトケアン諸島"
+
+msgid "(GMT-08:00) Tijuana, Baja California"
+msgstr "（GMT-08:00）ティフアナ、バハ・カリフォルニア"
+
+msgid "(GMT-09:00) Alaska"
+msgstr "(GMT-09:00) アラスカ"
+
+msgid "(GMT-09:00) Gambier Islands"
+msgstr "(GMT-09:00) ガンビエ諸島"
+
+msgid "(GMT-09:30) Marquesas Islands"
+msgstr "(GMT-09:30) マルキーズ諸島"
+
+msgid "(GMT-10:00) Hawaii"
+msgstr "(GMT-10:00) ハワイ"
+
+msgid "(GMT-10:00) Hawaii-Aleutian"
+msgstr "（GMT-10:00）ハワイ・アリューシャン"
+
+msgid "(GMT-11:00) Midway Island, Samoa"
+msgstr "(GMT-11:00) ミッドウェー島、サモア"
+
+msgid "(no title)"
+msgstr "（タイトルなし）"
+
+msgid "(upcoming)"
+msgstr "（予定）"
+
+#, python-format
+msgid "+ %(value_1)s more site"
+msgid_plural "+ %(value_1)s more sites"
+msgstr[0] "+ ほか%(value_1)sサイト"
+
+msgid "+ New Folder..."
+msgstr "+ 新しいフォルダー..."
+
+msgid "/day"
+msgstr "/日"
+
+msgid "/mo"
+msgstr "/月"
+
+msgid "/month"
+msgstr "/月"
+
+msgid "/year"
+msgstr "/年"
+
+msgid "1 month"
+msgstr "1か月"
+
+msgid "1 year"
+msgstr "1年"
+
+msgid "28 tools are available, covering reading, actions, training, and discovery."
+msgstr "記事の閲覧、操作、学習、検索などに使える28個のツールがあります。"
+
+msgid "2x daily"
+msgstr "1日2回"
+
+msgid "3x daily"
+msgstr "1日3回"
+
+msgid "5 years"
+msgstr "5年"
+
+msgid "5× faster feed updates"
+msgstr "フィード更新が5倍高速"
+
+#, python-format
+msgid "< %(count)s story/month"
+msgid_plural "< %(count)s stories/month"
+msgstr[0] "月間 %(count)s 件未満"
+
+#, python-format
+msgid "< %(value_1)s/month"
+msgstr "< %(value_1)s/月"
+
+msgid "< 30 stories/month"
+msgstr "月30件未満"
+
+#, python-format
+msgid "<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days"
+msgid_plural "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days"
+msgstr[0] "<b>%(value_1)s日</b> &mdash; プラン上限の%(value_3)s日を超えています"
+
+#, python-format
+msgid "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">No matches</span>"
+msgstr "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">一致するものはありません</span>"
+
+#, python-format
+msgid "<strong>%(count)s day</strong> left in your premium trial"
+msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
+msgstr[0] "プレミアムトライアルの残り<strong>%(count)s日</strong>"
+
+msgid "A blurblog of shared stories"
+msgstr "共有した記事のBlurblog"
+
+msgid "A folder of feeds read as one stream"
+msgstr "複数のフィードを1つのストリームとして読むフォルダー"
+
+msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
+msgstr "NewsBlur の読者が共有した記事から、毎時間選ばれる新鮮なピックアップ。"
+
+#, python-format
+msgid "A gift from %(value_1)s has been applied to your account."
+msgstr "%(value_1)sからのギフトがアカウントに適用されました。"
+
+msgid "A second pass uses your hint to find the right pattern on the page."
+msgstr "2回目の処理では、ヒントを使ってページ上の適切なパターンを見つけます。"
+
+msgid "A single like overrides any number of dislikes"
+msgstr "「いいね」が1つあれば、「低評価」がいくつあっても優先されます"
+
+msgid "A single super dislike overrides everything"
+msgstr "「強い低評価」が1つあれば、ほかのすべてに優先します"
+
+msgid "A story diff with additions and deletions"
+msgstr "追加・削除箇所を表示する記事の差分"
+
+msgid "AI Filter"
+msgstr "AIフィルター"
+
+msgid "AI Model"
+msgstr "AIモデル"
+
+#, python-format
+msgid "AI filters are saved but won't run until you %(billing_link)s."
+msgstr "AIフィルターは保存されていますが、%(billing_link)sまで適用されません。"
+
+msgid "AI finds the stories"
+msgstr "AIが記事を見つけます"
+
+msgid "AI-curated summary of your top stories"
+msgstr "注目記事をAIが選んで要約"
+
+msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
+msgstr "ニュースフィードの記事をAIで分析し、あなたに合わせた毎日の要約を作成します。"
+
+#, python-format
+msgid "ALL CATEGORIES (%(value_1)s)"
+msgstr "すべてのカテゴリ（%(value_1)s）"
+
+msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
+msgstr "もちろんです。トレーナーを開いて、付けた高評価や低評価を外せばリセットできます。"
+
+msgid "Account"
+msgstr "アカウント"
+
+msgid "Accurate filters are happy filters"
+msgstr "正確なフィルターで快適に"
+
+msgid "Actions"
+msgstr "アクション"
+
+msgid "Active"
+msgstr "有効"
+
+msgid "Activities"
+msgstr "アクティビティ"
+
+msgid "Add"
+msgstr "追加"
+
+#, python-format
+msgid "Add %(count)s story tag"
+msgid_plural "Add %(count)s story tags"
+msgstr[0] "記事タグを%(count)s個追加"
+
+msgid "Add Folder"
+msgstr "フォルダーを追加"
+
+msgid "Add Site &amp; Share Story Bookmarklet"
+msgstr "サイト追加 &amp; 記事共有ブックマークレット"
+
+msgid "Add a forwarding address"
+msgstr "転送先アドレスを追加"
+
+msgid "Add a note to send along with the story…"
+msgstr "記事と一緒に送るメモを追加…"
+
+msgid "Add a site"
+msgstr "サイトを追加"
+
+msgid "Add a site to this folder"
+msgstr "このフォルダーにサイトを追加"
+
+msgid "Add any site or feed"
+msgstr "サイトやフィードを追加"
+
+msgid "Add custom tags to organize saved stories by topic"
+msgstr "カスタムタグを追加して、保存した記事をトピック別に整理"
+
+msgid "Add domains you never want to archive."
+msgstr "アーカイブしないドメインを追加してください。"
+
+msgid "Add folder"
+msgstr "フォルダーを追加"
+
+msgid "Add it to Claude Code with: claude mcp add --transport http newsblur https://newsblur.com/mcp/"
+msgstr "次のコマンドで Claude Code に追加できます: claude mcp add --transport http newsblur https://newsblur.com/mcp/"
+
+msgid "Add keyword filters that create their own briefing section. All keywords must match."
+msgstr "独自のブリーフィングセクションを作成するキーワードフィルターを追加します。すべてのキーワードが一致する必要があります。"
+
+msgid "Add keyword section"
+msgstr "キーワードセクションを追加"
+
+msgid "Add site"
+msgstr "サイトを追加"
+
+msgid "Add site/folder"
+msgstr "サイト／フォルダーを追加"
+
+msgid "Add story list"
+msgstr "記事一覧を追加"
+
+msgid "Add to Chrome"
+msgstr "Chromeに追加"
+
+msgid "Add to Firefox"
+msgstr "Firefoxに追加"
+
+msgid "Add to folder"
+msgstr "フォルダーに追加"
+
+#, python-format
+msgid "Added %(date)s"
+msgstr "%(date)sに追加"
+
+msgid "Added!"
+msgstr "追加しました！"
+
+msgid "Adding site..."
+msgstr "サイトを追加中..."
+
+msgid "Adding..."
+msgstr "追加中..."
+
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s秒後"
+
+msgid "After marking feed/folder read"
+msgstr "フィード／フォルダーを既読にした後"
+
+msgid "Afternoon"
+msgstr "午後"
+
+#, python-format
+msgid "Alert after %(value_1)s day without new stories"
+msgid_plural "Alert after %(value_1)s days without new stories"
+msgstr[0] "新着記事がない状態が%(value_1)s日続いたら通知"
+
+msgid "All"
+msgstr "すべて"
+
+msgid "All Categories"
+msgstr "すべてのカテゴリー"
+
+msgid "All Categorized"
+msgstr "すべて分類済み"
+
+msgid "All Done "
+msgstr "完了 "
+
+msgid "All Folders & Sites"
+msgstr "すべてのフォルダーとサイト"
+
+msgid "All Notifications"
+msgstr "すべての通知"
+
+msgid "All Shared Stories"
+msgstr "共有されたすべての記事"
+
+msgid "All Site Stories"
+msgstr "すべてのサイトの記事"
+
+msgid "All Stories"
+msgstr "すべての記事"
+
+msgid "All done!"
+msgstr "完了しました！"
+
+msgid "All feeds fetched every 5-15 minutes"
+msgstr "すべてのフィードを5～15分ごとに取得"
+
+#, python-format
+msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
+msgstr "すべてのパターンはデフォルトで大文字と小文字を区別しません。部分一致を避けるには、単語境界に %(code)s を使用してください。"
+
+msgid "All sites"
+msgstr "すべてのサイト"
+
+msgid "All sites in folder"
+msgstr "フォルダー内のすべてのサイト"
+
+msgid "All stories"
+msgstr "すべての記事"
+
+msgid ""
+"All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
+"styles, and auto mark-as-read."
+msgstr "人気フィードでは、すべてのユーザーに記事がクラスター表示されます。プレミアムアーカイブでは、切り替え、表示スタイル、自動既読などを自由に設定できます。"
+
+msgid "Allowed Domains"
+msgstr "許可するドメイン"
+
+msgid "Alphabetical"
+msgstr "アルファベット順"
+
+#, python-format
+msgid "Also delete %(value_1)s existing archive from this domain"
+msgid_plural "Also delete %(value_1)s existing archives from this domain"
+msgstr[0] "このドメインの既存アーカイブ%(value_1)s件も削除する"
+
+#, python-format
+msgid "Also published by %(value_1)s site"
+msgid_plural "Also published by %(value_1)s sites"
+msgstr[0] "ほか%(value_1)sサイトでも公開"
+
+msgid "Also works with Edge"
+msgstr "Edgeでも使えます"
+
+msgid "Always show Train/Save/Share buttons below stories"
+msgstr "記事の下に「学習」「保存」「共有」ボタンを常に表示する"
+
+msgid "Always show unread counts on folders"
+msgstr "フォルダーに未読数を常に表示"
+
+msgid ""
+"An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
+"topics, and custom sections you define."
+msgstr "トップ記事、長文記事、多く取り上げられているトピック、独自に設定したセクションを含む、AI生成のトップ記事要約です。"
+
+msgid "An error occurred during analysis."
+msgstr "分析中にエラーが発生しました。"
+
+msgid "An error occurred."
+msgstr "エラーが発生しました。"
+
+msgid "An error occurred. Please try again."
+msgstr "エラーが発生しました。もう一度お試しください。"
+
+msgid "Analysis timed out. Please try again."
+msgstr "分析がタイムアウトしました。もう一度お試しください。"
+
+msgid "Analyzing images..."
+msgstr "画像を分析中…"
+
+msgid "Analyzing page to find story patterns..."
+msgstr "記事のパターンを見つけるためページを分析中..."
+
+msgid "Analyzing saved stories..."
+msgstr "保存した記事を分析中..."
+
+msgid "Analyzing your archive..."
+msgstr "アーカイブを分析中..."
+
+#, python-format
+msgid "And you have %(count)s saved story."
+msgid_plural "And you have %(count)s saved stories."
+msgstr[0] "保存した記事が %(count)s 件あります。"
+
+msgid "Android notifications"
+msgstr "Android通知"
+
+msgid "Android notifications require Premium Archive"
+msgstr "Android通知にはプレミアムアーカイブが必要です"
+
+msgid "Animals"
+msgstr "動物"
+
+msgid "Animations"
+msgstr "アニメーション"
+
+msgid "Any"
+msgstr "すべて"
+
+msgid ""
+"Any public web page: Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
+"sites, and more."
+msgstr "公開されているあらゆるウェブページに対応：Twitterプロフィール、Redditスレッド、GitHubリポジトリ、商品ページ、求人掲示板、政府機関のサイトなど。"
+
+msgid "Any time"
+msgstr "すべての期間"
+
+#, python-format
+msgid "Applied %(count)s merge (%(stories)s)"
+msgid_plural "Applied %(count)s merges (%(stories)s)"
+msgstr[0] "%(count)s件の統合を適用しました（%(stories)s）"
+
+#, python-format
+msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
+msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
+msgstr[0] "%(count)s件中%(succeeded)s件の統合を適用しました（%(stories)s）"
+
+msgid "Apply"
+msgstr "適用"
+
+msgid "Apply All Merges"
+msgstr "すべての統合を適用"
+
+msgid "Apply Split"
+msgstr "分割を適用"
+
+msgid "Apply training across a folder"
+msgstr "フォルダー全体に学習を適用"
+
+msgid "Apply training globally"
+msgstr "学習内容を全体に適用"
+
+msgid "Applying..."
+msgstr "適用中…"
+
+msgid "Approve"
+msgstr "承認"
+
+msgid "Approved"
+msgstr "承認済み"
+
+msgid "April"
+msgstr "4月"
+
+msgid "Archive"
+msgstr "アーカイブ"
+
+msgid "Archive Assistant"
+msgstr "アーカイブアシスタント"
+
+msgid "Are the apps free?"
+msgstr "アプリは無料ですか？"
+
+msgid "Are the apps open source?"
+msgstr "アプリはオープンソースですか？"
+
+msgid "Arrows"
+msgstr "矢印"
+
+msgid "As a reminder, use the intelligence slider to select a filter:"
+msgstr "念のため、インテリジェンススライダーでフィルターを選択してください："
+
+msgid "Ask"
+msgstr "質問する"
+
+msgid "Ask AI"
+msgstr "AIに質問"
+
+msgid "Ask AI & Daily Briefing"
+msgstr "AIに質問＆デイリーブリーフィング"
+
+msgid "Ask AI about story"
+msgstr "記事についてAIに質問"
+
+msgid "Ask AI anything about your browsing history"
+msgstr "閲覧履歴についてAIに何でも質問"
+
+msgid "Ask AI can transcribe a podcast or video first, then answer questions about it."
+msgstr "「AIに質問」では、ポッドキャストや動画を文字起こししてから、その内容について質問できます。"
+
+msgid "Ask AI questions about stories"
+msgstr "記事についてAIに質問する"
+
+msgid "Ask AI with a choice of models"
+msgstr "モデルを選んでAIに質問"
+
+msgid "Ask a custom question..."
+msgstr "質問を自由に入力..."
+
+msgid "Ask a question..."
+msgstr "質問する…"
+
+msgid "Ask about your browsing history..."
+msgstr "閲覧履歴について質問する..."
+
+msgid ""
+"Ask questions about everything you've read. I can search your browsing history and find relevant "
+"information."
+msgstr "読んだ内容について何でも質問できます。閲覧履歴を検索して、関連情報を見つけます。"
+
+msgid "Ask questions, get summaries, or request key points"
+msgstr "質問したり、要約や要点をリクエストしたりできます"
+
+msgid "Audio"
+msgstr "音声"
+
+msgid "Audio not transcribed"
+msgstr "音声は文字起こしされていません"
+
+msgid "August"
+msgstr "8月"
+
+msgid "Author"
+msgstr "著者"
+
+msgid "Author Regex"
+msgstr "著者の正規表現"
+
+#, python-format
+msgid "Author filters found no stories in %(context)s."
+msgstr "著者フィルターにより、%(context)sの記事は見つかりませんでした。"
+
+msgid "Author filters found no stories in this view."
+msgstr "著者フィルターにより、この表示に記事が見つかりませんでした。"
+
+msgid "Author: "
+msgstr "著者："
+
+msgid "Authors"
+msgstr "著者"
+
+msgid "Auto"
+msgstr "自動"
+
+msgid "Auto Mark as Read"
+msgstr "自動で既読にする"
+
+msgid "Auto mark as read"
+msgstr "自動で既読にする"
+
+msgid "Auto theme follows your system's light and dark schedule."
+msgstr "自動テーマは、システムのライト／ダーク切り替えスケジュールに合わせます。"
+
+msgid "Auto-follow<br>my friends"
+msgstr "友達を<br>自動フォロー"
+
+msgid "Auto-generate"
+msgstr "自動生成"
+
+msgid "Auto-play"
+msgstr "自動再生"
+
+msgid "Auto-select top sites"
+msgstr "上位サイトを自動選択"
+
+msgid "Auto-selected by popularity"
+msgstr "人気順で自動選択"
+
+msgid "Automatically archive every page you visit to search with AI later."
+msgstr "閲覧したすべてのページを自動的にアーカイブし、後でAI検索できます。"
+
+msgid "Automatically generate briefings on schedule"
+msgstr "スケジュールに合わせてブリーフィングを自動生成"
+
+msgid "Automatically play next item in queue"
+msgstr "キュー内の次の項目を自動再生"
+
+msgid "Back"
+msgstr "戻る"
+
+#, python-format
+msgid "Back %(seconds)s second"
+msgid_plural "Back %(seconds)s seconds"
+msgstr[0] "%(seconds)s 秒戻る"
+
+msgid "Back to Categories"
+msgstr "カテゴリーに戻る"
+
+msgid "Back to Search"
+msgstr "検索に戻る"
+
+msgid "Back to classifier trainer"
+msgstr "分類トレーナーに戻る"
+
+msgid "Back to feeds"
+msgstr "フィードに戻る"
+
+msgid "Back to stories"
+msgstr "記事一覧に戻る"
+
+msgid "Back to trainer"
+msgstr "トレーナーに戻る"
+
+msgid "Background color"
+msgstr "背景色"
+
+msgid "Backup your sites"
+msgstr "サイトをバックアップ"
+
+msgid "Based on your interests"
+msgstr "興味に基づく"
+
+msgid "Begin Training"
+msgstr "学習を開始"
+
+msgid "Bio"
+msgstr "自己紹介"
+
+#, python-format
+msgid "Block %(value_1)s?"
+msgstr "%(value_1)sをブロックしますか？"
+
+msgid "Block Domain"
+msgstr "ドメインをブロック"
+
+msgid "Block URLs matching these patterns (supports wildcards like *.example.com)."
+msgstr "これらのパターンに一致するURLをブロックします（*.example.com のようなワイルドカードに対応）。"
+
+msgid "Blocked"
+msgstr "ブロック済み"
+
+msgid "Blocked Domains"
+msgstr "ブロックしたドメイン"
+
+msgid "Blocked URL Patterns"
+msgstr "ブロックするURLパターン"
+
+msgid "Blocking..."
+msgstr "ブロック中..."
+
+msgid "Blocklist"
+msgstr "ブロックリスト"
+
+msgid "Blocklist Settings"
+msgstr "ブロックリストの設定"
+
+msgid "Blurblog"
+msgstr "Blurblog"
+
+msgid "Blurblog Options"
+msgstr "Blurblogのオプション"
+
+msgid "Blurblog address"
+msgstr "Blurblogのアドレス"
+
+msgid "Blurblog permalinks"
+msgstr "Blurblogのパーマリンク"
+
+msgid "Blurblog title"
+msgstr "Blurblogのタイトル"
+
+msgid "Blurblogs"
+msgstr "Blurblog"
+
+msgid "Bookmarklet"
+msgstr "ブックマークレット"
+
+msgid "Bottom"
+msgstr "下部"
+
+msgctxt "summary length"
+msgid "Brief"
+msgstr "簡潔"
+
+msgid "Briefing"
+msgstr "ブリーフィング"
+
+msgid "Briefing Admin"
+msgstr "ブリーフィング管理"
+
+msgid "Briefing Preferences"
+msgstr "ブリーフィング設定"
+
+msgid "Briefing Settings"
+msgstr "ブリーフィング設定"
+
+msgid "Briefing generation timed out. Please try again."
+msgstr "ブリーフィングの生成がタイムアウトしました。もう一度お試しください。"
+
+msgid "Briefing length"
+msgstr "ブリーフィングの長さ"
+
+msgid "Browse Archives"
+msgstr "アーカイブを閲覧"
+
+msgid "Browse all your stories"
+msgstr "すべての記事を見る"
+
+msgid "Browse by Category"
+msgstr "カテゴリから探す"
+
+msgid "Browse domains from your archives and click to block them."
+msgstr "アーカイブ内のドメインを一覧し、クリックしてブロックできます。"
+
+msgid "Browse domains from your archives. Click on a domain to block it from future archiving."
+msgstr "アーカイブ内のドメインを閲覧できます。ドメインをクリックすると、今後のアーカイブ対象から除外できます。"
+
+msgid "Browse goodies & integrations"
+msgstr "便利な機能と連携を探す"
+
+msgid "Browse popular blogs, news sites, and publications with RSS feeds."
+msgstr "RSSフィードがある人気ブログ、ニュースサイト、出版物を探しましょう。"
+
+msgid "Browse saved stories by tag in the sidebar"
+msgstr "サイドバーでタグ別に保存済み記事を閲覧できます"
+
+#, python-format
+msgid ""
+"Browse the full %(faq_link_start)sFAQ page%(faq_link_end)s or %(forum_link_start)sask the "
+"community%(forum_link_end)s."
+msgstr "%(faq_link_start)sFAQページ%(faq_link_end)sをご覧いただくか、%(forum_link_start)sコミュニティに質問してください%(forum_link_end)s。"
+
+msgid "Browser"
+msgstr "ブラウザー"
+
+msgid "Browser Extensions"
+msgstr "ブラウザー拡張機能"
+
+msgid "Bullet points"
+msgstr "箇条書き"
+
+msgid "Bullets"
+msgstr "箇条書き"
+
+#, python-format
+msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
+msgstr "記事が10件以上あるカテゴリー (%(value_1)s)"
+
+msgid "CLI Tool"
+msgstr "CLIツール"
+
+msgid "CLI access requires Premium Archive or Premium Pro."
+msgstr "CLIの利用にはプレミアムアーカイブまたはプレミアム Proが必要です。"
+
+msgid "Can I search saved stories?"
+msgstr "保存した記事を検索できますか？"
+
+msgid "Can I search the archive?"
+msgstr "アーカイブを検索できますか？"
+
+msgid "Can I share tagged collections?"
+msgstr "タグ付きコレクションを共有できますか？"
+
+msgid "Can I train on newsletter content?"
+msgstr "ニュースレターの内容を学習させられますか？"
+
+msgid "Can I turn clustering off?"
+msgstr "クラスタリングをオフにできますか？"
+
+msgid "Can I undo training?"
+msgstr "学習を元に戻せますか？"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Cancel delete"
+msgstr "削除をキャンセル"
+
+msgid "Cancel mute"
+msgstr "ミュートを解除"
+
+msgid "Cancel rename"
+msgstr "名前変更をキャンセル"
+
+msgid "Cancel share"
+msgstr "共有を取り消す"
+
+msgid "Cancel subscription renewal"
+msgstr "サブスクリプションの更新をキャンセル"
+
+msgid "Cancel unfollow"
+msgstr "フォロー解除をキャンセル"
+
+msgid "Canceled Request"
+msgstr "リクエストをキャンセルしました"
+
+msgid "Cancelling..."
+msgstr "キャンセル中..."
+
+msgid "Categories"
+msgstr "カテゴリ"
+
+msgid "Categories &amp; Tags"
+msgstr "カテゴリ&amp;タグ"
+
+#, python-format
+msgid "Categorize %(count)s Uncategorized"
+msgid_plural "Categorize %(count)s Uncategorized"
+msgstr[0] "未分類の%(count)s件を分類"
+
+msgid "Categorizing..."
+msgstr "分類中..."
+
+msgid "Category"
+msgstr "カテゴリ"
+
+#, python-format
+msgid "Category: %(value_1)s"
+msgstr "カテゴリ: %(value_1)s"
+
+msgid "Change"
+msgstr "変更"
+
+msgid "Change RSS Feed Address"
+msgstr "RSSフィードのアドレスを変更"
+
+msgid "Change Website Address"
+msgstr "ウェブサイトのアドレスを変更"
+
+msgid "Change billing details"
+msgstr "請求先情報を変更"
+
+msgid "Change folders"
+msgstr "フォルダーを変更"
+
+msgid "Change password"
+msgstr "パスワードを変更"
+
+msgid "Change what you like above..."
+msgstr "上の項目をお好みに合わせて変更してください..."
+
+msgid "Change your blurblog settings above"
+msgstr "上記でBlurblogの設定を変更してください"
+
+msgid "Change your credit card"
+msgstr "クレジットカードを変更"
+
+msgid "Change your profile above"
+msgstr "上記でプロフィールを変更"
+
+msgid "Check back later for popular sites being added by NewsBlur users."
+msgstr "NewsBlurユーザーが追加する人気サイトを、後でもう一度確認してください。"
+
+msgid "Check what you like above..."
+msgstr "上で好みの項目を選んでください..."
+
+msgid "Check your email..."
+msgstr "メールを確認してください..."
+
+msgid "Checking recent pages..."
+msgstr "最近のページを確認中…"
+
+msgid "Chinese"
+msgstr "中国語"
+
+#, python-format
+msgid "Choose %(count)s site"
+msgid_plural "Choose %(count)s sites"
+msgstr[0] "%(count)s件のサイトを選択"
+
+#, python-format
+msgid "Choose Your %(count)s site"
+msgid_plural "Choose Your %(count)s sites"
+msgstr[0] "サイトを%(count)s件選択"
+
+msgid "Choose Your sites"
+msgstr "サイトを選択"
+
+msgid "Choose a story pattern"
+msgstr "記事のパターンを選択"
+
+msgid "Choose another language"
+msgstr "別の言語を選択"
+
+msgid "Choose categories"
+msgstr "カテゴリーを選択"
+
+msgid "Choose how many days back"
+msgstr "何日前までさかのぼるか選択"
+
+msgid "Choose model"
+msgstr "モデルを選択"
+
+msgid "Choose sites"
+msgstr "サイトを選択"
+
+msgid "Choose when stories are marked as read"
+msgstr "記事を既読にするタイミングを選択"
+
+msgid "Choose which AI model writes your briefing"
+msgstr "ブリーフィングを作成するAIモデルを選択"
+
+msgid "Choose which feeds are used to build your briefing"
+msgstr "ブリーフィングの作成に使うフィードを選択"
+
+msgid "Choose which feeds to include"
+msgstr "含めるフィードを選択"
+
+msgid "Choose which sections appear in your briefing"
+msgstr "ブリーフィングに表示するセクションを選択"
+
+msgid "Choose your browser"
+msgstr "ブラウザを選択"
+
+msgid "Choose your language"
+msgstr "言語を選択"
+
+msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
+msgstr "お好みのAIモデルを選択：Claude、GPT、Gemini、またはGrok"
+
+msgid "Choose your sites"
+msgstr "サイトを選択"
+
+msgid "Classifier filter scope"
+msgstr "分類フィルターの適用範囲"
+
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "分類器の範囲には%(tier_link)sが必要です"
+
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（xAI）に対応。いつでも切り替えられます。"
+
+msgid "Cleanup and rearrange feeds"
+msgstr "フィードを整理・並べ替え"
+
+msgid "Clear"
+msgstr "クリア"
+
+msgid "Clear all filters"
+msgstr "すべてのフィルターを解除"
+
+msgid "Clear all overrides"
+msgstr "すべての上書きをクリア"
+
+msgid "Clear classifier filter"
+msgstr "分類フィルターをクリア"
+
+msgid "Clear custom range"
+msgstr "カスタム期間をクリア"
+
+msgid "Clear date range"
+msgstr "日付範囲をクリア"
+
+msgid "Clear filter"
+msgstr "フィルターをクリア"
+
+msgid "Clear icon"
+msgstr "アイコンを消去"
+
+msgid "Clear search"
+msgstr "検索をクリア"
+
+#, python-format
+msgid "Cleared %(count)s override."
+msgid_plural "Cleared %(count)s overrides."
+msgstr[0] "%(count)s件の上書き設定をクリアしました。"
+
+msgid "Click any source card on a clustered story to read that version instead."
+msgstr "クラスター化された記事のソースカードをクリックすると、そのバージョンを読めます。"
+
+msgid "Click any source to read that version instead, or mark all duplicates as read at once"
+msgstr "ソースをクリックすると、そのバージョンの記事を読めます。または、重複記事をまとめて既読にできます"
+
+msgid "Click to block"
+msgstr "クリックしてブロック"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Close Training and Start Reading"
+msgstr "学習を終了して読み始める"
+
+msgid "Close player"
+msgstr "プレーヤーを閉じる"
+
+msgid "Cluster duplicate stories across all your feeds"
+msgstr "すべてのフィードで重複する記事をまとめる"
+
+msgid "Cluster preview:"
+msgstr "クラスターのプレビュー："
+
+msgid "Cluster related stories"
+msgstr "関連する記事をまとめる"
+
+msgid "Clustered stories in the titles view"
+msgstr "タイトル表示で記事をグループ化"
+
+msgid "Collapse All Folders"
+msgstr "すべてのフォルダーを折りたたむ"
+
+msgid "Collapse Folder"
+msgstr "フォルダーを折りたたむ"
+
+msgid "Collapse all"
+msgstr "すべて折りたたむ"
+
+msgid "Collapse story"
+msgstr "記事を折りたたむ"
+
+msgid "Collapsed"
+msgstr "折りたたみ済み"
+
+msgid "Color"
+msgstr "色"
+
+msgid "Columns"
+msgstr "列"
+
+msgid "Comfortable"
+msgstr "ゆったり"
+
+msgid "Comfortable spacing: less dense"
+msgstr "ゆったりした間隔：密度を下げる"
+
+msgid "Commands output JSON you can pipe straight to jq."
+msgstr "コマンドは、jqにそのまま渡せるJSONを出力します。"
+
+msgid "Comment"
+msgstr "コメント"
+
+msgid "Comment on stories"
+msgstr "記事にコメントする"
+
+msgid "Comments:"
+msgstr "コメント："
+
+msgid "Compact"
+msgstr "コンパクト"
+
+msgid "Compact spacing: more dense"
+msgstr "コンパクトな間隔：より高密度"
+
+msgid "Complete data ownership"
+msgstr "データを完全に自分で管理"
+
+msgid "Concise bullet points highlighting key takeaways from each story"
+msgstr "各記事の重要なポイントを簡潔な箇条書きで表示"
+
+msgid "Confirming mark as read"
+msgstr "既読にする操作を確認"
+
+msgid "Congratulations! You're done."
+msgstr "おめでとうございます！完了しました。"
+
+#, python-format
+msgid "Connect %(provider)s"
+msgstr "%(provider)sを接続"
+
+msgid ""
+"Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
+"subscriptions from Claude Code, Codex, or any MCP-compatible tool."
+msgstr "AIエージェントをNewsBlurアカウントに接続できます。Claude Code、Codex、その他のMCP対応ツールから、フィードの読み込み、記事の振り分け、分類器の学習、購読の管理ができます。"
+
+msgid "Connect AI agents with MCP server and CLI"
+msgstr "MCPサーバーとCLIでAIエージェントを接続"
+
+msgid ""
+"Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
+"shares to Slack; trigger custom workflows from your training."
+msgstr "NewsBlurを何百ものサービスに接続できます。記事をPocket、Instapaper、Evernote、Notionに保存したり、Slackで共有したり、学習内容をきっかけに独自のワークフローを実行したりできます。"
+
+msgid "Connected"
+msgstr "接続済み"
+
+msgid "Connected accounts"
+msgstr "接続済みアカウント"
+
+msgid "Content"
+msgstr "コンテンツ"
+
+msgid "Content Filter"
+msgstr "コンテンツフィルター"
+
+msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
+msgstr "フィードごとのクラスタリングはフィードオプションのポップオーバーで、全体の設定は「設定」>「記事」で変更できます。"
+
+msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
+msgstr "アーカイブするウェブサイトを管理します。ブロックしたサイトはブラウザー拡張機能によって保存されません。"
+
+msgid "Copied"
+msgstr "コピーしました"
+
+msgid "Copied URL"
+msgstr "URLをコピーしました"
+
+msgid "Copied text"
+msgstr "テキストをコピーしました"
+
+msgid "Copied!"
+msgstr "コピーしました！"
+
+msgid "Copy"
+msgstr "コピー"
+
+msgid "Copy Text"
+msgstr "テキストをコピー"
+
+msgid "Copy URL"
+msgstr "URLをコピー"
+
+msgid "Could not disconnect this account. Please try again."
+msgstr "このアカウントを切断できませんでした。もう一度お試しください。"
+
+msgid "Could not find RSS feed for this URL"
+msgstr "このURLのRSSフィードが見つかりませんでした"
+
+msgid "Could not load FAQ. Please try again."
+msgstr "FAQを読み込めませんでした。もう一度お試しください。"
+
+msgid "Counting is difficult"
+msgstr "数えるのは難しい"
+
+msgid "Counting..."
+msgstr "集計中..."
+
+msgid "Create"
+msgstr "作成"
+
+msgid "Create Account"
+msgstr "アカウントを作成"
+
+msgid "Create Gift Link"
+msgstr "ギフトリンクを作成"
+
+msgid "Create a feed for any website, even without RSS."
+msgstr "RSSがなくても、あらゆるウェブサイトのフィードを作成できます。"
+
+msgid "Create a new subfolder"
+msgstr "新しいサブフォルダーを作成"
+
+msgid "Created:"
+msgstr "作成日："
+
+msgid "Creative"
+msgstr "クリエイティブ"
+
+msgid "Credit"
+msgstr "クレジット"
+
+msgid "Cursors"
+msgstr "カーソル"
+
+msgid "Custom Add Site URL"
+msgstr "カスタムのサイト追加URL"
+
+msgid "Custom CSS"
+msgstr "カスタムCSS"
+
+msgid "Custom CSS for your Blurblog"
+msgstr "Blurblog用のカスタムCSS"
+
+msgid "Custom CSS/JavaScript"
+msgstr "カスタム CSS／JavaScript"
+
+msgid "Custom Date Range"
+msgstr "カスタム期間"
+
+msgid "Custom JavaScript"
+msgstr "カスタムJavaScript"
+
+msgid "Custom RSS feeds for saved stories"
+msgstr "保存した記事用のカスタムRSSフィード"
+
+msgid "Custom URLs"
+msgstr "カスタムURL"
+
+msgid "Custom date range"
+msgstr "日付範囲を指定"
+
+msgid "Custom icon"
+msgstr "カスタムアイコン"
+
+msgid "Customizable writing style and length"
+msgstr "文体と長さをカスタマイズ"
+
+msgid "Customize auto-read by site or folder"
+msgstr "サイトまたはフォルダーごとに自動既読をカスタマイズ"
+
+msgid "Customize briefing sections and delivery schedule"
+msgstr "ブリーフィングのセクションと配信スケジュールをカスタマイズ"
+
+msgid "Customize with Claude Code"
+msgstr "Claude Codeでカスタマイズ"
+
+msgid "DIY"
+msgstr "DIY"
+
+msgid "Daily"
+msgstr "毎日"
+
+msgid "Daily Briefing"
+msgstr "デイリーブリーフィング"
+
+msgid "Daily Briefing with story summaries"
+msgstr "記事の要約付きデイリーブリーフィング"
+
+msgid ""
+"Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
+"stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
+msgstr "デイリーブリーフィングはプレミアムアーカイブの機能です。現在のプランでは、各ブリーフィングの最初の3件の記事をプレビューできます。アップグレードすると、すべての記事を閲覧でき、設定したスケジュールでブリーフィングが自動作成されます。"
+
+msgid "Daily briefing with your top stories and keywords"
+msgstr "トップ記事とキーワードをまとめた毎日のブリーフィング"
+
+msgid "Daily distribution of stories"
+msgstr "記事の日別配信状況"
+
+msgid "Dark"
+msgstr "ダーク"
+
+msgid "Dark mode and reading customization"
+msgstr "ダークモードと表示設定"
+
+msgid "Dashboard"
+msgstr "ダッシュボード"
+
+msgid "Date"
+msgstr "日付"
+
+#, python-format
+msgid "Date: %(value_1)s → %(value_2)s"
+msgstr "日付: %(value_1)s → %(value_2)s"
+
+msgid "Days"
+msgstr "日"
+
+msgid "Days of unreads"
+msgstr "未読の日数"
+
+msgid "December"
+msgstr "12月"
+
+msgid "Deep reads the community gave real time to"
+msgstr "コミュニティが時間をかけて読んだ記事"
+
+msgid "Default"
+msgstr "デフォルト"
+
+msgid "Default Blocklist"
+msgstr "デフォルトのブロックリスト"
+
+msgid "Default folder"
+msgstr "デフォルトのフォルダー"
+
+msgid "Default layout"
+msgstr "デフォルトのレイアウト"
+
+msgid "Default story order"
+msgstr "記事のデフォルトの並び順"
+
+msgid "Default view"
+msgstr "デフォルトの表示"
+
+msgid "Delete"
+msgstr "削除"
+
+#, python-format
+msgid "Delete %(count)s site"
+msgid_plural "Delete %(count)s sites"
+msgstr[0] "%(count)s件のサイトを削除"
+
+msgid "Delete It. It Just Won't Work!"
+msgstr "削除する。どうしても動かない！"
+
+msgid "Delete Share"
+msgstr "共有を削除"
+
+msgid "Delete Tag"
+msgstr "タグを削除"
+
+msgid "Delete all of my sites"
+msgstr "すべてのサイトを削除"
+
+msgid "Delete my account"
+msgstr "アカウントを削除"
+
+msgid "Delete my intelligence training classifiers"
+msgstr "インテリジェンス学習の分類器を削除"
+
+msgid "Delete my saved stories"
+msgstr "保存した記事をすべて削除"
+
+msgid "Delete my shared stories"
+msgstr "共有した記事を削除"
+
+msgid "Delete saved search"
+msgstr "保存した検索を削除"
+
+msgid "Delete sites"
+msgstr "サイトを削除"
+
+msgid "Delete this folder"
+msgstr "このフォルダーを削除"
+
+msgid "Delete this site"
+msgstr "このサイトを削除"
+
+msgid "Deleted!"
+msgstr "削除しました！"
+
+msgid "Deleting..."
+msgstr "削除中..."
+
+msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
+msgstr "探している記事の内容を説明してください。ページを再解析して見つけます。"
+
+msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
+msgstr "トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事を優先表示または非表示にします。"
+
+msgid "Describe what to focus or hide"
+msgstr "注目する内容、または非表示にする内容を説明してください"
+
+msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
+msgstr "探したい内容を入力すると、AIがプロンプトに基づいて各記事の画像を分析します。"
+
+msgctxt "summary length"
+msgid "Detailed"
+msgstr "詳細"
+
+msgid "Devices"
+msgstr "デバイス"
+
+msgid "Disable daily briefings"
+msgstr "デイリーブリーフィングを無効にする"
+
+msgid "Disable social features"
+msgstr "ソーシャル機能を無効にする"
+
+msgid "Disable story clustering"
+msgstr "記事のクラスタリングを無効にする"
+
+msgid "Disable the highlighter"
+msgstr "ハイライトを無効にする"
+
+#, python-format
+msgid "Disconnect %(account)s? You will no longer be able to use it to sign in to this NewsBlur account."
+msgstr "%(account)sとの連携を解除しますか？このNewsBlurアカウントへのサインインに使用できなくなります。"
+
+#, python-format
+msgid "Disconnect %(provider)s (%(email)s)"
+msgstr "%(provider)s（%(email)s）との接続を解除"
+
+msgid "Disconnecting..."
+msgstr "切断中..."
+
+msgid "Discover"
+msgstr "見つける"
+
+msgid "Discover Channels"
+msgstr "チャンネルを探す"
+
+msgid "Discover Newsletters"
+msgstr "ニュースレターを探す"
+
+msgid "Discover Podcasts"
+msgstr "ポッドキャストを見つける"
+
+msgid "Discover Sites"
+msgstr "サイトを探す"
+
+msgid "Discover Subreddits"
+msgstr "サブレディットを探す"
+
+msgid "Discover feeds organized by topic and interest."
+msgstr "トピックや興味ごとに整理されたフィードを探す。"
+
+msgid "Discover more to read"
+msgstr "もっと読むものを見つける"
+
+msgid "Discover new feeds by topic and search your Reading Archive"
+msgstr "トピックから新しいフィードを見つけ、閲覧アーカイブを検索"
+
+msgid "Discover related stories across your archive"
+msgstr "アーカイブ内の関連する記事を見つける"
+
+msgid "Discover related stories and sites"
+msgstr "関連する記事やサイトを見つける"
+
+msgid "Discover sites"
+msgstr "サイトを見つける"
+
+msgid "Dislike"
+msgstr "低評価"
+
+msgid "Dislike "
+msgstr "低評価 "
+
+msgid "Dislike matching stories"
+msgstr "一致する記事を低評価する"
+
+msgid "Dislikes"
+msgstr "低評価"
+
+msgid "Dismiss"
+msgstr "閉じる"
+
+msgid "Do I get a unique email address?"
+msgstr "専用のメールアドレスを利用できますか？"
+
+msgid "Do the apps work offline?"
+msgstr "アプリはオフラインでも使えますか？"
+
+msgid "Does Ask AI work with audio and video?"
+msgstr "「AIに質問」は音声や動画にも対応していますか？"
+
+msgid "Does training work across all my feeds?"
+msgstr "学習内容はすべてのフィードに適用されますか？"
+
+#, python-format
+msgid "Domain: %(value_1)s"
+msgstr "ドメイン: %(value_1)s"
+
+msgid "Don't automatically mark stories as read"
+msgstr "記事を自動的に既読にしない"
+
+msgid "Don't bother showing tooltips"
+msgstr "ツールチップを表示しない"
+
+msgid "Don't do anything on double-clicks"
+msgstr "ダブルクリック時に何もしない"
+
+msgid "Don't see your subreddit? Subscribe directly by name."
+msgstr "お探しのサブレディットが見つかりませんか？名前を指定して直接登録できます。"
+
+msgid "Don't show a preview, only show the story title"
+msgstr "プレビューを表示せず、記事のタイトルだけを表示"
+
+msgid "Don't show a thumbnail"
+msgstr "サムネイルを表示しない"
+
+msgid "Done!"
+msgstr "完了！"
+
+msgid "Double-clicking a site"
+msgstr "サイトをダブルクリック"
+
+msgid "Double-clicking an unread count"
+msgstr "未読数をダブルクリック"
+
+msgid "Download"
+msgstr "ダウンロード"
+
+msgid "Download NewsBlur from the App Store or Google Play"
+msgstr "App StoreまたはGoogle PlayからNewsBlurをダウンロード"
+
+msgid "Download OPML"
+msgstr "OPMLをダウンロード"
+
+msgid "Download this XML file as a backup"
+msgstr "バックアップとしてこのXMLファイルをダウンロード"
+
+msgid "Drag categories here to exclude them"
+msgstr "除外するカテゴリをここにドラッグ"
+
+msgid ""
+"Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
+" reading."
+msgstr "ボタンをブックマークツールバーにドラッグしてください。どのサイトでも、そのサイトのフィードを購読したり、読んでいる記事を共有したりできます。"
+
+msgid "Drag this bookmarklet into your bookmarks bar"
+msgstr "このブックマークレットをブックマークバーにドラッグしてください"
+
+msgid "Drag this button to your bookmark toolbar."
+msgstr "このボタンをブックマークツールバーにドラッグしてください。"
+
+msgid "Drag to reorder"
+msgstr "ドラッグして並べ替え"
+
+msgid "Drag to reorder priority. Only shown when matching stories are found."
+msgstr "ドラッグして優先順位を変更します。一致する記事が見つかった場合にのみ表示されます。"
+
+msgid "Duplicates fold underneath the highest-scoring version in your river"
+msgstr "重複記事は、記事一覧で最もスコアの高い記事の下にまとめられます"
+
+msgid "EXCLUDED FROM MERGES"
+msgstr "統合対象外"
+
+msgid "Each feed can notify a different way: browser push, email, iOS, or Android."
+msgstr "フィードごとに、ブラウザーのプッシュ通知、メール、iOS、Androidのいずれかで通知できます。"
+
+msgid "Each newsletter sender becomes its own feed"
+msgstr "ニュースレターの送信者ごとに専用フィードを作成"
+
+msgid "Each selected split needs a name and at least one story"
+msgstr "選択した各分割には、名前と記事が1件以上必要です"
+
+msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
+msgstr "送信者ごとに独立したフィードが作成されるため、しつこいニュースレターを学習させて除外できます。"
+
+msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
+msgstr "タグごとにRSSフィードが作成され、共有したり、ほかのツールに連携したりできます"
+
+msgid "Earn Free Premium"
+msgstr "無料でプレミアムを獲得"
+
+msgid ""
+"Earn free time on your subscription for every person who signs up and subscribes. The credit scales with "
+"what they pick — no cap."
+msgstr "登録して購読した人1人につき、購読期間を無料で獲得できます。付与される期間は相手のプランに応じて増え、上限はありません。"
+
+msgid "Edit Profile"
+msgstr "プロフィールを編集"
+
+msgid "Editorial"
+msgstr "読み物"
+
+msgid "Education"
+msgstr "教育"
+
+msgid "Email"
+msgstr "メール"
+
+msgid "Email Newsletters"
+msgstr "メールニュースレター"
+
+msgid "Email address"
+msgstr "メールアドレス"
+
+msgid "Email me 3 days before my subscription renews"
+msgstr "サブスクリプション更新の3日前にメールで通知する"
+
+msgid "Email me replies, re-shares, new followers, and account notices"
+msgstr "返信、再共有、新しいフォロワー、アカウント通知をメールで受け取る"
+
+msgid "Email notifications"
+msgstr "メール通知"
+
+msgid "Email notifications require Premium Archive"
+msgstr "メール通知にはプレミアムアーカイブが必要です"
+
+msgid "Email story"
+msgstr "記事をメールで送信"
+
+msgid "Email:"
+msgstr "メール："
+
+msgid "Emails"
+msgstr "メール"
+
+msgid "Emoji"
+msgstr "絵文字"
+
+msgid "Enable \"mark all as read\" so reading one version clears every duplicate."
+msgstr "「すべて既読にする」を有効にすると、同じ記事のどれか1つを読むだけで、重複分もすべて既読になります。"
+
+msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
+msgstr "デイリーブリーフィングを有効にして、注目記事のAI要約を受け取る"
+
+#, python-format
+msgid "Enable all %(count)s site"
+msgid_plural "Enable all %(count)s sites"
+msgstr[0] "%(count)s 件のサイトをすべて有効にする"
+
+msgid "Enable all sites"
+msgstr "すべてのサイトを有効にする"
+
+msgid "Enable captions/subtitles for YouTube videos"
+msgstr "YouTube動画の字幕を有効にする"
+
+msgid "Enable daily briefings"
+msgstr "デイリーブリーフィングを有効にする"
+
+msgid "Enable highlighting"
+msgstr "ハイライトを有効にする"
+
+msgid "Enable microphone in browser settings to use voice input"
+msgstr "音声入力を使用するには、ブラウザーの設定でマイクを有効にしてください"
+
+msgid "Enable social features"
+msgstr "ソーシャル機能を有効にする"
+
+msgid "Enable story clustering"
+msgstr "記事のクラスタリングを有効にする"
+
+msgid "Enable the sites you want"
+msgstr "利用したいサイトを有効にする"
+
+msgid "English"
+msgstr "英語"
+
+msgid "Enter URL pattern to match..."
+msgstr "一致させるURLパターンを入力…"
+
+msgid "Enter a pattern"
+msgstr "パターンを入力"
+
+msgid "Enter a topic or keywords..."
+msgstr "トピックまたはキーワードを入力..."
+
+msgid "Enter author pattern above"
+msgstr "上に著者のパターンを入力"
+
+msgid "Enter author pattern..."
+msgstr "著者のパターンを入力…"
+
+msgid "Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content."
+msgstr "キーワードを入力して、一致する記事のセクションを作成します。記事のタイトルと本文にある完全一致のフレーズを検索します。"
+
+msgid "Enter text above"
+msgstr "上にテキストを入力"
+
+msgid "Enter text to match..."
+msgstr "一致するテキストを入力..."
+
+msgid "Erase your intelligence training classifiers"
+msgstr "インテリジェンス学習の分類器を消去"
+
+msgid "Erase your saved stories"
+msgstr "保存した記事を消去"
+
+msgid "Erase your shared stories"
+msgstr "共有した記事を削除"
+
+msgid "Erase yourself"
+msgstr "自分の情報を消去"
+
+msgid "Erase yourself permanently"
+msgstr "アカウントを完全に削除する"
+
+msgid "Error"
+msgstr "エラー"
+
+msgid "Error - Try Again"
+msgstr "エラー - 再試行"
+
+msgid "Error - please try again"
+msgstr "エラーが発生しました。もう一度お試しください"
+
+msgid "Error Loading Classifiers"
+msgstr "分類器の読み込みエラー"
+
+msgid "Error saving"
+msgstr "保存エラー"
+
+msgid "Error. Try again."
+msgstr "エラーが発生しました。もう一度お試しください。"
+
+msgid "Error:"
+msgstr "エラー："
+
+#, python-format
+msgid "Error: %(error)s"
+msgstr "エラー: %(error)s"
+
+#, python-format
+msgid "Error: %(message)s"
+msgstr "エラー: %(message)s"
+
+msgid "Even geekier"
+msgstr "さらにマニアック"
+
+msgid "Evening"
+msgstr "夕方"
+
+msgid "Every"
+msgstr "更新間隔"
+
+msgid "Every new story is archived permanently"
+msgstr "新着記事はすべて永久にアーカイブされます"
+
+msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
+msgstr "保存した記事のタグごとに専用のRSSフィードがあり、IFTTTやZapierとの連携に最適です。"
+
+msgid "Every story archived and searchable forever"
+msgstr "すべての記事を永久に保存・検索"
+
+msgid "Every story archived and searchable forever. Your personal knowledge base."
+msgstr "すべての記事を永久に保存し、いつでも検索できます。あなただけのナレッジベースです。"
+
+msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
+msgstr "各タグに専用のRSSフィードが用意されます。リンクを共有するか、IFTTTやZapierに連携できます。"
+
+msgid "Everybody"
+msgstr "全員"
+
+msgid "Everything NewsBlur can do, and how to try it"
+msgstr "NewsBlurでできることと、その試し方"
+
+msgid "Everything by This Publisher"
+msgstr "この配信元のすべての記事"
+
+msgid "Everything has been deleted."
+msgstr "すべて削除されました。"
+
+msgid "Everything in Archive, plus:"
+msgstr "アーカイブのすべての機能に加えて："
+
+msgid "Everything in Free, plus:"
+msgstr "無料プランのすべてに加えて："
+
+msgid "Everything in Premium, plus:"
+msgstr "プレミアムの全機能に加えて："
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
+" train classifiers. Pipe to jq or script your workflows."
+msgstr "ターミナルからMCPサーバーの全機能を使えます。フィードの閲覧、記事の検索、登録の管理、分類器の学習が可能です。jqに渡したり、スクリプトでワークフローを自動化したりできます。"
+
+msgid "Exact phrase"
+msgstr "完全一致フレーズ"
+
+msgid "Examples"
+msgstr "例"
+
+msgid "Exclude from merge"
+msgstr "統合対象から除外"
+
+msgid "Excluded from merges"
+msgstr "統合対象から除外"
+
+msgid "Exclusions & Advanced"
+msgstr "除外と詳細設定"
+
+msgid "Exit fullscreen"
+msgstr "全画面表示を終了"
+
+msgid "Expand All Folders"
+msgstr "すべてのフォルダーを展開"
+
+msgid "Expand Folder"
+msgstr "フォルダーを展開"
+
+msgid "Expand all"
+msgstr "すべて展開"
+
+msgid "Expand story"
+msgstr "記事を展開"
+
+msgid "Expanded"
+msgstr "展開表示"
+
+msgid "Expire 1 YR"
+msgstr "1年で期限切れ"
+
+msgid "Export trained stories from folders"
+msgstr "フォルダーから学習済みの記事をエクスポート"
+
+msgid "Extras"
+msgstr "その他"
+
+msgid "FAQ"
+msgstr "よくある質問"
+
+msgid "Faces"
+msgstr "顔"
+
+msgid "Fact check this story"
+msgstr "この記事のファクトチェック"
+
+msgid "Failed to connect to server"
+msgstr "サーバーに接続できませんでした"
+
+msgid "Failed to convert newsletter URL"
+msgstr "ニュースレターURLの変換に失敗しました"
+
+msgid "Failed to create Google News feed"
+msgstr "Google ニュースフィードの作成に失敗しました"
+
+msgid "Failed to create feed"
+msgstr "フィードを作成できませんでした"
+
+msgid "Failed to delete tag."
+msgstr "タグを削除できませんでした。"
+
+msgid "Failed to get split suggestions"
+msgstr "分割候補を取得できませんでした"
+
+msgid "Failed to load SVG image"
+msgstr "SVG画像の読み込みに失敗しました"
+
+msgid "Failed to load archives"
+msgstr "アーカイブの読み込みに失敗しました"
+
+msgid "Failed to load conversation"
+msgstr "会話を読み込めませんでした"
+
+msgid "Failed to load related sites"
+msgstr "関連サイトを読み込めませんでした"
+
+msgid "Failed to load stories"
+msgstr "記事の読み込みに失敗しました"
+
+msgid "Failed to mark as unread"
+msgstr "未読にできませんでした"
+
+msgid "Failed to merge categories"
+msgstr "カテゴリを統合できませんでした"
+
+msgid "Failed to rename category"
+msgstr "カテゴリ名の変更に失敗しました"
+
+msgid "Failed to rename tag."
+msgstr "タグの名前を変更できませんでした。"
+
+msgid "Failed to search Reddit"
+msgstr "Redditの検索に失敗しました"
+
+msgid "Failed to search YouTube"
+msgstr "YouTubeの検索に失敗しました"
+
+msgid "Failed to search podcasts"
+msgstr "ポッドキャストの検索に失敗しました"
+
+msgid "Failed to start categorization"
+msgstr "分類の開始に失敗しました"
+
+msgid "Failed to submit query"
+msgstr "クエリの送信に失敗しました"
+
+msgid "Failed to subscribe"
+msgstr "購読に失敗しました"
+
+msgid "Fashion"
+msgstr "ファッション"
+
+msgid "Fast"
+msgstr "高速"
+
+msgid "Faster updates. Full-text search. Read by folder."
+msgstr "更新の高速化。全文検索。フォルダーごとに閲覧。"
+
+msgid "Favorited!"
+msgstr "お気に入りに追加しました！"
+
+msgid "Favorites"
+msgstr "お気に入り"
+
+msgid "Features & Tips"
+msgstr "機能とヒント"
+
+msgid "Features &amp; Tips"
+msgstr "機能 &amp; ヒント"
+
+msgid "Features and essays that readers gave real time to."
+msgstr "読者が実際に時間をかけて読んだ特集やエッセイ。"
+
+msgid "February"
+msgstr "2月"
+
+msgid "Feed"
+msgstr "フィード"
+
+#, python-format
+msgid "Feed \"%(value_1)s\" has been created."
+msgstr "フィード「%(value_1)s」を作成しました。"
+
+#, python-format
+msgid "Feed \"%(value_1)s\" is ready."
+msgstr "フィード「%(value_1)s」の準備ができました。"
+
+msgid "Feed Fetch"
+msgstr "フィード取得"
+
+msgid "Feed Icon"
+msgstr "フィードアイコン"
+
+msgid "Feed Push"
+msgstr "フィードプッシュ"
+
+msgid "Feed opens:"
+msgstr "フィードを開いた回数："
+
+msgid "Feed: "
+msgstr "フィード："
+
+msgid "Feeds"
+msgstr "フィード"
+
+msgid "Feeds back-filled for complete archive"
+msgstr "完全なアーカイブのためにフィードの過去分も取得"
+
+msgid "Feeds with deeply engaged readers, not yet widely known"
+msgstr "熱心な読者がいる、まだ広く知られていないフィード"
+
+msgid "Feeds:"
+msgstr "フィード:"
+
+msgid "Feel comfortable connecting to these services."
+msgstr "これらのサービスには安心して接続できます。"
+
+msgid "Fetch Feed From Website"
+msgstr "ウェブサイトからフィードを取得"
+
+#, python-format
+msgid "Fetch error: %(error)s"
+msgstr "取得エラー：%(error)s"
+
+#, python-format
+msgid "Fetched every %(value_1)s"
+msgstr "%(value_1)sごとに取得"
+
+msgid "Fetching page..."
+msgstr "ページを取得中..."
+
+msgid "Fetching stories"
+msgstr "記事を取得中"
+
+msgid "Fetching stories..."
+msgstr "記事を取得しています..."
+
+msgid "Fetching story"
+msgstr "記事を取得中"
+
+msgid "Fetching text"
+msgstr "テキストを取得中"
+
+msgid "Fetching your feeds"
+msgstr "フィードを取得中"
+
+msgid "Fetching..."
+msgstr "取得中..."
+
+msgid "Files"
+msgstr "ファイル"
+
+msgid "Filled Icons"
+msgstr "塗りつぶしアイコン"
+
+msgid "Filter by date range"
+msgstr "期間で絞り込む"
+
+msgid "Filter by site or classifier..."
+msgstr "サイトまたは分類器で絞り込む..."
+
+msgid "Filter channels..."
+msgstr "チャンネルを絞り込む..."
+
+msgid "Filter icons..."
+msgstr "アイコンを絞り込む..."
+
+msgid "Filter newsletters..."
+msgstr "ニュースレターを絞り込む…"
+
+msgid "Filter notifications to focus-only stories so your training decides what pings you."
+msgstr "通知をフォーカス記事のみに絞り、学習内容に基づいて通知を受け取れます。"
+
+msgid "Filter podcasts..."
+msgstr "ポッドキャストを絞り込む..."
+
+msgid "Filter sites..."
+msgstr "サイトを絞り込む..."
+
+msgid "Filter stories"
+msgstr "記事を絞り込む"
+
+msgid "Filter stories by date range"
+msgstr "日付範囲で記事を絞り込む"
+
+msgid "Filter subreddits..."
+msgstr "サブレディットを絞り込む..."
+
+msgid "Filtering for"
+msgstr "フィルター対象"
+
+#, python-format
+msgid "Filters found no stories in %(context)s."
+msgstr "%(context)sでフィルターに一致する記事はありませんでした。"
+
+msgid "Filters found no stories in this view."
+msgstr "このビューにはフィルターに一致する記事がありません。"
+
+msgid "Finance"
+msgstr "金融"
+
+#, python-format
+msgid "Find %(value_1)s Friends"
+msgstr "%(value_1)sの友達を探す"
+
+msgid "Find Friends"
+msgstr "友達を探す"
+
+msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
+msgstr "「メールニュースレター」ダイアログで、あなた専用のNewsBlurメールアドレスを確認できます"
+
+msgid "Finish recording..."
+msgstr "録音を終了..."
+
+msgid "First things first..."
+msgstr "まずはじめに…"
+
+msgid "First, add sites"
+msgstr "まず、サイトを追加してください"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. Everything you love about NewsBlur, on "
+"every device."
+msgstr "各プラットフォーム向けに開発された本格的なネイティブアプリ。Webラッパーではありません。NewsBlurの魅力を、あらゆるデバイスで。"
+
+msgid "Fix a misbehaving site"
+msgstr "動作に問題のあるサイトを修正"
+
+msgid "Fix misbehaving site"
+msgstr "動作に問題のあるサイトを修正"
+
+msgid "Fix this misbehaving site"
+msgstr "このサイトの問題を修正"
+
+msgid "Flat"
+msgstr "フラット"
+
+msgid "Flowing narrative that connects stories into a readable digest"
+msgstr "記事をつなぎ、読みやすいダイジェストにまとめた流れるような文章"
+
+msgid "Focus"
+msgstr "フォーカス"
+
+msgid "Focus or hide all stories from this publisher."
+msgstr "この配信元のすべての記事に注目するか、非表示にします。"
+
+msgid "Folder"
+msgstr "フォルダー"
+
+msgid "Folder Icon"
+msgstr "フォルダーアイコン"
+
+msgid "Folder RSS Feed Address"
+msgstr "フォルダーのRSSフィードアドレス"
+
+msgid "Folder Settings"
+msgstr "フォルダー設定"
+
+msgid "Folder settings"
+msgstr "フォルダー設定"
+
+msgid "Folder unread counts"
+msgstr "フォルダーの未読数"
+
+msgid "Folders"
+msgstr "フォルダー"
+
+msgid "Folders, feeds, and story titles"
+msgstr "フォルダー、フィード、記事タイトル"
+
+msgid "Follow"
+msgstr "フォロー"
+
+#, python-format
+msgid "Follow %(value_1)s"
+msgstr "%(value_1)sをフォロー"
+
+msgid "Follow any website, even ones that don't publish an RSS feed."
+msgstr "RSSフィードを公開していないサイトも含め、あらゆるウェブサイトをフォローできます。"
+
+msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
+msgstr "フィードを提供していないSNSプロフィール、求人掲示板、変更履歴、製品ページなどをフォローできます。"
+
+msgid "Follow to see their shared stories"
+msgstr "フォローして共有記事を見る"
+
+msgid "Follow up to 1,024 sites"
+msgstr "最大1,024サイトをフォロー"
+
+msgid "Follow up to 10,000 sites"
+msgstr "最大10,000サイトをフォロー"
+
+msgid "Follow up to 4,096 sites"
+msgstr "最大4,096件のサイトをフォロー"
+
+msgid "Follow up to 64 sites"
+msgstr "最大64サイトをフォロー"
+
+msgid "Follow up..."
+msgstr "追加で質問…"
+
+msgid "Follow-ups"
+msgstr "続報"
+
+msgid "Followers"
+msgstr "フォロワー"
+
+msgid "Following"
+msgstr "フォロー中"
+
+msgid "Following Me"
+msgstr "フォロワー"
+
+msgid "Following..."
+msgstr "フォロー中..."
+
+msgid "Follows you"
+msgstr "あなたをフォロー中"
+
+msgid "Food"
+msgstr "食べ物"
+
+msgid "For Chrome & Edge"
+msgstr "ChromeとEdge向け"
+
+msgid "For Firefox"
+msgstr "Firefox用"
+
+msgid "For Mac"
+msgstr "Mac用"
+
+msgid "For Safari on Mac"
+msgstr "Mac版Safari用"
+
+msgid "Force all tall stories to have a max height"
+msgstr "縦長の記事すべてに最大高さを設定する"
+
+#, python-format
+msgid "Forward %(seconds)s second"
+msgid_plural "Forward %(seconds)s seconds"
+msgstr[0] "%(seconds)s秒進む"
+
+msgid "Forward or subscribe newsletters to that address"
+msgstr "そのアドレスにニュースレターを転送するか、購読登録してください"
+
+msgid "Forwarding email address"
+msgstr "転送先メールアドレス"
+
+#, python-format
+msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
+msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
+msgstr[0] "%(count)s 件のパターンが見つかりました。読みたい記事に最もよく合うものを選択してください。"
+
+msgid "Found in the Account dialog"
+msgstr "アカウントダイアログにあります"
+
+msgid "Free"
+msgstr "無料"
+
+msgid "Free + subscription · Mac, iPhone &amp; iPad"
+msgstr "無料＋サブスクリプション · Mac、iPhone &amp; iPad"
+
+msgid "Free + subscription · iPhone, iPad &amp; Mac"
+msgstr "無料＋サブスクリプション · iPhone、iPad &amp; Mac"
+
+msgid "Free beta · Mac, iPhone &amp; iPad"
+msgstr "無料ベータ版 · Mac、iPhone &amp; iPad"
+
+msgid "Free beta · iPhone, iPad &amp; Mac"
+msgstr "ベータ版無料 · iPhone、iPad &amp; Mac"
+
+msgid "Free · Android, iPhone, iPad &amp; Mac"
+msgstr "無料 · Android、iPhone、iPad &amp; Mac"
+
+msgid "Free · Apple Watch, iPhone &amp; iPad"
+msgstr "無料 · Apple Watch、iPhone &amp; iPad"
+
+msgid "Free · Made by NewsBlur"
+msgstr "無料 · NewsBlur製"
+
+msgid "Free · Windows 10 &amp; 11"
+msgstr "無料 · Windows 10 &amp; 11"
+
+msgid "Free · iPhone &amp; iPad"
+msgstr "無料 · iPhone &amp; iPad"
+
+msgid "Free · iPhone, iPad &amp; Mac"
+msgstr "無料 · iPhone、iPad &amp; Mac"
+
+msgid "Free · iPhone, iPad, Mac &amp; Android"
+msgstr "無料 · iPhone、iPad、Mac &amp; Android"
+
+msgid "Free, open source · E-ink devices (Kobo, Kindle, PocketBook)"
+msgstr "無料、オープンソース · E Ink端末（Kobo、Kindle、PocketBook）"
+
+msgid "Free, open source · Emacs"
+msgstr "無料・オープンソース · Emacs"
+
+msgid "Free, open source · GNOME/Flathub"
+msgstr "無料・オープンソース · GNOME/Flathub"
+
+msgid "Free, open source · Mac, iPhone &amp; iPad"
+msgstr "無料・オープンソース · Mac、iPhone &amp; iPad"
+
+msgid "Free, open source · Terminal (Linux, macOS, BSD)"
+msgstr "無料・オープンソース · ターミナル（Linux、macOS、BSD）"
+
+msgid "Free, open source · iPhone, iPad &amp; Mac"
+msgstr "無料・オープンソース · iPhone、iPad &amp; Mac"
+
+msgid "French"
+msgstr "フランス語"
+
+msgid "Frequency"
+msgstr "頻度"
+
+msgid "Frequently Asked Questions"
+msgstr "よくある質問"
+
+msgid "Fri"
+msgstr "金"
+
+msgid "Friday"
+msgstr "金曜日"
+
+msgid "Friendly note: You will be emailed a backup of your sites"
+msgstr "お知らせ：サイトのバックアップをメールでお送りします"
+
+msgid "Friends &amp; Followers"
+msgstr "友達 &amp; フォロワー"
+
+msgid "Friends and Followers"
+msgstr "友達とフォロワー"
+
+msgctxt "date range"
+msgid "From"
+msgstr "開始日"
+
+msgid "From infrequent sites"
+msgstr "更新頻度の低いサイトから"
+
+msgid "Full"
+msgstr "フル"
+
+#, python-format
+msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
+msgstr "アーカイブアシスタントの完全な回答は、%(link_start)sプレミアムアーカイブの機能%(link_end)sです。"
+
+msgid "Full Refund"
+msgstr "全額返金"
+
+msgid "Full articles extracted from the original site"
+msgstr "元のサイトから抽出した記事全文"
+
+msgid "Full paragraph"
+msgstr "1段落"
+
+msgid "Full screen"
+msgstr "全画面表示"
+
+msgid "Full width"
+msgstr "全幅"
+
+msgid "Full-Text Search"
+msgstr "全文検索"
+
+msgid "Full-text search across all stories"
+msgstr "すべての記事を全文検索"
+
+msgid "Full-text search requires Premium or higher."
+msgstr "全文検索にはプレミアム以上が必要です。"
+
+msgid "Full-text training on the Archive plan"
+msgstr "アーカイブプランでは全文での学習も可能"
+
+msgid "Fullscreen"
+msgstr "全画面表示"
+
+msgid "Games"
+msgstr "ゲーム"
+
+msgid "Gaming"
+msgstr "ゲーム"
+
+msgid "General"
+msgstr "一般"
+
+msgid "Generate Briefing"
+msgstr "ブリーフィングを生成"
+
+msgid "Generate Daily Briefing"
+msgstr "デイリーブリーフィングを生成"
+
+msgid "Generate Twice-Daily Briefing"
+msgstr "1日2回のブリーフィングを生成"
+
+msgid "Generate Weekly Briefing"
+msgstr "週刊ブリーフィングを作成"
+
+msgid "Generating..."
+msgstr "生成中..."
+
+msgid "Generation failed."
+msgstr "生成に失敗しました。"
+
+msgid "German"
+msgstr "ドイツ語"
+
+msgid "Gestures"
+msgstr "ジェスチャー"
+
+msgid "Get AI Suggestions"
+msgstr "AIの提案を取得"
+
+msgid "Get AI Suggestions →"
+msgstr "AIの提案を取得 →"
+
+msgid "Get Started"
+msgstr "始める"
+
+msgid "Get Started with Archive"
+msgstr "アーカイブを始める"
+
+msgid "Get a summary of your top stories, delivered on your schedule."
+msgstr "注目記事の要約を、指定したスケジュールでお届けします。"
+
+msgid "Get an AI-curated daily briefing with top stories and long reads"
+msgstr "注目記事や長文記事をまとめた、AI選定の日刊ブリーフィングを受け取れます"
+
+msgid "Get more from NewsBlur"
+msgstr "NewsBlurをもっと活用"
+
+msgid ""
+"Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
+"Android, filtered by your training."
+msgstr "フィードに新しい記事が公開された瞬間に通知を受け取れます。学習設定に基づいて絞り込まれたフィードごとの通知を、ウェブ、メール、iOS、Androidで受信できます。"
+
+msgid "Get notified when a new briefing is ready"
+msgstr "新しいブリーフィングの準備ができたら通知する"
+
+msgid "Get started"
+msgstr "始める"
+
+msgid "Get the Browser Extension"
+msgstr "ブラウザー拡張機能を入手"
+
+msgid "Get the add-on"
+msgstr "アドオンを入手する"
+
+msgid "Get the apps"
+msgstr "アプリを入手"
+
+#, python-format
+msgid "Getting AI suggestions for \"%(category)s\"..."
+msgstr "「%(category)s」のAI提案を取得中..."
+
+msgid "Getting AI suggestions..."
+msgstr "AIの提案を取得中…"
+
+msgid "Gift"
+msgstr "ギフト"
+
+msgid "Gift a Subscription"
+msgstr "購読をプレゼント"
+
+msgid "Gift link created:"
+msgstr "ギフトリンクを作成しました："
+
+msgid "Gifts Sent"
+msgstr "送信したギフト"
+
+msgid "Give your AI agent the skill: npx skills add samuelclay/newsblur-cli-skill"
+msgstr "AIエージェントにスキルを追加: npx skills add samuelclay/newsblur-cli-skill"
+
+msgid "Global"
+msgstr "全体"
+
+msgid "Global Classifiers"
+msgstr "グローバル分類器"
+
+msgid "Global Shared Stories"
+msgstr "全体で共有されている記事"
+
+msgid "Global settings"
+msgstr "全般設定"
+
+msgid ""
+"Gmail will walk you through confirming the email address. You'll want to come back to NewsBlur and look for"
+" the confirmation email under the \"Newsletters\" folder."
+msgstr "Gmailの案内に従ってメールアドレスを確認してください。その後NewsBlurに戻り、「ニュースレター」フォルダーで確認メールを探してください。"
+
+msgid "Go Premium — $36/year"
+msgstr "プレミアムに登録 — 年額36ドル"
+
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "%(breadcrumb)sに戻る"
+
+msgid "Good Reads"
+msgstr "おすすめ記事"
+
+msgid "Good Reads on NewsBlur"
+msgstr "NewsBlurのおすすめ記事"
+
+msgid "Goodies &amp; Extras"
+msgstr "便利な機能 &amp; その他"
+
+msgid "Goodies &amp; Mobile Apps"
+msgstr "便利な機能 &amp; モバイルアプリ"
+
+msgid "Google News"
+msgstr "Google ニュース"
+
+msgid "Green marks additions, red marks deletions."
+msgstr "追加箇所は緑、削除箇所は赤で表示されます。"
+
+msgid "Grid"
+msgstr "グリッド"
+
+msgid "Grid View"
+msgstr "グリッド表示"
+
+msgid "Grid view"
+msgstr "グリッド表示"
+
+msgid "Group duplicate stories across your feeds"
+msgstr "フィード間で重複する記事をグループ化"
+
+msgid "Group stories that share:"
+msgstr "次の項目が共通する記事をグループ化:"
+
+msgid "Groups similar stories from different feeds"
+msgstr "異なるフィードの類似した記事をまとめる"
+
+msgid "Hand-picked shares from across NewsBlur"
+msgstr "NewsBlurから厳選した共有記事"
+
+msgid "Hang tight, indexing..."
+msgstr "そのままお待ちください。インデックス作成中..."
+
+msgid "Headlines"
+msgstr "見出し"
+
+msgid "Health"
+msgstr "健康"
+
+msgid "Hearts"
+msgstr "ハート"
+
+msgid "Here's what happens next:"
+msgstr "これからの流れ："
+
+msgid "Here's what to do:"
+msgstr "次の操作を行ってください："
+
+msgid "Hidden Gems"
+msgstr "穴場"
+
+msgid "Hide"
+msgstr "非表示"
+
+msgid "Hide all sharing, comments, and blurblog features"
+msgstr "共有、コメント、Blurblog機能をすべて非表示にする"
+
+msgid "Hide discover sites popover"
+msgstr "おすすめサイトのポップオーバーを非表示"
+
+msgid "Hide history"
+msgstr "履歴を隠す"
+
+msgid "Hide matching stories"
+msgstr "一致する記事を非表示"
+
+msgid "Hide sites"
+msgstr "サイトを非表示"
+
+msgid "Hide sites you already subscribe to"
+msgstr "登録済みのサイトを非表示にする"
+
+msgid "Hide story changes"
+msgstr "記事の変更を非表示"
+
+msgid "Highlight"
+msgstr "ハイライト"
+
+msgid "Highlight words in the title to train on specific phrases."
+msgstr "タイトル内の単語をハイライトして、特定のフレーズを学習させましょう。"
+
+msgid "History"
+msgstr "履歴"
+
+msgid "Home"
+msgstr "ホーム"
+
+msgid "Home-screen widgets show unread counts and the latest stories at a glance."
+msgstr "ホーム画面のウィジェットで未読件数や最新記事をひと目で確認できます。"
+
+msgid "How Gifting Works"
+msgstr "ギフトの仕組み"
+
+msgid "How are duplicates detected?"
+msgstr "重複記事はどのように検出されますか？"
+
+msgid "How does authentication work?"
+msgstr "認証の仕組みは？"
+
+msgid "How far back does search go?"
+msgstr "検索ではどこまで遡れますか？"
+
+msgid "How far back does the archive go?"
+msgstr "アーカイブはどこまで遡れますか？"
+
+msgid "How it works"
+msgstr "仕組み"
+
+msgid "How many stories can I save?"
+msgstr "記事はいくつ保存できますか？"
+
+msgid "How often"
+msgstr "頻度"
+
+msgid "I'm Following"
+msgstr "フォロー中"
+
+msgid "IFTTT & Zapier"
+msgstr "IFTTTとZapier"
+
+msgid "Identify key people and relationships"
+msgstr "重要な人物と人間関係を特定する"
+
+msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
+msgstr "RSSフィードが見つからない場合、NewsBlurはウェブフィードの作成を提案します"
+
+msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
+msgstr "該当する選択肢がない場合は、ページに表示されている記事のタイトルを入力してください。再分析します。"
+
+#, python-format
+msgid "If you went %(premium_link)s,<br>this site would update every"
+msgstr "%(premium_link)sにアップグレードすると、<br>このサイトは次の間隔で更新されます"
+
+msgid "Ignore"
+msgstr "無視"
+
+msgid "Ignored"
+msgstr "無視済み"
+
+msgid "Image"
+msgstr "画像"
+
+msgid "Image Filter"
+msgstr "画像フィルター"
+
+msgid "Image Preview"
+msgstr "画像プレビュー"
+
+msgid "Image must be smaller than 5MB"
+msgstr "画像は5MB未満である必要があります"
+
+msgid "Image preview"
+msgstr "画像プレビュー"
+
+msgid "Image prompt"
+msgstr "画像プロンプト"
+
+msgid "Immediately"
+msgstr "すぐに"
+
+msgid "Import feeds"
+msgstr "フィードをインポート"
+
+msgid "Import from Google Reader or upload OPML"
+msgstr "Google Readerからインポート、またはOPMLをアップロード"
+
+msgid "Import or upload sites"
+msgstr "サイトをインポートまたはアップロード"
+
+msgid "Importing your sites..."
+msgstr "サイトをインポートしています..."
+
+#, python-format
+msgid "In %(count)s day, your premium trial ends and you'll return to Free"
+msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
+msgstr[0] "%(count)s 日後にプレミアムの無料トライアルが終了し、無料プランに戻ります"
+
+#, python-format
+msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
+msgstr "Gmailで%(settings_menu)sに移動し、%(add_button)sをクリックします。カスタムのNewsBlurメールアドレスを追加してください。"
+
+msgid "In NewsBlur"
+msgstr "NewsBlur内"
+
+#, python-format
+msgid ""
+"In a new tab, open <b>%(config_page)s</b>, search for <b>%(setting)s</b>, and set it to <b>%(value)s</b>. "
+"Stories opened with %(shortcut)s will then load in the background."
+msgstr "新しいタブで<b>%(config_page)s</b>を開き、<b>%(setting)s</b>を検索して、<b>%(value)s</b>に設定してください。以後、%(shortcut)sで開いた記事はバックグラウンドで読み込まれます。"
+
+msgid "In a new window"
+msgstr "新しいウィンドウで開く"
+
+msgid ""
+"In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
+"between like, dislike, and neutral."
+msgstr "フィード表示では、記事ヘッダー内のタグや著者をクリックして学習させます。クリックするたびに「いいね」「低評価」「中立」が切り替わります。"
+
+msgid "In this window"
+msgstr "このウィンドウ内"
+
+msgid "Include read"
+msgstr "既読を含める"
+
+msgid "Increase or remove your limit"
+msgstr "上限を引き上げるか、解除する"
+
+msgid "Independent"
+msgstr "独立系"
+
+msgid "Index feeds for discovery"
+msgstr "おすすめ用にフィードをインデックス化"
+
+msgid "Index remaining feeds"
+msgstr "残りのフィードをインデックス化"
+
+msgid "Indexing your feeds for search"
+msgstr "検索用にフィードをインデックス化しています"
+
+msgid "Indexing..."
+msgstr "インデックス作成中..."
+
+msgid "Infrequent Site Stories"
+msgstr "更新頻度の低いサイトの記事"
+
+msgid "Infrequent stories per month"
+msgstr "月あたりの記事が少ないフィード"
+
+msgid "Insta-fetch stories"
+msgstr "記事をすぐに取得"
+
+msgid "Install"
+msgstr "インストール"
+
+msgid ""
+"Install the browser extension to automatically save every page you visit. Ask AI questions about anything "
+"you've read."
+msgstr "ブラウザー拡張機能をインストールすると、訪問したページをすべて自動保存できます。読んだ内容についてAIに質問できます。"
+
+msgid "Install with: uv pip install newsblur-cli"
+msgstr "インストール方法: uv pip install newsblur-cli"
+
+msgid "Intelligence Trainer"
+msgstr "インテリジェンストレーナー"
+
+msgid "Intelligence Training"
+msgstr "インテリジェンス学習"
+
+msgid "Interactions"
+msgstr "やり取り"
+
+#, python-format
+msgid "Invalid regex: %(error)s"
+msgstr "無効な正規表現: %(error)s"
+
+msgid "Invoice"
+msgstr "請求書"
+
+msgid "Is my data safe?"
+msgstr "データは安全ですか？"
+
+msgid "Is this available on the free plan?"
+msgstr "無料プランでも利用できますか？"
+
+msgid "Is this different from RSS?"
+msgstr "RSSとは違うのですか？"
+
+msgid "Is training free?"
+msgstr "学習機能は無料ですか？"
+
+msgid "January"
+msgstr "1月"
+
+msgid "Japanese"
+msgstr "日本語"
+
+msgid "July"
+msgstr "7月"
+
+msgid "Jump immediately with no animations"
+msgstr "アニメーションなしですぐに移動"
+
+msgid "Jump to Folder"
+msgstr "フォルダーへジャンプ"
+
+msgid "June"
+msgstr "6月"
+
+msgid "Just Delete This Feed"
+msgstr "このフィードだけを削除"
+
+msgid "Just now"
+msgstr "たった今"
+
+msgid "Just the headlines with minimal commentary"
+msgstr "コメントを最小限にした見出しのみ"
+
+msgid "Just the headlines, no commentary"
+msgstr "解説なしの見出しのみ"
+
+msgid "Keep others unread"
+msgstr "他の記事を未読のままにする"
+
+msgid "Keep read status"
+msgstr "既読状態を維持"
+
+msgid "Keep right-side buttons visible while reading"
+msgstr "閲覧中も右側のボタンを表示する"
+
+msgid "Keep stories separate"
+msgstr "記事を分けて表示"
+
+msgid "Keep up-to-date with NewsBlur"
+msgstr "NewsBlurの最新情報をチェック"
+
+msgid "Keyboard"
+msgstr "キーボード"
+
+msgid "Keyboard Shortcuts"
+msgstr "キーボードショートカット"
+
+msgid "Keyboard shortcuts"
+msgstr "キーボードショートカット"
+
+msgid "Keyword Section"
+msgstr "キーワードセクション"
+
+#, python-format
+msgid "Keyword section %(value_1)s"
+msgstr "キーワードセクション %(value_1)s"
+
+msgid "Keyword sections"
+msgstr "キーワードセクション"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "Large image thumbnail on the left"
+msgstr "左側に大きな画像サムネイル"
+
+msgid "Large image thumbnail on the right"
+msgstr "右側に大きな画像サムネイル"
+
+msgid "Last 30 Days"
+msgstr "過去30日間"
+
+msgid "Last 7 Days"
+msgstr "過去7日間"
+
+msgid "Last 90 Days"
+msgstr "過去90日間"
+
+msgid "Last IP:"
+msgstr "最後のIPアドレス："
+
+msgid "Last Update"
+msgstr "最終更新"
+
+msgid "Last seen:"
+msgstr "最終確認："
+
+msgid "Leave unread"
+msgstr "未読のままにする"
+
+msgid "Left"
+msgstr "左"
+
+msgid "Let's Get Started "
+msgstr "さっそく始めましょう"
+
+msgid "Let's get some sites to read."
+msgstr "読めるサイトを追加しましょう。"
+
+msgid "Light"
+msgstr "ライト"
+
+msgid ""
+"Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
+"image previews, all customizable per-feed."
+msgstr "ウェブ、iOS、Androidで、ライト・ダーク・自動のテーマを利用できます。フォント、文字サイズ、行間、表示密度、画像プレビューもフィードごとにカスタマイズできます。"
+
+msgid "Like"
+msgstr "いいね"
+
+msgid "Like "
+msgstr "いいね "
+
+msgid "Like matching stories"
+msgstr "一致する記事に「いいね」する"
+
+msgid "Likes"
+msgstr "いいね"
+
+msgid "Link"
+msgstr "リンク"
+
+msgid "Link directly to the original story"
+msgstr "元の記事に直接リンクする"
+
+msgid "Link to my blurblog and shared comments"
+msgstr "自分のBlurblogと共有コメントへのリンク"
+
+msgid "List"
+msgstr "リスト"
+
+msgid "List View"
+msgstr "リスト表示"
+
+msgid "List view"
+msgstr "リスト表示"
+
+msgid "Loading PayPal..."
+msgstr "PayPalを読み込み中..."
+
+msgid "Loading Training..."
+msgstr "学習データを読み込み中..."
+
+msgid "Loading checkout..."
+msgstr "チェックアウトを読み込み中..."
+
+msgid "Loading classifiers..."
+msgstr "分類器を読み込み中..."
+
+msgid "Loading feeds..."
+msgstr "フィードを読み込み中..."
+
+msgid "Loading more briefings..."
+msgstr "ブリーフィングをさらに読み込み中…"
+
+msgid "Loading your blocklist settings..."
+msgstr "ブロックリストの設定を読み込んでいます..."
+
+msgid "Loading..."
+msgstr "読み込み中..."
+
+msgid "Location"
+msgstr "場所"
+
+msgid "Lock"
+msgstr "ロック"
+
+msgid "Locked"
+msgstr "ロック中"
+
+msgid "Log In or Sign Up"
+msgstr "ログインまたは新規登録"
+
+msgid "Logout"
+msgstr "ログアウト"
+
+msgid "Long Reads"
+msgstr "長文記事"
+
+msgid "Long Reads on NewsBlur"
+msgstr "NewsBlurの長文記事"
+
+msgid "Long reads for later"
+msgstr "あとで読む長文記事"
+
+msgid "Longer articles worth setting time aside for"
+msgstr "時間を取って読む価値のある長めの記事"
+
+msgid "MCP Server"
+msgstr "MCPサーバー"
+
+msgid "MCP server access requires Premium Archive or Premium Pro."
+msgstr "MCPサーバーへのアクセスにはプレミアムアーカイブまたはプレミアム Proが必要です。"
+
+msgid "Magazine"
+msgstr "マガジン"
+
+msgid "Make changes above..."
+msgstr "上記を変更..."
+
+msgid "Manage Categories"
+msgstr "カテゴリーを管理"
+
+msgid "Manage NewsBlur"
+msgstr "NewsBlurを管理"
+
+msgid "Manage Training"
+msgstr "学習を管理"
+
+msgid "Manage billing and limits"
+msgstr "請求と利用上限を管理"
+
+msgid "Manage billing on Stripe"
+msgstr "Stripeで請求を管理"
+
+msgid "Manage email settings"
+msgstr "メール設定を管理"
+
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "手動で、%(first_key)sまたは%(second_key)sを押したとき"
+
+msgid "Manually or by clicking in the story"
+msgstr "手動、または記事内をクリックしたとき"
+
+msgid ""
+"Many feeds only include a summary. Text view extracts the full story from the original website and displays"
+" it right in NewsBlur, with clean formatting and no clutter."
+msgstr "多くのフィードには要約しか含まれていません。テキスト表示では元のウェブサイトから記事全文を抽出し、すっきりとした書式でNewsBlur内に表示します。"
+
+msgid "March"
+msgstr "3月"
+
+#, python-format
+msgid "Mark %(count)s story as read?"
+msgid_plural "Mark %(count)s stories as read?"
+msgstr[0] "%(count)s件の記事を既読にしますか？"
+
+msgid "Mark <b>every story</b> as read"
+msgstr "<b>すべての記事</b>を既読にする"
+
+msgid "Mark Everything Read / Unread"
+msgstr "すべての記事を既読／未読にする"
+
+msgid "Mark Stories as Read"
+msgstr "記事を既読にする"
+
+msgid "Mark Stories as Unread"
+msgstr "記事を未読にする"
+
+msgid "Mark a story as read"
+msgstr "記事を既読にする"
+
+msgid "Mark above stories read"
+msgstr "上の記事を既読にする"
+
+msgid "Mark all as read"
+msgstr "すべて既読にする"
+
+msgid "Mark all as read?"
+msgstr "すべて既読にしますか？"
+
+#, python-format
+msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
+msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
+msgstr[0] "<b>%(value_1)s日</b>より古い記事をすべて既読にする"
+
+msgid "Mark as read"
+msgstr "既読にする"
+
+msgid "Mark as read without confirmation"
+msgstr "確認せずに既読にする"
+
+msgid "Mark as unread"
+msgstr "未読にする"
+
+msgid "Mark below stories read"
+msgstr "下の記事を既読にする"
+
+msgid "Mark duplicates as read"
+msgstr "重複を既読にする"
+
+msgid "Mark everything read / unread"
+msgstr "すべてを既読／未読にする"
+
+msgid "Mark folder as read"
+msgstr "フォルダーを既読にする"
+
+msgid "Mark folder stories as unread"
+msgstr "フォルダー内の記事を未読にする"
+
+msgid "Mark newer stories read"
+msgstr "新しい記事を既読にする"
+
+msgid "Mark older stories read"
+msgstr "古い記事を既読にする"
+
+#, python-format
+msgid "Mark older than %(count)s day as read?"
+msgid_plural "Mark older than %(count)s days as read?"
+msgstr[0] "%(count)s日より前の記事を既読にしますか？"
+
+msgid "Mark stories as read when scrolled past"
+msgstr "スクロールして通過した記事を既読にする"
+
+msgid "Mark stories as unread"
+msgstr "記事を未読にする"
+
+#, python-format
+msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
+msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
+msgstr[0] "過去<b>%(value_1)s日間</b>の記事を未読にする"
+
+msgid "Mark stories read on scroll"
+msgstr "スクロール時に記事を既読にする"
+
+msgid "Mark the site as read"
+msgstr "サイトを既読にする"
+
+msgid "Markers"
+msgstr "マーカー"
+
+msgid "Marking as read..."
+msgstr "既読にしています…"
+
+msgid "Marking as unread..."
+msgstr "未読に設定中..."
+
+msgid "Match"
+msgstr "一致"
+
+msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
+msgstr "本文中の単語やフレーズで記事を照合します。記事内のテキストを選択して「学習」をクリックすると、自動入力されます。"
+
+msgid "Matched via a duplicate title"
+msgstr "タイトルの重複で一致"
+
+msgid "Matched via related topics"
+msgstr "関連トピックから一致"
+
+msgid "Matches story titles containing all keywords"
+msgstr "すべてのキーワードを含む記事タイトルに一致"
+
+msgid "May"
+msgstr "5月"
+
+msgid "Maybe later"
+msgstr "後で"
+
+msgid "Media"
+msgstr "メディア"
+
+msgctxt "card height"
+msgid "Medium"
+msgstr "中"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "標準"
+
+msgid "Merge"
+msgstr "統合"
+
+#, python-format
+msgid "Merge %(count)s category into:"
+msgid_plural "Merge %(count)s categories into:"
+msgstr[0] "%(count)s個のカテゴリの統合先："
+
+msgid "Merge into:"
+msgstr "統合先："
+
+#, python-format
+msgid "Merged %(count)s story into \"%(category)s\""
+msgid_plural "Merged %(count)s stories into \"%(category)s\""
+msgstr[0] "%(count)s件の記事を「%(category)s」に統合しました"
+
+msgid "Merging..."
+msgstr "統合中…"
+
+msgid "Messages"
+msgstr "メッセージ"
+
+msgid "Microphone blocked - click the lock icon in your browser's address bar to enable"
+msgstr "マイクがブロックされています。有効にするには、ブラウザーのアドレスバーにある鍵アイコンをクリックしてください"
+
+msgid "Misc"
+msgstr "その他"
+
+msgid "Mon"
+msgstr "月"
+
+msgid "Monday"
+msgstr "月曜日"
+
+msgid "Monthly spending limit"
+msgstr "月間支出上限"
+
+msgid "Monthly spending limit reached. "
+msgstr "月間利用上限に達しました。 "
+
+msgid "Months Earned"
+msgstr "獲得した月数"
+
+msgid "More"
+msgstr "もっと見る"
+
+msgid "More Features"
+msgstr "その他の機能"
+
+msgid "More from Reddit"
+msgstr "Redditのその他の結果"
+
+msgid "Morning"
+msgstr "朝"
+
+msgid "Morning + Afternoon"
+msgstr "朝＋午後"
+
+msgid "Morning + Evening"
+msgstr "朝＋夕方"
+
+msgid "Most subscribed-to feeds this week"
+msgstr "今週最も購読されたフィード"
+
+msgid "Most used at top, then alphabetical"
+msgstr "使用頻度順、その後アルファベット順"
+
+msgid "Move"
+msgstr "移動"
+
+#, python-format
+msgid "Move %(count)s site"
+msgid_plural "Move %(count)s sites"
+msgstr[0] "%(count)s 件のサイトを移動"
+
+msgid "Move to folder"
+msgstr "フォルダーに移動"
+
+msgid "Moved"
+msgstr "移動しました"
+
+msgid "Moved!"
+msgstr "移動しました！"
+
+msgid "Moving..."
+msgstr "移動中..."
+
+msgid "Mute"
+msgstr "ミュート"
+
+#, python-format
+msgid "Mute %(count)s site"
+msgid_plural "Mute %(count)s sites"
+msgstr[0] "%(count)s件のサイトをミュート"
+
+msgid "Mute Sites"
+msgstr "サイトをミュート"
+
+#, python-format
+msgid "Mute for %(duration)s"
+msgstr "%(duration)sミュート"
+
+msgid "Mute indefinitely"
+msgstr "無期限にミュート"
+
+msgid "Mute sites"
+msgstr "サイトをミュート"
+
+msgid "Mute this site"
+msgstr "このサイトをミュート"
+
+msgid "Muted"
+msgstr "ミュート中"
+
+msgid "Muted indefinitely."
+msgstr "無期限にミュートしました。"
+
+#, python-format
+msgid "Muted · unmutes in %(time)s"
+msgstr "ミュート中 · %(time)s後に解除"
+
+msgid "Muted · unmuting soon"
+msgstr "ミュート中 · まもなく解除"
+
+msgid "My shared stories are public and anybody can reply to me"
+msgstr "共有した記事は公開されており、誰でも返信できます"
+
+msgid "My shared stories are public but only people I approve can reply"
+msgstr "共有した記事は公開されますが、返信できるのは私が承認した人だけです"
+
+msgid "NEVER"
+msgstr "無期限"
+
+msgid "Name"
+msgstr "名前"
+
+msgid "Native Apps"
+msgstr "ネイティブアプリ"
+
+msgid "Natural Language Image Classifier"
+msgstr "自然言語画像分類器"
+
+msgid "Natural Language Text Classifier"
+msgstr "自然言語テキスト分類器"
+
+msgid "Natural language classifier billing"
+msgstr "自然言語分類の請求"
+
+msgid "Natural language classifiers are paused until next billing cycle. "
+msgstr "自然言語分類器は次の請求サイクルまで一時停止されています。 "
+
+msgid "Natural language classifiers are using your instance's API keys."
+msgstr "自然言語分類器は、このインスタンスのAPIキーを使用しています。"
+
+msgid "Natural language text and image classifiers"
+msgstr "自然言語テキスト・画像分類器"
+
+msgid "Nature"
+msgstr "自然"
+
+msgid "Navigate between stories"
+msgstr "記事間を移動"
+
+msgid ""
+"Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
+"train, all from the keyboard."
+msgstr "マウスに触れずにすべてを操作できます。フィードを開く、記事をスクロールする、既読にする、保存する、共有する、好みを学習させる操作をすべてキーボードから行えます。"
+
+msgid "Need at least 2 categories to merge"
+msgstr "統合するにはカテゴリーが2つ以上必要です"
+
+msgid "Nested"
+msgstr "入れ子"
+
+msgid "Never"
+msgstr "しない"
+
+msgid "Never ever send me an email"
+msgstr "メールは一切送らないでください"
+
+msgid "Never expire"
+msgstr "期限なし"
+
+msgid "Never gonna expire. Congrats!"
+msgstr "有効期限はありません。おめでとうございます！"
+
+msgid "New Arrivals"
+msgstr "新着"
+
+msgid "New Chat"
+msgstr "新しいチャット"
+
+msgid "New Conversation"
+msgstr "新しい会話"
+
+msgid "New category name"
+msgstr "新しいカテゴリ名"
+
+msgid "New content appears in your feed just like regular RSS"
+msgstr "新しいコンテンツは通常のRSSと同じようにフィードに表示されます"
+
+msgid "New folder"
+msgstr "新しいフォルダー"
+
+msgid "New folder name..."
+msgstr "新しいフォルダー名..."
+
+#, python-format
+msgid "New folder under %(folder)s..."
+msgstr "%(folder)sの下に新しいフォルダーを作成…"
+
+msgid "New password"
+msgstr "新しいパスワード"
+
+msgid "New posts from feeds you recently read"
+msgstr "最近読んだフィードの新着記事"
+
+msgid "New tag name"
+msgstr "新しいタグ名"
+
+msgid "New to me"
+msgstr "未購読のサイト"
+
+msgid "Newer:"
+msgstr "この日以降："
+
+msgid "Newest"
+msgstr "新しい順"
+
+msgid "Newest first"
+msgstr "新しい順"
+
+msgid "NewsBlur checks for changes and delivers new stories to your feed."
+msgstr "NewsBlurが変更を確認し、新しい記事をフィードに配信します。"
+
+msgid "NewsBlur connected to other services"
+msgstr "NewsBlurと連携するサービス"
+
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlurがブラウザから%(language)sを検出しました。"
+
+msgid "NewsBlur is down right now. <br> Try again soon."
+msgstr "NewsBlurは現在ダウンしています。<br>しばらくしてからもう一度お試しください。"
+
+msgid "NewsBlur is in maintenance mode. <br> Try again soon."
+msgstr "NewsBlurはメンテナンス中です。<br> しばらくしてからもう一度お試しください。"
+
+msgid "NewsBlur monitors the page for changes automatically"
+msgstr "NewsBlurがページの変更を自動で監視します"
+
+msgid "NewsBlur on iOS with the full feature set"
+msgstr "全機能を備えたiOS版NewsBlur"
+
+msgid "NewsBlur will automatically find the RSS feed for this site."
+msgstr "NewsBlurがこのサイトのRSSフィードを自動的に見つけます。"
+
+msgid "Newsletter"
+msgstr "ニュースレター"
+
+msgid "Newsletters"
+msgstr "ニュースレター"
+
+msgid "Newsletters & Substack"
+msgstr "ニュースレターとSubstack"
+
+msgid "Newsletters appearing as feeds"
+msgstr "フィードとして表示されるニュースレター"
+
+msgid "Next Unread Story"
+msgstr "次の未読記事"
+
+msgid "Next Update"
+msgstr "次回更新"
+
+msgid "Next site"
+msgstr "次のサイト"
+
+msgid "Next step "
+msgstr "次のステップ "
+
+msgid "Next story"
+msgstr "次の記事"
+
+msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
+msgstr "次に、すべてのニュースレターをカスタムNewsBlurアドレスに転送するフィルタを作成します。"
+
+msgid "No"
+msgstr "いいえ"
+
+msgid "No Changes"
+msgstr "変更なし"
+
+msgid "No Trained Classifiers Yet"
+msgstr "学習済みの分類器はありません"
+
+msgid "No archived domains found. Start browsing to build your archive!"
+msgstr "アーカイブされたドメインは見つかりません。閲覧を始めてアーカイブを作成しましょう！"
+
+msgid "No archives match your filters"
+msgstr "条件に一致するアーカイブはありません"
+
+msgid "No briefings yet."
+msgstr "ブリーフィングはまだありません。"
+
+msgid "No categories available. Categories will appear here once they are configured."
+msgstr "利用可能なカテゴリはありません。設定すると、ここにカテゴリが表示されます。"
+
+msgid "No categories with 10+ stories available for splitting."
+msgstr "分割できる、記事が10件以上あるカテゴリはありません。"
+
+msgid "No channels found matching your filter."
+msgstr "条件に一致するチャンネルが見つかりません。"
+
+msgid "No channels found."
+msgstr "チャンネルが見つかりません。"
+
+msgid "No connected accounts"
+msgstr "接続済みのアカウントはありません"
+
+msgid "No content"
+msgstr "コンテンツなし"
+
+msgid "No feeds found"
+msgstr "フィードが見つかりません"
+
+msgid "No feeds found in this category."
+msgstr "このカテゴリーにフィードはありません。"
+
+msgid "No gifts sent yet."
+msgstr "まだギフトは送信されていません。"
+
+#, python-format
+msgid "No icons match \"%(value_1)s\""
+msgstr "「%(value_1)s」に一致するアイコンはありません"
+
+msgid "No image"
+msgstr "画像なし"
+
+msgid "No items added yet."
+msgstr "まだアイテムは追加されていません。"
+
+msgid "No limit"
+msgstr "上限なし"
+
+msgid "No match"
+msgstr "一致なし"
+
+msgid "No match in URL"
+msgstr "URLに一致するものがありません"
+
+msgid "No match in author"
+msgstr "著者に一致するものはありません"
+
+msgid "No match in story"
+msgstr "記事内に一致する箇所はありません"
+
+msgid "No match in title"
+msgstr "タイトルに一致するものがありません"
+
+#, python-format
+msgid "No matches for “%(value_1)s”"
+msgstr "「%(value_1)s」に一致するものはありません"
+
+msgid "No merge suggestions"
+msgstr "統合候補はありません"
+
+msgid "No merge suggestions available"
+msgstr "統合候補はありません"
+
+msgid "No merge suggestions available. Categories are analyzed for similarity."
+msgstr "統合候補はありません。カテゴリの類似性を分析します。"
+
+msgid "No merges to apply"
+msgstr "適用する統合はありません"
+
+msgid "No newsletters found matching your filter."
+msgstr "条件に一致するニュースレターは見つかりませんでした。"
+
+msgid "No newsletters found."
+msgstr "ニュースレターが見つかりません。"
+
+msgid "No past conversations"
+msgstr "過去の会話はありません"
+
+msgid "No payments found."
+msgstr "支払い履歴はありません。"
+
+msgid "No podcasts found matching your filter."
+msgstr "フィルターに一致するポッドキャストは見つかりませんでした。"
+
+msgid "No podcasts found."
+msgstr "ポッドキャストが見つかりません。"
+
+msgid "No questions match that search."
+msgstr "検索に一致する質問はありません。"
+
+msgid "No recency filter"
+msgstr "新しさフィルターなし"
+
+msgid "No referrals yet. Share your link to get started!"
+msgstr "まだ紹介はありません。リンクを共有して始めましょう！"
+
+msgid "No results found, but you can subscribe directly if you know the subreddit name."
+msgstr "検索結果が見つかりません。サブレディット名がわかる場合は、直接登録できます。"
+
+msgid "No similar stories found"
+msgstr "類似する記事は見つかりませんでした"
+
+msgid "No sites available"
+msgstr "利用可能なサイトがありません"
+
+msgid "No sites found matching your filter."
+msgstr "フィルターに一致するサイトが見つかりません。"
+
+msgid "No sites found."
+msgstr "サイトが見つかりません。"
+
+msgid "No split suggestions available"
+msgstr "分割候補はありません"
+
+msgid "No split suggestions available for this category"
+msgstr "このカテゴリに分割候補はありません"
+
+msgid "No stories"
+msgstr "記事はありません"
+
+#, python-format
+msgid "No stories from %(folder)s have yet been indexed for related stories."
+msgstr "%(folder)sの記事は、関連記事用にまだインデックスされていません。"
+
+#, python-format
+msgid "No stories from your %(count)s site have yet been indexed for related stories."
+msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
+msgstr[0] "%(count)s件のサイトの記事は、関連記事用にまだインデックスされていません。"
+
+msgid "No stories published last month"
+msgstr "先月公開された記事はありません"
+
+msgid "No stories to delete"
+msgstr "削除する記事がありません"
+
+msgid "No stories to read"
+msgstr "読む記事がありません"
+
+msgid "No stories yet"
+msgstr "記事はまだありません"
+
+msgid "No story patterns found on this page."
+msgstr "このページに記事のパターンは見つかりませんでした。"
+
+msgid "No trending sites available"
+msgstr "トレンドサイトはありません"
+
+msgid "No usage billing invoices yet."
+msgstr "利用料金の請求書はまだありません。"
+
+msgid "No usage billing set up."
+msgstr "従量課金が設定されていません。"
+
+msgid "No valid merge groups to apply"
+msgstr "適用できる有効な統合グループがありません"
+
+msgid "Nobody has yet subscribed to your shared stories."
+msgstr "共有した記事を購読している人はまだいません。"
+
+msgid "Nobody left to recommend. Good job!"
+msgstr "おすすめできる人はいません。よくできました！"
+
+msgid "None"
+msgstr "なし"
+
+msgid "Not active"
+msgstr "無効"
+
+msgid "Not authenticated"
+msgstr "認証されていません"
+
+msgid "Not found in URL"
+msgstr "URLに見つかりません"
+
+msgid "Not found in author"
+msgstr "著者に見つかりません"
+
+msgid "Not found in story"
+msgstr "記事内に見つかりません"
+
+msgid "Not found in title"
+msgstr "タイトルに見つかりません"
+
+msgid "Not now"
+msgstr "今はしない"
+
+msgid "Not redeemed in 90 days?"
+msgstr "90日以内に引き換えられなかった場合は？"
+
+msgid "Not seeing the right stories?"
+msgstr "読みたい記事が見つかりませんか？"
+
+msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
+msgstr "最も読まれているサイトではなく、評価が高く、大手よりも小規模サイトを重視しています。"
+
+msgid "Nothing"
+msgstr "なし"
+
+msgid "Nothing happens without your permission."
+msgstr "許可なく何かが起こることはありません。"
+
+msgid "Nothing recorded."
+msgstr "記録はありません。"
+
+msgid "Notification Preferences"
+msgstr "通知設定"
+
+msgid "Notifications"
+msgstr "通知"
+
+msgid "Notifications on trained intelligence classifiers"
+msgstr "学習済みインテリジェンス分類器の通知"
+
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "通知には%(tier_link)sが必要です"
+
+msgid "Notify on"
+msgstr "通知対象"
+
+msgid "Notify on match"
+msgstr "一致したら通知"
+
+msgid "Notify on match. Premium Archive required"
+msgstr "一致時に通知。プレミアムアーカイブが必要です"
+
+msgid "November"
+msgstr "11月"
+
+msgid "Now"
+msgstr "現在"
+
+msgid "Number of stories to include in each briefing"
+msgstr "各ブリーフィングに含める記事数"
+
+msgid "Numbers & Symbols"
+msgstr "数字と記号"
+
+msgid "OFF"
+msgstr "オフ"
+
+msgid "ON"
+msgstr "オン"
+
+msgid "Objects"
+msgstr "オブジェクト"
+
+msgid "October"
+msgstr "10月"
+
+msgid "Off"
+msgstr "オフ"
+
+msgid "Official NewsBlur Android App"
+msgstr "公式NewsBlur Androidアプリ"
+
+msgid "Official NewsBlur iPhone/iPad App"
+msgstr "公式NewsBlur iPhone/iPadアプリ"
+
+msgid "Official NewsBlur macOS App"
+msgstr "公式NewsBlur macOSアプリ"
+
+msgid "Oh no! <br> There was an error!"
+msgstr "あっ！<br> エラーが発生しました！"
+
+msgid "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened."
+msgstr "あら、URLの取得中に問題が発生しました。原因を特定できません。"
+
+msgid "Old password"
+msgstr "古いパスワード"
+
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "%(year)s年%(month)s%(day)s日より前"
+
+msgid "Older:"
+msgstr "この日以前："
+
+msgid "Oldest"
+msgstr "古い順"
+
+msgid "Oldest first"
+msgstr "古い順"
+
+msgid "Oldest unread story"
+msgstr "最も古い未読記事"
+
+msgid "On"
+msgstr "オン"
+
+msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
+msgstr "プレミアムアーカイブでは、最近の記事だけでなく、これまでにアーカイブされたすべての記事を検索できます。"
+
+msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
+msgstr "プレミアムでは最近の記事を検索できます。プレミアムアーカイブでは、アーカイブ済みのすべての記事を検索できます。"
+
+msgid "One command with Docker"
+msgstr "Dockerならコマンド1つ"
+
+msgid "One sentence"
+msgstr "一文"
+
+msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
+msgstr "フィードのあるサイトなら、ワンクリックで購読できます。「その他」タブにあるカスタムサイト追加URLを使用してください。"
+
+#, python-format
+msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
+msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
+msgstr[0] "関連する記事を表示するためにインデックス化されたサイトは、%(count)s件中%(indexed)s件のみです。"
+
+#, python-format
+msgid ""
+"Only %(indexed)s of your %(count)s site is indexed for discovery. Upgrade to index all your sites and get "
+"personalized recommendations."
+msgid_plural ""
+"Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
+" personalized recommendations."
+msgstr[0] "おすすめ用にインデックス登録されているサイトは、%(count)s件中%(indexed)s件のみです。アップグレードすると、すべてのサイトをインデックスに登録し、パーソナライズされたおすすめを受け取れます。"
+
+msgid "Only Focus:"
+msgstr "フォーカスのみ："
+
+msgid "Only page down in story, do not open next unread story"
+msgstr "記事内でページを下にスクロールするだけで、次の未読記事は開かない"
+
+msgid "Only people I approve can see my shared stories and reply to me"
+msgstr "承認した人だけが、共有した記事を閲覧し、私に返信できます"
+
+#, python-format
+msgid "Only recent stories shown from %(count)s site."
+msgid_plural "Only recent stories shown from %(count)s sites."
+msgstr[0] "%(count)sサイトから最近の記事のみを表示しています。"
+
+#, python-format
+msgid "Only recent stories shown from %(indexed)s of %(count)s site."
+msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
+msgstr[0] "%(count)s件中%(indexed)s件のサイトから、最近の記事のみを表示しています。"
+
+msgid "Only recent stories shown from this site are available."
+msgstr "このサイトで表示されるのは、最近の記事のみです。"
+
+msgid "Only see the full story title"
+msgstr "記事のタイトル全体のみを表示"
+
+msgid "Only show comments from friends"
+msgstr "友達のコメントのみ表示"
+
+msgid "Only show counts on collapsed folders"
+msgstr "折りたたまれたフォルダーにのみ件数を表示"
+
+msgid "Only truncate long shared stories in blurblogs"
+msgstr "Blurblogでは長い共有記事のみ省略する"
+
+msgid "Open"
+msgstr "開く"
+
+msgid "Open All Site Stories"
+msgstr "すべてのサイトの記事を開く"
+
+msgid "Open Everything"
+msgstr "すべてを開く"
+
+msgid "Open Site"
+msgstr "サイトを開く"
+
+msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
+msgstr "フォルダー名を開くと、その中のすべてのフィードをまとめて読めます。「すべてのサイトの記事」は全記事をまとめた一覧です。"
+
+msgid "Open clustering preferences"
+msgstr "クラスタリング設定を開く"
+
+msgid "Open in Story view"
+msgstr "記事表示で開く"
+
+msgid "Open in Text view"
+msgstr "テキスト表示で開く"
+
+msgid "Open in background tab"
+msgstr "バックグラウンドタブで開く"
+
+msgid "Open in email client"
+msgstr "メールアプリで開く"
+
+msgid "Open in new window"
+msgstr "新しいウィンドウで開く"
+
+msgid "Open links"
+msgstr "リンクを開く"
+
+msgid "Open links in a background tab"
+msgstr "リンクをバックグラウンドタブで開く"
+
+msgid "Open next unread story when bottom of story is visible"
+msgstr "記事の末尾が表示されたら、次の未読記事を開く"
+
+msgid "Open next unread story when story is half-way up"
+msgstr "記事が画面の半分までスクロールしたら、次の未読記事を開く"
+
+msgid "Open preferences"
+msgstr "設定を開く"
+
+msgid "Open site/feed trainer"
+msgstr "サイト／フィードのトレーナーを開く"
+
+msgid "Open story trainer"
+msgstr "記事トレーナーを開く"
+
+msgid "Open the Intelligence Trainer"
+msgstr "インテリジェンストレーナーを開く"
+
+msgid "Open the feed and story title menu"
+msgstr "フィードと記事タイトルのメニューを開く"
+
+msgid "Open the first story"
+msgstr "最初の記事を開く"
+
+msgid "Open the next site/folder"
+msgstr "次のサイト／フォルダーを開く"
+
+msgid "Open the site in a new window"
+msgstr "サイトを新しいウィンドウで開く"
+
+msgid "Open the site in a new window and mark it as read"
+msgstr "サイトを新しいウィンドウで開き、既読にする"
+
+msgid "Open the trainer for any feed"
+msgstr "任意のフィードでトレーナーを開く"
+
+msgid "Open this story in NewsBlur"
+msgstr "この記事をNewsBlurで開く"
+
+msgid "Open your Daily Briefing"
+msgstr "デイリーブリーフィングを開く"
+
+msgid "Open your saved stories"
+msgstr "保存した記事を開く"
+
+msgid "Opens"
+msgstr "開いた回数"
+
+msgid "Opens stories in a background tab with a customizable hotkey"
+msgstr "カスタマイズ可能なホットキーで、記事をバックグラウンドタブで開きます"
+
+msgid "Option 1:"
+msgstr "オプション1："
+
+msgid "Option 2:"
+msgstr "オプション2："
+
+msgid "Option 3:"
+msgstr "オプション3："
+
+msgid "Option 4:"
+msgstr "オプション4："
+
+msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
+msgstr "任意。上限に達すると分類器は一時停止し、次の請求サイクルに再開します。"
+
+msgid "Options"
+msgstr "オプション"
+
+msgid "Organize Sites"
+msgstr "サイトを整理"
+
+msgid "Organize sites"
+msgstr "サイトを整理"
+
+msgid "Original"
+msgstr "オリジナル"
+
+msgid "Outline Icons"
+msgstr "アウトラインアイコン"
+
+msgid "Override the default blocklist for these domains. These sites WILL be archived even if normally blocked."
+msgstr "これらのドメインについて、デフォルトのブロックリストを上書きします。通常はブロック対象でも、これらのサイトはアーカイブされます。"
+
+msgid "PNG, JPG, GIF, SVG, or WebP — max 5 MB, any size"
+msgstr "PNG、JPG、GIF、SVG、WebP — 最大5 MB、サイズ不問"
+
+#, python-format
+msgid "Page %(value_1)s"
+msgstr "ページ %(value_1)s"
+
+msgid "Page Fetch"
+msgstr "ページ取得"
+
+msgid "Page down"
+msgstr "ページダウン"
+
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "ページ送りの幅：%(slider)s 画面の%(percent)s"
+
+msgid "Page up"
+msgstr "ページアップ"
+
+msgid "Pages are re-checked on a configurable schedule and diffed for new content."
+msgstr "設定可能なスケジュールでページを再確認し、新しいコンテンツとの差分を検出します。"
+
+msgid "Paired with full-text search, the archive doubles as a personal knowledge base."
+msgstr "全文検索と組み合わせれば、アーカイブを個人用のナレッジベースとして活用できます。"
+
+msgid "Parse this RSS/XML Feed"
+msgstr "このRSS/XMLフィードを解析"
+
+msgid "Parsing..."
+msgstr "解析中…"
+
+msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
+msgstr "任意のURLを貼り付けると、NewsBlurがRSSのないページからもフィードを作成します。"
+
+msgid "Paste any URL into the \"Add Site\" dialog"
+msgstr "「サイトを追加」ダイアログにURLを貼り付けてください"
+
+msgid "Paste any website URL..."
+msgstr "ウェブサイトのURLを貼り付け..."
+
+#, python-format
+msgid "Pattern: %(value_1)s"
+msgstr "パターン: %(value_1)s"
+
+msgid "Payment history"
+msgstr "支払い履歴"
+
+msgid "Payments"
+msgstr "お支払い"
+
+msgid "Paypal email:"
+msgstr "PayPalのメールアドレス："
+
+msgid "Pending"
+msgstr "保留中"
+
+msgid "People"
+msgstr "人"
+
+msgid "People to follow"
+msgstr "フォローする人"
+
+msgid "People you know"
+msgstr "知り合い"
+
+msgid "Per Folder"
+msgstr "フォルダーごと"
+
+msgid "Per Site"
+msgstr "サイトごと"
+
+msgid "Per-feed notification settings"
+msgstr "フィードごとの通知設定"
+
+msgid "Pick a tier & pay."
+msgstr "プランを選んでお支払いください。"
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。"
+
+msgid "Places"
+msgstr "場所"
+
+msgid "Platform"
+msgstr "プラットフォーム"
+
+msgid "Play Last"
+msgstr "最後に再生"
+
+msgid "Play Next"
+msgstr "次を再生"
+
+msgid "Play in Mini Media Player"
+msgstr "ミニメディアプレーヤーで再生"
+
+msgid "Play/Pause"
+msgstr "再生／一時停止"
+
+msgid "Playback speed"
+msgstr "再生速度"
+
+msgid "Player settings"
+msgstr "プレーヤー設定"
+
+msgid "Please create an account and add sites you read. Then you can train them."
+msgstr "アカウントを作成して、閲覧するサイトを追加してください。その後、記事を学習させることができます。"
+
+msgid "Please create an account. Not much to do without an account."
+msgstr "アカウントを作成してください。アカウントがないとできることはあまりありません。"
+
+msgid "Please enter a new category name"
+msgstr "新しいカテゴリ名を入力してください"
+
+msgid "Please enter a tag name."
+msgstr "タグ名を入力してください。"
+
+msgid "Please enter a target category name"
+msgstr "移動先のカテゴリー名を入力してください"
+
+msgid "Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)"
+msgstr "有効な画像ファイル（PNG、JPG、GIF、SVG、WebP）を選択してください"
+
+msgid "Please select at least one category to split into"
+msgstr "分割するカテゴリを1つ以上選択してください"
+
+msgid "Podcasts"
+msgstr "ポッドキャスト"
+
+msgid "Point it at a self-hosted instance with --server or the NEWSBLUR_SERVER environment variable."
+msgstr "--serverまたはNEWSBLUR_SERVER環境変数を指定して、自分でホストしているインスタンスに接続します。"
+
+msgid "Popular"
+msgstr "人気"
+
+msgid "Popular Shared Stories"
+msgstr "人気の共有記事"
+
+msgid "Portuguese"
+msgstr "ポルトガル語"
+
+msgid "Position & Greedy"
+msgstr "位置と貪欲マッチ"
+
+msgid "Positive you want to delete everything?"
+msgstr "本当にすべて削除してもよろしいですか？"
+
+msgid "Positive you want to delete your intelligence training classifiers?"
+msgstr "本当にインテリジェンス学習の分類器を削除しますか？"
+
+msgid "Positive you want to delete your saved stories?"
+msgstr "保存した記事を削除してもよろしいですか？"
+
+msgid "Positive you want to delete your shared stories?"
+msgstr "共有した記事を本当に削除しますか？"
+
+msgid "Post"
+msgstr "投稿"
+
+#, python-format
+msgid "Post to %(service)s"
+msgstr "%(service)sに投稿"
+
+msgid "Posting..."
+msgstr "投稿中..."
+
+msgid "Prefer a third-party app? The open API powers Reeder, ReadKit, Unread, and dozens more."
+msgstr "他社製アプリをお使いですか？オープンAPIはReeder、ReadKit、Unreadなど多数のアプリで利用できます。"
+
+msgid "Preferences"
+msgstr "設定"
+
+msgid "Premium"
+msgstr "プレミアム"
+
+msgid "Premium Archive"
+msgstr "プレミアムアーカイブ"
+
+msgid "Premium Pro"
+msgstr "プレミアム Pro"
+
+msgid "Premium Pro Account"
+msgstr "プレミアム Pro アカウント"
+
+msgid "Premium Subscription"
+msgstr "プレミアム購読"
+
+msgid "Premium Trial"
+msgstr "プレミアムトライアル"
+
+#, python-format
+msgid "Premium Trial (%(count)s day)"
+msgid_plural "Premium Trial (%(count)s days)"
+msgstr[0] "プレミアムトライアル（%(count)s日間）"
+
+msgid "Premium details"
+msgstr "プレミアムの詳細"
+
+#, python-format
+msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
+msgstr "プレミアムフォントを使用するには、%(link_start)sプレミアムアカウント%(link_end)sが必要です"
+
+msgid "Premium renewal"
+msgstr "プレミアムの更新"
+
+msgid "Premium renewal: "
+msgstr "プレミアム更新："
+
+msgid "Premium status"
+msgstr "プレミアムステータス"
+
+msgid "Premium users can make their blurblog private."
+msgstr "プレミアムユーザーは自分のBlurblogを非公開にできます。"
+
+msgid "Press / anywhere to jump straight to the search field."
+msgstr "/ キーを押すと、どこからでも検索欄に移動できます。"
+
+msgid "Press ? anytime to see the full shortcut list."
+msgstr "いつでも ? キーを押すと、すべてのショートカットを確認できます。"
+
+msgid "Press s to save the story you're reading."
+msgstr "sキーを押すと、閲覧中の記事を保存できます。"
+
+msgid "Press the Text tab on any story to fetch the full article."
+msgstr "記事の「テキスト」タブを押すと、全文を取得できます。"
+
+msgid "Press the search icon or hit the / key"
+msgstr "検索アイコンを押すか、/キーを押してください"
+
+msgid "Prev. site"
+msgstr "前のサイト"
+
+msgid "Preview"
+msgstr "プレビュー"
+
+msgid "Previous story"
+msgstr "前の記事"
+
+#, python-format
+msgid "Previously Recommended on: %(date)s"
+msgstr "以前おすすめ：%(date)s"
+
+msgid "Print"
+msgstr "印刷"
+
+msgid "Priority support"
+msgstr "優先サポート"
+
+msgid "Privacy"
+msgstr "プライバシー"
+
+msgid "Privacy options for your blurblog"
+msgstr "自分のBlurblogのプライバシー設定"
+
+msgid "Private by default — banking, medical, and email sites are never archived"
+msgstr "初期設定では非公開 — 銀行、医療、メールのサイトはアーカイブされません"
+
+msgid "Private notes:"
+msgstr "非公開メモ："
+
+msgid "Private:"
+msgstr "非公開："
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "Processing stories..."
+msgstr "記事を処理中..."
+
+msgid "Processing..."
+msgstr "処理中…"
+
+msgid "Profile"
+msgstr "プロフィール"
+
+msgid "Profile &amp; Blurblog"
+msgstr "プロフィール &amp; Blurblog"
+
+msgid "Profile Details"
+msgstr "プロフィール詳細"
+
+msgid "Profile picture"
+msgstr "プロフィール画像"
+
+msgid "Prompt"
+msgstr "プロンプト"
+
+msgid "Protected:"
+msgstr "保護済み："
+
+msgid "Public blurblog sharing"
+msgstr "公開Blurblog共有"
+
+msgid "Public comments"
+msgstr "公開コメント"
+
+msgid "Public:"
+msgstr "公開："
+
+msgid "Publisher"
+msgstr "配信元"
+
+msgid "Push Expires"
+msgstr "プッシュの有効期限"
+
+msgid "Push expires"
+msgstr "プッシュの有効期限"
+
+msgid "Questions"
+msgstr "質問"
+
+#, python-format
+msgid ""
+"Queued %(count)s story for categorization (%(remaining)s remaining). Categories will appear as stories are "
+"processed."
+msgid_plural ""
+"Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
+"are processed."
+msgstr[0] "分類待ちの記事：%(count)s件（残り%(remaining)s件）。処理が進むとカテゴリが表示されます。"
+
+#, python-format
+msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
+msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
+msgstr[0] "分類待ちの記事：%(count)s件。処理が進むとカテゴリが表示されます。"
+
+msgid "Quick search for a site"
+msgstr "サイトをすばやく検索"
+
+msgid "Quota exceeded"
+msgstr "クォータを超過しました"
+
+msgid "Quote"
+msgstr "引用"
+
+msgid "RSS Feed"
+msgstr "RSSフィード"
+
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "フォルダーのRSSフィードは%(link_start)sプレミアム機能%(link_end)sです。"
+
+#, python-format
+msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
+msgstr "保存した記事タグのRSSフィードは%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "RSS/XML URL: "
+msgstr "RSS/XML URL: "
+
+msgid "Re-analysis timed out. Please try again."
+msgstr "再分析がタイムアウトしました。もう一度お試しください。"
+
+msgid "Re-analyze"
+msgstr "再分析"
+
+msgid "Re-analyzing…"
+msgstr "再分析中…"
+
+msgid "Re-ask"
+msgstr "再質問"
+
+msgid "Re-ask original question"
+msgstr "元の質問を再度尋ねる"
+
+msgid "Re-categorize this article"
+msgstr "この記事を再分類"
+
+msgid "Re-categorizing..."
+msgstr "再分類中…"
+
+msgid "Read Stories"
+msgstr "既読の記事"
+
+msgid "Read Stories:"
+msgstr "既読記事数："
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
+"river surfaces the best stories across your subscriptions."
+msgstr "フォルダー内のすべてのフィードを、時系列順のスクロール可能なストリームとして読みます。学習機能と組み合わせると、購読中のフィード全体からおすすめの記事が表示されます。"
+
+msgid "Read more on the NewsBlur Blog"
+msgstr "NewsBlurブログでもっと読む"
+
+msgid "Read offline with automatic background refresh"
+msgstr "バックグラウンドで自動更新して、オフラインで読む"
+
+msgid "Read on scroll"
+msgstr "スクロール時に既読にする"
+
+msgid "Read stories by folder"
+msgstr "フォルダー別に記事を読む"
+
+msgid "Read the whole story"
+msgstr "記事全体を読む"
+
+msgid "Read unread stories with: newsblur stories list"
+msgstr "未読記事を読む：newsblur stories list"
+
+msgid "Read your email newsletters in your news reader, not your inbox."
+msgstr "メールの受信トレイではなく、ニュースリーダーでニュースレターを読めます。"
+
+msgid "Read your feeds: unread stories, folders, search, and saved stories by tag"
+msgstr "フィードを読む：未読記事、フォルダー、検索、タグ別の保存記事"
+
+msgid "Reading"
+msgstr "読書"
+
+msgid "Reading article..."
+msgstr "記事を読み込み中…"
+
+#, python-format
+msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
+msgstr "タグ別に保存した記事を読むのは%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "Reading saved story..."
+msgstr "保存した記事を読み込み中…"
+
+msgid "Reading view"
+msgstr "閲覧画面"
+
+msgid "Real-time"
+msgstr "リアルタイム"
+
+msgid "Real-time RSS updates"
+msgstr "リアルタイムRSS更新"
+
+msgid "Really delete?"
+msgstr "本当に削除しますか？"
+
+msgid "Really unfollow?"
+msgstr "本当にフォローを解除しますか？"
+
+msgid "Recency"
+msgstr "新しさ"
+
+msgid "Recent interactions"
+msgstr "最近のアクティビティ"
+
+msgid "Recently added feeds that are gaining subscribers"
+msgstr "最近追加され、購読者が増えているフィード"
+
+msgid "Recommend Site"
+msgstr "サイトをおすすめする"
+
+msgid "Recommend this Site"
+msgstr "このサイトをおすすめする"
+
+msgid "Recommend this site"
+msgstr "このサイトをおすすめする"
+
+msgid "Recommended"
+msgstr "おすすめ"
+
+msgid "Record voice question"
+msgstr "音声で質問を録音"
+
+msgid "Recording..."
+msgstr "録音中..."
+
+msgid "Reddit Subreddits"
+msgstr "Redditのサブレディット"
+
+msgid "Redeemed"
+msgstr "引き換え済み"
+
+msgid "Reduce clutter in your river of stories"
+msgstr "記事の流れをすっきり整理"
+
+msgid "Refer"
+msgstr "紹介"
+
+msgid "Refer &amp; Gift"
+msgstr "紹介 &amp; ギフト"
+
+msgid "Referral History"
+msgstr "紹介履歴"
+
+msgid "Refine with a hint"
+msgstr "ヒントで絞り込む"
+
+msgid "Refund $12"
+msgstr "12ドルを返金"
+
+msgid "Refunded"
+msgstr "返金済み"
+
+#, python-format
+msgid "Refunded $%(amount)s"
+msgstr "$%(amount)sを返金しました"
+
+msgid "Regenerate Briefing"
+msgstr "ブリーフィングを再生成"
+
+msgid "Regex"
+msgstr "正規表現"
+
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "正規表現には%(tier_link)sが必要です"
+
+msgid "Related"
+msgstr "関連"
+
+msgid "Related Sites"
+msgstr "関連サイト"
+
+msgid "Related stories are only available for premium subscribers."
+msgstr "関連記事はプレミアム会員のみご利用いただけます。"
+
+msgid "Reload NewsBlur"
+msgstr "NewsBlurを再読み込み"
+
+msgid "Reload feed/folder"
+msgstr "フィード／フォルダーを再読み込み"
+
+msgid "Remember playback position for each episode"
+msgstr "エピソードごとに再生位置を記憶"
+
+msgid "Remove"
+msgstr "削除"
+
+msgid "Remove this list"
+msgstr "このリストを削除"
+
+msgid "Remove this merge group"
+msgstr "この統合グループを削除"
+
+msgid "Removed"
+msgstr "削除済み"
+
+msgid "Rename"
+msgstr "名前を変更"
+
+#, python-format
+msgid "Rename \"%(value_1)s\" to:"
+msgstr "「%(value_1)s」の名前を変更："
+
+msgid "Rename Tag"
+msgstr "タグ名を変更"
+
+msgid "Rename category"
+msgstr "カテゴリ名を変更"
+
+msgid "Rename this folder"
+msgstr "このフォルダーの名前を変更"
+
+msgid "Rename this site"
+msgstr "このサイトの名前を変更"
+
+msgid "Renamed"
+msgstr "名前を変更しました"
+
+#, python-format
+msgid "Renamed %(count)s story to \"%(category)s\""
+msgid_plural "Renamed %(count)s stories to \"%(category)s\""
+msgstr[0] "%(count)s件の記事を「%(category)s」に名前変更しました"
+
+msgid "Renaming..."
+msgstr "名前を変更中..."
+
+msgid "Request timed out"
+msgstr "リクエストがタイムアウトしました"
+
+msgid "Request timed out."
+msgstr "リクエストがタイムアウトしました。"
+
+msgid "Request timed out. The AI service took too long to respond. Please try again."
+msgstr "リクエストがタイムアウトしました。AIサービスからの応答に時間がかかりすぎています。もう一度お試しください。"
+
+msgid "Requested"
+msgstr "リクエスト済み"
+
+msgid "Requests to Follow You"
+msgstr "あなたへのフォローリクエスト"
+
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "%(tier_link)sが必要です"
+
+msgid "Requires Premium Archive"
+msgstr "プレミアムアーカイブが必要です"
+
+msgid "Reset"
+msgstr "リセット"
+
+msgid "Reset to original favicon"
+msgstr "元のファビコンに戻す"
+
+msgid "Resetting..."
+msgstr "リセット中…"
+
+#, python-format
+msgid "Restart your %(value_1)s subscription"
+msgstr "%(value_1)s の購読を再開"
+
+msgid "Restart your subscription"
+msgstr "購読を再開"
+
+msgid "Restore the player when you reload NewsBlur"
+msgstr "NewsBlurを再読み込みしたときにプレーヤーを復元する"
+
+msgid "Results show matching stories with highlighted terms"
+msgstr "一致する記事が検索結果に表示され、該当語句がハイライトされます"
+
+msgid "Results will appear as indexing completes"
+msgstr "インデックス作成が完了すると結果が表示されます"
+
+msgid "Resume"
+msgstr "再開"
+
+msgid "Retry"
+msgstr "再試行"
+
+msgid "Retry fetching and parsing"
+msgstr "取得と解析を再試行"
+
+msgid "Rewinding..."
+msgstr "巻き戻しています…"
+
+msgid "Rich cards for alternative sources"
+msgstr "代替ソースのリッチカード"
+
+msgid "Right-clicking"
+msgstr "右クリック"
+
+msgid "Rising"
+msgstr "上昇中"
+
+msgid "River of News"
+msgstr "ニュースの流れ"
+
+msgid "River of News (reading by folder)"
+msgstr "ニュース一覧（フォルダー別に読む）"
+
+msgid "Run newsblur auth login to authorize via OAuth"
+msgstr "newsblur auth loginを実行してOAuthで認証"
+
+msgid "Run your own NewsBlur"
+msgstr "自分でNewsBlurを運用する"
+
+msgid "Runs silently — pages are captured after 5 seconds of reading"
+msgstr "バックグラウンドで動作し、閲覧開始から5秒後にページを保存します"
+
+#, python-format
+msgid ""
+"Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the "
+"Releases appcast in the repo."
+msgstr "%(shortcut)sが記事をバックグラウンドタブで開けるSafari App Extensionです。リポジトリのReleases appcastからアプリをダウンロードしてください。"
+
+msgid "Sat"
+msgstr "土"
+
+msgid "Saturday"
+msgstr "土曜日"
+
+msgid "Save"
+msgstr "保存"
+
+#, python-format
+msgid "Save %(count)s classifier"
+msgid_plural "Save %(count)s classifiers"
+msgstr[0] "%(count)s個の分類器を保存"
+
+#, python-format
+msgid "Save %(count)s folder"
+msgid_plural "Save %(count)s folders"
+msgstr[0] "フォルダーを%(count)s件保存"
+
+msgid "Save & Close"
+msgstr "保存して閉じる"
+
+#, python-format
+msgid "Save & Next %(value_1)s"
+msgstr "保存して次へ %(value_1)s"
+
+msgid "Save Changes"
+msgstr "変更を保存"
+
+msgid "Save My Account"
+msgstr "アカウントを保存"
+
+msgid "Save My Blurblog Settings"
+msgstr "Blurblogの設定を保存"
+
+msgid "Save My Profile"
+msgstr "プロフィールを保存"
+
+msgid "Save Preferences"
+msgstr "設定を保存"
+
+msgid "Save Search"
+msgstr "検索を保存"
+
+msgid "Save a search as a feed and it keeps collecting matches in your sidebar."
+msgstr "検索をフィードとして保存すると、一致する記事がサイドバーに追加され続けます。"
+
+msgid "Save any story with one click or the s key"
+msgstr "ワンクリックまたはsキーで記事を保存"
+
+msgid "Save comments"
+msgstr "コメントを保存"
+
+msgid "Save my profile"
+msgstr "プロフィールを保存"
+
+msgid "Save searches as feeds for ongoing monitoring"
+msgstr "検索をフィードとして保存し、継続的に監視"
+
+msgid "Save stories for later"
+msgstr "記事を後で読むために保存"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
+"shareable."
+msgstr "記事を後で読むために保存し、カスタムタグで整理できます。検索や共有もできる、あなただけのクリッピングライブラリです。"
+
+msgid "Save stories with searchable tags"
+msgstr "検索可能なタグを付けて記事を保存"
+
+msgid "Save this story"
+msgstr "この記事を保存"
+
+msgid "Save/Unsave story"
+msgstr "記事を保存／保存解除"
+
+msgid "Saved"
+msgstr "保存しました"
+
+msgid "Saved Searches"
+msgstr "保存した検索"
+
+msgid "Saved Stories"
+msgstr "保存した記事"
+
+msgid "Saved Stories & Tags"
+msgstr "保存した記事とタグ"
+
+msgid "Saved Tags"
+msgstr "保存済みタグ"
+
+msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
+msgstr "保存した記事は、後でフィードの購読を解除しても、いつまでも残ります。"
+
+msgid "Saved stories organized with custom tags"
+msgstr "保存した記事をカスタムタグで整理"
+
+msgid "Saved!"
+msgstr "保存しました！"
+
+msgid "Saved:"
+msgstr "保存済み："
+
+msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium or higher."
+msgstr "記事の保存はすべてのプランで利用できます。タグとタグのRSSフィードはプレミアム以上が必要です。"
+
+msgid "Saving..."
+msgstr "保存中..."
+
+msgid "Schedule when your briefing is generated"
+msgstr "ブリーフィングの生成スケジュールを設定"
+
+msgid ""
+"Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
+" you use the Generate button."
+msgstr "定期ブリーフィングにはプレミアムアーカイブの購読が必要です。現在のプランでは、「生成」ボタンを使ったときのみブリーフィングが作成されます。"
+
+msgid "Scheduled delivery (daily or twice daily)"
+msgstr "配信スケジュール（毎日または1日2回）"
+
+msgid "Science"
+msgstr "科学"
+
+#, python-format
+msgid "Scoped classifiers are only available to %(plan)s subscribers."
+msgstr "適用範囲を指定した分類器は%(plan)sの購読者のみご利用いただけます。"
+
+msgid "Scroll to comments"
+msgstr "コメントまでスクロール"
+
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "記事内を上下に%(slider)s %(pixels)spxずつスクロールします。"
+
+msgid "Search"
+msgstr "検索"
+
+msgid "Search All Site Stories"
+msgstr "すべてのサイトの記事を検索"
+
+msgid "Search YouTube channels..."
+msgstr "YouTubeチャンネルを検索..."
+
+msgid "Search across all saved stories and tags"
+msgstr "保存したすべての記事とタグを検索"
+
+msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
+msgstr "Elasticsearchを活用した全文検索で、すべての購読フィードを検索できます。"
+
+msgid "Search archives..."
+msgstr "アーカイブを検索…"
+
+msgid "Search by name, keyword, or paste a URL..."
+msgstr "名前、キーワードで検索、またはURLを貼り付け…"
+
+msgid "Search everything with: newsblur stories search \"machine learning\""
+msgstr "すべてを検索: newsblur stories search \"machine learning\""
+
+msgid "Search failed"
+msgstr "検索に失敗しました"
+
+msgid "Search feed"
+msgstr "フィードを検索"
+
+msgid "Search folder"
+msgstr "フォルダーを検索"
+
+msgid "Search for friends"
+msgstr "友達を検索"
+
+#, python-format
+msgid "Search is a %(link_start)spremium feature%(link_end)s."
+msgstr "検索は%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "Search keywords"
+msgstr "キーワードを検索"
+
+msgid "Search newsletters or paste URL..."
+msgstr "ニュースレターを検索、またはURLを貼り付け..."
+
+msgid "Search podcasts (e.g., \"technology\", \"true crime\", \"comedy\")..."
+msgstr "ポッドキャストを検索（例：「technology」、「true crime」、「comedy」）..."
+
+msgid "Search results across subscriptions"
+msgstr "登録フィード全体から検索"
+
+msgid "Search site"
+msgstr "サイトを検索"
+
+msgid "Search sites and folders"
+msgstr "サイトとフォルダーを検索"
+
+msgid "Search subreddits (e.g., programming, news, gaming)..."
+msgstr "サブレディットを検索（例：programming、news、gaming）..."
+
+msgid "Search the FAQ..."
+msgstr "FAQを検索..."
+
+msgid "Search within a single feed, a folder, or across everything"
+msgstr "1つのフィード、フォルダー、または全体を対象に検索"
+
+msgid "Search your entire archive with full-text search"
+msgstr "全文検索でアーカイブ全体を検索"
+
+msgid "Search your stories"
+msgstr "記事を検索"
+
+#, python-format
+msgid "Search: \"%(value_1)s\""
+msgstr "検索：「%(value_1)s」"
+
+#, python-format
+msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
+msgstr "<b>%(feed_title)s</b>で「<b>%(query)s</b>」を検索中"
+
+msgid "Searching RSS feeds..."
+msgstr "RSSフィードを検索しています..."
+
+msgid "Searching saved stories..."
+msgstr "保存した記事を検索中..."
+
+msgid "Searching your archive..."
+msgstr "アーカイブを検索中..."
+
+msgid "Seconds to skip backward"
+msgstr "巻き戻す秒数"
+
+msgid "Seconds to skip forward"
+msgstr "スキップする秒数（早送り）"
+
+msgid "Sections"
+msgstr "セクション"
+
+msgid "Sections are only included when matching stories are found."
+msgstr "該当する記事が見つかった場合にのみ、セクションが含まれます。"
+
+msgid "Security"
+msgstr "セキュリティ"
+
+#, python-format
+msgid "See %(feature)s"
+msgstr "%(feature)sを見る"
+
+msgid "See all shortcuts"
+msgstr "すべてのショートカットを見る"
+
+msgid "See feature"
+msgstr "機能を見る"
+
+msgid ""
+"See how a story evolves after it's first published. NewsBlur tracks revisions and shows you a diff of what "
+"changed, highlighted in green and red."
+msgstr "記事が最初に公開されてからどのように変化したかを確認できます。NewsBlurは改訂履歴を記録し、変更箇所を緑と赤で強調して差分を表示します。"
+
+msgid "See shared stories"
+msgstr "共有された記事を見る"
+
+msgid "See the story title and a short content preview"
+msgstr "記事のタイトルと短い内容のプレビューを表示"
+
+msgid "See which feeds cover the same story"
+msgstr "同じ記事を取り上げているフィードを確認"
+
+msgid "Select"
+msgstr "選択"
+
+msgid "Select URL portion above"
+msgstr "上のURL部分を選択"
+
+msgid "Select a folder"
+msgstr "フォルダーを選択"
+
+msgid "Select a story to read"
+msgstr "読みたい記事を選択"
+
+msgid "Select any story and click \"Ask AI\""
+msgstr "記事を選択して「AIに質問」をクリック"
+
+msgid "Select classifiers to remove"
+msgstr "削除する分類器を選択"
+
+msgid "Select folders"
+msgstr "フォルダーを選択"
+
+msgid "Select part of the URL to match patterns like sections or categories."
+msgstr "URLの一部を選択して、セクションやカテゴリーなどのパターンに一致させます。"
+
+msgid "Select title phrase"
+msgstr "タイトルのフレーズを選択"
+
+msgid "Selecting a story in the story titles marks it as read."
+msgstr "記事タイトル一覧で記事を選択すると、既読になります。"
+
+msgid "Self-Hosted"
+msgstr "セルフホスト版"
+
+msgid "Semantic matching finds stories about the same topic with different headlines"
+msgstr "意味的なマッチングで、見出しが異なる同じ話題の記事を見つけます"
+
+msgid "Send"
+msgstr "送信"
+
+msgid "Send Story by Email"
+msgstr "記事をメールで送信"
+
+msgid "Send me a copy of this email"
+msgstr "このメールのコピーを送信する"
+
+msgid "Send this story"
+msgstr "この記事を送信"
+
+msgid "Sending…"
+msgstr "送信中…"
+
+msgid "September"
+msgstr "9月"
+
+msgid "Server error"
+msgstr "サーバーエラー"
+
+#, python-format
+msgid "Server error: %(status)s"
+msgstr "サーバーエラー：%(status)s"
+
+msgid "Set up billing"
+msgstr "お支払いを設定"
+
+msgid "Set up newsletters"
+msgstr "ニュースレターを設定"
+
+msgid "Set up notifications"
+msgstr "通知を設定"
+
+msgid "Set up usage-based billing to use natural language content and image filters."
+msgstr "自然言語によるコンテンツフィルターと画像フィルターを利用するには、使用量ベースの課金を設定してください。"
+
+msgid "Set up your blurblog"
+msgstr "Blurblogを設定"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Settings &gt; Forwarding"
+msgstr "設定 &gt; メール転送と POP/IMAP"
+
+msgid "Setup instructions"
+msgstr "設定手順"
+
+msgid "Share"
+msgstr "共有"
+
+msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
+msgstr "コメントを添えて記事を共有すると、Blurblogに公開され、RSSまたはウェブでフォローできるようになります。"
+
+msgid "Share on NewsBlur"
+msgstr "NewsBlurで共有"
+
+msgid "Share stories"
+msgstr "記事を共有"
+
+msgid ""
+"Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
+"and sharing."
+msgstr "公開Blurblogで自分のコメントを添えて記事を共有しましょう。友達をフォローすると、読んだり共有したりした記事を確認できます。"
+
+msgid "Share the link."
+msgstr "リンクを共有。"
+
+msgid "Share this link. When someone signs up and subscribes to premium, you earn a free year."
+msgstr "このリンクを共有しましょう。誰かが登録してプレミアムに加入すると、1年間無料で利用できます。"
+
+msgid "Share this story"
+msgstr "この記事を共有"
+
+msgid "Share to your Blurblog"
+msgstr "Blurblog に共有"
+
+msgid "Share with comment"
+msgstr "コメントを添えて共有"
+
+msgid "Share with comments"
+msgstr "コメント付きで共有"
+
+msgid "Shared"
+msgstr "共有済み"
+
+msgid "Shared Stories & Blurblog"
+msgstr "共有記事とBlurblog"
+
+#, python-format
+msgid "Shared by %(count)s person"
+msgid_plural "Shared by %(count)s people"
+msgstr[0] "%(count)s人が共有"
+
+msgid "Shared with NewsBlur.com"
+msgstr "NewsBlur.comで共有"
+
+msgid "Shared!"
+msgstr "共有しました！"
+
+msgid "Sharing"
+msgstr "共有"
+
+msgid "Sharing Stories From These Sites"
+msgstr "これらのサイトの記事を共有"
+
+msgid "Sharing services"
+msgstr "共有サービス"
+
+msgid "Sharing..."
+msgstr "共有中..."
+
+msgid "Shift+u hides the sidebar for distraction-free reading."
+msgstr "Shift+uでサイドバーを隠し、集中して読めます。"
+
+msgid "Shopping"
+msgstr "ショッピング"
+
+msgctxt "card height"
+msgid "Short"
+msgstr "低"
+
+msgid "Show"
+msgstr "表示"
+
+msgid "Show Folders"
+msgstr "フォルダーを表示"
+
+msgid "Show Global Shared Stories"
+msgstr "全体共有の記事を表示"
+
+msgid "Show Good Reads"
+msgstr "おすすめ記事を表示"
+
+msgid "Show Infrequent Site Stories"
+msgstr "更新頻度の低いサイトの記事を表示"
+
+msgid "Show Long Reads"
+msgstr "長文記事を表示"
+
+msgid "Show Widely Read Stories"
+msgstr "よく読まれている記事を表示"
+
+msgid "Show a preview of the story"
+msgstr "記事のプレビューを表示"
+
+msgid "Show all animations"
+msgstr "すべてのアニメーションを表示"
+
+msgid "Show all comments"
+msgstr "すべてのコメントを表示"
+
+msgid "Show all stories"
+msgstr "すべての記事を表示"
+
+msgid "Show buttons on the right (when there is room)"
+msgstr "スペースがある場合は右側にボタンを表示"
+
+msgid "Show confirmation only when marking folders as read"
+msgstr "フォルダーを既読にするときだけ確認を表示"
+
+msgid "Show confirmation when marking feeds or folders as read"
+msgstr "フィードやフォルダーを既読にする際に確認を表示"
+
+msgid "Show discover sites popover above story titles"
+msgstr "おすすめサイトのポップオーバーを記事タイトルの上に表示"
+
+msgid "Show every site, including ones you already follow"
+msgstr "すでにフォローしているサイトも含め、すべてのサイトを表示"
+
+msgid "Show every story individually without grouping"
+msgstr "グループ化せず、記事を1件ずつ表示"
+
+msgid "Show from both friends and the public"
+msgstr "友達と一般公開の両方から表示"
+
+msgid "Show highlighter when selecting text"
+msgstr "テキスト選択時にハイライトを表示"
+
+msgid "Show history"
+msgstr "履歴を表示"
+
+msgid "Show more related stories"
+msgstr "関連する記事をもっと表示"
+
+msgid "Show on Load"
+msgstr "読み込み時に表示"
+
+msgid "Show story changes"
+msgstr "記事の変更を表示"
+
+msgid "Show the dashboard when loading NewsBlur"
+msgstr "NewsBlurの起動時にダッシュボードを表示"
+
+msgid "Show the entire story, even if really, really long"
+msgstr "非常に長い場合でも、記事全体を表示"
+
+msgid "Show tooltips"
+msgstr "ツールチップを表示"
+
+msgid "Show unread counts in the window title"
+msgstr "ウィンドウタイトルに未読件数を表示"
+
+#, python-format
+msgid "Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"
+msgstr "<b>%(start_date)s</b>から<b>%(end_date)s</b>までの記事を表示中"
+
+#, python-format
+msgid "Showing stories newer than <b>%(date)s</b>"
+msgstr "<b>%(date)s</b>より新しい記事を表示中"
+
+#, python-format
+msgid "Showing stories older than <b>%(date)s</b>"
+msgstr "<b>%(date)s</b>より古い記事を表示中"
+
+#, python-format
+msgid "Showing stories on <b>%(date)s</b>"
+msgstr "<b>%(date)s</b>の記事を表示中"
+
+msgid "Shows a toolbar button with your unread count"
+msgstr "未読件数を表示するツールバーボタン"
+
+msgid "Sign in and your feeds, training, and saved stories sync instantly"
+msgstr "サインインすると、フィード、学習内容、保存した記事がすぐに同期されます"
+
+msgid "Sign up"
+msgstr "登録"
+
+msgid "Sign up to read your own feeds."
+msgstr "自分のフィードを読むには、登録してください。"
+
+msgid "Signup"
+msgstr "新規登録"
+
+msgid "Single Story"
+msgstr "単一の記事"
+
+msgid "Single line"
+msgstr "1行"
+
+msgid "Site"
+msgstr "サイト"
+
+msgid "Site Notifications"
+msgstr "サイト通知"
+
+msgid "Site Settings"
+msgstr "サイト設定"
+
+msgid "Site URL or search by name..."
+msgstr "サイトURLまたは名前で検索..."
+
+msgid "Site by Site"
+msgstr "サイトごと"
+
+msgid "Site settings"
+msgstr "サイト設定"
+
+msgid "Site sidebar order"
+msgstr "サイトサイドバーの順序"
+
+msgid "Site stats"
+msgstr "サイト統計"
+
+msgid "Sites"
+msgstr "サイト"
+
+msgid "Sites updated up to 5x more often"
+msgstr "サイトの更新頻度が最大5倍に"
+
+msgid "Skip Back"
+msgstr "前へスキップ"
+
+msgid "Skip Forward"
+msgstr "早送り"
+
+msgid "Skip this step "
+msgstr "この手順をスキップ"
+
+msgid "Small feeds with the fastest-growing subscriber base"
+msgstr "購読者数が最も急速に増えている小規模フィード"
+
+msgid "Small image thumbnail on the left"
+msgstr "左側に小さなサムネイルを表示"
+
+msgid "Small image thumbnail on the right"
+msgstr "右側に小さなサムネイル画像"
+
+msgid "So much time and so little to do. Strike that! Reverse it."
+msgstr "時間はたっぷり、やることはほんの少し。いや、取り消し！逆だ。"
+
+msgid "Social"
+msgstr "ソーシャル"
+
+msgid "Social Connections"
+msgstr "ソーシャル接続"
+
+#, python-format
+msgid "Sorry, nobody matches \"%(value_1)s\"."
+msgstr "「%(value_1)s」に一致する人はいません。"
+
+#, python-format
+msgid "Sorry, nothing matches \"%(value_1)s\"."
+msgstr "「%(value_1)s」に一致するものはありません。"
+
+msgid "Sorry, the original story<br />could not be proxied."
+msgstr "申し訳ありません。元の記事を<br />プロキシ経由で表示できませんでした。"
+
+msgid "Sorry, the story's text<br />could not be extracted."
+msgstr "申し訳ありません。記事の本文を<br />抽出できませんでした。"
+
+msgid "Sorry, there was a problem deleting feeds."
+msgstr "フィードの削除中に問題が発生しました。"
+
+msgid "Sorry, there was a problem moving feeds."
+msgstr "フィードの移動中に問題が発生しました。"
+
+msgid "Sorry, there was an unhandled error."
+msgstr "申し訳ありません。予期しないエラーが発生しました。"
+
+msgid "Sorry, this reply could not be deleted."
+msgstr "申し訳ありません。この返信を削除できませんでした。"
+
+msgid "Sorry, this reply could not be posted. Probably Adblock."
+msgstr "申し訳ありません。この返信を投稿できませんでした。おそらく Adblock が原因です。"
+
+msgid "Sorry, this story could not be shared. Probably Adblock."
+msgstr "申し訳ありません。この記事を共有できませんでした。Adblockが原因かもしれません。"
+
+msgid "Sorry, this story could not be unshared. Probably Adblock."
+msgstr "申し訳ありません。この記事の共有を解除できませんでした。Adblockが原因の可能性があります。"
+
+msgid "Sort "
+msgstr "並べ替え "
+
+msgid "Sort By"
+msgstr "並べ替え"
+
+msgid "Sort the river oldest-first or newest-first from the feed options popover."
+msgstr "フィードのオプションメニューから、ストリームを古い順または新しい順に並べ替えられます。"
+
+msgid "Sort, filter, and display options"
+msgstr "並べ替え、フィルター、表示オプション"
+
+msgid "Source feeds"
+msgstr "ソースフィード"
+
+msgid "Spacing between feeds and story titles"
+msgstr "フィードと記事タイトルの間隔"
+
+msgid "Spanish"
+msgstr "スペイン語"
+
+msgid "Special Folders"
+msgstr "特別フォルダー"
+
+msgid "Spending limit reached. Classifiers paused until next cycle."
+msgstr "利用上限に達しました。次のサイクルまで分類器は一時停止されます。"
+
+msgid "Split"
+msgstr "分割"
+
+#, python-format
+msgid "Split \"%(category)s\" (%(count)s story) into:"
+msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
+msgstr[0] "「%(category)s」（%(count)s件の記事）を次の項目に分割："
+
+#, python-format
+msgid "Split \"%(value_1)s\" into:"
+msgstr "「%(value_1)s」を次のように分割："
+
+#, python-format
+msgid "Split complete: %(count)s story recategorized"
+msgid_plural "Split complete: %(count)s stories recategorized"
+msgstr[0] "分割完了：%(count)s件の記事を再分類しました"
+
+msgid "Split failed to apply"
+msgstr "分割を適用できませんでした"
+
+msgid "Split functionality coming soon"
+msgstr "分割機能は近日公開"
+
+#, python-format
+msgid "Split partially applied: %(count)s story recategorized"
+msgid_plural "Split partially applied: %(count)s stories recategorized"
+msgstr[0] "分割を一部適用しました: %(count)s件の記事を再分類しました"
+
+msgid "Split with AI"
+msgstr "AIで分割"
+
+msgid "Sports"
+msgstr "スポーツ"
+
+msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
+msgstr "サイトのキャッチコピーをもっと魅力的にしましょう。選ばれると、このサイトは1週間NewsBlurダッシュボードに掲載されます。"
+
+#, python-format
+msgid "Stale %(date)s"
+msgstr "更新停止 %(date)s"
+
+#, python-format
+msgid "Stale — last story %(date)s"
+msgstr "更新が停止しています — 最後の記事は%(date)s"
+
+msgid "Stars"
+msgstr "スター"
+
+msgid "Start Training Site by Site"
+msgstr "サイトごとに学習を開始"
+
+msgid "Starting analysis..."
+msgstr "分析を開始しています..."
+
+msgid "Starting briefing generation..."
+msgstr "ブリーフィングを生成しています..."
+
+msgid "Starting categorization..."
+msgstr "カテゴリ分けを開始しています..."
+
+msgid "Starting trial..."
+msgstr "トライアルを開始しています…"
+
+msgid "Statistics"
+msgstr "統計"
+
+msgid "Statistics &amp; History"
+msgstr "統計 &amp; 履歴"
+
+msgid "Stats"
+msgstr "統計"
+
+msgid "Status"
+msgstr "ステータス"
+
+msgid "Stay on the same feed/folder"
+msgstr "同じフィード／フォルダーにとどまる"
+
+#, python-format
+msgid "Step %(step)s of %(count)s"
+msgstr "%(step)s / %(count)s"
+
+msgid "Stop any time you like."
+msgstr "いつでも停止できます。"
+
+msgid "Stop recording"
+msgstr "録音を停止"
+
+msgid "Stories"
+msgstr "記事"
+
+msgid "Stories are highlighted green (like) or hidden (dislike)"
+msgstr "高評価の記事は緑色で強調表示され、低評価の記事は非表示になります"
+
+msgid "Stories arrive in real-time"
+msgstr "記事がリアルタイムで届きます"
+
+msgid "Stories cache for offline reading with automatic background refresh."
+msgstr "記事はオフラインで読めるようキャッシュされ、バックグラウンドで自動更新されます。"
+
+msgid "Stories can stay unread forever"
+msgstr "記事をいつまでも未読のままにできます"
+
+msgid "Stories covered by 3+ feeds"
+msgstr "3つ以上のフィードで取り上げられた記事"
+
+#, python-format
+msgid "Stories from %(start_date)s to %(end_date)s"
+msgstr "%(start_date)sから%(end_date)sまでの記事"
+
+msgid "Stories from feeds that rarely publish"
+msgstr "更新頻度の低いフィードの記事"
+
+msgid "Stories in archive"
+msgstr "アーカイブ内の記事"
+
+#, python-format
+msgid "Stories marked as read at <b>%(days)s day</b>"
+msgid_plural "Stories marked as read at <b>%(days)s days</b>"
+msgstr[0] "記事は<b>%(days)s日後</b>に既読になります"
+
+msgid "Stories matching your trained topics and authors"
+msgstr "学習済みのトピックや著者に一致する記事"
+
+msgid "Stories never expire or disappear"
+msgstr "記事は期限切れになったり、消えたりしません"
+
+#, python-format
+msgid "Stories newer than %(date)s"
+msgstr "%(date)sより新しい記事"
+
+#, python-format
+msgid "Stories older than %(date)s"
+msgstr "%(date)sより古い記事"
+
+#, python-format
+msgid "Stories on %(date)s"
+msgstr "%(date)sの記事"
+
+msgid "Stories per day"
+msgstr "1日あたりの記事数"
+
+msgid "Stories per month"
+msgstr "月ごとの記事数"
+
+msgid "Stories readers finished, saved, and shared"
+msgstr "読者が読み終えた記事、保存した記事、共有した記事"
+
+msgid "Stories that held the most attention across NewsBlur."
+msgstr "NewsBlurで最も注目を集めた記事。"
+
+msgid "Stories will <b>never</b> be auto-marked as read"
+msgstr "記事が<b>決して</b>自動で既読になることはありません"
+
+msgid "Stories will <b>never</b> be marked as read"
+msgstr "記事が既読になることは<b>ありません</b>"
+
+msgid "Story"
+msgstr "記事"
+
+msgid "Story Archive"
+msgstr "記事アーカイブ"
+
+msgid "Story Authors"
+msgstr "記事の著者"
+
+msgid "Story Categories &amp; Tags"
+msgstr "記事のカテゴリ &amp; タグ"
+
+msgid "Story Clustering"
+msgstr "記事のクラスタリング"
+
+msgid "Story Layout - Grid Columns"
+msgstr "記事レイアウト - グリッド列数"
+
+msgid "Story Layout - Split"
+msgstr "記事レイアウト - 分割"
+
+msgid "Story Text"
+msgstr "記事本文"
+
+msgid "Story Title"
+msgstr "記事のタイトル"
+
+msgid "Story Typography"
+msgstr "記事の文字設定"
+
+msgid "Story URL"
+msgstr "記事のURL"
+
+msgid "Story clustering"
+msgstr "記事のグループ化"
+
+msgid "Story content preview"
+msgstr "記事本文のプレビュー"
+
+msgid "Story is always hidden"
+msgstr "記事は常に非表示"
+
+msgid "Story layout"
+msgstr "記事のレイアウト"
+
+msgid "Story preview"
+msgstr "記事のプレビュー"
+
+msgid "Story shows in Focus view"
+msgstr "記事がフォーカスビューに表示されます"
+
+msgid "Story side options"
+msgstr "記事のサイドオプション"
+
+msgid "Story side options buttons"
+msgstr "記事サイドのオプションボタン"
+
+msgid "Story side options placement"
+msgstr "記事サイドオプションの配置"
+
+msgid "Story title styling"
+msgstr "記事タイトルのスタイル"
+
+msgid "Stream interrupted. No response received for 10 seconds."
+msgstr "ストリームが中断されました。10秒間応答がありません。"
+
+msgid "Stripe Id:"
+msgstr "Stripe ID："
+
+msgid "Submit Payment"
+msgstr "支払いを送信"
+
+msgid "Submitting..."
+msgstr "送信中..."
+
+msgid "Subscribe"
+msgstr "購読"
+
+#, python-format
+msgid "Subscribe to %(count)s site"
+msgid_plural "Subscribe to %(count)s sites"
+msgstr[0] "%(count)s件のサイトを購読"
+
+#, python-format
+msgid "Subscribe to %(title)s via RSS"
+msgstr "%(title)sをRSSで購読"
+
+#, python-format
+msgid "Subscribe to %(value_1)s"
+msgstr "%(value_1)sを購読"
+
+msgid "Subscribe to Google News feeds by topic or custom keywords."
+msgstr "トピックや任意のキーワードでGoogleニュースのフィードを購読できます。"
+
+msgid "Subscribe to Premium Archive"
+msgstr "プレミアムアーカイブに登録"
+
+msgid "Subscribe to YouTube channels and playlists as RSS feeds."
+msgstr "YouTubeチャンネルや再生リストをRSSフィードとして購読できます。"
+
+msgid "Subscribe to a new feed and its entire available history back-fills automatically."
+msgstr "新しいフィードを購読すると、取得可能な過去の記事もすべて自動で遡って取得されます。"
+
+msgid "Subscribe to add this feed to your NewsBlur"
+msgstr "購読して、このフィードをNewsBlurに追加"
+
+msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
+msgstr "RSSがなくても、どのウェブサイトもフィードとして購読できます。プレミアムアーカイブにアップグレードすると、ウェブフィードが利用できます。"
+
+msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
+msgstr "Substack、Medium、Ghost、Buttondownなどのニュースレターを購読できます。"
+
+msgid "Subscribe to newsletters with your NewsBlur address directly and they never touch your inbox."
+msgstr "NewsBlurのアドレスを使ってニュースレターを直接登録すれば、受信トレイに届くことはありません。"
+
+msgid "Subscribe to podcasts via RSS. Search by name or paste a feed URL."
+msgstr "RSSでポッドキャストを登録できます。名前で検索するか、フィードURLを貼り付けてください。"
+
+#, python-format
+msgid "Subscribe to r/%(value_1)s"
+msgstr "r/%(value_1)s を購読"
+
+msgid "Subscribe to subreddits as RSS feeds."
+msgstr "サブレディットをRSSフィードとして登録できます。"
+
+msgid "Subscribed"
+msgstr "購読中"
+
+msgid "Subscribed with errors"
+msgstr "購読しました（エラーあり）"
+
+msgid "Subscribed!"
+msgstr "購読しました！"
+
+msgid "Subscribed! Fetching stories..."
+msgstr "登録しました！記事を取得中..."
+
+msgid "Subscribers"
+msgstr "購読者"
+
+msgid "Subscribing..."
+msgstr "購読中..."
+
+msgid "Subscription tiers"
+msgstr "購読プラン"
+
+msgid "Suggested questions"
+msgstr "質問の候補"
+
+msgid "Summarize"
+msgstr "要約"
+
+msgid "Summarize in a paragraph"
+msgstr "段落で要約する"
+
+msgid "Summarize in bullet points"
+msgstr "箇条書きで要約"
+
+msgid "Summarize in one sentence"
+msgstr "1文で要約"
+
+msgid "Sun"
+msgstr "日"
+
+msgid "Sunday"
+msgstr "日曜日"
+
+msgid "Super Dislike "
+msgstr "強い低評価 "
+
+#, python-format
+msgid "Supplemented by checks every %(value_1)s"
+msgstr "%(value_1)sごとに行うチェックで補完"
+
+msgid "Switch between views (original, feed, text, story)"
+msgstr "表示を切り替える（オリジナル、フィード、テキスト、記事）"
+
+msgid "Switch focus/unread"
+msgstr "フォーカス／未読を切り替え"
+
+msgid "Switch models per question. Each answer is labeled with the model that wrote it."
+msgstr "質問ごとにモデルを切り替えられます。各回答には、作成したモデルが表示されます。"
+
+msgid "Switch themes instantly from the bottom of the Manage menu."
+msgstr "管理メニューの下部から、テーマをすぐに切り替えられます。"
+
+#, python-format
+msgid "Switch to %(value_1)s"
+msgstr "%(value_1)sに切り替え"
+
+msgid "Switch to All or Unread."
+msgstr "「すべて」または「未読」に切り替えてください。"
+
+msgid "Switch to Credit Card"
+msgstr "クレジットカードに切り替え"
+
+msgid "Switch views"
+msgstr "表示を切り替える"
+
+msgid "Tag"
+msgstr "タグ"
+
+msgid "Tag RSS Feed"
+msgstr "タグのRSSフィード"
+
+msgid "Tag Settings"
+msgstr "タグ設定"
+
+#, python-format
+msgid "Tag filters found no stories in %(context)s."
+msgstr "%(context)s にタグフィルターに一致する記事がありません。"
+
+msgid "Tag filters found no stories in this view."
+msgstr "タグフィルターに一致する記事はありません。"
+
+msgid "Tag name must be 128 characters or less."
+msgstr "タグ名は128文字以内にしてください。"
+
+msgid "Tag settings"
+msgstr "タグ設定"
+
+msgid "Tag: "
+msgstr "タグ："
+
+msgid "Tags"
+msgstr "タグ"
+
+msgid "Tags:"
+msgstr "タグ:"
+
+msgid "Take action: mark as read, save with tags and notes, subscribe, share"
+msgstr "操作：既読にする、タグやメモを付けて保存する、購読する、共有する"
+
+msgctxt "card height"
+msgid "Tall"
+msgstr "高"
+
+msgid "Target category name"
+msgstr "統合先のカテゴリ名"
+
+msgid "Tech"
+msgstr "テクノロジー"
+
+msgid "Technology"
+msgstr "テクノロジー"
+
+msgid "Temporarily turn off feeds"
+msgstr "フィードを一時的にオフにする"
+
+msgid "Test failed"
+msgstr "テストに失敗しました"
+
+msgid "Test on these images"
+msgstr "これらの画像でテスト"
+
+msgid "Test on this image"
+msgstr "この画像でテスト"
+
+msgid "Test on this story"
+msgstr "この記事でテスト"
+
+msgid "Testing on this story..."
+msgstr "この記事でテスト中…"
+
+msgid "Text"
+msgstr "テキスト"
+
+msgid "Text Phrases"
+msgstr "テキストフレーズ"
+
+msgid "Text Regex"
+msgstr "テキスト正規表現"
+
+msgid "Text View"
+msgstr "テキスト表示"
+
+#, python-format
+msgid "Text filters found no stories in %(context)s."
+msgstr "テキストフィルターにより、%(context)s に記事が見つかりませんでした。"
+
+msgid "Text filters found no stories in this view."
+msgstr "このビューではテキストフィルターに一致する記事がありません。"
+
+msgid "Text view extracts the story"
+msgstr "テキスト表示では記事本文を抽出します"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
+msgstr "ありがとうございます！%(bold_start)sプレミアムアカウント%(bold_end)sをご利用いただけます。"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
+msgstr "ありがとうございます！%(bold_start)sプレミアムアーカイブアカウント%(bold_end)sをご利用いただけます。"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
+msgstr "ありがとうございます！%(bold_start)sプレミアム Proアカウント%(bold_end)sをご利用中です。"
+
+msgid "The AI service took too long to respond. Please try again."
+msgstr "AIサービスからの応答に時間がかかりすぎています。もう一度お試しください。"
+
+msgid ""
+"The CLI is a standalone terminal tool you run directly. The MCP server lets AI agents connect on your "
+"behalf. Both use the same API and have the same capabilities."
+msgstr "CLIは、直接実行するスタンドアロンのターミナルツールです。MCPサーバーを使うと、AIエージェントがあなたに代わって接続できます。どちらも同じAPIを使用し、同じ機能を備えています。"
+
+msgid ""
+"The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
+"custom sections you define."
+msgstr "デイリーブリーフィングはサイドバーの上部に表示され、トップ記事、長文記事、独自に設定したセクションが並びます。"
+
+msgid ""
+"The MCP server uses OAuth, the same authentication as third-party apps. You authorize through your browser "
+"and can revoke access at any time."
+msgstr "MCPサーバーは、サードパーティ製アプリと同じOAuth認証を使用します。ブラウザーで認証し、いつでもアクセスを取り消せます。"
+
+msgid ""
+"The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets"
+" Claude, Codex, and other AI assistants interact with NewsBlur on your behalf."
+msgstr ""
+"Model Context "
+"Protocolは、AIエージェントを外部のツールやデータにつなぐオープン標準です。ClaudeやCodexなどのAIアシスタントが、あなたに代わってNewsBlurを利用できるようになります。"
+
+msgid "The NewsBlur Blog"
+msgstr "NewsBlurブログ"
+
+#, python-format
+msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
+msgstr "%(icon)sテキスト表示の全機能は%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "The full NewsBlur API is open and documented for custom integrations."
+msgstr "NewsBlurのAPIは全面公開されており、カスタム連携向けのドキュメントも用意されています。"
+
+#, python-format
+msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
+msgstr "ニュースの流れの全表示は%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "The full shortcut list"
+msgstr "ショートカット一覧"
+
+msgid "The gift has been applied to your account."
+msgstr "ギフトがアカウントに適用されました。"
+
+msgid "The intelligence slider filters stories."
+msgstr "インテリジェンススライダーで記事を絞り込めます。"
+
+msgid ""
+"The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
+"stories."
+msgstr "左下のインテリジェンススライダーで、すべての記事、未読記事、フォーカス記事を切り替えられます。"
+
+msgid ""
+"The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
+"anywhere except the NewsBlur API."
+msgstr "loginコマンドを実行すると、ブラウザーが開いてOAuth認証を行います。トークンはローカルに保存され、NewsBlur API以外に送信されることはありません。"
+
+msgid "The most important stories from your feeds"
+msgstr "フィードの中で特に重要な記事"
+
+msgid "The original page has been disabled by the publisher."
+msgstr "配信元により元のページが無効化されています。"
+
+msgid "The page HTML is fetched and parsed to extract content structure."
+msgstr "ページのHTMLを取得・解析し、コンテンツの構造を抽出します。"
+
+msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
+msgstr "選択した表示形式はサイトごとに記憶されるため、要約のみのフィードではテキスト表示をデフォルトにできます。"
+
+msgid "Themes & Customization"
+msgstr "テーマとカスタマイズ"
+
+msgid "There are too many sites and stories to process. "
+msgstr "処理するサイトと記事が多すぎます。"
+
+#, python-format
+msgid "There is %(count)s hidden story"
+msgid_plural "There are %(count)s hidden stories"
+msgstr[0] "非表示の記事が%(count)s件あります"
+
+#, python-format
+msgid "There is %(count)s public comment"
+msgid_plural "There are %(count)s public comments"
+msgstr[0] "公開コメントは%(count)s件あります"
+
+msgid ""
+"There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be "
+"fixed soon. You should probably send this manually now."
+msgstr "メールの送信中にバックエンドで問題が発生しました。申し訳ありません。問題は報告されており、まもなく修正されます。今すぐ手動で送信してください。"
+
+msgid "There was a problem deleting your classifiers."
+msgstr "分類器の削除中に問題が発生しました。"
+
+msgid "There was a problem deleting your saved stories."
+msgstr "保存した記事の削除中に問題が発生しました。"
+
+msgid "There was a problem deleting your shared stories."
+msgstr "共有した記事の削除中に問題が発生しました。"
+
+msgid "There was a problem deleting your sites."
+msgstr "サイトの削除中に問題が発生しました。"
+
+msgid "There was a problem fetching the feed from this URL."
+msgstr "このURLからフィードを取得できませんでした。"
+
+msgid "There was a problem loading your training data. Please try again."
+msgstr "学習データの読み込み中に問題が発生しました。もう一度お試しください。"
+
+msgid "There was a problem trying to add this site. Please try a different URL."
+msgstr "このサイトの追加中に問題が発生しました。別のURLをお試しください。"
+
+msgid "There was a problem uploading your OPML file."
+msgstr "OPMLファイルのアップロード中に問題が発生しました。"
+
+msgid "There was a problem uploading your photo."
+msgstr "写真のアップロード中に問題が発生しました。"
+
+msgid "There was an error trying to logout, ouch."
+msgstr "ログアウト中にエラーが発生しました。困りました。"
+
+msgid "There's no limit. Save as many stories as you want and they're kept forever."
+msgstr "上限はありません。好きなだけ記事を保存でき、永久に保管されます。"
+
+msgid "These clusters were found because other subscribers share these feeds."
+msgstr "他の購読者がこれらのフィードを共有しているため、これらのクラスターが見つかりました。"
+
+msgid ""
+"These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
+"above to override."
+msgstr "これらのドメインはデフォルトでブロックされています（検索エンジン、ソーシャルメディアなど）。許可するには、上の「許可するドメイン」に追加してください。"
+
+msgid "They redeem it."
+msgstr "相手が引き換えます。"
+
+msgid "Thinking"
+msgstr "思考モード"
+
+msgid "Thinking..."
+msgstr "考え中..."
+
+msgid "Third-party apps that sync with NewsBlur"
+msgstr "NewsBlurと同期するサードパーティ製アプリ"
+
+msgid "This Month"
+msgstr "今月"
+
+msgid "This Week"
+msgstr "今週"
+
+msgid "This Year"
+msgstr "今年"
+
+msgid "This is just the demo."
+msgstr "これはデモです。"
+
+msgid "This matches the entire URL and will only match this exact story. Select a portion of the URL instead."
+msgstr "これはURL全体に一致するため、この記事だけに一致します。代わりにURLの一部を選択してください。"
+
+msgid ""
+"This matches the entire story text and will only match this exact story. Consider using a shorter phrase or"
+" pattern."
+msgstr "これは記事全文に一致するため、この完全一致する記事だけに適用されます。より短い語句やパターンの使用をおすすめします。"
+
+msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
+msgstr "これはタイトル全体に一致するため、この記事だけに一致します。タイトルの一部を選択してください。"
+
+#, python-format
+msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
+msgstr "この既読記事リストは%(link_start)sプレミアム機能%(link_end)sです。"
+
+msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
+msgstr "この操作を行うと、保存したすべての記事からタグが削除されます。記事はタグなしで保存されたままです。"
+
+msgid "This site"
+msgstr "このサイト"
+
+msgid ""
+"This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to "
+"see the exact status codes for the feed. The more errors for the feed, the longer time taken between "
+"fetches."
+msgstr "このサイトで例外が発生しており、正常な状態ではありません。このダイアログの下部で、フィードのステータスコードを確認してください。エラーが多いほど、次回の取得までの時間が長くなります。"
+
+#, python-format
+msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors."
+msgstr "このサイトは<b>%(time)s</b>の間取得されておらず、エラーが発生しています。"
+
+msgid "This site has not yet been indexed for related stories."
+msgstr "このサイトは関連する記事のインデックスにまだ登録されていません。"
+
+msgid ""
+"This site has published zero stories in the past month or has averaged less than a single story a month. As"
+" soon as it starts publishing at least once a month, it will automatically fetch more frequently."
+msgstr "このサイトは過去1か月間に記事を1件も公開していないか、月平均1件未満しか公開していません。月に1回以上公開するようになると、自動的に更新頻度が上がります。"
+
+msgid "This site is active and receiving stories."
+msgstr "このサイトは稼働中で、記事を受信しています。"
+
+msgid "This site only"
+msgstr "このサイトのみ"
+
+msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
+msgstr "このウェブフィードは<b>一時停止中</b>です。新着記事の取得を再開するには、プレミアムアーカイブにアップグレードしてください。"
+
+msgid "This will erase all existing feeds and folders."
+msgstr "既存のフィードとフォルダーがすべて消去されます。"
+
+msgid "This will prevent the browser extension from archiving pages from this domain in the future."
+msgstr "この設定にすると、今後このドメインのページがブラウザー拡張機能によってアーカイブされなくなります。"
+
+msgid "Thu"
+msgstr "木"
+
+msgid "Thumbs down what you don't want to see"
+msgstr "見たくない記事に低評価を付ける"
+
+msgid "Thumbs up and down on authors, tags, and titles"
+msgstr "著者・タグ・タイトルに高評価または低評価を付ける"
+
+msgid "Thumbs up authors, tags, or title keywords you like"
+msgstr "気に入った著者、タグ、タイトルのキーワードに高評価を付ける"
+
+msgid "Thursday"
+msgstr "木曜日"
+
+msgid "Tier"
+msgstr "プラン"
+
+msgid "Time Period"
+msgstr "期間"
+
+#, python-format
+msgid "Time: %(value_1)s"
+msgstr "期間：%(value_1)s"
+
+msgid "Timezone"
+msgstr "タイムゾーン"
+
+msgid "Timezone:"
+msgstr "タイムゾーン："
+
+msgid "Tips"
+msgstr "ヒント"
+
+msgid "Title"
+msgstr "タイトル"
+
+msgid "Title Phrases"
+msgstr "タイトルのフレーズ"
+
+msgid "Title Regex"
+msgstr "タイトルの正規表現"
+
+#, python-format
+msgid "Title filters found no stories in %(context)s."
+msgstr "タイトルフィルターにより、%(context)sに該当する記事が見つかりませんでした。"
+
+msgid "Title filters found no stories in this view."
+msgstr "この表示では、タイトルフィルターに一致する記事がありません。"
+
+msgid "Title matching catches exact and fuzzy duplicates"
+msgstr "タイトルの照合で完全一致や類似の重複を検出"
+
+msgid "Title only"
+msgstr "タイトルのみ"
+
+msgid ""
+"Title training matches phrases, so train just the words that matter and future stories with those words "
+"follow suit."
+msgstr "タイトル学習はフレーズ単位で一致します。重要な単語だけを学習させれば、今後それらの単語を含む記事にも反映されます。"
+
+msgid "Title: "
+msgstr "タイトル: "
+
+msgid "Titles"
+msgstr "タイトル"
+
+msgid "To"
+msgstr "宛先"
+
+msgctxt "date range"
+msgid "To"
+msgstr "終了日"
+
+msgid ""
+"To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
+"above."
+msgstr "メールニュースレターをNewsBlurで読むには、上に表示されている専用メールアドレスに転送してください。"
+
+msgid "Today"
+msgstr "今日"
+
+#, python-format
+msgid "Today, %(date)s"
+msgstr "今日、%(date)s"
+
+#, python-format
+msgid "Today, %(date)s %(time)s"
+msgstr "今日、%(date)s %(time)s"
+
+msgid "Toggle read/unread"
+msgstr "既読／未読を切り替え"
+
+msgid "Toggle unread/all"
+msgstr "未読／すべてを切り替え"
+
+#, python-format
+msgid "Tomorrow, %(date)s %(time)s"
+msgstr "明日、%(date)s %(time)s"
+
+#, python-format
+msgid "Tomorrow, %(time)s"
+msgstr "明日、%(time)s"
+
+#, python-format
+msgid "Too many sites! Deselect %(count)s site..."
+msgid_plural "Too many sites! Deselect %(count)s sites..."
+msgstr[0] "サイトが多すぎます！%(count)s件のサイトの選択を解除してください..."
+
+msgid "Tools"
+msgstr "ツール"
+
+msgid "Tooltips"
+msgstr "ツールチップ"
+
+msgid "Tooltips like this"
+msgstr "このようなツールチップ"
+
+msgid "Top"
+msgstr "上部"
+
+msgid "Top Domains"
+msgstr "上位ドメイン"
+
+msgid "Top Level"
+msgstr "最上位"
+
+msgid "Top stories"
+msgstr "トップ記事"
+
+msgid "Track Changes"
+msgstr "変更を追跡"
+
+msgid "Train"
+msgstr "学習"
+
+msgid "Train &amp; filter"
+msgstr "学習 &amp; フィルター"
+
+msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
+msgstr "NewsBlurを学習させて、見たいものを表示し、見たくないものを非表示にできます。アルゴリズムではなく、あなたが主導権を握れます。"
+
+msgid "Train across folders or globally on Premium Archive"
+msgstr "プレミアムアーカイブではフォルダー単位や全体で学習可能"
+
+msgid "Train and notification settings"
+msgstr "学習と通知の設定"
+
+msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
+msgstr "インテリジェンス学習：著者、タグ、タイトル、フィードに高評価または低評価を付ける"
+
+msgid "Train stories by author, tag, title"
+msgstr "著者、タグ、タイトルで記事を学習"
+
+msgid "Train stories on full text content"
+msgstr "全文コンテンツで記事を学習する"
+
+msgid "Train stories with regular expressions"
+msgstr "正規表現で記事を学習させる"
+
+msgid "Train stories, search, share, and tag just like on the web"
+msgstr "ウェブ版と同じように、記事の学習、検索、共有、タグ付けができます"
+
+msgid "Train this classifier"
+msgstr "この分類器を学習させる"
+
+msgid "Train this site"
+msgstr "このサイトを学習させる"
+
+msgid "Train this story"
+msgstr "この記事を学習させる"
+
+msgid "Train your feeds to filter stories you like and dislike."
+msgstr "フィードを学習させて、好みの記事や好みでない記事を絞り込みましょう。"
+
+msgid "Train, tag, search, and organize newsletters like any feed"
+msgstr "ニュースレターも通常のフィードと同じように、学習・タグ付け・検索・整理できます"
+
+msgid "Training:"
+msgstr "トレーニング："
+
+msgid "Transcribing audio"
+msgstr "音声を文字起こし中"
+
+msgid "Transcribing..."
+msgstr "文字起こし中..."
+
+msgid "Transport"
+msgstr "交通"
+
+msgid "Travel"
+msgstr "旅行"
+
+msgid "Trending"
+msgstr "トレンド"
+
+msgid "Trending Sites"
+msgstr "トレンドのサイト"
+
+msgid "Truncate stories"
+msgstr "記事を省略表示"
+
+msgid "Try"
+msgstr "試す"
+
+msgid "Try Again"
+msgstr "再試行"
+
+msgid "Try a different search term or paste a URL directly."
+msgstr "別の検索語を試すか、URLを直接貼り付けてください。"
+
+msgid "Try again"
+msgstr "もう一度お試しください"
+
+msgid "Try different keywords, or clear the search to see everything."
+msgstr "別のキーワードを試すか、検索をクリアしてすべて表示してください。"
+
+msgid "Try removing some filters to see more results"
+msgstr "フィルターをいくつか解除して、さらに結果を表示してみてください"
+
+msgid "Tue"
+msgstr "火"
+
+msgid "Tuesday"
+msgstr "火曜日"
+
+msgid "Turn off automatic briefing generation"
+msgstr "自動ブリーフィング生成をオフにする"
+
+#, python-format
+msgid "Turn on this %(count)s site, please"
+msgid_plural "Turn on these %(count)s sites, please"
+msgstr[0] "これらのサイト%(count)s件を有効にしてください"
+
+msgid "Turning any page into a feed"
+msgstr "あらゆるページをフィードに変換"
+
+msgid ""
+"Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
+"Elasticsearch to catch the same event under completely different headlines."
+msgstr "2段階で照合します。タイトル照合では見出しを正規化し、完全一致とあいまい一致を判定します。意味的照合ではElasticsearchを使い、見出しがまったく異なっていても同じ出来事を検出します。"
+
+msgid "Type a story title you see on the page"
+msgstr "ページ上で見つけた記事のタイトルを入力"
+
+msgid "Type keywords, phrases, or combinations"
+msgstr "キーワードやフレーズ、またはそれらの組み合わせを入力"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "URL Regex"
+msgstr "URL正規表現"
+
+#, python-format
+msgid "URL filters found no stories in %(context)s."
+msgstr "%(context)sにURLフィルターに一致する記事はありません。"
+
+msgid "URL filters found no stories in this view."
+msgstr "URLフィルターに一致する記事はありません。"
+
+msgid "URL gives a 404 - page not found."
+msgstr "URLが404を返しました - ページが見つかりません。"
+
+msgid "URL:"
+msgstr "URL："
+
+msgid "Un-mute this site"
+msgstr "このサイトのミュートを解除"
+
+msgid "Uncategorized"
+msgstr "未分類"
+
+msgid "Unfavorited"
+msgstr "お気に入り解除"
+
+msgid "Unfollow"
+msgstr "フォロー解除"
+
+msgid "Unfollowed"
+msgstr "フォローを解除しました"
+
+msgid "Unfollowing..."
+msgstr "フォローを解除しています…"
+
+msgid "Unhighlight"
+msgstr "ハイライトを解除"
+
+msgid "Unknown"
+msgstr "不明"
+
+msgid "Unknown Feed"
+msgstr "不明なフィード"
+
+msgid "Unknown error"
+msgstr "不明なエラー"
+
+msgid "Unknown question"
+msgstr "不明な質問"
+
+msgid "Unlock"
+msgstr "ロックを解除"
+
+msgid "Unlock for $36/year"
+msgstr "年額36ドルで利用する"
+
+msgid "Unlock full discovery"
+msgstr "すべての発見機能を利用"
+
+msgid "Unlocked"
+msgstr "ロック解除済み"
+
+msgid "Unmute"
+msgstr "ミュート解除"
+
+msgid "Unmuted"
+msgstr "ミュート解除"
+
+msgid "Unread"
+msgstr "未読"
+
+msgid "Unread only"
+msgstr "未読のみ"
+
+msgid "Unread stories"
+msgstr "未読記事"
+
+msgid "Unread stories going back months"
+msgstr "数か月前までさかのぼる未読記事"
+
+msgid "Unread stories never expire, so read at your own pace."
+msgstr "未読記事は期限切れにならないので、自分のペースで読めます。"
+
+msgid "Unread+Focus:"
+msgstr "未読＋フォーカス："
+
+msgid "Unsave this story"
+msgstr "この記事の保存を解除"
+
+msgid "Unshared"
+msgstr "共有解除済み"
+
+msgid "Untitled"
+msgstr "無題"
+
+msgid "Up Next"
+msgstr "次に再生"
+
+msgid "Upcoming charge: "
+msgstr "次回の請求額："
+
+msgid "Update History"
+msgstr "更新履歴"
+
+msgid "Updated"
+msgstr "更新日"
+
+#, python-format
+msgid "Updated %(count)s day ago"
+msgid_plural "Updated %(count)s days ago"
+msgstr[0] "%(count)s日前に更新"
+
+#, python-format
+msgid "Updated %(count)s month ago"
+msgid_plural "Updated %(count)s months ago"
+msgstr[0] "%(count)sか月前に更新"
+
+#, python-format
+msgid "Updated %(count)s week ago"
+msgid_plural "Updated %(count)s weeks ago"
+msgstr[0] "%(count)s 週間前に更新"
+
+#, python-format
+msgid "Updated %(value_1)s ago"
+msgstr "%(value_1)s前に更新"
+
+msgid "Updated today"
+msgstr "今日更新"
+
+msgid "Updated within the last 5 years"
+msgstr "過去5年以内に更新"
+
+msgid "Updated within the last month"
+msgstr "過去1か月以内に更新"
+
+msgid "Updated within the last year"
+msgstr "過去1年以内に更新"
+
+msgid "Updated!"
+msgstr "更新しました！"
+
+msgid "Updates come to you"
+msgstr "更新が自動で届きます"
+
+#, python-format
+msgid "Updating sites every %(count)s second..."
+msgid_plural "Updating sites every %(count)s seconds..."
+msgstr[0] "サイトを%(count)s秒ごとに更新中..."
+
+msgid "Updating sites in real-time..."
+msgstr "サイトをリアルタイムで更新中…"
+
+#, python-format
+msgid "Upgrade to %(value_1)s"
+msgstr "%(value_1)sにアップグレード"
+
+msgid "Upgrade to Archive or Pro"
+msgstr "ArchiveまたはProにアップグレード"
+
+msgid "Upgrade to Premium"
+msgstr "プレミアムにアップグレード"
+
+msgid "Upgrade to Premium Archive"
+msgstr "プレミアムアーカイブにアップグレード"
+
+msgid "Upgrade to Premium Archive for classifier notifications"
+msgstr "分類通知を利用するにはプレミアムアーカイブにアップグレード"
+
+msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
+msgstr "プレミアムアーカイブにアップグレードすると、すべてのフィードをスキャンして重複記事を探せるため、記事のまとまりを見逃しません。"
+
+msgid "Upgrade to Premium Pro"
+msgstr "プレミアム Proにアップグレード"
+
+msgid "Upgrade to a Premium Archive account"
+msgstr "プレミアムアーカイブアカウントにアップグレード"
+
+msgid "Upgrade to a Premium account"
+msgstr "プレミアムアカウントにアップグレード"
+
+msgid "Upgrade to premium"
+msgstr "プレミアムにアップグレード"
+
+msgid "Upgrade your reading"
+msgstr "読書体験をアップグレード"
+
+msgid "Upgraded!"
+msgstr "アップグレードしました！"
+
+msgid "Upload"
+msgstr "アップロード"
+
+msgid "Upload Custom Image"
+msgstr "カスタム画像をアップロード"
+
+msgid "Upload OPML File"
+msgstr "OPMLファイルをアップロード"
+
+msgid "Upload failed. Please check your connection and try again."
+msgstr "アップロードに失敗しました。接続を確認して、もう一度お試しください。"
+
+msgid "Upload failed. Please try again."
+msgstr "アップロードに失敗しました。もう一度お試しください。"
+
+msgid "Uploaded!"
+msgstr "アップロードしました！"
+
+msgid "Usage billing history"
+msgstr "利用料金の請求履歴"
+
+msgid "Usage-based billing is enabled for natural language classifiers."
+msgstr "自然言語分類器では使用量に応じた課金が有効です。"
+
+#, python-format
+msgid "Use %(language)s"
+msgstr "%(language)sを使用"
+
+msgid "Use 12-hour clock"
+msgstr "12時間制を使用"
+
+msgid "Use 24-hour clock"
+msgstr "24時間表示を使用"
+
+msgid "Use prompt templates for inbox triage, topic research, and feed audits"
+msgstr "受信トレイの整理、トピック調査、フィード監査にプロンプトテンプレートを使用"
+
+msgid "Use the native browser context menu"
+msgstr "ブラウザー標準のコンテキストメニューを使用"
+
+msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
+msgstr "このURLテンプレートをブラウザー拡張機能やフィードリーダーで使うと、NewsBlurでフィードを購読できます。"
+
+msgid "Use widgets to see unread counts and stories at a glance"
+msgstr "ウィジェットで未読数や記事をひと目で確認できます"
+
+msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
+msgstr "進行中のニュース、訂正された記事、更新が続く製品発表などに便利です。"
+
+msgid "User Admin"
+msgstr "ユーザー管理"
+
+msgid "User is premium ARCHIVE, expires: "
+msgstr "プレミアムアーカイブユーザー、有効期限："
+
+msgid "User is premium, expires: "
+msgstr "プレミアムユーザー、有効期限："
+
+msgid "Username"
+msgstr "ユーザー名"
+
+msgid "Username or email..."
+msgstr "ユーザー名またはメールアドレス..."
+
+#, python-format
+msgid "Using default: <b>%(days)s day</b>"
+msgid_plural "Using default: <b>%(days)s days</b>"
+msgstr[0] "デフォルトを使用：<b>%(days)s日</b>"
+
+#, python-format
+msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
+msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
+msgstr[0] "デフォルトを使用: <b>%(days)s 日</b>（%(source)sより）"
+
+#, python-format
+msgid "Using default: <b>never</b> (from %(source)s)"
+msgstr "デフォルトを使用：<b>自動既読なし</b>（%(source)sから）"
+
+msgid "Using default: stories will <b>never</b> be auto-marked as read"
+msgstr "デフォルト：記事は<b>一切</b>自動で既読になりません"
+
+#, python-format
+msgid "Variant %(number)s"
+msgstr "バリエーション %(number)s"
+
+msgid "View keyboard shortcuts"
+msgstr "キーボードショートカットを表示"
+
+msgid "View matching stories"
+msgstr "一致する記事を表示"
+
+msgid "View on GitHub"
+msgstr "GitHubで見る"
+
+msgid "View profile"
+msgstr "プロフィールを表示"
+
+msgid "View settings"
+msgstr "設定を表示"
+
+msgid "Visual"
+msgstr "ビジュアル"
+
+msgid "Voice recording failed. Please try again."
+msgstr "音声の録音に失敗しました。もう一度お試しください。"
+
+msgid "Warning: This is actually permanent"
+msgstr "警告：この操作は本当に取り消せません"
+
+msgid "Weather"
+msgstr "天気"
+
+msgid "Web"
+msgstr "ウェブ"
+
+msgid "Web Feed"
+msgstr "ウェブフィード"
+
+msgid "Web Feeds"
+msgstr "ウェブフィード"
+
+msgid "Web Feeds from any website, even without RSS"
+msgstr "RSSがなくても、あらゆるウェブサイトからフィードを取得"
+
+msgid ""
+"Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
+"fetching."
+msgstr "ウェブフィードにはプレミアムアーカイブまたはプレミアム Proが必要です。ページのスクレイピングはRSSの取得より多くのリソースを使用するためです。"
+
+msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
+msgstr "ウェブフィードは通常のフィードと同じスケジュールで確認され、上位プランほど頻繁に更新されます。"
+
+msgid "Web feeds train, search, and organize exactly like RSS feeds."
+msgstr "ウェブフィードもRSSフィードと同じように学習、検索、整理できます。"
+
+msgid "Web notifications"
+msgstr "ウェブ通知"
+
+msgid "Web notifications require Premium Archive"
+msgstr "ウェブ通知にはプレミアムアーカイブが必要です"
+
+msgid "Website"
+msgstr "ウェブサイト"
+
+msgid "Website URL: "
+msgstr "ウェブサイトURL： "
+
+msgid "Wed"
+msgstr "水"
+
+msgid "Wednesday"
+msgstr "水曜日"
+
+msgid "Weekly"
+msgstr "毎週"
+
+msgid "Welcome to NewsBlur"
+msgstr "NewsBlurへようこそ"
+
+msgid "What are the main arguments?"
+msgstr "主な論点は何ですか？"
+
+#, python-format
+msgid "What do you %(like)s and %(dislike)s about this site?"
+msgstr "このサイトで%(like)sするもの、%(dislike)sするものは？"
+
+#, python-format
+msgid "What do you %(like)s and %(dislike)s about this story?"
+msgstr "この記事で%(like)sするもの、%(dislike)sするものは？"
+
+msgid "What happens if I downgrade?"
+msgstr "ダウングレードするとどうなりますか？"
+
+msgid "What is MCP?"
+msgstr "MCPとは？"
+
+msgid "What is the Daily Briefing?"
+msgstr "デイリーブリーフィングとは？"
+
+msgid "What plan do I need?"
+msgstr "どのプランが必要ですか？"
+
+msgid "What sites can I follow?"
+msgstr "どのサイトをフォローできますか？"
+
+msgid "What the NewsBlur community is reading"
+msgstr "NewsBlur コミュニティで読まれている記事"
+
+msgid "What you like and dislike"
+msgstr "好きなもの・好きでないもの"
+
+msgid "What your agent can do"
+msgstr "エージェントにできること"
+
+msgid "What's the context and background?"
+msgstr "背景や状況を教えてください。"
+
+msgid "What's the difference between CLI and MCP?"
+msgstr "CLIとMCPの違いは何ですか？"
+
+msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
+msgstr "フィードが更新されると、NewsBlurは登録中のすべてのフィードを対象に重複を確認します"
+
+msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
+msgstr "複数のフィードに同じ記事が掲載されている場合、NewsBlurがまとめるので、記事は一度だけ表示されます。"
+
+msgid "When opening a site"
+msgstr "サイトを開くとき"
+
+msgid "When reading a clustered story:"
+msgstr "クラスター内の記事を読んだとき："
+
+msgid "When story content changes"
+msgstr "記事の内容が変更されたとき"
+
+msgid ""
+"When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
+"is kept forever."
+msgstr "フィードを購読すると、NewsBlurが利用可能な過去の記事をすべて取得します。その後も、すべての記事が永久に保存されます。"
+
+msgid "When you subscribe to a new feed, its history is back-filled"
+msgstr "新しいフィードを登録すると、過去の記事もさかのぼって取得されます"
+
+msgid "Which AI models are available?"
+msgstr "どのAIモデルが利用できますか？"
+
+msgid "Whoops! Something went wrong. Try again."
+msgstr "エラーが発生しました。もう一度お試しください。"
+
+msgid "Why is the next update not at the normal rate?"
+msgstr "次回の更新が通常の間隔で行われないのはなぜですか？"
+
+msgid "Why so infrequently?"
+msgstr "なぜそんなに頻度が低いのですか？"
+
+msgid "Widely Read Stories"
+msgstr "よく読まれている記事"
+
+msgid "Widely Read on NewsBlur"
+msgstr "NewsBlurで広く読まれている記事"
+
+msgid "Widely covered"
+msgstr "広く取り上げられている"
+
+msgid "Widen pane for controls"
+msgstr "操作ボタンを表示するためペインを広げる"
+
+msgid "Widen the story titles pane to use filter controls"
+msgstr "記事タイトル欄を広げてフィルターコントロールを表示"
+
+msgid "Window title"
+msgstr "ウィンドウタイトル"
+
+msgid "Windows &amp; Linux"
+msgstr "Windows &amp; Linux"
+
+msgid "Word Matching"
+msgstr "単語マッチング"
+
+msgid "Works on any website"
+msgstr "あらゆるウェブサイトで動作"
+
+msgid "Works with social media profiles, job boards, product pages, and more"
+msgstr "SNSプロフィール、求人掲示板、製品ページなどに対応"
+
+msgid "Writing style"
+msgstr "文体"
+
+msgid "XPath patterns identify story blocks, headlines, links, and images."
+msgstr "XPathパターンで記事ブロック、見出し、リンク、画像を特定します。"
+
+msgid "YYYY-MM-DD"
+msgstr "YYYY-MM-DD"
+
+msgid "Years Earned"
+msgstr "獲得年数"
+
+msgid "Yes"
+msgstr "はい"
+
+msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
+msgstr "はい。すべてのインテリジェンス学習機能は、通常のフィードと同じようにニュースレターでも利用できます。"
+
+msgid "Yes, both apps are open source and actively developed on GitHub."
+msgstr "はい。どちらのアプリもオープンソースで、GitHub上で積極的に開発されています。"
+
+msgid ""
+"Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
+"web."
+msgstr "はい。iOSアプリとAndroidアプリはどちらも無料です。アプリ内のプレミアム機能は、ウェブでのご契約内容に応じて利用できます。"
+
+msgid "Yes, delete it"
+msgstr "はい、削除します"
+
+msgid "Yes, email newsletters are a free feature."
+msgstr "はい。メールニュースレターは無料で利用できます。"
+
+msgid "Yes, every NewsBlur account has a unique email address for receiving newsletters."
+msgstr "はい。すべてのNewsBlurアカウントには、ニュースレターを受信するための専用メールアドレスがあります。"
+
+msgid "Yes, every archived story is fully searchable."
+msgstr "はい。アーカイブした記事はすべて全文検索できます。"
+
+msgid "Yes, it can transcribe audio and video content and then answer questions about it."
+msgstr "はい。音声や動画の内容を文字起こしし、それについて質問に答えられます。"
+
+msgid "Yes, saved stories and their tags are fully searchable."
+msgstr "はい。保存した記事とそのタグはすべて検索できます。"
+
+msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
+msgstr "はい。各タグには専用のRSSフィードが生成されるため、別のリーダーで購読したり、リンクを共有したりできます。"
+
+msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
+msgstr "はい。記事はローカルにキャッシュされ、バックグラウンドで更新されます。"
+
+msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
+msgstr "はい。フィードのオプションポップオーバーまたは設定で「記事を個別に表示」を切り替えてください。"
+
+msgid ""
+"Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
+"Premium Archive."
+msgstr "はい。著者、タグ、タイトルのキーワードに基づく学習は無料です。記事本文の全文を使った学習にはプレミアムアーカイブが必要です。"
+
+msgid ""
+"Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
+"even when sites don't offer RSS."
+msgstr "はい。ウェブフィードはページのHTMLの変更を監視し、RSSは構造化されたフィードファイルを読み込みます。ウェブフィードなら、RSSを提供していないサイトでも利用できます。"
+
+msgid "Yesterday"
+msgstr "昨日"
+
+#, python-format
+msgid "Yesterday, %(date)s"
+msgstr "昨日、%(date)s"
+
+#, python-format
+msgid "Yesterday, %(date)s %(time)s"
+msgstr "昨日、%(date)s %(time)s"
+
+#, python-format
+msgid "Yesterday, %(time)s"
+msgstr "昨日、%(time)s"
+
+msgid "You"
+msgstr "あなた"
+
+#, python-format
+msgid "You are followed by %(count)s person"
+msgid_plural "You are followed by %(count)s people"
+msgstr[0] "%(count)s 人にフォローされています"
+
+#, python-format
+msgid "You are following %(count)s person"
+msgid_plural "You are following %(count)s people"
+msgstr[0] "%(count)s人をフォローしています"
+
+#, python-format
+msgid "You are subscribed to %(count)s site."
+msgid_plural "You are subscribed to %(count)s sites."
+msgstr[0] "%(count)s件のサイトを購読中です。"
+
+#, python-format
+msgid "You are subscribed to at least %(count)s site."
+msgid_plural "You are subscribed to at least %(count)s sites."
+msgstr[0] "%(count)s件以上のサイトを購読しています。"
+
+msgid "You are trialing this plan"
+msgstr "このプランをお試し中です"
+
+msgid "You are unsubscribed from all NewsBlur emails"
+msgstr "NewsBlurからのすべてのメールの配信を停止しました"
+
+msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
+msgstr "NewsBlurからのメール配信をすべて停止しています。再登録するには、下で受信するメールを選択して保存してください。"
+
+msgid "You can also filter out stories you don't want to read."
+msgstr "読みたくない記事を除外することもできます。"
+
+msgid "You can change this anytime in Preferences."
+msgstr "この設定はいつでも「設定」で変更できます。"
+
+msgid "You can change your opinions."
+msgstr "評価はいつでも変更できます。"
+
+#, python-format
+msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
+msgstr "記事を読みながら、記事の横にある%(like_icon)s%(dislike_icon)sボタンをクリックできます。"
+
+msgid "You can override this on a per-site and per-folder basis."
+msgstr "サイトごと、フォルダーごとにこの設定を上書きできます。"
+
+msgid "You can override this on a per-site basis."
+msgstr "サイトごとにこの設定を上書きできます。"
+
+msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
+msgstr "フィードごとの学習は無料で利用できます。フォルダー単位および全体の学習には、プレミアムアーカイブが必要です。"
+
+#, python-format
+msgid "You follow %(count)s site. Premium makes all of them better."
+msgid_plural "You follow %(count)s sites. Premium makes all of them better."
+msgstr[0] "%(count)s件のサイトをフォローしています。プレミアムなら、すべてのサイトがもっと便利になります。"
+
+#, python-format
+msgid "You have a %(bold_start)sfree account%(bold_end)s."
+msgstr "%(bold_start)s無料アカウント%(bold_end)sをお使いです。"
+
+msgid "You have no active subscriptions."
+msgstr "有効な購読はありません。"
+
+msgid "You have no saved stories."
+msgstr "保存した記事はありません。"
+
+msgid "You have no unread stories in Focus mode."
+msgstr "フォーカスモードに未読記事はありません。"
+
+msgid "You have no unread stories."
+msgstr "未読の記事はありません。"
+
+msgid "You have not yet subscribed to anybody's shared stories."
+msgstr "まだ誰の共有記事も購読していません。"
+
+#, python-format
+msgid "You must be following %(value_1)s to reply"
+msgstr "返信するには、%(value_1)sをフォローする必要があります"
+
+msgid "You must be logged in to send a story over email."
+msgstr "記事をメールで送信するにはログインが必要です。"
+
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "キーボードショートカットを変更するには、%(link_start)sプレミアムアカウント%(link_end)sが必要です。"
+
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
+msgstr "プライバシー設定を変更するには、%(link_start)sプレミアムアカウント%(link_end)sが必要です。"
+
+msgid "You need to be logged in to reply to a comment."
+msgstr "コメントに返信するにはログインが必要です。"
+
+msgid "You need to be logged in to share a story."
+msgstr "記事を共有するにはログインが必要です。"
+
+msgid "You will be emailed within a minute or three."
+msgstr "1〜3分以内にメールが届きます。"
+
+msgid "You will see a bunch of tags and authors."
+msgstr "タグや著者が多数表示されます。"
+
+msgid "You're being rate limited.<br> Try again soon, but not too soon."
+msgstr "リクエストが制限されています。<br>少し時間をおいて、再度お試しください。"
+
+msgid "You're presented with multiple story pattern options to choose from."
+msgstr "複数の記事パターン候補が表示されます。そこから選択してください。"
+
+msgid ""
+"You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
+"briefings on your schedule."
+msgstr "各ブリーフィングの最初の3件の記事をプレビューしています。アップグレードすると、すべての記事と、スケジュールに沿った自動ブリーフィングを利用できます。"
+
+msgid "You're ready to go! Hope you enjoy NewsBlur."
+msgstr "準備完了です！NewsBlurをお楽しみください。"
+
+#, python-format
+msgid "You've been gifted %(value_1)s of %(value_2)s!"
+msgstr "%(value_2)sを%(value_1)s分プレゼントされました！"
+
+#, python-format
+msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
+msgstr "サイト数の上限%(value_1)s件に達しました。サイトをミュートするか、アカウントをアップグレードして追加してください。"
+
+msgid "You:"
+msgstr "あなた："
+
+msgid "YouTube Captions"
+msgstr "YouTube字幕"
+
+msgid "YouTube Channels"
+msgstr "YouTubeチャンネル"
+
+#, python-format
+msgid "Your %(value_1)s subscription includes everything above"
+msgstr "%(value_1)s の購読には上記のすべてが含まれます"
+
+#, python-format
+msgid "Your %(value_1)s subscription is active"
+msgstr "%(value_1)sのサブスクリプションは有効です"
+
+msgid "Your Archived Domains"
+msgstr "アーカイブ済みドメイン"
+
+msgid "Your Blurblog"
+msgstr "あなたのBlurblog"
+
+msgid "Your Referral Link"
+msgstr "紹介リンク"
+
+msgid "Your Referral Stats"
+msgstr "紹介実績"
+
+msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
+msgstr "アーカイブした記事には引き続きアクセスできますが、新しい記事には通常の保存期間ポリシーが適用されます。"
+
+msgid "Your cookie has expired — Please login again"
+msgstr "Cookieの有効期限が切れました — もう一度ログインしてください"
+
+msgid "Your email"
+msgstr "メールアドレス"
+
+msgid "Your filters may be hiding sites — open Options to widen them."
+msgstr "フィルターによってサイトが非表示になっている可能性があります。オプションを開いて範囲を広げてください。"
+
+msgid "Your inbox stays clean"
+msgstr "受信トレイをすっきり保てます"
+
+msgid "Your name"
+msgstr "名前"
+
+msgid "Your premium account is paid until:"
+msgstr "プレミアムアカウントの支払い済み期間："
+
+msgid "Your premium account will downgrade on:"
+msgstr "プレミアムアカウントは次の日にダウングレードされます："
+
+msgid "Your profile"
+msgstr "プロフィール"
+
+msgid "Your subscription is no longer active."
+msgstr "購読はすでに有効ではありません。"
+
+msgid "Your subscription will be prorated"
+msgstr "購読料は日割り計算されます"
+
+msgid "Your subscription will no longer automatically renew."
+msgstr "購読は自動更新されなくなります。"
+
+msgid "and auto-follow them"
+msgstr "見つけた友達を自動フォローする"
+
+msgid "artificial intelligence"
+msgstr "人工知能"
+
+msgid "audio"
+msgstr "音声"
+
+msgid "autonomous vehicles"
+msgstr "自動運転車"
+
+msgid "beats any"
+msgstr "どれにも勝る"
+
+msgid "bird migration"
+msgstr "鳥の渡り"
+
+msgid "board games"
+msgstr "ボードゲーム"
+
+msgid "book reviews"
+msgstr "書評"
+
+msgid "browser engines"
+msgstr "ブラウザーエンジン"
+
+msgid "but it wouldn't matter because<br>this site is already in real-time"
+msgstr "ただし、<br>このサイトはすでにリアルタイムなので、意味はありません"
+
+msgid "cancel"
+msgstr "キャンセル"
+
+msgid "central banking"
+msgstr "中央銀行業務"
+
+msgid "climate change"
+msgstr "気候変動"
+
+msgid "connect"
+msgstr "接続"
+
+msgid "coral reefs"
+msgstr "サンゴ礁"
+
+msgid "cybersecurity"
+msgstr "サイバーセキュリティ"
+
+msgid "dark matter"
+msgstr "ダークマター"
+
+msgid "data privacy"
+msgstr "データプライバシー"
+
+msgid "dislike"
+msgstr "低評価"
+
+#, python-format
+msgid "e.g. %(example)s"
+msgstr "例: %(example)s"
+
+msgid "e.g., \"AI and machine learning\" or \"local politics\""
+msgstr "例：「AIと機械学習」や「地域政治」"
+
+msgid "e.g., \"food photography\" or \"charts and graphs\""
+msgstr "例：「フード写真」や「チャートとグラフ」"
+
+#, python-format
+msgid "e.g., %(example)s"
+msgstr "例：%(example)s"
+
+#, python-format
+msgid "e.g., %(first)s or %(second)s"
+msgstr "例：%(first)sまたは%(second)s"
+
+msgid "edit"
+msgstr "編集"
+
+msgid "electric vehicles"
+msgstr "電気自動車"
+
+msgid "film criticism"
+msgstr "映画評論"
+
+msgid "follower"
+msgid_plural "followers"
+msgstr[0] "フォロワー"
+
+msgid "following"
+msgstr "フォロー中"
+
+msgid "food science"
+msgstr "食品科学"
+
+msgid "gene therapy"
+msgstr "遺伝子治療"
+
+msgid "hide hidden stories"
+msgstr "非表示の記事を隠す"
+
+msgid "housing market"
+msgstr "住宅市場"
+
+msgid "iOS & Android apps"
+msgstr "iOS・Androidアプリ"
+
+msgid "iOS notifications"
+msgstr "iOS通知"
+
+msgid "iOS notifications require Premium Archive"
+msgstr "iOS通知にはプレミアムアーカイブが必要です"
+
+msgid "iPhone &amp; iPad"
+msgstr "iPhone &amp; iPad"
+
+msgid "in"
+msgstr "追加先："
+
+#, python-format
+msgid "in %(time)s"
+msgstr "%(time)s後"
+
+msgid "indie games"
+msgstr "インディーゲーム"
+
+msgid "interest rates"
+msgstr "金利"
+
+msgid "j and k move through stories; n jumps to the next unread."
+msgstr "jとkで記事を移動し、nで次の未読記事に移動します。"
+
+msgid "just now"
+msgstr "たった今"
+
+msgid "labor unions"
+msgstr "労働組合"
+
+msgid "like"
+msgstr "いいね"
+
+msgid "local elections"
+msgstr "地方選挙"
+
+msgid "machine learning"
+msgstr "機械学習"
+
+msgid "microplastics"
+msgstr "マイクロプラスチック"
+
+msgid "nuclear fusion"
+msgstr "核融合"
+
+msgid "open source"
+msgstr "オープンソース"
+
+msgid "optional, appears above the story"
+msgstr "任意。記事の上に表示されます"
+
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "または%(paypal_button)sで登録"
+
+msgid "pending"
+msgstr "保留中"
+
+msgid "podcast industry"
+msgstr "ポッドキャスト業界"
+
+msgid "premium"
+msgstr "プレミアム"
+
+msgid "public transit"
+msgstr "公共交通機関"
+
+msgid "quantum computing"
+msgstr "量子コンピューティング"
+
+msgid "recipient@example.com"
+msgstr "recipient@example.com"
+
+msgid "remote work"
+msgstr "リモートワーク"
+
+msgid "renewable energy"
+msgstr "再生可能エネルギー"
+
+msgid "reply"
+msgstr "返信"
+
+msgid "right to repair"
+msgstr "修理する権利"
+
+msgid "separate multiple addresses with commas"
+msgstr "複数のアドレスはカンマで区切ってください"
+
+msgid "set up usage-based billing"
+msgstr "使用量に応じた請求を設定"
+
+msgid "show hidden stories"
+msgstr "非表示の記事を表示"
+
+msgid "site-wide"
+msgstr "全体の設定"
+
+msgid "site-wide preference"
+msgstr "全体の設定"
+
+msgid "soil health"
+msgstr "土壌の健康"
+
+msgid "space exploration"
+msgstr "宇宙探査"
+
+msgid "streaming wars"
+msgstr "ストリーミング戦争"
+
+msgid "subscribed"
+msgstr "購読中"
+
+msgid "supply chain"
+msgstr "サプライチェーン"
+
+msgid "trade policy"
+msgstr "貿易政策"
+
+msgid "typography"
+msgstr "タイポグラフィ"
+
+msgid "unmuting soon"
+msgstr "まもなくミュート解除"
+
+msgid "upload picture"
+msgstr "画像をアップロード"
+
+msgid "urban planning"
+msgstr "都市計画"
+
+msgid "video"
+msgstr "動画"
+
+msgid "vintage computing"
+msgstr "ヴィンテージコンピューティング"
+
+msgid "web standards"
+msgstr "ウェブ標準"
+
+#, python-format
+msgid "✓ %(count)s of %(total)s image matches this filter"
+msgid_plural "✓ %(count)s of %(total)s images match this filter"
+msgstr[0] "✓ %(total)s枚中%(count)s枚の画像がこのフィルターに一致"
+
+msgid "✓ Found in story"
+msgstr "✓ 記事内で見つかりました"
+
+msgid "✓ Image matches this filter"
+msgstr "✓ 画像はこのフィルターに一致します"
+
+msgid "✓ Matches URL"
+msgstr "✓ URLに一致"
+
+msgid "✓ Matches author"
+msgstr "✓ 著者が一致"
+
+msgid "✓ Matches story"
+msgstr "✓ 記事に一致"
+
+msgid "✓ Matches title"
+msgstr "✓ タイトルに一致"
+
+msgid "✓ Sent"
+msgstr "✓ 送信済み"
+
+msgid "✓ Story matches this filter"
+msgstr "✓ 記事がこのフィルターに一致します"
+
+msgid "✓ Valid"
+msgstr "✓ 有効"
+
+msgid "✗ Image does not match this filter"
+msgstr "✗ 画像がこのフィルターに一致しません"
+
+msgid "✗ No images match this filter"
+msgstr "✗ このフィルターに一致する画像はありません"
+
+msgid "✗ Story does not match this filter"
+msgstr "✗ 記事がこのフィルターに一致しません"
+

@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Saved Tags"
+            android:text="@string/ui_e17c700c2575"
             android:textColor="@color/secondary" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -74,7 +74,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Story Tags"
+            android:text="@string/ui_6e914f494515"
             android:textColor="@color/secondary" />
 
         <LinearLayout
@@ -89,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Other Tags"
+            android:text="@string/ui_e912ab619a72"
             android:textColor="@color/secondary" />
 
         <androidx.recyclerview.widget.RecyclerView

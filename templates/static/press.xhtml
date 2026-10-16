@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-press{% endblock %}
-{% block title %}Press Kit and Recent Press{% endblock %}
+{% block title %}{% trans "Press Kit and Recent Press" %}{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur press kit and recent press coverage. Download logos, screenshots, and media resources.">
     <meta property="og:title" content="NewsBlur Press Kit">
@@ -18,27 +19,25 @@
 
 {% block content %}
 
-<div class="NB-static-title">Press Kit and Recent Press</div>
+<div class="NB-static-title">{% trans "Press Kit and Recent Press" %}</div>
 
 <div class="NB-module">
-  <h5 class="NB-module-title">Press Information and Resources</h5>
+  <h5 class="NB-module-title">{% trans "Press Information and Resources" %}</h5>
 
   <div class="NB-module-content">
-    <h3>Contact</h3>
+    <h3>{% trans "Contact" %}</h3>
 
-    Thank you for your interest in NewsBlur. NewsBlur is built by a solo
-    developer:
+    {% trans "Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:" %}
     <ul>
       <li>
-        <a href="http://www.samuelclay.com">Samuel Clay</a>, founder,
+        <a href="http://www.samuelclay.com">Samuel Clay</a>, {% trans "founder" context "job title in a contact list" %},
         <a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a>,
         <a href="https://x.com/samuelclay">@samuelclay</a>
       </li>
     </ul>
-    Contact Samuel for interviews, comments, and questions about NewsBlur. As
-    another ambitious New Yorker, he is happy to talk about NewsBlur.
+    {% trans "Contact Samuel for interviews, comments, and questions about NewsBlur. As another ambitious New Yorker, he is happy to talk about NewsBlur." %}
 
-    <h3>Icons</h3>
+    <h3>{% trans "Icons" %}</h3>
 
     <a href="{{ MEDIA_URL }}/img/logo_newsblur_512.png"
       ><img src="{{ MEDIA_URL }}/img/logo_newsblur_512.png" width="128"
@@ -47,20 +46,20 @@
     <img src="{{ MEDIA_URL }}/img/logo_newsblur.png" />
     <img src="{{ MEDIA_URL }}/img/favicon.png" />
 
-    <h3>Screenshots</h3>
+    <h3>{% trans "Screenshots" %}</h3>
 
     <ul class="NB-press-screenshots">
       <li class="NB-press-screenshot">
         <a href="{{ MEDIA_URL }}/img/static/screenshot-1-full.png"
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-1.png"
         /></a>
-        <div class="NB-press-screenshot-text">Read the original site</div>
+        <div class="NB-press-screenshot-text">{% trans "Read the original site" %}</div>
       </li>
       <li class="NB-press-screenshot NB-last">
         <a href="{{ MEDIA_URL }}/img/static/screenshot-2-full.png"
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-2.png"
         /></a>
-        <div class="NB-press-screenshot-text">Artificial Intelligence</div>
+        <div class="NB-press-screenshot-text">{% trans "Artificial Intelligence" %}</div>
       </li>
 
       <li class="NB-press-screenshot">
@@ -68,28 +67,28 @@
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-3.png"
         /></a>
         <div class="NB-press-screenshot-text">
-          Bookmarklet to easily add sites
+          {% trans "Bookmarklet to easily add sites" %}
         </div>
       </li>
       <li class="NB-press-screenshot NB-last">
         <a href="{{ MEDIA_URL }}/img/static/screenshot-4-full.png"
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-4.png"
         /></a>
-        <div class="NB-press-screenshot-text">Feed view</div>
+        <div class="NB-press-screenshot-text">{% trans "Feed view" %}</div>
       </li>
 
       <li class="NB-press-screenshot">
         <a href="{{ MEDIA_URL }}/img/static/screenshot-5-full.png"
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-5.png"
         /></a>
-        <div class="NB-press-screenshot-text">Statistics and History</div>
+        <div class="NB-press-screenshot-text">{% trans "Statistics and History" %}</div>
       </li>
       <li class="NB-press-screenshot NB-last">
         <a href="{{ MEDIA_URL }}/img/static/screenshot-6-full.png"
           ><img src="{{ MEDIA_URL }}/img/static/screenshot-6.png"
         /></a>
         <div class="NB-press-screenshot-text">
-          Easily import from Google Reader
+          {% trans "Easily import from Google Reader" %}
         </div>
       </li>
     </ul>
@@ -97,13 +96,12 @@
 </div>
 
 <div class="NB-module">
-  <h5 class="NB-module-title">Reviews of NewsBlur</h5>
+  <h5 class="NB-module-title">{% trans "Reviews of NewsBlur" %}</h5>
   <div class="NB-module-content">
     <ul class="NB-static-press-reviews">
       <li>
         <a href="http://venturebeat.com/2012/09/05/newsblur-ipad/">
-          NewsBlur launches iPad app, aims to compete with Google Reader
-          (exclusive)
+          NewsBlur launches iPad app, aims to compete with Google Reader (exclusive)
         </a>
         <span class="NB-press-publisher">
           <img
@@ -129,8 +127,7 @@
         <a
           href="http://wwwhatsnew.com/2012/09/06/mas-competencia-para-google-reader-en-ipad/"
         >
-          NewsBlur: Más competencia para Google Reader, Flipboard y Pulse en
-          iPad
+          NewsBlur: Más competencia para Google Reader, Flipboard y Pulse en iPad
         </a>
         <span class="NB-press-publisher">
           <img
@@ -154,8 +151,7 @@
       <li>
         <a
           href="http://curation.masternewmedia.org/p/1641985252/news-discovery-the-google-reader-open-source-alternative-is-here-and-it-s-called-newsblur"
-          >News Discovery: The Google Reader Open-Source Alternative Is Here and
-          It’s Called NewsBlur</a
+          >News Discovery: The Google Reader Open-Source Alternative Is Here and It’s Called NewsBlur</a
         >
         <span class="NB-press-publisher">
           <img src="http://www.masternewmedia.org/favicon.ico" />
@@ -208,8 +204,7 @@
       </li>
       <li>
         <a href="http://www.bolindir.net/uygulamalar/newsblur.html"
-          >NewsBlur: API desteği desteği ile açık kaynak kodlu olarak hazırlanan
-          NewsBlur ile tarayıcınız üzerinden rss takibi yapabileceksiniz</a
+          >NewsBlur: API desteği desteği ile açık kaynak kodlu olarak hazırlanan NewsBlur ile tarayıcınız üzerinden rss takibi yapabileceksiniz</a
         >
         <span class="NB-press-publisher">
           <img src="http://www.bolindir.net/favicon.ico" />
@@ -220,8 +215,7 @@
       <li>
         <a
           href="http://thenextweb.com/apps/2010/08/11/newsblur-intelligently-makes-sense-out-of-your-news-feeds/"
-          >NewsBlur is a slick, new RSS reader that intelligently makes sense
-          out of your feeds.</a
+          >NewsBlur is a slick, new RSS reader that intelligently makes sense out of your feeds.</a
         >
         <span class="NB-press-publisher"
           ><img src="http://thenextweb.com/favicon.ico" /> The Next Web</span
@@ -260,8 +254,7 @@
         <a
           href="http://lifehacker.com/#!5681697/newsblur-is-an-online-rss-reader-that-displays-the-actual-web-site-youre-reading"
         >
-          NewsBlur Is an Online RSS Reader that Displays the Actual Web Site
-          You’re Reading
+          NewsBlur Is an Online RSS Reader that Displays the Actual Web Site You’re Reading
         </a>
         <span class="NB-press-publisher">
           <img
@@ -309,8 +302,7 @@
         <a
           href="http://www.genbeta.com/web/newsblur-una-excelente-alternativa-a-google-reader-que-filtra-los-posts-mas-relevantes"
         >
-          NewsBlur, una excelente alternativa a Google Reader que filtra los
-          posts más relevantes
+          NewsBlur, una excelente alternativa a Google Reader que filtra los posts más relevantes
         </a>
         <span class="NB-press-publisher">
           <img src="http://img.genbeta.com/lp2/v2/images/favicon.ico" />
@@ -320,8 +312,7 @@
       </li>
       <li>
         <a href="http://www.baixaki.com.br/download/newsblur.htm"
-          >NewsBlur: Visualize página inteiras em um completo leitor de RSS
-          integrado ao Chrome.</a
+          >NewsBlur: Visualize página inteiras em um completo leitor de RSS integrado ao Chrome.</a
         >
         <span class="NB-press-publisher">
           <img src="http://www.baixaki.com.br/favicon.ico" />
@@ -445,8 +436,7 @@
         <a
           href="http://techravings.info/2010/08/newsblur-artificial-intelligence-comes-to-rss-reader-goodbye-boring-content.html"
         >
-          NewsBlur: Artificial Intelligence Comes to RSS Reader. Goodbye Boring
-          Content!
+          NewsBlur: Artificial Intelligence Comes to RSS Reader. Goodbye Boring Content!
         </a>
         <span class="NB-press-publisher">
           <img src="" />

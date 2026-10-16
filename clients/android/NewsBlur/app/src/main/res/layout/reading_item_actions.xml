@@ -94,8 +94,8 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:id="@+id/reading_friend_comment_total"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
@@ -115,8 +115,8 @@
             android:layout_below="@id/reading_friend_comment_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:orientation="vertical"/>
 
         <LinearLayout
@@ -136,8 +136,8 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:id="@+id/reading_friend_emptyshare_total"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
@@ -157,8 +157,8 @@
             android:layout_below="@id/reading_friend_emptyshare_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:orientation="vertical"/>
 
         <LinearLayout
@@ -178,8 +178,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:textStyle="bold"
@@ -198,8 +198,8 @@
             android:id="@+id/reading_public_comment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:layout_below="@id/reading_public_comment_header"
             android:orientation="vertical"/>
 

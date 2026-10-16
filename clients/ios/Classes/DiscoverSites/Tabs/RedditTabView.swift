@@ -19,7 +19,7 @@ struct RedditTabView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 DiscoverSearchBarView(
-                    placeholder: "Search subreddits...",
+                    placeholder: NBLocalization.text("Search subreddits..."),
                     text: $viewModel.redditState.searchQuery,
                     isLoading: viewModel.redditState.isSearching,
                     onSubmit: {

@@ -9,6 +9,7 @@
 #import "MoveSiteViewController.h"
 #import "StringHelper.h"
 #import "StoriesCollection.h"
+#import "NewsBlur-Swift.h"
 
 @implementation MoveSiteViewController
 
@@ -110,7 +111,7 @@
     [folderPicker selectRow:row inComponent:0 animated:NO];
     
     moveButton.enabled = NO;
-    moveButton.title = appDelegate.storiesCollection.isRiverView ? @"Move Folder to Folder" : @"Move Site to Folder";
+    moveButton.title = appDelegate.storiesCollection.isRiverView ? [NBLocalization text:@"Move Folder to Folder"] : [NBLocalization text:@"Move Site to Folder"];
 }
 
 - (IBAction)doCancelButton {

@@ -13,6 +13,7 @@ from urllib.parse import quote_plus, urlparse
 import requests
 from django.conf import settings
 from django.db.models import Count, Q
+from django.utils.translation import gettext
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
@@ -141,7 +142,7 @@ def search_feed(request):
     address = request.GET.get("address")
     offset = int(request.GET.get("offset", 0))
     if not address:
-        return dict(code=-1, message="Please provide a URL/address.")
+        return dict(code=-1, message=gettext("Please provide a URL/address."))
 
     logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
     ip = request.META.get("HTTP_X_FORWARDED_FOR", None) or request.META["REMOTE_ADDR"]
@@ -151,7 +152,7 @@ def search_feed(request):
     if feed:
         return feed.canonical()
     else:
-        return dict(code=-1, message="No feed found matching that XML or website address.")
+        return dict(code=-1, message=gettext("No feed found matching that XML or website address."))
 
 
 @json.json_view
@@ -163,7 +164,7 @@ def feed_autocomplete(request):
     include_stories = request.GET.get("include_stories", "false").lower() == "true"
 
     if not query:
-        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
+        return dict(code=-1, message=gettext("Specify a search 'term'."), feeds=[], term=query)
 
     if "." in query:
         try:
@@ -288,7 +289,7 @@ def discover_feeds(request, feed_id=None):
         similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
         similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
     else:
-        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+        return {"code": -1, "message": gettext("Missing feed_ids."), "discover_feeds": None, "failed": True}
 
     feeds = Feed.objects.filter(pk__in=similar_feed_ids)
     discover_feeds = defaultdict(dict)
@@ -311,7 +312,7 @@ def discover_stories(request, story_hash):
     offset = (page - 1) * limit
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:
-        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+        return {"code": -1, "message": gettext("Story not found."), "discover_stories": None, "failed": True}
 
     user_search = MUserSearch.get_user(request.user.pk)
     user_search.touch_discover_date()
@@ -578,7 +579,7 @@ def youtube_search(request):
     max_results = min(int(request.GET.get("limit", 10)), 25)
 
     if not query:
-        return {"code": -1, "message": "Please provide a search query.", "results": []}
+        return {"code": -1, "message": gettext("Please provide a search query."), "results": []}
 
     # sp=EgIQAg%3D%3D filters to channel results only
     search_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAg%3D%3D"
@@ -593,19 +594,19 @@ def youtube_search(request):
         html = response.text
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRYouTube search error: %s" % str(e))
-        return {"code": -1, "message": "YouTube search request failed.", "results": []}
+        return {"code": -1, "message": gettext("YouTube search request failed."), "results": []}
 
     # Extract ytInitialData JSON from the page
     match = re.search(r"var ytInitialData = ({.*?});", html)
     if not match:
         logging.user(request, "~FRYouTube search: could not parse results page")
-        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+        return {"code": -1, "message": gettext("Could not parse YouTube results."), "results": []}
 
     try:
         data = stdlib_json.loads(match.group(1))
     except (stdlib_json.JSONDecodeError, ValueError):
         logging.user(request, "~FRYouTube search: invalid JSON in results page")
-        return {"code": -1, "message": "Could not parse YouTube results.", "results": []}
+        return {"code": -1, "message": gettext("Could not parse YouTube results."), "results": []}
 
     # Navigate to the search result items
     contents = (
@@ -679,7 +680,7 @@ def reddit_search(request):
     limit = min(int(request.GET.get("limit", 15)), 25)
 
     if not query:
-        return {"code": -1, "message": "Please provide a search query.", "results": []}
+        return {"code": -1, "message": gettext("Please provide a search query."), "results": []}
 
     # Reddit's public JSON API for subreddit search
     api_url = "https://www.reddit.com/subreddits/search.json"
@@ -698,7 +699,7 @@ def reddit_search(request):
         data = response.json()
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRReddit search error: %s" % str(e))
-        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+        return {"code": -1, "message": gettext("Reddit API request failed."), "results": []}
 
     results = []
     for child in data.get("data", {}).get("children", []):
@@ -757,7 +758,7 @@ def reddit_popular(request):
         data = response.json()
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRReddit popular error: %s" % str(e))
-        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+        return {"code": -1, "message": gettext("Reddit API request failed."), "results": []}
 
     results = []
     for child in data.get("data", {}).get("children", []):
@@ -800,7 +801,7 @@ def newsletter_convert(request):
     url = request.GET.get("url", "").strip()
 
     if not url:
-        return {"code": -1, "message": "Please provide a newsletter URL.", "feed_url": None}
+        return {"code": -1, "message": gettext("Please provide a newsletter URL."), "feed_url": None}
 
     # Normalize URL
     if not url.startswith(("http://", "https://")):
@@ -890,7 +891,7 @@ def newsletter_convert(request):
             platform = "generic"
 
     if not feed_url:
-        return {"code": -1, "message": "Could not determine RSS feed URL.", "feed_url": None}
+        return {"code": -1, "message": gettext("Could not determine RSS feed URL."), "feed_url": None}
 
     logging.user(request, "~FBNewsletter convert: %s -> %s (%s)" % (url, feed_url, platform))
     return {
@@ -912,7 +913,7 @@ def podcast_search(request):
     limit = min(int(request.GET.get("limit", 20)), 50)
 
     if not query:
-        return {"code": -1, "message": "Query is required", "results": []}
+        return {"code": -1, "message": gettext("Query is required"), "results": []}
 
     # iTunes Search API (free, no auth required)
     api_url = "https://itunes.apple.com/search"
@@ -953,7 +954,7 @@ def podcast_search(request):
 
     except requests.exceptions.RequestException as e:
         logging.user(request, "~FRPodcast search error: %s" % str(e))
-        return {"code": -1, "message": "Failed to search podcasts", "results": []}
+        return {"code": -1, "message": gettext("Failed to search podcasts"), "results": []}
 
 
 @json.json_view
@@ -1003,7 +1004,7 @@ def google_news_feed(request):
         feed_url = f"https://news.google.com/rss/search?q={encoded_query}&hl={language}&gl={region}&ceid={region}:{language}"
         title = f"Google News - {query}"
     else:
-        return {"code": -1, "message": "Search query or topic is required", "feed_url": None}
+        return {"code": -1, "message": gettext("Search query or topic is required"), "feed_url": None}
 
     logging.user(request, "~FBGoogle News feed built: %s" % feed_url)
     return {
@@ -1140,7 +1141,7 @@ def popular_feeds(request):
     include_stories = request.GET.get("include_stories", "false").lower() == "true"
 
     if not feed_type:
-        return {"code": -1, "message": "Feed type is required", "feeds": []}
+        return {"code": -1, "message": gettext("Feed type is required"), "feeds": []}
 
     # Add Site / Discover filters: staleness ("Updated" control) and exclude_subscribed
     # ("Show" control). Applied to every PopularFeed queryset below so result rows and
@@ -1483,7 +1484,7 @@ def link_popular_feed(request):
     feed_url = request.GET.get("feed_url") or request.POST.get("feed_url")
 
     if not popular_feed_id and not feed_url:
-        return {"code": -1, "message": "Missing popular feed id or feed url"}
+        return {"code": -1, "message": gettext("Missing popular feed id or feed url")}
 
     # Try PopularFeed lookup first
     pf = None
@@ -1525,4 +1526,4 @@ def link_popular_feed(request):
         logging.user(request, "~FCCreated feed from URL ~SB%s~SN → feed ~SB%s" % (feed_url, feed.pk))
         return {"code": 1, "feed_id": feed.pk}
 
-    return {"code": -1, "message": "Popular feed not found"}
+    return {"code": -1, "message": gettext("Popular feed not found")}

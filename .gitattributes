@@ -1,0 +1,6 @@
+# Generated translation catalogs: review source messages and translation memory first.
+locale/** linguist-generated=true
+localization/translations/*.json linguist-generated=true
+clients/ios/Resources/*.lproj/Localizable.strings linguist-generated=true
+clients/ios/Resources/*.lproj/Localizable.stringsdict linguist-generated=true
+clients/android/NewsBlur/app/src/main/res/values-*/strings.xml linguist-generated=true

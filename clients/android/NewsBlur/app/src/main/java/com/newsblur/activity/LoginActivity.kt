@@ -6,10 +6,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : FragmentActivity() {
+class LoginActivity : AppCompatActivity() {
     private val account: com.newsblur.onboarding.AccountViewModel by viewModels()
 
     @Inject
@@ -32,6 +32,10 @@ class LoginActivity : FragmentActivity() {
     @SuppressLint("UseKtx")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // LoginActivity.kt uses explicit Compose palettes; Android must not recolor provider buttons.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.decorView.isForceDarkAllowed = false
+        }
         enableEdgeToEdge()
         val deleting = intent.getBooleanExtra("manage_account", false)
         val resolvedTheme = prefsRepo.getResolvedTheme(this)
@@ -41,7 +45,8 @@ class LoginActivity : FragmentActivity() {
             isAppearanceLightStatusBars = light
             isAppearanceLightNavigationBars = light
         }
-        intent?.data?.let(account::callback)
+        // LoginActivity.kt hands a sign-in callback over once; a recreate, such as after a language change, must not replay it.
+        if (savedInstanceState == null) intent?.data?.let(account::callback)
         val variant = prefsRepo.getSelectedTheme().toVariant()
         setContent {
             NewsBlurTheme(variant = variant, dynamic = false) {

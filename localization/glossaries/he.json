@@ -1,0 +1,405 @@
+{
+  "language": "he",
+  "register": "Second person with the written-neutral singular suffixes the catalog mostly uses (שלך, לך, אותך, אליך, which read for any gender unvocalized), gender-neutral plural imperatives in sentences (לחצו, בחרו, נסו שוב, שדרגו; the catalog's majority over לחץ/בחר/נסה), and verbal nouns for buttons, menu items and titles (שמירה, הוספת אתר, סימון כנקרא). Masculine-default imperatives (שמור, לחץ, נסה שוב) and plural possessives (שלכם) are both standard in Israeli apps and are not flagged on their own; flagged are second-person slash hedges (בחר/י, נסה/י, את/ה: 58 in the catalog, low register), feminine-only forms, and one string that switches between singular and plural address mid-sentence (low register). Third-person slash forms for other users (%1$s שיתף/ה) are the normal Hebrew convention for an unknown gender and are left alone. Verifier addition: first-person hedges with no neutral verb form («אני צריך/ה להתחבר») are left alone rather than replaced by a masculine-only form.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "כתבה / כתבות (הכתבה, כתבות שנשמרו)",
+      "avoid": [
+        "סיפור / סיפורים",
+        "ידיעה"
+      ],
+      "note": "Catalog ~950 כתבה vs ~170 סיפור. סיפור for a story → low terminology; medium when it is a label, folder or view name whose siblings use כתבות (Saved stories, Shared stories, Next unread story). פריט is fine where English says item. Also avoid where it means this concept: פריט."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "אתר / אתרים",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "פיד / פידים (פיד RSS, פידי RSS)",
+      "avoid": [
+        "עדכון / עדכונים",
+        "הזנה / הזנות"
+      ],
+      "note": "Catalog 273 פיד vs 152 עדכון vs 104 הזנה. עדכון/עדכונים reads as update(s) → medium terminology on labels (Feeds, Feed list, Add feed) and low in prose; הזנה is the formal Academy word, understood → low terminology. מקור is fine where the English means source. Also avoid where it means this concept: מקור."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "פיד אינטרנט / פידי אינטרנט",
+      "avoid": [
+        "עדכוני רשת",
+        "הזנת רשת",
+        "פידים באינטרנט"
+      ],
+      "note": "Feature name; עדכוני רשת → medium on titles, low in prose."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "תיקייה / תיקיות",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "לא נקרא (filter label) / שלא נקראו (stories that are unread) / לא נקראו בלבד",
+      "avoid": [],
+      "note": "Unread+Focus: «לא נקראו + מיקוד»."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "סימון כנקרא / סימון הכול כנקרא (button); לסמן כנקרא? (question)",
+      "avoid": [],
+      "note": "Masculine imperative סמן is accepted in buttons; not flagged."
+    },
+    {
+      "concept": "Read Stories (folder)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "כתבות שנקראו",
+      "avoid": [],
+      "note": "קריאת כתבות = reading stories (verbal noun/imperative) → high meaning. Siri/Spotlight 'Read %@' opens a feed: «קריאת %@» is fine there. Also avoid where it means this concept: קריאת כתבות."
+    },
+    {
+      "concept": "saved stories / save",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "כתבות שמורות; שמירה (button); ביטול שמירה (Unsave); נשמר (status)",
+      "avoid": [
+        "סיפורים שמורים"
+      ],
+      "note": "Save as rescue (הצלה) would be high."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "שיתוף (button) / כתבות ששותפו or כתבות משותפות",
+      "avoid": [],
+      "note": "Both shared-stories forms are accepted."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (ה־Blurblog שלך, ב־Blurblog שלך)",
+      "avoid": [
+        "בלוג טשטוש",
+        "הבלוג המטושטש",
+        "בלוג הערפול",
+        "בלוג Blur",
+        "בלוגי Blur"
+      ],
+      "note": "Product name stays Latin. בלוג טשטוש/מטושטש/ערפול = blurry/obscured blog → medium meaning. «בלוג Blur» splits the name → low. Descriptive «הבלוג שלך» / «בלוג השיתופים שלך» in prose is tolerated."
+    },
+    {
+      "concept": "Intelligence Trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "מאמן הבינה / אימון הבינה; Train → אימון",
+      "avoid": [],
+      "note": "מודיעין is military/espionage intelligence → medium meaning. אינטליגנציה and «המערכת החכמה» are understood and left alone. Also avoid where it means this concept: מודיעין."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "מסווג / מסווגים",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Focus",
+      "en": "\\bfocus\\b",
+      "use": "מיקוד; Focus stories → כתבות במיקוד (כתבות ממוקדות accepted); Focus mode → מצב מיקוד",
+      "avoid": [
+        "מועדפים",
+        "התמקדות"
+      ],
+      "note": "מועדפים = favorites → medium meaning. התמקדות in a label → low."
+    },
+    {
+      "concept": "Like / Dislike (trainer)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "אהבתי / לא אהבתי; Super Dislike → סלידה חזקה or מאוד לא אהבתי",
+      "avoid": [
+        "לא אוהב",
+        "לא אוהב במיוחד"
+      ],
+      "note": "First-person past tense is gender-neutral; לא אוהב is masculine present → low terminology. «לא אוהב במיוחד» = not particularly fond (weaker, not stronger) → medium meaning. Trainer question (reader_classifier.js make_like_dislike_title / TrainerView.swift, the lowercase like/dislike words are used only there): template «מה %(like)s ומה %(dislike)s בכתבה הזו?» with like «אהבת», dislike «לא אהבת»; iOS «מה 👍 %1$@ ומה 👎 %2$@ בכתבה הזו?»."
+    },
+    {
+      "concept": "beats / (like wins)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "use": "גובר על / (אהבתי גובר)",
+      "avoid": [
+        "מכה",
+        "פעימות"
+      ],
+      "note": "Trainer level separator: Like outranks Dislike."
+    },
+    {
+      "concept": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro (Latin); מינוי Premium; משתמשי Premium; תכונת Premium; שדרוג ל־Premium Archive",
+      "avoid": [
+        "פרימיום",
+        "ארכיון פרימיום",
+        "ארכיון Premium",
+        "שדרוג לארכיון"
+      ],
+      "note": "Plan names stay Latin. פרימיום transliteration → low terminology. Premium Archive translated as «ארכיון פרימיום/ארכיון Premium» reads as 'the premium archive' → medium terminology. Archive plan as «ארכיון» (the archive) → medium. The story archive feature stays «ארכיון»."
+    },
+    {
+      "concept": "Preferences / Settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "העדפות (NewsBlur's Preferences screen on all platforms) / הגדרות (where English says Settings)",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "subscribe / subscription / subscriber",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "הרשמה / הירשמו (to a feed); מינוי (paid subscription); מנוי / מנויים (subscribers)",
+      "avoid": [],
+      "note": "Feed subscription can also be «מינוי»; email Unsubscribe must say emails («ביטול ההרשמה לאימיילים»), not the paid plan."
+    },
+    {
+      "concept": "River of News / All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\briver of news\\b)|(?:\\ball site stories\\b)",
+      "use": "זרם החדשות / כל כתבות האתרים",
+      "avoid": [
+        "נהר החדשות",
+        "כל הכתבות באתר",
+        "כל הסיפורים באתר"
+      ],
+      "note": "Singular-site readings («כל הכתבות באתר», «כל כתבות האתר») → high meaning. נהר (literal river) → low. Also avoid where it means this concept: כל כתבות האתר."
+    },
+    {
+      "concept": "Dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "לוח בקרה",
+      "avoid": [],
+      "note": "לוח מחוונים in alt text tolerated."
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "תדריך יומי / התדריך; Briefing settings → הגדרות התדריך",
+      "avoid": [
+        "תקציר יומי",
+        "תדרוך",
+        "סיכום יומי"
+      ],
+      "note": "Catalog 59 תדריך vs 37 תקציר. תקציר (summary) for the briefing → low terminology (medium on the feature's own titles). Brief (summary length option) → «קצר/תמציתי», must not collide with the briefing."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "תגית / תגיות; מחבר or כותב",
+      "avoid": [],
+      "note": "תג tolerated."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "ניוזלטר / ניוזלטרים",
+      "avoid": [],
+      "note": "עלון/עלוני חדשות also natural; not flagged."
+    },
+    {
+      "concept": "Discover / Related Sites",
+      "en": "(?:\\bsites?\\b)|(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "גילוי / אתרים קשורים",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "תגובה / תגובות; reply → תשובה (noun), השב (button)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "מעקב / עוקבים / במעקב; Follow (button) → מעקב or עקוב; Following (button state and count/tab) → במעקב; I'm Following / Following Me tabs → «אני עוקב/ת» or «במעקב» vs «עוקבים אחריי»",
+      "avoid": [
+        "עוקב (for Following)"
+      ],
+      "note": "Following → «עוקב» collides with Follower «עוקב» → medium."
+    },
+    {
+      "concept": "Follow up (Ask AI box) / Follow-ups (briefing section)",
+      "en": "(?:\\bask ai\\b)|(?:\\bbriefings?\\b)|(?:\\bfollow[- ]?ups?\\b)",
+      "use": "שאלת המשך… / התפתחויות or המשכים",
+      "avoid": [
+        "מעקב...",
+        "תגובות המשך"
+      ],
+      "note": "The Ask AI input placeholder asks a follow-up question; «מעקב…» = tracking → medium meaning."
+    },
+    {
+      "concept": "Mute / Unmute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "השתקה / ביטול השתקה; Muted → מושתק; Mute None → ביטול השתקת הכול",
+      "avoid": [],
+      "note": "Mute None selects none of the sites to mute."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "התראות",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "כתבות מאתרים שמתעדכנים לעיתים רחוקות",
+      "avoid": [
+        "כתבות שמופיעות לעיתים רחוקות",
+        "כתבות לא תכופות"
+      ],
+      "note": "Stories from sites that post rarely; versions that make the stories themselves rare → low terminology."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "קריאות מומלצות (קריאות טובות accepted) / כתבות ארוכות (קריאות ארוכות accepted) / כתבות שנקראו רבות / כתבות משותפות גלובליות",
+      "avoid": [
+        "ספרים מומלצים",
+        "ביקורות חיוביות",
+        "Good Reads"
+      ],
+      "note": "Good Reads is a folder of good stories, not books or reviews → high meaning."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "תצוגת טקסט / תצוגת כתבה / תצוגת פיד / תצוגת האתר המקורי",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "שאלו את ה-AI (also accepted: שאל את ה-AI, שאלו את הבינה המלאכותית); in a sentence ״שאלו את ה-AI״",
+      "avoid": [
+        "Ask AI (Latin in UI)",
+        "שאל/י"
+      ],
+      "note": "Catalog 22 translated vs 14 Latin; a descriptive feature name is translated. Latin «Ask AI» in UI → medium untranslated."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "ייבוא / ייצוא",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account / log in / sign up / log out",
+      "en": "(?:\\baccounts?\\b)|(?:\\b(log ?(in|out)|sign(ed|ing)? (in|up))\\b)",
+      "use": "חשבון / התחברות / הרשמה / התנתקות",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "email",
+      "en": "\\be-?mails?\\b",
+      "use": "אימייל or דוא״ל",
+      "avoid": [],
+      "note": "Split evenly in the catalog; both standard, not flagged."
+    },
+    {
+      "concept": "trial / upgrade / renew",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)|(?:\\brenew(al|als|ed|s|ing)?\\b)",
+      "use": "תקופת ניסיון / שדרוג / חידוש",
+      "avoid": [],
+      "note": "«שדרוג מ־Premium» (Upgrade from) is fine: שדרוג implies moving up."
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "קיצורי מקלדת",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "קיבוץ כתבות / אשכול",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "plural forms",
+      "en": null,
+      "use": "web gettext nplurals=2: :0 = one (n == 1, singular noun: «%(count)s אתר», «%(count)s כתבה»), :1 = other (plural noun). iOS stringsdict and Android: one / two / other; two may use the plural noun with the number («%d ימים») or the dual.",
+      "avoid": [
+        "noun before the number in the one form («אתר %(count)s» reads as 'site no. 1')"
+      ],
+      "note": "Plural noun in a one form → medium grammar; «%(count)s» moved after the noun → medium."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Western punctuation; quotes ״…״ when adding new ones (never ASCII \"); maqaf ־ or hyphen before Latin/placeholders after a prefix letter (ל־Premium, ב-%s), either accepted; ellipsis as in the source",
+      "avoid": [],
+      "note": "No invisible bidi control characters added."
+    },
+    {
+      "concept": "language dialog",
+      "en": "\\b(use|detected) %",
+      "use": "Use %(language)s / %1$s / %@ → «השתמשו ב־%1$s» (accepted: the maqaf prefix works for Latin and Hebrew names; web «שימוש ב־%(language)s» also fine). Detected → «NewsBlur זיהה במכשיר/בדפדפן שלכם את השפה %1$s.»",
+      "avoid": [
+        "NewsBlur זיהה את %1$s"
+      ],
+      "note": "The picker inserts any language's native name (Deutsch, עברית), so a prefix with maqaf is the safe form; «זיהה את עברית» reads oddly → low unnatural."
+    },
+    {
+      "concept": "relative times",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "web «לפני %(time)s» with bare units «%(number)d ימים/יום» (Hebrew does not inflect the count after לפני); future «בעוד %(time)s»",
+      "avoid": [
+        "ב־%(time)s for 'in %(time)s' (reads as 'within/at')"
+      ],
+      "note": "reader_statistics.js 'Next Update' + «in %(time)s» should be «בעוד %(time)s»."
+    },
+    {
+      "concept": "Editorial (briefing style)",
+      "en": "(?:\\bbriefings?\\b)|(?:\\beditorial\\b)",
+      "use": "מאמר מערכת (beside תבליטים / כותרות)",
+      "avoid": [
+        "מערכתי",
+        "עריכה",
+        "מערכת העריכה"
+      ],
+      "note": "«מערכתי» reads as systemic to most readers; «מאמר מערכת» is the Hebrew name of the editorial genre, and the subtitle explains the narrative style. Applied on web, iOS and Android."
+    },
+    {
+      "concept": "Play Next / Play Last (media queue)",
+      "en": "\\bplay (next|last)\\b",
+      "use": "הפעל כבא בתור / הפעל בסוף התור",
+      "avoid": [
+        "הפעל הבא",
+        "נגן את האחרון"
+      ],
+      "note": "story_detail_view.js add_to_queue(item, 0) / add_to_queue(item); imperative to match the sibling «הפעל בנגן מדיה מוקטן»."
+    },
+    {
+      "concept": "Unsubscribe (email opt-out page)",
+      "en": "(?:\\bunsubscrib(e|ed|ing)\\b)|(?:\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b)|(?:\\be-?mails?\\b)",
+      "use": "הסרה מרשימת התפוצה",
+      "avoid": [
+        "ביטול המינוי"
+      ],
+      "note": "«ביטול המינוי» reads as cancelling the paid plan and «ביטול ההרשמה» can read as cancelling the account; «הסרה מרשימת התפוצה» is the standard Israeli email footer wording. Also avoid where it means this concept: ביטול ההרשמה."
+    }
+  ]
+}

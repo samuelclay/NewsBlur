@@ -26,6 +26,7 @@ from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.translation import gettext
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
@@ -61,15 +62,10 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import (
-    MActivity,
-    MSharedStory,
-    MSocialProfile,
-    MSocialServices,
-    MSocialSubscription,
-)
+from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from utils import json_functions as json
 from utils import log as logging
+from utils.languages import normalize_language
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import is_true, render_to
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
@@ -99,9 +95,13 @@ def set_preference(request):
     code = 1
     message = ""
     new_preferences = request.POST
+    if "language" in new_preferences and normalize_language(new_preferences["language"]) is None:
+        return dict(code=-1, message=gettext("Unsupported language"))
 
     preferences = json.decode(request.user.profile.preferences)
     for preference_name, preference_value in list(new_preferences.items()):
+        if preference_name == "language":
+            preference_value = normalize_language(preference_value)
         if preference_value in ["true", "false"]:
             preference_value = True if preference_value == "true" else False
         if preference_name in SINGLE_FIELD_PREFS:
@@ -1379,7 +1379,7 @@ def save_usage_billing_limit(request):
 
     user = request.user
     if not user.profile.can_use_ai_classifiers:
-        return {"code": -1, "message": "Usage billing not enabled"}
+        return {"code": -1, "message": gettext("Usage billing not enabled")}
 
     limit_str = request.POST.get("limit", "").strip()
 
@@ -1393,13 +1393,13 @@ def save_usage_billing_limit(request):
     try:
         limit = Decimal(limit_str)
     except (InvalidOperation, ValueError):
-        return {"code": -1, "message": "Invalid amount"}
+        return {"code": -1, "message": gettext("Invalid amount")}
 
     if limit <= 0:
-        return {"code": -1, "message": "Limit must be a positive amount"}
+        return {"code": -1, "message": gettext("Limit must be a positive amount")}
 
     if limit > 10000:
-        return {"code": -1, "message": "Limit cannot exceed $10,000"}
+        return {"code": -1, "message": gettext("Limit cannot exceed $10,000")}
 
     user.profile.usage_billing_limit = limit
     user.profile.save()
@@ -1898,10 +1898,7 @@ def email_optout_token(request, username, secret):
 @require_POST
 @json.json_view
 def ios_subscription_status(request):
-    from appstoreserverlibrary.signed_data_verifier import (
-        VerificationException,
-        VerificationStatus,
-    )
+    from appstoreserverlibrary.signed_data_verifier import VerificationException, VerificationStatus
 
     from apps.profile.apple_notifications import process_apple_notification
 
@@ -1961,7 +1958,7 @@ def gift_checkout(request):
     gift_duration = request.POST.get("gift_duration", "year")
 
     if gift_tier not in ("premium", "archive", "pro"):
-        return {"code": -1, "message": "Invalid gift tier."}
+        return {"code": -1, "message": gettext("Invalid gift tier.")}
 
     tier_prices = {"premium": 36, "archive": 99, "pro": 299}
     payment_amount = tier_prices[gift_tier]

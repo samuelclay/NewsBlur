@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  UserProfileViewController.m
 //  NewsBlur
@@ -96,7 +97,7 @@
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Profiling...";
+    HUD.labelText = [NBLocalization text:@"Profiling..."];
     [self.profileBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@
                            "%@/social/profile?user_id=%@"

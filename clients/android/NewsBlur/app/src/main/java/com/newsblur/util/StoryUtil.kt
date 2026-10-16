@@ -48,10 +48,13 @@ object StoryUtil {
         nightMask: Int,
         enableHighlights: Boolean,
         classifier: Classifier? = null,
+        interfaceRtl: Boolean = false,
     ): String =
         withContext(Dispatchers.Default) {
             val sb = StringBuilder(8 * 1024)
-            sb.append("<html><head>")
+            // StoryUtil.kt gives the page the interface direction (Arabic, Hebrew) and lets the story
+            // itself take the direction of its own text, so an English story still reads left to right.
+            sb.append(if (interfaceRtl) "<html dir=\"rtl\"><head>" else "<html><head>")
             sb.append(
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0\"/>",
             )
@@ -73,7 +76,7 @@ object StoryUtil {
                     }
             }
 
-            sb.append("</head><body><div class=\"NB-story\">")
+            sb.append("</head><body><div class=\"NB-story\" dir=\"auto\">")
             sb.append(storyHtml)
             sb.append("<script src=\"mark.min.js\"></script>")
             if (enableHighlights) {

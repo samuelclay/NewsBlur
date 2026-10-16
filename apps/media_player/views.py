@@ -2,6 +2,7 @@ import datetime
 
 import redis
 from django.conf import settings
+from django.utils.translation import gettext
 
 from apps.media_player.models import MMediaPlaybackState
 from utils import json_functions as json
@@ -46,7 +47,7 @@ def save_playback_state(request):
             state_fields[field] = request.POST[field] in ("true", "True", "1", True)
 
     if not state_fields:
-        return {"code": -1, "message": "No fields to update"}
+        return {"code": -1, "message": gettext("No fields to update")}
 
     state = MMediaPlaybackState.save_playback_state(user.pk, **state_fields)
 

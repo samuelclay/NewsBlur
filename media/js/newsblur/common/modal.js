@@ -108,7 +108,8 @@ NEWSBLUR.Modal.prototype = {
         if (this.feed.is_starred() || this.feed.is_social()) {
             $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
         } else {
-            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)).show();
+            var num_subscribers = this.feed.get('num_subscribers');
+            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", num_subscribers), { count: Inflector.commas(num_subscribers) }, true)).show();
         }
     },
 

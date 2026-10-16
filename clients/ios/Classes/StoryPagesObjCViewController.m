@@ -145,7 +145,7 @@
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:appDelegate.detailViewController
                                                                      action:@selector(toggleTemporaryFullScreen:)];
-    self.temporaryFullScreenButton.accessibilityLabel = @"Toggle Full Screen";
+    self.temporaryFullScreenButton.accessibilityLabel = [NBLocalization text:@"Toggle Full Screen"];
     self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 }
 
@@ -202,7 +202,7 @@
 
     self.storyTitlesEdgeRevealGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
                                                                                           action:@selector(handleStoryTitlesEdgeReveal:)];
-    self.storyTitlesEdgeRevealGesture.edges = UIRectEdgeLeft;
+    self.storyTitlesEdgeRevealGesture.edges = [StoryPagerDirection leadingScreenEdgeWithRightToLeft:NBLocalization.isRightToLeft];
     self.storyTitlesEdgeRevealGesture.maximumNumberOfTouches = 1;
     self.storyTitlesEdgeRevealGesture.delegate = self;
     [self.view addGestureRecognizer:self.storyTitlesEdgeRevealGesture];
@@ -245,10 +245,15 @@
         }
     }
     // StoryPagesObjCViewController.m lets UIKit's native ancestor edge win before reader pans or article taps begin.
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
     for (UIView *ancestor = self.view.superview; ancestor; ancestor = ancestor.superview) {
         for (UIGestureRecognizer *gesture in ancestor.gestureRecognizers) {
+            UIRectEdge gestureEdges = [gesture isKindOfClass:UIScreenEdgePanGestureRecognizer.class] ?
+                ((UIScreenEdgePanGestureRecognizer *)gesture).edges : UIRectEdgeNone;
+            // StoryPagesObjCViewController.m also lets a right-edge native gesture lead a right-to-left interface.
+            BOOL leadingEdge = gestureEdges == UIRectEdgeLeft || (rightToLeft && gestureEdges == UIRectEdgeRight);
             if (![gesture isKindOfClass:UIScreenEdgePanGestureRecognizer.class] || !gesture.enabled ||
-                ((UIScreenEdgePanGestureRecognizer *)gesture).edges != UIRectEdgeLeft ||
+                !leadingEdge ||
                 gesture == navigation.interactivePopGestureRecognizer || gesture == contentPop) continue;
             for (UIGestureRecognizer *readerGesture in readerGestures) {
                 NSHashTable *edges = [self.duoNativeEdgePriorities objectForKey:readerGesture];
@@ -354,6 +359,7 @@
     self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     self.scrollView.contentInset = UIEdgeInsetsZero;
     [self setupStoryTitlesEdgeRevealGesture];
+    [self updateReaderDirection];
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
@@ -392,24 +398,24 @@
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
-    fontSettingsButton.accessibilityLabel = @"Story settings";
+    fontSettingsButton.accessibilityLabel = [NBLocalization text:@"Story settings"];
     
     UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
     markreadImage = [markreadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
-    originalStoryButton.accessibilityLabel = @"Show original story";
+    originalStoryButton.accessibilityLabel = [NBLocalization text:@"Show original story"];
 
     UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
     markReadImage = [markReadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
                                                                     target:self
                                                                     action:@selector(markAllRead:)];
-    markReadBarButton.accessibilityLabel = @"Mark all as read";
+    markReadBarButton.accessibilityLabel = [NBLocalization text:@"Mark all as read"];
 
     UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc]
-                                     initWithTitle:@"Follow User"
+                                     initWithTitle:[NBLocalization text:@"Follow User"]
                                      style:UIBarButtonItemStylePlain
                                      target:self
                                      action:@selector(subscribeToBlurblog)
@@ -419,7 +425,7 @@
 
     [self updateTheme];
     
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
+    self.notifier = [[NBNotifier alloc] initWithTitle:[NBLocalization text:@"Fetching text..."]
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
     [self.view addSubview:self.notifier];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
@@ -465,7 +471,7 @@
         probeView.isAccessibilityElement = YES;
         probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
         probeView.accessibilityIdentifier = @"story-current-story";
-        probeView.accessibilityLabel = @"No story selected";
+        probeView.accessibilityLabel = [NBLocalization text:@"No story selected"];
         probeView.alpha = 0.01;
         [self.view addSubview:probeView];
         [NSLayoutConstraint activateConstraints:@[
@@ -483,7 +489,7 @@
         probeView.isAccessibilityElement = YES;
         probeView.accessibilityTraits = UIAccessibilityTraitStaticText;
         probeView.accessibilityIdentifier = @"story-traverse-fade-state";
-        probeView.accessibilityLabel = @"Traverse fade state";
+        probeView.accessibilityLabel = [NBLocalization text:@"Traverse fade state"];
         probeView.alpha = 0.01;
         [self.view addSubview:probeView];
         [NSLayoutConstraint activateConstraints:@[
@@ -538,6 +544,7 @@
     [self applyToolbarButtonTint];
     [self updateTheme];
     [self updateStoryTitleNavigationButtons];
+    [self updateReaderDirection];
     
     [self updateAutoscrollButtons];
     [self updateTraverseBackground];
@@ -721,7 +728,7 @@
     if (appDelegate.isTryFeedView && !self.isPhoneOrCompact &&
         ![[appDelegate.storiesCollection.activeFeed objectForKey:@"username"] isKindOfClass:[NSNull class]] &&
         [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]) {
-        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@",
+        self.subscribeButton.title = [NSString stringWithFormat:[NBLocalization text:@"Follow %@"],
                                       [appDelegate.storiesCollection.activeFeed objectForKey:@"username"]];
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = self.subscribeButton;
     }
@@ -993,15 +1000,15 @@
 - (void)prepareVerticalReaderToolbar {
     if (self.verticalReaderToolbarItems) return;
     BOOL horizontal = self.isHorizontal;
-    self.verticalTextButton = [self readerBarButtonWithTitle:@"Text view" symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
-    self.verticalSendButton = [self readerBarButtonWithTitle:@"Share story" symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
-    self.verticalProgressButton = [self readerBarButtonWithTitle:@"Reading progress" symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
-    self.verticalPreviousButton = [self readerBarButtonWithTitle:@"Previous story" symbol:horizontal ? @"chevron.left" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
-    self.verticalNextButton = [self readerBarButtonWithTitle:@"Next unread story" symbol:horizontal ? @"chevron.right" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
-    self.verticalOriginalButton = [self readerBarButtonWithTitle:@"Show original story" symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
-    self.verticalSettingsButton = [self readerBarButtonWithTitle:@"Story settings" symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
-    self.verticalMarkReadButton = [self readerBarButtonWithTitle:@"Mark all as read" symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
-    self.verticalAutoscrollButton = [self readerBarButtonWithTitle:@"Autoscroll" symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
+    self.verticalTextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Text view"] symbol:@"doc.text" identifier:@"reader-text" action:@selector(toggleTextView:)];
+    self.verticalSendButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Share story"] symbol:@"square.and.arrow.up" identifier:@"reader-share" action:@selector(openSendToDialog:)];
+    self.verticalProgressButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Reading progress"] symbol:@"chart.pie" identifier:@"reader-progress" action:@selector(tapProgressBar:)];
+    self.verticalPreviousButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Previous story"] symbol:horizontal ? @"chevron.backward" : @"chevron.up" identifier:@"reader-previous" action:@selector(doPreviousStory:)];
+    self.verticalNextButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Next unread story"] symbol:horizontal ? @"chevron.forward" : @"chevron.down" identifier:@"reader-next" action:@selector(doNextUnreadStory:)];
+    self.verticalOriginalButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Show original story"] symbol:@"safari" identifier:@"reader-original" action:@selector(showOriginalSubview:)];
+    self.verticalSettingsButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Story settings"] symbol:@"textformat.size" identifier:@"reader-settings" action:@selector(toggleFontSize:)];
+    self.verticalMarkReadButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Mark all as read"] symbol:@"checkmark" identifier:@"reader-mark-read" action:@selector(markAllRead:)];
+    self.verticalAutoscrollButton = [self readerBarButtonWithTitle:[NBLocalization text:@"Autoscroll"] symbol:@"arrow.down.circle" identifier:@"reader-autoscroll" action:nil];
     [self ensureTemporaryFullScreenButton];
     self.temporaryFullScreenButton.accessibilityIdentifier = @"reader-fullscreen";
 #if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270100
@@ -1035,7 +1042,7 @@
     self.temporaryFullScreenButton.hidden = !detail.canToggleDuoFullscreenReader;
     self.verticalProgressButton.hidden = detail.canToggleDuoFullscreenReader;
     self.temporaryFullScreenButton.target = detail;
-    self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? @"On" : @"Off";
+    self.temporaryFullScreenButton.accessibilityValue = detail.isDuoFullscreenReader ? [NBLocalization text:@"On"] : [NBLocalization text:@"Off"];
     NSString *symbol = detail.isDuoFullscreenReader ? @"rectangle.split.2x1" : @"arrow.left.and.right";
     self.temporaryFullScreenButton.image = [UIImage systemImageNamed:symbol];
 }
@@ -1420,55 +1427,55 @@
         if (appDelegate.storiesCollection.isSocialRiverView &&
             [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
-            titleText = @"Global Shared Stories";
+            titleText = [NBLocalization text:@"Global Shared Stories"];
         } else if (appDelegate.storiesCollection.isSocialRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"all-shares"];
-            titleText = @"All Shared Stories";
+            titleText = [NBLocalization text:@"All Shared Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
-            titleText = @"All Site Stories";
+            titleText = [NBLocalization text:@"All Site Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
-            titleText = @"Dashboard";
+            titleText = [NBLocalization text:@"Dashboard"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
-            titleText = @"Infrequent Stories";
+            titleText = [NBLocalization text:@"Infrequent Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:well_read"]) {
             titleImage = [UIImage imageNamed:@"trending-well-read"];
-            titleText = @"Widely Read Stories";
+            titleText = [NBLocalization text:@"Widely Read Stories"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:long_reads"]) {
             titleImage = [UIImage imageNamed:@"trending-long-reads"];
-            titleText = @"Long Reads";
+            titleText = [NBLocalization text:@"Long Reads"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
             titleImage = [UIImage systemImageNamed:@"star.fill"];
-            titleText = @"Good Reads";
+            titleText = [NBLocalization text:@"Good Reads"];
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"daily_briefing"]) {
             titleImage = [UIImage imageNamed:@"briefing"];
-            titleText = @"Daily Briefing";
+            titleText = [NBLocalization text:@"Daily Briefing"];
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
             titleText = appDelegate.storiesCollection.activeSavedStoryTag;
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
-            titleText = @"Widget Stories";
+            titleText = [NBLocalization text:@"Widget Stories"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
             titleImage = [UIImage imageNamed:@"indicator-unread"];
-            titleText = @"Read Stories";
+            titleText = [NBLocalization text:@"Read Stories"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
             titleImage = [UIImage imageNamed:@"search"];
-            titleText = @"Saved Searches";
+            titleText = [NBLocalization text:@"Saved Searches"];
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
-            titleText = @"Saved Stories";
+            titleText = [NBLocalization text:@"Saved Stories"];
         } else if (appDelegate.storiesCollection.isRiverView) {
             NSString *folderName = appDelegate.storiesCollection.activeFolder;
             NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
@@ -1579,7 +1586,9 @@
     if (gestureRecognizer == self.fullScreenPopGesture) {
         UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint velocity = [pan velocityInView:self.view];
-        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+        // StoryPagesObjCViewController.m goes back with a swipe away from the leading edge, which is leftward in Arabic and Hebrew.
+        CGFloat backVelocity = [StoryPagerDirection velocityAwayFromLeadingEdge:velocity rightToLeft:NBLocalization.isRightToLeft];
+        if (backVelocity <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
             return NO;
         }
         UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
@@ -1593,7 +1602,8 @@
         UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
         CGPoint velocity = [pan velocityInView:self.view];
         BOOL usesOverlay = appDelegate.splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay;
-        if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
+        CGFloat revealVelocity = [StoryPagerDirection velocityAwayFromLeadingEdge:velocity rightToLeft:NBLocalization.isRightToLeft];
+        if (revealVelocity <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
             return NO;
         }
 
@@ -1889,16 +1899,16 @@
     if (self.verticalAutoscrollButton) {
         self.verticalAutoscrollButton.hidden = !self.autoscrollAvailable;
         __weak typeof(self) weakSelf = self;
-        UIAction *pause = [UIAction actionWithTitle:self.autoscrollActive ? @"Pause" : @"Resume"
+        UIAction *pause = [UIAction actionWithTitle:self.autoscrollActive ? [NBLocalization text:@"Pause"] : [NBLocalization text:@"Resume"]
                                              image:[UIImage systemImageNamed:self.autoscrollActive ? @"pause" : @"play"]
                                         identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollPauseResume:nil]; }];
-        UIAction *slower = [UIAction actionWithTitle:@"Slower" image:[UIImage systemImageNamed:@"tortoise"]
+        UIAction *slower = [UIAction actionWithTitle:[NBLocalization text:@"Slower"] image:[UIImage systemImageNamed:@"tortoise"]
                                          identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollSlower:nil]; }];
-        UIAction *faster = [UIAction actionWithTitle:@"Faster" image:[UIImage systemImageNamed:@"hare"]
+        UIAction *faster = [UIAction actionWithTitle:[NBLocalization text:@"Faster"] image:[UIImage systemImageNamed:@"hare"]
                                          identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollFaster:nil]; }];
-        UIAction *stop = [UIAction actionWithTitle:@"Stop autoscroll" image:[UIImage systemImageNamed:@"stop"]
+        UIAction *stop = [UIAction actionWithTitle:[NBLocalization text:@"Stop autoscroll"] image:[UIImage systemImageNamed:@"stop"]
                                        identifier:nil handler:^(__kindof UIAction *action) { [weakSelf autoscrollDisable:nil]; }];
-        self.verticalAutoscrollButton.menu = [UIMenu menuWithTitle:@"Autoscroll" children:@[pause, slower, faster, stop]];
+        self.verticalAutoscrollButton.menu = [UIMenu menuWithTitle:[NBLocalization text:@"Autoscroll"] children:@[pause, slower, faster, stop]];
     }
 }
 
@@ -2534,7 +2544,9 @@
         CGRect frame = self.scrollView.frame;
         
         if (self.isHorizontal) {
-            frame.origin.x = frame.size.width;
+            // StoryPagesObjCViewController.m slides the reader in from the trailing edge, the left in Arabic and Hebrew.
+            BOOL mirrored = [StoryPagerDirection mirrorsPagesWithHorizontal:YES rightToLeft:NBLocalization.isRightToLeft];
+            frame.origin.x = mirrored ? -frame.size.width : frame.size.width;
         } else {
             frame.origin.y = frame.size.height;
         }
@@ -2915,6 +2927,9 @@
     host.userInteractionEnabled = NO;
     host.accessibilityElementsHidden = YES;
     host.backgroundColor = self.scrollView.backgroundColor;
+    // StoryPagesObjCViewController.m mirrors the transition like the pager, so a later story arrives from the left in
+    // Arabic and Hebrew; the pages keep their own flip and read normally (StoryPagesViewController.swift).
+    host.transform = self.scrollView.transform;
     [parent insertSubview:host aboveSubview:self.scrollView];
     self.storySelectionTransitionHost = host;
     self.storySelectionTransitionPages = ordered;
@@ -3386,7 +3401,7 @@
          [[appDelegate.readStories lastObject] isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]));
     [self.traverseBar updatePreviousEnabled:prevEnabled];
     self.verticalPreviousButton.enabled = prevEnabled;
-    self.verticalPreviousButton.image = [UIImage systemImageNamed:horizontal ? @"chevron.left" : @"chevron.up"];
+    self.verticalPreviousButton.image = [UIImage systemImageNamed:horizontal ? @"chevron.backward" : @"chevron.up"];
 
     // Next/Done button state
     buttonNext.enabled = YES;
@@ -3395,16 +3410,16 @@
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
     BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
-    self.verticalNextButton.title = hasMoreUnread ? @"Next unread story" : @"Done";
+    self.verticalNextButton.title = hasMoreUnread ? [NBLocalization text:@"Next unread story"] : [NBLocalization text:@"Done"];
     self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
-    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.right" : @"chevron.down") : @"checkmark"];
+    self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.forward" : @"chevron.down") : @"checkmark"];
 
     // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
     [self.traverseBar updateProgress:progress];
-    self.verticalProgressButton.title = [NSString stringWithFormat:@"%ld unread %@", (long)unreadCount, unreadCount == 1 ? @"story" : @"stories"];
+    self.verticalProgressButton.title = [NBLocalization plural:@"%@ unread stories" count:@(unreadCount)];
     self.verticalProgressButton.accessibilityLabel = self.verticalProgressButton.title;
 }
 
@@ -3446,7 +3461,7 @@
     originalStoryButton.enabled = enabled;
     self.verticalTextButton.enabled = enabled;
     self.verticalTextButton.selected = storyViewController.inTextView;
-    self.verticalTextButton.title = storyViewController.inTextView ? @"Story view" : @"Text view";
+    self.verticalTextButton.title = storyViewController.inTextView ? [NBLocalization text:@"Story view"] : [NBLocalization text:@"Text view"];
     self.verticalTextButton.accessibilityLabel = self.verticalTextButton.title;
     self.verticalSendButton.enabled = enabled;
     self.verticalSettingsButton.enabled = enabled;
@@ -3540,11 +3555,9 @@
 	hud.removeFromSuperViewOnHide = YES;
     NSInteger unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        hud.labelText = @"No unread stories";
-    } else if (unreadCount == 1) {
-        hud.labelText = @"1 story left";
+        hud.labelText = [NBLocalization text:@"No unread stories"];
     } else {
-        hud.labelText = [NSString stringWithFormat:@"%li stories left", (long)unreadCount];
+        hud.labelText = [NBLocalization plural:@"%@ stories left" count:@(unreadCount)];
     }
 	[hud hide:YES afterDelay:0.8];
 }
@@ -3688,6 +3701,7 @@
     [self setWebViewsScrollEnabled:YES];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self updateReaderDirection];
     [self reorientPages];
     [self updatePopGestureForScrollOrientation];
 }
@@ -3737,6 +3751,28 @@
     [self.previousPage updateStoryTheme];
 }
 
+- (void)updateStoriesDirection {
+    [self.currentPage updateStoryDirection];
+    [self.nextPage updateStoryDirection];
+    [self.previousPage updateStoryDirection];
+    [self updateReaderDirection];
+}
+
+// StoryPagesObjCViewController.m mirrors horizontal paging and the story titles edge swipe for Arabic and Hebrew
+// (StoryPagesViewController.swift). Page locations and content offsets stay measured from the left, so next/previous
+// buttons, keyboard shortcuts, programmatic jumps and mark-read on page change are unaffected.
+- (void)updateReaderDirection {
+    if (!self.isViewLoaded) return;
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    CGAffineTransform transform = [StoryPagerDirection pagerTransformWithHorizontal:self.isHorizontal rightToLeft:rightToLeft];
+    [StoryPagerDirection apply:transform to:self.scrollView];
+    StoryDetailViewController *pages[] = {currentPage, nextPage, previousPage};
+    for (NSInteger index = 0; index < 3; index++) {
+        [StoryPagerDirection apply:transform to:pages[index].viewIfLoaded];
+    }
+    self.storyTitlesEdgeRevealGesture.edges = [StoryPagerDirection leadingScreenEdgeWithRightToLeft:rightToLeft];
+}
+
 - (void)updateStatusBarTheme {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         [self updateStatusBarState];
@@ -3761,7 +3797,7 @@
 
 - (void)showFetchingTextNotifier {
     self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Fetching text...";
+    self.notifier.title = [NBLocalization text:@"Fetching text..."];
     [self.notifier setProgress:0];
     [self.notifier show];
 }

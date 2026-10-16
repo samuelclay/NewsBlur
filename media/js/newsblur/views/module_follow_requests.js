@@ -33,7 +33,7 @@ NEWSBLUR.Views.FollowRequestsModule = Backbone.View.extend({
 
         if (this.request_profiles.length) {
             var $profiles = this.make_follow_requests();
-            this.$el.html($.make('h5', 'Requests to Follow You'));
+            this.$el.html($.make('h5', gettext('Requests to Follow You')));
             this.$el.append($profiles);
             if (!this.$el.is(":visible")) {
                 this.$el.hide();

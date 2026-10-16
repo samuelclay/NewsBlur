@@ -99,7 +99,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Discover sites'
+                    gettext('Discover sites')
                 ]),
                 this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-loading' }, [
@@ -115,7 +115,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
     on_data_load_error: function () {
         this.hide_loading();
-        this.$el.find(".NB-discover-loading").html('<div class="error-message">Failed to load related sites</div>');
+        this.$el.find(".NB-discover-loading").html('<div class="error-message">' + _.escape(gettext('Failed to load related sites')) + '</div>');
     },
 
     render: function () {
@@ -125,7 +125,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, [
                     $.make('div', { className: 'NB-icon' }),
-                    'Discover sites'
+                    gettext('Discover sites')
                 ]),
                 this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-feed-badges NB-story-pane-west' }, _.flatten(this.discover_feeds_model.map(function (discover_feed) {
@@ -293,7 +293,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         if (!last_story_date) {
             if (!options.show_empty) return null;
             freshness_class += ' NB-freshness-none';
-            freshness_label = 'No stories yet';
+            freshness_label = gettext('No stories yet');
             return $.make('div', { className: freshness_class }, [
                 $.make('span', { className: 'NB-freshness-dot' }),
                 $.make('span', { className: 'NB-freshness-label' }, freshness_label)
@@ -309,22 +309,22 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         if (days_ago < 365) {
             freshness_class += ' NB-freshness-active';
             if (days_ago < 1) {
-                freshness_label = 'Updated today';
+                freshness_label = gettext('Updated today');
             } else if (days_ago < 7) {
-                freshness_label = 'Updated ' + days_ago + (days_ago === 1 ? ' day ago' : ' days ago');
+                freshness_label = interpolate(ngettext('Updated %(count)s day ago', 'Updated %(count)s days ago', days_ago), {count: days_ago}, true);
             } else if (days_ago < 30) {
                 var weeks = Math.floor(days_ago / 7);
-                freshness_label = 'Updated ' + weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+                freshness_label = interpolate(ngettext('Updated %(count)s week ago', 'Updated %(count)s weeks ago', weeks), {count: weeks}, true);
             } else {
                 var months = Math.floor(days_ago / 30);
-                freshness_label = 'Updated ' + (months === 1 ? '1 month ago' : months + ' months ago');
+                freshness_label = interpolate(ngettext('Updated %(count)s month ago', 'Updated %(count)s months ago', months), {count: months}, true);
             }
         } else {
             freshness_class += ' NB-freshness-stale';
             var date_str = last_date.toLocaleDateString(undefined, {
                 month: 'short', day: 'numeric', year: 'numeric'
             });
-            freshness_label = 'Stale \u2014 last story ' + date_str;
+            freshness_label = interpolate(gettext('Stale \u2014 last story %(date)s'), {date: date_str}, true);
         }
 
         return $.make('div', { className: freshness_class }, [
@@ -369,9 +369,9 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     update_index_button_state: function () {
         var $button = this.$('.NB-discover-index-button');
         if (this.is_discover_indexing) {
-            $button.addClass('NB-disabled').text('Indexing...');
+            $button.addClass('NB-disabled').text(gettext('Indexing...'));
         } else {
-            $button.removeClass('NB-disabled').text('Index remaining feeds');
+            $button.removeClass('NB-disabled').text(gettext('Index remaining feeds'));
         }
     },
 
@@ -394,13 +394,21 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
             this.$('.NB-discover-archive-banner-progress-fill').css('width', progress_pct + '%');
             this.$('.NB-discover-archive-banner-progress-label').text(
-                counts.discover_indexed_count + ' of ' + counts.feed_count + ' sites indexed'
+                this.sites_indexed_label(counts.discover_indexed_count, counts.feed_count)
             );
             this.$('.NB-discover-archive-banner-body').text(
-                counts.discover_indexed_count + ' of ' + counts.feed_count +
-                ' sites indexed. Index remaining feeds to get better recommendations.'
+                this.sites_indexed_body(counts.discover_indexed_count, counts.feed_count)
             );
         }
+    },
+
+    // discover_feeds_popover.js shares the indexed-sites progress text between the banner and live progress updates.
+    sites_indexed_label: function (discover_indexed_count, feed_count) {
+        return interpolate(ngettext("%(indexed)s of %(count)s site indexed", "%(indexed)s of %(count)s sites indexed", feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
+    },
+
+    sites_indexed_body: function (discover_indexed_count, feed_count) {
+        return interpolate(ngettext("%(indexed)s of %(count)s site indexed. Index remaining feeds to get better recommendations.", "%(indexed)s of %(count)s sites indexed. Index remaining feeds to get better recommendations.", feed_count), {indexed: discover_indexed_count, count: feed_count}, true);
     },
 
     get_discover_counts: function () {
@@ -431,7 +439,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             if (progress_pct >= 100) return false;
 
             var is_indexing = this.is_discover_indexing;
-            var button_text = is_indexing ? 'Indexing...' : 'Index remaining feeds';
+            var button_text = is_indexing ? gettext('Indexing...') : gettext('Index remaining feeds');
             var button_class = 'NB-discover-index-button' + (is_indexing ? ' NB-disabled' : '');
 
             return $.make('div', { className: 'NB-discover-index-banner' }, [
@@ -439,11 +447,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-discover-archive-banner-icon' }),
                     $.make('div', { className: 'NB-discover-archive-banner-text' }, [
                         $.make('div', { className: 'NB-discover-archive-banner-title' },
-                            'Index feeds for discovery'
+                            gettext('Index feeds for discovery')
                         ),
                         $.make('div', { className: 'NB-discover-archive-banner-body' },
-                            discover_indexed_count + ' of ' + feed_count +
-                            ' sites indexed. Index remaining feeds to get better recommendations.'
+                            this.sites_indexed_body(discover_indexed_count, feed_count)
                         )
                     ])
                 ]),
@@ -455,7 +462,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                         })
                     ]),
                     $.make('div', { className: 'NB-discover-archive-banner-progress-label' },
-                        discover_indexed_count + ' of ' + feed_count + ' sites indexed'
+                        this.sites_indexed_label(discover_indexed_count, feed_count)
                     )
                 ]),
                 $.make('div', { className: button_class }, button_text)
@@ -468,12 +475,11 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                 $.make('div', { className: 'NB-discover-archive-banner-icon' }),
                 $.make('div', { className: 'NB-discover-archive-banner-text' }, [
                     $.make('div', { className: 'NB-discover-archive-banner-title' }, [
-                        'Unlock full discovery',
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                        gettext('Unlock full discovery'),
+                        $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
                     ]),
                     $.make('div', { className: 'NB-discover-archive-banner-body' },
-                        'Only ' + discover_indexed_count + ' of your ' + feed_count +
-                        ' sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.'
+                        interpolate(ngettext("Only %(indexed)s of your %(count)s site is indexed for discovery. Upgrade to index all your sites and get personalized recommendations.", "Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.", feed_count), {indexed: discover_indexed_count, count: feed_count}, true)
                     )
                 ])
             ]),
@@ -485,10 +491,10 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     })
                 ]),
                 $.make('div', { className: 'NB-discover-archive-banner-progress-label' },
-                    discover_indexed_count + ' of ' + feed_count + ' sites indexed'
+                    this.sites_indexed_label(discover_indexed_count, feed_count)
                 )
             ]),
-            $.make('div', { className: 'NB-discover-archive-banner-cta' }, 'Upgrade to Premium Archive')
+            $.make('div', { className: 'NB-discover-archive-banner-cta' }, gettext('Upgrade to Premium Archive'))
         ]);
     }
 

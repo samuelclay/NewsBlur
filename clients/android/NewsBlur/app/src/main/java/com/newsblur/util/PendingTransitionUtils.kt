@@ -7,18 +7,24 @@ import android.os.Build
 import com.newsblur.R
 
 object PendingTransitionUtils {
+    // PendingTransitionUtils.kt slides a new screen in from the end edge and back out toward it, so
+    // the slides mirror in Arabic and Hebrew along with the back swipes.
+    private fun isRtl(activity: Activity): Boolean = UIUtils.towardEndSign(activity) < 0f
+
     @JvmStatic
     fun overrideEnterTransition(activity: Activity) {
+        val enter = if (isRtl(activity)) R.anim.slide_in_from_left else R.anim.slide_in_from_right
+        val exit = if (isRtl(activity)) R.anim.slide_out_to_right else R.anim.slide_out_to_left
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity.overrideActivityTransition(
                 Activity.OVERRIDE_TRANSITION_OPEN,
-                R.anim.slide_in_from_right,
-                R.anim.slide_out_to_left,
+                enter,
+                exit,
             )
         } else {
             activity.overridePendingTransition(
-                R.anim.slide_in_from_right,
-                R.anim.slide_out_to_left,
+                enter,
+                exit,
             )
         }
     }
@@ -41,14 +47,16 @@ object PendingTransitionUtils {
 
     @JvmStatic
     fun overrideExitTransition(activity: Activity) {
+        val enter = if (isRtl(activity)) R.anim.slide_in_from_right else R.anim.slide_in_from_left
+        val exit = if (isRtl(activity)) R.anim.slide_out_to_left else R.anim.slide_out_to_right
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity.overrideActivityTransition(
                 Activity.OVERRIDE_TRANSITION_CLOSE,
-                R.anim.slide_in_from_left,
-                R.anim.slide_out_to_right,
+                enter,
+                exit,
             )
         } else {
-            activity.overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right)
+            activity.overridePendingTransition(enter, exit)
         }
     }
 

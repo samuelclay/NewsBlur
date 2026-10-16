@@ -59,6 +59,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
 import com.newsblur.util.AppConstants
 import com.newsblur.util.AppConstants.READING_BASE_URL
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyReaderFooterInsetTo
@@ -1016,7 +1017,8 @@ class ReadingItemFragment :
         setupUserTags()
 
         if (!TextUtils.isEmpty(story!!.authors)) {
-            binding.readingItemAuthors.text = "•   " + story!!.authors
+            // ReadingItemFragment.kt isolates the author so the bullet stays beside the date in either direction.
+            binding.readingItemAuthors.text = "•   " + BidiText.isolate(story!!.authors)
             binding.readingItemAuthors.compoundDrawablePadding = UIUtils.dp2px(requireContext(), 4)
             val authorScore = if (classifier != null) classifier!!.authors[story!!.authors] else null
             when (authorScore) {
@@ -1024,25 +1026,25 @@ class ReadingItemFragment :
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 Classifier.DISLIKE -> {
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.negative))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 12), UIUtils.dp2px(requireContext(), 12))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 Classifier.SUPER_DISLIKE -> {
                     binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.super_negative))
                     val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_double_crimson)
                     icon?.setBounds(0, 0, UIUtils.dp2px(requireContext(), 14), UIUtils.dp2px(requireContext(), 14))
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, icon, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, icon, null)
                 }
                 else -> {
                     binding.readingItemAuthors.setTextColor(
                         UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
                     )
-                    binding.readingItemAuthors.setCompoundDrawables(null, null, null, null)
+                    binding.readingItemAuthors.setCompoundDrawablesRelative(null, null, null, null)
                 }
             }
         }
@@ -1228,7 +1230,7 @@ class ReadingItemFragment :
                 height = UIUtils.dp2px(requireContext(), sentimentSize)
             }
 
-        dateView.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        dateView.text = StoryUtils.formatRelativeShortDate(requireContext(), clusterStory.timestamp)
         dateView.setTextColor(if (isRead) palette.readMetaColor else palette.metaColor)
 
         titleView.text = UIUtils.fromHtml(clusterStory.title ?: "")
@@ -1562,6 +1564,7 @@ class ReadingItemFragment :
                 enableHighlights = enableHighlights,
                 textClassifiers = classifier?.texts?.toMap().orEmpty(),
                 textRegexClassifiers = classifier?.textRegex?.toMap().orEmpty(),
+                interfaceRtl = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL,
             )
         documentRenderer.submit(
             scope = viewLifecycleOwner.lifecycleScope,
@@ -1584,6 +1587,7 @@ class ReadingItemFragment :
                                 nightMask = request.nightMask,
                                 enableHighlights = request.enableHighlights,
                                 classifier = bodyClassifier,
+                                interfaceRtl = request.interfaceRtl,
                             ),
                     )
                 }
@@ -2432,6 +2436,7 @@ private data class ReaderHtmlRequest(
     val enableHighlights: Boolean,
     val textClassifiers: Map<String, Int>,
     val textRegexClassifiers: Map<String, Int>,
+    val interfaceRtl: Boolean,
 )
 
 private data class PreparedReaderDocument(

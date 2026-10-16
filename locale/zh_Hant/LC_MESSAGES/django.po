@@ -1,0 +1,5602 @@
+# Chinese (Traditional) translations for NewsBlur.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the NewsBlur project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NewsBlur VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_Hant\n"
+"Language-Team: zh_Hant <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid " - Folder: All Site Stories"
+msgstr " - 資料夾：所有網站文章"
+
+msgid " - Folder: Top Level"
+msgstr " - 資料夾：最上層"
+
+msgid "$100/year (Pro: unlimited sources)"
+msgstr "每年 $100（Pro：不限來源）"
+
+msgid "$144/year (Pro+) / $18/month (Enterprise)"
+msgstr "$144/年（Pro+）/ $18/月（Enterprise）"
+
+msgid "$29/mo"
+msgstr "每月 $29"
+
+msgid "$29/month"
+msgstr "每月 $29"
+
+msgid "$29/month (Pro: 10K sites, 5-min fetching)"
+msgstr "每月 $29（Pro：10,000 個網站、每 5 分鐘擷取一次）"
+
+msgid "$30/year (Premium)"
+msgstr "每年 30 美元（Premium）"
+
+msgid "$30/year (Supporter: 500 sources)"
+msgstr "每年 $30（支持者：500 個來源）"
+
+msgid "$36/year"
+msgstr "每年 $36"
+
+msgid "$36/year (1,024 sites)"
+msgstr "每年 $36（1,024 個網站）"
+
+msgid "$36/year (Premium), $99/year (Archive)"
+msgstr "每年 36 美元（Premium），每年 99 美元（Archive）"
+
+msgid "$36/yr"
+msgstr "每年 $36"
+
+msgid "$50/year (single plan)"
+msgstr "每年 $50（單一方案）"
+
+msgid "$72/year (Pro)"
+msgstr "每年 $72（Pro）"
+
+msgid "$96/year (full access)"
+msgstr "每年 $96（完整存取權）"
+
+msgid "$99/year"
+msgstr "每年 99 美元"
+
+msgid "$99/yr"
+msgstr "每年 $99"
+
+#, python-format
+msgid "%(comments)s Comment"
+msgid_plural "%(comments)s Comments"
+msgstr[0] "%(comments)s 則留言"
+
+#, python-format
+msgid "%(comments)s public comment"
+msgid_plural "%(comments)s public comments"
+msgstr[0] "%(comments)s 則公開留言"
+
+#, python-format
+msgid "%(count)d day ago"
+msgid_plural "%(count)d days ago"
+msgstr[0] "%(count)d 天前"
+
+#, python-format
+msgid "%(count)d hour ago"
+msgid_plural "%(count)d hours ago"
+msgstr[0] "%(count)d 小時前"
+
+#, python-format
+msgid "%(count)d minute ago"
+msgid_plural "%(count)d minutes ago"
+msgstr[0] "%(count)d 分鐘前"
+
+#, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s %(time)s"
+
+#, python-format
+msgid "%(number)d day"
+msgid_plural "%(number)d days"
+msgstr[0] "%(number)d 天"
+
+#, python-format
+msgid "%(number)d hour"
+msgid_plural "%(number)d hours"
+msgstr[0] "%(number)d 小時"
+
+#, python-format
+msgid "%(number)d minute"
+msgid_plural "%(number)d minutes"
+msgstr[0] "%(number)d 分鐘"
+
+#, python-format
+msgid "%(number)d second"
+msgid_plural "%(number)d seconds"
+msgstr[0] "%(number)d 秒"
+
+#, python-format
+msgid "%(shares)s Share"
+msgid_plural "%(shares)s Shares"
+msgstr[0] "%(shares)s 次分享"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "%(time)s前"
+
+#, python-format
+msgid ""
+"%(username)s <a href=\"%(permalink)s\">shared this story</a> from <img src=\"%(favicon_url)s\" style"
+"=\"vertical-align: middle;width:16px;height:16px;\"> %(feed_title)s."
+msgstr ""
+"%(username)s <a href=\"%(permalink)s\">分享了這篇文章</a>，來自 <img src=\"%(favicon_url)s\" style=\"vertical-align: "
+"middle;width:16px;height:16px;\"> %(feed_title)s。"
+
+#, python-format
+msgid ""
+"%(username)s <a href=\"%(permalink)s\">shared this story</a> from <img src=\"%(favicon_url)s\" style"
+"=\"vertical-align: middle;width:16px;height:16px;\"> %(feed_title)s:"
+msgstr ""
+"%(username)s <a href=\"%(permalink)s\">分享了這篇文章</a>，來源：<img src=\"%(favicon_url)s\" style=\"vertical-align: "
+"middle;width:16px;height:16px;\"> %(feed_title)s："
+
+#, python-format
+msgid "%(username)s <a href=\"%(permalink)s\">shared this story</a>."
+msgstr "%(username)s <a href=\"%(permalink)s\">分享了這篇文章</a>。"
+
+#, python-format
+msgid "%(username)s <a href=\"%(permalink)s\">shared this story</a>:"
+msgstr "%(username)s <a href=\"%(permalink)s\">分享了這篇文章</a>："
+
+#, python-format
+msgid ""
+"%(username)s favorited <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>'s comments on <span class=\"NB-interaction-sharedstory-title "
+"NB-splash-link\">%(title)s</span>:"
+msgstr ""
+"%(username)s 將 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span> 在 <span class=\"NB-interaction-sharedstory-title NB-splash-"
+"link\">%(title)s</span> 的留言加入最愛："
+
+#, python-format
+msgid ""
+"%(username)s followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>."
+msgstr ""
+"%(username)s 已追蹤 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>。"
+
+#, python-format
+msgid ""
+"%(username)s replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>:"
+msgstr ""
+"%(username)s 回覆了 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>："
+
+#, python-format
+msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
+msgstr "%(username)s 分享了 <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>。"
+
+#, python-format
+msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>:"
+msgstr "%(username)s 已分享 <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>："
+
+#, python-format
+msgid "%(username)s signed up for NewsBlur."
+msgstr "%(username)s 註冊了 NewsBlur。"
+
+#, python-format
+msgid "%(weekday)s, %(date)s %(time)s"
+msgstr "%(weekday)s，%(date)s %(time)s"
+
+#, python-format
+msgid "(and %(behind_display)s person behind you)"
+msgid_plural "(and %(behind_display)s people behind you)"
+msgstr[0] "（還有 %(behind_display)s 人排在你後面）"
+
+msgid "- The best stories from your friends and favorite blogs, all in one place."
+msgstr "- 朋友和喜愛的部落格所刊載的精選文章，盡在一處。"
+
+msgid "...and more"
+msgstr "…以及更多"
+
+msgid "/month"
+msgstr "/月"
+
+msgid "/year"
+msgstr "/年"
+
+msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
+msgstr "1,024 個網站、全文搜尋、新聞流、已儲存的文章標籤和文字檢視"
+
+msgid "1,024 sites, search, text view, river of news"
+msgstr "1,024 個網站、搜尋、文字檢視、新聞流"
+
+msgid "100 feeds"
+msgstr "100 個訂閱來源"
+
+msgid "100 sources, 3 feeds"
+msgstr "100 個來源，3 個訂閱來源"
+
+msgid "12 sites"
+msgstr "12 個網站"
+
+msgid "150 sources"
+msgstr "150 個來源"
+
+msgid "28 tools available"
+msgstr "提供 28 種工具"
+
+msgid "30 days of premium, on the house"
+msgstr "免費享有 30 天進階功能"
+
+msgid "30 days, no credit card required. You get full Premium features during the trial."
+msgstr "30 天試用，無需信用卡。試用期間可使用所有付費功能。"
+
+msgid "4-oh-4, not found"
+msgstr "404，找不到頁面"
+
+msgid "404 - NewsBlur can't find that page"
+msgstr "404 - NewsBlur 找不到此頁面"
+
+msgid "5-min fetching, regex training, 10,000 sites"
+msgstr "每 5 分鐘擷取一次、正規表示式訓練、10,000 個網站"
+
+msgid "64 sites"
+msgstr "64 個網站"
+
+#, python-format
+msgid ""
+"<a href=\"%(index_url)s\"><img src=\"%(logo_url)s\" style=\"height: 32px;\" class=\"NB-footer-logo\" "
+"title=\"NewsBlur\" alt=\"NewsBlur\" /></a> is built in San Francisco and Western Massachusetts by <a "
+"href=\"http://x.com/samuelclay\" class=\"NB-splash-link\"> <img src=\"%(avatar_url)s\" class=\"NB-twitter-"
+"avatar\"> @samuelclay </a>"
+msgstr ""
+"<a href=\"%(index_url)s\"><img src=\"%(logo_url)s\" style=\"height: 32px;\" class=\"NB-footer-logo\" "
+"title=\"NewsBlur\" alt=\"NewsBlur\" /></a>由 <a href=\"http://x.com/samuelclay\" class=\"NB-splash-link\"> "
+"<img src=\"%(avatar_url)s\" class=\"NB-twitter-avatar\"> @samuelclay </a> 在舊金山與麻薩諸塞州西部打造"
+
+msgid ""
+"<a href=\"/\">NewsBlur</a> is a personal news reader that brings people together to talk about the world. A"
+" new sound of an old instrument."
+msgstr "<a href=\"/\">NewsBlur</a> 是一款個人新聞閱讀器，讓人們聚在一起暢談世界。古老樂器的新聲音。"
+
+msgid "<a href=\"/\">NewsBlur</a> is a personal news reader."
+msgstr "<a href=\"/\">NewsBlur</a> 是個人新聞閱讀器。"
+
+msgid ""
+"<a href=\"/features#web-feeds\">Web Feeds</a> let you follow any website, even without RSS. NewsBlur "
+"monitors the page for changes and delivers new content to you automatically."
+msgstr "<a href=\"/features#web-feeds\">網頁訂閱來源</a>讓你追蹤任何網站，即使沒有 RSS 也可以。NewsBlur 會監控頁面變更，並自動將新內容傳送給你。"
+
+#, python-format
+msgid "<b>%(followers)s</b> follower"
+msgid_plural "<b>%(followers)s</b> followers"
+msgstr[0] "<b>%(followers)s</b> 位追蹤者"
+
+#, python-format
+msgid "<b>%(stories)s</b> story"
+msgid_plural "<b>%(stories)s</b> stories"
+msgstr[0] "<b>%(stories)s</b> 篇文章"
+
+#, python-format
+msgid "<b>%(stories)s</b> story per month"
+msgid_plural "<b>%(stories)s</b> stories per month"
+msgstr[0] "每月 <b>%(stories)s</b> 篇文章"
+
+#, python-format
+msgid "<b>%(subscribers)s</b> subscriber"
+msgid_plural "<b>%(subscribers)s</b> subscribers"
+msgstr[0] "<b>%(subscribers)s</b> 位訂閱者"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"favorited your comments on <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"將你在 <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span> 的留言加入最愛。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"is now following you."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"現在開始追蹤你。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"re-shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"重新分享了 <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"re-shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"重新分享了 <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>："
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"replied to your comment:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"回覆了你的留言："
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"replied to your reply:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"回覆了你的回覆："
+
+msgid "A Note about OAuth"
+msgstr "關於 OAuth 的說明"
+
+msgid "A cheap, clock-accurate FPGA replacement for the Nintendo arcade Picture Processing Unit on a 2-layer PCB."
+msgstr "以雙層 PCB 打造廉價且時脈精準的 FPGA，取代 Nintendo 街機的圖像處理單元（PPU）。"
+
+msgid "A creative feed for any website, even without RSS"
+msgstr "為任何網站建立創意訂閱來源，即使沒有 RSS 也可以"
+
+msgid ""
+"A feature-by-feature comparison of NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. All are open source, "
+"but only one offers a fully hosted service alongside self-hosting."
+msgstr "NewsBlur、FreshRSS、Miniflux 和 Tiny Tiny RSS 的逐項功能比較。這些服務都是開放原始碼，但只有其中一項同時提供全代管服務與自行架設選項。"
+
+msgid "A new sound of an old instrument"
+msgstr "古老樂器的新聲音"
+
+msgid "A new sound of an old instrument."
+msgstr "舊樂器的新聲音。"
+
+msgid "A personal news reader bringing people together to talk about the world"
+msgstr "一款讓人們聚在一起討論世界的個人新聞閱讀器"
+
+msgid "A personal news reader that brings people together to talk about the world."
+msgstr "一款個人新聞閱讀器，讓人們齊聚一堂，暢談世界。"
+
+msgid "A summary of your top stories, customizable and delivered every day"
+msgstr "每日送達、可自訂的熱門文章摘要"
+
+msgid "AI Assistant (Feedly AI)"
+msgstr "AI 助理（Feedly AI）"
+
+msgid "AI Features"
+msgstr "AI 功能"
+
+msgid "AI built into every story"
+msgstr "每篇文章都內建 AI"
+
+msgid "AI skill"
+msgstr "AI 技能"
+
+msgid "AI-based topic prioritization"
+msgstr "AI 主題優先排序"
+
+msgid "AI-curated daily briefing with sections"
+msgstr "由 AI 編選、含多個區段的每日簡報"
+
+msgid "AI-powered reading"
+msgstr "AI 智慧閱讀"
+
+msgid "AI-powered story analysis and daily summaries"
+msgstr "AI 驅動的文章分析與每日摘要"
+
+msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
+msgstr "運用 AI 分析文章，並根據你的新聞訂閱來源提供個人化每日摘要。"
+
+msgid "API Guidelines and Terms of Service"
+msgstr "API 指引與服務條款"
+
+msgid "API Table of Contents"
+msgstr "API 目錄"
+
+msgid "About"
+msgstr "關於"
+
+msgid "About NewsBlur"
+msgstr "關於 NewsBlur"
+
+msgid ""
+"Absolutely. NewsBlur's open API powers dozens of third-party clients including Reeder, ReadKit, Unread, and"
+" many more."
+msgstr "當然。NewsBlur 的開放 API 為數十款第三方用戶端提供支援，包括 Reeder、ReadKit、Unread 等。"
+
+msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset."
+msgstr "當然可以。開啟訓練器，移除任何讚或倒讚即可重設。"
+
+msgid ""
+"Absolutely. You can upgrade or downgrade at any time. When upgrading, your subscription is prorated so you "
+"only pay the difference."
+msgstr "當然可以。你可以隨時升級或降級。升級時，訂閱費用會按比例計算，因此你只需支付差額。"
+
+msgid "Access denied."
+msgstr "存取遭拒。"
+
+msgid "Account"
+msgstr "帳戶"
+
+msgid "Account and tier info"
+msgstr "帳戶與方案資訊"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Active Development"
+msgstr "積極開發中"
+
+msgid "Active GitHub Community"
+msgstr "活躍的 GitHub 社群"
+
+msgid "Active community"
+msgstr "活躍的社群"
+
+msgid "Active since 2009"
+msgstr "自 2009 年起持續運作"
+
+msgid "Add"
+msgstr "新增"
+
+msgid "Add + Discover Sites"
+msgstr "新增 + 探索網站"
+
+msgid "Add custom tags to organize saved stories by topic"
+msgstr "新增自訂標籤，依主題整理已儲存的文章"
+
+#, python-format
+msgid "Add to <code>%(path)s</code> under <code>%(key)s</code>:"
+msgstr "新增至 <code>%(path)s</code> 的 <code>%(key)s</code> 底下："
+
+#, python-format
+msgid "Add to <code>%(path)s</code>:"
+msgstr "新增至 <code>%(path)s</code>："
+
+msgid ""
+"After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
+"training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
+msgstr "加入 Y Combinator 後，Samuel 推出了 Blurblog、iPad 與 Android 應用程式，並改進了智慧訓練。Samuel 和他的狗 Shiloh 以香檳和餅乾慶祝。"
+
+msgid "Algorithm decides for you"
+msgstr "由演算法為你決定"
+
+msgid "All"
+msgstr "全部"
+
+msgid "All Features"
+msgstr "所有功能"
+
+msgid "All Feeds Fetched Every 5 Min"
+msgstr "每 5 分鐘擷取所有訂閱來源"
+
+msgid "All Plans"
+msgstr "所有方案"
+
+msgid "All Shared Stories"
+msgstr "所有分享的文章"
+
+msgid "All Site Stories"
+msgstr "所有網站文章"
+
+msgid "All feeds fetched every 5-15 minutes"
+msgstr "所有訂閱來源每 5–15 分鐘擷取一次"
+
+msgid "All feeds with folders and unread counts"
+msgstr "所有訂閱來源（含資料夾和未讀數量）"
+
+msgid ""
+"All five nucleobases detected in asteroid Ryugu samples, reinforcing the theory that carbonaceous asteroids"
+" seeded early Earth's prebiotic chemistry."
+msgstr "在龍宮（Ryugu）小行星樣本中檢測出全部五種核鹼基，進一步支持碳質小行星為早期地球帶來生命前化學物質的理論。"
+
+msgid ""
+"All four readers support Docker, but the complexity varies. Miniflux is the lightest: a single Go binary "
+"plus PostgreSQL, consuming minimal resources. FreshRSS runs on PHP and can use SQLite for a zero-config "
+"database, making it easy to deploy on even the smallest VPS. Tiny Tiny RSS requires PHP and PostgreSQL with"
+" some manual configuration. NewsBlur is the most full-featured self-hosted option. It uses Docker Compose "
+"to orchestrate multiple services: a Django web app, Celery task workers, Node.js services, PostgreSQL, "
+"MongoDB, Redis, Elasticsearch, HAProxy, and Nginx. You run <code>make nb</code> and the entire stack comes "
+"up, but you will need a server with at least 2 GB of RAM. The tradeoff is clear: more resources in exchange"
+" for a dramatically richer feature set."
+msgstr ""
+"這四款閱讀器都支援 Docker，但複雜程度各不相同。Miniflux 最精簡：單一 Go 執行檔搭配 PostgreSQL，耗用資源極少。FreshRSS 使用 PHP，並可採用 SQLite "
+"作為免設定的資料庫，因此即使在最小型的 VPS 上也很容易部署。Tiny Tiny RSS 需要 PHP 和 PostgreSQL，且需進行一些手動設定。NewsBlur 是功能最完整的自架選項。它使用 "
+"Docker Compose 協調多項服務：Django 網頁應用程式、Celery 工作程序、Node.js 服務、PostgreSQL、MongoDB、Redis、Elasticsearch、HAProxy 和"
+" Nginx。執行 <code>make nb</code>，整套服務就會啟動，但你需要至少配備 2 GB RAM 的伺服器。取捨很明確：消耗更多資源，換來豐富得多的功能。"
+
+msgid ""
+"All four readers support OPML import and export, so you can move your feed list between them freely. "
+"NewsBlur goes further by giving you access to the full application source code under the MIT license. Your "
+"stories, intelligence training data, saved searches, and blurblog posts all live in databases you control "
+"when self-hosting. There is no vendor lock-in at any layer. If you use the hosted service, you can export "
+"your OPML at any time and stand up your own instance with the same open source code that powers "
+"newsblur.com."
+msgstr ""
+"這四款閱讀器都支援匯入和匯出 OPML，因此你可以自由地在它們之間移轉訂閱來源清單。NewsBlur 更進一步，依 MIT 授權條款提供完整的應用程式原始碼。自行架設時，你的文章、智慧分類訓練資料、已儲存的搜尋和 "
+"Blurblog 貼文都存放在由你掌控的資料庫中。各個層面都不會受到供應商綁定。若你使用代管服務，隨時都可以匯出 OPML，並使用支援 newsblur.com 的相同開源程式碼架設自己的服務。"
+
+msgid ""
+"All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
+"toggle clustering on or off, choose display styles, and automatically mark duplicates as read."
+msgstr "所有使用者在熱門訂閱來源中都會看到分群文章。Premium Archive 訂閱者（每年 $99）可完全掌控：開啟或關閉分群、選擇顯示樣式，並自動將重複文章標記為已讀。"
+
+msgid "All-in-one reader (RSS + read-later + highlights)"
+msgstr "一站式閱讀器（RSS＋稍後閱讀＋重點標記）"
+
+msgid "Almost There!"
+msgstr "快完成了！"
+
+msgid "Almost done. Enter your new password below."
+msgstr "快完成了。請在下方輸入新密碼。"
+
+msgid "Already have a NewsBlur account?"
+msgstr "已經有 NewsBlur 帳戶了嗎？"
+
+msgid "Alternatives"
+msgstr "替代方案"
+
+msgid "Amount"
+msgstr "金額"
+
+msgid ""
+"An AI-generated summary delivered to your NewsBlur account with sections for top stories, long reads, "
+"widely covered topics, and custom sections you define."
+msgstr "由 AI 生成的摘要，會傳送至你的 NewsBlur 帳戶，內容包括熱門文章、長篇閱讀、廣泛報導的主題，以及你定義的自訂區段。"
+
+msgid ""
+"An AI-generated summary of your top stories, customized to your interests and delivered right in NewsBlur. "
+"Get curated sections: top stories, long reads, stories from infrequent sites, widely covered topics, and "
+"custom AI-powered sections you define. Choose your delivery schedule and summary style."
+msgstr ""
+"由 AI 生成的熱門文章摘要，依你的興趣量身打造，並直接傳送至 NewsBlur。取得精選內容區塊：熱門文章、長篇閱讀、來自不常更新網站的文章、廣受關注的主題，以及由你自訂的 AI "
+"智慧區塊。選擇摘要的傳送時間和摘要風格。"
+
+msgid ""
+"An AI-generated summary of your top stories, customized to your interests. Top stories, long reads, widely "
+"covered topics, and custom sections."
+msgstr "由 AI 產生、依據你的興趣量身打造的熱門文章摘要。涵蓋熱門文章、長篇閱讀、廣受關注的主題及自訂區段。"
+
+msgid ""
+"An AI-generated summary of your top stories, delivered daily. Clusters related stories and highlights what "
+"you'd find most interesting."
+msgstr "每天送達的 AI 生成摘要，精選你最關注的文章。彙整相關文章，並突顯你最感興趣的內容。"
+
+msgid "An RSS reader built for the long haul"
+msgstr "為長期閱讀而打造的 RSS 閱讀器"
+
+msgid "Analyzing page"
+msgstr "正在分析頁面"
+
+msgid "Android support"
+msgstr "Android 支援"
+
+msgid "Any MCP client"
+msgstr "任何 MCP 用戶端"
+
+msgid ""
+"Any public web page. Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
+"sites, and more."
+msgstr "任何公開網頁。Twitter 個人檔案、Reddit 討論串、GitHub 儲存庫、產品頁面、求職網站、政府網站等。"
+
+msgid ""
+"Anything you can do: read stories, save and tag articles, mark stories as read, train your intelligence "
+"filters, subscribe to new feeds, and search your archive. Common workflows include daily briefings, inbox "
+"triage, and research across saved stories."
+msgstr "你可以進行各種操作：閱讀文章、儲存並加上標籤、將文章標記為已讀、訓練智慧篩選器、新增訂閱來源，以及搜尋封存內容。常見用途包括每日簡報、整理收件匣，以及搜尋儲存的文章。"
+
+msgid "Apply training across a folder"
+msgstr "將訓練套用至整個資料夾"
+
+msgid "Apply training globally"
+msgstr "全域套用訓練"
+
+msgid "Approve"
+msgstr "核准"
+
+msgid "Archive"
+msgstr "Archive"
+
+msgid "Archive & Community"
+msgstr "封存與社群"
+
+msgid "Archive plan"
+msgstr "Archive 方案"
+
+msgid "Archive plan ($99/yr)"
+msgstr "Archive 方案（每年 $99）"
+
+msgid "Archive showing unread stories going back months"
+msgstr "封存內容顯示數月前的未讀文章"
+
+msgid "Archive totals and sync health"
+msgstr "封存總數與同步狀態"
+
+msgid "Are saved stories searchable?"
+msgstr "已儲存的文章可以搜尋嗎？"
+
+msgid "Are the apps free?"
+msgstr "這些應用程式免費嗎？"
+
+msgid "Are the apps open source?"
+msgstr "這些應用程式是開放原始碼嗎？"
+
+msgid "Are you positive you want to<br />delete your account?"
+msgstr "你確定要<br />刪除帳戶嗎？"
+
+msgid "Are you sure to delete the application"
+msgstr "確定要刪除此應用程式嗎？"
+
+msgid "Artificial Intelligence"
+msgstr "人工智慧"
+
+msgid "Ask AI"
+msgstr "詢問 AI"
+
+msgid "Ask AI & Daily Briefing"
+msgstr "詢問 AI 與每日簡報"
+
+msgid "Ask AI & Daily Briefing - NewsBlur"
+msgstr "詢問 AI 與每日簡報 - NewsBlur"
+
+msgid "Ask AI (Query Stories)"
+msgstr "詢問 AI（查詢文章）"
+
+msgid "Ask AI and Daily Briefing require Premium Archive ($99/year)."
+msgstr "詢問 AI 和每日簡報需要 Premium Archive（每年 $99）。"
+
+msgid "Ask AI dialog with model selector"
+msgstr "含模型選擇器的詢問 AI 對話框"
+
+msgid "Ask AI dialog with model selector showing Claude, GPT, Gemini, and Grok"
+msgstr "「詢問 AI」對話框，模型選擇器中顯示 Claude、GPT、Gemini 和 Grok"
+
+msgid "Ask AI questions about stories"
+msgstr "向 AI 詢問文章相關問題"
+
+msgid "Ask AI with Claude, GPT, Gemini, Grok"
+msgstr "使用 Claude、GPT、Gemini、Grok 詢問 AI"
+
+msgid ""
+"Ask any question about a story using Claude, GPT, Gemini, or Grok. Get summaries, key points, or have a "
+"conversation."
+msgstr "使用 Claude、GPT、Gemini 或 Grok 詢問任何關於文章的問題。取得摘要、重點，或展開對話。"
+
+msgid "Ask questions about any story and get answers powered by AI"
+msgstr "針對任何文章提問，並取得 AI 提供的解答"
+
+msgid ""
+"Ask questions about any story and get answers powered by your choice of AI model: Claude, GPT, Gemini, or "
+"Grok. Get summaries, key points, or ask follow-up questions in a conversation. Even transcribe audio and "
+"video content and ask questions about it."
+msgstr "針對任何文章提問，並取得由你選擇的 AI 模型提供的解答：Claude、GPT、Gemini 或 Grok。取得摘要、重點，或在對話中提出後續問題。甚至可以轉錄音訊和影片內容並就此提問。"
+
+msgid ""
+"Ask questions about any story using Claude, GPT, Gemini, or Grok. Summarize, translate, analyze, or dig "
+"deeper into what you're reading."
+msgstr "使用 Claude、GPT、Gemini 或 Grok 詢問任何文章。摘要、翻譯、分析，或深入探索你正在閱讀的內容。"
+
+msgid "Ask questions, get summaries, or request key points"
+msgstr "提出問題、取得摘要或索取重點"
+
+msgid "Ask the Archive Assistant AI"
+msgstr "詢問封存助理 AI"
+
+msgid "Ask the community or try NewsBlur for yourself."
+msgstr "向社群提問，或親自試試 NewsBlur。"
+
+msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
+msgstr "驗證使用 OAuth 2.0 &mdash; 你的用戶端會自動處理流程。"
+
+msgid "Author"
+msgstr "作者"
+
+msgid "Author & Journalist"
+msgstr "作者與記者"
+
+msgid "Authorization Grant Type"
+msgstr "授權授予類型"
+
+msgid "Auto"
+msgstr "自動"
+
+msgctxt "theme"
+msgid "Auto"
+msgstr "自動"
+
+msgid "Automate workflows with hundreds of services"
+msgstr "透過數百種服務自動化工作流程"
+
+msgid "Automatic (device language)"
+msgstr "自動（裝置語言）"
+
+msgid "Available on Premium Pro"
+msgstr "Premium Pro 才能使用"
+
+msgid "Available on paid plans"
+msgstr "付費方案適用"
+
+msgid "Avg. load time"
+msgstr "平均載入時間"
+
+msgid "Back to NewsBlur"
+msgstr "返回 NewsBlur"
+
+msgid "Back to account"
+msgstr "返回帳戶"
+
+msgid "Back to login"
+msgstr "返回登入"
+
+msgid "Basic"
+msgstr "基本"
+
+msgid "Basic filters"
+msgstr "基本篩選器"
+
+msgid ""
+"Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in "
+"a bubble."
+msgstr "Ben Thompson 認為 AI 代理正在從根本上改變運算需求，他也不再相信我們正身處泡沫之中。"
+
+msgid "Best Open Source RSS Readers"
+msgstr "最佳開源 RSS 閱讀器"
+
+msgid "Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux & More"
+msgstr "最佳開源 RSS 閱讀器 — NewsBlur、FreshRSS、Miniflux 等"
+
+msgid ""
+"Beyond intelligence training, NewsBlur offers several features you won't find in Feedly: Track Changes "
+"shows how stories evolve after publication. Web Feeds let you follow any website, even without RSS. Story "
+"clustering groups related stories across your feeds. The original site view renders stories exactly as they"
+" appear on the publisher's website. And the entire platform works with third-party apps like Reeder, "
+"ReadKit, Unread, and NetNewsWire."
+msgstr ""
+"除了智慧訓練功能外，NewsBlur 還提供多項 Feedly 沒有的功能：追蹤變更可查看文章發布後的演變；網頁訂閱來源讓你追蹤任何網站，即使沒有 RSS "
+"也可以；文章分群會將不同訂閱來源中的相關文章整理在一起；原始網站檢視會以文章在發布網站上的原貌呈現。此外，整個平台也支援 Reeder、ReadKit、Unread 和 NetNewsWire 等第三方應用程式。"
+
+msgid "Bill To"
+msgstr "帳單寄送對象"
+
+msgid "Blogger"
+msgstr "部落客"
+
+msgid "Blurblog Privacy"
+msgstr "Blurblog 隱私設定"
+
+msgid "Blurblog Profile"
+msgstr "Blurblog 個人檔案"
+
+msgid "Blurblogs"
+msgstr "Blurblog"
+
+msgid "Bookmarklet to easily add sites"
+msgstr "可輕鬆新增網站的書籤小工具"
+
+msgid "Both are feature-rich RSS readers for power users. Here's how they compare."
+msgstr "兩者都是功能豐富、適合進階使用者的 RSS 閱讀器。以下比較兩者的差異。"
+
+msgid ""
+"Both readers emerged from the post-Google Reader era. NewsBlur has continued evolving with intelligence "
+"training, AI, and a full open source platform."
+msgstr "兩款閱讀器都誕生於 Google Reader 時代之後。NewsBlur 持續演進，加入智慧訓練、AI 與完整的開放原始碼平台。"
+
+msgid ""
+"Both readers offer powerful filtering, but the approach differs. Inoreader uses rule-based filtering that "
+"requires you to set up conditions manually. NewsBlur's intelligence training is visual and intuitive: see "
+"an author you like? Thumbs up. A tag you don't care about? Thumbs down. Stories are color-coded green "
+"(focus), red (hidden), or neutral, so you can see at a glance how your training is working. Both support "
+"regex for power users."
+msgstr ""
+"兩款閱讀器都提供強大的篩選功能，但方式各有不同。Inoreader 使用規則式篩選，需要你手動設定條件。NewsBlur "
+"的智慧訓練採用直觀的視覺化方式：看到喜歡的作者？按讚。看到不在意的標籤？按倒讚。文章會以顏色標示：綠色（焦點）、紅色（隱藏）或中性色，讓你一眼看出訓練效果。兩者也都支援進階使用者使用正規表示式。"
+
+msgid ""
+"Bring your feeds from any reader or take them with you when you leave. OPML import brings over all your "
+"subscriptions and folder structure in seconds. Export anytime to get a complete backup. No lock-in, ever."
+msgstr "可從任何閱讀器匯入訂閱來源，離開時也能帶走。透過 OPML 匯入，只需幾秒即可匯入所有訂閱和資料夾結構。隨時匯出完整備份。永不受限。"
+
+msgid ""
+"Browse Global Shared Stories, your friends' shares, and NewsBlur-wide trending lists: widely-read stories, "
+"long reads, and good reads"
+msgstr "瀏覽全域分享文章、朋友分享的文章，以及 NewsBlur 範圍的熱門清單：廣受閱讀的文章、長篇閱讀和優質閱讀"
+
+msgid "Browse saved stories by tag in the sidebar"
+msgstr "在側邊欄依標籤瀏覽已儲存的文章"
+
+msgid "Built <a href=\"http://github.com/samuelclay/\">in the open</a> in New York and San Francisco."
+msgstr "在紐約和舊金山<a href=\"http://github.com/samuelclay/\">以開放原始碼</a>打造。"
+
+msgid "Built before Google Reader died, built to last after it"
+msgstr "在 Google Reader 停止服務前打造，並為此後長久使用而設計"
+
+msgid "Built for iOS<br>from the ground up"
+msgstr "專為 iOS<br>從頭打造"
+
+msgid "Built with"
+msgstr "建置工具"
+
+msgid "Built-in player"
+msgstr "內建播放器"
+
+msgid "Bundles & broadcasting"
+msgstr "合集與廣播"
+
+msgid ""
+"But NewsBlur goes further. Intelligence training lets you highlight stories by author, tag, title keyword, "
+"or full text. You can filter by URL patterns and even use regex classifiers on the Pro plan. Stories are "
+"color-coded green for focus and red for hidden, so you always know why a story is surfaced or suppressed. "
+"Ask AI lets you query your stories using Claude, GPT, Gemini, or Grok. Web Feeds let you follow any "
+"website, even ones without RSS. And email newsletters can be forwarded directly into your reading queue."
+msgstr ""
+"但 NewsBlur 更進一步。智慧訓練可依作者、標籤、標題關鍵字或全文醒目標示文章。你可以依網址模式篩選，Pro "
+"方案甚至能使用正規表示式分類器。文章會以綠色標示為焦點，以紅色標示為隱藏，讓你隨時了解文章為何顯示或被略過。透過「詢問 AI」，你可以使用 Claude、GPT、Gemini 或 Grok "
+"查詢文章。網頁訂閱來源讓你追蹤任何網站，即使該網站沒有 RSS 也可以。你也可以將電子報直接轉寄至閱讀佇列。"
+
+msgid "By going premium you can get full and immediate access to NewsBlur."
+msgstr "升級為付費方案，即可完整且立即存取 NewsBlur。"
+
+msgid "CLI Tool"
+msgstr "命令列工具"
+
+msgid "CLI Tool - NewsBlur"
+msgstr "命令列工具 - NewsBlur"
+
+msgid "CLI access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "CLI 存取需要訂閱 Premium Archive（每年 99 美元）或 Premium Pro（每月 29 美元）。"
+
+msgid "CTO, Parse.ly"
+msgstr "Parse.ly 技術長"
+
+msgid "Can I automatically mark duplicates as read?"
+msgstr "可以自動將重複項目標記為已讀嗎？"
+
+msgid "Can I downgrade from Pro?"
+msgstr "我可以降級 Pro 方案嗎？"
+
+msgid "Can I import feeds from another reader?"
+msgstr "我可以從其他閱讀器匯入訂閱來源嗎？"
+
+msgid "Can I import my feeds from another reader?"
+msgstr "我可以從其他閱讀器匯入訂閱來源嗎？"
+
+msgid "Can I save a search as a feed?"
+msgstr "可以將搜尋儲存為訂閱來源嗎？"
+
+msgid "Can I search saved stories?"
+msgstr "我可以搜尋已儲存的文章嗎？"
+
+msgid "Can I search the archive?"
+msgstr "我可以搜尋封存內容嗎？"
+
+msgid "Can I share tagged collections?"
+msgstr "我可以分享已加標籤的集合嗎？"
+
+msgid "Can I switch between plans?"
+msgstr "我可以切換方案嗎？"
+
+msgid "Can I train on newsletter content?"
+msgstr "可以用電子報內容訓練嗎？"
+
+msgid "Can I try premium features before paying?"
+msgstr "付費前可以先試用進階功能嗎？"
+
+msgid "Can I turn clustering off?"
+msgstr "可以關閉文章分群嗎？"
+
+msgid "Can I undo training?"
+msgstr "可以復原訓練結果嗎？"
+
+msgid "Can I upgrade to Archive or Pro later?"
+msgstr "我之後可以升級為 Archive 或 Pro 嗎？"
+
+msgid "Can I use Ask AI on any story?"
+msgstr "我可以對任何文章使用「詢問 AI」嗎？"
+
+msgid "Can I use it with a self-hosted instance?"
+msgstr "可以搭配自架版本使用嗎？"
+
+msgid "Can I use third-party apps instead?"
+msgstr "我可以改用第三方應用程式嗎？"
+
+msgid "Can add any URL"
+msgstr "可新增任何網址"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Category-based rules"
+msgstr "依類別設定規則"
+
+msgid "Changed your mind? Manage your email settings"
+msgstr "改變心意了嗎？管理電子郵件設定"
+
+msgid "Cheapest Paid Plan"
+msgstr "最便宜的付費方案"
+
+msgid "Chief Morale Officer"
+msgstr "首席士氣官"
+
+msgid "Choose Your 64"
+msgstr "選擇你的 64 個網站"
+
+msgid "Choose when stories are marked as read"
+msgstr "選擇何時將文章標記為已讀"
+
+msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
+msgstr "選擇偏好的 AI 模型：Claude、GPT、Gemini 或 Grok"
+
+msgid "Choose your username"
+msgstr "選擇你的使用者名稱"
+
+msgid "Civic Tech"
+msgstr "公民科技"
+
+msgid "Classification failed, please try again"
+msgstr "分類失敗，請再試一次"
+
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你隨時可以切換。"
+
+msgid "Click any source to read that version instead, or mark all duplicates as read at once"
+msgstr "點選任何來源即可改讀該版本，或一次將所有重複項目標記為已讀"
+
+msgctxt "technology stack group"
+msgid "Client"
+msgstr "用戶端"
+
+msgid "Client id"
+msgstr "用戶端 ID"
+
+msgid "Client secret"
+msgstr "用戶端密鑰"
+
+msgid "Client type"
+msgstr "用戶端類型"
+
+msgid "Cluster duplicate stories across all your feeds"
+msgstr "將所有訂閱來源中的重複文章分群"
+
+msgid "Clustered stories in the titles view"
+msgstr "標題檢視中的群組文章"
+
+msgid "Clustering controls in the feed options popover"
+msgstr "訂閱來源選項彈出視窗中的分群控制項"
+
+msgid "Collapse All Folders"
+msgstr "收合所有資料夾"
+
+msgid "Command-line interface"
+msgstr "命令列介面"
+
+msgid "Comment on this story..."
+msgstr "留言回覆這篇文章…"
+
+msgid "Comments from friends"
+msgstr "朋友的留言"
+
+msgid "Common Questions"
+msgstr "常見問題"
+
+msgid "Common questions about plans and billing"
+msgstr "關於方案與帳單的常見問題"
+
+msgid "Community"
+msgstr "社群"
+
+msgid "Community Feedback"
+msgstr "社群意見回饋"
+
+msgid "Compare"
+msgstr "比較"
+
+msgid "Compare NewsBlur"
+msgstr "比較 NewsBlur"
+
+msgid "Compare all plans"
+msgstr "比較所有方案"
+
+msgid "Compare every tier side by side"
+msgstr "並列比較所有方案"
+
+msgid "Compare plans and FAQ"
+msgstr "比較方案與常見問題"
+
+msgid "Complete data ownership"
+msgstr "完整掌控資料"
+
+msgid "Complete folder-feed hierarchy"
+msgstr "完整的資料夾與訂閱來源階層"
+
+msgid "Complete!"
+msgstr "完成！"
+
+msgid "Comprehensive"
+msgstr "完整"
+
+msgid "Confirm your password"
+msgstr "確認密碼"
+
+#, python-format
+msgid "Connect %(provider_name)s"
+msgstr "連結 %(provider_name)s"
+
+msgid ""
+"Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
+"train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. 28 tools "
+"available with pre-built prompt templates for common workflows like daily briefings and inbox triage."
+msgstr ""
+"透過模型上下文協定，將 AI 代理連接至你的 NewsBlur 帳戶。使用 Claude Code、Codex 或任何相容 MCP 的工具閱讀訂閱來源、整理文章、訓練分類器並管理訂閱。提供 28 "
+"種工具，並附有適用於每日簡報、收件匣整理等常見工作流程的預製提示範本。"
+
+msgid ""
+"Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
+"subscriptions from Claude Code, Codex, or any MCP-compatible tool."
+msgstr "將 AI 代理程式連線至你的 NewsBlur 帳戶。透過 Claude Code、Codex 或任何相容 MCP 的工具閱讀訂閱來源、分類文章、訓練分類器及管理訂閱。"
+
+msgid "Connect AI agents to your feeds and stories"
+msgstr "將 AI 代理連接至你的訂閱來源和文章"
+
+msgid "Connect AI agents with MCP server and CLI"
+msgstr "透過 MCP 伺服器和 CLI 連接 AI 代理"
+
+msgid ""
+"Connect NewsBlur to hundreds of other services. Automatically save stories to Pocket, Instapaper, Evernote,"
+" or Notion. Post shared stories to Slack, Twitter, or email. Trigger custom workflows when stories match "
+"your training filters. The full NewsBlur API is also available for custom integrations."
+msgstr ""
+"將 NewsBlur 連結至數百種其他服務。自動將文章儲存到 Pocket、Instapaper、Evernote 或 Notion。將分享的文章發布到 Slack、Twitter "
+"或電子郵件。當文章符合你的訓練篩選條件時，觸發自訂工作流程。也可使用完整的 NewsBlur API 進行自訂整合。"
+
+msgid "Connect an existing account"
+msgstr "連結現有帳戶"
+
+msgid "Connect in one command"
+msgstr "透過一個指令連線"
+
+msgid "Connect your account"
+msgstr "連結你的帳戶"
+
+msgid "Contact"
+msgstr "聯絡我們"
+
+msgid "Contact Samuel Clay, NewsBlur's developer, with questions about NewsBlur or your account."
+msgstr "如有關於 NewsBlur 或你的帳戶的問題，請聯絡 NewsBlur 的開發者 Samuel Clay。"
+
+msgid ""
+"Contact Samuel for interviews, comments, and questions about NewsBlur. As another ambitious New Yorker, he "
+"is happy to talk about NewsBlur."
+msgstr "如需採訪、評論或詢問 NewsBlur，請聯絡 Samuel。身為另一位雄心勃勃的紐約客，他很樂意聊聊 NewsBlur。"
+
+msgid "Contact information"
+msgstr "聯絡資訊"
+
+msgid "Contact the NewsBlur Android team for help with the Android app."
+msgstr "如需 Android 應用程式的協助，請聯絡 NewsBlur Android 團隊。"
+
+msgid "Contact us"
+msgstr "聯絡我們"
+
+msgid "Contact us - NewsBlur"
+msgstr "聯絡我們 - NewsBlur"
+
+msgid "Continue to NewsBlur"
+msgstr "繼續前往 NewsBlur"
+
+msgid "Control the Original View"
+msgstr "控制原始檢視"
+
+msgid "Could not determine RSS feed URL."
+msgstr "無法判定 RSS 訂閱來源網址。"
+
+msgid "Could not find feeds for user."
+msgstr "找不到此使用者的訂閱來源。"
+
+msgid "Could not find story to save."
+msgstr "找不到要儲存的文章。"
+
+msgid "Could not find the original story and no copies could be found."
+msgstr "找不到原始文章，也找不到任何副本。"
+
+msgid "Could not load FAQ."
+msgstr "無法載入常見問題。"
+
+msgid "Could not parse YouTube results."
+msgstr "無法解析 YouTube 搜尋結果。"
+
+msgid "Could not save story, not found"
+msgstr "無法儲存文章，找不到該文章"
+
+msgid "Could not unsave story, not found"
+msgstr "找不到文章，無法取消儲存"
+
+#, python-format
+msgid "Coverage period: %(start)s &ndash; %(end)s"
+msgstr "涵蓋期間：%(start)s &ndash; %(end)s"
+
+msgid ""
+"Craig Hockenberry deep-dives into why Canon printers constantly go \"Offline\" on Mac &mdash; broken "
+"Bonjour/mDNS firmware &mdash; and presents a permanent workaround."
+msgstr "Craig Hockenberry 深入探討 Canon 印表機在 Mac 上不斷顯示「離線」的原因 &mdash; Bonjour/mDNS 韌體有問題 &mdash; 並提出永久解決方法。"
+
+msgid "Create Account"
+msgstr "建立帳戶"
+
+msgid "Create a new account instead"
+msgstr "改為建立新帳戶"
+
+msgid "Create account"
+msgstr "建立帳戶"
+
+msgid "Create an Account"
+msgstr "建立帳戶"
+
+msgid "Create an account"
+msgstr "建立帳戶"
+
+msgid "Credit/debit cards via Stripe and PayPal."
+msgstr "透過 Stripe 和 PayPal 使用信用卡／金融卡付款。"
+
+msgid "Currently viewing"
+msgstr "目前正在檢視"
+
+msgid "Custom RSS feeds for folders and saved stories"
+msgstr "資料夾與已儲存文章的自訂 RSS 訂閱來源"
+
+msgid "Custom RSS feeds for saved stories"
+msgstr "已儲存文章的自訂 RSS 訂閱來源"
+
+msgid "Custom question is required"
+msgstr "必須填寫自訂問題"
+
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "自訂問題最多可輸入 %(limit)d 個字元"
+
+msgid "Customizable AI summaries"
+msgstr "可自訂的 AI 摘要"
+
+msgid "Customize auto-read behavior by site or folder. Read on scroll, on open, or manually."
+msgstr "依網站或資料夾自訂自動標記為已讀的方式。可在捲動時、開啟時或手動標記為已讀。"
+
+msgid "Customize auto-read by site or folder"
+msgstr "依網站或資料夾自訂自動標記為已讀"
+
+msgid "Customize briefing sections and delivery schedule"
+msgstr "自訂簡報區段和寄送時程"
+
+msgid "Customize with Claude Code"
+msgstr "使用 Claude Code 自訂"
+
+msgid "DIY"
+msgstr "自己動手做"
+
+msgid "Daily AI Briefing"
+msgstr "每日 AI 簡報"
+
+msgid "Daily Briefing"
+msgstr "每日簡報"
+
+msgid "Daily Briefing with AI-generated story summaries"
+msgstr "由 AI 產生文章摘要的每日簡報"
+
+msgid "Daily briefing"
+msgstr "每日簡報"
+
+msgid "Daily briefing with AI-generated story summaries"
+msgstr "由 AI 生成文章摘要的每日簡報"
+
+msgid "Daily briefing with story summaries"
+msgstr "附文章摘要的每日簡報"
+
+msgid "Daily briefing with your top stories and keywords"
+msgstr "每日簡報，包含熱門文章與關鍵字"
+
+msgctxt "theme"
+msgid "Dark"
+msgstr "深色"
+
+msgid "Dark Mode"
+msgstr "深色模式"
+
+msgid "Data Scientist"
+msgstr "資料科學家"
+
+msgid "Data portability and OPML"
+msgstr "資料可攜性與 OPML"
+
+msgid "Database"
+msgstr "資料庫"
+
+msgid "Database search"
+msgstr "資料庫搜尋"
+
+msgid "Days must be a positive integer."
+msgstr "天數必須是正整數。"
+
+msgid "Days must be between 0 and 365"
+msgstr "天數必須介於 0 到 365 之間"
+
+msgid "Days parameter must be an integer."
+msgstr "Days 參數必須是整數。"
+
+msgid "Deb's spring salad refresh, inspired by a Paris trip where the magnolias were blooming."
+msgstr "Deb 在巴黎旅行時看到木蘭花盛開，因而得到靈感，為春日沙拉換上新風味。"
+
+msgid "Decline"
+msgstr "拒絕"
+
+msgid "Deep highlighting and annotation"
+msgstr "深度標註與註解"
+
+msgid "Default"
+msgstr "預設"
+
+msgid "Delete"
+msgstr "刪除"
+
+msgid "Description"
+msgstr "說明"
+
+msgid "Developer"
+msgstr "開發者"
+
+msgid "Different tools for different needs"
+msgstr "滿足不同需求的各種工具"
+
+msgid "Discover"
+msgstr "探索"
+
+msgid "Discover new feeds"
+msgstr "探索新的訂閱來源"
+
+msgid "Discover related stories across your archive"
+msgstr "在你的封存內容中探索相關文章"
+
+msgid "Discover related stories and sites"
+msgstr "探索相關文章與網站"
+
+msgid "Do I get a unique email address?"
+msgstr "我會有專屬的電子郵件地址嗎？"
+
+msgid "Do I need RSS feeds to follow a site?"
+msgstr "追蹤網站一定需要 RSS 訂閱來源嗎？"
+
+msgid "Do the apps work offline?"
+msgstr "這些應用程式可以離線使用嗎？"
+
+msgid "Docker Support"
+msgstr "Docker 支援"
+
+msgid "Docker install"
+msgstr "Docker 安裝"
+
+msgid "Docker one-command install"
+msgstr "透過 Docker 一行指令安裝"
+
+msgid "Docker or binary"
+msgstr "Docker 或二進位檔"
+
+msgid "Docker or manual"
+msgstr "Docker 或手動安裝"
+
+msgid "Docker setup: from simple to full-stack"
+msgstr "Docker 設定：從簡易到完整堆疊"
+
+msgid "Does Archive include everything in Premium?"
+msgstr "Archive 是否包含 Premium 的所有功能？"
+
+msgid "Does Ask AI work with audio and video?"
+msgstr "「詢問 AI」支援音訊和影片嗎？"
+
+msgid "Does NewsBlur work with other apps?"
+msgstr "NewsBlur 能與其他應用程式搭配使用嗎？"
+
+msgid "Does Pro include everything in Archive?"
+msgstr "Pro 方案是否包含 Archive 的所有功能？"
+
+msgid "Does training work across all my feeds?"
+msgstr "訓練設定會套用到我所有的訂閱來源嗎？"
+
+msgid "Download NewsBlur from the App Store or Google Play"
+msgstr "從 App Store 或 Google Play 下載 NewsBlur"
+
+#, python-format
+msgid "Download the free NewsBlur Android app on <br /><span class=\"NB-big\">%(store)s</span>"
+msgstr "在 <br /><span class=\"NB-big\">%(store)s</span> 下載免費的 NewsBlur Android 應用程式"
+
+#, python-format
+msgid "Download the free NewsBlur iOS app on the<br /><span class=\"NB-big\">%(store)s</span>"
+msgstr "在<br /><span class=\"NB-big\">%(store)s</span>下載免費的 NewsBlur iOS App"
+
+msgid "Download the latest version of the NewsBlur iOS app"
+msgstr "下載最新版本的 NewsBlur iOS App"
+
+msgid "Duplicates fold underneath the highest-scoring version in your river view"
+msgstr "重複項目會在新聞流中，折疊至得分最高的版本下方"
+
+msgid "Each newsletter sender becomes its own feed"
+msgstr "每位電子報寄件者都會成為獨立的訂閱來源"
+
+msgid "Each river must have river_id, river_side, and river_order"
+msgstr "每個 river 都必須有 river_id、river_side 和 river_order"
+
+msgid "Each saved story tag generates its own RSS feed. Pipe curated collections into other tools or share them."
+msgstr "每個已儲存的文章標籤都會產生專屬 RSS 訂閱來源。將精選內容集結後傳送至其他工具，或分享給他人。"
+
+msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
+msgstr "每個標籤都會有自己的 RSS 訂閱來源，可供分享或串接到其他工具"
+
+msgid "Easily import from Google Reader"
+msgstr "輕鬆從 Google Reader 匯入"
+
+msgid "Easy on the eyes and built into the web, iOS, and Android"
+msgstr "賞心悅目，並內建於網頁、iOS 和 Android"
+
+msgid "Easy reading"
+msgstr "輕鬆閱讀"
+
+msgid "Economist"
+msgstr "經濟學家"
+
+msgid "Edit"
+msgstr "編輯"
+
+msgid "Edit application"
+msgstr "編輯應用程式"
+
+msgid ""
+"Either the URL you accessed doesn't point to anything or there is no site, story, or data with these "
+"parameters."
+msgstr "你造訪的網址不存在，或沒有符合這些參數的網站、文章或資料。"
+
+msgid "Elasticsearch-powered"
+msgstr "由 Elasticsearch 驅動"
+
+msgid "Email"
+msgstr "電子郵件"
+
+msgid "Email Newsletters"
+msgstr "電子報"
+
+msgid "Email Newsletters - NewsBlur"
+msgstr "電子報 - NewsBlur"
+
+msgid "Email address"
+msgstr "電子郵件地址"
+
+msgid "Email newsletters appearing as feeds in NewsBlur"
+msgstr "電子報以訂閱來源形式顯示於 NewsBlur"
+
+msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
+msgstr "啟用每日簡報，取得 AI 生成的熱門文章摘要"
+
+msgid "Engineer"
+msgstr "工程師"
+
+msgid "Engineer & Writer"
+msgstr "工程師與作家"
+
+msgid "Enjoying premium features? Keep them forever!"
+msgstr "喜歡進階功能嗎？永久保留它們！"
+
+msgid "Enter your email address and we'll send you a link to set a new password."
+msgstr "輸入你的電子郵件地址，我們會寄送設定新密碼的連結給你。"
+
+msgid "Even sites that don't publish RSS feeds can be followed"
+msgstr "即使網站沒有發布 RSS 訂閱來源，也可以追蹤"
+
+#, python-format
+msgid ""
+"Every command supports <code>%(json_flag)s</code> for structured output and <code>%(raw_flag)s</code> for "
+"unformatted text. Pipe to jq, use in shell scripts, or connect to self-hosted instances."
+msgstr ""
+"每個指令都支援 <code>%(json_flag)s</code> 結構化輸出，以及 <code>%(raw_flag)s</code> 未格式化文字。可透過管線傳給 jq、用於 shell "
+"指令碼，或連線至自架執行個體。"
+
+msgid "Every feature from the web, built natively for Android. Free on the Play Store."
+msgstr "具備網頁版的所有功能，並專為 Android 打造。可在 Play 商店免費下載。"
+
+msgid "Every feature, at a glance"
+msgstr "一覽所有功能"
+
+msgid "Every feed fetched every 5-15 minutes, regex training, and up to 10,000 sites"
+msgstr "每個訂閱來源每 5–15 分鐘擷取一次、正規表示式訓練，以及最多 10,000 個網站"
+
+msgid ""
+"Every feed in your account is checked at minimum every 15 minutes, with most feeds checked every 5 minutes."
+" This is independent of how often the feed actually publishes."
+msgstr "你帳戶中的每個訂閱來源至少每 15 分鐘檢查一次，大多數訂閱來源則每 5 分鐘檢查一次。檢查頻率與訂閱來源實際發布頻率無關。"
+
+msgid "Every layout, every theme, every keyboard shortcut. Train your feeds to surface what matters."
+msgstr "各種版面、各種佈景主題、各種鍵盤快速鍵。訓練你的訂閱來源，讓重要內容浮現。"
+
+msgid ""
+"Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your "
+"feeds and training on the free tier."
+msgstr "每個新帳戶都可免費試用 30 天 Premium，不需信用卡。試用結束後，你仍可在免費方案中保留訂閱來源和訓練設定。"
+
+msgid "Every new story is archived permanently"
+msgstr "每篇新文章都會永久封存"
+
+msgid ""
+"Every single feed in your account is checked at least every 15 minutes, most every 5 minutes. Monitoring-"
+"grade frequency."
+msgstr "你帳戶中的每個訂閱來源至少每 15 分鐘檢查一次，多數每 5 分鐘檢查一次。具備監控等級的更新頻率。"
+
+msgid ""
+"Every site can have its own layout. Choose from Split, List, Grid, and Magazine views. Set different "
+"layouts per-feed to match the content &mdash; grid for image-heavy sites, list for high-volume feeds, split"
+" for long-form reading. Customize column count, card height, and content density."
+msgstr ""
+"每個網站都可以使用自己的版面配置。可選擇分欄、清單、格狀和雜誌檢視。你可以為不同訂閱來源設定不同版面，以配合內容 &mdash; "
+"圖片較多的網站用格狀，高流量訂閱來源用清單，長篇內容用分欄。自訂欄數、卡片高度和內容密度。"
+
+msgid "Every site has its own story layout, so you can mix and match"
+msgstr "每個網站都有自己的文章版面，你可以自由混搭"
+
+msgid "Every story archived and searchable forever"
+msgstr "每篇文章都會永久封存並可搜尋"
+
+msgid ""
+"Every story archived and searchable forever. Feeds are back-filled for a complete history. Your reading "
+"archive grows with you."
+msgstr "每篇文章都會永久封存並可搜尋。訂閱來源會回填舊文章，建立完整歷史紀錄。你的閱讀封存會隨你持續成長。"
+
+msgid ""
+"Every story archived and searchable forever. When you subscribe to a new feed, NewsBlur back-fills its "
+"entire history so you have the complete archive from day one. Stories never expire. Your reading history "
+"becomes a searchable personal knowledge base."
+msgstr "每篇文章都會永久封存並可供搜尋。新增訂閱來源時，NewsBlur 會補齊其完整歷史記錄，讓你從第一天起就擁有完整的封存內容。文章永不過期。你的閱讀記錄將成為可搜尋的個人知識庫。"
+
+msgid "Every story archived and searchable forever. Your personal knowledge base."
+msgstr "每篇文章永久封存並可搜尋。你的個人知識庫。"
+
+msgid "Every story kept and searchable forever"
+msgstr "每篇文章都會永久保留並可搜尋"
+
+msgid "Everything in Archive, plus"
+msgstr "包含 Archive 的所有功能，另外還有"
+
+msgid "Everything in Archive, plus:"
+msgstr "Archive 的所有功能，另外還有："
+
+msgid "Everything in Free, plus:"
+msgstr "包含免費方案的所有功能，另外還有："
+
+msgid "Everything in Premium, plus"
+msgstr "包含 Premium 的所有功能，另外還有"
+
+msgid "Everything in Premium, plus:"
+msgstr "包含 Premium 的所有功能，另外還有："
+
+msgid "Everything is on its way..."
+msgstr "一切即將就緒……"
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Pipe to jq, script your workflows, or just browse "
+"your feeds."
+msgstr "透過終端機使用 MCP 伺服器的所有功能。將輸出傳給 jq、編寫工作流程指令碼，或直接瀏覽你的訂閱來源。"
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
+" train classifiers. Pipe to jq, script your workflows, or just browse your feeds."
+msgstr "在終端機中使用 MCP 伺服器的所有功能。閱讀訂閱來源、搜尋文章、管理訂閱及訓練分類器。可將結果傳給 jq、編寫工作流程指令碼，或單純瀏覽訂閱來源。"
+
+msgid "Everything you loved about Google Reader, and more"
+msgstr "擁有你喜愛的 Google Reader 一切功能，還有更多"
+
+msgid "Everything you need for power reading. 1,024 sites, full-text search, and a smarter reading experience."
+msgstr "滿足進階閱讀需求。1,024 個網站、全文搜尋，以及更聰明的閱讀體驗。"
+
+msgid "Everything you need to know about NewsBlur"
+msgstr "關於 NewsBlur，你需要知道的一切"
+
+msgid "Example"
+msgstr "範例"
+
+msgid "Example:"
+msgstr "範例："
+
+msgid "Expand well beyond the 64-site free limit. Follow all the sources that matter to you."
+msgstr "突破免費方案的 64 個網站上限，追蹤所有你重視的來源。"
+
+msgid "Expand your network"
+msgstr "拓展你的社群"
+
+msgid "Explore Archive"
+msgstr "探索 Archive"
+
+msgid "Explore Premium"
+msgstr "探索 Premium"
+
+msgid "Explore Pro"
+msgstr "探索 Pro"
+
+msgid "Explore more features"
+msgstr "探索更多功能"
+
+msgid "Export stories that match your training from any folder as an RSS feed or download."
+msgstr "將符合訓練條件的文章從任何資料夾匯出為 RSS 訂閱來源或下載。"
+
+msgid "Export trained stories from folders"
+msgstr "從資料夾匯出已訓練的文章"
+
+msgid ""
+"Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
+"into NewsBlur. All your feeds, folders, and organization come over instantly. Every new account starts with"
+" a free 30-day premium trial, so you can evaluate the full experience before committing."
+msgstr ""
+"從 Feedly 匯出 OPML 檔案（Settings &rarr; Organize Sources &rarr; Export OPML），然後匯入 "
+"NewsBlur。所有訂閱來源、資料夾和分類都會立即匯入。每個新帳戶都可免費試用 30 天 Premium，讓你在決定訂閱前體驗完整功能。"
+
+msgid ""
+"Export your OPML file from Inoreader (Preferences &rarr; Import/Export &rarr; Export Subscriptions), then "
+"import it into NewsBlur. All your feeds and folder structure come over instantly. Every new account starts "
+"with a free 30-day premium trial so you can evaluate the full experience before deciding."
+msgstr ""
+"從 Inoreader 匯出 OPML 檔案（偏好設定 &rarr; 匯入／匯出 &rarr; 匯出訂閱），然後匯入至 NewsBlur。所有訂閱來源和資料夾結構都會立即轉移。每個新帳戶都可免費試用 30 天 "
+"Premium，讓你在決定前體驗完整功能。"
+
+msgid "Extracts full text from truncated feeds"
+msgstr "從遭截斷的訂閱來源擷取全文"
+
+msgid "FAQ"
+msgstr "常見問題"
+
+msgid "FAQ - Frequently Asked Questions About NewsBlur"
+msgstr "常見問題 - 關於 NewsBlur 的常見問題"
+
+msgid "Failed to delete tag."
+msgstr "無法刪除標籤。"
+
+msgid "Failed to rename tag."
+msgstr "無法重新命名標籤。"
+
+msgid "Failed to search podcasts"
+msgstr "搜尋 Podcast 失敗"
+
+msgid "Familiar roots, different trajectory"
+msgstr "熟悉的根源，不同的發展軌跡"
+
+msgid "Feature"
+msgstr "功能"
+
+msgid "Features"
+msgstr "功能"
+
+msgid "Features & Tips"
+msgstr "功能與技巧"
+
+msgid "Features Feedly doesn't have"
+msgstr "Feedly 沒有的功能"
+
+msgid "Features that justify the footprint"
+msgstr "值得佔用空間的功能"
+
+msgctxt "story view mode"
+msgid "Feed"
+msgstr "訂閱來源"
+
+msgid "Feed ID and photo required"
+msgstr "需要訂閱來源 ID 和照片"
+
+msgid "Feed ID required"
+msgstr "必須提供訂閱來源 ID"
+
+msgid "Feed Lyric, NewsBlur's hungry hound"
+msgstr "餵飽 NewsBlur 的飢餓獵犬 Lyric"
+
+msgid "Feed Statistics"
+msgstr "訂閱來源統計"
+
+msgid "Feed metadata and stats"
+msgstr "訂閱來源中繼資料與統計"
+
+msgid "Feed not found"
+msgstr "找不到訂閱來源"
+
+msgid "Feed not found in subscriptions"
+msgstr "訂閱清單中找不到此訂閱來源"
+
+msgid "Feed options popover showing clustering controls"
+msgstr "顯示分群控制項的訂閱來源選項彈出視窗"
+
+msgid "Feed statistics showing publish frequency and subscriber count"
+msgstr "訂閱來源統計，顯示發布頻率和訂閱者數量"
+
+msgid "Feed statistics showing update frequency and fetch schedule"
+msgstr "訂閱來源統計資料，顯示更新頻率與擷取排程"
+
+msgid "Feed type is required"
+msgstr "必須指定訂閱來源類型"
+
+msgid "Feed view"
+msgstr "訂閱來源檢視"
+
+msgid "Feedback on NewsBlur"
+msgstr "關於 NewsBlur 的意見回饋"
+
+msgid "Feedly Alternative"
+msgstr "Feedly 替代方案"
+
+msgid "Feedly Alternative — Switch to NewsBlur for Less"
+msgstr "Feedly 替代方案 — 改用 NewsBlur，花費更少"
+
+msgid ""
+"Feedly uses AI to decide what's important for you. NewsBlur's intelligence training puts you in control. "
+"Thumbs up on an author, tag, or keyword to highlight stories you care about. Thumbs down to hide what you "
+"don't. Stories are color-coded green (focus), yellow (neutral), and red (hidden) so you always know why "
+"you're seeing something. No black box, no algorithmic surprises."
+msgstr ""
+"Feedly 使用 AI 判斷哪些內容對你很重要。NewsBlur "
+"的智慧訓練功能讓你掌握主導權。對你關心的作者、標籤或關鍵字按讚，醒目標示相關文章；按倒讚則隱藏不想看的內容。文章會以顏色分類：綠色（焦點）、黃色（中立）、紅色（隱藏），讓你隨時知道為什麼會看到某篇文章。沒有黑箱，也沒有演算法帶來的意外。"
+
+msgid "Feeds back-filled for complete archive"
+msgstr "回填訂閱來源的歷史文章，建立完整封存"
+
+msgid "Feeds fetched"
+msgstr "已擷取的訂閱來源"
+
+msgid "Fetching your feeds"
+msgstr "正在擷取你的訂閱來源"
+
+msgid "Filter stories by date range"
+msgstr "依日期範圍篩選文章"
+
+msgid "Find answers to common questions about features, pricing, training, AI, and more."
+msgstr "尋找有關功能、價格、訓練、AI 等常見問題的解答。"
+
+msgid "Find connections between stories across your entire archive with semantic similarity."
+msgstr "透過語意相似度，找出整個封存中不同文章之間的關聯。"
+
+msgid "Find new feeds by topic, see trending feeds, find feeds similar to ones you follow"
+msgstr "依主題尋找新的訂閱來源、查看熱門訂閱來源，並尋找與你追蹤的訂閱來源相似的來源"
+
+msgid "First-class iOS & Android apps, not wrappers"
+msgstr "原生 iOS 與 Android App，而非包裝程式"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. Everything you love about NewsBlur, on "
+"every device."
+msgstr "為各平台打造的一流原生應用程式，而非網頁包裝程式。在每台裝置上，享受你喜愛的 NewsBlur 一切功能。"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. The iOS app supports offline reading, "
+"background refresh, widgets, and all the same training, search, and sharing features as the web. The "
+"Android app matches feature-for-feature. Both apps are open source and actively developed."
+msgstr ""
+"為各平台打造的一流原生應用程式，而非網頁包裝。iOS 應用程式支援離線閱讀、背景更新、小工具，以及與網頁版相同的訓練、搜尋和分享功能。Android "
+"應用程式也具備完全相同的功能。兩款應用程式皆為開放原始碼，並持續積極開發。"
+
+msgid ""
+"First-class native apps built specifically for each platform. Full training, sharing, and offline reading "
+"on your phone and tablet."
+msgstr "專為各平台打造的一流原生應用程式。提供完整的訓練、分享功能，以及手機和平板電腦的離線閱讀。"
+
+msgid "Fixed all iOS 8 issues (preference panes, profile popovers)"
+msgstr "修復所有 iOS 8 問題（偏好設定面板、個人檔案彈出視窗）"
+
+msgid "Fixing rotation issues so you can watch a video and rotate without losing position."
+msgstr "修正旋轉問題，讓你觀看影片時可以旋轉裝置，而不會失去播放位置。"
+
+msgid "Focus"
+msgstr "焦點"
+
+msgid "Focus/hide with color indicators"
+msgstr "以顏色指示焦點／隱藏"
+
+msgid "Folder title and photo required"
+msgstr "必須提供資料夾標題和照片"
+
+msgid "Folder title required"
+msgstr "必須填寫資料夾標題"
+
+msgid "Folder tree with unread counts"
+msgstr "顯示未讀數量的資料夾樹狀清單"
+
+msgid ""
+"Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
+"delivers new content automatically."
+msgstr "追蹤任何網站，即使它沒有 RSS 訂閱來源也可以。NewsBlur 會監控頁面變更，並自動提供新內容。"
+
+msgid "Follow any website, even ones that don't publish an RSS feed."
+msgstr "追蹤任何網站，即使它沒有提供 RSS 訂閱來源也可以。"
+
+msgid ""
+"Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web "
+"page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, "
+"job boards &mdash; if it's on the web, you can follow it."
+msgstr ""
+"追蹤任何網站，即使它沒有發布 RSS 訂閱來源。NewsBlur 會監控網頁變更，為任何頁面產生自訂訂閱來源。追蹤 Twitter 個人檔案、Reddit 討論串、GitHub 儲存庫、產品頁面、求職版 "
+"&mdash; 只要在網路上，就能追蹤。"
+
+msgid "Follow any website, even without RSS"
+msgstr "追蹤任何網站，即使沒有 RSS 也可以"
+
+msgid ""
+"Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and"
+" delivers new content to you."
+msgstr "追蹤任何網站，即使沒有 RSS。NewsBlur 會從任何頁面產生訂閱來源、監控更新，並將新內容送達給你。"
+
+msgid "Follow friends, shared items"
+msgstr "追蹤朋友和分享項目"
+
+msgid "Follow sites without RSS"
+msgstr "追蹤沒有 RSS 的網站"
+
+msgid "Follow the blog."
+msgstr "追蹤這個部落格。"
+
+msgid "Follow up to 1,024 sites"
+msgstr "追蹤最多 1,024 個網站"
+
+msgid "Follow up to 10,000 sites"
+msgstr "追蹤最多 10,000 個網站"
+
+msgid "Follow up to 4,096 sites"
+msgstr "最多追蹤 4,096 個網站"
+
+msgid "Follow up to 64 sites"
+msgstr "追蹤最多 64 個網站"
+
+msgid "Follower"
+msgid_plural "Followers"
+msgstr[0] "追蹤者"
+
+msgid "Followers"
+msgstr "追蹤者"
+
+msgid "Following"
+msgstr "追蹤中"
+
+msgid ""
+"For power users who need precision. Write regular expressions that match against story titles, body text, "
+"and URLs. Build complex filters that catch exactly what you're looking for, from CVE numbers to stock "
+"ticker patterns to specific phrase combinations."
+msgstr "適合需要精確篩選的進階使用者。撰寫比對文章標題、內文和網址的正規表示式。建立複雜篩選條件，精準找出所需內容，從 CVE 編號、股票代號模式，到特定詞組組合皆可。"
+
+msgid ""
+"For professionals who need real-time awareness, NewsBlur Pro fetches every feed in your account every 5-15 "
+"minutes. Not just priority feeds &mdash; every single one of your 10,000 sites. This makes NewsBlur a "
+"monitoring-grade tool for journalists, analysts, security researchers, and anyone whose work depends on "
+"being the first to know."
+msgstr ""
+"對於需要即時掌握資訊的專業人士，NewsBlur Pro 每 5 到 15 分鐘擷取你帳戶中的每個訂閱來源。不只是優先的訂閱來源 &mdash; 而是你全部 10,000 個網站。這讓 NewsBlur "
+"成為適用於記者、分析師、資安研究人員，以及工作仰賴搶先掌握資訊者的監控級工具。"
+
+msgid "Forgot password?"
+msgstr "忘記密碼？"
+
+msgid "Forward or subscribe newsletters to that address"
+msgstr "將電子報轉寄至該地址，或直接用該地址訂閱電子報"
+
+msgid "Forward to Feedly"
+msgstr "轉寄至 Feedly"
+
+msgid "Forward to Inoreader"
+msgstr "轉寄至 Inoreader"
+
+msgid "Forward to NewsBlur"
+msgstr "轉寄至 NewsBlur"
+
+msgid "Founder"
+msgstr "創辦人"
+
+msgid "Four times the Premium limit. Follow every source you need."
+msgstr "Premium 方案上限的四倍。追蹤你需要的所有來源。"
+
+msgid "Free"
+msgstr "免費"
+
+msgid "Free & up"
+msgstr "免費方案起"
+
+msgid "Free Plan"
+msgstr "免費方案"
+
+msgid "Free account"
+msgstr "免費帳戶"
+
+msgid "Free accounts are limited to 64 active sites."
+msgstr "免費帳戶最多可訂閱 64 個啟用中的網站。"
+
+msgid "Free accounts are limited to 64 sites"
+msgstr "免費帳戶最多可訂閱 64 個網站"
+
+msgid "Free tier and open source"
+msgstr "免費方案與開放原始碼"
+
+msgid "Free tier and pricing"
+msgstr "免費方案與價格"
+
+msgid "Frequent updates since 2009"
+msgstr "自 2009 年起持續頻繁更新"
+
+msgid "Frequently Asked Questions"
+msgstr "常見問題"
+
+msgid ""
+"FreshRSS, Miniflux, and Tiny Tiny RSS are all excellent projects, but they require you to set up and "
+"maintain your own server. That means provisioning a VPS, configuring a database, managing updates, and "
+"handling backups. NewsBlur gives you a choice. You can sign up at newsblur.com and start reading in "
+"seconds, or you can self-host the entire stack with Docker. No other open source RSS reader offers both "
+"options."
+msgstr ""
+"FreshRSS、Miniflux 和 Tiny Tiny RSS 都是出色的專案，但你必須自行設定並維護伺服器。這代表要配置 VPS、設定資料庫、管理更新和處理備份。NewsBlur 讓你自由選擇。你可以在 "
+"newsblur.com 註冊，幾秒內就開始閱讀；也可以透過 Docker 自行架設整套服務。沒有其他開源 RSS 閱讀器同時提供這兩種選項。"
+
+msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
+msgstr "從輕鬆閱讀到專業新聞情報。所有方案均提供 30 天免費進階試用。"
+
+msgctxt "story layout"
+msgid "Full"
+msgstr "完整"
+
+msgid "Full Text Search"
+msgstr "全文搜尋"
+
+msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
+msgstr "完整封存、詢問 AI、每日簡報、4,096 個網站"
+
+msgid "Full article from source"
+msgstr "來源的完整文章"
+
+msgid "Full story archive, Ask AI, daily briefing, story clustering, and advanced training"
+msgstr "完整文章封存、詢問 AI、每日簡報、文章分群及進階訓練"
+
+msgid "Full-Text Search"
+msgstr "全文搜尋"
+
+msgid "Full-Text Search - NewsBlur"
+msgstr "全文搜尋 - NewsBlur"
+
+msgid "Full-Text Training"
+msgstr "全文訓練"
+
+msgid "Full-featured news reader"
+msgstr "功能完整的新聞閱讀器"
+
+msgid "Full-text articles"
+msgstr "全文文章"
+
+msgid "Full-text search"
+msgstr "全文搜尋"
+
+msgid ""
+"Full-text search every page the browser extension captured from your web browsing, or ask the Archive "
+"Assistant AI about what you've read"
+msgstr "對瀏覽器擴充功能在你瀏覽網頁時擷取的每個頁面進行全文搜尋，或向封存助理 AI 詢問你讀過的內容"
+
+msgid "Full-text search requires Premium ($36/year) or higher."
+msgstr "全文搜尋需要 Premium（$36/年）或更高級方案。"
+
+msgid "Full-text search results across subscriptions"
+msgstr "跨訂閱項目的全文搜尋結果"
+
+msgid "Full-text training dialog showing content-based classifiers"
+msgstr "顯示以內容為基礎分類器的全文訓練對話框"
+
+msgid "Full-text training on Archive tier"
+msgstr "Archive 方案提供全文訓練"
+
+msgid "Fully open source (MIT)"
+msgstr "完全開放原始碼（MIT）"
+
+msgid "Fully open source on GitHub"
+msgstr "在 GitHub 上完全開放原始碼"
+
+msgid ""
+"Fully open source under the MIT license. Run your own instance with Docker, contribute on <a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>, or just read the code. No lock-in, ever."
+msgstr ""
+"完全採用 MIT 授權的開放原始碼。使用 Docker 執行自己的執行個體，在 <a href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a> "
+"上貢獻，或直接閱讀程式碼。永遠不會被綁定。"
+
+msgid "Fully open source, no lock-in"
+msgstr "完全開放原始碼，沒有綁定限制"
+
+msgid "Further UI cleanups and memory fixes/speedups for iOS 8."
+msgstr "進一步改善介面，並修正記憶體問題、提升 iOS 8 的速度。"
+
+msgid "General support"
+msgstr "一般支援"
+
+msgid "Gentoo Developer"
+msgstr "Gentoo 開發者"
+
+msgid "Get Premium"
+msgstr "升級至 Premium"
+
+msgid "Get Premium Archive"
+msgstr "取得 Premium Archive"
+
+msgid "Get Premium Pro"
+msgstr "升級至 Premium Pro"
+
+msgid "Get Started Free"
+msgstr "免費開始使用"
+
+msgid "Get alerted the moment a feed publishes, on web, iOS, or Android"
+msgstr "訂閱來源發布新內容時立即在網頁、iOS 或 Android 上收到通知"
+
+msgid "Get an AI-curated briefing with top stories, infrequent site gems, and long reads."
+msgstr "取得 AI 精選的每日簡報，掌握熱門文章、不常更新網站的好文和長篇閱讀內容。"
+
+msgid ""
+"Get an AI-curated briefing with top stories, infrequent site gems, long reads, and stories matching your "
+"classifiers"
+msgstr "取得 AI 精選簡報，涵蓋熱門文章、不常更新網站的精選內容、長篇閱讀，以及符合你分類器的文章"
+
+msgid "Get faster responses from the NewsBlur team when you need help."
+msgstr "需要協助時，可更快獲得 NewsBlur 團隊的回覆。"
+
+msgid "Get notified by email, web, iOS, or Android when new stories match your trained intelligence classifiers."
+msgstr "當新文章符合你訓練的智慧分類器時，透過電子郵件、網站、iOS 或 Android 接收通知。"
+
+msgid ""
+"Get notified the moment a feed publishes a new story. Set notifications per-feed on web (browser push), "
+"email, iOS, or Android. Apply your training filters so you only get notified about stories that match your "
+"focus. Never miss an important update."
+msgstr "訂閱來源發布新文章時，立即收到通知。可針對每個訂閱來源設定網頁（瀏覽器推播）、電子郵件、iOS 或 Android 通知。套用你的訓練篩選條件，只接收符合焦點的文章通知。絕不錯過重要更新。"
+
+msgid ""
+"Get notified when feeds publish new stories. Set up web push, email, iOS, or Android notifications per-feed"
+" with training filters."
+msgstr "在訂閱來源發布新文章時接收通知。可為每個訂閱來源設定網頁推播、電子郵件、iOS 或 Android 通知，並搭配訓練篩選條件。"
+
+msgid "Get started"
+msgstr "開始使用"
+
+msgid ""
+"Get unread stories from any feed or folder, list all your folders and feeds, search across all "
+"subscriptions, retrieve saved stories by tag"
+msgstr "取得任何訂閱來源或資料夾中的未讀文章、列出所有資料夾與訂閱來源、搜尋所有訂閱內容，並依標籤找出已儲存的文章"
+
+msgid "Get unread stories from feeds, folders, or everything at once."
+msgstr "從訂閱來源、資料夾或所有項目中取得未讀文章。"
+
+msgid "Getting Started"
+msgstr "快速入門"
+
+msgid "Gift Error"
+msgstr "贈禮錯誤"
+
+msgid "Gift Sent"
+msgstr "禮物已送出"
+
+msgid "Gift code"
+msgstr "禮物代碼"
+
+msgid "Global"
+msgstr "全域"
+
+msgid "Global Shared Stories"
+msgstr "全域分享文章"
+
+msgid "Global and friends' shared stories"
+msgstr "全域與朋友分享的文章"
+
+msgid "Go Back"
+msgstr "返回"
+
+msgid "Go beyond titles and tags. Train on the actual content of stories for more precise filtering."
+msgstr "不只看標題和標籤。根據文章實際內容進行訓練，讓篩選更精準。"
+
+msgid ""
+"Go beyond titles and tags. Train on the actual content of stories, so you can filter based on what's being "
+"said, not just the metadata. Perfect for catching topics that span multiple authors and feeds."
+msgstr "不只依據標題和標籤。根據文章的實際內容進行訓練，讓你能依據文章談論的內容篩選，而不只是中繼資料。非常適合掌握橫跨多位作者和訂閱來源的主題。"
+
+msgid "Go to Account Settings to find your unique NewsBlur email address"
+msgstr "前往「帳戶設定」取得你的專屬 NewsBlur 電子郵件地址"
+
+msgid "Good Reads"
+msgstr "優質閱讀"
+
+msgid "Goodies & Apps"
+msgstr "實用工具與應用程式"
+
+msgid "Google Reader Alt"
+msgstr "Google Reader 替代品"
+
+msgid "Google Reader Alternative"
+msgstr "Google Reader 替代方案"
+
+msgid "Google Reader Alternative - NewsBlur Has Been the Answer Since 2009"
+msgstr "Google Reader 替代方案 - NewsBlur 自 2009 年以來一直是最佳解答"
+
+msgid ""
+"Google sunsets Reader and thousands of users flee the dying giant. NewsBlur becomes one of the top "
+"contenders for the successor to the RSS throne, offering sustainability and longevity by charging cash "
+"American dollar for premium accounts."
+msgstr "Google 關閉 Reader，數千名使用者逃離這個垂死的巨頭。NewsBlur 成為 RSS 王座繼任者的熱門候選之一，透過向進階帳戶收取美元費用，提供永續與長久的服務。"
+
+msgid "Got it!<br>Email should be sent within the next few minutes."
+msgstr "知道了！<br>電子郵件應會在幾分鐘內寄出。"
+
+msgid "Graceful iFrame Busting"
+msgstr "優雅地解除 iFrame 限制"
+
+msgctxt "story layout"
+msgid "Grid"
+msgstr "格狀"
+
+msgid "Grid, List, Split, Magazine"
+msgstr "網格、清單、分割、雜誌"
+
+msgid "Group duplicate stories across your feeds"
+msgstr "將各個訂閱來源中的重複文章分群"
+
+msgid "Half the price, more features"
+msgstr "價格減半，功能更多"
+
+msgid "Harvard Law Professor"
+msgstr "哈佛法學教授"
+
+msgid ""
+"Have an idea for a new command or workflow? Post it on the <a href=\"https://forum.newsblur.com\">NewsBlur "
+"support forum</a> and we'll consider it for a future release."
+msgstr "有新指令或工作流程的點子嗎？請張貼到 <a href=\"https://forum.newsblur.com\">NewsBlur 支援論壇</a>，我們會考慮在未來版本中加入。"
+
+msgid ""
+"Have an idea for a new tool or workflow? Post it on the <a href=\"https://forum.newsblur.com\">NewsBlur "
+"support forum</a> and we'll consider it for a future release."
+msgstr "對新工具或工作流程有想法嗎？請發佈到 <a href=\"https://forum.newsblur.com\">NewsBlur 支援論壇</a>，我們會考慮在未來版本中推出。"
+
+msgid "Health Economist, NY Times"
+msgstr "《紐約時報》健康經濟學家"
+
+msgid "Hide"
+msgstr "隱藏"
+
+msgid "Hide the stories you don't like and highlight the stories you do"
+msgstr "隱藏你不喜歡的文章，並醒目顯示你喜歡的文章"
+
+msgid "Higher (full-stack: 2+ GB RAM)"
+msgstr "較高（全端：2 GB 以上 RAM）"
+
+msgid "Hold on just a smidgen..."
+msgstr "請稍候一下…"
+
+msgid "Hold tight while your account is being upgraded..."
+msgstr "帳戶升級中，請稍候……"
+
+msgid "Home"
+msgstr "首頁"
+
+msgid "Hook NewsBlur up to nearly every service on the web"
+msgstr "將 NewsBlur 連結至網路上幾乎所有服務"
+
+msgid "Hosted Service"
+msgstr "代管服務"
+
+msgid "How does NewsBlur compare to Feedly?"
+msgstr "NewsBlur 與 Feedly 相比如何？"
+
+msgid "How does NewsBlur compare to Inoreader?"
+msgstr "NewsBlur 和 Inoreader 相比如何？"
+
+msgid "How does authentication work?"
+msgstr "驗證機制如何運作？"
+
+msgid "How does clustering detect duplicate stories?"
+msgstr "分群如何偵測重複文章？"
+
+msgid "How far back does search go?"
+msgstr "搜尋範圍涵蓋多久以前的內容？"
+
+msgid "How far back does the archive go?"
+msgstr "封存內容最早可以追溯到多久以前？"
+
+msgid "How it works"
+msgstr "運作方式"
+
+msgid "How long is the free trial?"
+msgstr "免費試用期有多長？"
+
+msgid "How many stories can I save?"
+msgstr "我可以儲存多少篇文章？"
+
+msgid "How often are Web Feeds checked?"
+msgstr "網頁訂閱來源多久檢查一次？"
+
+msgid "IFTTT & Zapier"
+msgstr "IFTTT 與 Zapier"
+
+msgid "IFTTT integration showing NewsBlur blurblog recipes"
+msgstr "IFTTT 整合：顯示 NewsBlur Blurblog 配方"
+
+msgid "Icons"
+msgstr "圖示"
+
+msgid "If I was a bird I'd be a pigeon."
+msgstr "如果我是一隻鳥，我會是隻鴿子。"
+
+msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
+msgstr "如果找不到 RSS 訂閱來源，NewsBlur 會提供建立網頁訂閱來源的選項"
+
+msgid ""
+"If you used Google Reader, you'll feel at home in NewsBlur. Folder-based organization, keyboard shortcuts "
+"for navigating and managing stories, a clean reading interface, and full OPML import and export are all "
+"here. NewsBlur preserved the core reading experience that made Google Reader great."
+msgstr ""
+"如果你用過 Google Reader，在 NewsBlur 中會很快上手。資料夾分類、用於瀏覽和管理文章的鍵盤快速鍵、簡潔的閱讀介面，以及完整的 OPML 匯入與匯出功能，一應俱全。NewsBlur 保留了 "
+"Google Reader 深受喜愛的核心閱讀體驗。"
+
+msgid ""
+"If you've been searching for a Google Reader replacement, you've found it. NewsBlur isn't just an "
+"alternative. It's the reader that Google Reader users chose, and the one that's still here."
+msgstr "如果你一直在尋找 Google Reader 的替代品，那你找到了。NewsBlur 不只是替代方案；它是 Google Reader 使用者選擇的閱讀器，而且至今仍持續運作。"
+
+msgid ""
+"If your project or application allows users to interact with data from NewsBlur, you must cite NewsBlur as "
+"the source of your data."
+msgstr "如果你的專案或應用程式允許使用者與 NewsBlur 的資料互動，你必須將 NewsBlur 列為資料來源。"
+
+msgid "Images are now “full bleed”, extending to the entire width of the screen"
+msgstr "圖片現在會延伸至整個螢幕寬度，呈現「滿版」效果"
+
+msgid "Import Sites"
+msgstr "匯入網站"
+
+msgid "Import sites"
+msgstr "匯入網站"
+
+msgid "Infrequent Site Stories"
+msgstr "不常更新的網站文章"
+
+msgid "Infrequent Site Stories view showing rarely-published feeds"
+msgstr "「不常更新的網站文章」檢視，顯示發布頻率較低的訂閱來源"
+
+msgid "Inoreader Alternative"
+msgstr "Inoreader 替代方案"
+
+msgid "Inoreader Alternative — Switch to NewsBlur"
+msgstr "Inoreader 替代方案 — 改用 NewsBlur"
+
+msgid ""
+"Inoreader offers rules and filters to manage your feeds, but NewsBlur takes a fundamentally different "
+"approach with intelligence training. Thumbs up on an author, tag, or keyword to highlight stories you want "
+"to see. Thumbs down to hide what you don't. Stories are color-coded green (focus), yellow (neutral), and "
+"red (hidden), so you always know why you're seeing something. No algorithmic curation, no opaque AI "
+"decisions. You build your own filter, and it gets smarter as you train it."
+msgstr ""
+"Inoreader 提供規則和篩選器來管理訂閱來源，而 NewsBlur "
+"採取截然不同的方式，透過智慧訓練來運作。對作者、標籤或關鍵字按讚，突顯你想看的文章；按倒讚則隱藏不想看的內容。文章會以顏色標示：綠色（焦點）、黃色（中性）和紅色（隱藏），讓你隨時知道為何會看到某篇文章。沒有演算法策展，也沒有不透明的"
+" AI 決策。你打造自己的篩選器，它會隨著你的訓練越來越聰明。"
+
+msgid "Install"
+msgstr "安裝"
+
+msgid ""
+"Install the NewsBlur CLI skill to give your AI agent full knowledge of every command and flag. Works with "
+"Claude Code, Cursor, Windsurf, and any tool that supports the Skills standard."
+msgstr "安裝 NewsBlur CLI 技能，讓你的 AI 代理全面掌握所有指令與旗標。適用於 Claude Code、Cursor、Windsurf，以及任何支援 Skills 標準的工具。"
+
+msgid "Install the NewsBlur app"
+msgstr "安裝 NewsBlur 應用程式"
+
+msgid "Install the NewsBlur iPhone and iPad app"
+msgstr "安裝 NewsBlur iPhone 和 iPad App"
+
+msgid "Intelligence & Discovery"
+msgstr "智慧訓練與探索"
+
+msgid "Intelligence / Filtering"
+msgstr "智慧 / 篩選"
+
+msgid "Intelligence Training"
+msgstr "智慧訓練"
+
+msgid "Intelligence Training - NewsBlur"
+msgstr "智慧訓練 - NewsBlur"
+
+msgid "Intelligence training and AI features"
+msgstr "智慧訓練與 AI 功能"
+
+msgid "Intelligence training changes how you read"
+msgstr "智慧訓練會改變你的閱讀方式"
+
+msgid "Intelligence training dialog showing thumbs up and thumbs down on authors, tags, and titles"
+msgstr "智慧訓練對話框，顯示作者、標籤和標題的讚與倒讚"
+
+msgid "Intelligence training puts you in charge"
+msgstr "智慧訓練讓你掌握主導權"
+
+msgid "Intelligence training vs. manual curation"
+msgstr "智慧訓練與手動整理"
+
+msgid "Intelligence training: the biggest differentiator"
+msgstr "智慧訓練：最大的差異化特色"
+
+msgid "Introduction to the API"
+msgstr "API 簡介"
+
+msgid "Invalid JSON"
+msgstr "JSON 無效"
+
+msgid "Invalid JSON data"
+msgstr "無效的 JSON 資料"
+
+msgid "Invalid URL"
+msgstr "網址無效"
+
+msgid "Invalid URL."
+msgstr "網址無效。"
+
+msgid "Invalid amount"
+msgstr "金額無效"
+
+msgid "Invalid classifier_type"
+msgstr "無效的 classifier_type"
+
+msgid "Invalid conversation history format"
+msgstr "對話記錄格式無效"
+
+msgid "Invalid days value"
+msgstr "天數值無效"
+
+msgid "Invalid feed ID"
+msgstr "無效的訂閱來源 ID"
+
+msgid "Invalid feed_id"
+msgstr "feed_id 無效"
+
+msgid "Invalid feed_id."
+msgstr "feed_id 無效。"
+
+msgid "Invalid gift tier."
+msgstr "禮物方案層級無效。"
+
+msgid "Invalid image file"
+msgstr "圖片檔案無效"
+
+msgid "Invalid mute_duration_days"
+msgstr "mute_duration_days 無效"
+
+msgid "Invalid request identifier"
+msgstr "無效的請求識別碼"
+
+msgid "Invalid story URL"
+msgstr "無效的文章網址"
+
+msgid "Invalid user_id parameter."
+msgstr "user_id 參數無效。"
+
+msgid "Invoice"
+msgstr "發票"
+
+#, python-format
+msgid "Invoice %(invoice_number)s - NewsBlur"
+msgstr "發票 %(invoice_number)s - NewsBlur"
+
+msgid "Invoice Date"
+msgstr "發票日期"
+
+msgid "Is NewsBlur open source?"
+msgstr "NewsBlur 是開放原始碼嗎？"
+
+msgid "Is my data safe?"
+msgstr "我的資料安全嗎？"
+
+msgid "Is there a free trial?"
+msgstr "有免費試用嗎？"
+
+msgid "Is there a self-hosted option?"
+msgstr "有自架版本嗎？"
+
+msgid "Is this available on the free plan?"
+msgstr "免費方案提供這項功能嗎？"
+
+msgid "Is this different from RSS?"
+msgstr "這和 RSS 有什麼不同？"
+
+msgid "Is training available on the free plan?"
+msgstr "免費方案可以使用訓練功能嗎？"
+
+msgid "Keep the signal, lose the noise."
+msgstr "保留重點，排除雜訊。"
+
+msgid "Keep up-to-date"
+msgstr "隨時掌握最新動態"
+
+msgid "Keyboard"
+msgstr "鍵盤"
+
+msgid "Keyboard Shortcuts"
+msgstr "鍵盤快速鍵"
+
+msgid "Keyboard shortcuts preferences dialog"
+msgstr "鍵盤快速鍵偏好設定對話框"
+
+msgid "Keywords"
+msgstr "關鍵字"
+
+msgid "Kind words people say about NewsBlur"
+msgstr "大家對 NewsBlur 的好評"
+
+msgid "L"
+msgstr "L"
+
+msgid "Label-based filters"
+msgstr "依標籤篩選"
+
+msgid "Language"
+msgstr "語言"
+
+msgid "Last used"
+msgstr "上次使用"
+
+msgid "Launch Intel"
+msgstr "開啟訓練器"
+
+msgid "Learn more"
+msgstr "了解更多"
+
+msgid "License"
+msgstr "授權"
+
+msgctxt "theme"
+msgid "Light"
+msgstr "淺色"
+
+msgid "Limit cannot exceed $10,000"
+msgstr "上限不得超過 $10,000"
+
+msgid "Limit must be a positive amount"
+msgstr "上限必須是正數"
+
+msgid "Limited"
+msgstr "有限"
+
+msgid "Limited (own apps only)"
+msgstr "有限（僅限自有應用程式）"
+
+msgctxt "story layout"
+msgid "List"
+msgstr "清單"
+
+msgid "Load stories from feeds, folders, or all"
+msgstr "從訂閱來源、資料夾或全部載入文章"
+
+msgid "Loading"
+msgstr "載入中"
+
+msgid "Log In"
+msgstr "登入"
+
+msgid "Log in"
+msgstr "登入"
+
+#, python-format
+msgid "Logged in as <b>%(username)s</b>"
+msgstr "目前以 <b>%(username)s</b> 身分登入"
+
+msgid "Login"
+msgstr "登入"
+
+msgid "Login to a different account"
+msgstr "登入其他帳戶"
+
+msgid "Login to your account"
+msgstr "登入你的帳戶"
+
+msgid "Logout"
+msgstr "登出"
+
+msgid "Long Reads"
+msgstr "長篇閱讀"
+
+msgid "Long press images in a story to read the alt text"
+msgstr "在文章中的圖片上長按即可閱讀替代文字"
+
+msgid "Long press images in a story to save it to your camera roll"
+msgstr "在文章中的圖片上長按，即可儲存至相機膠卷"
+
+msgid "Long press images in a story to zoom into it"
+msgstr "在文章中長按圖片即可放大"
+
+msgid "Long press links in a story to get an actions menu (safari, instapaper, bookmark, etc)"
+msgstr "在文章中的連結上長按，即可開啟操作選單（Safari、Instapaper、書籤等）"
+
+msgid "Looking for a Feedly alternative?"
+msgstr "正在尋找 Feedly 替代方案嗎？"
+
+msgid "Looking for an Inoreader alternative?"
+msgstr "正在尋找 Inoreader 的替代方案嗎？"
+
+msgid "Looking for the AI agent integration?"
+msgstr "正在尋找 AI 代理程式整合功能嗎？"
+
+msgid "Looking for the command-line tool?"
+msgstr "在找命令列工具嗎？"
+
+msgid "Low (PHP + SQLite: 256 MB)"
+msgstr "低（PHP + SQLite：256 MB）"
+
+msgid "M"
+msgstr "M"
+
+msgid "MCP Server"
+msgstr "MCP 伺服器"
+
+msgid "MCP Server & CLI"
+msgstr "MCP 伺服器與命令列介面"
+
+msgid "MCP Server & CLI - NewsBlur"
+msgstr "MCP 伺服器與 CLI - NewsBlur"
+
+msgid "MCP Server - NewsBlur"
+msgstr "MCP 伺服器 - NewsBlur"
+
+msgid "MCP server access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "存取 MCP 伺服器需要訂閱 Premium Archive（每年 $99）或 Premium Pro（每月 $29）。"
+
+msgid "MCP server and CLI access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "使用 MCP 伺服器和 CLI 需訂閱 Premium Archive（每年 99 美元）或 Premium Pro（每月 29 美元）。"
+
+msgid "MIT licensed, fully transparent"
+msgstr "採用 MIT 授權，完全透明"
+
+msgctxt "story layout"
+msgid "Magazine"
+msgstr "雜誌"
+
+msgid "Magazine view layout showing story cards with thumbnails"
+msgstr "以縮圖文章卡片呈現的雜誌檢視版面"
+
+msgid ""
+"Make NewsBlur yours. Choose from light, dark, and auto themes across web, iOS, and Android. Customize your "
+"reading experience with multiple font choices, five text sizes, adjustable line spacing, compact or "
+"comfortable density, and image preview styles. Every setting can be different per-feed, so each site looks "
+"exactly the way you want it."
+msgstr ""
+"讓 NewsBlur 成為你的專屬體驗。可在網頁、iOS 和 Android "
+"上選擇淺色、深色或自動主題。你可以透過多種字型、五種文字大小、可調整的行距、精簡或舒適的版面密度，以及圖片預覽樣式，自訂閱讀體驗。每個設定都能依訂閱來源個別調整，讓每個網站都呈現你喜歡的樣子。"
+
+msgid "Make your blurblog private so only you can see your shared stories. Control who sees what you're reading."
+msgstr "將你的 Blurblog 設為私人，只有你能看到分享的文章。自行控制誰能看到你的閱讀內容。"
+
+msgid "Maker"
+msgstr "自造者"
+
+msgid "Manage NewsBlur"
+msgstr "管理 NewsBlur"
+
+msgid "Manage feeds and folders"
+msgstr "管理訂閱來源與資料夾"
+
+msgid "Manage feeds and stories from your terminal"
+msgstr "在終端機管理訂閱來源和文章"
+
+msgid ""
+"Manage your NewsBlur from the terminal. Read feeds, search stories, manage subscriptions, and train "
+"classifiers. Pipe to jq, script your workflows, and automate with <code>--json</code> output. Works with "
+"self-hosted instances too."
+msgstr "從終端機管理你的 NewsBlur。閱讀訂閱來源、搜尋文章、管理訂閱項目並訓練分類器。輸出至 jq、編寫工作流程指令碼，並使用 <code>--json</code> 輸出格式自動化作業。自架執行個體也適用。"
+
+msgid "Manual config required"
+msgstr "需要手動設定"
+
+msgid ""
+"Many RSS feeds only include a summary or the first paragraph. Text view extracts the full story from the "
+"original website and displays it right in NewsBlur, with clean formatting and no clutter. Read full "
+"articles without leaving your reader."
+msgstr "許多 RSS 訂閱來源只包含摘要或第一段。文字檢視會從原始網站擷取完整文章，並直接顯示於 NewsBlur，格式清晰俐落、不含雜訊。無須離開閱讀器即可閱讀完整文章。"
+
+msgid "Mark all as read"
+msgstr "全部標記為已讀"
+
+msgid "Mark read by hash, feed, or folder"
+msgstr "依雜湊值、訂閱來源或資料夾標記為已讀"
+
+msgid ""
+"Mark stories as read, save stories with tags and notes, subscribe to new feeds, share stories to your "
+"blurblog"
+msgstr "將文章標記為已讀、使用標籤和備註儲存文章、新增訂閱來源，並將文章分享至你的 Blurblog"
+
+msgid "Migrating is easy with OPML import"
+msgstr "透過 OPML 匯入即可輕鬆轉移"
+
+msgid "Minimal (Go binary: 128 MB)"
+msgstr "極低（Go 二進位檔：128 MB）"
+
+msgid "Missing XPath expressions for story extraction"
+msgstr "缺少用於擷取文章的 XPath 運算式"
+
+msgid "Missing `story_hash` list parameter."
+msgstr "缺少 `story_hash` 清單參數。"
+
+msgid "Missing apns_token."
+msgstr "缺少 apns_token。"
+
+msgid "Missing feed_id"
+msgstr "缺少 feed_id"
+
+msgid "Missing feed_id or feed_title"
+msgstr "缺少 feed_id 或 feed_title"
+
+msgid "Missing feed_ids."
+msgstr "缺少 feed_ids。"
+
+msgid "Missing or invalid feed id."
+msgstr "訂閱來源 ID 缺少或無效。"
+
+msgid "Missing parameter: photo"
+msgstr "缺少參數：photo"
+
+msgid "Missing popular feed id or feed url"
+msgstr "缺少熱門訂閱來源 ID 或訂閱來源網址"
+
+msgid "Missing prompt"
+msgstr "缺少提示詞"
+
+msgid "Missing prompt or prompt_id"
+msgstr "缺少提示或 prompt_id"
+
+msgid "Missing story_hash"
+msgstr "缺少 story_hash"
+
+msgid "Missing story_hash."
+msgstr "缺少 story_hash。"
+
+msgid "Missing username."
+msgstr "缺少使用者名稱。"
+
+msgid "Mobile Apps (Native)"
+msgstr "原生行動應用程式"
+
+msgid "Moderate"
+msgstr "中等"
+
+msgid "Moderate (PHP + PostgreSQL: 512 MB)"
+msgstr "中等（PHP + PostgreSQL：512 MB）"
+
+msgid "Moderation Queue"
+msgstr "審核佇列"
+
+msgid "More Features"
+msgstr "更多功能"
+
+msgid "More affordable for serious readers"
+msgstr "價格更實惠，適合重度閱讀者"
+
+msgid "More ways to get help"
+msgstr "更多求助方式"
+
+msgid ""
+"Most open source readers give you a reverse-chronological list of stories and leave it at that. NewsBlur "
+"goes further with its intelligence training system. You can train on authors, tags, title keywords, full "
+"text, URLs, and regex patterns to highlight stories you care about and hide the rest. Stories are color-"
+"coded green, red, or neutral so you can see your training at work. On top of that, Ask AI lets you query "
+"any story with Claude, GPT, Gemini, or Grok to get summaries, extract key points, or ask follow-up "
+"questions."
+msgstr ""
+"大多數開放原始碼閱讀器只會按時間倒序列出文章，除此之外便沒有其他功能。NewsBlur "
+"更進一步，提供智慧訓練系統。你可以依作者、標籤、標題關鍵字、全文、網址和正規表示式進行訓練，凸顯你關心的文章並隱藏其他內容。文章會以綠色、紅色或中性色標示，讓你看見訓練結果。此外，「詢問 AI」可讓你使用 "
+"Claude、GPT、Gemini 或 Grok 查詢任何文章，取得摘要、擷取重點或提出後續問題。"
+
+msgid "Move and rename feeds"
+msgstr "移動及重新命名訂閱來源"
+
+msgid "Moving between the feed list, story list, and story detail is now much faster"
+msgstr "在訂閱來源清單、文章清單與文章詳細內容之間切換，現在快得多了"
+
+msgid "Multiple Layouts"
+msgstr "多種版面配置"
+
+msgid "Mute Sites"
+msgstr "靜音網站"
+
+msgid "Muted!"
+msgstr "已靜音！"
+
+msgid "Native"
+msgstr "原生"
+
+msgid "Native Apps"
+msgstr "原生應用程式"
+
+msgid "Native Apps - NewsBlur"
+msgstr "原生 App - NewsBlur"
+
+msgid "Native Mobile Apps"
+msgstr "原生行動應用程式"
+
+msgid "Native apps and third-party support"
+msgstr "原生應用程式與第三方支援"
+
+msgid "Native apps on every platform"
+msgstr "各平台皆有原生應用程式"
+
+msgid "Native apps vs. third-party ecosystem"
+msgstr "原生應用程式與第三方生態系"
+
+msgid "Native apps, newsletters, and web feeds"
+msgstr "原生應用程式、電子報與網頁訂閱來源"
+
+msgid "Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc)."
+msgstr "使用原生控制項，將文章傳送至其他服務（郵件、Safari、Chrome、Evernote、Instapaper 等）。"
+
+msgid "Native iOS & Android Apps"
+msgstr "原生 iOS 與 Android 應用程式"
+
+msgid "Native on Android"
+msgstr "Android 原生應用程式"
+
+msgid "Natural language text and image classifiers"
+msgstr "自然語言文字與圖像分類器"
+
+msgid "Navigate everything without touching the mouse"
+msgstr "不碰滑鼠也能瀏覽所有內容"
+
+msgid ""
+"Navigate everything without touching the mouse. Open feeds, scroll through stories, mark as read, save, "
+"share, train, switch views &mdash; all from the keyboard. Press <code>?</code> to see the full list. Power "
+"readers can fly through hundreds of stories in minutes."
+msgstr ""
+"不用碰滑鼠，就能操作所有功能。開啟訂閱來源、瀏覽文章、標記為已讀、儲存、分享、訓練、切換檢視模式 &mdash; 全都能用鍵盤完成。按下 <code>?</code> "
+"查看完整清單。熟練的讀者幾分鐘內就能快速瀏覽數百篇文章。"
+
+msgid "Navigate your archive with date filters. Find stories from any time period."
+msgstr "使用日期篩選瀏覽封存內容，尋找任何時段的文章。"
+
+msgid ""
+"Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
+"feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
+"It's like a curated digest of your quietest subscriptions."
+msgstr "再也不會錯過更新頻率低的網站文章。「不常更新的網站文章」檢視會彙集每週僅發布一次或更少的訂閱來源，確保這些珍貴內容不會被更新頻繁的訂閱來源淹沒。就像為你精選最安靜的訂閱來源所製作的摘要。"
+
+msgid "New Application"
+msgstr "新增應用程式"
+
+msgid "New Features"
+msgstr "新功能"
+
+msgid "New Password"
+msgstr "新密碼"
+
+msgid ""
+"New Safari-based browser for the original story. These views are faster and support content blockers on iOS"
+" 9 and use your browser's cookies. However, they look like Safari and not NewsBlur, so the default in-app "
+"browser is the original browser. The new in-app Safari browser is a preference, along with Chrome, Opera, "
+"and the full Safari app."
+msgstr ""
+"以 Safari 為基礎的新瀏覽器，用於開啟原始文章。這些檢視速度更快，並支援 iOS 9 的內容封鎖功能，也會使用瀏覽器的 Cookie。不過，它們看起來像 Safari，而不是 "
+"NewsBlur，因此預設的應用程式內瀏覽器仍是原始瀏覽器。新的應用程式內 Safari 瀏覽器是偏好設定之一，你也可以選擇 Chrome、Opera 或完整的 Safari App。"
+
+msgid ""
+"New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card "
+"required."
+msgstr "新帳戶可享有 <strong>30 天 Premium 試用</strong> &mdash; 無需信用卡。"
+
+msgid "New content appears in your feed just like regular RSS"
+msgstr "新內容會像一般 RSS 一樣出現在你的訂閱來源中"
+
+msgid "New password"
+msgstr "新密碼"
+
+msgid "New preference for hiding feeds after they are read"
+msgstr "新增偏好設定：閱讀後隱藏訂閱來源"
+
+msgid "New subscriptions automatically import the feed's full history so you have everything from day one."
+msgstr "新訂閱會自動匯入訂閱來源的完整歷史記錄，讓你從第一天起就能取得所有內容。"
+
+msgid "New tag name is required."
+msgstr "必須輸入新標籤名稱。"
+
+msgid "NewsBlur - Connecting..."
+msgstr "NewsBlur - 正在連線…"
+
+msgid "NewsBlur Dashboard"
+msgstr "NewsBlur 儀表板"
+
+msgid "NewsBlur Features - Intelligence Training, AI, Search & More"
+msgstr "NewsBlur 功能－智慧訓練、AI、搜尋等"
+
+msgid "NewsBlur GitHub repository"
+msgstr "NewsBlur GitHub 儲存庫"
+
+msgid "NewsBlur News Popularity Spreadsheet Creator"
+msgstr "NewsBlur 新聞熱門度試算表產生器"
+
+msgid "NewsBlur Premium Subscription"
+msgstr "NewsBlur Premium 訂閱"
+
+msgid ""
+"NewsBlur Premium costs $36/year for up to 1,024 sites. Feedly Pro starts at $72/year. For that lower price,"
+" NewsBlur includes full-text search, river of news, saved story tags, privacy options, text view, and all "
+"the intelligence training features. The Archive plan at $99/year adds permanent story archiving, Ask AI "
+"with Claude/GPT/Gemini/Grok, daily AI briefings, web feeds, and date-range filtering."
+msgstr ""
+"NewsBlur Premium 每年 36 美元，最多可訂閱 1,024 個網站。Feedly Pro 每年起價 72 美元。以較低的價格，NewsBlur "
+"提供全文搜尋、新聞流、已儲存的文章標籤、隱私選項、文字檢視，以及所有智慧訓練功能。每年 99 美元的 Archive 方案另提供永久文章封存、使用 Claude/GPT/Gemini/Grok 的「詢問 "
+"AI」、每日 AI 簡報、網頁訂閱來源和日期範圍篩選。"
+
+msgid ""
+"NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
+"users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
+"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
+"doesn't offer regex filtering or self-hosting."
+msgstr ""
+"NewsBlur Premium 每年 36 美元起，最多可訂閱 1,024 個網站 &mdash; 費用僅為 Feedly Pro 的一半。進階使用者可選擇 NewsBlur Pro，每月 29 美元，包含全部 "
+"10,000 個網站每 5 分鐘擷取一次、正規表示式分類器及優先支援。Feedly 類似的 Enterprise 方案每月 18 美元，但上限為 2,500 個來源，且不提供正規表示式篩選或自行架設。"
+
+msgid "NewsBlur Pricing - Plans for Every Reader"
+msgstr "NewsBlur 價格方案 - 適合每位讀者的方案"
+
+msgid ""
+"NewsBlur and Feedbin are both independent, privacy-respecting RSS readers built by small teams. They share "
+"a commitment to open source and a belief that RSS should be simple and user-controlled. The key difference "
+"is depth: Feedbin focuses on a clean, minimal reading experience. NewsBlur adds intelligence training, AI "
+"features, social sharing, and native mobile apps on top of a similarly clean interface. If you want the "
+"simplest possible reader, Feedbin is excellent. If you want more power without sacrificing usability, "
+"NewsBlur delivers."
+msgstr ""
+"NewsBlur 和 Feedbin 都是由小型團隊打造、獨立且重視隱私的 RSS 閱讀器。兩者都致力於開放原始碼，並相信 RSS 應該簡單易用、由使用者掌控。主要差異在於功能深度：Feedbin "
+"著重於簡潔、精簡的閱讀體驗。NewsBlur 則在同樣清爽的介面上，加入智慧訓練、AI 功能、社群分享和原生行動應用程式。若你想要盡可能簡單的閱讀器，Feedbin "
+"是絕佳選擇。若你想要更多功能，又不犧牲易用性，NewsBlur 就能滿足需求。"
+
+msgid ""
+"NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
+"intelligence training, blurblog sharing, and text view. Feedbin relies entirely on third-party apps like "
+"Reeder and NetNewsWire. Both approaches work, but NewsBlur's native apps mean every feature is available on"
+" mobile from day one, without waiting for a third-party developer to add support."
+msgstr ""
+"NewsBlur 自行打造並維護原生 iOS 和 Android 應用程式，功能完整一致，包括智慧訓練、Blurblog 分享和文字檢視。Feedbin 則完全依賴 Reeder 和 NetNewsWire "
+"等第三方應用程式。兩種方式都可行，但 NewsBlur 的原生應用程式讓你從第一天起就能在行動裝置上使用所有功能，不必等待第三方開發者加入支援。"
+
+msgid "NewsBlur can't find that page"
+msgstr "NewsBlur 找不到該頁面"
+
+msgid ""
+"NewsBlur continues to evolve with AI-powered features, daily briefings, and intelligence training that gets"
+" smarter over time. Still independent, still open source, still built for readers who care about the news."
+msgstr "NewsBlur 持續演進，推出 AI 驅動功能、每日簡報，以及會隨時間變得更聰明的智慧訓練。依然獨立、依然開源，依然為關心新聞的讀者打造。"
+
+msgid "NewsBlur experienced an error"
+msgstr "NewsBlur 發生錯誤"
+
+msgid ""
+"NewsBlur gives you intelligence training to control your reading, AI-powered summaries, native mobile apps,"
+" and full open source transparency. Switching takes less than a minute."
+msgstr "NewsBlur 提供讓你掌控閱讀的智慧訓練、AI 摘要、原生行動 App，以及完全開放原始碼的透明度。切換只需不到一分鐘。"
+
+msgid ""
+"NewsBlur gives you more control over your reading, costs less, and is fully open source. Switching takes "
+"less than a minute."
+msgstr "NewsBlur 讓你更能掌控閱讀、費用更低，而且完全開放原始碼。切換只需不到一分鐘。"
+
+msgid ""
+"NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully "
+"open source codebase you can self-host."
+msgstr "NewsBlur 提供個人化訓練而非規則、內建 AI 功能、文章分群，以及可自行架設的完整開源程式碼。"
+
+msgid ""
+"NewsBlur has been running continuously since 2009. That's over fifteen years of uptime, development, and "
+"community trust. It survived the Google Reader shutdown, the rise and fall of social media as a news "
+"source, and the ongoing consolidation of the web. Through all of it, NewsBlur has stayed independent, open "
+"source, and focused on one thing: giving you the best way to read the news."
+msgstr ""
+"NewsBlur 自 2009 年起持續運作，至今已超過十五年，始終維持服務、持續開發，並贏得社群信任。它歷經 Google Reader "
+"關閉、社群媒體作為新聞來源的興起與衰退，以及網路持續整併。一路走來，NewsBlur 始終保持獨立、開放原始碼，並專注於一件事：為你提供最好的新聞閱讀方式。"
+
+msgid ""
+"NewsBlur has native iOS and Android apps built and maintained alongside the web app. Every feature, "
+"including intelligence training, blurblog sharing, text view, and dark mode, works on mobile. NewsBlur also"
+" works with third-party apps like Reeder, ReadKit, Unread, and NetNewsWire. You get the best of both "
+"worlds: first-party apps with full features and third-party app compatibility through a standard API."
+msgstr ""
+"NewsBlur 同時提供原生 iOS 和 Android 應用程式，與網頁版同步開發和維護。所有功能，包括智慧訓練、Blurblog 分享、文字檢視和深色模式，都能在行動裝置上使用。NewsBlur 也支援 "
+"Reeder、ReadKit、Unread 和 NetNewsWire 等第三方應用程式。兼得兩者優勢：功能完整的官方應用程式，以及透過標準 API 與第三方應用程式相容。"
+
+msgid ""
+"NewsBlur has native iOS and Android apps, plus full sync with popular third-party readers like Reeder, "
+"ReadKit, Unread, and NetNewsWire. The Old Reader is primarily a web application with limited third-party "
+"integration. For mobile reading, NewsBlur provides a significantly better experience with native apps built"
+" specifically for each platform."
+msgstr ""
+"NewsBlur 提供原生 iOS 和 Android 應用程式，並可與 Reeder、ReadKit、Unread 和 NetNewsWire 等熱門第三方閱讀器完整同步。The Old Reader "
+"主要是網頁應用程式，與第三方服務的整合有限。若要在行動裝置上閱讀，NewsBlur 提供更出色的體驗，並為各平台打造專屬原生應用程式。"
+
+msgid "NewsBlur iOS app on iPad showing the dashboard"
+msgstr "在 iPad 上顯示儀表板的 NewsBlur iOS 應用程式"
+
+msgid "NewsBlur in dark mode showing the full interface"
+msgstr "NewsBlur 深色模式下的完整介面"
+
+msgid ""
+"NewsBlur includes native iOS and Android apps built in-house. The other open source readers rely on third-"
+"party clients via API compatibility layers. NewsBlur also lets you forward email newsletters into your feed"
+" reader and follow websites that don't have RSS at all using web feeds. These features are built into the "
+"hosted service and the self-hosted version alike."
+msgstr ""
+"NewsBlur 提供自行開發的原生 iOS 和 Android 應用程式。其他開源閱讀器則透過 API 相容層依賴第三方用戶端。NewsBlur 也讓你將電子報轉寄到閱讀器，並透過網頁訂閱來源追蹤完全沒有 RSS"
+" 的網站。這些功能同時內建於代管服務和自架版本中。"
+
+msgid "NewsBlur is a news reader and aggregator developed by Samuel Clay at NewsBlur, Inc."
+msgstr "NewsBlur 是由 Samuel Clay 在 NewsBlur 公司開發的新聞閱讀器與聚合器。"
+
+msgid ""
+"NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
+"growing service and unlock a few restrictions."
+msgstr "NewsBlur 可在網頁、iPad、iPhone 和 Android 上免費使用。訂閱 Premium 帳戶可支持持續發展的服務，並解除部分限制。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, including the web app, iOS app, "
+"Android app, and all backend services, is available on GitHub. You can inspect it, contribute to it, or run"
+" your own self-hosted instance with Docker. Even if NewsBlur the service were to stop operating, the "
+"software would live on. Your reading workflow is never at the mercy of a single company's quarterly "
+"earnings call."
+msgstr ""
+"NewsBlur 採用 MIT 授權條款，完全開放原始碼。整個程式碼庫，包括網頁應用程式、iOS app、Android app 及所有後端服務，都可在 GitHub 上取得。你可以檢視、貢獻，或使用 Docker"
+" 執行自己的自架版本。即使 NewsBlur 服務停止營運，軟體仍會繼續存在。你的閱讀流程永遠不會受制於單一公司的季度財報電話會議。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, including web, iOS, Android, and "
+"all backend services, is on <a href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>. You can self-"
+"host your own instance with Docker, contribute features, or simply audit the code. If you ever want to "
+"leave, OPML export takes your feeds anywhere. Your reading data is never held hostage."
+msgstr ""
+"NewsBlur 以 MIT 授權條款完全開源。整個程式碼庫，包括網頁、iOS、Android 和所有後端服務，都在 <a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a> 上。你可以使用 Docker 自行架設、貢獻功能，或單純檢視程式碼。若你日後想離開，可透過 "
+"OPML 匯出，將訂閱來源帶到任何地方。你的閱讀資料絕不會被挾持。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, web, iOS, Android, and all "
+"backend services, is on <a href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>. You can self-host "
+"your own instance with Docker, contribute features, or audit the code. Inoreader is proprietary and closed-"
+"source. If you ever want to leave NewsBlur, OPML export takes your feeds anywhere. Your reading data is "
+"never held hostage."
+msgstr ""
+"NewsBlur 完全以 MIT 授權條款開放原始碼。整個程式碼庫，包括網頁、iOS、Android 和所有後端服務，都在 <a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a> 上。你可以用 Docker 自行架設、貢獻功能或檢視程式碼。Inoreader "
+"是專有且封閉原始碼的軟體。如果你想離開 NewsBlur，OPML 匯出功能可讓你將訂閱來源帶到任何地方。你的閱讀資料永遠不會被挾持。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. You can inspect the code, contribute features, or run "
+"your own instance with Docker. Your data is truly yours. Feedly is a proprietary, closed-source service "
+"with no self-hosted option. If Feedly shuts down or changes pricing, you have no alternative but to export "
+"and leave."
+msgstr ""
+"NewsBlur 完全採用 MIT 授權條款開放原始碼。你可以檢視程式碼、貢獻功能，或使用 Docker 執行自己的服務。你的資料真正屬於你。Feedly 是專有且不開放原始碼的服務，也不提供自行代管的選項。如果 "
+"Feedly 關閉或調整價格，你除了匯出資料離開之外別無選擇。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. You can run your own instance, contribute features, or"
+" audit the code. The entire application &mdash; web, iOS, Android, and all backend services &mdash; is on "
+"GitHub. Inoreader is a closed-source proprietary service with no self-hosted option."
+msgstr ""
+"NewsBlur 採用 MIT 授權條款，完全開放原始碼。你可以自行架設執行個體、貢獻功能或檢視程式碼。整個應用程式 &mdash; 網頁版、iOS、Android 及所有後端服務 &mdash; 都在 "
+"GitHub 上。Inoreader 是封閉原始碼的專有服務，且不提供自行架設的選項。"
+
+msgid ""
+"NewsBlur is fully open source. Run your own instance with a single Docker command. Complete data ownership,"
+" no lock-in. Customize it with Claude Code, contribute to development, or just run it on your own hardware."
+" The entire codebase is on GitHub."
+msgstr "NewsBlur 完全開源。只需一行 Docker 指令即可執行自己的執行個體。資料完全由你掌控，不受平台綁定。使用 Claude Code 自訂、參與開發，或直接在自己的硬體上執行。完整程式碼庫位於 GitHub。"
+
+msgid ""
+"NewsBlur is released under the MIT license, the most permissive of the four readers compared here. The "
+"entire codebase, including the web app, iOS app, Android app, and all backend services, is available on "
+"GitHub. You can inspect how your data is handled, contribute features, or fork the project. Whether you use"
+" the hosted service or run your own instance, you always have full visibility into the software."
+msgstr ""
+"NewsBlur 採用 MIT 授權釋出，是此處比較的四款閱讀器中限制最少的。整個程式碼庫，包括網頁應用程式、iOS 應用程式、Android 應用程式及所有後端服務，皆可在 GitHub "
+"上取得。你可以檢視資料的處理方式、貢獻功能，或複製專案並另行開發。無論你使用代管服務或自行執行個體，都能完整檢視軟體內容。"
+
+msgid "NewsBlur is the most feature-rich news reader. Here's everything it&nbsp;can&nbsp;do."
+msgstr "NewsBlur 是功能最豐富的新聞閱讀器。以下介紹它&nbsp;能&nbsp;做到的一切。"
+
+msgid ""
+"NewsBlur is the only self-hosted RSS reader that also offers a fully managed hosted service at "
+"newsblur.com. This gives you a unique migration path that no other reader can match. You can start with the"
+" hosted version, read your feeds without managing any infrastructure, and export your data via OPML "
+"whenever you are ready to self-host. Or go the other direction: run your own instance first, and if you "
+"decide you would rather not maintain a server, move to the hosted service and bring all your feeds and "
+"training with you. FreshRSS, Miniflux, and Tiny Tiny RSS are self-host-only. If you want to stop running a "
+"server, you have to switch to a completely different product."
+msgstr ""
+"NewsBlur 是唯一同時提供全代管託管服務（newsblur.com）的自架 RSS "
+"閱讀器。這為你提供其他閱讀器無法比擬的獨特遷移途徑。你可以從託管版本開始，無須管理任何基礎架構即可閱讀訂閱來源，並在準備好自行架設時透過 OPML "
+"匯出資料。也可以反向操作：先執行自己的執行個體，若之後不想維護伺服器，就遷移至託管服務，並帶上所有訂閱來源和訓練資料。FreshRSS、Miniflux 和 Tiny Tiny RSS "
+"都只能自行架設。若你不想再執行伺服器，就必須改用完全不同的產品。"
+
+msgid ""
+"NewsBlur launched in 2009 as an independent RSS reader. When Google Reader shut down in 2013, hundreds of "
+"thousands of readers found their new home. Over a decade later, NewsBlur is still going strong."
+msgstr "NewsBlur 於 2009 年推出，是一款獨立的 RSS 閱讀器。Google Reader 於 2013 年關閉時，數十萬名讀者在此找到了新家。十多年後的今天，NewsBlur 依然蓬勃發展。"
+
+msgid ""
+"NewsBlur launched to the public and to favorable reviews. Premium accounts launched in October, paying for "
+"NewsBlur's increasing server costs."
+msgstr "NewsBlur 正式向大眾推出，並獲得好評。付費方案於 10 月推出，以支付 NewsBlur 日益增加的伺服器成本。"
+
+msgid "NewsBlur monitors the page for changes automatically"
+msgstr "NewsBlur 會自動監控頁面變更"
+
+msgid ""
+"NewsBlur offers a free plan with up to 64 sites and a 30-day premium trial for every new account. Feedbin "
+"has no free tier and charges $50/year for a single plan. NewsBlur Premium at $36/year is more affordable "
+"and includes up to 1,024 sites. The Archive plan at $99/year adds permanent story storage, Ask AI, daily "
+"briefings, web feeds, and regex classifiers. Both readers let you export via OPML at any time."
+msgstr ""
+"NewsBlur 提供免費方案，最多可訂閱 64 個網站，且每個新帳戶都享有 30 天進階功能試用期。Feedbin 沒有免費方案，單一方案每年收費 50 美元。每年 36 美元的 NewsBlur Premium"
+" 更實惠，最多可訂閱 1,024 個網站。每年 99 美元的 Archive 方案則新增永久文章儲存、「詢問 AI」、每日簡報、網頁訂閱來源和正規表示式分類器。兩款閱讀器都可隨時透過 OPML 匯出。"
+
+msgid ""
+"NewsBlur offers a free plan with up to 64 sites, and every new account gets a 30-day premium trial. "
+"Readwise Reader requires a paid subscription ($96/year) with no free tier. NewsBlur is also fully open "
+"source under the MIT license, so you can self-host your own instance, contribute to development, or audit "
+"the code. Readwise Reader is a closed-source service."
+msgstr ""
+"NewsBlur 提供最多可訂閱 64 個網站的免費方案，每個新帳戶都可享有 30 天的 Premium 試用期。Readwise Reader 必須付費訂閱（每年 $96），沒有免費方案。NewsBlur 也採用"
+" MIT 授權，完全開放原始碼，因此你可以自行託管執行個體、參與開發，或檢視程式碼。Readwise Reader 則是封閉原始碼服務。"
+
+msgid ""
+"NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open "
+"source. No ads, no tracking, no algorithmic feeds."
+msgstr "NewsBlur 提供智慧訓練、全文搜尋、詢問 AI、網頁訂閱來源、原生應用程式，並且完全開源。沒有廣告、沒有追蹤，也沒有演算法動態消息。"
+
+msgid "NewsBlur on iOS with native interface and full feature set"
+msgstr "NewsBlur iOS 版，具備原生介面與完整功能"
+
+msgid "NewsBlur password"
+msgstr "NewsBlur 密碼"
+
+msgid ""
+"NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using "
+"Claude, GPT, Gemini, or Grok &mdash; get summaries, extract key points, or ask follow-up questions. The "
+"Daily Briefing generates a personalized AI summary of your top stories with customizable sections. These "
+"features turn passive reading into active intelligence gathering."
+msgstr ""
+"NewsBlur 的 AI 功能別具特色，提供 Inoreader 沒有的服務。「詢問 AI」可讓你使用 Claude、GPT、Gemini 或 Grok 查詢任何文章 &mdash; "
+"取得摘要、擷取重點或提出後續問題。每日簡報會以 AI 為你精選的重要文章產生個人化摘要，並可自訂區段。這些功能讓被動閱讀化為主動蒐集情報。"
+
+msgid ""
+"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
+"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
+"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
+msgstr ""
+"NewsBlur 支援 OAuth，但若要使用啟用 OAuth 的用戶端，你必須<a href=\"mailto:samuel@newsblur.com\">寄電子郵件給 Samuel</a>，申請用戶端 ID "
+"和密鑰。你需要提供你的 NewsBlur 使用者名稱、重新導向 URI（通常是用戶端應用程式的網站）和應用程式名稱。"
+
+msgid "NewsBlur username"
+msgstr "NewsBlur 使用者名稱"
+
+msgid ""
+"NewsBlur uses more server resources than the alternatives, and that is because it does more. Intelligence "
+"training lets you highlight and hide stories by author, tag, title keyword, full text, URL, or regex "
+"pattern. Ask AI lets you query any story with Claude, GPT, Gemini, or Grok. Native iOS and Android apps "
+"connect to your self-hosted instance just as they do to the hosted service. You get email newsletter "
+"ingestion, web feeds for sites without RSS, full-text Elasticsearch, story change tracking, social sharing "
+"with blurblogs, and third-party app sync with Reeder, ReadKit, Unread, and more. If you want a minimal, "
+"lightweight reader, Miniflux or FreshRSS are great choices. If you want the most capable self-hosted RSS "
+"reader available, NewsBlur is it."
+msgstr ""
+"NewsBlur 比其他選項更耗用伺服器資源，因為它能做更多事。智慧訓練可讓你依作者、標籤、標題關鍵字、全文、網址或正規表示式模式，醒目標示或隱藏文章。「詢問 AI」可讓你使用 Claude、GPT、Gemini "
+"或 Grok 查詢任何文章。原生 iOS 和 Android 應用程式可連線至你自行代管的執行個體，使用方式與代管服務相同。你還能接收電子報、為沒有 RSS 的網站建立網頁訂閱來源、使用 Elasticsearch"
+" 搜尋全文、追蹤文章變更、透過 Blurblog 分享內容，以及與 Reeder、ReadKit、Unread 等第三方應用程式同步。如果你想要簡約輕巧的閱讀器，Miniflux 或 FreshRSS "
+"都是很好的選擇。如果你想要功能最強大的自架 RSS 閱讀器，NewsBlur 就是最佳選擇。"
+
+msgid "NewsBlur vs Feedbin"
+msgstr "NewsBlur 與 Feedbin 比較"
+
+msgid "NewsBlur vs Feedbin - RSS Reader Comparison"
+msgstr "NewsBlur 與 Feedbin 比較－RSS 閱讀器評比"
+
+msgid "NewsBlur vs Feedly"
+msgstr "NewsBlur 與 Feedly 比較"
+
+msgid "NewsBlur vs Feedly - RSS Reader Comparison"
+msgstr "NewsBlur 與 Feedly 比較 - RSS 閱讀器比較"
+
+msgid "NewsBlur vs Inoreader"
+msgstr "NewsBlur 與 Inoreader 比較"
+
+msgid "NewsBlur vs Inoreader - RSS Reader Comparison"
+msgstr "NewsBlur 與 Inoreader－RSS 閱讀器比較"
+
+msgid "NewsBlur vs Readwise Reader"
+msgstr "NewsBlur 與 Readwise Reader 比較"
+
+msgid "NewsBlur vs Readwise Reader - RSS Reader Comparison"
+msgstr "NewsBlur 與 Readwise Reader - RSS 閱讀器比較"
+
+msgid "NewsBlur vs The Old Reader"
+msgstr "NewsBlur 與 The Old Reader 比較"
+
+msgid "NewsBlur vs The Old Reader - RSS Reader Comparison"
+msgstr "NewsBlur 與 The Old Reader — RSS 閱讀器比較"
+
+msgid ""
+"NewsBlur was founded in 2009 as an independent, one-person project with a simple goal: build a better RSS "
+"reader. At the time, Google Reader dominated the market. But NewsBlur offered something Google never did. "
+"It let you train your feeds with intelligence classifiers so you could focus on the stories that matter and"
+" hide the ones that don't."
+msgstr ""
+"NewsBlur 於 2009 年創立，是一個由單人獨立開發的專案，目標很簡單：打造更好的 RSS 閱讀器。當時 Google Reader 稱霸市場，但 NewsBlur 提供了 Google "
+"從未有過的功能。你可以透過智慧分類器訓練訂閱來源，專注於重要文章，並隱藏不重要的內容。"
+
+msgid "NewsBlur website: <a href=\"https://www.newsblur.com\">www.newsblur.com</a>"
+msgstr "NewsBlur 網站：<a href=\"https://www.newsblur.com\">www.newsblur.com</a>"
+
+msgid ""
+"NewsBlur works with popular third-party apps like Reeder, ReadKit, and Unread through its open API. You can"
+" read on the web, on the native iOS and Android apps, or through the client of your choice. There's also a "
+"free plan with up to 64 sites, so you can try it without commitment."
+msgstr ""
+"NewsBlur 可透過開放 API 與 Reeder、ReadKit 和 Unread 等熱門第三方應用程式搭配使用。你可以在網頁、iOS 和 Android "
+"原生應用程式，或你選擇的用戶端閱讀。另有免費方案，最多可追蹤 64 個網站，讓你無需承諾即可試用。"
+
+msgid "NewsBlur — Personal News Reader with Intelligence Training"
+msgstr "NewsBlur — 具智慧訓練功能的個人新聞閱讀器"
+
+msgid ""
+"NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and "
+"individual feed stories. No API key is required, but you are required to authenticate before using any of "
+"the API endpoints. Please be considerate, and don't hammer our servers."
+msgstr "NewsBlur 的 API 可讓使用者取得訂閱來源、訂閱來源數量、圖示、統計資料及個別文章。無須 API 金鑰，但使用任何 API 端點前都必須先驗證身分。請善用服務，切勿對我們的伺服器發送過多請求。"
+
+msgid ""
+"NewsBlur's Ask AI feature lets you query any story using Claude, GPT, Gemini, or Grok. Summarize articles, "
+"ask follow-up questions, extract key points, or get context on topics you're unfamiliar with. Daily AI "
+"briefings give you an overview of what matters across all your feeds. These features are included in the "
+"Archive plan at $99/year, which is less than Inoreader's Pro plan at $99.99/year."
+msgstr ""
+"NewsBlur 的「詢問 AI」功能可讓你使用 Claude、GPT、Gemini 或 Grok 查詢任何文章。摘要文章、提出後續問題、擷取重點，或取得陌生主題的背景資訊。每日 AI "
+"簡報會概述你所有訂閱來源中的重要內容。這些功能包含在每年 99 美元的 Archive 方案中，價格低於 Inoreader 每年 99.99 美元的 Pro 方案。"
+
+msgid ""
+"NewsBlur's intelligence training lets you highlight or hide stories based on author, tag, title keywords, "
+"full text content, URLs, and regex patterns. Over time, your feeds become personalized. Stories are color-"
+"coded green (focus), yellow (neutral), and red (hidden). Feedbin has no equivalent filtering system. You "
+"manage reading through folders, tags, and manual triage. For high-volume reading across hundreds of feeds, "
+"NewsBlur's training is a major advantage."
+msgstr ""
+"NewsBlur "
+"的智慧訓練功能可讓你依據作者、標籤、標題關鍵字、全文內容、網址和正規表示式模式，醒目顯示或隱藏文章。隨著時間推移，你的訂閱來源會逐漸個人化。文章以顏色標示：綠色（焦點）、黃色（中性）和紅色（隱藏）。Feedbin "
+"沒有同等的篩選系統。你必須透過資料夾、標籤和手動篩選來管理閱讀。若要大量閱讀數百個訂閱來源，NewsBlur 的訓練功能是一大優勢。"
+
+msgid ""
+"NewsBlur's intelligence training system lets you highlight or hide stories based on author, tag, title "
+"keywords, full text content, URLs, and regex patterns. Over time, your feeds become personalized without "
+"any algorithmic black box. Readwise Reader has no equivalent system. You manage your reading through manual"
+" triage, filters, and folder organization. For high-volume reading across hundreds of feeds, NewsBlur's "
+"training is a significant advantage."
+msgstr ""
+"NewsBlur 的智慧訓練系統可讓你根據作者、標籤、標題關鍵字、全文內容、網址和正規表示式模式，醒目標示或隱藏文章。隨著時間推移，你的訂閱來源會逐漸個人化，不必依賴任何演算法黑箱。Readwise Reader "
+"沒有類似的系統。你必須透過手動篩選、篩選器和資料夾整理來管理閱讀內容。若要跨數百個訂閱來源大量閱讀，NewsBlur 的訓練功能是一大優勢。"
+
+msgid "Newsletters appearing as feeds"
+msgstr "以訂閱來源形式顯示電子報"
+
+msgid "Next Page of Stories"
+msgstr "下一頁文章"
+
+msgid "Next Unread"
+msgstr "下一篇未讀文章"
+
+msgid "Next page"
+msgstr "下一頁"
+
+msgid "Next unread"
+msgstr "下一篇未讀文章"
+
+msgid "No URL provided."
+msgstr "未提供網址。"
+
+#, python-format
+msgid "No applications defined. <a href=\"%(register_url)s\">Click here</a> if you want to register a new one"
+msgstr "未定義任何應用程式。若要註冊新的應用程式，請<a href=\"%(register_url)s\">按這裡</a>"
+
+msgid "No audio file provided"
+msgstr "未提供音訊檔案"
+
+msgid "No classifiers to save"
+msgstr "沒有可儲存的分類器"
+
+msgid "No credit card required"
+msgstr "不需要信用卡"
+
+msgid "No feed found for this URL."
+msgstr "找不到此網址的訂閱來源。"
+
+msgid "No feed found matching that XML or website address."
+msgstr "找不到符合該 XML 或網站網址的訂閱來源。"
+
+msgid "No feeds found."
+msgstr "找不到訂閱來源。"
+
+msgid "No fields to update"
+msgstr "沒有可更新的欄位"
+
+msgid "No forced mark-as-read. Stories stay unread until you decide to read them."
+msgstr "不會強制標記為已讀。文章會維持未讀，直到你決定閱讀為止。"
+
+msgid "No free plan"
+msgstr "沒有免費方案"
+
+msgid "No social features"
+msgstr "沒有社群功能"
+
+msgid "No story_url specified."
+msgstr "未指定 story_url。"
+
+msgid "No thanks, keep my emails and continue to NewsBlur"
+msgstr "不了，保留我的電子郵件並繼續使用 NewsBlur"
+
+msgid "No training system"
+msgstr "無訓練系統"
+
+msgid "No uncategorized archives found"
+msgstr "找不到未分類的封存項目"
+
+msgid "No user has that email address."
+msgstr "沒有使用者使用此電子郵件地址。"
+
+msgctxt "negative answer to a question"
+msgid "No."
+msgstr "不需要。"
+
+msgid "Not a web feed"
+msgstr "不是網頁訂閱來源"
+
+msgid "Note:&nbsp; this form requires Javascript to use."
+msgstr "注意：&nbsp; 此表單必須啟用 JavaScript 才能使用。"
+
+msgid "Nothing was marked as read"
+msgstr "沒有文章標記為已讀"
+
+msgid "Notification settings per feed with web, email, iOS, and Android options"
+msgstr "可個別設定每個訂閱來源的通知方式，包括網頁、電子郵件、iOS 和 Android"
+
+msgid "Notifications"
+msgstr "通知"
+
+msgid "Notifications on trained intelligence classifiers"
+msgstr "接收經訓練的智慧分類器通知"
+
+msgid "OPML Import & Export"
+msgstr "OPML 匯入與匯出"
+
+msgid "OPML Import/Export"
+msgstr "OPML 匯入／匯出"
+
+msgid "OPML import dialog for bringing feeds from other readers"
+msgstr "用於從其他閱讀器匯入訂閱來源的 OPML 匯入對話框"
+
+msgid "Official Hosted Option"
+msgstr "官方代管方案"
+
+msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
+msgstr "Premium 可搜尋近期文章。Premium Archive 則可搜尋所有曾封存的文章。"
+
+msgid "On first use, a browser window opens for you to log in and authorize access."
+msgstr "首次使用時，瀏覽器視窗會開啟，讓你登入並授權存取。"
+
+msgid "One-Command Install"
+msgstr "一鍵安裝"
+
+#, python-format
+msgid ""
+"Only 1.9%% of Widgetsmith users use Display Zoom &mdash; way lower than expected. Helped him decide not to "
+"support it for clear widget backgrounds."
+msgstr "只有 1.9%% 的 Widgetsmith 使用者會使用顯示縮放 &mdash; 遠低於預期。這讓他決定不支援此功能，以便提供透明背景小工具。"
+
+msgid "Only premium users can share multiple stories per day from the same site."
+msgstr "只有付費會員才能每天分享同一網站的多篇文章。"
+
+msgid "Open Source"
+msgstr "開放原始碼"
+
+msgid "Open Source RSS"
+msgstr "開源 RSS"
+
+msgid "Open Source RSS Readers"
+msgstr "開放原始碼 RSS 閱讀器"
+
+msgid "Open source (MIT)"
+msgstr "開放原始碼（MIT）"
+
+msgid "Open source and community-driven"
+msgstr "開源，由社群驅動"
+
+msgid "Open source and self-hostable"
+msgstr "開放原始碼，可自行架設"
+
+msgid "Open source means it can never be killed by a corporate decision"
+msgstr "開放原始碼代表企業決策永遠無法讓它消失"
+
+msgid "Open source means no lock-in"
+msgstr "開放原始碼，沒有綁定限制"
+
+msgid "Open the trainer for any feed"
+msgstr "開啟任一訂閱來源的訓練器"
+
+msgid "OpenAI API key not configured"
+msgstr "尚未設定 OpenAI API 金鑰"
+
+#, python-format
+msgid "Opens your browser to authorize via OAuth. Token stored locally at <code>%(path)s</code>."
+msgstr "開啟瀏覽器，透過 OAuth 授權。權杖會儲存在本機：<code>%(path)s</code>。"
+
+#, python-format
+msgid "Opens your browser to authorize. Token stored locally at <code>%(path)s</code>."
+msgstr "將在瀏覽器中開啟授權頁面。權杖會儲存在本機：<code>%(path)s</code>。"
+
+msgid "Opt-out of the Original view"
+msgstr "退出原始檢視"
+
+msgid "Optional"
+msgstr "選填"
+
+msgid "Organize Sites"
+msgstr "整理網站"
+
+msgctxt "story view mode"
+msgid "Original"
+msgstr "原始"
+
+msgid "Original Site"
+msgstr "原始網站"
+
+msgid "Original Site View"
+msgstr "原始網站檢視"
+
+msgid "Original site view rendering a website inline within NewsBlur"
+msgstr "以原始網站檢視方式在 NewsBlur 中內嵌顯示網站"
+
+msgid "Original tag name is required."
+msgstr "必須提供原始標籤名稱。"
+
+msgid "OvershareKit updated for iOS 8"
+msgstr "OvershareKit 已更新，支援 iOS 8"
+
+msgid "Own API, Fever plugin"
+msgstr "自有 API、Fever 外掛"
+
+msgid "PDF / EPUB Support"
+msgstr "支援 PDF / EPUB"
+
+msgid "POST required"
+msgstr "需要 POST"
+
+msgid "Paid Plan"
+msgstr "付費方案"
+
+msgid "Parameter"
+msgstr "參數"
+
+msgid "Password"
+msgstr "密碼"
+
+msgid "Password (optional)"
+msgstr "密碼（選填）"
+
+msgid "Past day"
+msgstr "過去一天"
+
+msgid "Past day by hour"
+msgstr "過去一天（按小時）"
+
+msgid "Payment Method"
+msgstr "付款方式"
+
+msgid "Peek into related stories and sites"
+msgstr "探索相關文章與網站"
+
+msgid "People to follow"
+msgstr "可追蹤的人"
+
+msgid "Per-feed alerts"
+msgstr "個別訂閱來源通知"
+
+msgid "Permanent with Archive plan"
+msgstr "永久保存（需 Archive 方案）"
+
+msgid "Plan"
+msgstr "方案"
+
+msgid "Plans for every reader"
+msgstr "適合各種讀者的方案"
+
+msgid "Please create an account to continue."
+msgstr "請建立帳戶以繼續。"
+
+msgid "Please enter in a keyword search query."
+msgstr "請輸入關鍵字搜尋查詢。"
+
+msgid "Please enter in an email address."
+msgstr "請輸入電子郵件地址。"
+
+msgid "Please login to continue."
+msgstr "請先登入以繼續。"
+
+msgid "Please provide a URL/address."
+msgstr "請提供 URL／網址。"
+
+msgid "Please provide a newsletter URL."
+msgstr "請提供電子報網址。"
+
+msgid "Please provide a search query."
+msgstr "請輸入搜尋字詞。"
+
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "請輸入「DELETE」以確認刪除。"
+
+msgid ""
+"Plug NewsBlur into Claude, Cursor, or any AI agent framework via the Model Context Protocol. Manage feeds, "
+"triage stories, and train classifiers from your favorite tools."
+msgstr "透過模型情境協定，將 NewsBlur 整合至 Claude、Cursor 或任何 AI 代理框架。你可以使用慣用工具管理訂閱來源、篩選文章並訓練分類器。"
+
+msgid "Podcast Playback"
+msgstr "Podcast 播放"
+
+msgid "Point your client at the streamable HTTP endpoint:"
+msgstr "將用戶端指向可串流的 HTTP 端點："
+
+msgid "Political Analyst"
+msgstr "政治分析師"
+
+msgid "Popular"
+msgstr "熱門"
+
+msgid "Popular feed not found"
+msgstr "找不到熱門訂閱來源"
+
+msgid "Possible but unsupported"
+msgstr "可能可行，但不受支援"
+
+msgid "PostgreSQL + MongoDB + Redis + Elasticsearch"
+msgstr "PostgreSQL + MongoDB + Redis + Elasticsearch"
+
+msgid "PostgreSQL search"
+msgstr "PostgreSQL 搜尋"
+
+msgid "Power User Plan"
+msgstr "進階使用者方案"
+
+msgid "Pre-built workflows for inbox triage, topic research, and feed health audits"
+msgstr "為收件匣篩選、主題研究和訂閱來源健康狀況稽核打造的預設工作流程"
+
+msgid "Preferences"
+msgstr "偏好設定"
+
+msgid "Premium"
+msgstr "Premium"
+
+msgid "Premium - NewsBlur Pricing"
+msgstr "Premium - NewsBlur 價格"
+
+msgid "Premium Archive"
+msgstr "Premium Archive"
+
+msgid "Premium Archive - NewsBlur Pricing"
+msgstr "Premium Archive - NewsBlur 價格"
+
+msgid "Premium Archive required for classifier notifications"
+msgstr "分類器通知需要 Premium Archive"
+
+msgid "Premium Archive required for folder and global classifiers"
+msgstr "資料夾與全域分類器需要 Premium Archive"
+
+msgid "Premium Archive showing unread stories going back months"
+msgstr "Premium Archive 顯示可追溯至數月前的未讀文章"
+
+msgid "Premium Archive subscription"
+msgstr "Premium Archive 訂閱"
+
+msgid "Premium Pro"
+msgstr "Premium Pro"
+
+msgid "Premium Pro - NewsBlur Pricing"
+msgstr "Premium Pro - NewsBlur 價格"
+
+msgid "Premium Pro subscription"
+msgstr "Premium Pro 訂閱"
+
+msgid "Premium Subscription"
+msgstr "Premium 訂閱"
+
+msgid "Premium Users"
+msgstr "付費會員"
+
+msgid "Premium feeds are checked more frequently, so you get stories faster than free users."
+msgstr "Premium 的訂閱來源檢查頻率較高，因此你能比免費使用者更快看到文章。"
+
+msgid "Premium only"
+msgstr "僅限 Premium"
+
+msgid ""
+"Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown "
+"rice."
+msgstr "Premium 訂閱者幫 Lyric 準備家常餐點，包括四季豆、地瓜、紅蘿蔔和糙米。"
+
+msgid "Premium subscription"
+msgstr "Premium 訂閱"
+
+msgid "Premium upgrade"
+msgstr "升級至 Premium"
+
+msgid "Press Information and Resources"
+msgstr "新聞媒體資訊與資源"
+
+msgid "Press Kit and Recent Press"
+msgstr "媒體資料包與近期報導"
+
+msgid "Press the search icon or use the keyboard shortcut"
+msgstr "按下搜尋圖示或使用鍵盤快速鍵"
+
+msgid "Previous"
+msgstr "上一個"
+
+msgid "Previous page"
+msgstr "上一頁"
+
+msgid "Pricing"
+msgstr "價格"
+
+msgid "Primary Focus"
+msgstr "主要定位"
+
+msgid "Print"
+msgstr "列印"
+
+msgid "Print Invoice"
+msgstr "列印發票"
+
+msgid "Priority only on select feeds"
+msgstr "僅在選定的訂閱來源啟用優先排序"
+
+msgid "Priority support"
+msgstr "優先支援"
+
+msgid "Privacy Policy"
+msgstr "隱私權政策"
+
+msgid "Privacy options for your blurblog"
+msgstr "你的 Blurblog 隱私選項"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid ""
+"Pro is built for professionals who depend on staying informed. Every feed in your account is fetched every "
+"5-15 minutes, meaning you see breaking news and updates as they happen. Regex classifiers let you build "
+"precise filters that match patterns across titles, story text, and URLs. If your work depends on being the "
+"first to know, Pro pays for itself."
+msgstr ""
+"Pro 專為仰賴掌握最新資訊的專業人士打造。帳戶中的每個訂閱來源都會每 5–15 "
+"分鐘擷取一次，讓你即時掌握突發新聞和最新動態。正規表示式分類器可讓你建立精確篩選器，依標題、文章內容和網址中的模式進行比對。如果你的工作仰賴搶先掌握消息，Pro 絕對物超所值。"
+
+msgid "Pro plan"
+msgstr "Pro 方案"
+
+msgid ""
+"Pro's real-time fetching infrastructure costs more to operate, so it's priced monthly. You're paying for "
+"dedicated, high-frequency polling of up to 10,000 feeds."
+msgstr "Pro 的即時擷取基礎設施營運成本較高，因此按月計費。你付費使用的是專屬的高頻率輪詢服務，最多可追蹤 10,000 個訂閱來源。"
+
+msgid "Pro+ plans"
+msgstr "Pro+ 方案"
+
+msgid "Pro: every feed, every 5 minutes"
+msgstr "Pro：所有訂閱來源，每 5 分鐘更新"
+
+msgid "Processing question"
+msgstr "正在處理問題"
+
+msgid "Professional-grade feed monitoring"
+msgstr "專業級訂閱來源監控"
+
+msgid ""
+"Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 "
+"sites."
+msgstr "專業級新聞情報。每個訂閱來源每 5–15 分鐘擷取一次，支援正規表示式訓練，涵蓋 10,000 個網站。"
+
+msgid "Professor, OSU"
+msgstr "OSU 教授"
+
+msgid "Progress bar for the Story view when loading a story using the in-app browser."
+msgstr "使用應用程式內瀏覽器載入文章時，文章檢視畫面的進度列。"
+
+msgid "Prompt classifier not found"
+msgstr "找不到提示分類器"
+
+msgid "Prompt too long (max 500 characters)"
+msgstr "提示太長（上限 500 個字元）"
+
+msgid "Proprietary"
+msgstr "專有"
+
+msgid "Public blurblog sharing"
+msgstr "公開分享至 Blurblog"
+
+msgid "Public blurblog with comments"
+msgstr "可留言的公開 Blurblog"
+
+msgid "Public blurblog, comments, sharing"
+msgstr "公開 Blurblog、留言與分享"
+
+msgid "Publication"
+msgstr "出版物"
+
+msgid "Pull to refresh date is now localized"
+msgstr "下拉更新日期現已依所在地區顯示"
+
+msgid "Pull to refresh updated to match theme"
+msgstr "下拉重新整理已更新，符合佈景主題"
+
+msgid "Put your Email<br>in the box"
+msgstr "將你的電子郵件<br>輸入方框中"
+
+msgid "Query is required"
+msgstr "必須提供查詢"
+
+msgid "Quickly find stories across all of your subscriptions"
+msgstr "快速搜尋所有訂閱中的文章"
+
+msgid "RSS and web feeds, synced on every platform you use."
+msgstr "RSS 與網頁訂閱來源，會在你使用的所有平台上同步。"
+
+msgid "RSS only"
+msgstr "僅限 RSS"
+
+msgid "RSS reader with intelligence training"
+msgstr "具智慧訓練功能的 RSS 閱讀器"
+
+msgid "RSS/Atom only"
+msgstr "僅限 RSS/Atom"
+
+msgid "Re-analyzing page"
+msgstr "正在重新分析頁面"
+
+msgid "Read Stories"
+msgstr "已讀文章"
+
+msgid "Read Your Way"
+msgstr "依你的方式閱讀"
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream. No need to click into individual feeds &mdash; just "
+"open a folder and read everything in chronological order. Combined with training, your River of News "
+"surfaces the best stories from across all your subscriptions."
+msgstr "將資料夾中的所有訂閱來源合併成一個可捲動的串流閱讀。不必逐一點選訂閱來源 &mdash; 只要開啟資料夾，就能依時間順序閱讀所有內容。搭配訓練功能，「新聞流」會從所有訂閱內容中挑選最精彩的文章。"
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream. No need to click into individual feeds. Combined with "
+"training, your river surfaces the best stories."
+msgstr "將資料夾中的所有訂閱來源合併為一個可捲動串流閱讀，不必逐一開啟訂閱來源。搭配訓練功能，新聞流會為你呈現最優質的文章。"
+
+msgid "Read all your feeds by folder in one scrollable stream"
+msgstr "透過單一可捲動的動態串流，依資料夾閱讀所有訂閱來源"
+
+msgid "Read more on the NewsBlur Blog"
+msgstr "在 NewsBlur 部落格閱讀更多"
+
+msgid "Read newsletters in your news reader"
+msgstr "在新聞閱讀器中閱讀電子報"
+
+msgid "Read offline with automatic background refresh"
+msgstr "離線閱讀並自動於背景更新"
+
+msgid "Read stories"
+msgstr "閱讀文章"
+
+msgid ""
+"Read stories on the original website, rendered inline within NewsBlur. See the full design, layout, and "
+"interactive elements of the original page without opening a new tab. Switch between Feed view, Text view, "
+"and Original view per-feed."
+msgstr "在 NewsBlur 內嵌呈現原始網站上的文章。無須開啟新分頁，即可查看原頁的完整設計、版面配置和互動元素。可針對每個訂閱來源，在訂閱來源檢視、文字檢視和原始檢視之間切換。"
+
+msgid "Read the Full Story"
+msgstr "閱讀完整文章"
+
+msgid "Read the community"
+msgstr "閱讀社群內容"
+
+msgid "Read the content in context, the way it was meant to be seen"
+msgstr "在內容原本呈現的脈絡中閱讀，體驗最初設計的樣貌"
+
+msgid "Read the original site"
+msgstr "閱讀原始網站"
+
+msgid "Read the whole story"
+msgstr "閱讀全文"
+
+msgid "Read without the noise"
+msgstr "閱讀文章，不受雜訊干擾"
+
+msgid "Read your email newsletters in your news reader, not your inbox."
+msgstr "在新聞閱讀器中閱讀電子報，而不是收件匣。"
+
+msgid "Read your email newsletters where they belong, in a news reader"
+msgstr "在新聞閱讀器中閱讀電子報，讓它們回到該在的位置"
+
+msgid ""
+"Read your email newsletters where they belong: in a news reader. Forward newsletters to your unique "
+"NewsBlur email address and they appear as a feed. Train, tag, search, and organize newsletters just like "
+"any other feed. No more cluttered inbox."
+msgstr "在適合的地方閱讀電子報：新聞閱讀器。將電子報轉寄到你的專屬 NewsBlur 電子郵件地址，它們就會以訂閱來源的形式顯示。你可以像管理其他訂閱來源一樣，訓練、加上標籤、搜尋及整理電子報。收件匣不再雜亂。"
+
+msgid "Read your feeds"
+msgstr "閱讀你的訂閱來源"
+
+msgid "Read-Later / Highlights"
+msgstr "稍後閱讀／重點摘錄"
+
+msgid "Reading"
+msgstr "閱讀"
+
+msgid "Reading Archive"
+msgstr "閱讀封存"
+
+msgid "Reading by folder"
+msgstr "依資料夾閱讀"
+
+msgid "Reading history with search"
+msgstr "搭配搜尋的閱讀記錄"
+
+msgid "Reading news is better with friends. Share stories on your public blurblog"
+msgstr "和朋友一起閱讀新聞更有趣。在你的公開 Blurblog 分享文章"
+
+msgid ""
+"Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
+" email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
+"place and care deeply about taking notes on what they read. NewsBlur is a dedicated RSS reader built for "
+"people who follow many feeds and want intelligent filtering to surface what matters. If your primary need "
+"is RSS with powerful training and filtering, NewsBlur is the sharper tool for the job."
+msgstr ""
+"Readwise Reader 是一款全方位閱讀應用程式，整合 RSS 訂閱來源、稍後閱讀文章、PDF、EPUB "
+"和電子報，並提供深入的螢光標記與註解功能。它專為希望將所有內容集中一處，且重視閱讀筆記的人打造。NewsBlur 則是專為追蹤許多訂閱來源、並希望透過智慧篩選掌握重要內容的人打造的 RSS "
+"閱讀器。如果你主要需要具備強大訓練與篩選功能的 RSS 工具，NewsBlur 會是更合適的選擇。"
+
+msgid "Real examples of what it looks like when an AI agent connects to your NewsBlur."
+msgstr "AI 代理連線至你的 NewsBlur 時的實際範例。"
+
+msgid "Real-Time Feed Fetching"
+msgstr "即時擷取訂閱來源"
+
+msgid "Real-Time Updates"
+msgstr "即時更新"
+
+msgid "Real-time RSS"
+msgstr "即時 RSS"
+
+msgid "Real-time RSS updates"
+msgstr "即時 RSS 更新"
+
+msgid "Real-time Stats"
+msgstr "即時統計"
+
+msgid "Reason to upgrade"
+msgstr "升級原因"
+
+msgid "Recommended Site"
+msgstr "推薦網站"
+
+msgid "Reddit API request failed."
+msgstr "Reddit API 要求失敗。"
+
+msgid "Redeem Gift"
+msgstr "兌換禮物"
+
+msgid "Redeem a Gift Code"
+msgstr "兌換禮物碼"
+
+msgid "Redirect Uris"
+msgstr "重新導向 URI"
+
+msgid "Reeder, NetNewsWire, etc."
+msgstr "Reeder、NetNewsWire 等"
+
+msgid "Reeder, ReadKit, Unread, etc."
+msgstr "Reeder、ReadKit、Unread 等"
+
+msgid "Reeder, ReadKit, etc."
+msgstr "Reeder、ReadKit 等"
+
+msgid "Refer & Gift"
+msgstr "推薦與贈送"
+
+#, python-format
+msgid "Referred by <b>%(referrer)s</b> &mdash; welcome to NewsBlur!"
+msgstr "由 <b>%(referrer)s</b> 推薦 &mdash; 歡迎來到 NewsBlur！"
+
+msgid "Regex Classifiers"
+msgstr "正規表示式分類器"
+
+msgid "Regex mode toggle for intelligence classifiers"
+msgstr "智慧分類器的正規表示式模式切換"
+
+msgid "Register a new application"
+msgstr "註冊新應用程式"
+
+msgid "Regularly used searches are conveniently given their own feeds"
+msgstr "常用的搜尋會方便地建立為專屬訂閱來源"
+
+msgid "Remove from saved"
+msgstr "從已儲存項目中移除"
+
+msgid "Remove subscription"
+msgstr "取消訂閱"
+
+msgid "Renders original website"
+msgstr "呈現原始網站"
+
+msgid "Reply comments cannot be empty."
+msgstr "回覆留言不可為空。"
+
+msgid "Required"
+msgstr "必填"
+
+msgid "Researcher"
+msgstr "研究人員"
+
+msgid "Reset Password"
+msgstr "重設密碼"
+
+msgid "Reset Your Password - NewsBlur"
+msgstr "重設密碼 - NewsBlur"
+
+msgid "Reset your password"
+msgstr "重設密碼"
+
+msgid "Resource Requirements"
+msgstr "資源需求"
+
+msgid "Results show matching stories with highlighted terms"
+msgstr "搜尋結果會顯示符合條件的文章，並醒目標示搜尋詞"
+
+msgid "Retained while subscribed"
+msgstr "訂閱期間保留"
+
+msgid "Retrieve feeds, stories, and stats. Open source, no API key required."
+msgstr "擷取訂閱來源、文章和統計資料。開放原始碼，無需 API 金鑰。"
+
+msgid "Retry"
+msgstr "重試"
+
+msgctxt "leave the original site view"
+msgid "Return"
+msgstr "返回"
+
+msgid "Return to NewsBlur"
+msgstr "返回 NewsBlur"
+
+msgid "Review"
+msgstr "評論"
+
+msgid "Reviews of NewsBlur"
+msgstr "NewsBlur 的評論"
+
+msgid "Rich cards for alternative sources in the detail view"
+msgstr "詳細檢視中替代來源的豐富卡片"
+
+msgid "River of News"
+msgstr "新聞流"
+
+msgid "River of News (reading by folder)"
+msgstr "新聞流（依資料夾閱讀）"
+
+msgid "River of News showing stories from multiple feeds in one stream"
+msgstr "新聞流：在同一串流中顯示多個訂閱來源的文章"
+
+msgid "Rules & filters"
+msgstr "規則與篩選器"
+
+msgid "Rules only, no visual training"
+msgstr "僅使用規則，不進行視覺訓練"
+
+msgid "Rules with regex (Pro)"
+msgstr "使用正規表示式的規則（Pro）"
+
+msgid "Run your own NewsBlur"
+msgstr "自行架設 NewsBlur"
+
+msgid ""
+"Run your own RSS reader with Docker. Compare NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS for self-"
+"hosting. Only NewsBlur lets you start hosted and switch to self-hosted whenever you want."
+msgstr "使用 Docker 執行自己的 RSS 閱讀器。比較 NewsBlur、FreshRSS、Miniflux 和 Tiny Tiny RSS 等自架方案。只有 NewsBlur 能讓你先使用託管服務，並隨時切換為自架。"
+
+#, python-format
+msgid ""
+"Running <code>%(command)s</code> opens your browser for OAuth authorization, the same flow used by third-"
+"party apps. Your token is stored locally at <code>%(path)s</code> and never sent anywhere except the "
+"NewsBlur API."
+msgstr ""
+"執行 <code>%(command)s</code> 會開啟瀏覽器進行 OAuth 授權，流程與第三方應用程式使用的相同。你的權杖會儲存在本機 <code>%(path)s</code>，除了 NewsBlur "
+"API 外，不會傳送到任何地方。"
+
+msgid "S"
+msgstr "S"
+
+msgid "SEO Expert"
+msgstr "SEO 專家"
+
+msgid "SQLite or MySQL/PostgreSQL"
+msgstr "SQLite 或 MySQL/PostgreSQL"
+
+msgid ""
+"Samuel wanted a better way to read the news. So he built the first version of NewsBlur almost entirely "
+"underground on the A train in New York City."
+msgstr "Samuel 想找一種更好的新聞閱讀方式，於是他幾乎全程在紐約市 A 線地鐵上，在地下打造了 NewsBlur 的第一個版本。"
+
+msgid "Save"
+msgstr "儲存"
+
+msgid "Save any story with one click or a keyboard shortcut"
+msgstr "一鍵或使用鍵盤快速鍵儲存文章"
+
+msgid "Save searches as feeds for ongoing monitoring"
+msgstr "將搜尋儲存為訂閱來源，以便持續追蹤"
+
+msgid "Save stories and organize with custom tags"
+msgstr "儲存文章並使用自訂標籤整理"
+
+msgid "Save stories for later"
+msgstr "儲存文章以便稍後閱讀"
+
+msgid "Save stories for later and organize them with custom tags. Each tag gets its own RSS feed for sharing."
+msgstr "將文章儲存以供稍後閱讀，並使用自訂標籤整理。每個標籤都有專屬 RSS 訂閱來源，可供分享。"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Tags are searchable, so you can quickly find "
+"saved stories by topic. Each tag gets its own RSS feed, so you can pipe your curated collections into other"
+" tools or share them."
+msgstr "將文章儲存以便稍後閱讀，並使用自訂標籤整理。標籤可供搜尋，讓你快速依主題找到已儲存的文章。每個標籤都有專屬的 RSS 訂閱來源，方便你將整理好的內容集匯入其他工具或分享。"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
+"shareable."
+msgstr "儲存文章以供日後閱讀，並使用自訂標籤整理。你的個人剪藏庫可供搜尋與分享。"
+
+msgid "Save stories with custom tags for fast references"
+msgstr "使用自訂標籤儲存文章，方便快速查找"
+
+msgid "Save stories with searchable tags"
+msgstr "使用可搜尋的標籤儲存文章"
+
+msgid "Save stories, highlight text, tag and organize"
+msgstr "儲存文章、醒目標示文字、加上標籤並整理"
+
+msgid "Save with tags, notes, highlights"
+msgstr "加上標籤、筆記和重點標記並儲存"
+
+msgid "Save, share, and mark stories as read."
+msgstr "儲存、分享文章，並將文章標記為已讀。"
+
+msgid "Saved"
+msgstr "已儲存"
+
+#, python-format
+msgid ""
+"Saved <strong>%(title)s</strong> by Ben Thompson with tags <code>%(first_tag)s</code> and "
+"<code>%(second_tag)s</code>. You can find it in your saved stories any time."
+msgstr ""
+"已儲存 Ben Thompson 的 <strong>%(title)s</strong>，標籤為 <code>%(first_tag)s</code> 和 "
+"<code>%(second_tag)s</code>。你隨時可以在已儲存的文章中找到它。"
+
+msgid "Saved Searches"
+msgstr "已儲存的搜尋"
+
+msgid "Saved Stories"
+msgstr "已儲存的文章"
+
+msgid "Saved Stories & Tags"
+msgstr "已儲存文章與標籤"
+
+msgid "Saved Stories & Tags - NewsBlur"
+msgstr "已儲存文章與標籤 - NewsBlur"
+
+msgid "Saved stories by tag"
+msgstr "依標籤分類的已儲存文章"
+
+msgid "Saved stories organized with custom tags"
+msgstr "使用自訂標籤整理已儲存的文章"
+
+msgid "Saved story tagging: add and remove tags with a handy tagging popover."
+msgstr "儲存文章標記：使用方便的標記快顯視窗新增或移除標籤。"
+
+msgid "Saved story tags"
+msgstr "已儲存的文章標籤"
+
+msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium ($36/year) or higher."
+msgstr "所有方案皆可儲存文章。標籤和標籤 RSS 訂閱來源則需訂閱 Premium（每年 $36）或更高級方案。"
+
+msgid "Screenshots"
+msgstr "螢幕截圖"
+
+msgid "Scripting and automation"
+msgstr "指令碼與自動化"
+
+msgid "Search Sites and People"
+msgstr "搜尋網站與人物"
+
+msgid "Search across all saved stories and tags"
+msgstr "搜尋所有已儲存的文章和標籤"
+
+msgid "Search across all your subscriptions"
+msgstr "搜尋所有訂閱"
+
+msgid ""
+"Search across all your subscriptions and saved stories. Find anything you've ever read with Elasticsearch-"
+"powered full-text search."
+msgstr "搜尋所有訂閱和已儲存的文章。透過 Elasticsearch 全文搜尋，找出你曾讀過的任何內容。"
+
+msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
+msgstr "使用 Elasticsearch 全文搜尋功能，搜尋你所有的訂閱內容。"
+
+msgid ""
+"Search across all your subscriptions with Elasticsearch-powered full-text search. Find stories by keyword, "
+"phrase, or combination. Search within a single feed, a folder, or across everything. Save searches as feeds"
+" for ongoing monitoring."
+msgstr "透過 Elasticsearch 全文搜尋功能，搜尋你所有訂閱的內容。依關鍵字、詞組或組合尋找文章。可在單一訂閱來源、資料夾或所有內容中搜尋。將搜尋儲存為訂閱來源，以便持續追蹤。"
+
+msgid ""
+"Search across all your subscriptions with Elasticsearch. Find stories by keyword or phrase. Search within a"
+" feed, a folder, or everything."
+msgstr "使用 Elasticsearch 搜尋所有訂閱內容。依關鍵字或詞句尋找文章。可搜尋單一訂閱來源、資料夾或所有內容。"
+
+msgid "Search and trending feeds"
+msgstr "搜尋與熱門訂閱來源"
+
+msgid "Search by topic, find similar feeds, or browse what's trending."
+msgstr "依主題搜尋、尋找類似訂閱來源，或瀏覽熱門趨勢。"
+
+msgid "Search feeds and folders."
+msgstr "搜尋訂閱來源和資料夾。"
+
+msgid "Search for stories"
+msgstr "搜尋文章"
+
+msgid "Search for topics across millions of stories from millions of publishers"
+msgstr "搜尋數百萬家出版商所發布的數百萬篇文章中的主題"
+
+msgid "Search query or topic is required"
+msgstr "必須輸入搜尋查詢或主題"
+
+msgid "Search results across subscriptions"
+msgstr "搜尋所有訂閱內容"
+
+msgid "Search results across subscriptions with highlighted terms"
+msgstr "搜尋訂閱內容，並醒目標示搜尋字詞"
+
+msgid "Search sites and folders"
+msgstr "搜尋網站和資料夾"
+
+msgid "Search within a single feed, a folder, or across everything"
+msgstr "搜尋單一訂閱來源、資料夾或全部內容"
+
+msgid "Search your Reading Archive"
+msgstr "搜尋你的閱讀封存"
+
+msgid "Search your browsing Reading Archive"
+msgstr "搜尋你的瀏覽閱讀封存"
+
+msgid "Search your entire archive with full-text search"
+msgstr "使用全文搜尋搜尋整個封存庫"
+
+msgid "Security Engineer"
+msgstr "資安工程師"
+
+msgid "See Ask AI"
+msgstr "查看「詢問 AI」"
+
+msgid "See Email Newsletters"
+msgstr "查看電子報"
+
+msgid "See Full-Text Search"
+msgstr "查看全文搜尋"
+
+msgid "See Intelligence Training"
+msgstr "查看智慧訓練"
+
+msgid "See Native Apps"
+msgstr "查看原生應用程式"
+
+msgid "See Saved Stories"
+msgstr "查看已儲存的文章"
+
+msgid "See Story Archive"
+msgstr "查看文章封存"
+
+msgid "See Story Clustering"
+msgstr "查看文章分群"
+
+msgid "See Web Feeds"
+msgstr "查看網頁訂閱來源"
+
+msgid "See all 30+ features"
+msgstr "查看全部 30 多項功能"
+
+msgid "See all features"
+msgstr "查看所有功能"
+
+msgid "See all frequently asked questions"
+msgstr "查看所有常見問題"
+
+msgid "See all plans"
+msgstr "查看所有方案"
+
+msgid ""
+"See detailed analytics for every feed: publish frequency, average stories per month, subscriber count, last"
+" fetch time, and historical charts. Know exactly how active a feed is and when it last published. Useful "
+"for deciding which feeds to keep and which to prune."
+msgstr "查看每個訂閱來源的詳細分析：發布頻率、每月平均文章數、訂閱者人數、上次擷取時間和歷史圖表。清楚掌握訂閱來源的活躍程度，以及上次發布的時間。可協助你決定保留或移除哪些訂閱來源。"
+
+msgid "See how a story evolved since it was first published"
+msgstr "查看文章自首次發布以來的演變"
+
+msgid ""
+"See how a story evolves after it's first published. NewsBlur tracks revisions and shows you a diff of what "
+"changed, highlighted in green and red. Useful for following developing news stories, corrected articles, or"
+" evolving product announcements."
+msgstr "查看文章首次發布後如何演變。NewsBlur 會追蹤修訂版本，並以紅綠標示差異，讓你看出哪些內容有所變更。適合追蹤持續發展中的新聞、修正過的文章，或不斷更新的產品公告。"
+
+msgid "See how stories evolve"
+msgstr "查看文章如何演變"
+
+msgid "See it in action"
+msgstr "看看實際效果"
+
+msgid "See pricing"
+msgstr "查看價格"
+
+msgid "See the MCP Server"
+msgstr "查看 MCP 伺服器"
+
+msgid "See the NewsBlur CLI"
+msgstr "查看 NewsBlur CLI"
+
+msgid "See the full comparison"
+msgstr "查看完整比較"
+
+msgid "Self-Hosted"
+msgstr "自架"
+
+msgid "Self-Hosted Option"
+msgstr "自架選項"
+
+msgid "Self-Hosted RSS"
+msgstr "自架 RSS"
+
+msgid "Self-Hosted RSS Readers"
+msgstr "自架 RSS 閱讀器"
+
+msgid "Self-Hosted RSS Readers - Run Your Own News Reader with Docker"
+msgstr "自架 RSS 閱讀器－使用 Docker 執行自己的新聞閱讀器"
+
+msgid "Self-host only"
+msgstr "僅限自行託管"
+
+msgid "Semantic matching uses Elasticsearch to find stories about the same topic with different headlines"
+msgstr "語意比對使用 Elasticsearch，找出主題相同但標題不同的文章"
+
+msgid ""
+"Sending stories to third-party services now uses full Text if available. Useful for storing full story text"
+" in Evernote or Pocket."
+msgstr "現在將文章傳送至第三方服務時，若有全文可用便會一併傳送。適合將文章全文儲存至 Evernote 或 Pocket。"
+
+msgid "Seriously, fuck off spammer."
+msgstr "說真的，垃圾訊息發送者，滾開。"
+
+msgctxt "technology stack group"
+msgid "Server"
+msgstr "伺服器"
+
+msgid "Set New Password - NewsBlur"
+msgstr "設定新密碼 - NewsBlur"
+
+msgid "Set a new password"
+msgstr "設定新密碼"
+
+msgid "Set training rules that apply across all your feeds, everywhere."
+msgstr "設定適用於所有訂閱來源、隨處生效的訓練規則。"
+
+msgid "Set training rules that apply to every feed in a folder at once."
+msgstr "設定可一次套用至資料夾內所有訂閱來源的訓練規則。"
+
+msgid "Setup NewsBlur."
+msgstr "設定 NewsBlur。"
+
+msgid "Share & Organize"
+msgstr "分享與整理"
+
+msgid "Share stories with the world or only with your friends"
+msgstr "與全世界或僅與朋友分享文章"
+
+msgid ""
+"Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
+"and sharing. Every NewsBlur user gets their own blurblog &mdash; a public page of shared stories that "
+"anyone can follow via RSS or on the web. Premium users can make their blurblog private."
+msgstr ""
+"在你的公開 Blurblog 上分享附有個人留言的文章。追蹤朋友，看看他們正在閱讀和分享什麼。每位 NewsBlur 使用者都有自己的 Blurblog &mdash; 一個公開的分享文章頁面，任何人都可以透過 "
+"RSS 或網頁追蹤。Premium 使用者可以將 Blurblog 設為私人。"
+
+msgid "Share this story"
+msgstr "分享這篇文章"
+
+msgid "Share to blurblog"
+msgstr "分享到 Blurblog"
+
+msgid "Shared Stories"
+msgstr "分享的文章"
+
+msgid "Shared Stories & Blurblog"
+msgstr "分享文章與 Blurblog"
+
+msgid "Shared articles"
+msgstr "已分享的文章"
+
+msgid "Shared stories and blurblog with comments"
+msgstr "分享的文章與附有留言的 Blurblog"
+
+msgid "Shared story"
+msgid_plural "Shared stories"
+msgstr[0] "分享的文章"
+
+msgid "Shared story cannot be found."
+msgstr "找不到分享的文章。"
+
+msgid "Shared story not found."
+msgstr "找不到分享的文章。"
+
+msgid "Show sidebar"
+msgstr "顯示側邊欄"
+
+msgid "Sign Up"
+msgstr "註冊"
+
+msgid "Sign in"
+msgstr "登入"
+
+msgid "Sign in and your feeds, training, and saved stories sync instantly"
+msgstr "登入後，你的訂閱來源、訓練資料和已儲存文章會立即同步"
+
+msgid "Sign in to NewsBlur"
+msgstr "登入 NewsBlur"
+
+msgid "Sign in with Apple"
+msgstr "使用 Apple 登入"
+
+msgid "Sign in with Google"
+msgstr "使用 Google 登入"
+
+msgid "Sign up or Log in"
+msgstr "註冊或登入"
+
+msgid "Signup"
+msgstr "註冊"
+
+msgid "Single binary or container"
+msgstr "單一二進位檔或容器"
+
+msgid "Single command install on Docker"
+msgstr "在 Docker 上用單一指令安裝"
+
+msgid "Single container"
+msgstr "單一容器"
+
+msgid "Site"
+msgid_plural "Sites"
+msgstr[0] "網站"
+
+msgid "Site name or address..."
+msgstr "網站名稱或網址……"
+
+msgid "Sites"
+msgstr "網站"
+
+msgid "Sites & Friends"
+msgstr "網站與朋友"
+
+msgid "Sites loaded"
+msgstr "已載入網站"
+
+msgid "Sites updated up to 10x more often"
+msgstr "網站更新頻率最高可提升 10 倍"
+
+msgid "Sites updated up to 5x more often"
+msgstr "網站更新頻率最高可提升 5 倍"
+
+msgid "Social / Blurblog"
+msgstr "社群／Blurblog"
+
+msgid "Social / Sharing"
+msgstr "社交／分享"
+
+msgid "Social Features"
+msgstr "社交功能"
+
+msgid "Software Engineer"
+msgstr "軟體工程師"
+
+msgid "Solo maintainer"
+msgstr "個人維護者"
+
+msgid "Someone is already using that email address."
+msgstr "已有其他人使用此電子郵件地址。"
+
+msgid "Someone is already using that username."
+msgstr "此使用者名稱已有人使用。"
+
+msgid "Something went wrong..."
+msgstr "發生錯誤……"
+
+msgid "Sorry, that email is invalid."
+msgstr "抱歉，此電子郵件地址無效。"
+
+msgid "Source:"
+msgstr "來源："
+
+msgid "Specify a search 'term'."
+msgstr "請指定搜尋參數「term」。"
+
+msgctxt "story layout"
+msgid "Split"
+msgstr "分割"
+
+msgid "Standard Users"
+msgstr "標準使用者"
+
+msgid "Start Trial Premium"
+msgstr "開始 Premium 試用"
+
+msgid "Start reading"
+msgstr "開始閱讀"
+
+msgid "Statistics & History"
+msgstr "統計與歷史紀錄"
+
+msgid "Statistics and History"
+msgstr "統計資料與歷史記錄"
+
+msgid "Stay Smart"
+msgstr "保持聰明"
+
+msgid "Stay tuned..."
+msgstr "敬請期待…"
+
+msgid "Still have questions?"
+msgstr "還有疑問嗎？"
+
+#, python-format
+msgid "Stop sending all NewsBlur emails to <b>%(email)s</b> for the account <b>%(username)s</b>?"
+msgstr "要停止將帳戶 <b>%(username)s</b> 的所有 NewsBlur 電子郵件寄至 <b>%(email)s</b> 嗎？"
+
+msgid "Stories"
+msgstr "文章"
+
+msgid "Stories are highlighted green (like) or faded (dislike)"
+msgstr "喜歡的文章會以綠色標示，不喜歡的則會淡化"
+
+msgid "Stories are now searchable through spotlight if they have been stored for offline reading."
+msgstr "已儲存供離線閱讀的文章，現在也能透過 Spotlight 搜尋。"
+
+msgid "Stories are pushed directly to you, so you can read news as it comes in"
+msgstr "文章會直接推送給你，讓你即時閱讀最新消息"
+
+msgid ""
+"Stories are pushed to you as they're published. Free users get real-time updates via PubSubHubbub. Premium "
+"users get feeds checked up to 5x more often. Pro users get every single feed in their account fetched every"
+" 5-15 minutes, making NewsBlur a monitoring-grade tool for professionals who need to be first to know."
+msgstr ""
+"文章發布後會立即推送給你。免費使用者可透過 PubSubHubbub 即時接收更新。Premium 使用者的訂閱來源檢查頻率最高可達一般的 5 倍。Pro 使用者帳戶中的每個訂閱來源都會每 5 到 15 "
+"分鐘擷取一次，讓 NewsBlur 成為專業人士掌握第一手消息的監控級工具。"
+
+msgid "Stories can stay unread forever"
+msgstr "文章可以永遠保持未讀"
+
+msgid "Stories expire"
+msgstr "文章會過期"
+
+msgid "Stories from rarely-publishing feeds"
+msgstr "來自較少更新的訂閱來源的文章"
+
+msgid "Stories never expire or disappear"
+msgstr "文章永不過期，也不會消失"
+
+msgid "Stories never expire. When you subscribe to a new feed, its entire history is back-filled."
+msgstr "文章永不過期。新增訂閱來源時，系統會回填其完整歷史內容。"
+
+msgid ""
+"Stories now remember your last scroll position. When you go back to a story, you are taken back to the same"
+" place you left off."
+msgstr "文章現在會記住你上次的捲動位置。返回文章時，會回到你上次離開的位置。"
+
+msgid ""
+"Stories pushed as they publish with real-time notifications. Pro users get all feeds fetched every 5-15 "
+"minutes for breaking news."
+msgstr "文章發布時即時推送並發送通知。Pro 方案會每 5 到 15 分鐘擷取所有訂閱來源，掌握突發新聞。"
+
+msgid "Story"
+msgstr "文章"
+
+msgctxt "story view mode"
+msgid "Story"
+msgstr "文章"
+
+msgid "Story Archive"
+msgstr "文章封存"
+
+msgid "Story Archive (Forever)"
+msgstr "文章封存（永久）"
+
+msgid "Story Archive - NewsBlur"
+msgstr "文章封存 - NewsBlur"
+
+msgid "Story Archive requires Premium Archive ($99/year) or Premium Pro ($29/month)."
+msgstr "文章封存需要 Premium Archive（每年 $99）或 Premium Pro（每月 $29）。"
+
+msgid "Story Clustering"
+msgstr "文章分群"
+
+msgid "Story Clustering - NewsBlur"
+msgstr "文章分群 - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "已分享的文章"
+
+msgid "Story Tagging"
+msgstr "文章標籤"
+
+msgid "Story already shared but then not shared. I don't really know. Did you submit this twice very quickly?"
+msgstr "文章已分享，但之後又取消分享了。我也不太清楚。你是不是很快連續提交了兩次？"
+
+msgid "Story clustering"
+msgstr "文章分群"
+
+msgid "Story clustering grouping duplicate stories from multiple feeds"
+msgstr "文章分群：將多個訂閱來源中的重複文章分組"
+
+msgid "Story clustering grouping related stories together"
+msgstr "文章分群：將相關文章歸在一起"
+
+msgid "Story detail view showing cluster cards for alternative sources"
+msgstr "文章詳細檢視，顯示其他來源的群組卡片"
+
+msgid "Story diff showing tracked changes highlighted in green and red"
+msgstr "文章差異比較，變更處以綠色和紅色標示"
+
+msgid "Story has no images"
+msgstr "文章沒有圖片"
+
+msgid "Story not found"
+msgstr "找不到文章"
+
+msgid "Story not found."
+msgstr "找不到文章。"
+
+msgid "Story titles view showing clustered stories with sources listed underneath"
+msgstr "文章標題檢視會顯示分組文章，並在下方列出來源"
+
+msgid "Story unshared."
+msgstr "已取消分享文章。"
+
+msgid "Style"
+msgstr "樣式"
+
+msgid "Submit Payment"
+msgstr "提交付款"
+
+msgid "Subscribe by URL"
+msgstr "透過網址訂閱"
+
+msgid "Subscribe to Premium Archive"
+msgstr "訂閱 Premium Archive"
+
+msgid "Subscribe, unsubscribe, and organize your feed list."
+msgstr "訂閱、取消訂閱並整理你的訂閱來源清單。"
+
+msgid "Subscribed"
+msgstr "已訂閱"
+
+msgid "Subscribed to web feed"
+msgstr "已訂閱網頁來源"
+
+msgid "Subscriber"
+msgstr "訂閱者"
+
+msgid "Subtotal"
+msgstr "小計"
+
+msgid "Support"
+msgstr "支援"
+
+msgid "Supports Reeder, ReadKit, Unread, and loads more"
+msgstr "支援 Reeder、ReadKit、Unread 等眾多應用程式"
+
+msgid "Swipe through stories, train with a tap, read offline. A native app that feels right at home."
+msgstr "滑動瀏覽文章，輕點即可訓練，離線閱讀。原生 App，使用起來自在又順手。"
+
+msgid "Switch in under a minute"
+msgstr "不到一分鐘即可切換"
+
+msgid "Switch to this Credit Card"
+msgstr "切換至這張信用卡"
+
+msgid "Tag name is required."
+msgstr "必須填寫標籤名稱。"
+
+msgid "Tag name must be 128 characters or less."
+msgstr "標籤名稱不得超過 128 個字元。"
+
+msgid "Take action"
+msgstr "採取動作"
+
+msgid "Take actions on stories"
+msgstr "對文章採取動作"
+
+msgid "Take back control of your news"
+msgstr "重新掌控你的新聞"
+
+msgid "Team boards (paid)"
+msgstr "團隊看板（付費）"
+
+msgid "Tech Entrepreneur"
+msgstr "科技企業家"
+
+msgid "Tech Journalist"
+msgstr "科技記者"
+
+msgid "Technologist, BYU Professor"
+msgstr "科技專家、BYU 教授"
+
+msgid "Terms of Service"
+msgstr "服務條款"
+
+msgctxt "story view mode"
+msgid "Text"
+msgstr "文字"
+
+msgid "Text View"
+msgstr "文字檢視"
+
+msgid "Text View (Full Story)"
+msgstr "文字檢視（全文）"
+
+msgid "Text view conveniently extracts the story"
+msgstr "文字檢視模式可方便地擷取文章內容"
+
+msgid "Text view extracting full article content from a website"
+msgstr "從網站擷取完整文章內容的文字檢視"
+
+msgid "Text view extracts the story"
+msgstr "文字檢視會擷取文章內容"
+
+msgid "Thank you for subscribing to NewsBlur"
+msgstr "感謝你訂閱 NewsBlur"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive"
+msgstr "感謝你訂閱 NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Pro"
+msgstr "感謝你訂閱 NewsBlur Premium Pro"
+
+msgid "Thank you for supporting NewsBlur!"
+msgstr "感謝你支持 NewsBlur！"
+
+msgid "Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:"
+msgstr "感謝你對 NewsBlur 的興趣。NewsBlur 由一位獨立開發者打造："
+
+msgid "Thanks!"
+msgstr "謝謝！"
+
+msgid "That story has been removed from the feed, no need to mark it unread."
+msgstr "這篇文章已從訂閱來源中移除，無需標記為未讀。"
+
+msgid ""
+"That story pattern is tied to the exact items on the page right now, so it would never find new stories. "
+"Please analyze the page again."
+msgstr "此文章模式與目前頁面上的特定項目綁定，因此永遠無法找到新文章。請重新分析此頁面。"
+
+msgid "That username is not registered. Please try again."
+msgstr "此使用者名稱尚未註冊。請再試一次。"
+
+msgid "The Blog"
+msgstr "部落格"
+
+#, python-format
+msgid ""
+"The CLI is a standalone terminal tool you run directly. The <a href=\"%(mcp_url)s\">MCP server</a> lets AI "
+"agents like Claude and Codex connect to your NewsBlur on your behalf. Both use the same underlying API and "
+"have the same capabilities."
+msgstr ""
+"CLI 是可直接執行的獨立終端機工具。<a href=\"%(mcp_url)s\">MCP 伺服器</a> 可讓 Claude 和 Codex 等 AI 代理代表你連線至 NewsBlur。兩者使用相同的底層 "
+"API，功能也相同。"
+
+msgid "The Google Reader Alternative That's Been Here All Along"
+msgstr "Google Reader 替代方案，其實一直都在"
+
+msgid ""
+"The MCP server uses OAuth, the same authentication used by third-party apps. You authorize access through "
+"your browser, and you can revoke access at any time. The MCP server never stores your credentials."
+msgstr "MCP 伺服器使用 OAuth，這是第三方應用程式採用的相同驗證方式。你可透過瀏覽器授權存取，並可隨時撤銷權限。MCP 伺服器絕不會儲存你的登入憑證。"
+
+msgid ""
+"The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets"
+" Claude, Codex, and other AI assistants interact with NewsBlur on your behalf."
+msgstr "模型上下文協定（MCP）是一種開放標準，可將 AI 代理連接至外部工具和資料。它讓 Claude、Codex 和其他 AI 助理能代表你與 NewsBlur 互動。"
+
+msgid "The NewsBlur API"
+msgstr "NewsBlur API"
+
+msgid "The NewsBlur Android App"
+msgstr "NewsBlur Android 應用程式"
+
+msgid "The NewsBlur iPad & iPhone App"
+msgstr "NewsBlur iPad 與 iPhone App"
+
+msgid "The NewsBlur<br />Android App"
+msgstr "NewsBlur<br />Android App"
+
+msgid "The NewsBlur<br />iOS App"
+msgstr "NewsBlur<br />iOS App"
+
+msgid ""
+"The Old Reader was created to recreate the Google Reader experience, and it does that well. The interface "
+"is intentionally simple and familiar. NewsBlur also started before Google Reader shut down (founded in "
+"2009), but has evolved continuously since then. Intelligence training, AI-powered reading, web feeds, story"
+" clustering, and a full API ecosystem have been added over the years. If you want a simple, no-frills "
+"Google Reader clone, The Old Reader delivers. If you want a reader that has kept pace with how the web has "
+"changed, NewsBlur is the more complete choice."
+msgstr ""
+"The Old Reader 的建立宗旨是重現 Google Reader 的使用體驗，而且做得很好。介面刻意設計得簡單又熟悉。NewsBlur 也在 Google Reader 關閉前就已推出（2009 "
+"年成立），但此後持續演進。多年來陸續加入智慧訓練、AI 閱讀、網頁訂閱來源、文章分群，以及完整的 API 生態系。如果你想要一個簡單、沒有多餘功能的 Google Reader 仿製品，The Old Reader"
+" 值得一試。如果你想要一款與時俱進、跟上網路變遷的閱讀器，NewsBlur 則是更完整的選擇。"
+
+msgid ""
+"The Text view is now sticky based on the last view you used. It's per feed but it also respects individual "
+"feeds when reading by folder."
+msgstr "文字檢視現在會固定使用你上次採用的檢視方式。此設定適用於個別訂閱來源，依資料夾閱讀時也會遵循各訂閱來源的個別設定。"
+
+msgid "The best of both worlds: hosted and self-hosted"
+msgstr "兼得兩全：代管與自架"
+
+msgid ""
+"The biggest difference between NewsBlur and Feedly is philosophy. Feedly uses AI to decide what's important"
+" for you. NewsBlur puts you in control with its intelligence training system. You explicitly tell NewsBlur "
+"what to highlight and what to hide, by author, tag, title keyword, full text, URL, or regex pattern. "
+"There's no black box &mdash; you always know why a story is highlighted or hidden."
+msgstr ""
+"NewsBlur 和 Feedly 最大的差異在於理念。Feedly 使用 AI 判斷哪些內容對你重要。NewsBlur "
+"則透過智慧訓練系統，讓你掌握主導權。你可以依據作者、標籤、標題關鍵字、全文、網址或正規表示式模式，明確告訴 NewsBlur 要突顯或隱藏哪些內容。沒有黑箱 &mdash; 你隨時都知道文章為何被突顯或隱藏。"
+
+msgid ""
+"The biggest feature difference is NewsBlur's intelligence training. Instead of reading every story in every"
+" feed, you can train NewsBlur to highlight authors and topics you care about and hide the rest. Stories are"
+" color-coded so you can scan your feeds at a glance. Over time, the reader adapts to your interests. The "
+"Old Reader has no filtering or training system, so managing a large number of feeds means more manual work."
+msgstr ""
+"最大的功能差異在於 NewsBlur 的智慧訓練。你不必逐一閱讀每個訂閱來源的所有文章，而是可以訓練 NewsBlur "
+"突顯你感興趣的作者和主題，並隱藏其他內容。文章會以顏色標示，讓你一眼掌握各訂閱來源。隨著時間推移，閱讀器會逐漸適應你的興趣。The Old Reader 沒有篩選或訓練系統，因此管理大量訂閱來源需要更多手動操作。"
+
+msgid "The email will be sent to:"
+msgstr "電子郵件將寄送至："
+
+msgid "The error has been logged and will be fixed soon so you won't have to see this message again."
+msgstr "錯誤已記錄，我們會盡快修正，讓你不必再看到這則訊息。"
+
+msgid "The full experience,<br>right in your browser"
+msgstr "完整體驗，<br>就在瀏覽器中"
+
+msgid "The highest limit available. Monitor everything."
+msgstr "可用的最高上限。監控所有內容。"
+
+msgid ""
+"The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value "
+"it, it can disappear overnight. Google shut down Reader not because it was unpopular, but because it didn't"
+" align with their business priorities."
+msgstr "Google Reader 帶來的教訓很明確：如果你的閱讀工具由不重視它的企業擁有，它可能一夜之間消失。Google 關閉 Reader 並不是因為它不受歡迎，而是因為它不符合公司的業務優先事項。"
+
+msgid "The only open source RSS reader you don't have to host yourself"
+msgstr "唯一不必自行架設的開源 RSS 閱讀器"
+
+msgid "The original story from truncated RSS feeds is seamlessly expanded"
+msgstr "遭截斷的 RSS 訂閱來源中的原始文章會無縫展開"
+
+msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
+msgstr "與一般訂閱來源相同。Premium 和 Pro 使用者可享有更頻繁的更新。"
+
+msgid "The shared comment cannot be found."
+msgstr "找不到這則分享的留言。"
+
+msgid "The story"
+msgstr "我們的故事"
+
+msgid "The team"
+msgstr "團隊"
+
+msgid "Themes"
+msgstr "主題"
+
+msgid "Themes & Customization"
+msgstr "佈景主題與自訂"
+
+#, python-format
+msgid ""
+"There is %(position_display)s person in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
+"patiently waiting<br /> on their free accounts on NewsBlur."
+msgid_plural ""
+"There are %(position_display)s people in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
+"all patiently waiting<br /> on their free accounts on NewsBlur."
+msgstr[0] "你前面還有 %(position_display)s 人 <span style=\"color:#999\">%(behind_clause)s</span>，正耐心等待<br />NewsBlur 的免費帳戶。"
+
+#, python-format
+msgid ""
+"There is %(position_display)s person in front of you, patiently waiting<br /> on their free accounts on "
+"NewsBlur."
+msgid_plural ""
+"There are %(position_display)s people in front of you, all patiently waiting<br /> on their free accounts "
+"on NewsBlur."
+msgstr[0] "你前面還有 %(position_display)s 人，正耐心等待<br />NewsBlur 的免費帳戶。"
+
+msgid "There's no limit. Save as many stories as you want and they're kept forever."
+msgstr "沒有數量限制。想儲存多少文章都可以，而且會永久保留。"
+
+msgid "Third-Party App Support"
+msgstr "第三方應用程式支援"
+
+msgid "Third-Party App Sync"
+msgstr "第三方應用程式同步"
+
+msgid "Third-Party Apps"
+msgstr "第三方應用程式"
+
+msgid "Third-party Apps"
+msgstr "第三方應用程式"
+
+msgid "Third-party app icons: NetNewsWire, Reeder, ReadKit, and Unread"
+msgstr "第三方 App 圖示：NetNewsWire、Reeder、ReadKit 和 Unread"
+
+msgid "Third-party apps only"
+msgstr "僅限第三方應用程式"
+
+msgid "Third-party only"
+msgstr "僅限第三方"
+
+msgid "This email is already being used by another account. Try something different."
+msgstr "此電子郵件地址已由另一個帳戶使用。請嘗試其他地址。"
+
+msgid "This feature requires the Archive subscription"
+msgstr "此功能需要 Archive 訂閱"
+
+msgid "This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded."
+msgstr "此贈禮連結將於 90 天後失效。若未兌換，系統會自動退款。"
+
+msgid "This is already an RSS feed. Subscribing directly."
+msgstr "這已是 RSS 訂閱來源，正在直接訂閱。"
+
+msgid "This payment has been refunded."
+msgstr "此筆付款已退款。"
+
+msgid "This user has limited their shared stories only to followers."
+msgstr "這位使用者僅與追蹤者分享文章。"
+
+msgid "This username is already taken. Try something different."
+msgstr "此使用者名稱已有人使用。請嘗試其他名稱。"
+
+msgid "Thumbs down what you don't want to see"
+msgstr "對不想看的內容按倒讚"
+
+msgid "Thumbs up authors, tags, or title keywords you like"
+msgstr "為你喜愛的作者、標籤或標題關鍵字按讚"
+
+msgid "Tips"
+msgstr "提示"
+
+msgid "Title matching catches exact and fuzzy duplicates using significant-word overlap"
+msgstr "標題比對會依據重要詞彙的重疊，找出完全相同及模糊重複的項目"
+
+msgid "Title, text, and URL patterns (Pro)"
+msgstr "標題、文字和網址模式（Pro）"
+
+msgid "To complete the import,<br />just choose a username."
+msgstr "若要完成匯入，<br />只要選擇使用者名稱即可。"
+
+#, python-format
+msgid ""
+"To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just "
+"as you would on any other OAuth API. Use the <code>%(authorize_path)s</code> endpoint to begin the OAuth "
+"authentication procedure. Use the <code>%(token_path)s</code> endpoint to receive your authorized token, "
+"which you can pass in with every request."
+msgstr ""
+"使用 OAuth 驗證請求時，請務必在每個請求中附上 Bearer HTTP 標頭，就像使用任何其他 OAuth API 一樣。使用 <code>%(authorize_path)s</code> 端點開始 "
+"OAuth 驗證程序。使用 <code>%(token_path)s</code> 端點取得授權權杖，並在每個請求中一併傳送。"
+
+#, python-format
+msgid "Today, %(date)s %(time)s"
+msgstr "今天，%(date)s %(time)s"
+
+msgid "Toggle dark mode"
+msgstr "切換深色模式"
+
+msgid "Toggle theme"
+msgstr "切換主題"
+
+msgid "Token already saved."
+msgstr "權杖先前已儲存。"
+
+msgid "Token saved."
+msgstr "權杖已儲存。"
+
+msgid "Top Level"
+msgstr "頂層"
+
+msgid "Total Paid"
+msgstr "付款總額"
+
+msgid "Track Changes"
+msgstr "追蹤變更"
+
+msgid "Track Changes / Diffs"
+msgstr "追蹤變更／差異"
+
+msgid ""
+"Train NewsBlur to show you what you want and hide what you don't. Thumbs up an author, tag, or title "
+"keyword to highlight matching stories in green. Thumbs down to fade them away. The more you train, the "
+"smarter your feeds become. No algorithm decides for you &mdash; you're in control."
+msgstr ""
+"訓練 NewsBlur，讓它顯示你想看的內容，並隱藏不想看的內容。對作者、標籤或標題關鍵字按讚，符合的文章就會以綠色標示；按倒讚則會淡出。訓練得越多，訂閱來源就越聰明。沒有演算法替你做決定 &mdash; "
+"一切由你掌控。"
+
+msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
+msgstr "訓練 NewsBlur，讓它顯示你想看的內容，並隱藏你不想看的內容。由你掌控，而非演算法。"
+
+msgid "Train across folders or globally on Archive"
+msgstr "使用 Archive 方案可跨資料夾或全域訓練"
+
+msgid "Train by author, tag, title, and full text"
+msgstr "依作者、標籤、標題和全文進行訓練"
+
+msgid "Train by author, tag, title, text, URL, regex"
+msgstr "依作者、標籤、標題、內文、網址、正規表示式訓練"
+
+msgid "Train intelligence"
+msgstr "訓練智慧分類器"
+
+msgid "Train like/dislike by author, tag, title, feed"
+msgstr "依作者、標籤、標題、訂閱來源訓練喜歡／不喜歡"
+
+msgid "Train stories by author, tag, title"
+msgstr "依作者、標籤和標題訓練文章分類"
+
+msgid ""
+"Train stories by author, tag, title, and keyword. Thumbs up what you want to see, thumbs down what you "
+"don't. NewsBlur learns what matters to you."
+msgstr "依作者、標籤、標題和關鍵字訓練文章推薦。對想看的內容按讚，不想看的內容按倒讚。NewsBlur 會學習哪些內容對你重要。"
+
+msgid "Train stories on full text content"
+msgstr "根據全文內容訓練文章分類"
+
+msgid "Train stories with regular expressions"
+msgstr "使用正規表示式訓練文章"
+
+msgid "Train stories, search, share, and tag just like on the web"
+msgstr "像在網站上一樣訓練文章、搜尋、分享和加上標籤"
+
+msgid "Train stories."
+msgstr "訓練文章。"
+
+msgid "Train, tag, search, and organize newsletters like any feed"
+msgstr "像管理任何訂閱來源一樣，訓練、標記、搜尋及整理電子報"
+
+msgid "Trainer"
+msgstr "訓練器"
+
+msgid "Training dialog with thumbs up and thumbs down on authors, tags, and titles"
+msgstr "可對作者、標籤和標題按讚或倒讚的訓練對話框"
+
+msgid "Training dialog with thumbs up/down"
+msgstr "可按讚／倒讚的訓練對話框"
+
+msgid "Trial Premium Subscription"
+msgstr "試用 Premium 訂閱"
+
+msgid "Try"
+msgstr "試試"
+
+msgid "Try NewsBlur free"
+msgstr "免費試用 NewsBlur"
+
+msgid "Try Premium for Free"
+msgstr "免費試用 Premium"
+
+msgid "Try it free"
+msgstr "免費試用"
+
+msgid "Try out NewsBlur"
+msgstr "試用 NewsBlur"
+
+msgid ""
+"Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
+"combines RSS, read-later, and highlights in one app."
+msgstr "兩種截然不同的理念：NewsBlur 是專用的 RSS 閱讀器，並具備智慧訓練功能。Readwise Reader 則將 RSS、稍後閱讀和重點標記整合在同一個應用程式中。"
+
+msgid ""
+"Two independent, privacy-focused RSS readers. Both are built by small teams, but they take different "
+"approaches to features, filtering, and pricing."
+msgstr "兩款獨立且重視隱私的 RSS 閱讀器。兩者都由小型團隊打造，但在功能、篩選和定價方面採取不同做法。"
+
+msgid "Two indie readers, different philosophies"
+msgstr "兩款獨立閱讀器，兩種不同理念"
+
+msgid ""
+"Two layers work together. Title matching normalizes headlines and groups exact and fuzzy matches. Semantic "
+"matching sends titles to Elasticsearch's more_like_this query to catch stories about the same event written"
+" with completely different headlines."
+msgstr "兩種比對方式相輔相成。標題比對會標準化標題，並將完全相同或相似的標題分組。語意比對則會將標題傳送至 Elasticsearch 的 more_like_this 查詢，找出描述相同事件、但標題截然不同的文章。"
+
+msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
+msgstr "兩款最受歡迎的 RSS 閱讀器，逐項比較功能。以下是它們的差異。"
+
+msgid "Type \"Delete\" to confirm"
+msgstr "輸入「Delete」以確認"
+
+msgid "Type keywords, phrases, or combinations"
+msgstr "輸入關鍵字、詞組或組合"
+
+msgid "URL is blocked"
+msgstr "網址已封鎖"
+
+msgid "Unique email address"
+msgstr "專屬電子郵件地址"
+
+msgid "Unknown Ask AI question"
+msgstr "未知的「詢問 AI」問題"
+
+msgid "Unlimited sites"
+msgstr "不限網站數量"
+
+msgid "Unlock the full NewsBlur experience"
+msgstr "解鎖完整的 NewsBlur 體驗"
+
+msgid "Unread"
+msgstr "未讀"
+
+msgid "Unsubscribe"
+msgstr "取消訂閱"
+
+msgid "Unsubscribe from NewsBlur emails"
+msgstr "取消訂閱 NewsBlur 電子郵件"
+
+msgid "Unsubscribed"
+msgstr "已取消訂閱"
+
+msgid "Unsupported language"
+msgstr "不支援的語言"
+
+msgid "Upgrade to Premium"
+msgstr "升級至 Premium"
+
+msgid "Upgrade to premium archive"
+msgstr "升級至 Premium Archive"
+
+msgid "Usage billing not enabled"
+msgstr "未啟用用量計費"
+
+msgid "Usage billing required for AI classifiers"
+msgstr "AI 分類器需使用量計費"
+
+msgctxt "heading for CLI usage examples"
+msgid "Use"
+msgstr "使用"
+
+msgid ""
+"Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
+"Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
+"NewsBlur's open API powers dozens of third-party clients."
+msgstr ""
+"在你最喜愛的閱讀應用程式中使用 NewsBlur。完整支援與 Reeder、ReadKit、Unread、lire、Fiery Feeds、Newsify "
+"等眾多應用程式同步。你的已讀狀態、已儲存文章和訓練資料會在所有應用程式間同步。NewsBlur 的開放 API 為數十款第三方用戶端提供支援。"
+
+msgid "Use prompt templates"
+msgstr "使用提示範本"
+
+msgid "Use widgets to see unread counts and stories at a glance"
+msgstr "使用小工具，一覽未讀數量和文章"
+
+msgid "User not found."
+msgstr "找不到使用者。"
+
+msgid "User-Controlled Filtering"
+msgstr "由使用者掌控的篩選"
+
+msgid "Username"
+msgstr "使用者名稱"
+
+msgid "Username or Email"
+msgstr "使用者名稱或電子郵件"
+
+msgid "Username or email"
+msgstr "使用者名稱或電子郵件"
+
+msgid "Username or email..."
+msgstr "使用者名稱或電子郵件…"
+
+msgid "View all training data"
+msgstr "查看所有訓練資料"
+
+msgid "View and update classifiers to like or dislike authors, tags, titles, and feeds"
+msgstr "檢視並更新分類器，喜歡或不喜歡作者、標籤、標題及訂閱來源"
+
+msgid "View and update your classifiers to like or dislike authors, tags, titles, and feeds."
+msgstr "檢視並更新你的分類器，喜歡或不喜歡作者、標籤、標題和訂閱來源。"
+
+msgid "View on GitHub"
+msgstr "在 GitHub 上查看"
+
+msgid "View on NewsBlur"
+msgstr "在 NewsBlur 上檢視"
+
+msgid ""
+"Visit the <a href=\"https://forum.newsblur.com\">NewsBlur support forum</a> to ask questions, report "
+"problems, or suggest features."
+msgstr "前往 <a href=\"https://forum.newsblur.com\">NewsBlur 支援論壇</a>，提問、回報問題或建議新功能。"
+
+msgid "Visit the forum"
+msgstr "前往論壇"
+
+msgid "Visual Training (Thumbs Up/Down)"
+msgstr "視覺訓練（按讚／倒讚）"
+
+msgid "Visual training vs. rule-based filtering"
+msgstr "視覺化訓練與規則式篩選"
+
+msgid "Want more CLI features?"
+msgstr "想要更多 CLI 功能嗎？"
+
+msgid "Want more MCP features?"
+msgstr "想要更多 MCP 功能嗎？"
+
+msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
+msgstr "Warren Robinett 用 64 位元組 RAM 寫出了 BASIC 解譯器。最多 9 行、64 個符號，整數範圍為 0&ndash;99。"
+
+msgid ""
+"Washington State bill HB2320 would require 3D printers to phone home and refuse to print known firearms. "
+"Why it's technically infeasible."
+msgstr "華盛頓州法案 HB2320 將要求 3D 印表機連線回報，並拒絕列印已知的槍枝。為何從技術上來說不可行。"
+
+msgid "We accept all major credit cards via Stripe (Visa, Mastercard, American Express, Discover) and PayPal."
+msgstr "我們透過 Stripe（Visa、Mastercard、American Express、Discover）和 PayPal 接受所有主要信用卡。"
+
+msgid ""
+"We love pull requests. If you want to add an endpoint, modify output, or make something better, <a "
+"href=\"http://github.com/samuelclay/NewsBlur\">NewsBlur's repo on Github</a> is the place to make that "
+"happen."
+msgstr ""
+"我們歡迎提交合併請求。若你想新增端點、修改輸出內容或讓某些功能更完善，<a href=\"http://github.com/samuelclay/NewsBlur\">NewsBlur 的 Github 儲存庫 "
+"</a> 就是實現這些想法的地方。"
+
+msgid ""
+"We reserve the right to revise these guidelines. If you violate the spirit of these terms, expect to be "
+"blocked without advance warning."
+msgstr "我們保留修訂這些準則的權利。若你違反這些條款的精神，可能會在未事先警告的情況下遭到封鎖。"
+
+#, python-format
+msgid ""
+"We're quite pleased to point out that this entire API is open-source, including the implementation of the "
+"endpoints. You can find the source of the <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py\">%(reader_path)s views "
+"source</a>, <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py\">%(social_path)s views "
+"source</a>, <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py\">%(feeds_path)s views "
+"source</a>, as well as <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml\">the API definitions in "
+"YAML</a>."
+msgstr ""
+"我們很高興指出，整個 API 都是開放原始碼，包括端點的實作。你可以在此找到 <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py\">%(reader_path)s views "
+"原始碼</a>、<a href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py\">%(social_path)s "
+"views 原始碼</a>、<a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py\">%(feeds_path)s views "
+"原始碼</a>，以及 <a href=\"http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml\">YAML 格式的 "
+"API 定義</a>。"
+
+msgid "Web"
+msgstr "網頁"
+
+msgid "Web Feed requires a Premium Archive subscription."
+msgstr "網頁訂閱來源需要 Premium Archive 訂閱。"
+
+msgid "Web Feeds"
+msgstr "網頁訂閱來源"
+
+msgid "Web Feeds (Any Website)"
+msgstr "網頁訂閱來源（任何網站）"
+
+msgid "Web Feeds - NewsBlur"
+msgstr "網頁訂閱來源 - NewsBlur"
+
+msgid "Web Feeds from any website, even without RSS"
+msgstr "任何網站的網頁訂閱來源，即使沒有 RSS 也可以"
+
+msgid ""
+"Web Feeds require a Premium Archive ($99/year) or Premium Pro ($29/month) subscription. Page-scraping is "
+"more resource-intensive than RSS fetching, so it's reserved for paid tiers."
+msgstr "網頁訂閱來源需要 Premium Archive（每年 $99）或 Premium Pro（每月 $29）訂閱。擷取網頁內容比抓取 RSS 更耗用資源，因此僅提供給付費方案使用。"
+
+msgid "Web feed creation showing a page being converted to a feed"
+msgstr "建立網頁訂閱來源：將頁面轉換為訂閱來源"
+
+msgid "Web feed creation showing page conversion"
+msgstr "建立網頁訂閱來源：顯示頁面轉換"
+
+msgid "Web only"
+msgstr "僅限網頁版"
+
+msgid "Web page monitoring (Pro)"
+msgstr "網頁監控（專業版）"
+
+msgid "Welcome to your premium trial!"
+msgstr "歡迎開始 Premium 試用！"
+
+msgid "What can an AI agent do with my NewsBlur?"
+msgstr "AI 代理可以如何使用我的 NewsBlur？"
+
+msgid "What does 5-15 minute fetching mean?"
+msgstr "每 5–15 分鐘擷取一次是什麼意思？"
+
+msgid "What happens if I cancel?"
+msgstr "如果我取消訂閱會怎麼樣？"
+
+msgid "What happens if I downgrade from Archive?"
+msgstr "如果我從 Archive 降級會怎麼樣？"
+
+msgid "What happens if I downgrade?"
+msgstr "如果我降級會怎樣？"
+
+msgid "What happens to my data if I downgrade?"
+msgstr "如果我降級，我的資料會怎麼處理？"
+
+msgid "What is MCP?"
+msgstr "什麼是 MCP？"
+
+msgid "What is the Daily Briefing?"
+msgstr "每日簡報是什麼？"
+
+msgid "What makes NewsBlur different"
+msgstr "NewsBlur 有何不同"
+
+msgid "What makes Premium Pro worth $29/month?"
+msgstr "為什麼 Premium Pro 值得每月 29 美元？"
+
+msgid "What payment methods do you accept?"
+msgstr "你們接受哪些付款方式？"
+
+msgid "What plan do I need for search?"
+msgstr "搜尋需要哪種方案？"
+
+msgid "What plan do I need?"
+msgstr "我需要哪種方案？"
+
+msgid "What sites can I follow with Web Feeds?"
+msgstr "網頁訂閱來源可以追蹤哪些網站？"
+
+msgid "What you get with Premium"
+msgstr "Premium 方案內容"
+
+msgid "What your agent can do"
+msgstr "你的代理程式可以做什麼"
+
+msgid "What's New"
+msgstr "最新消息"
+
+msgid "What's new:"
+msgstr "最新消息："
+
+msgid "What's the difference between CLI and MCP?"
+msgstr "CLI 和 MCP 有什麼不同？"
+
+msgid ""
+"When Google announced the shutdown of Google Reader in March 2013, millions of people scrambled for an "
+"alternative. NewsBlur was one of the top destinations for that migration. The servers were overwhelmed for "
+"weeks as new users flooded in. That moment proved something important: people care deeply about RSS, and "
+"they need a reader they can count on."
+msgstr ""
+"2013 年 3 月，Google 宣布關閉 Google Reader 時，數百萬人紛紛尋找替代服務。NewsBlur "
+"是當時最受歡迎的遷移目的地之一。新使用者大量湧入，伺服器連續數週不堪負荷。這件事證明了一個重要事實：人們非常重視 RSS，也需要一個值得信賴的閱讀器。"
+
+msgid "When a feed updates, NewsBlur checks for duplicate stories across all your subscriptions"
+msgstr "訂閱來源更新時，NewsBlur 會檢查你所有訂閱項目中是否有重複文章"
+
+msgid ""
+"When feeds only include summaries, Text view fetches the full article from the source. Clean formatting, no"
+" clutter."
+msgstr "當訂閱來源只提供摘要時，「文字」檢視會從來源網站擷取全文。格式簡潔清晰，不含雜訊。"
+
+msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
+msgstr "多個訂閱來源涵蓋同一則新聞時，NewsBlur 會將它們整理在一起，讓你只需看一次。"
+
+msgid ""
+"When multiple feeds cover the same story, NewsBlur groups them together so you only see it once. Semantic "
+"duplicate detection uses fuzzy title matching to catch stories that are similar but not identical. Read the"
+" version you prefer and skip the rest."
+msgstr "當多個訂閱來源報導同一則新聞時，NewsBlur 會將它們歸為一組，讓你只需閱讀一次。語意重複偵測會使用模糊標題比對，找出相似但不完全相同的報導。閱讀你偏好的版本，略過其他版本。"
+
+msgid ""
+"When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip "
+"duplicates."
+msgstr "多個訂閱來源若刊載相同文章，便會歸類在一起。閱讀你偏好的版本，並略過重複內容。"
+
+msgid ""
+"When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
+"is kept forever."
+msgstr "新增訂閱來源時，NewsBlur 會回補其所有可取得的歷史內容。之後的每篇文章都會永久保存。"
+
+msgid "When you subscribe to a new feed, its history is back-filled"
+msgstr "新增訂閱來源時，會回填其過往內容"
+
+msgid ""
+"Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
+" makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
+"NewsBlur also supports exporting your subscriptions at any time, so you're never locked in."
+msgstr ""
+"無論你是從 Google Reader 舊版 OPML 匯出檔匯入、使用其他 RSS 閱讀器，還是從頭開始，NewsBlur 都能讓你輕鬆完成設定。匯入 OPML "
+"檔案後，所有訂閱來源和資料夾便會立即顯示。NewsBlur 也支援隨時匯出你的訂閱項目，讓你不受平台綁定。"
+
+msgid "Which AI models are available?"
+msgstr "有哪些 AI 模型可用？"
+
+msgid "Whitney"
+msgstr "Whitney"
+
+msgid "Whoopsy-daisy, wrong password. Try again."
+msgstr "哎呀，密碼錯了。請再試一次。"
+
+msgid "Why is Pro monthly instead of yearly?"
+msgstr "為什麼 Pro 按月收費，而不是按年？"
+
+msgid "Widely Read Stories"
+msgstr "廣受閱讀的文章"
+
+msgid "Widely-read, long reads, good reads"
+msgstr "廣受閱讀、長篇閱讀、優質閱讀"
+
+msgid "Works Everywhere"
+msgstr "隨處皆可使用"
+
+msgid "Works with social media profiles, job boards, product pages, and more"
+msgstr "適用於社群媒體個人檔案、求職網站、產品頁面等"
+
+msgid ""
+"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
+"stories just like the intelligence trainer, with usage-based billing."
+msgstr "撰寫自然語言提示，依文章內容或圖片篩選文章。自然語言分類器會像智慧訓練器一樣為文章評分，並按使用量計費。"
+
+msgid ""
+"Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
+"professionals."
+msgstr "撰寫可比對標題、內文和網址的正規表示式。為專業人士提供精準且強大的篩選功能。"
+
+msgid "Writer"
+msgstr "作者"
+
+msgid "XL"
+msgstr "XL"
+
+msgid "XS"
+msgstr "XS"
+
+msgid ""
+"Yes! Basic intelligence training on authors, tags, and title keywords is free. Full-text training on story "
+"content requires Premium Archive."
+msgstr "可以！作者、標籤和標題關鍵字的基本智慧訓練免費提供。文章內容的全文訓練則需要 Premium Archive。"
+
+msgid "Yes, Ask AI works on any story in your feeds, including archived stories."
+msgstr "是的，「詢問 AI」可用於訂閱來源中的任何文章，包括已封存的文章。"
+
+msgid "Yes, Premium Archive includes all Premium features plus the archive, AI, and advanced training features."
+msgstr "是，Premium Archive 包含所有 Premium 功能，以及封存、AI 和進階訓練功能。"
+
+msgid ""
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
+"support."
+msgstr "是，Premium Pro 包含所有 Premium 和 Archive 功能，另加即時擷取、正規表示式和優先支援。"
+
+msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
+msgstr "是的，所有智慧訓練功能在電子報上的運作方式與一般訂閱來源相同。"
+
+msgid "Yes, both apps are open source and actively developed on GitHub."
+msgstr "是的，兩款應用程式都是開放原始碼，並且在 GitHub 上持續開發。"
+
+msgid ""
+"Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
+"web."
+msgstr "是的，iOS 和 Android 應用程式皆免費。應用程式中的付費功能會依照你在網頁版的訂閱方案提供。"
+
+msgid "Yes, email newsletters are a free feature."
+msgstr "是，電子報是免費功能。"
+
+msgid "Yes, every NewsBlur account has a unique email address for receiving newsletters."
+msgstr "是的，每個 NewsBlur 帳戶都有專屬的電子郵件地址，可用來接收電子報。"
+
+msgid "Yes, every archived story is fully searchable with Elasticsearch."
+msgstr "是，每篇封存文章都能透過 Elasticsearch 完整搜尋。"
+
+msgid "Yes, it can transcribe audio and video content and then answer questions about it."
+msgstr "是的，它可以轉錄音訊和影片內容，並回答相關問題。"
+
+msgid "Yes, save any search as a feed to get ongoing results."
+msgstr "可以，將任何搜尋儲存為訂閱來源，即可持續取得搜尋結果。"
+
+msgid "Yes, saved stories and their tags are fully indexed by search."
+msgstr "是的，已儲存的文章及其標籤都會完整建立搜尋索引。"
+
+msgid "Yes, saved stories and their tags are fully searchable."
+msgstr "是，已儲存的文章及其標籤都可以完整搜尋。"
+
+msgid "Yes, you can switch to Premium Archive or Premium at any time."
+msgstr "可以，你隨時都能改用 Premium Archive 或 Premium。"
+
+msgid "Yes, you can upgrade at any time. Your Premium subscription will be prorated."
+msgstr "可以，你隨時都能升級。Premium 訂閱費用會按比例計算。"
+
+msgid ""
+"Yes. Every new account starts with a free 30-day premium trial. No credit card required. You get full "
+"access to all premium features during the trial."
+msgstr "是。每個新帳戶都會自動享有 30 天免費進階版試用期。不需要信用卡。試用期間可完整使用所有進階功能。"
+
+msgid ""
+"Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader, share the link, "
+"or pipe it into IFTTT or Zapier."
+msgstr "可以。每個標籤都會產生自己的 RSS 訂閱來源，因此你可以在其他閱讀器訂閱、分享連結，或將它串接到 IFTTT 或 Zapier。"
+
+msgid ""
+"Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, "
+"and training sync across every app."
+msgstr "可以。支援與 Reeder、ReadKit、Unread、NetNewsWire 等眾多應用程式完整同步。你的已讀狀態、已儲存文章和訓練資料會在所有應用程式間同步。"
+
+msgid ""
+"Yes. NewsBlur is fully open source and can be self-hosted with a single Docker command. Visit the <a "
+"href=\"https://github.com/samuelclay/NewsBlur\" class=\"NB-splash-link\">GitHub repository</a> for "
+"instructions."
+msgstr ""
+"是。NewsBlur 完全採用開放原始碼，並可透過一條 Docker 指令自行架設。請參閱 <a href=\"https://github.com/samuelclay/NewsBlur\" class"
+"=\"NB-splash-link\">GitHub 儲存庫</a>中的說明。"
+
+msgid ""
+"Yes. NewsBlur supports OPML import, so you can bring your feeds from Google Reader, Feedly, Inoreader, or "
+"any other RSS reader."
+msgstr "可以。NewsBlur 支援匯入 OPML，因此你可以從 Google Reader、Feedly、Inoreader 或其他 RSS 閱讀器匯入訂閱來源。"
+
+#, python-format
+msgid ""
+"Yes. Pass <code>%(server_flag)s</code> to any command, or set the <code>%(variable)s</code> environment "
+"variable."
+msgstr "是。將 <code>%(server_flag)s</code> 傳遞給任何命令，或設定 <code>%(variable)s</code> 環境變數。"
+
+msgid ""
+"Yes. Stories are cached locally and the iOS app uses background refresh to stay up to date even when you're"
+" not using it."
+msgstr "是。文章會快取在本機，而 iOS App 會使用背景重新整理，即使你沒有使用 App，也能保持最新狀態。"
+
+msgid ""
+"Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with "
+"Google Reader exports, Feedly, Inoreader, and more."
+msgstr "可以。上傳 OPML 檔案後，NewsBlur 會在幾秒內匯入所有訂閱與資料夾。支援 Google Reader 匯出檔、Feedly、Inoreader 等。"
+
+msgid ""
+"Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
+"even when sites don't offer RSS."
+msgstr "是的。網頁訂閱來源會監控網頁的 HTML 是否有變更，而 RSS 則會讀取結構化的訂閱來源檔案。即使網站不提供 RSS，網頁訂閱來源仍然適用。"
+
+#, python-format
+msgid "Yesterday, %(date)s %(time)s"
+msgstr "昨天，%(date)s %(time)s"
+
+#, python-format
+msgid "Yesterday, %(time)s"
+msgstr "昨天，%(time)s"
+
+msgid ""
+"You are at the front of the line! Just a few more minutes<br />until you receive your free invite to use "
+"NewsBlur."
+msgstr "你已排到隊伍最前面！再等幾分鐘<br />就能收到使用 NewsBlur 的免費邀請。"
+
+#, python-format
+msgid ""
+"You are not required to use OAuth, in which case you will need to pass the <code>%(cookie_name)s</code> "
+"cookie with every request. This cookie is set on <a href=\"#/api/login\">login</a>."
+msgstr ""
+"你不一定要使用 OAuth；若不使用，則每次請求都必須附上 <code>%(cookie_name)s</code> cookie。此 cookie 會在<a "
+"href=\"#/api/login\">登入</a>時設定。"
+
+msgid "You are not subscribed to this feed"
+msgstr "你尚未訂閱此來源"
+
+msgid "You can train per-feed, per-folder (Archive), or globally (Archive). Per-feed training is free."
+msgstr "你可以針對個別訂閱來源、資料夾（Archive）或全域（Archive）進行訓練。個別訂閱來源訓練免費。"
+
+msgid "You cannot favorite your own shared story comment."
+msgstr "你無法將自己分享的文章留言加入最愛。"
+
+msgid "You cannot share newsletters. Somebody could unsubscribe you!"
+msgstr "你無法分享電子報，別人可能會藉此取消你的訂閱！"
+
+msgid "You decide what to focus and hide"
+msgstr "由你決定要關注或隱藏哪些內容"
+
+#, python-format
+msgid ""
+"You favorited <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>'s comments on <span class=\"NB-interaction-sharedstory-title "
+"NB-splash-link\">%(title)s</span>:"
+msgstr ""
+"你已將 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span> 在 <span class=\"NB-interaction-sharedstory-title NB-splash-"
+"link\">%(title)s</span> 的留言加入最愛："
+
+#, python-format
+msgid ""
+"You followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>."
+msgstr ""
+"你已追蹤 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>。"
+
+msgid "You have a lot of subscriptions! We're preparing your OPML export file now."
+msgstr "你的訂閱來源很多！我們正在準備 OPML 匯出檔案。"
+
+msgid ""
+"You may use the API commercially, by which we mean you may charge people money to use your project which "
+"itself uses the API. You may not, however, sell advertising against any data retrieved from NewsBlur's API."
+" Essentially, you can charge money for your application or service, but not wrap NewsBlur in "
+"advertisements."
+msgstr ""
+"你可以將 API 用於商業用途，也就是說，你可以向他人收費，讓他們使用採用此 API 的專案。不過，你不得在從 NewsBlur 的 API 擷取的任何資料上刊登廣告。簡單來說，你可以對應用程式或服務收費，但不得在"
+" NewsBlur 外包裝廣告。"
+
+#, python-format
+msgid ""
+"You replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>:"
+msgstr ""
+"你回覆了 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>："
+
+#, python-format
+msgid "You saved \"<span class=\"NB-interaction-starred-story-title NB-splash-link\">%(title)s</span>\"."
+msgstr "你已儲存「<span class=\"NB-interaction-starred-story-title NB-splash-link\">%(title)s</span>」。"
+
+#, python-format
+msgid "You shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
+msgstr "你分享了 <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>。"
+
+#, python-format
+msgid "You shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>:"
+msgstr "你分享了 <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>："
+
+msgid "You signed up for NewsBlur."
+msgstr "你已註冊 NewsBlur。"
+
+#, python-format
+msgid "You subscribed to <span class=\"NB-interaction-feed-title NB-splash-link\">%(feed_title)s</span>."
+msgstr "你已訂閱 <span class=\"NB-interaction-feed-title NB-splash-link\">%(feed_title)s</span>。"
+
+msgid "You train the reader, not the other way around"
+msgstr "是你訓練閱讀器，而不是反過來"
+
+msgid "You will no longer receive any emails from NewsBlur."
+msgstr "你將不會再收到來自 NewsBlur 的電子郵件。"
+
+msgid "You will no longer receive email notifications for this story."
+msgstr "你將不再收到這篇文章的電子郵件通知。"
+
+#, python-format
+msgid "You will not be charged until %(date)s"
+msgstr "直到 %(date)s 才會向你收費"
+
+msgid "You will receive an email shortly with your subscription backup attached."
+msgstr "稍後你會收到一封電子郵件，內附你的訂閱備份。"
+
+msgid "You're in control, not an algorithm"
+msgstr "由你掌控，而不是由演算法決定"
+
+msgid "You've been gifted a premium subscription! Sign up to claim it."
+msgstr "你獲贈了 Premium 訂閱！註冊即可領取。"
+
+msgid "YouTube search request failed."
+msgstr "YouTube 搜尋請求失敗。"
+
+msgid "Your Gift is Ready!"
+msgstr "你的禮物已準備就緒！"
+
+msgid "Your OPML export is being processed"
+msgstr "正在處理你的 OPML 匯出檔"
+
+msgid "Your OPML export is being processed. You will receive an email shortly with your subscription backup."
+msgstr "你的 OPML 匯出正在處理中。你很快會收到一封電子郵件，其中附有你的訂閱備份。"
+
+msgid "Your account"
+msgstr "你的帳戶"
+
+msgid ""
+"Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
+"data is deleted. Upgrade again anytime and everything is restored."
+msgstr "你的帳戶將恢復為免費方案。你仍可保留所有訂閱來源（最多 64 個）、訓練設定和已儲存的文章。不會刪除任何資料。隨時再次升級，即可恢復所有內容。"
+
+msgid "Your applications"
+msgstr "你的應用程式"
+
+msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
+msgstr "你封存的文章仍可存取，但新文章將依照標準保留政策處理。"
+
+msgid "Your archived stories remain accessible, but new stories will start following the standard retention policy."
+msgstr "你封存的文章仍可存取，但新文章將依照標準保留政策處理。"
+
+msgid ""
+"Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily"
+" briefing."
+msgstr "由 AI 提供智慧功能的完整新聞封存。包含 4,096 個網站、完整文章封存、詢問 AI 和每日簡報。"
+
+msgid "Your email address"
+msgstr "你的電子郵件地址"
+
+msgid ""
+"Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
+" appear in search results but will be available again if you re-upgrade. If you exceed the feed limit of a "
+"lower tier, you'll be asked to mute some feeds."
+msgstr "你的訂閱來源和已儲存文章永遠不會被刪除。若從 Archive 降級，較舊的文章將不再出現在搜尋結果中，但重新升級後即可再次存取。若超出較低方案的訂閱來源上限，系統會請你將部分訂閱來源設為靜音。"
+
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "禮物代碼無效。請檢查是否有誤。"
+
+msgid "Your gift code should be 12 characters long."
+msgstr "禮物代碼長度應為 12 個字元。"
+
+msgid "Your inbox stays clean"
+msgstr "讓收件匣保持整潔"
+
+msgid "Your new password"
+msgstr "新密碼"
+
+msgid "Your old password is incorrect."
+msgstr "舊密碼不正確。"
+
+msgid "Your password doesn't match."
+msgstr "密碼不符。"
+
+msgid "Your payment is being processed. Your gift link will be available shortly."
+msgstr "正在處理你的付款。你的贈禮連結稍後即可使用。"
+
+#, python-format
+msgid "Your premium trial has <strong class=\"NB-trial-days\">%(days)s day</strong> remaining"
+msgid_plural "Your premium trial has <strong class=\"NB-trial-days\">%(days)s days</strong> remaining"
+msgstr[0] "你的 Premium 試用期還剩 <strong class=\"NB-trial-days\">%(days)s 天</strong>"
+
+msgctxt "joins the comment count and the share count"
+msgid "and"
+msgstr "和"
+
+msgctxt "between a date and a time"
+msgid "at"
+msgstr "於"
+
+#, python-format
+msgid "by %(authors)s"
+msgstr "作者：%(authors)s"
+
+msgid "classifier_type and classifier_value are required"
+msgstr "classifier_type 和 classifier_value 為必填欄位"
+
+msgid "dashboard_rivers must be a list"
+msgstr "dashboard_rivers 必須是清單"
+
+msgctxt "button to edit a comment"
+msgid "edit"
+msgstr "編輯"
+
+msgid "email address"
+msgstr "電子郵件地址"
+
+msgid "feed_id is required"
+msgstr "必須提供 feed_id"
+
+msgctxt "job title in a contact list"
+msgid "founder"
+msgstr "創辦人"
+
+msgid "iOS & Android Apps"
+msgstr "iOS 與 Android 應用程式"
+
+msgid "iOS & Android apps"
+msgstr "iOS 與 Android 應用程式"
+
+msgid "iOS 8 is also now fully supported (as well as iOS 7)"
+msgstr "現在也已全面支援 iOS 8（以及 iOS 7）"
+
+msgid "iOS 8 is the minimum supported version for this release."
+msgstr "此版本最低支援 iOS 8。"
+
+msgid "iOS 9-ified"
+msgstr "iOS 9 風格"
+
+msgid "iOS and Android"
+msgstr "iOS 與 Android"
+
+msgid "iPhone 6 and 6 Plus are now fully supported"
+msgstr "現已完整支援 iPhone 6 和 6 Plus"
+
+msgid "just a second"
+msgstr "稍等一下"
+
+msgid "just now"
+msgstr "剛才"
+
+msgid "logout"
+msgstr "登出"
+
+msgctxt "divider between social sign-in and password sign-in"
+msgid "or"
+msgstr "或"
+
+msgid "password"
+msgstr "密碼"
+
+msgid "pebble watch, philips hue, alexa"
+msgstr "Pebble 手錶、Philips Hue、Alexa"
+
+msgctxt "button to reply to a comment"
+msgid "reply"
+msgstr "回覆"
+
+msgid "river_order must be an integer"
+msgstr "river_order 必須是整數"
+
+msgid "river_order must be non-negative"
+msgstr "river_order 必須是非負數"
+
+msgctxt "abbreviation for seconds"
+msgid "sec"
+msgstr "秒"
+
+msgid "username"
+msgstr "使用者名稱"
+
+msgctxt "versus, comparing NewsBlur with another reader"
+msgid "vs"
+msgstr "對比"
+
+msgid "vs Feedbin"
+msgstr "與 Feedbin 比較"
+
+msgid "vs Feedly"
+msgstr "與 Feedly 比較"
+
+msgid "vs Inoreader"
+msgstr "與 Inoreader 比較"
+
+msgid "vs Old Reader"
+msgstr "與 Old Reader 比較"
+
+msgid "vs Readwise"
+msgstr "與 Readwise 比較"
+
+msgid "vs. Other Readers"
+msgstr "與其他閱讀器相比"
+
