@@ -2,6 +2,19 @@
 
 Observed on October 16, 2026 for NewsBlur, app ID `463981119`, iOS version `16.0`, build `343`. The version is **Developer Rejected** after the authorized withdrawal from review. No replacement submission has been sent.
 
+## Diagnosed screenshot cause
+
+A fresh App Store Connect tab reproduced the English screenshot failure while recording the browser's actual responses. Each new medium-iPhone placement returned HTTP 409, `STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED`: the placement group already contains its limit of ten screenshots.
+
+The page's placement-list response returned only **50 of 81** records and supplied a next-page cursor. All 50 returned records were legacy screenshots: 8 iPad 13-inch, 8 iPad 12.9-inch second-generation, 5 iPad 9.7-inch, and 29 older Home-button iPhone screenshots. No modern medium-iPhone placements appeared in that first page. The UI's zero count therefore cannot be treated as evidence that earlier uploads were not saved. Repeated attempts created placements that the truncated readback did not display.
+
+Recovery is to remove the obsolete draft placements through Media Manager, retaining their Asset Library files, then inspect and deduplicate the newly visible modern groups. The UI explicitly confirms that removal from this device leaves files in Asset Library. The first removal confirmation was opened but not completed when desktop focus changed. No removal is claimed yet. Header/search behavior will be rechecked after this cleanup rather than assumed fixed.
+
+- [Placement-limit error responses](en-placement-limit-errors.json)
+- [Observed first-page counts](en-placement-pagination.json)
+
+The historical observations below describe what the UI displayed, not a reliable inventory of all stored placements.
+
 ## Reproduction
 
 1. Open the main 16.0 version page in App Store Connect.
@@ -33,4 +46,4 @@ All 20 non-English header/search pairs passed readback after a full page reload 
 - [Non-English creative readback](non-english-creative-readback.json)
 - [Current release checkpoint](../resubmission.json)
 
-Apple's [asset management instructions](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-your-app-store-assets) list Developer Rejected as an editable upload state. The UI does not expose a more specific cause. This evidence establishes a primary-locale placement failure, not its server-side cause. No support message has been sent.
+Apple's [asset management instructions](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-your-app-store-assets) list Developer Rejected as an editable upload state. The generic UI error initially concealed the placement-limit and pagination evidence documented above. No support message has been sent.
