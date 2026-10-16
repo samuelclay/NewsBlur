@@ -8,7 +8,7 @@
     "Stage reviewed files with unique locale, size and panel filenames"
   ],
   "store_placement": "unverified",
-  "updated_at": "2026-10-16T23:33:18Z",
+  "updated_at": "2026-10-16T23:34:51Z",
   "completed_sets": [
     {
       "language": "en",
@@ -170,6 +170,15 @@
       "technical_validation": "passed_including_native_pixel_comparison",
       "visual_review": "passed",
       "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-2064x2752-0[1-4].png",
+      "store_placement": "unverified"
+    },
+    {
+      "language": "hi",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed_including_native_pixel_comparison",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-2064x2752-0[1-4].png",
       "store_placement": "unverified"
     }
   ],
