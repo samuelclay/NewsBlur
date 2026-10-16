@@ -6366,7 +6366,7 @@ msgstr "Google Readerからのスター付き記事のインポートが完了�
 
 #, python-format
 msgid "Your NewsBlur %(tier_name)s gift is ready to share!"
-msgstr "NewsBlur%(tier_name)s__NB_TOKEN_2__のギフトを共有できます！"
+msgstr "NewsBlur %(tier_name)sのギフトを共有できます！"
 
 #, python-format
 msgid "Your NewsBlur subscription and your %(count)s site"

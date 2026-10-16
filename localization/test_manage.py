@@ -44,6 +44,14 @@ class Test_Translation(unittest.TestCase):
             Translator(0).translate("fr", [("title", "Read stories", "button")], [])
         request.assert_not_called()
 
+    def test_an_invented_masking_token_is_rejected(self):
+        # A model once returned a third __NB_TOKEN__ for a string with two, and it reached a subject line.
+        with self.assertRaises(ValueError):
+            validate(
+                "Your NewsBlur %(tier_name)s gift is ready to share!",
+                "Dein NewsBlur-Geschenk für %(tier_name)s __NB_TOKEN_2__ kann jetzt geteilt werden!",
+            )
+
     def test_stray_percent_in_a_format_string_is_rejected(self):
         with self.assertRaises(ValueError):
             validate("Only 1.9%% of users", "Yalnızca %1,9%%'u")
