@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13890": {
+      "title": "Reddit RSS Feeds Error 429/Error 404",
+      "url": "https://forum.newsblur.com/t/reddit-rss-feeds-error-429-error-404/13890",
+      "status": "reply-drafted",
+      "tier": 1,
+      "handled_at": "2026-10-16T17:29:25Z",
+      "last_posted_at": "2026-10-16T16:44:06.755Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "Read all four forum posts. Current source routes normal Reddit RSS URLs through OAuth; non-rate-limit failures are still recorded as generic 404. Fresh htask-celery-01 logs show widespread Reddit HTTP 403 on October 16. A direct GET to oauth.reddit.com/r/nvidia/hot using the existing cached production bearer token returned HTTP 403 text/html and the message You've been blocked by network security, with Reddit support form 21879292693140. Credentials are configured and the cached token has positive TTL; this does not independently prove token validity. The response does not identify whether IP, app, or another restriction caused the block. No production writes, token refresh, code fix, deployment, or forum post. No safe local fix for the upstream block established. Next action is review through Reddit's linked support form; no ticket submitted.",
+      "reply": "I checked again today. NewsBlur is using Reddit's authenticated API, but Reddit is returning a 403 with the message \"You've been blocked by network security.\" It's affecting multiple unrelated feeds. The 404 shown in NewsBlur is misleading here.\n\nReddit's response points to their support form to have the block reviewed. I don't yet know what triggered it or when access will return. You don't need to change your subscription URLs.",
+      "question": null
+    },
     "13869": {
       "title": "NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites",
       "url": "https://forum.newsblur.com/t/newsblur-15-for-android-faster-scrolling-a-tablet-layout-and-add-discover-sites/13869",
