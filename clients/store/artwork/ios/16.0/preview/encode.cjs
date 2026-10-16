@@ -56,6 +56,11 @@ const work = path.join(folder, stem + '-edit');
 fs.mkdirSync(work, {recursive: true});
 const fontNames = {ar: 'Geeza Pro', he: 'Arial Hebrew', hi: 'Kohinoor Devanagari', th: 'Thonburi', ja: 'Hiragino Sans', ko: 'Apple SD Gothic Neo', 'zh-Hans': 'PingFang SC', 'zh-Hant': 'PingFang TC'};
 const font = fontNames[options.locale] || 'Helvetica Neue';
+// encode.cjs uses libass RTL paragraph ordering and one box across shaped glyph runs.
+const rtl = ['ar', 'he'].includes(options.locale);
+const titleBox = rtl ? '4,0,12' : '3,12,0';
+const disclosureBox = rtl ? '4,0,9' : '3,9,0';
+const encoding = rtl ? -1 : 1;
 const fontSize = options.device === 'ipad' ? 43 : 34;
 const margin = Math.round(device.width * 0.06);
 const safeText = text => {
@@ -65,7 +70,7 @@ const safeText = text => {
 const stamp = seconds => `0:00:${seconds.toFixed(2).padStart(5, '0')}`;
 const events = editScenes.map(scene => `Dialogue: 0,${stamp(scene.start)},${stamp(scene.start + scene.duration)},Title,,0,0,0,,${safeText(copy[scene.key])}`);
 events.push(`Dialogue: 1,${stamp(editScenes.at(-1).start)},${stamp(totalDuration)},Disclosure,,0,0,0,,${safeText(copy.disclosure)}`);
-const subtitles = `[Script Info]\nScriptType: v4.00+\nPlayResX: ${device.width}\nPlayResY: ${device.height}\nWrapStyle: 0\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Title,${font},${fontSize},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,12,0,2,${margin},${margin},${Math.round(device.height * 0.155)},1\nStyle: Disclosure,${font},${Math.round(fontSize * 0.76)},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,9,0,2,${margin},${margin},${Math.round(device.height * 0.075)},1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n${events.join('\n')}\n`;
+const subtitles = `[Script Info]\nScriptType: v4.00+\nPlayResX: ${device.width}\nPlayResY: ${device.height}\nWrapStyle: 0\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Title,${font},${fontSize},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,${titleBox},2,${margin},${margin},${Math.round(device.height * 0.155)},${encoding}\nStyle: Disclosure,${font},${Math.round(fontSize * 0.76)},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,${disclosureBox},2,${margin},${margin},${Math.round(device.height * 0.075)},${encoding}\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n${events.join('\n')}\n`;
 fs.writeFileSync(path.join(work, 'captions.ass'), subtitles);
 const ffmpegArgs = ['-hide_banner', '-nostdin', '-n', '-filter_complex_threads', '1'];
 for (const input of inputs) ffmpegArgs.push('-threads', '1', '-i', input.file);

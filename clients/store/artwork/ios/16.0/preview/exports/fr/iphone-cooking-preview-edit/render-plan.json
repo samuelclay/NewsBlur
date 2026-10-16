@@ -1,5 +1,5 @@
 {
-  "status": "prepared_not_encoded",
+  "status": "encoded_technical_checks_passed",
   "locale": "fr",
   "device": "iphone",
   "output": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/preview/exports/fr/iphone-cooking-preview.mp4",
@@ -98,7 +98,8 @@
             "creation_time": "2026-10-16T22:10:50.000000Z"
           }
         }
-      }
+      },
+      "sha256": "042ff6af0fa1082a32041db28fcf5448e7ccab4302d9d9ef6ffc1f88c7accf8e"
     },
     {
       "scene": "stories",
@@ -193,7 +194,8 @@
             "creation_time": "2026-10-16T22:10:50.000000Z"
           }
         }
-      }
+      },
+      "sha256": "042ff6af0fa1082a32041db28fcf5448e7ccab4302d9d9ef6ffc1f88c7accf8e"
     },
     {
       "scene": "reader",
@@ -288,7 +290,8 @@
             "creation_time": "2026-10-16T22:10:50.000000Z"
           }
         }
-      }
+      },
+      "sha256": "042ff6af0fa1082a32041db28fcf5448e7ccab4302d9d9ef6ffc1f88c7accf8e"
     },
     {
       "scene": "saved",
@@ -383,7 +386,8 @@
             "creation_time": "2026-10-16T22:10:50.000000Z"
           }
         }
-      }
+      },
+      "sha256": "042ff6af0fa1082a32041db28fcf5448e7ccab4302d9d9ef6ffc1f88c7accf8e"
     }
   ],
   "scenes": [
@@ -502,6 +506,159 @@
   ],
   "working_directory": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/preview/exports/fr/iphone-cooking-preview-edit",
   "poster_candidate_seconds": 8,
-  "visual_review": "pending",
-  "submission": "not_submitted"
+  "visual_review": "sampled_frames_passed",
+  "submission": "not_submitted",
+  "output_probe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 886,
+        "height": 1920,
+        "coded_width": 886,
+        "coded_height": 1920,
+        "has_b_frames": 2,
+        "sample_aspect_ratio": "1:1",
+        "display_aspect_ratio": "443:960",
+        "pix_fmt": "yuv420p",
+        "level": 40,
+        "color_range": "tv",
+        "color_space": "bt709",
+        "color_transfer": "iec61966-2-1",
+        "color_primaries": "smpte432",
+        "chroma_location": "left",
+        "field_order": "progressive",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "id": "0x1",
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "time_base": "1/15360",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 276480,
+        "duration": "18.000000",
+        "bit_rate": "3294598",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "540",
+        "extradata_size": 49,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc62.11.100 libx264"
+        }
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_long_name": "AAC (Advanced Audio Coding)",
+        "profile": "LC",
+        "codec_type": "audio",
+        "codec_tag_string": "mp4a",
+        "codec_tag": "0x6134706d",
+        "sample_fmt": "fltp",
+        "sample_rate": "48000",
+        "channels": 2,
+        "channel_layout": "stereo",
+        "bits_per_sample": 0,
+        "initial_padding": 0,
+        "id": "0x2",
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/48000",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 864000,
+        "duration": "18.000000",
+        "bit_rate": "2280",
+        "nb_frames": "845",
+        "extradata_size": 5,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "SoundHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/preview/exports/fr/iphone-cooking-preview.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "nb_stream_groups": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "18.000000",
+      "size": "7439189",
+      "bit_rate": "3306306",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf62.3.100"
+      }
+    }
+  },
+  "visual_review_details": {
+    "method": "Two frames per second across the complete export, plus full-resolution title, reader and ending frames",
+    "contact_sheet": "../../../proof/fr/iphone-contact.jpg",
+    "checked": [
+      "Native French UI with actual article scrolling",
+      "Clean cuts including brief native navigation into Saved Stories",
+      "French captions and two-line disclosure fit without clipping"
+    ],
+    "real_time_playback": "pending",
+    "reviewed_at": "2026-10-16"
+  },
+  "output_sha256": "78a229bba54fd743da7d52ba8491ba0a47a6b25060dfa3a891f84256fa4955ba"
 }

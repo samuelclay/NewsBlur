@@ -63,10 +63,12 @@ The initial English iPhone edit uses source offsets `31,61,86.5,101.5` with leng
 
 Captions use libass with font fallback for complex scripts. The installed FFmpeg exposes both `ass` and `subtitles` filters. A supported system font is selected by script; visual checking is still required, especially for Arabic, Hebrew, Devanagari, Thai, and CJK. The script rejects untranslated locale fallback: each locale requires its own copy JSON and the caller must supply the corresponding native-language footage. The original English story content can remain visible inside the localized app.
 
+Arabic and Hebrew use libass `Encoding=-1` for paragraph direction and mixed-script ordering, plus `BorderStyle=4` for a single rectangular background across shaped glyph runs. This avoids reversed sentence order around “NewsBlur” and ragged per-glyph boxes. These are [documented libass extensions](https://github.com/libass/libass/wiki/Libass'-ASS-Extensions); the subtitles are burned into the final video, so store playback does not depend on an ASS renderer.
+
 ## Localization and review
 
 Produce one iPhone and one iPad preview for each of the 21 supported locales once the capture workflow supplies native UI recordings and reviewed caption files. `copy/<locale>.json` must have exactly `feeds`, `stories`, `reader`, `saved`, and `disclosure`. Record translation review separately; filenames alone do not prove a translated interface.
 
-French, Arabic and German iPhone source intervals have been visually inspected and their dry-run caption/edit plans are prepared. They are not encoded or upload-ready yet. Their iPad edits await corresponding native recordings. Hebrew is held for a corrected capture after delayed screen transitions were found. The remaining locale captions are ready, while their native capture and timing review proceed separately.
+French, Arabic and German iPhone previews are encoded and pass technical and sampled visual checks; normal-speed playback is pending. Arabic includes the verified RTL caption correction. Their iPad edits await corresponding native recordings. Hebrew is held for a corrected capture after delayed screen transitions were found. The remaining locale captions are ready, while their native capture and timing review proceed separately.
 
 The script checks technical output properties and writes a probe report. It cannot prove useful motion, correct language, missing glyphs, readable captions, clean scene cuts, settled sync state, lack of personal data, or a good poster frame. Review the entire actual video before upload. Verify processing and App Review submission independently; a local valid video is not a submitted preview.
