@@ -234,6 +234,38 @@
     "google_listing_limits": "https://support.google.com/googleplay/android-developer/answer/9859152?hl=en",
     "google_release_notes_limit": "https://support.google.com/googleplay/android-developer/answer/9859348?hl=en",
     "google_listings_api": "https://developers.google.com/android-publisher/api-ref/rest/v3/edits.listings",
-    "google_tracks_api": "https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks"
+    "google_tracks_api": "https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks",
+    "apple_product_page": "https://developer.apple.com/app-store/product-page/",
+    "apple_subscription_fields": "https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/auto-renewable-subscription-information/",
+    "apple_iap_fields": "https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/in-app-purchase-information/"
+  },
+  "product_limits": {
+    "apple": {
+      "subscriptions": {
+        "name": {
+          "max": 35,
+          "unit": "characters"
+        },
+        "description": {
+          "max": 55,
+          "unit": "characters"
+        }
+      },
+      "subscription_groups": {
+        "name": {
+          "max": 35,
+          "unit": "characters"
+        },
+        "app_name": {
+          "max": 30,
+          "unit": "characters"
+        }
+      },
+      "verified_at": "2026-10-16",
+      "notes": [
+        "Subscription name/description limits match the official product-page guide and empty live App Store Connect form counters. The Help In-App Purchase reference still lists the stricter 30/45 limits.",
+        "Subscription-group display name and custom app-name limits were verified from empty live App Store Connect form counters. The official subscription reference distinguishes customer-facing display names from internal reference names but does not state these numerical limits."
+      ]
+    }
   }
 }
