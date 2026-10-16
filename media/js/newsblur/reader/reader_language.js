@@ -62,6 +62,27 @@ _.extend(NEWSBLUR.LanguageChooser, {
         return _.contains(this.RTL_LANGUAGES, code) ? 'rtl' : 'ltr';
     },
 
+    // The chooser's title, prompt and button in one language. templates/base.html carries every language's
+    // copy (apps/profile/language.py) so the grid can preview the selected language; without it the
+    // interface language comes from the catalog and the rest fall back to the English source.
+    copy: function (code) {
+        var copy = NEWSBLUR.language_chooser_copy && NEWSBLUR.language_chooser_copy[code];
+        if (copy) return copy;
+        var native_name = this.native_name(code);
+        if (code == this.ui_language()) {
+            return {
+                title: gettext("Choose your language"),
+                pick: gettext("Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."),
+                use: interpolate(gettext("Use %(language)s"), { language: native_name }, true)
+            };
+        }
+        return {
+            title: "Choose your language",
+            pick: "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.",
+            use: interpolate("Use %(language)s", { language: native_name }, true)
+        };
+    },
+
     is_seen: function () {
         return !!NEWSBLUR.assets.preference('language_dialog_seen');
     },
@@ -167,21 +188,10 @@ _.extend(NEWSBLUR.LanguageChooser.prototype, {
     // ========
 
     render_grid: function (options) {
-        var language = this.language;
-        var headings = [
-            this.make_heading(language, gettext("Choose your language"),
-                gettext("Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."))
-        ];
-        if (language != 'en') {
-            // reader_language.js: The untranslated source keeps the grid readable for English speakers.
-            headings.push(this.make_heading('en', "Choose your language",
-                "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.")
-                .addClass('NB-language-source'));
-        }
-
         this.mode = 'grid';
         this.$el.attr('class', 'NB-language-chooser NB-language-mode-grid').empty().append([
-            $.make('div', { className: 'NB-language-headings' }, headings),
+            // update_selection fills the headings in the selected language.
+            $.make('div', { className: 'NB-language-headings' }),
             $.make('div', {
                 className: 'NB-language-options',
                 role: 'radiogroup',
@@ -240,6 +250,7 @@ _.extend(NEWSBLUR.LanguageChooser.prototype, {
     select_option: function (e) {
         this.selected = $(e.currentTarget).val();
         this.update_selection();
+        this.options.on_resize();
     },
 
     update_selection: function () {
@@ -248,9 +259,19 @@ _.extend(NEWSBLUR.LanguageChooser.prototype, {
             var $option = $(this);
             $option.toggleClass('NB-active', $('input', $option).val() == selected);
         });
-        $('.NB-language-use-selected', this.$el).text(interpolate(gettext("Use %(language)s"), {
-            language: NEWSBLUR.LanguageChooser.native_name(selected)
-        }, true));
+        // reader_language.js previews the selected language: the heading and the button read entirely in
+        // it, and the English source follows so the way back stays readable.
+        var copy = NEWSBLUR.LanguageChooser.copy(selected);
+        var english = NEWSBLUR.LanguageChooser.copy('en');
+        var headings = [this.make_heading(selected, copy.title, copy.pick)];
+        if (selected != 'en') {
+            headings.push(this.make_heading('en', english.title, english.pick).addClass('NB-language-source'));
+        }
+        $('.NB-language-headings', this.$el).empty().append(headings);
+        $('.NB-language-use-selected', this.$el).attr({
+            lang: selected,
+            dir: NEWSBLUR.LanguageChooser.direction(selected)
+        }).text(copy.use);
     },
 
     // ===========

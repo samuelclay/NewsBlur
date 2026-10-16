@@ -39,6 +39,7 @@
     NEWSBLUR.language_auto_label = "{{ ui_language_auto_label|escapejs }}";
     NEWSBLUR.detected_language = "{{ ui_detected_language|escapejs }}";
     NEWSBLUR.languages = [{% for code, name in ui_languages %}["{{ code|escapejs }}", "{{ name|escapejs }}"]{% if not forloop.last %},{% endif %}{% endfor %}];
+    {% if user.is_authenticated %}NEWSBLUR.language_chooser_copy = {{ ui_language_chooser_copy }};{% endif %}
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},

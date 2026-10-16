@@ -15,10 +15,13 @@ from apps.profile.language import (
     adopt_login_language,
     detect_language,
     javascript_catalog_data,
+    language_chooser_copy,
+    language_chooser_copy_script,
     language_context,
     language_preference,
 )
 from utils import json_functions as json
+from utils.languages import LANGUAGES
 from utils.story_functions import format_story_link_date__long, format_story_link_date__short, relative_date
 
 
@@ -120,6 +123,25 @@ class Test_Language(SimpleTestCase):
         self.assertEqual(response.content, b"new catalog")
         self.assertEqual(response["Cache-Control"], "no-store")
         self.assertEqual(response["ETag"], '"' + "b" * 16 + '"')
+
+    def test_language_chooser_copy_is_written_in_each_language(self):
+        # reader_language.js previews the grid's selected language, so its button must not mix in the
+        # interface language ("Use Українська" on an English page).
+        copy = language_chooser_copy()
+        self.assertEqual(set(copy), set(LANGUAGES))
+        self.assertEqual(copy["en"]["use"], "Use English")
+        self.assertEqual(copy["es"]["use"], "Usar Español")
+        self.assertIn("Українська", copy["uk"]["use"])
+        self.assertNotIn("Use ", copy["uk"]["use"])
+        self.assertNotEqual(copy["uk"]["title"], copy["en"]["title"])
+        self.assertNotEqual(copy["zh-Hant"]["pick"], copy["en"]["pick"])
+        for code, name in LANGUAGES.items():
+            self.assertIn(name, copy[code]["use"])
+
+    def test_language_chooser_copy_cannot_close_the_script_block(self):
+        script = language_chooser_copy_script()
+        self.assertNotIn("<", script)
+        self.assertEqual(json.decode(script)["fr"]["use"], language_chooser_copy()["fr"]["use"])
 
     def test_account_automatic_ignores_anonymous_cookie(self):
         request = self.request(authenticated=True, header="ja", cookie="fr")
