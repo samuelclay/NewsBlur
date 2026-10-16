@@ -37,6 +37,12 @@ All 21 app and version localizations, all 63 subscription localizations, and all
 
 ### Android
 
-The signed 16.0 bundle (version code 292), 21 store listings, and 21 release-note localizations are staged and verified in an uncommitted Play API edit. Subscription text and production submission are still in progress; Android is not yet submitted.
+Submitted on October 16, 2026 through Play Console. Publishing overview shows **Changes in review**, including 16.0 (version code 292), a full production rollout, and all 21 localized store listings. Managed publishing is off, allowing publication after approval. Google's preliminary checks were still running when submission was confirmed; this is not evidence of public availability.
+
+All 21 saved Console listings were reloaded and compared against the canonical title, short description, and full description. All 21 release notes were verified in the Console release form. Both subscriptions were independently read back through the Publisher API: all 42 localized titles, descriptions, and benefit lists matched exactly, and nonlisting product configuration was unchanged.
+
+A fresh post-submission API snapshot independently confirmed all 21 listing texts and production version 292 with status `completed` (full rollout). All 21 release notes matched their intended content; the Console's tagged-text import retained one leading newline in the 20 non-English notes. This formatting difference does not change their text. The track's `completed` status describes rollout configuration and does not override the Console's pending review state.
+
+The API account could stage an edit but lacked permission to commit it, so the actual release and listing changes were saved and submitted through the authenticated Console. The uncommitted API edit is not submission evidence. Console validation reported no device-support loss; its native debug-symbol warning did not block submission.
 
 Screenshot assets and linked privacy/terms documents have not been translated by this text workflow.
