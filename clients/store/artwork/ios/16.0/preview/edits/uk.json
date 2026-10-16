@@ -1,0 +1,25 @@
+{
+  "locale": "uk",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "uk",
+      "source_sha256": "53a0181e3a8efe6e69fe18dd7d78422d08c8d9e4d414941e4d6309f142bc153d",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        38,
+        50.6
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Matching native iPad interface, inspected across the full source timeline and half-second Saved transition frames. Includes actual fullscreen article scrolling. Saved Stories retains brief native navigation before the settled collection; ends before the later article-selection animation."
+    }
+  },
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated recording gap, then inspect final output and perform normal-speed playback before staging."
+}
