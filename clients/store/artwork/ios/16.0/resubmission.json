@@ -119,6 +119,19 @@
         "proof/ar-iphone-screenshots-persisted.jpg",
         "proof/ar-ipad-screenshots-persisted.jpg"
       ]
+    },
+    "de": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "proof": [
+        "proof/de-iphone-screenshots-persisted.jpg",
+        "proof/de-ipad-screenshots-persisted.jpg"
+      ]
     }
   },
   "app_preview_status": "English iPhone/iPad and French iPhone playback passed. French iPhone uploaded and persisted after reload. Other localized videos in progress.",
