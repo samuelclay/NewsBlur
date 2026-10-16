@@ -58,7 +58,7 @@
     "verified_proof": "proof/fr-main-search-persisted.jpg",
     "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "English, French, Arabic and German native iPhone sets verified. Hebrew capture stopped safely when article did not render. Fresh English iPad stories is verified; French iPad capture in progress. Only one task capture simulator active.",
+  "capture_status": "English, French and Arabic native captures complete for iPhone and iPad. German iPhone complete. Hebrew iPad in progress; Hebrew iPhone stopped safely on non-rendering article. Remaining locales pending. One task capture simulator active.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -70,7 +70,30 @@
         "panel-4.png"
       ],
       "placement_status": "not_persisted",
-      "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement."
+      "note": "Direct upload and subsequent library assignment both displayed 4 of 10. Fresh main-version navigation and full reload showed 0. Asset Library retains all four new files. No claim of final placement.",
+      "native_retry": {
+        "files": [
+          "newsblur-16.0-en-1206x2622-01.png",
+          "newsblur-16.0-en-1206x2622-02.png",
+          "newsblur-16.0-en-1206x2622-03.png",
+          "newsblur-16.0-en-1206x2622-04.png"
+        ],
+        "initial_result": "Two displayed, two returned An error occurred during upload",
+        "after_full_reload": "0 of 10 App Screenshots",
+        "proof": "proof/en-native-upload-error.jpg"
+      }
+    },
+    "fr": {
+      "size": "1206x2622",
+      "asset_library_files": [
+        "newsblur-16.0-fr-1206x2622-01.png",
+        "newsblur-16.0-fr-1206x2622-02.png",
+        "newsblur-16.0-fr-1206x2622-03.png",
+        "newsblur-16.0-fr-1206x2622-04.png"
+      ],
+      "placement_status": "persisted_after_full_reload",
+      "proof": "proof/fr-main-screenshots-persisted.jpg",
+      "note": "Four reviewed Sage panels uploaded through native picker; all four filenames and 4 of 10 count verified after full reload and explicitly reselecting French."
     }
   },
   "app_preview_status": "English iPhone and iPad final videos passed real-time playback; French, Arabic and German iPhone encoded and sampled QA passed, playback review pending."
