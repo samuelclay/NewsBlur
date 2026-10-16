@@ -342,6 +342,20 @@
       "note": "Reproduced on Samsung Galaxy S22, NB Alpha 15.1: Next moved 332 px between consecutive Hacker News stories because ReaderEndControls reparented navigation into article footers. Fixed position, Next/Done width, and full stationary page-transition backdrop. PR #2175 includes before/after screenshot sets, four-theme checks, Next/Done and scrolling evidence, and final-build recording. 837 unit tests passed initially; 27 focused tests and Alpha build passed after the review fix. Both Android CI runs, Django CI, and both automated reviews passed, with zero unresolved review threads. Localization validation fails on an unrelated hardcoded web chooser title introduced by main 3a887b707; main itself fails the same audit. Final head db8983ce4 verified; localization was the only red check. Merged at Sam's explicit request before the v16 i18n release on 2026-10-16T16:10:27Z as 4d0a09e900da210a9f383455c5ce92998410c65f. Not released or posted. Original theme preferences and login retained.",
       "reply": "Found it. The controls were moving to the bottom of each story, so short articles and related stories changed where Next appeared. The fix keeps it at the bottom of the screen, including when it changes to Done. It is merged and waiting for an Android release.",
       "question": null
+    },
+    "13852": {
+      "title": "Fails to add RSS feed",
+      "url": "https://forum.newsblur.com/t/fails-to-add-rss-feed/13852",
+      "status": "reply-drafted",
+      "tier": 1,
+      "handled_at": "2026-10-16T16:15:43.040Z",
+      "last_posted_at": "2026-10-15T18:19:20.532Z",
+      "pr": null,
+      "branch": null,
+      "worktree": null,
+      "note": "Checked 2026-10-16: full Discourse JSON includes Avi, steanne, sergiomarchesini. Both HTTPS RSS feeds HTTP 200 locally; NewsBlur FeedFinder discovers both homepages and direct RSS URLs; actual FetchFeed.fetch using unsaved feed objects returns FEED_OK/200, 25 entries, bozo=False in ~0.5s each. Upsilandre newest article 2025-01-31 Les Ghouls'n Ghosts; Djayesse newest 2026-10-11 L'Etranger. Production happ-web-01 and htask-celery-01 curl cannot establish TCP to either host. Production safe_requests_get also ConnectTimeout on HTTP/HTTPS and over-blog.com/overblog.com variants. Production FeedFinder returns [] for all three reported URLs due to connect timeouts. DNS resolves public IPs 185.128.239.39 and 185.128.239.66. Production Upsilandre feed 8404574 has repeated 505 Timeout, latest 2026-10-12; old HTTP feed 7814178 last updated 2020; no Djayesse feed row matched. Code utils/feed_fetcher.py maps TimeoutError to internal 505. Root failure is production-to-OverBlog reachability; who drops connections is unproven. No parser/discovery defect reproduced locally and no code fix, branch, PR or deployment made. No working alternate URL found; network restoration or a separately evaluated proxy workaround remains needed. Browser screenshots unavailable because neither iab nor chrome is exposed. MFetchHistory.feed helper used per skill; it may create empty analytics history if missing.",
+      "reply": "Both RSS feeds are valid. I can fetch and parse them locally, but connections from NewsBlur’s servers to OverBlog time out before any response comes back. The 505 shown in NewsBlur means a timeout, not an HTTP error returned by the blog.\n\nUpsilandre’s latest post is January 31, 2025, but its feed still works. Djayesse is actively publishing, with a post from October 11, 2026. This is a connectivity problem between NewsBlur and OverBlog. It hasn’t been fixed yet, and changing the feed URL doesn’t appear to help.",
+      "question": null
     }
   }
 }
