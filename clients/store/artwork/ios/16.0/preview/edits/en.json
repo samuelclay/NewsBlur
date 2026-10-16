@@ -1,0 +1,39 @@
+{
+  "locale": "en",
+  "devices": {
+    "iphone": {
+      "source_ui_locale": "en",
+      "source_intervals_reviewed": true,
+      "starts": [
+        31,
+        61,
+        86.5,
+        101.5
+      ],
+      "durations": [
+        4,
+        3.5,
+        7,
+        5
+      ],
+      "notes": "Includes the genuine article scroll at source 88–91 seconds; cuts exclude long host stalls and loading intervals. Source offsets were inspected against decoded frames."
+    },
+    "ipad": {
+      "source_ui_locale": "en",
+      "source_intervals_reviewed": true,
+      "starts": [
+        0,
+        8.4,
+        12.4,
+        21.4
+      ],
+      "durations": [
+        0,
+        4,
+        8.5,
+        4.5
+      ],
+      "notes": "Initial feed sidebar and empty loading interval omitted. Includes genuine split-view expansion, article scrolling and navigation to a saved bread story."
+    }
+  }
+}

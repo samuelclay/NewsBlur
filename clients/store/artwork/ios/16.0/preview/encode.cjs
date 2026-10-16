@@ -7,7 +7,7 @@ const storyboard = JSON.parse(fs.readFileSync(path.join(__dirname, 'storyboard.j
 const args = process.argv.slice(2);
 if (!args.length || args.includes('--help')) {
   console.log('Usage: node encode.cjs --device iphone|ipad --locale en --feeds VIDEO --stories VIDEO --reader VIDEO --saved VIDEO --starts 0,0,0,0 [--durations 5,5,5,5] --output FILE.mp4 [--execute]');
-  console.log('Default: probe inputs and write edit plan/captions only. No encoding. Four real portrait video intervals totaling 20 seconds are required.');
+  console.log('Default: probe inputs and write edit plan/captions only. No encoding. Real portrait video intervals totaling 15–30 seconds are required; a zero-duration scene is omitted.');
   process.exit(0);
 }
 const options = {};
@@ -30,9 +30,10 @@ if (Object.keys(copy).sort().join() !== [...keys].sort().join() || keys.some(k =
 const starts = (options.starts || '0,0,0,0').split(',').map(Number);
 if (starts.length !== 4 || starts.some(n => !Number.isFinite(n) || n < 0)) throw Error('--starts needs four nonnegative offsets.');
 const durations = (options.durations || '5,5,5,5').split(',').map(Number);
-if (durations.length !== 4 || durations.some(n => !Number.isFinite(n) || n < 2) || Math.abs(durations.reduce((a, b) => a + b, 0) - 20) > 0.001) throw Error('--durations needs four intervals of at least 2 seconds totaling 20.');
+const totalDuration = durations.reduce((a, b) => a + b, 0);
+if (durations.length !== 4 || durations.some(n => !Number.isFinite(n) || (n !== 0 && n < 2)) || totalDuration < 15 || totalDuration > 30 || durations[3] < 4) throw Error('--durations needs four intervals (zero skips a scene), totaling 15–30 seconds, with at least 4 seconds for the final disclosure.');
 let timeline = 0;
-const editScenes = storyboard.scenes.map((scene, i) => {const edit = {...scene, start: timeline, duration: durations[i]}; timeline += durations[i]; return edit;});
+const editScenes = storyboard.scenes.map((scene, i) => {const edit = {...scene, source_index: i, start: timeline, duration: durations[i]}; timeline += durations[i]; return edit;}).filter(scene => scene.duration > 0);
 if (!options.output || path.extname(options.output).toLowerCase() !== '.mp4') throw Error('Choose an --output ending in .mp4.');
 const output = path.resolve(options.output);
 if (fs.existsSync(output)) throw Error('Output already exists; choose a new file: ' + output);
@@ -45,9 +46,9 @@ const inputs = editScenes.map((scene, i) => {
   const info = probe(file);
   const video = info.streams.find(s => s.codec_type === 'video');
   const duration = Number(video?.duration || info.format.duration);
-  if (!video || !(duration >= starts[i] + scene.duration)) throw Error('Recording is too short for selected interval: ' + file);
+  if (!video || !(duration >= starts[scene.source_index] + scene.duration)) throw Error('Recording is too short for selected interval: ' + file);
   if (video.width !== device.expected_raw_width || video.height !== device.expected_raw_height) throw Error('Unexpected raw recording dimensions: ' + file + ` (${video.width}x${video.height})`);
-  return {scene: scene.key, file, start: starts[i], duration: scene.duration, bytes: fs.statSync(file).size, probe: info};
+  return {scene: scene.key, file, start: starts[scene.source_index], duration: scene.duration, bytes: fs.statSync(file).size, probe: info};
 });
 const folder = path.dirname(output);
 const stem = path.basename(output, '.mp4');
@@ -63,16 +64,17 @@ const safeText = text => {
 };
 const stamp = seconds => `0:00:${seconds.toFixed(2).padStart(5, '0')}`;
 const events = editScenes.map(scene => `Dialogue: 0,${stamp(scene.start)},${stamp(scene.start + scene.duration)},Title,,0,0,0,,${safeText(copy[scene.key])}`);
-events.push(`Dialogue: 1,${stamp(editScenes[3].start)},0:00:20.00,Disclosure,,0,0,0,,${safeText(copy.disclosure)}`);
+events.push(`Dialogue: 1,${stamp(editScenes.at(-1).start)},${stamp(totalDuration)},Disclosure,,0,0,0,,${safeText(copy.disclosure)}`);
 const subtitles = `[Script Info]\nScriptType: v4.00+\nPlayResX: ${device.width}\nPlayResY: ${device.height}\nWrapStyle: 0\nScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Title,${font},${fontSize},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,12,0,2,${margin},${margin},${Math.round(device.height * 0.155)},1\nStyle: Disclosure,${font},${Math.round(fontSize * 0.76)},&H00F3F2ED,&H00F3F2ED,&H40252C27,&H40252C27,0,0,0,0,100,100,0,0,3,9,0,2,${margin},${margin},${Math.round(device.height * 0.075)},1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n${events.join('\n')}\n`;
 fs.writeFileSync(path.join(work, 'captions.ass'), subtitles);
 const ffmpegArgs = ['-hide_banner', '-nostdin', '-n', '-filter_complex_threads', '1'];
-for (const input of inputs) ffmpegArgs.push('-threads', '1', '-ss', String(input.start), '-t', String(input.duration), '-i', input.file);
-ffmpegArgs.push('-f', 'lavfi', '-t', '20', '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
-const filters = inputs.map((input, i) => `[${i}:v]trim=duration=${input.duration},setpts=PTS-STARTPTS,fps=30,scale=${device.width}:${device.height}:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=${device.width}:${device.height}:(ow-iw)/2:(oh-ih)/2:color=0xedefeb,setsar=1,settb=AVTB[v${i}]`);
-filters.push('[v0][v1][v2][v3]concat=n=4:v=1:a=0,ass=filename=captions.ass:shaping=complex[v]');
-ffmpegArgs.push('-filter_complex', filters.join(';'), '-map', '[v]', '-map', '4:a:0', '-t', '20', '-c:v', 'libx264', '-preset', 'fast', '-threads', '2', '-profile:v', 'high', '-level:v', '4.0', '-pix_fmt', 'yuv420p', '-b:v', '11M', '-maxrate', '12M', '-bufsize', '24M', '-r', '30', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2', '-disposition:a:0', 'default', '-movflags', '+faststart', '-map_metadata', '-1', output);
-const plan = {status: 'prepared_not_encoded', locale: options.locale, device: options.device, output, source_copy: copyPath, inputs, scenes: editScenes, expected: device, duration: 20, encoder: 'ffmpeg', encoder_args: ffmpegArgs, working_directory: work, poster_candidate_seconds: 12, visual_review: 'pending', submission: 'not_submitted'};
+for (const input of inputs) ffmpegArgs.push('-threads', '1', '-i', input.file);
+ffmpegArgs.push('-f', 'lavfi', '-t', String(totalDuration), '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
+// encode.cjs must preserve held VFR frames: normalize the full timeline before cutting.
+const filters = inputs.map((input, i) => `[${i}:v]fps=30:start_time=0,trim=start=${input.start}:duration=${input.duration},setpts=PTS-STARTPTS,scale=${device.width}:${device.height}:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=${device.width}:${device.height}:(ow-iw)/2:(oh-ih)/2:color=0xedefeb,setsar=1,settb=AVTB[v${i}]`);
+filters.push(inputs.map((_, i) => `[v${i}]`).join('') + `concat=n=${inputs.length}:v=1:a=0,ass=filename=captions.ass:shaping=complex[v]`);
+ffmpegArgs.push('-filter_complex', filters.join(';'), '-map', '[v]', '-map', `${inputs.length}:a:0`, '-t', String(totalDuration), '-c:v', 'libx264', '-preset', 'fast', '-threads', '2', '-profile:v', 'high', '-level:v', '4.0', '-pix_fmt', 'yuv420p', '-b:v', '11M', '-maxrate', '12M', '-bufsize', '24M', '-r', '30', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2', '-disposition:a:0', 'default', '-movflags', '+faststart', '-map_metadata', '-1', output);
+const plan = {status: 'prepared_not_encoded', locale: options.locale, device: options.device, output, source_copy: copyPath, inputs, scenes: editScenes, expected: device, duration: totalDuration, encoder: 'ffmpeg', encoder_args: ffmpegArgs, working_directory: work, poster_candidate_seconds: storyboard.poster_candidate_seconds, visual_review: 'pending', submission: 'not_submitted'};
 const planPath = path.join(work, 'render-plan.json');
 fs.writeFileSync(planPath, JSON.stringify(plan, null, 2) + '\n');
 console.log('Prepared ' + planPath);
@@ -84,7 +86,7 @@ const video = report.streams.find(s => s.codec_type === 'video');
 const audio = report.streams.find(s => s.codec_type === 'audio');
 const duration = Number(report.format.duration);
 const fraction = value => { const [n, d] = value.split('/').map(Number); return n / d; };
-const valid = video?.codec_name === 'h264' && video.profile === 'High' && video.level <= 40 && video.width === device.width && video.height === device.height && video.pix_fmt === 'yuv420p' && fraction(video.avg_frame_rate) <= 30.001 && Math.abs(duration - 20) <= 0.1 && audio?.codec_name === 'aac' && audio.channels === 2 && Number(audio.sample_rate) === 48000 && fs.statSync(output).size < 500000000;
+const valid = video?.codec_name === 'h264' && video.profile === 'High' && video.level <= 40 && video.width === device.width && video.height === device.height && video.pix_fmt === 'yuv420p' && Math.abs(fraction(video.avg_frame_rate) - 30) < 0.001 && Math.abs(Number(video.duration) - totalDuration) <= 0.1 && Math.abs(Number(video.nb_frames) - Math.round(totalDuration * 30)) <= 1 && Math.abs(duration - totalDuration) <= 0.1 && audio?.codec_name === 'aac' && audio.channels === 2 && Number(audio.sample_rate) === 48000 && fs.statSync(output).size < 500000000;
 plan.status = valid ? 'encoded_technical_checks_passed' : 'encoded_technical_checks_failed';
 plan.output_probe = report;
 fs.writeFileSync(planPath, JSON.stringify(plan, null, 2) + '\n');
