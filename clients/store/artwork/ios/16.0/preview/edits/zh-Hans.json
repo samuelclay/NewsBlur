@@ -1,0 +1,25 @@
+{
+  "locale": "zh-Hans",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "zh-Hans",
+      "source_sha256": "2aed7ce0b782fd68509dd33c53c151e0c8bde5745e6525e1aea3e6c6bc66a8ce",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        40,
+        56.5
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native Simplified Chinese iPad UI with loaded photographs. Real fullscreen article scroll and settled Saved collection; ending selected before the later bread-article transition."
+    }
+  },
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated gap, then verify CJK glyphs, exact final frame and normal-speed playback."
+}
