@@ -344,7 +344,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="unknown_user">Người dùng không xác định</string>
     <string name="delete_feed_message">Xóa nguồn cấp \"%s\"?</string>
     <string name="delete_saved_search_message">Xóa tìm kiếm đã lưu %s?</string>
-    <string name="delete_folder_message">Xóa thư mục \"%s\" và hủy đăng ký tất cả nguồn tin bên trong?</string>
+    <string name="delete_folder_message">Xóa thư mục \"%s\" và hủy đăng ký tất cả nguồn cấp bên trong?</string>
     <string name="deleting_folder_message">Đang xóa thư mục \"%s\"</string>
     <string name="add_saved_search_message">Lưu tìm kiếm \"%s\"?</string>
     <string name="unfollow_message">Bỏ theo dõi \"%s\"?</string>

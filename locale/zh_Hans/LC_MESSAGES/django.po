@@ -404,7 +404,7 @@ msgid "AI-powered story analysis and daily summaries"
 msgstr "AI 驱动的文章分析和每日摘要"
 
 msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
-msgstr "通过 AI 分析文章，并根据你的新闻源生成个性化每日摘要。"
+msgstr "通过 AI 分析文章，并根据你的新闻订阅源生成个性化每日摘要。"
 
 msgid "API Guidelines and Terms of Service"
 msgstr "API 指南和服务条款"

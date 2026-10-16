@@ -2769,7 +2769,7 @@ msgid "Feed opens:"
 msgstr "פתיחות פיד:"
 
 msgid "Feed: "
-msgstr "מקור: "
+msgstr "פיד: "
 
 msgid "Feeds"
 msgstr "פידים"
@@ -2778,7 +2778,7 @@ msgid "Feeds back-filled for complete archive"
 msgstr "השלמה לאחור של פידים לארכיון מלא"
 
 msgid "Feeds with deeply engaged readers, not yet widely known"
-msgstr "מקורות עם קוראים מעורבים מאוד, שעדיין אינם מוכרים לרבים"
+msgstr "פידים עם קוראים מעורבים מאוד, שעדיין אינם מוכרים לרבים"
 
 msgid "Feeds:"
 msgstr "פידים:"
@@ -5179,7 +5179,7 @@ msgid "Recent interactions"
 msgstr "אינטראקציות אחרונות"
 
 msgid "Recently added feeds that are gaining subscribers"
-msgstr "מקורות שנוספו לאחרונה וצוברים מנויים"
+msgstr "פידים שנוספו לאחרונה וצוברים מנויים"
 
 msgid "Recommend Site"
 msgstr "המלצת אתר"

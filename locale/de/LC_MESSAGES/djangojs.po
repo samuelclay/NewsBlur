@@ -3375,7 +3375,7 @@ msgid "Hide"
 msgstr "Ausblenden"
 
 msgid "Hide all sharing, comments, and blurblog features"
-msgstr "Alle Funktionen zum Teilen, Kommentieren und Blurbloggen ausblenden"
+msgstr "Alle Teilen-, Kommentar- und Blurblog-Funktionen ausblenden"
 
 msgid "Hide discover sites popover"
 msgstr "Popover zum Entdecken von Websites ausblenden"
@@ -3792,7 +3792,7 @@ msgid "Long Reads on NewsBlur"
 msgstr "Lange Artikel auf NewsBlur"
 
 msgid "Long reads for later"
-msgstr "Längere Artikel für später"
+msgstr "Lange Artikel für später"
 
 msgid "Longer articles worth setting time aside for"
 msgstr "Längere Artikel, für die sich Zeit lohnt"

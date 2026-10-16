@@ -6152,7 +6152,7 @@ msgid "Stories per month"
 msgstr "Ay başına haber"
 
 msgid "Stories readers finished, saved, and shared"
-msgstr "Okuyucuların bitirdiği, kaydettiği ve paylaştığı hikâyeler"
+msgstr "Okuyucuların bitirdiği, kaydettiği ve paylaştığı haberler"
 
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "NewsBlur genelinde en çok ilgi gören haberler."

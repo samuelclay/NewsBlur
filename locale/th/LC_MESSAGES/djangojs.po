@@ -3395,7 +3395,7 @@ msgid ""
 "Stories opened with %(shortcut)s will then load in the background."
 msgstr ""
 "เปิด <b>%(config_page)s</b> ในแท็บใหม่ ค้นหา <b>%(setting)s</b> แล้วตั้งค่าเป็น <b>%(value)s</b> "
-"จากนั้นเรื่องราวที่เปิดด้วย %(shortcut)s จะโหลดในเบื้องหลัง"
+"จากนั้นบทความที่เปิดด้วย %(shortcut)s จะโหลดในเบื้องหลัง"
 
 msgid "In a new window"
 msgstr "ในหน้าต่างใหม่"

@@ -4416,7 +4416,7 @@ msgid ""
 "changed, highlighted in green and red. Useful for following developing news stories, corrected articles, or"
 " evolving product announcements."
 msgstr ""
-"Lihat bagaimana sebuah cerita berubah setelah pertama kali diterbitkan. NewsBlur melacak revisi dan "
+"Lihat bagaimana sebuah artikel berubah setelah pertama kali diterbitkan. NewsBlur melacak revisi dan "
 "menampilkan perbedaan yang berubah, disorot dengan warna hijau dan merah. Berguna untuk mengikuti berita "
 "yang berkembang, artikel yang dikoreksi, atau pengumuman produk yang diperbarui."
 
@@ -4761,7 +4761,7 @@ msgid "Story detail view showing cluster cards for alternative sources"
 msgstr "Tampilan detail artikel yang menampilkan kartu klaster untuk sumber alternatif"
 
 msgid "Story diff showing tracked changes highlighted in green and red"
-msgstr "Perbedaan cerita yang menyorot perubahan terlacak dengan warna hijau dan merah"
+msgstr "Perbedaan artikel yang menyorot perubahan terlacak dengan warna hijau dan merah"
 
 msgid "Story has no images"
 msgstr "Artikel tidak memiliki gambar"

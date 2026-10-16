@@ -391,7 +391,7 @@ msgid "A personal news reader that brings people together to talk about the worl
 msgstr "İnsanları dünya hakkında konuşmak için bir araya getiren kişisel bir haber okuyucusu."
 
 msgid "A summary of your top stories, customizable and delivered every day"
-msgstr "En iyi hikâyelerinizin özelleştirilebilir ve her gün gönderilen özeti"
+msgstr "En iyi haberlerinizin özelleştirilebilir ve her gün gönderilen özeti"
 
 msgid "AI Assistant (Feedly AI)"
 msgstr "Yapay Zekâ Asistanı (Feedly AI)"

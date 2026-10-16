@@ -439,7 +439,7 @@
 			<key>one</key>
 			<string>%@ непрочитана стаття</string>
 			<key>other</key>
-			<string>%@ непрочитаних новин</string>
+			<string>%@ непрочитаної статті</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

@@ -44,7 +44,7 @@
 "%@ stories left" = "Sisa %@ artikel";
 "%@ stories/month" = "%@ artikel/bulan";
 "%@ subscribers" = "%@ pelanggan";
-"%@ unread stories" = "%@ cerita belum dibaca";
+"%@ unread stories" = "%@ artikel belum dibaca";
 "%ldd ago" = "%ld hari lalu";
 "%ldh ago" = "%ld jam yang lalu";
 "%ldm ago" = "%ld menit yang lalu";
@@ -1014,7 +1014,7 @@
 "Unread + Focus" = "Belum Dibaca + Fokus";
 "Unread Stories" = "Artikel Belum Dibaca";
 "Unread only" = "Hanya yang belum dibaca";
-"Unsave" = "Hapus dari simpanan";
+"Unsave" = "Batal simpan";
 "Unsave This Story" = "Batal Simpan Artikel Ini";
 "Unsave story" = "Batal simpan artikel";
 "Unsave this story" = "Batal simpan artikel ini";

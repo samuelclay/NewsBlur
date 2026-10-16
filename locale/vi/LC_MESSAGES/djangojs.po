@@ -2034,7 +2034,7 @@ msgstr ""
 "bạn."
 
 msgid "Daily briefing with your top stories and keywords"
-msgstr "Bản tin hằng ngày với tin nổi bật và từ khóa của bạn"
+msgstr "Bản tin hằng ngày gồm những bài viết nổi bật và từ khóa của bạn"
 
 msgid "Daily distribution of stories"
 msgstr "Phân bố bài viết trong ngày"
@@ -2849,7 +2849,7 @@ msgid "Flat"
 msgstr "Phẳng"
 
 msgid "Flowing narrative that connects stories into a readable digest"
-msgstr "Mạch truyện liền lạc kết nối các bài viết thành bản tóm lược dễ đọc"
+msgstr "Lối tường thuật liền mạch kết nối các bài viết thành bản tóm lược dễ đọc"
 
 msgid "Focus"
 msgstr "Tập trung"
@@ -3138,7 +3138,7 @@ msgid "Get a summary of your top stories, delivered on your schedule."
 msgstr "Nhận bản tóm tắt những bài viết hàng đầu theo lịch của bạn."
 
 msgid "Get an AI-curated daily briefing with top stories and long reads"
-msgstr "Nhận bản tin tóm lược hằng ngày do AI tuyển chọn, gồm các tin nổi bật và bài đọc dài"
+msgstr "Nhận bản tin tóm lược hằng ngày do AI tuyển chọn, gồm các bài viết nổi bật và bài đọc dài"
 
 msgid "Get more from NewsBlur"
 msgstr "Khai thác thêm từ NewsBlur"
@@ -5589,7 +5589,7 @@ msgid "See the story title and a short content preview"
 msgstr "Xem tiêu đề bài viết và bản xem trước nội dung ngắn"
 
 msgid "See which feeds cover the same story"
-msgstr "Xem những nguồn cấp nào cùng đưa một tin"
+msgstr "Xem những nguồn cấp nào cùng đăng một bài viết"
 
 msgid "Select"
 msgstr "Chọn"
@@ -6464,8 +6464,8 @@ msgid ""
 "The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
 "custom sections you define."
 msgstr ""
-"Bản tin hằng ngày xuất hiện ở đầu thanh bên, gồm các mục tin nổi bật, bài đọc dài và các mục tùy chỉnh do "
-"bạn tạo."
+"Bản tin hằng ngày xuất hiện ở đầu thanh bên, gồm các mục bài viết hàng đầu, bài đọc dài và các mục tùy "
+"chỉnh do bạn tạo."
 
 msgid ""
 "The MCP server uses OAuth, the same authentication as third-party apps. You authorize through your browser "

@@ -5612,7 +5612,7 @@ msgid "Share the link."
 msgstr "リンクを共有。"
 
 msgid "Share this link. When someone signs up and subscribes to premium, you earn a free year."
-msgstr "このリンクをシェアしましょう。誰かが登録してプレミアムに加入すると、1年間無料で利用できます。"
+msgstr "このリンクを共有しましょう。誰かが登録してプレミアムに加入すると、1年間無料で利用できます。"
 
 msgid "Share this story"
 msgstr "この記事を共有"
@@ -5708,7 +5708,7 @@ msgid "Show confirmation when marking feeds or folders as read"
 msgstr "フィードやフォルダーを既読にする際に確認を表示"
 
 msgid "Show discover sites popover above story titles"
-msgstr "サイト発見のポップオーバーを記事タイトルの上に表示"
+msgstr "おすすめサイトのポップオーバーを記事タイトルの上に表示"
 
 msgid "Show every site, including ones you already follow"
 msgstr "すでにフォローしているサイトも含め、すべてのサイトを表示"
@@ -7195,7 +7195,7 @@ msgid "What the NewsBlur community is reading"
 msgstr "NewsBlur コミュニティで読まれている記事"
 
 msgid "What you like and dislike"
-msgstr "好きなもの・嫌いなもの"
+msgstr "好きなもの・好きでないもの"
 
 msgid "What your agent can do"
 msgstr "エージェントにできること"

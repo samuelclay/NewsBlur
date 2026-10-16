@@ -26,9 +26,9 @@
 "%@ could not be added." = "לא ניתן היה להוסיף %@ פידים.";
 "%@ days" = "%@ ימים";
 "%@ feed" = "פיד %@";
-"%@ feeds" = "%@ הזנות";
+"%@ feeds" = "%@ פידים";
 "%@ feeds added" = "נוספו %@ פידים";
-"%@ feeds added." = "נוספו %@ הזנות.";
+"%@ feeds added." = "נוספו %@ פידים.";
 "%@ feeds couldn’t be added." = "לא ניתן להוסיף %@ פידים.";
 "%@ feeds selected" = "נבחרו %@ פידים";
 "%@ focused stories" = "%@ כתבות ממוקדות";
@@ -830,7 +830,7 @@
 "Show original story" = "הצגת הכתבה המקורית";
 "Show original text" = "הצג את הטקסט המקורי";
 "Show public comments" = "הצגת תגובות ציבוריות";
-"Show related feeds in the story list header" = "הצגת מקורות קשורים בכותרת רשימת הכתבות";
+"Show related feeds in the story list header" = "הצגת פידים קשורים בכותרת רשימת הכתבות";
 "Show stories" = "הצגת כתבות";
 "Show unread count" = "הצגת מספר הכתבות שלא נקראו";
 "Show with feed icons" = "הצגה עם סמלי פידים";
