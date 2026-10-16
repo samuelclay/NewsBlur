@@ -6220,8 +6220,6 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"%(feed_title)s</a>に関する<a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" "
-"style=\"text-decoration:none;\">メール通知を設定しているため、このメールをお送りしています。"
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."

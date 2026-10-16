@@ -6383,8 +6383,8 @@ msgid ""
 "You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
 "style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"%(feed_title)s</a>에 대한 <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
-"decoration:none;\">이메일 알림을 설정해 두셔서 이 알림을 받았습니다."
+"<a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s에 대한 이메일 알림</a>을 설정하셨기 때문에 이 메일을 받으셨습니다."
 
 #, python-format
 msgid ""
@@ -6392,9 +6392,8 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"%(feed_title)s</a>에 대한 이메일 알림을 <a "
-"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\"> 받고 계시므로 이 메시지를 받았습니다."
+"<a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s에 대한 이메일 알림</a>을 설정하셨기 때문에 이 메일을 받으셨습니다."
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."

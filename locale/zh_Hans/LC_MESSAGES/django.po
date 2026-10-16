@@ -6259,8 +6259,8 @@ msgid ""
 "You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
 "style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"你收到此邮件是因为你已为 %(feed_title)s</a> 开启 <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
-"style=\"text-decoration:none;\">电子邮件通知。"
+"你收到此邮件，是因为你开启了<a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s 的电子邮件通知</a>。"
 
 #, python-format
 msgid ""
@@ -6268,9 +6268,8 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"你收到此邮件是因为你为 %(feed_title)s</a> 启用了 <a "
-"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\">邮件通知。"
+"你收到此邮件，是因为你开启了<a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style"
+"=\"text-decoration:none;\">%(feed_title)s 的电子邮件通知</a>。"
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."

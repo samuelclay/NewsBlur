@@ -6832,8 +6832,8 @@ msgid ""
 "You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
 "style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"आपको यह इसलिए मिला क्योंकि आपने %(feed_title)s</a> के लिए <a href=\"https://%(domain)s/briefing?next"
-"=briefing-notifications\" style=\"text-decoration:none;\">ईमेल सूचनाएँ चालू की हैं।"
+"आपको यह इसलिए मिला क्योंकि आपने <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style"
+"=\"text-decoration:none;\">%(feed_title)s के लिए ईमेल सूचनाएँ</a> चालू की हैं।"
 
 #, python-format
 msgid ""
@@ -6841,9 +6841,9 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"आपको यह ईमेल इसलिए मिला है क्योंकि आपने %(feed_title)s</a> के लिए <a "
+"आपको यह इसलिए मिला क्योंकि आपने <a "
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\">ईमेल सूचनाएँ ली हुई हैं।"
+"decoration:none;\">%(feed_title)s के लिए ईमेल सूचनाएँ</a> चालू की हैं।"
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."

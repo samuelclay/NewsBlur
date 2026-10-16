@@ -7032,9 +7032,6 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"Vous avez reçu cet e-mail parce que vous avez activé les notifications par e-mail pour %(feed_title)s</a> "
-"sur <a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\">."
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."
