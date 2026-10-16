@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "อ่านโฟลเดอร์ ค้นหา แท็กบทความที่บันทึก"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium พร้อมคลังบทความถาวร"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "ดึงฟีดทุก 5 ถึง 15 นาที"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "การสมัครสมาชิก NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "การสมัครสมาชิก NewsBlur Premium",
+        "description": "อ่านโฟลเดอร์รวมกัน ค้นหาในฟีด แท็กบทความที่บันทึกไว้ และรับการอัปเดตฟีดที่เร็วขึ้น",
+        "benefits": [
+          "อ่านโฟลเดอร์ในรายการบทความเดียว",
+          "ค้นหาในทุกฟีด",
+          "แท็กบทความที่บันทึกไว้",
+          "อัปเดตฟีดเร็วขึ้น"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "การสมัครสมาชิก NewsBlur Premium Archive",
+        "description": "ทุกอย่างใน Premium พร้อมจัดเก็บบทความถาวรและค้นหาได้ เก็บบทความเป็นยังไม่อ่านได้นานเท่าที่ต้องการ",
+        "benefits": [
+          "ทุกอย่างใน Premium",
+          "คงสถานะยังไม่อ่านได้ตลอดไป",
+          "จัดเก็บทุกบทความอย่างถาวร",
+          "ค้นหาในคลังบทความทั้งหมด"
+        ]
+      }
+    }
+  }
+}

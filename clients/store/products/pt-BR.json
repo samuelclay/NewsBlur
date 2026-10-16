@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Pastas, busca e tags de artigos salvos"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium e arquivo permanente de artigos"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feeds atualizados a cada 5 a 15 minutos"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Assinaturas do NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Assinatura do NewsBlur Premium",
+        "description": "Leia pastas em uma só lista, pesquise nos feeds, adicione tags aos artigos salvos e receba atualizações de feeds mais frequentes.",
+        "benefits": [
+          "Leia pastas em uma lista de artigos",
+          "Pesquise em todos os feeds",
+          "Adicione tags aos artigos salvos",
+          "Atualizações de feeds mais frequentes"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Assinatura do NewsBlur Premium Archive",
+        "description": "Tudo do Premium, mais arquivo permanente de artigos e pesquisa. Mantenha artigos não lidos pelo tempo que quiser.",
+        "benefits": [
+          "Tudo do Premium",
+          "Mantenha artigos não lidos para sempre",
+          "Arquive cada artigo para sempre",
+          "Pesquise em todo o arquivo de artigos"
+        ]
+      }
+    }
+  }
+}

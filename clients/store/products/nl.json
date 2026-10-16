@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Mappen, zoeken, opgeslagen artikelen taggen"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium met een blijvend artikelarchief"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feeds elke 5 tot 15 minuten bijgewerkt"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur-abonnementen",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium-abonnement",
+        "description": "Lees mappen in één lijst, doorzoek je feeds, tag opgeslagen artikelen en ontvang vaker feedupdates.",
+        "benefits": [
+          "Lees mappen in één artikellijst",
+          "Doorzoek al je feeds",
+          "Tag je opgeslagen artikelen",
+          "Vaker feedupdates"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive-abonnement",
+        "description": "Alles van Premium, plus een blijvend, doorzoekbaar artikelarchief. Laat artikelen zo lang ongelezen als je wilt.",
+        "benefits": [
+          "Alles van Premium",
+          "Laat artikelen altijd ongelezen",
+          "Archiveer elk artikel blijvend",
+          "Doorzoek je volledige artikelarchief"
+        ]
+      }
+    }
+  }
+}

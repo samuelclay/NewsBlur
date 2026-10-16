@@ -1,0 +1,3 @@
+NewsBlurs Oberfläche unterstützt jetzt 21 Sprachen. Wähle deine in der App, mit Vorschau in deiner Sprache und auf Englisch. Arabisch und Hebräisch laufen von rechts nach links. Artikel bleiben unverändert.
+
+Die Steuerung zum nächsten Artikel bleibt an derselben Stelle, auch wenn Weiter zu Fertig wird. Anmeldeschaltflächen sind in dunklen Designs besser lesbar.

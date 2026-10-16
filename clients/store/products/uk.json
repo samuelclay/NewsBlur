@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Читання папок, пошук, теги збережених статей"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium і постійний архів статей"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Завантаження стрічок кожні 5–15 хвилин"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Підписки NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Підписка NewsBlur Premium",
+        "description": "Читайте папки разом, шукайте в стрічках, додавайте теги до збережених статей і отримуйте оновлення стрічок швидше.",
+        "benefits": [
+          "Читайте папки в одному списку статей",
+          "Пошук у всіх стрічках",
+          "Теги для збережених статей",
+          "Частіше оновлення стрічок"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Підписка NewsBlur Premium Archive",
+        "description": "Усі можливості Premium, а також постійне зберігання статей і пошук в архіві. Залишайте статті непрочитаними скільки завгодно.",
+        "benefits": [
+          "Усі можливості Premium",
+          "Залишайте статті непрочитаними назавжди",
+          "Постійне зберігання всіх статей",
+          "Пошук у всьому архіві статей"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Klasör okuma, arama, kayıtlı haberlere etiket"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium ve kalıcı haber arşivi"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Akışlar her 5 ila 15 dakikada alınır"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur abonelikleri",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium Aboneliği",
+        "description": "Klasörleri birlikte okuyun, akışlarınızda arayın, kaydettiğiniz haberleri etiketleyin ve akış güncellemelerini daha hızlı alın.",
+        "benefits": [
+          "Klasörleri tek haber listesinde okuyun",
+          "Akışlar arasında arama yapın",
+          "Kaydettiğiniz haberleri etiketleyin",
+          "Daha hızlı akış güncellemeleri"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive Aboneliği",
+        "description": "Premium’daki her şeyin yanı sıra kalıcı haber arşivleme ve arama. Haberleri istediğiniz kadar uzun süre okunmamış tutun.",
+        "benefits": [
+          "Premium’daki her şey",
+          "Haberleri süresiz okunmamış tutun",
+          "Her haberi kalıcı olarak arşivleyin",
+          "Tüm haber arşivinizde arama yapın"
+        ]
+      }
+    }
+  }
+}

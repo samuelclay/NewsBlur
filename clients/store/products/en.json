@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Folder reading, search and saved story tags"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium plus a permanent story archive"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feeds fetched every 5 to 15 minutes"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur subscriptions",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium Subscription",
+        "description": "Read folders together, search your feeds, tag saved stories, and get faster feed updates.",
+        "benefits": [
+          "Read folders in one story list",
+          "Search across feeds",
+          "Tag your saved stories",
+          "Faster feed updates"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive Subscription",
+        "description": "Everything in Premium, plus permanent story archiving and search. Keep stories unread for as long as you like.",
+        "benefits": [
+          "Everything in Premium",
+          "Keep stories unread forever",
+          "Archive every story permanently",
+          "Search your complete story archive"
+        ]
+      }
+    }
+  }
+}

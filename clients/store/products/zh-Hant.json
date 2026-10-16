@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "資料夾閱讀、搜尋、為已儲存的文章加上標籤"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "包含 Premium 功能，並可永久封存文章"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "每 5 至 15 分鐘擷取一次訂閱來源"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur 訂閱",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium 訂閱",
+        "description": "集中閱讀資料夾內的文章、搜尋訂閱來源、為已儲存的文章加上標籤，並享有更快的訂閱來源更新。",
+        "benefits": [
+          "在同一清單中閱讀資料夾內的文章",
+          "跨訂閱來源搜尋",
+          "為已儲存的文章加上標籤",
+          "更快的訂閱來源更新"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive 訂閱",
+        "description": "包含 Premium 的所有功能，另加文章永久封存與搜尋。文章想保留未讀狀態多久都可以。",
+        "benefits": [
+          "Premium 的所有功能",
+          "文章可永遠保持未讀狀態",
+          "永久封存每篇文章",
+          "搜尋完整的文章封存庫"
+        ]
+      }
+    }
+  }
+}

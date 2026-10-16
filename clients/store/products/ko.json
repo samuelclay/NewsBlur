@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "폴더 모아 읽기, 검색, 저장한 스토리에 태그 지정"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium 기능과 스토리 영구 보관"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "5~15분마다 피드 가져오기"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur 구독",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium 구독",
+        "description": "폴더를 모아 읽고, 피드를 검색하고, 저장한 스토리에 태그를 지정하세요. 피드도 더 빠르게 업데이트됩니다.",
+        "benefits": [
+          "폴더를 하나의 스토리 목록으로 읽기",
+          "여러 피드에서 검색",
+          "저장한 스토리에 태그 지정",
+          "더 빠른 피드 업데이트"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive 구독",
+        "description": "Premium의 모든 기능에 스토리 영구 보관과 검색이 추가됩니다. 스토리를 원하는 만큼 읽지 않은 상태로 유지하세요.",
+        "benefits": [
+          "Premium의 모든 기능",
+          "스토리를 영원히 읽지 않은 상태로 유지",
+          "모든 스토리 영구 보관",
+          "전체 스토리 보관함 검색"
+        ]
+      }
+    }
+  }
+}

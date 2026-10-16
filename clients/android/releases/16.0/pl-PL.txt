@@ -1,0 +1,3 @@
+Interfejs NewsBlur obsługuje teraz 21 języków. Wybierz swój w aplikacji, z podglądem w Twoim języku i po angielsku. Arabski i hebrajski czyta się od prawej do lewej. Artykuły pozostają bez zmian.
+
+Przyciski następnego artykułu pozostają na miejscu, także gdy Dalej zmienia się w Gotowe. Przyciski logowania są czytelniejsze w ciemnych motywach.

@@ -1,0 +1,3 @@
+NewsBlur arayüzü artık 21 dili destekliyor. Dilinizi uygulama içinden seçin; önizlemeyi seçtiğiniz dilde ve İngilizce görün. Arapça ve İbranice sağdan sola okunur. Haberler yayımlandıkları haliyle kalır.
+
+Sonraki haber kontrolleri, İleri düğmesi Tamam’a dönüştüğünde de aynı konumda kalır. Koyu temalarda giriş düğmeleri daha kolay okunur.
