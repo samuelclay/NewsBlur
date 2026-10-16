@@ -17,9 +17,9 @@
         7,
         4
       ],
-      "notes": "Matching native iPad interface. Initial split-reader body text appears smaller than the normalized reference; held for capture quality review. Actual fullscreen article scrolling and brief navigation into Saved Stories are retained, ending before later article-selection animation."
+      "notes": "Matching native iPad interface. Full-size source frame at 18 seconds confirms normal readable split-reader text, without clipping. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending before the later article-selection animation. The earlier feed-overlay background has smaller transient body text; the foreground feed list and the selected story beat are readable."
     }
   },
-  "status": "hold_for_capture_quality_decision",
-  "remaining": "Resolve initial split-reader sizing, then encode and visually review; normal-speed playback and store upload pending."
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated capture gap, then inspect the final export and perform normal-speed playback before staging."
 }
