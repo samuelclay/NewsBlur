@@ -6858,8 +6858,8 @@ msgid ""
 "You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
 "style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"%(feed_title)s</a> için <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
-"decoration:none;\">e-posta bildirimlerini etkinleştirdiğinizden bu e-postayı aldınız."
+"Bunu, <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s için e-posta bildirimlerini</a> açtığınız için aldınız."
 
 #, python-format
 msgid ""
@@ -6867,9 +6867,8 @@ msgid ""
 "href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
 "decoration:none;\">email notifications for %(feed_title)s</a>."
 msgstr ""
-"Bu e-postayı, %(feed_title)s</a> için <a "
-"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
-"decoration:none;\">e-posta bildirimleriniz açık olduğu için aldınız."
+"Bunu, <a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s için e-posta bildirimlerini</a> açtığınız için aldınız."
 
 #, python-format
 msgid "You received this because you have email notifications for %(feed_title)s."

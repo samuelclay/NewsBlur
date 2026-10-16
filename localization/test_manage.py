@@ -52,6 +52,13 @@ class Test_Translation(unittest.TestCase):
                 "Dein NewsBlur-Geschenk für %(tier_name)s __NB_TOKEN_2__ kann jetzt geteilt werden!",
             )
 
+    def test_markup_must_still_nest_after_reordering(self):
+        source = 'You have <a href="%(url)s">email notifications for %(feed_title)s</a>.'
+        # Japanese moved the feed title, and its closing tag, ahead of the link it closes.
+        with self.assertRaises(ValueError):
+            validate(source, '%(feed_title)s</a>に関する<a href="%(url)s">メール通知を設定しています。')
+        validate(source, '<a href="%(url)s">%(feed_title)sのメール通知</a>を設定しています。')
+
     def test_stray_percent_in_a_format_string_is_rejected(self):
         with self.assertRaises(ValueError):
             validate("Only 1.9%% of users", "Yalnızca %1,9%%'u")
