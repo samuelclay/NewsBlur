@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Folder
@@ -38,7 +39,6 @@ import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material.icons.rounded.Podcasts
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.SmartDisplay
-import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -60,6 +60,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -76,6 +78,7 @@ import com.newsblur.design.ReaderSheetPalette
 import com.newsblur.discover.DiscoveryTab
 import com.newsblur.domain.FeedResult
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import java.text.NumberFormat
@@ -121,7 +124,7 @@ fun AddSiteSheet(
             Row(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.Public, null, tint = colors.textSecondary, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(9.dp))
-                Text("Add site", color = colors.textPrimary, fontSize = 18.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.i18n_add_site), color = colors.textPrimary, fontSize = 18.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
             }
         }
         // AddSiteSheet.kt scrolls the whole form so folder creation and shortcuts stay reachable above the keyboard.
@@ -136,7 +139,8 @@ fun AddSiteSheet(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     SiteInput(
                         value = state.query,
-                        placeholder = "https:// or search",
+                        // AddSiteSheet.kt isolates the URL scheme so "https://" reads left to right inside Arabic and Hebrew.
+                        placeholder = stringResource(R.string.add_site_url_or_search, BidiText.isolateLeftToRight("https://")),
                         icon = Icons.Rounded.Public,
                         enabled = enabled,
                         colors = colors,
@@ -147,6 +151,7 @@ fun AddSiteSheet(
                     )
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.weight(1f)) {
+                            val chooseFolderLabel = stringResource(R.string.add_site_choose_folder)
                             Row(
                                 Modifier
                                     .fillMaxWidth()
@@ -157,7 +162,7 @@ fun AddSiteSheet(
                                     .clickable(
                                         enabled = enabled,
                                         role = Role.Button,
-                                        onClickLabel = "Choose folder",
+                                        onClickLabel = chooseFolderLabel,
                                         onClick = { choosingFolder = true },
                                     ).padding(horizontal = 10.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -165,7 +170,7 @@ fun AddSiteSheet(
                                 Icon(Icons.Rounded.Folder, null, Modifier.size(20.dp), colors.textSecondary)
                                 Spacer(Modifier.width(7.dp))
                                 Text(
-                                    if (state.parent == AppConstants.ROOT_FOLDER) "— Top Level —" else state.parent,
+                                    if (state.parent == AppConstants.ROOT_FOLDER) stringResource(R.string.add_site_top_level) else state.parent,
                                     Modifier.weight(1f, fill = false),
                                     color = colors.textPrimary,
                                     fontSize = 15.sp,
@@ -203,7 +208,7 @@ fun AddSiteSheet(
                                                 )
                                                 Spacer(Modifier.width(10.dp))
                                                 Text(
-                                                    if (folder.name == AppConstants.ROOT_FOLDER) "— Top Level —" else folder.name,
+                                                    if (folder.name == AppConstants.ROOT_FOLDER) stringResource(R.string.add_site_top_level) else folder.name,
                                                     color = colors.textPrimary,
                                                     fontWeight = FontWeight.Normal,
                                                     fontSize = 16.sp,
@@ -232,15 +237,23 @@ fun AddSiteSheet(
                             contentAlignment = Alignment.Center,
                         ) {
                             if (state.submitting) {
+                                val addingSite = stringResource(R.string.add_site_adding_site)
                                 CircularProgressIndicator(
-                                    Modifier.size(20.dp).semantics { contentDescription = "Adding site" },
+                                    Modifier.size(20.dp).semantics { contentDescription = addingSite },
                                     color = Color.White,
                                     strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text(if (folderOnly) "Add folder" else "Add site", color = Color.White, fontSize = 16.sp, lineHeight = 20.sp)
+                                Text(
+                                    stringResource(if (folderOnly) R.string.add_site_add_folder else R.string.i18n_add_site),
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    lineHeight = 20.sp,
+                                )
                             }
                         }
+                        val newFolderDescription =
+                            stringResource(if (state.creatingFolder) R.string.add_site_cancel_new_folder else R.string.add_site_create_new_folder)
                         Box(
                             Modifier
                                 .size(44.dp)
@@ -248,7 +261,7 @@ fun AddSiteSheet(
                                 .background(colors.cardBackground)
                                 .border(1.dp, if (state.creatingFolder) colors.accent else colors.border, RoundedCornerShape(8.dp))
                                 .clickable(enabled = enabled, role = Role.Button, onClick = onToggleFolder)
-                                .semantics { contentDescription = if (state.creatingFolder) "Cancel new folder" else "Create new folder" },
+                                .semantics { contentDescription = newFolderDescription },
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
@@ -262,7 +275,7 @@ fun AddSiteSheet(
                     AnimatedVisibility(state.creatingFolder) {
                         SiteInput(
                             state.newFolder,
-                            "New folder name",
+                            stringResource(R.string.add_site_new_folder_name),
                             Icons.Rounded.Folder,
                             enabled,
                             colors,
@@ -279,7 +292,7 @@ fun AddSiteSheet(
             if (state.query.isEmpty()) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        "Discover more to read",
+                        stringResource(R.string.i18n_discover_more_to_read),
                         color = colors.textSecondary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -303,7 +316,7 @@ fun AddSiteSheet(
             } else if (state.searched && !state.searching && state.error == null) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        "No sites found. You can also add a site by URL.",
+                        stringResource(R.string.i18n_no_sites_found_you_can_also_add_a_site_by_url),
                         Modifier.padding(16.dp),
                         color = colors.textSecondary,
                         fontSize = 14.sp,
@@ -337,7 +350,7 @@ private fun DiscoveryShortcut(
             Icon(painterResource(R.drawable.ic_discover_reddit), null, Modifier.size(24.dp), colors.textPrimary)
         } else {
             val icon = when (shortcut.tab) {
-                DiscoveryTab.SEARCH -> Icons.Rounded.TrendingUp
+                DiscoveryTab.SEARCH -> Icons.AutoMirrored.Rounded.TrendingUp
                 DiscoveryTab.WEB -> Icons.Rounded.Public
                 DiscoveryTab.POPULAR -> Icons.Rounded.LocalFireDepartment
                 DiscoveryTab.YOUTUBE -> Icons.Rounded.SmartDisplay
@@ -348,7 +361,12 @@ private fun DiscoveryShortcut(
             }
             Icon(icon, null, Modifier.size(24.dp), colors.textPrimary)
         }
-        Text(shortcut.title, color = colors.textPrimary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        Text(
+            shortcut.titleRes?.let { stringResource(it) } ?: shortcut.tab.title,
+            color = colors.textPrimary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 
@@ -412,9 +430,10 @@ private fun SiteInput(
             },
         )
         if (loading) {
+            val searchingSites = stringResource(R.string.add_site_searching_sites)
             CircularProgressIndicator(
                 Modifier.padding(start = 6.dp).size(18.dp).semantics {
-                    contentDescription = "Searching sites"
+                    contentDescription = searchingSites
                 },
                 color = colors.textSecondary,
                 strokeWidth = 2.dp,
@@ -422,6 +441,14 @@ private fun SiteInput(
         }
     }
 }
+
+// AddSiteSheet.kt words a result's age with plural resources so each language counts it natively.
+@Composable
+private fun freshnessText(freshness: SiteFreshness): String =
+    when (freshness) {
+        is SiteFreshness.Recent -> pluralStringResource(freshness.unit.plural, freshness.count, freshness.count)
+        is SiteFreshness.Stale -> stringResource(R.string.add_site_freshness_stale, freshness.month)
+    }
 
 @Composable
 private fun SiteResultRow(
@@ -432,7 +459,8 @@ private fun SiteResultRow(
     onClick: () -> Unit,
 ) {
     val subscriberCount = remember(result.numberOfSubscriber) { NumberFormat.getIntegerInstance().format(result.numberOfSubscriber) }
-    val freshness = remember(result.lastStorySecondsAgo) { SiteFreshness.from(result.lastStorySecondsAgo) }
+    val locale = LocalConfiguration.current.locales[0]
+    val freshness = remember(result.lastStorySecondsAgo, locale) { SiteFreshness.from(result.lastStorySecondsAgo, locale = locale) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -469,7 +497,7 @@ private fun SiteResultRow(
         }
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                "$subscriberCount ${if (result.numberOfSubscriber == 1) "subscriber" else "subscribers"}",
+                pluralStringResource(R.plurals.discover_subscribers, result.numberOfSubscriber, subscriberCount),
                 color = colors.textSecondary,
                 fontSize = 11.sp,
                 lineHeight = 14.sp,
@@ -478,7 +506,7 @@ private fun SiteResultRow(
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     val color = if (freshness.stale) colors.stale else colors.fresh
                     Box(Modifier.size(5.dp).clip(CircleShape).background(color))
-                    Text(freshness.text, color = color, fontSize = 11.sp, lineHeight = 14.sp)
+                    Text(freshnessText(freshness), color = color, fontSize = 11.sp, lineHeight = 14.sp)
                 }
             }
         }

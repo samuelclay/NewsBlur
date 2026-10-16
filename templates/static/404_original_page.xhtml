@@ -1,6 +1,7 @@
-<html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>4-oh-4, not found</title>
+    <title>{% trans "4-oh-4, not found" %}</title>
 </head>
 <body>
     <script>

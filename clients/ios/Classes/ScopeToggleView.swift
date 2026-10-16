@@ -60,7 +60,7 @@ struct ScopeToggleView: View {
             withAnimation(.default) {
                 shakeAmount = 1
             }
-            tooltipText = "Premium Archive"
+            tooltipText = NBLocalization.text("Premium Archive")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 shakeAmount = 0
             }
@@ -100,7 +100,7 @@ struct ScopeToggleView: View {
     }
 
     private var tooltipBackground: Color {
-        if tooltipText == "Premium Archive" {
+        if tooltipText == NBLocalization.text("Premium Archive") {
             return Color(red: 0.851, green: 0.467, blue: 0.024) // #D97706 amber
         }
         return Color(white: 0.15).opacity(0.85)

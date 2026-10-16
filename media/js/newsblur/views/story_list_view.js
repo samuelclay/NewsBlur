@@ -159,7 +159,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
             $.make('div', { className: 'NB-world' }),
-            'Select a story to read'
+            gettext('Select a story to read')
         ]);
 
         this.$el.append($empty);
@@ -183,14 +183,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             hidden_stories = false;
         }
         var $empty = $.make("div", { className: "NB-story-list-empty" }, [
-            'No stories to read',
+            gettext('No stories to read'),
             $.make('div', { className: 'NB-world' }),
-            (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' }, [
-                'There ',
-                Inflector.pluralize('is', hidden_stories),
-                ' ',
-                Inflector.pluralize('hidden story', hidden_stories, true)
-            ]))
+            (hidden_stories && $.make('div', { className: 'NB-story-list-empty-subtitle' },
+                interpolate(ngettext('There is %(count)s hidden story', 'There are %(count)s hidden stories', hidden_stories),
+                    { count: Inflector.commas(hidden_stories) }, true)
+            ))
         ]);
 
         this.$el.append($empty);
@@ -379,29 +377,30 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
 
+    // story_list_view.js: Each premium notice is one complete translated sentence whose
+    // %(link_start)s/%(link_end)s markers wrap the upgrade link.
+    make_premium_only_text: function (message, feature) {
+        var link_start = '<a href="#" class="NB-splash-link"' +
+            (feature ? ' data-feature="' + feature + '"' : '') + '>';
+        var $text = $.make('div', { className: 'NB-feed-story-premium-only-text' });
+        $text.html(interpolate(_.escape(message), { link_start: link_start, link_end: '</a>' }, true));
+        return $text;
+    },
+
     append_river_premium_only_notification: function () {
-        var message = [
-            'The full River of News is a ',
-            $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'river' }, 'premium feature'),
-            '.'
-        ];
+        var message = gettext('The full River of News is a %(link_start)spremium feature%(link_end)s.');
+        var feature = 'river';
         if (NEWSBLUR.reader.flags['starred_view']) {
-            message = [
-                'Reading saved stories by tag is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'saved-tags' }, 'premium feature'),
-                '.'
-            ];
+            message = gettext('Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s.');
+            feature = 'saved-tags';
         }
         if (NEWSBLUR.reader.active_feed == "read") {
-            message = [
-                'This read stories list is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
-                '.'
-            ];
+            message = gettext('This read stories list is a %(link_start)spremium feature%(link_end)s.');
+            feature = null;
         }
 
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text' }, message)
+            this.make_premium_only_text(message, feature)
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         if (_.contains(['full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -415,11 +414,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
     append_search_premium_only_notification: function () {
         var $notice = $.make('div', { className: 'NB-feed-story-premium-only' }, [
-            $.make('div', { className: 'NB-feed-story-premium-only-text' }, [
-                'Search is a ',
-                $.make('a', { href: '#', className: 'NB-splash-link', 'data-feature': 'search' }, 'premium feature'),
-                '.'
-            ])
+            this.make_premium_only_text(gettext('Search is a %(link_start)spremium feature%(link_end)s.'), 'search')
         ]);
         this.$('.NB-feed-story-premium-only').remove();
         this.$(".NB-end-line").append($notice);

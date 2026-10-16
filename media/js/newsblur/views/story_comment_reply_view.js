@@ -20,16 +20,18 @@ NEWSBLUR.Views.StoryCommentReply = Backbone.View.extend({
         return this;
     },
 
+    // story_comment_reply_view.js: dir="auto" isolates usernames and reply text so mixed
+    // scripts read correctly in both LTR and RTL interfaces.
     template: _.template('\
         <img class="NB-user-avatar NB-story-comment-reply-photo" src="<%= user.get("photo_url") %>" />\
-        <div class="NB-story-comment-username NB-story-comment-reply-username"><%= user.get("username") %></div>\
-        <div class="NB-story-comment-date NB-story-comment-reply-date"><%= reply.get("publish_date") %> ago</div>\
+        <div class="NB-story-comment-username NB-story-comment-reply-username" dir="auto"><%= user.get("username") %></div>\
+        <div class="NB-story-comment-date NB-story-comment-reply-date"><%- interpolate(gettext("%(value_1)s ago"), {value_1: reply.get("publish_date")}, true) %></div>\
         <% if (reply.get("user_id") == current_user_id) { %>\
             <div class="NB-story-comment-edit-button NB-story-comment-reply-edit-button">\
-                <div class="NB-story-comment-edit-button-wrapper">edit</div>\
+                <div class="NB-story-comment-edit-button-wrapper"><%- gettext("edit") %></div>\
             </div>\
         <% } %>\
-        <div class="NB-story-comment-reply-content"><%= reply.get("comments") %></div>\
+        <div class="NB-story-comment-reply-content" dir="auto"><%= reply.get("comments") %></div>\
     '),
 
     // ==========

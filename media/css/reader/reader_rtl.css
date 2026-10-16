@@ -1,0 +1,223 @@
+/* ================================================================== */
+/* = reader_rtl.css: right-to-left overrides for the web reader     = */
+/* ================================================================== */
+/*
+ * reader_rtl.css is the "rtl" bundle in newsblur_web/assets.yml. Right-to-left
+ * pages (Arabic, Hebrew) render <html dir="rtl"> and never load the LTR
+ * "common" or "blurblog" CSS. {% include_stylesheets %}
+ * (utils/templatetags/utils_tags.py) links a horizontally mirrored copy
+ * instead, built by flip_stylesheet() in utils/rtl_css.py and served by
+ * apps/profile/language.py at /rtl/<bundle>/<version>.css. Every rule keeps its
+ * place in the cascade and only its physical direction changes: left and right
+ * offsets, margins, paddings, borders, corner radii, floats, text-align,
+ * background positions, horizontal gradients, resize cursors and shadow
+ * offsets are swapped. templates/base.html and social_page.xhtml load this
+ * file right after the mirrored CSS.
+ *
+ * What the flip leaves alone, and this file therefore handles by hand:
+ *   - Transforms. translateX() slide-outs and toggles still move in their LTR
+ *     direction, and arrow and chevron images still point their LTR way.
+ *   - Physical class names. jQuery Layout panes are named west and east, and
+ *     in RTL the reader moves the feed list and the side-by-side story titles
+ *     to the east pane (NEWSBLUR.utils.layout_edge in reader_utils.js), so the
+ *     LTR west resizer styling is restated for the east resizers.
+ *   - Story bodies and comments, whose rules stay LTR in the mirrored CSS
+ *     because their text carries dir="auto" and follows its own direction.
+ *   - Elements JavaScript positions (see INSET_EXCLUDE in utils/rtl_css.py).
+ *
+ * This file loads only on right-to-left pages. Every rule except the bidi
+ * isolation rule requires html[dir="rtl"], which also keeps it ahead of pages
+ * that include the mirrored "common" a second time (accounts/login.html and
+ * other templates extending base.html).
+ */
+
+
+/* ================================================= */
+/* = 1. Bidi isolation                              = */
+/* ================================================= */
+
+/* The dir="auto" alignment rule lives in reader.css so English pages get it too. */
+
+
+/* ================================================= */
+/* = 2. Story content follows its own direction     = */
+/* ================================================= */
+
+/* reader_rtl.css: story and comment text carries dir="auto" (story_detail_view.js,
+   story_comment_view.js, social_story.xhtml), and utils/rtl_css.py keeps the
+   rules for elements inside it LTR. Quote bars and widened images use logical
+   sides here so they follow the story's own direction: in an LTR story,
+   inline-start is the left side, as on an LTR page. Both physical sides are
+   cleared first because the mirrored CSS also carries global blockquote rules
+   (darkmode.css, social_page.css) that now draw a right border. Logical
+   properties are used rather than :dir(rtl), which the LightningCSS minifier
+   (utils/pipeline_utils.py) rewrites into a :lang() list. */
+html[dir="rtl"] .NB-feed-story blockquote {
+    border-left: none;
+    border-right: none;
+    border-inline-start: 2px solid #ECEFE9;
+}
+
+html[dir="rtl"] .NB-dark .NB-feed-story blockquote {
+    border-left: none;
+    border-right: none;
+    border-inline-start: 2px solid #c0c0c0;
+}
+
+html[dir="rtl"] .NB-story-comment .NB-story-comment-content blockquote {
+    border-left: none;
+    border-right: none;
+    border-inline-start: 3px solid #a0a0a0;
+}
+
+html[dir="rtl"] .NB-dark .NB-story-comment .NB-story-comment-content blockquote {
+    border-inline-start-color: #606060;
+}
+
+html[dir="rtl"] .NB-feed-story .NB-feed-story-content img.NB-large-image.NB-large-image-widen {
+    margin-left: 0 !important;
+    margin-inline-start: -28px !important;
+}
+
+/* reader_rtl.css: shared stories on blurblog pages (media/css/circular/css/social_page.css). */
+html[dir="rtl"] .NB-story-content blockquote {
+    border-left: none;
+    border-right: none;
+    border-inline-start: 1px solid #9B9B9B;
+}
+
+
+/* ================================================= */
+/* = 3. Layout panes                                = */
+/* ================================================= */
+
+/* reader_rtl.css: the feed list and side-by-side story titles are east panes in
+   RTL (NEWSBLUR.utils.layout_edge), so their resizers take the styling the west
+   resizers get in reader.css "Pane Customizations" and darkmode.css, mirrored. */
+html[dir="rtl"] .ui-layout-resizer-east {
+    border-right: 1px solid #e5e5e4;
+    width: 2px;
+}
+
+html[dir="rtl"] .right-pane .ui-layout-resizer-east {
+    background-color: #F7F8F5;
+}
+
+html[dir="rtl"] .NB-dark .ui-layout-resizer-east {
+    background-color: rgb(52, 59, 61);
+    border-right: 1px solid #303030;
+}
+
+
+/* ================================================= */
+/* = 4. Directional icons                           = */
+/* ================================================= */
+
+/* reader_rtl.css: chevrons that point toward the inline end point left in RTL.
+   Hover states swap to up and down arrows, which need no mirroring. The
+   mirrored CSS already moves each chevron to the other edge. */
+html[dir="rtl"] .NB-feedlist .feed .NB-feedlist-manage-icon:not(:hover),
+html[dir="rtl"] .NB-feedlist .folder_title .NB-feedlist-manage-icon:not(:hover),
+html[dir="rtl"] .NB-feedbar .NB-feedlist-manage-icon:not(:hover),
+html[dir="rtl"] .NB-story-title .NB-story-manage-icon:not(:hover),
+html[dir="rtl"] .NB-feed-story-feed .NB-feedlist-manage-icon:not(:hover),
+html[dir="rtl"] .NB-feed-story .NB-feed-story-manage-icon:not(:hover),
+html[dir="rtl"] .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-image,
+html[dir="rtl"] .NB-menu-manage-story-feed:after,
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedchooser-upgrade-arrow,
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-arrow,
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedlist .feed .NB-feedlist-manage-icon:hover,
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
+html[dir="rtl"] .NB-modal-organizer .NB-icon-subfolder {
+    background-image: url('/media/embed/icons/nouns/left.svg');
+}
+
+/* reader_rtl.css: the feed chooser hides folder chevrons (reader.css "Unified
+   Header Card"), which the chevron rule above would otherwise bring back. */
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedlist .folder_title .NB-feedlist-manage-icon,
+html[dir="rtl"] .NB-modal-feedchooser .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon {
+    background-image: none;
+}
+
+/* reader_rtl.css: the collapsed sidebar reopens from the right edge. */
+html[dir="rtl"] .NB-story-titles-expand-sidebar {
+    background-image: url('/media/img/icons/nouns/nav-left.svg');
+}
+
+html[dir="rtl"] .NB-feeds-header-collapse-sidebar img {
+    transform: scaleX(-1);
+}
+
+/* reader_rtl.css: dashboard module paging arrows. scaleX(-1) mirrors the empty
+   link, arrow and icon offset together, so the offset goes back to its LTR
+   value here instead of the mirrored "right 4px center". */
+html[dir="rtl"] .NB-module .NB-module-next-page,
+html[dir="rtl"] .NB-module .NB-module-next-page:link,
+html[dir="rtl"] .NB-module .NB-module-next-page:hover,
+html[dir="rtl"] .NB-module .NB-module-next-page.NB-disabled:hover {
+    background-position: 4px center;
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .NB-module .NB-module-previous-page,
+html[dir="rtl"] .NB-module .NB-module-previous-page:link,
+html[dir="rtl"] .NB-module .NB-module-previous-page:hover,
+html[dir="rtl"] .NB-module .NB-module-previous-page.NB-disabled:hover {
+    background-position: 8px center;
+    transform: scaleX(-1);
+}
+
+/* reader_rtl.css: callout tails point down from the mirrored side. The mouse
+   indicator callout is positioned by reader.js and keeps its LTR tail. */
+html[dir="rtl"] .NB-callout .NB-callout-container .NB-callout-arrow {
+    transform: scaleX(-1);
+}
+
+html[dir="rtl"] .NB-callout-mouse-indicator .NB-callout-container .NB-callout-arrow {
+    transform: none;
+}
+
+
+/* ================================================= */
+/* = 5. Sliding controls                            = */
+/* ================================================= */
+
+/* reader_rtl.css: the narrow-screen archive conversation sidebar is pinned to
+   the left in RTL, so it collapses off the left edge (reader.css translates it
+   off the right edge). */
+@media (max-width: 768px) {
+    html[dir="rtl"] .NB-archive-conversation-sidebar.NB-collapsed {
+        transform: translateX(-100%);
+    }
+}
+
+/* reader_rtl.css: the welcome page's log in / sign up switch
+   (pages/welcome.css) starts its pill on the right in RTL, so the sign up
+   option it slides to is on the left. */
+html[dir="rtl"] .NB-welcome-header-segment.NB-segment-right::before {
+    transform: translateX(-100%);
+}
+
+/* reader_rtl.css: the static page theme switch (pages/static_pages.css) starts
+   its thumb on the right in RTL and slides left for dark mode. */
+html[dir="rtl"] body.NB-dark .NB-theme-toggle-thumb {
+    transform: translateX(-16px);
+}
+
+@media (max-width: 900px) {
+    html[dir="rtl"] body.NB-dark .NB-theme-toggle-thumb {
+        transform: translateX(-12px);
+    }
+}
+
+/* reader_rtl.css: an English feed title starts on the unread-count side in RTL, so rows
+   with two or three counts reserve room for all of them instead of hiding the title's
+   first letters under the counts. */
+html[dir="rtl"] .NB-feedlist .feed.unread_positive.unread_neutral .feed_title,
+html[dir="rtl"] .NB-feedlist .feed.unread_positive.unread_negative .feed_title,
+html[dir="rtl"] .NB-feedlist .feed.unread_neutral.unread_negative .feed_title {
+    padding-left: 66px;
+}
+html[dir="rtl"] .NB-feedlist .feed.unread_positive.unread_neutral.unread_negative .feed_title {
+    padding-left: 92px;
+}

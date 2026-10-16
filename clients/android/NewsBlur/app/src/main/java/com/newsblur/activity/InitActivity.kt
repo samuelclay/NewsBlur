@@ -11,6 +11,7 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.DailyBriefingDeepLink
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NotificationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +41,8 @@ class InitActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // AppCompat has restored its stored locale by now, so InitActivity.kt can line it up with the language pref.
+        LanguageSettings.reconcile(this)
 
         // Keep the splash screen visible for this Activity
         splashScreen.setKeepOnScreenCondition { true }

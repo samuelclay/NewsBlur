@@ -388,3 +388,9 @@ When load times are elevated but the site isn't down, read `SLOW_LOAD_TIMES.md` 
 ## Writing Forum Replies
 - Keep replies free of AI slop: no em dashes, no hyphens as punctuation, no overly polished language. Restructure sentences instead.
 - Be concise and direct, matching a natural conversational tone
+
+## Internationalization
+- All new user-visible interface text must use the platform localization API described in `localization/README.md`.
+- Translate complete messages with named/positional placeholders and native plurals. Never localize identifiers, FormData keys, DOM attribute names, preference values, URLs, usernames, feed titles or story content.
+- After adding or changing UI text, run `localization/manage.py translate`, `check`, and `compile` inside the worktree Docker container. Commit translation memory and generated catalogs with the UI change. The Localization workflow also creates incremental translation update PRs.
+- Verify language detection, the login and preferences overrides, English fallback, layout expansion, and Arabic/Hebrew direction. Android language controls must work in light, dark and black themes.

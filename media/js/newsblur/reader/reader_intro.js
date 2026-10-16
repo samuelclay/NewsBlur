@@ -3,10 +3,15 @@ NEWSBLUR.ReaderIntro = function (options) {
         modal_container_class: "NB-full-container"
     };
     var intro_page = NEWSBLUR.assets.preference('intro_page');
+    var first_page = intro_page && _.isNumber(intro_page) && intro_page <= 3 ? intro_page : 1;
+    // reader_intro.js: A fresh intro starts on the language chooser (page 0) from reader_language.js.
+    if (!intro_page && NEWSBLUR.LanguageChooser.should_offer()) {
+        first_page = 0;
+    }
 
     _.bindAll(this, 'close', 'post_connect');
     this.options = $.extend({
-        'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 3 ? intro_page : 1
+        'page_number': first_page
     }, defaults, options);
     this.services = {
         'twitter': {},
@@ -15,6 +20,7 @@ NEWSBLUR.ReaderIntro = function (options) {
     this.flags = {};
     this.autofollow = true;
     this.chosen_categories = [];
+    this.intro_width = this.options.width || 600;
 
     this.page_number = this.options.page_number;
     this.slider_value = 0;
@@ -49,29 +55,30 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $.make('span', { className: 'NB-modal-loading NB-spinner' })
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
-                'Welcome to NewsBlur',
+                gettext('Welcome to NewsBlur'),
                 $.make('div', { className: 'NB-divider' })
             ]),
             $.make('img', { className: 'NB-intro-spinning-logo', src: NEWSBLUR.Globals.MEDIA_URL + 'img/logo_512.png' }),
+            $.make('div', { className: 'NB-page NB-page-0' }),
             $.make('div', { className: 'NB-page NB-page-1' }, [
-                $.make('h4', { className: 'NB-page-1-started' }, "So much time and so little to do. Strike that! Reverse it.")
+                $.make('h4', { className: 'NB-page-1-started' }, gettext("So much time and so little to do. Strike that! Reverse it."))
             ]),
             $.make('div', { className: 'NB-page NB-page-2' }, [
                 $.make('div', { className: 'NB-intro-imports NB-intro-imports-start' }, [
                     $.make('div', { className: 'NB-page-2-started' }, [
-                        $.make('h4', "Let's get some sites to read."),
+                        $.make('h4', gettext("Let's get some sites to read.")),
                         $.make('div', { className: 'NB-intro-import-starred-message' })
                     ]),
                     $.make('div', { className: 'NB-intro-module-containers' }, [
                         $.make('div', { className: 'NB-intro-module-container NB-left' }, [
-                            $.make('h3', { className: 'NB-module-content-header' }, 'Choose categories'),
+                            $.make('h3', { className: 'NB-module-content-header' }, gettext('Choose categories')),
                             $.make('div', { className: 'NB-intro-module NB-intro-categories-container' }, [
                                 $.make('div', { className: "NB-intro-categories-loader" }),
                                 $.make('div', { className: "NB-intro-categories" })
                             ])
                         ]),
                         $.make('div', { className: 'NB-intro-module-container NB-right' }, [
-                            $.make('h3', { className: 'NB-module-content-header' }, 'Upload'),
+                            $.make('h3', { className: 'NB-module-content-header' }, gettext('Upload')),
                             $.make('div', { className: 'NB-intro-module NB-intro-import-opml' }, [
                                 $.make('div', { className: 'NB-carousel' }, [
                                     $.make('div', { className: 'NB-carousel-inner NB-intro-imports' }, [
@@ -79,29 +86,29 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                                             $.make('h3', 'OPML'),
                                             $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                                 $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
-                                                    'Upload OPML File',
+                                                    gettext('Upload OPML File'),
                                                     $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
                                                 ])
                                             ])
                                         ]),
                                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-progress' }, [
-                                            $.make('div', { className: 'NB-page-2-importing' }, "Importing your sites..."),
+                                            $.make('div', { className: 'NB-page-2-importing' }, gettext("Importing your sites...")),
                                             $.make('div', { className: 'NB-loading' })
                                         ]),
                                         $.make('div', { className: 'NB-carousel-item NB-intro-imports-sites' }, [
                                             $.make('h6', { className: 'NB-intro-import-message' }),
                                             $.make('div', { className: 'NB-intro-import-delayed' }, [
-                                                'There are too many sites and stories to process. ',
-                                                'You will be emailed within a minute or three.'
+                                                gettext('There are too many sites and stories to process. '),
+                                                gettext('You will be emailed within a minute or three.')
                                             ]),
                                             $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
-                                                '&laquo; Re-upload your sites'
+                                                gettext('&laquo; Re-upload your sites')
                                             ]),
                                             $.make('div', { className: 'NB-intro-bookmarklet NB-intro-section NB-intro-import-container' }, [
-                                                $.make('h3', { className: 'NB-module-content-header' }, 'Install'),
+                                                $.make('h3', { className: 'NB-module-content-header' }, gettext('Install')),
                                                 $.make('div', { className: 'NB-intro-import NB-intro-module' }, [
                                                     NEWSBLUR.generate_bookmarklet(),
-                                                    $.make('div', { className: 'NB-intro-bookmarklet-info' }, 'Drag this bookmarklet into your bookmarks bar')
+                                                    $.make('div', { className: 'NB-intro-bookmarklet-info' }, gettext('Drag this bookmarklet into your bookmarks bar'))
                                                 ])
                                             ])
                                         ])
@@ -117,7 +124,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             //     $.make('div', { className: 'NB-intro-services' })
             // ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
-                $.make('h4', { className: 'NB-page-3-started' }, "Keep up-to-date with NewsBlur"),
+                $.make('h4', { className: 'NB-page-3-started' }, gettext("Keep up-to-date with NewsBlur")),
                 $.make('table', { className: 'NB-intro-follows', cellpadding: 0, cellspacing: 0 }, [
                     $.make('tr', [
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
@@ -141,32 +148,32 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
                             $.make('div', [
                                 $.make('img', { src: '/media/img/favicon.png' }),
-                                'Popular Shared Stories'
+                                gettext('Popular Shared Stories')
                             ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-popular NB-modal-submit-green NB-modal-submit-button' }, [
-                                'Subscribe'
+                                gettext('Subscribe')
                             ]),
-                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
+                            $.make('div', { className: 'NB-subscribed' }, gettext("Subscribed"))
                         ]),
                         $.make('td', { className: 'NB-intro-uptodate-follow' }, [
                             $.make('div', [
                                 $.make('img', { src: '/media/img/favicon.png' }),
-                                'The NewsBlur Blog'
+                                gettext('The NewsBlur Blog')
                             ]),
                             $.make('div', { className: 'NB-intro-uptodate-follow-blog NB-modal-submit-green NB-modal-submit-button' }, [
-                                'Subscribe'
+                                gettext('Subscribe')
                             ]),
-                            $.make('div', { className: 'NB-subscribed' }, "Subscribed")
+                            $.make('div', { className: 'NB-subscribed' }, gettext("Subscribed"))
                         ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-intro-section' }, [
-                    "You're ready to go! Hope you enjoy NewsBlur."
+                    gettext("You're ready to go! Hope you enjoy NewsBlur.")
                 ])
             ]),
             $.make('div', { className: 'NB-modal-submit-bottom' }, [
                 $.make('div', { className: 'NB-page-next NB-modal-submit-button NB-modal-submit-green NB-modal-submit-save' }, [
-                    $.make('span', { className: 'NB-tutorial-next-page-text' }, "Let's Get Started "),
+                    $.make('span', { className: 'NB-tutorial-next-page-text' }, gettext("Let's Get Started ")),
                     $.make('span', { className: 'NB-raquo' }, '&raquo;')
                 ])
             ])
@@ -239,7 +246,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (this.chosen_categories.length) {
             NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
-            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext('Next step '));
         }
     },
 
@@ -283,7 +290,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
                         ]),
                         $.make('div', { className: 'NB-friends-service-connected' }, [
-                            'Connected'
+                            gettext('Connected')
                         ])
                     ])
                 ]);
@@ -298,7 +305,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_big.png', width: 44, height: 44 })
                         ]),
                         $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
-                            (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
+                            (syncing ? gettext('Fetching...') : interpolate(gettext("Find %(value_1)s Friends"), {value_1: _.string.capitalize(service)}, true))
                         ])
                     ])
                 ]);
@@ -308,15 +315,15 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
 
         var $autofollow = $.make('div', { className: 'NB-friends-autofollow' }, [
             $.make('input', { type: 'checkbox', className: 'NB-friends-autofollow-checkbox', id: 'NB-friends-autofollow-checkbox', checked: this.autofollow ? 'checked' : null }),
-            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, 'and auto-follow them')
+            $.make('label', { className: 'NB-friends-autofollow-label', 'for': 'NB-friends-autofollow-checkbox' }, gettext('and auto-follow them'))
         ]);
         $services.prepend($autofollow);
 
         if (!this.services.twitter.twitter_uid || !this.services.facebook.facebook_uid) {
             var $note = $.make('div', { className: 'NB-note' }, [
-                'Feel comfortable connecting to these services.',
+                gettext('Feel comfortable connecting to these services.'),
                 $.make('br'),
-                'Nothing happens without your permission.'
+                gettext('Nothing happens without your permission.')
             ]);
             $services.append($note);
         }
@@ -325,12 +332,14 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             _.each(['following', 'follower'], _.bind(function (follow) {
                 var $stat = $.make('div', { className: 'NB-intro-services-stats-count' }, [
                     $.make('div', { className: 'NB-intro-services-stats-count-number' }, this.profile.get(follow + '_count')),
-                    $.make('div', { className: 'NB-intro-services-stats-count-description' }, Inflector.pluralize(follow, this.profile.get(follow + '_count')))
+                    $.make('div', { className: 'NB-intro-services-stats-count-description' }, follow == 'following' ?
+                        gettext('following') :
+                        ngettext('follower', 'followers', this.profile.get(follow + '_count')))
                 ]);
                 $stats.append($stat);
             }, this));
             $services.append($stats);
-            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext('Next step '));
         }
 
         if (service_syncing) {
@@ -367,7 +376,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
 
     disconnect: function (service) {
         var $service = $('.NB-friends-service-' + service, this.$modal);
-        $('.NB-friends-service-connect', $service).text('Disconnecting...');
+        $('.NB-friends-service-connect', $service).text(gettext('Disconnecting...'));
         // _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function (data) {
             this.services = data.services;
@@ -413,11 +422,16 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (page_number == null) {
             return this.page_number;
         }
-        var page_count = $('.NB-page', this.$modal).length;
+        // reader_intro.js: The language chooser on page 0 is not a numbered step.
+        var page_count = $('.NB-page', this.$modal).not('.NB-page-0').length;
+        var was_language_page = this.$modal.hasClass('NB-intro-language');
         this.page_number = page_number;
+        this.$modal.toggleClass('NB-intro-language', page_number == 0);
 
-        if (page_number == page_count) {
-            $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
+        if (page_number == 0) {
+            this.make_language_page();
+        } else if (page_number == page_count) {
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext('All Done '));
         } else if (page_number > page_count) {
             NEWSBLUR.reader.check_hide_getting_started();
             NEWSBLUR.assets.preference('has_setup_feeds', true);
@@ -429,18 +443,16 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             }, this));
             return;
         } else if (page_number == 1) {
-            $('.NB-tutorial-next-page-text', this.$modal).text("Let's Get Started ");
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext("Let's Get Started "));
         } else {
-            $('.NB-tutorial-next-page-text', this.$modal).text('Skip this step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext('Skip this step '));
         }
         $('.NB-page', this.$modal).css({ 'display': 'none' });
         $('.NB-page-' + this.page_number, this.$modal).css({ 'display': 'block' });
-        $('.NB-modal-page-text', this.$modal).html($.make('div', [
-            'Step ',
-            $.make('b', this.page_number),
-            ' of ',
-            $.make('b', page_count)
-        ]));
+        $('.NB-modal-page-text', this.$modal).html($.make('div', interpolate(gettext("Step %(step)s of %(count)s"), {
+            step: '<b>' + this.page_number + '</b>',
+            count: '<b>' + page_count + '</b>'
+        }, true)));
         if (page_number > 1) {
             $('.NB-intro-spinning-logo', this.$modal).css({ 'top': 12, 'left': 12, 'width': 48, 'height': 48 });
             // $('.NB-modal-title', this.$modal).css({'paddingLeft': 42});
@@ -459,8 +471,40 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
 
         clearTimeout(this.sync_interval);
-        NEWSBLUR.assets.preference('intro_page', page_number);
+        if (page_number == 0 || was_language_page) {
+            // The language page is as wide as the standalone language dialog and sizes to its chooser,
+            // while the numbered pages keep the intro's width and fixed height.
+            this.set_width(page_number == 0 ? NEWSBLUR.ReaderLanguage.WIDTH : this.intro_width);
+            this.resize();
+        }
+        if (page_number > 0) {
+            NEWSBLUR.assets.preference('intro_page', page_number);
+        }
         // _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
+    },
+
+    // Simplemodal sizes the container from these options on every resize.
+    set_width: function (width) {
+        this.options.width = width;
+        if (this.simplemodal && this.simplemodal.o) {
+            this.simplemodal.o.minWidth = width;
+            this.simplemodal.o.maxWidth = width;
+        }
+    },
+
+    make_language_page: function () {
+        if (this.language_chooser) return;
+
+        this.language_chooser = new NEWSBLUR.LanguageChooser({
+            on_keep: _.bind(function () {
+                this.page(1);
+            }, this),
+            on_resize: _.bind(this.resize, this),
+            // A new language reloads the page, which reopens the intro on the welcome page.
+            preferences: { intro_page: 1 }
+        });
+        $('.NB-page-0', this.$modal).append(this.language_chooser.$el);
+        NEWSBLUR.LanguageChooser.mark_seen();
     },
 
     advance_import_carousel: function (page, options) {
@@ -470,7 +514,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (page >= 2) {
             NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
-            $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+            $('.NB-tutorial-next-page-text', this.$modal).text(gettext('Next step '));
         }
 
         $carousel.animate({ 'left': (-1 * page * 100) + '%' }, {
@@ -487,21 +531,14 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var starred_count = options.starred_count || NEWSBLUR.assets.starred_count;
 
         if (feed_count) {
-            $(".NB-page-2-started h4", this.$modal).text([
-                'You are subscribed to ',
-                (options.fake_count && 'at least '),
-                Inflector.pluralize(' site', feed_count, true),
-                '.'
-            ].join(""));
+            $(".NB-page-2-started h4", this.$modal).text(options.fake_count ?
+                interpolate(ngettext("You are subscribed to at least %(count)s site.", "You are subscribed to at least %(count)s sites.", feed_count), {count: Inflector.commas(feed_count)}, true) :
+                interpolate(ngettext("You are subscribed to %(count)s site.", "You are subscribed to %(count)s sites.", feed_count), {count: Inflector.commas(feed_count)}, true));
         }
 
         if (starred_count) {
             var $info = $(".NB-page-2-started .NB-intro-import-starred-message", this.$modal);
-            $info.text([
-                "And you have ",
-                Inflector.pluralize(' saved story', starred_count, true),
-                ". "
-            ].join("")).show();
+            $info.text(interpolate(ngettext("And you have %(count)s saved story.", "And you have %(count)s saved stories.", starred_count), {count: Inflector.commas(starred_count)}, true)).show();
         }
     },
 
@@ -571,7 +608,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $('.NB-intro-import-restart', self.$modal).show();
                         $('.NB-intro-import-message', self.$modal).addClass('NB-error').show().text(data.message);
                     } else {
-                        $('.NB-intro-import-message', self.$modal).text("All done!").removeClass('NB-error').show();
+                        $('.NB-intro-import-message', self.$modal).text(gettext("All done!")).removeClass('NB-error').show();
                         $('.NB-intro-import-delayed', self.$modal).hide();
                         $('.NB-intro-import-restart', self.$modal).show();
                     }
@@ -582,7 +619,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 self.advance_import_carousel(2);
                 $loading.removeClass('NB-active');
                 NEWSBLUR.log(['Error', data, status, e]);
-                $('.NB-intro-import-message', self.$modal).text("There was a problem uploading your OPML file.").addClass('NB-error').css('display', 'block');
+                $('.NB-intro-import-message', self.$modal).text(gettext("There was a problem uploading your OPML file.")).addClass('NB-error').css('display', 'block');
             },
             cache: false,
             contentType: false,
@@ -690,7 +727,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         $.targetIs(e, { tagSelector: '.NB-goodies-bookmarklet-button' }, function ($t, $p) {
             e.preventDefault();
 
-            alert('Drag this button to your bookmark toolbar.');
+            alert(gettext('Drag this button to your bookmark toolbar.'));
         });
         $.targetIs(e, { tagSelector: '.NB-friends-service-connect' }, function ($t, $p) {
             e.preventDefault();

@@ -30,7 +30,7 @@ typedef enum {
 @property (assign, nonatomic) NSInteger blueCount;
 @property (assign, nonatomic) CGRect rect;
 
-- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType;
+- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType rightToLeft:(BOOL)rightToLeft;
 - (void)calculateOffsets:(NSInteger)ps nt:(NSInteger)nt;
 - (NSInteger)offsetWidth;
 

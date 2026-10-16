@@ -329,7 +329,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView = v.findViewById(R.id.row_socialfeed_name);
             nameView.setText(f.feedTitle);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            nameView.setPaddingRelative(nameView.getPaddingStart(), titleVerticalPadding, nameView.getPaddingEnd(), titleVerticalPadding);
             ImageView iconView = v.findViewById(R.id.row_socialfeed_icon);
             iconLoader.displayImage(f.photoUrl, iconView);
             TextView neutCounter = v.findViewById(R.id.row_socialsumneu);
@@ -362,7 +362,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setText(sc.tag);
             nameView.setTextSize(textSize * defaultTextSize_childName);
             nameView.setAlpha(NONZERO_UNREADS_ALPHA);
-            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            nameView.setPaddingRelative(nameView.getPaddingStart(), titleVerticalPadding, nameView.getPaddingEnd(), titleVerticalPadding);
             TextView savedCounter = v.findViewById(R.id.row_saved_tag_sum);
             savedCounter.setText(Integer.toString(checkNegativeUnreads(sc.count)));
             savedCounter.setTextSize(textSize * defaultTextSize_count);
@@ -371,7 +371,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             SavedSearch ss = savedSearches.get(childPosition);
             TextView nameView = v.findViewById(R.id.row_saved_search_title);
             nameView.setText(UIUtils.fromHtml(ss.feedTitle));
-            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            nameView.setPaddingRelative(nameView.getPaddingStart(), titleVerticalPadding, nameView.getPaddingEnd(), titleVerticalPadding);
             ImageView iconView = v.findViewById(R.id.row_saved_search_icon);
             iconLoader.preCheck(ss.faviconUrl, iconView);
             iconLoader.displayImage(ss.faviconUrl, iconView);
@@ -386,7 +386,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             TextView nameView = v.findViewById(R.id.row_feedname);
             nameView.setText(f.title);
             nameView.setTextSize(textSize * defaultTextSize_childName);
-            nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
+            nameView.setPaddingRelative(nameView.getPaddingStart(), titleVerticalPadding, nameView.getPaddingEnd(), titleVerticalPadding);
             ImageView iconView = v.findViewById(R.id.row_feedfavicon);
             CustomIcon customFeedIcon = BlurDatabaseHelper.getFeedIcon(f.feedId);
             if (customFeedIcon != null) {

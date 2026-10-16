@@ -51,9 +51,11 @@ struct CardView: View {
                         .id(ObjectIdentifier(story))
                 }
                 .accessibilityElement(children: .combine)
-                .accessibilityValue("\(story.isRead ? "Read" : "Unread"), \(story.isSaved ? "Saved" : "Unsaved")")
-                .accessibilityAction(named: Text(story.isSaved ? "Unsave" : "Save"), toggleSavedState)
-                .accessibilityAction(named: Text(story.isRead ? "Mark Unread" : "Mark Read"), toggleReadState)
+                .accessibilityValue(String(format: NBLocalization.text("%1$@, %2$@"),
+                                           story.isRead ? NBLocalization.text("Read") : NBLocalization.text("Unread"),
+                                           story.isSaved ? NBLocalization.text("Saved") : NBLocalization.text("Unsaved")))
+                .accessibilityAction(named: Text(story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save")), toggleSavedState)
+                .accessibilityAction(named: Text(story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read")), toggleReadState)
             } else if cache.isNonGridStoryTitlesLayout {
                 swipeableStandardCardBody
             } else {
@@ -69,7 +71,7 @@ struct CardView: View {
                 Button {
                     toggleReadState()
                 } label: {
-                    Label(story.isRead ? "Mark Unread" : "Mark Read",
+                    Label(story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read"),
                           image: story.isRead ? "indicator-unread" : "indicator-read")
                 }
                 .tint(Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
@@ -80,7 +82,7 @@ struct CardView: View {
                 Button {
                     toggleSavedState()
                 } label: {
-                    Label(story.isSaved ? "Unsave" : "Save", image: "saved-stories")
+                    Label(story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save"), image: "saved-stories")
                 }
                 .tint(Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
                                     story.isSaved ? 0x007A86 : 0x1FB5C8,
@@ -90,7 +92,7 @@ struct CardView: View {
                 Button {
                     shareStory()
                 } label: {
-                    Label("Share", image: "email")
+                    Label(NBLocalization.text("Share"), image: "email")
                 }
                 .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
             }
@@ -310,7 +312,7 @@ struct CardView: View {
     }
 
     var clusterBadgeText: String {
-        StoryClusterDisplayDecision.clusterTierLabel(forValue: story.clusterTier).uppercased()
+        StoryClusterDisplayDecision.clusterTierBadgeText(forValue: story.clusterTier)
     }
 
     var clusterListBackgroundColor: Color {
@@ -387,7 +389,7 @@ struct CardView: View {
 
     private var swipeActionButtons: some View {
         HStack(spacing: 0) {
-            swipeActionButton(title: story.isRead ? "Mark Unread" : "Mark Read",
+            swipeActionButton(title: story.isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read"),
                               imageName: story.isRead ? "indicator-unread" : "indicator-read",
                               tint: Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
                                                   story.isRead ? 0xC89628 : 0x4A9648,
@@ -395,7 +397,7 @@ struct CardView: View {
                                                   story.isRead ? 0xA67C00 : 0x1B5E20]),
                               action: toggleReadState)
 
-            swipeActionButton(title: story.isSaved ? "Unsave" : "Save",
+            swipeActionButton(title: story.isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save"),
                               imageName: "saved-stories",
                               tint: Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
                                                   story.isSaved ? 0x007A86 : 0x1FB5C8,
@@ -403,7 +405,7 @@ struct CardView: View {
                                                   story.isSaved ? 0x004A52 : 0x0B8FA0]),
                               action: toggleSavedState)
 
-            swipeActionButton(title: "Share",
+            swipeActionButton(title: NBLocalization.text("Share"),
                               imageName: "email",
                               tint: Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]),
                               action: shareStory)

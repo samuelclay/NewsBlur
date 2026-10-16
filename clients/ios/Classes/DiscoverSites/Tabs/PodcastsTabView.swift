@@ -19,7 +19,7 @@ struct PodcastsTabView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 DiscoverSearchBarView(
-                    placeholder: "Search podcasts...",
+                    placeholder: NBLocalization.text("Search podcasts..."),
                     text: $viewModel.podcastsState.searchQuery,
                     isLoading: viewModel.podcastsState.isSearching,
                     onSubmit: {

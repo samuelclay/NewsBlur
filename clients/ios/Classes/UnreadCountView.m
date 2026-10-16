@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "UnreadCountView.h"
 #import "UIView+TKCategory.h"
+#import "NewsBlur-Swift.h"
 
 static UIFont *indicatorFont = nil;
 
@@ -29,10 +30,12 @@ const int COUNT_HEIGHT = 18;
 - (void)drawRect:(CGRect)r {
     self.userInteractionEnabled = NO;
     
-    return [self drawInRect:r ps:psCount nt:ntCount listType:NBFeedListFolder];
+    return [self drawInRect:r ps:psCount nt:ntCount listType:NBFeedListFolder rightToLeft:self.nb_isRightToLeft];
 }
 
-- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType {
+// UnreadCountView.m takes the direction from its caller because FeedTableCell.m draws counts with a view
+// that is never added to the hierarchy.
+- (void)drawInRect:(CGRect)r ps:(NSInteger)ps nt:(NSInteger)nt listType:(NBFeedListType)listType rightToLeft:(BOOL)rightToLeft {
     rect = CGRectInset(r, 12, 0);
     rect.size.width -= 18; // Scrollbar padding
     
@@ -64,6 +67,8 @@ const int COUNT_HEIGHT = 18;
         } else {
             rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, CGRectGetMidY(r)-COUNT_HEIGHT/2, psWidth, COUNT_HEIGHT);
         }
+        // UnreadCountView.m moves the counts to the left edge in a right-to-left feed list.
+        rr = [NBLocalization directionalRect:rr within:r rightToLeft:rightToLeft];
         
         if (blueCount) {
             [UIColorFromFixedRGB(0x11448B) set];
@@ -112,6 +117,7 @@ const int COUNT_HEIGHT = 18;
         if (rr.origin.x > CGFLOAT_MAX) {
             return;
         }
+        rr = [NBLocalization directionalRect:rr within:r rightToLeft:rightToLeft];
         
         [UIColorFromLightDarkRGB(0xB3B6AD, 0xA3A69D) set];
         [UIView drawRoundRectangleInRect:rr withRadius:4];        

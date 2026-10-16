@@ -39,7 +39,7 @@
     
     // SmallActivityCell.m inherits ActivityCell.m's content-area label sizing with its smaller margins.
     // position avatar to bounds
-    self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    self.faviconLeftToRightFrame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
     if (!((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
         self.activityLabel.backgroundColor = UIColorFromRGB(0xd7dadf);

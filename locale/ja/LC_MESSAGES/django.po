@@ -1,0 +1,5556 @@
+# Japanese translations for NewsBlur.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the NewsBlur project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NewsBlur VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid " - Folder: All Site Stories"
+msgstr " - フォルダー：すべてのサイトの記事"
+
+msgid " - Folder: Top Level"
+msgstr " - フォルダー：最上位"
+
+msgid "$100/year (Pro: unlimited sources)"
+msgstr "年額100ドル（Pro：ソース数無制限）"
+
+msgid "$144/year (Pro+) / $18/month (Enterprise)"
+msgstr "年額144ドル（Pro+） / 月額18ドル（Enterprise）"
+
+msgid "$29/mo"
+msgstr "月額29ドル"
+
+msgid "$29/month"
+msgstr "月額29ドル"
+
+msgid "$29/month (Pro: 10K sites, 5-min fetching)"
+msgstr "月額29ドル（Pro：1万サイト、5分ごとに取得）"
+
+msgid "$30/year (Premium)"
+msgstr "年額30ドル（プレミアム）"
+
+msgid "$30/year (Supporter: 500 sources)"
+msgstr "年額30ドル（サポーター：500フィード）"
+
+msgid "$36/year"
+msgstr "年額36ドル"
+
+msgid "$36/year (1,024 sites)"
+msgstr "年額36ドル（1,024サイト）"
+
+msgid "$36/year (Premium), $99/year (Archive)"
+msgstr "年額36ドル（プレミアム）、年額99ドル（アーカイブ）"
+
+msgid "$36/yr"
+msgstr "年額36ドル"
+
+msgid "$50/year (single plan)"
+msgstr "年額50ドル（単一プラン）"
+
+msgid "$72/year (Pro)"
+msgstr "年額72ドル（Pro）"
+
+msgid "$96/year (full access)"
+msgstr "年額96ドル（全機能利用）"
+
+msgid "$99/year"
+msgstr "年間99ドル"
+
+msgid "$99/yr"
+msgstr "年額99ドル"
+
+#, python-format
+msgid "%(comments)s Comment"
+msgid_plural "%(comments)s Comments"
+msgstr[0] "コメント%(comments)s件"
+
+#, python-format
+msgid "%(comments)s public comment"
+msgid_plural "%(comments)s public comments"
+msgstr[0] "%(comments)s件の公開コメント"
+
+#, python-format
+msgid "%(count)d day ago"
+msgid_plural "%(count)d days ago"
+msgstr[0] "%(count)d日前"
+
+#, python-format
+msgid "%(count)d hour ago"
+msgid_plural "%(count)d hours ago"
+msgstr[0] "%(count)d時間前"
+
+#, python-format
+msgid "%(count)d minute ago"
+msgid_plural "%(count)d minutes ago"
+msgstr[0] "%(count)d分前"
+
+#, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s、%(time)s"
+
+#, python-format
+msgid "%(number)d day"
+msgid_plural "%(number)d days"
+msgstr[0] "%(number)d日"
+
+#, python-format
+msgid "%(number)d hour"
+msgid_plural "%(number)d hours"
+msgstr[0] "%(number)d時間"
+
+#, python-format
+msgid "%(number)d minute"
+msgid_plural "%(number)d minutes"
+msgstr[0] "%(number)d分"
+
+#, python-format
+msgid "%(number)d second"
+msgid_plural "%(number)d seconds"
+msgstr[0] "%(number)d秒"
+
+#, python-format
+msgid "%(shares)s Share"
+msgid_plural "%(shares)s Shares"
+msgstr[0] "%(shares)s件の共有"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "%(time)s前"
+
+#, python-format
+msgid ""
+"%(username)s <a href=\"%(permalink)s\">shared this story</a> from <img src=\"%(favicon_url)s\" style"
+"=\"vertical-align: middle;width:16px;height:16px;\"> %(feed_title)s."
+msgstr ""
+"%(username)sが<a href=\"%(permalink)s\">この記事を共有しました</a>（<img src=\"%(favicon_url)s\" style=\"vertical-align:"
+" middle;width:16px;height:16px;\"> %(feed_title)sより）。"
+
+#, python-format
+msgid ""
+"%(username)s <a href=\"%(permalink)s\">shared this story</a> from <img src=\"%(favicon_url)s\" style"
+"=\"vertical-align: middle;width:16px;height:16px;\"> %(feed_title)s:"
+msgstr ""
+"%(username)sが<a href=\"%(permalink)s\">この記事を共有しました</a>（<img src=\"%(favicon_url)s\" style=\"vertical-align:"
+" middle;width:16px;height:16px;\"> %(feed_title)sより）："
+
+#, python-format
+msgid "%(username)s <a href=\"%(permalink)s\">shared this story</a>."
+msgstr "%(username)sが<a href=\"%(permalink)s\">この記事を共有しました</a>。"
+
+#, python-format
+msgid "%(username)s <a href=\"%(permalink)s\">shared this story</a>:"
+msgstr "%(username)sが<a href=\"%(permalink)s\">この記事を共有しました</a>："
+
+#, python-format
+msgid ""
+"%(username)s favorited <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>'s comments on <span class=\"NB-interaction-sharedstory-title "
+"NB-splash-link\">%(title)s</span>:"
+msgstr ""
+"%(username)sが<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>の<span class=\"NB-interaction-sharedstory-title NB-splash-"
+"link\">%(title)s</span>へのコメントをお気に入りに追加しました："
+
+#, python-format
+msgid ""
+"%(username)s followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>."
+msgstr ""
+"%(username)sが<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>をフォローしました。"
+
+#, python-format
+msgid ""
+"%(username)s replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>:"
+msgstr ""
+"%(username)sが<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>に返信しました："
+
+#, python-format
+msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
+msgstr "%(username)sが<span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>を共有しました。"
+
+#, python-format
+msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>:"
+msgstr "%(username)sが<span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>を共有しました："
+
+#, python-format
+msgid "%(username)s signed up for NewsBlur."
+msgstr "%(username)sさんがNewsBlurに登録しました。"
+
+#, python-format
+msgid "%(weekday)s, %(date)s %(time)s"
+msgstr "%(weekday)s、%(date)s %(time)s"
+
+#, python-format
+msgid "(and %(behind_display)s person behind you)"
+msgid_plural "(and %(behind_display)s people behind you)"
+msgstr[0] "（ほかに%(behind_display)s人があなたの後ろにいます）"
+
+msgid "- The best stories from your friends and favorite blogs, all in one place."
+msgstr "- 友人やお気に入りのブログから、選りすぐりの記事を一か所で読めます。"
+
+msgid "...and more"
+msgstr "…その他"
+
+msgid "/month"
+msgstr "/月"
+
+msgid "/year"
+msgstr "/年"
+
+msgid "1,024 sites, full-text search, River of News, saved story tags, and text view"
+msgstr "1,024サイト、全文検索、ニュースの一覧表示、記事タグの保存、テキスト表示"
+
+msgid "1,024 sites, search, text view, river of news"
+msgstr "1,024サイト、検索、テキスト表示、ニュースの流れ"
+
+msgid "100 feeds"
+msgstr "100件のフィード"
+
+msgid "100 sources, 3 feeds"
+msgstr "100件のソース、3件のフィード"
+
+msgid "12 sites"
+msgstr "12件のサイト"
+
+msgid "150 sources"
+msgstr "150件のソース"
+
+msgid "28 tools available"
+msgstr "28個のツールを利用可能"
+
+msgid "30 days of premium, on the house"
+msgstr "プレミアムを30日間無料でご利用いただけます"
+
+msgid "30 days, no credit card required. You get full Premium features during the trial."
+msgstr "30日間、クレジットカード不要でお試しいただけます。トライアル中はプレミアム機能をすべてご利用いただけます。"
+
+msgid "4-oh-4, not found"
+msgstr "404、見つかりません"
+
+msgid "404 - NewsBlur can't find that page"
+msgstr "404 - NewsBlur：ページが見つかりません"
+
+msgid "5-min fetching, regex training, 10,000 sites"
+msgstr "5分ごとの取得、正規表現による学習、10,000サイト"
+
+msgid "64 sites"
+msgstr "64サイト"
+
+#, python-format
+msgid ""
+"<a href=\"%(index_url)s\"><img src=\"%(logo_url)s\" style=\"height: 32px;\" class=\"NB-footer-logo\" "
+"title=\"NewsBlur\" alt=\"NewsBlur\" /></a> is built in San Francisco and Western Massachusetts by <a "
+"href=\"http://x.com/samuelclay\" class=\"NB-splash-link\"> <img src=\"%(avatar_url)s\" class=\"NB-twitter-"
+"avatar\"> @samuelclay </a>"
+msgstr ""
+"<a href=\"%(index_url)s\"><img src=\"%(logo_url)s\" style=\"height: 32px;\" class=\"NB-footer-logo\" "
+"title=\"NewsBlur\" alt=\"NewsBlur\" /></a>は、サンフランシスコとマサチューセッツ州西部で<a href=\"http://x.com/samuelclay\" class"
+"=\"NB-splash-link\"> <img src=\"%(avatar_url)s\" class=\"NB-twitter-avatar\"> @samuelclay </a>が開発しています"
+
+msgid ""
+"<a href=\"/\">NewsBlur</a> is a personal news reader that brings people together to talk about the world. A"
+" new sound of an old instrument."
+msgstr "<a href=\"/\">NewsBlur</a>は、人々が世界について語り合うためのパーソナルニュースリーダーです。古い楽器から生まれた新しい音。"
+
+msgid "<a href=\"/\">NewsBlur</a> is a personal news reader."
+msgstr "<a href=\"/\">NewsBlur</a>は、個人向けニュースリーダーです。"
+
+msgid ""
+"<a href=\"/features#web-feeds\">Web Feeds</a> let you follow any website, even without RSS. NewsBlur "
+"monitors the page for changes and delivers new content to you automatically."
+msgstr ""
+"<a href=\"/features#web-"
+"feeds\">ウェブフィード</a>を使うと、RSSがないサイトも含め、あらゆるウェブサイトをフォローできます。NewsBlurがページの変更を監視し、新しいコンテンツを自動でお届けします。"
+
+#, python-format
+msgid "<b>%(followers)s</b> follower"
+msgid_plural "<b>%(followers)s</b> followers"
+msgstr[0] "<b>%(followers)s</b>人のフォロワー"
+
+#, python-format
+msgid "<b>%(stories)s</b> story"
+msgid_plural "<b>%(stories)s</b> stories"
+msgstr[0] "<b>%(stories)s</b> 件の記事"
+
+#, python-format
+msgid "<b>%(stories)s</b> story per month"
+msgid_plural "<b>%(stories)s</b> stories per month"
+msgstr[0] "<b>%(stories)s</b>件の記事／月"
+
+#, python-format
+msgid "<b>%(subscribers)s</b> subscriber"
+msgid_plural "<b>%(subscribers)s</b> subscribers"
+msgstr[0] "<b>%(subscribers)s</b> 人の購読者"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"favorited your comments on <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>さんが、<span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>へのあなたのコメントをお気に入りに追加しました。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"is now following you."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>があなたをフォローし始めました。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"re-shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>が<span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>を再共有しました。"
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"re-shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>が<span class=\"NB-interaction-sharedstory-title NB-splash-link\" "
+"title=\"%(full_title)s\">%(title)s</span>を再共有しました："
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"replied to your comment:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>があなたのコメントに返信しました："
+
+#, python-format
+msgid ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
+"replied to your reply:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s "
+"</span>さんがあなたの返信に返信しました："
+
+msgid "A Note about OAuth"
+msgstr "OAuthについて"
+
+msgid "A cheap, clock-accurate FPGA replacement for the Nintendo arcade Picture Processing Unit on a 2-layer PCB."
+msgstr "2層基板上に実装された、Nintendoアーケード用ピクチャープロセッシングユニットの低価格でクロック精度の高いFPGA代替品。"
+
+msgid "A creative feed for any website, even without RSS"
+msgstr "RSSがなくても、どんなウェブサイトにもクリエイティブなフィードを"
+
+msgid ""
+"A feature-by-feature comparison of NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS. All are open source, "
+"but only one offers a fully hosted service alongside self-hosting."
+msgstr ""
+"NewsBlur、FreshRSS、Miniflux、Tiny Tiny "
+"RSSの機能を項目ごとに比較。それぞれオープンソースですが、自分でホスティングするだけでなく、完全ホスト型サービスも提供しているのは1つだけです。"
+
+msgid "A new sound of an old instrument"
+msgstr "古い楽器の新しい音色"
+
+msgid "A new sound of an old instrument."
+msgstr "古い楽器に新しい響きを。"
+
+msgid "A personal news reader bringing people together to talk about the world"
+msgstr "人々が世界について語り合える、パーソナルニュースリーダー"
+
+msgid "A personal news reader that brings people together to talk about the world."
+msgstr "人々が世界について語り合うためのパーソナルニュースリーダー。"
+
+msgid "A summary of your top stories, customizable and delivered every day"
+msgstr "トップ記事をまとめて毎日お届け。内容はカスタマイズできます。"
+
+msgid "AI Assistant (Feedly AI)"
+msgstr "AIアシスタント（Feedly AI）"
+
+msgid "AI Features"
+msgstr "AI機能"
+
+msgid "AI built into every story"
+msgstr "すべての記事にAIを"
+
+msgid "AI skill"
+msgstr "AIスキル"
+
+msgid "AI-based topic prioritization"
+msgstr "AIによるトピックの優先順位付け"
+
+msgid "AI-curated daily briefing with sections"
+msgstr "AIが選ぶセクション別の毎日のブリーフィング"
+
+msgid "AI-powered reading"
+msgstr "AIを活用した読書"
+
+msgid "AI-powered story analysis and daily summaries"
+msgstr "AIによる記事分析と日次要約"
+
+msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
+msgstr "ニュースフィードの記事をAIで分析し、あなたに合わせた日次まとめを作成します。"
+
+msgid "API Guidelines and Terms of Service"
+msgstr "APIガイドラインと利用規約"
+
+msgid "API Table of Contents"
+msgstr "API目次"
+
+msgid "About"
+msgstr "概要"
+
+msgid "About NewsBlur"
+msgstr "NewsBlurについて"
+
+msgid ""
+"Absolutely. NewsBlur's open API powers dozens of third-party clients including Reeder, ReadKit, Unread, and"
+" many more."
+msgstr "もちろんです。NewsBlurのオープンAPIは、Reeder、ReadKit、Unreadなど、数多くのサードパーティ製クライアントを支えています。"
+
+msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset."
+msgstr "はい。トレーナーを開き、リセットするには高評価または低評価を解除してください。"
+
+msgid ""
+"Absolutely. You can upgrade or downgrade at any time. When upgrading, your subscription is prorated so you "
+"only pay the difference."
+msgstr "もちろんです。いつでもアップグレードまたはダウングレードできます。アップグレード時はサブスクリプション料金が日割り計算され、差額のみお支払いいただきます。"
+
+msgid "Access denied."
+msgstr "アクセスが拒否されました。"
+
+msgid "Account"
+msgstr "アカウント"
+
+msgid "Account and tier info"
+msgstr "アカウントとプランの情報"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Active Development"
+msgstr "積極的に開発中"
+
+msgid "Active GitHub Community"
+msgstr "活発なGitHubコミュニティ"
+
+msgid "Active community"
+msgstr "活発なコミュニティ"
+
+msgid "Active since 2009"
+msgstr "2009年から運営"
+
+msgid "Add"
+msgstr "追加"
+
+msgid "Add + Discover Sites"
+msgstr "サイトを追加＋探す"
+
+msgid "Add custom tags to organize saved stories by topic"
+msgstr "カスタムタグを追加して、保存した記事をトピック別に整理"
+
+#, python-format
+msgid "Add to <code>%(path)s</code> under <code>%(key)s</code>:"
+msgstr "<code>%(path)s</code>の<code>%(key)s</code>に追加:"
+
+#, python-format
+msgid "Add to <code>%(path)s</code>:"
+msgstr "<code>%(path)s</code>に追加:"
+
+msgid ""
+"After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
+"training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
+msgstr ""
+"Y "
+"Combinatorに参加した後、SamuelはBlurblogs、iPadとAndroidのアプリ、そしてより優れたインテリジェンス学習機能を立ち上げました。Samuelと愛犬Shilohは、シャンパンとビスケットでお祝いしました。"
+
+msgid "Algorithm decides for you"
+msgstr "アルゴリズムに任せる"
+
+msgid "All"
+msgstr "すべて"
+
+msgid "All Features"
+msgstr "すべての機能"
+
+msgid "All Feeds Fetched Every 5 Min"
+msgstr "すべてのフィードを5分ごとに取得"
+
+msgid "All Plans"
+msgstr "すべてのプラン"
+
+msgid "All Shared Stories"
+msgstr "共有されたすべての記事"
+
+msgid "All Site Stories"
+msgstr "すべてのサイトの記事"
+
+msgid "All feeds fetched every 5-15 minutes"
+msgstr "すべてのフィードを5～15分ごとに取得"
+
+msgid "All feeds with folders and unread counts"
+msgstr "フォルダーと未読数を含むすべてのフィード"
+
+msgid ""
+"All five nucleobases detected in asteroid Ryugu samples, reinforcing the theory that carbonaceous asteroids"
+" seeded early Earth's prebiotic chemistry."
+msgstr "小惑星リュウグウの試料から5種類すべての核酸塩基が検出され、炭素質小惑星が初期地球の生命誕生前の化学反応に種をもたらしたという説を裏付けています。"
+
+msgid ""
+"All four readers support Docker, but the complexity varies. Miniflux is the lightest: a single Go binary "
+"plus PostgreSQL, consuming minimal resources. FreshRSS runs on PHP and can use SQLite for a zero-config "
+"database, making it easy to deploy on even the smallest VPS. Tiny Tiny RSS requires PHP and PostgreSQL with"
+" some manual configuration. NewsBlur is the most full-featured self-hosted option. It uses Docker Compose "
+"to orchestrate multiple services: a Django web app, Celery task workers, Node.js services, PostgreSQL, "
+"MongoDB, Redis, Elasticsearch, HAProxy, and Nginx. You run <code>make nb</code> and the entire stack comes "
+"up, but you will need a server with at least 2 GB of RAM. The tradeoff is clear: more resources in exchange"
+" for a dramatically richer feature set."
+msgstr ""
+"4つのリーダーはいずれもDockerに対応していますが、複雑さはそれぞれ異なります。最も軽量なのはMinifluxで、単一のGoバイナリとPostgreSQLで動作し、リソース消費も最小限です。FreshRSSはPHPで動作し、設定不要のデータベースとしてSQLiteを使えるため、最小構成のVPSにも簡単に導入できます。Tiny"
+" Tiny RSSはPHPとPostgreSQLが必要で、ある程度手動で設定する必要があります。セルフホスト型で最も多機能なのはNewsBlurです。Docker "
+"Composeで複数のサービスを連携させます。Djangoウェブアプリ、Celeryタスクワーカー、Node.jsサービス、PostgreSQL、MongoDB、Redis、Elasticsearch、HAProxy、Nginxが含まれます。<code>make"
+" nb</code>を実行すればスタック全体が起動しますが、少なくとも2 GBのRAMを搭載したサーバーが必要です。トレードオフは明確です。リソースを多く使う代わりに、機能が格段に豊富になります。"
+
+msgid ""
+"All four readers support OPML import and export, so you can move your feed list between them freely. "
+"NewsBlur goes further by giving you access to the full application source code under the MIT license. Your "
+"stories, intelligence training data, saved searches, and blurblog posts all live in databases you control "
+"when self-hosting. There is no vendor lock-in at any layer. If you use the hosted service, you can export "
+"your OPML at any time and stand up your own instance with the same open source code that powers "
+"newsblur.com."
+msgstr "4つのリーダーはいずれもOPMLのインポートとエクスポートに対応しているため、フィードリストを自由に移行できます。NewsBlurではさらに、MITライセンスのもとでアプリケーションのソースコード全体を利用できます。セルフホスティングの場合、記事、インテリジェンス学習データ、保存した検索、Blurblogの投稿はすべて、管理下のデータベースに保存されます。どの層にもベンダーロックインはありません。ホスト型サービスをご利用の場合も、いつでもOPMLをエクスポートし、newsblur.comを支えるものと同じオープンソースコードで独自のインスタンスを立ち上げられます。"
+
+msgid ""
+"All users see clustered stories on popular feeds. Premium Archive subscribers ($99/year) get full control: "
+"toggle clustering on or off, choose display styles, and automatically mark duplicates as read."
+msgstr "人気のフィードでは、すべてのユーザーに記事のクラスタリングが表示されます。プレミアムアーカイブの購読者（年額99ドル）は、クラスタリングのオン・オフ切り替え、表示スタイルの選択、重複記事の自動既読化を自由に設定できます。"
+
+msgid "All-in-one reader (RSS + read-later + highlights)"
+msgstr "オールインワンリーダー（RSS＋後で読む＋ハイライト）"
+
+msgid "Almost There!"
+msgstr "あと少しです！"
+
+msgid "Almost done. Enter your new password below."
+msgstr "あと少しです。下に新しいパスワードを入力してください。"
+
+msgid "Already have a NewsBlur account?"
+msgstr "すでにNewsBlurアカウントをお持ちですか？"
+
+msgid "Alternatives"
+msgstr "代替サービス"
+
+msgid "Amount"
+msgstr "金額"
+
+msgid ""
+"An AI-generated summary delivered to your NewsBlur account with sections for top stories, long reads, "
+"widely covered topics, and custom sections you define."
+msgstr "トップ記事、長文記事、多く取り上げられているトピック、独自に定義したセクションを含む、AI生成の要約をNewsBlurアカウントにお届けします。"
+
+msgid ""
+"An AI-generated summary of your top stories, customized to your interests and delivered right in NewsBlur. "
+"Get curated sections: top stories, long reads, stories from infrequent sites, widely covered topics, and "
+"custom AI-powered sections you define. Choose your delivery schedule and summary style."
+msgstr "注目記事をAIが要約し、あなたの関心に合わせてNewsBlur内にお届けします。注目記事、長文記事、更新頻度の低いサイトの記事、広く取り上げられているトピック、独自に設定できるAI活用セクションなど、厳選されたセクションを利用できます。配信スケジュールと要約スタイルを選択してください。"
+
+msgid ""
+"An AI-generated summary of your top stories, customized to your interests. Top stories, long reads, widely "
+"covered topics, and custom sections."
+msgstr "関心に合わせてカスタマイズされた、AI生成の注目記事まとめ。注目記事、長文記事、広く取り上げられている話題、カスタムセクションをお届けします。"
+
+msgid ""
+"An AI-generated summary of your top stories, delivered daily. Clusters related stories and highlights what "
+"you'd find most interesting."
+msgstr "注目記事をAIが要約して毎日お届けします。関連する記事をまとめ、あなたが特に興味を持ちそうな内容をピックアップします。"
+
+msgid "An RSS reader built for the long haul"
+msgstr "長く使えるRSSリーダー"
+
+msgid "Analyzing page"
+msgstr "ページを解析中"
+
+msgid "Android support"
+msgstr "Androidサポート"
+
+msgid "Any MCP client"
+msgstr "任意のMCPクライアント"
+
+msgid ""
+"Any public web page. Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
+"sites, and more."
+msgstr "公開されているあらゆるウェブページ。Twitterのプロフィール、Redditのスレッド、GitHubのリポジトリ、商品ページ、求人サイト、政府機関のサイトなど。"
+
+msgid ""
+"Anything you can do: read stories, save and tag articles, mark stories as read, train your intelligence "
+"filters, subscribe to new feeds, and search your archive. Common workflows include daily briefings, inbox "
+"triage, and research across saved stories."
+msgstr "記事を読む、保存してタグを付ける、既読にする、インテリジェンスフィルターを学習させる、新しいフィードを購読する、アーカイブを検索するなど、さまざまなことができます。よくある使い方には、毎日の概要確認、受信トレイの整理、保存した記事を使った調査などがあります。"
+
+msgid "Apply training across a folder"
+msgstr "フォルダー全体に学習を適用"
+
+msgid "Apply training globally"
+msgstr "学習内容をすべてのフィードに適用"
+
+msgid "Approve"
+msgstr "承認"
+
+msgid "Archive"
+msgstr "アーカイブ"
+
+msgid "Archive & Community"
+msgstr "アーカイブとコミュニティ"
+
+msgid "Archive plan"
+msgstr "アーカイブプラン"
+
+msgid "Archive plan ($99/yr)"
+msgstr "アーカイブプラン（年額99ドル）"
+
+msgid "Archive showing unread stories going back months"
+msgstr "数か月前までの未読記事を表示するアーカイブ"
+
+msgid "Archive totals and sync health"
+msgstr "アーカイブの合計数と同期状態"
+
+msgid "Are saved stories searchable?"
+msgstr "保存した記事は検索できますか？"
+
+msgid "Are the apps free?"
+msgstr "アプリは無料ですか？"
+
+msgid "Are the apps open source?"
+msgstr "アプリはオープンソースですか？"
+
+msgid "Are you positive you want to<br />delete your account?"
+msgstr "本当に<br />アカウントを削除しますか？"
+
+msgid "Are you sure to delete the application"
+msgstr "アプリケーションを削除してもよろしいですか？"
+
+msgid "Artificial Intelligence"
+msgstr "人工知能"
+
+msgid "Ask AI"
+msgstr "AIに質問"
+
+msgid "Ask AI & Daily Briefing"
+msgstr "AIに質問・デイリーブリーフィング"
+
+msgid "Ask AI & Daily Briefing - NewsBlur"
+msgstr "AIに質問＆デイリーブリーフィング - NewsBlur"
+
+msgid "Ask AI (Query Stories)"
+msgstr "AIに質問（記事について質問）"
+
+msgid "Ask AI and Daily Briefing require Premium Archive ($99/year)."
+msgstr "AIへの質問とデイリーブリーフィングの利用には、プレミアムアーカイブ（年額99ドル）が必要です。"
+
+msgid "Ask AI dialog with model selector"
+msgstr "モデル選択機能付きAI質問ダイアログ"
+
+msgid "Ask AI dialog with model selector showing Claude, GPT, Gemini, and Grok"
+msgstr "Claude、GPT、Gemini、Grokのモデル選択欄を表示した「AIに質問」ダイアログ"
+
+msgid "Ask AI questions about stories"
+msgstr "記事についてAIに質問する"
+
+msgid "Ask AI with Claude, GPT, Gemini, Grok"
+msgstr "Claude、GPT、Gemini、GrokでAIに質問"
+
+msgid ""
+"Ask any question about a story using Claude, GPT, Gemini, or Grok. Get summaries, key points, or have a "
+"conversation."
+msgstr "Claude、GPT、Gemini、Grokを使って記事について質問できます。要約や要点を得たり、会話したりできます。"
+
+msgid "Ask questions about any story and get answers powered by AI"
+msgstr "あらゆる記事について質問し、AIによる回答を得られます"
+
+msgid ""
+"Ask questions about any story and get answers powered by your choice of AI model: Claude, GPT, Gemini, or "
+"Grok. Get summaries, key points, or ask follow-up questions in a conversation. Even transcribe audio and "
+"video content and ask questions about it."
+msgstr "あらゆる記事について質問し、お好みのAIモデル（Claude、GPT、Gemini、Grok）による回答を得られます。要約や要点を取得したり、会話形式で追加の質問をしたりできます。音声や動画の文字起こしをして、その内容について質問することもできます。"
+
+msgid ""
+"Ask questions about any story using Claude, GPT, Gemini, or Grok. Summarize, translate, analyze, or dig "
+"deeper into what you're reading."
+msgstr "Claude、GPT、Gemini、Grokを使って、どの記事についても質問できます。要約、翻訳、分析をしたり、読んでいる内容をさらに掘り下げたりできます。"
+
+msgid "Ask questions, get summaries, or request key points"
+msgstr "質問したり、要約を取得したり、要点を尋ねたりできます"
+
+msgid "Ask the Archive Assistant AI"
+msgstr "アーカイブアシスタントAIに質問"
+
+msgid "Ask the community or try NewsBlur for yourself."
+msgstr "コミュニティに質問するか、NewsBlurをお試しください。"
+
+msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
+msgstr "認証にはOAuth 2.0を使用します&mdash;フローはクライアントが自動的に処理します。"
+
+msgid "Author"
+msgstr "著者"
+
+msgid "Author & Journalist"
+msgstr "著者・ジャーナリスト"
+
+msgid "Authorization Grant Type"
+msgstr "認可グラントタイプ"
+
+msgid "Auto"
+msgstr "自動"
+
+msgctxt "theme"
+msgid "Auto"
+msgstr "自動"
+
+msgid "Automate workflows with hundreds of services"
+msgstr "数百のサービスと連携してワークフローを自動化"
+
+msgid "Automatic (device language)"
+msgstr "自動（端末の言語）"
+
+msgid "Available on Premium Pro"
+msgstr "プレミアム Proで利用可能"
+
+msgid "Available on paid plans"
+msgstr "有料プランで利用可能"
+
+msgid "Avg. load time"
+msgstr "平均読み込み時間"
+
+msgid "Back to NewsBlur"
+msgstr "NewsBlurに戻る"
+
+msgid "Back to account"
+msgstr "アカウントに戻る"
+
+msgid "Back to login"
+msgstr "ログインに戻る"
+
+msgid "Basic"
+msgstr "ベーシック"
+
+msgid "Basic filters"
+msgstr "基本フィルター"
+
+msgid ""
+"Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in "
+"a bubble."
+msgstr "ベン・トンプソンは、AIエージェントがコンピューティング需要を根本的に変えつつあり、もはやバブルの中にいるとは考えていないと論じています。"
+
+msgid "Best Open Source RSS Readers"
+msgstr "おすすめのオープンソースRSSリーダー"
+
+msgid "Best Open Source RSS Readers — NewsBlur, FreshRSS, Miniflux & More"
+msgstr "オープンソースのおすすめRSSリーダー — NewsBlur、FreshRSS、Minifluxなど"
+
+msgid ""
+"Beyond intelligence training, NewsBlur offers several features you won't find in Feedly: Track Changes "
+"shows how stories evolve after publication. Web Feeds let you follow any website, even without RSS. Story "
+"clustering groups related stories across your feeds. The original site view renders stories exactly as they"
+" appear on the publisher's website. And the entire platform works with third-party apps like Reeder, "
+"ReadKit, Unread, and NetNewsWire."
+msgstr "インテリジェンス学習に加え、NewsBlurにはFeedlyにはない機能がいくつもあります。変更追跡では、公開後に記事がどう変わったかを確認できます。ウェブフィードでは、RSSがないサイトもフォローできます。記事のクラスタリングでは、フィードをまたいで関連する記事をまとめます。元サイト表示では、配信元のウェブサイトに掲載されたとおりに記事を表示します。また、プラットフォーム全体がReeder、ReadKit、Unread、NetNewsWireなどのサードパーティ製アプリと連携します。"
+
+msgid "Bill To"
+msgstr "請求先"
+
+msgid "Blogger"
+msgstr "ブロガー"
+
+msgid "Blurblog Privacy"
+msgstr "Blurblogのプライバシー"
+
+msgid "Blurblog Profile"
+msgstr "Blurblogプロフィール"
+
+msgid "Blurblogs"
+msgstr "Blurblog"
+
+msgid "Bookmarklet to easily add sites"
+msgstr "サイトを簡単に追加できるブックマークレット"
+
+msgid "Both are feature-rich RSS readers for power users. Here's how they compare."
+msgstr "どちらも上級ユーザー向けの高機能なRSSリーダーです。機能を比較してみましょう。"
+
+msgid ""
+"Both readers emerged from the post-Google Reader era. NewsBlur has continued evolving with intelligence "
+"training, AI, and a full open source platform."
+msgstr "どちらのリーダーもGoogle Reader終了後に登場しました。NewsBlurは、インテリジェンス学習、AI、そして完全なオープンソースプラットフォームで進化を続けています。"
+
+msgid ""
+"Both readers offer powerful filtering, but the approach differs. Inoreader uses rule-based filtering that "
+"requires you to set up conditions manually. NewsBlur's intelligence training is visual and intuitive: see "
+"an author you like? Thumbs up. A tag you don't care about? Thumbs down. Stories are color-coded green "
+"(focus), red (hidden), or neutral, so you can see at a glance how your training is working. Both support "
+"regex for power users."
+msgstr "どちらのリーダーも強力なフィルタリング機能を備えていますが、方法は異なります。Inoreaderではルールベースのフィルタリングを使い、条件を手動で設定する必要があります。NewsBlurのインテリジェンス学習は視覚的で直感的です。好きな著者を見つけたら高評価、興味のないタグには低評価を付けるだけ。記事は緑（フォーカス）、赤（非表示）、または中立色で表示されるため、学習の効果を一目で確認できます。どちらも上級ユーザー向けに正規表現に対応しています。"
+
+msgid ""
+"Bring your feeds from any reader or take them with you when you leave. OPML import brings over all your "
+"subscriptions and folder structure in seconds. Export anytime to get a complete backup. No lock-in, ever."
+msgstr "どのリーダーからでもフィードを取り込めます。また、利用をやめるときに持ち出すこともできます。OPMLをインポートすれば、すべての購読とフォルダー構成を数秒で引き継げます。いつでもエクスポートして完全なバックアップを作成できます。囲い込みは一切ありません。"
+
+msgid ""
+"Browse Global Shared Stories, your friends' shares, and NewsBlur-wide trending lists: widely-read stories, "
+"long reads, and good reads"
+msgstr "全体で共有された記事、友達の共有記事、NewsBlur全体のトレンド一覧（よく読まれている記事、長文記事、おすすめ記事）をチェック"
+
+msgid "Browse saved stories by tag in the sidebar"
+msgstr "サイドバーでタグ別に保存済みの記事を閲覧"
+
+msgid "Built <a href=\"http://github.com/samuelclay/\">in the open</a> in New York and San Francisco."
+msgstr "ニューヨークとサンフランシスコで<a href=\"http://github.com/samuelclay/\">オープンに</a>開発されました。"
+
+msgid "Built before Google Reader died, built to last after it"
+msgstr "Google Readerの終了前に誕生し、その後も長く使えるように作られました"
+
+msgid "Built for iOS<br>from the ground up"
+msgstr "iOS向けに<br>一から構築"
+
+msgid "Built with"
+msgstr "使用技術"
+
+msgid "Built-in player"
+msgstr "内蔵プレーヤー"
+
+msgid "Bundles & broadcasting"
+msgstr "バンドルと配信"
+
+msgid ""
+"But NewsBlur goes further. Intelligence training lets you highlight stories by author, tag, title keyword, "
+"or full text. You can filter by URL patterns and even use regex classifiers on the Pro plan. Stories are "
+"color-coded green for focus and red for hidden, so you always know why a story is surfaced or suppressed. "
+"Ask AI lets you query your stories using Claude, GPT, Gemini, or Grok. Web Feeds let you follow any "
+"website, even ones without RSS. And email newsletters can be forwarded directly into your reading queue."
+msgstr "しかし、NewsBlurはそれだけではありません。インテリジェンス学習では、著者、タグ、タイトルのキーワード、記事全文を基準に記事をハイライトできます。URLパターンでフィルタリングでき、Proプランでは正規表現による分類も利用できます。記事は、フォーカスが緑、非表示が赤で色分けされるため、記事が表示または除外された理由がひと目でわかります。「AIに質問」では、Claude、GPT、Gemini、Grokを使って記事について質問できます。ウェブフィードを使えば、RSSのないサイトも含め、あらゆるウェブサイトをフォローできます。また、メールニュースレターを読書キューに直接転送することもできます。"
+
+msgid "By going premium you can get full and immediate access to NewsBlur."
+msgstr "プレミアムにアップグレードすると、NewsBlurに完全かつ即時にアクセスできます。"
+
+msgid "CLI Tool"
+msgstr "CLIツール"
+
+msgid "CLI Tool - NewsBlur"
+msgstr "CLIツール - NewsBlur"
+
+msgid "CLI access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "CLIへのアクセスには、プレミアムアーカイブ（年額99ドル）またはプレミアム Pro（月額29ドル）の購読が必要です。"
+
+msgid "CTO, Parse.ly"
+msgstr "Parse.ly CTO"
+
+msgid "Can I automatically mark duplicates as read?"
+msgstr "重複記事を自動的に既読にできますか？"
+
+msgid "Can I downgrade from Pro?"
+msgstr "Proからダウングレードできますか？"
+
+msgid "Can I import feeds from another reader?"
+msgstr "別のリーダーからフィードをインポートできますか？"
+
+msgid "Can I import my feeds from another reader?"
+msgstr "他のリーダーからフィードをインポートできますか？"
+
+msgid "Can I save a search as a feed?"
+msgstr "検索をフィードとして保存できますか？"
+
+msgid "Can I search saved stories?"
+msgstr "保存した記事を検索できますか？"
+
+msgid "Can I search the archive?"
+msgstr "アーカイブを検索できますか？"
+
+msgid "Can I share tagged collections?"
+msgstr "タグ付きコレクションを共有できますか？"
+
+msgid "Can I switch between plans?"
+msgstr "プランを切り替えることはできますか？"
+
+msgid "Can I train on newsletter content?"
+msgstr "ニュースレターのコンテンツを学習に使えますか？"
+
+msgid "Can I try premium features before paying?"
+msgstr "支払う前にプレミアム機能を試せますか？"
+
+msgid "Can I turn clustering off?"
+msgstr "クラスタリングを無効にできますか？"
+
+msgid "Can I undo training?"
+msgstr "学習を取り消せますか？"
+
+msgid "Can I upgrade to Archive or Pro later?"
+msgstr "後からアーカイブまたはProにアップグレードできますか？"
+
+msgid "Can I use Ask AI on any story?"
+msgstr "どの記事でも「AIに質問」を使えますか？"
+
+msgid "Can I use it with a self-hosted instance?"
+msgstr "セルフホスト版でも使えますか？"
+
+msgid "Can I use third-party apps instead?"
+msgstr "代わりにサードパーティ製アプリを使えますか？"
+
+msgid "Can add any URL"
+msgstr "任意のURLを追加できます"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Category-based rules"
+msgstr "カテゴリ別ルール"
+
+msgid "Changed your mind? Manage your email settings"
+msgstr "気が変わりましたか？メール設定を管理"
+
+msgid "Cheapest Paid Plan"
+msgstr "最安の有料プラン"
+
+msgid "Chief Morale Officer"
+msgstr "チーフ・モラル・オフィサー"
+
+msgid "Choose Your 64"
+msgstr "64件を選択"
+
+msgid "Choose when stories are marked as read"
+msgstr "記事を既読にするタイミングを選択"
+
+msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
+msgstr "お好みのAIモデルを選択：Claude、GPT、Gemini、Grok"
+
+msgid "Choose your username"
+msgstr "ユーザー名を選択"
+
+msgid "Civic Tech"
+msgstr "シビックテック"
+
+msgid "Classification failed, please try again"
+msgstr "分類に失敗しました。もう一度お試しください"
+
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（xAI）。いつでも切り替えられます。"
+
+msgid "Click any source to read that version instead, or mark all duplicates as read at once"
+msgstr "ソースを選ぶとそのバージョンを読めます。または、重複記事をすべてまとめて既読にできます"
+
+msgctxt "technology stack group"
+msgid "Client"
+msgstr "クライアント"
+
+msgid "Client id"
+msgstr "クライアントID"
+
+msgid "Client secret"
+msgstr "クライアントシークレット"
+
+msgid "Client type"
+msgstr "クライアントの種類"
+
+msgid "Cluster duplicate stories across all your feeds"
+msgstr "すべてのフィードで重複する記事をまとめる"
+
+msgid "Clustered stories in the titles view"
+msgstr "タイトル表示で記事をグループ化"
+
+msgid "Clustering controls in the feed options popover"
+msgstr "フィードオプションのポップオーバーにあるクラスタリング設定"
+
+msgid "Collapse All Folders"
+msgstr "すべてのフォルダーを折りたたむ"
+
+msgid "Command-line interface"
+msgstr "コマンドラインインターフェース"
+
+msgid "Comment on this story..."
+msgstr "この記事にコメント…"
+
+msgid "Comments from friends"
+msgstr "友達からのコメント"
+
+msgid "Common Questions"
+msgstr "よくある質問"
+
+msgid "Common questions about plans and billing"
+msgstr "プランと請求に関するよくある質問"
+
+msgid "Community"
+msgstr "コミュニティ"
+
+msgid "Community Feedback"
+msgstr "コミュニティからのフィードバック"
+
+msgid "Compare"
+msgstr "比較"
+
+msgid "Compare NewsBlur"
+msgstr "NewsBlurを比較"
+
+msgid "Compare all plans"
+msgstr "すべてのプランを比較"
+
+msgid "Compare every tier side by side"
+msgstr "すべてのプランを並べて比較"
+
+msgid "Compare plans and FAQ"
+msgstr "プランの比較とよくある質問"
+
+msgid "Complete data ownership"
+msgstr "データを完全に管理"
+
+msgid "Complete folder-feed hierarchy"
+msgstr "フォルダーとフィードの階層全体"
+
+msgid "Complete!"
+msgstr "完了！"
+
+msgid "Comprehensive"
+msgstr "包括的"
+
+msgid "Confirm your password"
+msgstr "パスワードを確認"
+
+#, python-format
+msgid "Connect %(provider_name)s"
+msgstr "%(provider_name)sに接続"
+
+msgid ""
+"Connect AI agents to your NewsBlur account via the Model Context Protocol. Read feeds, triage stories, "
+"train classifiers, and manage subscriptions from Claude Code, Codex, or any MCP-compatible tool. 28 tools "
+"available with pre-built prompt templates for common workflows like daily briefings and inbox triage."
+msgstr ""
+"Model Context Protocolを介してAIエージェントをNewsBlurアカウントに接続できます。Claude "
+"Code、Codex、またはMCP対応ツールから、フィードの閲覧、記事の仕分け、分類器の学習、購読の管理が可能です。日次ブリーフィングや受信トレイの仕分けなど、よく使うワークフロー向けの事前構築済みプロンプトテンプレートと、28種類のツールを利用できます。"
+
+msgid ""
+"Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
+"subscriptions from Claude Code, Codex, or any MCP-compatible tool."
+msgstr "AIエージェントをNewsBlurアカウントに接続できます。Claude Code、Codex、またはMCP互換ツールから、フィードの閲覧、記事の整理、分類器の学習、購読の管理を行えます。"
+
+msgid "Connect AI agents to your feeds and stories"
+msgstr "AIエージェントをフィードや記事に接続"
+
+msgid "Connect AI agents with MCP server and CLI"
+msgstr "MCPサーバーとCLIでAIエージェントを接続"
+
+msgid ""
+"Connect NewsBlur to hundreds of other services. Automatically save stories to Pocket, Instapaper, Evernote,"
+" or Notion. Post shared stories to Slack, Twitter, or email. Trigger custom workflows when stories match "
+"your training filters. The full NewsBlur API is also available for custom integrations."
+msgstr ""
+"NewsBlurを何百ものサービスと連携できます。記事をPocket、Instapaper、Evernote、Notionに自動保存したり、共有した記事をSlack、Twitter、メールに投稿したりできます。記事が学習済みのフィルターに一致したときに、カスタムワークフローを実行することもできます。カスタム連携向けにNewsBlur"
+" APIも利用できます。"
+
+msgid "Connect an existing account"
+msgstr "既存のアカウントに接続"
+
+msgid "Connect in one command"
+msgstr "1つのコマンドで接続"
+
+msgid "Connect your account"
+msgstr "アカウントを接続"
+
+msgid "Contact"
+msgstr "お問い合わせ"
+
+msgid "Contact Samuel Clay, NewsBlur's developer, with questions about NewsBlur or your account."
+msgstr "NewsBlurの開発者であるSamuel Clayに、NewsBlurやアカウントについてお問い合わせください。"
+
+msgid ""
+"Contact Samuel for interviews, comments, and questions about NewsBlur. As another ambitious New Yorker, he "
+"is happy to talk about NewsBlur."
+msgstr "NewsBlurについての取材、コメント、ご質問はSamuelまでお問い合わせください。彼も意欲あふれるニューヨーカーとして、NewsBlurについて喜んでお話しします。"
+
+msgid "Contact information"
+msgstr "連絡先情報"
+
+msgid "Contact the NewsBlur Android team for help with the Android app."
+msgstr "Androidアプリについては、NewsBlurのAndroidチームにお問い合わせください。"
+
+msgid "Contact us"
+msgstr "お問い合わせ"
+
+msgid "Contact us - NewsBlur"
+msgstr "お問い合わせ - NewsBlur"
+
+msgid "Continue to NewsBlur"
+msgstr "NewsBlurに進む"
+
+msgid "Control the Original View"
+msgstr "オリジナル表示を操作する"
+
+msgid "Could not determine RSS feed URL."
+msgstr "RSSフィードのURLを特定できませんでした。"
+
+msgid "Could not find feeds for user."
+msgstr "ユーザーのフィードが見つかりませんでした。"
+
+msgid "Could not find story to save."
+msgstr "保存する記事が見つかりませんでした。"
+
+msgid "Could not find the original story and no copies could be found."
+msgstr "元の記事もコピーも見つかりませんでした。"
+
+msgid "Could not load FAQ."
+msgstr "FAQを読み込めませんでした。"
+
+msgid "Could not parse YouTube results."
+msgstr "YouTubeの検索結果を解析できませんでした。"
+
+msgid "Could not save story, not found"
+msgstr "記事を保存できませんでした。見つかりません。"
+
+msgid "Could not unsave story, not found"
+msgstr "記事を保存解除できませんでした。見つかりません。"
+
+#, python-format
+msgid "Coverage period: %(start)s &ndash; %(end)s"
+msgstr "対象期間: %(start)s &ndash; %(end)s"
+
+msgid ""
+"Craig Hockenberry deep-dives into why Canon printers constantly go \"Offline\" on Mac &mdash; broken "
+"Bonjour/mDNS firmware &mdash; and presents a permanent workaround."
+msgstr "Craig Hockenberryが、CanonのプリンターがMacで常に「オフライン」になる原因&mdash;Bonjour/mDNSファームウェアの不具合&mdash;を詳しく解説し、恒久的な回避策を紹介します。"
+
+msgid "Create Account"
+msgstr "アカウントを作成"
+
+msgid "Create a new account instead"
+msgstr "代わりに新しいアカウントを作成"
+
+msgid "Create account"
+msgstr "アカウントを作成"
+
+msgid "Create an Account"
+msgstr "アカウントを作成"
+
+msgid "Create an account"
+msgstr "アカウントを作成"
+
+msgid "Credit/debit cards via Stripe and PayPal."
+msgstr "StripeおよびPayPal経由のクレジットカード／デビットカード。"
+
+msgid "Currently viewing"
+msgstr "現在表示中"
+
+msgid "Custom RSS feeds for folders and saved stories"
+msgstr "フォルダーや保存した記事用のカスタムRSSフィード"
+
+msgid "Custom RSS feeds for saved stories"
+msgstr "保存した記事用のカスタムRSSフィード"
+
+msgid "Custom question is required"
+msgstr "カスタム質問は必須です"
+
+#, python-format
+msgid "Custom questions are limited to %(limit)d characters"
+msgstr "カスタム質問は%(limit)d文字以内で入力してください"
+
+msgid "Customizable AI summaries"
+msgstr "カスタマイズ可能なAI要約"
+
+msgid "Customize auto-read behavior by site or folder. Read on scroll, on open, or manually."
+msgstr "サイトやフォルダーごとに自動既読の動作を設定できます。スクロール時、開いたとき、または手動で既読にできます。"
+
+msgid "Customize auto-read by site or folder"
+msgstr "サイトまたはフォルダーごとに自動既読をカスタマイズ"
+
+msgid "Customize briefing sections and delivery schedule"
+msgstr "ブリーフィングのセクションと配信スケジュールをカスタマイズ"
+
+msgid "Customize with Claude Code"
+msgstr "Claude Codeでカスタマイズ"
+
+msgid "DIY"
+msgstr "DIY"
+
+msgid "Daily AI Briefing"
+msgstr "毎日のAIブリーフィング"
+
+msgid "Daily Briefing"
+msgstr "デイリーブリーフィング"
+
+msgid "Daily Briefing with AI-generated story summaries"
+msgstr "AI生成の記事要約付きデイリーブリーフィング"
+
+msgid "Daily briefing"
+msgstr "毎日のブリーフィング"
+
+msgid "Daily briefing with AI-generated story summaries"
+msgstr "AIが生成する記事要約付きの日次ブリーフィング"
+
+msgid "Daily briefing with story summaries"
+msgstr "記事の要約付きデイリーブリーフィング"
+
+msgid "Daily briefing with your top stories and keywords"
+msgstr "注目の記事とキーワードを毎日お届け"
+
+msgctxt "theme"
+msgid "Dark"
+msgstr "ダーク"
+
+msgid "Dark Mode"
+msgstr "ダークモード"
+
+msgid "Data Scientist"
+msgstr "データサイエンティスト"
+
+msgid "Data portability and OPML"
+msgstr "データの移行とOPML"
+
+msgid "Database"
+msgstr "データベース"
+
+msgid "Database search"
+msgstr "データベース検索"
+
+msgid "Days must be a positive integer."
+msgstr "日数は正の整数で指定してください。"
+
+msgid "Days must be between 0 and 365"
+msgstr "日数は0〜365の範囲で指定してください"
+
+msgid "Days parameter must be an integer."
+msgstr "Daysパラメーターは整数である必要があります。"
+
+msgid "Deb's spring salad refresh, inspired by a Paris trip where the magnolias were blooming."
+msgstr "パリ旅行でモクレンが咲き誇るのを見たことに着想を得た、デブの春のサラダアレンジ。"
+
+msgid "Decline"
+msgstr "却下"
+
+msgid "Deep highlighting and annotation"
+msgstr "詳細なハイライトと注釈"
+
+msgid "Default"
+msgstr "デフォルト"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Description"
+msgstr "説明"
+
+msgid "Developer"
+msgstr "開発者"
+
+msgid "Different tools for different needs"
+msgstr "ニーズに合わせたさまざまなツール"
+
+msgid "Discover"
+msgstr "見つける"
+
+msgid "Discover new feeds"
+msgstr "新しいフィードを見つける"
+
+msgid "Discover related stories across your archive"
+msgstr "アーカイブ全体から関連する記事を見つける"
+
+msgid "Discover related stories and sites"
+msgstr "関連記事や関連サイトを見つける"
+
+msgid "Do I get a unique email address?"
+msgstr "専用のメールアドレスを取得できますか？"
+
+msgid "Do I need RSS feeds to follow a site?"
+msgstr "サイトをフォローするにはRSSフィードが必要ですか？"
+
+msgid "Do the apps work offline?"
+msgstr "アプリはオフラインでも使えますか？"
+
+msgid "Docker Support"
+msgstr "Dockerのサポート"
+
+msgid "Docker install"
+msgstr "Dockerでインストール"
+
+msgid "Docker one-command install"
+msgstr "Dockerワンコマンドインストール"
+
+msgid "Docker or binary"
+msgstr "Docker またはバイナリ"
+
+msgid "Docker or manual"
+msgstr "Dockerまたは手動"
+
+msgid "Docker setup: from simple to full-stack"
+msgstr "Dockerのセットアップ：シンプル構成からフルスタックまで"
+
+msgid "Does Archive include everything in Premium?"
+msgstr "アーカイブにはプレミアムのすべての機能が含まれますか？"
+
+msgid "Does Ask AI work with audio and video?"
+msgstr "「AIに質問」は音声や動画にも対応していますか？"
+
+msgid "Does NewsBlur work with other apps?"
+msgstr "NewsBlurは他のアプリと連携できますか？"
+
+msgid "Does Pro include everything in Archive?"
+msgstr "Proにはアーカイブのすべての機能が含まれますか？"
+
+msgid "Does training work across all my feeds?"
+msgstr "学習内容はすべてのフィードに反映されますか？"
+
+msgid "Download NewsBlur from the App Store or Google Play"
+msgstr "App StoreまたはGoogle PlayからNewsBlurをダウンロード"
+
+#, python-format
+msgid "Download the free NewsBlur Android app on <br /><span class=\"NB-big\">%(store)s</span>"
+msgstr "無料の NewsBlur Android アプリを <br /><span class=\"NB-big\">%(store)s</span> からダウンロード"
+
+#, python-format
+msgid "Download the free NewsBlur iOS app on the<br /><span class=\"NB-big\">%(store)s</span>"
+msgstr "無料の NewsBlur iOSアプリを<br /><span class=\"NB-big\">%(store)s</span>からダウンロード"
+
+msgid "Download the latest version of the NewsBlur iOS app"
+msgstr "NewsBlur iOSアプリの最新バージョンをダウンロード"
+
+msgid "Duplicates fold underneath the highest-scoring version in your river view"
+msgstr "重複記事は、記事一覧で最もスコアの高い記事の下にまとめられます"
+
+msgid "Each newsletter sender becomes its own feed"
+msgstr "各ニュースレターの送信者が個別のフィードになります"
+
+msgid "Each river must have river_id, river_side, and river_order"
+msgstr "各リバーにはriver_id、river_side、river_orderが必要です"
+
+msgid "Each saved story tag generates its own RSS feed. Pipe curated collections into other tools or share them."
+msgstr "保存した記事のタグごとに、専用のRSSフィードが作成されます。厳選したコレクションを他のツールに連携したり、共有したりできます。"
+
+msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
+msgstr "各タグには、共有したり他のツールに取り込んだりできる専用のRSSフィードが用意されます"
+
+msgid "Easily import from Google Reader"
+msgstr "Google Readerから簡単にインポート"
+
+msgid "Easy on the eyes and built into the web, iOS, and Android"
+msgstr "見やすく、ウェブ・iOS・Androidに標準搭載"
+
+msgid "Easy reading"
+msgstr "快適に読める"
+
+msgid "Economist"
+msgstr "エコノミスト"
+
+msgid "Edit"
+msgstr "編集"
+
+msgid "Edit application"
+msgstr "アプリケーションを編集"
+
+msgid ""
+"Either the URL you accessed doesn't point to anything or there is no site, story, or data with these "
+"parameters."
+msgstr "アクセスしたURLが何も指していないか、指定されたパラメーターに一致するサイト、記事、データがありません。"
+
+msgid "Elasticsearch-powered"
+msgstr "Elasticsearch搭載"
+
+msgid "Email"
+msgstr "メールアドレス"
+
+msgid "Email Newsletters"
+msgstr "メールニュースレター"
+
+msgid "Email Newsletters - NewsBlur"
+msgstr "メールニュースレター - NewsBlur"
+
+msgid "Email address"
+msgstr "メールアドレス"
+
+msgid "Email newsletters appearing as feeds in NewsBlur"
+msgstr "NewsBlurでフィードとして表示されるメールニュースレター"
+
+msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
+msgstr "注目記事のAI生成要約を利用するには、デイリーブリーフィングを有効にしてください"
+
+msgid "Engineer"
+msgstr "エンジニア"
+
+msgid "Engineer & Writer"
+msgstr "エンジニア兼ライター"
+
+msgid "Enjoying premium features? Keep them forever!"
+msgstr "プレミアム機能をお楽しみですか？ずっと使い続けましょう！"
+
+msgid "Enter your email address and we'll send you a link to set a new password."
+msgstr "メールアドレスを入力してください。新しいパスワードを設定するためのリンクをお送りします。"
+
+msgid "Even sites that don't publish RSS feeds can be followed"
+msgstr "RSSフィードを公開していないサイトもフォローできます"
+
+#, python-format
+msgid ""
+"Every command supports <code>%(json_flag)s</code> for structured output and <code>%(raw_flag)s</code> for "
+"unformatted text. Pipe to jq, use in shell scripts, or connect to self-hosted instances."
+msgstr "すべてのコマンドは、構造化出力用の<code>%(json_flag)s</code>と、未フォーマットテキスト用の<code>%(raw_flag)s</code>に対応しています。jqに渡したり、シェルスクリプトで使ったり、セルフホスト環境に接続したりできます。"
+
+msgid "Every feature from the web, built natively for Android. Free on the Play Store."
+msgstr "ウェブ版のすべての機能をAndroid向けにネイティブ実装。Playストアで無料。"
+
+msgid "Every feature, at a glance"
+msgstr "すべての機能を一覧で"
+
+msgid "Every feed fetched every 5-15 minutes, regex training, and up to 10,000 sites"
+msgstr "すべてのフィードを5～15分ごとに取得、正規表現の学習、最大10,000サイト"
+
+msgid ""
+"Every feed in your account is checked at minimum every 15 minutes, with most feeds checked every 5 minutes."
+" This is independent of how often the feed actually publishes."
+msgstr "アカウント内の各フィードは最低15分ごとにチェックされ、ほとんどのフィードは5分ごとにチェックされます。フィードが実際に記事を公開する頻度とは関係ありません。"
+
+msgid "Every layout, every theme, every keyboard shortcut. Train your feeds to surface what matters."
+msgstr "あらゆるレイアウト、テーマ、キーボードショートカット。フィードを学習させて、大切な情報を表示しましょう。"
+
+msgid ""
+"Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your "
+"feeds and training on the free tier."
+msgstr "新規アカウントには、30日間のプレミアム無料トライアルが付いています。クレジットカードは不要です。終了後も、無料プランでフィードと学習内容を引き続き利用できます。"
+
+msgid "Every new story is archived permanently"
+msgstr "新しい記事はすべて永久にアーカイブされます"
+
+msgid ""
+"Every single feed in your account is checked at least every 15 minutes, most every 5 minutes. Monitoring-"
+"grade frequency."
+msgstr "アカウント内のすべてのフィードを少なくとも15分ごとにチェックし、ほとんどは5分ごとにチェックします。監視システム級の頻度です。"
+
+msgid ""
+"Every site can have its own layout. Choose from Split, List, Grid, and Magazine views. Set different "
+"layouts per-feed to match the content &mdash; grid for image-heavy sites, list for high-volume feeds, split"
+" for long-form reading. Customize column count, card height, and content density."
+msgstr "サイトごとにレイアウトを設定できます。分割、リスト、グリッド、マガジン表示から選択できます。フィードごとに異なるレイアウトを設定し、コンテンツに合わせましょう&mdash;画像の多いサイトにはグリッド、大量のフィードにはリスト、長文を読むには分割表示がおすすめです。列数、カードの高さ、コンテンツの密度も調整できます。"
+
+msgid "Every site has its own story layout, so you can mix and match"
+msgstr "サイトごとに記事のレイアウトを設定できるので、自由に組み合わせられます"
+
+msgid "Every story archived and searchable forever"
+msgstr "すべての記事を永久にアーカイブして検索可能"
+
+msgid ""
+"Every story archived and searchable forever. Feeds are back-filled for a complete history. Your reading "
+"archive grows with you."
+msgstr "すべての記事をアーカイブして、いつでも検索できます。フィードは過去にさかのぼって取得され、完全な履歴を作成します。読書アーカイブは利用とともに増えていきます。"
+
+msgid ""
+"Every story archived and searchable forever. When you subscribe to a new feed, NewsBlur back-fills its "
+"entire history so you have the complete archive from day one. Stories never expire. Your reading history "
+"becomes a searchable personal knowledge base."
+msgstr "すべての記事を永久にアーカイブし、検索できます。新しいフィードを購読すると、NewsBlurは過去の記事をすべて取り込み、初日から完全なアーカイブを利用できるようにします。記事が期限切れになることはありません。閲覧履歴が検索可能な個人用ナレッジベースになります。"
+
+msgid "Every story archived and searchable forever. Your personal knowledge base."
+msgstr "すべての記事を永久にアーカイブして検索できます。あなただけのナレッジベースです。"
+
+msgid "Every story kept and searchable forever"
+msgstr "すべての記事を永久に保存・検索可能"
+
+msgid "Everything in Archive, plus"
+msgstr "アーカイブのすべての機能に加えて"
+
+msgid "Everything in Archive, plus:"
+msgstr "アーカイブのすべての機能に加えて："
+
+msgid "Everything in Free, plus:"
+msgstr "無料プランのすべての機能に加えて："
+
+msgid "Everything in Premium, plus"
+msgstr "プレミアムのすべての機能に加えて"
+
+msgid "Everything in Premium, plus:"
+msgstr "プレミアムのすべての機能に加えて："
+
+msgid "Everything is on its way..."
+msgstr "すべて準備中です..."
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Pipe to jq, script your workflows, or just browse "
+"your feeds."
+msgstr "ターミナルからMCPサーバーのすべての機能を利用できます。jqに渡したり、ワークフローをスクリプト化したり、フィードを閲覧したりできます。"
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
+" train classifiers. Pipe to jq, script your workflows, or just browse your feeds."
+msgstr "ターミナルからMCPサーバーのすべての機能を利用できます。フィードの閲覧、記事の検索、購読の管理、分類器の学習が可能です。jqに渡したり、ワークフローをスクリプト化したり、フィードを閲覧したりできます。"
+
+msgid "Everything you loved about Google Reader, and more"
+msgstr "Google Readerで気に入っていた機能をすべて、さらにその先へ"
+
+msgid "Everything you need for power reading. 1,024 sites, full-text search, and a smarter reading experience."
+msgstr "本格的なニュース閲覧に必要なすべて。1,024サイト、全文検索、よりスマートな閲覧体験。"
+
+msgid "Everything you need to know about NewsBlur"
+msgstr "NewsBlurについて知っておきたいこと"
+
+msgid "Example"
+msgstr "例"
+
+msgid "Example:"
+msgstr "例："
+
+msgid "Expand well beyond the 64-site free limit. Follow all the sources that matter to you."
+msgstr "無料プランの64サイト制限を大きく超えて、必要な情報源をすべてフォローできます。"
+
+msgid "Expand your network"
+msgstr "つながりを広げる"
+
+msgid "Explore Archive"
+msgstr "アーカイブプランを詳しく見る"
+
+msgid "Explore Premium"
+msgstr "プレミアムをチェック"
+
+msgid "Explore Pro"
+msgstr "Proを詳しく見る"
+
+msgid "Explore more features"
+msgstr "その他の機能を見る"
+
+msgid "Export stories that match your training from any folder as an RSS feed or download."
+msgstr "どのフォルダーからでも、学習内容に一致する記事をRSSフィードとしてエクスポート、またはダウンロードできます。"
+
+msgid "Export trained stories from folders"
+msgstr "フォルダーから学習済み記事をエクスポート"
+
+msgid ""
+"Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
+"into NewsBlur. All your feeds, folders, and organization come over instantly. Every new account starts with"
+" a free 30-day premium trial, so you can evaluate the full experience before committing."
+msgstr ""
+"FeedlyからOPMLファイルをエクスポートし（Settings &rarr; Organize Sources &rarr; Export "
+"OPML）、NewsBlurにインポートしてください。すべてのフィード、フォルダー、整理方法がすぐに引き継がれます。新規アカウントでは、すべての機能をじっくり試せる30日間のプレミアム無料トライアルをご利用いただけます。"
+
+msgid ""
+"Export your OPML file from Inoreader (Preferences &rarr; Import/Export &rarr; Export Subscriptions), then "
+"import it into NewsBlur. All your feeds and folder structure come over instantly. Every new account starts "
+"with a free 30-day premium trial so you can evaluate the full experience before deciding."
+msgstr ""
+"InoreaderからOPMLファイルをエクスポートし（Preferences &rarr; Import/Export &rarr; Export "
+"Subscriptions）、それをNewsBlurにインポートしてください。すべてのフィードとフォルダー構成がすぐに引き継がれます。新規アカウントはすべて、機能を十分にお試しいただけるよう、無料のプレミアム30日間トライアルから始まります。"
+
+msgid "Extracts full text from truncated feeds"
+msgstr "フィードで省略された記事の全文を取得"
+
+msgid "FAQ"
+msgstr "よくある質問"
+
+msgid "FAQ - Frequently Asked Questions About NewsBlur"
+msgstr "よくある質問 - NewsBlurについてのFAQ"
+
+msgid "Failed to delete tag."
+msgstr "タグを削除できませんでした。"
+
+msgid "Failed to rename tag."
+msgstr "タグの名前を変更できませんでした。"
+
+msgid "Failed to search podcasts"
+msgstr "ポッドキャストの検索に失敗しました"
+
+msgid "Familiar roots, different trajectory"
+msgstr "馴染みのあるルーツ、異なる軌跡"
+
+msgid "Feature"
+msgstr "機能"
+
+msgid "Features"
+msgstr "機能"
+
+msgid "Features & Tips"
+msgstr "機能とヒント"
+
+msgid "Features Feedly doesn't have"
+msgstr "Feedlyにはない機能"
+
+msgid "Features that justify the footprint"
+msgstr "リソース消費に見合う充実した機能"
+
+msgctxt "story view mode"
+msgid "Feed"
+msgstr "フィード"
+
+msgid "Feed ID and photo required"
+msgstr "フィードIDと写真が必要です"
+
+msgid "Feed ID required"
+msgstr "フィードIDが必要です"
+
+msgid "Feed Lyric, NewsBlur's hungry hound"
+msgstr "NewsBlurの食いしん坊な看板犬Lyricにごはんを"
+
+msgid "Feed Statistics"
+msgstr "フィード統計"
+
+msgid "Feed metadata and stats"
+msgstr "フィードのメタデータと統計"
+
+msgid "Feed not found"
+msgstr "フィードが見つかりません"
+
+msgid "Feed not found in subscriptions"
+msgstr "購読中のフィードに見つかりません"
+
+msgid "Feed options popover showing clustering controls"
+msgstr "クラスタリング設定を表示するフィードオプションのポップオーバー"
+
+msgid "Feed statistics showing publish frequency and subscriber count"
+msgstr "フィード統計：公開頻度と購読者数を表示"
+
+msgid "Feed statistics showing update frequency and fetch schedule"
+msgstr "更新頻度と取得スケジュールを表示するフィード統計"
+
+msgid "Feed type is required"
+msgstr "フィードの種類は必須です"
+
+msgid "Feed view"
+msgstr "フィード表示"
+
+msgid "Feedback on NewsBlur"
+msgstr "NewsBlurへのフィードバック"
+
+msgid "Feedly Alternative"
+msgstr "Feedlyの代替サービス"
+
+msgid "Feedly Alternative — Switch to NewsBlur for Less"
+msgstr "Feedlyの代替 — NewsBlurに乗り換えて節約"
+
+msgid ""
+"Feedly uses AI to decide what's important for you. NewsBlur's intelligence training puts you in control. "
+"Thumbs up on an author, tag, or keyword to highlight stories you care about. Thumbs down to hide what you "
+"don't. Stories are color-coded green (focus), yellow (neutral), and red (hidden) so you always know why "
+"you're seeing something. No black box, no algorithmic surprises."
+msgstr "FeedlyはAIを使って、あなたにとって重要なものを判断します。NewsBlurのインテリジェンス学習機能なら、あなた自身がコントロールできます。気になる記事を目立たせるには、著者、タグ、キーワードに高評価を付けましょう。見たくないものには低評価を付けます。記事は緑（フォーカス）、黄（中立）、赤（非表示）で色分けされるので、なぜ表示されているのかがひと目でわかります。中身の見えないブラックボックスも、アルゴリズムによる予想外の結果もありません。"
+
+msgid "Feeds back-filled for complete archive"
+msgstr "フィードを遡って取得し、完全なアーカイブを作成"
+
+msgid "Feeds fetched"
+msgstr "取得したフィード"
+
+msgid "Fetching your feeds"
+msgstr "フィードを取得中"
+
+msgid "Filter stories by date range"
+msgstr "日付範囲で記事を絞り込む"
+
+msgid "Find answers to common questions about features, pricing, training, AI, and more."
+msgstr "機能、料金、学習機能、AIなど、よくある質問への回答をご覧ください。"
+
+msgid "Find connections between stories across your entire archive with semantic similarity."
+msgstr "意味的な類似性を使って、アーカイブ全体から記事同士のつながりを見つけます。"
+
+msgid "Find new feeds by topic, see trending feeds, find feeds similar to ones you follow"
+msgstr "トピックから新しいフィードを探したり、人気のフィードを見たり、フォロー中のフィードに似たものを探したりできます"
+
+msgid "First-class iOS & Android apps, not wrappers"
+msgstr "ラッパーではない、充実したiOS・Androidアプリ"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. Everything you love about NewsBlur, on "
+"every device."
+msgstr "各プラットフォーム向けに開発された本格的なネイティブアプリ。ウェブの単なるラッパーではありません。NewsBlurの魅力を、あらゆるデバイスで。"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. The iOS app supports offline reading, "
+"background refresh, widgets, and all the same training, search, and sharing features as the web. The "
+"Android app matches feature-for-feature. Both apps are open source and actively developed."
+msgstr "各プラットフォーム向けに開発された、本格的なネイティブアプリです。単なるウェブラッパーではありません。iOSアプリはオフライン閲覧、バックグラウンド更新、ウィジェットに対応し、ウェブ版と同じ学習、検索、共有機能をすべて備えています。Androidアプリも機能面で同等です。どちらのアプリもオープンソースで、積極的に開発されています。"
+
+msgid ""
+"First-class native apps built specifically for each platform. Full training, sharing, and offline reading "
+"on your phone and tablet."
+msgstr "各プラットフォーム専用に開発された高品質なネイティブアプリ。スマートフォンやタブレットでの充実した学習、共有、オフライン閲覧に対応しています。"
+
+msgid "Fixed all iOS 8 issues (preference panes, profile popovers)"
+msgstr "iOS 8のすべての問題を修正（設定パネル、プロフィールのポップオーバー）"
+
+msgid "Fixing rotation issues so you can watch a video and rotate without losing position."
+msgstr "動画を見ながら回転しても再生位置がずれないよう、回転に関する問題を修正しました。"
+
+msgid "Focus"
+msgstr "フォーカス"
+
+msgid "Focus/hide with color indicators"
+msgstr "色のインジケーターでフォーカス／非表示"
+
+msgid "Folder title and photo required"
+msgstr "フォルダー名と写真が必要です"
+
+msgid "Folder title required"
+msgstr "フォルダー名が必要です"
+
+msgid "Folder tree with unread counts"
+msgstr "未読数付きフォルダーツリー"
+
+msgid ""
+"Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
+"delivers new content automatically."
+msgstr "RSSフィードがないウェブサイトもフォローできます。NewsBlurがページの変更を監視し、新しいコンテンツを自動で配信します。"
+
+msgid "Follow any website, even ones that don't publish an RSS feed."
+msgstr "RSSフィードを公開していないサイトも含め、あらゆるウェブサイトをフォローできます。"
+
+msgid ""
+"Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web "
+"page by monitoring it for changes. Follow Twitter profiles, Reddit threads, GitHub repos, product pages, "
+"job boards &mdash; if it's on the web, you can follow it."
+msgstr "RSSフィードを公開していないサイトも含め、あらゆるウェブサイトをフォローできます。NewsBlurは変更を監視して、どのウェブページからもカスタムフィードを生成します。Twitterプロフィール、Redditのスレッド、GitHubリポジトリ、商品ページ、求人掲示板など&mdash;ウェブ上にあるものなら何でもフォローできます。"
+
+msgid "Follow any website, even without RSS"
+msgstr "RSSがなくても、あらゆるウェブサイトを登録できます"
+
+msgid ""
+"Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and"
+" delivers new content to you."
+msgstr "RSSがなくても、あらゆるウェブサイトをフォローできます。NewsBlurは任意のページからフィードを生成し、更新を監視して新しいコンテンツをお届けします。"
+
+msgid "Follow friends, shared items"
+msgstr "友達や共有アイテムをフォロー"
+
+msgid "Follow sites without RSS"
+msgstr "RSSのないサイトをフォロー"
+
+msgid "Follow the blog."
+msgstr "ブログをフォローする。"
+
+msgid "Follow up to 1,024 sites"
+msgstr "最大1,024件のサイトをフォロー"
+
+msgid "Follow up to 10,000 sites"
+msgstr "最大10,000サイトをフォロー"
+
+msgid "Follow up to 4,096 sites"
+msgstr "最大4,096サイトをフォロー"
+
+msgid "Follow up to 64 sites"
+msgstr "最大64サイトをフォロー"
+
+msgid "Follower"
+msgid_plural "Followers"
+msgstr[0] "フォロワー"
+
+msgid "Followers"
+msgstr "フォロワー"
+
+msgid "Following"
+msgstr "フォロー中"
+
+msgid ""
+"For power users who need precision. Write regular expressions that match against story titles, body text, "
+"and URLs. Build complex filters that catch exactly what you're looking for, from CVE numbers to stock "
+"ticker patterns to specific phrase combinations."
+msgstr "細かな調整が必要なパワーユーザー向け。記事のタイトル、本文、URLに一致する正規表現を記述できます。CVE番号から株式ティッカーのパターン、特定の語句の組み合わせまで、探しているものを的確に見つける複雑なフィルターを作成できます。"
+
+msgid ""
+"For professionals who need real-time awareness, NewsBlur Pro fetches every feed in your account every 5-15 "
+"minutes. Not just priority feeds &mdash; every single one of your 10,000 sites. This makes NewsBlur a "
+"monitoring-grade tool for journalists, analysts, security researchers, and anyone whose work depends on "
+"being the first to know."
+msgstr ""
+"リアルタイムの状況把握が必要なプロフェッショナル向けに、NewsBlur "
+"Proはアカウント内のすべてのフィードを5～15分ごとに取得します。優先フィードだけではありません&mdash;10,000件のサイトすべてが対象です。これにより、NewsBlurは、いち早く情報を得ることが仕事に欠かせないジャーナリスト、アナリスト、セキュリティ研究者などに適した監視ツールとなります。"
+
+msgid "Forgot password?"
+msgstr "パスワードをお忘れですか？"
+
+msgid "Forward or subscribe newsletters to that address"
+msgstr "ニュースレターをこのアドレスに転送するか、購読登録してください"
+
+msgid "Forward to Feedly"
+msgstr "Feedlyに転送"
+
+msgid "Forward to Inoreader"
+msgstr "Inoreaderに転送"
+
+msgid "Forward to NewsBlur"
+msgstr "NewsBlurに転送"
+
+msgid "Founder"
+msgstr "創設者"
+
+msgid "Four times the Premium limit. Follow every source you need."
+msgstr "プレミアムの4倍の上限。必要な情報源をすべてフォローできます。"
+
+msgid "Free"
+msgstr "無料"
+
+msgid "Free & up"
+msgstr "無料プラン以上"
+
+msgid "Free Plan"
+msgstr "無料プラン"
+
+msgid "Free account"
+msgstr "無料アカウント"
+
+msgid "Free accounts are limited to 64 active sites."
+msgstr "無料アカウントでは、アクティブなサイトは64件までです。"
+
+msgid "Free accounts are limited to 64 sites"
+msgstr "無料アカウントでは登録できるサイトは64件までです"
+
+msgid "Free tier and open source"
+msgstr "無料プランとオープンソース"
+
+msgid "Free tier and pricing"
+msgstr "無料プランと料金"
+
+msgid "Frequent updates since 2009"
+msgstr "2009年から頻繁に更新"
+
+msgid "Frequently Asked Questions"
+msgstr "よくある質問"
+
+msgid ""
+"FreshRSS, Miniflux, and Tiny Tiny RSS are all excellent projects, but they require you to set up and "
+"maintain your own server. That means provisioning a VPS, configuring a database, managing updates, and "
+"handling backups. NewsBlur gives you a choice. You can sign up at newsblur.com and start reading in "
+"seconds, or you can self-host the entire stack with Docker. No other open source RSS reader offers both "
+"options."
+msgstr ""
+"FreshRSS、Miniflux、Tiny Tiny "
+"RSSはいずれも優れたプロジェクトですが、自分でサーバーをセットアップして保守する必要があります。つまり、VPSの用意、データベースの設定、アップデートの管理、バックアップへの対応が必要です。NewsBlurなら選択できます。newsblur.comで登録すれば数秒で読み始められます。または、Dockerでスタック全体をセルフホストできます。この両方の選択肢を提供するオープンソースのRSSリーダーはほかにありません。"
+
+msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
+msgstr "気軽な読書からプロ向けのニュース分析まで。どのプランも30日間のプレミアム無料トライアル付きです。"
+
+msgctxt "story layout"
+msgid "Full"
+msgstr "フル"
+
+msgid "Full Text Search"
+msgstr "全文検索"
+
+msgid "Full archive, Ask AI, daily briefing, 4,096 sites"
+msgstr "全アーカイブ、AIに質問、デイリーブリーフィング、4,096サイト"
+
+msgid "Full article from source"
+msgstr "ソースの全文記事"
+
+msgid "Full story archive, Ask AI, daily briefing, story clustering, and advanced training"
+msgstr "記事アーカイブ全体、AIへの質問、毎日のブリーフィング、記事のクラスタリング、高度な学習機能"
+
+msgid "Full-Text Search"
+msgstr "全文検索"
+
+msgid "Full-Text Search - NewsBlur"
+msgstr "全文検索 - NewsBlur"
+
+msgid "Full-Text Training"
+msgstr "全文学習"
+
+msgid "Full-featured news reader"
+msgstr "多機能なニュースリーダー"
+
+msgid "Full-text articles"
+msgstr "全文記事"
+
+msgid "Full-text search"
+msgstr "全文検索"
+
+msgid ""
+"Full-text search every page the browser extension captured from your web browsing, or ask the Archive "
+"Assistant AI about what you've read"
+msgstr "ブラウザー拡張機能が閲覧中に保存したすべてのページを全文検索したり、アーカイブアシスタントのAIに読んだ内容について質問したりできます"
+
+msgid "Full-text search requires Premium ($36/year) or higher."
+msgstr "全文検索にはプレミアム（年額36ドル）以上が必要です。"
+
+msgid "Full-text search results across subscriptions"
+msgstr "購読フィード全体の全文検索結果"
+
+msgid "Full-text training dialog showing content-based classifiers"
+msgstr "コンテンツベースの分類器を表示する全文学習ダイアログ"
+
+msgid "Full-text training on Archive tier"
+msgstr "アーカイブプランでの全文学習"
+
+msgid "Fully open source (MIT)"
+msgstr "完全なオープンソース（MIT）"
+
+msgid "Fully open source on GitHub"
+msgstr "GitHubで完全オープンソース"
+
+msgid ""
+"Fully open source under the MIT license. Run your own instance with Docker, contribute on <a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>, or just read the code. No lock-in, ever."
+msgstr ""
+"MITライセンスの完全なオープンソースです。Dockerで独自のインスタンスを実行したり、<a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>で貢献したり、コードを読むだけでもかまいません。ベンダーロックインは一切ありません。"
+
+msgid "Fully open source, no lock-in"
+msgstr "完全なオープンソースで、乗り換えを妨げません"
+
+msgid "Further UI cleanups and memory fixes/speedups for iOS 8."
+msgstr "iOS 8向けに、UIのさらなる整理とメモリ修正・高速化を行いました。"
+
+msgid "General support"
+msgstr "一般サポート"
+
+msgid "Gentoo Developer"
+msgstr "Gentoo開発者"
+
+msgid "Get Premium"
+msgstr "プレミアムに登録"
+
+msgid "Get Premium Archive"
+msgstr "プレミアムアーカイブを利用する"
+
+msgid "Get Premium Pro"
+msgstr "プレミアム Proに登録"
+
+msgid "Get Started Free"
+msgstr "無料で始める"
+
+msgid "Get alerted the moment a feed publishes, on web, iOS, or Android"
+msgstr "フィードの公開をウェブ、iOS、Androidですぐに通知"
+
+msgid "Get an AI-curated briefing with top stories, infrequent site gems, and long reads."
+msgstr "注目記事、更新頻度の低いサイトのおすすめ記事、長文記事をAIが厳選してお届けします。"
+
+msgid ""
+"Get an AI-curated briefing with top stories, infrequent site gems, long reads, and stories matching your "
+"classifiers"
+msgstr "人気記事、更新頻度の低いサイトの逸品、長文記事、分類器に一致する記事を集めたAI編集のブリーフィングを受け取りましょう"
+
+msgid "Get faster responses from the NewsBlur team when you need help."
+msgstr "サポートが必要なとき、NewsBlurチームからより迅速に回答を受けられます。"
+
+msgid "Get notified by email, web, iOS, or Android when new stories match your trained intelligence classifiers."
+msgstr "学習済みのインテリジェンス分類器に一致する新着記事を、メール、ウェブ、iOS、Androidで通知します。"
+
+msgid ""
+"Get notified the moment a feed publishes a new story. Set notifications per-feed on web (browser push), "
+"email, iOS, or Android. Apply your training filters so you only get notified about stories that match your "
+"focus. Never miss an important update."
+msgstr "フィードに新しい記事が公開された瞬間に通知を受け取れます。ウェブ（ブラウザープッシュ）、メール、iOS、Androidでフィードごとに通知を設定できます。学習済みのフィルターを適用して、関心に合った記事だけを通知することもできます。重要な更新を見逃しません。"
+
+msgid ""
+"Get notified when feeds publish new stories. Set up web push, email, iOS, or Android notifications per-feed"
+" with training filters."
+msgstr "フィードに新しい記事が公開されたら通知を受け取れます。学習フィルターを使って、フィードごとにウェブプッシュ、メール、iOS、Androidの通知を設定できます。"
+
+msgid "Get started"
+msgstr "始める"
+
+msgid ""
+"Get unread stories from any feed or folder, list all your folders and feeds, search across all "
+"subscriptions, retrieve saved stories by tag"
+msgstr "任意のフィードやフォルダーから未読記事を取得、すべてのフォルダーとフィードを一覧表示、購読中のフィードを横断検索、タグで保存した記事を検索"
+
+msgid "Get unread stories from feeds, folders, or everything at once."
+msgstr "フィード、フォルダー、またはすべてから未読記事を取得できます。"
+
+msgid "Getting Started"
+msgstr "はじめに"
+
+msgid "Gift Error"
+msgstr "ギフトエラー"
+
+msgid "Gift Sent"
+msgstr "ギフトを送信しました"
+
+msgid "Gift code"
+msgstr "ギフトコード"
+
+msgid "Global"
+msgstr "グローバル"
+
+msgid "Global Shared Stories"
+msgstr "全体で共有された記事"
+
+msgid "Global and friends' shared stories"
+msgstr "全体および友達が共有した記事"
+
+msgid "Go Back"
+msgstr "戻る"
+
+msgid "Go beyond titles and tags. Train on the actual content of stories for more precise filtering."
+msgstr "タイトルやタグだけにとどまらず、記事の実際の内容を学習させて、より精度の高いフィルタリングを実現しましょう。"
+
+msgid ""
+"Go beyond titles and tags. Train on the actual content of stories, so you can filter based on what's being "
+"said, not just the metadata. Perfect for catching topics that span multiple authors and feeds."
+msgstr "タイトルやタグにとどまらず、記事の実際の内容を学習させましょう。メタデータだけでなく、記事で何が語られているかに基づいてフィルタリングできます。複数の執筆者やフィードにまたがるトピックの検出に最適です。"
+
+msgid "Go to Account Settings to find your unique NewsBlur email address"
+msgstr "アカウント設定で、あなただけのNewsBlurメールアドレスを確認できます"
+
+msgid "Good Reads"
+msgstr "おすすめ記事"
+
+msgid "Goodies & Apps"
+msgstr "便利な機能とアプリ"
+
+msgid "Google Reader Alt"
+msgstr "Google Readerの代替"
+
+msgid "Google Reader Alternative"
+msgstr "Google Readerの代替サービス"
+
+msgid "Google Reader Alternative - NewsBlur Has Been the Answer Since 2009"
+msgstr "Google Readerの代替サービス - NewsBlurは2009年以来の答えです"
+
+msgid ""
+"Google sunsets Reader and thousands of users flee the dying giant. NewsBlur becomes one of the top "
+"contenders for the successor to the RSS throne, offering sustainability and longevity by charging cash "
+"American dollar for premium accounts."
+msgstr "GoogleがReaderの提供を終了し、何千人ものユーザーが衰退する巨大サービスから離れました。NewsBlurはRSSの王座を継ぐ有力候補の一つとなり、プレミアムアカウントを米ドルで有料化することで、持続可能性と長期的な運営を実現しています。"
+
+msgid "Got it!<br>Email should be sent within the next few minutes."
+msgstr "承知しました！<br>メールは数分以内に送信されます。"
+
+msgid "Graceful iFrame Busting"
+msgstr "iFrameの制限を適切に解除"
+
+msgctxt "story layout"
+msgid "Grid"
+msgstr "グリッド"
+
+msgid "Grid, List, Split, Magazine"
+msgstr "グリッド、リスト、分割、マガジン"
+
+msgid "Group duplicate stories across your feeds"
+msgstr "フィード間で重複する記事をまとめる"
+
+msgid "Half the price, more features"
+msgstr "価格は半分、機能はさらに充実"
+
+msgid "Harvard Law Professor"
+msgstr "ハーバード大学法学教授"
+
+msgid ""
+"Have an idea for a new command or workflow? Post it on the <a href=\"https://forum.newsblur.com\">NewsBlur "
+"support forum</a> and we'll consider it for a future release."
+msgstr ""
+"新しいコマンドやワークフローのアイデアはありますか？<a "
+"href=\"https://forum.newsblur.com\">NewsBlurサポートフォーラム</a>に投稿してください。今後のリリースへの採用を検討します。"
+
+msgid ""
+"Have an idea for a new tool or workflow? Post it on the <a href=\"https://forum.newsblur.com\">NewsBlur "
+"support forum</a> and we'll consider it for a future release."
+msgstr ""
+"新しいツールやワークフローのアイデアはありますか？<a "
+"href=\"https://forum.newsblur.com\">NewsBlurサポートフォーラム</a>に投稿してください。今後のリリースでの採用を検討します。"
+
+msgid "Health Economist, NY Times"
+msgstr "ニューヨーク・タイムズの医療経済学者"
+
+msgid "Hide"
+msgstr "非表示"
+
+msgid "Hide the stories you don't like and highlight the stories you do"
+msgstr "好みでない記事を非表示にし、気に入った記事を目立たせる"
+
+msgid "Higher (full-stack: 2+ GB RAM)"
+msgstr "より高い（フルスタック：RAM 2 GB以上）"
+
+msgid "Hold on just a smidgen..."
+msgstr "もう少しだけお待ちください…"
+
+msgid "Hold tight while your account is being upgraded..."
+msgstr "アカウントをアップグレードしています。しばらくお待ちください…"
+
+msgid "Home"
+msgstr "ホーム"
+
+msgid "Hook NewsBlur up to nearly every service on the web"
+msgstr "NewsBlurをウェブ上のほぼすべてのサービスと連携"
+
+msgid "Hosted Service"
+msgstr "ホステッドサービス"
+
+msgid "How does NewsBlur compare to Feedly?"
+msgstr "NewsBlurはFeedlyとどう違いますか？"
+
+msgid "How does NewsBlur compare to Inoreader?"
+msgstr "NewsBlurはInoreaderとどう違いますか？"
+
+msgid "How does authentication work?"
+msgstr "認証の仕組みを教えてください"
+
+msgid "How does clustering detect duplicate stories?"
+msgstr "クラスタリングは重複した記事をどのように検出しますか？"
+
+msgid "How far back does search go?"
+msgstr "検索対象はどこまで遡れますか？"
+
+msgid "How far back does the archive go?"
+msgstr "アーカイブはどれくらい前までありますか？"
+
+msgid "How it works"
+msgstr "使い方"
+
+msgid "How long is the free trial?"
+msgstr "無料トライアルの期間はどれくらいですか？"
+
+msgid "How many stories can I save?"
+msgstr "記事はいくつ保存できますか？"
+
+msgid "How often are Web Feeds checked?"
+msgstr "ウェブフィードはどのくらいの頻度でチェックされますか？"
+
+msgid "IFTTT & Zapier"
+msgstr "IFTTTとZapier"
+
+msgid "IFTTT integration showing NewsBlur blurblog recipes"
+msgstr "NewsBlurのBlurblogレシピを表示するIFTTT連携"
+
+msgid "Icons"
+msgstr "アイコン"
+
+msgid "If I was a bird I'd be a pigeon."
+msgstr "もし鳥になれるなら、ハトになりたい。"
+
+msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
+msgstr "RSSフィードが見つからない場合、NewsBlurはウェブフィードの作成を提案します"
+
+msgid ""
+"If you used Google Reader, you'll feel at home in NewsBlur. Folder-based organization, keyboard shortcuts "
+"for navigating and managing stories, a clean reading interface, and full OPML import and export are all "
+"here. NewsBlur preserved the core reading experience that made Google Reader great."
+msgstr ""
+"Google "
+"Readerを使っていた方なら、NewsBlurにもすぐ馴染めるでしょう。フォルダーによる整理、記事の閲覧や管理に使えるキーボードショートカット、すっきりした閲覧画面、OPMLの完全なインポートとエクスポートなど、必要な機能が揃っています。NewsBlurは、Google"
+" Readerを優れたものにしていた読書体験の核を守っています。"
+
+msgid ""
+"If you've been searching for a Google Reader replacement, you've found it. NewsBlur isn't just an "
+"alternative. It's the reader that Google Reader users chose, and the one that's still here."
+msgstr "Google Readerの代替サービスを探していたなら、ここにあります。NewsBlurは単なる代替サービスではありません。Google Readerのユーザーが選び、今も使い続けられるリーダーです。"
+
+msgid ""
+"If your project or application allows users to interact with data from NewsBlur, you must cite NewsBlur as "
+"the source of your data."
+msgstr "プロジェクトまたはアプリケーションで、ユーザーがNewsBlurのデータを利用できるようにする場合は、データの出典としてNewsBlurを明記する必要があります。"
+
+msgid "Images are now “full bleed”, extending to the entire width of the screen"
+msgstr "画像が画面幅いっぱいに広がる「フルブリード」表示になりました"
+
+msgid "Import Sites"
+msgstr "サイトをインポート"
+
+msgid "Import sites"
+msgstr "サイトをインポート"
+
+msgid "Infrequent Site Stories"
+msgstr "更新頻度の低いサイトの記事"
+
+msgid "Infrequent Site Stories view showing rarely-published feeds"
+msgstr "更新頻度の低いフィードを表示する「更新頻度の低いサイトの記事」ビュー"
+
+msgid "Inoreader Alternative"
+msgstr "Inoreaderの代替サービス"
+
+msgid "Inoreader Alternative — Switch to NewsBlur"
+msgstr "Inoreaderの代替サービス — NewsBlurに乗り換え"
+
+msgid ""
+"Inoreader offers rules and filters to manage your feeds, but NewsBlur takes a fundamentally different "
+"approach with intelligence training. Thumbs up on an author, tag, or keyword to highlight stories you want "
+"to see. Thumbs down to hide what you don't. Stories are color-coded green (focus), yellow (neutral), and "
+"red (hidden), so you always know why you're seeing something. No algorithmic curation, no opaque AI "
+"decisions. You build your own filter, and it gets smarter as you train it."
+msgstr "Inoreaderにはフィードを管理するルールやフィルターがありますが、NewsBlurはインテリジェンス学習という根本的に異なる方法を採用しています。表示したい記事の著者、タグ、キーワードに高評価を付けて強調し、表示したくないものには低評価を付けて非表示にできます。記事は緑（フォーカス）、黄（中立）、赤（非表示）で色分けされるため、なぜ表示されているのかがひと目でわかります。アルゴリズムによる選別も、不透明なAIの判断もありません。自分でフィルターを作り、学習させるほど賢くなります。"
+
+msgid "Install"
+msgstr "インストール"
+
+msgid ""
+"Install the NewsBlur CLI skill to give your AI agent full knowledge of every command and flag. Works with "
+"Claude Code, Cursor, Windsurf, and any tool that supports the Skills standard."
+msgstr ""
+"NewsBlur CLIスキルをインストールすると、AIエージェントがすべてのコマンドとフラグを把握できます。Claude "
+"Code、Cursor、Windsurf、およびSkills標準に対応するあらゆるツールで利用できます。"
+
+msgid "Install the NewsBlur app"
+msgstr "NewsBlurアプリをインストール"
+
+msgid "Install the NewsBlur iPhone and iPad app"
+msgstr "NewsBlurのiPhone・iPadアプリをインストール"
+
+msgid "Intelligence & Discovery"
+msgstr "インテリジェンスと発見"
+
+msgid "Intelligence / Filtering"
+msgstr "インテリジェンス／フィルタリング"
+
+msgid "Intelligence Training"
+msgstr "インテリジェンス学習"
+
+msgid "Intelligence Training - NewsBlur"
+msgstr "インテリジェンス学習 - NewsBlur"
+
+msgid "Intelligence training and AI features"
+msgstr "インテリジェンス学習とAI機能"
+
+msgid "Intelligence training changes how you read"
+msgstr "インテリジェンスの学習で読み方が変わる"
+
+msgid "Intelligence training dialog showing thumbs up and thumbs down on authors, tags, and titles"
+msgstr "著者、タグ、タイトルに高評価または低評価を付けるインテリジェンス学習ダイアログ"
+
+msgid "Intelligence training puts you in charge"
+msgstr "インテリジェンス学習で、あなたが主導権を握れます"
+
+msgid "Intelligence training vs. manual curation"
+msgstr "インテリジェンス学習と手動キュレーション"
+
+msgid "Intelligence training: the biggest differentiator"
+msgstr "インテリジェンス学習：最大の差別化要素"
+
+msgid "Introduction to the API"
+msgstr "API入門"
+
+msgid "Invalid JSON"
+msgstr "無効なJSON"
+
+msgid "Invalid JSON data"
+msgstr "無効なJSONデータ"
+
+msgid "Invalid URL"
+msgstr "無効なURL"
+
+msgid "Invalid URL."
+msgstr "無効なURLです。"
+
+msgid "Invalid amount"
+msgstr "金額が無効です"
+
+msgid "Invalid classifier_type"
+msgstr "無効なclassifier_type"
+
+msgid "Invalid conversation history format"
+msgstr "会話履歴の形式が無効です"
+
+msgid "Invalid days value"
+msgstr "無効な日数です"
+
+msgid "Invalid feed ID"
+msgstr "フィードIDが無効です"
+
+msgid "Invalid feed_id"
+msgstr "無効なfeed_id"
+
+msgid "Invalid feed_id."
+msgstr "feed_idが無効です。"
+
+msgid "Invalid gift tier."
+msgstr "ギフトのプランが無効です。"
+
+msgid "Invalid image file"
+msgstr "無効な画像ファイル"
+
+msgid "Invalid mute_duration_days"
+msgstr "mute_duration_days が無効です"
+
+msgid "Invalid request identifier"
+msgstr "無効なリクエスト識別子"
+
+msgid "Invalid story URL"
+msgstr "記事のURLが無効です"
+
+msgid "Invalid user_id parameter."
+msgstr "user_idパラメーターが無効です。"
+
+msgid "Invoice"
+msgstr "請求書"
+
+#, python-format
+msgid "Invoice %(invoice_number)s - NewsBlur"
+msgstr "請求書 %(invoice_number)s - NewsBlur"
+
+msgid "Invoice Date"
+msgstr "請求日"
+
+msgid "Is NewsBlur open source?"
+msgstr "NewsBlurはオープンソースですか？"
+
+msgid "Is my data safe?"
+msgstr "データは安全ですか？"
+
+msgid "Is there a free trial?"
+msgstr "無料トライアルはありますか？"
+
+msgid "Is there a self-hosted option?"
+msgstr "セルフホスト版はありますか？"
+
+msgid "Is this available on the free plan?"
+msgstr "無料プランで利用できますか？"
+
+msgid "Is this different from RSS?"
+msgstr "RSSとは違いますか？"
+
+msgid "Is training available on the free plan?"
+msgstr "無料プランでも学習機能は使えますか？"
+
+msgid "Keep the signal, lose the noise."
+msgstr "ノイズを取り除き、大事な情報だけを。"
+
+msgid "Keep up-to-date"
+msgstr "最新情報をチェック"
+
+msgid "Keyboard"
+msgstr "キーボード"
+
+msgid "Keyboard Shortcuts"
+msgstr "キーボードショートカット"
+
+msgid "Keyboard shortcuts preferences dialog"
+msgstr "キーボードショートカットの設定ダイアログ"
+
+msgid "Keywords"
+msgstr "キーワード"
+
+msgid "Kind words people say about NewsBlur"
+msgstr "NewsBlurへの好意的なコメント"
+
+msgid "L"
+msgstr "L"
+
+msgid "Label-based filters"
+msgstr "ラベルベースのフィルター"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "Last used"
+msgstr "最終使用"
+
+msgid "Launch Intel"
+msgstr "トレーナーを起動"
+
+msgid "Learn more"
+msgstr "詳細を見る"
+
+msgid "License"
+msgstr "ライセンス"
+
+msgctxt "theme"
+msgid "Light"
+msgstr "ライト"
+
+msgid "Limit cannot exceed $10,000"
+msgstr "上限は$10,000以下にしてください"
+
+msgid "Limit must be a positive amount"
+msgstr "上限には正の値を指定してください"
+
+msgid "Limited"
+msgstr "制限あり"
+
+msgid "Limited (own apps only)"
+msgstr "制限あり（自社アプリのみ）"
+
+msgctxt "story layout"
+msgid "List"
+msgstr "リスト"
+
+msgid "Load stories from feeds, folders, or all"
+msgstr "フィード、フォルダー、またはすべてから記事を読み込む"
+
+msgid "Loading"
+msgstr "読み込み中"
+
+msgid "Log In"
+msgstr "ログイン"
+
+msgid "Log in"
+msgstr "ログイン"
+
+#, python-format
+msgid "Logged in as <b>%(username)s</b>"
+msgstr "<b>%(username)s</b>としてログイン中"
+
+msgid "Login"
+msgstr "ログイン"
+
+msgid "Login to a different account"
+msgstr "別のアカウントにログイン"
+
+msgid "Login to your account"
+msgstr "アカウントにログイン"
+
+msgid "Logout"
+msgstr "ログアウト"
+
+msgid "Long Reads"
+msgstr "長文記事"
+
+msgid "Long press images in a story to read the alt text"
+msgstr "記事内の画像を長押しすると、代替テキストを読めます"
+
+msgid "Long press images in a story to save it to your camera roll"
+msgstr "記事内の画像を長押しすると、カメラロールに保存できます"
+
+msgid "Long press images in a story to zoom into it"
+msgstr "記事内の画像を長押しすると拡大できます"
+
+msgid "Long press links in a story to get an actions menu (safari, instapaper, bookmark, etc)"
+msgstr "記事内のリンクを長押しすると、操作メニュー（Safari、Instapaper、ブックマークなど）が表示されます"
+
+msgid "Looking for a Feedly alternative?"
+msgstr "Feedlyの代替サービスをお探しですか？"
+
+msgid "Looking for an Inoreader alternative?"
+msgstr "Inoreaderの代替サービスをお探しですか？"
+
+msgid "Looking for the AI agent integration?"
+msgstr "AIエージェントとの連携をお探しですか？"
+
+msgid "Looking for the command-line tool?"
+msgstr "コマンドラインツールをお探しですか？"
+
+msgid "Low (PHP + SQLite: 256 MB)"
+msgstr "低（PHP + SQLite：256 MB）"
+
+msgid "M"
+msgstr "M"
+
+msgid "MCP Server"
+msgstr "MCPサーバー"
+
+msgid "MCP Server & CLI"
+msgstr "MCPサーバーとCLI"
+
+msgid "MCP Server & CLI - NewsBlur"
+msgstr "MCPサーバーとCLI - NewsBlur"
+
+msgid "MCP Server - NewsBlur"
+msgstr "MCPサーバー - NewsBlur"
+
+msgid "MCP server access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "MCPサーバーへのアクセスには、プレミアムアーカイブ（年額99ドル）またはプレミアム Pro（月額29ドル）の契約が必要です。"
+
+msgid "MCP server and CLI access requires a Premium Archive ($99/year) or Premium Pro ($29/month) subscription."
+msgstr "MCPサーバーとCLIへのアクセスには、プレミアムアーカイブ（年額99ドル）またはプレミアム Pro（月額29ドル）のサブスクリプションが必要です。"
+
+msgid "MIT licensed, fully transparent"
+msgstr "MITライセンス、完全な透明性"
+
+msgctxt "story layout"
+msgid "Magazine"
+msgstr "マガジン"
+
+msgid "Magazine view layout showing story cards with thumbnails"
+msgstr "サムネイル付きの記事カードを表示するマガジン表示レイアウト"
+
+msgid ""
+"Make NewsBlur yours. Choose from light, dark, and auto themes across web, iOS, and Android. Customize your "
+"reading experience with multiple font choices, five text sizes, adjustable line spacing, compact or "
+"comfortable density, and image preview styles. Every setting can be different per-feed, so each site looks "
+"exactly the way you want it."
+msgstr "NewsBlurを自分好みに。ウェブ、iOS、Androidでライト、ダーク、自動テーマから選べます。複数のフォント、5段階の文字サイズ、行間の調整、コンパクトまたはゆったりした表示密度、画像プレビューのスタイルで読書環境をカスタマイズできます。設定はフィードごとに変更できるため、各サイトを思いどおりに表示できます。"
+
+msgid "Make your blurblog private so only you can see your shared stories. Control who sees what you're reading."
+msgstr "共有した記事を自分だけが見られるように、Blurblogを非公開にできます。あなたが読んでいるものを誰に見せるかを管理できます。"
+
+msgid "Maker"
+msgstr "メイカー"
+
+msgid "Manage NewsBlur"
+msgstr "NewsBlurを管理"
+
+msgid "Manage feeds and folders"
+msgstr "フィードとフォルダーを管理"
+
+msgid "Manage feeds and stories from your terminal"
+msgstr "ターミナルからフィードと記事を管理"
+
+msgid ""
+"Manage your NewsBlur from the terminal. Read feeds, search stories, manage subscriptions, and train "
+"classifiers. Pipe to jq, script your workflows, and automate with <code>--json</code> output. Works with "
+"self-hosted instances too."
+msgstr "ターミナルからNewsBlurを管理できます。フィードの閲覧、記事の検索、購読の管理、分類器の学習が可能です。jqにパイプで渡したり、ワークフローをスクリプト化したり、<code>--json</code>出力で自動化したりできます。セルフホスト環境でも動作します。"
+
+msgid "Manual config required"
+msgstr "手動設定が必要"
+
+msgid ""
+"Many RSS feeds only include a summary or the first paragraph. Text view extracts the full story from the "
+"original website and displays it right in NewsBlur, with clean formatting and no clutter. Read full "
+"articles without leaving your reader."
+msgstr "多くのRSSフィードには、要約または最初の段落しか含まれていません。テキスト表示では、元のウェブサイトから記事全文を抽出し、すっきりとした書式で余計なものを省いてNewsBlur内に表示します。リーダーを離れずに記事を最後まで読めます。"
+
+msgid "Mark all as read"
+msgstr "すべて既読にする"
+
+msgid "Mark read by hash, feed, or folder"
+msgstr "ハッシュ、フィード、またはフォルダー単位で既読にする"
+
+msgid ""
+"Mark stories as read, save stories with tags and notes, subscribe to new feeds, share stories to your "
+"blurblog"
+msgstr "記事を既読にする、タグやメモを付けて保存する、新しいフィードを購読する、記事を自分のBlurblogで共有する"
+
+msgid "Migrating is easy with OPML import"
+msgstr "OPMLインポートで簡単に移行"
+
+msgid "Minimal (Go binary: 128 MB)"
+msgstr "ミニマル（Goバイナリ：128 MB）"
+
+msgid "Missing XPath expressions for story extraction"
+msgstr "記事抽出用のXPath式がありません"
+
+msgid "Missing `story_hash` list parameter."
+msgstr "`story_hash`リストのパラメーターがありません。"
+
+msgid "Missing apns_token."
+msgstr "apns_tokenがありません。"
+
+msgid "Missing feed_id"
+msgstr "feed_idがありません"
+
+msgid "Missing feed_id or feed_title"
+msgstr "feed_idまたはfeed_titleがありません"
+
+msgid "Missing feed_ids."
+msgstr "feed_ids がありません。"
+
+msgid "Missing or invalid feed id."
+msgstr "フィードIDがないか、無効です。"
+
+msgid "Missing parameter: photo"
+msgstr "パラメーターがありません：photo"
+
+msgid "Missing popular feed id or feed url"
+msgstr "人気フィードのIDまたはURLがありません"
+
+msgid "Missing prompt"
+msgstr "プロンプトがありません"
+
+msgid "Missing prompt or prompt_id"
+msgstr "プロンプトまたはprompt_idがありません"
+
+msgid "Missing story_hash"
+msgstr "story_hash がありません"
+
+msgid "Missing story_hash."
+msgstr "story_hashがありません。"
+
+msgid "Missing username."
+msgstr "ユーザー名がありません。"
+
+msgid "Mobile Apps (Native)"
+msgstr "モバイルアプリ（ネイティブ）"
+
+msgid "Moderate"
+msgstr "審査する"
+
+msgid "Moderate (PHP + PostgreSQL: 512 MB)"
+msgstr "中程度（PHP + PostgreSQL：512 MB）"
+
+msgid "Moderation Queue"
+msgstr "モデレーションキュー"
+
+msgid "More Features"
+msgstr "その他の機能"
+
+msgid "More affordable for serious readers"
+msgstr "熱心な読者にもっとお得"
+
+msgid "More ways to get help"
+msgstr "その他のヘルプ方法"
+
+msgid ""
+"Most open source readers give you a reverse-chronological list of stories and leave it at that. NewsBlur "
+"goes further with its intelligence training system. You can train on authors, tags, title keywords, full "
+"text, URLs, and regex patterns to highlight stories you care about and hide the rest. Stories are color-"
+"coded green, red, or neutral so you can see your training at work. On top of that, Ask AI lets you query "
+"any story with Claude, GPT, Gemini, or Grok to get summaries, extract key points, or ask follow-up "
+"questions."
+msgstr "多くのオープンソースのリーダーは、記事を新しい順に並べて表示するだけです。NewsBlurは、インテリジェンス学習システムでさらに一歩進みます。著者、タグ、タイトルのキーワード、全文、URL、正規表現パターンを学習させ、読みたい記事を強調表示し、それ以外を非表示にできます。記事は緑、赤、または中立の色で表示され、学習結果を確認できます。さらに、「AIに質問」ではClaude、GPT、Gemini、Grokを使って記事について質問し、要約や要点の抽出、追加の質問ができます。"
+
+msgid "Move and rename feeds"
+msgstr "フィードを移動・名前変更"
+
+msgid "Moving between the feed list, story list, and story detail is now much faster"
+msgstr "フィード一覧、記事一覧、記事詳細の間を移動する速度が大幅に向上しました"
+
+msgid "Multiple Layouts"
+msgstr "複数のレイアウト"
+
+msgid "Mute Sites"
+msgstr "サイトをミュート"
+
+msgid "Muted!"
+msgstr "ミュートしました！"
+
+msgid "Native"
+msgstr "ネイティブ"
+
+msgid "Native Apps"
+msgstr "ネイティブアプリ"
+
+msgid "Native Apps - NewsBlur"
+msgstr "ネイティブアプリ - NewsBlur"
+
+msgid "Native Mobile Apps"
+msgstr "モバイルネイティブアプリ"
+
+msgid "Native apps and third-party support"
+msgstr "ネイティブアプリとサードパーティーのサポート"
+
+msgid "Native apps on every platform"
+msgstr "あらゆるプラットフォームに対応したネイティブアプリ"
+
+msgid "Native apps vs. third-party ecosystem"
+msgstr "ネイティブアプリとサードパーティのエコシステム"
+
+msgid "Native apps, newsletters, and web feeds"
+msgstr "ネイティブアプリ、ニュースレター、ウェブフィード"
+
+msgid "Native controls for sending a story to other services (mail, safari, chrome, evernote, instapaper, etc)."
+msgstr "メール、Safari、Chrome、Evernote、Instapaperなど、他のサービスに記事を送るためのネイティブコントロール。"
+
+msgid "Native iOS & Android Apps"
+msgstr "iOS・Androidネイティブアプリ"
+
+msgid "Native on Android"
+msgstr "Android版ネイティブアプリ"
+
+msgid "Natural language text and image classifiers"
+msgstr "自然言語テキスト・画像分類器"
+
+msgid "Navigate everything without touching the mouse"
+msgstr "マウスに触れずにすべてを操作"
+
+msgid ""
+"Navigate everything without touching the mouse. Open feeds, scroll through stories, mark as read, save, "
+"share, train, switch views &mdash; all from the keyboard. Press <code>?</code> to see the full list. Power "
+"readers can fly through hundreds of stories in minutes."
+msgstr "マウスを使わずにすべての操作を行えます。フィードを開く、記事をスクロールする、既読にする、保存する、共有する、学習させる、表示を切り替える&mdash;すべてキーボードから操作できます。全リストを見るには<code>?</code>を押してください。ヘビーユーザーなら、数分で何百もの記事を読み進められます。"
+
+msgid "Navigate your archive with date filters. Find stories from any time period."
+msgstr "日付フィルターでアーカイブを閲覧できます。いつの時期の記事でも見つけられます。"
+
+msgid ""
+"Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
+"feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
+"It's like a curated digest of your quietest subscriptions."
+msgstr "更新頻度の低いサイトの記事を見逃さないようにしましょう。「更新頻度の低いサイトの記事」ビューでは、週に1回以下しか投稿しないフィードの記事をまとめて表示し、貴重な記事が更新頻度の高いフィードに埋もれないようにします。更新頻度が最も低い購読先の記事を集めたダイジェストのようなものです。"
+
+msgid "New Application"
+msgstr "新しいアプリケーション"
+
+msgid "New Features"
+msgstr "新機能"
+
+msgid "New Password"
+msgstr "新しいパスワード"
+
+msgid ""
+"New Safari-based browser for the original story. These views are faster and support content blockers on iOS"
+" 9 and use your browser's cookies. However, they look like Safari and not NewsBlur, so the default in-app "
+"browser is the original browser. The new in-app Safari browser is a preference, along with Chrome, Opera, "
+"and the full Safari app."
+msgstr ""
+"元の記事を表示する、Safariベースの新しいブラウザーです。この表示は高速で、iOS "
+"9のコンテンツブロッカーに対応し、ブラウザーのCookieを使用します。ただし、NewsBlurではなくSafariのような見た目のため、アプリ内ブラウザーのデフォルトには従来のブラウザーを採用しています。新しいSafariベースのアプリ内ブラウザーは、Chrome、Opera、Safariアプリと同様に設定で選択できます。"
+
+msgid ""
+"New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card "
+"required."
+msgstr "新規アカウントには<strong>30日間のプレミアム購読トライアル</strong>が付属します&mdash;クレジットカードは不要です。"
+
+msgid "New content appears in your feed just like regular RSS"
+msgstr "新しいコンテンツは通常のRSSと同じようにフィードに表示されます"
+
+msgid "New password"
+msgstr "新しいパスワード"
+
+msgid "New preference for hiding feeds after they are read"
+msgstr "既読後にフィードを非表示にする新しい設定"
+
+msgid "New subscriptions automatically import the feed's full history so you have everything from day one."
+msgstr "新しく登録したフィードは、初日からすべての記事を読めるように、過去の記事も自動的に取り込みます。"
+
+msgid "New tag name is required."
+msgstr "新しいタグ名を入力してください。"
+
+msgid "NewsBlur - Connecting..."
+msgstr "NewsBlur - 接続中..."
+
+msgid "NewsBlur Dashboard"
+msgstr "NewsBlurダッシュボード"
+
+msgid "NewsBlur Features - Intelligence Training, AI, Search & More"
+msgstr "NewsBlurの機能 - インテリジェンス学習、AI、検索など"
+
+msgid "NewsBlur GitHub repository"
+msgstr "NewsBlurのGitHubリポジトリ"
+
+msgid "NewsBlur News Popularity Spreadsheet Creator"
+msgstr "NewsBlurニュース人気度スプレッドシート作成ツール"
+
+msgid "NewsBlur Premium Subscription"
+msgstr "NewsBlurプレミアムサブスクリプション"
+
+msgid ""
+"NewsBlur Premium costs $36/year for up to 1,024 sites. Feedly Pro starts at $72/year. For that lower price,"
+" NewsBlur includes full-text search, river of news, saved story tags, privacy options, text view, and all "
+"the intelligence training features. The Archive plan at $99/year adds permanent story archiving, Ask AI "
+"with Claude/GPT/Gemini/Grok, daily AI briefings, web feeds, and date-range filtering."
+msgstr ""
+"NewsBlurプレミアムは、最大1,024サイトまで年間36ドルです。Feedly "
+"Proは年間72ドルからです。より低価格のNewsBlurには、全文検索、ニュースの流れ、保存記事タグ、プライバシー設定、テキスト表示、すべてのインテリジェンス学習機能が含まれています。年間99ドルのアーカイブプランでは、記事の永久保存、Claude/GPT/Gemini/Grokを使ったAIへの質問、毎日のAIブリーフィング、ウェブフィード、期間指定フィルターが追加されます。"
+
+msgid ""
+"NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
+"users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
+"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
+"doesn't offer regex filtering or self-hosting."
+msgstr ""
+"NewsBlurプレミアムは最大1,024サイトで年額36ドルから&mdash;Feedly Proの半額です。パワーユーザー向けのNewsBlur "
+"Proは月額29ドルで、全10,000サイトの5分ごとのフィード取得、正規表現分類、優先サポートが含まれます。Feedlyの同等プランであるEnterpriseは月額18ドルですが、情報源は最大2,500件で、正規表現フィルタリングやセルフホスティングには対応していません。"
+
+msgid "NewsBlur Pricing - Plans for Every Reader"
+msgstr "NewsBlurの料金プラン - すべての読者に合ったプラン"
+
+msgid ""
+"NewsBlur and Feedbin are both independent, privacy-respecting RSS readers built by small teams. They share "
+"a commitment to open source and a belief that RSS should be simple and user-controlled. The key difference "
+"is depth: Feedbin focuses on a clean, minimal reading experience. NewsBlur adds intelligence training, AI "
+"features, social sharing, and native mobile apps on top of a similarly clean interface. If you want the "
+"simplest possible reader, Feedbin is excellent. If you want more power without sacrificing usability, "
+"NewsBlur delivers."
+msgstr "NewsBlurとFeedbinは、どちらも小規模なチームが開発する、プライバシーを尊重した独立系RSSリーダーです。オープンソースへの取り組みと、RSSはシンプルでユーザーが管理できるべきだという考えを共有しています。大きな違いは機能の幅です。Feedbinは、すっきりとした最小限の読書体験に重点を置いています。一方NewsBlurは、同様にすっきりしたインターフェースに、インテリジェンス学習、AI機能、ソーシャル共有、ネイティブモバイルアプリを加えています。できるだけシンプルなリーダーをお求めなら、Feedbinは最適です。使いやすさを損なわず、より多くの機能を求めるなら、NewsBlurがお応えします。"
+
+msgid ""
+"NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
+"intelligence training, blurblog sharing, and text view. Feedbin relies entirely on third-party apps like "
+"Reeder and NetNewsWire. Both approaches work, but NewsBlur's native apps mean every feature is available on"
+" mobile from day one, without waiting for a third-party developer to add support."
+msgstr "NewsBlurは、iOSとAndroid向けのネイティブアプリを自社で開発・保守し、インテリジェンスの学習、Blurblogでの共有、テキスト表示など、すべての機能を提供しています。FeedbinはReederやNetNewsWireなどのサードパーティ製アプリに全面的に依存しています。どちらの方式にも利点がありますが、NewsBlurのネイティブアプリなら、サードパーティの開発者による対応を待たずに、初日からモバイルですべての機能を利用できます。"
+
+msgid "NewsBlur can't find that page"
+msgstr "NewsBlurはそのページを見つけられません"
+
+msgid ""
+"NewsBlur continues to evolve with AI-powered features, daily briefings, and intelligence training that gets"
+" smarter over time. Still independent, still open source, still built for readers who care about the news."
+msgstr "NewsBlurは、AIを活用した機能、毎日のブリーフィング、使うほど賢くなるインテリジェンス学習を通じて進化し続けています。今も独立運営で、オープンソース。ニュースを大切にする読者のために作られています。"
+
+msgid "NewsBlur experienced an error"
+msgstr "NewsBlur でエラーが発生しました"
+
+msgid ""
+"NewsBlur gives you intelligence training to control your reading, AI-powered summaries, native mobile apps,"
+" and full open source transparency. Switching takes less than a minute."
+msgstr "NewsBlurでは、読書を自分好みに調整するためのインテリジェンス学習、AIによる要約、ネイティブモバイルアプリ、そして完全なオープンソースの透明性をご利用いただけます。乗り換えは1分もかかりません。"
+
+msgid ""
+"NewsBlur gives you more control over your reading, costs less, and is fully open source. Switching takes "
+"less than a minute."
+msgstr "NewsBlurなら、読書をより細かく管理でき、料金も安く、完全なオープンソースです。乗り換えは1分もかかりません。"
+
+msgid ""
+"NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully "
+"open source codebase you can self-host."
+msgstr "NewsBlurでは、ルールの代わりに自分に合わせた学習、組み込みのAI機能、記事のクラスタリング、そしてセルフホスト可能な完全オープンソースのコードベースを利用できます。"
+
+msgid ""
+"NewsBlur has been running continuously since 2009. That's over fifteen years of uptime, development, and "
+"community trust. It survived the Google Reader shutdown, the rise and fall of social media as a news "
+"source, and the ongoing consolidation of the web. Through all of it, NewsBlur has stayed independent, open "
+"source, and focused on one thing: giving you the best way to read the news."
+msgstr ""
+"NewsBlurは2009年から継続して運営されています。15年以上にわたり、稼働を続け、開発を重ね、コミュニティの信頼を築いてきました。Google "
+"Readerの終了、ニュースソースとしてのソーシャルメディアの台頭と衰退、そしてウェブの統合が進むなかも乗り越えてきました。その間ずっと、NewsBlurは独立性とオープンソースを保ち、ニュースを読む最良の方法を提供することに注力してきました。"
+
+msgid ""
+"NewsBlur has native iOS and Android apps built and maintained alongside the web app. Every feature, "
+"including intelligence training, blurblog sharing, text view, and dark mode, works on mobile. NewsBlur also"
+" works with third-party apps like Reeder, ReadKit, Unread, and NetNewsWire. You get the best of both "
+"worlds: first-party apps with full features and third-party app compatibility through a standard API."
+msgstr "NewsBlurには、ウェブアプリと並行して開発・保守されているiOSおよびAndroid向けネイティブアプリがあります。インテリジェンス学習、Blurblogでの共有、テキスト表示、ダークモードなど、すべての機能をモバイルでも利用できます。Reeder、ReadKit、Unread、NetNewsWireなどのサードパーティ製アプリでもNewsBlurを使えます。すべての機能を備えた公式アプリと、標準APIを介したサードパーティ製アプリへの対応、両方の利点を活用できます。"
+
+msgid ""
+"NewsBlur has native iOS and Android apps, plus full sync with popular third-party readers like Reeder, "
+"ReadKit, Unread, and NetNewsWire. The Old Reader is primarily a web application with limited third-party "
+"integration. For mobile reading, NewsBlur provides a significantly better experience with native apps built"
+" specifically for each platform."
+msgstr ""
+"NewsBlurにはiOSとAndroidのネイティブアプリがあり、Reeder、ReadKit、Unread、NetNewsWireなどの人気サードパーティ製リーダーとも完全に同期できます。一方、The Old "
+"Readerは主にウェブアプリで、サードパーティ連携は限られています。モバイルで読むなら、各プラットフォーム専用に開発されたネイティブアプリを備えるNewsBlurの方が、はるかに快適です。"
+
+msgid "NewsBlur iOS app on iPad showing the dashboard"
+msgstr "iPadでダッシュボードを表示しているNewsBlur iOSアプリ"
+
+msgid "NewsBlur in dark mode showing the full interface"
+msgstr "インターフェース全体を表示したNewsBlurのダークモード"
+
+msgid ""
+"NewsBlur includes native iOS and Android apps built in-house. The other open source readers rely on third-"
+"party clients via API compatibility layers. NewsBlur also lets you forward email newsletters into your feed"
+" reader and follow websites that don't have RSS at all using web feeds. These features are built into the "
+"hosted service and the self-hosted version alike."
+msgstr "NewsBlurには、社内で開発したiOSとAndroidのネイティブアプリが含まれています。他のオープンソースリーダーは、API互換レイヤーを介してサードパーティ製クライアントに依存しています。NewsBlurでは、メールニュースレターをリーダーに転送したり、RSSがないウェブサイトをウェブフィードでフォローしたりすることもできます。これらの機能は、ホスト版とセルフホスト版のどちらにも組み込まれています。"
+
+msgid "NewsBlur is a news reader and aggregator developed by Samuel Clay at NewsBlur, Inc."
+msgstr "NewsBlurは、NewsBlur, Inc.のSamuel Clayが開発したニュースリーダー兼アグリゲーターです。"
+
+msgid ""
+"NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
+"growing service and unlock a few restrictions."
+msgstr "NewsBlurはウェブ、iPad、iPhone、Androidで無料で利用できます。プレミアムアカウントに登録すると、成長を続けるサービスを支援でき、いくつかの制限が解除されます。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, including the web app, iOS app, "
+"Android app, and all backend services, is available on GitHub. You can inspect it, contribute to it, or run"
+" your own self-hosted instance with Docker. Even if NewsBlur the service were to stop operating, the "
+"software would live on. Your reading workflow is never at the mercy of a single company's quarterly "
+"earnings call."
+msgstr "NewsBlurはMITライセンスのもとで完全にオープンソースとして公開されています。ウェブアプリ、iOSアプリ、Androidアプリ、すべてのバックエンドサービスを含むコードベース全体をGitHubで公開しています。コードを確認したり、開発に参加したり、Dockerを使って自分でホストするインスタンスを運用したりできます。たとえNewsBlurのサービスが終了しても、ソフトウェアは存続します。あなたの読書の習慣が、ひとつの企業の四半期決算に左右されることはありません。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, including web, iOS, Android, and "
+"all backend services, is on <a href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>. You can self-"
+"host your own instance with Docker, contribute features, or simply audit the code. If you ever want to "
+"leave, OPML export takes your feeds anywhere. Your reading data is never held hostage."
+msgstr ""
+"NewsBlur は MIT ライセンスの完全なオープンソースです。Web、iOS、Android、すべてのバックエンドサービスを含むコードベース全体が <a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a> で公開されています。Docker "
+"を使って独自のインスタンスをセルフホストしたり、機能開発に貢献したり、コードを監査したりできます。利用をやめる場合も、OPML "
+"エクスポートでフィードをどこへでも移行できます。読書データが人質に取られることはありません。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. The entire codebase, web, iOS, Android, and all "
+"backend services, is on <a href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>. You can self-host "
+"your own instance with Docker, contribute features, or audit the code. Inoreader is proprietary and closed-"
+"source. If you ever want to leave NewsBlur, OPML export takes your feeds anywhere. Your reading data is "
+"never held hostage."
+msgstr ""
+"NewsBlurはMITライセンスのもと完全にオープンソースで公開されています。ウェブ、iOS、Android、すべてのバックエンドサービスを含むコードベース全体が<a "
+"href=\"https://github.com/samuelclay/NewsBlur\">GitHub</a>にあります。Dockerで独自の環境をセルフホストしたり、機能開発に貢献したり、コードを監査したりできます。Inoreaderはプロプライエタリで、ソースコードは非公開です。NewsBlurから移行する場合も、OPMLエクスポートでフィードをどこへでも移せます。閲覧データを人質に取られることはありません。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. You can inspect the code, contribute features, or run "
+"your own instance with Docker. Your data is truly yours. Feedly is a proprietary, closed-source service "
+"with no self-hosted option. If Feedly shuts down or changes pricing, you have no alternative but to export "
+"and leave."
+msgstr "NewsBlurはMITライセンスのもとで完全にオープンソースとして公開されています。コードを確認したり、機能の開発に参加したり、Dockerを使って自分のインスタンスを運用したりできます。データは本当にあなたのものです。Feedlyは独自のクローズドソースサービスで、セルフホストする方法はありません。Feedlyがサービスを終了したり料金を変更したりした場合、データをエクスポートして離れる以外に選択肢はありません。"
+
+msgid ""
+"NewsBlur is fully open source under the MIT license. You can run your own instance, contribute features, or"
+" audit the code. The entire application &mdash; web, iOS, Android, and all backend services &mdash; is on "
+"GitHub. Inoreader is a closed-source proprietary service with no self-hosted option."
+msgstr "NewsBlurはMITライセンスのもとで完全にオープンソースです。独自のインスタンスを実行したり、機能の開発に貢献したり、コードを監査したりできます。アプリケーション全体&mdash;ウェブ、iOS、Android、すべてのバックエンドサービス&mdash;がGitHubで公開されています。Inoreaderはクローズドソースのプロプライエタリなサービスで、セルフホスティングには対応していません。"
+
+msgid ""
+"NewsBlur is fully open source. Run your own instance with a single Docker command. Complete data ownership,"
+" no lock-in. Customize it with Claude Code, contribute to development, or just run it on your own hardware."
+" The entire codebase is on GitHub."
+msgstr ""
+"NewsBlurは完全なオープンソースです。Dockerコマンド1つで独自のインスタンスを実行できます。データを完全に所有でき、ロックインもありません。Claude "
+"Codeでカスタマイズしたり、開発に貢献したり、自分のハードウェアで実行したりできます。コードベース全体はGitHubにあります。"
+
+msgid ""
+"NewsBlur is released under the MIT license, the most permissive of the four readers compared here. The "
+"entire codebase, including the web app, iOS app, Android app, and all backend services, is available on "
+"GitHub. You can inspect how your data is handled, contribute features, or fork the project. Whether you use"
+" the hosted service or run your own instance, you always have full visibility into the software."
+msgstr "NewsBlurは、ここで比較されている4つのリーダーの中で最も寛容なMITライセンスで公開されています。ウェブアプリ、iOSアプリ、Androidアプリ、すべてのバックエンドサービスを含むコードベース全体がGitHubで公開されています。データの扱いを確認したり、機能開発に貢献したり、プロジェクトをフォークしたりできます。ホステッドサービスを使う場合も、自分でインスタンスを運用する場合も、ソフトウェアの全容をいつでも確認できます。"
+
+msgid "NewsBlur is the most feature-rich news reader. Here's everything it&nbsp;can&nbsp;do."
+msgstr "NewsBlurは最も多機能なニュースリーダーです。できることをすべてご紹介します。&nbsp;&nbsp;"
+
+msgid ""
+"NewsBlur is the only self-hosted RSS reader that also offers a fully managed hosted service at "
+"newsblur.com. This gives you a unique migration path that no other reader can match. You can start with the"
+" hosted version, read your feeds without managing any infrastructure, and export your data via OPML "
+"whenever you are ready to self-host. Or go the other direction: run your own instance first, and if you "
+"decide you would rather not maintain a server, move to the hosted service and bring all your feeds and "
+"training with you. FreshRSS, Miniflux, and Tiny Tiny RSS are self-host-only. If you want to stop running a "
+"server, you have to switch to a completely different product."
+msgstr ""
+"NewsBlurは、完全管理型のホステッドサービスをnewsblur.comで提供する唯一のセルフホスト型RSSリーダーです。そのため、他のリーダーにはない独自の移行方法があります。ホステッド版から始めれば、インフラを管理せずにフィードを読み、セルフホストの準備ができたらいつでもOPMLでデータを書き出せます。逆に、まず自分のインスタンスを運用し、サーバーの保守を続けたくなくなった場合は、すべてのフィードと学習データを引き継いでホステッドサービスに移行できます。FreshRSS、Miniflux、Tiny"
+" Tiny RSSはセルフホスト専用です。サーバーの運用をやめるには、まったく別の製品に切り替える必要があります。"
+
+msgid ""
+"NewsBlur launched in 2009 as an independent RSS reader. When Google Reader shut down in 2013, hundreds of "
+"thousands of readers found their new home. Over a decade later, NewsBlur is still going strong."
+msgstr ""
+"NewsBlurは2009年、独立系RSSリーダーとしてスタートしました。2013年にGoogle "
+"Readerが終了すると、何十万人もの読者が新たな居場所を見つけました。10年以上たった今も、NewsBlurは健在です。"
+
+msgid ""
+"NewsBlur launched to the public and to favorable reviews. Premium accounts launched in October, paying for "
+"NewsBlur's increasing server costs."
+msgstr "NewsBlurは一般公開され、好意的な評価を受けました。10月にはプレミアムアカウントが開始され、増加するNewsBlurのサーバー費用を賄いました。"
+
+msgid "NewsBlur monitors the page for changes automatically"
+msgstr "NewsBlurがページの変更を自動的に監視します"
+
+msgid ""
+"NewsBlur offers a free plan with up to 64 sites and a 30-day premium trial for every new account. Feedbin "
+"has no free tier and charges $50/year for a single plan. NewsBlur Premium at $36/year is more affordable "
+"and includes up to 1,024 sites. The Archive plan at $99/year adds permanent story storage, Ask AI, daily "
+"briefings, web feeds, and regex classifiers. Both readers let you export via OPML at any time."
+msgstr "NewsBlurでは、最大64サイトを利用できる無料プランと、新規アカウント向けの30日間プレミアムトライアルを提供しています。Feedbinには無料プランがなく、単一プランの料金は年額50ドルです。NewsBlurプレミアムは年額36ドルでより手頃なうえ、最大1,024サイトを利用できます。年額99ドルのアーカイブプランでは、記事の永久保存、AIへの質問、デイリーブリーフィング、ウェブフィード、正規表現による分類機能が追加されます。どちらのリーダーも、いつでもOPML形式でエクスポートできます。"
+
+msgid ""
+"NewsBlur offers a free plan with up to 64 sites, and every new account gets a 30-day premium trial. "
+"Readwise Reader requires a paid subscription ($96/year) with no free tier. NewsBlur is also fully open "
+"source under the MIT license, so you can self-host your own instance, contribute to development, or audit "
+"the code. Readwise Reader is a closed-source service."
+msgstr ""
+"NewsBlurには最大64サイトまで利用できる無料プランがあり、新規アカウントには30日間のプレミアムトライアルが付属します。Readwise "
+"Readerは有料サブスクリプション（年額96ドル）が必要で、無料プランはありません。NewsBlurはMITライセンスのもとで完全にオープンソース化されているため、自分のインスタンスをセルフホストしたり、開発に参加したり、コードを監査したりできます。Readwise"
+" Readerはソース非公開のサービスです。"
+
+msgid ""
+"NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open "
+"source. No ads, no tracking, no algorithmic feeds."
+msgstr "NewsBlurは、インテリジェンス学習、全文検索、AIへの質問、ウェブフィード、ネイティブアプリを提供し、完全なオープンソースです。広告も追跡もアルゴリズムによるフィードもありません。"
+
+msgid "NewsBlur on iOS with native interface and full feature set"
+msgstr "ネイティブインターフェースと全機能を備えたiOS版NewsBlur"
+
+msgid "NewsBlur password"
+msgstr "NewsBlurのパスワード"
+
+msgid ""
+"NewsBlur stands out with AI features that Inoreader doesn't offer. Ask AI lets you query any story using "
+"Claude, GPT, Gemini, or Grok &mdash; get summaries, extract key points, or ask follow-up questions. The "
+"Daily Briefing generates a personalized AI summary of your top stories with customizable sections. These "
+"features turn passive reading into active intelligence gathering."
+msgstr "NewsBlurは、InoreaderにはないAI機能が特長です。「AIに質問」では、Claude、GPT、Gemini、Grokを使って記事について質問できます&mdash;要約の取得、要点の抽出、追加の質問も可能です。デイリーブリーフィングでは、セクションをカスタマイズできる、注目記事のパーソナライズされたAI要約を作成します。これらの機能により、受け身の読書が能動的な情報収集へと変わります。"
+
+msgid ""
+"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
+"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
+"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
+msgstr ""
+"NewsBlurはOAuthに対応していますが、OAuth対応クライアントを利用するには、クライアントIDとシークレットを申請するため、<a "
+"href=\"mailto:samuel@newsblur.com\">Samuelにメール</a>する必要があります。NewsBlurのユーザー名、リダイレクトURI（多くの場合、クライアントアプリのウェブサイト）、アプリ名をお知らせください。"
+
+msgid "NewsBlur username"
+msgstr "NewsBlurのユーザー名"
+
+msgid ""
+"NewsBlur uses more server resources than the alternatives, and that is because it does more. Intelligence "
+"training lets you highlight and hide stories by author, tag, title keyword, full text, URL, or regex "
+"pattern. Ask AI lets you query any story with Claude, GPT, Gemini, or Grok. Native iOS and Android apps "
+"connect to your self-hosted instance just as they do to the hosted service. You get email newsletter "
+"ingestion, web feeds for sites without RSS, full-text Elasticsearch, story change tracking, social sharing "
+"with blurblogs, and third-party app sync with Reeder, ReadKit, Unread, and more. If you want a minimal, "
+"lightweight reader, Miniflux or FreshRSS are great choices. If you want the most capable self-hosted RSS "
+"reader available, NewsBlur is it."
+msgstr "NewsBlurは他の選択肢より多くのサーバーリソースを使います。それだけ多くの機能を提供しているからです。インテリジェンス学習では、著者、タグ、タイトルのキーワード、全文、URL、正規表現パターンを基準に記事をハイライトしたり非表示にしたりできます。AIに質問では、Claude、GPT、Gemini、Grokを使ってあらゆる記事に質問できます。iOSとAndroidのネイティブアプリからは、ホスト型サービスと同じようにセルフホスト環境にも接続できます。メールニュースレターの取り込み、RSSのないサイトのウェブフィード、Elasticsearchによる全文検索、記事の変更追跡、blurblogでのソーシャル共有、Reeder、ReadKit、Unreadなどのサードパーティアプリとの同期も利用できます。シンプルで軽量なリーダーをお求めなら、MinifluxやFreshRSSがおすすめです。利用可能な最も高機能なセルフホスト型RSSリーダーをお求めなら、それがNewsBlurです。"
+
+msgid "NewsBlur vs Feedbin"
+msgstr "NewsBlurとFeedbinの比較"
+
+msgid "NewsBlur vs Feedbin - RSS Reader Comparison"
+msgstr "NewsBlurとFeedbinの比較 - RSSリーダー比較"
+
+msgid "NewsBlur vs Feedly"
+msgstr "NewsBlurとFeedlyの比較"
+
+msgid "NewsBlur vs Feedly - RSS Reader Comparison"
+msgstr "NewsBlurとFeedly - RSSリーダー比較"
+
+msgid "NewsBlur vs Inoreader"
+msgstr "NewsBlur と Inoreader の比較"
+
+msgid "NewsBlur vs Inoreader - RSS Reader Comparison"
+msgstr "NewsBlurとInoreaderを比較 - RSSリーダー比較"
+
+msgid "NewsBlur vs Readwise Reader"
+msgstr "NewsBlurとReadwise Readerの比較"
+
+msgid "NewsBlur vs Readwise Reader - RSS Reader Comparison"
+msgstr "NewsBlurとReadwise Readerの比較 - RSSリーダー比較"
+
+msgid "NewsBlur vs The Old Reader"
+msgstr "NewsBlur と The Old Reader の比較"
+
+msgid "NewsBlur vs The Old Reader - RSS Reader Comparison"
+msgstr "NewsBlurとThe Old Readerの比較 - RSSリーダー比較"
+
+msgid ""
+"NewsBlur was founded in 2009 as an independent, one-person project with a simple goal: build a better RSS "
+"reader. At the time, Google Reader dominated the market. But NewsBlur offered something Google never did. "
+"It let you train your feeds with intelligence classifiers so you could focus on the stories that matter and"
+" hide the ones that don't."
+msgstr ""
+"NewsBlurは2009年、より優れたRSSリーダーを作るというシンプルな目標を掲げ、独立した個人プロジェクトとして始まりました。当時、市場を支配していたのはGoogle "
+"Readerでした。しかしNewsBlurには、Googleが決して提供しなかった機能がありました。インテリジェントな分類機能でフィードを学習させ、重要な記事に集中し、そうでない記事を非表示にできるのです。"
+
+msgid "NewsBlur website: <a href=\"https://www.newsblur.com\">www.newsblur.com</a>"
+msgstr "NewsBlurウェブサイト: <a href=\"https://www.newsblur.com\">www.newsblur.com</a>"
+
+msgid ""
+"NewsBlur works with popular third-party apps like Reeder, ReadKit, and Unread through its open API. You can"
+" read on the web, on the native iOS and Android apps, or through the client of your choice. There's also a "
+"free plan with up to 64 sites, so you can try it without commitment."
+msgstr "NewsBlurは、オープンAPIを通じてReeder、ReadKit、Unreadなどの人気サードパーティ製アプリに対応しています。ウェブ、iOS・Androidのネイティブアプリ、またはお好みのクライアントで読むことができます。最大64サイトを登録できる無料プランもあるので、気軽にお試しいただけます。"
+
+msgid "NewsBlur — Personal News Reader with Intelligence Training"
+msgstr "NewsBlur — インテリジェンス学習機能付きパーソナルニュースリーダー"
+
+msgid ""
+"NewsBlur's API allows users to retrieve their feeds, feed counts, feed icons, feed statistics, and "
+"individual feed stories. No API key is required, but you are required to authenticate before using any of "
+"the API endpoints. Please be considerate, and don't hammer our servers."
+msgstr "NewsBlurのAPIでは、ユーザーはフィード、フィード件数、フィードアイコン、フィード統計、個々のフィード記事を取得できます。APIキーは不要ですが、各APIエンドポイントを使用する前に認証が必要です。節度を守り、サーバーに過剰な負荷をかけないようにしてください。"
+
+msgid ""
+"NewsBlur's Ask AI feature lets you query any story using Claude, GPT, Gemini, or Grok. Summarize articles, "
+"ask follow-up questions, extract key points, or get context on topics you're unfamiliar with. Daily AI "
+"briefings give you an overview of what matters across all your feeds. These features are included in the "
+"Archive plan at $99/year, which is less than Inoreader's Pro plan at $99.99/year."
+msgstr ""
+"NewsBlurの「AIに質問」機能では、Claude、GPT、Gemini、Grokを使ってあらゆる記事について質問できます。記事の要約、追加質問、要点の抽出、なじみのない話題の背景確認が可能です。毎日のAIブリーフィングでは、すべてのフィードから重要な情報をまとめて確認できます。これらの機能は年額99ドルのアーカイブプランに含まれており、年額99.99ドルのInoreader"
+" Proプランよりお得です。"
+
+msgid ""
+"NewsBlur's intelligence training lets you highlight or hide stories based on author, tag, title keywords, "
+"full text content, URLs, and regex patterns. Over time, your feeds become personalized. Stories are color-"
+"coded green (focus), yellow (neutral), and red (hidden). Feedbin has no equivalent filtering system. You "
+"manage reading through folders, tags, and manual triage. For high-volume reading across hundreds of feeds, "
+"NewsBlur's training is a major advantage."
+msgstr "NewsBlurのインテリジェンス学習では、著者、タグ、タイトルのキーワード、全文、URL、正規表現パターンに基づいて記事を強調表示または非表示にできます。使い続けるほど、フィードが自分好みに最適化されます。記事は緑（フォーカス）、黄（中立）、赤（非表示）で色分けされます。Feedbinには同等のフィルタリング機能がありません。フォルダーやタグ、手動での振り分けを使って読書を管理します。数百のフィードを大量に読む場合、NewsBlurの学習機能は大きな強みです。"
+
+msgid ""
+"NewsBlur's intelligence training system lets you highlight or hide stories based on author, tag, title "
+"keywords, full text content, URLs, and regex patterns. Over time, your feeds become personalized without "
+"any algorithmic black box. Readwise Reader has no equivalent system. You manage your reading through manual"
+" triage, filters, and folder organization. For high-volume reading across hundreds of feeds, NewsBlur's "
+"training is a significant advantage."
+msgstr ""
+"NewsBlurの学習システムでは、著者、タグ、タイトルのキーワード、全文、URL、正規表現パターンに基づいて記事をハイライトまたは非表示にできます。使い続けるほど、アルゴリズムのブラックボックスに頼らずフィードを自分好みに調整できます。Readwise"
+" Readerには同等のシステムがありません。手動での記事の振り分け、フィルター、フォルダー整理で読む内容を管理します。何百ものフィードを大量に読む場合、NewsBlurの学習機能は大きな強みになります。"
+
+msgid "Newsletters appearing as feeds"
+msgstr "フィードとして表示されるニュースレター"
+
+msgid "Next Page of Stories"
+msgstr "記事の次のページ"
+
+msgid "Next Unread"
+msgstr "次の未読"
+
+msgid "Next page"
+msgstr "次のページ"
+
+msgid "Next unread"
+msgstr "次の未読"
+
+msgid "No URL provided."
+msgstr "URLが指定されていません。"
+
+#, python-format
+msgid "No applications defined. <a href=\"%(register_url)s\">Click here</a> if you want to register a new one"
+msgstr "アプリケーションが定義されていません。新しく登録する場合は<a href=\"%(register_url)s\">こちらをクリック</a>してください"
+
+msgid "No audio file provided"
+msgstr "音声ファイルがありません"
+
+msgid "No classifiers to save"
+msgstr "保存する分類器はありません"
+
+msgid "No credit card required"
+msgstr "クレジットカード不要"
+
+msgid "No feed found for this URL."
+msgstr "このURLに該当するフィードが見つかりません。"
+
+msgid "No feed found matching that XML or website address."
+msgstr "そのXMLまたはウェブサイトのアドレスに一致するフィードが見つかりません。"
+
+msgid "No feeds found."
+msgstr "フィードが見つかりません。"
+
+msgid "No fields to update"
+msgstr "更新する項目がありません"
+
+msgid "No forced mark-as-read. Stories stay unread until you decide to read them."
+msgstr "強制的に既読にはしません。記事は自分で読むまで未読のままです。"
+
+msgid "No free plan"
+msgstr "無料プランなし"
+
+msgid "No social features"
+msgstr "ソーシャル機能なし"
+
+msgid "No story_url specified."
+msgstr "story_urlが指定されていません。"
+
+msgid "No thanks, keep my emails and continue to NewsBlur"
+msgstr "いいえ、メールを受け取り続けてNewsBlurに進む"
+
+msgid "No training system"
+msgstr "学習システムなし"
+
+msgid "No uncategorized archives found"
+msgstr "未分類のアーカイブは見つかりませんでした"
+
+msgid "No user has that email address."
+msgstr "そのメールアドレスのユーザーはいません。"
+
+msgctxt "negative answer to a question"
+msgid "No."
+msgstr "いいえ"
+
+msgid "Not a web feed"
+msgstr "ウェブフィードではありません"
+
+msgid "Note:&nbsp; this form requires Javascript to use."
+msgstr "注意：&nbsp;このフォームを使用するにはJavaScriptが必要です。"
+
+msgid "Nothing was marked as read"
+msgstr "既読にした記事はありません"
+
+msgid "Notification settings per feed with web, email, iOS, and Android options"
+msgstr "フィードごとの通知設定（ウェブ、メール、iOS、Android）"
+
+msgid "Notifications"
+msgstr "通知"
+
+msgid "Notifications on trained intelligence classifiers"
+msgstr "学習済みインテリジェンス分類器の通知"
+
+msgid "OPML Import & Export"
+msgstr "OPMLのインポートとエクスポート"
+
+msgid "OPML Import/Export"
+msgstr "OPMLのインポート／エクスポート"
+
+msgid "OPML import dialog for bringing feeds from other readers"
+msgstr "他のリーダーからフィードを取り込むOPMLインポートダイアログ"
+
+msgid "Official Hosted Option"
+msgstr "公式ホスティングプラン"
+
+msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
+msgstr "プレミアムでは最近の記事を検索できます。プレミアムアーカイブでは、これまでにアーカイブされたすべての記事を検索できます。"
+
+msgid "On first use, a browser window opens for you to log in and authorize access."
+msgstr "初回使用時にブラウザーウィンドウが開き、ログインしてアクセスを許可できます。"
+
+msgid "One-Command Install"
+msgstr "ワンコマンドでインストール"
+
+#, python-format
+msgid ""
+"Only 1.9%% of Widgetsmith users use Display Zoom &mdash; way lower than expected. Helped him decide not to "
+"support it for clear widget backgrounds."
+msgstr "WidgetsmithユーザーのうちDisplay Zoomを使っているのはわずか1.9%%&mdash;予想を大きく下回っています。そのおかげで、透明なウィジェット背景には対応しないと判断できました。"
+
+msgid "Only premium users can share multiple stories per day from the same site."
+msgstr "同じサイトから1日に複数の記事を共有できるのは、プレミアムユーザーのみです。"
+
+msgid "Open Source"
+msgstr "オープンソース"
+
+msgid "Open Source RSS"
+msgstr "オープンソースのRSSリーダー"
+
+msgid "Open Source RSS Readers"
+msgstr "オープンソースのRSSリーダー"
+
+msgid "Open source (MIT)"
+msgstr "オープンソース（MIT）"
+
+msgid "Open source and community-driven"
+msgstr "オープンソースで、コミュニティ主導"
+
+msgid "Open source and self-hostable"
+msgstr "オープンソースでセルフホスト可能"
+
+msgid "Open source means it can never be killed by a corporate decision"
+msgstr "オープンソースなら、企業の判断で消されることはありません"
+
+msgid "Open source means no lock-in"
+msgstr "オープンソースなら乗り換えを妨げられません"
+
+msgid "Open the trainer for any feed"
+msgstr "任意のフィードでトレーナーを開く"
+
+msgid "OpenAI API key not configured"
+msgstr "OpenAI APIキーが設定されていません"
+
+#, python-format
+msgid "Opens your browser to authorize via OAuth. Token stored locally at <code>%(path)s</code>."
+msgstr "OAuth認証のためブラウザーを開きます。トークンはローカルの<code>%(path)s</code>に保存されます。"
+
+#, python-format
+msgid "Opens your browser to authorize. Token stored locally at <code>%(path)s</code>."
+msgstr "ブラウザーで認証画面を開きます。トークンはローカルの<code>%(path)s</code>に保存されます。"
+
+msgid "Opt-out of the Original view"
+msgstr "オリジナル表示を使わない"
+
+msgid "Optional"
+msgstr "任意"
+
+msgid "Organize Sites"
+msgstr "サイトを整理"
+
+msgctxt "story view mode"
+msgid "Original"
+msgstr "オリジナル"
+
+msgid "Original Site"
+msgstr "元のサイト"
+
+msgid "Original Site View"
+msgstr "元のサイト表示"
+
+msgid "Original site view rendering a website inline within NewsBlur"
+msgstr "NewsBlur内にウェブサイトをインライン表示するオリジナルサイト表示"
+
+msgid "Original tag name is required."
+msgstr "元のタグ名は必須です。"
+
+msgid "OvershareKit updated for iOS 8"
+msgstr "iOS 8向けにOvershareKitをアップデート"
+
+msgid "Own API, Fever plugin"
+msgstr "独自API、Feverプラグイン"
+
+msgid "PDF / EPUB Support"
+msgstr "PDF / EPUB対応"
+
+msgid "POST required"
+msgstr "POSTが必要です"
+
+msgid "Paid Plan"
+msgstr "有料プラン"
+
+msgid "Parameter"
+msgstr "パラメーター"
+
+msgid "Password"
+msgstr "パスワード"
+
+msgid "Password (optional)"
+msgstr "パスワード（任意）"
+
+msgid "Past day"
+msgstr "過去1日"
+
+msgid "Past day by hour"
+msgstr "過去1日（時間別）"
+
+msgid "Payment Method"
+msgstr "お支払い方法"
+
+msgid "Peek into related stories and sites"
+msgstr "関連記事や関連サイトをのぞいてみましょう"
+
+msgid "People to follow"
+msgstr "フォローする人"
+
+msgid "Per-feed alerts"
+msgstr "フィードごとの通知"
+
+msgid "Permanent with Archive plan"
+msgstr "アーカイブプランで永久保存"
+
+msgid "Plan"
+msgstr "プラン"
+
+msgid "Plans for every reader"
+msgstr "すべての読者に最適なプラン"
+
+msgid "Please create an account to continue."
+msgstr "続行するにはアカウントを作成してください。"
+
+msgid "Please enter in a keyword search query."
+msgstr "キーワード検索のクエリを入力してください。"
+
+msgid "Please enter in an email address."
+msgstr "メールアドレスを入力してください。"
+
+msgid "Please login to continue."
+msgstr "続行するにはログインしてください。"
+
+msgid "Please provide a URL/address."
+msgstr "URL／アドレスを入力してください。"
+
+msgid "Please provide a newsletter URL."
+msgstr "ニュースレターのURLを入力してください。"
+
+msgid "Please provide a search query."
+msgstr "検索語句を入力してください。"
+
+msgid "Please type \"DELETE\" to confirm deletion."
+msgstr "削除を確定するには「DELETE」と入力してください。"
+
+msgid ""
+"Plug NewsBlur into Claude, Cursor, or any AI agent framework via the Model Context Protocol. Manage feeds, "
+"triage stories, and train classifiers from your favorite tools."
+msgstr ""
+"Model Context "
+"Protocolを介して、NewsBlurをClaude、Cursor、または任意のAIエージェントフレームワークに接続できます。お気に入りのツールからフィードの管理、記事の振り分け、分類器の学習を行えます。"
+
+msgid "Podcast Playback"
+msgstr "ポッドキャストの再生"
+
+msgid "Point your client at the streamable HTTP endpoint:"
+msgstr "クライアントの接続先に、ストリーミング可能なHTTPエンドポイントを指定してください："
+
+msgid "Political Analyst"
+msgstr "政治アナリスト"
+
+msgid "Popular"
+msgstr "人気"
+
+msgid "Popular feed not found"
+msgstr "人気のフィードが見つかりません"
+
+msgid "Possible but unsupported"
+msgstr "可能ですが、サポート対象外です"
+
+msgid "PostgreSQL + MongoDB + Redis + Elasticsearch"
+msgstr "PostgreSQL + MongoDB + Redis + Elasticsearch"
+
+msgid "PostgreSQL search"
+msgstr "PostgreSQL検索"
+
+msgid "Power User Plan"
+msgstr "パワーユーザープラン"
+
+msgid "Pre-built workflows for inbox triage, topic research, and feed health audits"
+msgstr "受信トレイの仕分け、トピック調査、フィードの健全性チェック用に、すぐ使えるワークフロー"
+
+msgid "Preferences"
+msgstr "設定"
+
+msgid "Premium"
+msgstr "プレミアム"
+
+msgid "Premium - NewsBlur Pricing"
+msgstr "プレミアム - NewsBlurの料金"
+
+msgid "Premium Archive"
+msgstr "プレミアムアーカイブ"
+
+msgid "Premium Archive - NewsBlur Pricing"
+msgstr "プレミアムアーカイブ - NewsBlurの料金"
+
+msgid "Premium Archive required for classifier notifications"
+msgstr "分類器の通知にはプレミアムアーカイブが必要です"
+
+msgid "Premium Archive required for folder and global classifiers"
+msgstr "フォルダー分類器とグローバル分類器にはプレミアムアーカイブが必要です"
+
+msgid "Premium Archive showing unread stories going back months"
+msgstr "プレミアムアーカイブで、数か月前までさかのぼって未読記事を表示"
+
+msgid "Premium Archive subscription"
+msgstr "プレミアムアーカイブのサブスクリプション"
+
+msgid "Premium Pro"
+msgstr "プレミアム Pro"
+
+msgid "Premium Pro - NewsBlur Pricing"
+msgstr "プレミアム Pro - NewsBlurの料金"
+
+msgid "Premium Pro subscription"
+msgstr "プレミアムProサブスクリプション"
+
+msgid "Premium Subscription"
+msgstr "プレミアムサブスクリプション"
+
+msgid "Premium Users"
+msgstr "プレミアムユーザー"
+
+msgid "Premium feeds are checked more frequently, so you get stories faster than free users."
+msgstr "プレミアムフィードはより頻繁にチェックされるため、無料ユーザーより早く記事を読めます。"
+
+msgid "Premium only"
+msgstr "プレミアム限定"
+
+msgid ""
+"Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown "
+"rice."
+msgstr "プレミアム購読者のおかげで、Lyricにはインゲン、サツマイモ、ニンジン、玄米を使った手作りの食事を与えられています。"
+
+msgid "Premium subscription"
+msgstr "プレミアム購読"
+
+msgid "Premium upgrade"
+msgstr "プレミアムにアップグレード"
+
+msgid "Press Information and Resources"
+msgstr "報道関係者向け情報と資料"
+
+msgid "Press Kit and Recent Press"
+msgstr "プレスキットと最近の報道"
+
+msgid "Press the search icon or use the keyboard shortcut"
+msgstr "検索アイコンを押すか、キーボードショートカットを使ってください"
+
+msgid "Previous"
+msgstr "前へ"
+
+msgid "Previous page"
+msgstr "前のページ"
+
+msgid "Pricing"
+msgstr "料金"
+
+msgid "Primary Focus"
+msgstr "主な用途"
+
+msgid "Print"
+msgstr "印刷"
+
+msgid "Print Invoice"
+msgstr "請求書を印刷"
+
+msgid "Priority only on select feeds"
+msgstr "選択したフィードのみ優先"
+
+msgid "Priority support"
+msgstr "優先サポート"
+
+msgid "Privacy Policy"
+msgstr "プライバシーポリシー"
+
+msgid "Privacy options for your blurblog"
+msgstr "あなたのBlurblogのプライバシー設定"
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid ""
+"Pro is built for professionals who depend on staying informed. Every feed in your account is fetched every "
+"5-15 minutes, meaning you see breaking news and updates as they happen. Regex classifiers let you build "
+"precise filters that match patterns across titles, story text, and URLs. If your work depends on being the "
+"first to know, Pro pays for itself."
+msgstr "Proは、常に最新情報を把握する必要があるプロフェッショナル向けです。アカウント内のすべてのフィードを5〜15分ごとに取得するため、速報や最新情報をリアルタイムで確認できます。正規表現による分類機能を使えば、タイトル、記事本文、URLに含まれるパターンに基づいて精密なフィルターを作成できます。誰よりも早く情報を知ることが仕事に欠かせないなら、Proの料金は十分に元が取れます。"
+
+msgid "Pro plan"
+msgstr "Proプラン"
+
+msgid ""
+"Pro's real-time fetching infrastructure costs more to operate, so it's priced monthly. You're paying for "
+"dedicated, high-frequency polling of up to 10,000 feeds."
+msgstr "Proのリアルタイム取得インフラは運用コストが高いため、月額制です。最大10,000件のフィードを専用で高頻度にポーリングするための料金です。"
+
+msgid "Pro+ plans"
+msgstr "Pro+プラン"
+
+msgid "Pro: every feed, every 5 minutes"
+msgstr "Pro：すべてのフィードを5分ごとに更新"
+
+msgid "Processing question"
+msgstr "質問を処理中"
+
+msgid "Professional-grade feed monitoring"
+msgstr "プロ仕様のフィード監視"
+
+msgid ""
+"Professional-grade news intelligence. Every feed fetched every 5-15 minutes, regex training, and 10,000 "
+"sites."
+msgstr "プロ仕様のニュース分析。すべてのフィードを5～15分ごとに取得、正規表現による学習、10,000サイトに対応。"
+
+msgid "Professor, OSU"
+msgstr "OSU教授"
+
+msgid "Progress bar for the Story view when loading a story using the in-app browser."
+msgstr "アプリ内ブラウザーで記事を読み込む際の、記事表示用プログレスバー。"
+
+msgid "Prompt classifier not found"
+msgstr "プロンプト分類器が見つかりません"
+
+msgid "Prompt too long (max 500 characters)"
+msgstr "プロンプトが長すぎます（最大500文字）"
+
+msgid "Proprietary"
+msgstr "プロプライエタリ"
+
+msgid "Public blurblog sharing"
+msgstr "Blurblogの公開共有"
+
+msgid "Public blurblog with comments"
+msgstr "コメント付き公開Blurblog"
+
+msgid "Public blurblog, comments, sharing"
+msgstr "公開Blurblog、コメント、共有"
+
+msgid "Publication"
+msgstr "出版物"
+
+msgid "Pull to refresh date is now localized"
+msgstr "プルして更新する日付がローカライズされました"
+
+msgid "Pull to refresh updated to match theme"
+msgstr "テーマに合わせてプル更新の表示を変更しました"
+
+msgid "Put your Email<br>in the box"
+msgstr "ボックスに<br>メールアドレスを入力"
+
+msgid "Query is required"
+msgstr "クエリは必須です"
+
+msgid "Quickly find stories across all of your subscriptions"
+msgstr "すべての購読フィードから記事をすばやく検索"
+
+msgid "RSS and web feeds, synced on every platform you use."
+msgstr "RSSフィードとウェブフィードを、お使いのすべてのプラットフォームで同期。"
+
+msgid "RSS only"
+msgstr "RSSのみ"
+
+msgid "RSS reader with intelligence training"
+msgstr "学習機能付きRSSリーダー"
+
+msgid "RSS/Atom only"
+msgstr "RSS/Atomのみ"
+
+msgid "Re-analyzing page"
+msgstr "ページを再解析中"
+
+msgid "Read Stories"
+msgstr "既読の記事"
+
+msgid "Read Your Way"
+msgstr "自分らしい読み方で"
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream. No need to click into individual feeds &mdash; just "
+"open a folder and read everything in chronological order. Combined with training, your River of News "
+"surfaces the best stories from across all your subscriptions."
+msgstr ""
+"フォルダー内のすべてのフィードを、スクロールして読める一つのストリームにまとめます。個々のフィードを開く必要はありません &mdash; "
+"フォルダーを開くだけで、すべての記事を時系列順に読めます。学習機能と組み合わせると、ニュースの流れが購読中のフィード全体からおすすめの記事を表示します。"
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream. No need to click into individual feeds. Combined with "
+"training, your river surfaces the best stories."
+msgstr "フォルダー内のすべてのフィードを、ひと続きのスクロール可能なストリームで読みましょう。フィードを個別に開く必要はありません。学習機能と組み合わせると、記事一覧におすすめの記事が表示されます。"
+
+msgid "Read all your feeds by folder in one scrollable stream"
+msgstr "フォルダーごとのフィードを、スクロール可能な1つの画面ですべて読む"
+
+msgid "Read more on the NewsBlur Blog"
+msgstr "NewsBlurブログでもっと読む"
+
+msgid "Read newsletters in your news reader"
+msgstr "ニュースリーダーでニュースレターを読む"
+
+msgid "Read offline with automatic background refresh"
+msgstr "バックグラウンドで自動更新してオフラインで読む"
+
+msgid "Read stories"
+msgstr "記事を読む"
+
+msgid ""
+"Read stories on the original website, rendered inline within NewsBlur. See the full design, layout, and "
+"interactive elements of the original page without opening a new tab. Switch between Feed view, Text view, "
+"and Original view per-feed."
+msgstr "NewsBlur内に元のウェブサイトをそのまま表示して記事を読むことができます。新しいタブを開かずに、元ページのデザイン、レイアウト、インタラクティブな要素をすべて確認できます。フィードごとにフィード表示、テキスト表示、オリジナル表示を切り替えられます。"
+
+msgid "Read the Full Story"
+msgstr "記事全文を読む"
+
+msgid "Read the community"
+msgstr "コミュニティを読む"
+
+msgid "Read the content in context, the way it was meant to be seen"
+msgstr "本来の表示で、文脈に沿ってコンテンツを読む"
+
+msgid "Read the original site"
+msgstr "元のサイトを読む"
+
+msgid "Read the whole story"
+msgstr "記事全文を読む"
+
+msgid "Read without the noise"
+msgstr "余計なものに邪魔されずに読む"
+
+msgid "Read your email newsletters in your news reader, not your inbox."
+msgstr "メールニュースレターは受信トレイではなく、ニュースリーダーで読みましょう。"
+
+msgid "Read your email newsletters where they belong, in a news reader"
+msgstr "メールニュースレターは本来の場所、ニュースリーダーで読みましょう"
+
+msgid ""
+"Read your email newsletters where they belong: in a news reader. Forward newsletters to your unique "
+"NewsBlur email address and they appear as a feed. Train, tag, search, and organize newsletters just like "
+"any other feed. No more cluttered inbox."
+msgstr "メールニュースレターは本来の場所、つまりニュースリーダーで読みましょう。専用のNewsBlurメールアドレスに転送すると、フィードとして表示されます。他のフィードと同じように、学習、タグ付け、検索、整理ができます。受信トレイが散らかることもありません。"
+
+msgid "Read your feeds"
+msgstr "フィードを読む"
+
+msgid "Read-Later / Highlights"
+msgstr "後で読む / ハイライト"
+
+msgid "Reading"
+msgstr "閲覧"
+
+msgid "Reading Archive"
+msgstr "閲覧アーカイブ"
+
+msgid "Reading by folder"
+msgstr "フォルダー別に読む"
+
+msgid "Reading history with search"
+msgstr "検索機能付き閲覧履歴"
+
+msgid "Reading news is better with friends. Share stories on your public blurblog"
+msgstr "ニュースは友達と読むともっと楽しい。公開Blurblogで記事を共有しましょう"
+
+msgid ""
+"Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
+" email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
+"place and care deeply about taking notes on what they read. NewsBlur is a dedicated RSS reader built for "
+"people who follow many feeds and want intelligent filtering to surface what matters. If your primary need "
+"is RSS with powerful training and filtering, NewsBlur is the sharper tool for the job."
+msgstr ""
+"Readwise "
+"Readerは、RSSフィード、後で読む記事、PDF、EPUB、メールニュースレターをまとめて利用でき、ハイライトや注釈機能も充実したオールインワンの読書アプリです。読んだ内容を一か所にまとめて、メモを取ることを大切にする人のために作られています。NewsBlurは、多くのフィードをフォローし、重要な情報を見つけるためにインテリジェントなフィルタリングを活用したい人向けの専用RSSリーダーです。高度な学習機能とフィルタリングを備えたRSSリーダーが主な目的なら、NewsBlurがより適したツールです。"
+
+msgid "Real examples of what it looks like when an AI agent connects to your NewsBlur."
+msgstr "AIエージェントがNewsBlurに接続したときの実例をご覧ください。"
+
+msgid "Real-Time Feed Fetching"
+msgstr "リアルタイムのフィード取得"
+
+msgid "Real-Time Updates"
+msgstr "リアルタイム更新"
+
+msgid "Real-time RSS"
+msgstr "リアルタイムRSS"
+
+msgid "Real-time RSS updates"
+msgstr "RSSをリアルタイムで更新"
+
+msgid "Real-time Stats"
+msgstr "リアルタイム統計"
+
+msgid "Reason to upgrade"
+msgstr "アップグレードする理由"
+
+msgid "Recommended Site"
+msgstr "おすすめサイト"
+
+msgid "Reddit API request failed."
+msgstr "Reddit APIへのリクエストに失敗しました。"
+
+msgid "Redeem Gift"
+msgstr "ギフトを引き換える"
+
+msgid "Redeem a Gift Code"
+msgstr "ギフトコードを引き換える"
+
+msgid "Redirect Uris"
+msgstr "リダイレクトURI"
+
+msgid "Reeder, NetNewsWire, etc."
+msgstr "Reeder、NetNewsWireなど"
+
+msgid "Reeder, ReadKit, Unread, etc."
+msgstr "Reeder、ReadKit、Unreadなど"
+
+msgid "Reeder, ReadKit, etc."
+msgstr "Reeder、ReadKitなど"
+
+msgid "Refer & Gift"
+msgstr "紹介＆ギフト"
+
+#, python-format
+msgid "Referred by <b>%(referrer)s</b> &mdash; welcome to NewsBlur!"
+msgstr "<b>%(referrer)s</b>から紹介されました &mdash; NewsBlurへようこそ！"
+
+msgid "Regex Classifiers"
+msgstr "正規表現分類器"
+
+msgid "Regex mode toggle for intelligence classifiers"
+msgstr "インテリジェンス分類器の正規表現モード切り替え"
+
+msgid "Register a new application"
+msgstr "新しいアプリケーションを登録"
+
+msgid "Regularly used searches are conveniently given their own feeds"
+msgstr "よく使う検索は、それぞれ専用のフィードとして便利に利用できます"
+
+msgid "Remove from saved"
+msgstr "保存済みから削除"
+
+msgid "Remove subscription"
+msgstr "購読を解除"
+
+msgid "Renders original website"
+msgstr "元のウェブサイトを表示"
+
+msgid "Reply comments cannot be empty."
+msgstr "返信コメントは空欄にできません。"
+
+msgid "Required"
+msgstr "必須"
+
+msgid "Researcher"
+msgstr "研究者"
+
+msgid "Reset Password"
+msgstr "パスワードをリセット"
+
+msgid "Reset Your Password - NewsBlur"
+msgstr "パスワードをリセット - NewsBlur"
+
+msgid "Reset your password"
+msgstr "パスワードをリセット"
+
+msgid "Resource Requirements"
+msgstr "リソース要件"
+
+msgid "Results show matching stories with highlighted terms"
+msgstr "一致する記事が表示され、検索語句がハイライトされます"
+
+msgid "Retained while subscribed"
+msgstr "購読中は保持されます"
+
+msgid "Retrieve feeds, stories, and stats. Open source, no API key required."
+msgstr "フィード、記事、統計情報を取得。オープンソースで、APIキーは不要です。"
+
+msgid "Retry"
+msgstr "再試行"
+
+msgctxt "leave the original site view"
+msgid "Return"
+msgstr "戻る"
+
+msgid "Return to NewsBlur"
+msgstr "NewsBlurに戻る"
+
+msgid "Review"
+msgstr "レビュー"
+
+msgid "Reviews of NewsBlur"
+msgstr "NewsBlurのレビュー"
+
+msgid "Rich cards for alternative sources in the detail view"
+msgstr "詳細表示で代替ソースをリッチカード表示"
+
+msgid "River of News"
+msgstr "ニュースの流れ"
+
+msgid "River of News (reading by folder)"
+msgstr "ニュースの流れ（フォルダー別に読む）"
+
+msgid "River of News showing stories from multiple feeds in one stream"
+msgstr "複数のフィードの記事を1つのストリームにまとめて表示するニュースの流れ"
+
+msgid "Rules & filters"
+msgstr "ルールとフィルター"
+
+msgid "Rules only, no visual training"
+msgstr "ルールのみ。視覚的な学習機能なし"
+
+msgid "Rules with regex (Pro)"
+msgstr "正規表現を使ったルール（Pro）"
+
+msgid "Run your own NewsBlur"
+msgstr "自分のNewsBlurを運用する"
+
+msgid ""
+"Run your own RSS reader with Docker. Compare NewsBlur, FreshRSS, Miniflux, and Tiny Tiny RSS for self-"
+"hosting. Only NewsBlur lets you start hosted and switch to self-hosted whenever you want."
+msgstr ""
+"Dockerで独自のRSSリーダーを運用しましょう。セルフホスティング向けにNewsBlur、FreshRSS、Miniflux、Tiny Tiny "
+"RSSを比較できます。ホスト型で始め、好きなときにセルフホストへ切り替えられるのはNewsBlurだけです。"
+
+#, python-format
+msgid ""
+"Running <code>%(command)s</code> opens your browser for OAuth authorization, the same flow used by third-"
+"party apps. Your token is stored locally at <code>%(path)s</code> and never sent anywhere except the "
+"NewsBlur API."
+msgstr ""
+"<code>%(command)s</code>を実行すると、サードパーティ製アプリと同じOAuth認証のためにブラウザーが開きます。トークンはローカルの<code>%(path)s</code>に保存され、NewsBlur"
+" API以外に送信されることはありません。"
+
+msgid "S"
+msgstr "S"
+
+msgid "SEO Expert"
+msgstr "SEOエキスパート"
+
+msgid "SQLite or MySQL/PostgreSQL"
+msgstr "SQLiteまたはMySQL/PostgreSQL"
+
+msgid ""
+"Samuel wanted a better way to read the news. So he built the first version of NewsBlur almost entirely "
+"underground on the A train in New York City."
+msgstr "Samuelはニュースをもっと読みやすくする方法を求めていました。そこで、NewsBlurの最初のバージョンのほとんどを、ニューヨーク市の地下鉄A線の車内で作り上げました。"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Save any story with one click or a keyboard shortcut"
+msgstr "ワンクリックまたはキーボードショートカットで記事を保存"
+
+msgid "Save searches as feeds for ongoing monitoring"
+msgstr "検索をフィードとして保存し、継続的にチェック"
+
+msgid "Save stories and organize with custom tags"
+msgstr "記事を保存し、カスタムタグで整理"
+
+msgid "Save stories for later"
+msgstr "記事を後で読むために保存"
+
+msgid "Save stories for later and organize them with custom tags. Each tag gets its own RSS feed for sharing."
+msgstr "記事を後で読むために保存し、独自のタグで整理できます。各タグには共有用のRSSフィードが作成されます。"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Tags are searchable, so you can quickly find "
+"saved stories by topic. Each tag gets its own RSS feed, so you can pipe your curated collections into other"
+" tools or share them."
+msgstr "記事を後で読むために保存し、カスタムタグで整理できます。タグは検索できるため、トピック別に保存した記事をすばやく見つけられます。各タグには専用のRSSフィードがあり、整理したコレクションを他のツールに取り込んだり、共有したりできます。"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
+"shareable."
+msgstr "記事を後で読むために保存し、独自のタグで整理できます。検索や共有もできる、あなただけのクリッピングライブラリです。"
+
+msgid "Save stories with custom tags for fast references"
+msgstr "すばやく参照できるよう、記事にカスタムタグを付けて保存"
+
+msgid "Save stories with searchable tags"
+msgstr "検索可能なタグを付けて記事を保存"
+
+msgid "Save stories, highlight text, tag and organize"
+msgstr "記事を保存し、テキストを強調表示し、タグ付けして整理する"
+
+msgid "Save with tags, notes, highlights"
+msgstr "タグ、メモ、ハイライトを付けて保存"
+
+msgid "Save, share, and mark stories as read."
+msgstr "記事を保存、共有し、既読にできます。"
+
+msgid "Saved"
+msgstr "保存済み"
+
+#, python-format
+msgid ""
+"Saved <strong>%(title)s</strong> by Ben Thompson with tags <code>%(first_tag)s</code> and "
+"<code>%(second_tag)s</code>. You can find it in your saved stories any time."
+msgstr ""
+"Ben "
+"Thompsonの<strong>%(title)s</strong>を、タグ<code>%(first_tag)s</code>と<code>%(second_tag)s</code>を付けて保存しました。保存した記事からいつでも確認できます。"
+
+msgid "Saved Searches"
+msgstr "保存済み検索"
+
+msgid "Saved Stories"
+msgstr "保存した記事"
+
+msgid "Saved Stories & Tags"
+msgstr "保存した記事とタグ"
+
+msgid "Saved Stories & Tags - NewsBlur"
+msgstr "保存した記事とタグ - NewsBlur"
+
+msgid "Saved stories by tag"
+msgstr "タグ別に保存した記事"
+
+msgid "Saved stories organized with custom tags"
+msgstr "カスタムタグで整理された保存済み記事"
+
+msgid "Saved story tagging: add and remove tags with a handy tagging popover."
+msgstr "保存した記事のタグ付け：便利なタグ付けポップオーバーでタグを追加・削除できます。"
+
+msgid "Saved story tags"
+msgstr "保存した記事のタグ"
+
+msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium ($36/year) or higher."
+msgstr "記事の保存はすべてのプランで利用できます。タグとタグのRSSフィードは、プレミアムプラン（年額36ドル）以上でご利用いただけます。"
+
+msgid "Screenshots"
+msgstr "スクリーンショット"
+
+msgid "Scripting and automation"
+msgstr "スクリプトと自動化"
+
+msgid "Search Sites and People"
+msgstr "サイトとユーザーを検索"
+
+msgid "Search across all saved stories and tags"
+msgstr "保存したすべての記事とタグを検索"
+
+msgid "Search across all your subscriptions"
+msgstr "すべての購読先を検索"
+
+msgid ""
+"Search across all your subscriptions and saved stories. Find anything you've ever read with Elasticsearch-"
+"powered full-text search."
+msgstr "すべての購読フィードと保存した記事を検索できます。Elasticsearchを活用した全文検索で、これまでに読んだものを見つけましょう。"
+
+msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
+msgstr "Elasticsearchを活用した全文検索で、すべての購読フィードを横断検索できます。"
+
+msgid ""
+"Search across all your subscriptions with Elasticsearch-powered full-text search. Find stories by keyword, "
+"phrase, or combination. Search within a single feed, a folder, or across everything. Save searches as feeds"
+" for ongoing monitoring."
+msgstr "Elasticsearchを活用した全文検索で、すべての登録フィードを検索できます。キーワード、フレーズ、組み合わせで記事を検索できます。単一のフィード、フォルダー、または全体を対象に検索できます。検索をフィードとして保存すれば、継続的に確認できます。"
+
+msgid ""
+"Search across all your subscriptions with Elasticsearch. Find stories by keyword or phrase. Search within a"
+" feed, a folder, or everything."
+msgstr "Elasticsearchで購読中のすべてのフィードを検索できます。キーワードやフレーズで記事を見つけましょう。フィード内、フォルダー内、または全体を検索できます。"
+
+msgid "Search and trending feeds"
+msgstr "検索フィードとトレンドフィード"
+
+msgid "Search by topic, find similar feeds, or browse what's trending."
+msgstr "トピックを検索したり、類似フィードを探したり、話題のトピックを見たりできます。"
+
+msgid "Search feeds and folders."
+msgstr "フィードとフォルダーを検索"
+
+msgid "Search for stories"
+msgstr "記事を検索"
+
+msgid "Search for topics across millions of stories from millions of publishers"
+msgstr "数百万の出版社が配信する数百万の記事から、トピックを検索"
+
+msgid "Search query or topic is required"
+msgstr "検索クエリまたはトピックが必要です"
+
+msgid "Search results across subscriptions"
+msgstr "購読フィード全体の検索結果"
+
+msgid "Search results across subscriptions with highlighted terms"
+msgstr "購読フィード全体の検索結果（検索語をハイライト表示）"
+
+msgid "Search sites and folders"
+msgstr "サイトとフォルダーを検索"
+
+msgid "Search within a single feed, a folder, or across everything"
+msgstr "単一のフィード、フォルダー、または全体を検索"
+
+msgid "Search your Reading Archive"
+msgstr "閲覧アーカイブを検索"
+
+msgid "Search your browsing Reading Archive"
+msgstr "閲覧履歴アーカイブを検索"
+
+msgid "Search your entire archive with full-text search"
+msgstr "全文検索でアーカイブ全体を検索"
+
+msgid "Security Engineer"
+msgstr "セキュリティエンジニア"
+
+msgid "See Ask AI"
+msgstr "「AIに質問」を見る"
+
+msgid "See Email Newsletters"
+msgstr "メールニュースレターを見る"
+
+msgid "See Full-Text Search"
+msgstr "全文検索を見る"
+
+msgid "See Intelligence Training"
+msgstr "インテリジェンス学習を見る"
+
+msgid "See Native Apps"
+msgstr "ネイティブアプリを見る"
+
+msgid "See Saved Stories"
+msgstr "保存した記事を見る"
+
+msgid "See Story Archive"
+msgstr "記事アーカイブを見る"
+
+msgid "See Story Clustering"
+msgstr "記事のクラスタリングを見る"
+
+msgid "See Web Feeds"
+msgstr "ウェブフィードを見る"
+
+msgid "See all 30+ features"
+msgstr "30以上の機能を見る"
+
+msgid "See all features"
+msgstr "すべての機能を見る"
+
+msgid "See all frequently asked questions"
+msgstr "よくある質問をすべて見る"
+
+msgid "See all plans"
+msgstr "すべてのプランを見る"
+
+msgid ""
+"See detailed analytics for every feed: publish frequency, average stories per month, subscriber count, last"
+" fetch time, and historical charts. Know exactly how active a feed is and when it last published. Useful "
+"for deciding which feeds to keep and which to prune."
+msgstr "すべてのフィードの詳細な分析情報を確認できます。更新頻度、月平均の記事数、購読者数、最終取得時刻、過去の推移をグラフで表示します。フィードの更新状況や最終公開時刻を正確に把握できるため、残すフィードと整理するフィードを決めるのに役立ちます。"
+
+msgid "See how a story evolved since it was first published"
+msgstr "記事が最初に公開されてからどのように変化したかを見る"
+
+msgid ""
+"See how a story evolves after it's first published. NewsBlur tracks revisions and shows you a diff of what "
+"changed, highlighted in green and red. Useful for following developing news stories, corrected articles, or"
+" evolving product announcements."
+msgstr "記事が最初に公開された後、どのように変化するかを確認できます。NewsBlurは改訂を追跡し、変更箇所を緑と赤で強調した差分を表示します。進展中のニュース、訂正記事、更新されていく製品発表の追跡に便利です。"
+
+msgid "See how stories evolve"
+msgstr "記事の変化を見る"
+
+msgid "See it in action"
+msgstr "実際の動作を見る"
+
+msgid "See pricing"
+msgstr "料金を見る"
+
+msgid "See the MCP Server"
+msgstr "MCPサーバーを見る"
+
+msgid "See the NewsBlur CLI"
+msgstr "NewsBlur CLIを見る"
+
+msgid "See the full comparison"
+msgstr "比較の全容を見る"
+
+msgid "Self-Hosted"
+msgstr "セルフホスト"
+
+msgid "Self-Hosted Option"
+msgstr "セルフホスト版"
+
+msgid "Self-Hosted RSS"
+msgstr "セルフホストRSS"
+
+msgid "Self-Hosted RSS Readers"
+msgstr "セルフホスト型RSSリーダー"
+
+msgid "Self-Hosted RSS Readers - Run Your Own News Reader with Docker"
+msgstr "セルフホスト型RSSリーダー — Dockerで自分専用のニュースリーダーを運用"
+
+msgid "Self-host only"
+msgstr "セルフホストのみ"
+
+msgid "Semantic matching uses Elasticsearch to find stories about the same topic with different headlines"
+msgstr "セマンティックマッチングではElasticsearchを使い、見出しが異なっていても同じトピックを扱う記事を見つけます"
+
+msgid ""
+"Sending stories to third-party services now uses full Text if available. Useful for storing full story text"
+" in Evernote or Pocket."
+msgstr "今後、第三者サービスへの記事送信では、利用可能な場合に全文テキストを使用します。EvernoteやPocketに記事全文を保存するのに便利です。"
+
+msgid "Seriously, fuck off spammer."
+msgstr "いい加減にしろ、スパマー。"
+
+msgctxt "technology stack group"
+msgid "Server"
+msgstr "サーバー"
+
+msgid "Set New Password - NewsBlur"
+msgstr "新しいパスワードを設定 - NewsBlur"
+
+msgid "Set a new password"
+msgstr "新しいパスワードを設定"
+
+msgid "Set training rules that apply across all your feeds, everywhere."
+msgstr "すべてのフィードに適用される学習ルールを設定できます。"
+
+msgid "Set training rules that apply to every feed in a folder at once."
+msgstr "フォルダー内のすべてのフィードに一括適用する学習ルールを設定します。"
+
+msgid "Setup NewsBlur."
+msgstr "NewsBlurをセットアップ。"
+
+msgid "Share & Organize"
+msgstr "共有と整理"
+
+msgid "Share stories with the world or only with your friends"
+msgstr "記事を世界中に、または友達だけに共有できます"
+
+msgid ""
+"Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
+"and sharing. Every NewsBlur user gets their own blurblog &mdash; a public page of shared stories that "
+"anyone can follow via RSS or on the web. Premium users can make their blurblog private."
+msgstr "公開Blurblogで、自分のコメントを添えて記事を共有できます。友達をフォローすると、読んでいる記事や共有した記事を確認できます。NewsBlurのユーザーにはそれぞれ自分のBlurblogが用意されます&mdash;共有した記事を掲載する公開ページで、RSSまたはウェブ上から誰でもフォローできます。プレミアムユーザーはBlurblogを非公開にできます。"
+
+msgid "Share this story"
+msgstr "この記事を共有"
+
+msgid "Share to blurblog"
+msgstr "Blurblogに共有"
+
+msgid "Shared Stories"
+msgstr "共有記事"
+
+msgid "Shared Stories & Blurblog"
+msgstr "共有記事とBlurblog"
+
+msgid "Shared articles"
+msgstr "共有した記事"
+
+msgid "Shared stories and blurblog with comments"
+msgstr "コメント付きの共有記事とBlurblog"
+
+msgid "Shared story"
+msgid_plural "Shared stories"
+msgstr[0] "共有した記事"
+
+msgid "Shared story cannot be found."
+msgstr "共有された記事が見つかりません。"
+
+msgid "Shared story not found."
+msgstr "共有された記事が見つかりません。"
+
+msgid "Show sidebar"
+msgstr "サイドバーを表示"
+
+msgid "Sign Up"
+msgstr "登録"
+
+msgid "Sign in"
+msgstr "ログイン"
+
+msgid "Sign in and your feeds, training, and saved stories sync instantly"
+msgstr "サインインすると、フィード、学習内容、保存した記事がすぐに同期されます"
+
+msgid "Sign in to NewsBlur"
+msgstr "NewsBlurにサインイン"
+
+msgid "Sign in with Apple"
+msgstr "Appleでサインイン"
+
+msgid "Sign in with Google"
+msgstr "Googleでサインイン"
+
+msgid "Sign up or Log in"
+msgstr "登録またはログイン"
+
+msgid "Signup"
+msgstr "登録"
+
+msgid "Single binary or container"
+msgstr "単一のバイナリまたはコンテナ"
+
+msgid "Single command install on Docker"
+msgstr "Dockerにワンコマンドでインストール"
+
+msgid "Single container"
+msgstr "単一コンテナ"
+
+msgid "Site"
+msgid_plural "Sites"
+msgstr[0] "サイト"
+
+msgid "Site name or address..."
+msgstr "サイト名またはアドレス..."
+
+msgid "Sites"
+msgstr "サイト"
+
+msgid "Sites & Friends"
+msgstr "サイトと友達"
+
+msgid "Sites loaded"
+msgstr "読み込まれたサイト"
+
+msgid "Sites updated up to 10x more often"
+msgstr "サイトの更新頻度が最大10倍に"
+
+msgid "Sites updated up to 5x more often"
+msgstr "サイトの更新頻度が最大5倍に"
+
+msgid "Social / Blurblog"
+msgstr "ソーシャル / Blurblog"
+
+msgid "Social / Sharing"
+msgstr "ソーシャル／共有"
+
+msgid "Social Features"
+msgstr "ソーシャル機能"
+
+msgid "Software Engineer"
+msgstr "ソフトウェアエンジニア"
+
+msgid "Solo maintainer"
+msgstr "単独のメンテナー"
+
+msgid "Someone is already using that email address."
+msgstr "このメールアドレスはすでに使用されています。"
+
+msgid "Someone is already using that username."
+msgstr "そのユーザー名はすでに使用されています。"
+
+msgid "Something went wrong..."
+msgstr "問題が発生しました..."
+
+msgid "Sorry, that email is invalid."
+msgstr "申し訳ありませんが、そのメールアドレスは無効です。"
+
+msgid "Source:"
+msgstr "ソース："
+
+msgid "Specify a search 'term'."
+msgstr "検索「term」を指定してください。"
+
+msgctxt "story layout"
+msgid "Split"
+msgstr "分割"
+
+msgid "Standard Users"
+msgstr "スタンダードユーザー"
+
+msgid "Start Trial Premium"
+msgstr "プレミアムの無料トライアルを開始"
+
+msgid "Start reading"
+msgstr "読み始める"
+
+msgid "Statistics & History"
+msgstr "統計と履歴"
+
+msgid "Statistics and History"
+msgstr "統計と履歴"
+
+msgid "Stay Smart"
+msgstr "スマートに過ごそう"
+
+msgid "Stay tuned..."
+msgstr "続報をお待ちください..."
+
+msgid "Still have questions?"
+msgstr "ほかにご質問はありますか？"
+
+#, python-format
+msgid "Stop sending all NewsBlur emails to <b>%(email)s</b> for the account <b>%(username)s</b>?"
+msgstr "アカウント<b>%(username)s</b>宛てのNewsBlurメールをすべて<b>%(email)s</b>に送信するのを停止しますか？"
+
+msgid "Stories"
+msgstr "記事"
+
+msgid "Stories are highlighted green (like) or faded (dislike)"
+msgstr "記事は「いいね」で緑色に、「低評価」で薄く表示されます"
+
+msgid "Stories are now searchable through spotlight if they have been stored for offline reading."
+msgstr "オフライン閲覧用に保存された記事は、Spotlightから検索できるようになりました。"
+
+msgid "Stories are pushed directly to you, so you can read news as it comes in"
+msgstr "記事が直接届くので、ニュースが届くたびに読めます"
+
+msgid ""
+"Stories are pushed to you as they're published. Free users get real-time updates via PubSubHubbub. Premium "
+"users get feeds checked up to 5x more often. Pro users get every single feed in their account fetched every"
+" 5-15 minutes, making NewsBlur a monitoring-grade tool for professionals who need to be first to know."
+msgstr "記事は公開されるとすぐに配信されます。無料ユーザーはPubSubHubbubを通じてリアルタイム更新を受け取れます。プレミアムユーザーはフィードのチェック頻度が最大5倍になります。Proユーザーはアカウント内のすべてのフィードが5～15分ごとに取得されるため、誰よりも早く情報を得たいプロフェッショナル向けの監視ツールとしてNewsBlurを利用できます。"
+
+msgid "Stories can stay unread forever"
+msgstr "記事をいつまでも未読のままにしておけます"
+
+msgid "Stories expire"
+msgstr "記事は期限切れになる"
+
+msgid "Stories from rarely-publishing feeds"
+msgstr "更新頻度の低いフィードの記事"
+
+msgid "Stories never expire or disappear"
+msgstr "記事は期限切れになったり、消えたりしません"
+
+msgid "Stories never expire. When you subscribe to a new feed, its entire history is back-filled."
+msgstr "記事が期限切れになることはありません。新しいフィードを購読すると、過去の全履歴が補完されます。"
+
+msgid ""
+"Stories now remember your last scroll position. When you go back to a story, you are taken back to the same"
+" place you left off."
+msgstr "記事のスクロール位置が記憶されるようになりました。記事に戻ると、前回読んでいた場所から再開できます。"
+
+msgid ""
+"Stories pushed as they publish with real-time notifications. Pro users get all feeds fetched every 5-15 "
+"minutes for breaking news."
+msgstr "記事の公開と同時にリアルタイム通知でお届けします。Proユーザーは、速報記事を逃さないよう、すべてのフィードを5〜15分ごとに取得できます。"
+
+msgid "Story"
+msgstr "記事"
+
+msgctxt "story view mode"
+msgid "Story"
+msgstr "記事"
+
+msgid "Story Archive"
+msgstr "記事アーカイブ"
+
+msgid "Story Archive (Forever)"
+msgstr "記事アーカイブ（無期限）"
+
+msgid "Story Archive - NewsBlur"
+msgstr "記事アーカイブ - NewsBlur"
+
+msgid "Story Archive requires Premium Archive ($99/year) or Premium Pro ($29/month)."
+msgstr "記事アーカイブを利用するには、プレミアムアーカイブ（年額99ドル）またはプレミアム Pro（月額29ドル）が必要です。"
+
+msgid "Story Clustering"
+msgstr "記事のクラスタリング"
+
+msgid "Story Clustering - NewsBlur"
+msgstr "記事のクラスタリング - NewsBlur"
+
+msgid "Story Shared"
+msgid_plural "Stories Shared"
+msgstr[0] "共有された記事"
+
+msgid "Story Tagging"
+msgstr "記事のタグ付け"
+
+msgid "Story already shared but then not shared. I don't really know. Did you submit this twice very quickly?"
+msgstr "記事は一度共有されましたが、その後共有解除されました。よくわかりません。短時間に2回送信しましたか？"
+
+msgid "Story clustering"
+msgstr "記事のクラスタリング"
+
+msgid "Story clustering grouping duplicate stories from multiple feeds"
+msgstr "複数のフィードにある重複記事をまとめる記事クラスタリング"
+
+msgid "Story clustering grouping related stories together"
+msgstr "記事のクラスタリング：関連する記事をまとめる"
+
+msgid "Story detail view showing cluster cards for alternative sources"
+msgstr "代替ソースのクラスタカードを表示する記事詳細ビュー"
+
+msgid "Story diff showing tracked changes highlighted in green and red"
+msgstr "記事の差分。変更箇所を緑と赤で表示"
+
+msgid "Story has no images"
+msgstr "記事に画像がありません"
+
+msgid "Story not found"
+msgstr "記事が見つかりません"
+
+msgid "Story not found."
+msgstr "記事が見つかりません。"
+
+msgid "Story titles view showing clustered stories with sources listed underneath"
+msgstr "ソース一覧を下に表示した、クラスタ化された記事のタイトル表示"
+
+msgid "Story unshared."
+msgstr "記事の共有を解除しました。"
+
+msgid "Style"
+msgstr "スタイル"
+
+msgid "Submit Payment"
+msgstr "支払いを送信"
+
+msgid "Subscribe by URL"
+msgstr "URLで登録"
+
+msgid "Subscribe to Premium Archive"
+msgstr "プレミアムアーカイブに登録"
+
+msgid "Subscribe, unsubscribe, and organize your feed list."
+msgstr "フィードリストの購読、購読解除、整理ができます。"
+
+msgid "Subscribed"
+msgstr "登録済み"
+
+msgid "Subscribed to web feed"
+msgstr "ウェブフィードを登録しました"
+
+msgid "Subscriber"
+msgstr "購読者"
+
+msgid "Subtotal"
+msgstr "小計"
+
+msgid "Support"
+msgstr "サポート"
+
+msgid "Supports Reeder, ReadKit, Unread, and loads more"
+msgstr "Reeder、ReadKit、Unreadなど、多数のアプリに対応"
+
+msgid "Swipe through stories, train with a tap, read offline. A native app that feels right at home."
+msgstr "記事をスワイプして読み、タップで学習。オフラインでも読めます。使い慣れた感覚で使えるネイティブアプリです。"
+
+msgid "Switch in under a minute"
+msgstr "1分以内で切り替え"
+
+msgid "Switch to this Credit Card"
+msgstr "このクレジットカードに切り替える"
+
+msgid "Tag name is required."
+msgstr "タグ名を入力してください。"
+
+msgid "Tag name must be 128 characters or less."
+msgstr "タグ名は128文字以内にしてください。"
+
+msgid "Take action"
+msgstr "アクションを実行"
+
+msgid "Take actions on stories"
+msgstr "記事にアクションを実行"
+
+msgid "Take back control of your news"
+msgstr "ニュースを自分の手に取り戻す"
+
+msgid "Team boards (paid)"
+msgstr "チームボード（有料）"
+
+msgid "Tech Entrepreneur"
+msgstr "テック起業家"
+
+msgid "Tech Journalist"
+msgstr "テックジャーナリスト"
+
+msgid "Technologist, BYU Professor"
+msgstr "技術者、ブリガムヤング大学教授"
+
+msgid "Terms of Service"
+msgstr "利用規約"
+
+msgctxt "story view mode"
+msgid "Text"
+msgstr "テキスト"
+
+msgid "Text View"
+msgstr "テキスト表示"
+
+msgid "Text View (Full Story)"
+msgstr "テキスト表示（全文）"
+
+msgid "Text view conveniently extracts the story"
+msgstr "テキスト表示で記事を手軽に抽出"
+
+msgid "Text view extracting full article content from a website"
+msgstr "ウェブサイトから記事全文を抽出するテキスト表示"
+
+msgid "Text view extracts the story"
+msgstr "テキスト表示では記事本文を抽出します"
+
+msgid "Thank you for subscribing to NewsBlur"
+msgstr "NewsBlurにご登録いただきありがとうございます"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive"
+msgstr "NewsBlurプレミアムアーカイブにご登録いただきありがとうございます"
+
+msgid "Thank you for subscribing to NewsBlur Premium Pro"
+msgstr "NewsBlur プレミアム Proにご登録いただきありがとうございます"
+
+msgid "Thank you for supporting NewsBlur!"
+msgstr "NewsBlurをご支援いただきありがとうございます！"
+
+msgid "Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:"
+msgstr "NewsBlurにご関心をお寄せいただきありがとうございます。NewsBlurは個人開発者が開発しています："
+
+msgid "Thanks!"
+msgstr "ありがとうございます！"
+
+msgid "That story has been removed from the feed, no need to mark it unread."
+msgstr "この記事はフィードから削除されているため、未読にする必要はありません。"
+
+msgid ""
+"That story pattern is tied to the exact items on the page right now, so it would never find new stories. "
+"Please analyze the page again."
+msgstr "この記事パターンは現在ページ上にある特定の項目に紐づいているため、新しい記事は見つかりません。ページをもう一度分析してください。"
+
+msgid "That username is not registered. Please try again."
+msgstr "そのユーザー名は登録されていません。もう一度お試しください。"
+
+msgid "The Blog"
+msgstr "ブログ"
+
+#, python-format
+msgid ""
+"The CLI is a standalone terminal tool you run directly. The <a href=\"%(mcp_url)s\">MCP server</a> lets AI "
+"agents like Claude and Codex connect to your NewsBlur on your behalf. Both use the same underlying API and "
+"have the same capabilities."
+msgstr ""
+"CLIは、直接実行する独立したターミナルツールです。<a "
+"href=\"%(mcp_url)s\">MCPサーバー</a>を使うと、ClaudeやCodexなどのAIエージェントが、あなたに代わってNewsBlurに接続できます。どちらも同じ基盤APIを使用し、同じ機能を備えています。"
+
+msgid "The Google Reader Alternative That's Been Here All Along"
+msgstr "ずっとここにあったGoogle Readerの代替サービス"
+
+msgid ""
+"The MCP server uses OAuth, the same authentication used by third-party apps. You authorize access through "
+"your browser, and you can revoke access at any time. The MCP server never stores your credentials."
+msgstr "MCPサーバーは、サードパーティ製アプリと同じOAuth認証を使用します。ブラウザーでアクセスを許可でき、いつでも取り消せます。MCPサーバーに認証情報が保存されることはありません。"
+
+msgid ""
+"The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets"
+" Claude, Codex, and other AI assistants interact with NewsBlur on your behalf."
+msgstr ""
+"Model Context "
+"Protocol（MCP）は、AIエージェントを外部のツールやデータに接続するためのオープン標準です。Claude、CodexなどのAIアシスタントが、あなたに代わってNewsBlurを操作できるようになります。"
+
+msgid "The NewsBlur API"
+msgstr "NewsBlur API"
+
+msgid "The NewsBlur Android App"
+msgstr "NewsBlur Androidアプリ"
+
+msgid "The NewsBlur iPad & iPhone App"
+msgstr "NewsBlur iPad & iPhone アプリ"
+
+msgid "The NewsBlur<br />Android App"
+msgstr "NewsBlur<br />Androidアプリ"
+
+msgid "The NewsBlur<br />iOS App"
+msgstr "NewsBlur<br />iOSアプリ"
+
+msgid ""
+"The Old Reader was created to recreate the Google Reader experience, and it does that well. The interface "
+"is intentionally simple and familiar. NewsBlur also started before Google Reader shut down (founded in "
+"2009), but has evolved continuously since then. Intelligence training, AI-powered reading, web feeds, story"
+" clustering, and a full API ecosystem have been added over the years. If you want a simple, no-frills "
+"Google Reader clone, The Old Reader delivers. If you want a reader that has kept pace with how the web has "
+"changed, NewsBlur is the more complete choice."
+msgstr ""
+"The Old Readerは、Google Readerの使用感を再現するために作られ、その点ではよくできています。意図的にシンプルでなじみやすいインターフェースです。NewsBlurもGoogle "
+"Readerの終了前（2009年創業）に始まりましたが、それ以来、継続的に進化してきました。インテリジェンス学習、AIを活用した読書、ウェブフィード、記事のクラスタリング、そして充実したAPIエコシステムが年月をかけて追加されました。シンプルで余計な機能のないGoogle"
+" Readerのクローンをお探しなら、The Old Readerが期待に応えてくれます。ウェブの変化に合わせて進化し続けてきたリーダーをお求めなら、NewsBlurのほうがより充実した選択肢です。"
+
+msgid ""
+"The Text view is now sticky based on the last view you used. It's per feed but it also respects individual "
+"feeds when reading by folder."
+msgstr "テキスト表示は、最後に使用した表示モードに基づいて固定されるようになりました。フィードごとに設定されますが、フォルダー表示で読む場合も各フィードの設定が反映されます。"
+
+msgid "The best of both worlds: hosted and self-hosted"
+msgstr "ホスト型とセルフホスト型、両方の利点を"
+
+msgid ""
+"The biggest difference between NewsBlur and Feedly is philosophy. Feedly uses AI to decide what's important"
+" for you. NewsBlur puts you in control with its intelligence training system. You explicitly tell NewsBlur "
+"what to highlight and what to hide, by author, tag, title keyword, full text, URL, or regex pattern. "
+"There's no black box &mdash; you always know why a story is highlighted or hidden."
+msgstr "NewsBlurとFeedlyの最大の違いは、その理念です。FeedlyはAIであなたにとって重要なものを判断します。NewsBlurは、独自の学習システムであなたが主導権を握れます。著者、タグ、タイトルのキーワード、全文、URL、正規表現パターンを指定して、NewsBlurに何を強調表示し、何を非表示にするかを明示できます。ブラックボックスはありません&mdash;記事が強調表示または非表示になった理由が常にわかります。"
+
+msgid ""
+"The biggest feature difference is NewsBlur's intelligence training. Instead of reading every story in every"
+" feed, you can train NewsBlur to highlight authors and topics you care about and hide the rest. Stories are"
+" color-coded so you can scan your feeds at a glance. Over time, the reader adapts to your interests. The "
+"Old Reader has no filtering or training system, so managing a large number of feeds means more manual work."
+msgstr ""
+"最大の機能差は、NewsBlurのインテリジェンス学習機能です。すべてのフィードの記事を読む代わりに、関心のある著者やトピックをNewsBlurに学習させて強調表示し、それ以外を非表示にできます。記事は色分けされるため、フィードをひと目で確認できます。使い続けるうちに、リーダーはあなたの関心に合わせて変化します。The"
+" Old Readerにはフィルタリングや学習の仕組みがないため、多数のフィードを管理するには、より多くの手作業が必要です。"
+
+msgid "The email will be sent to:"
+msgstr "メールの送信先："
+
+msgid "The error has been logged and will be fixed soon so you won't have to see this message again."
+msgstr "エラーは記録されました。まもなく修正されるため、このメッセージは今後表示されなくなります。"
+
+msgid "The full experience,<br>right in your browser"
+msgstr "ブラウザーで、<br>すべての機能を利用"
+
+msgid "The highest limit available. Monitor everything."
+msgstr "利用可能な上限のうち最も高い設定です。すべてをモニタリングします。"
+
+msgid ""
+"The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value "
+"it, it can disappear overnight. Google shut down Reader not because it was unpopular, but because it didn't"
+" align with their business priorities."
+msgstr ""
+"Google "
+"Readerの教訓は明らかでした。読書ツールが、それを大切にしない企業のものだと、一夜にして消えてしまうことがあります。GoogleがReaderを終了したのは、人気がなかったからではなく、同社の事業上の優先事項に合わなかったからです。"
+
+msgid "The only open source RSS reader you don't have to host yourself"
+msgstr "自分でホストする必要のない、唯一のオープンソースRSSリーダー"
+
+msgid "The original story from truncated RSS feeds is seamlessly expanded"
+msgstr "省略されたRSSフィードの記事を、元の記事からシームレスに展開"
+
+msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
+msgstr "通常のフィードと同じです。プレミアムおよびProユーザーは、より短い間隔で更新されます。"
+
+msgid "The shared comment cannot be found."
+msgstr "共有されたコメントが見つかりません。"
+
+msgid "The story"
+msgstr "これまでの歩み"
+
+msgid "The team"
+msgstr "チーム"
+
+msgid "Themes"
+msgstr "テーマ"
+
+msgid "Themes & Customization"
+msgstr "テーマとカスタマイズ"
+
+#, python-format
+msgid ""
+"There is %(position_display)s person in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
+"patiently waiting<br /> on their free accounts on NewsBlur."
+msgid_plural ""
+"There are %(position_display)s people in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
+"all patiently waiting<br /> on their free accounts on NewsBlur."
+msgstr[0] ""
+"あなたの前には%(position_display)s人がいます<span "
+"style=\"color:#999\">%(behind_clause)s</span>。皆さん、NewsBlurの無料アカウントを<br />辛抱強く待っています。"
+
+#, python-format
+msgid ""
+"There is %(position_display)s person in front of you, patiently waiting<br /> on their free accounts on "
+"NewsBlur."
+msgid_plural ""
+"There are %(position_display)s people in front of you, all patiently waiting<br /> on their free accounts "
+"on NewsBlur."
+msgstr[0] "あなたの前には%(position_display)s人がいて、NewsBlurの無料アカウントを<br />辛抱強く待っています。"
+
+msgid "There's no limit. Save as many stories as you want and they're kept forever."
+msgstr "上限はありません。好きなだけ記事を保存でき、いつまでも残ります。"
+
+msgid "Third-Party App Support"
+msgstr "サードパーティアプリのサポート"
+
+msgid "Third-Party App Sync"
+msgstr "サードパーティアプリとの同期"
+
+msgid "Third-Party Apps"
+msgstr "サードパーティ製アプリ"
+
+msgid "Third-party Apps"
+msgstr "サードパーティ製アプリ"
+
+msgid "Third-party app icons: NetNewsWire, Reeder, ReadKit, and Unread"
+msgstr "サードパーティ製アプリのアイコン：NetNewsWire、Reeder、ReadKit、Unread"
+
+msgid "Third-party apps only"
+msgstr "サードパーティ製アプリのみ"
+
+msgid "Third-party only"
+msgstr "サードパーティのみ"
+
+msgid "This email is already being used by another account. Try something different."
+msgstr "このメールアドレスは別のアカウントですでに使用されています。別のアドレスをお試しください。"
+
+msgid "This feature requires the Archive subscription"
+msgstr "この機能にはアーカイブプランが必要です"
+
+msgid "This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded."
+msgstr "このギフトリンクは90日後に期限切れになります。引き換えられなかった場合、料金は自動的に返金されます。"
+
+msgid "This is already an RSS feed. Subscribing directly."
+msgstr "これはすでにRSSフィードです。直接購読します。"
+
+msgid "This payment has been refunded."
+msgstr "このお支払いは返金されました。"
+
+msgid "This user has limited their shared stories only to followers."
+msgstr "このユーザーは、共有する記事をフォロワーのみに制限しています。"
+
+msgid "This username is already taken. Try something different."
+msgstr "このユーザー名はすでに使用されています。別の名前をお試しください。"
+
+msgid "Thumbs down what you don't want to see"
+msgstr "見たくないものに低評価を付ける"
+
+msgid "Thumbs up authors, tags, or title keywords you like"
+msgstr "好みの著者、タグ、タイトルのキーワードに高評価を付ける"
+
+msgid "Tips"
+msgstr "ヒント"
+
+msgid "Title matching catches exact and fuzzy duplicates using significant-word overlap"
+msgstr "タイトル照合では、重要語の重なりを使って完全一致とあいまい一致の重複を検出します"
+
+msgid "Title, text, and URL patterns (Pro)"
+msgstr "タイトル、本文、URLのパターン（Pro）"
+
+msgid "To complete the import,<br />just choose a username."
+msgstr "インポートを完了するには、<br />ユーザー名を選ぶだけです。"
+
+#, python-format
+msgid ""
+"To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just "
+"as you would on any other OAuth API. Use the <code>%(authorize_path)s</code> endpoint to begin the OAuth "
+"authentication procedure. Use the <code>%(token_path)s</code> endpoint to receive your authorized token, "
+"which you can pass in with every request."
+msgstr ""
+"リクエストの認証にOAuthを使用するには、他のOAuth APIと同様に、すべてのリクエストにBearer "
+"HTTPヘッダーを付けてください。OAuth認証を開始するには、<code>%(authorize_path)s</code>エンドポイントを使用します。認証済みトークンを受け取るには、<code>%(token_path)s</code>エンドポイントを使用してください。このトークンはすべてのリクエストに含めることができます。"
+
+#, python-format
+msgid "Today, %(date)s %(time)s"
+msgstr "今日、%(date)s %(time)s"
+
+msgid "Toggle dark mode"
+msgstr "ダークモードを切り替え"
+
+msgid "Toggle theme"
+msgstr "テーマを切り替える"
+
+msgid "Token already saved."
+msgstr "トークンはすでに保存されています。"
+
+msgid "Token saved."
+msgstr "トークンを保存しました。"
+
+msgid "Top Level"
+msgstr "最上位"
+
+msgid "Total Paid"
+msgstr "支払総額"
+
+msgid "Track Changes"
+msgstr "変更を追跡"
+
+msgid "Track Changes / Diffs"
+msgstr "変更の追跡／差分"
+
+msgid ""
+"Train NewsBlur to show you what you want and hide what you don't. Thumbs up an author, tag, or title "
+"keyword to highlight matching stories in green. Thumbs down to fade them away. The more you train, the "
+"smarter your feeds become. No algorithm decides for you &mdash; you're in control."
+msgstr "NewsBlurに学習させて、見たいものを表示し、見たくないものを非表示にしましょう。著者、タグ、タイトルのキーワードに高評価を付けると、一致する記事が緑色で強調表示されます。低評価を付けると薄く表示されます。学習させるほど、フィードが賢くなります。アルゴリズムが勝手に決めることはありません&mdash;すべてあなたがコントロールできます。"
+
+msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
+msgstr "NewsBlurに好みを学習させて、読みたい記事を表示し、不要な記事を非表示にしましょう。アルゴリズム任せではなく、あなたがコントロールできます。"
+
+msgid "Train across folders or globally on Archive"
+msgstr "アーカイブプランではフォルダー単位や全体で学習可能"
+
+msgid "Train by author, tag, title, and full text"
+msgstr "著者、タグ、タイトル、全文で学習"
+
+msgid "Train by author, tag, title, text, URL, regex"
+msgstr "著者、タグ、タイトル、本文、URL、正規表現で学習"
+
+msgid "Train intelligence"
+msgstr "インテリジェンス学習"
+
+msgid "Train like/dislike by author, tag, title, feed"
+msgstr "著者、タグ、タイトル、フィードごとに「いいね」「低評価」を学習させる"
+
+msgid "Train stories by author, tag, title"
+msgstr "著者、タグ、タイトルで記事を学習させる"
+
+msgid ""
+"Train stories by author, tag, title, and keyword. Thumbs up what you want to see, thumbs down what you "
+"don't. NewsBlur learns what matters to you."
+msgstr "著者、タグ、タイトル、キーワードで記事を学習させましょう。読みたい記事には高評価、読みたくない記事には低評価を付けます。NewsBlurがあなたにとって大切な情報を学習します。"
+
+msgid "Train stories on full text content"
+msgstr "記事の全文を使って学習する"
+
+msgid "Train stories with regular expressions"
+msgstr "正規表現で記事を学習"
+
+msgid "Train stories, search, share, and tag just like on the web"
+msgstr "ウェブ版と同様に、記事の学習、検索、共有、タグ付けができます"
+
+msgid "Train stories."
+msgstr "記事を学習させる。"
+
+msgid "Train, tag, search, and organize newsletters like any feed"
+msgstr "ニュースレターもフィードと同じように、学習、タグ付け、検索、整理できます"
+
+msgid "Trainer"
+msgstr "トレーナー"
+
+msgid "Training dialog with thumbs up and thumbs down on authors, tags, and titles"
+msgstr "著者、タグ、タイトルに高評価と低評価を付けて学習させるダイアログ"
+
+msgid "Training dialog with thumbs up/down"
+msgstr "高評価／低評価で学習させるダイアログ"
+
+msgid "Trial Premium Subscription"
+msgstr "プレミアムサブスクリプションの無料トライアル"
+
+msgid "Try"
+msgstr "試す"
+
+msgid "Try NewsBlur free"
+msgstr "NewsBlurを無料で試す"
+
+msgid "Try Premium for Free"
+msgstr "プレミアムを無料で試す"
+
+msgid "Try it free"
+msgstr "無料で試す"
+
+msgid "Try out NewsBlur"
+msgstr "NewsBlurを試す"
+
+msgid ""
+"Two different philosophies: NewsBlur is a dedicated RSS reader with intelligence training. Readwise Reader "
+"combines RSS, read-later, and highlights in one app."
+msgstr "2つの異なる考え方：NewsBlurは、インテリジェンス学習機能を備えた専用RSSリーダーです。Readwise Readerは、RSS、後で読む機能、ハイライトを1つのアプリにまとめています。"
+
+msgid ""
+"Two independent, privacy-focused RSS readers. Both are built by small teams, but they take different "
+"approaches to features, filtering, and pricing."
+msgstr "プライバシーを重視する独立系RSSリーダー2つ。どちらも小規模なチームが開発していますが、機能、フィルタリング、料金へのアプローチは異なります。"
+
+msgid "Two indie readers, different philosophies"
+msgstr "哲学の異なる2つのインディー系リーダー"
+
+msgid ""
+"Two layers work together. Title matching normalizes headlines and groups exact and fuzzy matches. Semantic "
+"matching sends titles to Elasticsearch's more_like_this query to catch stories about the same event written"
+" with completely different headlines."
+msgstr "2つの層が連携して機能します。タイトル照合では見出しを正規化し、完全一致や類似するものをグループ化します。意味照合ではタイトルをElasticsearchのmore_like_thisクエリに送信し、見出しがまったく異なっていても同じ出来事を扱う記事を見つけます。"
+
+msgid "Two of the most popular RSS readers, compared feature by feature. Here's how they differ."
+msgstr "人気のRSSリーダー2つを機能ごとに比較。それぞれの違いをご紹介します。"
+
+msgid "Type \"Delete\" to confirm"
+msgstr "確認のため「Delete」と入力"
+
+msgid "Type keywords, phrases, or combinations"
+msgstr "キーワード、フレーズ、または組み合わせを入力"
+
+msgid "URL is blocked"
+msgstr "URLはブロックされています"
+
+msgid "Unique email address"
+msgstr "専用メールアドレス"
+
+msgid "Unknown Ask AI question"
+msgstr "不明な質問の種類です"
+
+msgid "Unlimited sites"
+msgstr "サイト数無制限"
+
+msgid "Unlock the full NewsBlur experience"
+msgstr "NewsBlurのすべての機能を利用する"
+
+msgid "Unread"
+msgstr "未読"
+
+msgid "Unsubscribe"
+msgstr "配信を停止"
+
+msgid "Unsubscribe from NewsBlur emails"
+msgstr "NewsBlurからのメール配信を停止"
+
+msgid "Unsubscribed"
+msgstr "配信を停止しました"
+
+msgid "Unsupported language"
+msgstr "未対応の言語"
+
+msgid "Upgrade to Premium"
+msgstr "プレミアムにアップグレード"
+
+msgid "Upgrade to premium archive"
+msgstr "プレミアムアーカイブにアップグレード"
+
+msgid "Usage billing not enabled"
+msgstr "従量課金は有効になっていません"
+
+msgid "Usage billing required for AI classifiers"
+msgstr "AI分類器の利用には従量課金の設定が必要です"
+
+msgctxt "heading for CLI usage examples"
+msgid "Use"
+msgstr "使用方法"
+
+msgid ""
+"Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
+"Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
+"NewsBlur's open API powers dozens of third-party clients."
+msgstr ""
+"お気に入りの読書アプリでNewsBlurを使いましょう。Reeder、ReadKit、Unread、lire、Fiery "
+"Feeds、Newsifyなど、多数のアプリと完全に同期できます。既読状態、保存した記事、学習内容はすべてのアプリ間で同期されます。NewsBlurのオープンAPIを使ったサードパーティ製クライアントは数十種類あります。"
+
+msgid "Use prompt templates"
+msgstr "プロンプトテンプレートを使用"
+
+msgid "Use widgets to see unread counts and stories at a glance"
+msgstr "ウィジェットで未読件数や記事をひと目で確認"
+
+msgid "User not found."
+msgstr "ユーザーが見つかりません。"
+
+msgid "User-Controlled Filtering"
+msgstr "ユーザーが管理するフィルタリング"
+
+msgid "Username"
+msgstr "ユーザー名"
+
+msgid "Username or Email"
+msgstr "ユーザー名またはメールアドレス"
+
+msgid "Username or email"
+msgstr "ユーザー名またはメールアドレス"
+
+msgid "Username or email..."
+msgstr "ユーザー名またはメールアドレス..."
+
+msgid "View all training data"
+msgstr "学習データをすべて表示"
+
+msgid "View and update classifiers to like or dislike authors, tags, titles, and feeds"
+msgstr "分類器を表示・更新して、著者、タグ、タイトル、フィードを高評価または低評価に設定"
+
+msgid "View and update your classifiers to like or dislike authors, tags, titles, and feeds."
+msgstr "分類設定を表示・更新して、著者、タグ、タイトル、フィードを高評価または低評価にできます。"
+
+msgid "View on GitHub"
+msgstr "GitHubで見る"
+
+msgid "View on NewsBlur"
+msgstr "NewsBlurで表示"
+
+msgid ""
+"Visit the <a href=\"https://forum.newsblur.com\">NewsBlur support forum</a> to ask questions, report "
+"problems, or suggest features."
+msgstr "質問、問題の報告、機能の提案は、<a href=\"https://forum.newsblur.com\">NewsBlurサポートフォーラム</a>をご利用ください。"
+
+msgid "Visit the forum"
+msgstr "フォーラムを見る"
+
+msgid "Visual Training (Thumbs Up/Down)"
+msgstr "ビジュアル学習（高評価／低評価）"
+
+msgid "Visual training vs. rule-based filtering"
+msgstr "ビジュアル学習とルールベースのフィルタリング"
+
+msgid "Want more CLI features?"
+msgstr "CLIの機能をもっと使いたいですか？"
+
+msgid "Want more MCP features?"
+msgstr "MCPの機能をもっと利用しませんか？"
+
+msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
+msgstr "Warren Robinettは64バイトのRAMでBASICインタプリタを書きました。最大9行、64文字、整数0&ndash;99。"
+
+msgid ""
+"Washington State bill HB2320 would require 3D printers to phone home and refuse to print known firearms. "
+"Why it's technically infeasible."
+msgstr "ワシントン州の法案HB2320は、3Dプリンターに本部への通信を義務付け、既知の銃器の印刷を拒否させるものです。技術的に実現不可能な理由。"
+
+msgid "We accept all major credit cards via Stripe (Visa, Mastercard, American Express, Discover) and PayPal."
+msgstr "Visa、Mastercard、American Express、Discoverなどの主要クレジットカード（Stripe経由）とPayPalをご利用いただけます。"
+
+msgid ""
+"We love pull requests. If you want to add an endpoint, modify output, or make something better, <a "
+"href=\"http://github.com/samuelclay/NewsBlur\">NewsBlur's repo on Github</a> is the place to make that "
+"happen."
+msgstr ""
+"プルリクエストを歓迎します。エンドポイントの追加や出力の変更、改善に取り組みたい場合は、<a href=\"http://github.com/samuelclay/NewsBlur\">NewsBlurの "
+"GitHub リポジトリ</a>で実現できます。"
+
+msgid ""
+"We reserve the right to revise these guidelines. If you violate the spirit of these terms, expect to be "
+"blocked without advance warning."
+msgstr "これらのガイドラインを改定する権利を留保します。規約の趣旨に反する行為があった場合、事前の警告なくブロックされることがあります。"
+
+#, python-format
+msgid ""
+"We're quite pleased to point out that this entire API is open-source, including the implementation of the "
+"endpoints. You can find the source of the <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py\">%(reader_path)s views "
+"source</a>, <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py\">%(social_path)s views "
+"source</a>, <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py\">%(feeds_path)s views "
+"source</a>, as well as <a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml\">the API definitions in "
+"YAML</a>."
+msgstr ""
+"このAPI全体は、エンドポイントの実装も含めてオープンソースです。<a "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/reader/views.py\">%(reader_path)sビューのソース</a>、<a"
+" "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/social/views.py\">%(social_path)sビューのソース</a>、<a"
+" "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/apps/rss_feeds/views.py\">%(feeds_path)sビューのソース</a>、および<a"
+" "
+"href=\"http://github.com/samuelclay/NewsBlur/tree/master/templates/static/api.yml\">YAML形式のAPI定義</a>をご覧いただけます。"
+
+msgid "Web"
+msgstr "ウェブ"
+
+msgid "Web Feed requires a Premium Archive subscription."
+msgstr "ウェブフィードにはプレミアムアーカイブの購読が必要です。"
+
+msgid "Web Feeds"
+msgstr "ウェブフィード"
+
+msgid "Web Feeds (Any Website)"
+msgstr "ウェブフィード（あらゆるウェブサイト）"
+
+msgid "Web Feeds - NewsBlur"
+msgstr "ウェブフィード - NewsBlur"
+
+msgid "Web Feeds from any website, even without RSS"
+msgstr "RSSがなくても、あらゆるウェブサイトからウェブフィードを作成"
+
+msgid ""
+"Web Feeds require a Premium Archive ($99/year) or Premium Pro ($29/month) subscription. Page-scraping is "
+"more resource-intensive than RSS fetching, so it's reserved for paid tiers."
+msgstr "ウェブフィードを利用するには、プレミアムアーカイブ（年99ドル）またはプレミアム Pro（月29ドル）の購読が必要です。ページのスクレイピングはRSSの取得より多くのリソースを必要とするため、有料プラン限定です。"
+
+msgid "Web feed creation showing a page being converted to a feed"
+msgstr "ウェブフィードの作成：ページをフィードに変換中"
+
+msgid "Web feed creation showing page conversion"
+msgstr "ページ変換を表示するウェブフィード作成"
+
+msgid "Web only"
+msgstr "ウェブのみ"
+
+msgid "Web page monitoring (Pro)"
+msgstr "ウェブページ監視（Pro）"
+
+msgid "Welcome to your premium trial!"
+msgstr "プレミアムトライアルへようこそ！"
+
+msgid "What can an AI agent do with my NewsBlur?"
+msgstr "AIエージェントはNewsBlurで何ができますか？"
+
+msgid "What does 5-15 minute fetching mean?"
+msgstr "5〜15分ごとの取得とは何ですか？"
+
+msgid "What happens if I cancel?"
+msgstr "解約するとどうなりますか？"
+
+msgid "What happens if I downgrade from Archive?"
+msgstr "アーカイブプランからダウングレードするとどうなりますか？"
+
+msgid "What happens if I downgrade?"
+msgstr "ダウングレードするとどうなりますか？"
+
+msgid "What happens to my data if I downgrade?"
+msgstr "ダウングレードすると、データはどうなりますか？"
+
+msgid "What is MCP?"
+msgstr "MCPとは？"
+
+msgid "What is the Daily Briefing?"
+msgstr "デイリーブリーフィングとは？"
+
+msgid "What makes NewsBlur different"
+msgstr "NewsBlurの特徴"
+
+msgid "What makes Premium Pro worth $29/month?"
+msgstr "プレミアム Proが月額29ドルに見合う理由は？"
+
+msgid "What payment methods do you accept?"
+msgstr "どのような支払い方法に対応していますか？"
+
+msgid "What plan do I need for search?"
+msgstr "検索にはどのプランが必要ですか？"
+
+msgid "What plan do I need?"
+msgstr "どのプランが必要ですか？"
+
+msgid "What sites can I follow with Web Feeds?"
+msgstr "ウェブフィードではどのサイトをフォローできますか？"
+
+msgid "What you get with Premium"
+msgstr "プレミアムで利用できる機能"
+
+msgid "What your agent can do"
+msgstr "エージェントにできること"
+
+msgid "What's New"
+msgstr "新着情報"
+
+msgid "What's new:"
+msgstr "新着情報："
+
+msgid "What's the difference between CLI and MCP?"
+msgstr "CLIとMCPの違いは何ですか？"
+
+msgid ""
+"When Google announced the shutdown of Google Reader in March 2013, millions of people scrambled for an "
+"alternative. NewsBlur was one of the top destinations for that migration. The servers were overwhelmed for "
+"weeks as new users flooded in. That moment proved something important: people care deeply about RSS, and "
+"they need a reader they can count on."
+msgstr ""
+"2013年3月、GoogleがGoogle "
+"Readerの終了を発表すると、何百万人もの人々が代替サービスを探し始めました。NewsBlurは移行先として人気を集めました。新しいユーザーが殺到し、サーバーは数週間にわたって過負荷状態になりました。この出来事は大切なことを証明しました。人々はRSSを深く大切にしており、信頼できるリーダーを必要としているのです。"
+
+msgid "When a feed updates, NewsBlur checks for duplicate stories across all your subscriptions"
+msgstr "フィードが更新されると、NewsBlurは登録済みのすべてのフィードを対象に重複記事をチェックします"
+
+msgid ""
+"When feeds only include summaries, Text view fetches the full article from the source. Clean formatting, no"
+" clutter."
+msgstr "フィードに概要しか含まれていない場合、テキスト表示では配信元から記事全文を取得します。すっきりと読みやすい表示です。"
+
+msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
+msgstr "複数のフィードに同じ記事が掲載されている場合、NewsBlurはそれらをまとめて表示するため、記事は一度だけ表示されます。"
+
+msgid ""
+"When multiple feeds cover the same story, NewsBlur groups them together so you only see it once. Semantic "
+"duplicate detection uses fuzzy title matching to catch stories that are similar but not identical. Read the"
+" version you prefer and skip the rest."
+msgstr "複数のフィードが同じ記事を取り上げている場合、NewsBlurはそれらをまとめ、記事が重複して表示されないようにします。意味的な重複検出では、タイトルをあいまい照合して、完全には一致しない類似記事も見つけます。お好みのバージョンを読み、残りはスキップできます。"
+
+msgid ""
+"When multiple feeds cover the same story, they're grouped together. Read your preferred version and skip "
+"duplicates."
+msgstr "複数のフィードで同じ記事が配信されると、ひとつにまとめられます。お好みのバージョンを読んで、重複をスキップできます。"
+
+msgid ""
+"When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
+"is kept forever."
+msgstr "フィードを購読すると、NewsBlurは利用可能な過去の記事をすべて取得します。今後の記事もすべて永久に保存されます。"
+
+msgid "When you subscribe to a new feed, its history is back-filled"
+msgstr "新しいフィードを購読すると、過去の記事も遡って取得されます"
+
+msgid ""
+"Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
+" makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
+"NewsBlur also supports exporting your subscriptions at any time, so you're never locked in."
+msgstr ""
+"Google "
+"Readerの古いOPMLエクスポートから移行する場合も、別のRSSリーダーから移行する場合も、新たに始める場合も、NewsBlurなら簡単に準備できます。OPMLファイルをインポートすると、すべてのフィードとフォルダーがすぐに表示されます。NewsBlurではいつでも登録内容をエクスポートできるため、サービスに縛られることはありません。"
+
+msgid "Which AI models are available?"
+msgstr "利用できるAIモデルは？"
+
+msgid "Whitney"
+msgstr "Whitney"
+
+msgid "Whoopsy-daisy, wrong password. Try again."
+msgstr "おっと、パスワードが違います。もう一度お試しください。"
+
+msgid "Why is Pro monthly instead of yearly?"
+msgstr "Proはなぜ年額ではなく月額なのですか？"
+
+msgid "Widely Read Stories"
+msgstr "よく読まれている記事"
+
+msgid "Widely-read, long reads, good reads"
+msgstr "よく読まれている記事、長文記事、おすすめ記事"
+
+msgid "Works Everywhere"
+msgstr "どこでも使えます"
+
+msgid "Works with social media profiles, job boards, product pages, and more"
+msgstr "ソーシャルメディアのプロフィール、求人サイト、商品ページなどで利用できます"
+
+msgid ""
+"Write natural language prompts to filter stories by content or images. Natural language classifiers score "
+"stories just like the intelligence trainer, with usage-based billing."
+msgstr "自然言語のプロンプトを作成して、内容や画像で記事をフィルタリングできます。自然言語分類器は、インテリジェンストレーナーと同様に記事をスコアリングし、利用量に応じて課金されます。"
+
+msgid ""
+"Write regex patterns that match against titles, body text, and URLs. Precise, powerful filtering for "
+"professionals."
+msgstr "タイトル、本文、URLに一致する正規表現パターンを作成できます。プロ向けの精密で強力なフィルタリングです。"
+
+msgid "Writer"
+msgstr "ライター"
+
+msgid "XL"
+msgstr "XL"
+
+msgid "XS"
+msgstr "XS"
+
+msgid ""
+"Yes! Basic intelligence training on authors, tags, and title keywords is free. Full-text training on story "
+"content requires Premium Archive."
+msgstr "はい！著者、タグ、タイトル内のキーワードに関する基本的な学習は無料です。記事本文の全文学習にはプレミアムアーカイブが必要です。"
+
+msgid "Yes, Ask AI works on any story in your feeds, including archived stories."
+msgstr "はい。「AIに質問」は、アーカイブ済みの記事を含め、フィード内のすべての記事で利用できます。"
+
+msgid "Yes, Premium Archive includes all Premium features plus the archive, AI, and advanced training features."
+msgstr "はい。プレミアムアーカイブには、すべてのプレミアム機能に加えて、アーカイブ、AI、高度な学習機能が含まれます。"
+
+msgid ""
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
+"support."
+msgstr "はい。プレミアム Proには、プレミアムとアーカイブの全機能に加え、リアルタイム取得、正規表現、優先サポートが含まれます。"
+
+msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
+msgstr "はい。すべてのインテリジェンス学習機能は、通常のフィードと同様にニュースレターでも使えます。"
+
+msgid "Yes, both apps are open source and actively developed on GitHub."
+msgstr "はい、両方のアプリはオープンソースで、GitHubで積極的に開発されています。"
+
+msgid ""
+"Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
+"web."
+msgstr "iOSアプリもAndroidアプリも無料です。アプリのプレミアム機能は、ウェブでのご契約内容に対応しています。"
+
+msgid "Yes, email newsletters are a free feature."
+msgstr "はい、メールニュースレターは無料機能です。"
+
+msgid "Yes, every NewsBlur account has a unique email address for receiving newsletters."
+msgstr "はい。すべてのNewsBlurアカウントには、ニュースレターを受信するための専用メールアドレスがあります。"
+
+msgid "Yes, every archived story is fully searchable with Elasticsearch."
+msgstr "はい。アーカイブされたすべての記事はElasticsearchで完全に検索できます。"
+
+msgid "Yes, it can transcribe audio and video content and then answer questions about it."
+msgstr "はい。音声や動画の内容を文字起こしし、それについての質問に回答できます。"
+
+msgid "Yes, save any search as a feed to get ongoing results."
+msgstr "はい。検索をフィードとして保存すれば、継続的に結果を取得できます。"
+
+msgid "Yes, saved stories and their tags are fully indexed by search."
+msgstr "はい。保存した記事とそのタグは、すべて検索用にインデックス化されます。"
+
+msgid "Yes, saved stories and their tags are fully searchable."
+msgstr "はい、保存した記事とそのタグはすべて検索できます。"
+
+msgid "Yes, you can switch to Premium Archive or Premium at any time."
+msgstr "はい。プレミアムアーカイブまたはプレミアムにはいつでも切り替えられます。"
+
+msgid "Yes, you can upgrade at any time. Your Premium subscription will be prorated."
+msgstr "はい、いつでもアップグレードできます。プレミアムの料金は日割りで調整されます。"
+
+msgid ""
+"Yes. Every new account starts with a free 30-day premium trial. No credit card required. You get full "
+"access to all premium features during the trial."
+msgstr "はい。新規アカウントにはすべて、30日間のプレミアム無料トライアルが付いています。クレジットカードは不要です。トライアル期間中は、すべてのプレミアム機能を利用できます。"
+
+msgid ""
+"Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader, share the link, "
+"or pipe it into IFTTT or Zapier."
+msgstr "はい。各タグ専用のRSSフィードが生成されるため、別のリーダーで購読したり、リンクを共有したり、IFTTTやZapierに連携したりできます。"
+
+msgid ""
+"Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, "
+"and training sync across every app."
+msgstr "はい。Reeder、ReadKit、Unread、NetNewsWireなどと完全に同期できます。既読状態、保存した記事、学習データがすべてのアプリ間で同期されます。"
+
+msgid ""
+"Yes. NewsBlur is fully open source and can be self-hosted with a single Docker command. Visit the <a "
+"href=\"https://github.com/samuelclay/NewsBlur\" class=\"NB-splash-link\">GitHub repository</a> for "
+"instructions."
+msgstr ""
+"はい。NewsBlurは完全なオープンソースで、Dockerコマンド1つでセルフホストできます。手順は<a href=\"https://github.com/samuelclay/NewsBlur\" class"
+"=\"NB-splash-link\">GitHubリポジトリ</a>をご覧ください。"
+
+msgid ""
+"Yes. NewsBlur supports OPML import, so you can bring your feeds from Google Reader, Feedly, Inoreader, or "
+"any other RSS reader."
+msgstr "はい。NewsBlurはOPMLのインポートに対応しているため、Google Reader、Feedly、Inoreader、その他のRSSリーダーからフィードを移行できます。"
+
+#, python-format
+msgid ""
+"Yes. Pass <code>%(server_flag)s</code> to any command, or set the <code>%(variable)s</code> environment "
+"variable."
+msgstr "はい。任意のコマンドに<code>%(server_flag)s</code>を渡すか、環境変数<code>%(variable)s</code>を設定してください。"
+
+msgid ""
+"Yes. Stories are cached locally and the iOS app uses background refresh to stay up to date even when you're"
+" not using it."
+msgstr "はい。記事は端末にキャッシュされ、iOSアプリはバックグラウンド更新を使って、アプリを使っていないときも最新の状態を保ちます。"
+
+msgid ""
+"Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with "
+"Google Reader exports, Feedly, Inoreader, and more."
+msgstr "はい。OPMLファイルをアップロードすると、NewsBlurが購読フィードとフォルダーを数秒でインポートします。Google Readerのエクスポート、Feedly、Inoreaderなどに対応しています。"
+
+msgid ""
+"Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
+"even when sites don't offer RSS."
+msgstr "はい。ウェブフィードはページのHTMLを監視して変更を検出し、RSSは構造化されたフィードファイルを読み込みます。サイトがRSSを提供していなくても、ウェブフィードなら利用できます。"
+
+#, python-format
+msgid "Yesterday, %(date)s %(time)s"
+msgstr "昨日、%(date)s %(time)s"
+
+#, python-format
+msgid "Yesterday, %(time)s"
+msgstr "昨日、%(time)s"
+
+msgid ""
+"You are at the front of the line! Just a few more minutes<br />until you receive your free invite to use "
+"NewsBlur."
+msgstr "列の先頭です！あと数分で、<br />NewsBlurを利用するための無料招待が届きます。"
+
+#, python-format
+msgid ""
+"You are not required to use OAuth, in which case you will need to pass the <code>%(cookie_name)s</code> "
+"cookie with every request. This cookie is set on <a href=\"#/api/login\">login</a>."
+msgstr ""
+"OAuth の使用は必須ではありません。使用しない場合は、すべてのリクエストで <code>%(cookie_name)s</code> Cookie を送信する必要があります。この Cookie は<a "
+"href=\"#/api/login\">ログイン</a>時に設定されます。"
+
+msgid "You are not subscribed to this feed"
+msgstr "このフィードを購読していません"
+
+msgid "You can train per-feed, per-folder (Archive), or globally (Archive). Per-feed training is free."
+msgstr "フィードごと、フォルダーごと（アーカイブ）、または全体（アーカイブ）で学習できます。フィードごとの学習は無料です。"
+
+msgid "You cannot favorite your own shared story comment."
+msgstr "自分が共有した記事へのコメントに「お気に入り」は付けられません。"
+
+msgid "You cannot share newsletters. Somebody could unsubscribe you!"
+msgstr "ニュースレターは共有できません。誰かに購読解除される可能性があります！"
+
+msgid "You decide what to focus and hide"
+msgstr "注目する内容と非表示にする内容を自分で決められます"
+
+#, python-format
+msgid ""
+"You favorited <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>'s comments on <span class=\"NB-interaction-sharedstory-title "
+"NB-splash-link\">%(title)s</span>:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>さんの<span class=\"NB-interaction-sharedstory-title NB-splash-"
+"link\">%(title)s</span>へのコメントをお気に入りに追加しました:"
+
+#, python-format
+msgid ""
+"You followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>."
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>をフォローしました。"
+
+msgid "You have a lot of subscriptions! We're preparing your OPML export file now."
+msgstr "購読数が多いため、OPMLエクスポートファイルを準備しています。"
+
+msgid ""
+"You may use the API commercially, by which we mean you may charge people money to use your project which "
+"itself uses the API. You may not, however, sell advertising against any data retrieved from NewsBlur's API."
+" Essentially, you can charge money for your application or service, but not wrap NewsBlur in "
+"advertisements."
+msgstr "APIは商用利用できます。つまり、APIを使用するプロジェクトの利用料金をユーザーに請求できます。ただし、NewsBlurのAPIから取得したデータに広告を掲載して販売することはできません。基本的に、アプリケーションやサービスの利用料金を請求することはできますが、NewsBlurを広告で包み込むことはできません。"
+
+#, python-format
+msgid ""
+"You replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>:"
+msgstr ""
+"<span class=\"NB-interaction-username NB-splash-link\" data-user-"
+"id=\"%(user_id)s\">%(other_username)s</span>に返信しました："
+
+#, python-format
+msgid "You saved \"<span class=\"NB-interaction-starred-story-title NB-splash-link\">%(title)s</span>\"."
+msgstr "「<span class=\"NB-interaction-starred-story-title NB-splash-link\">%(title)s</span>」を保存しました。"
+
+#, python-format
+msgid "You shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
+msgstr "<span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>を共有しました。"
+
+#, python-format
+msgid "You shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>:"
+msgstr "<span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>を共有しました："
+
+msgid "You signed up for NewsBlur."
+msgstr "NewsBlurに登録しました。"
+
+#, python-format
+msgid "You subscribed to <span class=\"NB-interaction-feed-title NB-splash-link\">%(feed_title)s</span>."
+msgstr "<span class=\"NB-interaction-feed-title NB-splash-link\">%(feed_title)s</span>を購読しました。"
+
+msgid "You train the reader, not the other way around"
+msgstr "リーダーに合わせるのではなく、リーダーをあなた好みに学習させましょう"
+
+msgid "You will no longer receive any emails from NewsBlur."
+msgstr "今後、NewsBlurからメールが届くことはありません。"
+
+msgid "You will no longer receive email notifications for this story."
+msgstr "この記事に関するメール通知は今後届かなくなります。"
+
+#, python-format
+msgid "You will not be charged until %(date)s"
+msgstr "%(date)s までは請求されません"
+
+msgid "You will receive an email shortly with your subscription backup attached."
+msgstr "まもなく、購読フィードのバックアップを添付したメールが届きます。"
+
+msgid "You're in control, not an algorithm"
+msgstr "アルゴリズムではなく、自分で操作できます"
+
+msgid "You've been gifted a premium subscription! Sign up to claim it."
+msgstr "プレミアム購読をプレゼントされました！登録して受け取りましょう。"
+
+msgid "YouTube search request failed."
+msgstr "YouTubeの検索リクエストに失敗しました。"
+
+msgid "Your Gift is Ready!"
+msgstr "ギフトの準備ができました！"
+
+msgid "Your OPML export is being processed"
+msgstr "OPMLのエクスポートを処理しています"
+
+msgid "Your OPML export is being processed. You will receive an email shortly with your subscription backup."
+msgstr "OPMLのエクスポートを処理中です。購読フィードのバックアップを記載したメールをまもなくお送りします。"
+
+msgid "Your account"
+msgstr "アカウント"
+
+msgid ""
+"Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
+"data is deleted. Upgrade again anytime and everything is restored."
+msgstr "アカウントは無料プランに戻ります。すべてのフィード（最大64件）、学習設定、保存した記事はそのまま保持されます。データは削除されません。いつでも再アップグレードすれば、すべて元に戻ります。"
+
+msgid "Your applications"
+msgstr "アプリケーション"
+
+msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
+msgstr "アーカイブ済みの記事は引き続き閲覧できますが、新しい記事には標準の保存期間が適用されます。"
+
+msgid "Your archived stories remain accessible, but new stories will start following the standard retention policy."
+msgstr "アーカイブ済みの記事には引き続きアクセスできますが、新しい記事には標準の保存期間が適用されます。"
+
+msgid ""
+"Your complete news archive with AI-powered intelligence. 4,096 sites, full story archive, Ask AI, and daily"
+" briefing."
+msgstr "AIを活用したインテリジェンス機能を備えた、完全なニュースアーカイブ。4,096件のサイト、記事全文アーカイブ、AIへの質問、毎日のブリーフィング。"
+
+msgid "Your email address"
+msgstr "メールアドレス"
+
+msgid ""
+"Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
+" appear in search results but will be available again if you re-upgrade. If you exceed the feed limit of a "
+"lower tier, you'll be asked to mute some feeds."
+msgstr "フィードや保存した記事が削除されることはありません。アーカイブプランからダウングレードすると、古い記事は検索結果に表示されなくなりますが、再度アップグレードすれば利用できます。下位プランのフィード数上限を超えた場合、一部のフィードをミュートするよう求められます。"
+
+msgid "Your gift code is invalid. Check it for errors."
+msgstr "ギフトコードが無効です。入力に誤りがないか確認してください。"
+
+msgid "Your gift code should be 12 characters long."
+msgstr "ギフトコードは12文字で入力してください。"
+
+msgid "Your inbox stays clean"
+msgstr "受信トレイをすっきり保てます"
+
+msgid "Your new password"
+msgstr "新しいパスワード"
+
+msgid "Your old password is incorrect."
+msgstr "現在のパスワードが正しくありません。"
+
+msgid "Your password doesn't match."
+msgstr "パスワードが一致しません。"
+
+msgid "Your payment is being processed. Your gift link will be available shortly."
+msgstr "お支払いを処理しています。ギフトリンクはまもなくご利用いただけます。"
+
+#, python-format
+msgid "Your premium trial has <strong class=\"NB-trial-days\">%(days)s day</strong> remaining"
+msgid_plural "Your premium trial has <strong class=\"NB-trial-days\">%(days)s days</strong> remaining"
+msgstr[0] "プレミアムトライアルの残り日数：<strong class=\"NB-trial-days\">%(days)s日</strong>"
+
+msgctxt "joins the comment count and the share count"
+msgid "and"
+msgstr "と"
+
+msgctxt "between a date and a time"
+msgid "at"
+msgstr "の"
+
+#, python-format
+msgid "by %(authors)s"
+msgstr "著者：%(authors)s"
+
+msgid "classifier_type and classifier_value are required"
+msgstr "classifier_type と classifier_value は必須です"
+
+msgid "dashboard_rivers must be a list"
+msgstr "dashboard_rivers はリストである必要があります"
+
+msgctxt "button to edit a comment"
+msgid "edit"
+msgstr "編集"
+
+msgid "email address"
+msgstr "メールアドレス"
+
+msgid "feed_id is required"
+msgstr "feed_idは必須です"
+
+msgctxt "job title in a contact list"
+msgid "founder"
+msgstr "創業者"
+
+msgid "iOS & Android Apps"
+msgstr "iOS・Androidアプリ"
+
+msgid "iOS & Android apps"
+msgstr "iOS・Androidアプリ"
+
+msgid "iOS 8 is also now fully supported (as well as iOS 7)"
+msgstr "iOS 8にも完全対応しました（iOS 7にも対応）"
+
+msgid "iOS 8 is the minimum supported version for this release."
+msgstr "このリリースの対応最低バージョンはiOS 8です。"
+
+msgid "iOS 9-ified"
+msgstr "iOS 9に対応"
+
+msgid "iOS and Android"
+msgstr "iOSとAndroid"
+
+msgid "iPhone 6 and 6 Plus are now fully supported"
+msgstr "iPhone 6および6 Plusに完全対応しました"
+
+msgid "just a second"
+msgstr "数秒"
+
+msgid "just now"
+msgstr "たった今"
+
+msgid "logout"
+msgstr "ログアウト"
+
+msgctxt "divider between social sign-in and password sign-in"
+msgid "or"
+msgstr "または"
+
+msgid "password"
+msgstr "パスワード"
+
+msgid "pebble watch, philips hue, alexa"
+msgstr "Pebbleウォッチ、Philips Hue、Alexa"
+
+msgctxt "button to reply to a comment"
+msgid "reply"
+msgstr "返信"
+
+msgid "river_order must be an integer"
+msgstr "river_orderは整数である必要があります"
+
+msgid "river_order must be non-negative"
+msgstr "river_order は 0 以上である必要があります"
+
+msgctxt "abbreviation for seconds"
+msgid "sec"
+msgstr "秒"
+
+msgid "username"
+msgstr "ユーザー名"
+
+msgctxt "versus, comparing NewsBlur with another reader"
+msgid "vs"
+msgstr "対"
+
+msgid "vs Feedbin"
+msgstr "Feedbinとの比較"
+
+msgid "vs Feedly"
+msgstr "Feedlyとの比較"
+
+msgid "vs Inoreader"
+msgstr "Inoreaderとの比較"
+
+msgid "vs Old Reader"
+msgstr "Old Readerとの比較"
+
+msgid "vs Readwise"
+msgstr "Readwiseとの比較"
+
+msgid "vs. Other Readers"
+msgstr "他のリーダーとの比較"
+

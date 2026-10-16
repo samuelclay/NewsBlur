@@ -18,9 +18,9 @@ class StoryThumbnailView
     ) : AppCompatImageView(context, attrs, defStyleAttr) {
         private var expandedWidth: Int = 0
         private var expandedHeight: Int = 0
-        private var expandedLeftMargin: Int = 0
+        private var expandedStartMargin: Int = 0
         private var expandedTopMargin: Int = 0
-        private var expandedRightMargin: Int = 0
+        private var expandedEndMargin: Int = 0
         private var expandedBottomMargin: Int = 0
 
         init {
@@ -31,22 +31,22 @@ class StoryThumbnailView
         fun setExpandedLayout(
             width: Int,
             height: Int,
-            leftMargin: Int,
+            startMargin: Int,
             topMargin: Int,
-            rightMargin: Int,
+            endMargin: Int,
             bottomMargin: Int,
         ) {
             expandedWidth = width
             expandedHeight = height
-            expandedLeftMargin = leftMargin
+            expandedStartMargin = startMargin
             expandedTopMargin = topMargin
-            expandedRightMargin = rightMargin
+            expandedEndMargin = endMargin
             expandedBottomMargin = bottomMargin
             if (visibility == VISIBLE) {
                 (layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
                     params.width = width
                     params.height = height
-                    params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin)
+                    setRelativeMargins(params, startMargin, topMargin, endMargin, bottomMargin)
                     layoutParams = params
                     refreshHierarchy()
                 }
@@ -66,22 +66,17 @@ class StoryThumbnailView
                 if (visibility == VISIBLE) {
                     if (expandedWidth != 0) params.width = expandedWidth
                     if (expandedHeight != 0) params.height = expandedHeight
-                    params.setMargins(
-                        expandedLeftMargin,
-                        expandedTopMargin,
-                        expandedRightMargin,
-                        expandedBottomMargin,
-                    )
+                    setRelativeMargins(params, expandedStartMargin, expandedTopMargin, expandedEndMargin, expandedBottomMargin)
                 } else {
                     if (params.width != 0) expandedWidth = params.width
                     if (params.height != 0) expandedHeight = params.height
-                    expandedLeftMargin = params.leftMargin
+                    expandedStartMargin = params.marginStart
                     expandedTopMargin = params.topMargin
-                    expandedRightMargin = params.rightMargin
+                    expandedEndMargin = params.marginEnd
                     expandedBottomMargin = params.bottomMargin
                     params.width = 0
                     params.height = 0
-                    params.setMargins(0, 0, 0, 0)
+                    setRelativeMargins(params, 0, 0, 0, 0)
                 }
                 layoutParams = params
             }
@@ -92,6 +87,20 @@ class StoryThumbnailView
         override fun setImageBitmap(bm: Bitmap?) {
             super.setImageBitmap(bm)
             refreshHierarchy()
+        }
+
+        // StoryThumbnailView.kt keeps start and end margins, so the row mirrors in right-to-left languages.
+        private fun setRelativeMargins(
+            params: ViewGroup.MarginLayoutParams,
+            start: Int,
+            top: Int,
+            end: Int,
+            bottom: Int,
+        ) {
+            params.marginStart = start
+            params.topMargin = top
+            params.marginEnd = end
+            params.bottomMargin = bottom
         }
 
         private fun refreshHierarchy() {

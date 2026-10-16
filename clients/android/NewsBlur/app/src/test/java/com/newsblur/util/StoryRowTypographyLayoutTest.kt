@@ -37,7 +37,7 @@ class StoryRowTypographyLayoutTest {
         assertEquals("@id/story_item_title", views.getValue("story_item_content").getAttribute("android:layout_below"))
         val metadata = views.getValue("story_item_metadata")
         assertEquals("@id/story_item_content", metadata.getAttribute("android:layout_below"))
-        assertEquals("@id/story_item_thumbnail_right", metadata.getAttribute("android:layout_toLeftOf"))
+        assertEquals("@id/story_item_thumbnail_right", metadata.getAttribute("android:layout_toStartOf"))
         assertEquals("horizontal", metadata.getAttribute("android:orientation"))
         for (id in listOf("story_item_date", "story_item_author")) {
             val view = views.getValue(id)

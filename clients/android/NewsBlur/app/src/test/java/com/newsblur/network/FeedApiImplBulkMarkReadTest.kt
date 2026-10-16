@@ -45,6 +45,7 @@ class FeedApiImplBulkMarkReadTest {
                 OkHttpClient
                     .Builder()
                     .addInterceptor { chain ->
+                        assertEquals("en", chain.request().header("Accept-Language"))
                         readTimeouts += chain.readTimeoutMillis()
                         requestBodies += chain.request().body!!.utf8()
                         val attempt = attempts.incrementAndGet()
@@ -129,6 +130,7 @@ class FeedApiImplBulkMarkReadTest {
         every { connectivityManager.activeNetworkInfo } returns networkInfo
         val sharedPreferences = mockk<SharedPreferences>()
         every { sharedPreferences.getString(any(), any()) } returns null
+        every { sharedPreferences.getString("language", "auto") } returns "en"
         return mockk {
             every { getSystemService(Context.CONNECTIVITY_SERVICE) } returns connectivityManager
             every { getSharedPreferences(any(), any()) } returns sharedPreferences

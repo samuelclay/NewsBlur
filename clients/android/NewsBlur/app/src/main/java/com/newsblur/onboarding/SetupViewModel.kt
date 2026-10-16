@@ -3,15 +3,18 @@ package com.newsblur.onboarding
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import com.google.mlkit.nl.languageid.LanguageIdentification
+import com.newsblur.compose.LanguageChooserGate
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.discover.DiscoveryFeed
 import com.newsblur.discover.obj
 import com.newsblur.discover.objects
 import com.newsblur.discover.string
+import com.newsblur.network.UserApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -64,6 +67,8 @@ class SetupViewModel
         private val api: OnboardingApi,
         val queue: SetupQueue,
         private val db: BlurDatabaseHelper,
+        private val userApi: UserApi,
+        private val savedState: SavedStateHandle,
     ) : ViewModel() {
         private val mutable = MutableStateFlow(SetupState())
         val state = mutable.asStateFlow()
@@ -82,6 +87,15 @@ class SetupViewModel
         private val candidateTasks = mutableMapOf<String, Job>()
         private var searchJob: Job? = null
         private val language = LanguageIdentification.getClient()
+
+        // SetupViewModel.kt opens first-run setup on the language page (SetupLanguageStep.kt). Both flags live in the
+        // saved state, so the activity recreation a new language causes resumes on the next page.
+        val hasLanguageStep: Boolean =
+            savedState[HAS_LANGUAGE_STEP]
+                ?: LanguageChooserGate
+                    .setupStep(context, savedState["initial_setup"] ?: false)
+                    .also { savedState[HAS_LANGUAGE_STEP] = it }
+        val languageStep = savedState.getStateFlow(LANGUAGE_STEP, hasLanguageStep)
 
         init {
             queue.bind(account)
@@ -475,7 +489,23 @@ class SetupViewModel
             queue.import(uri)
         }
 
+        /** Keeps Automatic and moves on to the next setup page. */
+        fun keepLanguage() {
+            savedState[LANGUAGE_STEP] = false
+        }
+
+        /** Advances before saving, because the new language recreates the activity right away. */
+        fun chooseLanguage(code: String) {
+            keepLanguage()
+            LanguageChooserGate.save(context, userApi, code)
+        }
+
         override fun onCleared() {
             language.close()
+        }
+
+        private companion object {
+            const val HAS_LANGUAGE_STEP = "has_language_step"
+            const val LANGUAGE_STEP = "language_step"
         }
     }

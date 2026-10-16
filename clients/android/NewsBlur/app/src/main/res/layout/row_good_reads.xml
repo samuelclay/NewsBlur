@@ -8,10 +8,10 @@
         android:id="@+id/row_everything_icon"
         android:layout_width="19dp"
         android:layout_height="19dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/ic_good_reads" />
 
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_everything_icon"
+        android:layout_toEndOf="@id/row_everything_icon"
         android:letterSpacing="@dimen/extra_letter_spacing"
         android:text="@string/good_reads_title" />
 

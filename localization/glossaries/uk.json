@@ -1,0 +1,364 @@
+{
+  "language": "uk",
+  "register": "Polite ви, lowercase inside sentences (ви, ваш, вас, вам): the catalog uses it in ~190 strings, never capitalizes it mid-sentence and never uses ти. Buttons and menu items use the infinitive (Зберегти, Додати сайт, Позначити як прочитане); instructions and hints use the ви imperative (Виберіть, Натисніть, Перейдіть); confirmation titles use the infinitive question (Видалити папку?). The user's own past actions use the ви plural past (Ви поділилися, Ви підписалися), which is gender neutral; other users' actions in activity lists use the present tense or a noun construction (%1$s поширює %2$s, %1$s відповідає на ваш коментар), never hedges like вподобав(-ла). After «відповідає» a bare inserted username cannot carry the dative, so write «%1$s відповідає користувачу %2$s» (the Android/iOS/web activity strings all do).",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "стаття (стаття, статті, статей; Наступна стаття, Збережені статті; counts 1 стаття / 2–4 статті / 5+ статей; 21 стаття)",
+      "avoid": [
+        "історія (calque; reads as history)",
+        "публікація (collides with sharing/publishing)",
+        "сюжет"
+      ],
+      "note": "Catalog: стаття ~720, історія ~185, матеріал ~90, новина ~90, публікація ~65, запис ~55, допис ~30. Drift is low terminology; medium when the word changes meaning (bare «Історія», «URL історії», «Параметри історії» read as history; «публікація» read as the act of sharing). Історія stays where the English says history (reading history, Hide history). Fix agreement whenever the noun changes gender (стаття/історія/новина/публікація feminine; матеріал/запис/допис masculine). Also avoid where it means this concept: матеріал, запис, новина, допис."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "сайт",
+      "avoid": [
+        "джерело (for a subscribed site)"
+      ],
+      "note": "Consistent. Also avoid where it means this concept: ресурс."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "стрічка (стрічка, стрічки, стрічок; Додати стрічку, RSS-стрічка, вебстрічка)",
+      "avoid": [
+        "канал (for a feed; канал stays for YouTube channels)",
+        "фід"
+      ],
+      "note": "Consistent (~540). Вебканал → low."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "папка",
+      "avoid": [
+        "тека (low; catalog has 2–3)"
+      ],
+      "note": "Consistent apart from a few теки."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "непрочитані (agreeing: непрочитана стаття, непрочитані статті); slider/filter labels Усі / Непрочитані / Фокус",
+      "avoid": [],
+      "note": "Непрочитане (neuter collective) is acceptable as a bare label; do not churn."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Позначити як прочитане / прочитані; the Read Stories folder → Прочитані статті",
+      "avoid": [
+        "Читати статті / Прочитати статті (imperative) for the Read Stories folder"
+      ],
+      "note": "Imperative for the folder is high severity. Siri/Handoff \"Read …\" titles open a feed → Читати …, never Позначити … як прочитане. Позначити прочитаним vs позначити як прочитане: do not churn."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "Зберегти; Saved Stories → Збережені статті; Saved (feedback) → Збережено; Unsave → Скасувати збереження / Прибрати зі збережених",
+      "avoid": [
+        "збережені статті for the offline cache (use завантажені / кеш)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "Поділитися; Shared (state) → Поширено; Shared stories → Поширені статті; Share story → Поділитися статтею; Unshare / Delete share → Скасувати поширення / Видалити поширення",
+      "avoid": [
+        "Спільні статті (reads as common/joint; low)",
+        "Публікацію поширено (story term)"
+      ],
+      "note": "Поширити/поширення is the catalog's noun/verb family for a share; keep it."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (Latin product name, not declined: у своєму Blurblog, налаштування Blurblog); the plural optgroup/folder label «Blurblogs» keeps the English plural",
+      "avoid": [
+        "Блогблюри",
+        "блурблог / блерблог / бларґ (transliterations)",
+        "блог blurblog (redundant)",
+        "блог-дайджест"
+      ],
+      "note": "Transliterations and garbled forms are medium terminology; the redundant блог Blurblog is low. Lowercase blurblog inside Ukrainian text → Blurblog (low, only when the string is already flagged)."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Intelligence Trainer → Тренер інтелектуальних фільтрів; intelligence training → навчання інтелектуальних фільтрів; Train → Навчити; training → навчання; trained → навчений; Train this story → Навчити на цій статті; Train this site → Навчити на цьому сайті; story/site trainer → навчання за статтею / за сайтом",
+      "avoid": [
+        "тренажер (exercise machine, medium)",
+        "Навчити цей сайт (teach the site, medium)",
+        "Тренер інтелекту / Навчити інтелект (train the intellect, low)",
+        "Навчайтеся на статтях (the user learning)"
+      ],
+      "note": "Do not churn навчання wording when it is clear."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Фокус (slider/filter label and mode name: режим «Фокус»); Focus stories → статті у фокусі; Focus only → Лише у фокусі; verb (training: focus or hide) → виділяти / виділити",
+      "avoid": [
+        "вибране / вибрані (reads as favorites/saved; medium)",
+        "важливі (for the Focus filter; low)",
+        "фокусування",
+        "Зосередитися на новинах (imperative-like verb for a label; medium)"
+      ],
+      "note": "Catalog: фокус 18, вибране 7, важлив 4."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Подобається; Dislike → Не подобається; Super dislike → Дуже не подобається; inserted trainer words like → подобається, dislike → не подобається",
+      "avoid": [
+        "Категорично не подобається (low; Android key also uses Дуже)",
+        "вподобайка / дизлайк for the button names"
+      ],
+      "note": "beats (trainer separator between two chips) → переважає (Android «переважає», iOS «ПЕРЕВАЖАЄ»); web «beats any» → «переважає будь-яке». Bare «сильніше» needs «за» and does not read as a separator; «переважає» also matches «Одне «Дуже не подобається» переважає все». Android «удари» and iOS «БІТИ» were high. (like wins) → («Подобається» важливіше)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "Приховати / приховані",
+      "avoid": [],
+      "note": "Сховати is also fine; do not churn."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "класифікатор",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro stay in Latin script (підписка Premium Archive, план Archive, Перейти на Premium Archive)",
+      "avoid": [
+        "Преміум-архів / Архів Premium / Архів (as the plan name; medium)",
+        "Преміум (Cyrillic plan name; low)",
+        "Перейти на Архів"
+      ],
+      "note": "Generic compounds like преміум-функція / преміум-підписка are acceptable and not churned (but fix unhyphenated преміумфункція/преміумпідписка when the string is flagged anyway; low typography)."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Перейти на … (Перейти на Premium Archive); bare Upgrade button → Перейти на вищий план / Оновити план; Upgrade from Premium/Archive (subtitle on a higher plan's purchase button) → Перехід із Premium на цей план / Перехід з Archive на цей план",
+      "avoid": [
+        "Перейти з Premium (reads as leaving Premium; high)",
+        "Оновити (reads as software update/refresh for a bare Upgrade; medium)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Налаштування on web, iOS and Android (Preferences and Settings both); OS words: Скасувати, Готово, Видалити, Поділитися, OK",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Підписатися; Subscribed → Ви підписані (state) / Підписку оформлено (feedback); subscription → підписка; subscribers → підписники; Unsubscribe → Відписатися / Скасувати підписку",
+      "avoid": [
+        "абонент (low)",
+        "передплатник (low, fine only for paid plans)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Follow → Стежити; Unfollow → Відписатися / Не стежити; Following (button state) → Ви стежите; Following (people list/count) → Стежить; Followers → Підписники; I'm Following / Following Me → Я стежу / Стежать за мною",
+      "avoid": [
+        "Підписані (ambiguous for the people list; low)",
+        "Відстеження (tracking; medium)"
+      ],
+      "note": "The two social tabs must stay distinguishable."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Mute (site/feed/folder) → Вимкнути; Unmute → Увімкнути; Muted → Вимкнено / Вимкнені сайти; Mute Sites (chooser) → Вимкнути сайти; Mute All → Вимкнути всі; Mute None → Не вимикати жодного",
+      "avoid": [
+        "Вимкнути звук / звуки / Увімкнути звук (sound; medium)",
+        "Вимкнути сповіщення (notifications are a separate feature; medium)",
+        "Зам’ютити (slang; medium)",
+        "Заглушити / приглушити (sound metaphor; low)",
+        "Ігнорувати (low; catalog has ~12, fix when flagged or in short UI labels)"
+      ],
+      "note": "NewsBlur muting deactivates the site entirely (it stops being fetched and shown), so Вимкнути/Увімкнути is accurate. Catalog: вимкн 18, ігнор 12, заглуш 8, звук 7. Muting a user (social) → Приховати користувача / Не показувати is fine. Muting a user on a profile badge: Mute → Приховати, Unmute → Показати, Muted → Приховано, Unmuted → Показано (perfective pairs; «Показувати»/«Показується» were mixed aspects)."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Потік новин",
+      "avoid": [
+        "Стрічка новин (collides with стрічка = feed; medium)",
+        "Річка новин (calque; medium)"
+      ],
+      "note": "Catalog: потік 8, стрічка новин 10, річка ~15."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Статті з усіх сайтів (stories from all sites)",
+      "avoid": [
+        "Усі статті сайту / Усі дописи сайту / Усі статті сайтів (one site; high)"
+      ],
+      "note": "Every current rendering reads as one site: high meaning."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Статті з нечасто оновлюваних сайтів (short label: Нечасто оновлювані сайти); From infrequent sites → З нечасто оновлюваних сайтів; the stories-per-month preference title → Поріг нечасто оновлюваних сайтів; its options stay «< 5 статей на місяць»",
+      "avoid": [
+        "Рідкісні статті / рідкісні історії сайту (the sites are infrequent, not the stories; rare = rare items)",
+        "Нечасті публікації сайту (one site)"
+      ],
+      "note": "Catalog's own phrase З нечасто оновлюваних сайтів is the base."
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Widely Read Stories → Популярні статті; Long Reads → Довгі статті; Good Reads → Хороші статті; Global Shared Stories → Загальнодоступні поширені статті (the Android folder title; keep it on every platform)",
+      "avoid": [
+        "Good Reads in English (untranslated; medium)",
+        "Цікаве / Гарні матеріали / хороші читання / хороші записи / Вдалі знахідки (low/medium drift)",
+        "Довгі читання (calque; low)",
+        "лонгріди (anglicism; low)",
+        "Global Shared Stories in English (medium)",
+        "Спільні матеріали з усіх сайтів / всіма доступні спільні статті (low)"
+      ],
+      "note": "Good Reads is a folder of well-liked stories, never books."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Панель керування",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Daily Briefing → Щоденний огляд; Briefing → Огляд; Morning/Afternoon/Evening Briefing → Ранковий / Денний / Вечірній огляд (Післяобідній is acceptable); Weekly → Щотижневий огляд",
+      "avoid": [
+        "зведення / дайджест / добірка (low)",
+        "Daily Briefing (English)"
+      ],
+      "note": "Catalog: огляд 75, зведення 19, дайджест 9."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Запитати ШІ (функція «Запитати ШІ»)",
+      "avoid": [
+        "Ask AI (English) inside Ukrainian text (medium untranslated)",
+        "AI for ШІ"
+      ],
+      "note": "Model names (Claude, GPT…) stay."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "тег / автор",
+      "avoid": [
+        "мітка (for a story tag; low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "розсилка",
+      "avoid": [
+        "інформаційний бюлетень (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Discover → Знайти (Знайти сайти / Знайти канали; breadcrumb «Знайти сайти»); Related Sites → Пов’язані сайти (Схожі сайти also fine)",
+      "avoid": [
+        "Відкрити (reads as Open; medium for a bare Discover label)",
+        "Огляд for a bare Discover tab (collides with Briefing → Огляд; iOS 05#114 still says it but was not flagged)"
+      ],
+      "note": "Do not churn Пов’язані vs Схожі."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Feed view → Перегляд стрічки; Text view → Текстовий режим / Текстовий вигляд; Story view → Перегляд статті; Original view → Оригінальний сайт / Оригінал",
+      "avoid": [],
+      "note": "Do not churn вигляд vs режим."
+    },
+    {
+      "concept": "web feeds",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Web Feed → вебстрічка",
+      "avoid": [
+        "вебканал (low)"
+      ],
+      "note": "Consistent."
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Story clustering → групування статей; cluster → група",
+      "avoid": [
+        "кластер / кластеризація (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "relative ages",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "Clients wrap the server units in «%(time)s тому» / «%@ тому» / «%1$s тому» and «через %(time)s»; тому and через take the accusative, so the server one forms of feminine units must be accusative: %(number)d хвилину, %(number)d секунду, %(number)d годину (день, тиждень, місяць, рік are unchanged; few/many forms are fine).",
+      "avoid": [
+        "%(number)d хвилина / секунда / година"
+      ],
+      "note": "Wrappers that need the genitive (протягом %(time)s) break the one forms; use вже %(time)s or a colon form."
+    },
+    {
+      "concept": "language names",
+      "en": "\\blanguages?\\b",
+      "use": "The language dialog inserts the native name (Українська): keep it nominative after a colon, e.g. «Використовувати мову: %(language)s», «NewsBlur визначив мову вашого браузера: %(language)s.»",
+      "avoid": [
+        "Використовувати %(language)s (→ Використовувати Українська)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "«…» quotes (also replacing Android \\\"%s\\\"), apostrophe ’ (U+2019, catalog norm, 198 vs 5), sentence case for labels and titles, em dash with spaces, 1 024 / 4 096 with a space, abbreviated units хв, год, дн., тиж., міс.",
+      "avoid": [
+        "English Title Case",
+        "\"…\" ASCII quotes around inserted names",
+        "1,024 (reads as a decimal)",
+        "ASCII ' in Ukrainian words"
+      ],
+      "note": "Do not churn хв vs хв., дн vs дн. unless sibling forms disagree."
+    },
+    {
+      "concept": "site limits",
+      "en": "\\blimits?\\b",
+      "use": "Follow up to N sites (plan bullets) → Відстежуйте до N сайтів; keep «до» (up to)",
+      "avoid": [
+        "Стежте за N сайтами / Стежте за новинами на N сайтах (loses 'up to'; medium meaning)",
+        "Стежте за 10 000 сайтів (needs the instrumental; medium grammar)"
+      ],
+      "note": "Keep the thousands space (1 024, 4 096, 10 000)."
+    }
+  ]
+}

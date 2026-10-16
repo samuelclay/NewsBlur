@@ -1,0 +1,7828 @@
+# Chinese (Traditional) translations for NewsBlur.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the NewsBlur project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: NewsBlur VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-01-01 00:00+0000\n"
+"PO-Revision-Date: 2026-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_Hant\n"
+"Language-Team: zh_Hant <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid " (%(count)s domain)"
+msgid_plural " (%(count)s domains)"
+msgstr[0] "（%(count)s 個網域）"
+
+msgid " As great as finding good stuff is, you can just as easily ignore the stories you do not like."
+msgstr " 找到好內容固然很棒，但你也可以輕鬆忽略不喜歡的文章。"
+
+msgid " Choose Premium, Archive, or Pro and check out."
+msgstr " 選擇 Premium、Archive 或 Pro，然後結帳。"
+
+msgid " Gift for free (staff)"
+msgstr " 免費贈送（員工）"
+
+msgid " One click and they have premium."
+msgstr "只要點一下，他們就能享有 Premium。"
+
+msgid " Send the gift link to anyone."
+msgstr " 將禮物連結傳送給任何人。"
+
+msgid " Sites will be ordered by popularity. Click on what you like and don't like."
+msgstr "網站將依人氣排序。點選你喜歡和不喜歡的項目。"
+
+msgid " You can easily train individual stories as you read."
+msgstr " 閱讀時也能輕鬆訓練個別文章。"
+
+msgid " You get a full refund, automatically."
+msgstr " 你會自動獲得全額退款。"
+
+#, python-format
+msgid " — \"%(first)s\" or \"%(second)s\""
+msgstr " —「%(first)s」或「%(second)s」"
+
+#, python-format
+msgid " — \"%(first)s\" or \"%(second)s\" (optional letter)"
+msgstr " — 「%(first)s」或「%(second)s」（可選字母）"
+
+#, python-format
+msgid " — \"%(first)s\" then anything then \"%(second)s\""
+msgstr " — 「%(first)s」後接任意內容，再接「%(second)s」"
+
+#, python-format
+msgid " — \"%(prefix)s\" followed by numbers (%(examples)s)"
+msgstr " — 「%(prefix)s」後接數字（%(examples)s）"
+
+msgid " — Any of these words"
+msgstr " — 這些字詞中的任一個"
+
+#, python-format
+msgid " — At least %(count)s character"
+msgid_plural " — At least %(count)s characters"
+msgstr[0] " — 至少 %(count)s 個字元"
+
+#, python-format
+msgid " — Dollar amounts (%(examples)s)"
+msgstr " — 金額（%(examples)s）"
+
+#, python-format
+msgid " — Ends with \"%(text)s\""
+msgstr " — 結尾為「%(text)s」"
+
+#, python-format
+msgid " — Exact phrase \"%(phrase)s\""
+msgstr " — 完整詞組「%(phrase)s」"
+
+#, python-format
+msgid " — Exactly %(count)s digit (years)"
+msgid_plural " — Exactly %(count)s digits (years)"
+msgstr[0] " — 必須剛好是 %(count)s 位數（年份）"
+
+#, python-format
+msgid " — Hashtags (%(examples)s)"
+msgstr " — 主題標籤（%(examples)s）"
+
+#, python-format
+msgid " — Mentions (%(examples)s)"
+msgstr " — 提及（%(examples)s）"
+
+#, python-format
+msgid " — NOT containing \"%(text)s\""
+msgstr " — 不包含「%(text)s」"
+
+#, python-format
+msgid " — NOT containing word \"%(word)s\""
+msgstr " — 不包含「%(word)s」一詞"
+
+msgid " — Non-greedy: each quoted phrase"
+msgstr " — 非貪婪：每個引號內的詞組"
+
+#, python-format
+msgid " — Starts with \"%(text)s\""
+msgstr " — 開頭為「%(text)s」"
+
+msgid " — Starts with number and period"
+msgstr " — 以數字和句點開頭"
+
+msgid " — Two or more capital letters"
+msgstr " — 兩個或更多大寫字母"
+
+#, python-format
+msgid " — Whole word \"%(word)s\" only"
+msgstr " — 僅限完整單字「%(word)s」"
+
+msgid "$29/month"
+msgstr "每月 $29"
+
+msgid "$36/year"
+msgstr "每年 $36"
+
+msgid "$99/year"
+msgstr "每年 $99"
+
+#, python-format
+msgid "%(account)s disconnected."
+msgstr "已解除連結 %(account)s。"
+
+#, python-format
+msgid "%(badge)s Customize days of unreads"
+msgstr "%(badge)s 自訂未讀天數"
+
+#, python-format
+msgid "%(badge)s for up to %(count)s day"
+msgid_plural "%(badge)s for up to %(count)s days"
+msgstr[0] "%(badge)s 最多可使用 %(count)s 天"
+
+#, python-format
+msgid "%(category)s topics"
+msgstr "%(category)s 主題"
+
+#, python-format
+msgid "%(comments)s and %(replies)s"
+msgstr "%(comments)s 和 %(replies)s"
+
+#, python-format
+msgid "%(cost)s/story"
+msgstr "%(cost)s/篇文章"
+
+#, python-format
+msgid "%(count)s byte"
+msgid_plural "%(count)s bytes"
+msgstr[0] "%(count)s 位元組"
+
+#, python-format
+msgid "%(count)s channel"
+msgid_plural "%(count)s channels"
+msgstr[0] "%(count)s 個頻道"
+
+#, python-format
+msgid "%(count)s classifier has been deleted."
+msgid_plural "%(count)s classifiers have been deleted."
+msgstr[0] "已刪除 %(count)s 個分類器。"
+
+#, python-format
+msgid "%(count)s classifier will be deleted"
+msgid_plural "%(count)s classifiers will be deleted"
+msgstr[0] "將刪除 %(count)s 個分類器"
+
+#, python-format
+msgid "%(count)s comment"
+msgid_plural "%(count)s comments"
+msgstr[0] "%(count)s 則留言"
+
+#, python-format
+msgid "%(count)s content filter"
+msgid_plural "%(count)s content filters"
+msgstr[0] "%(count)s 個內容篩選器"
+
+#, python-format
+msgid "%(count)s curated story"
+msgid_plural "%(count)s curated stories"
+msgstr[0] "%(count)s 篇精選文章"
+
+#, python-format
+msgid "%(count)s day"
+msgid_plural "%(count)s days"
+msgstr[0] "%(count)s 天"
+
+#, python-format
+msgid "%(count)s day ago"
+msgid_plural "%(count)s days ago"
+msgstr[0] "%(count)s 天前"
+
+#, python-format
+msgid "%(count)s dislike"
+msgid_plural "%(count)s dislikes"
+msgstr[0] "%(count)s 個倒讚"
+
+#, python-format
+msgid "%(count)s episode"
+msgid_plural "%(count)s episodes"
+msgstr[0] "%(count)s 集"
+
+#, python-format
+msgid "%(count)s feed"
+msgid_plural "%(count)s feeds"
+msgstr[0] "%(count)s 個訂閱來源"
+
+#, python-format
+msgid "%(count)s follower"
+msgid_plural "%(count)s followers"
+msgstr[0] "%(count)s 位追蹤者"
+
+#, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s 小時"
+
+#, python-format
+msgid "%(count)s hour ago"
+msgid_plural "%(count)s hours ago"
+msgstr[0] "%(count)s 小時前"
+
+#, python-format
+msgid "%(count)s image filter"
+msgid_plural "%(count)s image filters"
+msgstr[0] "%(count)s 個圖片篩選器"
+
+#, python-format
+msgid "%(count)s like"
+msgid_plural "%(count)s likes"
+msgstr[0] "%(count)s 個讚"
+
+#, python-format
+msgid "%(count)s member"
+msgid_plural "%(count)s members"
+msgstr[0] "%(count)s 位成員"
+
+#, python-format
+msgid "%(count)s merge (%(categories)s categories into %(count)s)"
+msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
+msgstr[0] "%(count)s 個合併（將 %(categories)s 個分類合併至 %(count)s）"
+
+#, python-format
+msgid "%(count)s minute ago"
+msgid_plural "%(count)s minutes ago"
+msgstr[0] "%(count)s 分鐘前"
+
+#, python-format
+msgid "%(count)s month"
+msgid_plural "%(count)s months"
+msgstr[0] "%(count)s 個月"
+
+#, python-format
+msgid "%(count)s newsletter"
+msgid_plural "%(count)s newsletters"
+msgstr[0] "%(count)s 份電子報"
+
+#, python-format
+msgid "%(count)s of %(limit)s site"
+msgid_plural "%(count)s of %(limit)s sites"
+msgstr[0] "%(count)s / %(limit)s 個網站"
+
+#, python-format
+msgid "%(count)s on all sites (%(stories)s)"
+msgstr "所有網站上的 %(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s on folder (%(stories)s)"
+msgstr "資料夾中的 %(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s on this site (%(stories)s)"
+msgstr "此網站上的 %(count)s（%(stories)s）"
+
+#, python-format
+msgid "%(count)s open"
+msgid_plural "%(count)s opens"
+msgstr[0] "%(count)s 次開啟"
+
+#, python-format
+msgid "%(count)s page"
+msgid_plural "%(count)s pages"
+msgstr[0] "%(count)s 個頁面"
+
+#, python-format
+msgid "%(count)s podcast"
+msgid_plural "%(count)s podcasts"
+msgstr[0] "%(count)s 個 Podcast"
+
+#, python-format
+msgid "%(count)s public comment"
+msgid_plural "%(count)s public comments"
+msgstr[0] "%(count)s 則公開留言"
+
+#, python-format
+msgid "%(count)s reply"
+msgid_plural "%(count)s replies"
+msgstr[0] "%(count)s 則回覆"
+
+#, python-format
+msgid "%(count)s selected"
+msgid_plural "%(count)s selected"
+msgstr[0] "已選取 %(count)s 個"
+
+#, python-format
+msgid "%(count)s share"
+msgid_plural "%(count)s shares"
+msgstr[0] "%(count)s 次分享"
+
+#, python-format
+msgid "%(count)s shared story"
+msgid_plural "%(count)s shared stories"
+msgstr[0] "%(count)s 篇分享文章"
+
+#, python-format
+msgid "%(count)s site"
+msgid_plural "%(count)s sites"
+msgstr[0] "%(count)s 個網站"
+
+#, python-format
+msgid "%(count)s site available"
+msgid_plural "%(count)s sites available"
+msgstr[0] "%(count)s 個網站可用"
+
+#, python-format
+msgid "%(count)s site over limit"
+msgid_plural "%(count)s sites over limit"
+msgstr[0] "超出上限 %(count)s 個網站"
+
+#, python-format
+msgid "%(count)s story"
+msgid_plural "%(count)s stories"
+msgstr[0] "%(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story has been deleted."
+msgid_plural "%(count)s stories have been deleted."
+msgstr[0] "已刪除 %(count)s 篇文章。"
+
+#, python-format
+msgid "%(count)s story in archive"
+msgid_plural "%(count)s stories in archive"
+msgstr[0] "封存中有 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story per day"
+msgid_plural "%(count)s stories per day"
+msgstr[0] "每天 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story per month"
+msgid_plural "%(count)s stories per month"
+msgstr[0] "每月 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story will be deleted"
+msgid_plural "%(count)s stories will be deleted"
+msgstr[0] "將刪除 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story/mo"
+msgid_plural "%(count)s stories/mo"
+msgstr[0] "每月 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s story/month"
+msgid_plural "%(count)s stories/month"
+msgstr[0] "每月 %(count)s 篇文章"
+
+#, python-format
+msgid "%(count)s subreddit"
+msgid_plural "%(count)s subreddits"
+msgstr[0] "%(count)s 個 Subreddit"
+
+#, python-format
+msgid "%(count)s subscriber"
+msgid_plural "%(count)s subscribers"
+msgstr[0] "%(count)s 位訂閱者"
+
+#, python-format
+msgid "%(count)s subscribers"
+msgstr "%(count)s 位訂閱者"
+
+#, python-format
+msgid "%(count)s video"
+msgid_plural "%(count)s videos"
+msgstr[0] "%(count)s 部影片"
+
+#, python-format
+msgid "%(count)s week"
+msgid_plural "%(count)s weeks"
+msgstr[0] "%(count)s 週"
+
+#, python-format
+msgid "%(count)s word"
+msgid_plural "%(count)s words"
+msgstr[0] "%(count)s 個字"
+
+#, python-format
+msgid "%(count)s year"
+msgid_plural "%(count)s years"
+msgstr[0] "%(count)s 年"
+
+#, python-format
+msgid "%(count)sd ago"
+msgid_plural "%(count)sd ago"
+msgstr[0] "%(count)s 天前"
+
+#, python-format
+msgid "%(count)sh ago"
+msgid_plural "%(count)sh ago"
+msgstr[0] "%(count)s 小時前"
+
+#, python-format
+msgid "%(count)sm ago"
+msgid_plural "%(count)sm ago"
+msgstr[0] "%(count)s 分鐘前"
+
+#, python-format
+msgid "%(count)smo ago"
+msgid_plural "%(count)smo ago"
+msgstr[0] "%(count)s 個月前"
+
+#, python-format
+msgid "%(count)sw ago"
+msgid_plural "%(count)sw ago"
+msgstr[0] "%(count)s 週前"
+
+#, python-format
+msgid "%(date)s, %(time)s"
+msgstr "%(date)s %(time)s"
+
+#, python-format
+msgid "%(date_from)s → %(date_to)s"
+msgstr "%(date_from)s → %(date_to)s"
+
+#, python-format
+msgid "%(feed_title)s notifications are set up"
+msgstr "已設定 %(feed_title)s 通知"
+
+#, python-format
+msgid "%(icon)s are stories you don't like"
+msgstr "%(icon)s 是你不喜歡的文章"
+
+#, python-format
+msgid "%(icon)s are stories you have not yet rated"
+msgstr "%(icon)s 是你尚未評分的文章"
+
+#, python-format
+msgid "%(icon)s are stories you like"
+msgstr "%(icon)s 是你喜歡的文章"
+
+#, python-format
+msgid "%(indexed)s of %(count)s site indexed"
+msgid_plural "%(indexed)s of %(count)s sites indexed"
+msgstr[0] "已索引 %(indexed)s 個網站（共 %(count)s 個）"
+
+#, python-format
+msgid "%(indexed)s of %(count)s site indexed. Index remaining feeds to get better recommendations."
+msgid_plural "%(indexed)s of %(count)s sites indexed. Index remaining feeds to get better recommendations."
+msgstr[0] "已索引 %(indexed)s / %(count)s 個網站。索引剩餘的訂閱來源，以取得更好的推薦。"
+
+#, python-format
+msgid "%(message)s Upgrade to see related stories from your entire archive."
+msgstr "%(message)s 升級即可查看整個封存中的相關文章。"
+
+#, python-format
+msgid "%(name)s is sharing a story: %(title)s"
+msgstr "%(name)s 分享了一篇文章：%(title)s"
+
+#, python-format
+msgid "%(price)s · Menu bar news ticker for Mac"
+msgstr "%(price)s · Mac 選單列新聞快訊"
+
+#, python-format
+msgid "%(price)s · iPhone &amp; iPad"
+msgstr "%(price)s · iPhone &amp; iPad"
+
+#, python-format
+msgid "%(price)s · iPhone, iPad &amp; Mac"
+msgstr "%(price)s · iPhone、iPad &amp; Mac"
+
+#, python-format
+msgid "%(shortcut)s to send"
+msgstr "按 %(shortcut)s 傳送"
+
+#, python-format
+msgid "%(slot)s — %(date)s"
+msgstr "%(slot)s — %(date)s"
+
+#, python-format
+msgid "%(start)s to %(end)s hour"
+msgid_plural "%(start)s to %(end)s hours"
+msgstr[0] "%(start)s 到 %(end)s 小時"
+
+#, python-format
+msgid "%(start)s to %(end)s minute"
+msgid_plural "%(start)s to %(end)s minutes"
+msgstr[0] "%(start)s 至 %(end)s 分鐘"
+
+#, python-format
+msgid "%(start)s – %(end)s"
+msgstr "%(start)s – %(end)s"
+
+#, python-format
+msgid "%(submit_button)s or %(cancel_link)s"
+msgstr "%(submit_button)s 或 %(cancel_link)s"
+
+#, python-format
+msgid "%(tier)s (staff)"
+msgstr "%(tier)s（員工）"
+
+#, python-format
+msgid "%(time)s ago"
+msgstr "%(time)s前"
+
+#, python-format
+msgid "%(time)s left"
+msgstr "剩餘 %(time)s"
+
+#, python-format
+msgid "%(topic)s Channels"
+msgstr "%(topic)s 頻道"
+
+#, python-format
+msgid "%(topic)s Newsletters"
+msgstr "%(topic)s 電子報"
+
+#, python-format
+msgid "%(topic)s Podcasts"
+msgstr "%(topic)s Podcast"
+
+#, python-format
+msgid "%(topic)s Sites"
+msgstr "%(topic)s 網站"
+
+#, python-format
+msgid "%(topic)s Subreddits"
+msgstr "%(topic)s Subreddit"
+
+#, python-format
+msgid "%(value_1)s Back"
+msgstr "%(value_1)s 返回"
+
+#, python-format
+msgid "%(value_1)s Retrain all sites"
+msgstr "%(value_1)s 重新訓練所有網站"
+
+#, python-format
+msgid "%(value_1)s Unlock this and all premium features."
+msgstr "%(value_1)s 解鎖此功能及所有進階功能。"
+
+#, python-format
+msgid "%(value_1)s ago"
+msgstr "%(value_1)s前"
+
+#, python-format
+msgid "%(value_1)s is Premium"
+msgstr "%(value_1)s 是 Premium 功能"
+
+#, python-format
+msgid "%(weekday)s, %(date)s %(time)s"
+msgstr "%(weekday)s，%(date)s %(time)s"
+
+#, python-format
+msgid "%(weekday)s, %(month)s %(day)s, %(year)s"
+msgstr "%(year)s 年%(month)s %(day)s 日 %(weekday)s"
+
+msgid "&laquo; Re-upload your sites"
+msgstr "&laquo; 重新上傳你的網站"
+
+msgid "&raquo; Want credit? Enter your Twitter username: "
+msgstr "&raquo; 想獲得署名嗎？請輸入你的 Twitter 使用者名稱： "
+
+#, python-format
+msgid "(%(count)s item)"
+msgid_plural "(%(count)s items)"
+msgstr[0] "（%(count)s 個項目）"
+
+msgid "(GMT) Greenwich Mean Time : Belfast"
+msgstr "(GMT) 格林威治標準時間：貝爾法斯特"
+
+msgid "(GMT) Greenwich Mean Time : Dublin"
+msgstr "(GMT) 格林威治標準時間：都柏林"
+
+msgid "(GMT) Greenwich Mean Time : Lisbon"
+msgstr "(GMT) 格林威治標準時間：里斯本"
+
+msgid "(GMT) Greenwich Mean Time : London"
+msgstr "(GMT) 格林威治標準時間：倫敦"
+
+msgid "(GMT) Monrovia, Reykjavik"
+msgstr "(GMT) 蒙羅維亞、雷克雅維克"
+
+msgid "(GMT+01:00) Amsterdam, Berlin, Stockholm"
+msgstr "(GMT+01:00) 阿姆斯特丹、柏林、斯德哥爾摩"
+
+msgid "(GMT+01:00) Belgrade, Budapest, Prague"
+msgstr "(GMT+01:00) 貝爾格勒、布達佩斯、布拉格"
+
+msgid "(GMT+01:00) Brussels, Copenhagen, Paris"
+msgstr "(GMT+01:00) 布魯塞爾、哥本哈根、巴黎"
+
+msgid "(GMT+01:00) West Central Africa"
+msgstr "(GMT+01:00) 中西非"
+
+msgid "(GMT+01:00) Windhoek"
+msgstr "(GMT+01:00) 溫得和克"
+
+msgid "(GMT+02:00) Beirut"
+msgstr "(GMT+02:00) 貝魯特"
+
+msgid "(GMT+02:00) Cairo"
+msgstr "(GMT+02:00) 開羅"
+
+msgid "(GMT+02:00) Gaza"
+msgstr "(GMT+02:00) 加薩"
+
+msgid "(GMT+02:00) Harare, Pretoria"
+msgstr "(GMT+02:00) 哈拉雷、普利托利亞"
+
+msgid "(GMT+02:00) Jerusalem"
+msgstr "(GMT+02:00) 耶路撒冷"
+
+msgid "(GMT+02:00) Minsk, Kyiv"
+msgstr "(GMT+02:00) 明斯克、基輔"
+
+msgid "(GMT+02:00) Syria"
+msgstr "(GMT+02:00) 敘利亞"
+
+msgid "(GMT+03:00) Moscow, St. Petersburg"
+msgstr "(GMT+03:00) 莫斯科、聖彼得堡"
+
+msgid "(GMT+03:00) Nairobi"
+msgstr "(GMT+03:00) 奈洛比"
+
+msgid "(GMT+03:30) Tehran"
+msgstr "(GMT+03:30) 德黑蘭"
+
+msgid "(GMT+04:00) Abu Dhabi, Muscat"
+msgstr "(GMT+04:00) 阿布達比、馬斯喀特"
+
+msgid "(GMT+04:00) Yerevan"
+msgstr "(GMT+04:00) 葉里溫"
+
+msgid "(GMT+04:30) Kabul"
+msgstr "(GMT+04:30) 喀布爾"
+
+msgid "(GMT+05:00) Ekaterinburg"
+msgstr "(GMT+05:00) 葉卡捷琳堡"
+
+msgid "(GMT+05:00) Tashkent"
+msgstr "(GMT+05:00) 塔什干"
+
+msgid "(GMT+05:30) Chennai, Mumbai, New Delhi"
+msgstr "(GMT+05:30) 清奈、孟買、新德里"
+
+msgid "(GMT+05:45) Kathmandu"
+msgstr "(GMT+05:45) 加德滿都"
+
+msgid "(GMT+06:00) Astana, Dhaka"
+msgstr "(GMT+06:00) 阿斯塔納、達卡"
+
+msgid "(GMT+06:00) Novosibirsk"
+msgstr "(GMT+06:00) 新西伯利亞"
+
+msgid "(GMT+06:30) Yangon (Rangoon)"
+msgstr "(GMT+06:30) 仰光（Rangoon）"
+
+msgid "(GMT+07:00) Bangkok, Hanoi, Jakarta"
+msgstr "(GMT+07:00) 曼谷、河內、雅加達"
+
+msgid "(GMT+07:00) Krasnoyarsk"
+msgstr "(GMT+07:00) 克拉斯諾亞爾斯克"
+
+msgid "(GMT+08:00) Beijing, Chongqing, Hong Kong"
+msgstr "(GMT+08:00) 北京、重慶、香港"
+
+msgid "(GMT+08:00) Irkutsk, Ulaan Bataar"
+msgstr "(GMT+08:00) 伊爾庫茨克、烏蘭巴托"
+
+msgid "(GMT+08:00) Perth"
+msgstr "(GMT+08:00) 伯斯"
+
+msgid "(GMT+08:45) Eucla"
+msgstr "(GMT+08:45) 尤克拉"
+
+msgid "(GMT+09:00) Osaka, Sapporo, Tokyo"
+msgstr "(GMT+09:00) 大阪、札幌、東京"
+
+msgid "(GMT+09:00) Seoul"
+msgstr "(GMT+09:00) 首爾"
+
+msgid "(GMT+09:00) Yakutsk"
+msgstr "(GMT+09:00) 雅庫茨克"
+
+msgid "(GMT+09:30) Adelaide"
+msgstr "(GMT+09:30) 阿德雷德"
+
+msgid "(GMT+09:30) Darwin"
+msgstr "(GMT+09:30) 達爾文"
+
+msgid "(GMT+10:00) Brisbane"
+msgstr "(GMT+10:00) 布里斯本"
+
+msgid "(GMT+10:00) Sydney, Hobart"
+msgstr "(GMT+10:00) 雪梨、荷巴特"
+
+msgid "(GMT+10:00) Vladivostok"
+msgstr "(GMT+10:00) 海參崴"
+
+msgid "(GMT+10:30) Lord Howe Island"
+msgstr "(GMT+10:30) 豪勳爵島"
+
+msgid "(GMT+11:00) Magadan"
+msgstr "(GMT+11:00) 馬加丹"
+
+msgid "(GMT+11:00) Solomon Is., New Caledonia"
+msgstr "(GMT+11:00) 索羅門群島、新喀里多尼亞"
+
+msgid "(GMT+11:30) Norfolk Island"
+msgstr "(GMT+11:30) 諾福克島"
+
+msgid "(GMT+12:00) Anadyr, Kamchatka"
+msgstr "(GMT+12:00) 阿納德爾、堪察加"
+
+msgid "(GMT+12:00) Auckland, Wellington"
+msgstr "(GMT+12:00) 奧克蘭、威靈頓"
+
+msgid "(GMT+12:00) Fiji, Kamchatka, Marshall Is."
+msgstr "(GMT+12:00) 斐濟、堪察加半島、馬紹爾群島"
+
+msgid "(GMT+12:45) Chatham Islands"
+msgstr "(GMT+12:45) 查塔姆群島"
+
+msgid "(GMT+13:00) Nuku'alofa"
+msgstr "(GMT+13:00) 努瓜婁發"
+
+msgid "(GMT+14:00) Kiritimati"
+msgstr "(GMT+14:00) 基里地馬地"
+
+msgid "(GMT-01:00) Azores"
+msgstr "(GMT-01:00) 亞速群島"
+
+msgid "(GMT-01:00) Cape Verde Is."
+msgstr "(GMT-01:00) 維德角群島"
+
+msgid "(GMT-02:00) Mid-Atlantic"
+msgstr "(GMT-02:00) 中大西洋"
+
+msgid "(GMT-03:00) Brasilia"
+msgstr "(GMT-03:00) 巴西利亞"
+
+msgid "(GMT-03:00) Buenos Aires"
+msgstr "(GMT-03:00) 布宜諾斯艾利斯"
+
+msgid "(GMT-03:00) Greenland"
+msgstr "(GMT-03:00) 格陵蘭"
+
+msgid "(GMT-03:00) Miquelon, St. Pierre"
+msgstr "(GMT-03:00) 米克隆、聖皮埃爾"
+
+msgid "(GMT-03:00) Montevideo"
+msgstr "(GMT-03:00) 蒙特維多"
+
+msgid "(GMT-03:00) UTC-3"
+msgstr "(GMT-03:00) UTC-3"
+
+msgid "(GMT-03:30) Newfoundland"
+msgstr "(GMT-03:30) 紐芬蘭"
+
+msgid "(GMT-04:00) Atlantic Time (Canada)"
+msgstr "(GMT-04:00) 大西洋時間（加拿大）"
+
+msgid "(GMT-04:00) Atlantic Time (Goose Bay)"
+msgstr "(GMT-04:00) 大西洋時間（古斯灣）"
+
+msgid "(GMT-04:00) Brazil"
+msgstr "(GMT-04:00) 巴西"
+
+msgid "(GMT-04:00) Faukland Islands"
+msgstr "(GMT-04:00) 福克蘭群島"
+
+msgid "(GMT-04:00) La Paz"
+msgstr "(GMT-04:00) 拉巴斯"
+
+msgid "(GMT-04:00) Santiago"
+msgstr "(GMT-04:00) 聖地牙哥"
+
+msgid "(GMT-04:30) Caracas"
+msgstr "(GMT-04:30) 卡拉卡斯"
+
+msgid "(GMT-05:00) Bogota, Lima, Quito, Rio Branco"
+msgstr "(GMT-05:00) 波哥大、利馬、基多、里奧布蘭科"
+
+msgid "(GMT-05:00) Cuba"
+msgstr "(GMT-05:00) 古巴"
+
+msgid "(GMT-05:00) Eastern Time (US & Canada)"
+msgstr "(GMT-05:00) 東部時間（美國與加拿大）"
+
+msgid "(GMT-06:00) Central Time (US & Canada)"
+msgstr "(GMT-06:00) 中部時間（美國與加拿大）"
+
+msgid "(GMT-06:00) Easter Island"
+msgstr "(GMT-06:00) 復活節島"
+
+msgid "(GMT-06:00) Guadalajara, Mexico City"
+msgstr "(GMT-06:00) 瓜達拉哈拉、墨西哥城"
+
+msgid "(GMT-06:00) Saskatchewan, Central America"
+msgstr "(GMT-06:00) 薩斯喀徹溫省、中美洲"
+
+msgid "(GMT-07:00) Arizona"
+msgstr "(GMT-07:00) 亞利桑那州"
+
+msgid "(GMT-07:00) Chihuahua, La Paz, Mazatlan"
+msgstr "(GMT-07:00) 奇瓦瓦、拉巴斯、馬薩特蘭"
+
+msgid "(GMT-07:00) Mountain Time (US & Canada)"
+msgstr "(GMT-07:00) 山區時間（美國與加拿大）"
+
+msgid "(GMT-08:00) Pacific Time (US & Canada)"
+msgstr "(GMT-08:00) 太平洋時間（美國和加拿大）"
+
+msgid "(GMT-08:00) Pitcairn Islands"
+msgstr "(GMT-08:00) 皮特肯群島"
+
+msgid "(GMT-08:00) Tijuana, Baja California"
+msgstr "(GMT-08:00) 提華納、下加利福尼亞州"
+
+msgid "(GMT-09:00) Alaska"
+msgstr "(GMT-09:00) 阿拉斯加"
+
+msgid "(GMT-09:00) Gambier Islands"
+msgstr "(GMT-09:00) 甘比爾群島"
+
+msgid "(GMT-09:30) Marquesas Islands"
+msgstr "(GMT-09:30) 馬克薩斯群島"
+
+msgid "(GMT-10:00) Hawaii"
+msgstr "(GMT-10:00) 夏威夷"
+
+msgid "(GMT-10:00) Hawaii-Aleutian"
+msgstr "(GMT-10:00) 夏威夷－阿留申"
+
+msgid "(GMT-11:00) Midway Island, Samoa"
+msgstr "(GMT-11:00) 中途島、薩摩亞"
+
+msgid "(no title)"
+msgstr "（無標題）"
+
+msgid "(upcoming)"
+msgstr "（即將開立）"
+
+#, python-format
+msgid "+ %(value_1)s more site"
+msgid_plural "+ %(value_1)s more sites"
+msgstr[0] "+ %(value_1)s 個網站"
+
+msgid "+ New Folder..."
+msgstr "+ 新增資料夾…"
+
+msgid "/day"
+msgstr "/天"
+
+msgid "/mo"
+msgstr "/月"
+
+msgid "/month"
+msgstr "/月"
+
+msgid "/year"
+msgstr "/年"
+
+msgid "1 month"
+msgstr "1 個月"
+
+msgid "1 year"
+msgstr "1 年"
+
+msgid "28 tools are available, covering reading, actions, training, and discovery."
+msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
+
+msgid "2x daily"
+msgstr "每日 2 次"
+
+msgid "3x daily"
+msgstr "每日 3 次"
+
+msgid "5 years"
+msgstr "5 年"
+
+msgid "5× faster feed updates"
+msgstr "訂閱來源更新速度快 5 倍"
+
+#, python-format
+msgid "< %(count)s story/month"
+msgid_plural "< %(count)s stories/month"
+msgstr[0] "每月少於 %(count)s 篇文章"
+
+#, python-format
+msgid "< %(value_1)s/month"
+msgstr "每月少於 %(value_1)s 篇"
+
+msgid "< 30 stories/month"
+msgstr "每月少於 30 篇文章"
+
+#, python-format
+msgid "<b>%(value_1)s day</b> &mdash; exceeds your plan limit of %(value_3)s days"
+msgid_plural "<b>%(value_1)s days</b> &mdash; exceeds your plan limit of %(value_3)s days"
+msgstr[0] "<b>%(value_1)s 天</b> &mdash; 超出你的方案上限 %(value_3)s 天"
+
+#, python-format
+msgid "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">No matches</span>"
+msgstr "<span class=\"NB-preview-label\">%(value_1)s:</span> <span class=\"NB-no-matches\">沒有符合項目</span>"
+
+#, python-format
+msgid "<strong>%(count)s day</strong> left in your premium trial"
+msgid_plural "<strong>%(count)s days</strong> left in your premium trial"
+msgstr[0] "試用 Premium 還剩 <strong>%(count)s 天</strong>"
+
+msgid "A blurblog of shared stories"
+msgstr "分享文章的 Blurblog"
+
+msgid "A folder of feeds read as one stream"
+msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
+
+msgid "A fresh handful of the stories NewsBlur readers shared, chosen every hour."
+msgstr "每小時精選一小批 NewsBlur 讀者分享的最新文章。"
+
+#, python-format
+msgid "A gift from %(value_1)s has been applied to your account."
+msgstr "已將 %(value_1)s 贈送的禮物套用至你的帳戶。"
+
+msgid "A second pass uses your hint to find the right pattern on the page."
+msgstr "第二次掃描會使用你的提示，在頁面上找到正確的模式。"
+
+msgid "A single like overrides any number of dislikes"
+msgstr "一個「喜歡」就能勝過任意數量的「不喜歡」"
+
+msgid "A single super dislike overrides everything"
+msgstr "一次超級不喜歡就能推翻所有設定"
+
+msgid "A story diff with additions and deletions"
+msgstr "顯示新增與刪除內容的文章差異"
+
+msgid "AI Filter"
+msgstr "AI 篩選器"
+
+msgid "AI Model"
+msgstr "AI 模型"
+
+#, python-format
+msgid "AI filters are saved but won't run until you %(billing_link)s."
+msgstr "AI 篩選條件已儲存，但在你 %(billing_link)s 之前不會執行。"
+
+msgid "AI finds the stories"
+msgstr "由 AI 找出文章"
+
+msgid "AI-curated summary of your top stories"
+msgstr "由 AI 精選的熱門文章摘要"
+
+msgid "AI-powered story analysis and personalized daily summaries from your news feeds."
+msgstr "運用 AI 分析文章，並根據你的新聞訂閱來源提供個人化每日摘要。"
+
+#, python-format
+msgid "ALL CATEGORIES (%(value_1)s)"
+msgstr "所有分類（%(value_1)s）"
+
+msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
+msgstr "當然可以。開啟訓練器，移除任何讚或倒讚即可重設。"
+
+msgid "Account"
+msgstr "帳戶"
+
+msgid "Accurate filters are happy filters"
+msgstr "篩選器準確，使用更愉快"
+
+msgid "Actions"
+msgstr "動作"
+
+msgid "Active"
+msgstr "啟用中"
+
+msgid "Activities"
+msgstr "活動"
+
+msgid "Add"
+msgstr "新增"
+
+#, python-format
+msgid "Add %(count)s story tag"
+msgid_plural "Add %(count)s story tags"
+msgstr[0] "新增 %(count)s 個文章標籤"
+
+msgid "Add Folder"
+msgstr "新增資料夾"
+
+msgid "Add Site &amp; Share Story Bookmarklet"
+msgstr "新增網站 &amp; 分享文章書籤小工具"
+
+msgid "Add a forwarding address"
+msgstr "新增轉寄地址"
+
+msgid "Add a note to send along with the story…"
+msgstr "新增隨文章一併傳送的備註…"
+
+msgid "Add a site"
+msgstr "新增網站"
+
+msgid "Add a site to this folder"
+msgstr "在此資料夾新增網站"
+
+msgid "Add any site or feed"
+msgstr "新增任何網站或訂閱來源"
+
+msgid "Add custom tags to organize saved stories by topic"
+msgstr "新增自訂標籤，依主題整理已儲存的文章"
+
+msgid "Add domains you never want to archive."
+msgstr "新增你永遠不想封存的網域。"
+
+msgid "Add folder"
+msgstr "新增資料夾"
+
+msgid "Add it to Claude Code with: claude mcp add --transport http newsblur https://newsblur.com/mcp/"
+msgstr "使用以下指令將其新增至 Claude Code：claude mcp add --transport http newsblur https://newsblur.com/mcp/"
+
+msgid "Add keyword filters that create their own briefing section. All keywords must match."
+msgstr "新增關鍵字篩選器，並建立專屬的簡報區段。所有關鍵字都必須符合。"
+
+msgid "Add keyword section"
+msgstr "新增關鍵字區段"
+
+msgid "Add site"
+msgstr "新增網站"
+
+msgid "Add site/folder"
+msgstr "新增網站／資料夾"
+
+msgid "Add story list"
+msgstr "新增文章清單"
+
+msgid "Add to Chrome"
+msgstr "新增至 Chrome"
+
+msgid "Add to Firefox"
+msgstr "新增至 Firefox"
+
+msgid "Add to folder"
+msgstr "加入資料夾"
+
+#, python-format
+msgid "Added %(date)s"
+msgstr "新增於 %(date)s"
+
+msgid "Added!"
+msgstr "已新增！"
+
+msgid "Adding site..."
+msgstr "正在新增網站…"
+
+msgid "Adding..."
+msgstr "正在新增…"
+
+#, python-format
+msgid "After %(slider)s %(count)s second."
+msgid_plural "After %(slider)s %(count)s seconds."
+msgstr[0] "%(slider)s %(count)s 秒後"
+
+msgid "After marking feed/folder read"
+msgstr "將訂閱來源／資料夾標記為已讀後"
+
+msgid "Afternoon"
+msgstr "下午"
+
+#, python-format
+msgid "Alert after %(value_1)s day without new stories"
+msgid_plural "Alert after %(value_1)s days without new stories"
+msgstr[0] "超過 %(value_1)s 天沒有新文章時提醒"
+
+msgid "All"
+msgstr "全部"
+
+msgid "All Categories"
+msgstr "所有分類"
+
+msgid "All Categorized"
+msgstr "全部已分類"
+
+msgid "All Done "
+msgstr "全部完成 "
+
+msgid "All Folders & Sites"
+msgstr "所有資料夾與網站"
+
+msgid "All Notifications"
+msgstr "所有通知"
+
+msgid "All Shared Stories"
+msgstr "所有分享的文章"
+
+msgid "All Site Stories"
+msgstr "所有網站文章"
+
+msgid "All Stories"
+msgstr "所有文章"
+
+msgid "All done!"
+msgstr "全部完成！"
+
+msgid "All feeds fetched every 5-15 minutes"
+msgstr "每 5 至 15 分鐘擷取所有訂閱來源"
+
+#, python-format
+msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
+msgstr "所有模式預設都不區分大小寫。使用 %(code)s 表示字詞邊界，避免部分比對。"
+
+msgid "All sites"
+msgstr "所有網站"
+
+msgid "All sites in folder"
+msgstr "資料夾中的所有網站"
+
+msgid "All stories"
+msgstr "所有文章"
+
+msgid ""
+"All users see clustered stories on popular feeds. Premium Archive unlocks full control: toggles, display "
+"styles, and auto mark-as-read."
+msgstr "所有使用者在熱門訂閱來源中都會看到已分群的文章。Premium Archive 可解鎖完整控制功能：切換選項、顯示樣式，以及自動標記為已讀。"
+
+msgid "Allowed Domains"
+msgstr "允許的網域"
+
+msgid "Alphabetical"
+msgstr "依字母順序"
+
+#, python-format
+msgid "Also delete %(value_1)s existing archive from this domain"
+msgid_plural "Also delete %(value_1)s existing archives from this domain"
+msgstr[0] "同時刪除此網域中現有的 %(value_1)s 個封存項目"
+
+#, python-format
+msgid "Also published by %(value_1)s site"
+msgid_plural "Also published by %(value_1)s sites"
+msgstr[0] "也由 %(value_1)s 個網站發布"
+
+msgid "Also works with Edge"
+msgstr "也支援 Edge"
+
+msgid "Always show Train/Save/Share buttons below stories"
+msgstr "一律在文章下方顯示訓練／儲存／分享按鈕"
+
+msgid "Always show unread counts on folders"
+msgstr "一律在資料夾上顯示未讀數量"
+
+msgid ""
+"An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
+"topics, and custom sections you define."
+msgstr "由 AI 產生的熱門文章摘要，包含熱門文章、長篇閱讀、廣泛報導的主題，以及你自訂的區段。"
+
+msgid "An error occurred during analysis."
+msgstr "分析時發生錯誤。"
+
+msgid "An error occurred."
+msgstr "發生錯誤。"
+
+msgid "An error occurred. Please try again."
+msgstr "發生錯誤，請再試一次。"
+
+msgid "Analysis timed out. Please try again."
+msgstr "分析逾時。請再試一次。"
+
+msgid "Analyzing images..."
+msgstr "正在分析圖片…"
+
+msgid "Analyzing page to find story patterns..."
+msgstr "正在分析頁面以尋找文章模式…"
+
+msgid "Analyzing saved stories..."
+msgstr "正在分析已儲存的文章…"
+
+msgid "Analyzing your archive..."
+msgstr "正在分析你的封存內容…"
+
+#, python-format
+msgid "And you have %(count)s saved story."
+msgid_plural "And you have %(count)s saved stories."
+msgstr[0] "你還有 %(count)s 篇已儲存文章。"
+
+msgid "Android notifications"
+msgstr "Android 通知"
+
+msgid "Android notifications require Premium Archive"
+msgstr "Android 通知需要 Premium Archive"
+
+msgid "Animals"
+msgstr "動物"
+
+msgid "Animations"
+msgstr "動畫"
+
+msgid "Any"
+msgstr "不限"
+
+msgid ""
+"Any public web page: Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government "
+"sites, and more."
+msgstr "任何公開網頁：Twitter 個人檔案、Reddit 討論串、GitHub 儲存庫、產品頁面、求職網站、政府網站等。"
+
+msgid "Any time"
+msgstr "任何時間"
+
+#, python-format
+msgid "Applied %(count)s merge (%(stories)s)"
+msgid_plural "Applied %(count)s merges (%(stories)s)"
+msgstr[0] "已套用 %(count)s 項合併（%(stories)s）"
+
+#, python-format
+msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
+msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
+msgstr[0] "已套用 %(succeeded)s / %(count)s 個合併項目（%(stories)s）"
+
+msgid "Apply"
+msgstr "套用"
+
+msgid "Apply All Merges"
+msgstr "套用所有合併"
+
+msgid "Apply Split"
+msgstr "套用分割"
+
+msgid "Apply training across a folder"
+msgstr "將訓練套用至整個資料夾"
+
+msgid "Apply training globally"
+msgstr "套用訓練至所有網站"
+
+msgid "Applying..."
+msgstr "正在套用…"
+
+msgid "Approve"
+msgstr "核准"
+
+msgid "Approved"
+msgstr "已核准"
+
+msgid "April"
+msgstr "四月"
+
+msgid "Archive"
+msgstr "Archive"
+
+msgid "Archive Assistant"
+msgstr "封存助理"
+
+msgid "Are the apps free?"
+msgstr "這些應用程式免費嗎？"
+
+msgid "Are the apps open source?"
+msgstr "這些應用程式是開放原始碼嗎？"
+
+msgid "Arrows"
+msgstr "箭頭"
+
+msgid "As a reminder, use the intelligence slider to select a filter:"
+msgstr "提醒你，請使用智慧程度滑桿選擇篩選條件："
+
+msgid "Ask"
+msgstr "詢問"
+
+msgid "Ask AI"
+msgstr "詢問 AI"
+
+msgid "Ask AI & Daily Briefing"
+msgstr "詢問 AI 與每日簡報"
+
+msgid "Ask AI about story"
+msgstr "向 AI 詢問這篇文章"
+
+msgid "Ask AI anything about your browsing history"
+msgstr "詢問 AI 任何關於你瀏覽記錄的問題"
+
+msgid "Ask AI can transcribe a podcast or video first, then answer questions about it."
+msgstr "「詢問 AI」可先轉錄 Podcast 或影片，再回答相關問題。"
+
+msgid "Ask AI questions about stories"
+msgstr "向 AI 詢問文章相關問題"
+
+msgid "Ask AI with a choice of models"
+msgstr "選擇模型並詢問 AI"
+
+msgid "Ask a custom question..."
+msgstr "提出自訂問題…"
+
+msgid "Ask a question..."
+msgstr "提出問題……"
+
+msgid "Ask about your browsing history..."
+msgstr "詢問你的瀏覽記錄…"
+
+msgid ""
+"Ask questions about everything you've read. I can search your browsing history and find relevant "
+"information."
+msgstr "詢問你讀過的所有內容。我可以搜尋你的瀏覽記錄，找出相關資訊。"
+
+msgid "Ask questions, get summaries, or request key points"
+msgstr "提出問題、取得摘要，或要求列出重點"
+
+msgid "Audio"
+msgstr "音訊"
+
+msgid "Audio not transcribed"
+msgstr "音訊尚未轉錄"
+
+msgid "August"
+msgstr "八月"
+
+msgid "Author"
+msgstr "作者"
+
+msgid "Author Regex"
+msgstr "作者正規表示式"
+
+#, python-format
+msgid "Author filters found no stories in %(context)s."
+msgstr "作者篩選器在 %(context)s 中找不到文章。"
+
+msgid "Author filters found no stories in this view."
+msgstr "作者篩選器在此檢視中找不到文章。"
+
+msgid "Author: "
+msgstr "作者："
+
+msgid "Authors"
+msgstr "作者"
+
+msgid "Auto"
+msgstr "自動"
+
+msgid "Auto Mark as Read"
+msgstr "自動標記為已讀"
+
+msgid "Auto mark as read"
+msgstr "自動標記為已讀"
+
+msgid "Auto theme follows your system's light and dark schedule."
+msgstr "自動佈景主題會依照你系統的淺色與深色排程切換。"
+
+msgid "Auto-follow<br>my friends"
+msgstr "自動追蹤<br>我的朋友"
+
+msgid "Auto-generate"
+msgstr "自動產生"
+
+msgid "Auto-play"
+msgstr "自動播放"
+
+msgid "Auto-select top sites"
+msgstr "自動選取熱門網站"
+
+msgid "Auto-selected by popularity"
+msgstr "依人氣自動選取"
+
+msgid "Automatically archive every page you visit to search with AI later."
+msgstr "自動封存你造訪的每個頁面，以便日後使用 AI 搜尋。"
+
+msgid "Automatically generate briefings on schedule"
+msgstr "依排程自動產生簡報"
+
+msgid "Automatically play next item in queue"
+msgstr "自動播放佇列中的下一個項目"
+
+msgid "Back"
+msgstr "返回"
+
+#, python-format
+msgid "Back %(seconds)s second"
+msgid_plural "Back %(seconds)s seconds"
+msgstr[0] "倒退 %(seconds)s 秒"
+
+msgid "Back to Categories"
+msgstr "返回分類"
+
+msgid "Back to Search"
+msgstr "返回搜尋"
+
+msgid "Back to classifier trainer"
+msgstr "返回分類器訓練器"
+
+msgid "Back to feeds"
+msgstr "返回訂閱來源"
+
+msgid "Back to stories"
+msgstr "返回文章"
+
+msgid "Back to trainer"
+msgstr "返回訓練器"
+
+msgid "Background color"
+msgstr "背景顏色"
+
+msgid "Backup your sites"
+msgstr "備份你的網站"
+
+msgid "Based on your interests"
+msgstr "根據你的興趣"
+
+msgid "Begin Training"
+msgstr "開始訓練"
+
+msgid "Bio"
+msgstr "個人簡介"
+
+#, python-format
+msgid "Block %(value_1)s?"
+msgstr "封鎖 %(value_1)s？"
+
+msgid "Block Domain"
+msgstr "封鎖網域"
+
+msgid "Block URLs matching these patterns (supports wildcards like *.example.com)."
+msgstr "封鎖符合這些模式的網址（支援 *.example.com 等萬用字元）。"
+
+msgid "Blocked"
+msgstr "已封鎖"
+
+msgid "Blocked Domains"
+msgstr "封鎖的網域"
+
+msgid "Blocked URL Patterns"
+msgstr "封鎖的 URL 模式"
+
+msgid "Blocking..."
+msgstr "正在封鎖…"
+
+msgid "Blocklist"
+msgstr "封鎖清單"
+
+msgid "Blocklist Settings"
+msgstr "封鎖清單設定"
+
+msgid "Blurblog"
+msgstr "Blurblog"
+
+msgid "Blurblog Options"
+msgstr "Blurblog 選項"
+
+msgid "Blurblog address"
+msgstr "Blurblog 網址"
+
+msgid "Blurblog permalinks"
+msgstr "Blurblog 永久連結"
+
+msgid "Blurblog title"
+msgstr "Blurblog 標題"
+
+msgid "Blurblogs"
+msgstr "Blurblog"
+
+msgid "Bookmarklet"
+msgstr "書籤小工具"
+
+msgid "Bottom"
+msgstr "底部"
+
+msgctxt "summary length"
+msgid "Brief"
+msgstr "簡短"
+
+msgid "Briefing"
+msgstr "簡報"
+
+msgid "Briefing Admin"
+msgstr "簡報管理員"
+
+msgid "Briefing Preferences"
+msgstr "簡報偏好設定"
+
+msgid "Briefing Settings"
+msgstr "簡報設定"
+
+msgid "Briefing generation timed out. Please try again."
+msgstr "簡報產生逾時，請再試一次。"
+
+msgid "Briefing length"
+msgstr "簡報長度"
+
+msgid "Browse Archives"
+msgstr "瀏覽封存內容"
+
+msgid "Browse all your stories"
+msgstr "瀏覽你的所有文章"
+
+msgid "Browse by Category"
+msgstr "依分類瀏覽"
+
+msgid "Browse domains from your archives and click to block them."
+msgstr "瀏覽封存中的網域，並點選以封鎖。"
+
+msgid "Browse domains from your archives. Click on a domain to block it from future archiving."
+msgstr "瀏覽封存中的網域。按一下網域即可封鎖，避免未來封存該網域的內容。"
+
+msgid "Browse goodies & integrations"
+msgstr "瀏覽實用工具與整合功能"
+
+msgid "Browse popular blogs, news sites, and publications with RSS feeds."
+msgstr "瀏覽提供 RSS 訂閱來源的熱門部落格、新聞網站和出版物。"
+
+msgid "Browse saved stories by tag in the sidebar"
+msgstr "在側邊欄依標籤瀏覽已儲存的文章"
+
+#, python-format
+msgid ""
+"Browse the full %(faq_link_start)sFAQ page%(faq_link_end)s or %(forum_link_start)sask the "
+"community%(forum_link_end)s."
+msgstr "瀏覽完整的 %(faq_link_start)s常見問題頁面%(faq_link_end)s，或%(forum_link_start)s向社群提問%(forum_link_end)s。"
+
+msgid "Browser"
+msgstr "瀏覽器"
+
+msgid "Browser Extensions"
+msgstr "瀏覽器擴充功能"
+
+msgid "Bullet points"
+msgstr "條列式重點"
+
+msgid "Bullets"
+msgstr "重點條列"
+
+#, python-format
+msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
+msgstr "含 10 篇以上文章的分類（%(value_1)s）"
+
+msgid "CLI Tool"
+msgstr "命令列工具"
+
+msgid "CLI access requires Premium Archive or Premium Pro."
+msgstr "CLI 存取需要 Premium Archive 或 Premium Pro。"
+
+msgid "Can I search saved stories?"
+msgstr "可以搜尋已儲存的文章嗎？"
+
+msgid "Can I search the archive?"
+msgstr "我可以搜尋封存內容嗎？"
+
+msgid "Can I share tagged collections?"
+msgstr "我可以分享已加上標籤的收藏集嗎？"
+
+msgid "Can I train on newsletter content?"
+msgstr "我可以用電子報內容進行訓練嗎？"
+
+msgid "Can I turn clustering off?"
+msgstr "可以關閉文章分群嗎？"
+
+msgid "Can I undo training?"
+msgstr "可以復原訓練嗎？"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Cancel delete"
+msgstr "取消刪除"
+
+msgid "Cancel mute"
+msgstr "取消靜音"
+
+msgid "Cancel rename"
+msgstr "取消重新命名"
+
+msgid "Cancel share"
+msgstr "取消分享"
+
+msgid "Cancel subscription renewal"
+msgstr "取消訂閱續約"
+
+msgid "Cancel unfollow"
+msgstr "不要取消追蹤"
+
+msgid "Canceled Request"
+msgstr "請求已取消"
+
+msgid "Cancelling..."
+msgstr "正在取消…"
+
+msgid "Categories"
+msgstr "分類"
+
+msgid "Categories &amp; Tags"
+msgstr "分類 &amp; 標籤"
+
+#, python-format
+msgid "Categorize %(count)s Uncategorized"
+msgid_plural "Categorize %(count)s Uncategorized"
+msgstr[0] "將 %(count)s 個未分類項目分類"
+
+msgid "Categorizing..."
+msgstr "正在分類…"
+
+msgid "Category"
+msgstr "分類"
+
+#, python-format
+msgid "Category: %(value_1)s"
+msgstr "分類：%(value_1)s"
+
+msgid "Change"
+msgstr "變更"
+
+msgid "Change RSS Feed Address"
+msgstr "變更 RSS 訂閱來源網址"
+
+msgid "Change Website Address"
+msgstr "變更網站網址"
+
+msgid "Change billing details"
+msgstr "變更帳單資料"
+
+msgid "Change folders"
+msgstr "變更資料夾"
+
+msgid "Change password"
+msgstr "變更密碼"
+
+msgid "Change what you like above..."
+msgstr "變更上方的偏好設定…"
+
+msgid "Change your blurblog settings above"
+msgstr "請在上方變更你的 Blurblog 設定"
+
+msgid "Change your credit card"
+msgstr "更換信用卡"
+
+msgid "Change your profile above"
+msgstr "在上方變更你的個人檔案"
+
+msgid "Check back later for popular sites being added by NewsBlur users."
+msgstr "稍後再回來查看 NewsBlur 使用者新增的熱門網站。"
+
+msgid "Check what you like above..."
+msgstr "請在上方勾選你喜歡的項目…"
+
+msgid "Check your email..."
+msgstr "請查看你的電子郵件…"
+
+msgid "Checking recent pages..."
+msgstr "正在檢查最近瀏覽的頁面…"
+
+msgid "Chinese"
+msgstr "中文"
+
+#, python-format
+msgid "Choose %(count)s site"
+msgid_plural "Choose %(count)s sites"
+msgstr[0] "選擇 %(count)s 個網站"
+
+#, python-format
+msgid "Choose Your %(count)s site"
+msgid_plural "Choose Your %(count)s sites"
+msgstr[0] "選擇你的 %(count)s 個網站"
+
+msgid "Choose Your sites"
+msgstr "選擇你的網站"
+
+msgid "Choose a story pattern"
+msgstr "選擇文章模式"
+
+msgid "Choose another language"
+msgstr "選擇其他語言"
+
+msgid "Choose categories"
+msgstr "選擇分類"
+
+msgid "Choose how many days back"
+msgstr "選擇往回查看的天數"
+
+msgid "Choose model"
+msgstr "選擇模型"
+
+msgid "Choose sites"
+msgstr "選擇網站"
+
+msgid "Choose when stories are marked as read"
+msgstr "選擇將文章標記為已讀的時機"
+
+msgid "Choose which AI model writes your briefing"
+msgstr "選擇撰寫簡報的 AI 模型"
+
+msgid "Choose which feeds are used to build your briefing"
+msgstr "選擇要用來製作簡報的訂閱來源"
+
+msgid "Choose which feeds to include"
+msgstr "選擇要納入的訂閱來源"
+
+msgid "Choose which sections appear in your briefing"
+msgstr "選擇要顯示在簡報中的區段"
+
+msgid "Choose your browser"
+msgstr "選擇你的瀏覽器"
+
+msgid "Choose your language"
+msgstr "選擇你的語言"
+
+msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
+msgstr "選擇你偏好的 AI 模型：Claude、GPT、Gemini 或 Grok"
+
+msgid "Choose your sites"
+msgstr "選擇你的網站"
+
+msgid "Classifier filter scope"
+msgstr "分類器篩選範圍"
+
+#, python-format
+msgid "Classifier scope requires %(tier_link)s"
+msgstr "分類器範圍需要 %(tier_link)s"
+
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你可以隨時切換。"
+
+msgid "Cleanup and rearrange feeds"
+msgstr "整理並重新排列訂閱來源"
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "Clear all filters"
+msgstr "清除所有篩選條件"
+
+msgid "Clear all overrides"
+msgstr "清除所有覆寫設定"
+
+msgid "Clear classifier filter"
+msgstr "清除分類器篩選條件"
+
+msgid "Clear custom range"
+msgstr "清除自訂範圍"
+
+msgid "Clear date range"
+msgstr "清除日期範圍"
+
+msgid "Clear filter"
+msgstr "清除篩選條件"
+
+msgid "Clear icon"
+msgstr "清除圖示"
+
+msgid "Clear search"
+msgstr "清除搜尋"
+
+#, python-format
+msgid "Cleared %(count)s override."
+msgid_plural "Cleared %(count)s overrides."
+msgstr[0] "已清除 %(count)s 個覆寫項目。"
+
+msgid "Click any source card on a clustered story to read that version instead."
+msgstr "在已分群的文章上點選任一來源卡片，即可改讀該版本。"
+
+msgid "Click any source to read that version instead, or mark all duplicates as read at once"
+msgstr "點選任一來源即可改讀該版本，或一次將所有重複文章標記為已讀"
+
+msgid "Click to block"
+msgstr "點擊以封鎖"
+
+msgid "Close"
+msgstr "關閉"
+
+msgid "Close Training and Start Reading"
+msgstr "關閉訓練並開始閱讀"
+
+msgid "Close player"
+msgstr "關閉播放器"
+
+msgid "Cluster duplicate stories across all your feeds"
+msgstr "將所有訂閱來源中的重複文章分群"
+
+msgid "Cluster preview:"
+msgstr "分群預覽："
+
+msgid "Cluster related stories"
+msgstr "將相關文章分群"
+
+msgid "Clustered stories in the titles view"
+msgstr "標題檢視中的文章群組"
+
+msgid "Collapse All Folders"
+msgstr "收合所有資料夾"
+
+msgid "Collapse Folder"
+msgstr "收合資料夾"
+
+msgid "Collapse all"
+msgstr "全部收合"
+
+msgid "Collapse story"
+msgstr "收合文章"
+
+msgid "Collapsed"
+msgstr "已收合"
+
+msgid "Color"
+msgstr "顏色"
+
+msgid "Columns"
+msgstr "欄"
+
+msgid "Comfortable"
+msgstr "舒適"
+
+msgid "Comfortable spacing: less dense"
+msgstr "舒適間距：較不密集"
+
+msgid "Commands output JSON you can pipe straight to jq."
+msgstr "指令會輸出 JSON，可直接透過管線傳給 jq。"
+
+msgid "Comment"
+msgstr "留言"
+
+msgid "Comment on stories"
+msgstr "留言回覆文章"
+
+msgid "Comments:"
+msgstr "留言："
+
+msgid "Compact"
+msgstr "精簡"
+
+msgid "Compact spacing: more dense"
+msgstr "緊湊間距：更密集"
+
+msgid "Complete data ownership"
+msgstr "完整掌控資料"
+
+msgid "Concise bullet points highlighting key takeaways from each story"
+msgstr "以精簡條列方式整理每篇文章的重點"
+
+msgid "Confirming mark as read"
+msgstr "確認標記為已讀"
+
+msgid "Congratulations! You're done."
+msgstr "恭喜！完成了。"
+
+#, python-format
+msgid "Connect %(provider)s"
+msgstr "連結 %(provider)s"
+
+msgid ""
+"Connect AI agents to your NewsBlur account. Read feeds, triage stories, train classifiers, and manage "
+"subscriptions from Claude Code, Codex, or any MCP-compatible tool."
+msgstr "將 AI 代理連線至你的 NewsBlur 帳戶。你可以從 Claude Code、Codex 或任何相容 MCP 的工具讀取訂閱來源、整理文章、訓練分類器及管理訂閱。"
+
+msgid "Connect AI agents with MCP server and CLI"
+msgstr "使用 MCP 伺服器和 CLI 連接 AI 代理"
+
+msgid ""
+"Connect NewsBlur to hundreds of services. Save stories to Pocket, Instapaper, Evernote, or Notion; post "
+"shares to Slack; trigger custom workflows from your training."
+msgstr "將 NewsBlur 連結至數百種服務。將文章儲存至 Pocket、Instapaper、Evernote 或 Notion；將分享內容發佈至 Slack；依據你的訓練觸發自訂工作流程。"
+
+msgid "Connected"
+msgstr "已連線"
+
+msgid "Connected accounts"
+msgstr "已連結的帳戶"
+
+msgid "Content"
+msgstr "內容"
+
+msgid "Content Filter"
+msgstr "內容篩選器"
+
+msgid "Control clustering per feed from the feed options popover, or globally in Preferences > Stories."
+msgstr "可在各訂閱來源的選項彈出視窗中，或於「偏好設定」>「文章」中全域控制文章分群。"
+
+msgid "Control which websites are archived. Blocked sites will not be saved by the browser extension."
+msgstr "控管要封存哪些網站。遭封鎖的網站不會由瀏覽器擴充功能儲存。"
+
+msgid "Copied"
+msgstr "已複製"
+
+msgid "Copied URL"
+msgstr "已複製網址"
+
+msgid "Copied text"
+msgstr "已複製文字"
+
+msgid "Copied!"
+msgstr "已複製！"
+
+msgid "Copy"
+msgstr "複製"
+
+msgid "Copy Text"
+msgstr "複製文字"
+
+msgid "Copy URL"
+msgstr "複製網址"
+
+msgid "Could not disconnect this account. Please try again."
+msgstr "無法解除連結此帳戶。請再試一次。"
+
+msgid "Could not find RSS feed for this URL"
+msgstr "找不到此網址的 RSS 訂閱來源"
+
+msgid "Could not load FAQ. Please try again."
+msgstr "無法載入常見問題。請再試一次。"
+
+msgid "Counting is difficult"
+msgstr "計數很難"
+
+msgid "Counting..."
+msgstr "正在計算…"
+
+msgid "Create"
+msgstr "建立"
+
+msgid "Create Account"
+msgstr "建立帳戶"
+
+msgid "Create Gift Link"
+msgstr "建立禮物連結"
+
+msgid "Create a feed for any website, even without RSS."
+msgstr "為任何網站建立訂閱來源，即使沒有 RSS 也可以。"
+
+msgid "Create a new subfolder"
+msgstr "建立新子資料夾"
+
+msgid "Created:"
+msgstr "建立時間："
+
+msgid "Creative"
+msgstr "創意"
+
+msgid "Credit"
+msgstr "獲得的回饋"
+
+msgid "Cursors"
+msgstr "游標"
+
+msgid "Custom Add Site URL"
+msgstr "自訂新增網站網址"
+
+msgid "Custom CSS"
+msgstr "自訂 CSS"
+
+msgid "Custom CSS for your Blurblog"
+msgstr "為你的 Blurblog 自訂 CSS"
+
+msgid "Custom CSS/JavaScript"
+msgstr "自訂 CSS/JavaScript"
+
+msgid "Custom Date Range"
+msgstr "自訂日期範圍"
+
+msgid "Custom JavaScript"
+msgstr "自訂 JavaScript"
+
+msgid "Custom RSS feeds for saved stories"
+msgstr "已儲存文章的自訂 RSS 訂閱來源"
+
+msgid "Custom URLs"
+msgstr "自訂網址"
+
+msgid "Custom date range"
+msgstr "自訂日期範圍"
+
+msgid "Custom icon"
+msgstr "自訂圖示"
+
+msgid "Customizable writing style and length"
+msgstr "可自訂的寫作風格和長度"
+
+msgid "Customize auto-read by site or folder"
+msgstr "依網站或資料夾自訂自動標記為已讀"
+
+msgid "Customize briefing sections and delivery schedule"
+msgstr "自訂簡報區段和寄送時間"
+
+msgid "Customize with Claude Code"
+msgstr "使用 Claude Code 自訂"
+
+msgid "DIY"
+msgstr "自己動手做"
+
+msgid "Daily"
+msgstr "每日"
+
+msgid "Daily Briefing"
+msgstr "每日簡報"
+
+msgid "Daily Briefing with story summaries"
+msgstr "含文章摘要的每日簡報"
+
+msgid ""
+"Daily Briefings are a Premium Archive feature. On your plan you can generate a preview with the first 3 "
+"stories of each briefing. Upgrade for every story and automatic briefings on your schedule."
+msgstr "每日簡報是 Premium Archive 功能。你的方案可預覽每份簡報的前 3 篇文章。升級即可查看所有文章，並依排程自動接收簡報。"
+
+msgid "Daily briefing with your top stories and keywords"
+msgstr "包含熱門文章與關鍵字的每日簡報"
+
+msgid "Daily distribution of stories"
+msgstr "每日文章分布"
+
+msgid "Dark"
+msgstr "深色"
+
+msgid "Dark mode and reading customization"
+msgstr "深色模式與閱讀自訂設定"
+
+msgid "Dashboard"
+msgstr "儀表板"
+
+msgid "Date"
+msgstr "日期"
+
+#, python-format
+msgid "Date: %(value_1)s → %(value_2)s"
+msgstr "日期：%(value_1)s → %(value_2)s"
+
+msgid "Days"
+msgstr "天"
+
+msgid "Days of unreads"
+msgstr "未讀天數"
+
+msgid "December"
+msgstr "十二月"
+
+msgid "Deep reads the community gave real time to"
+msgstr "社群投入時間深入閱讀的文章"
+
+msgid "Default"
+msgstr "預設"
+
+msgid "Default Blocklist"
+msgstr "預設封鎖清單"
+
+msgid "Default folder"
+msgstr "預設資料夾"
+
+msgid "Default layout"
+msgstr "預設版面配置"
+
+msgid "Default story order"
+msgstr "預設文章順序"
+
+msgid "Default view"
+msgstr "預設檢視"
+
+msgid "Delete"
+msgstr "刪除"
+
+#, python-format
+msgid "Delete %(count)s site"
+msgid_plural "Delete %(count)s sites"
+msgstr[0] "刪除 %(count)s 個網站"
+
+msgid "Delete It. It Just Won't Work!"
+msgstr "刪掉它。它就是行不通！"
+
+msgid "Delete Share"
+msgstr "刪除分享"
+
+msgid "Delete Tag"
+msgstr "刪除標籤"
+
+msgid "Delete all of my sites"
+msgstr "刪除我的所有網站"
+
+msgid "Delete my account"
+msgstr "刪除我的帳戶"
+
+msgid "Delete my intelligence training classifiers"
+msgstr "刪除我的智慧訓練分類器"
+
+msgid "Delete my saved stories"
+msgstr "刪除我已儲存的文章"
+
+msgid "Delete my shared stories"
+msgstr "刪除我分享的文章"
+
+msgid "Delete saved search"
+msgstr "刪除已儲存的搜尋"
+
+msgid "Delete sites"
+msgstr "刪除網站"
+
+msgid "Delete this folder"
+msgstr "刪除此資料夾"
+
+msgid "Delete this site"
+msgstr "刪除此網站"
+
+msgid "Deleted!"
+msgstr "已刪除！"
+
+msgid "Deleting..."
+msgstr "正在刪除…"
+
+msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
+msgstr "描述你要找的文章，我們會重新分析頁面來尋找。"
+
+msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
+msgstr "描述一個主題，AI 會根據你的提示為每篇文章評分，並將符合的文章設為焦點或隱藏。"
+
+msgid "Describe what to focus or hide"
+msgstr "描述要聚焦或隱藏的內容"
+
+msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
+msgstr "描述你要尋找的內容，AI 會根據你的提示分析每篇文章的圖片。"
+
+msgctxt "summary length"
+msgid "Detailed"
+msgstr "詳細"
+
+msgid "Devices"
+msgstr "裝置"
+
+msgid "Disable daily briefings"
+msgstr "停用每日簡報"
+
+msgid "Disable social features"
+msgstr "停用社交功能"
+
+msgid "Disable story clustering"
+msgstr "停用文章分群"
+
+msgid "Disable the highlighter"
+msgstr "停用醒目提示"
+
+#, python-format
+msgid "Disconnect %(account)s? You will no longer be able to use it to sign in to this NewsBlur account."
+msgstr "要解除連結 %(account)s 嗎？你將無法再使用它登入此 NewsBlur 帳戶。"
+
+#, python-format
+msgid "Disconnect %(provider)s (%(email)s)"
+msgstr "解除連結 %(provider)s（%(email)s）"
+
+msgid "Disconnecting..."
+msgstr "正在中斷連線…"
+
+msgid "Discover"
+msgstr "探索"
+
+msgid "Discover Channels"
+msgstr "探索頻道"
+
+msgid "Discover Newsletters"
+msgstr "探索電子報"
+
+msgid "Discover Podcasts"
+msgstr "探索 Podcast"
+
+msgid "Discover Sites"
+msgstr "探索網站"
+
+msgid "Discover Subreddits"
+msgstr "探索 Subreddit"
+
+msgid "Discover feeds organized by topic and interest."
+msgstr "探索依主題和興趣分類的訂閱來源。"
+
+msgid "Discover more to read"
+msgstr "探索更多內容"
+
+msgid "Discover new feeds by topic and search your Reading Archive"
+msgstr "依主題探索新訂閱來源，並搜尋你的閱讀封存"
+
+msgid "Discover related stories across your archive"
+msgstr "在你的封存內容中尋找相關文章"
+
+msgid "Discover related stories and sites"
+msgstr "探索相關文章與網站"
+
+msgid "Discover sites"
+msgstr "探索網站"
+
+msgid "Dislike"
+msgstr "不喜歡"
+
+msgid "Dislike "
+msgstr "不喜歡"
+
+msgid "Dislike matching stories"
+msgstr "不喜歡符合條件的文章"
+
+msgid "Dislikes"
+msgstr "不喜歡"
+
+msgid "Dismiss"
+msgstr "關閉"
+
+msgid "Do I get a unique email address?"
+msgstr "我會取得專屬的電子郵件地址嗎？"
+
+msgid "Do the apps work offline?"
+msgstr "應用程式可以離線使用嗎？"
+
+msgid "Does Ask AI work with audio and video?"
+msgstr "「詢問 AI」支援音訊和影片嗎？"
+
+msgid "Does training work across all my feeds?"
+msgstr "訓練設定會套用到我所有的訂閱來源嗎？"
+
+#, python-format
+msgid "Domain: %(value_1)s"
+msgstr "網域：%(value_1)s"
+
+msgid "Don't automatically mark stories as read"
+msgstr "不要自動將文章標記為已讀"
+
+msgid "Don't bother showing tooltips"
+msgstr "不必顯示工具提示"
+
+msgid "Don't do anything on double-clicks"
+msgstr "按兩下時不執行任何動作"
+
+msgid "Don't see your subreddit? Subscribe directly by name."
+msgstr "找不到你的 subreddit？直接輸入名稱訂閱。"
+
+msgid "Don't show a preview, only show the story title"
+msgstr "不要顯示預覽，只顯示文章標題"
+
+msgid "Don't show a thumbnail"
+msgstr "不要顯示縮圖"
+
+msgid "Done!"
+msgstr "完成！"
+
+msgid "Double-clicking a site"
+msgstr "按兩下網站"
+
+msgid "Double-clicking an unread count"
+msgstr "按兩下未讀數量"
+
+msgid "Download"
+msgstr "下載"
+
+msgid "Download NewsBlur from the App Store or Google Play"
+msgstr "從 App Store 或 Google Play 下載 NewsBlur"
+
+msgid "Download OPML"
+msgstr "下載 OPML"
+
+msgid "Download this XML file as a backup"
+msgstr "下載此 XML 檔案作為備份"
+
+msgid "Drag categories here to exclude them"
+msgstr "將分類拖曳至此處以排除"
+
+msgid ""
+"Drag the button to your bookmark toolbar. On any site, it subscribes to the feed or shares the story you're"
+" reading."
+msgstr "將按鈕拖曳至書籤列。在任何網站上，按下按鈕即可訂閱該網站，或分享你正在閱讀的文章。"
+
+msgid "Drag this bookmarklet into your bookmarks bar"
+msgstr "將此書籤小工具拖曳到書籤列"
+
+msgid "Drag this button to your bookmark toolbar."
+msgstr "將此按鈕拖曳至書籤工具列。"
+
+msgid "Drag to reorder"
+msgstr "拖曳以重新排序"
+
+msgid "Drag to reorder priority. Only shown when matching stories are found."
+msgstr "拖曳以調整優先順序。只有找到相符文章時才會顯示。"
+
+msgid "Duplicates fold underneath the highest-scoring version in your river"
+msgstr "重複文章會收合在新聞流中評分最高的版本下方"
+
+msgid "EXCLUDED FROM MERGES"
+msgstr "不納入合併"
+
+msgid "Each feed can notify a different way: browser push, email, iOS, or Android."
+msgstr "每個訂閱來源都能使用不同方式通知：瀏覽器推播、電子郵件、iOS 或 Android。"
+
+msgid "Each newsletter sender becomes its own feed"
+msgstr "每位電子報寄件者都會成為獨立的訂閱來源"
+
+msgid "Each selected split needs a name and at least one story"
+msgstr "每個選取的拆分都需要名稱和至少一篇文章"
+
+msgid "Each sender becomes its own feed, so you can train away the newsletters that overstay their welcome."
+msgstr "每位寄件者都會成為獨立的訂閱來源，方便你訓練系統過濾掉那些寄個沒完沒了的電子報。"
+
+msgid "Each tag gets its own RSS feed for sharing or piping into other tools"
+msgstr "每個標籤都有專屬 RSS 訂閱來源，可供分享或串接至其他工具"
+
+msgid "Earn Free Premium"
+msgstr "免費獲得 Premium"
+
+msgid ""
+"Earn free time on your subscription for every person who signs up and subscribes. The credit scales with "
+"what they pick — no cap."
+msgstr "每位註冊並訂閱的推薦對象，都能為你的訂閱增加免費使用時間。回饋時長依對方選擇的方案而定，沒有上限。"
+
+msgid "Edit Profile"
+msgstr "編輯個人資料"
+
+msgid "Editorial"
+msgstr "敘事"
+
+msgid "Education"
+msgstr "教育"
+
+msgid "Email"
+msgstr "電子郵件"
+
+msgid "Email Newsletters"
+msgstr "電子報"
+
+msgid "Email address"
+msgstr "電子郵件地址"
+
+msgid "Email me 3 days before my subscription renews"
+msgstr "在訂閱續訂前 3 天寄送電子郵件通知我"
+
+msgid "Email me replies, re-shares, new followers, and account notices"
+msgstr "有回覆、重新分享、新追蹤者及帳戶通知時寄送電子郵件給我"
+
+msgid "Email notifications"
+msgstr "電子郵件通知"
+
+msgid "Email notifications require Premium Archive"
+msgstr "電子郵件通知需要 Premium Archive"
+
+msgid "Email story"
+msgstr "以電子郵件分享文章"
+
+msgid "Email:"
+msgstr "電子郵件："
+
+msgid "Emails"
+msgstr "電子郵件"
+
+msgid "Emoji"
+msgstr "表情符號"
+
+msgid "Enable \"mark all as read\" so reading one version clears every duplicate."
+msgstr "啟用「全部標記為已讀」，閱讀其中一個版本時便會清除所有重複文章。"
+
+msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
+msgstr "啟用每日簡報，取得 AI 生成的熱門文章摘要"
+
+#, python-format
+msgid "Enable all %(count)s site"
+msgid_plural "Enable all %(count)s sites"
+msgstr[0] "啟用所有 %(count)s 個網站"
+
+msgid "Enable all sites"
+msgstr "啟用所有網站"
+
+msgid "Enable captions/subtitles for YouTube videos"
+msgstr "為 YouTube 影片啟用字幕"
+
+msgid "Enable daily briefings"
+msgstr "啟用每日簡報"
+
+msgid "Enable highlighting"
+msgstr "啟用醒目提示"
+
+msgid "Enable microphone in browser settings to use voice input"
+msgstr "請在瀏覽器設定中啟用麥克風，以使用語音輸入"
+
+msgid "Enable social features"
+msgstr "啟用社交功能"
+
+msgid "Enable story clustering"
+msgstr "啟用文章分群"
+
+msgid "Enable the sites you want"
+msgstr "啟用你想要的網站"
+
+msgid "English"
+msgstr "英文"
+
+msgid "Enter URL pattern to match..."
+msgstr "輸入要比對的網址模式……"
+
+msgid "Enter a pattern"
+msgstr "輸入模式"
+
+msgid "Enter a topic or keywords..."
+msgstr "輸入主題或關鍵字…"
+
+msgid "Enter author pattern above"
+msgstr "在上方輸入作者模式"
+
+msgid "Enter author pattern..."
+msgstr "輸入作者模式…"
+
+msgid "Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content."
+msgstr "輸入關鍵字，為符合的文章建立區段。將比對文章標題和內容中的完整詞組。"
+
+msgid "Enter text above"
+msgstr "在上方輸入文字"
+
+msgid "Enter text to match..."
+msgstr "輸入要比對的文字…"
+
+msgid "Erase your intelligence training classifiers"
+msgstr "清除你的智慧訓練分類器"
+
+msgid "Erase your saved stories"
+msgstr "清除你已儲存的文章"
+
+msgid "Erase your shared stories"
+msgstr "刪除你分享的文章"
+
+msgid "Erase yourself"
+msgstr "刪除你的帳戶"
+
+msgid "Erase yourself permanently"
+msgstr "永久刪除你的帳戶"
+
+msgid "Error"
+msgstr "錯誤"
+
+msgid "Error - Try Again"
+msgstr "發生錯誤－請重試"
+
+msgid "Error - please try again"
+msgstr "發生錯誤，請再試一次"
+
+msgid "Error Loading Classifiers"
+msgstr "載入分類器時發生錯誤"
+
+msgid "Error saving"
+msgstr "儲存時發生錯誤"
+
+msgid "Error. Try again."
+msgstr "發生錯誤，請再試一次。"
+
+msgid "Error:"
+msgstr "錯誤："
+
+#, python-format
+msgid "Error: %(error)s"
+msgstr "錯誤：%(error)s"
+
+#, python-format
+msgid "Error: %(message)s"
+msgstr "錯誤：%(message)s"
+
+msgid "Even geekier"
+msgstr "更極客風"
+
+msgid "Evening"
+msgstr "晚上"
+
+msgid "Every"
+msgstr "每"
+
+msgid "Every new story is archived permanently"
+msgstr "每篇新文章都會永久封存"
+
+msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
+msgstr "每個已儲存文章的標籤都有自己的 RSS 訂閱來源，非常適合串接至 IFTTT 或 Zapier。"
+
+msgid "Every story archived and searchable forever"
+msgstr "每篇文章都會永久封存並可供搜尋"
+
+msgid "Every story archived and searchable forever. Your personal knowledge base."
+msgstr "所有文章都會永久封存並可搜尋。你的個人知識庫。"
+
+msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
+msgstr "每個標籤都有專屬的 RSS 訂閱來源。分享連結，或將其傳送至 IFTTT 或 Zapier。"
+
+msgid "Everybody"
+msgstr "所有人"
+
+msgid "Everything NewsBlur can do, and how to try it"
+msgstr "NewsBlur 能做的所有事，以及如何試用"
+
+msgid "Everything by This Publisher"
+msgstr "此發布者的所有內容"
+
+msgid "Everything has been deleted."
+msgstr "所有內容都已刪除。"
+
+msgid "Everything in Archive, plus:"
+msgstr "包含 Archive 的所有功能，此外還有："
+
+msgid "Everything in Free, plus:"
+msgstr "包含免費方案的所有功能，此外還有："
+
+msgid "Everything in Premium, plus:"
+msgstr "Premium 的所有功能，另外還有："
+
+msgid ""
+"Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
+" train classifiers. Pipe to jq or script your workflows."
+msgstr "在終端機中使用 MCP 伺服器的所有功能。閱讀訂閱來源、搜尋文章、管理訂閱並訓練分類器。可將結果傳給 jq，或用指令碼自動化工作流程。"
+
+msgid "Exact phrase"
+msgstr "完全符合的詞組"
+
+msgid "Examples"
+msgstr "範例"
+
+msgid "Exclude from merge"
+msgstr "不納入合併"
+
+msgid "Excluded from merges"
+msgstr "已從合併中排除"
+
+msgid "Exclusions & Advanced"
+msgstr "排除項目與進階設定"
+
+msgid "Exit fullscreen"
+msgstr "退出全螢幕"
+
+msgid "Expand All Folders"
+msgstr "展開所有資料夾"
+
+msgid "Expand Folder"
+msgstr "展開資料夾"
+
+msgid "Expand all"
+msgstr "全部展開"
+
+msgid "Expand story"
+msgstr "展開文章"
+
+msgid "Expanded"
+msgstr "展開"
+
+msgid "Expire 1 YR"
+msgstr "1 年後過期"
+
+msgid "Export trained stories from folders"
+msgstr "匯出資料夾中的已訓練文章"
+
+msgid "Extras"
+msgstr "其他"
+
+msgid "FAQ"
+msgstr "常見問題"
+
+msgid "Faces"
+msgstr "表情"
+
+msgid "Fact check this story"
+msgstr "查證這篇文章"
+
+msgid "Failed to connect to server"
+msgstr "無法連線至伺服器"
+
+msgid "Failed to convert newsletter URL"
+msgstr "無法轉換電子報網址"
+
+msgid "Failed to create Google News feed"
+msgstr "無法建立 Google 新聞訂閱來源"
+
+msgid "Failed to create feed"
+msgstr "建立訂閱來源失敗"
+
+msgid "Failed to delete tag."
+msgstr "無法刪除標籤。"
+
+msgid "Failed to get split suggestions"
+msgstr "無法取得拆分建議"
+
+msgid "Failed to load SVG image"
+msgstr "無法載入 SVG 圖片"
+
+msgid "Failed to load archives"
+msgstr "載入封存失敗"
+
+msgid "Failed to load conversation"
+msgstr "無法載入對話"
+
+msgid "Failed to load related sites"
+msgstr "無法載入相關網站"
+
+msgid "Failed to load stories"
+msgstr "載入文章失敗"
+
+msgid "Failed to mark as unread"
+msgstr "標記為未讀失敗"
+
+msgid "Failed to merge categories"
+msgstr "合併分類失敗"
+
+msgid "Failed to rename category"
+msgstr "重新命名分類失敗"
+
+msgid "Failed to rename tag."
+msgstr "重新命名標籤失敗。"
+
+msgid "Failed to search Reddit"
+msgstr "搜尋 Reddit 失敗"
+
+msgid "Failed to search YouTube"
+msgstr "搜尋 YouTube 失敗"
+
+msgid "Failed to search podcasts"
+msgstr "搜尋 Podcast 失敗"
+
+msgid "Failed to start categorization"
+msgstr "分類啟動失敗"
+
+msgid "Failed to submit query"
+msgstr "提交查詢失敗"
+
+msgid "Failed to subscribe"
+msgstr "訂閱失敗"
+
+msgid "Fashion"
+msgstr "時尚"
+
+msgid "Fast"
+msgstr "快速"
+
+msgid "Faster updates. Full-text search. Read by folder."
+msgstr "更新更快。全文搜尋。依資料夾閱讀。"
+
+msgid "Favorited!"
+msgstr "已加入最愛！"
+
+msgid "Favorites"
+msgstr "最愛"
+
+msgid "Features & Tips"
+msgstr "功能與技巧"
+
+msgid "Features &amp; Tips"
+msgstr "功能 &amp; 提示"
+
+msgid "Features and essays that readers gave real time to."
+msgstr "讀者真正花時間閱讀的特色文章與評論。"
+
+msgid "February"
+msgstr "二月"
+
+msgid "Feed"
+msgstr "訂閱來源"
+
+#, python-format
+msgid "Feed \"%(value_1)s\" has been created."
+msgstr "已建立訂閱來源「%(value_1)s」。"
+
+#, python-format
+msgid "Feed \"%(value_1)s\" is ready."
+msgstr "訂閱來源「%(value_1)s」已準備就緒。"
+
+msgid "Feed Fetch"
+msgstr "訂閱來源擷取"
+
+msgid "Feed Icon"
+msgstr "訂閱來源圖示"
+
+msgid "Feed Push"
+msgstr "訂閱來源推送"
+
+msgid "Feed opens:"
+msgstr "訂閱來源開啟次數："
+
+msgid "Feed: "
+msgstr "訂閱來源："
+
+msgid "Feeds"
+msgstr "訂閱來源"
+
+msgid "Feeds back-filled for complete archive"
+msgstr "回填訂閱來源的歷史文章，建立完整封存"
+
+msgid "Feeds with deeply engaged readers, not yet widely known"
+msgstr "擁有高度投入讀者、但尚未廣為人知的訂閱來源"
+
+msgid "Feeds:"
+msgstr "訂閱來源："
+
+msgid "Feel comfortable connecting to these services."
+msgstr "請放心連結至這些服務。"
+
+msgid "Fetch Feed From Website"
+msgstr "從網站擷取訂閱來源"
+
+#, python-format
+msgid "Fetch error: %(error)s"
+msgstr "擷取錯誤：%(error)s"
+
+#, python-format
+msgid "Fetched every %(value_1)s"
+msgstr "每隔 %(value_1)s 擷取一次"
+
+msgid "Fetching page..."
+msgstr "正在擷取頁面……"
+
+msgid "Fetching stories"
+msgstr "正在擷取文章"
+
+msgid "Fetching stories..."
+msgstr "正在擷取文章…"
+
+msgid "Fetching story"
+msgstr "正在擷取文章"
+
+msgid "Fetching text"
+msgstr "正在擷取文字"
+
+msgid "Fetching your feeds"
+msgstr "正在擷取你的訂閱來源"
+
+msgid "Fetching..."
+msgstr "正在擷取…"
+
+msgid "Files"
+msgstr "檔案"
+
+msgid "Filled Icons"
+msgstr "實心圖示"
+
+msgid "Filter by date range"
+msgstr "依日期範圍篩選"
+
+msgid "Filter by site or classifier..."
+msgstr "依網站或分類器篩選…"
+
+msgid "Filter channels..."
+msgstr "篩選頻道…"
+
+msgid "Filter icons..."
+msgstr "篩選圖示…"
+
+msgid "Filter newsletters..."
+msgstr "篩選電子報…"
+
+msgid "Filter notifications to focus-only stories so your training decides what pings you."
+msgstr "將通知篩選為僅顯示焦點文章，讓你的訓練設定決定哪些內容會通知你。"
+
+msgid "Filter podcasts..."
+msgstr "篩選 Podcast…"
+
+msgid "Filter sites..."
+msgstr "篩選網站……"
+
+msgid "Filter stories"
+msgstr "篩選文章"
+
+msgid "Filter stories by date range"
+msgstr "依日期範圍篩選文章"
+
+msgid "Filter subreddits..."
+msgstr "篩選 subreddit…"
+
+msgid "Filtering for"
+msgstr "篩選條件："
+
+#, python-format
+msgid "Filters found no stories in %(context)s."
+msgstr "篩選器在 %(context)s 中找不到任何文章。"
+
+msgid "Filters found no stories in this view."
+msgstr "此檢視畫面中沒有文章符合篩選條件。"
+
+msgid "Finance"
+msgstr "財經"
+
+#, python-format
+msgid "Find %(value_1)s Friends"
+msgstr "尋找 %(value_1)s 朋友"
+
+msgid "Find Friends"
+msgstr "尋找朋友"
+
+msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
+msgstr "在電子報對話框中尋找你的專屬 NewsBlur 電子郵件地址"
+
+msgid "Finish recording..."
+msgstr "完成錄製…"
+
+msgid "First things first..."
+msgstr "首先……"
+
+msgid "First, add sites"
+msgstr "首先，新增網站"
+
+msgid ""
+"First-class native apps built for each platform, not web wrappers. Everything you love about NewsBlur, on "
+"every device."
+msgstr "為各平台打造的一流原生 App，而非網頁包裝程式。你在 NewsBlur 喜愛的一切，都能在每台裝置上使用。"
+
+msgid "Fix a misbehaving site"
+msgstr "修復異常網站"
+
+msgid "Fix misbehaving site"
+msgstr "修復異常網站"
+
+msgid "Fix this misbehaving site"
+msgstr "修復這個異常網站"
+
+msgid "Flat"
+msgstr "扁平"
+
+msgid "Flowing narrative that connects stories into a readable digest"
+msgstr "串聯文章、易於閱讀的流暢摘要"
+
+msgid "Focus"
+msgstr "焦點"
+
+msgid "Focus or hide all stories from this publisher."
+msgstr "將這個發布者的所有文章設為焦點或隱藏。"
+
+msgid "Folder"
+msgstr "資料夾"
+
+msgid "Folder Icon"
+msgstr "資料夾圖示"
+
+msgid "Folder RSS Feed Address"
+msgstr "資料夾 RSS 訂閱來源網址"
+
+msgid "Folder Settings"
+msgstr "資料夾設定"
+
+msgid "Folder settings"
+msgstr "資料夾設定"
+
+msgid "Folder unread counts"
+msgstr "資料夾未讀數量"
+
+msgid "Folders"
+msgstr "資料夾"
+
+msgid "Folders, feeds, and story titles"
+msgstr "資料夾、訂閱來源和文章標題"
+
+msgid "Follow"
+msgstr "追蹤"
+
+#, python-format
+msgid "Follow %(value_1)s"
+msgstr "追蹤 %(value_1)s"
+
+msgid "Follow any website, even ones that don't publish an RSS feed."
+msgstr "追蹤任何網站，即使它們沒有發布 RSS 訂閱來源。"
+
+msgid "Follow social profiles, job boards, changelogs, and product pages that never offered a feed."
+msgstr "追蹤從未提供訂閱來源的社群個人檔案、求職網站、更新紀錄和產品頁面。"
+
+msgid "Follow to see their shared stories"
+msgstr "追蹤以查看對方分享的文章"
+
+msgid "Follow up to 1,024 sites"
+msgstr "最多追蹤 1,024 個網站"
+
+msgid "Follow up to 10,000 sites"
+msgstr "最多追蹤 10,000 個網站"
+
+msgid "Follow up to 4,096 sites"
+msgstr "最多追蹤 4,096 個網站"
+
+msgid "Follow up to 64 sites"
+msgstr "追蹤最多 64 個網站"
+
+msgid "Follow up..."
+msgstr "追問…"
+
+msgid "Follow-ups"
+msgstr "後續追蹤"
+
+msgid "Followers"
+msgstr "追蹤者"
+
+msgid "Following"
+msgstr "追蹤中"
+
+msgid "Following Me"
+msgstr "追蹤我的人"
+
+msgid "Following..."
+msgstr "正在追蹤…"
+
+msgid "Follows you"
+msgstr "追蹤你"
+
+msgid "Food"
+msgstr "美食"
+
+msgid "For Chrome & Edge"
+msgstr "適用於 Chrome 和 Edge"
+
+msgid "For Firefox"
+msgstr "適用於 Firefox"
+
+msgid "For Mac"
+msgstr "適用於 Mac"
+
+msgid "For Safari on Mac"
+msgstr "適用於 Mac 上的 Safari"
+
+msgid "Force all tall stories to have a max height"
+msgstr "強制所有過高的文章限制最大高度"
+
+#, python-format
+msgid "Forward %(seconds)s second"
+msgid_plural "Forward %(seconds)s seconds"
+msgstr[0] "快轉 %(seconds)s 秒"
+
+msgid "Forward or subscribe newsletters to that address"
+msgstr "將電子報轉寄至該地址，或直接用該地址訂閱電子報"
+
+msgid "Forwarding email address"
+msgstr "轉寄電子郵件地址"
+
+#, python-format
+msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
+msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
+msgstr[0] "找到 %(count)s 種模式。請選擇最符合你想看的文章的模式。"
+
+msgid "Found in the Account dialog"
+msgstr "可在「帳戶」對話方塊中找到"
+
+msgid "Free"
+msgstr "免費"
+
+msgid "Free + subscription · Mac, iPhone &amp; iPad"
+msgstr "免費＋訂閱 · Mac、iPhone &amp; iPad"
+
+msgid "Free + subscription · iPhone, iPad &amp; Mac"
+msgstr "免費 + 訂閱制 · iPhone、iPad &amp; Mac"
+
+msgid "Free beta · Mac, iPhone &amp; iPad"
+msgstr "免費測試版 · Mac、iPhone &amp; iPad"
+
+msgid "Free beta · iPhone, iPad &amp; Mac"
+msgstr "免費測試版 · iPhone、iPad &amp; Mac"
+
+msgid "Free · Android, iPhone, iPad &amp; Mac"
+msgstr "免費 · Android、iPhone、iPad &amp; Mac"
+
+msgid "Free · Apple Watch, iPhone &amp; iPad"
+msgstr "免費 · Apple Watch、iPhone &amp; iPad"
+
+msgid "Free · Made by NewsBlur"
+msgstr "免費 · 由 NewsBlur 製作"
+
+msgid "Free · Windows 10 &amp; 11"
+msgstr "免費 · Windows 10 &amp; 11"
+
+msgid "Free · iPhone &amp; iPad"
+msgstr "免費 · iPhone &amp; iPad"
+
+msgid "Free · iPhone, iPad &amp; Mac"
+msgstr "免費 · iPhone、iPad &amp; Mac"
+
+msgid "Free · iPhone, iPad, Mac &amp; Android"
+msgstr "免費 · iPhone、iPad、Mac &amp; Android"
+
+msgid "Free, open source · E-ink devices (Kobo, Kindle, PocketBook)"
+msgstr "免費、開放原始碼 · 電子紙裝置（Kobo、Kindle、PocketBook）"
+
+msgid "Free, open source · Emacs"
+msgstr "免費、開放原始碼 · Emacs"
+
+msgid "Free, open source · GNOME/Flathub"
+msgstr "免費開源 · GNOME/Flathub"
+
+msgid "Free, open source · Mac, iPhone &amp; iPad"
+msgstr "免費、開放原始碼 · Mac、iPhone &amp; iPad"
+
+msgid "Free, open source · Terminal (Linux, macOS, BSD)"
+msgstr "免費、開放原始碼 · 終端機（Linux、macOS、BSD）"
+
+msgid "Free, open source · iPhone, iPad &amp; Mac"
+msgstr "免費、開放原始碼 · iPhone、iPad &amp; Mac"
+
+msgid "French"
+msgstr "法文"
+
+msgid "Frequency"
+msgstr "頻率"
+
+msgid "Frequently Asked Questions"
+msgstr "常見問題"
+
+msgid "Fri"
+msgstr "週五"
+
+msgid "Friday"
+msgstr "星期五"
+
+msgid "Friendly note: You will be emailed a backup of your sites"
+msgstr "友情提醒：我們會將你訂閱的網站備份寄到你的電子郵件"
+
+msgid "Friends &amp; Followers"
+msgstr "朋友 &amp; 追蹤者"
+
+msgid "Friends and Followers"
+msgstr "朋友與追蹤者"
+
+msgctxt "date range"
+msgid "From"
+msgstr "從"
+
+msgid "From infrequent sites"
+msgstr "來自不常更新的網站"
+
+msgid "Full"
+msgstr "完整"
+
+#, python-format
+msgid "Full Archive Assistant responses are a %(link_start)spremium archive feature%(link_end)s."
+msgstr "完整封存助理的回應是 %(link_start)sPremium Archive 功能%(link_end)s。"
+
+msgid "Full Refund"
+msgstr "全額退款"
+
+msgid "Full articles extracted from the original site"
+msgstr "從原始網站擷取的完整文章"
+
+msgid "Full paragraph"
+msgstr "完整段落"
+
+msgid "Full screen"
+msgstr "全螢幕"
+
+msgid "Full width"
+msgstr "全寬"
+
+msgid "Full-Text Search"
+msgstr "全文搜尋"
+
+msgid "Full-text search across all stories"
+msgstr "搜尋所有文章的全文"
+
+msgid "Full-text search requires Premium or higher."
+msgstr "全文搜尋僅限 Premium 或更高級方案使用。"
+
+msgid "Full-text training on the Archive plan"
+msgstr "Archive 方案的全文訓練"
+
+msgid "Fullscreen"
+msgstr "全螢幕"
+
+msgid "Games"
+msgstr "遊戲"
+
+msgid "Gaming"
+msgstr "遊戲"
+
+msgid "General"
+msgstr "一般"
+
+msgid "Generate Briefing"
+msgstr "產生簡報"
+
+msgid "Generate Daily Briefing"
+msgstr "產生每日簡報"
+
+msgid "Generate Twice-Daily Briefing"
+msgstr "產生每日兩次的簡報"
+
+msgid "Generate Weekly Briefing"
+msgstr "產生每週簡報"
+
+msgid "Generating..."
+msgstr "正在產生……"
+
+msgid "Generation failed."
+msgstr "產生失敗。"
+
+msgid "German"
+msgstr "德文"
+
+msgid "Gestures"
+msgstr "手勢"
+
+msgid "Get AI Suggestions"
+msgstr "取得 AI 建議"
+
+msgid "Get AI Suggestions →"
+msgstr "取得 AI 建議 →"
+
+msgid "Get Started"
+msgstr "開始使用"
+
+msgid "Get Started with Archive"
+msgstr "開始使用封存"
+
+msgid "Get a summary of your top stories, delivered on your schedule."
+msgstr "依照你的時間安排，接收熱門文章摘要。"
+
+msgid "Get an AI-curated daily briefing with top stories and long reads"
+msgstr "取得 AI 精選的每日簡報，掌握熱門文章與長篇閱讀"
+
+msgid "Get more from NewsBlur"
+msgstr "進一步探索 NewsBlur"
+
+msgid ""
+"Get notified the moment a feed publishes a new story. Per-feed notifications on web, email, iOS, and "
+"Android, filtered by your training."
+msgstr "訂閱來源發布新文章時立即收到通知。可在網頁、電子郵件、iOS 和 Android 上設定個別訂閱來源通知，並依據你的訓練結果篩選。"
+
+msgid "Get notified when a new briefing is ready"
+msgstr "新簡報準備好時通知我"
+
+msgid "Get started"
+msgstr "開始使用"
+
+msgid "Get the Browser Extension"
+msgstr "取得瀏覽器擴充功能"
+
+msgid "Get the add-on"
+msgstr "取得附加元件"
+
+msgid "Get the apps"
+msgstr "取得應用程式"
+
+#, python-format
+msgid "Getting AI suggestions for \"%(category)s\"..."
+msgstr "正在取得「%(category)s」的 AI 建議……"
+
+msgid "Getting AI suggestions..."
+msgstr "正在取得 AI 建議…"
+
+msgid "Gift"
+msgstr "贈送"
+
+msgid "Gift a Subscription"
+msgstr "贈送訂閱"
+
+msgid "Gift link created:"
+msgstr "已建立禮物連結："
+
+msgid "Gifts Sent"
+msgstr "已送出的禮物"
+
+msgid "Give your AI agent the skill: npx skills add samuelclay/newsblur-cli-skill"
+msgstr "為你的 AI 代理程式新增技能：npx skills add samuelclay/newsblur-cli-skill"
+
+msgid "Global"
+msgstr "全域"
+
+msgid "Global Classifiers"
+msgstr "全域分類器"
+
+msgid "Global Shared Stories"
+msgstr "全域分享文章"
+
+msgid "Global settings"
+msgstr "全域設定"
+
+msgid ""
+"Gmail will walk you through confirming the email address. You'll want to come back to NewsBlur and look for"
+" the confirmation email under the \"Newsletters\" folder."
+msgstr "Gmail 會引導你確認電子郵件地址。之後請返回 NewsBlur，並在「電子報」資料夾中尋找確認郵件。"
+
+msgid "Go Premium — $36/year"
+msgstr "升級至 Premium — 每年 36 美元"
+
+#, python-format
+msgid "Go back to %(breadcrumb)s"
+msgstr "返回 %(breadcrumb)s"
+
+msgid "Good Reads"
+msgstr "優質閱讀"
+
+msgid "Good Reads on NewsBlur"
+msgstr "NewsBlur 上的優質閱讀"
+
+msgid "Goodies &amp; Extras"
+msgstr "實用工具 &amp; 額外功能"
+
+msgid "Goodies &amp; Mobile Apps"
+msgstr "實用工具 &amp; 行動應用程式"
+
+msgid "Google News"
+msgstr "Google 新聞"
+
+msgid "Green marks additions, red marks deletions."
+msgstr "綠色標示新增內容，紅色標示刪除內容。"
+
+msgid "Grid"
+msgstr "格狀"
+
+msgid "Grid View"
+msgstr "格狀檢視"
+
+msgid "Grid view"
+msgstr "格狀檢視"
+
+msgid "Group duplicate stories across your feeds"
+msgstr "將不同訂閱來源中的重複文章分群"
+
+msgid "Group stories that share:"
+msgstr "將符合以下條件的文章分組："
+
+msgid "Groups similar stories from different feeds"
+msgstr "將不同訂閱來源中的相似文章分群"
+
+msgid "Hand-picked shares from across NewsBlur"
+msgstr "來自 NewsBlur 各地的精選分享"
+
+msgid "Hang tight, indexing..."
+msgstr "請稍候，正在建立索引…"
+
+msgid "Headlines"
+msgstr "標題"
+
+msgid "Health"
+msgstr "健康"
+
+msgid "Hearts"
+msgstr "愛心"
+
+msgid "Here's what happens next:"
+msgstr "接下來會發生以下情況："
+
+msgid "Here's what to do:"
+msgstr "請依照以下步驟操作："
+
+msgid "Hidden Gems"
+msgstr "隱藏的珍寶"
+
+msgid "Hide"
+msgstr "隱藏"
+
+msgid "Hide all sharing, comments, and blurblog features"
+msgstr "隱藏所有分享、留言和 Blurblog 功能"
+
+msgid "Hide discover sites popover"
+msgstr "隱藏探索網站彈出視窗"
+
+msgid "Hide history"
+msgstr "隱藏歷史紀錄"
+
+msgid "Hide matching stories"
+msgstr "隱藏符合條件的文章"
+
+msgid "Hide sites"
+msgstr "隱藏網站"
+
+msgid "Hide sites you already subscribe to"
+msgstr "隱藏你已訂閱的網站"
+
+msgid "Hide story changes"
+msgstr "隱藏文章變更"
+
+msgid "Highlight"
+msgstr "醒目標示"
+
+msgid "Highlight words in the title to train on specific phrases."
+msgstr "醒目標示標題中的詞語，以便針對特定詞組進行訓練。"
+
+msgid "History"
+msgstr "歷史記錄"
+
+msgid "Home"
+msgstr "居家"
+
+msgid "Home-screen widgets show unread counts and the latest stories at a glance."
+msgstr "主畫面小工具可一覽未讀數量和最新文章。"
+
+msgid "How Gifting Works"
+msgstr "贈送方式"
+
+msgid "How are duplicates detected?"
+msgstr "如何偵測重複內容？"
+
+msgid "How does authentication work?"
+msgstr "驗證如何運作？"
+
+msgid "How far back does search go?"
+msgstr "搜尋可以追溯到多久以前？"
+
+msgid "How far back does the archive go?"
+msgstr "封存內容可以追溯到多久以前？"
+
+msgid "How it works"
+msgstr "運作方式"
+
+msgid "How many stories can I save?"
+msgstr "我可以儲存多少篇文章？"
+
+msgid "How often"
+msgstr "頻率"
+
+msgid "I'm Following"
+msgstr "我追蹤的人"
+
+msgid "IFTTT & Zapier"
+msgstr "IFTTT 與 Zapier"
+
+msgid "Identify key people and relationships"
+msgstr "辨識重要人物及其關係"
+
+msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
+msgstr "如果找不到 RSS 訂閱來源，NewsBlur 會提供建立網頁訂閱來源的選項"
+
+msgid "If none of the options match, type a story title you see on the page and we'll re-analyze."
+msgstr "如果選項都不符合，請輸入頁面上看到的文章標題，我們會重新分析。"
+
+#, python-format
+msgid "If you went %(premium_link)s,<br>this site would update every"
+msgstr "如果你升級至 %(premium_link)s，<br>此網站將每隔"
+
+msgid "Ignore"
+msgstr "忽略"
+
+msgid "Ignored"
+msgstr "已忽略"
+
+msgid "Image"
+msgstr "圖片"
+
+msgid "Image Filter"
+msgstr "圖片篩選器"
+
+msgid "Image Preview"
+msgstr "圖片預覽"
+
+msgid "Image must be smaller than 5MB"
+msgstr "圖片必須小於 5MB"
+
+msgid "Image preview"
+msgstr "圖片預覽"
+
+msgid "Image prompt"
+msgstr "圖片提示"
+
+msgid "Immediately"
+msgstr "立即"
+
+msgid "Import feeds"
+msgstr "匯入訂閱來源"
+
+msgid "Import from Google Reader or upload OPML"
+msgstr "從 Google Reader 匯入或上傳 OPML"
+
+msgid "Import or upload sites"
+msgstr "匯入或上傳網站"
+
+msgid "Importing your sites..."
+msgstr "正在匯入你的網站…"
+
+#, python-format
+msgid "In %(count)s day, your premium trial ends and you'll return to Free"
+msgid_plural "In %(count)s days, your premium trial ends and you'll return to Free"
+msgstr[0] "再過 %(count)s 天，你的 Premium 試用期將結束，並恢復為免費方案"
+
+#, python-format
+msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
+msgstr "在 Gmail 中前往 %(settings_menu)s，然後點選 %(add_button)s。新增你的自訂 NewsBlur 電子郵件地址。"
+
+msgid "In NewsBlur"
+msgstr "在 NewsBlur"
+
+#, python-format
+msgid ""
+"In a new tab, open <b>%(config_page)s</b>, search for <b>%(setting)s</b>, and set it to <b>%(value)s</b>. "
+"Stories opened with %(shortcut)s will then load in the background."
+msgstr "在新分頁中開啟 <b>%(config_page)s</b>，搜尋 <b>%(setting)s</b>，並將其設定為 <b>%(value)s</b>。之後透過 %(shortcut)s 開啟的文章就會在背景載入。"
+
+msgid "In a new window"
+msgstr "在新視窗中"
+
+msgid ""
+"In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
+"between like, dislike, and neutral."
+msgstr "在訂閱來源檢視中，直接點選文章標頭中的標籤和作者來訓練系統。每點一次，就會在喜歡、不喜歡和中立之間切換。"
+
+msgid "In this window"
+msgstr "在此視窗中"
+
+msgid "Include read"
+msgstr "包含已讀"
+
+msgid "Increase or remove your limit"
+msgstr "提高或移除你的限制"
+
+msgid "Independent"
+msgstr "獨立"
+
+msgid "Index feeds for discovery"
+msgstr "為探索功能建立訂閱來源索引"
+
+msgid "Index remaining feeds"
+msgstr "為其餘訂閱來源建立索引"
+
+msgid "Indexing your feeds for search"
+msgstr "正在為搜尋建立訂閱來源索引"
+
+msgid "Indexing..."
+msgstr "正在建立索引…"
+
+msgid "Infrequent Site Stories"
+msgstr "不常更新的網站文章"
+
+msgid "Infrequent stories per month"
+msgstr "不常更新網站的每月文章數"
+
+msgid "Insta-fetch stories"
+msgstr "立即擷取文章"
+
+msgid "Install"
+msgstr "安裝"
+
+msgid ""
+"Install the browser extension to automatically save every page you visit. Ask AI questions about anything "
+"you've read."
+msgstr "安裝瀏覽器擴充功能，自動儲存你造訪的每個頁面。還能針對你讀過的內容詢問 AI。"
+
+msgid "Install with: uv pip install newsblur-cli"
+msgstr "安裝指令：uv pip install newsblur-cli"
+
+msgid "Intelligence Trainer"
+msgstr "智慧訓練器"
+
+msgid "Intelligence Training"
+msgstr "智慧訓練"
+
+msgid "Interactions"
+msgstr "互動"
+
+#, python-format
+msgid "Invalid regex: %(error)s"
+msgstr "無效的正規表示式：%(error)s"
+
+msgid "Invoice"
+msgstr "發票"
+
+msgid "Is my data safe?"
+msgstr "我的資料安全嗎？"
+
+msgid "Is this available on the free plan?"
+msgstr "免費方案也提供這項功能嗎？"
+
+msgid "Is this different from RSS?"
+msgstr "這和 RSS 有什麼不同？"
+
+msgid "Is training free?"
+msgstr "訓練功能免費嗎？"
+
+msgid "January"
+msgstr "一月"
+
+msgid "Japanese"
+msgstr "日文"
+
+msgid "July"
+msgstr "七月"
+
+msgid "Jump immediately with no animations"
+msgstr "立即跳轉，不使用動畫"
+
+msgid "Jump to Folder"
+msgstr "跳至資料夾"
+
+msgid "June"
+msgstr "六月"
+
+msgid "Just Delete This Feed"
+msgstr "直接刪除此訂閱來源"
+
+msgid "Just now"
+msgstr "剛剛"
+
+msgid "Just the headlines with minimal commentary"
+msgstr "只有標題，幾乎沒有評論"
+
+msgid "Just the headlines, no commentary"
+msgstr "只有標題，沒有評論"
+
+msgid "Keep others unread"
+msgstr "保留其他文章為未讀"
+
+msgid "Keep read status"
+msgstr "保留已讀狀態"
+
+msgid "Keep right-side buttons visible while reading"
+msgstr "閱讀時保持右側按鈕顯示"
+
+msgid "Keep stories separate"
+msgstr "分開顯示文章"
+
+msgid "Keep up-to-date with NewsBlur"
+msgstr "掌握 NewsBlur 的最新消息"
+
+msgid "Keyboard"
+msgstr "鍵盤"
+
+msgid "Keyboard Shortcuts"
+msgstr "鍵盤快速鍵"
+
+msgid "Keyboard shortcuts"
+msgstr "鍵盤快速鍵"
+
+msgid "Keyword Section"
+msgstr "關鍵字區段"
+
+#, python-format
+msgid "Keyword section %(value_1)s"
+msgstr "關鍵字區段 %(value_1)s"
+
+msgid "Keyword sections"
+msgstr "關鍵字區段"
+
+msgid "Language"
+msgstr "語言"
+
+msgid "Large image thumbnail on the left"
+msgstr "左側顯示大型圖片縮圖"
+
+msgid "Large image thumbnail on the right"
+msgstr "右側顯示大型圖片縮圖"
+
+msgid "Last 30 Days"
+msgstr "最近 30 天"
+
+msgid "Last 7 Days"
+msgstr "最近 7 天"
+
+msgid "Last 90 Days"
+msgstr "最近 90 天"
+
+msgid "Last IP:"
+msgstr "上次 IP："
+
+msgid "Last Update"
+msgstr "上次更新"
+
+msgid "Last seen:"
+msgstr "上次上線："
+
+msgid "Leave unread"
+msgstr "保留為未讀"
+
+msgid "Left"
+msgstr "左側"
+
+msgid "Let's Get Started "
+msgstr "開始使用"
+
+msgid "Let's get some sites to read."
+msgstr "來找些網站閱讀吧。"
+
+msgid "Light"
+msgstr "淺色"
+
+msgid ""
+"Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
+"image previews, all customizable per-feed."
+msgstr "在網頁、iOS 和 Android 上提供淺色、深色及自動主題。字型、文字大小、行距、密度和圖片預覽皆可針對各訂閱來源自訂。"
+
+msgid "Like"
+msgstr "喜歡"
+
+msgid "Like "
+msgstr "喜歡 "
+
+msgid "Like matching stories"
+msgstr "喜歡符合條件的文章"
+
+msgid "Likes"
+msgstr "喜歡"
+
+msgid "Link"
+msgstr "連結"
+
+msgid "Link directly to the original story"
+msgstr "直接連結至原始文章"
+
+msgid "Link to my blurblog and shared comments"
+msgstr "連結至我的 Blurblog 和分享的留言"
+
+msgid "List"
+msgstr "清單"
+
+msgid "List View"
+msgstr "清單檢視"
+
+msgid "List view"
+msgstr "清單檢視"
+
+msgid "Loading PayPal..."
+msgstr "正在載入 PayPal…"
+
+msgid "Loading Training..."
+msgstr "正在載入訓練資料……"
+
+msgid "Loading checkout..."
+msgstr "正在載入結帳頁面…"
+
+msgid "Loading classifiers..."
+msgstr "正在載入分類器…"
+
+msgid "Loading feeds..."
+msgstr "正在載入訂閱來源…"
+
+msgid "Loading more briefings..."
+msgstr "正在載入更多簡報…"
+
+msgid "Loading your blocklist settings..."
+msgstr "正在載入封鎖清單設定…"
+
+msgid "Loading..."
+msgstr "載入中…"
+
+msgid "Location"
+msgstr "位置"
+
+msgid "Lock"
+msgstr "鎖定"
+
+msgid "Locked"
+msgstr "已鎖定"
+
+msgid "Log In or Sign Up"
+msgstr "登入或註冊"
+
+msgid "Logout"
+msgstr "登出"
+
+msgid "Long Reads"
+msgstr "長篇閱讀"
+
+msgid "Long Reads on NewsBlur"
+msgstr "NewsBlur 上的長篇閱讀"
+
+msgid "Long reads for later"
+msgstr "稍後閱讀長篇文章"
+
+msgid "Longer articles worth setting time aside for"
+msgstr "值得撥出時間閱讀的長篇文章"
+
+msgid "MCP Server"
+msgstr "MCP 伺服器"
+
+msgid "MCP server access requires Premium Archive or Premium Pro."
+msgstr "MCP 伺服器存取需要 Premium Archive 或 Premium Pro。"
+
+msgid "Magazine"
+msgstr "雜誌"
+
+msgid "Make changes above..."
+msgstr "變更上方設定…"
+
+msgid "Manage Categories"
+msgstr "管理分類"
+
+msgid "Manage NewsBlur"
+msgstr "管理 NewsBlur"
+
+msgid "Manage Training"
+msgstr "管理訓練"
+
+msgid "Manage billing and limits"
+msgstr "管理帳單與使用限額"
+
+msgid "Manage billing on Stripe"
+msgstr "在 Stripe 管理帳單"
+
+msgid "Manage email settings"
+msgstr "管理電子郵件設定"
+
+#, python-format
+msgid "Manually by hitting %(first_key)s or %(second_key)s"
+msgstr "手動按下 %(first_key)s 或 %(second_key)s"
+
+msgid "Manually or by clicking in the story"
+msgstr "手動操作或點選文章時"
+
+msgid ""
+"Many feeds only include a summary. Text view extracts the full story from the original website and displays"
+" it right in NewsBlur, with clean formatting and no clutter."
+msgstr "許多訂閱來源只提供摘要。文字檢視會從原始網站擷取完整文章，並以整潔、不雜亂的格式直接顯示在 NewsBlur 中。"
+
+msgid "March"
+msgstr "三月"
+
+#, python-format
+msgid "Mark %(count)s story as read?"
+msgid_plural "Mark %(count)s stories as read?"
+msgstr[0] "要將 %(count)s 篇文章標記為已讀嗎？"
+
+msgid "Mark <b>every story</b> as read"
+msgstr "將<b>每篇文章</b>標記為已讀"
+
+msgid "Mark Everything Read / Unread"
+msgstr "全部標記為已讀／未讀"
+
+msgid "Mark Stories as Read"
+msgstr "將文章標記為已讀"
+
+msgid "Mark Stories as Unread"
+msgstr "將文章標記為未讀"
+
+msgid "Mark a story as read"
+msgstr "將文章標記為已讀"
+
+msgid "Mark above stories read"
+msgstr "將上方文章標記為已讀"
+
+msgid "Mark all as read"
+msgstr "全部標記為已讀"
+
+msgid "Mark all as read?"
+msgstr "要將全部標記為已讀嗎？"
+
+#, python-format
+msgid "Mark all stories older than <b>%(value_1)s day</b> old as read"
+msgid_plural "Mark all stories older than <b>%(value_1)s days</b> old as read"
+msgstr[0] "將超過 <b>%(value_1)s 天</b> 的所有文章標記為已讀"
+
+msgid "Mark as read"
+msgstr "標記為已讀"
+
+msgid "Mark as read without confirmation"
+msgstr "不經確認即標記為已讀"
+
+msgid "Mark as unread"
+msgstr "標記為未讀"
+
+msgid "Mark below stories read"
+msgstr "將下方文章標記為已讀"
+
+msgid "Mark duplicates as read"
+msgstr "將重複文章標記為已讀"
+
+msgid "Mark everything read / unread"
+msgstr "將所有項目標記為已讀／未讀"
+
+msgid "Mark folder as read"
+msgstr "將資料夾標記為已讀"
+
+msgid "Mark folder stories as unread"
+msgstr "將資料夾中的文章標記為未讀"
+
+msgid "Mark newer stories read"
+msgstr "將較新的文章標記為已讀"
+
+msgid "Mark older stories read"
+msgstr "將較舊的文章標記為已讀"
+
+#, python-format
+msgid "Mark older than %(count)s day as read?"
+msgid_plural "Mark older than %(count)s days as read?"
+msgstr[0] "要將超過 %(count)s 天的文章標記為已讀嗎？"
+
+msgid "Mark stories as read when scrolled past"
+msgstr "捲動略過文章時將其標記為已讀"
+
+msgid "Mark stories as unread"
+msgstr "將文章標記為未讀"
+
+#, python-format
+msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
+msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
+msgstr[0] "將過去 <b>%(value_1)s 天</b>的文章標記為未讀"
+
+msgid "Mark stories read on scroll"
+msgstr "捲動時將文章標記為已讀"
+
+msgid "Mark the site as read"
+msgstr "將網站標記為已讀"
+
+msgid "Markers"
+msgstr "標記"
+
+msgid "Marking as read..."
+msgstr "正在標記為已讀…"
+
+msgid "Marking as unread..."
+msgstr "正在標記為未讀……"
+
+msgid "Match"
+msgstr "符合"
+
+msgid "Match stories by words or phrases in the body. Highlight text in the story and click Train to auto-fill."
+msgstr "依文章內文中的字詞或詞組比對文章。在文章中反白文字並點擊「訓練」，即可自動填入。"
+
+msgid "Matched via a duplicate title"
+msgstr "透過重複標題比對"
+
+msgid "Matched via related topics"
+msgstr "依相關主題比對"
+
+msgid "Matches story titles containing all keywords"
+msgstr "比對標題包含所有關鍵字的文章"
+
+msgid "May"
+msgstr "五月"
+
+msgid "Maybe later"
+msgstr "稍後再說"
+
+msgid "Media"
+msgstr "媒體"
+
+msgctxt "card height"
+msgid "Medium"
+msgstr "中"
+
+msgctxt "summary length"
+msgid "Medium"
+msgstr "中等"
+
+msgid "Merge"
+msgstr "合併"
+
+#, python-format
+msgid "Merge %(count)s category into:"
+msgid_plural "Merge %(count)s categories into:"
+msgstr[0] "將 %(count)s 個分類合併至："
+
+msgid "Merge into:"
+msgstr "合併至："
+
+#, python-format
+msgid "Merged %(count)s story into \"%(category)s\""
+msgid_plural "Merged %(count)s stories into \"%(category)s\""
+msgstr[0] "已將 %(count)s 篇文章合併至「%(category)s」"
+
+msgid "Merging..."
+msgstr "正在合併…"
+
+msgid "Messages"
+msgstr "訊息"
+
+msgid "Microphone blocked - click the lock icon in your browser's address bar to enable"
+msgstr "麥克風遭到封鎖——請點擊瀏覽器網址列中的鎖頭圖示以啟用"
+
+msgid "Misc"
+msgstr "其他"
+
+msgid "Mon"
+msgstr "週一"
+
+msgid "Monday"
+msgstr "星期一"
+
+msgid "Monthly spending limit"
+msgstr "每月支出上限"
+
+msgid "Monthly spending limit reached. "
+msgstr "已達每月支出上限。 "
+
+msgid "Months Earned"
+msgstr "已獲得月數"
+
+msgid "More"
+msgstr "更多"
+
+msgid "More Features"
+msgstr "更多功能"
+
+msgid "More from Reddit"
+msgstr "更多 Reddit 內容"
+
+msgid "Morning"
+msgstr "早上"
+
+msgid "Morning + Afternoon"
+msgstr "早上 + 下午"
+
+msgid "Morning + Evening"
+msgstr "早上 + 晚上"
+
+msgid "Most subscribed-to feeds this week"
+msgstr "本週訂閱數最多的訂閱來源"
+
+msgid "Most used at top, then alphabetical"
+msgstr "最常使用的排前面，其餘按字母排序"
+
+msgid "Move"
+msgstr "移動"
+
+#, python-format
+msgid "Move %(count)s site"
+msgid_plural "Move %(count)s sites"
+msgstr[0] "移動 %(count)s 個網站"
+
+msgid "Move to folder"
+msgstr "移至資料夾"
+
+msgid "Moved"
+msgstr "已移動"
+
+msgid "Moved!"
+msgstr "已移動！"
+
+msgid "Moving..."
+msgstr "正在移動…"
+
+msgid "Mute"
+msgstr "靜音"
+
+#, python-format
+msgid "Mute %(count)s site"
+msgid_plural "Mute %(count)s sites"
+msgstr[0] "靜音 %(count)s 個網站"
+
+msgid "Mute Sites"
+msgstr "靜音網站"
+
+#, python-format
+msgid "Mute for %(duration)s"
+msgstr "靜音 %(duration)s"
+
+msgid "Mute indefinitely"
+msgstr "無限期靜音"
+
+msgid "Mute sites"
+msgstr "靜音網站"
+
+msgid "Mute this site"
+msgstr "靜音此網站"
+
+msgid "Muted"
+msgstr "已靜音"
+
+msgid "Muted indefinitely."
+msgstr "已無限期靜音。"
+
+#, python-format
+msgid "Muted · unmutes in %(time)s"
+msgstr "已靜音 · 將於 %(time)s 解除靜音"
+
+msgid "Muted · unmuting soon"
+msgstr "已靜音 · 即將取消靜音"
+
+msgid "My shared stories are public and anybody can reply to me"
+msgstr "我的分享文章為公開內容，任何人都可以回覆我"
+
+msgid "My shared stories are public but only people I approve can reply"
+msgstr "我分享的文章是公開的，但只有經我核准的人才能回覆"
+
+msgid "NEVER"
+msgstr "永不"
+
+msgid "Name"
+msgstr "名稱"
+
+msgid "Native Apps"
+msgstr "原生應用程式"
+
+msgid "Natural Language Image Classifier"
+msgstr "自然語言圖片分類器"
+
+msgid "Natural Language Text Classifier"
+msgstr "自然語言文字分類器"
+
+msgid "Natural language classifier billing"
+msgstr "自然語言分類器計費"
+
+msgid "Natural language classifiers are paused until next billing cycle. "
+msgstr "自然語言分類器已暫停，將於下個帳單週期恢復。"
+
+msgid "Natural language classifiers are using your instance's API keys."
+msgstr "自然語言分類器正在使用你這個執行個體的 API 金鑰。"
+
+msgid "Natural language text and image classifiers"
+msgstr "自然語言文字與圖片分類器"
+
+msgid "Nature"
+msgstr "自然"
+
+msgid "Navigate between stories"
+msgstr "在文章間切換"
+
+msgid ""
+"Navigate everything without touching the mouse. Open feeds, scroll stories, mark as read, save, share, and "
+"train, all from the keyboard."
+msgstr "不用碰滑鼠，就能瀏覽所有內容。只需使用鍵盤即可開啟訂閱來源、捲動文章、標記為已讀、儲存、分享及訓練。"
+
+msgid "Need at least 2 categories to merge"
+msgstr "至少需要 2 個分類才能合併"
+
+msgid "Nested"
+msgstr "巢狀"
+
+msgid "Never"
+msgstr "永不"
+
+msgid "Never ever send me an email"
+msgstr "絕對不要寄電子郵件給我"
+
+msgid "Never expire"
+msgstr "永不過期"
+
+msgid "Never gonna expire. Congrats!"
+msgstr "永不過期。恭喜！"
+
+msgid "New Arrivals"
+msgstr "最新上架"
+
+msgid "New Chat"
+msgstr "新對話"
+
+msgid "New Conversation"
+msgstr "新增對話"
+
+msgid "New category name"
+msgstr "新分類名稱"
+
+msgid "New content appears in your feed just like regular RSS"
+msgstr "新內容會像一般 RSS 一樣出現在你的訂閱來源中"
+
+msgid "New folder"
+msgstr "新增資料夾"
+
+msgid "New folder name..."
+msgstr "新資料夾名稱…"
+
+#, python-format
+msgid "New folder under %(folder)s..."
+msgstr "在 %(folder)s 下新增資料夾…"
+
+msgid "New password"
+msgstr "新密碼"
+
+msgid "New posts from feeds you recently read"
+msgstr "你最近閱讀的訂閱來源發布的新文章"
+
+msgid "New tag name"
+msgstr "新標籤名稱"
+
+msgid "New to me"
+msgstr "未訂閱的網站"
+
+msgid "Newer:"
+msgstr "晚於："
+
+msgid "Newest"
+msgstr "最新"
+
+msgid "Newest first"
+msgstr "由新到舊"
+
+msgid "NewsBlur checks for changes and delivers new stories to your feed."
+msgstr "NewsBlur 會檢查是否有更新，並將新文章送到你的訂閱來源。"
+
+msgid "NewsBlur connected to other services"
+msgstr "NewsBlur 已連結至其他服務"
+
+#, python-format
+msgid "NewsBlur detected %(language)s from your browser."
+msgstr "NewsBlur 從你的瀏覽器偵測到 %(language)s。"
+
+msgid "NewsBlur is down right now. <br> Try again soon."
+msgstr "NewsBlur 目前無法使用。<br> 請稍後再試。"
+
+msgid "NewsBlur is in maintenance mode. <br> Try again soon."
+msgstr "NewsBlur 正在維護中。<br> 請稍後再試。"
+
+msgid "NewsBlur monitors the page for changes automatically"
+msgstr "NewsBlur 會自動監控頁面是否有變更"
+
+msgid "NewsBlur on iOS with the full feature set"
+msgstr "在 iOS 上使用完整功能的 NewsBlur"
+
+msgid "NewsBlur will automatically find the RSS feed for this site."
+msgstr "NewsBlur 會自動尋找此網站的 RSS 訂閱來源。"
+
+msgid "Newsletter"
+msgstr "電子報"
+
+msgid "Newsletters"
+msgstr "電子報"
+
+msgid "Newsletters & Substack"
+msgstr "電子報與 Substack"
+
+msgid "Newsletters appearing as feeds"
+msgstr "以訂閱來源形式顯示的電子報"
+
+msgid "Next Unread Story"
+msgstr "下一篇未讀文章"
+
+msgid "Next Update"
+msgstr "下次更新"
+
+msgid "Next site"
+msgstr "下一個網站"
+
+msgid "Next step "
+msgstr "下一步 "
+
+msgid "Next story"
+msgstr "下一篇文章"
+
+msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
+msgstr "接著，建立一個包含所有電子報的篩選器，讓它們轉寄到 NewsBlur 上的自訂地址。"
+
+msgid "No"
+msgstr "否"
+
+msgid "No Changes"
+msgstr "沒有變更"
+
+msgid "No Trained Classifiers Yet"
+msgstr "尚無訓練過的分類器"
+
+msgid "No archived domains found. Start browsing to build your archive!"
+msgstr "找不到已封存的網域。開始瀏覽以建立封存內容！"
+
+msgid "No archives match your filters"
+msgstr "沒有符合篩選條件的封存項目"
+
+msgid "No briefings yet."
+msgstr "目前沒有簡報。"
+
+msgid "No categories available. Categories will appear here once they are configured."
+msgstr "目前沒有可用的分類。設定分類後，它們就會顯示在這裡。"
+
+msgid "No categories with 10+ stories available for splitting."
+msgstr "沒有可供拆分、含有 10 篇以上文章的分類。"
+
+msgid "No channels found matching your filter."
+msgstr "找不到符合篩選條件的頻道。"
+
+msgid "No channels found."
+msgstr "找不到頻道。"
+
+msgid "No connected accounts"
+msgstr "沒有已連結的帳戶"
+
+msgid "No content"
+msgstr "沒有內容"
+
+msgid "No feeds found"
+msgstr "找不到訂閱來源"
+
+msgid "No feeds found in this category."
+msgstr "此類別中找不到訂閱來源。"
+
+msgid "No gifts sent yet."
+msgstr "尚未送出任何贈品。"
+
+#, python-format
+msgid "No icons match \"%(value_1)s\""
+msgstr "找不到符合「%(value_1)s」的圖示"
+
+msgid "No image"
+msgstr "沒有圖片"
+
+msgid "No items added yet."
+msgstr "尚未新增任何項目。"
+
+msgid "No limit"
+msgstr "不限"
+
+msgid "No match"
+msgstr "沒有相符項目"
+
+msgid "No match in URL"
+msgstr "網址中沒有相符項目"
+
+msgid "No match in author"
+msgstr "作者中沒有符合項目"
+
+msgid "No match in story"
+msgstr "文章中沒有符合項目"
+
+msgid "No match in title"
+msgstr "標題中沒有符合項目"
+
+#, python-format
+msgid "No matches for “%(value_1)s”"
+msgstr "找不到符合「%(value_1)s」的項目"
+
+msgid "No merge suggestions"
+msgstr "沒有合併建議"
+
+msgid "No merge suggestions available"
+msgstr "沒有可用的合併建議"
+
+msgid "No merge suggestions available. Categories are analyzed for similarity."
+msgstr "目前沒有可用的合併建議。系統會分析分類之間的相似度。"
+
+msgid "No merges to apply"
+msgstr "沒有要套用的合併項目"
+
+msgid "No newsletters found matching your filter."
+msgstr "找不到符合篩選條件的電子報。"
+
+msgid "No newsletters found."
+msgstr "找不到電子報。"
+
+msgid "No past conversations"
+msgstr "沒有過去的對話"
+
+msgid "No payments found."
+msgstr "找不到付款紀錄。"
+
+msgid "No podcasts found matching your filter."
+msgstr "找不到符合篩選條件的 Podcast。"
+
+msgid "No podcasts found."
+msgstr "找不到 Podcast。"
+
+msgid "No questions match that search."
+msgstr "找不到符合此搜尋的問題。"
+
+msgid "No recency filter"
+msgstr "不限制近期程度"
+
+msgid "No referrals yet. Share your link to get started!"
+msgstr "目前還沒有推薦紀錄。分享你的連結，開始推薦吧！"
+
+msgid "No results found, but you can subscribe directly if you know the subreddit name."
+msgstr "找不到結果，但如果你知道 subreddit 名稱，可以直接訂閱。"
+
+msgid "No similar stories found"
+msgstr "找不到相似文章"
+
+msgid "No sites available"
+msgstr "沒有可用的網站"
+
+msgid "No sites found matching your filter."
+msgstr "找不到符合篩選條件的網站。"
+
+msgid "No sites found."
+msgstr "找不到網站。"
+
+msgid "No split suggestions available"
+msgstr "沒有可用的拆分建議"
+
+msgid "No split suggestions available for this category"
+msgstr "此分類沒有可用的拆分建議"
+
+msgid "No stories"
+msgstr "沒有文章"
+
+#, python-format
+msgid "No stories from %(folder)s have yet been indexed for related stories."
+msgstr "尚未為 %(folder)s 建立索引，以供尋找相關文章。"
+
+#, python-format
+msgid "No stories from your %(count)s site have yet been indexed for related stories."
+msgid_plural "No stories from your %(count)s sites have yet been indexed for related stories."
+msgstr[0] "你的 %(count)s 個網站尚未有文章建立相關文章索引。"
+
+msgid "No stories published last month"
+msgstr "上個月沒有發布任何文章"
+
+msgid "No stories to delete"
+msgstr "沒有可刪除的文章"
+
+msgid "No stories to read"
+msgstr "沒有文章可讀"
+
+msgid "No stories yet"
+msgstr "尚無文章"
+
+msgid "No story patterns found on this page."
+msgstr "此頁面上找不到任何文章模式。"
+
+msgid "No trending sites available"
+msgstr "目前沒有熱門網站"
+
+msgid "No usage billing invoices yet."
+msgstr "目前沒有使用費用帳單。"
+
+msgid "No usage billing set up."
+msgstr "尚未設定用量計費。"
+
+msgid "No valid merge groups to apply"
+msgstr "沒有可套用的有效合併群組"
+
+msgid "Nobody has yet subscribed to your shared stories."
+msgstr "目前還沒有人訂閱你分享的文章。"
+
+msgid "Nobody left to recommend. Good job!"
+msgstr "沒有更多可推薦的人了。做得好！"
+
+msgid "None"
+msgstr "無"
+
+msgid "Not active"
+msgstr "未啟用"
+
+msgid "Not authenticated"
+msgstr "未經驗證"
+
+msgid "Not found in URL"
+msgstr "網址中找不到"
+
+msgid "Not found in author"
+msgstr "作者中找不到"
+
+msgid "Not found in story"
+msgstr "文章中找不到"
+
+msgid "Not found in title"
+msgstr "標題中找不到"
+
+msgid "Not now"
+msgstr "稍後再說"
+
+msgid "Not redeemed in 90 days?"
+msgstr "90 天內未兌換？"
+
+msgid "Not seeing the right stories?"
+msgstr "沒看到想要的文章嗎？"
+
+msgid "Not the most read, but the best received, and tilted toward small sites over big ones."
+msgstr "不一定是閱讀量最高的，但最受好評，且偏重小型網站而非大型網站。"
+
+msgid "Nothing"
+msgstr "無"
+
+msgid "Nothing happens without your permission."
+msgstr "未經你的允許，任何事情都不會發生。"
+
+msgid "Nothing recorded."
+msgstr "沒有記錄。"
+
+msgid "Notification Preferences"
+msgstr "通知偏好設定"
+
+msgid "Notifications"
+msgstr "通知"
+
+msgid "Notifications on trained intelligence classifiers"
+msgstr "依訓練過的智慧分類器傳送通知"
+
+#, python-format
+msgid "Notifications require %(tier_link)s"
+msgstr "通知需要 %(tier_link)s"
+
+msgid "Notify on"
+msgstr "通知條件"
+
+msgid "Notify on match"
+msgstr "符合時通知"
+
+msgid "Notify on match. Premium Archive required"
+msgstr "符合時通知。需要 Premium Archive"
+
+msgid "November"
+msgstr "十一月"
+
+msgid "Now"
+msgstr "現在"
+
+msgid "Number of stories to include in each briefing"
+msgstr "每份簡報包含的文章數量"
+
+msgid "Numbers & Symbols"
+msgstr "數字與符號"
+
+msgid "OFF"
+msgstr "關"
+
+msgid "ON"
+msgstr "開"
+
+msgid "Objects"
+msgstr "物件"
+
+msgid "October"
+msgstr "十月"
+
+msgid "Off"
+msgstr "關閉"
+
+msgid "Official NewsBlur Android App"
+msgstr "官方 NewsBlur Android 應用程式"
+
+msgid "Official NewsBlur iPhone/iPad App"
+msgstr "官方 NewsBlur iPhone／iPad App"
+
+msgid "Official NewsBlur macOS App"
+msgstr "官方 NewsBlur macOS App"
+
+msgid "Oh no! <br> There was an error!"
+msgstr "糟糕！<br>發生錯誤！"
+
+msgid "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened."
+msgstr "糟糕，擷取該網址時發生問題，而且無法確定原因。"
+
+msgid "Old password"
+msgstr "舊密碼"
+
+#, python-format
+msgid "Older than: %(month)s %(day)s %(year)s"
+msgstr "早於：%(year)s %(month)s %(day)s"
+
+msgid "Older:"
+msgstr "早於："
+
+msgid "Oldest"
+msgstr "最舊"
+
+msgid "Oldest first"
+msgstr "由舊到新"
+
+msgid "Oldest unread story"
+msgstr "最舊的未讀文章"
+
+msgid "On"
+msgstr "開啟"
+
+msgid "On Premium Archive, search reaches every story ever archived, not just recent ones."
+msgstr "使用 Premium Archive 時，搜尋會涵蓋所有曾封存的文章，而不只是近期文章。"
+
+msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
+msgstr "Premium 可搜尋近期文章；Premium Archive 則可搜尋所有曾封存的文章。"
+
+msgid "One command with Docker"
+msgstr "使用 Docker 執行一行指令"
+
+msgid "One sentence"
+msgstr "一句話"
+
+msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
+msgstr "只要網站有訂閱來源，即可一鍵訂閱。請使用「其他」分頁中的自訂新增網站網址。"
+
+#, python-format
+msgid "Only %(indexed)s of your %(count)s site has been indexed for related stories."
+msgid_plural "Only %(indexed)s of %(count)s of your sites have been indexed for related stories."
+msgstr[0] "你的 %(count)s 個網站中，只有 %(indexed)s 個已建立相關文章索引。"
+
+#, python-format
+msgid ""
+"Only %(indexed)s of your %(count)s site is indexed for discovery. Upgrade to index all your sites and get "
+"personalized recommendations."
+msgid_plural ""
+"Only %(indexed)s of your %(count)s sites are indexed for discovery. Upgrade to index all your sites and get"
+" personalized recommendations."
+msgstr[0] "你的 %(count)s 個網站中，只有 %(indexed)s 個已建立索引以供探索。升級即可為所有網站建立索引並取得個人化推薦。"
+
+msgid "Only Focus:"
+msgstr "僅焦點："
+
+msgid "Only page down in story, do not open next unread story"
+msgstr "只在文章內向下翻頁，不開啟下一篇未讀文章"
+
+msgid "Only people I approve can see my shared stories and reply to me"
+msgstr "只有我核准的人才能查看我分享的文章並回覆我"
+
+#, python-format
+msgid "Only recent stories shown from %(count)s site."
+msgid_plural "Only recent stories shown from %(count)s sites."
+msgstr[0] "僅顯示 %(count)s 個網站的近期文章。"
+
+#, python-format
+msgid "Only recent stories shown from %(indexed)s of %(count)s site."
+msgid_plural "Only recent stories shown from %(indexed)s of %(count)s sites."
+msgstr[0] "僅顯示 %(count)s 個網站中 %(indexed)s 個網站的近期文章。"
+
+msgid "Only recent stories shown from this site are available."
+msgstr "僅能使用此網站上顯示的近期文章。"
+
+msgid "Only see the full story title"
+msgstr "只顯示完整的文章標題"
+
+msgid "Only show comments from friends"
+msgstr "只顯示朋友的留言"
+
+msgid "Only show counts on collapsed folders"
+msgstr "僅在收合的資料夾中顯示數量"
+
+msgid "Only truncate long shared stories in blurblogs"
+msgstr "只截斷 Blurblog 中過長的分享文章"
+
+msgid "Open"
+msgstr "開啟"
+
+msgid "Open All Site Stories"
+msgstr "開啟所有網站文章"
+
+msgid "Open Everything"
+msgstr "開啟全部"
+
+msgid "Open Site"
+msgstr "開啟網站"
+
+msgid "Open any folder title to read all of its feeds at once. All Site Stories is the river of everything."
+msgstr "開啟任一資料夾標題，即可一次閱讀其中所有訂閱來源。「所有網站文章」是涵蓋一切的新聞流。"
+
+msgid "Open clustering preferences"
+msgstr "開啟分群偏好設定"
+
+msgid "Open in Story view"
+msgstr "在文章檢視中開啟"
+
+msgid "Open in Text view"
+msgstr "在文字檢視中開啟"
+
+msgid "Open in background tab"
+msgstr "在背景分頁中開啟"
+
+msgid "Open in email client"
+msgstr "在電子郵件用戶端中開啟"
+
+msgid "Open in new window"
+msgstr "在新視窗中開啟"
+
+msgid "Open links"
+msgstr "開啟連結"
+
+msgid "Open links in a background tab"
+msgstr "在背景分頁中開啟連結"
+
+msgid "Open next unread story when bottom of story is visible"
+msgstr "文章底部顯示時，開啟下一篇未讀文章"
+
+msgid "Open next unread story when story is half-way up"
+msgstr "文章捲動到一半時開啟下一篇未讀文章"
+
+msgid "Open preferences"
+msgstr "開啟偏好設定"
+
+msgid "Open site/feed trainer"
+msgstr "開啟網站／訂閱來源訓練器"
+
+msgid "Open story trainer"
+msgstr "開啟文章訓練器"
+
+msgid "Open the Intelligence Trainer"
+msgstr "開啟智慧訓練器"
+
+msgid "Open the feed and story title menu"
+msgstr "開啟訂閱來源和文章標題選單"
+
+msgid "Open the first story"
+msgstr "開啟第一篇文章"
+
+msgid "Open the next site/folder"
+msgstr "開啟下一個網站／資料夾"
+
+msgid "Open the site in a new window"
+msgstr "在新視窗中開啟網站"
+
+msgid "Open the site in a new window and mark it as read"
+msgstr "在新視窗中開啟網站並標記為已讀"
+
+msgid "Open the trainer for any feed"
+msgstr "開啟任一訂閱來源的訓練器"
+
+msgid "Open this story in NewsBlur"
+msgstr "在 NewsBlur 中開啟這篇文章"
+
+msgid "Open your Daily Briefing"
+msgstr "開啟每日簡報"
+
+msgid "Open your saved stories"
+msgstr "開啟已儲存的文章"
+
+msgid "Opens"
+msgstr "開啟次數"
+
+msgid "Opens stories in a background tab with a customizable hotkey"
+msgstr "使用可自訂的快速鍵，在背景分頁開啟文章"
+
+msgid "Option 1:"
+msgstr "選項 1："
+
+msgid "Option 2:"
+msgstr "選項 2："
+
+msgid "Option 3:"
+msgstr "選項 3："
+
+msgid "Option 4:"
+msgstr "選項 4："
+
+msgid "Optional. Classifiers pause when the limit is reached and resume next billing cycle."
+msgstr "選填。達到上限時分類器會暫停，並於下一個計費週期恢復。"
+
+msgid "Options"
+msgstr "選項"
+
+msgid "Organize Sites"
+msgstr "整理網站"
+
+msgid "Organize sites"
+msgstr "整理網站"
+
+msgid "Original"
+msgstr "原始"
+
+msgid "Outline Icons"
+msgstr "線框圖示"
+
+msgid "Override the default blocklist for these domains. These sites WILL be archived even if normally blocked."
+msgstr "針對這些網域覆寫預設封鎖清單。即使這些網站通常會被封鎖，仍會將其封存。"
+
+msgid "PNG, JPG, GIF, SVG, or WebP — max 5 MB, any size"
+msgstr "PNG、JPG、GIF、SVG 或 WebP — 最多 5 MB，尺寸不限"
+
+#, python-format
+msgid "Page %(value_1)s"
+msgstr "第 %(value_1)s 頁"
+
+msgid "Page Fetch"
+msgstr "頁面抓取"
+
+msgid "Page down"
+msgstr "向下翻頁"
+
+#, python-format
+msgid "Page down by %(slider)s %(percent)s of the screen"
+msgstr "向下捲動螢幕 %(slider)s %(percent)s"
+
+msgid "Page up"
+msgstr "向上翻頁"
+
+msgid "Pages are re-checked on a configurable schedule and diffed for new content."
+msgstr "系統會依可設定的排程重新檢查頁面，並比對差異以找出新內容。"
+
+msgid "Paired with full-text search, the archive doubles as a personal knowledge base."
+msgstr "搭配全文搜尋，這個封存庫就能成為個人知識庫。"
+
+msgid "Parse this RSS/XML Feed"
+msgstr "解析此 RSS/XML 訂閱來源"
+
+msgid "Parsing..."
+msgstr "解析中…"
+
+msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
+msgstr "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。"
+
+msgid "Paste any URL into the \"Add Site\" dialog"
+msgstr "在「新增網站」對話框中貼上任何網址"
+
+msgid "Paste any website URL..."
+msgstr "貼上任何網站網址…"
+
+#, python-format
+msgid "Pattern: %(value_1)s"
+msgstr "模式：%(value_1)s"
+
+msgid "Payment history"
+msgstr "付款紀錄"
+
+msgid "Payments"
+msgstr "付款"
+
+msgid "Paypal email:"
+msgstr "PayPal 電子郵件："
+
+msgid "Pending"
+msgstr "待處理"
+
+msgid "People"
+msgstr "人物"
+
+msgid "People to follow"
+msgstr "可追蹤的人"
+
+msgid "People you know"
+msgstr "你認識的人"
+
+msgid "Per Folder"
+msgstr "依資料夾"
+
+msgid "Per Site"
+msgstr "依網站"
+
+msgid "Per-feed notification settings"
+msgstr "個別訂閱來源通知設定"
+
+msgid "Pick a tier & pay."
+msgstr "選擇方案並付款。"
+
+msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
+msgstr "選擇你希望 NewsBlur 使用的語言。你隨時可以在偏好設定中更改。"
+
+msgid "Places"
+msgstr "地點"
+
+msgid "Platform"
+msgstr "平台"
+
+msgid "Play Last"
+msgstr "最後播放"
+
+msgid "Play Next"
+msgstr "接著播放"
+
+msgid "Play in Mini Media Player"
+msgstr "在迷你媒體播放器中播放"
+
+msgid "Play/Pause"
+msgstr "播放／暫停"
+
+msgid "Playback speed"
+msgstr "播放速度"
+
+msgid "Player settings"
+msgstr "播放器設定"
+
+msgid "Please create an account and add sites you read. Then you can train them."
+msgstr "請建立帳戶並新增你閱讀的網站，然後就能訓練它們。"
+
+msgid "Please create an account. Not much to do without an account."
+msgstr "請建立帳戶。沒有帳戶的話，能做的事情不多。"
+
+msgid "Please enter a new category name"
+msgstr "請輸入新的分類名稱"
+
+msgid "Please enter a tag name."
+msgstr "請輸入標籤名稱。"
+
+msgid "Please enter a target category name"
+msgstr "請輸入目標分類名稱"
+
+msgid "Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)"
+msgstr "請選擇有效的圖片檔案（PNG、JPG、GIF、SVG 或 WebP）"
+
+msgid "Please select at least one category to split into"
+msgstr "請至少選取一個要拆分的類別"
+
+msgid "Podcasts"
+msgstr "Podcast"
+
+msgid "Point it at a self-hosted instance with --server or the NEWSBLUR_SERVER environment variable."
+msgstr "使用 --server 或 NEWSBLUR_SERVER 環境變數，將其指向自行託管的執行個體。"
+
+msgid "Popular"
+msgstr "熱門"
+
+msgid "Popular Shared Stories"
+msgstr "熱門分享文章"
+
+msgid "Portuguese"
+msgstr "葡萄牙文"
+
+msgid "Position & Greedy"
+msgstr "位置與貪婪"
+
+msgid "Positive you want to delete everything?"
+msgstr "確定要刪除所有內容嗎？"
+
+msgid "Positive you want to delete your intelligence training classifiers?"
+msgstr "確定要刪除你的智慧訓練分類器嗎？"
+
+msgid "Positive you want to delete your saved stories?"
+msgstr "確定要刪除已儲存的文章嗎？"
+
+msgid "Positive you want to delete your shared stories?"
+msgstr "確定要刪除你分享的文章嗎？"
+
+msgid "Post"
+msgstr "發布"
+
+#, python-format
+msgid "Post to %(service)s"
+msgstr "發布到 %(service)s"
+
+msgid "Posting..."
+msgstr "正在發布……"
+
+msgid "Prefer a third-party app? The open API powers Reeder, ReadKit, Unread, and dozens more."
+msgstr "偏好使用第三方 App？開放 API 支援 Reeder、ReadKit、Unread 等數十款 App。"
+
+msgid "Preferences"
+msgstr "偏好設定"
+
+msgid "Premium"
+msgstr "Premium"
+
+msgid "Premium Archive"
+msgstr "Premium Archive"
+
+msgid "Premium Pro"
+msgstr "Premium Pro"
+
+msgid "Premium Pro Account"
+msgstr "Premium Pro 帳戶"
+
+msgid "Premium Subscription"
+msgstr "Premium 訂閱"
+
+msgid "Premium Trial"
+msgstr "Premium 試用"
+
+#, python-format
+msgid "Premium Trial (%(count)s day)"
+msgid_plural "Premium Trial (%(count)s days)"
+msgstr[0] "Premium 試用期（%(count)s 天）"
+
+msgid "Premium details"
+msgstr "Premium 詳情"
+
+#, python-format
+msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
+msgstr "Premium 字型需要%(link_start)s進階帳戶%(link_end)s"
+
+msgid "Premium renewal"
+msgstr "Premium 續訂"
+
+msgid "Premium renewal: "
+msgstr "Premium 續訂："
+
+msgid "Premium status"
+msgstr "Premium 狀態"
+
+msgid "Premium users can make their blurblog private."
+msgstr "Premium 使用者可以將自己的 Blurblog 設為私人。"
+
+msgid "Press / anywhere to jump straight to the search field."
+msgstr "在任何地方按下 /，即可直接跳至搜尋欄位。"
+
+msgid "Press ? anytime to see the full shortcut list."
+msgstr "隨時按 ? 查看完整的快速鍵清單。"
+
+msgid "Press s to save the story you're reading."
+msgstr "按 s 儲存目前閱讀的文章。"
+
+msgid "Press the Text tab on any story to fetch the full article."
+msgstr "按一下任何文章上的「文字」分頁，即可擷取完整文章。"
+
+msgid "Press the search icon or hit the / key"
+msgstr "按搜尋圖示或按 / 鍵"
+
+msgid "Prev. site"
+msgstr "上一個網站"
+
+msgid "Preview"
+msgstr "預覽"
+
+msgid "Previous story"
+msgstr "上一篇文章"
+
+#, python-format
+msgid "Previously Recommended on: %(date)s"
+msgstr "先前推薦於：%(date)s"
+
+msgid "Print"
+msgstr "列印"
+
+msgid "Priority support"
+msgstr "優先支援"
+
+msgid "Privacy"
+msgstr "隱私權"
+
+msgid "Privacy options for your blurblog"
+msgstr "你的 Blurblog 隱私選項"
+
+msgid "Private by default — banking, medical, and email sites are never archived"
+msgstr "預設為私人——銀行、醫療和電子郵件網站絕不會封存"
+
+msgid "Private notes:"
+msgstr "私人備註："
+
+msgid "Private:"
+msgstr "私人："
+
+msgid "Pro"
+msgstr "Pro"
+
+msgid "Processing stories..."
+msgstr "正在處理文章…"
+
+msgid "Processing..."
+msgstr "處理中…"
+
+msgid "Profile"
+msgstr "個人檔案"
+
+msgid "Profile &amp; Blurblog"
+msgstr "個人檔案 &amp; Blurblog"
+
+msgid "Profile Details"
+msgstr "個人資料詳情"
+
+msgid "Profile picture"
+msgstr "個人資料圖片"
+
+msgid "Prompt"
+msgstr "提示詞"
+
+msgid "Protected:"
+msgstr "受保護："
+
+msgid "Public blurblog sharing"
+msgstr "公開分享至 Blurblog"
+
+msgid "Public comments"
+msgstr "公開留言"
+
+msgid "Public:"
+msgstr "公開："
+
+msgid "Publisher"
+msgstr "發布者"
+
+msgid "Push Expires"
+msgstr "推播到期"
+
+msgid "Push expires"
+msgstr "推播到期時間"
+
+msgid "Questions"
+msgstr "問題"
+
+#, python-format
+msgid ""
+"Queued %(count)s story for categorization (%(remaining)s remaining). Categories will appear as stories are "
+"processed."
+msgid_plural ""
+"Queued %(count)s stories for categorization (%(remaining)s remaining). Categories will appear as stories "
+"are processed."
+msgstr[0] "已將 %(count)s 篇文章排入分類佇列（剩餘 %(remaining)s 篇）。文章處理後，分類就會顯示。"
+
+#, python-format
+msgid "Queued %(count)s story for categorization. Categories will appear as stories are processed."
+msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
+msgstr[0] "已將 %(count)s 篇文章排入分類佇列。文章處理後，分類就會顯示。"
+
+msgid "Quick search for a site"
+msgstr "快速搜尋網站"
+
+msgid "Quota exceeded"
+msgstr "已超出配額"
+
+msgid "Quote"
+msgstr "引用"
+
+msgid "RSS Feed"
+msgstr "RSS 訂閱來源"
+
+#, python-format
+msgid "RSS feeds for folders is a %(link_start)spremium feature%(link_end)s."
+msgstr "資料夾的 RSS 訂閱來源是 %(link_start)s進階功能%(link_end)s。"
+
+#, python-format
+msgid "RSS feeds for saved story tags is a %(link_start)spremium feature%(link_end)s."
+msgstr "已儲存文章標籤的 RSS 訂閱來源是 %(link_start)sPremium 功能%(link_end)s。"
+
+msgid "RSS/XML URL: "
+msgstr "RSS/XML 網址："
+
+msgid "Re-analysis timed out. Please try again."
+msgstr "重新分析逾時。請再試一次。"
+
+msgid "Re-analyze"
+msgstr "重新分析"
+
+msgid "Re-analyzing…"
+msgstr "正在重新分析…"
+
+msgid "Re-ask"
+msgstr "重新提問"
+
+msgid "Re-ask original question"
+msgstr "重新詢問原始問題"
+
+msgid "Re-categorize this article"
+msgstr "重新分類這篇文章"
+
+msgid "Re-categorizing..."
+msgstr "正在重新分類…"
+
+msgid "Read Stories"
+msgstr "已讀文章"
+
+msgid "Read Stories:"
+msgstr "已讀文章："
+
+msgid ""
+"Read all feeds in a folder as one scrollable stream, in chronological order. Combined with training, the "
+"river surfaces the best stories across your subscriptions."
+msgstr "將資料夾中的所有訂閱來源合併成按時間順序排列的可捲動資訊流來閱讀。搭配訓練功能，新聞流會從你的訂閱內容中挑選出最佳文章。"
+
+msgid "Read more on the NewsBlur Blog"
+msgstr "在 NewsBlur 部落格閱讀更多"
+
+msgid "Read offline with automatic background refresh"
+msgstr "自動在背景更新，離線也能閱讀"
+
+msgid "Read on scroll"
+msgstr "捲動時標記為已讀"
+
+msgid "Read stories by folder"
+msgstr "依資料夾閱讀文章"
+
+msgid "Read the whole story"
+msgstr "閱讀完整文章"
+
+msgid "Read unread stories with: newsblur stories list"
+msgstr "使用以下方式閱讀未讀文章：newsblur stories list"
+
+msgid "Read your email newsletters in your news reader, not your inbox."
+msgstr "在新聞閱讀器中閱讀電子報，而不是在收件匣裡。"
+
+msgid "Read your feeds: unread stories, folders, search, and saved stories by tag"
+msgstr "閱讀你的訂閱來源：未讀文章、資料夾、搜尋，以及依標籤分類的已儲存文章"
+
+msgid "Reading"
+msgstr "閱讀中"
+
+msgid "Reading article..."
+msgstr "正在讀取文章…"
+
+#, python-format
+msgid "Reading saved stories by tag is a %(link_start)spremium feature%(link_end)s."
+msgstr "依標籤閱讀已儲存文章是 %(link_start)sPremium 功能%(link_end)s。"
+
+msgid "Reading saved story..."
+msgstr "正在讀取已儲存的文章…"
+
+msgid "Reading view"
+msgstr "閱讀檢視"
+
+msgid "Real-time"
+msgstr "即時"
+
+msgid "Real-time RSS updates"
+msgstr "即時 RSS 更新"
+
+msgid "Really delete?"
+msgstr "確定要刪除嗎？"
+
+msgid "Really unfollow?"
+msgstr "確定要取消追蹤嗎？"
+
+msgid "Recency"
+msgstr "新近程度"
+
+msgid "Recent interactions"
+msgstr "近期互動"
+
+msgid "Recently added feeds that are gaining subscribers"
+msgstr "近期新增且訂閱人數持續增加的訂閱來源"
+
+msgid "Recommend Site"
+msgstr "推薦網站"
+
+msgid "Recommend this Site"
+msgstr "推薦此網站"
+
+msgid "Recommend this site"
+msgstr "推薦此網站"
+
+msgid "Recommended"
+msgstr "推薦"
+
+msgid "Record voice question"
+msgstr "錄製語音問題"
+
+msgid "Recording..."
+msgstr "正在錄音…"
+
+msgid "Reddit Subreddits"
+msgstr "Reddit Subreddit"
+
+msgid "Redeemed"
+msgstr "已兌換"
+
+msgid "Reduce clutter in your river of stories"
+msgstr "減少新聞流中的雜訊"
+
+msgid "Refer"
+msgstr "推薦"
+
+msgid "Refer &amp; Gift"
+msgstr "推薦 &amp; 贈送"
+
+msgid "Referral History"
+msgstr "推薦紀錄"
+
+msgid "Refine with a hint"
+msgstr "以提示進一步篩選"
+
+msgid "Refund $12"
+msgstr "退款 12 美元"
+
+msgid "Refunded"
+msgstr "已退款"
+
+#, python-format
+msgid "Refunded $%(amount)s"
+msgstr "已退款 $%(amount)s"
+
+msgid "Regenerate Briefing"
+msgstr "重新產生簡報"
+
+msgid "Regex"
+msgstr "正規表示式"
+
+#, python-format
+msgid "Regex requires %(tier_link)s"
+msgstr "正規表示式需要 %(tier_link)s"
+
+msgid "Related"
+msgstr "相關"
+
+msgid "Related Sites"
+msgstr "相關網站"
+
+msgid "Related stories are only available for premium subscribers."
+msgstr "相關文章僅提供給付費訂閱者。"
+
+msgid "Reload NewsBlur"
+msgstr "重新載入 NewsBlur"
+
+msgid "Reload feed/folder"
+msgstr "重新載入訂閱來源／資料夾"
+
+msgid "Remember playback position for each episode"
+msgstr "記住每集的播放位置"
+
+msgid "Remove"
+msgstr "移除"
+
+msgid "Remove this list"
+msgstr "移除此清單"
+
+msgid "Remove this merge group"
+msgstr "移除此合併群組"
+
+msgid "Removed"
+msgstr "已移除"
+
+msgid "Rename"
+msgstr "重新命名"
+
+#, python-format
+msgid "Rename \"%(value_1)s\" to:"
+msgstr "將「%(value_1)s」重新命名為："
+
+msgid "Rename Tag"
+msgstr "重新命名標籤"
+
+msgid "Rename category"
+msgstr "重新命名分類"
+
+msgid "Rename this folder"
+msgstr "重新命名此資料夾"
+
+msgid "Rename this site"
+msgstr "重新命名此網站"
+
+msgid "Renamed"
+msgstr "已重新命名"
+
+#, python-format
+msgid "Renamed %(count)s story to \"%(category)s\""
+msgid_plural "Renamed %(count)s stories to \"%(category)s\""
+msgstr[0] "已將 %(count)s 篇文章重新命名為「%(category)s」"
+
+msgid "Renaming..."
+msgstr "正在重新命名…"
+
+msgid "Request timed out"
+msgstr "要求逾時"
+
+msgid "Request timed out."
+msgstr "要求逾時。"
+
+msgid "Request timed out. The AI service took too long to respond. Please try again."
+msgstr "要求逾時。AI 服務回應時間過長，請再試一次。"
+
+msgid "Requested"
+msgstr "已送出請求"
+
+msgid "Requests to Follow You"
+msgstr "追蹤你的請求"
+
+#, python-format
+msgid "Requires %(tier_link)s"
+msgstr "需要 %(tier_link)s"
+
+msgid "Requires Premium Archive"
+msgstr "需要 Premium Archive"
+
+msgid "Reset"
+msgstr "重設"
+
+msgid "Reset to original favicon"
+msgstr "還原為原始網站圖示"
+
+msgid "Resetting..."
+msgstr "正在重設…"
+
+#, python-format
+msgid "Restart your %(value_1)s subscription"
+msgstr "重新啟動你的 %(value_1)s 訂閱"
+
+msgid "Restart your subscription"
+msgstr "重新啟用你的訂閱"
+
+msgid "Restore the player when you reload NewsBlur"
+msgstr "重新載入 NewsBlur 時恢復播放器"
+
+msgid "Results show matching stories with highlighted terms"
+msgstr "結果會顯示符合條件的文章，並醒目標示符合的字詞"
+
+msgid "Results will appear as indexing completes"
+msgstr "索引完成後便會顯示結果"
+
+msgid "Resume"
+msgstr "繼續"
+
+msgid "Retry"
+msgstr "重試"
+
+msgid "Retry fetching and parsing"
+msgstr "重新嘗試擷取並解析"
+
+msgid "Rewinding..."
+msgstr "正在倒帶……"
+
+msgid "Rich cards for alternative sources"
+msgstr "替代來源的豐富卡片"
+
+msgid "Right-clicking"
+msgstr "按右鍵"
+
+msgid "Rising"
+msgstr "人氣竄升"
+
+msgid "River of News"
+msgstr "新聞流"
+
+msgid "River of News (reading by folder)"
+msgstr "新聞流（依資料夾閱讀）"
+
+msgid "Run newsblur auth login to authorize via OAuth"
+msgstr "執行 newsblur auth login，透過 OAuth 授權"
+
+msgid "Run your own NewsBlur"
+msgstr "自行執行你的 NewsBlur"
+
+msgid "Runs silently — pages are captured after 5 seconds of reading"
+msgstr "靜默執行 — 閱讀 5 秒後擷取網頁"
+
+#, python-format
+msgid ""
+"Safari App Extension that lets %(shortcut)s open stories in a background tab. Download the app from the "
+"Releases appcast in the repo."
+msgstr "Safari App Extension，可讓 %(shortcut)s 在背景分頁開啟文章。請從儲存庫的 Releases appcast 下載此 App。"
+
+msgid "Sat"
+msgstr "週六"
+
+msgid "Saturday"
+msgstr "星期六"
+
+msgid "Save"
+msgstr "儲存"
+
+#, python-format
+msgid "Save %(count)s classifier"
+msgid_plural "Save %(count)s classifiers"
+msgstr[0] "儲存 %(count)s 個分類器"
+
+#, python-format
+msgid "Save %(count)s folder"
+msgid_plural "Save %(count)s folders"
+msgstr[0] "儲存 %(count)s 個資料夾"
+
+msgid "Save & Close"
+msgstr "儲存並關閉"
+
+#, python-format
+msgid "Save & Next %(value_1)s"
+msgstr "儲存並前往下一個 %(value_1)s"
+
+msgid "Save Changes"
+msgstr "儲存變更"
+
+msgid "Save My Account"
+msgstr "儲存我的帳戶"
+
+msgid "Save My Blurblog Settings"
+msgstr "儲存我的 Blurblog 設定"
+
+msgid "Save My Profile"
+msgstr "儲存我的個人檔案"
+
+msgid "Save Preferences"
+msgstr "儲存偏好設定"
+
+msgid "Save Search"
+msgstr "儲存搜尋"
+
+msgid "Save a search as a feed and it keeps collecting matches in your sidebar."
+msgstr "將搜尋儲存為訂閱來源後，它就會持續收集符合條件的結果，並顯示在側邊欄。"
+
+msgid "Save any story with one click or the s key"
+msgstr "按一下或按 s 鍵即可儲存任何文章"
+
+msgid "Save comments"
+msgstr "儲存留言"
+
+msgid "Save my profile"
+msgstr "儲存我的個人檔案"
+
+msgid "Save searches as feeds for ongoing monitoring"
+msgstr "將搜尋儲存為訂閱來源，以便持續追蹤"
+
+msgid "Save stories for later"
+msgstr "儲存文章以便稍後閱讀"
+
+msgid ""
+"Save stories for later and organize them with custom tags. Your personal clipping library, searchable and "
+"shareable."
+msgstr "儲存文章以便稍後閱讀，並使用自訂標籤整理。打造個人剪輯庫，內容可搜尋、可分享。"
+
+msgid "Save stories with searchable tags"
+msgstr "使用可搜尋的標籤儲存文章"
+
+msgid "Save this story"
+msgstr "儲存這篇文章"
+
+msgid "Save/Unsave story"
+msgstr "儲存／取消儲存文章"
+
+msgid "Saved"
+msgstr "已儲存"
+
+msgid "Saved Searches"
+msgstr "已儲存的搜尋"
+
+msgid "Saved Stories"
+msgstr "已儲存的文章"
+
+msgid "Saved Stories & Tags"
+msgstr "已儲存的文章與標籤"
+
+msgid "Saved Tags"
+msgstr "已儲存的標籤"
+
+msgid "Saved stories are kept forever, even from feeds you later unsubscribe from."
+msgstr "已儲存的文章會永久保留，即使你之後取消訂閱相關來源也一樣。"
+
+msgid "Saved stories organized with custom tags"
+msgstr "以自訂標籤整理已儲存的文章"
+
+msgid "Saved!"
+msgstr "已儲存！"
+
+msgid "Saved:"
+msgstr "已儲存："
+
+msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium or higher."
+msgstr "所有方案皆可儲存文章。標籤與標籤 RSS 訂閱來源需使用 Premium 或更高級方案。"
+
+msgid "Saving..."
+msgstr "儲存中…"
+
+msgid "Schedule when your briefing is generated"
+msgstr "安排簡報產生時間"
+
+msgid ""
+"Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when"
+" you use the Generate button."
+msgstr "排程簡報需要 Premium Archive 訂閱方案。依你目前的方案，只有在按下「產生」按鈕時才會產生簡報。"
+
+msgid "Scheduled delivery (daily or twice daily)"
+msgstr "排程傳送（每日或每日兩次）"
+
+msgid "Science"
+msgstr "科學"
+
+#, python-format
+msgid "Scoped classifiers are only available to %(plan)s subscribers."
+msgstr "範圍分類器僅供 %(plan)s 訂閱者使用。"
+
+msgid "Scroll to comments"
+msgstr "捲動至留言"
+
+#, python-format
+msgid "Scroll up/down in story by %(slider)s %(pixels)spx."
+msgstr "在文章中向上／下捲動 %(slider)s %(pixels)spx。"
+
+msgid "Search"
+msgstr "搜尋"
+
+msgid "Search All Site Stories"
+msgstr "搜尋所有網站文章"
+
+msgid "Search YouTube channels..."
+msgstr "搜尋 YouTube 頻道…"
+
+msgid "Search across all saved stories and tags"
+msgstr "搜尋所有已儲存的文章和標籤"
+
+msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
+msgstr "使用 Elasticsearch 全文搜尋，搜尋所有訂閱內容。"
+
+msgid "Search archives..."
+msgstr "搜尋封存內容…"
+
+msgid "Search by name, keyword, or paste a URL..."
+msgstr "依名稱、關鍵字搜尋，或貼上網址…"
+
+msgid "Search everything with: newsblur stories search \"machine learning\""
+msgstr "使用以下方式搜尋所有內容：newsblur stories search \"machine learning\""
+
+msgid "Search failed"
+msgstr "搜尋失敗"
+
+msgid "Search feed"
+msgstr "搜尋訂閱來源"
+
+msgid "Search folder"
+msgstr "搜尋資料夾"
+
+msgid "Search for friends"
+msgstr "搜尋朋友"
+
+#, python-format
+msgid "Search is a %(link_start)spremium feature%(link_end)s."
+msgstr "搜尋是 %(link_start)sPremium 功能%(link_end)s。"
+
+msgid "Search keywords"
+msgstr "搜尋關鍵字"
+
+msgid "Search newsletters or paste URL..."
+msgstr "搜尋電子報或貼上網址…"
+
+msgid "Search podcasts (e.g., \"technology\", \"true crime\", \"comedy\")..."
+msgstr "搜尋 Podcast（例如「科技」、「真實犯罪」、「喜劇」）…"
+
+msgid "Search results across subscriptions"
+msgstr "所有訂閱來源的搜尋結果"
+
+msgid "Search site"
+msgstr "搜尋網站"
+
+msgid "Search sites and folders"
+msgstr "搜尋網站和資料夾"
+
+msgid "Search subreddits (e.g., programming, news, gaming)..."
+msgstr "搜尋 subreddit（例如 programming、news、gaming）…"
+
+msgid "Search the FAQ..."
+msgstr "搜尋常見問題…"
+
+msgid "Search within a single feed, a folder, or across everything"
+msgstr "搜尋單一訂閱來源、資料夾，或所有內容"
+
+msgid "Search your entire archive with full-text search"
+msgstr "使用全文搜尋搜尋整個封存內容"
+
+msgid "Search your stories"
+msgstr "搜尋你的文章"
+
+#, python-format
+msgid "Search: \"%(value_1)s\""
+msgstr "搜尋：「%(value_1)s」"
+
+#, python-format
+msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
+msgstr "正在 <b>%(feed_title)s</b> 搜尋「<b>%(query)s</b>」"
+
+msgid "Searching RSS feeds..."
+msgstr "正在搜尋 RSS 訂閱來源…"
+
+msgid "Searching saved stories..."
+msgstr "正在搜尋已儲存的文章……"
+
+msgid "Searching your archive..."
+msgstr "正在搜尋你的封存內容…"
+
+msgid "Seconds to skip backward"
+msgstr "倒退秒數"
+
+msgid "Seconds to skip forward"
+msgstr "快轉秒數"
+
+msgid "Sections"
+msgstr "區段"
+
+msgid "Sections are only included when matching stories are found."
+msgstr "只有找到符合條件的文章時，才會顯示這些區段。"
+
+msgid "Security"
+msgstr "安全性"
+
+#, python-format
+msgid "See %(feature)s"
+msgstr "查看 %(feature)s"
+
+msgid "See all shortcuts"
+msgstr "查看所有快速鍵"
+
+msgid "See feature"
+msgstr "查看功能"
+
+msgid ""
+"See how a story evolves after it's first published. NewsBlur tracks revisions and shows you a diff of what "
+"changed, highlighted in green and red."
+msgstr "查看文章首次發布後如何演變。NewsBlur 會追蹤修訂版本，並以綠色和紅色標示變更內容。"
+
+msgid "See shared stories"
+msgstr "查看分享的文章"
+
+msgid "See the story title and a short content preview"
+msgstr "查看文章標題和簡短的內容預覽"
+
+msgid "See which feeds cover the same story"
+msgstr "查看哪些訂閱來源報導了相同的新聞"
+
+msgid "Select"
+msgstr "選取"
+
+msgid "Select URL portion above"
+msgstr "選取上方的網址片段"
+
+msgid "Select a folder"
+msgstr "選取資料夾"
+
+msgid "Select a story to read"
+msgstr "選取一篇文章來閱讀"
+
+msgid "Select any story and click \"Ask AI\""
+msgstr "選取任一篇文章，然後按一下「詢問 AI」"
+
+msgid "Select classifiers to remove"
+msgstr "選取要移除的分類器"
+
+msgid "Select folders"
+msgstr "選取資料夾"
+
+msgid "Select part of the URL to match patterns like sections or categories."
+msgstr "選取網址的一部分，以比對區段或分類等模式。"
+
+msgid "Select title phrase"
+msgstr "選取標題詞組"
+
+msgid "Selecting a story in the story titles marks it as read."
+msgstr "在文章標題列表中選取文章，即會將它標記為已讀。"
+
+msgid "Self-Hosted"
+msgstr "自架"
+
+msgid "Semantic matching finds stories about the same topic with different headlines"
+msgstr "語意比對會找出標題不同但主題相同的文章"
+
+msgid "Send"
+msgstr "傳送"
+
+msgid "Send Story by Email"
+msgstr "以電子郵件傳送文章"
+
+msgid "Send me a copy of this email"
+msgstr "寄一份此電子郵件副本給我"
+
+msgid "Send this story"
+msgstr "傳送這篇文章"
+
+msgid "Sending…"
+msgstr "正在傳送…"
+
+msgid "September"
+msgstr "九月"
+
+msgid "Server error"
+msgstr "伺服器錯誤"
+
+#, python-format
+msgid "Server error: %(status)s"
+msgstr "伺服器錯誤：%(status)s"
+
+msgid "Set up billing"
+msgstr "設定帳單"
+
+msgid "Set up newsletters"
+msgstr "設定電子報"
+
+msgid "Set up notifications"
+msgstr "設定通知"
+
+msgid "Set up usage-based billing to use natural language content and image filters."
+msgstr "設定依用量計費，才能使用自然語言內容和圖片篩選器。"
+
+msgid "Set up your blurblog"
+msgstr "設定你的 Blurblog"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Settings &gt; Forwarding"
+msgstr "設定 &gt; 轉寄"
+
+msgid "Setup instructions"
+msgstr "設定說明"
+
+msgid "Share"
+msgstr "分享"
+
+msgid "Share a story with a comment and it's published on your blurblog, followable via RSS or on the web."
+msgstr "分享文章並附上留言，內容就會發布到你的 Blurblog，其他人可以透過 RSS 或網頁追蹤。"
+
+msgid "Share on NewsBlur"
+msgstr "分享到 NewsBlur"
+
+msgid "Share stories"
+msgstr "分享文章"
+
+msgid ""
+"Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
+"and sharing."
+msgstr "在你的公開 Blurblog 上分享文章並附上自己的留言。追蹤朋友，看看他們正在閱讀和分享什麼。"
+
+msgid "Share the link."
+msgstr "分享連結。"
+
+msgid "Share this link. When someone signs up and subscribes to premium, you earn a free year."
+msgstr "分享此連結。有人註冊並訂閱 Premium 後，你就能獲得一年免費使用期。"
+
+msgid "Share this story"
+msgstr "分享這篇文章"
+
+msgid "Share to your Blurblog"
+msgstr "分享到你的 Blurblog"
+
+msgid "Share with comment"
+msgstr "附上留言分享"
+
+msgid "Share with comments"
+msgstr "分享並附上留言"
+
+msgid "Shared"
+msgstr "已分享"
+
+msgid "Shared Stories & Blurblog"
+msgstr "分享文章與 Blurblog"
+
+#, python-format
+msgid "Shared by %(count)s person"
+msgid_plural "Shared by %(count)s people"
+msgstr[0] "由 %(count)s 人分享"
+
+msgid "Shared with NewsBlur.com"
+msgstr "透過 NewsBlur.com 分享"
+
+msgid "Shared!"
+msgstr "已分享！"
+
+msgid "Sharing"
+msgstr "分享"
+
+msgid "Sharing Stories From These Sites"
+msgstr "分享來自這些網站的文章"
+
+msgid "Sharing services"
+msgstr "分享服務"
+
+msgid "Sharing..."
+msgstr "正在分享…"
+
+msgid "Shift+u hides the sidebar for distraction-free reading."
+msgstr "按 Shift+u 隱藏側邊欄，專心閱讀。"
+
+msgid "Shopping"
+msgstr "購物"
+
+msgctxt "card height"
+msgid "Short"
+msgstr "矮"
+
+msgid "Show"
+msgstr "顯示"
+
+msgid "Show Folders"
+msgstr "顯示資料夾"
+
+msgid "Show Global Shared Stories"
+msgstr "顯示全域分享文章"
+
+msgid "Show Good Reads"
+msgstr "顯示優質閱讀"
+
+msgid "Show Infrequent Site Stories"
+msgstr "顯示不常更新的網站文章"
+
+msgid "Show Long Reads"
+msgstr "顯示長篇閱讀"
+
+msgid "Show Widely Read Stories"
+msgstr "顯示廣受閱讀的文章"
+
+msgid "Show a preview of the story"
+msgstr "顯示文章預覽"
+
+msgid "Show all animations"
+msgstr "顯示所有動畫"
+
+msgid "Show all comments"
+msgstr "顯示所有留言"
+
+msgid "Show all stories"
+msgstr "顯示所有文章"
+
+msgid "Show buttons on the right (when there is room)"
+msgstr "空間足夠時，在右側顯示按鈕"
+
+msgid "Show confirmation only when marking folders as read"
+msgstr "僅在將資料夾標記為已讀時顯示確認訊息"
+
+msgid "Show confirmation when marking feeds or folders as read"
+msgstr "將訂閱來源或資料夾標記為已讀時顯示確認訊息"
+
+msgid "Show discover sites popover above story titles"
+msgstr "在文章標題上方顯示探索網站彈出視窗"
+
+msgid "Show every site, including ones you already follow"
+msgstr "顯示所有網站，包括你已追蹤的網站"
+
+msgid "Show every story individually without grouping"
+msgstr "逐篇顯示文章，不進行分組"
+
+msgid "Show from both friends and the public"
+msgstr "同時顯示朋友和公開的留言"
+
+msgid "Show highlighter when selecting text"
+msgstr "選取文字時顯示醒目提示"
+
+msgid "Show history"
+msgstr "顯示歷史記錄"
+
+msgid "Show more related stories"
+msgstr "顯示更多相關文章"
+
+msgid "Show on Load"
+msgstr "載入時顯示"
+
+msgid "Show story changes"
+msgstr "顯示文章變更"
+
+msgid "Show the dashboard when loading NewsBlur"
+msgstr "載入 NewsBlur 時顯示儀表板"
+
+msgid "Show the entire story, even if really, really long"
+msgstr "顯示完整文章，即使文章非常非常長"
+
+msgid "Show tooltips"
+msgstr "顯示工具提示"
+
+msgid "Show unread counts in the window title"
+msgstr "在視窗標題中顯示未讀數量"
+
+#, python-format
+msgid "Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"
+msgstr "顯示 <b>%(start_date)s</b> 至 <b>%(end_date)s</b> 之間的文章"
+
+#, python-format
+msgid "Showing stories newer than <b>%(date)s</b>"
+msgstr "顯示晚於 <b>%(date)s</b> 的文章"
+
+#, python-format
+msgid "Showing stories older than <b>%(date)s</b>"
+msgstr "正在顯示早於 <b>%(date)s</b> 的文章"
+
+#, python-format
+msgid "Showing stories on <b>%(date)s</b>"
+msgstr "顯示 <b>%(date)s</b> 的文章"
+
+msgid "Shows a toolbar button with your unread count"
+msgstr "顯示含未讀數量的工具列按鈕"
+
+msgid "Sign in and your feeds, training, and saved stories sync instantly"
+msgstr "登入後，你的訂閱來源、訓練設定和已儲存文章會立即同步"
+
+msgid "Sign up"
+msgstr "註冊"
+
+msgid "Sign up to read your own feeds."
+msgstr "註冊即可閱讀自己的訂閱來源。"
+
+msgid "Signup"
+msgstr "註冊"
+
+msgid "Single Story"
+msgstr "單篇文章"
+
+msgid "Single line"
+msgstr "單行"
+
+msgid "Site"
+msgstr "網站"
+
+msgid "Site Notifications"
+msgstr "網站通知"
+
+msgid "Site Settings"
+msgstr "網站設定"
+
+msgid "Site URL or search by name..."
+msgstr "網站網址或依名稱搜尋…"
+
+msgid "Site by Site"
+msgstr "逐個網站"
+
+msgid "Site settings"
+msgstr "網站設定"
+
+msgid "Site sidebar order"
+msgstr "網站側邊欄順序"
+
+msgid "Site stats"
+msgstr "網站統計"
+
+msgid "Sites"
+msgstr "網站"
+
+msgid "Sites updated up to 5x more often"
+msgstr "網站更新頻率最高可提升 5 倍"
+
+msgid "Skip Back"
+msgstr "倒退"
+
+msgid "Skip Forward"
+msgstr "快轉"
+
+msgid "Skip this step "
+msgstr "略過此步驟 "
+
+msgid "Small feeds with the fastest-growing subscriber base"
+msgstr "訂閱者人數成長最快的小型訂閱來源"
+
+msgid "Small image thumbnail on the left"
+msgstr "左側顯示小型圖片縮圖"
+
+msgid "Small image thumbnail on the right"
+msgstr "右側顯示小型圖片縮圖"
+
+msgid "So much time and so little to do. Strike that! Reverse it."
+msgstr "時間多得很，事情卻少得可憐。等等！說反了。"
+
+msgid "Social"
+msgstr "社群"
+
+msgid "Social Connections"
+msgstr "社群連結"
+
+#, python-format
+msgid "Sorry, nobody matches \"%(value_1)s\"."
+msgstr "抱歉，找不到符合「%(value_1)s」的人。"
+
+#, python-format
+msgid "Sorry, nothing matches \"%(value_1)s\"."
+msgstr "抱歉，找不到符合「%(value_1)s」的項目。"
+
+msgid "Sorry, the original story<br />could not be proxied."
+msgstr "抱歉，原始文章<br />無法透過代理載入。"
+
+msgid "Sorry, the story's text<br />could not be extracted."
+msgstr "抱歉，文章文字<br />無法擷取。"
+
+msgid "Sorry, there was a problem deleting feeds."
+msgstr "抱歉，刪除訂閱來源時發生問題。"
+
+msgid "Sorry, there was a problem moving feeds."
+msgstr "抱歉，移動訂閱來源時發生問題。"
+
+msgid "Sorry, there was an unhandled error."
+msgstr "抱歉，發生了未處理的錯誤。"
+
+msgid "Sorry, this reply could not be deleted."
+msgstr "抱歉，無法刪除此則回覆。"
+
+msgid "Sorry, this reply could not be posted. Probably Adblock."
+msgstr "抱歉，無法發布這則回覆。可能是 Adblock 所致。"
+
+msgid "Sorry, this story could not be shared. Probably Adblock."
+msgstr "抱歉，無法分享這篇文章。可能是廣告封鎖程式所致。"
+
+msgid "Sorry, this story could not be unshared. Probably Adblock."
+msgstr "抱歉，無法取消分享這篇文章。可能是 Adblock 所致。"
+
+msgid "Sort "
+msgstr "排序 "
+
+msgid "Sort By"
+msgstr "排序方式"
+
+msgid "Sort the river oldest-first or newest-first from the feed options popover."
+msgstr "在訂閱來源選項彈出視窗中，將新聞流排序為由舊至新或由新至舊。"
+
+msgid "Sort, filter, and display options"
+msgstr "排序、篩選和顯示選項"
+
+msgid "Source feeds"
+msgstr "訂閱來源"
+
+msgid "Spacing between feeds and story titles"
+msgstr "訂閱來源與文章標題之間的間距"
+
+msgid "Spanish"
+msgstr "西班牙文"
+
+msgid "Special Folders"
+msgstr "特殊資料夾"
+
+msgid "Spending limit reached. Classifiers paused until next cycle."
+msgstr "已達支出上限。分類器已暫停，直到下一個週期。"
+
+msgid "Split"
+msgstr "分割"
+
+#, python-format
+msgid "Split \"%(category)s\" (%(count)s story) into:"
+msgid_plural "Split \"%(category)s\" (%(count)s stories) into:"
+msgstr[0] "將「%(category)s」（%(count)s 篇文章）拆分為："
+
+#, python-format
+msgid "Split \"%(value_1)s\" into:"
+msgstr "將「%(value_1)s」拆分為："
+
+#, python-format
+msgid "Split complete: %(count)s story recategorized"
+msgid_plural "Split complete: %(count)s stories recategorized"
+msgstr[0] "分割完成：已重新分類 %(count)s 篇文章"
+
+msgid "Split failed to apply"
+msgstr "套用分割失敗"
+
+msgid "Split functionality coming soon"
+msgstr "分割功能即將推出"
+
+#, python-format
+msgid "Split partially applied: %(count)s story recategorized"
+msgid_plural "Split partially applied: %(count)s stories recategorized"
+msgstr[0] "部分套用分類拆分：已重新分類 %(count)s 篇文章"
+
+msgid "Split with AI"
+msgstr "使用 AI 拆分"
+
+msgid "Sports"
+msgstr "體育"
+
+msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
+msgstr "美化網站標語。若獲選，該網站將在 NewsBlur 儀表板上展示一週。"
+
+#, python-format
+msgid "Stale %(date)s"
+msgstr "停更於 %(date)s"
+
+#, python-format
+msgid "Stale — last story %(date)s"
+msgstr "已停更 — 最後一篇文章發布於 %(date)s"
+
+msgid "Stars"
+msgstr "星星"
+
+msgid "Start Training Site by Site"
+msgstr "逐一訓練網站"
+
+msgid "Starting analysis..."
+msgstr "正在開始分析…"
+
+msgid "Starting briefing generation..."
+msgstr "正在產生簡報…"
+
+msgid "Starting categorization..."
+msgstr "正在開始分類…"
+
+msgid "Starting trial..."
+msgstr "正在開始試用…"
+
+msgid "Statistics"
+msgstr "統計資料"
+
+msgid "Statistics &amp; History"
+msgstr "統計資料 &amp; 歷史記錄"
+
+msgid "Stats"
+msgstr "統計資料"
+
+msgid "Status"
+msgstr "狀態"
+
+msgid "Stay on the same feed/folder"
+msgstr "停留在同一個訂閱來源／資料夾"
+
+#, python-format
+msgid "Step %(step)s of %(count)s"
+msgstr "第 %(step)s 步，共 %(count)s 步"
+
+msgid "Stop any time you like."
+msgstr "隨時都可以停止。"
+
+msgid "Stop recording"
+msgstr "停止錄音"
+
+msgid "Stories"
+msgstr "文章"
+
+msgid "Stories are highlighted green (like) or hidden (dislike)"
+msgstr "喜歡的文章會以綠色標示，不喜歡的則會隱藏"
+
+msgid "Stories arrive in real-time"
+msgstr "文章即時送達"
+
+msgid "Stories cache for offline reading with automatic background refresh."
+msgstr "快取文章以供離線閱讀，並在背景自動更新。"
+
+msgid "Stories can stay unread forever"
+msgstr "文章可以永遠保持未讀"
+
+msgid "Stories covered by 3+ feeds"
+msgstr "由 3 個以上訂閱來源報導的文章"
+
+#, python-format
+msgid "Stories from %(start_date)s to %(end_date)s"
+msgstr "從 %(start_date)s 到 %(end_date)s 的文章"
+
+msgid "Stories from feeds that rarely publish"
+msgstr "來自不常更新的訂閱來源的文章"
+
+msgid "Stories in archive"
+msgstr "封存中的文章"
+
+#, python-format
+msgid "Stories marked as read at <b>%(days)s day</b>"
+msgid_plural "Stories marked as read at <b>%(days)s days</b>"
+msgstr[0] "文章會在 <b>%(days)s 天</b>後標記為已讀"
+
+msgid "Stories matching your trained topics and authors"
+msgstr "符合你訓練的主題和作者的文章"
+
+msgid "Stories never expire or disappear"
+msgstr "文章永不過期或消失"
+
+#, python-format
+msgid "Stories newer than %(date)s"
+msgstr "晚於 %(date)s 的文章"
+
+#, python-format
+msgid "Stories older than %(date)s"
+msgstr "早於 %(date)s 的文章"
+
+#, python-format
+msgid "Stories on %(date)s"
+msgstr "%(date)s 的文章"
+
+msgid "Stories per day"
+msgstr "每日文章數"
+
+msgid "Stories per month"
+msgstr "每月文章數"
+
+msgid "Stories readers finished, saved, and shared"
+msgstr "讀者讀完、儲存及分享的文章"
+
+msgid "Stories that held the most attention across NewsBlur."
+msgstr "在 NewsBlur 中最受關注的文章。"
+
+msgid "Stories will <b>never</b> be auto-marked as read"
+msgstr "文章將<b>永遠不會</b>自動標記為已讀"
+
+msgid "Stories will <b>never</b> be marked as read"
+msgstr "文章<b>永遠</b>不會標記為已讀"
+
+msgid "Story"
+msgstr "文章"
+
+msgid "Story Archive"
+msgstr "文章封存"
+
+msgid "Story Authors"
+msgstr "文章作者"
+
+msgid "Story Categories &amp; Tags"
+msgstr "文章分類 &amp; 標籤"
+
+msgid "Story Clustering"
+msgstr "文章分群"
+
+msgid "Story Layout - Grid Columns"
+msgstr "文章版面配置－網格欄數"
+
+msgid "Story Layout - Split"
+msgstr "文章版面配置 - 分割"
+
+msgid "Story Text"
+msgstr "文章文字"
+
+msgid "Story Title"
+msgstr "文章標題"
+
+msgid "Story Typography"
+msgstr "文章字體樣式"
+
+msgid "Story URL"
+msgstr "文章網址"
+
+msgid "Story clustering"
+msgstr "文章分群"
+
+msgid "Story content preview"
+msgstr "文章內容預覽"
+
+msgid "Story is always hidden"
+msgstr "文章永遠隱藏"
+
+msgid "Story layout"
+msgstr "文章版面"
+
+msgid "Story preview"
+msgstr "文章預覽"
+
+msgid "Story shows in Focus view"
+msgstr "文章會顯示在焦點檢視中"
+
+msgid "Story side options"
+msgstr "文章側邊選項"
+
+msgid "Story side options buttons"
+msgstr "文章側邊選項按鈕"
+
+msgid "Story side options placement"
+msgstr "文章側邊選項位置"
+
+msgid "Story title styling"
+msgstr "文章標題樣式"
+
+msgid "Stream interrupted. No response received for 10 seconds."
+msgstr "串流中斷。10 秒內未收到回應。"
+
+msgid "Stripe Id:"
+msgstr "Stripe ID："
+
+msgid "Submit Payment"
+msgstr "提交付款"
+
+msgid "Submitting..."
+msgstr "正在提交…"
+
+msgid "Subscribe"
+msgstr "訂閱"
+
+#, python-format
+msgid "Subscribe to %(count)s site"
+msgid_plural "Subscribe to %(count)s sites"
+msgstr[0] "訂閱 %(count)s 個網站"
+
+#, python-format
+msgid "Subscribe to %(title)s via RSS"
+msgstr "透過 RSS 訂閱 %(title)s"
+
+#, python-format
+msgid "Subscribe to %(value_1)s"
+msgstr "訂閱 %(value_1)s"
+
+msgid "Subscribe to Google News feeds by topic or custom keywords."
+msgstr "依主題或自訂關鍵字訂閱 Google 新聞動態。"
+
+msgid "Subscribe to Premium Archive"
+msgstr "訂閱 Premium Archive"
+
+msgid "Subscribe to YouTube channels and playlists as RSS feeds."
+msgstr "將 YouTube 頻道和播放清單訂閱為 RSS 訂閱來源。"
+
+msgid "Subscribe to a new feed and its entire available history back-fills automatically."
+msgstr "訂閱新來源後，系統會自動回補其所有可用的歷史內容。"
+
+msgid "Subscribe to add this feed to your NewsBlur"
+msgstr "訂閱即可將此訂閱來源新增至你的 NewsBlur"
+
+msgid "Subscribe to any website as a feed, even without RSS. Upgrade to Premium Archive to unlock Web Feeds."
+msgstr "將任何網站當作訂閱來源訂閱，即使沒有 RSS 也可以。升級至 Premium Archive 即可使用網頁訂閱來源。"
+
+msgid "Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more."
+msgstr "訂閱 Substack、Medium、Ghost、Buttondown 等電子報。"
+
+msgid "Subscribe to newsletters with your NewsBlur address directly and they never touch your inbox."
+msgstr "使用你的 NewsBlur 地址訂閱電子報，它們就不會進入你的收件匣。"
+
+msgid "Subscribe to podcasts via RSS. Search by name or paste a feed URL."
+msgstr "透過 RSS 訂閱 Podcast。可依名稱搜尋或貼上訂閱來源網址。"
+
+#, python-format
+msgid "Subscribe to r/%(value_1)s"
+msgstr "訂閱 r/%(value_1)s"
+
+msgid "Subscribe to subreddits as RSS feeds."
+msgstr "將 subreddit 訂閱為 RSS 訂閱來源。"
+
+msgid "Subscribed"
+msgstr "已訂閱"
+
+msgid "Subscribed with errors"
+msgstr "訂閱成功，但發生錯誤"
+
+msgid "Subscribed!"
+msgstr "已訂閱！"
+
+msgid "Subscribed! Fetching stories..."
+msgstr "已訂閱！正在擷取文章…"
+
+msgid "Subscribers"
+msgstr "訂閱者"
+
+msgid "Subscribing..."
+msgstr "正在訂閱…"
+
+msgid "Subscription tiers"
+msgstr "訂閱方案等級"
+
+msgid "Suggested questions"
+msgstr "建議問題"
+
+msgid "Summarize"
+msgstr "摘要"
+
+msgid "Summarize in a paragraph"
+msgstr "以一段文字摘要"
+
+msgid "Summarize in bullet points"
+msgstr "以條列方式摘要"
+
+msgid "Summarize in one sentence"
+msgstr "用一句話摘要"
+
+msgid "Sun"
+msgstr "週日"
+
+msgid "Sunday"
+msgstr "星期日"
+
+msgid "Super Dislike "
+msgstr "超級不喜歡 "
+
+#, python-format
+msgid "Supplemented by checks every %(value_1)s"
+msgstr "每隔 %(value_1)s 檢查一次作為補充"
+
+msgid "Switch between views (original, feed, text, story)"
+msgstr "切換檢視方式（原始、訂閱來源、文字、文章）"
+
+msgid "Switch focus/unread"
+msgstr "切換焦點／未讀"
+
+msgid "Switch models per question. Each answer is labeled with the model that wrote it."
+msgstr "每個問題都可以切換模型。每個答案都會標示撰寫它的模型。"
+
+msgid "Switch themes instantly from the bottom of the Manage menu."
+msgstr "在「管理」選單底部即可即時切換主題。"
+
+#, python-format
+msgid "Switch to %(value_1)s"
+msgstr "切換至 %(value_1)s"
+
+msgid "Switch to All or Unread."
+msgstr "切換至「全部」或「未讀」。"
+
+msgid "Switch to Credit Card"
+msgstr "改用信用卡"
+
+msgid "Switch views"
+msgstr "切換檢視模式"
+
+msgid "Tag"
+msgstr "標籤"
+
+msgid "Tag RSS Feed"
+msgstr "標籤 RSS 訂閱來源"
+
+msgid "Tag Settings"
+msgstr "標籤設定"
+
+#, python-format
+msgid "Tag filters found no stories in %(context)s."
+msgstr "%(context)s 中沒有文章符合標籤篩選條件。"
+
+msgid "Tag filters found no stories in this view."
+msgstr "標籤篩選器在此檢視中找不到文章。"
+
+msgid "Tag name must be 128 characters or less."
+msgstr "標籤名稱不得超過 128 個字元。"
+
+msgid "Tag settings"
+msgstr "標籤設定"
+
+msgid "Tag: "
+msgstr "標籤："
+
+msgid "Tags"
+msgstr "標籤"
+
+msgid "Tags:"
+msgstr "標籤："
+
+msgid "Take action: mark as read, save with tags and notes, subscribe, share"
+msgstr "採取行動：標記為已讀、加上標籤與備註儲存、訂閱、分享"
+
+msgctxt "card height"
+msgid "Tall"
+msgstr "高"
+
+msgid "Target category name"
+msgstr "目標分類名稱"
+
+msgid "Tech"
+msgstr "科技"
+
+msgid "Technology"
+msgstr "科技"
+
+msgid "Temporarily turn off feeds"
+msgstr "暫時關閉訂閱來源"
+
+msgid "Test failed"
+msgstr "測試失敗"
+
+msgid "Test on these images"
+msgstr "在這些圖片上測試"
+
+msgid "Test on this image"
+msgstr "在這張圖片上測試"
+
+msgid "Test on this story"
+msgstr "在這篇文章上測試"
+
+msgid "Testing on this story..."
+msgstr "正在此文章上測試…"
+
+msgid "Text"
+msgstr "文字"
+
+msgid "Text Phrases"
+msgstr "文字詞組"
+
+msgid "Text Regex"
+msgstr "文字正規表示式"
+
+msgid "Text View"
+msgstr "文字檢視"
+
+#, python-format
+msgid "Text filters found no stories in %(context)s."
+msgstr "文字篩選器在 %(context)s 中找不到文章。"
+
+msgid "Text filters found no stories in this view."
+msgstr "文字篩選器在此檢視中找不到任何文章。"
+
+msgid "Text view extracts the story"
+msgstr "文字檢視會擷取文章內容"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium account%(bold_end)s."
+msgstr "謝謝！你擁有 %(bold_start)sPremium 帳戶%(bold_end)s。"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium archive account%(bold_end)s."
+msgstr "謝謝！你擁有 %(bold_start)sPremium Archive 帳戶%(bold_end)s。"
+
+#, python-format
+msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
+msgstr "謝謝！你擁有 %(bold_start)sPremium Pro 帳戶%(bold_end)s。"
+
+msgid "The AI service took too long to respond. Please try again."
+msgstr "AI 服務回應時間過長。請再試一次。"
+
+msgid ""
+"The CLI is a standalone terminal tool you run directly. The MCP server lets AI agents connect on your "
+"behalf. Both use the same API and have the same capabilities."
+msgstr "CLI 是可直接執行的獨立終端機工具。MCP 伺服器則讓 AI 代理代表你連線。兩者使用相同的 API，功能也相同。"
+
+msgid ""
+"The Daily Briefing appears at the top of your sidebar, with sections for top stories, long reads, and "
+"custom sections you define."
+msgstr "每日簡報會顯示在側邊欄頂端，包含熱門文章、長篇閱讀，以及你自訂的區塊。"
+
+msgid ""
+"The MCP server uses OAuth, the same authentication as third-party apps. You authorize through your browser "
+"and can revoke access at any time."
+msgstr "MCP 伺服器使用 OAuth，與第三方應用程式採用相同的驗證方式。你可透過瀏覽器授權，並隨時撤銷存取權限。"
+
+msgid ""
+"The Model Context Protocol is an open standard for connecting AI agents to external tools and data. It lets"
+" Claude, Codex, and other AI assistants interact with NewsBlur on your behalf."
+msgstr "模型上下文協定（MCP）是一種開放標準，可將 AI 代理連接至外部工具和資料。它讓 Claude、Codex 和其他 AI 助理能代表你與 NewsBlur 互動。"
+
+msgid "The NewsBlur Blog"
+msgstr "NewsBlur 部落格"
+
+#, python-format
+msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
+msgstr "完整的 %(icon)s 文字檢視是%(link_start)s進階功能%(link_end)s。"
+
+msgid "The full NewsBlur API is open and documented for custom integrations."
+msgstr "完整的 NewsBlur API 開放使用，並附有文件，可供自訂整合。"
+
+#, python-format
+msgid "The full River of News is a %(link_start)spremium feature%(link_end)s."
+msgstr "完整新聞流是%(link_start)s進階功能%(link_end)s。"
+
+msgid "The full shortcut list"
+msgstr "完整快速鍵清單"
+
+msgid "The gift has been applied to your account."
+msgstr "禮物已套用至你的帳戶。"
+
+msgid "The intelligence slider filters stories."
+msgstr "智慧篩選滑桿可篩選文章。"
+
+msgid ""
+"The intelligence slider in the bottom-left corner filters between all stories, unread stories, and focus "
+"stories."
+msgstr "左下角的智慧度滑桿可在所有文章、未讀文章和焦點文章之間篩選。"
+
+msgid ""
+"The login command opens your browser for OAuth authorization. Your token is stored locally and never sent "
+"anywhere except the NewsBlur API."
+msgstr "登入指令會開啟瀏覽器進行 OAuth 授權。你的權杖會儲存在本機，除了 NewsBlur API 之外，不會傳送至任何地方。"
+
+msgid "The most important stories from your feeds"
+msgstr "訂閱來源中最重要的文章"
+
+msgid "The original page has been disabled by the publisher."
+msgstr "發布者已停用原始頁面。"
+
+msgid "The page HTML is fetched and parsed to extract content structure."
+msgstr "擷取並解析頁面 HTML，以提取內容結構。"
+
+msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
+msgstr "你選擇的檢視方式會按網站記憶，因此僅提供摘要的訂閱來源可預設為文字檢視。"
+
+msgid "Themes & Customization"
+msgstr "佈景主題與自訂"
+
+msgid "There are too many sites and stories to process. "
+msgstr "要處理的網站和文章太多了。"
+
+#, python-format
+msgid "There is %(count)s hidden story"
+msgid_plural "There are %(count)s hidden stories"
+msgstr[0] "有 %(count)s 篇隱藏文章"
+
+#, python-format
+msgid "There is %(count)s public comment"
+msgid_plural "There are %(count)s public comments"
+msgstr[0] "有 %(count)s 則公開留言"
+
+msgid ""
+"There was a issue on the backend with sending your email. Sorry about this! It has been noted and will be "
+"fixed soon. You should probably send this manually now."
+msgstr "寄送電子郵件時，後端發生問題。很抱歉！我們已記錄此問題，並會盡快修復。你現在可能需要手動寄送。"
+
+msgid "There was a problem deleting your classifiers."
+msgstr "刪除分類器時發生問題。"
+
+msgid "There was a problem deleting your saved stories."
+msgstr "刪除已儲存文章時發生問題。"
+
+msgid "There was a problem deleting your shared stories."
+msgstr "刪除你分享的文章時發生問題。"
+
+msgid "There was a problem deleting your sites."
+msgstr "刪除網站時發生問題。"
+
+msgid "There was a problem fetching the feed from this URL."
+msgstr "從此網址擷取訂閱來源時發生問題。"
+
+msgid "There was a problem loading your training data. Please try again."
+msgstr "載入訓練資料時發生問題。請再試一次。"
+
+msgid "There was a problem trying to add this site. Please try a different URL."
+msgstr "新增此網站時發生問題。請嘗試其他網址。"
+
+msgid "There was a problem uploading your OPML file."
+msgstr "上傳 OPML 檔案時發生問題。"
+
+msgid "There was a problem uploading your photo."
+msgstr "上傳照片時發生問題。"
+
+msgid "There was an error trying to logout, ouch."
+msgstr "登出時發生錯誤，哎呀。"
+
+msgid "There's no limit. Save as many stories as you want and they're kept forever."
+msgstr "沒有數量限制。想儲存多少篇文章都可以，而且會永久保留。"
+
+msgid "These clusters were found because other subscribers share these feeds."
+msgstr "這些群組是因為其他訂閱者也訂閱了這些來源而找到的。"
+
+msgid ""
+"These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
+"above to override."
+msgstr "這些網域預設為封鎖（搜尋引擎、社群媒體等）。若要允許，請將它們加入上方的「允許的網域」。"
+
+msgid "They redeem it."
+msgstr "對方進行兌換。"
+
+msgid "Thinking"
+msgstr "思考中"
+
+msgid "Thinking..."
+msgstr "思考中…"
+
+msgid "Third-party apps that sync with NewsBlur"
+msgstr "與 NewsBlur 同步的第三方應用程式"
+
+msgid "This Month"
+msgstr "本月"
+
+msgid "This Week"
+msgstr "本週"
+
+msgid "This Year"
+msgstr "今年"
+
+msgid "This is just the demo."
+msgstr "這只是示範。"
+
+msgid "This matches the entire URL and will only match this exact story. Select a portion of the URL instead."
+msgstr "這會比對完整網址，因此只會比對這篇特定文章。請改為選取網址的一部分。"
+
+msgid ""
+"This matches the entire story text and will only match this exact story. Consider using a shorter phrase or"
+" pattern."
+msgstr "這會比對文章的完整文字，因此只會比對這篇特定文章。請考慮使用較短的詞句或模式。"
+
+msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
+msgstr "這會比對完整標題，因此只會比對這篇完全相同的文章。請改選標題的一部分。"
+
+#, python-format
+msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
+msgstr "此已讀文章清單是%(link_start)s進階版功能%(link_end)s。"
+
+msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
+msgstr "這會從所有已儲存的文章中移除該標籤。文章仍會保留，但不再有此標籤。"
+
+msgid "This site"
+msgstr "此網站"
+
+msgid ""
+"This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to "
+"see the exact status codes for the feed. The more errors for the feed, the longer time taken between "
+"fetches."
+msgstr "此網站發生例外錯誤，目前狀態不正常。請查看此對話框底部，確認此訂閱來源的確切狀態碼。訂閱來源錯誤越多，兩次擷取之間的間隔就越長。"
+
+#, python-format
+msgid "This site has not been fetched in <b>%(time)s</b> and is throwing errors."
+msgstr "此網站已有 <b>%(time)s</b> 未擷取，且發生錯誤。"
+
+msgid "This site has not yet been indexed for related stories."
+msgstr "此網站尚未建立相關文章索引。"
+
+msgid ""
+"This site has published zero stories in the past month or has averaged less than a single story a month. As"
+" soon as it starts publishing at least once a month, it will automatically fetch more frequently."
+msgstr "此網站過去一個月沒有發布任何文章，或平均每月發布不到一篇文章。一旦開始每月至少發布一篇文章，系統就會自動提高擷取頻率。"
+
+msgid "This site is active and receiving stories."
+msgstr "此網站目前正常運作並接收文章。"
+
+msgid "This site only"
+msgstr "僅此網站"
+
+msgid "This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories."
+msgstr "此網頁訂閱來源已<b>暫停</b>。升級至 Premium Archive 即可繼續擷取新文章。"
+
+msgid "This will erase all existing feeds and folders."
+msgstr "這會清除所有現有的訂閱來源和資料夾。"
+
+msgid "This will prevent the browser extension from archiving pages from this domain in the future."
+msgstr "這會阻止瀏覽器擴充功能日後封存此網域的網頁。"
+
+msgid "Thu"
+msgstr "週四"
+
+msgid "Thumbs down what you don't want to see"
+msgstr "對不想看到的內容按倒讚"
+
+msgid "Thumbs up and down on authors, tags, and titles"
+msgstr "對作者、標籤和標題按讚或倒讚"
+
+msgid "Thumbs up authors, tags, or title keywords you like"
+msgstr "對你喜歡的作者、標籤或標題關鍵字按讚"
+
+msgid "Thursday"
+msgstr "星期四"
+
+msgid "Tier"
+msgstr "方案"
+
+msgid "Time Period"
+msgstr "時間範圍"
+
+#, python-format
+msgid "Time: %(value_1)s"
+msgstr "時間：%(value_1)s"
+
+msgid "Timezone"
+msgstr "時區"
+
+msgid "Timezone:"
+msgstr "時區："
+
+msgid "Tips"
+msgstr "提示"
+
+msgid "Title"
+msgstr "標題"
+
+msgid "Title Phrases"
+msgstr "標題詞組"
+
+msgid "Title Regex"
+msgstr "標題正規表示式"
+
+#, python-format
+msgid "Title filters found no stories in %(context)s."
+msgstr "標題篩選器在 %(context)s 中找不到文章。"
+
+msgid "Title filters found no stories in this view."
+msgstr "標題篩選器在此檢視中找不到任何文章。"
+
+msgid "Title matching catches exact and fuzzy duplicates"
+msgstr "標題比對可找出完全相同及相似的重複項目"
+
+msgid "Title only"
+msgstr "僅標題"
+
+msgid ""
+"Title training matches phrases, so train just the words that matter and future stories with those words "
+"follow suit."
+msgstr "標題訓練會比對詞組，因此只需訓練重要詞彙，之後含有這些詞彙的文章就會依照相同方式處理。"
+
+msgid "Title: "
+msgstr "標題："
+
+msgid "Titles"
+msgstr "標題"
+
+msgid "To"
+msgstr "收件者"
+
+msgctxt "date range"
+msgid "To"
+msgstr "至"
+
+msgid ""
+"To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
+"above."
+msgstr "若要在 NewsBlur 閱讀電子報，請將電子報轉寄至上方顯示的專屬電子郵件地址。"
+
+msgid "Today"
+msgstr "今天"
+
+#, python-format
+msgid "Today, %(date)s"
+msgstr "今天，%(date)s"
+
+#, python-format
+msgid "Today, %(date)s %(time)s"
+msgstr "今天，%(date)s %(time)s"
+
+msgid "Toggle read/unread"
+msgstr "切換已讀／未讀"
+
+msgid "Toggle unread/all"
+msgstr "切換未讀／全部"
+
+#, python-format
+msgid "Tomorrow, %(date)s %(time)s"
+msgstr "明天，%(date)s %(time)s"
+
+#, python-format
+msgid "Tomorrow, %(time)s"
+msgstr "明天，%(time)s"
+
+#, python-format
+msgid "Too many sites! Deselect %(count)s site..."
+msgid_plural "Too many sites! Deselect %(count)s sites..."
+msgstr[0] "網站太多了！請取消選取 %(count)s 個網站……"
+
+msgid "Tools"
+msgstr "工具"
+
+msgid "Tooltips"
+msgstr "工具提示"
+
+msgid "Tooltips like this"
+msgstr "這類工具提示"
+
+msgid "Top"
+msgstr "頂端"
+
+msgid "Top Domains"
+msgstr "熱門網域"
+
+msgid "Top Level"
+msgstr "頂層"
+
+msgid "Top stories"
+msgstr "熱門文章"
+
+msgid "Track Changes"
+msgstr "追蹤變更"
+
+msgid "Train"
+msgstr "訓練"
+
+msgid "Train &amp; filter"
+msgstr "訓練 &amp; 篩選"
+
+msgid "Train NewsBlur to show you what you want and hide what you don't. You're in control, not an algorithm."
+msgstr "訓練 NewsBlur，讓它顯示你想看的內容，並隱藏你不想看的內容。由你掌控，而不是由演算法決定。"
+
+msgid "Train across folders or globally on Premium Archive"
+msgstr "在資料夾或全域範圍內，使用 Premium Archive 進行訓練"
+
+msgid "Train and notification settings"
+msgstr "訓練與通知設定"
+
+msgid "Train intelligence: like or dislike authors, tags, titles, and feeds"
+msgstr "訓練智慧分類器：喜歡或不喜歡作者、標籤、標題和訂閱來源"
+
+msgid "Train stories by author, tag, title"
+msgstr "依作者、標籤和標題訓練文章"
+
+msgid "Train stories on full text content"
+msgstr "根據文章全文訓練"
+
+msgid "Train stories with regular expressions"
+msgstr "使用正規表示式訓練文章"
+
+msgid "Train stories, search, share, and tag just like on the web"
+msgstr "像在網頁版一樣訓練文章、搜尋、分享和加上標籤"
+
+msgid "Train this classifier"
+msgstr "訓練此分類器"
+
+msgid "Train this site"
+msgstr "訓練此網站"
+
+msgid "Train this story"
+msgstr "訓練這篇文章"
+
+msgid "Train your feeds to filter stories you like and dislike."
+msgstr "訓練你的訂閱來源，篩選出你喜歡或不喜歡的文章。"
+
+msgid "Train, tag, search, and organize newsletters like any feed"
+msgstr "像管理任何訂閱來源一樣，訓練、標記、搜尋及整理電子報"
+
+msgid "Training:"
+msgstr "訓練："
+
+msgid "Transcribing audio"
+msgstr "正在轉錄音訊"
+
+msgid "Transcribing..."
+msgstr "正在轉錄…"
+
+msgid "Transport"
+msgstr "交通"
+
+msgid "Travel"
+msgstr "旅遊"
+
+msgid "Trending"
+msgstr "熱門趨勢"
+
+msgid "Trending Sites"
+msgstr "熱門網站"
+
+msgid "Truncate stories"
+msgstr "截短文章"
+
+msgid "Try"
+msgstr "試試"
+
+msgid "Try Again"
+msgstr "再試一次"
+
+msgid "Try a different search term or paste a URL directly."
+msgstr "請嘗試其他搜尋詞，或直接貼上網址。"
+
+msgid "Try again"
+msgstr "再試一次"
+
+msgid "Try different keywords, or clear the search to see everything."
+msgstr "請嘗試其他關鍵字，或清除搜尋內容以查看所有項目。"
+
+msgid "Try removing some filters to see more results"
+msgstr "試著移除一些篩選條件，看看更多結果"
+
+msgid "Tue"
+msgstr "週二"
+
+msgid "Tuesday"
+msgstr "星期二"
+
+msgid "Turn off automatic briefing generation"
+msgstr "關閉自動產生簡報"
+
+#, python-format
+msgid "Turn on this %(count)s site, please"
+msgid_plural "Turn on these %(count)s sites, please"
+msgstr[0] "請啟用這 %(count)s 個網站"
+
+msgid "Turning any page into a feed"
+msgstr "將任何頁面轉換為訂閱來源"
+
+msgid ""
+"Two layers: title matching normalizes headlines for exact and fuzzy matches, and semantic matching uses "
+"Elasticsearch to catch the same event under completely different headlines."
+msgstr "兩個層次：標題比對會將標題正規化，以進行精確和模糊比對；語意比對則使用 Elasticsearch，找出標題完全不同但描述同一事件的文章。"
+
+msgid "Type a story title you see on the page"
+msgstr "輸入你在頁面上看到的文章標題"
+
+msgid "Type keywords, phrases, or combinations"
+msgstr "輸入關鍵字、詞組或組合"
+
+msgid "URL"
+msgstr "網址"
+
+msgid "URL Regex"
+msgstr "URL 正規表示式"
+
+#, python-format
+msgid "URL filters found no stories in %(context)s."
+msgstr "URL 篩選器在 %(context)s 中找不到文章。"
+
+msgid "URL filters found no stories in this view."
+msgstr "URL 篩選器在此檢視中找不到任何文章。"
+
+msgid "URL gives a 404 - page not found."
+msgstr "URL 回傳 404 — 找不到頁面。"
+
+msgid "URL:"
+msgstr "網址："
+
+msgid "Un-mute this site"
+msgstr "取消將此網站靜音"
+
+msgid "Uncategorized"
+msgstr "未分類"
+
+msgid "Unfavorited"
+msgstr "已取消最愛"
+
+msgid "Unfollow"
+msgstr "取消追蹤"
+
+msgid "Unfollowed"
+msgstr "已取消追蹤"
+
+msgid "Unfollowing..."
+msgstr "正在取消追蹤…"
+
+msgid "Unhighlight"
+msgstr "取消醒目標示"
+
+msgid "Unknown"
+msgstr "未知"
+
+msgid "Unknown Feed"
+msgstr "未知的訂閱來源"
+
+msgid "Unknown error"
+msgstr "未知錯誤"
+
+msgid "Unknown question"
+msgstr "未知問題"
+
+msgid "Unlock"
+msgstr "解鎖"
+
+msgid "Unlock for $36/year"
+msgstr "每年 $36 解鎖"
+
+msgid "Unlock full discovery"
+msgstr "解鎖完整探索功能"
+
+msgid "Unlocked"
+msgstr "已解鎖"
+
+msgid "Unmute"
+msgstr "取消靜音"
+
+msgid "Unmuted"
+msgstr "已取消靜音"
+
+msgid "Unread"
+msgstr "未讀"
+
+msgid "Unread only"
+msgstr "僅未讀"
+
+msgid "Unread stories"
+msgstr "未讀文章"
+
+msgid "Unread stories going back months"
+msgstr "數月前的未讀文章"
+
+msgid "Unread stories never expire, so read at your own pace."
+msgstr "未讀文章不會過期，請按照自己的步調閱讀。"
+
+msgid "Unread+Focus:"
+msgstr "未讀＋焦點："
+
+msgid "Unsave this story"
+msgstr "取消儲存這篇文章"
+
+msgid "Unshared"
+msgstr "已取消分享"
+
+msgid "Untitled"
+msgstr "未命名"
+
+msgid "Up Next"
+msgstr "接下來"
+
+msgid "Upcoming charge: "
+msgstr "即將扣款："
+
+msgid "Update History"
+msgstr "更新記錄"
+
+msgid "Updated"
+msgstr "更新時間"
+
+#, python-format
+msgid "Updated %(count)s day ago"
+msgid_plural "Updated %(count)s days ago"
+msgstr[0] "%(count)s 天前更新"
+
+#, python-format
+msgid "Updated %(count)s month ago"
+msgid_plural "Updated %(count)s months ago"
+msgstr[0] "%(count)s 個月前更新"
+
+#, python-format
+msgid "Updated %(count)s week ago"
+msgid_plural "Updated %(count)s weeks ago"
+msgstr[0] "%(count)s 週前更新"
+
+#, python-format
+msgid "Updated %(value_1)s ago"
+msgstr "於 %(value_1)s 前更新"
+
+msgid "Updated today"
+msgstr "今天更新"
+
+msgid "Updated within the last 5 years"
+msgstr "最近 5 年內更新"
+
+msgid "Updated within the last month"
+msgstr "最近一個月內更新"
+
+msgid "Updated within the last year"
+msgstr "最近一年內更新"
+
+msgid "Updated!"
+msgstr "已更新！"
+
+msgid "Updates come to you"
+msgstr "更新主動送到你手上"
+
+#, python-format
+msgid "Updating sites every %(count)s second..."
+msgid_plural "Updating sites every %(count)s seconds..."
+msgstr[0] "每 %(count)s 秒更新網站…"
+
+msgid "Updating sites in real-time..."
+msgstr "正在即時更新網站…"
+
+#, python-format
+msgid "Upgrade to %(value_1)s"
+msgstr "升級至 %(value_1)s"
+
+msgid "Upgrade to Archive or Pro"
+msgstr "升級至 Archive 或 Pro"
+
+msgid "Upgrade to Premium"
+msgstr "升級至 Premium"
+
+msgid "Upgrade to Premium Archive"
+msgstr "升級至 Premium Archive"
+
+msgid "Upgrade to Premium Archive for classifier notifications"
+msgstr "升級至 Premium Archive 以取得分類器通知"
+
+msgid "Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster."
+msgstr "升級至 Premium Archive，即可掃描所有訂閱來源中的重複文章，不再錯過任何一組重複內容。"
+
+msgid "Upgrade to Premium Pro"
+msgstr "升級至 Premium Pro"
+
+msgid "Upgrade to a Premium Archive account"
+msgstr "升級至 Premium Archive 帳戶"
+
+msgid "Upgrade to a Premium account"
+msgstr "升級至 Premium 帳戶"
+
+msgid "Upgrade to premium"
+msgstr "升級至 Premium"
+
+msgid "Upgrade your reading"
+msgstr "升級你的閱讀體驗"
+
+msgid "Upgraded!"
+msgstr "已升級！"
+
+msgid "Upload"
+msgstr "上傳"
+
+msgid "Upload Custom Image"
+msgstr "上傳自訂圖片"
+
+msgid "Upload OPML File"
+msgstr "上傳 OPML 檔案"
+
+msgid "Upload failed. Please check your connection and try again."
+msgstr "上傳失敗。請檢查網路連線後再試一次。"
+
+msgid "Upload failed. Please try again."
+msgstr "上傳失敗。請再試一次。"
+
+msgid "Uploaded!"
+msgstr "已上傳！"
+
+msgid "Usage billing history"
+msgstr "用量帳單記錄"
+
+msgid "Usage-based billing is enabled for natural language classifiers."
+msgstr "自然語言分類器已啟用依用量計費。"
+
+#, python-format
+msgid "Use %(language)s"
+msgstr "使用 %(language)s"
+
+msgid "Use 12-hour clock"
+msgstr "使用 12 小時制"
+
+msgid "Use 24-hour clock"
+msgstr "使用 24 小時制"
+
+msgid "Use prompt templates for inbox triage, topic research, and feed audits"
+msgstr "使用提示範本進行收件匣分類、主題研究和訂閱來源稽核"
+
+msgid "Use the native browser context menu"
+msgstr "使用瀏覽器原生的內容選單"
+
+msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
+msgstr "在瀏覽器擴充功能和 RSS 閱讀器中使用此 URL 範本，即可在 NewsBlur 訂閱。"
+
+msgid "Use widgets to see unread counts and stories at a glance"
+msgstr "使用小工具一覽未讀數量和文章"
+
+msgid "Useful for developing news stories, corrected articles, and evolving product announcements."
+msgstr "適用於持續發展的新聞、經過更正的文章，以及不斷更新的產品公告。"
+
+msgid "User Admin"
+msgstr "使用者管理"
+
+msgid "User is premium ARCHIVE, expires: "
+msgstr "使用者為 Premium Archive，到期日："
+
+msgid "User is premium, expires: "
+msgstr "使用者為 Premium，將於以下日期到期："
+
+msgid "Username"
+msgstr "使用者名稱"
+
+msgid "Username or email..."
+msgstr "使用者名稱或電子郵件…"
+
+#, python-format
+msgid "Using default: <b>%(days)s day</b>"
+msgid_plural "Using default: <b>%(days)s days</b>"
+msgstr[0] "使用預設值：<b>%(days)s 天</b>"
+
+#, python-format
+msgid "Using default: <b>%(days)s day</b> (from %(source)s)"
+msgid_plural "Using default: <b>%(days)s days</b> (from %(source)s)"
+msgstr[0] "使用預設值：<b>%(days)s 天</b>（來自 %(source)s）"
+
+#, python-format
+msgid "Using default: <b>never</b> (from %(source)s)"
+msgstr "使用預設值：<b>永不</b>（來自 %(source)s）"
+
+msgid "Using default: stories will <b>never</b> be auto-marked as read"
+msgstr "使用預設值：文章<b>永遠不會</b>自動標記為已讀"
+
+#, python-format
+msgid "Variant %(number)s"
+msgstr "變體 %(number)s"
+
+msgid "View keyboard shortcuts"
+msgstr "查看鍵盤快速鍵"
+
+msgid "View matching stories"
+msgstr "查看符合條件的文章"
+
+msgid "View on GitHub"
+msgstr "在 GitHub 上查看"
+
+msgid "View profile"
+msgstr "查看個人檔案"
+
+msgid "View settings"
+msgstr "檢視設定"
+
+msgid "Visual"
+msgstr "視覺"
+
+msgid "Voice recording failed. Please try again."
+msgstr "語音錄製失敗。請再試一次。"
+
+msgid "Warning: This is actually permanent"
+msgstr "警告：此操作確實無法復原"
+
+msgid "Weather"
+msgstr "天氣"
+
+msgid "Web"
+msgstr "網頁"
+
+msgid "Web Feed"
+msgstr "網頁訂閱來源"
+
+msgid "Web Feeds"
+msgstr "網頁訂閱來源"
+
+msgid "Web Feeds from any website, even without RSS"
+msgstr "從任何網站取得網頁訂閱來源，即使沒有 RSS 也可以"
+
+msgid ""
+"Web Feeds require Premium Archive or Premium Pro, since page-scraping is more resource-intensive than RSS "
+"fetching."
+msgstr "網頁訂閱來源需要 Premium Archive 或 Premium Pro，因為擷取網頁的資源需求比取得 RSS 更高。"
+
+msgid "Web feeds are checked on the same schedule as regular feeds, faster on higher plans."
+msgstr "網頁訂閱來源會依照一般訂閱來源的排程檢查；方案等級越高，檢查速度越快。"
+
+msgid "Web feeds train, search, and organize exactly like RSS feeds."
+msgstr "網頁訂閱來源的訓練、搜尋及整理方式與 RSS 訂閱來源完全相同。"
+
+msgid "Web notifications"
+msgstr "網頁通知"
+
+msgid "Web notifications require Premium Archive"
+msgstr "網頁通知需使用 Premium Archive"
+
+msgid "Website"
+msgstr "網站"
+
+msgid "Website URL: "
+msgstr "網站網址： "
+
+msgid "Wed"
+msgstr "週三"
+
+msgid "Wednesday"
+msgstr "星期三"
+
+msgid "Weekly"
+msgstr "每週"
+
+msgid "Welcome to NewsBlur"
+msgstr "歡迎使用 NewsBlur"
+
+msgid "What are the main arguments?"
+msgstr "主要論點是什麼？"
+
+#, python-format
+msgid "What do you %(like)s and %(dislike)s about this site?"
+msgstr "你 %(like)s 和 %(dislike)s 這個網站的哪些地方？"
+
+#, python-format
+msgid "What do you %(like)s and %(dislike)s about this story?"
+msgstr "你 %(like)s 和 %(dislike)s 這篇文章的哪些地方？"
+
+msgid "What happens if I downgrade?"
+msgstr "如果我降級會怎麼樣？"
+
+msgid "What is MCP?"
+msgstr "什麼是 MCP？"
+
+msgid "What is the Daily Briefing?"
+msgstr "每日簡報是什麼？"
+
+msgid "What plan do I need?"
+msgstr "我需要哪種方案？"
+
+msgid "What sites can I follow?"
+msgstr "我可以追蹤哪些網站？"
+
+msgid "What the NewsBlur community is reading"
+msgstr "NewsBlur 社群正在閱讀的內容"
+
+msgid "What you like and dislike"
+msgstr "你喜歡與不喜歡的內容"
+
+msgid "What your agent can do"
+msgstr "你的代理程式能做什麼"
+
+msgid "What's the context and background?"
+msgstr "背景與脈絡是什麼？"
+
+msgid "What's the difference between CLI and MCP?"
+msgstr "CLI 和 MCP 有什麼不同？"
+
+msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
+msgstr "訂閱來源更新時，NewsBlur 會檢查你所有訂閱中是否有重複內容"
+
+msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
+msgstr "多個訂閱來源刊載相同文章時，NewsBlur 會將它們彙整在一起，讓你只需看一次。"
+
+msgid "When opening a site"
+msgstr "開啟網站時"
+
+msgid "When reading a clustered story:"
+msgstr "閱讀群組文章時："
+
+msgid "When story content changes"
+msgstr "文章內容變更時"
+
+msgid ""
+"When you subscribe to a feed, NewsBlur back-fills its entire available history. Going forward, every story "
+"is kept forever."
+msgstr "新增訂閱來源時，NewsBlur 會補齊其所有可取得的歷史內容。之後的每篇文章都會永久保存。"
+
+msgid "When you subscribe to a new feed, its history is back-filled"
+msgstr "新增訂閱來源時，系統會回填其歷史內容"
+
+msgid "Which AI models are available?"
+msgstr "有哪些 AI 模型可用？"
+
+msgid "Whoops! Something went wrong. Try again."
+msgstr "糟糕！發生錯誤。請再試一次。"
+
+msgid "Why is the next update not at the normal rate?"
+msgstr "為什麼下次更新不是以正常頻率進行？"
+
+msgid "Why so infrequently?"
+msgstr "為什麼這麼不頻繁？"
+
+msgid "Widely Read Stories"
+msgstr "廣受閱讀的文章"
+
+msgid "Widely Read on NewsBlur"
+msgstr "NewsBlur 上廣受閱讀"
+
+msgid "Widely covered"
+msgstr "廣泛報導"
+
+msgid "Widen pane for controls"
+msgstr "加寬面板以顯示控制項"
+
+msgid "Widen the story titles pane to use filter controls"
+msgstr "加寬文章標題窗格以使用篩選控制項"
+
+msgid "Window title"
+msgstr "視窗標題"
+
+msgid "Windows &amp; Linux"
+msgstr "Windows &amp; Linux"
+
+msgid "Word Matching"
+msgstr "文字比對"
+
+msgid "Works on any website"
+msgstr "適用於任何網站"
+
+msgid "Works with social media profiles, job boards, product pages, and more"
+msgstr "適用於社群媒體個人檔案、求職網站、產品頁面等"
+
+msgid "Writing style"
+msgstr "寫作風格"
+
+msgid "XPath patterns identify story blocks, headlines, links, and images."
+msgstr "XPath 模式可識別文章區塊、標題、連結和圖片。"
+
+msgid "YYYY-MM-DD"
+msgstr "YYYY-MM-DD"
+
+msgid "Years Earned"
+msgstr "已獲得年數"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
+msgstr "可以，所有智慧訓練功能在電子報上都能像一般訂閱來源一樣使用。"
+
+msgid "Yes, both apps are open source and actively developed on GitHub."
+msgstr "是的，兩款應用程式都是開源軟體，並在 GitHub 上持續開發。"
+
+msgid ""
+"Yes, both the iOS and Android apps are free. Premium features in the apps match your subscription on the "
+"web."
+msgstr "是的，iOS 和 Android App 都是免費的。App 中的進階功能會依照你在網站上的訂閱方案提供。"
+
+msgid "Yes, delete it"
+msgstr "是，刪除"
+
+msgid "Yes, email newsletters are a free feature."
+msgstr "是，電子報是免費功能。"
+
+msgid "Yes, every NewsBlur account has a unique email address for receiving newsletters."
+msgstr "是的，每個 NewsBlur 帳戶都有專屬電子郵件地址，可用來接收電子報。"
+
+msgid "Yes, every archived story is fully searchable."
+msgstr "是的，每篇封存的文章都可以完整搜尋。"
+
+msgid "Yes, it can transcribe audio and video content and then answer questions about it."
+msgstr "可以，它能轉錄音訊和影片內容，然後回答相關問題。"
+
+msgid "Yes, saved stories and their tags are fully searchable."
+msgstr "是，已儲存的文章及其標籤都可以完整搜尋。"
+
+msgid "Yes. Every tag generates its own RSS feed, so you can subscribe to it from another reader or share the link."
+msgstr "可以。每個標籤都會產生專屬的 RSS 訂閱來源，因此你可以在其他閱讀器中訂閱，或分享連結。"
+
+msgid "Yes. Stories are cached locally and background refresh keeps them up to date."
+msgstr "是。文章會快取在本機，並在背景更新以保持最新。"
+
+msgid "Yes. Toggle \"Keep stories separate\" in the feed options popover or in Preferences."
+msgstr "可以。在訂閱來源選項彈出視窗或偏好設定中，開啟「分開顯示文章」。"
+
+msgid ""
+"Yes. Training on authors, tags, and title keywords is free. Full-text training on story content requires "
+"Premium Archive."
+msgstr "可以。作者、標籤和標題關鍵字訓練免費。若要依文章內容全文訓練，則需要 Premium Archive。"
+
+msgid ""
+"Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work "
+"even when sites don't offer RSS."
+msgstr "是的。網頁訂閱來源會監控網頁的 HTML 變更，而 RSS 則會讀取結構化的訂閱來源檔案。即使網站不提供 RSS，網頁訂閱來源仍然可用。"
+
+msgid "Yesterday"
+msgstr "昨天"
+
+#, python-format
+msgid "Yesterday, %(date)s"
+msgstr "昨天，%(date)s"
+
+#, python-format
+msgid "Yesterday, %(date)s %(time)s"
+msgstr "昨天，%(date)s %(time)s"
+
+#, python-format
+msgid "Yesterday, %(time)s"
+msgstr "昨天，%(time)s"
+
+msgid "You"
+msgstr "你"
+
+#, python-format
+msgid "You are followed by %(count)s person"
+msgid_plural "You are followed by %(count)s people"
+msgstr[0] "有 %(count)s 人追蹤你"
+
+#, python-format
+msgid "You are following %(count)s person"
+msgid_plural "You are following %(count)s people"
+msgstr[0] "你正在追蹤 %(count)s 人"
+
+#, python-format
+msgid "You are subscribed to %(count)s site."
+msgid_plural "You are subscribed to %(count)s sites."
+msgstr[0] "你已訂閱 %(count)s 個網站。"
+
+#, python-format
+msgid "You are subscribed to at least %(count)s site."
+msgid_plural "You are subscribed to at least %(count)s sites."
+msgstr[0] "你至少訂閱了 %(count)s 個網站。"
+
+msgid "You are trialing this plan"
+msgstr "你正在試用此方案"
+
+msgid "You are unsubscribed from all NewsBlur emails"
+msgstr "你已取消訂閱所有 NewsBlur 電子郵件"
+
+msgid "You are unsubscribed from all NewsBlur emails. Choose to receive emails below and save to resubscribe."
+msgstr "你已取消訂閱所有 NewsBlur 電子郵件。請在下方選擇要接收的電子郵件並儲存，即可重新訂閱。"
+
+msgid "You can also filter out stories you don't want to read."
+msgstr "你也可以篩除不想閱讀的文章。"
+
+msgid "You can change this anytime in Preferences."
+msgstr "你隨時可以在偏好設定中更改。"
+
+msgid "You can change your opinions."
+msgstr "你可以改變自己的看法。"
+
+#, python-format
+msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
+msgstr "閱讀文章時，你可以點擊文章旁的 %(like_icon)s%(dislike_icon)s 按鈕。"
+
+msgid "You can override this on a per-site and per-folder basis."
+msgstr "你可以針對個別網站和資料夾覆寫此設定。"
+
+msgid "You can override this on a per-site basis."
+msgstr "你可以針對個別網站覆寫此設定。"
+
+msgid "You can train per-feed for free, or per-folder and globally on Premium Archive."
+msgstr "免費方案可針對個別訂閱來源進行訓練；Premium Archive 則可針對資料夾及全域進行訓練。"
+
+#, python-format
+msgid "You follow %(count)s site. Premium makes all of them better."
+msgid_plural "You follow %(count)s sites. Premium makes all of them better."
+msgstr[0] "你追蹤 %(count)s 個網站。升級 Premium，讓它們全部更出色。"
+
+#, python-format
+msgid "You have a %(bold_start)sfree account%(bold_end)s."
+msgstr "你擁有%(bold_start)s免費帳戶%(bold_end)s。"
+
+msgid "You have no active subscriptions."
+msgstr "你目前沒有任何有效訂閱。"
+
+msgid "You have no saved stories."
+msgstr "你沒有已儲存的文章。"
+
+msgid "You have no unread stories in Focus mode."
+msgstr "焦點模式中沒有未讀文章。"
+
+msgid "You have no unread stories."
+msgstr "你沒有未讀文章。"
+
+msgid "You have not yet subscribed to anybody's shared stories."
+msgstr "你尚未訂閱任何人分享的文章。"
+
+#, python-format
+msgid "You must be following %(value_1)s to reply"
+msgstr "你必須追蹤 %(value_1)s 才能回覆"
+
+msgid "You must be logged in to send a story over email."
+msgstr "你必須登入才能透過電子郵件傳送文章。"
+
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts."
+msgstr "你必須擁有 %(link_start)s進階帳戶%(link_end)s，才能變更鍵盤快速鍵。"
+
+#, python-format
+msgid "You must have a %(link_start)spremium account%(link_end)s to change privacy."
+msgstr "你必須擁有%(link_start)s進階帳戶%(link_end)s才能變更隱私設定。"
+
+msgid "You need to be logged in to reply to a comment."
+msgstr "你必須登入才能回覆留言。"
+
+msgid "You need to be logged in to share a story."
+msgstr "你必須登入才能分享文章。"
+
+msgid "You will be emailed within a minute or three."
+msgstr "你會在一至三分鐘內收到電子郵件。"
+
+msgid "You will see a bunch of tags and authors."
+msgstr "你會看到一系列標籤和作者。"
+
+msgid "You're being rate limited.<br> Try again soon, but not too soon."
+msgstr "你的請求頻率受到限制。<br> 請稍後再試，但別太快。"
+
+msgid "You're presented with multiple story pattern options to choose from."
+msgstr "系統會提供多種文章模式選項供你選擇。"
+
+msgid ""
+"You're previewing the first 3 stories of each briefing. Upgrade to unlock every story and automatic "
+"briefings on your schedule."
+msgstr "你目前只能預覽每份簡報的前 3 篇文章。升級即可解鎖所有文章，並依照你的時間安排自動接收簡報。"
+
+msgid "You're ready to go! Hope you enjoy NewsBlur."
+msgstr "一切就緒！希望你喜歡 NewsBlur。"
+
+#, python-format
+msgid "You've been gifted %(value_1)s of %(value_2)s!"
+msgstr "你獲贈了 %(value_1)s 的 %(value_2)s！"
+
+#, python-format
+msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
+msgstr "你已達到 %(value_1)s 個網站的上限。請將部分網站設為靜音，或升級帳戶以新增更多網站。"
+
+msgid "You:"
+msgstr "你："
+
+msgid "YouTube Captions"
+msgstr "YouTube 字幕"
+
+msgid "YouTube Channels"
+msgstr "YouTube 頻道"
+
+#, python-format
+msgid "Your %(value_1)s subscription includes everything above"
+msgstr "你的 %(value_1)s 訂閱包含以上所有內容"
+
+#, python-format
+msgid "Your %(value_1)s subscription is active"
+msgstr "你的 %(value_1)s 訂閱已啟用"
+
+msgid "Your Archived Domains"
+msgstr "已封存的網域"
+
+msgid "Your Blurblog"
+msgstr "你的 Blurblog"
+
+msgid "Your Referral Link"
+msgstr "你的推薦連結"
+
+msgid "Your Referral Stats"
+msgstr "你的推薦統計"
+
+msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
+msgstr "你封存的文章仍可存取，但新文章將依照標準保留政策處理。"
+
+msgid "Your cookie has expired — Please login again"
+msgstr "Cookie 已過期 — 請重新登入"
+
+msgid "Your email"
+msgstr "你的電子郵件"
+
+msgid "Your filters may be hiding sites — open Options to widen them."
+msgstr "你的篩選器可能隱藏了網站 — 開啟「選項」以放寬篩選條件。"
+
+msgid "Your inbox stays clean"
+msgstr "讓你的收件匣保持整潔"
+
+msgid "Your name"
+msgstr "你的姓名"
+
+msgid "Your premium account is paid until:"
+msgstr "你的 Premium 帳戶已付費至："
+
+msgid "Your premium account will downgrade on:"
+msgstr "你的 Premium 帳戶將於以下日期降級："
+
+msgid "Your profile"
+msgstr "你的個人檔案"
+
+msgid "Your subscription is no longer active."
+msgstr "你的訂閱已不再有效。"
+
+msgid "Your subscription will be prorated"
+msgstr "你的訂閱費用將按比例計算"
+
+msgid "Your subscription will no longer automatically renew."
+msgstr "你的訂閱將不再自動續訂。"
+
+msgid "and auto-follow them"
+msgstr "並自動追蹤他們"
+
+msgid "artificial intelligence"
+msgstr "人工智慧"
+
+msgid "audio"
+msgstr "音訊"
+
+msgid "autonomous vehicles"
+msgstr "自駕車"
+
+msgid "beats any"
+msgstr "勝過任何"
+
+msgid "bird migration"
+msgstr "鳥類遷徙"
+
+msgid "board games"
+msgstr "棋盤遊戲"
+
+msgid "book reviews"
+msgstr "書評"
+
+msgid "browser engines"
+msgstr "瀏覽器引擎"
+
+msgid "but it wouldn't matter because<br>this site is already in real-time"
+msgstr "但這也無關緊要，因為<br>此網站已是即時更新"
+
+msgid "cancel"
+msgstr "取消"
+
+msgid "central banking"
+msgstr "中央銀行業務"
+
+msgid "climate change"
+msgstr "氣候變遷"
+
+msgid "connect"
+msgstr "連結"
+
+msgid "coral reefs"
+msgstr "珊瑚礁"
+
+msgid "cybersecurity"
+msgstr "網路安全"
+
+msgid "dark matter"
+msgstr "暗物質"
+
+msgid "data privacy"
+msgstr "資料隱私"
+
+msgid "dislike"
+msgstr "不喜歡"
+
+#, python-format
+msgid "e.g. %(example)s"
+msgstr "例如 %(example)s"
+
+msgid "e.g., \"AI and machine learning\" or \"local politics\""
+msgstr "例如：「AI 與機器學習」或「地方政治」"
+
+msgid "e.g., \"food photography\" or \"charts and graphs\""
+msgstr "例如：「美食攝影」或「圖表」"
+
+#, python-format
+msgid "e.g., %(example)s"
+msgstr "例如：%(example)s"
+
+#, python-format
+msgid "e.g., %(first)s or %(second)s"
+msgstr "例如：%(first)s 或 %(second)s"
+
+msgid "edit"
+msgstr "編輯"
+
+msgid "electric vehicles"
+msgstr "電動車"
+
+msgid "film criticism"
+msgstr "影評"
+
+msgid "follower"
+msgid_plural "followers"
+msgstr[0] "位追蹤者"
+
+msgid "following"
+msgstr "正在追蹤"
+
+msgid "food science"
+msgstr "食品科學"
+
+msgid "gene therapy"
+msgstr "基因療法"
+
+msgid "hide hidden stories"
+msgstr "隱藏已隱藏的文章"
+
+msgid "housing market"
+msgstr "房市"
+
+msgid "iOS & Android apps"
+msgstr "iOS 與 Android 應用程式"
+
+msgid "iOS notifications"
+msgstr "iOS 通知"
+
+msgid "iOS notifications require Premium Archive"
+msgstr "iOS 通知需使用 Premium Archive"
+
+msgid "iPhone &amp; iPad"
+msgstr "iPhone &amp; iPad"
+
+msgid "in"
+msgstr "在"
+
+#, python-format
+msgid "in %(time)s"
+msgstr "%(time)s 後"
+
+msgid "indie games"
+msgstr "獨立遊戲"
+
+msgid "interest rates"
+msgstr "利率"
+
+msgid "j and k move through stories; n jumps to the next unread."
+msgstr "按 j 和 k 瀏覽文章；按 n 跳至下一篇未讀文章。"
+
+msgid "just now"
+msgstr "剛剛"
+
+msgid "labor unions"
+msgstr "工會"
+
+msgid "like"
+msgstr "喜歡"
+
+msgid "local elections"
+msgstr "地方選舉"
+
+msgid "machine learning"
+msgstr "機器學習"
+
+msgid "microplastics"
+msgstr "微塑膠"
+
+msgid "nuclear fusion"
+msgstr "核融合"
+
+msgid "open source"
+msgstr "開放原始碼"
+
+msgid "optional, appears above the story"
+msgstr "選填，顯示於文章上方"
+
+#, python-format
+msgid "or subscribe with %(paypal_button)s"
+msgstr "或使用 %(paypal_button)s 訂閱"
+
+msgid "pending"
+msgstr "待處理"
+
+msgid "podcast industry"
+msgstr "Podcast 產業"
+
+msgid "premium"
+msgstr "Premium"
+
+msgid "public transit"
+msgstr "大眾運輸"
+
+msgid "quantum computing"
+msgstr "量子運算"
+
+msgid "recipient@example.com"
+msgstr "recipient@example.com"
+
+msgid "remote work"
+msgstr "遠端工作"
+
+msgid "renewable energy"
+msgstr "再生能源"
+
+msgid "reply"
+msgstr "回覆"
+
+msgid "right to repair"
+msgstr "維修權"
+
+msgid "separate multiple addresses with commas"
+msgstr "多個地址請以逗號分隔"
+
+msgid "set up usage-based billing"
+msgstr "設定用量計費"
+
+msgid "show hidden stories"
+msgstr "顯示隱藏的文章"
+
+msgid "site-wide"
+msgstr "全站"
+
+msgid "site-wide preference"
+msgstr "全站偏好設定"
+
+msgid "soil health"
+msgstr "土壤健康"
+
+msgid "space exploration"
+msgstr "太空探索"
+
+msgid "streaming wars"
+msgstr "串流大戰"
+
+msgid "subscribed"
+msgstr "已訂閱"
+
+msgid "supply chain"
+msgstr "供應鏈"
+
+msgid "trade policy"
+msgstr "貿易政策"
+
+msgid "typography"
+msgstr "字體排版"
+
+msgid "unmuting soon"
+msgstr "即將解除靜音"
+
+msgid "upload picture"
+msgstr "上傳圖片"
+
+msgid "urban planning"
+msgstr "都市規劃"
+
+msgid "video"
+msgstr "影片"
+
+msgid "vintage computing"
+msgstr "復古電腦"
+
+msgid "web standards"
+msgstr "網頁標準"
+
+#, python-format
+msgid "✓ %(count)s of %(total)s image matches this filter"
+msgid_plural "✓ %(count)s of %(total)s images match this filter"
+msgstr[0] "✓ %(total)s 張圖片中有 %(count)s 張符合此篩選條件"
+
+msgid "✓ Found in story"
+msgstr "✓ 在文章中找到"
+
+msgid "✓ Image matches this filter"
+msgstr "✓ 圖片符合此篩選條件"
+
+msgid "✓ Matches URL"
+msgstr "✓ 符合網址"
+
+msgid "✓ Matches author"
+msgstr "✓ 符合作者"
+
+msgid "✓ Matches story"
+msgstr "✓ 符合文章"
+
+msgid "✓ Matches title"
+msgstr "✓ 符合標題"
+
+msgid "✓ Sent"
+msgstr "✓ 已傳送"
+
+msgid "✓ Story matches this filter"
+msgstr "✓ 文章符合此篩選條件"
+
+msgid "✓ Valid"
+msgstr "✓ 有效"
+
+msgid "✗ Image does not match this filter"
+msgstr "✗ 圖片與此篩選條件不符"
+
+msgid "✗ No images match this filter"
+msgstr "✗ 沒有符合此篩選條件的圖片"
+
+msgid "✗ Story does not match this filter"
+msgstr "✗ 文章不符合此篩選條件"
+

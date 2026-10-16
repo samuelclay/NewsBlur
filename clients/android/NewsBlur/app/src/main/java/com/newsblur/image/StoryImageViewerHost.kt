@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.util.PendingTransitionUtils
 import java.util.UUID
 
@@ -13,9 +13,10 @@ import java.util.UUID
  * to its activity's pane, so a photo tapped in the reader pane would only cover the reader and
  * leave the story list showing beside it. StorySplitView.kt always expands this activity to the
  * whole window, so the same viewer Dialog attached here covers the story list too, while the
- * split stays laid out underneath for the photo's open and close animation.
+ * split stays laid out underneath for the photo's open and close animation. It extends
+ * AppCompatActivity so the viewer's controls use the in-app language before Android 13.
  */
-class StoryImageViewerHost : ComponentActivity() {
+class StoryImageViewerHost : AppCompatActivity() {
     private var viewer: StoryImageViewer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

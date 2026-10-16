@@ -1,6 +1,7 @@
 from django import template
 
 from apps.statistics.models import MFeedback
+from utils.story_functions import relative_date
 
 register = template.Library()
 
@@ -23,3 +24,9 @@ def format_graph(n, max_value, height=30):
 def render_feedback_table():
     feedbacks = MFeedback.all()
     return dict(feedbacks=feedbacks)
+
+
+@register.filter
+def feedback_age(date):
+    """statistics_tags.py ages forum posts when rendering so the label follows the viewer's language."""
+    return relative_date(date)

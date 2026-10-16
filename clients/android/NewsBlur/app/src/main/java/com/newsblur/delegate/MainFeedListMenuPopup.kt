@@ -148,7 +148,7 @@ class MainFeedListMenuPopup(
                 )
                 add(
                     MainMenuRow(
-                        title = "Import and feed bundles",
+                        title = activity.getString(R.string.main_menu_import_feed_bundles),
                         iconRes = R.drawable.nb_menu_import_export,
                     ) {
                         popupWindow.dismiss()
@@ -168,13 +168,13 @@ class MainFeedListMenuPopup(
                     },
                 )
                 add(
-                    MainMenuRow(title = "Export feeds", iconRes = R.drawable.nb_menu_import_export) {
+                    MainMenuRow(title = activity.getString(R.string.main_menu_export_feeds), iconRes = R.drawable.nb_menu_import_export) {
                         popupWindow.dismiss()
                         activity.startActivity(Intent(activity, ImportExportActivity::class.java))
                     },
                 )
                 add(
-                    MainMenuRow(title = "Delete account", iconRes = R.drawable.nb_menu_preferences) {
+                    MainMenuRow(title = activity.getString(R.string.onboarding_delete_account), iconRes = R.drawable.nb_menu_preferences) {
                         popupWindow.dismiss()
                         activity.startActivity(
                             Intent(activity, com.newsblur.activity.LoginActivity::class.java).putExtra("manage_account", true),

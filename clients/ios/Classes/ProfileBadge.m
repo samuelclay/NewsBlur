@@ -86,6 +86,8 @@
     }
     
     self.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    // ProfileBadge.m mirrors only the views this refresh adds; a refresh with a new width keeps earlier views.
+    NSArray<UIView *> *earlierSubviews = [self.contentView.subviews copy];
     
     if (showStats) {
         shouldShowStats = showStats;
@@ -140,14 +142,14 @@
     
     // check follow button status    
     if ([[profile objectForKey:@"yourself"] intValue]) {
-        [follow setTitle:@"You" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"You"] forState:UIControlStateNormal];
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
-        [follow setTitle:@"Following" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"Following" context:@"button state"] forState:UIControlStateNormal];
         follow.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
         [follow setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     } else {
-        [follow setTitle:@"Follow" forState:UIControlStateNormal];
+        [follow setTitle:[NBLocalization text:@"Follow"] forState:UIControlStateNormal];
     }
     
     follow.titleLabel.font = [UIFont systemFontOfSize:12];
@@ -249,9 +251,8 @@
         [self.contentView addSubview:shared];
         
         UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stor%@",
-                                    [[profile objectForKey:@"shared_stories_count"] intValue] == 1 ? @"y" : @"ies"];
-        sharedLabel.text = sharedLabelStr;
+        // ProfileBadge.m shows the count in its own label, so the plural forms are only the noun.
+        sharedLabel.text = [NBLocalization plural:@"Shared Stories label" count:@([[profile objectForKey:@"shared_stories_count"] intValue])];
         sharedLabel.textAlignment = NSTextAlignmentCenter;
         sharedLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         sharedLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -271,8 +272,7 @@
         [self.contentView addSubview:following];
         
         UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3), kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followingLabelStr = [NSString stringWithFormat:@"Following"];
-        followingLabel.text = followingLabelStr;
+        followingLabel.text = [NBLocalization text:@"Following" context:@"label under the number of people this profile follows"];
         followingLabel.textAlignment = NSTextAlignmentCenter;
         followingLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         followingLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -292,9 +292,7 @@
         [self.contentView addSubview:followers];
         
         UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake((width/3) * 2, kTopBadgeHeight + 30, (width/3), 20)];
-        NSString *followersLabelStr = [NSString stringWithFormat:@"Follower%@", 
-                                       [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
-        followersLabel.text = followersLabelStr;
+        followersLabel.text = [NBLocalization plural:@"Followers label" count:@([[profile objectForKey:@"follower_count"] intValue])];
         followersLabel.textAlignment = NSTextAlignmentCenter;
         followersLabel.font = [UIFont fontWithName:@"WhitneySSm-Book" size:13];
         followersLabel.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
@@ -302,7 +300,18 @@
         [self.contentView addSubview:followersLabel];
     }
 
-    
+    // ProfileBadge.m lays the badge out from the left edge, then mirrors it for Arabic and Hebrew so the avatar and
+    // the first statistic lead on the right (NBLocalization.swift).
+    if (NBLocalization.isRightToLeft) {
+        CGRect badgeBounds = CGRectMake(0, 0, width, 0);
+        for (UIView *subview in self.contentView.subviews) {
+            if ([earlierSubviews containsObject:subview]) continue;
+            subview.frame = [NBLocalization directionalRect:subview.frame within:badgeBounds rightToLeft:YES];
+        }
+        self.username.textAlignment = NSTextAlignmentRight;
+        self.userLocation.textAlignment = NSTextAlignmentRight;
+        self.userDescription.textAlignment = NSTextAlignmentNatural;
+    }
 }
 
 - (void)initProfile {
@@ -317,7 +326,9 @@
     
     [self.activityIndicator startAnimating];
     
-    if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+    // ProfileBadge.m decides from the profile state because the button title is translated.
+    BOOL follow = ![[self.activeProfile objectForKey:@"followed_by_you"] intValue];
+    if (follow) {
         urlString = [NSString stringWithFormat:@"%@/social/follow",
                                self.appDelegate.url];
     } else {
@@ -329,7 +340,7 @@
     [params setObject:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+        if (follow) {
             [self finishFollowing:responseObject];
         } else {
             [self finishUnfollowing:responseObject];
@@ -348,7 +359,7 @@
         return;
     } 
     
-    [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
+    [self.followButton setTitle:[NBLocalization text:@"Following" context:@"button state"] forState:UIControlStateNormal];
     self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowColor);
     [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowTextColor) forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
@@ -374,7 +385,7 @@
     } 
     
     NSLog(@"results %@", results);
-    [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
+    [self.followButton setTitle:[NBLocalization text:@"Follow"] forState:UIControlStateNormal];
     self.followButton.backgroundColor = UIColorFromFixedRGB(kFollowingColor);
     [self.followButton setTitleColor:UIColorFromFixedRGB(kFollowingTextColor) forState:UIControlStateNormal];
     

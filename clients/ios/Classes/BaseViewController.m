@@ -173,7 +173,9 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle wantPriority:(BOOL)wantPriority {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
     if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
-        keyCommand.discoverabilityTitle = discoverabilityTitle;
+        // BaseViewController.m translates every shortcut title here; localization/manage.py extracts the
+        // discoverabilityTitle:@"..." literals passed by callers.
+        keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
         if (@available(iOS 15.0, *)) {
             keyCommand.wantsPriorityOverSystemBehavior = wantPriority;
         }
@@ -234,7 +236,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
                                                         input:input
                                                 modifierFlags:modifierFlags
                                                  propertyList:NSStringFromSelector(readerAction)];
-    keyCommand.discoverabilityTitle = discoverabilityTitle;
+    keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
     keyCommand.wantsPriorityOverSystemBehavior = YES;
     [self addKeyCommand:keyCommand];
 }
@@ -437,7 +439,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         BOOL isSidebarVisible = !self.appDelegate.splitViewController.isFeedsListHidden;
-        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
+        command.title = isSidebarVisible ? [NBLocalization text:@"Hide Sidebar"] : [NBLocalization text:@"Show Sidebar"];
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -473,29 +475,29 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         }
     } else if (command.action == @selector(openRenameSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Rename Folder…";
+            command.title = [NBLocalization text:@"Rename Folder…"];
         } else {
-            command.title = @"Rename Site…";
+            command.title = [NBLocalization text:@"Rename Site…"];
         }
     } else if (command.action == @selector(deleteSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Delete Folder…";
+            command.title = [NBLocalization text:@"Delete Folder…"];
         } else {
-            command.title = @"Delete Site…";
+            command.title = [NBLocalization text:@"Delete Site…"];
         }
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
-            command.title = @"Unsave This Story";
+            command.title = [NBLocalization text:@"Unsave This Story"];
         } else {
-            command.title = @"Save This Story";
+            command.title = [NBLocalization text:@"Save This Story"];
         }
     } else if (command.action == @selector(toggleStoryUnread:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            command.title = @"Mark as Unread";
+            command.title = [NBLocalization text:@"Mark as Unread"];
         } else {
-            command.title = @"Mark as Read";
+            command.title = [NBLocalization text:@"Mark as Read"];
         }
     } else if (command.action == @selector(chooseMarkRead:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
@@ -754,23 +756,23 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 }
 
 - (IBAction)muteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to mute %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to mute %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Mute Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController muteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)deleteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to delete %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to delete %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Delete Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController deleteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }

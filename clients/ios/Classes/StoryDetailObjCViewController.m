@@ -620,15 +620,16 @@
                                                                                         isPremiumArchive:appDelegate.isPremiumArchive];
     NSInteger hiddenCount = allClusterStories.count - visibleClusterStories.count;
 
+    // StoryDetailObjCViewController.m words the cluster counts with the interface language's plural rules.
+    NSString *premiumArchiveLabel = [[NBLocalization text:@"Premium Archive"] stringByEncodingHTMLEntities];
     NSMutableString *clusterHTML = [NSMutableString string];
     [clusterHTML appendFormat:@"<div class=\"NB-story-cluster-detail\">"
      "<div class=\"NB-story-cluster-detail-header\">"
-     "<span class=\"NB-story-cluster-detail-title\">Also published by %ld site%@</span>",
-     (long)allClusterStories.count,
-     allClusterStories.count == 1 ? @"" : @"s"];
+     "<span class=\"NB-story-cluster-detail-title\">%@</span>",
+     [[NBLocalization plural:@"Also published by %@ sites" groupedCount:allClusterStories.count] stringByEncodingHTMLEntities]];
 
     if (!appDelegate.isPremiumArchive && hiddenCount == 0) {
-        [clusterHTML appendString:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-clustering-detail-upgrade-pill\">Premium Archive</a>"];
+        [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-clustering-detail-upgrade-pill\">%@</a>", premiumArchiveLabel];
     }
 
     [clusterHTML appendString:@"</div>"];
@@ -684,7 +685,7 @@
          "<span class=\"NB-cluster-feed-border-inner\" style=\"background-color:#%@;\"></span>"
          "%@"
          "%@"
-         "<span class=\"NB-cluster-detail-title-text\">%@</span>"
+         "<span class=\"NB-cluster-detail-title-text\"%@>%@</span>"
          "%@"
          "%@"
          "<span class=\"NB-cluster-detail-date\">%@</span>"
@@ -699,6 +700,7 @@
          borderInner,
          sentimentHTML,
          faviconDataURL.length ? [NSString stringWithFormat:@"<img class=\"NB-cluster-detail-favicon\" src=\"%@\" />", faviconDataURL] : @"<span class=\"NB-cluster-detail-favicon NB-cluster-detail-favicon-empty\"></span>",
+         [self contentDirectionAttribute],
          storyTitle,
          tierBadgeHTML,
          imageHTML,
@@ -707,11 +709,11 @@
 
     if (!appDelegate.isPremiumArchive && hiddenCount > 0) {
         [clusterHTML appendFormat:@"<a href=\"http://ios.newsblur.com/premium-archive\" class=\"NB-cluster-locked-upsell\">"
-         "<span class=\"NB-cluster-locked-text\">+ %ld more site%@</span>"
-         "<span class=\"NB-clustering-detail-upgrade-pill\">Premium Archive</span>"
+         "<span class=\"NB-cluster-locked-text\">%@</span>"
+         "<span class=\"NB-clustering-detail-upgrade-pill\">%@</span>"
          "</a>",
-         (long)hiddenCount,
-         hiddenCount == 1 ? @"" : @"s"];
+         [[NBLocalization plural:@"+ %@ more sites" groupedCount:hiddenCount] stringByEncodingHTMLEntities],
+         premiumArchiveLabel];
     }
 
     [clusterHTML appendString:@"</div>"];
@@ -773,8 +775,11 @@
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    // StoryDetailObjCViewController.m translates the whole sentence with its link markup, which localization/manage.py
+    // keeps intact in every language.
     NSString *premiumTextString = [NSString stringWithFormat:@"<div class=\"NB-feed-story-premium-only-divider\"></div>"
-                                   "<div class=\"NB-feed-story-premium-only-text\">The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a></div>"];
+                                   "<div class=\"NB-feed-story-premium-only-text\">%@</div>",
+                                   [NBLocalization text:@"The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>"]];
     
     fontStyleClass = [userPreferences stringForKey:@"fontStyle"];
     if (!fontStyleClass) {
@@ -929,7 +934,7 @@
     
     NSString *htmlTop = [NSString stringWithFormat:@
                             "<!DOCTYPE html>\n"
-                            "<html>"
+                            "<html%@>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@ %@\">"
                             "    <div class=\"%@\" id=\"NB-premium-check\">"
@@ -938,6 +943,7 @@
                             "    <div class=\"%@\" id=\"NB-line-spacing\">"
                             "        <div id=\"NB-header-container\">%@</div>" // storyHeader
                             "        %@", // shareBar
+                            [self interfaceDirectionAttributes],
                             headerString,
                             contentWidthClass,
                             riverClass,
@@ -961,7 +967,7 @@
     
     NSString *htmlContent = [NSString stringWithFormat:@
                              "%@" // header
-                             "        <div id=\"NB-story\" class=\"NB-story%@\">%@</div>"
+                             "        <div id=\"NB-story\" class=\"NB-story%@\"%@>%@</div>"
                              "        <div id=\"NB-cluster-stories-container\">%@</div>"
                              "        <div class=\"NB-text-view-premium-only\">%@</div>"
                              "        <div id=\"NB-sideoptions-container\">%@</div>"
@@ -972,6 +978,7 @@
                              "%@", // footer
                              htmlTop,
                              storyClassSuffix,
+                             [self contentDirectionAttribute],
                              storyContent,
                              clusterStoriesString,
                              premiumTextString,
@@ -1583,8 +1590,9 @@
     NSString *storyUserTags = @"";
     NSMutableArray *tagStrings = [NSMutableArray array];
     if ([self.activeStory objectForKey:@"starred"] && [self.activeStory objectForKey:@"starred_date"]) {
-        storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">Saved on %@</div>",
-                        [self.activeStory objectForKey:@"starred_date"]];
+        storyStarred = [NSString stringWithFormat:@"<div class=\"NB-story-starred-date\">%@</div>",
+                        [[NSString stringWithFormat:[NBLocalization text:@"Saved on %@"],
+                          [self.activeStory objectForKey:@"starred_date"]] stringByEncodingHTMLEntities]];
         
         if ([self.activeStory objectForKey:@"user_tags"]) {
             NSArray *tagArray = [self.activeStory objectForKey:@"user_tags"];
@@ -1602,9 +1610,10 @@
         storyUserTags = [NSString
                          stringWithFormat:@"<div id=\"NB-user-tags\" class=\"NB-user-tags\">"
                          "%@"
-                         "<a class=\"NB-user-tag NB-add-user-tag\" href=\"http://ios.newsblur.com/add-user-tag/add-user-tag/\"><div class=\"NB-highlight\"></div>Add Tag</a>"
+                         "<a class=\"NB-user-tag NB-add-user-tag\" href=\"http://ios.newsblur.com/add-user-tag/add-user-tag/\"><div class=\"NB-highlight\"></div>%@</a>"
                          "</div>",
-                         [tagStrings componentsJoinedByString:@""]];
+                         [tagStrings componentsJoinedByString:@""],
+                         [[NBLocalization text:@"Add Tag"] stringByEncodingHTMLEntities]];
 
     }
     
@@ -1725,14 +1734,14 @@
     }
 
     NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
-                                                                           "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", self.activeStory[@"story_changes"] != nil ? @"Hide Changes" : @"Show Changes"] : @"";
+                                                                           "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", [(self.activeStory[@"story_changes"] != nil ? [NBLocalization text:@"Hide Changes"] : [NBLocalization text:@"Show Changes"]) stringByEncodingHTMLEntities]] : @"";
     
     NSString *storyDate = [Utilities formatLongDateFromTimestamp:[[self.activeStory
                                                                   objectForKey:@"story_timestamp"]
                                                                   integerValue]];
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-title\">"
+                             "<div class=\"NB-story-title\"%@>"
                              "  %@"
                              "  <a href=\"%@\" class=\"NB-story-permalink\">%@</a>"
                              "</div>"
@@ -1744,6 +1753,7 @@
                              "%@"
                              "%@"
                              "</div></div>",
+                             [self contentDirectionAttribute],
                              storyUnread,
                              storyPermalink,
                              storyTitle,
@@ -1757,6 +1767,19 @@
     return storyHeader;
 }
 
+// StoryDetailObjCViewController.m mirrors the reader's own controls for an Arabic or Hebrew interface
+// (storyDetailView.css styles html[dir="rtl"]). A left-to-right interface keeps its markup unchanged.
+- (NSString *)interfaceDirectionAttributes {
+    if (!NBLocalization.isRightToLeft) return @"";
+    return [NSString stringWithFormat:@" dir=\"rtl\" lang=\"%@\"", NBLocalization.resolvedLanguage];
+}
+
+// StoryDetailObjCViewController.m lets story text, titles and comments inside a right-to-left interface take
+// their own direction, so an English story still reads left to right.
+- (NSString *)contentDirectionAttribute {
+    return NBLocalization.isRightToLeft ? @" dir=\"auto\"" : @"";
+}
+
 - (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
@@ -1764,13 +1787,19 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
 
-    NSString *askAIButton = showAskAI ? @
+    // StoryDetailObjCViewController.m escapes the translated button labels for the story document. Each label is an
+    // explicit NBLocalization call so localization/manage.py extracts it.
+    NSString *(^label)(NSString *) = ^NSString *(NSString *translated) {
+        return [translated stringByEncodingHTMLEntities];
+    };
+
+    NSString *askAIButton = showAskAI ? [NSString stringWithFormat:@
                              "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "      <span class=\"NB-sideoption-text\">%@</span>"
                              "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
-                             "  </div>" : @"";
+                             "  </div>", label([NBLocalization text:@"Ask AI"])] : @"";
 
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
@@ -1778,7 +1807,7 @@
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                              "  <div class='NB-share-button NB-train-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                             "      <span class=\"NB-sideoption-text\">Train</span>"
+                             "      <span class=\"NB-sideoption-text\">%@</span>"
                              "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>"
@@ -1796,10 +1825,11 @@
                              "  </div>"
                              "%@"
                              "</div></div></div>",
+                             label([NBLocalization text:@"Train"]),
                              isShared ? @"NB-button-active" : @"",
-                             isShared ? @"Shared" : @"Share",
+                             isShared ? label([NBLocalization text:@"Shared"]) : label([NBLocalization text:@"Share"]),
                              isSaved ? @"NB-button-active" : @"",
-                             isSaved ? @"Saved" : @"Save",
+                             isSaved ? label([NBLocalization text:@"Saved"]) : label([NBLocalization text:@"Save"]),
                              askAIButton
                              ];
 
@@ -1849,10 +1879,9 @@
             comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-friend-comments\">"];
             NSString *commentHeader = [NSString stringWithFormat:@
                                        "<div class=\"NB-story-comments-friends-header-wrapper\">"
-                                       "  <div class=\"NB-story-comments-friends-header\">%i comment%@</div>"
+                                       "  <div class=\"NB-story-comments-friends-header\">%@</div>"
                                        "</div>",
-                                       [[story objectForKey:@"comment_count_friends"] intValue],
-                                       [[story objectForKey:@"comment_count_friends"] intValue] == 1 ? @"" : @"s"];
+                                       [[NBLocalization plural:@"%@ comments" groupedCount:[[story objectForKey:@"comment_count_friends"] integerValue]] stringByEncodingHTMLEntities]];
             comments = [comments stringByAppendingString:commentHeader];
             
             // add friends comments
@@ -1870,10 +1899,9 @@
             comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-friend-shares\">"];
             NSString *commentHeader = [NSString stringWithFormat:@
                                        "<div class=\"NB-story-comments-friend-shares-header-wrapper\">"
-                                       "  <div class=\"NB-story-comments-friends-header\">%ld share%@</div>"
+                                       "  <div class=\"NB-story-comments-friends-header\">%@</div>"
                                        "</div>",
-                                       (long)sharedByFriendsCount,
-                                       sharedByFriendsCount == 1 ? @"" : @"s"];
+                                       [[NBLocalization plural:@"%@ shares" groupedCount:sharedByFriendsCount] stringByEncodingHTMLEntities]];
             comments = [comments stringByAppendingString:commentHeader];
             
             // add friend shares
@@ -1891,10 +1919,9 @@
             comments = [comments stringByAppendingString:@"<div class=\"NB-story-comments-group NB-story-comment-public-comments\">"];
             NSString *publicCommentHeader = [NSString stringWithFormat:@
                                              "<div class=\"NB-story-comments-public-header-wrapper\">"
-                                             "  <div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
+                                             "  <div class=\"NB-story-comments-public-header\">%@</div>"
                                              "</div>",
-                                             [[story objectForKey:@"comment_count_public"] intValue],
-                                             [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
+                                             [[NBLocalization plural:@"%@ public comments" groupedCount:[[story objectForKey:@"comment_count_public"] integerValue]] stringByEncodingHTMLEntities]];
             
             comments = [comments stringByAppendingString:publicCommentHeader];
             comments = [comments stringByAppendingFormat:@"<div class=\"NB-feed-story-comments\">"];
@@ -1928,9 +1955,8 @@
                                                                 "%@" // friend avatars
                                                                 "%@" // public avatars
                                                               "</div>",
-                                                              [[self.activeStory objectForKey:@"comment_count"] intValue] == 1
-                                                              ? [NSString stringWithFormat:@"<b>1 comment</b>"] :
-                                                              [NSString stringWithFormat:@"<b>%@ comments</b>", [self.activeStory objectForKey:@"comment_count"]],
+                                                              [NSString stringWithFormat:@"<b>%@</b>",
+                                                               [[NBLocalization plural:@"%@ comments" groupedCount:[[self.activeStory objectForKey:@"comment_count"] integerValue]] stringByEncodingHTMLEntities]],
                                                               
                                                               //replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
@@ -1952,9 +1978,8 @@
                                                               "</div>",
                                                               [self getAvatars:@"shared_by_public"],
                                                               [self getAvatars:@"shared_by_friends"],
-                                                              [[self.activeStory objectForKey:@"share_count"] intValue] == 1
-                                                              ? [NSString stringWithFormat:@"<b>1 share</b>"] : 
-                                                              [NSString stringWithFormat:@"<b>%@ shares</b>", [self.activeStory objectForKey:@"share_count"]]]];
+                                                              [NSString stringWithFormat:@"<b>%@</b>",
+                                                               [[NBLocalization plural:@"%@ shares" groupedCount:[[self.activeStory objectForKey:@"share_count"] integerValue]] stringByEncodingHTMLEntities]]]];
     }
     
     if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
@@ -2005,10 +2030,11 @@
         userEditButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                             "<a href=\"http://ios.newsblur.com/edit-share/%@\"><div class=\"NB-story-comment-edit-button-wrapper\">"
-                                "Edit"
+                                "%@"
                             "</div></a>"
                           "</div>",
-                          commentUserId];
+                          commentUserId,
+                          [[NBLocalization text:@"Edit"] stringByEncodingHTMLEntities]];
     } else {
         BOOL isInLikingUsers = NO;
         for (int i = 0; i < likingUsersArray.count; i++) {
@@ -2061,6 +2087,11 @@
         locationHtml = [NSString stringWithFormat:@"<div class=\"NB-story-comment-location\">%@</div>", location];
     }
     
+    // StoryDetailObjCViewController.m words the server's relative time (already in the request language) as a whole
+    // translated sentence.
+    NSString *commentDate = [[NSString stringWithFormat:[NBLocalization text:@"%@ ago"],
+                              [commentDict objectForKey:@"shared_date"]] stringByEncodingHTMLEntities];
+    NSString *replyLabel = [[NBLocalization text:@"Reply"] stringByEncodingHTMLEntities];
     if (!self.isPhoneOrCompact) {
         comment = [NSString stringWithFormat:@
                     "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
@@ -2073,15 +2104,15 @@
                     "<div class=\"NB-story-comment-author-container\">"
                     "   %@"
                     "    <div class=\"NB-story-comment-username\">%@</div>"
-                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                    "    <div class=\"NB-story-comment-date\">%@</div>"
                     "    <div class=\"NB-story-comment-likes\">%@</div>"
                     "</div>"
-                    "<div class=\"NB-story-comment-content\">%@</div>"
+                    "<div class=\"NB-story-comment-content\"%@>%@</div>"
                     "%@" // location
                     "<div class=\"NB-button-wrapper\">"
                     "    <div class=\"NB-story-comment-reply-button NB-button\">"
                     "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                    "            Reply"
+                    "            %@"
                     "        </div></a>"
                     "    </div>"
                     "    %@" //User Like Button
@@ -2095,12 +2126,14 @@
                     [user objectForKey:@"photo_url"],
                     userReshareString,
                     [user objectForKey:@"username"],
-                    [commentDict objectForKey:@"shared_date"],
+                    commentDate,
                     likingUsers,
+                    [self contentDirectionAttribute],
                     commentContent,
                     locationHtml,
                     [commentDict objectForKey:@"user_id"],
                     [user objectForKey:@"username"],
+                    replyLabel,
                     userEditButton,
                     userLikeButton,
                     [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]];
@@ -2116,15 +2149,15 @@
                    "<div class=\"NB-story-comment-author-container\">"
                    "    %@"
                    "    <div class=\"NB-story-comment-username\">%@</div>"
-                   "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                   "    <div class=\"NB-story-comment-date\">%@</div>"
                    "    <div class=\"NB-story-comment-likes\">%@</div>"
                    "</div>"
-                   "<div class=\"NB-story-comment-content\">%@</div>"
+                   "<div class=\"NB-story-comment-content\"%@>%@</div>"
                    "%@" // location
                    "<div class=\"NB-button-wrapper\">"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
                    "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                   "            Reply"
+                   "            %@"
                    "        </div></a>"
                    "    </div>"
                    "    %@" // User Like Button
@@ -2138,12 +2171,14 @@
                    [user objectForKey:@"photo_url"],
                    userReshareString,
                    [user objectForKey:@"username"],
-                   [commentDict objectForKey:@"shared_date"],
+                   commentDate,
                    likingUsers,
+                   [self contentDirectionAttribute],
                    commentContent,
                    locationHtml,
                    [commentDict objectForKey:@"user_id"],
                    [user objectForKey:@"username"],
+                   replyLabel,
                    userEditButton,
                    userLikeButton,
                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
@@ -2171,13 +2206,14 @@
                                   "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                                   "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%@\">"
                                   "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                  "Edit"
+                                  "%@"
                                   "</div>"
                                   "</a>"
                                   "</div>",
                                   commentUserId,
                                   replyUserId,
-                                  replyId
+                                  replyId,
+                                  [[NBLocalization text:@"Edit"] stringByEncodingHTMLEntities]
                                   ];
             }
             
@@ -2191,6 +2227,8 @@
             }
                         
             NSString *reply;
+            NSString *replyDate = [[NSString stringWithFormat:[NBLocalization text:@"%@ ago"],
+                                    [replyDict objectForKey:@"publish_date"]] stringByEncodingHTMLEntities];
             
             if (!self.isPhoneOrCompact) {
                 reply = [NSString stringWithFormat:@
@@ -2200,8 +2238,8 @@
                          "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
+                         "   <div class=\"NB-story-comment-reply-content\"%@>%@</div>"
                          "   %@" // location
                          "   <div class=\"NB-button-wrapper\">"
                          "       %@" // edit
@@ -2211,7 +2249,8 @@
                          [user objectForKey:@"user_id"],
                          [user objectForKey:@"photo_url"],
                          [user objectForKey:@"username"],
-                         [replyDict objectForKey:@"publish_date"],
+                         replyDate,
+                         [self contentDirectionAttribute],
                          replyContent,
                          locationHtml,
                          userEditButton];
@@ -2223,8 +2262,8 @@
                          "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
+                         "   <div class=\"NB-story-comment-reply-content\"%@>%@</div>"
                          "   %@"
                          "   <div class=\"NB-button-wrapper\">"
                          "       %@" // edit
@@ -2234,7 +2273,8 @@
                          [user objectForKey:@"user_id"],  
                          [user objectForKey:@"photo_url"],
                          [user objectForKey:@"username"],
-                         [replyDict objectForKey:@"publish_date"],
+                         replyDate,
+                         [self contentDirectionAttribute],
                          replyContent,
                          locationHtml,
                          userEditButton];
@@ -3349,6 +3389,25 @@
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 }
 
+// StoryDetailObjCViewController.m applies an account language change to stories that are already open with the
+// same attributes drawStory writes, without reloading them.
+- (void)updateStoryDirection {
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    NSString *jsString = [NSString stringWithFormat:@
+                          "(function(rightToLeft, language) {"
+                          "  var html = document.documentElement;"
+                          "  if (rightToLeft) { html.setAttribute('dir', 'rtl'); html.setAttribute('lang', language); }"
+                          "  else { html.removeAttribute('dir'); html.removeAttribute('lang'); }"
+                          "  var content = document.querySelectorAll('#NB-story, .NB-story-title, .NB-cluster-detail-title-text, .NB-story-comment-content, .NB-story-comment-reply-content');"
+                          "  for (var i = 0; i < content.length; i++) {"
+                          "    if (rightToLeft) { content[i].setAttribute('dir', 'auto'); } else { content[i].removeAttribute('dir'); }"
+                          "  }"
+                          "})(%@, %@);",
+                          rightToLeft ? @"true" : @"false",
+                          [self javaScriptStringFromString:NBLocalization.resolvedLanguage]];
+    [self.webView evaluateJavaScript:jsString completionHandler:nil];
+}
+
 - (void)updateStoryTheme {
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x000000);
 
@@ -3411,7 +3470,7 @@
 #pragma mark Actions
 
 - (void)toggleLikeComment:(BOOL)likeComment {
-    [appDelegate.storyPagesViewController showShareHUD:@"Favoriting"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Favoriting"]];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"%@/social/like_comment",
@@ -3663,7 +3722,7 @@
 
 - (void)previewImage:(NSURL *)url {
     [self hideHUDAnimated:YES];
-    [appDelegate.storyPagesViewController showShareHUD:@"Previewing..."];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Previewing..."]];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
@@ -3708,7 +3767,7 @@
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {
-    [appDelegate.storyPagesViewController showShareHUD:@"Following"];
+    [appDelegate.storyPagesViewController showShareHUD:[NBLocalization text:@"Following" context:@"in progress"]];
     NSString *urlString = [NSString stringWithFormat:@"%@/social/follow",
                      self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -3730,7 +3789,7 @@
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
-    self.storyHUD.labelText = @"Followed";
+    self.storyHUD.labelText = [NBLocalization text:@"Followed"];
     [self.storyHUD hide:YES afterDelay:1];
     appDelegate.storyPagesViewController.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
@@ -3784,29 +3843,29 @@
     self.storyHUD.removeFromSuperViewOnHide = YES;
     
     if ([messageType isEqualToString:@"reply"]) {
-        self.storyHUD.labelText = @"Replied";
+        self.storyHUD.labelText = [NBLocalization text:@"Replied"];
     } else if ([messageType isEqualToString:@"edit-reply"]) {
-        self.storyHUD.labelText = @"Edited Reply";
+        self.storyHUD.labelText = [NBLocalization text:@"Edited Reply"];
     } else if ([messageType isEqualToString:@"edit-share"]) {
-        self.storyHUD.labelText = @"Edited Comment";
+        self.storyHUD.labelText = [NBLocalization text:@"Edited Comment"];
     } else if ([messageType isEqualToString:@"share"]) {
-        self.storyHUD.labelText = @"Shared";
+        self.storyHUD.labelText = [NBLocalization text:@"Shared"];
     } else if ([messageType isEqualToString:@"like-comment"]) {
-        self.storyHUD.labelText = @"Favorited";
+        self.storyHUD.labelText = [NBLocalization text:@"Favorited"];
     } else if ([messageType isEqualToString:@"unlike-comment"]) {
-        self.storyHUD.labelText = @"Unfavorited";
+        self.storyHUD.labelText = [NBLocalization text:@"Unfavorited"];
     } else if ([messageType isEqualToString:@"saved"]) {
-        self.storyHUD.labelText = @"Saved";
+        self.storyHUD.labelText = [NBLocalization text:@"Saved"];
     } else if ([messageType isEqualToString:@"unsaved"]) {
-        self.storyHUD.labelText = @"No longer saved";
+        self.storyHUD.labelText = [NBLocalization text:@"No longer saved"];
     } else if ([messageType isEqualToString:@"unread"]) {
-        self.storyHUD.labelText = @"Unread";
+        self.storyHUD.labelText = [NBLocalization text:@"Unread"];
     } else if ([messageType isEqualToString:@"added"]) {
-        self.storyHUD.labelText = @"Added";
+        self.storyHUD.labelText = [NBLocalization text:@"Added"];
     } else if ([messageType isEqualToString:@"copied"]) {
-        self.storyHUD.labelText = @"Copied";
+        self.storyHUD.labelText = [NBLocalization text:@"Copied"];
     } else if ([messageType isEqualToString:@"saved"]) {
-        self.storyHUD.labelText = @"Saved";
+        self.storyHUD.labelText = [NBLocalization text:@"Saved"];
     }
     [self.storyHUD hide:YES afterDelay:1];
 }

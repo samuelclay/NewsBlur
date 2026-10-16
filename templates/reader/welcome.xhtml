@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% load recommendations_tags utils_tags statistics_tags %}
 {% load social_auth_tags %}
 
-{% block title %}NewsBlur — Personal News Reader with Intelligence Training{% endblock %}
+{% block title %}{% trans "NewsBlur — Personal News Reader with Intelligence Training" %}{% endblock %}
+{% block nav_language %}
+    <div class="NB-welcome-language">
+        {% include "includes/language_selector.html" %}
+    </div>
+{% endblock %}
 {% block head %}
     <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. Follow RSS feeds, train stories with intelligence filters, and read smarter with AI.">
     <meta property="og:title" content="NewsBlur - A Personal News Reader">
@@ -68,7 +74,7 @@
                     <a href="/"><img src="{{ MEDIA_URL }}img/logo_512.png" class="NB-module-logo-image" /></a>
                 </div>
                 <div class="NB-welcome-header-title">NewsBlur</div>
-                <div class="NB-welcome-header-tagline">A personal news reader bringing people together to talk about the world</div>
+                <div class="NB-welcome-header-tagline">{% trans "A personal news reader bringing people together to talk about the world" %}</div>
                 <div class="NB-welcome-header-actions">
                     <div class="NB-button NB-button-tryout">
                         <span class="NB-tryout-chevrons NB-tryout-chevrons-left">
@@ -77,7 +83,7 @@
                             <span class="NB-tryout-chevron"></span>
                         </span>
                         <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px">
-                        Try out NewsBlur
+                        {% trans "Try out NewsBlur" %}
                         <span class="NB-tryout-chevrons NB-tryout-chevrons-right">
                             <span class="NB-tryout-chevron"></span>
                             <span class="NB-tryout-chevron"></span>
@@ -89,8 +95,8 @@
 
             <div class="NB-welcome-header-formcard">
                 <div class="NB-welcome-header-segment {% if post_request and signup_form.errors %}NB-segment-right{% endif %}">
-                    <div class="NB-segment-option NB-segment-login {% if not post_request or login_form.errors %}NB-active{% endif %}">Log In</div>
-                    <div class="NB-segment-option NB-segment-signup {% if post_request and signup_form.errors %}NB-active{% endif %}">Sign Up</div>
+                    <div class="NB-segment-option NB-segment-login {% if not post_request or login_form.errors %}NB-active{% endif %}">{% trans "Log In" %}</div>
+                    <div class="NB-segment-option NB-segment-signup {% if post_request and signup_form.errors %}NB-active{% endif %}">{% trans "Sign Up" %}</div>
                 </div>
 
                 <div class="NB-formcard-panel NB-formcard-login {% if not post_request or login_form.errors %}NB-active{% endif %}">
@@ -104,7 +110,7 @@
                             {{ login_form.password }}
                         </div>
                         {{ login_form.add }}
-                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="log in" />
+                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="{% trans "Log In" %}" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if login_form.errors %}
@@ -114,7 +120,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <a href="{% url "profile-forgot-password" %}" class="NB-welcome-forgot">Forgot password?</a>
+                    <a href="{% url "profile-forgot-password" %}" class="NB-welcome-forgot">{% trans "Forgot password?" %}</a>
                 </div>
 
                 <div class="NB-formcard-panel NB-formcard-signup {% if post_request and signup_form.errors %}NB-active{% endif %}">
@@ -130,7 +136,7 @@
                         <div class="NB-formcard-field">
                             {{ signup_form.email }}
                         </div>
-                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="create account" />
+                        <input name="submit" type="submit" class="NB-welcome-submit-button" value="{% trans "Create Account" %}" />
                         <input type="hidden" name="next" value="/" />
                     </form>
                     {% if signup_form.errors %}
@@ -147,16 +153,16 @@
 
     <div class="NB-welcome-platforms">
         <div class="NB-welcome-platforms-header">
-            <h2 class="NB-platforms-heading">A new sound of an old instrument</h2>
-            <p class="NB-platforms-subheading">RSS and web feeds, synced on every platform you use.</p>
+            <h2 class="NB-platforms-heading">{% trans "A new sound of an old instrument" %}</h2>
+            <p class="NB-platforms-subheading">{% trans "RSS and web feeds, synced on every platform you use." %}</p>
         </div>
 
         <div class="NB-welcome-platform NB-platform-web">
             <div class="NB-platform-inner">
                 <div class="NB-platform-text">
-                    <div class="NB-platform-badge">Web</div>
-                    <div class="NB-platform-title">The full experience,<br>right in your browser</div>
-                    <div class="NB-platform-description">Every layout, every theme, every keyboard shortcut. Train your feeds to surface what matters.</div>
+                    <div class="NB-platform-badge">{% trans "Web" %}</div>
+                    <div class="NB-platform-title">{% blocktrans trimmed %}The full experience,<br>right in your browser{% endblocktrans %}</div>
+                    <div class="NB-platform-description">{% trans "Every layout, every theme, every keyboard shortcut. Train your feeds to surface what matters." %}</div>
                 </div>
                 <div class="NB-platform-screenshot">
                     <img src="{{ MEDIA_URL }}img/welcome/welcome-mac.png">
@@ -168,8 +174,8 @@
             <div class="NB-platform-inner">
                 <div class="NB-platform-text">
                     <div class="NB-platform-badge">iPhone &amp; iPad</div>
-                    <div class="NB-platform-title">Built for iOS<br>from the ground up</div>
-                    <div class="NB-platform-description">Swipe through stories, train with a tap, read offline. A native app that feels right at home.</div>
+                    <div class="NB-platform-title">{% blocktrans trimmed %}Built for iOS<br>from the ground up{% endblocktrans %}</div>
+                    <div class="NB-platform-description">{% trans "Swipe through stories, train with a tap, read offline. A native app that feels right at home." %}</div>
                 </div>
                 <div class="NB-platform-screenshot">
                     <img src="{{ MEDIA_URL }}img/welcome/welcome-ios.png">
@@ -181,8 +187,8 @@
             <div class="NB-platform-inner">
                 <div class="NB-platform-text">
                     <div class="NB-platform-badge">Android</div>
-                    <div class="NB-platform-title">Native on Android</div>
-                    <div class="NB-platform-description">Every feature from the web, built natively for Android. Free on the Play Store.</div>
+                    <div class="NB-platform-title">{% trans "Native on Android" %}</div>
+                    <div class="NB-platform-description">{% trans "Every feature from the web, built natively for Android. Free on the Play Store." %}</div>
                 </div>
                 <div class="NB-platform-screenshot">
                     <img src="{{ MEDIA_URL }}img/welcome/welcome-android.png">
@@ -194,8 +200,8 @@
 
     <div class="NB-welcome-features-wrap">
     <div class="NB-welcome-features-header">
-        <h2 class="NB-features-heading">Full-featured news reader</h2>
-        <p class="NB-features-subheading">Keep the signal, lose the noise.</p>
+        <h2 class="NB-features-heading">{% trans "Full-featured news reader" %}</h2>
+        <p class="NB-features-subheading">{% trans "Keep the signal, lose the noise." %}</p>
     </div>
 
     <div class="NB-welcome-feature-groups">
@@ -205,57 +211,57 @@
                 <h3 class="NB-feature-group-folder">
                     <span class="NB-folder-caret"></span>
                     <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
-                    <span class="NB-folder-name">Read Your Way</span>
+                    <span class="NB-folder-name">{% trans "Read Your Way" %}</span>
                     <span class="NB-folder-count">7</span>
                 </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#speed" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Real-time RSS</div>
-                            <div class="NB-fgi-desc">Stories are pushed directly to you, so you can read news as it comes in</div>
+                            <div class="NB-fgi-caption">{% trans "Real-time RSS" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Stories are pushed directly to you, so you can read news as it comes in" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#original" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Original Site</div>
-                            <div class="NB-fgi-desc">Read the content in context, the way it was meant to be seen</div>
+                            <div class="NB-fgi-caption">{% trans "Original Site" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Read the content in context, the way it was meant to be seen" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#text-view" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_3.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Read the Full Story</div>
-                            <div class="NB-fgi-desc">The original story from truncated RSS feeds is seamlessly expanded</div>
+                            <div class="NB-fgi-caption">{% trans "Read the Full Story" %}</div>
+                            <div class="NB-fgi-desc">{% trans "The original story from truncated RSS feeds is seamlessly expanded" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#layouts" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_8.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Grid, List, Split, Magazine</div>
-                            <div class="NB-fgi-desc">Every site has its own story layout, so you can mix and match</div>
+                            <div class="NB-fgi-caption">{% trans "Grid, List, Split, Magazine" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Every site has its own story layout, so you can mix and match" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#themes" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_9.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Dark Mode</div>
-                            <div class="NB-fgi-desc">Easy on the eyes and built into the web, iOS, and Android</div>
+                            <div class="NB-fgi-caption">{% trans "Dark Mode" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Easy on the eyes and built into the web, iOS, and Android" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#river" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_16.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">River of News</div>
-                            <div class="NB-fgi-desc">Read all your feeds by folder in one scrollable stream</div>
+                            <div class="NB-fgi-caption">{% trans "River of News" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Read all your feeds by folder in one scrollable stream" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#shortcuts" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_15.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Keyboard Shortcuts</div>
-                            <div class="NB-fgi-desc">Navigate everything without touching the mouse</div>
+                            <div class="NB-fgi-caption">{% trans "Keyboard Shortcuts" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Navigate everything without touching the mouse" %}</div>
                         </div>
                     </a>
                 </div>
@@ -265,57 +271,57 @@
                 <h3 class="NB-feature-group-folder">
                     <span class="NB-folder-caret"></span>
                     <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
-                    <span class="NB-folder-name">Stay Smart</span>
+                    <span class="NB-folder-name">{% trans "Stay Smart" %}</span>
                     <span class="NB-folder-count">7</span>
                 </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#training" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Intelligence Training</div>
-                            <div class="NB-fgi-desc">Hide the stories you don't like and highlight the stories you do</div>
+                            <div class="NB-fgi-caption">{% trans "Intelligence Training" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Hide the stories you don't like and highlight the stories you do" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#search" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_5.jpg">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Full Text Search</div>
-                            <div class="NB-fgi-desc">Quickly find stories across all of your subscriptions</div>
+                            <div class="NB-fgi-caption">{% trans "Full Text Search" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Quickly find stories across all of your subscriptions" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#search" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_1.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Saved Searches</div>
-                            <div class="NB-fgi-desc">Regularly used searches are conveniently given their own feeds</div>
+                            <div class="NB-fgi-caption">{% trans "Saved Searches" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Regularly used searches are conveniently given their own feeds" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#ask-ai" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_12.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Ask AI</div>
-                            <div class="NB-fgi-desc">Ask questions about any story and get answers powered by AI</div>
+                            <div class="NB-fgi-caption">{% trans "Ask AI" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Ask questions about any story and get answers powered by AI" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#briefing" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_13.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Daily Briefing</div>
-                            <div class="NB-fgi-desc">A summary of your top stories, customizable and delivered every day</div>
+                            <div class="NB-fgi-caption">{% trans "Daily Briefing" %}</div>
+                            <div class="NB-fgi-desc">{% trans "A summary of your top stories, customizable and delivered every day" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#changes" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_5.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Track Changes</div>
-                            <div class="NB-fgi-desc">See how a story evolved since it was first published</div>
+                            <div class="NB-fgi-caption">{% trans "Track Changes" %}</div>
+                            <div class="NB-fgi-desc">{% trans "See how a story evolved since it was first published" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#notifications" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_14.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Notifications</div>
-                            <div class="NB-fgi-desc">Get alerted the moment a feed publishes, on web, iOS, or Android</div>
+                            <div class="NB-fgi-caption">{% trans "Notifications" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Get alerted the moment a feed publishes, on web, iOS, or Android" %}</div>
                         </div>
                     </a>
                 </div>
@@ -325,36 +331,36 @@
                 <h3 class="NB-feature-group-folder">
                     <span class="NB-folder-caret"></span>
                     <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
-                    <span class="NB-folder-name">Share &amp; Organize</span>
+                    <span class="NB-folder-name">{% trans "Share & Organize" %}</span>
                     <span class="NB-folder-count">4</span>
                 </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#blurblog" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Shared Stories</div>
-                            <div class="NB-fgi-desc">Reading news is better with friends. Share stories on your public blurblog</div>
+                            <div class="NB-fgi-caption">{% trans "Shared Stories" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Reading news is better with friends. Share stories on your public blurblog" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#blurblog" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_7.jpg">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Blurblog Privacy</div>
-                            <div class="NB-fgi-desc">Share stories with the world or only with your friends</div>
+                            <div class="NB-fgi-caption">{% trans "Blurblog Privacy" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Share stories with the world or only with your friends" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#saved" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_6.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Story Tagging</div>
-                            <div class="NB-fgi-desc">Save stories with custom tags for fast references</div>
+                            <div class="NB-fgi-caption">{% trans "Story Tagging" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Save stories with custom tags for fast references" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#newsletters" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_7.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Email Newsletters</div>
-                            <div class="NB-fgi-desc">Read your email newsletters where they belong, in a news reader</div>
+                            <div class="NB-fgi-caption">{% trans "Email Newsletters" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Read your email newsletters where they belong, in a news reader" %}</div>
                         </div>
                     </a>
                 </div>
@@ -364,36 +370,36 @@
                 <h3 class="NB-feature-group-folder">
                     <span class="NB-folder-caret"></span>
                     <svg class="NB-folder-icon" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true"><path d="M1 3.5C1 2.7 1.7 2 2.5 2h4l1.5 2h7.5c.8 0 1.5.7 1.5 1.5v7c0 .8-.7 1.5-1.5 1.5h-13C1.7 14 1 13.3 1 12.5v-9z" fill="currentColor"/></svg>
-                    <span class="NB-folder-name">Works Everywhere</span>
+                    <span class="NB-folder-name">{% trans "Works Everywhere" %}</span>
                     <span class="NB-folder-count">4</span>
                 </h3>
                 <div class="NB-feature-group-items">
                     <a href="{% url "features" %}#apps" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/feature_8.jpg">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Third-party Apps</div>
-                            <div class="NB-fgi-desc">Supports Reeder, ReadKit, Unread, and loads more</div>
+                            <div class="NB-fgi-caption">{% trans "Third-party Apps" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Supports Reeder, ReadKit, Unread, and loads more" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#integrations" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_6.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">IFTTT &amp; Zapier</div>
-                            <div class="NB-fgi-desc">Hook NewsBlur up to nearly every service on the web</div>
+                            <div class="NB-fgi-caption">{% trans "IFTTT & Zapier" %}</div>
+                            <div class="NB-fgi-desc">{% trans "Hook NewsBlur up to nearly every service on the web" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#web-feeds" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_10.png">
                         <div class="NB-fgi-text">
                             <div class="NB-fgi-caption">YouTube</div>
-                            <div class="NB-fgi-desc">Even sites that don't publish RSS feeds can be followed</div>
+                            <div class="NB-fgi-desc">{% trans "Even sites that don't publish RSS feeds can be followed" %}</div>
                         </div>
                     </a>
                     <a href="{% url "features" %}#web-feeds" class="NB-fgi">
                         <img src="{{ MEDIA_URL }}img/welcome/subfeature_11.png">
                         <div class="NB-fgi-text">
-                            <div class="NB-fgi-caption">Web Feeds</div>
-                            <div class="NB-fgi-desc">A creative feed for any website, even without RSS</div>
+                            <div class="NB-fgi-caption">{% trans "Web Feeds" %}</div>
+                            <div class="NB-fgi-desc">{% trans "A creative feed for any website, even without RSS" %}</div>
                         </div>
                     </a>
 
@@ -405,88 +411,88 @@
 
     <div class="NB-welcome-banner-button-wrap">
         <a href="{% url "features" %}" class="NB-welcome-banner-button NB-banner-features">
-            See all 30+ features <span class="NB-banner-arrow">&rarr;</span>
+            {% trans "See all 30+ features" %} <span class="NB-banner-arrow">&rarr;</span>
         </a>
     </div>
     </div>
 
     <div class="NB-welcome-pricing">
         <div class="NB-inner">
-            <h2>Pricing</h2>
-            <p>NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a growing service and unlock a few restrictions.</p>
+            <h2>{% trans "Pricing" %}</h2>
+            <p>{% trans "NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a growing service and unlock a few restrictions." %}</p>
             <div class="NB-pricing-trial-callout">
-                New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card required.
+                {% blocktrans trimmed %}New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card required.{% endblocktrans %}
             </div>
 
             <div class="NB-pricing-tiers">
                 <div class="NB-pricing-tier NB-pricing-tier-premium">
                     <div class="NB-pricing-tier-header">
-                        <div class="NB-pricing-tier-name">Premium</div>
+                        <div class="NB-pricing-tier-name">{% trans "Premium" %}</div>
                         <div class="NB-pricing-tier-price">
                             <span class="NB-pricing-tier-price-amount">$36</span>
-                            <span class="NB-pricing-tier-price-period">/year</span>
+                            <span class="NB-pricing-tier-price-period">{% trans "/year" %}</span>
                         </div>
                     </div>
                     <ul class="NB-pricing-tier-features">
-                        <li class="NB-pricing-tier-includes">Everything in Free, plus:</li>
-                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 1,024 sites</li>
-                        <li class="NB-2"><div class="NB-pricing-bullet"></div>Sites updated up to 5x more often</li>
-                        <li class="NB-3"><div class="NB-pricing-bullet"></div>River of News (reading by folder)</li>
-                        <li class="NB-4"><div class="NB-pricing-bullet"></div>Search sites and folders</li>
-                        <li class="NB-5"><div class="NB-pricing-bullet"></div>Save stories with searchable tags</li>
-                        <li class="NB-6"><div class="NB-pricing-bullet"></div>Privacy options for your blurblog</li>
-                        <li class="NB-7"><div class="NB-pricing-bullet"></div>Custom RSS feeds for saved stories</li>
-                        <li class="NB-8"><div class="NB-pricing-bullet"></div>Text view extracts the story</li>
-                        <li class="NB-9"><div class="NB-pricing-bullet"></div>Discover related stories and sites</li>
-                        <li class="NB-10"><div class="NB-pricing-bullet"></div>Natural language text and image classifiers</li>
+                        <li class="NB-pricing-tier-includes">{% trans "Everything in Free, plus:" %}</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>{% trans "Follow up to 1,024 sites" %}</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>{% trans "Sites updated up to 5x more often" %}</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>{% trans "River of News (reading by folder)" %}</li>
+                        <li class="NB-4"><div class="NB-pricing-bullet"></div>{% trans "Search sites and folders" %}</li>
+                        <li class="NB-5"><div class="NB-pricing-bullet"></div>{% trans "Save stories with searchable tags" %}</li>
+                        <li class="NB-6"><div class="NB-pricing-bullet"></div>{% trans "Privacy options for your blurblog" %}</li>
+                        <li class="NB-7"><div class="NB-pricing-bullet"></div>{% trans "Custom RSS feeds for saved stories" %}</li>
+                        <li class="NB-8"><div class="NB-pricing-bullet"></div>{% trans "Text view extracts the story" %}</li>
+                        <li class="NB-9"><div class="NB-pricing-bullet"></div>{% trans "Discover related stories and sites" %}</li>
+                        <li class="NB-10"><div class="NB-pricing-bullet"></div>{% trans "Natural language text and image classifiers" %}</li>
                     </ul>
                 </div>
 
                 <div class="NB-pricing-tier NB-pricing-tier-archive">
                     <div class="NB-pricing-tier-header">
-                        <div class="NB-pricing-tier-name">Premium Archive</div>
+                        <div class="NB-pricing-tier-name">{% trans "Premium Archive" %}</div>
                         <div class="NB-pricing-tier-price">
                             <span class="NB-pricing-tier-price-amount">$99</span>
-                            <span class="NB-pricing-tier-price-period">/year</span>
+                            <span class="NB-pricing-tier-price-period">{% trans "/year" %}</span>
                         </div>
                     </div>
                     <ul class="NB-pricing-tier-features">
-                        <li class="NB-pricing-tier-includes">Everything in Premium, plus:</li>
-                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 4,096 sites</li>
-                        <li class="NB-2"><div class="NB-pricing-bullet"></div>Web Feeds from any website, even without RSS</li>
-                        <li class="NB-3"><div class="NB-pricing-bullet"></div>Cluster duplicate stories across all your feeds</li>
-                        <li class="NB-4"><div class="NB-pricing-bullet"></div>Daily briefing with your top stories and keywords</li>
-                        <li class="NB-5"><div class="NB-pricing-bullet"></div>Choose when stories are marked as read</li>
-                        <li class="NB-6"><div class="NB-pricing-bullet"></div>Customize auto-read by site or folder</li>
-                        <li class="NB-7"><div class="NB-pricing-bullet"></div>Every story archived and searchable forever</li>
-                        <li class="NB-8"><div class="NB-pricing-bullet"></div>Feeds back-filled for complete archive</li>
-                        <li class="NB-9"><div class="NB-pricing-bullet"></div>Train stories on full text content</li>
-                        <li class="NB-10"><div class="NB-pricing-bullet"></div>Notifications on trained intelligence classifiers</li>
-                        <li class="NB-11"><div class="NB-pricing-bullet"></div>Discover related stories across your archive</li>
-                        <li class="NB-12"><div class="NB-pricing-bullet"></div>Export trained stories from folders</li>
-                        <li class="NB-13"><div class="NB-pricing-bullet"></div>Stories can stay unread forever</li>
-                        <li class="NB-14"><div class="NB-pricing-bullet"></div>Ask AI questions about stories</li>
-                        <li class="NB-15"><div class="NB-pricing-bullet"></div>Filter stories by date range</li>
-                        <li class="NB-16"><div class="NB-pricing-bullet"></div>Apply training across a folder</li>
-                        <li class="NB-17"><div class="NB-pricing-bullet"></div>Apply training globally</li>
-                        <li class="NB-18"><div class="NB-pricing-bullet"></div>Connect AI agents with MCP server and CLI</li>
+                        <li class="NB-pricing-tier-includes">{% trans "Everything in Premium, plus:" %}</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>{% trans "Follow up to 4,096 sites" %}</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>{% trans "Web Feeds from any website, even without RSS" %}</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>{% trans "Cluster duplicate stories across all your feeds" %}</li>
+                        <li class="NB-4"><div class="NB-pricing-bullet"></div>{% trans "Daily briefing with your top stories and keywords" %}</li>
+                        <li class="NB-5"><div class="NB-pricing-bullet"></div>{% trans "Choose when stories are marked as read" %}</li>
+                        <li class="NB-6"><div class="NB-pricing-bullet"></div>{% trans "Customize auto-read by site or folder" %}</li>
+                        <li class="NB-7"><div class="NB-pricing-bullet"></div>{% trans "Every story archived and searchable forever" %}</li>
+                        <li class="NB-8"><div class="NB-pricing-bullet"></div>{% trans "Feeds back-filled for complete archive" %}</li>
+                        <li class="NB-9"><div class="NB-pricing-bullet"></div>{% trans "Train stories on full text content" %}</li>
+                        <li class="NB-10"><div class="NB-pricing-bullet"></div>{% trans "Notifications on trained intelligence classifiers" %}</li>
+                        <li class="NB-11"><div class="NB-pricing-bullet"></div>{% trans "Discover related stories across your archive" %}</li>
+                        <li class="NB-12"><div class="NB-pricing-bullet"></div>{% trans "Export trained stories from folders" %}</li>
+                        <li class="NB-13"><div class="NB-pricing-bullet"></div>{% trans "Stories can stay unread forever" %}</li>
+                        <li class="NB-14"><div class="NB-pricing-bullet"></div>{% trans "Ask AI questions about stories" %}</li>
+                        <li class="NB-15"><div class="NB-pricing-bullet"></div>{% trans "Filter stories by date range" %}</li>
+                        <li class="NB-16"><div class="NB-pricing-bullet"></div>{% trans "Apply training across a folder" %}</li>
+                        <li class="NB-17"><div class="NB-pricing-bullet"></div>{% trans "Apply training globally" %}</li>
+                        <li class="NB-18"><div class="NB-pricing-bullet"></div>{% trans "Connect AI agents with MCP server and CLI" %}</li>
                     </ul>
                 </div>
 
                 <div class="NB-pricing-tier NB-pricing-tier-pro">
                     <div class="NB-pricing-tier-header">
-                        <div class="NB-pricing-tier-name">Premium Pro</div>
+                        <div class="NB-pricing-tier-name">{% trans "Premium Pro" %}</div>
                         <div class="NB-pricing-tier-price">
                             <span class="NB-pricing-tier-price-amount">$29</span>
-                            <span class="NB-pricing-tier-price-period">/month</span>
+                            <span class="NB-pricing-tier-price-period">{% trans "/month" %}</span>
                         </div>
                     </div>
                     <ul class="NB-pricing-tier-features">
-                        <li class="NB-pricing-tier-includes">Everything in Archive, plus:</li>
-                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 10,000 sites</li>
-                        <li class="NB-2"><div class="NB-pricing-bullet"></div>All feeds fetched every 5-15 minutes</li>
-                        <li class="NB-3"><div class="NB-pricing-bullet"></div>Train stories with regular expressions</li>
-                        <li class="NB-4"><div class="NB-pricing-bullet"></div>Priority support</li>
+                        <li class="NB-pricing-tier-includes">{% trans "Everything in Archive, plus:" %}</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>{% trans "Follow up to 10,000 sites" %}</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>{% trans "All feeds fetched every 5-15 minutes" %}</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>{% trans "Train stories with regular expressions" %}</li>
+                        <li class="NB-4"><div class="NB-pricing-bullet"></div>{% trans "Priority support" %}</li>
                     </ul>
                 </div>
             </div>
@@ -494,32 +500,32 @@
             <div class="NB-pricing-tiers-bottom">
                 <div class="NB-pricing-tier NB-pricing-tier-free">
                     <div class="NB-pricing-tier-header">
-                        <div class="NB-pricing-tier-name">Free</div>
+                        <div class="NB-pricing-tier-name">{% trans "Free" %}</div>
                     </div>
                     <ul class="NB-pricing-tier-features">
-                        <li><div class="NB-pricing-bullet"></div><span>Follow up to 64 sites</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Real-time RSS updates</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Train stories by author, tag, title</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Public blurblog sharing</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Save stories for later</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>iOS &amp; Android apps</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Follow up to 64 sites" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Real-time RSS updates" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Train stories by author, tag, title" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Public blurblog sharing" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Save stories for later" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "iOS & Android apps" %}</span></li>
                     </ul>
                 </div>
                 <div class="NB-pricing-tier NB-pricing-tier-selfhosted">
                     <div class="NB-pricing-tier-header">
-                        <div class="NB-pricing-tier-label">DIY</div>
-                        <div class="NB-pricing-tier-name">Self-Hosted</div>
+                        <div class="NB-pricing-tier-label">{% trans "DIY" %}</div>
+                        <div class="NB-pricing-tier-name">{% trans "Self-Hosted" %}</div>
                     </div>
                     <ul class="NB-pricing-tier-features">
-                        <li><div class="NB-pricing-bullet"></div><span>Run your own NewsBlur</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Complete data ownership</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Single command install on Docker</span></li>
-                        <li><div class="NB-pricing-bullet"></div><span>Customize with Claude Code</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Run your own NewsBlur" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Complete data ownership" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Single command install on Docker" %}</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>{% trans "Customize with Claude Code" %}</span></li>
                     </ul>
                     <div class="NB-pricing-tier-actions">
                         <a href="https://github.com/samuelclay/NewsBlur" target="_blank" class="NB-pricing-github-button">
                             <img src="{{ MEDIA_URL }}img/reader/github-mark.svg" class="NB-github-icon">
-                            View on GitHub
+                            {% trans "View on GitHub" %}
                         </a>
                     </div>
                 </div>
@@ -528,27 +534,27 @@
             <div class="NB-pricing-lyric">
                 <img src="{{ MEDIA_URL }}img/reader/lyric.jpg" class="NB-lyric-photo">
                 <div class="NB-lyric-text">
-                    <div class="NB-lyric-title">Feed Lyric, NewsBlur's hungry hound</div>
-                    <div class="NB-lyric-description">Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown rice.</div>
+                    <div class="NB-lyric-title">{% trans "Feed Lyric, NewsBlur's hungry hound" %}</div>
+                    <div class="NB-lyric-description">{% trans "Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown rice." %}</div>
                 </div>
             </div>
         </div>
 
         <div class="NB-welcome-banner-button-wrap">
             <a href="{% url "pricing" %}" class="NB-welcome-banner-button NB-banner-pricing">
-                Compare plans and FAQ <span class="NB-banner-arrow">&rarr;</span>
+                {% trans "Compare plans and FAQ" %} <span class="NB-banner-arrow">&rarr;</span>
             </a>
         </div>
     </div>
 
     <div class="NB-welcome-testimonials">
         <div class="NB-testimonials-heading">
-            <h2>Kind words people say about NewsBlur</h2>
+            <h2>{% trans "Kind words people say about NewsBlur" %}</h2>
             <div class="NB-testimonials-nav">
-                <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-prev" aria-label="Previous page">
+                <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-prev" aria-label="{% trans 'Previous page' %}">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
-                <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-next" aria-label="Next page">
+                <button type="button" class="NB-testimonials-nav-btn NB-testimonials-nav-next" aria-label="{% trans 'Next page' %}">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
             </div>
@@ -561,7 +567,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/cory_doctorow.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Cory Doctorow</div>
-                <div class="NB-testimonial-role">Author &amp; Journalist</div>
+                <div class="NB-testimonial-role">{% trans "Author & Journalist" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I have nothing but praise for NewsBlur. The $36 I send them every year is a very good investment.</div>
@@ -581,7 +587,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/ben_werdmuller.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Ben Werdmuller</div>
-                <div class="NB-testimonial-role">Tech Entrepreneur</div>
+                <div class="NB-testimonial-role">{% trans "Tech Entrepreneur" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Less interruptive, less antagonizing, and less annoying as an interface, with no upsells or user engagement hacks.</div>
@@ -591,7 +597,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/wired.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">WIRED</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">A refreshingly simple old-school RSS reader.</div>
@@ -601,7 +607,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/austin_frakt.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Austin Frakt</div>
-                <div class="NB-testimonial-role">Health Economist, NY Times</div>
+                <div class="NB-testimonial-role">{% trans "Health Economist, NY Times" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The web version is better than Google Reader. NewsBlur can pull in full content of partial feeds more reliably than other methods. I’ve never seen it fail.</div>
@@ -611,7 +617,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/linux_com.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Linux.com</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The Open Source Feed Reader with Brains.</div>
@@ -621,7 +627,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/diego_petteno.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Diego Elio Pettenò</div>
-                <div class="NB-testimonial-role">Gentoo Developer</div>
+                <div class="NB-testimonial-role">{% trans "Gentoo Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is my favorite tool for reading feeds. The Intelligence Trainer is a killer feature.</div>
@@ -631,7 +637,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/search_engine_land.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Search Engine Land</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Easy to use, dependable, fast, and gets the job done.</div>
@@ -651,7 +657,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/lobsters.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lobsters</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is indie web software at its best.</div>
@@ -661,7 +667,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/lobsters.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lobsters</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Rock solid and worth far more than the paltry annual fee I pay for it.</div>
@@ -671,7 +677,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/webfx.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">WebFX</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">One of our best RSS readers because it lets you read the full text of content on its web reader.</div>
@@ -681,7 +687,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/slant.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Slant</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur allows users to customize the font size, line spacing, story layout, and typefaces. Very fast to navigate around the UI.</div>
@@ -691,7 +697,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/lobsters.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lobsters</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">A small indie developer who has written a brilliant piece of code, building a sustainable business rather than one focused on hyperscaling.</div>
@@ -701,7 +707,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/appmus.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Appmus</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Prioritizes control, customization, and a respectful approach to online content.</div>
@@ -711,7 +717,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/gregdotgilbert" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Greg Gilbert</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve been using NewsBlur for over two years, and I can’t imagine life without it.</div>
@@ -721,7 +727,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/ethics13" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lénya</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Best RSS client, period.</div>
@@ -731,7 +737,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The best feed reading experience of my life.</div>
@@ -741,7 +747,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Been using and paying for NewsBlur for years. Absolutely love it. Cross-platform with an excellent Android app.</div>
@@ -751,7 +757,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">It’s literally the only service I’ve been genuinely delighted to spend money on.</div>
@@ -761,7 +767,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">It felt like the most natural successor to Google Reader.</div>
@@ -771,7 +777,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/trustpilot.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Trustpilot</div>
-                <div class="NB-testimonial-role">Review</div>
+                <div class="NB-testimonial-role">{% trans "Review" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I moved to NewsBlur when Google Reader was shut down. Excellent styling, features, and no issues.</div>
@@ -781,7 +787,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur emerges as by far the best, and better designed in a lot of ways both large and small. It dominates all the Google Reader alternatives.</div>
@@ -791,7 +797,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The site is so much faster than it has been. Thanks for running a great product!</div>
@@ -801,7 +807,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The interface is simple and hasn’t largely changed, which to me is a win. It helps with muscle memory.</div>
@@ -811,7 +817,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur also lets you subscribe to YouTube channels, which is a much nicer experience than notifications.</div>
@@ -821,7 +827,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/lobsters.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lobsters</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve been paying for the hosted version of NewsBlur for 12 years and am very happy with it!</div>
@@ -831,7 +837,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur had the poweruser features I wanted. Much better experience than I had with Feedly and Inoreader.</div>
@@ -865,7 +871,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/popular_science.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Popular Science</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Still got plenty to offer — from story tagging and filtering to a comprehensive search tool, and wide support for third-party integrations.</div>
@@ -875,7 +881,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/howtogeek.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">How-To Geek</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The best way to get started with RSS is probably to set up a cloud-based RSS reader like NewsBlur.</div>
@@ -885,7 +891,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/b0rk" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Julia Evans</div>
-                <div class="NB-testimonial-role">Engineer &amp; Writer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer & Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I recently started using NewsBlur that automatically sorts my RSS feeds into ‘updates infrequently’ and ‘everything’ and it’s a lifesaver.</div>
@@ -895,7 +901,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/zittrain" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Jonathan Zittrain</div>
-                <div class="NB-testimonial-role">Harvard Law Professor</div>
+                <div class="NB-testimonial-role">{% trans "Harvard Law Professor" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I still use NewsBlur and find RSS feeds to be a great way to see what others are writing while dodging slop.</div>
@@ -905,7 +911,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/koranteng" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Koranteng</div>
-                <div class="NB-testimonial-role">Writer</div>
+                <div class="NB-testimonial-role">{% trans "Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Hands down the best $36 I spend every year. I subscribe to 1916 feeds. It’s my platonic ideal of software.</div>
@@ -925,7 +931,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Other readers pale in comparison to NewsBlur.</div>
@@ -935,7 +941,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">It’s open source and you can self host, but for the price of the subscription it’s just not worth the hassle.</div>
@@ -945,7 +951,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/feedspot.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">FeedSpot</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Highlight any phrase in article full text, mark it liked or disliked to train the intelligence to show you more of what you want.</div>
@@ -955,7 +961,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/vpn_tier_lists.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">VPN Tier Lists</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The intelligence trainer genuinely improves over time, learning subtle preferences that keyword filters would miss entirely.</div>
@@ -975,7 +981,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/sturek" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Jens Bonk-Wiltfang</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Going through my 222 RSS subscriptions in NewsBlur every morning. Chronological, full control over what you see.</div>
@@ -985,7 +991,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/dangerousmeta" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">dangerousmeta</div>
-                <div class="NB-testimonial-role">Blogger</div>
+                <div class="NB-testimonial-role">{% trans "Blogger" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is your best replacement for the old Google Reader. Take it from an RSS addict.</div>
@@ -995,7 +1001,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/akharlamov" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Alex Kharlamov</div>
-                <div class="NB-testimonial-role">Data Scientist</div>
+                <div class="NB-testimonial-role">{% trans "Data Scientist" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">RSS is like a longer form social media minus the vitriol. I switched to NewsBlur and still use it, it’s fantastic.</div>
@@ -1005,7 +1011,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/tingham" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Thomas Ingham</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The Global Shared Stories feed is a total black-hole of joyfulness.</div>
@@ -1015,7 +1021,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/mdriley25519" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Matthew Riley</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve used NewsBlur since 2013 when Google Reader was ‘spring cleaned’. I jumped at the chance to pay the creator more.</div>
@@ -1025,7 +1031,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/amontalenti" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Andrew Montalenti</div>
-                <div class="NB-testimonial-role">CTO, Parse.ly</div>
+                <div class="NB-testimonial-role">{% trans "CTO, Parse.ly" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">You can still get the original Google Reader experience, living on as a hosted and open source project, in NewsBlur.</div>
@@ -1035,7 +1041,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/mrawdon" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Michael Rawdon</div>
-                <div class="NB-testimonial-role">Software Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Software Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I switched to NewsBlur and am happy to be supporting a product that isn’t from Google.</div>
@@ -1045,7 +1051,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/crabmusket" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Daniel Buckmaster</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">An excellent product that lets me feel like I’m on top of my news feed, rather than the other way around.</div>
@@ -1055,7 +1061,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/wslack" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Will Slack</div>
-                <div class="NB-testimonial-role">Civic Tech</div>
+                <div class="NB-testimonial-role">{% trans "Civic Tech" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur! Most value of a yearly payment of anything I buy.</div>
@@ -1065,7 +1071,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/bbock23" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Bernhard Bock</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Way better than Google Reader ever was.</div>
@@ -1075,7 +1081,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/Kiffmeister" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">John Kiff</div>
-                <div class="NB-testimonial-role">Economist</div>
+                <div class="NB-testimonial-role">{% trans "Economist" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve now switched to NewsBlur which is slicker and has some ability to be trained.</div>
@@ -1085,7 +1091,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/bensherman" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Ben Sherman</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I was cleaning up my feeds and got an email with a backup automatically, in case I made a mistake. What amazing user experience.</div>
@@ -1095,7 +1101,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/tilgovi" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Randall Leeds</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I deleted a folder of feeds so NewsBlur sent me an OPML backup just in case. I am smitten.</div>
@@ -1105,7 +1111,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/reconbot" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Francis Gulotta</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Half the appeal was it wasn’t a fully funded tech startup and was open source. Works great, small but nice community.</div>
@@ -1119,7 +1125,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/AdamFeldman" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Adam Feldman</div>
-                <div class="NB-testimonial-role">Political Analyst</div>
+                <div class="NB-testimonial-role">{% trans "Political Analyst" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Saves so much time by aggregating RSS feeds from everything I like to pay attention to! It’s been reliably awesome for years.</div>
@@ -1129,7 +1135,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/CarolHTucker" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Carol H Tucker</div>
-                <div class="NB-testimonial-role">Writer</div>
+                <div class="NB-testimonial-role">{% trans "Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Ever since Google Reader was discontinued, I have paid for NewsBlur and it is worth every penny.</div>
@@ -1139,7 +1145,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/arkadiyt" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Arkadiy Tetelman</div>
-                <div class="NB-testimonial-role">Security Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Security Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I love everything about this NewsBlur data breach postmortem. Clear, specific, detailed timeline. Just excellent.</div>
@@ -1149,7 +1155,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/kyleniemeyer" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Kyle Niemeyer</div>
-                <div class="NB-testimonial-role">Professor, OSU</div>
+                <div class="NB-testimonial-role">{% trans "Professor, OSU" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I have been a happy subscriber to NewsBlur for almost nine years and it continues to get better. Highly recommend.</div>
@@ -1159,7 +1165,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/maryjofoley" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Mary Jo Foley</div>
-                <div class="NB-testimonial-role">Tech Journalist</div>
+                <div class="NB-testimonial-role">{% trans "Tech Journalist" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’d recommend NewsBlur for RSS. It’s really quite good.</div>
@@ -1169,7 +1175,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/jamesbroadhead" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">James Broadhead</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is a home of free speech, allowing users in countries with censored news outlets to bypass restrictions and get access to the world at large.</div>
@@ -1179,7 +1185,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/Weegee" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Kevin Smokler</div>
-                <div class="NB-testimonial-role">Author</div>
+                <div class="NB-testimonial-role">{% trans "Author" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The world’s greatest RSS reader now handles email newsletters too!</div>
@@ -1189,7 +1195,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/decadecity" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Orde Saunders</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve been using NewsBlur since Google Reader shut down and this kind of attention to detail shows through.</div>
@@ -1199,7 +1205,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/chesterbr" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Chester</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Feels like the best of the old and new webs.</div>
@@ -1209,7 +1215,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/Digitalink2008" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Digitalink</div>
-                <div class="NB-testimonial-role">Subscriber</div>
+                <div class="NB-testimonial-role">{% trans "Subscriber" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Years later and you are still making NewsBlur even more fancy. Love it.</div>
@@ -1219,7 +1225,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I use it multiple times a day, and I’m not sure what I’d do without it.</div>
@@ -1229,7 +1235,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/hn.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Hacker News</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The only non-Google reader with good keyboard support.</div>
@@ -1239,7 +1245,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Thank you for not disimproving NewsBlur.</div>
@@ -1249,7 +1255,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Holy crap the search feature is good.</div>
@@ -1259,7 +1265,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is a game-changer. Sleek interface, incredibly intuitive features.</div>
@@ -1269,7 +1275,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/reddit.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Reddit</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I love NewsBlur — it’s the only website I pay to use.</div>
@@ -1279,7 +1285,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I was so impressed I went premium without hesitation — by far the best reader out there!</div>
@@ -1289,7 +1295,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I can’t praise you enough for the fast and responsive search.</div>
@@ -1299,7 +1305,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">This has to be one of the best features — that I can discover new stuff and we can all comment on articles. Excellent.</div>
@@ -1309,7 +1315,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Features like this make me feel that I definitely get my money’s worth with this service.</div>
@@ -1319,7 +1325,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Just wanted to thank you for all the little things and big things added over the years.</div>
@@ -1329,7 +1335,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">IT’S AWESOME.</div>
@@ -1339,7 +1345,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/lobsters.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Lobsters</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">A wonderful reader. It handles newsletters so you can subscribe and read them just like any other RSS feed.</div>
@@ -1349,7 +1355,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/play_store.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Google Play</div>
-                <div class="NB-testimonial-role">Review</div>
+                <div class="NB-testimonial-role">{% trans "Review" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">One of the best news apps. You can create your own feed and it saves lots of time.</div>
@@ -1359,7 +1365,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/play_store.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Google Play</div>
-                <div class="NB-testimonial-role">Review</div>
+                <div class="NB-testimonial-role">{% trans "Review" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">A great app. The fact that I can self-host if I need to makes paying for the premium subscription worth it.</div>
@@ -1369,7 +1375,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">The app seems to be much improved. It makes the site lightning fast.</div>
@@ -1379,7 +1385,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Intelligence Trainer and the various options for Site Settings are very useful.</div>
@@ -1393,7 +1399,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/_anks" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Ankit Solanki</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">It’s an indispensable tool — it’s better than Google Reader at its best! Highly recommended.</div>
@@ -1413,7 +1419,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/jprodgers" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Jimmie P Rodgers</div>
-                <div class="NB-testimonial-role">Maker</div>
+                <div class="NB-testimonial-role">{% trans "Maker" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve been a paying NewsBlur user since Google Reader was dropped, and stuff like this makes me happy when my yearly subscription comes due.</div>
@@ -1423,7 +1429,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/phil_windley.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Phil Windley</div>
-                <div class="NB-testimonial-role">Technologist, BYU Professor</div>
+                <div class="NB-testimonial-role">{% trans "Technologist, BYU Professor" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’m wasting less time scrolling past stuff I don’t care about and more time reading things I enjoy.</div>
@@ -1433,7 +1439,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/zapier.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Zapier</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur’s most interesting feature is its sophisticated AI filtering, which can automatically highlight or hide stories based on certain criteria.</div>
@@ -1443,7 +1449,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/linux_magazine.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Linux Magazine</div>
-                <div class="NB-testimonial-role">Publication</div>
+                <div class="NB-testimonial-role">{% trans "Publication" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur offers a fresh take on managing multiple RSS feeds and features clever tools for sifting through hundreds of articles.</div>
@@ -1463,7 +1469,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/diego_petteno.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Diego Elio Pettenò</div>
-                <div class="NB-testimonial-role">Gentoo Developer</div>
+                <div class="NB-testimonial-role">{% trans "Gentoo Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I cared enough about feed readers to pay for NewsBlur. Finding NewsBlur was a saviour.</div>
@@ -1473,7 +1479,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I also found NewsBlur the best Google Reader successor out there.</div>
@@ -1483,7 +1489,7 @@
                 <img class="NB-testimonial-avatar" src="{{ m }}img/testimonials/forum.svg" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">NewsBlur Forum</div>
-                <div class="NB-testimonial-role">Community</div>
+                <div class="NB-testimonial-role">{% trans "Community" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">This is marvelous, thank you so much.</div>
@@ -1493,7 +1499,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/jpainio" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">James Pain</div>
-                <div class="NB-testimonial-role">Subscriber</div>
+                <div class="NB-testimonial-role">{% trans "Subscriber" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">You’ve fixed every issue I’ve had and you’re very responsive. Thanks and keep up the good work.</div>
@@ -1503,7 +1509,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/PonchoRebound" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Eize Basa</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur has filled the Google Reader-sized hole in my heart.</div>
@@ -1513,7 +1519,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/ItsDiarmaid" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Diarmaid McManus</div>
-                <div class="NB-testimonial-role">Writer</div>
+                <div class="NB-testimonial-role">{% trans "Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I learned NewsBlur had been hacked and data wiped through an RSS feed on NewsBlur, since they had restored access before I noticed.</div>
@@ -1523,7 +1529,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/vinnyrose" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Mario</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Used to just filter all email newsletters to trash. Now I forward them all to my NewsBlur account and actually read them.</div>
@@ -1533,7 +1539,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/bbock23" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Bernhard Bock</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Archive is a game changer for me. Instant upgrade.</div>
@@ -1543,7 +1549,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/MaggiBot" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">MaggiBot</div>
-                <div class="NB-testimonial-role">Subscriber</div>
+                <div class="NB-testimonial-role">{% trans "Subscriber" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I give a million props to NewsBlur’s customer service. It’s always top notch.</div>
@@ -1553,7 +1559,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/SusanDennis" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Susan Dennis</div>
-                <div class="NB-testimonial-role">Writer</div>
+                <div class="NB-testimonial-role">{% trans "Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">How fabulous the functionality of the NewsBlur newsletter feature.</div>
@@ -1563,7 +1569,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/gblekkenhorst" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">g. blekkenhorst</div>
-                <div class="NB-testimonial-role">Subscriber</div>
+                <div class="NB-testimonial-role">{% trans "Subscriber" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur has newsletters, affordable subscription, nice layout, save to Pocket, just generally has a nice attitude.</div>
@@ -1573,7 +1579,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/bmann" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Boris Mann</div>
-                <div class="NB-testimonial-role">Tech Entrepreneur</div>
+                <div class="NB-testimonial-role">{% trans "Tech Entrepreneur" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Nuked subscriptions. Automatically got email with backup OPML just in case.</div>
@@ -1583,7 +1589,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/ntaylor963" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Nathan Taylor</div>
-                <div class="NB-testimonial-role">Writer</div>
+                <div class="NB-testimonial-role">{% trans "Writer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">Just upgraded to NewsBlur premium. Very happy with it. Recommended.</div>
@@ -1593,7 +1599,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/clumma" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Carl Lumma</div>
-                <div class="NB-testimonial-role">Subscriber</div>
+                <div class="NB-testimonial-role">{% trans "Subscriber" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">NewsBlur is awesome and I’m very grateful to you for creating and running it!</div>
@@ -1603,7 +1609,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/jonahbishop" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Jonah Bishop</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I love NewsBlur. Thanks for making such a great product.</div>
@@ -1613,7 +1619,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/debramastaler" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Debra Mastaler</div>
-                <div class="NB-testimonial-role">SEO Expert</div>
+                <div class="NB-testimonial-role">{% trans "SEO Expert" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I don’t know how anyone combs content without a good reader.</div>
@@ -1623,7 +1629,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/mrgunn" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Jason Gunn</div>
-                <div class="NB-testimonial-role">Researcher</div>
+                <div class="NB-testimonial-role">{% trans "Researcher" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I’ve been saying this for 15 years. Kudos to NewsBlur keeping the RSS flame alive.</div>
@@ -1633,7 +1639,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/YuraYu" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Yura Yurchuk</div>
-                <div class="NB-testimonial-role">Developer</div>
+                <div class="NB-testimonial-role">{% trans "Developer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">I use NewsBlur for RSS, YouTube subscriptions, and email newsletters. Filtering is incredible.</div>
@@ -1643,7 +1649,7 @@
                 <img class="NB-testimonial-avatar" src="https://unavatar.io/x/sandipb" onerror="this.onerror=null;this.src='{{ m }}img/testimonials/twitter.svg'" alt="">
                 <div class="NB-testimonial-identity">
                 <div class="NB-testimonial-name">Sandip Bhattacharya</div>
-                <div class="NB-testimonial-role">Engineer</div>
+                <div class="NB-testimonial-role">{% trans "Engineer" %}</div>
                 </div>
                 </div>
                 <div class="NB-testimonial-text">A big NewsBlur user myself. I love the feed to email feature which lets me have both a push and pull model.</div>
@@ -1657,81 +1663,81 @@
 
     <div class="NB-welcome-faq">
         <div class="NB-inner">
-            <h2>Common Questions</h2>
+            <h2>{% trans "Common Questions" %}</h2>
             <div class="NB-welcome-faq-grid">
                 <div class="NB-welcome-faq-item">
-                    <h3>Is there a free trial?</h3>
-                    <p>Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your feeds and training on the free tier.</p>
+                    <h3>{% trans "Is there a free trial?" %}</h3>
+                    <p>{% trans "Every new account gets a free 30-day premium trial. No credit card required. When it ends, you keep your feeds and training on the free tier." %}</p>
                 </div>
                 <div class="NB-welcome-faq-item">
-                    <h3>Can I import feeds from another reader?</h3>
-                    <p>Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with Google Reader exports, Feedly, Inoreader, and more.</p>
+                    <h3>{% trans "Can I import feeds from another reader?" %}</h3>
+                    <p>{% trans "Yes. Upload your OPML file and NewsBlur imports all your subscriptions and folders in seconds. Works with Google Reader exports, Feedly, Inoreader, and more." %}</p>
                 </div>
                 <div class="NB-welcome-faq-item">
-                    <h3>Is NewsBlur open source?</h3>
-                    <p>Fully open source under the MIT license. Run your own instance with Docker, contribute on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>, or just read the code. No lock-in, ever.</p>
+                    <h3>{% trans "Is NewsBlur open source?" %}</h3>
+                    <p>{% blocktrans trimmed %}Fully open source under the MIT license. Run your own instance with Docker, contribute on <a href="https://github.com/samuelclay/NewsBlur">GitHub</a>, or just read the code. No lock-in, ever.{% endblocktrans %}</p>
                 </div>
                 <div class="NB-welcome-faq-item">
-                    <h3>What happens if I cancel?</h3>
-                    <p>Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No data is deleted. Upgrade again anytime and everything is restored.</p>
+                    <h3>{% trans "What happens if I cancel?" %}</h3>
+                    <p>{% trans "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No data is deleted. Upgrade again anytime and everything is restored." %}</p>
                 </div>
                 <div class="NB-welcome-faq-item">
-                    <h3>Does NewsBlur work with other apps?</h3>
-                    <p>Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, and training sync across every app.</p>
+                    <h3>{% trans "Does NewsBlur work with other apps?" %}</h3>
+                    <p>{% trans "Yes. Full sync with Reeder, ReadKit, Unread, NetNewsWire, and many more. Your read state, saved stories, and training sync across every app." %}</p>
                 </div>
                 <div class="NB-welcome-faq-item">
-                    <h3>Do I need RSS feeds to follow a site?</h3>
-                    <p>No. <a href="/features#web-feeds">Web Feeds</a> let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new content to you automatically.</p>
+                    <h3>{% trans "Do I need RSS feeds to follow a site?" %}</h3>
+                    <p>{% trans "No." context "negative answer to a question" %} {% blocktrans trimmed %}<a href="/features#web-feeds">Web Feeds</a> let you follow any website, even without RSS. NewsBlur monitors the page for changes and delivers new content to you automatically.{% endblocktrans %}</p>
                 </div>
                 <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
-                    <h3>How does NewsBlur compare to Feedly?</h3>
-                    <p>NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open source. No ads, no tracking, no algorithmic feeds.</p>
-                    <a href="{% url "compare-feedly" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                    <h3>{% trans "How does NewsBlur compare to Feedly?" %}</h3>
+                    <p>{% trans "NewsBlur offers intelligence training, full-text search, Ask AI, Web Feeds, native apps, and is fully open source. No ads, no tracking, no algorithmic feeds." %}</p>
+                    <a href="{% url "compare-feedly" %}" class="NB-welcome-faq-compare-link">{% trans "See the full comparison" %} <span class="NB-banner-arrow">&rarr;</span></a>
                 </div>
                 <div class="NB-welcome-faq-item NB-welcome-faq-item-compare">
-                    <h3>How does NewsBlur compare to Inoreader?</h3>
-                    <p>NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully open source codebase you can self-host.</p>
-                    <a href="{% url "compare-inoreader" %}" class="NB-welcome-faq-compare-link">See the full comparison <span class="NB-banner-arrow">&rarr;</span></a>
+                    <h3>{% trans "How does NewsBlur compare to Inoreader?" %}</h3>
+                    <p>{% trans "NewsBlur gives you personal training instead of rules, built-in AI features, story clustering, and a fully open source codebase you can self-host." %}</p>
+                    <a href="{% url "compare-inoreader" %}" class="NB-welcome-faq-compare-link">{% trans "See the full comparison" %} <span class="NB-banner-arrow">&rarr;</span></a>
                 </div>
             </div>
             <div class="NB-welcome-banner-button-wrap">
                 <a href="{% url "faq" %}" class="NB-welcome-banner-button NB-banner-faq">
-                    See all frequently asked questions <span class="NB-banner-arrow">&rarr;</span>
+                    {% trans "See all frequently asked questions" %} <span class="NB-banner-arrow">&rarr;</span>
                 </a>
             </div>
             <div class="NB-welcome-compare-header">
                 <div class="NB-welcome-compare-rule"></div>
-                <span class="NB-welcome-compare-label">Compare</span>
+                <span class="NB-welcome-compare-label">{% trans "Compare" %}</span>
                 <div class="NB-welcome-compare-rule"></div>
             </div>
             <div class="NB-welcome-compare-versus">
                 <a href="{% url "compare-feedly" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-tag">{% trans "vs" context "versus, comparing NewsBlur with another reader" %}</span>
                     <span class="NB-compare-vs-name">Feedly</span>
                 </a>
                 <a href="{% url "compare-inoreader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-tag">{% trans "vs" context "versus, comparing NewsBlur with another reader" %}</span>
                     <span class="NB-compare-vs-name">Inoreader</span>
                 </a>
                 <a href="{% url "compare-readwise" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-tag">{% trans "vs" context "versus, comparing NewsBlur with another reader" %}</span>
                     <span class="NB-compare-vs-name">Readwise Reader</span>
                 </a>
                 <a href="{% url "compare-the-old-reader" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-tag">{% trans "vs" context "versus, comparing NewsBlur with another reader" %}</span>
                     <span class="NB-compare-vs-name">The Old Reader</span>
                 </a>
                 <a href="{% url "compare-feedbin" %}" class="NB-compare-vs-link">
-                    <span class="NB-compare-vs-tag">vs</span>
+                    <span class="NB-compare-vs-tag">{% trans "vs" context "versus, comparing NewsBlur with another reader" %}</span>
                     <span class="NB-compare-vs-name">Feedbin</span>
                 </a>
             </div>
             <div class="NB-welcome-compare-alts">
-                <a href="{% url "alt-feedly" %}">Feedly Alternative</a>
-                <a href="{% url "alt-google-reader" %}">Google Reader Alternative</a>
-                <a href="{% url "alt-open-source" %}">Open Source RSS</a>
-                <a href="{% url "alt-inoreader" %}">Inoreader Alternative</a>
-                <a href="{% url "alt-self-hosted" %}">Self-Hosted RSS</a>
+                <a href="{% url "alt-feedly" %}">{% trans "Feedly Alternative" %}</a>
+                <a href="{% url "alt-google-reader" %}">{% trans "Google Reader Alternative" %}</a>
+                <a href="{% url "alt-open-source" %}">{% trans "Open Source RSS" %}</a>
+                <a href="{% url "alt-inoreader" %}">{% trans "Inoreader Alternative" %}</a>
+                <a href="{% url "alt-self-hosted" %}">{% trans "Self-Hosted RSS" %}</a>
             </div>
         </div>
     </div>
@@ -1739,14 +1745,14 @@
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}
-            <h2>Real-time Stats</h2>
+            <h2>{% trans "Real-time Stats" %}</h2>
             {% render_statistics_graphs statistics %}
         </div>
     </div>
 
     <div class="NB-welcome-bottomactions">
         <div class="NB-inner">
-            <div class="NB-welcome-bottomactions-heading">Read without the noise</div>
+            <div class="NB-welcome-bottomactions-heading">{% trans "Read without the noise" %}</div>
             <div class="NB-welcome-bottomactions-buttons">
                 <div class="NB-button NB-button-tryout NB-bottomaction-tryout">
                     <span class="NB-tryout-chevrons NB-tryout-chevrons-left">
@@ -1755,7 +1761,7 @@
                         <span class="NB-tryout-chevron"></span>
                     </span>
                     <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px">
-                    Try out NewsBlur
+                    {% trans "Try out NewsBlur" %}
                     <span class="NB-tryout-chevrons NB-tryout-chevrons-right">
                         <span class="NB-tryout-chevron"></span>
                         <span class="NB-tryout-chevron"></span>
@@ -1763,7 +1769,7 @@
                     </span>
                 </div>
                 <div class="NB-button NB-button-login NB-bottomaction-signup">
-                    Sign up or Log in
+                    {% trans "Sign up or Log in" %}
                 </div>
             </div>
         </div>
@@ -1782,15 +1788,19 @@
                 <a href="https://x.com/newsblur" title="X/Twitter"><img src="{{ MEDIA_URL }}img/welcome/x_favicon.png"></a>
                 <a href="https://mastodon.social/@newsblur" title="Mastodon"><img src="{{ MEDIA_URL }}img/welcome/mastodon_logo.svg"></a>
             </div>
-            <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
-            is built in San Francisco and Western Massachusetts by 
-            <a href="http://x.com/samuelclay" class="NB-splash-link">
-                <img src="{{ MEDIA_URL }}img/static/Samuel%20Clay.jpg" class="NB-twitter-avatar">
-                @samuelclay
-            </a>
+            {% comment %}welcome.xhtml: one message so translators can move the logo and the author link.{% endcomment %}
+            {% url "index" as index_url %}
+            {% blocktrans trimmed with logo_url=MEDIA_URL|add:"/img/logo_newsblur_blur.png" avatar_url=MEDIA_URL|add:"img/static/Samuel%20Clay.jpg" %}
+                <a href="{{ index_url }}"><img src="{{ logo_url }}" style="height: 32px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
+                is built in San Francisco and Western Massachusetts by
+                <a href="http://x.com/samuelclay" class="NB-splash-link">
+                    <img src="{{ avatar_url }}" class="NB-twitter-avatar">
+                    @samuelclay
+                </a>
+            {% endblocktrans %}
         </div>
         
-        {% render_footer "welcome" %}
+        {% render_footer "welcome" show_language=False %}
         
     </footer>
 {% endblock footer %}

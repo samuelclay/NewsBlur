@@ -223,7 +223,7 @@
                         android:layout_height="18dp"
                         android:layout_weight="1"
                         android:minWidth="0dp"
-                        android:text="Title"
+                        android:text="@string/ui_768e0c1c6957"
                         android:textSize="10sp"
                         android:tooltipText="@string/story_content_preview_none" />
 

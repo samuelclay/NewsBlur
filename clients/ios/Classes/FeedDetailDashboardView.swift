@@ -18,7 +18,7 @@ struct FeedDetailDashboardView: View {
         ScrollView {
             if cache.dashboardAll.isEmpty {
                 VStack(alignment: .center) {
-                    Text("No Story Lists")
+                    Text(NBLocalization.text("No Story Lists"))
                         .foregroundColor(.secondary)
                         .font(.custom("WhitneySSm-Medium", size: 24, relativeTo: .body))
                         .frame(minHeight: 300)
@@ -26,7 +26,7 @@ struct FeedDetailDashboardView: View {
                     Button {
                         feedDetailInteraction.addFirstDashboard()
                     } label: {
-                        Text("Add Story List")
+                        Text(NBLocalization.text("Add Story List"))
                     }
                 }
             }

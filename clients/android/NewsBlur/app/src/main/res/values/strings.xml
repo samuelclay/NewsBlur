@@ -1,4 +1,9 @@
 <resources>
+    <string name="language_title">Language</string>
+    <string name="settings_cat_general">General</string>
+    <string name="language_current">Language: %1$s</string>
+    <string name="language_automatic">Automatic (device language)</string>
+    <string name="language_save_failed">Could not save your language. Please try again.</string>
     <string name="reader_enter_fullscreen">Read full screen</string>
     <string name="reader_exit_fullscreen">Show story list</string>
     <string name="try_feed_instafetching">Insta-fetching stories…</string>
@@ -25,7 +30,7 @@
     <string name="settings_story_toolbar_bottom">Bottom</string>
     <string name="story_header_mark_read_cutoff">Choose how far back to mark read</string>
 
-    <string name="newsblur">NewsBlur</string>
+    <string name="newsblur" translatable="false">NewsBlur</string>
 
     <string name="login_username_hint">username</string>
     <string name="login_username_or_email_hint">username or email</string>
@@ -36,7 +41,7 @@
     <string name="login_segment_sign_up">Sign Up</string>
     <string name="login_forgot_password">Forgot password</string>
     <string name="login_custom_server">Self-hosted custom server</string>
-    <string name="login_custom_server_hint">https://www.newsblur.com</string>
+    <string name="login_custom_server_hint" translatable="false">https://www.newsblur.com</string>
     <string name="login_custom_server_subtitle">Use your own NewsBlur installation</string>
     <string name="login_custom_server_active">Custom server: %1$s</string>
     <string name="login_custom_server_edit">Tap to edit or reset your server URL</string>
@@ -146,28 +151,11 @@ people together to talk about the world.</string>
     <string name="profile_following">Following</string>
     <string name="profile_followers">Followers</string>
     <string name="profile_shared">Shared stories</string>
-    <string name="profile_ago">ago</string>
+    <string name="profile_time_ago">%1$s ago</string>
     <string name="profile_recent_actvity">Activities</string>
     <string name="profile_recent_interactions">Interactions</string>
-    <string name="profile_started_following">followed</string>
-    <string name="profile_you">You</string>
-    <string name="profile_you_lower">you</string>
-    <string name="profile_your">your</string>
-    <string name="profile_now_following">is now following %1$s</string>
-    <string name="profile_replied_to">Replied to</string>
-    <string name="profile_replied_to_your">replied to %1$s</string>
-    <string name="profile_shared_story">shared</string>
-    <string name="profile_comment">comment</string>
-    <string name="profile_reply">reply</string>
     <string name="profile_button_follow">Follow</string>
     <string name="profile_button_unfollow">Unfollow</string>
-    <string name="profile_subscribed_to">subscribed to</string>
-    <string name="profile_saved">saved</string>
-    <string name="profile_reshared">re-shared</string>
-    <string name="profile_favorited">favorited</string>
-    <string name="profile_favorited_comments">favorited %1$s comments on</string>
-    <string name="profile_signup">signed up for Newsblur</string>
-    <string name="profile_comments_on">comments on</string>
     <string name="profile_feed_not_available">You are no longer subscribed to this feed</string>
     <string name="profile_do_not_follow">You do not follow this user</string>
     <string name="profile_no_interactions">No interactions</string>
@@ -488,15 +476,15 @@ people together to talk about the world.</string>
         <item>@string/menu_network_select_opt_nomo</item>
         <item>@string/menu_network_select_opt_nomononme</item>
     </string-array>
-    <string-array name="default_network_select_values">
+    <string-array name="default_network_select_values" translatable="false">
         <item>ANY</item>
         <item>NOMO</item>
         <item>NOMONONME</item>
     </string-array>
-    <string name="default_network_select_value">NOMONONME</string>
+    <string name="default_network_select_value" translatable="false">NOMONONME</string>
 
     <string name="menu_delete_offline_stories">Delete offline stories…</string>
-    <string name="menu_delete_offline_stories_key">delete_offline_stories</string>
+    <string name="menu_delete_offline_stories_key" translatable="false">delete_offline_stories</string>
     <string name="menu_delete_offline_stories_sum">Free up space by clearing stored stories and images</string>
     <string name="menu_delete_offline_stories_confirmation">Cleared all stories and images!</string>
 
@@ -512,13 +500,13 @@ people together to talk about the world.</string>
         <item>@string/menu_cache_age_select_opt_14d</item>
         <item>@string/menu_cache_age_select_opt_30d</item>
     </string-array>
-    <string-array name="cache_age_select_values">
+    <string-array name="cache_age_select_values" translatable="false">
         <item>CACHE_AGE_2D</item>
         <item>CACHE_AGE_7D</item>
         <item>CACHE_AGE_14D</item>
         <item>CACHE_AGE_30D</item>
     </string-array>
-    <string name="default_cache_age_select_value">CACHE_AGE_30D</string>
+    <string name="default_cache_age_select_value" translatable="false">CACHE_AGE_30D</string>
 
     <string name="settings_cat_feed_list">Feed list</string>
 
@@ -564,11 +552,11 @@ people together to talk about the world.</string>
         <item>@string/newest</item>
         <item>@string/oldest</item>
     </string-array>
-    <string-array name="default_story_order_values">
+    <string-array name="default_story_order_values" translatable="false">
         <item>NEWEST</item>
         <item>OLDEST</item>
     </string-array>
-    <string name="default_story_order_value">NEWEST</string>
+    <string name="default_story_order_value" translatable="false">NEWEST</string>
 
     <string name="comfortable">Comfortable</string>
     <string name="compact">Compact</string>
@@ -579,11 +567,11 @@ people together to talk about the world.</string>
         <item>@string/alphabetical</item>
         <item>@string/most_used_at_top</item>
     </string-array>
-    <string-array name="default_feed_list_order_values">
+    <string-array name="default_feed_list_order_values" translatable="false">
         <item>ALPHABETICAL</item>
         <item>MOST_USED_AT_TOP</item>
     </string-array>
-    <string name="default_feed_list_order_value">ALPHABETICAL</string>
+    <string name="default_feed_list_order_value" translatable="false">ALPHABETICAL</string>
 
     <string name="all_stories">All stories</string>
     <string name="unread_only">Unread only</string>
@@ -597,11 +585,11 @@ people together to talk about the world.</string>
         <item>@string/all_stories</item>
         <item>@string/unread_only</item>
     </string-array>
-    <string-array name="default_read_filter_values">
+    <string-array name="default_read_filter_values" translatable="false">
         <item>ALL</item>
         <item>UNREAD</item>
     </string-array>
-    <string name="default_read_filter_value">ALL</string>
+    <string name="default_read_filter_value" translatable="false">ALL</string>
 
     <string-array name="mark_all_read_options">
         <item>Mark all read</item>
@@ -624,8 +612,8 @@ people together to talk about the world.</string>
         <item quantity="other">%s stories/mo</item>
     </plurals>
     <plurals name="story_cluster_header">
-        <item quantity="one">Also published by %d site</item>
-        <item quantity="other">Also published by %d sites</item>
+        <item quantity="one">Also published by %d other site</item>
+        <item quantity="other">Also published by %d other sites</item>
     </plurals>
     <plurals name="story_cluster_more_sites">
         <item quantity="one">+ %d more site</item>
@@ -689,7 +677,7 @@ people together to talk about the world.</string>
         <item>@string/mark_story_read_manually</item>
     </string-array>
 
-    <string-array name="mark_story_read_values">
+    <string-array name="mark_story_read_values" translatable="false">
         <item>ON_SCROLL</item>
         <item>IMMEDIATELY</item>
         <item>SECONDS_1</item>
@@ -704,7 +692,7 @@ people together to talk about the world.</string>
         <item>MANUALLY</item>
     </string-array>
 
-    <string name="mark_story_read_default_value">IMMEDIATELY</string>
+    <string name="mark_story_read_default_value" translatable="false">IMMEDIATELY</string>
 
     <string name="settings_social">Sharing stories</string>
     <string name="settings_show_public_comments">Show public comments</string>
@@ -722,7 +710,7 @@ people together to talk about the world.</string>
     <string name="settings_preview_images_segment_right_large">R large</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable notifications</string>
-    <string name="settings_enable_notifications_key">enable_notifications</string>
+    <string name="settings_enable_notifications_key" translatable="false">enable_notifications</string>
     <string name="ask_ai_upgrade_archive">Upgrade to Premium Archive</string>
     <string name="ask_ai_ask_question">Ask a question…</string>
     <string name="ask_ai_follow_up">Follow up…</string>
@@ -752,14 +740,14 @@ people together to talk about the world.</string>
         <item>@string/story_content_preview_large</item>
     </string-array>
 
-    <string-array name="show_content_preview_values">
+    <string-array name="show_content_preview_values" translatable="false">
         <item>NONE</item>
         <item>SMALL</item>
         <item>MEDIUM</item>
         <item>LARGE</item>
     </string-array>
 
-    <string name="show_content_preview_default_value">MEDIUM</string>
+    <string name="show_content_preview_default_value" translatable="false">MEDIUM</string>
 
     <string name="story_thumbnail_left_hand_small">Left-hand small</string>
     <string name="story_thumbnail_left_hand_large">Left-hand large</string>
@@ -774,7 +762,7 @@ people together to talk about the world.</string>
         <item>@string/story_thumbnail_no_image_preview</item>
     </string-array>
 
-    <string-array name="thumbnail_style_values">
+    <string-array name="thumbnail_style_values" translatable="false">
         <item>LEFT_SMALL</item>
         <item>LEFT_LARGE</item>
         <item>RIGHT_SMALL</item>
@@ -782,7 +770,7 @@ people together to talk about the world.</string>
         <item>OFF</item>
     </string-array>
 
-    <string name="thumbnail_style_default_value">RIGHT_LARGE</string>
+    <string name="thumbnail_style_default_value" translatable="false">RIGHT_LARGE</string>
 
     <string name="infrequent_choice_title">Stories from sites with</string>
     <string name="infrequent_5">&lt; 5 stories/month</string>
@@ -840,12 +828,12 @@ people together to talk about the world.</string>
         <item>@string/volume_up_next</item>
         <item>@string/volume_down_next</item>
     </string-array>
-    <string-array name="volume_key_navigation_values">
+    <string-array name="volume_key_navigation_values" translatable="false">
         <item>OFF</item>
         <item>UP_NEXT</item>
         <item>DOWN_NEXT</item>
     </string-array>
-    <string name="default_volume_key_navigation_value">OFF</string>
+    <string name="default_volume_key_navigation_value" translatable="false">OFF</string>
     <string name="settings_load_next_on_mark_read">Open next feed/folder after read</string>
     <string name="settings_load_next_on_mark_read_summary">Load the next feed/folder after marked as read</string>
 
@@ -858,12 +846,12 @@ people together to talk about the world.</string>
         <item>@string/folder_only</item>
         <item>@string/none</item>
     </string-array>
-    <string-array name="confirm_mark_all_read_values">
+    <string-array name="confirm_mark_all_read_values" translatable="false">
         <item>FEED_AND_FOLDER</item>
         <item>FOLDER_ONLY</item>
         <item>NONE</item>
     </string-array>
-    <string name="confirm_mark_all_read_value">FOLDER_ONLY</string>
+    <string name="confirm_mark_all_read_value" translatable="false">FOLDER_ONLY</string>
 
     <string name="settings_confirm_mark_range_read">Confirm mark older/newer read</string>
 
@@ -886,7 +874,7 @@ people together to talk about the world.</string>
         <item>@string/gest_action_unsave</item>
         <item>@string/gest_action_statistics</item>
     </string-array>
-    <string-array name="ltr_gesture_action_values">
+    <string-array name="ltr_gesture_action_values" translatable="false">
         <item>GEST_ACTION_BACK</item>
         <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
@@ -896,7 +884,7 @@ people together to talk about the world.</string>
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="ltr_gesture_action_value">GEST_ACTION_BACK</string>
+    <string name="ltr_gesture_action_value" translatable="false">GEST_ACTION_BACK</string>
 
     <string name="settings_rtl_gesture_action">Leftward swipe on story title…</string>
     <string-array name="rtl_gesture_action_entries">
@@ -908,7 +896,7 @@ people together to talk about the world.</string>
         <item>@string/gest_action_unsave</item>
         <item>@string/gest_action_statistics</item>
     </string-array>
-    <string-array name="rtl_gesture_action_values">
+    <string-array name="rtl_gesture_action_values" translatable="false">
         <item>GEST_ACTION_TOGGLE_READ</item>
         <item>GEST_ACTION_NONE</item>
         <item>GEST_ACTION_MARKREAD</item>
@@ -917,7 +905,7 @@ people together to talk about the world.</string>
         <item>GEST_ACTION_UNSAVE</item>
         <item>GEST_ACTION_STATISTICS</item>
     </string-array>
-    <string name="rtl_gesture_action_value">GEST_ACTION_TOGGLE_READ</string>
+    <string name="rtl_gesture_action_value" translatable="false">GEST_ACTION_TOGGLE_READ</string>
 
     <string name="default_browser">Default browser…</string>
     <string name="font">Font…</string>
@@ -929,20 +917,20 @@ people together to talk about the world.</string>
     <string name="open_sans_condensed_font">Open Sans Condensed</string>
     <string name="roboto_font">Roboto</string>
     <string name="anonymous_pro_font">Anonymous Pro</string>
-    <string name="anonymous_pro_font_prefvalue">ANONYMOUS_PRO</string>
-    <string name="default_font_prefvalue">DEFAULT</string>
-    <string name="whitney_font_prefvalue">WHITNEY</string>
-    <string name="gotham_narrow_font_prefvalue">GOTHAM_NARROW</string>
-    <string name="chronicle_font_prefvalue">CHRONICLE</string>
-    <string name="noto_sans_font_prefvalue">NOTO_SANS</string>
-    <string name="noto_serif_font_prefvalue">NOTO_SERIF</string>
-    <string name="open_sans_condensed_font_prefvalue">OPEN_SANS_CONDENSED</string>
-    <string name="roboto_font_prefvalue">ROBOTO</string>
-    <string name="system_default_prefvalue">SYSTEM_DEFAULT</string>
-    <string name="in_app_browser_prefvalue">IN_APP_BROWSER</string>
-    <string name="chrome_prefvalue">CHROME</string>
-    <string name="firefox_prefvalue">FIREFOX</string>
-    <string name="opera_mini_prefvalue">OPERA_MINI</string>
+    <string name="anonymous_pro_font_prefvalue" translatable="false">ANONYMOUS_PRO</string>
+    <string name="default_font_prefvalue" translatable="false">DEFAULT</string>
+    <string name="whitney_font_prefvalue" translatable="false">WHITNEY</string>
+    <string name="gotham_narrow_font_prefvalue" translatable="false">GOTHAM_NARROW</string>
+    <string name="chronicle_font_prefvalue" translatable="false">CHRONICLE</string>
+    <string name="noto_sans_font_prefvalue" translatable="false">NOTO_SANS</string>
+    <string name="noto_serif_font_prefvalue" translatable="false">NOTO_SERIF</string>
+    <string name="open_sans_condensed_font_prefvalue" translatable="false">OPEN_SANS_CONDENSED</string>
+    <string name="roboto_font_prefvalue" translatable="false">ROBOTO</string>
+    <string name="system_default_prefvalue" translatable="false">SYSTEM_DEFAULT</string>
+    <string name="in_app_browser_prefvalue" translatable="false">IN_APP_BROWSER</string>
+    <string name="chrome_prefvalue" translatable="false">CHROME</string>
+    <string name="firefox_prefvalue" translatable="false">FIREFOX</string>
+    <string name="opera_mini_prefvalue" translatable="false">OPERA_MINI</string>
     <string-array name="default_browser_entries">
         <item>System default</item>
         <item>In-app browser</item>
@@ -950,7 +938,7 @@ people together to talk about the world.</string>
         <item>Firefox</item>
         <item>Opera Mini</item>
     </string-array>
-    <string-array name="default_browser_values">
+    <string-array name="default_browser_values" translatable="false">
         <item>@string/system_default_prefvalue</item>
         <item>@string/in_app_browser_prefvalue</item>
         <item>@string/chrome_prefvalue</item>
@@ -967,7 +955,7 @@ people together to talk about the world.</string>
         <item>@string/open_sans_condensed_font</item>
         <item>@string/roboto_font</item>
     </string-array>
-    <string-array name="default_font_values">
+    <string-array name="default_font_values" translatable="false">
         <item>@string/anonymous_pro_font_prefvalue</item>
         <item>@string/chronicle_font_prefvalue</item>
         <item>@string/default_font_prefvalue</item>
@@ -977,10 +965,10 @@ people together to talk about the world.</string>
         <item>@string/open_sans_condensed_font_prefvalue</item>
         <item>@string/roboto_font_prefvalue</item>
     </string-array>
-    <string name="default_font_value">DEFAULT</string>
-    <string name="default_default_browser">@string/system_default_prefvalue</string>
+    <string name="default_font_value" translatable="false">DEFAULT</string>
+    <string name="default_default_browser" translatable="false">@string/system_default_prefvalue</string>
 
-    <string name="story_notification_channel_id">story_notification_channel</string>
+    <string name="story_notification_channel_id" translatable="false">story_notification_channel</string>
     <string name="story_notification_channel_name">New stories</string>
     <string name="go_to_feed">Go to feed</string>
 
@@ -1012,15 +1000,15 @@ people together to talk about the world.</string>
     <string name="saved_stories">Saved stories</string>
 
     <string name="short_next_story">Next Story</string>
-    <string name="short_next_story_key_down">\u2193</string>
-    <string name="short_next_story_key_j">J</string>
+    <string name="short_next_story_key_down" translatable="false">\u2193</string>
+    <string name="short_next_story_key_j" translatable="false">J</string>
 
     <string name="short_previous_story">Previous Story</string>
-    <string name="short_previous_story_key_up">\u2191</string>
-    <string name="short_previous_story_key_k">K</string>
+    <string name="short_previous_story_key_up" translatable="false">\u2191</string>
+    <string name="short_previous_story_key_k" translatable="false">K</string>
 
     <string name="short_text_view">Text View</string>
-    <string name="short_text_view_key">\u21E7 \u23CE</string>
+    <string name="short_text_view_key" translatable="false">\u21E7 \u23CE</string>
 
     <string name="short_page_down">Page Down</string>
     <string name="short_page_down_key">space</string>
@@ -1029,37 +1017,37 @@ people together to talk about the world.</string>
     <string name="short_page_up_key">\u21E7 space</string>
 
     <string name="short_next_unread_story">Next Unread Story</string>
-    <string name="short_next_unread_story_key">N</string>
+    <string name="short_next_unread_story_key" translatable="false">N</string>
 
     <string name="short_toggle_read_unread">Toggle Read/Unread</string>
-    <string name="short_toggle_read_unread_key_u">U</string>
-    <string name="short_toggle_read_unread_key_m">M</string>
+    <string name="short_toggle_read_unread_key_u" translatable="false">U</string>
+    <string name="short_toggle_read_unread_key_m" translatable="false">M</string>
 
     <string name="short_save_unsave_story">Save/Unsave Story</string>
-    <string name="short_save_unsave_story_key">S</string>
+    <string name="short_save_unsave_story_key" translatable="false">S</string>
 
     <string name="short_open_in_browser">Open in Browser</string>
-    <string name="short_open_in_browser_key_o">O</string>
-    <string name="short_open_in_browser_key_v">V</string>
+    <string name="short_open_in_browser_key_o" translatable="false">O</string>
+    <string name="short_open_in_browser_key_v" translatable="false">V</string>
 
     <string name="short_share_this_story">Share this Story</string>
-    <string name="short_share_this_story_key">\u21E7 S</string>
+    <string name="short_share_this_story_key" translatable="false">\u21E7 S</string>
 
     <string name="short_scroll_to_comments">Scroll to Comments</string>
-    <string name="short_scroll_to_comments_key">C</string>
+    <string name="short_scroll_to_comments_key" translatable="false">C</string>
 
     <string name="short_open_story_trainer">Open Story Trainer</string>
-    <string name="short_open_story_trainer_key">T</string>
+    <string name="short_open_story_trainer_key" translatable="false">T</string>
 
     <string name="short_open_all_stories">Open All Site Stories</string>
-    <string name="short_open_all_stories_key">\u2325 E</string>
+    <string name="short_open_all_stories_key" translatable="false">\u2325 E</string>
 
     <string name="short_switch_views">Switch Views</string>
-    <string name="short_switch_views_key_left">\u2190</string>
-    <string name="short_switch_views_key_right">\u2192</string>
+    <string name="short_switch_views_key_left" translatable="false">\u2190</string>
+    <string name="short_switch_views_key_right" translatable="false">\u2192</string>
 
     <string name="short_add_site">Add Site</string>
-    <string name="short_add_site_key">\u2325 A</string>
+    <string name="short_add_site_key" translatable="false">\u2325 A</string>
     <string name="registering">Registering...</string>
     <string name="renaming_feed_message">Renaming feed %s</string>
     <string name="renaming_folder_message">Renaming folder %s</string>
@@ -1067,4 +1055,326 @@ people together to talk about the world.</string>
     <string name="parent_folder">Parent folder</string>
     <string name="folder_added">Folder added</string>
     <string name="new_folder_parent">In: %1$s</string>
+    <string name="ui_014f8b8d982f">Add custom keyword filters that become their own briefing sections</string>
+    <string name="ui_05392d13e2f2">No briefings yet</string>
+    <string name="ui_0a4444676244">Save failed</string>
+    <string name="ui_0a8adac9d6d5">Schedule</string>
+    <string name="ui_13b7bfcac438">Working…</string>
+    <string name="ui_2eb56be3c2d9">Sources</string>
+    <string name="ui_314ef761a08f">Add keyword section</string>
+    <string name="ui_3af014d03229">Feed source</string>
+    <string name="ui_3e4a49541e18">Include already-read stories</string>
+    <string name="ui_4a24ff492222">Get daily briefings with all your top stories</string>
+    <string name="ui_4e9f59082144">Premium Archive</string>
+    <string name="ui_5b170811b992">Upgrade to Premium Archive</string>
+    <string name="ui_67a31d6fa581">Choose where Daily Briefing alerts should go</string>
+    <string name="ui_67d0be0dd546">Control how much is included and how it is written</string>
+    <string name="ui_68c2cc7f0cea">Model</string>
+    <string name="ui_710089545189">Length &amp; Style</string>
+    <string name="ui_753a22b2eb61">Notifications</string>
+    <string name="ui_771ee100da2b">Keyword Sections</string>
+    <string name="ui_7c522fb68f07">Get a summary of your top stories, delivered on your schedule.</string>
+    <string name="ui_7f7e956b2244">Set up Daily Briefing to generate a summary of the stories that matter most to you.</string>
+    <string name="ui_7ff5a6dafd80">Sections</string>
+    <string name="ui_80f7bcbc57b0">Choose how often and when your briefing is generated</string>
+    <string name="ui_a4d5830966af">Automatically create briefings on your schedule</string>
+    <string name="ui_a92076d4b9e3">Pick which model writes your Daily Briefing</string>
+    <string name="ui_a970fbbd6df8">Auto-generate</string>
+    <string name="ui_a9dc7e4dcba7">Daily Briefing Settings</string>
+    <string name="ui_bbfa773e5a63">Close</string>
+    <string name="ui_c2d462f8f6da">Choose which stories are eligible for Daily Briefing</string>
+    <string name="ui_d521ea8640b5">Generate Daily Briefing</string>
+    <string name="ui_df174a3f2faa">Enabled</string>
+    <string name="ui_df2164622bcf">Unable to load Daily Briefing</string>
+    <string name="ui_eaed56ec84ae">Daily Briefing</string>
+    <string name="ui_efc007a393f6">Save</string>
+    <string name="ui_f530db58b3e5">Keywords</string>
+    <string name="ui_fdafe86c10a4">Only sections with matching stories will be included</string>
+    <string name="ui_690910f6ed17">Import OPML</string>
+    <string name="ui_244fd5e426f0">Export OPML</string>
+    <string name="ui_768e0c1c6957">Title</string>
+    <string name="ui_0c2dd345a681" translatable="false">\u24D8</string>
+    <string name="ui_5fc52b1a5a92" translatable="false">\u2192</string>
+    <string name="ui_e17c700c2575">Saved Tags</string>
+    <string name="ui_6e914f494515">Story Tags</string>
+    <string name="ui_e912ab619a72">Other Tags</string>
+    <string name="i18n_add_site">Add site</string>
+    <string name="i18n_add">Add</string>
+    <string name="i18n_retry">Retry</string>
+    <string name="i18n_no_sites_found_try_another_search">No sites found. Try another search.</string>
+    <string name="i18n_load_more">Load more</string>
+    <string name="i18n_follow_any_website">Follow any website</string>
+    <string name="i18n_mark_updated_stories_unread">Mark updated stories unread</string>
+    <string name="i18n_follow_news_that_matters_to_you">Follow news that matters to you</string>
+    <string name="i18n_choose_a_topic_or_create_a_google_news_feed_for_any_search">Choose a topic or create a Google News feed for any search.</string>
+    <string name="i18n_subscribe">Subscribe</string>
+    <string name="i18n_tech">tech</string>
+    <string name="i18n_review">review</string>
+    <string name="i18n_sponsored">sponsored</string>
+    <string name="i18n_discover_more_to_read">Discover more to read</string>
+    <string name="i18n_no_sites_found_you_can_also_add_a_site_by_url">No sites found. You can also add a site by URL.</string>
+    <string name="i18n_add_discover_sites">Add + Discover Sites</string>
+    <string name="i18n_create_a_feed_from_a_page_without_rss_newsblur_finds_its_stories_and_checks_for_updates_requires_premium_archive">Create a feed from a page without RSS. NewsBlur finds its stories and checks for updates. Requires Premium Archive.</string>
+    <string name="onboarding_delete_account">Delete account</string>
+    <string name="onboarding_your_account_has_been_deleted">Your account has been deleted.</string>
+    <string name="onboarding_disconnect_newsblur_from_sign_in_with_apple_in_your_apple_account">Disconnect NewsBlur from Sign in with Apple in your Apple Account settings to finish removing its authorization.</string>
+    <string name="onboarding_apple_account_settings">Apple Account settings</string>
+    <string name="onboarding_deleting_your_account_permanently_removes_your_feeds_saved_storie">Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.</string>
+    <string name="onboarding_confirm_your_password">Confirm your password</string>
+    <string name="account_deletion_confirmation_word" translatable="false">Delete</string>
+    <string name="onboarding_type_delete_to_permanently_delete_your_account">Type %1$s to permanently delete your account.</string>
+    <string name="onboarding_permanently_delete_account">Permanently delete account</string>
+    <string name="onboarding_a_personal_news_reader_bringing_npeople_together_to_talk_about_th">A personal news reader bringing\npeople together to talk about the world.</string>
+    <string name="onboarding_or">or</string>
+    <string name="onboarding_enter_your_existing_newsblur_username_or_email_and_newsblur_passw">Enter your existing NewsBlur username or email and NewsBlur password. Your Apple or Google email can be different.</string>
+    <string name="onboarding_signing_in">Signing in…</string>
+    <string name="onboarding_connect_an_existing_account">Connect an existing account</string>
+    <string name="onboarding_create_a_new_account_instead">Create a new account instead</string>
+    <string name="onboarding_use_another_sign_in_method">Use another sign-in method</string>
+    <string name="onboarding_forgot_your_password">Forgot your password?</string>
+    <string name="onboarding_last_used">Last used</string>
+    <string name="onboarding_loading_interests">Loading interests</string>
+    <string name="onboarding_finding_feeds_for_you_to_explore">Finding feeds for you to explore</string>
+    <string name="onboarding_retry_icons">Retry icons</string>
+    <string name="onboarding_search_all_sites">Search all sites</string>
+    <string name="onboarding_no_interests_or_sites_found_try_another_search">No interests or sites found. Try another search.</string>
+    <string name="onboarding_try_search_again">Try search again</string>
+    <string name="onboarding_choose_feeds_for_your_folder">Choose feeds for your folder</string>
+    <string name="onboarding_folder_name">Folder name</string>
+    <string name="onboarding_already_have_feeds">Already have feeds?</string>
+    <string name="onboarding_bring_your_feeds_and_folders_from_another_reader">Bring your feeds and folders from another reader.</string>
+    <string name="onboarding_explore_interests">Explore interests</string>
+    <string name="onboarding_you_re_all_set_up">You’re all set up.</string>
+    <string name="onboarding_your_reading_list">Your reading list</string>
+    <string name="onboarding_stay_connected">Stay connected</string>
+    <string name="onboarding_connect_your_account">Connect your account</string>
+    <string name="onboarding_choose_your_username">Choose your username</string>
+    <string name="onboarding_create_an_account">Create an account</string>
+    <string name="onboarding_welcome_back">Welcome back</string>
+    <string name="onboarding_signing_in_with_provider">Signing in with %1$s</string>
+    <string name="onboarding_sign_in_with_provider">Sign in with %1$s</string>
+    <string name="onboarding_email">Email</string>
+    <string name="onboarding_username">Username</string>
+    <string name="onboarding_username_or_email">Username or email</string>
+    <string name="onboarding_password">Password</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_create_account">Create account</string>
+    <string name="onboarding_sign_in">Sign in</string>
+    <string name="onboarding_already_have_an_account_sign_in">Already have an account? Sign in</string>
+    <string name="onboarding_new_to_newsblur_create_an_account">New to NewsBlur? Create an account</string>
+    <string name="onboarding_use_a_custom_server">Use a custom server</string>
+    <string name="onboarding_verify_with_provider">Verify with %1$s</string>
+    <string name="setup_close_setup">Close setup</string>
+    <string name="setup_start_reading">Start reading</string>
+    <string name="setup_continue">Continue</string>
+    <string name="setup_a_little_of_everything">A little of everything</string>
+    <string name="setup_bundle_folder_name">Bundle folder name</string>
+    <string name="setup_added">Added</string>
+    <string name="setup_queued">Queued</string>
+    <string name="setup_loading_feeds_to_choose_from">Loading feeds to choose from…</string>
+    <string name="setup_loading_more_feeds">Loading more feeds…</string>
+    <string name="setup_select_feeds_to_add">Select feeds to add</string>
+    <string name="setup_name_your_folder_to_continue">Name your folder to continue</string>
+    <plurals name="setup_add_feeds_to_folder">
+        <item quantity="one">Add %1$d feed to “%2$s” folder</item>
+        <item quantity="other">Add %1$d feeds to “%2$s” folder</item>
+    </plurals>
+    <string name="setup_importing">Importing…</string>
+    <plurals name="setup_categories_to_choose_from">
+        <item quantity="one">%1$d category to choose from</item>
+        <item quantity="other">%1$d categories to choose from</item>
+    </plurals>
+    <string name="setup_search_interests_and_sites">Search interests and sites</string>
+    <plurals name="setup_feeds_selected">
+        <item quantity="one">%1$d feed selected</item>
+        <item quantity="other">%1$d feeds selected</item>
+    </plurals>
+    <plurals name="setup_feeds_added">
+        <item quantity="one">%1$d feed added</item>
+        <item quantity="other">%1$d feeds added</item>
+    </plurals>
+    <string name="setup_included_in_bundle">Included in bundle</string>
+    <string name="setup_include_in_bundle">Include in bundle</string>
+    <string name="setup_reader_ready_add_feeds_anytime">Your reader is ready. Add feeds anytime from Add + Discover Sites.</string>
+    <string name="setup_reading_list_yours">A reading list that’s yours. Everything you chose, in one place.</string>
+    <plurals name="setup_feed_count">
+        <item quantity="one">%1$d feed</item>
+        <item quantity="other">%1$d feeds</item>
+    </plurals>
+    <string name="setup_newsblur_forum">NewsBlur Forum</string>
+    <string name="setup_newsblur_forum_description">Ask questions and share ideas</string>
+    <string name="setup_handle_on_x">%1$s on X</string>
+    <string name="setup_samuelclay_on_x_description">From the creator of NewsBlur</string>
+    <string name="setup_newsblur_on_x_description">News and updates</string>
+    <plurals name="setup_feeds_could_not_be_added">
+        <item quantity="one">%1$d feed could not be added to %2$s. %3$s</item>
+        <item quantity="other">%1$d feeds could not be added to %2$s. %3$s</item>
+    </plurals>
+    <plurals name="setup_stories_per_month">
+        <item quantity="one">%1$d story/month</item>
+        <item quantity="other">%1$d stories/month</item>
+    </plurals>
+    <string name="setup_feed_stale_last_story">Stale · last story %1$s</string>
+    <string name="add_site_url_or_search">%1$s or search</string>
+    <string name="add_site_choose_folder">Choose folder</string>
+    <string name="add_site_top_level">— Top Level —</string>
+    <string name="add_site_adding_site">Adding site</string>
+    <string name="add_site_add_folder">Add folder</string>
+    <string name="add_site_cancel_new_folder">Cancel new folder</string>
+    <string name="add_site_create_new_folder">Create new folder</string>
+    <string name="add_site_new_folder_name">New folder name</string>
+    <string name="add_site_searching_sites">Searching sites</string>
+    <string name="discover_quick_add">Quick add site or folder</string>
+    <string name="discover_tab_search">Search</string>
+    <string name="discover_tab_web_feed">Web Feed</string>
+    <string name="discover_tab_popular">Popular</string>
+    <string name="discover_tab_newsletters">Newsletters</string>
+    <string name="discover_tab_podcasts">Podcasts</string>
+    <string name="discover_tab_heading">Discover %1$s</string>
+    <string name="discover_hint_search">Search sites or paste a URL</string>
+    <string name="discover_hint_popular">Search popular sites</string>
+    <string name="discover_hint_youtube">Search channels or paste a URL</string>
+    <string name="discover_hint_reddit">Search subreddits</string>
+    <string name="discover_hint_newsletters">Search newsletters or paste a URL</string>
+    <string name="discover_hint_podcasts">Search podcasts</string>
+    <string name="discover_platform">Platform</string>
+    <string name="discover_all_platforms">All</string>
+    <string name="discover_category">Category</string>
+    <string name="discover_all_categories">All categories</string>
+    <string name="discover_topic">Topic</string>
+    <string name="discover_all_topics">All topics</string>
+    <string name="discover_trending_this_week">Trending this week</string>
+    <string name="discover_search_results">Search results</string>
+    <string name="discover_add_this_url">Add this URL</string>
+    <string name="discover_choice_label">%1$s:</string>
+    <string name="discover_choose_option">Choose %1$s</string>
+    <string name="discover_clear_input">Clear %1$s</string>
+    <string name="discover_web_page_url">Web page URL</string>
+    <string name="discover_which_stories_optional">Which stories? (optional)</string>
+    <string name="discover_analyze_page">Analyze page</string>
+    <string name="discover_refine_analysis">Refine analysis</string>
+    <string name="discover_add_rss_feed">Add RSS feed</string>
+    <string name="discover_added">Added</string>
+    <string name="discover_web_pattern">Pattern %1$d</string>
+    <string name="discover_feed_title">Feed title</string>
+    <string name="discover_keep_stories">Keep stories</string>
+    <plurals name="discover_keep_stories_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="discover_create_web_feed">Create web feed</string>
+    <string name="discover_search_news_topic">Search a news topic</string>
+    <string name="discover_top_stories">Top stories</string>
+    <string name="discover_choose_a_topic">Choose a topic</string>
+    <string name="discover_choose_a_category">Choose a category</string>
+    <string name="discover_add_google_news_feed">Add Google News feed</string>
+    <string name="discover_news_topic_world">World</string>
+    <string name="discover_news_topic_nation">Nation</string>
+    <string name="discover_news_topic_business">Business</string>
+    <string name="discover_news_topic_technology">Technology</string>
+    <string name="discover_news_topic_entertainment">Entertainment</string>
+    <string name="discover_news_topic_sports">Sports</string>
+    <string name="discover_news_topic_science">Science</string>
+    <string name="discover_news_topic_health">Health</string>
+    <string name="briefing_frequency">Frequency</string>
+    <string name="briefing_frequency_thrice_daily">3x daily</string>
+    <string name="briefing_frequency_twice_daily">2x daily</string>
+    <string name="briefing_frequency_daily">Daily</string>
+    <string name="briefing_frequency_weekly">Weekly</string>
+    <string name="briefing_preferred_time">Preferred time</string>
+    <string name="briefing_time_morning">Morning</string>
+    <string name="briefing_time_afternoon">Afternoon</string>
+    <string name="briefing_time_evening">Evening</string>
+    <string name="briefing_preferred_day">Preferred day</string>
+    <string name="briefing_day_sunday">Sunday</string>
+    <string name="briefing_day_monday">Monday</string>
+    <string name="briefing_day_tuesday">Tuesday</string>
+    <string name="briefing_day_wednesday">Wednesday</string>
+    <string name="briefing_day_thursday">Thursday</string>
+    <string name="briefing_day_friday">Friday</string>
+    <string name="briefing_day_saturday">Saturday</string>
+    <string name="briefing_story_count">Story count</string>
+    <string name="briefing_writing_style">Writing style</string>
+    <string name="briefing_style_bullets">Bullets</string>
+    <string name="briefing_style_editorial">Editorial</string>
+    <string name="briefing_style_headlines">Headlines</string>
+    <string name="briefing_filter">Filter</string>
+    <string name="briefing_keyword_section">Keyword section %1$d</string>
+    <string name="briefing_remove_keyword_section">Remove</string>
+    <string name="briefing_generate_now">Generate Now</string>
+    <string name="briefing_saving_settings">Saving Daily Briefing settings…</string>
+    <plurals name="briefing_group_story_count">
+        <item quantity="one">%d story</item>
+        <item quantity="other">%d stories</item>
+    </plurals>
+    <string name="language_dialog_title">Choose your language</string>
+    <string name="language_dialog_detected">NewsBlur detected %1$s from your device.</string>
+    <string name="language_dialog_note">You can change this anytime in Preferences.</string>
+    <string name="language_dialog_use">Use %1$s</string>
+    <string name="language_dialog_choose_another">Choose another language</string>
+    <string name="language_dialog_pick">Pick the language you\'d like NewsBlur to use. You can change this anytime in Preferences.</string>
+    <string name="main_menu_import_feed_bundles">Import and feed bundles</string>
+    <string name="main_menu_export_feeds">Export feeds</string>
+    <string name="discover_open">Open</string>
+    <string name="discover_folder_top_level">Top Level</string>
+    <string name="discover_add_to_folder">Add to folder</string>
+    <string name="add_site_shortcut_trending">Trending</string>
+    <string name="add_site_freshness_stale">Stale %1$s</string>
+    <plurals name="compact_minutes_ago">
+        <item quantity="one">%dm ago</item>
+        <item quantity="other">%dm ago</item>
+    </plurals>
+    <plurals name="compact_hours_ago">
+        <item quantity="one">%dh ago</item>
+        <item quantity="other">%dh ago</item>
+    </plurals>
+    <plurals name="compact_days_ago">
+        <item quantity="one">%dd ago</item>
+        <item quantity="other">%dd ago</item>
+    </plurals>
+    <plurals name="compact_weeks_ago">
+        <item quantity="one">%dw ago</item>
+        <item quantity="other">%dw ago</item>
+    </plurals>
+    <plurals name="compact_months_ago">
+        <item quantity="one">%dmo ago</item>
+        <item quantity="other">%dmo ago</item>
+    </plurals>
+    <!-- ActivitiesAdapter.java: a profile's own activity. "you" forms have their own strings so the verb can agree. -->
+    <string name="profile_activity_you_subscribed">You subscribed to %1$s</string>
+    <string name="profile_activity_user_subscribed">%1$s subscribed to %2$s</string>
+    <string name="profile_activity_you_saved">You saved %1$s</string>
+    <string name="profile_activity_user_saved">%1$s saved %2$s</string>
+    <string name="profile_activity_you_signed_up">You signed up for NewsBlur</string>
+    <string name="profile_activity_user_signed_up">%1$s signed up for NewsBlur</string>
+    <string name="profile_activity_you_followed">You followed %1$s</string>
+    <string name="profile_activity_user_followed">%1$s followed %2$s</string>
+    <string name="profile_activity_you_favorited_comments">You favorited %1$s comments on %2$s</string>
+    <string name="profile_activity_user_favorited_comments">%1$s favorited %2$s comments on %3$s</string>
+    <string name="profile_activity_you_replied">You Replied to %1$s</string>
+    <string name="profile_activity_user_replied">%1$s Replied to %2$s</string>
+    <string name="profile_activity_you_shared">You shared %1$s</string>
+    <string name="profile_activity_user_shared">%1$s shared %2$s</string>
+    <!-- InteractionsAdapter.java: what other people did to a profile; %1$s is always the other person. -->
+    <string name="profile_interaction_following_you">%1$s is now following you</string>
+    <string name="profile_interaction_following_user">%1$s is now following %2$s</string>
+    <string name="profile_interaction_favorited_your_comments">%1$s favorited your comments on %2$s</string>
+    <string name="profile_interaction_favorited_user_comments">%1$s favorited %2$s\'s comments on %3$s</string>
+    <string name="profile_interaction_replied_your_comment">%1$s replied to your comment</string>
+    <string name="profile_interaction_replied_your_reply">%1$s replied to your reply</string>
+    <string name="profile_interaction_replied_user_comment">%1$s replied to %2$s\'s comment</string>
+    <string name="profile_interaction_replied_user_reply">%1$s replied to %2$s\'s reply</string>
+    <string name="profile_interaction_reshared">%1$s re-shared %2$s</string>
+    <string name="briefing_section_top_stories">Top stories</string>
+    <string name="briefing_section_top_stories_subtitle">The most important stories from your feeds</string>
+    <string name="briefing_section_infrequent">From infrequent sites</string>
+    <string name="briefing_section_infrequent_subtitle">Stories from feeds that rarely publish</string>
+    <string name="briefing_section_long_read">Long reads for later</string>
+    <string name="briefing_section_long_read_subtitle">Longer articles worth setting time aside for</string>
+    <string name="briefing_section_classifier_match">Based on your interests</string>
+    <string name="briefing_section_classifier_match_subtitle">Stories matching your trained topics and authors</string>
+    <string name="briefing_section_follow_up">Follow-ups</string>
+    <string name="briefing_section_follow_up_subtitle">New posts from feeds you recently read</string>
+    <string name="briefing_section_widely_covered">Widely covered</string>
+    <string name="briefing_section_widely_covered_subtitle">Stories covered by 3+ feeds</string>
 </resources>

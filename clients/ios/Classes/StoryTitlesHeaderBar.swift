@@ -194,8 +194,8 @@ class StoryTitlesHeaderBar: NSObject {
     private var markReadWidthConstraint: NSLayoutConstraint?
     private var isSearchCompact = false
     private var isDailyBriefingMode = false
-    private var filterText = "ALL"
-    private var orderText = "NEWEST"
+    private var filterText = StoryTitlesHeaderBar.filterTitle(readFilter: "all")
+    private var orderText = StoryTitlesHeaderBar.orderTitle(order: "newest")
     private var fullOptionsWidth: CGFloat = 0
     private var compactOptionsWidth: CGFloat = 0
     private let markReadWidth: CGFloat = 98
@@ -204,10 +204,10 @@ class StoryTitlesHeaderBar: NSObject {
     private var appliedDiscoverLayout: String?
     private lazy var optionsIconWidth = measuredPillWidth(title: nil, image: sym("chevron.down", size: 8, weight: .bold), leadingInset: 12, trailingInset: 12)
     private lazy var relatedIconWidth = measuredPillWidth(title: nil, image: discoverImage, leadingInset: 14, trailingInset: 14)
-    private lazy var relatedTextWidth = measuredPillWidth(title: "RELATED SITES", image: discoverImage, leadingInset: 14, trailingInset: 12)
-    private lazy var briefingTextWidth = measuredPillWidth(title: "BRIEFING SETTINGS", image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
+    private lazy var relatedTextWidth = measuredPillWidth(title: NBLocalization.text("RELATED SITES"), image: discoverImage, leadingInset: 14, trailingInset: 12)
+    private lazy var briefingTextWidth = measuredPillWidth(title: NBLocalization.text("BRIEFING SETTINGS"), image: dailyBriefingPillImage(), leadingInset: 14, trailingInset: 12)
     private lazy var searchIconWidth = measuredPillWidth(title: nil, image: sym("magnifyingglass", size: 12), leadingInset: 14, trailingInset: 14)
-    private lazy var searchTextWidth = measuredPillWidth(title: "SEARCH", image: sym("magnifyingglass", size: 11), leadingInset: 14, trailingInset: 14)
+    private lazy var searchTextWidth = measuredPillWidth(title: NBLocalization.text("SEARCH"), image: sym("magnifyingglass", size: 11), leadingInset: 14, trailingInset: 14)
     private lazy var discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
 
     // MARK: - State
@@ -279,14 +279,14 @@ class StoryTitlesHeaderBar: NSObject {
     private func applyDailyBriefingPill(compact: Bool) {
         setPillContent(
             discoverPill,
-            title: compact ? nil : "BRIEFING SETTINGS",
+            title: compact ? nil : NBLocalization.text("BRIEFING SETTINGS"),
             image: dailyBriefingPillImage(),
             leadingInset: 14,
             trailingInset: compact ? 14 : 12,
             lineBreakMode: .byClipping
         )
         discoverPill.contentHorizontalAlignment = .center
-        discoverPill.accessibilityLabel = "Daily Briefing Settings"
+        discoverPill.accessibilityLabel = NBLocalization.text("Daily Briefing Settings")
     }
 
     // MARK: - Platform-Adaptive Pill API
@@ -338,8 +338,12 @@ class StoryTitlesHeaderBar: NSObject {
         button.setImage(image?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = pillFont
         button.titleLabel?.lineBreakMode = lineBreakMode
-        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: leadingInset, bottom: 0, right: trailingInset)
-        button.semanticContentAttribute = trailingImage ? .forceRightToLeft : .unspecified
+        // StoryTitlesHeaderBar.swift reverses the button's own direction to put the image on the trailing side,
+        // which is the left side in a right-to-left interface.
+        let rightToLeft = NBLocalization.isRightToLeft
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: rightToLeft ? trailingInset : leadingInset,
+                                                bottom: 0, right: rightToLeft ? leadingInset : trailingInset)
+        button.semanticContentAttribute = trailingImage ? (rightToLeft ? .forceLeftToRight : .forceRightToLeft) : .unspecified
         if image != nil && title != nil {
             let half = imagePadding / 2
             if trailingImage {
@@ -532,10 +536,10 @@ class StoryTitlesHeaderBar: NSObject {
 
     private func buildDiscoverPill() {
         let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-        setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+        setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                        leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
-        discoverPill.accessibilityLabel = "Related Sites"
+        discoverPill.accessibilityLabel = NBLocalization.text("Related Sites")
         discoverPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         leadingControls.addArrangedSubview(discoverPill)
 
@@ -559,11 +563,11 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func buildSearchPill() {
-        setPillContent(searchPill, title: "SEARCH",
+        setPillContent(searchPill, title: NBLocalization.text("SEARCH"),
                        image: sym("magnifyingglass", size: 11),
                        leadingInset: 14, trailingInset: 14)
         configurePillAppearance(searchPill)
-        searchPill.accessibilityLabel = "Search stories"
+        searchPill.accessibilityLabel = NBLocalization.text("Search stories")
         searchPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         leadingControls.addArrangedSubview(searchPill)
 
@@ -592,7 +596,7 @@ class StoryTitlesHeaderBar: NSObject {
         #else
         markReadExpandButton.addTarget(self, action: #selector(handleMarkReadExpand), for: .touchUpInside)
         #endif
-        markReadExpandButton.accessibilityLabel = "Mark Read options"
+        markReadExpandButton.accessibilityLabel = NBLocalization.text("Mark Read options")
         addCatalystHighlight(markReadExpandButton)
         markReadContainer.addSubview(markReadExpandButton)
 
@@ -606,7 +610,7 @@ class StoryTitlesHeaderBar: NSObject {
                        leadingInset: 15, trailingInset: 15)
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         addCatalystHighlight(markReadPill)
-        markReadPill.accessibilityLabel = "Mark all read and return"
+        markReadPill.accessibilityLabel = NBLocalization.text("Mark all read and return")
         #if !targetEnvironment(macCatalyst)
         markReadPill.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleMarkReadLongPress(_:))))
         #endif
@@ -664,17 +668,18 @@ class StoryTitlesHeaderBar: NSObject {
 
         let menu = MenuViewController()
         // StoryTitlesHeaderBar.swift uses MenuViewController's sized icons because its cells center images at intrinsic size.
-        menu.addFeedListTitle("Mark \(markReadMenuTitle) as read", iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
+        menu.addFeedListTitle(NBLocalization.markReadTitle(markReadMenuTitle), iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
             self?.markReadHandler?(0)
         }
         if markReadMenuVisibleCount > 0 {
-            let title = markReadMenuVisibleCount == 1 ? "Mark this story as read" : "Mark these \(markReadMenuVisibleCount) stories read"
+            let title = markReadMenuVisibleCount == 1 ? NBLocalization.text("Mark this story as read")
+                : NBLocalization.plural("Mark these %@ stories read", count: NSNumber(value: markReadMenuVisibleCount))
             menu.addFeedListTitle(title, iconName: "mark-read", selectionShouldDismiss: true) { [weak self] in
                 self?.markReadVisibleHandler?()
             }
         }
         for days in [1, 3, 7, 14] {
-            menu.addFeedListTitle("Older than \(days) \(days == 1 ? "day" : "days")", iconName: "clock", selectionShouldDismiss: true) { [weak self] in
+            menu.addFeedListTitle(NBLocalization.plural("Older than %@ days", count: NSNumber(value: days)), iconName: "clock", selectionShouldDismiss: true) { [weak self] in
                 self?.markReadHandler?(days)
             }
         }
@@ -705,7 +710,7 @@ class StoryTitlesHeaderBar: NSObject {
         searchCancelButton.configuration = cancelConfig
         #endif
         searchCancelButton.translatesAutoresizingMaskIntoConstraints = false
-        searchCancelButton.accessibilityLabel = "Close search"
+        searchCancelButton.accessibilityLabel = NBLocalization.text("Close search")
         addCatalystHighlight(searchCancelButton)
         searchContainer.addSubview(searchCancelButton)
 
@@ -834,9 +839,9 @@ class StoryTitlesHeaderBar: NSObject {
             markReadContainer.isHidden = false
         } else {
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+            setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
-            discoverPill.accessibilityLabel = "Related Sites"
+            discoverPill.accessibilityLabel = NBLocalization.text("Related Sites")
             discoverPill.isHidden = false
             optionsPill.isHidden = false
             searchPill.isHidden = false
@@ -851,11 +856,20 @@ class StoryTitlesHeaderBar: NSObject {
 
     /// Updates the options pill text to reflect current order and read filter.
     func updateOptionsPill(order: String, readFilter: String) {
-        filterText = readFilter == "unread" ? "UNREAD" : "ALL"
-        orderText = order == "oldest" ? "OLDEST" : "NEWEST"
+        filterText = Self.filterTitle(readFilter: readFilter)
+        orderText = Self.orderTitle(order: order)
         measureOptionsWidths()
         if headerContainer.bounds.width <= 0 { applyOptionsTitle(compact: false) }
         relayoutPills()
+    }
+
+    // StoryTitlesHeaderBar.swift keeps the read_filter and order identifiers literal and only translates their labels.
+    static func filterTitle(readFilter: String) -> String {
+        readFilter == "unread" ? NBLocalization.text("UNREAD") : NBLocalization.text("ALL")
+    }
+
+    static func orderTitle(order: String) -> String {
+        order == "oldest" ? NBLocalization.text("OLDEST") : NBLocalization.text("NEWEST")
     }
 
     private func applyOptionsTitle(compact: Bool, iconOnly: Bool = false) {
@@ -977,7 +991,7 @@ class StoryTitlesHeaderBar: NSObject {
     private func layoutSearchPill(compact: Bool) {
         guard compact != isSearchCompact else { return }
         isSearchCompact = compact
-        setPillContent(searchPill, title: compact ? nil : "SEARCH",
+        setPillContent(searchPill, title: compact ? nil : NBLocalization.text("SEARCH"),
                        image: sym("magnifyingglass", size: compact ? 12 : 11),
                        leadingInset: 14, trailingInset: 14)
         // StoryTitlesHeaderBar.swift preserves active search colors when replacing its content configuration.
@@ -1032,7 +1046,7 @@ class StoryTitlesHeaderBar: NSObject {
         } else if showText {
             // Text mode: icon + "RELATED SITES"
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
+            setPillContent(discoverPill, title: NBLocalization.text("RELATED SITES"), image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {
@@ -1077,19 +1091,20 @@ class StoryTitlesHeaderBar: NSObject {
         markReadMenuVisibleCount = showVisibleOption ? visibleCount : 0
         var actions: [UIMenuElement] = []
 
-        actions.append(UIAction(title: "Mark \(title) as read", image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
+        actions.append(UIAction(title: NBLocalization.markReadTitle(title), image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
             self?.markReadHandler?(0)
         })
 
         if showVisibleOption && visibleCount > 0 {
-            let visibleTitle = visibleCount == 1 ? "Mark this story as read" : "Mark these \(visibleCount) stories read"
+            let visibleTitle = visibleCount == 1 ? NBLocalization.text("Mark this story as read")
+                : NBLocalization.plural("Mark these %@ stories read", count: NSNumber(value: visibleCount))
             actions.append(UIAction(title: visibleTitle, image: UIImage(systemName: "eye")) { [weak self] _ in
                 self?.markReadVisibleHandler?()
             })
         }
 
         for days in [1, 3, 7, 14] {
-            actions.append(UIAction(title: "Older than \(days) \(days == 1 ? "day" : "days")", image: UIImage(systemName: "calendar")) { [weak self] _ in
+            actions.append(UIAction(title: NBLocalization.plural("Older than %@ days", count: NSNumber(value: days)), image: UIImage(systemName: "calendar")) { [weak self] _ in
                 self?.markReadHandler?(days)
             })
         }

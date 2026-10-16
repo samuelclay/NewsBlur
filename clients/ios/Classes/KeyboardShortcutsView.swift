@@ -103,37 +103,37 @@ private struct ShortcutSection: Identifiable {
 @available(iOS 15.0, *)
 private func shortcutSections() -> [ShortcutSection] {
     [
-        ShortcutSection(title: "General", icon: "keyboard", shortcuts: [
-            KeyboardShortcut(keys: ["?"], description: "Keyboard shortcuts"),
-            KeyboardShortcut(keys: ["\u{21E7}", "D"], description: "Open Dashboard"),
-            KeyboardShortcut(keys: ["\u{21E7}", "E"], description: "Open All Stories"),
-            KeyboardShortcut(keys: ["\u{2318}", "F"], description: "Find in feed"),
-            KeyboardShortcut(keys: ["\u{2318}", "\u{2325}", "F"], description: "Find in sites"),
-            KeyboardShortcut(keys: ["\u{2318}", "A"], description: "Add site"),
+        ShortcutSection(title: NBLocalization.text("General"), icon: "keyboard", shortcuts: [
+            KeyboardShortcut(keys: ["?"], description: NBLocalization.text("Keyboard shortcuts")),
+            KeyboardShortcut(keys: ["\u{21E7}", "D"], description: NBLocalization.text("Open Dashboard")),
+            KeyboardShortcut(keys: ["\u{21E7}", "E"], description: NBLocalization.text("Open All Stories")),
+            KeyboardShortcut(keys: ["\u{2318}", "F"], description: NBLocalization.text("Find in feed")),
+            KeyboardShortcut(keys: ["\u{2318}", "\u{2325}", "F"], description: NBLocalization.text("Find in sites")),
+            KeyboardShortcut(keys: ["\u{2318}", "A"], description: NBLocalization.text("Add site")),
         ]),
-        ShortcutSection(title: "Sites", icon: "list.bullet", shortcuts: [
-            KeyboardShortcut(keys: ["\u{2325}", "\u{2193}"], description: "Next site"),
-            KeyboardShortcut(keys: ["\u{2325}", "\u{2191}"], description: "Previous site"),
-            KeyboardShortcut(keys: ["\u{21E7}", "\u{2193}"], description: "Next folder"),
-            KeyboardShortcut(keys: ["\u{21E7}", "\u{2191}"], description: "Previous folder"),
-            KeyboardShortcut(keys: ["\u{21E7}", "A"], description: "Mark all as read"),
-            KeyboardShortcut(keys: ["\u{21E7}", "T"], description: "Open story trainer"),
+        ShortcutSection(title: NBLocalization.text("Sites"), icon: "list.bullet", shortcuts: [
+            KeyboardShortcut(keys: ["\u{2325}", "\u{2193}"], description: NBLocalization.text("Next site")),
+            KeyboardShortcut(keys: ["\u{2325}", "\u{2191}"], description: NBLocalization.text("Previous site")),
+            KeyboardShortcut(keys: ["\u{21E7}", "\u{2193}"], description: NBLocalization.text("Next folder")),
+            KeyboardShortcut(keys: ["\u{21E7}", "\u{2191}"], description: NBLocalization.text("Previous folder")),
+            KeyboardShortcut(keys: ["\u{21E7}", "A"], description: NBLocalization.text("Mark all as read")),
+            KeyboardShortcut(keys: ["\u{21E7}", "T"], description: NBLocalization.text("Open story trainer")),
         ]),
-        ShortcutSection(title: "Stories", icon: "doc.text", shortcuts: [
-            KeyboardShortcut(keys: ["\u{2193}"], description: "Next story"),
-            KeyboardShortcut(keys: ["J"], description: "Next story"),
-            KeyboardShortcut(keys: ["\u{2191}"], description: "Previous story"),
-            KeyboardShortcut(keys: ["K"], description: "Previous story"),
-            KeyboardShortcut(keys: ["N"], description: "Next unread story"),
-            KeyboardShortcut(keys: ["\u{21E7}", "\u{21A9}"], description: "Text view"),
-            KeyboardShortcut(keys: ["space"], description: "Page down"),
-            KeyboardShortcut(keys: ["\u{21E7}", "space"], description: "Page up"),
-            KeyboardShortcut(keys: ["U"], description: "Toggle read/unread"),
-            KeyboardShortcut(keys: ["S"], description: "Save/unsave story"),
-            KeyboardShortcut(keys: ["O"], description: "Open in browser"),
-            KeyboardShortcut(keys: ["\u{21E7}", "S"], description: "Share story"),
-            KeyboardShortcut(keys: ["C"], description: "Scroll to comments"),
-            KeyboardShortcut(keys: ["T"], description: "Open story trainer"),
+        ShortcutSection(title: NBLocalization.text("Stories"), icon: "doc.text", shortcuts: [
+            KeyboardShortcut(keys: ["\u{2193}"], description: NBLocalization.text("Next story")),
+            KeyboardShortcut(keys: ["J"], description: NBLocalization.text("Next story")),
+            KeyboardShortcut(keys: ["\u{2191}"], description: NBLocalization.text("Previous story")),
+            KeyboardShortcut(keys: ["K"], description: NBLocalization.text("Previous story")),
+            KeyboardShortcut(keys: ["N"], description: NBLocalization.text("Next unread story")),
+            KeyboardShortcut(keys: ["\u{21E7}", "\u{21A9}"], description: NBLocalization.text("Text view")),
+            KeyboardShortcut(keys: ["space"], description: NBLocalization.text("Page down")),
+            KeyboardShortcut(keys: ["\u{21E7}", "space"], description: NBLocalization.text("Page up")),
+            KeyboardShortcut(keys: ["U"], description: NBLocalization.text("Toggle read/unread")),
+            KeyboardShortcut(keys: ["S"], description: NBLocalization.text("Save/unsave story")),
+            KeyboardShortcut(keys: ["O"], description: NBLocalization.text("Open in browser")),
+            KeyboardShortcut(keys: ["\u{21E7}", "S"], description: NBLocalization.text("Share story")),
+            KeyboardShortcut(keys: ["C"], description: NBLocalization.text("Scroll to comments")),
+            KeyboardShortcut(keys: ["T"], description: NBLocalization.text("Open story trainer")),
         ]),
     ]
 }
@@ -227,11 +227,11 @@ struct KeyboardShortcutsView: View {
                 }
             }
             .background(ShortcutsColors.background.ignoresSafeArea())
-            .navigationTitle("Keyboard Shortcuts")
+            .navigationTitle(NBLocalization.text("Keyboard Shortcuts"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(NBLocalization.text("Done")) {
                         onDismiss?()
                     }
                     .foregroundColor(ShortcutsColors.tabActive)

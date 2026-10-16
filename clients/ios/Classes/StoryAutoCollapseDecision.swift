@@ -8,6 +8,15 @@
 import CoreGraphics
 import Foundation
 
+#if SWIFT_PACKAGE
+// StoryAutoCollapseDecision.swift is also built by clients/ios/Package.swift for its unit tests, without the app's
+// NBLocalization.swift (which needs the app delegate), so the package build reads the English badge text.
+private enum NBLocalization {
+    static var resolvedLanguage: String { "en" }
+    static func text(_ source: String) -> String { source }
+}
+#endif
+
 public enum StoryAutoCollapseBehavior: String {
     case auto
     case tile
@@ -786,9 +795,17 @@ public enum StoryScrollReadDecision {
         normalizedClusterTier(from: value)
     }
 
+    // StoryAutoCollapseDecision.swift translates the badge shown on cluster rows, cards and the story detail.
     @objc(clusterTierLabelForValue:)
     public class func clusterTierLabel(forValue value: Any?) -> String {
-        normalizedClusterTier(from: value) == "title" ? "Match" : "Related"
+        normalizedClusterTier(from: value) == "title" ? NBLocalization.text("Match") : NBLocalization.text("Related")
+    }
+
+    // StoryAutoCollapseDecision.swift capitalizes the badge with the interface language's casing rules, so Turkish
+    // keeps its dotted capital I.
+    @objc(clusterTierBadgeTextForValue:)
+    public class func clusterTierBadgeText(forValue value: Any?) -> String {
+        clusterTierLabel(forValue: value).uppercased(with: Locale(identifier: NBLocalization.resolvedLanguage))
     }
 
     @objc(visibleClusterStories:subscribedFeedIds:isPremiumArchive:)

@@ -1,0 +1,390 @@
+{
+  "language": "zh-Hans",
+  "register": "Informal-polite 你 throughout (about 350 strings vs 130 with 您), which is what mainland consumer apps use; 您 strings and strings mixing 你/您 are flagged. Buttons and menu items are bare verb or noun phrases (添加网站, 保存), sentences end in full-width 。, and 请 is fine for instructions.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "文章",
+      "avoid": [
+        "报道 (when it means a NewsBlur story)",
+        "内容 (when it replaces a countable story)"
+      ],
+      "note": "Catalog majority (about 880 strings) is 文章; 故事 (about 155) reads as 'tale/fairy story' and 报道 as 'news report'. Counter: N 篇文章. 'News coverage' or 'widely covered topics' may stay 报道. Also avoid where it means this concept: 故事."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "网站",
+      "avoid": [
+        "站点"
+      ],
+      "note": "Counter: N 个网站. 'site-wide' → 全站 is fine."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "订阅源",
+      "avoid": [
+        "信息源",
+        "新闻源",
+        "资讯流",
+        "feed (Latin)",
+        "源 alone in labels"
+      ],
+      "note": "Counter: N 个订阅源. 'RSS feed' → RSS 订阅源 or RSS 源 (both standard). 'Feed view' → 订阅源视图."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "文件夹",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "未读 / 未读文章",
+      "avoid": [
+        "未读故事"
+      ],
+      "note": "Next unread story → 下一篇未读文章."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "标记为已读",
+      "avoid": [],
+      "note": "标为已读 tolerated in tight space. 'Read Stories' (the folder of stories already read) is 已读文章, never 阅读文章/阅读故事 (imperative 'read stories'). Siri/Spotlight 'Read %@' opens a feed to read it: 阅读 %@, not 标记为已读. 'Mark newer/older as read' → 将较新/较早的文章标记为已读."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "保存 / 已保存的文章",
+      "avoid": [
+        "收藏 (inconsistent with 保存)",
+        "挽救"
+      ],
+      "note": "Save story → 保存文章; Saved Stories → 已保存的文章; unsave → 取消保存."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "分享 / 已分享 / 分享的文章",
+      "avoid": [
+        "共享 (for sharing a story)"
+      ],
+      "note": "Shared Stories → 分享的文章; Global Shared Stories → 全局分享的文章; 共享 is reserved for shared accounts or data."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "blurblog (lowercase)",
+        "Blurblogs (plural)",
+        "博客 / 个人博客 (loses the product name)",
+        "模糊博客"
+      ],
+      "note": "Product name kept in Latin script with a capital B; Chinese has no plural."
+    },
+    {
+      "concept": "intelligence trainer",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "智能训练器",
+      "avoid": [
+        "智能分类器 (for the trainer itself)"
+      ],
+      "note": "Train (button) → 训练; training → 训练; Intelligence Training → 智能训练; Train this site/story → 训练此网站/此文章; Story trainer → 文章训练器. Also avoid where it means this concept: 智能功能."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "聚焦",
+      "avoid": [
+        "专注 (for the level)",
+        "重点 (for the level)",
+        "焦点",
+        "关注 (for the level)"
+      ],
+      "note": "Catalog's main UI labels use 聚焦: the slider is 全部 / 未读 / 聚焦, Focus stories → 聚焦文章, Focus view → 聚焦视图, Unread + Focus → 未读 + 聚焦. The plain verb 'focus on what matters' may stay 专注于 in prose."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "喜欢 / 不喜欢",
+      "avoid": [
+        "赞 / 踩 for the classifier states",
+        "超级不喜欢",
+        "非常不喜欢",
+        "超级点踩"
+      ],
+      "note": "Super dislike → 强烈不喜欢. Thumbs up/down in marketing prose may stay 点赞/点踩. The trainer's 'beats' means Like outranks Dislike: 喜欢 > 不喜欢."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "隐藏 / 已隐藏",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "分类器",
+      "avoid": [
+        "分类规则"
+      ],
+      "note": "Prompt classifier → 提示分类器; Regex classifiers → 正则表达式分类器; scoped → 限定范围的分类器."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "高级版 / 高级归档版 / 高级专业版 / 归档版 / 专业版",
+      "avoid": [
+        "Premium / Premium Archive / Premium Pro / Archive / Pro (Latin)",
+        "高级归档 / 高级存档 / 高级版归档 (without 版, reads as a feature)"
+      ],
+      "note": "Premium → 高级版; Premium Archive → 高级归档版; Premium Pro → 高级专业版; the short names Archive / Pro → 归档版 / 专业版; plan/tier → 套餐 (avoid 方案 for a pricing plan). The story archive itself is 归档 (avoid 存档, 档案 for NewsBlur's archive)."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "偏好设置 / 设置",
+      "avoid": [
+        "首选项"
+      ],
+      "note": "Preferences → 偏好设置 on all platforms; Settings → 设置."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "订阅 / 订阅者",
+      "avoid": [],
+      "note": "Feed subscribers → 订阅者; paying premium subscribers → 订阅用户 is fine."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "新闻流",
+      "avoid": [
+        "河流",
+        "河流视图",
+        "聚合流"
+      ],
+      "note": "Lowercase 'your river' → 新闻流 or 文章流."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "所有网站的文章",
+      "avoid": [
+        "此网站的所有文章",
+        "网站的所有文章",
+        "网站所有文章 (read as 'all stories of the site')"
+      ],
+      "note": "It is the river of every subscribed site, not all stories of one site."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "控制面板",
+      "avoid": [
+        "仪表板",
+        "信息面板"
+      ],
+      "note": "Catalog majority."
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "每日简报",
+      "avoid": [
+        "Daily Briefing (Latin)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "标签 / 作者",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "邮件简报 / 电子邮件简报",
+      "avoid": [
+        "电子报",
+        "新闻通讯",
+        "新闻邮件",
+        "通讯",
+        "newsletter (Latin)"
+      ],
+      "note": "新闻简报 (catalog's most common form) is tolerated; the outliers above are flagged."
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "发现 / 相关网站",
+      "avoid": [
+        "相关站点"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "评论 / 回复",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "关注 / 关注者 / 好友",
+      "avoid": [
+        "朋友 (for the Friends feature)"
+      ],
+      "note": "I'm Following → 我关注的人; Following Me → 关注我的人 (must be distinguishable). Ask AI follow-up → 追问."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "屏蔽 / 取消屏蔽",
+      "avoid": [
+        "静音 (for sites, feeds and folders)"
+      ],
+      "note": "Muting a site stops it showing in the reader; the Mute Sites screen and most site strings use 屏蔽. 静音 stays for audio."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "通知",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "低频网站文章",
+      "avoid": [
+        "少见网站的故事",
+        "不常见文章",
+        "较少出现的文章"
+      ],
+      "note": "Sites that publish rarely, not sites the reader rarely sees. In prose 更新较少的网站 / 不常更新的网站 is fine."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "优质阅读 / 长篇阅读 / 广受阅读的文章",
+      "avoid": [
+        "优质读物",
+        "优质推荐 (for the folder name)",
+        "热门文章 (that is Top stories)"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "全局分享的文章",
+      "avoid": [
+        "全球共享文章",
+        "全局共享文章"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "订阅源视图 / 文本视图 / 文章视图 / 原始视图",
+      "avoid": [
+        "资讯流视图",
+        "故事视图"
+      ],
+      "note": "Original site → 原始网站 (原网站 tolerated)."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "询问 AI",
+      "avoid": [
+        "Ask AI (Latin)",
+        "AI 问答 (as the feature name)"
+      ],
+      "note": "Full sentences like 向 AI 提问 are fine when they are not the feature name."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "导入 / 导出",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "账户 / 登录 / 退出登录 / 注册 / 创建账户",
+      "avoid": [
+        "账号 (catalog majority is 账户)"
+      ],
+      "note": "Sign in and Log in → 登录."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "电子邮件 / 邮箱 / 密码",
+      "avoid": [],
+      "note": "邮箱 for an address field is fine."
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "试用 / 升级",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "键盘快捷键 / 快捷键",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "网页订阅源",
+      "avoid": [
+        "网络订阅源",
+        "网页信息源",
+        "网页源",
+        "Web Feed(s) (Latin)"
+      ],
+      "note": "Also avoid where it means this concept: 网页订阅."
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "文章聚类 / 聚类",
+      "avoid": [
+        "故事聚类"
+      ],
+      "note": "聚合 for 'clustered' is tolerated in prose."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Full-width ，。：；？！（）“” in Chinese text; one space between Chinese and Latin words, numbers and placeholders; no space next to full-width punctuation; ellipsis …",
+      "avoid": [
+        "ASCII , . : ? ! ( ) after Chinese text",
+        "ASCII ... after Chinese text",
+        "missing space around Latin words or placeholders"
+      ],
+      "note": "Apple-style single … is used in menus (存储为…); …… is tolerated in prose. ASCII punctuation inside code, URLs or placeholders is left alone."
+    }
+  ]
+}

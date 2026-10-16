@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  AuthorizeServicesViewController.m
 //  NewsBlur
@@ -38,6 +39,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    // AuthorizeServicesViewController.m titles each service with its untranslated brand name.
     if ([type isEqualToString:@"google"]) {
         self.navigationItem.title = @"Google Reader";
     } else if ([type isEqualToString:@"facebook"]) {
@@ -55,7 +57,7 @@
     
     if (self.fromStory && !appDelegate.isPhone) {
         UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]
-                                         initWithTitle: @"Cancel"
+                                         initWithTitle: [NBLocalization text:@"Cancel"]
                                          style: UIBarButtonItemStylePlain
                                          target: self
                                          action: @selector(doCancelButton)];

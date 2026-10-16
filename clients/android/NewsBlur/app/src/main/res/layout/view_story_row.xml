@@ -25,14 +25,15 @@
         android:id="@+id/story_item_favicon_borderbar_2"
         android:layout_width="5dp"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_1" />
+        android:layout_toEndOf="@id/story_item_favicon_borderbar_1" />
 
     <!--
-        The next item to the right is actually the intel dot, but it has vertical bounds set relative to
-        the story title height, so it cannot be declared until after the title row and associated bits.
-        To prevent a cyclic layout dependency, we hard-code the left margin of everything to the right
-        of the dot by assuming the width of it. In fact, much of the remaining layout is done from the
-        right to the left.
+        The next item toward the end (to the right, or to the left in right-to-left languages) is actually
+        the intel dot, but it has vertical bounds set relative to the story title height, so it cannot be
+        declared until after the title row and associated bits. To prevent a cyclic layout dependency, we
+        hard-code the start margin of everything after the dot by assuming the width of it. In fact, much
+        of the remaining layout is done from the end to the start. Every rule here uses start and end, so
+        the row mirrors in Arabic and Hebrew.
     -->
 
     <com.newsblur.view.StoryThumbnailView
@@ -42,7 +43,7 @@
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:visibility="gone" />
 
     <com.newsblur.view.StoryThumbnailView
@@ -50,7 +51,7 @@
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/story_item_favicon_borderbar_2"
+        android:layout_toEndOf="@id/story_item_favicon_borderbar_2"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
         android:visibility="gone" />
@@ -59,18 +60,20 @@
         android:id="@+id/story_item_feedicon"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_toEndOf="@id/story_item_inteldot_container"
         app:shapeAppearanceOverlay="@style/smallRoundImageShapeAppearance" />
 
     <TextView
         android:id="@+id/story_item_feedtitle"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         style="?storyFeedTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="16dp"
-        android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@id/story_item_thumbnail_right"
-        android:layout_toRightOf="@id/story_item_feedicon"
+        android:layout_marginStart="8dp"
+        android:layout_toStartOf="@id/story_item_thumbnail_right"
+        android:layout_toEndOf="@id/story_item_feedicon"
         android:ellipsize="end"
         android:singleLine="true" />
 
@@ -80,11 +83,11 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/story_item_feedtitle"
-        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_toStartOf="@id/story_item_thumbnail_right"
         android:layout_alignWithParentIfMissing="true"
         android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone" />
 
     <ImageView
@@ -93,22 +96,24 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/story_item_feedtitle"
-        android:layout_toLeftOf="@id/story_item_saved_icon"
+        android:layout_toStartOf="@id/story_item_saved_icon"
         android:layout_alignWithParentIfMissing="true"
         android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone" />
 
     <!--dynamic spacing-->
     <TextView
         android:id="@+id/story_item_title"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         style="?storyTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/story_item_feedtitle"
-        android:layout_toLeftOf="@id/story_item_shared_icon"
-        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_toStartOf="@id/story_item_shared_icon"
+        android:layout_toEndOf="@id/story_item_inteldot_container"
         android:breakStrategy="balanced"
         android:hyphenationFrequency="none"
         android:ellipsize="end"
@@ -118,10 +123,12 @@
     <!--dynamic spacing-->
     <TextView
         android:id="@+id/story_item_content"
+        android:textDirection="firstStrong"
+        android:textAlignment="viewStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/story_item_thumbnail_right"
-        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_toStartOf="@id/story_item_thumbnail_right"
+        android:layout_toEndOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_title"
         android:ellipsize="end"
         android:lineSpacingExtra="1dp"
@@ -132,9 +139,9 @@
         android:id="@+id/story_item_metadata"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/story_item_inteldot_container"
+        android:layout_toEndOf="@id/story_item_inteldot_container"
         android:layout_below="@id/story_item_content"
-        android:layout_toLeftOf="@id/story_item_thumbnail_right"
+        android:layout_toStartOf="@id/story_item_thumbnail_right"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -145,11 +152,14 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:paddingRight="3dp" />
+            android:paddingStart="0dp"
+            android:paddingEnd="3dp" />
 
         <TextView
             style="?storySnippetText"
             android:id="@+id/story_item_author"
+            android:textDirection="firstStrong"
+            android:textAlignment="viewStart"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -165,13 +175,13 @@
         android:layout_marginEnd="8dp"
         android:layout_alignTop="@id/story_item_title"
         android:layout_alignBottom="@id/story_item_title"
-        android:layout_toRightOf="@id/story_item_thumbnail_left" >
+        android:layout_toEndOf="@id/story_item_thumbnail_left" >
 
         <ImageView
             android:id="@+id/story_item_inteldot"
             android:layout_width="9dp"
             android:layout_height="9dp"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical|start" />
 
     </FrameLayout>
 

@@ -1,0 +1,412 @@
+{
+  "language": "de",
+  "register": "Informal du with lowercase du/dein/dich/dir in running text (about 515 strings use du, about 60 use Sie/Ihr); German consumer apps and the rest of the catalog address the reader as du, so Sie/Ihr strings and strings that mix du and Sie are flagged (medium). Buttons and menu items stay infinitive or noun phrases (Website hinzufügen, Als gelesen markieren); instructions in sentences use the du imperative (Gib … ein, Wähle …).",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "Artikel (der Artikel, die Artikel)",
+      "avoid": [
+        "Story",
+        "Stories",
+        "Storys",
+        "Beitrag / Beiträge (for a NewsBlur story)"
+      ],
+      "note": "Catalog plurality (about 515 strings vs 475 Story and 95 Beitrag) and the standard term in German RSS readers (Feedly, Inoreader, Reeder, NetNewsWire). Artikel is masculine, so a switch from die Story changes articles and adjectives (dieser Artikel, einen Artikel, ein ungelesener Artikel). Compounds: Artikelliste, Artikeltitel, Artikelansicht, Artikel-Tags, Artikel-Trainer, Artikelgruppierung. 'Beitrag' stays only for a social post or a forum/blog post that is not a NewsBlur story."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "Website",
+      "avoid": [
+        "Seite (for a subscribed site)",
+        "Webseite (for a whole site)",
+        "Site"
+      ],
+      "note": "Seite/Webseite are fine for a single web page (page-scraping, a page's HTML)."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "Feed (der Feed, die Feeds)",
+      "avoid": [
+        "Newsfeed",
+        "Quelle (for a feed)",
+        "Kanal (for a feed)"
+      ],
+      "note": "Compounds with a hyphen: Feed-Titel, Feed-Ansicht, Feed-Liste/Feedliste both tolerated, RSS-Feed, Web-Feed."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "Ordner",
+      "avoid": [
+        "Verzeichnis"
+      ],
+      "note": "Expand folder → Ordner aufklappen (not erweitern)."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "ungelesen / Ungelesen",
+      "avoid": [],
+      "note": "Next unread story → Nächster ungelesener Artikel; Unread only → Nur ungelesene."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Als gelesen markieren / Gelesene Artikel",
+      "avoid": [
+        "Artikel lesen (for the Read Stories folder)",
+        "Stories lesen"
+      ],
+      "note": "'Read Stories' is the folder of stories already read: Gelesene Artikel, never the imperative. Siri/Spotlight 'Read %@' opens a feed to read it: %@ lesen. Mark newer/older as read → Neuere/Ältere als gelesen markieren."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "speichern / Gespeicherte Artikel",
+      "avoid": [
+        "sichern",
+        "Gespeicherte Stories"
+      ],
+      "note": "Unsave → Speichern aufheben / Nicht mehr speichern."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "teilen / Geteilte Artikel",
+      "avoid": [
+        "Freigabe (for sharing a story to the Blurblog)",
+        "freigeben"
+      ],
+      "note": "A share of a story is 'geteilter Artikel'; '%d shares' → '%d-mal geteilt' or 'Mal geteilt'. 'Freigabe' reads as permission/release; tolerated only where it already reads naturally (Freigabe löschen for Delete share is acceptable)."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (der Blurblog, masculine)",
+      "avoid": [
+        "das Blurblog",
+        "Blurbloggen"
+      ],
+      "note": "Product name, kept in Latin script; catalog majority uses masculine (deinen Blurblog)."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Intelligenz-Trainer / Training / trainieren",
+      "avoid": [
+        "Intelligence Trainer (English)",
+        "Training der intelligenten Funktionen",
+        "Training der Intelligenzfunktionen"
+      ],
+      "note": "Intelligence training in prose → Intelligenztraining (tolerated: Training). Train this site/story → Diese Website/Diesen Artikel trainieren. Story trainer → Artikel-Trainer. Train intelligence → Intelligenz trainieren."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Fokus",
+      "avoid": [
+        "Focus (English)",
+        "hervorgehoben (for the Focus level)",
+        "fokussieren (as a verb label for Focus stories)"
+      ],
+      "note": "Slider: Alle / Ungelesen / Fokus. Focus stories → Fokus-Artikel; Focus view/mode → Fokusansicht/Fokusmodus; Unread + Focus → Ungelesen + Fokus. In prose 'focus on what matters' may stay 'sich auf … konzentrieren'."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Gefällt mir / Gefällt mir nicht / Gefällt mir gar nicht",
+      "avoid": [
+        "Stark ablehnen",
+        "Dislike",
+        "liken",
+        "nicht mögen",
+        "wie (for the verb like)"
+      ],
+      "note": "Super dislike → Gefällt mir gar nicht (noun: ein „Gefällt mir gar nicht“). The trainer's 'beats' means Like outranks Dislike: schlägt / hat Vorrang vor. '(like wins)' → (Gefällt mir hat Vorrang). Thumbs up/down in marketing prose may stay Daumen hoch/runter."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "ausblenden / ausgeblendet",
+      "avoid": [
+        "versteckt (for training-hidden stories)"
+      ],
+      "note": "Also avoid where it means this concept: verbergen."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "Klassifikator (die Klassifikatoren)",
+      "avoid": [
+        "Klassifizierer",
+        "Klassifizierung (for the classifier itself)"
+      ],
+      "note": "Catalog plurality (27 vs 21). Prompt classifier → Prompt-Klassifikator; Regex classifiers → Regex-Klassifikatoren."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "Premium-Archiv (for the plan)",
+        "Archiv-Tarif (for the plan)"
+      ],
+      "note": "Plan names stay in English as product names, matching the App Store and Play Store products and the catalog plurality (Premium Archive 28 vs Premium-Archiv 25). Compounds with a hyphen: Premium-Abo, Archive-Tarif, Pro-Tarif. The story archive feature itself (not the plan) is Archiv. Generic lowercase 'premium feature/account' → Premium-Funktion / Premium-Konto. Also avoid where it means this concept: Premium-Archive."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Einstellungen",
+      "avoid": [
+        "Präferenzen",
+        "Optionen (for Preferences)"
+      ],
+      "note": "Both Preferences and Settings → Einstellungen on all platforms."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "abonnieren / Abonnement (Abo in tight space) / Abonnent",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Nachrichtenstrom",
+      "avoid": [
+        "River of News (English)",
+        "River",
+        "News-Stream",
+        "News-Fluss",
+        "Nachrichtenfluss",
+        "Newsfeed-Ansicht"
+      ],
+      "note": "Catalog plurality. Lowercase 'your river' → dein Nachrichtenstrom; river view → Nachrichtenstrom-Ansicht."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Alle Website-Artikel",
+      "avoid": [
+        "Alle Artikel der Website (reads as all stories of one site)",
+        "Alle Stories der Website",
+        "Alle Artikel einer Website"
+      ],
+      "note": "It is the river of every subscribed site, not all stories of one site."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Dashboard",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Tagesbriefing / Briefing",
+      "avoid": [
+        "Tägliche Zusammenfassung",
+        "Tagesübersicht",
+        "Tagesüberblick",
+        "Tägliche Übersicht",
+        "Tägliches Briefing",
+        "Daily Briefing (English)",
+        "Überblick (for a briefing)"
+      ],
+      "note": "Zusammenfassung is reserved for summaries (Ask AI summaries, the briefing's summary style and length), so it must not name the briefing. Morning/Afternoon/Evening Briefing → Morgen-/Nachmittags-/Abendbriefing; Weekly → Wochenbriefing. 'Brief' (a summary length) → Kurz; 'Editorial' (a narrative briefing style) → Redaktionell/Erzählend."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "Tag (der Tag, die Tags) / Autor",
+      "avoid": [
+        "Schlagwort (in UI labels for NewsBlur tags)",
+        "Stichwort (for a tag)"
+      ],
+      "note": "Story tags → Artikel-Tags; Saved story tags → Tags gespeicherter Artikel."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "Newsletter / E-Mail-Newsletter",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Entdecken / Ähnliche Websites / Ähnliche Artikel",
+      "avoid": [
+        "Verwandte Websites"
+      ],
+      "note": "Catalog mixes ähnlich and verwandt; ähnlich is the natural UI word."
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "Kommentar / Antwort / antworten",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "folgen / Follower / Freunde",
+      "avoid": [
+        "abonnieren (for following a person)"
+      ],
+      "note": "I'm Following → Ich folge; Following Me → Meine Follower (the tab beside Ich folge; 'Folgen mir' reads as an imperative). Button state Following → Folge ich (the established German social-app label). Ask AI follow-up → Nachfrage / Folgefrage."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "stummschalten / Stummschaltung aufheben",
+      "avoid": [
+        "ausblenden (for mute)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "Benachrichtigungen",
+      "avoid": [],
+      "note": "iOS-Mitteilungen tolerated when it names Apple's own iOS notifications."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Artikel selten aktiver Websites",
+      "avoid": [
+        "Artikel von selten besuchten Websites (wrong: rarely visited)",
+        "Seltene Beiträge dieser Website (wrong: this site)",
+        "Seltene Artikel",
+        "Seltene Stories von Websites"
+      ],
+      "note": "Stories from sites that publish rarely, not sites the reader rarely visits. In prose 'von selten aktiven Websites' is fine. The threshold setting 'Infrequent stories per month' → Grenze für selten aktive Websites (its options stay '< 5 Artikel/Monat')."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Gute Lektüre / Lange Artikel / Viel gelesene Artikel",
+      "avoid": [
+        "Good Reads (English)",
+        "Gute Bewertungen",
+        "Lange Lektüre",
+        "Längere Artikel",
+        "Weit verbreitete Artikel",
+        "Weit gelesene Artikel",
+        "Meistgelesene Stories",
+        "Häufig gelesene Beiträge"
+      ],
+      "note": "Good Reads is a folder of good stories, not books or ratings."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "Global geteilte Artikel",
+      "avoid": [
+        "Geteilte globale Storys"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Feed-Ansicht / Textansicht / Artikelansicht / Originalansicht",
+      "avoid": [
+        "Story-Ansicht",
+        "Beitragsansicht"
+      ],
+      "note": "Original site → Originalwebsite."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "KI fragen",
+      "avoid": [
+        "Ask AI (English)",
+        "Ask-AI"
+      ],
+      "note": "Descriptive feature name, translated; in prose quote it as „KI fragen“. Full sentences like 'Stelle der KI Fragen' are fine when not naming the feature."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "importieren / exportieren / Import / Export",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "Konto / Anmelden / Abmelden / Registrieren / Konto erstellen",
+      "avoid": [],
+      "note": "User → Nutzer (catalog majority) or Benutzer in Benutzername. Also avoid where it means this concept: Account."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "E-Mail / E-Mail-Adresse / Passwort",
+      "avoid": [
+        "Email",
+        "Kennwort"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "Testphase / Testzeitraum / Upgrade / upgraden / verlängern",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "Tastenkürzel",
+      "avoid": [
+        "Tastaturkürzel"
+      ],
+      "note": "Catalog majority on web and Android. iOS keeps Tastenkombinationen (close to Apple's own wording) without being flagged."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Web-Feed",
+      "avoid": [
+        "Webfeed",
+        "Web Feed"
+      ],
+      "note": "Catalog majority (29 vs 11)."
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Artikelgruppierung / gruppieren / Gruppe",
+      "avoid": [
+        "Story-Gruppierung",
+        "Story-Clustering",
+        "Cluster (tolerated in technical admin text)"
+      ],
+      "note": "Story clustering → Artikelgruppierung; clustered stories → gruppierte Artikel."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "German quotes „…“, single ‚…‘ inside; ellipsis … attached without space in menu labels (Ordner umbenennen…); no space before ?!:;; nouns capitalized; compounds joined or hyphenated; sentence case labels (no English Title Case); thousands separator . and decimal ,; currency after the number with a space (36 $)",
+      "avoid": [
+        "\"…\" ASCII quotes",
+        "“…” English quotes",
+        "space-separated compounds (Feed Liste)",
+        "Title Case copied from English"
+      ],
+      "note": "Typography is mostly clean; ellipsis spacing ('umbenennen …' vs 'umbenennen…') is tolerated and not flagged on its own."
+    }
+  ]
+}

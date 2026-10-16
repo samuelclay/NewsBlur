@@ -19,6 +19,7 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.FeedApi
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.StoryApi
+import com.newsblur.network.UserApi
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
@@ -34,6 +35,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FileCache
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.NotificationUtils
@@ -66,6 +68,9 @@ import kotlin.coroutines.CoroutineContext
 open class SyncService :
     JobService(),
     CoroutineScope {
+    @Inject
+    lateinit var userApi: UserApi
+
     @Inject
     lateinit var storyApi: StoryApi
 
@@ -481,6 +486,15 @@ open class SyncService :
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
             }
             prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
+            // SyncService.kt saves a language chosen on this device first; otherwise the account's language wins.
+            val localLanguage = LanguageSettings.selected(this)
+            if (LanguageSettings.pending(this)) {
+                if (userApi.setPreference("language", localLanguage)) {
+                    LanguageSettings.select(this, localLanguage)
+                }
+            } else if (localLanguage != feedResponse.language) {
+                LanguageSettings.select(this, feedResponse.language)
+            }
 
             // note all feeds that belong to some folder so we can find orphans
             for (folder in feedResponse.folders) {

@@ -154,7 +154,7 @@
                 android:layout_height="26dp"
                 android:gravity="center"
                 android:layout_marginStart="2dp"
-                android:text="\u24D8"
+                android:text="@string/ui_0c2dd345a681"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -198,7 +198,7 @@
                 android:layout_height="22dp"
                 android:gravity="center"
                 android:paddingHorizontal="8dp"
-                android:text="tech"
+                android:text="@string/i18n_tech"
                 android:textSize="10sp"
                 android:layout_marginEnd="4dp" />
             <TextView
@@ -207,7 +207,7 @@
                 android:layout_height="22dp"
                 android:gravity="center"
                 android:paddingHorizontal="8dp"
-                android:text="review"
+                android:text="@string/i18n_review"
                 android:textSize="10sp"
                 android:layout_marginEnd="4dp" />
             <TextView
@@ -230,7 +230,7 @@
                 android:id="@+id/explainer_ex1_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\u2192"
+                android:text="@string/ui_5fc52b1a5a92"
                 android:textSize="12sp"
                 android:layout_marginEnd="6dp" />
             <TextView
@@ -282,7 +282,7 @@
                 android:layout_height="22dp"
                 android:gravity="center"
                 android:paddingHorizontal="8dp"
-                android:text="sponsored"
+                android:text="@string/i18n_sponsored"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -296,7 +296,7 @@
                 android:id="@+id/explainer_ex2_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\u2192"
+                android:text="@string/ui_5fc52b1a5a92"
                 android:textSize="12sp"
                 android:layout_marginEnd="6dp" />
             <TextView

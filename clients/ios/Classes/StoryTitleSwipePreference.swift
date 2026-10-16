@@ -193,8 +193,8 @@ struct StoryTitleSwipeView<Content: View>: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
-                Text(action == .read ? (isRead ? "Mark Unread" : "Mark Read") :
-                     action == .save ? (isSaved ? "Unsave" : "Save") : "Share")
+                Text(action == .read ? (isRead ? NBLocalization.text("Mark Unread") : NBLocalization.text("Mark Read")) :
+                     action == .save ? (isSaved ? NBLocalization.text("Unsave") : NBLocalization.text("Save")) : NBLocalization.text("Share"))
                     .font(.system(size: 11, weight: .semibold))
                     .multilineTextAlignment(.center)
             }

@@ -118,7 +118,7 @@ object EdgeToEdgeUtil {
                             .getString(PrefConstants.STORY_TOOLBAR_POSITION, "bottom") != "top"
                     val bottomInset = maxOf(navBar.bottom, keyboard.bottom)
                     // EdgeToEdgeUtil.kt insets only the floating controls so stories still draw behind them.
-                    it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, if (bottomToolbar) 0 else bottomInset)
+                    it.setPaddingRelative(it.paddingStart, it.paddingTop, it.paddingEnd, if (bottomToolbar) 0 else bottomInset)
                     if (bottomToolbar) {
                         findViewById<View>(R.id.itemlist_story_header)?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                             bottomMargin = bottomInset + UIUtils.dp2px(this@applyView, 8)
@@ -131,7 +131,7 @@ object EdgeToEdgeUtil {
                         val verticalPadding = if (compactSearch) 0 else UIUtils.dp2px(this, 4)
                         listOf(R.id.itemlist_story_header_bar, R.id.itemlist_search_container).forEach { id ->
                             findViewById<View>(id)?.let { row ->
-                                row.setPadding(row.paddingLeft, verticalPadding, row.paddingRight, verticalPadding)
+                                row.setPaddingRelative(row.paddingStart, verticalPadding, row.paddingEnd, verticalPadding)
                             }
                         }
                     }
@@ -141,7 +141,7 @@ object EdgeToEdgeUtil {
             // Reading - activity_reading.xml
             findViewById<View>(R.id.content_bottom_overlay)?.let {
                 it.applyHorizontalNavBarMargins(navBar)
-                it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, navBar.bottom)
+                it.setPaddingRelative(it.paddingStart, it.paddingTop, it.paddingEnd, navBar.bottom)
             }
 
             // Main - activity_main.xml
@@ -250,7 +250,7 @@ object EdgeToEdgeUtil {
         }
 
     private fun View.updateBottomPadding(bottom: Int) {
-        setPadding(paddingLeft, paddingTop, paddingRight, bottom)
+        setPaddingRelative(paddingStart, paddingTop, paddingEnd, bottom)
     }
 
     private fun View.applyContentInsets(navBar: Insets) {
@@ -262,7 +262,7 @@ object EdgeToEdgeUtil {
         navBar: Insets,
     ) {
         applyHorizontalNavBarMargins(navBar)
-        setPadding(paddingLeft, statusBar.top, paddingRight, paddingBottom)
+        setPaddingRelative(paddingStart, statusBar.top, paddingEnd, paddingBottom)
     }
 
     private fun View.applyBottomToolbarInsets(navBar: Insets) {

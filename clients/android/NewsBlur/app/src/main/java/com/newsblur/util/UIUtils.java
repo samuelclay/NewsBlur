@@ -153,6 +153,16 @@ public class UIUtils {
 		return (int) (dp * scale + 0.5f);
 	}
 
+	/**
+	 * The sign of a horizontal movement toward the layout's end edge: 1 when the interface reads left
+	 * to right, -1 in Arabic and Hebrew. UIUtils.java lets the back swipes and the feed list slide-over
+	 * multiply their translations by it, so they mirror along with the layouts. It reads the
+	 * configuration rather than a view, because views ask before they are attached.
+	 */
+	public static float towardEndSign(Context context) {
+		return context.getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL ? -1f : 1f;
+	}
+
 	public static float dp2px(Context context, float dp) {
 		float scale = context.getResources().getDisplayMetrics().density;
 		return dp * scale;
@@ -389,14 +399,14 @@ public class UIUtils {
     public static void setViewBackground(View v, Drawable background) {
         // due to a framework bug, the below modification of background resource also resets the declared
         // padding on the view.  save a copy of said padding so it can be re-applied after the change.
-        int oldPadL = v.getPaddingLeft();
+        int oldPadStart = v.getPaddingStart();
         int oldPadT = v.getPaddingTop();
-        int oldPadR = v.getPaddingRight();
+        int oldPadEnd = v.getPaddingEnd();
         int oldPadB = v.getPaddingBottom();
 
         v.setBackground(background);
 
-        v.setPadding(oldPadL, oldPadT, oldPadR, oldPadB);
+        v.setPaddingRelative(oldPadStart, oldPadT, oldPadEnd, oldPadB);
     }
 
     public static Spanned fromHtml(String html) {
@@ -590,7 +600,7 @@ public class UIUtils {
         Drawable icon = pill.getContext().getDrawable(iconRes);
         if (icon != null) {
             icon.setBounds(0, 0, iconSize, iconSize);
-            pill.setCompoundDrawables(null, null, icon, null);
+            pill.setCompoundDrawablesRelative(null, null, icon, null);
             pill.setCompoundDrawablePadding((int) (3 * pill.getResources().getDisplayMetrics().density));
         }
     }

@@ -2160,8 +2160,8 @@ private final class DuoSidebarResizePan: FeedsSidebarResizePanGestureRecognizer 
             pages.setNextPreviousButtons()
             XCTAssertNotNil(previous.image?.pngData())
             XCTAssertNotNil(next.image?.pngData())
-            XCTAssertEqual(previous.image?.pngData(), UIImage(systemName: horizontal ? "chevron.left" : "chevron.up")?.pngData())
-            let symbol = next.title == "Done" ? "checkmark" : (horizontal ? "chevron.right" : "chevron.down")
+            XCTAssertEqual(previous.image?.pngData(), UIImage(systemName: horizontal ? "chevron.backward" : "chevron.up")?.pngData())
+            let symbol = next.title == "Done" ? "checkmark" : (horizontal ? "chevron.forward" : "chevron.down")
             XCTAssertEqual(next.image?.pngData(), UIImage(systemName: symbol)?.pngData(),
                            "Refreshing unread state must retain the selected paging direction")
         }

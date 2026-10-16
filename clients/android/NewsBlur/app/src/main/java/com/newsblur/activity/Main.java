@@ -153,7 +153,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             View list = findViewById(R.id.folderfeed_list);
             if (list != null) {
                 int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8);
-                if (list.getPaddingBottom() != inset) list.setPadding(list.getPaddingLeft(), list.getPaddingTop(), list.getPaddingRight(), inset);
+                if (list.getPaddingBottom() != inset) list.setPaddingRelative(list.getPaddingStart(), list.getPaddingTop(), list.getPaddingEnd(), inset);
                 if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
             }
         });
@@ -384,6 +384,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      */
     public void updateFeedCount(int feedCount) {
         setupQueue.feedListRendered();
+        // LanguageChooserDialog.kt asks once which language to use, after a feed list has loaded.
+        if (folderFeedList.firstCursorSeenYet) com.newsblur.compose.LanguageChooserGate.feedListLoaded(this);
         if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isFeedCountSyncRunning()) {
             updateStatusIndicators();
         }
@@ -531,12 +533,13 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 .start());
     }
 
-    private int getHiddenSyncStatusTranslation() {
-        return binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20);
+    // Main.java slides the sync pill past the end edge, which is the left edge in right-to-left layouts.
+    private float getHiddenSyncStatusTranslation() {
+        return (binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20)) * UIUtils.towardEndSign(this);
     }
 
-    private int getShownSyncStatusStartTranslation() {
-        return binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20);
+    private float getShownSyncStatusStartTranslation() {
+        return (binding.mainSyncStatusContainer.getWidth() + UIUtils.dp2px(this, 20)) * UIUtils.towardEndSign(this);
     }
 
     private void scheduleDoneSyncStatusHide() {

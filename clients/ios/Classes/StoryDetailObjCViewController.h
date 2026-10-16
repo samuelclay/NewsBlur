@@ -61,6 +61,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)drawStory;
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)updateStoryTheme;
+- (void)updateStoryDirection;
 - (void)drawFeedGradient;
 - (void)updateFeedTitleGradientPosition;
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha;

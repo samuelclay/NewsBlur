@@ -114,15 +114,22 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     },
 
     options_template: function () {
+        var feed_id = this.model.get('river_id');
+        var read_filter = NEWSBLUR.assets.view_setting(feed_id, "read_filter");
+        var order = NEWSBLUR.assets.view_setting(feed_id, "order");
+        // dashboard_river_view.js maps view setting identifiers to display labels; the identifiers stay untranslated.
+        var read_filter_labels = { all: gettext("All"), unread: gettext("Unread") };
+        var order_labels = { newest: gettext("Newest"), oldest: gettext("Oldest") };
         var $options = $(_.template('<div class="NB-feedbar-options-container">\
             <span class="NB-feedbar-options" role="button">\
                 <div class="NB-icon"></div>\
-                <%= NEWSBLUR.assets.view_setting(feed_id, "read_filter") %>\
+                <%- read_filter_label %>\
                 &middot;\
-                <%= NEWSBLUR.assets.view_setting(feed_id, "order") %>\
+                <%- order_label %>\
             </span>\
         </div>', {
-            feed_id: this.model.get('river_id')
+            read_filter_label: read_filter_labels[read_filter] || read_filter,
+            order_label: order_labels[order] || order
         }));
 
         this.$(".NB-module-river-settings").html($options);

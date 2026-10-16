@@ -362,13 +362,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         };
     },
 
+    // story_detail_view.js: dir="auto" on feed titles, story titles, dates, authors, tags and the
+    // story content lets each take the direction of its own text, so an English story reads
+    // correctly in an Arabic interface and vice versa (see media/css/reader/reader_rtl.css).
     story_header_template: _.template('\
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <%= $.favicon_html(feed) %>\
-                    <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
+                    <span class="NB-feed-story-header-title" dir="auto"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\
         </div>\
@@ -377,24 +380,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-feed-story-title-container">\
                     <div class="NB-feed-story-sentiment"></div>\
                     <div class="NB-feed-story-manage-icon"></div>\
-                    <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
+                    <a class="NB-feed-story-title" dir="auto" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
                 <div class="NB-feed-story-date-line">\
                     <% if (story.get("has_modifications")) { %>\
                         <div class="NB-feed-story-show-changes">\
                             <span class="NB-feed-story-show-changes-text">\
-                                <%= story.get("showing_diff") ? "Hide" : "Show" %> story changes\
+                                <%- story.get("showing_diff") ? gettext("Hide story changes") : gettext("Show story changes") %>\
                             </span>\
                             <span class="NB-middot">&middot;</span>\
                         </div>\
                     <% } %>\
-                    <div class="NB-feed-story-date">\
+                    <div class="NB-feed-story-date" dir="auto">\
                         <%= story.formatted_long_date() %>\
                     </div>\
                     <% if (story.story_authors()) { %>\
                         <div class="NB-feed-story-author-wrapper">\
                             <span class="NB-middot">&middot;</span>\
-                            <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                            <span dir="auto" class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
                                 <%= story.story_authors() %><% if (authors_score) { %><%= score_icon_html(authors_score) %><% } %>\
                                 <%= classifier_filter_button_html("author", story.story_authors()) %>\
                             </span>\
@@ -404,7 +407,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <div class="NB-feed-story-tags">\
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(story.get("story_tags"), function(tag) { %>\
-                                <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                <div dir="auto" class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                     <%= tag %><% if (tags_score && tags_score[tag]) { %><%= score_icon_html(tags_score[tag]) %><% } %>\
                                     <%= classifier_filter_button_html("tag", tag) %>\
                                 </div>\
@@ -414,7 +417,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% if (url_match && url_match.score) { %>\
                         <div class="NB-feed-story-url-match">\
                             <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
-                                <span class="NB-feed-story-url-content"><span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span></span>\
+                                <span class="NB-feed-story-url-content"><span class="NB-feed-story-url-label"><%- gettext("URL:") %> </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span></span>\
                                 <%= classifier_filter_button_html("url", story.get("story_permalink")) %>\
                             </span>\
                         </div>\
@@ -424,7 +427,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <span class="NB-middot">&middot;</span>\
                             <% _.each(prompt_classifiers, function(pc) { %>\
                                 <div class="NB-feed-story-ai-classifier NB-score-<%= pc.score %>" data-prompt-type="<%= pc.include_images ? \'image\' : \'content\' %>">\
-                                    <span class="NB-feed-story-ai-classifier-label"><%= pc.include_images ? \'Image Filter\' : \'Content Filter\' %></span>: <%= pc.prompt %>\
+                                    <span class="NB-feed-story-ai-classifier-label"><%- pc.include_images ? gettext("Image Filter") : gettext("Content Filter") %></span>: <%= pc.prompt %>\
                                 </div>\
                             <% }) %>\
                         </div>\
@@ -433,8 +436,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (story.get("starred_date")) { %>\
                     <div class="NB-feed-story-starred-date">\
                         <span class="NB-icon"></span>\
-                        <span class="NB-title">Saved: </span>\
-                        <span class="NB-date"><%= story.get("starred_date") %></span>\
+                        <span class="NB-title"><%- gettext("Saved:") %> </span>\
+                        <span class="NB-date" dir="auto"><%= story.get("starred_date") %></span>\
                     </div >\
                 <% } %>\
             </div>\
@@ -447,7 +450,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
                 <div class="NB-story-content-positioning-wrapper">\
-                    <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
+                    <div dir="auto" class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
                         <% if (!options.skip_content) { %>\
                             <%= story.story_content() %>\
                         <% } %>\
@@ -456,7 +459,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-story-content-expander" role="button">\
                     <div class="NB-story-content-expander-inner">\
                         <div class="NB-story-cutoff"></div>\
-                        <div class="NB-story-content-expander-text">Read the whole story</div>\
+                        <div class="NB-story-content-expander-text"><%- gettext("Read the whole story") %></div>\
                         <div class="NB-story-content-expander-pages"></div>\
                     </div>\
                 </div>\
@@ -468,7 +471,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-feed-story-sideoptions">\
                     <% if (show_sideoption_email) { %>\
                         <div class="NB-sideoption NB-feed-story-email" role="button">\
-                            <div class="NB-sideoption-title">Email</div>\
+                            <div class="NB-sideoption-title"><%- gettext("Email") %></div>\
                             <div class="NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
                         </div>\
                     <% } %>\
@@ -482,7 +485,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% }) %>\
                     <% if (show_sideoption_train) { %>\
                         <div class="NB-sideoption NB-feed-story-train" role="button">\
-                            <div class="NB-sideoption-title">Train</div>\
+                            <div class="NB-sideoption-title"><%- gettext("Train") %></div>\
                             <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
                             <div class="NB-sideoption-writerules">\
                                 <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
@@ -492,27 +495,27 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% } %>\
                     <% if (show_sideoption_save) { %>\
                         <div class="NB-sideoption NB-feed-story-save" role="button">\
-                            <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save" %></div>\
+                            <div class="NB-sideoption-title"><%- story.get("starred") ? gettext("Saved") : gettext("Save") %></div>\
                             <div class="NB-sideoption-icon">&nbsp;</div>\
                         </div>\
                         <%= story_save_view %>\
                         <% } %>\
                     <% if (show_sideoption_share) { %>\
                         <div class="NB-sideoption NB-feed-story-share" role="button">\
-                            <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share" %></div>\
+                            <div class="NB-sideoption-title"><%- story.get("shared") ? gettext("Shared") : gettext("Share") %></div>\
                             <div class="NB-sideoption-icon">&nbsp;</div>\
                         </div>\
                         <%= story_share_view %>\
                     <% } %>\
                     <% if (show_sideoption_related) { %>\
                         <div class="NB-sideoption NB-feed-story-discover" role="button">\
-                            <div class="NB-sideoption-title">Related</div>\
+                            <div class="NB-sideoption-title"><%- gettext("Related") %></div>\
                             <div class="NB-sideoption-icon">&nbsp;</div>\
                         </div>\
                     <% } %>\
                     <% if (show_sideoption_ask_ai) { %>\
                         <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
-                            <div class="NB-sideoption-title">Ask AI</div>\
+                            <div class="NB-sideoption-title"><%- gettext("Ask AI") %></div>\
                             <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
                         </div>\
                     <% } %>\
@@ -635,23 +638,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var header_children = [
             $.make('span', { className: 'NB-story-cluster-detail-title' },
-                'Also published by ' + stories.length + ' site' + (stories.length !== 1 ? 's' : ''))
+                interpolate(ngettext("Also published by %(value_1)s site", "Also published by %(value_1)s sites", stories.length), {value_1: stories.length}, true))
         ];
         if (!is_archive) {
             header_children.push($.make('span', { className: 'NB-clustering-detail-info' }, [
                 $.make('span', { className: 'NB-clustering-detail-info-icon', title: '' }, '\u24D8'),
                 $.make('span', { className: 'NB-clustering-detail-info-tooltip' }, [
-                    'These clusters were found because other subscribers share these feeds.',
+                    gettext('These clusters were found because other subscribers share these feeds.'),
                     $.make('br'),
                     $.make('br'),
-                    'Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster.'
+                    gettext('Upgrade to Premium Archive to scan all your feeds for duplicates so you never miss a cluster.')
                 ])
             ]));
             if (hidden_count === 0) {
                 header_children.push($.make('a', {
                     href: '#',
                     className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
-                }, 'Premium Archive'));
+                }, gettext('Premium Archive')));
             }
         }
         var $header = $.make('div', { className: 'NB-story-cluster-detail-header' }, header_children);
@@ -692,11 +695,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!is_archive && hidden_count > 0) {
             var $upsell = $.make('div', { className: 'NB-cluster-locked-upsell' }, [
                 $.make('span', { className: 'NB-cluster-locked-text' },
-                    '+ ' + hidden_count + ' more site' + (hidden_count !== 1 ? 's' : '')),
+                    interpolate(ngettext("+ %(value_1)s more site", "+ %(value_1)s more sites", hidden_count), {value_1: hidden_count}, true)),
                 $.make('a', {
                     href: '#',
                     className: 'NB-clustering-detail-upgrade-pill NB-archive-badge'
-                }, 'Premium Archive')
+                }, gettext('Premium Archive'))
             ]);
             $container.append($upsell);
         }
@@ -714,10 +717,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $icon = $(e.currentTarget);
         var $tooltip = $icon.siblings('.NB-clustering-detail-info-tooltip');
         var rect = $icon[0].getBoundingClientRect();
-        $tooltip.css({
-            top: rect.top - $tooltip.outerHeight() - 8,
-            right: window.innerWidth - rect.right - 4
-        }).show();
+        // story_detail_view.js: inline_end_alignment_css opens the tooltip toward the screen's middle in LTR and RTL.
+        $tooltip.css(_.extend({
+            top: rect.top - $tooltip.outerHeight() - 8
+        }, NEWSBLUR.utils.inline_end_alignment_css(rect, 4))).show();
     },
 
     hide_clustering_tooltip: function (e) {
@@ -725,7 +728,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     render_story_content: function () {
-        this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
+        this.$(".NB-feed-story-show-changes-text").text(this.model.get('showing_diff') ? gettext("Hide story changes") : gettext("Show story changes"));
         this.$(".NB-feed-story-content").html(this.model.story_content());
 
         this.attach_handlers();
@@ -761,8 +764,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $badge_container = $.make('div', { className: 'NB-briefing-admin-badge' }, [
             badge,
             $.make('div', { className: 'NB-briefing-admin-meta' }, [
-                Inflector.commas(curated_count) + ' curated ' +
-                Inflector.pluralize('story', curated_count)
+                interpolate(ngettext("%(count)s curated story", "%(count)s curated stories", curated_count), {count: Inflector.commas(curated_count)}, true)
             ])
         ]);
         this.$('.NB-feed-story-content').before($badge_container);
@@ -1078,13 +1080,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $sideoption_title = this.$('.NB-feed-story-save .NB-sideoption-title');
 
         if (story.get('starred')) {
-            $sideoption_title.text('Saved');
+            $sideoption_title.text(gettext('Saved'));
         } else {
-            $sideoption_title.text('Removed');
+            $sideoption_title.text(gettext('Removed'));
             $sideoption_title.one('mouseleave', function () {
                 _.delay(function () {
                     if (!story.get('starred')) {
-                        $sideoption_title.text('Save');
+                        $sideoption_title.text(gettext('Save'));
                     }
                 }, 200);
             });
@@ -1138,9 +1140,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             if (!item) return;
 
             var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
-            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
-            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
-            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' ' + _.escape(gettext('Play in Mini Media Player')) + '</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' ' + _.escape(gettext('Play Next')) + '</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' ' + _.escape(gettext('Play Last')) + '</div>');
 
             $buttons.append($play_now).append($play_next).append($play_last);
             $el.after($buttons);
@@ -1175,9 +1177,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             if (!item) return;
 
             var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
-            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
-            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
-            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' ' + _.escape(gettext('Play in Mini Media Player')) + '</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' ' + _.escape(gettext('Play Next')) + '</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' ' + _.escape(gettext('Play Last')) + '</div>');
 
             $buttons.append($play_now).append($play_next).append($play_last);
             $iframe.parent().after($buttons);
@@ -1312,11 +1314,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
 
             if ($thirdparty.length) {
-                $sideoption.find(".NB-sideoption-title").text("AI Filter");
+                $sideoption.find(".NB-sideoption-title").text(gettext("AI Filter"));
                 $thirdparty.addClass("NB-hover");
                 $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
             } else {
-                $sideoption.find(".NB-sideoption-title").text("Train");
+                $sideoption.find(".NB-sideoption-title").text(gettext("Train"));
                 $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
                 $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
             }
@@ -1326,7 +1328,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     mouseleave_sideoption_train: function (event) {
         var $sideoption = $(event.currentTarget);
         $sideoption.off('mousemove.train');
-        $sideoption.find(".NB-sideoption-title").text("Train");
+        $sideoption.find(".NB-sideoption-title").text(gettext("Train"));
         $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
         $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
     },
@@ -1395,7 +1397,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             "done": _.bind(function () {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
                 console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
-                $selection.attr('title', "<span class='NB-highlight-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg> Highlight</span><span class='NB-train-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 150 150' fill='white'><path d='M59.1 60.5V121.2c3.6 2.7 6 4.9 11.2 4.9h42.9c8.5 0 14.2-6.8 12-13.7 4.2-4.4 5.3-9.4 2.7-14.7 3.9-5.5 4.4-11.3.2-16.8 6.3-10.1.5-21.9-13.5-21.9h-17.1c0-7.2-.4-18.9-3.4-25.5-5.9-13.5-24.6-11.9-24 .4-.5 9.7-3.3 19.3-11.1 26.6M17.6 59.2V126h34.7V59.2H17.6z'/></svg> Train</span><span class='NB-quote-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M116,72v88a48.05,48.05,0,0,1-48,48,8,8,0,0,1,0-16,32,32,0,0,0,32-32v-8H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56h60A16,16,0,0,1,116,72ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Z'/></svg> Quote</span><br><span class='NB-search-site-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21 21-4.34-4.34'/><circle cx='11' cy='11' r='8'/></svg> Search site</span><span class='NB-search-folder-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1'/><path d='m21 21-1.9-1.9'/><circle cx='17' cy='17' r='3'/></svg> Search folder</span>");
+                $selection.attr('title', this.selection_menu_html(false));
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
                     appendTo: this.el,
@@ -1437,10 +1439,27 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         });
     },
 
+    // story_detail_view.js: Tooltip menu for selected or highlighted story text. Labels are
+    // translated and escaped because tippy renders the title attribute as HTML.
+    selection_menu_html: function (is_highlighted) {
+        var menu_item = function (class_name, svg, label) {
+            return "<span class='" + class_name + "'>" + svg + " " + _.escape(label) + "</span>";
+        };
+        var first_item = is_highlighted ?
+            menu_item('NB-unhighlight-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM213.67,103,160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38a8,8,0,0,1,0,11.31Z'/></svg>", gettext("Unhighlight")) :
+            menu_item('NB-highlight-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg>", gettext("Highlight"));
+        return first_item +
+            menu_item('NB-train-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 150 150' fill='white'><path d='M59.1 60.5V121.2c3.6 2.7 6 4.9 11.2 4.9h42.9c8.5 0 14.2-6.8 12-13.7 4.2-4.4 5.3-9.4 2.7-14.7 3.9-5.5 4.4-11.3.2-16.8 6.3-10.1.5-21.9-13.5-21.9h-17.1c0-7.2-.4-18.9-3.4-25.5-5.9-13.5-24.6-11.9-24 .4-.5 9.7-3.3 19.3-11.1 26.6M17.6 59.2V126h34.7V59.2H17.6z'/></svg>", gettext("Train")) +
+            menu_item('NB-quote-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M116,72v88a48.05,48.05,0,0,1-48,48,8,8,0,0,1,0-16,32,32,0,0,0,32-32v-8H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56h60A16,16,0,0,1,116,72ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Z'/></svg>", gettext("Quote")) +
+            "<br>" +
+            menu_item('NB-search-site-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21 21-4.34-4.34'/><circle cx='11' cy='11' r='8'/></svg>", gettext("Search site")) +
+            menu_item('NB-search-folder-selection', "<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1'/><path d='m21 21-1.9-1.9'/><circle cx='17' cy='17' r='3'/></svg>", gettext("Search folder"));
+    },
+
     show_unhighlight_tooltip: function ($highlight) {
         this.$highlight = $highlight;
         this.serialized_highlight = _.string.trim($highlight.text());
-        $highlight.attr('title', "<span class='NB-unhighlight-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M225,80.4,183.6,39a24,24,0,0,0-33.94,0L31,157.66a24,24,0,0,0,0,33.94l30.06,30.06A8,8,0,0,0,66.74,224H216a8,8,0,0,0,0-16h-84.7L225,114.34A24,24,0,0,0,225,80.4ZM213.67,103,160,156.69,107.31,104,161,50.34a8,8,0,0,1,11.32,0l41.38,41.38a8,8,0,0,1,0,11.31Z'/></svg> Unhighlight</span><span class='NB-train-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 150 150' fill='white'><path d='M59.1 60.5V121.2c3.6 2.7 6 4.9 11.2 4.9h42.9c8.5 0 14.2-6.8 12-13.7 4.2-4.4 5.3-9.4 2.7-14.7 3.9-5.5 4.4-11.3.2-16.8 6.3-10.1.5-21.9-13.5-21.9h-17.1c0-7.2-.4-18.9-3.4-25.5-5.9-13.5-24.6-11.9-24 .4-.5 9.7-3.3 19.3-11.1 26.6M17.6 59.2V126h34.7V59.2H17.6z'/></svg> Train</span><span class='NB-quote-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M116,72v88a48.05,48.05,0,0,1-48,48,8,8,0,0,1,0-16,32,32,0,0,0,32-32v-8H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56h60A16,16,0,0,1,116,72ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Z'/></svg> Quote</span><br><span class='NB-search-site-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21 21-4.34-4.34'/><circle cx='11' cy='11' r='8'/></svg> Search site</span><span class='NB-search-folder-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1'/><path d='m21 21-1.9-1.9'/><circle cx='17' cy='17' r='3'/></svg> Search folder</span>");
+        $highlight.attr('title', this.selection_menu_html(true));
         var $t = tippy($highlight.get(0), {
             // delay: 100,
             appendTo: this.el,
@@ -1480,7 +1499,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         // Show the highlight/train/search menu
-        $mark.attr('title', "<span class='NB-highlight-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg> Highlight</span><span class='NB-train-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 150 150' fill='white'><path d='M59.1 60.5V121.2c3.6 2.7 6 4.9 11.2 4.9h42.9c8.5 0 14.2-6.8 12-13.7 4.2-4.4 5.3-9.4 2.7-14.7 3.9-5.5 4.4-11.3.2-16.8 6.3-10.1.5-21.9-13.5-21.9h-17.1c0-7.2-.4-18.9-3.4-25.5-5.9-13.5-24.6-11.9-24 .4-.5 9.7-3.3 19.3-11.1 26.6M17.6 59.2V126h34.7V59.2H17.6z'/></svg> Train</span><span class='NB-quote-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M116,72v88a48.05,48.05,0,0,1-48,48,8,8,0,0,1,0-16,32,32,0,0,0,32-32v-8H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56h60A16,16,0,0,1,116,72ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Z'/></svg> Quote</span><br><span class='NB-search-site-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21 21-4.34-4.34'/><circle cx='11' cy='11' r='8'/></svg> Search site</span><span class='NB-search-folder-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1'/><path d='m21 21-1.9-1.9'/><circle cx='17' cy='17' r='3'/></svg> Search folder</span>");
+        $mark.attr('title', this.selection_menu_html(false));
         var $t = tippy($mark.get(0), {
             appendTo: this.el,
             arrow: true,
@@ -1641,7 +1660,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         // Show the highlight/train/search menu
-        $mark.attr('title', "<span class='NB-highlight-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg> Highlight</span><span class='NB-train-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 150 150' fill='white'><path d='M59.1 60.5V121.2c3.6 2.7 6 4.9 11.2 4.9h42.9c8.5 0 14.2-6.8 12-13.7 4.2-4.4 5.3-9.4 2.7-14.7 3.9-5.5 4.4-11.3.2-16.8 6.3-10.1.5-21.9-13.5-21.9h-17.1c0-7.2-.4-18.9-3.4-25.5-5.9-13.5-24.6-11.9-24 .4-.5 9.7-3.3 19.3-11.1 26.6M17.6 59.2V126h34.7V59.2H17.6z'/></svg> Train</span><span class='NB-quote-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 256 256' fill='white'><path d='M116,72v88a48.05,48.05,0,0,1-48,48,8,8,0,0,1,0-16,32,32,0,0,0,32-32v-8H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56h60A16,16,0,0,1,116,72ZM216,56H156a16,16,0,0,0-16,16v64a16,16,0,0,0,16,16h60v8a32,32,0,0,1-32,32,8,8,0,0,0,0,16,48.05,48.05,0,0,0,48-48V72A16,16,0,0,0,216,56Z'/></svg> Quote</span><br><span class='NB-search-site-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21 21-4.34-4.34'/><circle cx='11' cy='11' r='8'/></svg> Search site</span><span class='NB-search-folder-selection'><svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1'/><path d='m21 21-1.9-1.9'/><circle cx='17' cy='17' r='3'/></svg> Search folder</span>");
+        $mark.attr('title', this.selection_menu_html(false));
         var $t = tippy($mark.get(0), {
             appendTo: this.el,
             arrow: true,
@@ -1998,8 +2017,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var escaped_type = _.escape(String(type));
         var escaped_value = _.escape(String(value));
+        var escaped_label = _.escape(gettext('View matching stories'));
         return '<button type="button" class="NB-pill-view-classifier" ' +
-            'title="View matching stories" aria-label="View matching stories" ' +
+            'title="' + escaped_label + '" aria-label="' + escaped_label + '" ' +
             'data-classifier-type="' + escaped_type + '" ' +
             'data-classifier-value="' + escaped_value + '">' +
             // Same glyph as the trainer rows; defined once in
@@ -2071,7 +2091,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
 
         if (service == 'copyurl' || service == 'copytext') {
-            $sideoption.find(".NB-sideoption-title").text("Copied");
+            $sideoption.find(".NB-sideoption-title").text(gettext("Copied"));
             setTimeout(function () {
                 var label = NEWSBLUR.assets.third_party_sharing_services[service];
                 $sideoption.find(".NB-sideoption-title").text(label);
@@ -2149,19 +2169,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var questions = [
             {
                 id: 'summarize-group',
-                text: 'Summarize',
+                text: gettext('Summarize'),
                 isGroup: true,
                 icon: 'paragraph',
                 children: [
-                    { id: 'sentence', text: 'Brief', detail: 'One sentence', icon: 'content-preview-s', level: 'low' },
-                    { id: 'bullets', text: 'Medium', detail: 'Bullet points', icon: 'content-preview-m', level: 'medium' },
-                    { id: 'paragraph', text: 'Detailed', detail: 'Full paragraph', icon: 'content-preview-l', level: 'high' }
+                    { id: 'sentence', text: pgettext('summary length', 'Brief'), detail: gettext('One sentence'), icon: 'content-preview-s', level: 'low' },
+                    { id: 'bullets', text: pgettext('summary length', 'Medium'), detail: gettext('Bullet points'), icon: 'content-preview-m', level: 'medium' },
+                    { id: 'paragraph', text: pgettext('summary length', 'Detailed'), detail: gettext('Full paragraph'), icon: 'content-preview-l', level: 'high' }
                 ]
             },
-            { id: 'context', text: this.get_ask_ai_prompt_text('context', "What's the context and background?"), icon: 'world' },
-            { id: 'people', text: this.get_ask_ai_prompt_text('people', 'Identify key people and relationships'), icon: 'subscribers' },
-            { id: 'arguments', text: this.get_ask_ai_prompt_text('arguments', 'What are the main arguments?'), icon: 'venn' },
-            { id: 'factcheck', text: this.get_ask_ai_prompt_text('factcheck', 'Fact check this story'), icon: 'search' }
+            { id: 'context', text: this.get_ask_ai_prompt_text('context', gettext("What's the context and background?")), icon: 'world' },
+            { id: 'people', text: this.get_ask_ai_prompt_text('people', gettext('Identify key people and relationships')), icon: 'subscribers' },
+            { id: 'arguments', text: this.get_ask_ai_prompt_text('arguments', gettext('What are the main arguments?')), icon: 'venn' },
+            { id: 'factcheck', text: this.get_ask_ai_prompt_text('factcheck', gettext('Fact check this story')), icon: 'search' }
         ];
 
         var menu_template = _.template('\
@@ -2196,7 +2216,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% }) %>\
                     </ul>\
                     <div class="NB-menu-ask-ai-custom-input-wrapper">\
-                        <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
+                        <div class="NB-menu-ask-ai-voice-button" title="<%- gettext("Record voice question") %>">\
                             <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
                             <div class="NB-menu-ask-ai-recording-indicator">\
                                 <div class="NB-recording-bar"></div>\
@@ -2205,10 +2225,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                 <div class="NB-recording-bar"></div>\
                             </div>\
                         </div>\
-                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
+                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="<%- gettext("Ask a question...") %>" />\
                         <div class="NB-menu-ask-ai-submit-menu NB-disabled" data-model="anthropic">\
-                            <div class="NB-menu-ask-ai-custom-submit">Ask</div>\
-                            <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="Choose model">\
+                            <div class="NB-menu-ask-ai-custom-submit"><%- gettext("Ask") %></div>\
+                            <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="<%- gettext("Choose model") %>">\
                                 <span class="NB-dropdown-arrow">▾</span>\
                             </div>\
                             <div class="NB-menu-ask-ai-model-dropdown"></div>\
@@ -2240,11 +2260,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             '<div class="NB-thinking-toggle-segmented">' +
                 '<div class="NB-thinking-toggle-option NB-thinking-fast NB-selected" data-thinking="false">' +
                     '<img src="/media/img/icons/nouns/lightning-bolt.svg" class="NB-thinking-toggle-icon" />' +
-                    '<span>Fast</span>' +
+                    '<span>' + _.escape(gettext('Fast')) + '</span>' +
                 '</div>' +
                 '<div class="NB-thinking-toggle-option NB-thinking-thinking" data-thinking="true">' +
                     '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-thinking-toggle-icon" />' +
-                    '<span>Thinking</span>' +
+                    '<span>' + _.escape(gettext('Thinking')) + '</span>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -2466,22 +2486,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording...');
-                    $voice_button.attr('title', 'Stop recording');
+                    $input.attr('placeholder', gettext('Recording...'));
+                    $voice_button.attr('title', gettext('Stop recording'));
                 },
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
-                    $input.attr('placeholder', 'Transcribing...');
-                    $voice_button.attr('title', 'Transcribing audio');
+                    $input.attr('placeholder', gettext('Transcribing...'));
+                    $voice_button.attr('title', gettext('Transcribing audio'));
                 },
                 on_transcription_start: function () {
                     // Already showing transcribing state
                 },
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Ask a question...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Ask a question...'));
 
                     // Set the transcribed text and submit the question automatically
                     $input.val(text);
@@ -2494,7 +2514,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 },
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
+                    $voice_button.attr('title', gettext('Record voice question'));
 
                     // Check if this is a quota/limit error
                     var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
@@ -2502,14 +2522,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     if (is_quota_error) {
                         // Store the error and open Ask AI view to display it
                         $menu.data('transcription_error', error);
-                        $input.attr('placeholder', 'Quota exceeded');
+                        $input.attr('placeholder', gettext('Quota exceeded'));
                         // Auto-submit to open Ask AI view which will show the full error
                         _.delay(function () {
                             self.submit_custom_question_from_menu($menu);
                         }, 100);
                     } else {
                         // For other errors, show in placeholder
-                        $input.attr('placeholder', error || 'Error - please try again');
+                        $input.attr('placeholder', error || gettext('Error - please try again'));
                     }
 
                     console.error('Voice transcription error:', error);

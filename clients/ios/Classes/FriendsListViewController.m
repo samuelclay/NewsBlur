@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  FriendsListViewController.m
 //  NewsBlur
@@ -271,7 +272,7 @@ viewForHeaderInSection:(NSInteger)section {
     headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-    headerLabel.text = @"RECOMMENDED PEOPLE TO FOLLOW";
+    headerLabel.text = [NBLocalization text:@"RECOMMENDED PEOPLE TO FOLLOW"];
     
     customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
                                   colorWithAlphaComponent:0.8];
@@ -285,6 +286,12 @@ viewForHeaderInSection:(NSInteger)section {
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];    
+    // FriendsListViewController.m lays the header out from the left edge and mirrors it for Arabic and Hebrew.
+    if (NBLocalization.isRightToLeft) {
+        headerLabel.frame = [NBLocalization directionalRect:headerLabel.frame within:customView.bounds rightToLeft:YES];
+        headerLabel.textAlignment = NSTextAlignmentRight;
+        folderImageView.frame = [NBLocalization directionalRect:folderImageView.frame within:customView.bounds rightToLeft:YES];
+    }
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
@@ -334,7 +341,7 @@ viewForHeaderInSection:(NSInteger)section {
     } else {
         UILabel *message = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
         message.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        message.text = self.inSearch_ ? @"No results." : @"No friends to suggest.";
+        message.text = self.inSearch_ ? [NBLocalization text:@"No results."] : [NBLocalization text:@"No friends to suggest."];
         message.textColor = UIColorFromRGB(0x7a7a7a);
         message.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:vb.size.width > 320 ? 21.0 : 15.0];
         message.textAlignment = NSTextAlignmentCenter;
@@ -369,7 +376,7 @@ viewForHeaderInSection:(NSInteger)section {
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close" 
+                                   initWithTitle:[NBLocalization text:@"Close"]
                                    style:UIBarButtonItemStyleDone 
                                    target:self 
                                    action:@selector(hideUserProfileModal)];

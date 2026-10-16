@@ -31,7 +31,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
         if (this.transcription_error) {
-            this.question_text = '<em>Audio not transcribed</em>';
+            this.question_text = '<em>' + _.escape(gettext('Audio not transcribed')) + '</em>';
         } else {
             this.question_text = this.custom_question || this.get_question_text(this.question_id);
         }
@@ -133,7 +133,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$el.removeClass('NB-thinking');
         this.show_loading_pill_error();
 
-        var error_text = 'Request timed out. The AI service took too long to respond. Please try again.';
+        var error_text = gettext('Request timed out. The AI service took too long to respond. Please try again.');
 
         // Track error separately so it can be cleared if response arrives late
         this.pending_error = error_text;
@@ -148,7 +148,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$el.removeClass('NB-thinking');
         this.show_loading_pill_error();
 
-        var error_text = 'Stream interrupted. No response received for 10 seconds.';
+        var error_text = gettext('Stream interrupted. No response received for 10 seconds.');
 
         // Track error separately so it can be cleared if response arrives late
         this.pending_error = error_text;
@@ -162,7 +162,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Render response with pending error appended (but not baked into response_text)
         var $answer = this.$('.NB-story-ask-ai-answer');
         if (this.response_text) {
-            var display_text = this.response_text + '\n\n**Error:** ' + this.pending_error;
+            var display_text = this.response_text + '\n\n**' + gettext('Error:') + '** ' + this.pending_error;
             var html = this.markdown_to_html(display_text);
             $answer.html(html);
         } else {
@@ -185,34 +185,34 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             </div>\
             <div class="NB-story-ask-ai-response">\
                 <div class="NB-story-ask-ai-error">\
-                    <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
+                    <strong><%- gettext("Request timed out.") %></strong> <%- gettext("The AI service took too long to respond. Please try again.") %>\
                 </div>\
                 <div class="NB-story-ask-ai-answer" style="display: none;"></div>\
                 <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
                 <div class="NB-story-ask-ai-input-row">\
-                    <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
+                    <div class="NB-story-ask-ai-voice-button" title="<%- gettext("Record voice question") %>">\
                         <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
                     </div>\
-                    <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Follow up..." />\
+                    <input type="text" class="NB-story-ask-ai-followup-input" placeholder="<%- gettext("Follow up...") %>" />\
                     <div class="NB-story-ask-ai-reask-menu">\
-                        <div class="NB-button NB-story-ask-ai-reask-button" title="Re-ask original question">\
-                            <span>Re-ask</span>\
+                        <div class="NB-button NB-story-ask-ai-reask-button" title="<%- gettext("Re-ask original question") %>">\
+                            <span><%- gettext("Re-ask") %></span>\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-send-menu" style="display: none;">\
-                        <div class="NB-button NB-story-ask-ai-send-button">Send</div>\
-                        <div class="NB-story-ask-ai-send-dropdown-trigger" title="Choose model">\
+                        <div class="NB-button NB-story-ask-ai-send-button"><%- gettext("Send") %></div>\
+                        <div class="NB-story-ask-ai-send-dropdown-trigger" title="<%- gettext("Choose model") %>">\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-finish-recording-menu" style="display: none;">\
-                        <div class="NB-button NB-story-ask-ai-finish-recording-button">Finish recording...</div>\
-                        <div class="NB-story-ask-ai-finish-recording-dropdown-trigger" title="Choose model">\
+                        <div class="NB-button NB-story-ask-ai-finish-recording-button"><%- gettext("Finish recording...") %></div>\
+                        <div class="NB-story-ask-ai-finish-recording-dropdown-trigger" title="<%- gettext("Choose model") %>">\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown"></div>\
@@ -232,16 +232,16 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     get_question_text: function (question_id) {
         var questions = {
-            'sentence': 'Summarize in one sentence',
-            'bullets': 'Summarize in bullet points',
-            'paragraph': 'Summarize in a paragraph',
-            'context': "What's the context and background?",
-            'people': 'Identify key people and relationships',
-            'arguments': 'What are the main arguments?',
-            'factcheck': 'Fact check this story',
-            'custom': 'Ask a custom question...'
+            'sentence': gettext('Summarize in one sentence'),
+            'bullets': gettext('Summarize in bullet points'),
+            'paragraph': gettext('Summarize in a paragraph'),
+            'context': gettext("What's the context and background?"),
+            'people': gettext('Identify key people and relationships'),
+            'arguments': gettext('What are the main arguments?'),
+            'factcheck': gettext('Fact check this story'),
+            'custom': gettext('Ask a custom question...')
         };
-        return this.get_prompt_short_text(question_id, questions[question_id] || 'Unknown question');
+        return this.get_prompt_short_text(question_id, questions[question_id] || gettext('Unknown question'));
     },
 
     generate_request_id: function () {
@@ -331,7 +331,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             }
             return;
         }
-        this.handle_response_error(data.message || 'Unknown error');
+        this.handle_response_error(data.message || gettext('Unknown error'));
     },
 
     handle_response_error: function (error) {
@@ -345,15 +345,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 error_message = error.message;
             } else if (error.statusText) {
                 // jQuery XHR object
-                error_message = 'Server error: ' + error.statusText;
+                error_message = interpolate(gettext('Server error: %(status)s'), {status: error.statusText}, true);
             } else if (error.responseText) {
-                error_message = 'Server error';
+                error_message = gettext('Server error');
             }
         }
 
         // Ensure error_message is a string
         if (typeof error_message !== 'string') {
-            error_message = 'An error occurred. Please try again.';
+            error_message = gettext('An error occurred. Please try again.');
         }
 
         // Check if this is a usage limit error
@@ -650,7 +650,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         });
 
         // Add a visual separator for the follow-up to response_text
-        this.response_text += '\n\n---\n\n**You:** ' + followup_text + '\n\n';
+        this.response_text += '\n\n---\n\n**' + gettext('You:') + '** ' + followup_text + '\n\n';
 
         // Render the updated text with markdown
         var $answer = this.$('.NB-story-ask-ai-answer');
@@ -688,8 +688,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.voice_recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording...');
-                    $voice_button.attr('title', 'Stop recording');
+                    $input.attr('placeholder', gettext('Recording...'));
+                    $voice_button.attr('title', gettext('Stop recording'));
                     // Hide Re-ask and Send, show Finish Recording during recording
                     self.$('.NB-story-ask-ai-reask-menu').hide();
                     self.$('.NB-story-ask-ai-send-menu').hide();
@@ -698,15 +698,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
-                    $input.attr('placeholder', 'Transcribing...');
-                    $voice_button.attr('title', 'Transcribing audio');
+                    $input.attr('placeholder', gettext('Transcribing...'));
+                    $voice_button.attr('title', gettext('Transcribing audio'));
                     // Hide finish recording menu during transcription
                     self.$('.NB-story-ask-ai-finish-recording-menu').hide();
                 },
                 on_recording_cancel: function () {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Follow up...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Follow up...'));
                     // Reset button visibility
                     self.$('.NB-story-ask-ai-finish-recording-menu').hide();
                     if (!$input.val().trim()) {
@@ -722,8 +722,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 },
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Follow up...');
+                    $voice_button.attr('title', gettext('Record voice question'));
+                    $input.attr('placeholder', gettext('Follow up...'));
 
                     // Set the transcribed text and submit the question automatically
                     $input.val(text);
@@ -735,7 +735,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 },
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
-                    $voice_button.attr('title', 'Record voice question');
+                    $voice_button.attr('title', gettext('Record voice question'));
 
                     // Check if this is a quota/limit error
                     var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
@@ -744,10 +744,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         // Show quota error in the usage message box (blue box)
                         self.show_usage_message(error);
                         // Put a subtle placeholder in the input
-                        $input.attr('placeholder', 'Quota exceeded');
+                        $input.attr('placeholder', gettext('Quota exceeded'));
                     } else {
                         // Show other errors as notifications
-                        $input.attr('placeholder', 'Follow up...');
+                        $input.attr('placeholder', gettext('Follow up...'));
                         NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
                     }
                     // Reset buttons if no text
@@ -943,11 +943,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             '<div class="NB-thinking-toggle-segmented">' +
                 '<div class="NB-thinking-toggle-option NB-thinking-fast NB-selected" data-thinking="false">' +
                     '<img src="/media/img/icons/nouns/lightning-bolt.svg" class="NB-thinking-toggle-icon" />' +
-                    '<span>Fast</span>' +
+                    '<span>' + _.escape(gettext('Fast')) + '</span>' +
                 '</div>' +
                 '<div class="NB-thinking-toggle-option NB-thinking-thinking" data-thinking="true">' +
                     '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-thinking-toggle-icon" />' +
-                    '<span>Thinking</span>' +
+                    '<span>' + _.escape(gettext('Thinking')) + '</span>' +
                 '</div>' +
             '</div>' +
         '</div>';

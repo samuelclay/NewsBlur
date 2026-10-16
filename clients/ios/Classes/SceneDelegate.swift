@@ -28,6 +28,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        // SceneDelegate.swift gives the storyboard window the account language's direction before any view loads.
+        if let windowScene = scene as? UIWindowScene {
+            NBLocalization.applyDirection(to: windowScene)
+        }
         if appDelegate.window != nil {
             handleNotificationResponse(connectionOptions.notificationResponse)
             connectionOptions.urlContexts.forEach { appDelegate.open($0.url) }

@@ -1,8 +1,11 @@
 package com.newsblur.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+
+import com.newsblur.R;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -86,7 +89,7 @@ public class StoryUtils {
                 // localized pattern, with year
                 pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEE MMMM d yyyy");
             }
-            return DateFormat.format(pattern, storyDate).toString() + " " + timeFormat.format(storyDate);
+            return DateFormat.format(pattern, storyDate).toString() + " " + formatLocalizedTime(context, locale, storyDate);
         }
 
         if (storyDate.getTime() > midnightToday.getTime()) {
@@ -125,6 +128,16 @@ public class StoryUtils {
         return month.getTime();
     }
 
+    /**
+     * StoryUtils.java keeps English's compact "10:18am", but every other language gets its own time
+     * pattern and day period names, such as "10:18 ص" in Arabic, still honoring the 12/24 hour setting.
+     */
+    private static String formatLocalizedTime(Context context, Locale locale, Date date) {
+        String skeleton = android.text.format.DateFormat.is24HourFormat(context) ? "Hm" : "hm";
+        String pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, skeleton);
+        return DateFormat.format(pattern, date).toString();
+    }
+
     private static SimpleDateFormat getTimeFormat(Context context) {
         if (android.text.format.DateFormat.is24HourFormat(context)) {
             return twentyFourHourFormat.get();
@@ -159,7 +172,7 @@ public class StoryUtils {
 
         if(!locale.getLanguage().equals("en")){
             if (storyDate.getTime() > midnightToday.getTime()) {
-                return timeFormat.format(storyDate);
+                return formatLocalizedTime(context, locale, storyDate);
             }else {
                 String pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "d MMM yyyy " + timeFormat.toPattern());
                 return DateFormat.format(pattern, storyDate).toString();
@@ -178,19 +191,24 @@ public class StoryUtils {
         }
     }
 
-    public static String formatRelativeShortDate(long timestampMillis) {
+    /**
+     * A compact age such as "5h ago" for cluster rows. StoryUtils.java words it with plural resources
+     * so each language counts and phrases it natively.
+     */
+    public static String formatRelativeShortDate(Context context, long timestampMillis) {
         long now = System.currentTimeMillis();
         long diffMs = now - timestampMillis;
         if (diffMs < 0) diffMs = 0;
         long diffHours = Math.round(diffMs / (double) DateUtils.HOUR_IN_MILLIS);
+        Resources resources = context.getResources();
         if (diffHours < 1) {
-            long diffMinutes = Math.round(diffMs / (double) DateUtils.MINUTE_IN_MILLIS);
-            return diffMinutes + "m ago";
+            int diffMinutes = (int) Math.round(diffMs / (double) DateUtils.MINUTE_IN_MILLIS);
+            return resources.getQuantityString(R.plurals.compact_minutes_ago, diffMinutes, diffMinutes);
         } else if (diffHours < 24) {
-            return diffHours + "h ago";
+            return resources.getQuantityString(R.plurals.compact_hours_ago, (int) diffHours, (int) diffHours);
         } else {
-            long diffDays = Math.round(diffMs / (double) DateUtils.DAY_IN_MILLIS);
-            return diffDays + "d ago";
+            int diffDays = (int) Math.round(diffMs / (double) DateUtils.DAY_IN_MILLIS);
+            return resources.getQuantityString(R.plurals.compact_days_ago, diffDays, diffDays);
         }
     }
 

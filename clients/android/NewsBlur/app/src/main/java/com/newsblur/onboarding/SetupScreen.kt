@@ -41,20 +41,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.Apartment
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.DirectionsRun
 import androidx.compose.material.icons.outlined.Eco
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Memory
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.MoveToInbox
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Newspaper
@@ -68,7 +69,6 @@ import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.TheaterComedy
-import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.WorkOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -78,6 +78,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -99,9 +100,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -114,6 +117,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.newsblur.R
 import com.newsblur.design.ReaderSheetPalette
+import com.newsblur.design.withContentDirection
 import com.newsblur.discover.DiscoveryFeed
 import com.newsblur.discover.DiscoveryStory
 import com.newsblur.util.ImageLoader
@@ -135,6 +139,10 @@ fun SetupScreen(
     val colors = SetupPalette.colors(theme)
     val tablet = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
     var complete by rememberSaveable { mutableStateOf(false) }
+    // First-run setup opens on the language page (SetupLanguageStep.kt), which adds a step.
+    val languageStep by model.languageStep.collectAsStateWithLifecycle()
+    val steps = if (model.hasLanguageStep) 3 else 2
+    val step = if (languageStep) 1 else if (complete) steps else steps - 1
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(model::import) }
     BackHandler { if (state.category != null) model.closeBundle() else onClose() }
     Box(
@@ -158,26 +166,23 @@ fun SetupScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(painterResource(R.drawable.logo), null, Modifier.size(36.dp))
-                Text(
-                    "NewsBlur",
+                Text(stringResource(R.string.newsblur),
                     Modifier.padding(start = 10.dp).weight(1f),
                     color = colors.textPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                Text(if (complete) "2 / 2" else "1 / 2", color = colors.textSecondary, fontSize = 14.sp)
+                Text("$step / $steps", color = colors.textSecondary, fontSize = 14.sp)
                 Spacer(Modifier.width(8.dp))
                 IconButton(onClick = onClose, modifier = Modifier.size(44.dp).background(colors.cardBackground, CircleShape)) {
-                    Icon(Icons.Outlined.Close, "Close setup", Modifier.size(20.dp), tint = colors.textPrimary)
+                    Icon(Icons.Outlined.Close, stringResource(R.string.setup_close_setup), Modifier.size(20.dp), tint = colors.textPrimary)
                 }
             }
             Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                repeat(2) { index ->
+                repeat(steps) { index ->
                     Box(
                         Modifier.weight(1f).height(3.dp).background(
-                            if (index == 0 ||
-                                complete
-                            ) {
+                            if (index < step) {
                                 colors.textSecondary
                             } else {
                                 colors.border.copy(alpha = .5f)
@@ -191,7 +196,7 @@ fun SetupScreen(
                 (if (state.query.isBlank()) listOf("") else emptyList()) +
                     state.categories.filter { OnboardingCatalog.title(it).contains(state.query, true) }
             val gridState = rememberLazyGridState()
-            LaunchedEffect(complete) { gridState.scrollToItem(0) }
+            LaunchedEffect(complete, languageStep) { gridState.scrollToItem(0) }
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(260.dp),
                 state = gridState,
@@ -200,7 +205,9 @@ fun SetupScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (complete) {
+                if (languageStep) {
+                    item(span = { GridItemSpan(maxLineSpan) }) { SetupLanguageStep(model, theme) }
+                } else if (complete) {
                     item(span = { GridItemSpan(maxLineSpan) }) { Completion(state, progress, colors) }
                 } else {
                     item(span = { GridItemSpan(maxLineSpan) }) {
@@ -225,14 +232,13 @@ fun SetupScreen(
                                     CircularProgressIndicator(Modifier.size(110.dp), color = colors.border, strokeWidth = 2.dp)
                                     Icon(Icons.Outlined.GridView, null, Modifier.size(68.dp), tint = colors.textSecondary)
                                 }
-                                Text(
-                                    "Loading interests",
+                                Text(stringResource(R.string.onboarding_loading_interests),
                                     Modifier.padding(top = 24.dp),
                                     color = colors.textPrimary,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.SemiBold,
                                 )
-                                Text("Finding feeds for you to explore", Modifier.padding(top = 8.dp), color = colors.textSecondary)
+                                Text(stringResource(R.string.onboarding_finding_feeds_for_you_to_explore), Modifier.padding(top = 8.dp), color = colors.textSecondary)
                             }
                         }
                     } else if (state.categories.isNotEmpty()) {
@@ -243,19 +249,19 @@ fun SetupScreen(
                     if (state.iconFailures.isNotEmpty()) {
                         item(span = {
                             GridItemSpan(maxLineSpan)
-                        }) { TextButton(onClick = model::retryIcons) { Text("Retry icons", color = colors.siteLink) } }
+                        }) { TextButton(onClick = model::retryIcons) { Text(stringResource(R.string.onboarding_retry_icons), color = colors.siteLink) } }
                     }
                     if (state.query.isNotBlank()) {
                         item(span = {
                             GridItemSpan(maxLineSpan)
-                        }) { Text("Search all sites", color = colors.textPrimary, fontSize = 20.sp, fontWeight = FontWeight.SemiBold) }
+                        }) { Text(stringResource(R.string.onboarding_search_all_sites), color = colors.textPrimary, fontSize = 20.sp, fontWeight = FontWeight.SemiBold) }
                         if (state.searching) item(span = { GridItemSpan(maxLineSpan) }) { CircularProgressIndicator(color = setupTeal) }
                         items(state.search, key = {
                             "search:${it.url}"
                         }, span = { GridItemSpan(maxLineSpan) }) { feed -> SearchResult(feed, state, progress, colors, model) }
                         if (!state.searching && state.search.isEmpty() && categories.isEmpty() && state.error == null) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
-                                Text("No interests or sites found. Try another search.", color = colors.textSecondary)
+                                Text(stringResource(R.string.onboarding_no_interests_or_sites_found_try_another_search), color = colors.textSecondary)
                             }
                         }
                     }
@@ -263,16 +269,17 @@ fun SetupScreen(
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             Column {
                                 Text(message, color = colors.textPrimary)
-                                if (state.categories.isEmpty()) TextButton(onClick = { model.loadCatalog() }) { Text("Try again") }
-                                if (state.query.isNotBlank()) TextButton(onClick = { model.search(state.query) }) { Text("Try search again") }
+                                if (state.categories.isEmpty()) TextButton(onClick = { model.loadCatalog() }) { Text(stringResource(R.string.image_viewer_retry)) }
+                                if (state.query.isNotBlank()) TextButton(onClick = { model.search(state.query) }) { Text(stringResource(R.string.onboarding_try_search_again)) }
                             }
                         }
                     }
                 }
                 if (progress.failures.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) { Failures(progress, model, colors) }
             }
-            PrimaryAction(
-                if (complete) "Start reading" else "Continue",
+            // The language page's own buttons move setup on.
+            if (!languageStep) PrimaryAction(
+                stringResource(if (complete) R.string.setup_start_reading else R.string.setup_continue),
                 Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                 enabled = !state.importing,
             ) {
@@ -304,7 +311,7 @@ fun SetupScreen(
                 ) {
                     Box(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
                         Text(
-                            if (state.category!!.isEmpty()) "A little of everything" else OnboardingCatalog.title(state.category!!),
+                            if (state.category!!.isEmpty()) stringResource(R.string.setup_a_little_of_everything) else OnboardingCatalog.title(state.category!!),
                             Modifier.fillMaxWidth().padding(horizontal = 56.dp),
                             color = colors.textPrimary,
                             fontSize = 17.sp,
@@ -316,14 +323,13 @@ fun SetupScreen(
                         TextButton(
                             onClick = model::closeBundle,
                             modifier = Modifier.align(Alignment.CenterEnd),
-                        ) { Text("Done", color = colors.siteLink) }
+                        ) { Text(stringResource(R.string.alert_dialog_done), color = colors.siteLink) }
                     }
                     Column(
                         Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
-                        Text(
-                            "Choose feeds for your folder",
+                        Text(stringResource(R.string.onboarding_choose_feeds_for_your_folder),
                             color = colors.textPrimary,
                             fontSize = 28.sp,
                             lineHeight = 33.sp,
@@ -341,6 +347,7 @@ fun SetupScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(Icons.Outlined.Folder, null, tint = colors.textSecondary)
+                            val bundleFolderName = stringResource(R.string.setup_bundle_folder_name)
                             BasicTextField(
                                 state.folder,
                                 model::folder,
@@ -349,7 +356,7 @@ fun SetupScreen(
                                         start = 12.dp,
                                     ).weight(
                                         1f,
-                                    ).semantics { contentDescription = "Bundle folder name" },
+                                    ).semantics { contentDescription = bundleFolderName },
                                 singleLine = true,
                                 textStyle =
                                     TextStyle(
@@ -359,7 +366,7 @@ fun SetupScreen(
                                     ),
                                 cursorBrush = SolidColor(setupTeal),
                                 decorationBox = { inner ->
-                                    if (state.folder.isEmpty()) Text("Folder name", color = colors.textSecondary)
+                                    if (state.folder.isEmpty()) Text(stringResource(R.string.onboarding_folder_name), color = colors.textSecondary)
                                     inner()
                                 },
                             )
@@ -367,8 +374,8 @@ fun SetupScreen(
                         state.choices.feeds.forEach { feed ->
                             val status =
                                 when (feed.url) {
-                                    in progress.added, in state.unavailable -> "Added"
-                                    in progress.queued -> "Queued"
+                                    in progress.added, in state.unavailable -> stringResource(R.string.setup_added)
+                                    in progress.queued -> stringResource(R.string.setup_queued)
                                     else -> null
                                 }
                             BundleCard(
@@ -387,7 +394,9 @@ fun SetupScreen(
                             ) {
                                 CircularProgressIndicator(Modifier.size(24.dp), color = colors.textSecondary, strokeWidth = 2.dp)
                                 Text(
-                                    if (state.choices.feeds.isEmpty()) "Loading feeds to choose from…" else "Loading more feeds…",
+                                    stringResource(
+                                        if (state.choices.feeds.isEmpty()) R.string.setup_loading_feeds_to_choose_from else R.string.setup_loading_more_feeds,
+                                    ),
                                     Modifier.padding(start = 14.dp),
                                     color = colors.textSecondary,
                                 )
@@ -395,7 +404,7 @@ fun SetupScreen(
                         }
                         state.bundleError?.let {
                             Text(it, color = colors.textSecondary)
-                            TextButton(onClick = { model.openBundle(state.category!!) }) { Text("Try again") }
+                            TextButton(onClick = { model.openBundle(state.category!!) }) { Text(stringResource(R.string.image_viewer_retry)) }
                         }
                     }
                     if (!state.bundleLoading || state.choices.feeds.isNotEmpty()) {
@@ -404,11 +413,11 @@ fun SetupScreen(
                             if (count ==
                                 0
                             ) {
-                                "Select feeds to add"
+                                stringResource(R.string.setup_select_feeds_to_add)
                             } else if (state.folder.isBlank()) {
-                                "Name your folder to continue"
+                                stringResource(R.string.setup_name_your_folder_to_continue)
                             } else {
-                                "Add $count ${if (count == 1) "feed" else "feeds"} to “${state.folder.trim()}” folder"
+                                pluralStringResource(R.plurals.setup_add_feeds_to_folder, count, count, state.folder.trim())
                             }
                         PrimaryAction(label, Modifier.padding(16.dp), count > 0 && state.folder.isNotBlank(), model::addBundle)
                     }
@@ -455,8 +464,8 @@ fun SetupScreen(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 Icon(Icons.Outlined.MoveToInbox, null, Modifier.size(25.dp), tint = colors.textPrimary)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("Already have feeds?", color = colors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
-                    Text("Bring your feeds and folders from another reader.", color = colors.textSecondary, fontSize = 15.sp)
+                    Text(stringResource(R.string.onboarding_already_have_feeds), color = colors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
+                    Text(stringResource(R.string.onboarding_bring_your_feeds_and_folders_from_another_reader), color = colors.textSecondary, fontSize = 15.sp)
                 }
                 if (wide) ImportButton(state.importing, colors, onImport)
             }
@@ -479,15 +488,20 @@ fun SetupScreen(
         border = BorderStroke(1.dp, colors.border),
         colors = ButtonDefaults.outlinedButtonColors(containerColor = colors.cardBackground),
     ) {
-        Text(if (busy) "Importing…" else "Import OPML", color = colors.textPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+        Text(
+            stringResource(if (busy) R.string.setup_importing else R.string.ui_690910f6ed17),
+            color = colors.textPrimary,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
 @Composable private fun InterestHeading(state: SetupState, colors: ReaderSheetPalette.Colors) {
     Column {
-        Text("Explore interests", color = colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.onboarding_explore_interests), color = colors.textPrimary, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
         if (state.categories.isNotEmpty()) {
-            Text("${state.categories.size} categories to choose from", Modifier.padding(top = 4.dp),
+            Text(pluralStringResource(R.plurals.setup_categories_to_choose_from, state.categories.size, state.categories.size), Modifier.padding(top = 4.dp),
                 color = colors.textSecondary, fontSize = 12.sp)
         }
     }
@@ -516,18 +530,19 @@ fun SetupScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(Icons.Outlined.Search, null, Modifier.size(20.dp), tint = colors.textSecondary)
+                    val searchDescription = stringResource(R.string.setup_search_interests_and_sites)
                     BasicTextField(
                         state.query, onSearch,
                         Modifier.padding(start = 8.dp).weight(1f)
                             .onFocusChanged { focused = it.isFocused }
-                            .semantics { contentDescription = "Search interests and sites" },
+                            .semantics { contentDescription = searchDescription },
                         singleLine = true,
                         textStyle = TextStyle(color = colors.textPrimary, fontSize = 15.sp),
                         cursorBrush = SolidColor(setupTeal),
                     )
                     if (state.query.isNotEmpty()) {
                         IconButton(onClick = { onSearch("") }, modifier = Modifier.size(28.dp)) {
-                            Icon(Icons.Outlined.Close, "Clear search", tint = colors.textSecondary)
+                            Icon(Icons.Outlined.Close, stringResource(R.string.feed_list_clear_search), tint = colors.textSecondary)
                         }
                     }
                 }
@@ -579,7 +594,7 @@ fun SetupScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Icon(categoryIcon(category), null, Modifier.size(23.dp), tint = colors.textPrimary)
             Text(
-                if (category.isEmpty()) "A little of everything" else OnboardingCatalog.title(category),
+                if (category.isEmpty()) stringResource(R.string.setup_a_little_of_everything) else OnboardingCatalog.title(category),
                 color = colors.textPrimary,
                 fontSize = 17.sp,
                 lineHeight = 20.sp,
@@ -603,7 +618,7 @@ fun SetupScreen(
         Row(Modifier.padding(top = 10.dp).alpha(if (count > 0) 1f else 0f), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Outlined.CheckCircle, null, Modifier.size(14.dp), tint = accent)
             Text(
-                "$count ${if (count == 1) "feed" else "feeds"} ${if (pending > 0) "selected" else "added"}",
+                pluralStringResource(if (pending > 0) R.plurals.setup_feeds_selected else R.plurals.setup_feeds_added, count, count),
                 Modifier.padding(start = 5.dp),
                 color = accent,
                 fontSize = 12.sp,
@@ -622,11 +637,11 @@ private fun categoryIcon(name: String): ImageVector =
         "design" in name || "art" in name -> Icons.Outlined.Palette
         "travel" in name -> Icons.Outlined.Public
         "music" in name -> Icons.Outlined.MusicNote
-        "sport" in name -> Icons.Outlined.DirectionsRun
+        "sport" in name -> Icons.AutoMirrored.Outlined.DirectionsRun
         "news" in name -> Icons.Outlined.Newspaper
-        "business" in name -> Icons.Outlined.TrendingUp
+        "business" in name -> Icons.AutoMirrored.Outlined.TrendingUp
         "gaming" in name -> Icons.Outlined.SportsEsports
-        "book" in name -> Icons.Outlined.MenuBook
+        "book" in name -> Icons.AutoMirrored.Outlined.MenuBook
         "nature" in name || "agriculture" in name -> Icons.Outlined.Eco
         "space" in name -> Icons.Outlined.NightsStay
         "architecture" in name -> Icons.Outlined.Apartment
@@ -691,7 +706,13 @@ private fun categoryIcon(name: String): ImageVector =
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FeedIcon(feed, state, colors)
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
                 Text(
                     android.net.Uri
                         .parse(feed.link)
@@ -734,7 +755,7 @@ private fun categoryIcon(name: String): ImageVector =
                 tint = setupTeal,
             )
             Text(
-                status ?: if (selected) "Included in bundle" else "Include in bundle",
+                status ?: stringResource(if (selected) R.string.setup_included_in_bundle else R.string.setup_include_in_bundle),
                 Modifier.padding(start = 6.dp),
                 color = colors.textSecondary,
                 fontSize = 14.sp,
@@ -756,18 +777,31 @@ private fun categoryIcon(name: String): ImageVector =
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FeedIcon(feed, state, colors)
             Column(Modifier.weight(1f)) {
-                Text(feed.title, color = colors.textPrimary, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-                Text(feed.url, color = colors.siteLink, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    feed.title,
+                    color = colors.textPrimary,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
+                Text(
+                    feed.url,
+                    color = colors.siteLink,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = LocalTextStyle.current.withContentDirection(),
+                )
             }
         }
         Spacer(Modifier.height(8.dp))
         FeedStatistics(feed, colors)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Box {
-                TextButton(onClick = { choose = true }) { Text(folder.ifEmpty { "All Site Stories" }, color = colors.siteLink) }
+                TextButton(onClick = { choose = true }) { Text(folder.ifEmpty { stringResource(R.string.all_stories_title) }, color = colors.siteLink) }
                 DropdownMenu(choose, { choose = false }) {
                     state.existingFolders.forEach { option ->
-                        DropdownMenuItem(text = { Text(option.ifEmpty { "All Site Stories" }) }, onClick = {
+                        DropdownMenuItem(text = { Text(option.ifEmpty { stringResource(R.string.all_stories_title) }) }, onClick = {
                             folder =
                                 option
                             ; choose = false
@@ -783,11 +817,11 @@ private fun categoryIcon(name: String): ImageVector =
                     if (feed.url in
                         progress.queued
                     ) {
-                        "Queued"
+                        stringResource(R.string.setup_queued)
                     } else if (unavailable) {
-                        "Added"
+                        stringResource(R.string.setup_added)
                     } else {
-                        "Add"
+                        stringResource(R.string.i18n_add)
                     },
                     color = colors.siteLink,
                 )
@@ -828,8 +862,7 @@ private fun categoryIcon(name: String): ImageVector =
                     Icon(Icons.Outlined.Check, null, Modifier.size(38.dp), tint = accent)
                 }
             }
-            Text(
-                "You’re all set up.",
+            Text(stringResource(R.string.onboarding_you_re_all_set_up),
                 color = colors.textPrimary,
                 fontSize = 32.sp,
                 lineHeight = 38.sp,
@@ -840,9 +873,9 @@ private fun categoryIcon(name: String): ImageVector =
                 if (count ==
                     0
                 ) {
-                    "Your reader is ready. Add feeds anytime from Add + Discover Sites."
+                    stringResource(R.string.setup_reader_ready_add_feeds_anytime)
                 } else {
-                    "A reading list that’s yours. Everything you chose, in one place."
+                    stringResource(R.string.setup_reading_list_yours)
                 },
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center,
@@ -855,14 +888,13 @@ private fun categoryIcon(name: String): ImageVector =
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Row {
-                    Text(
-                        "Your reading list",
+                    Text(stringResource(R.string.onboarding_your_reading_list),
                         Modifier.weight(1f),
                         color = colors.textPrimary,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    Text("$count ${if (count == 1) "feed" else "feeds"}", color = accent)
+                    Text(pluralStringResource(R.plurals.setup_feed_count, count, count), color = accent)
                 }
                 folders.forEach { (folder, feeds) ->
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -870,7 +902,7 @@ private fun categoryIcon(name: String): ImageVector =
                             Icon(Icons.Outlined.Folder, null, tint = accent)
                             Text(
                                 folder.ifEmpty {
-                                    "All Site Stories"
+                                    stringResource(R.string.all_stories_title)
                                 },
                                 Modifier.padding(start = 10.dp).weight(1f),
                                 color = colors.textPrimary,
@@ -893,8 +925,7 @@ private fun categoryIcon(name: String): ImageVector =
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(
-                "Stay connected",
+            Text(stringResource(R.string.onboarding_stay_connected),
                 Modifier.padding(horizontal = 4.dp),
                 color = colors.textSecondary,
                 fontWeight = FontWeight.SemiBold,
@@ -903,9 +934,21 @@ private fun categoryIcon(name: String): ImageVector =
             Column(Modifier.background(colors.cardBackground, RoundedCornerShape(22.dp))) {
                 val links =
                     listOf(
-                        Triple("NewsBlur Forum", "Ask questions and share ideas", "https://forum.newsblur.com"),
-                        Triple("@samuelclay on X", "From the creator of NewsBlur", "https://x.com/samuelclay"),
-                        Triple("@NewsBlur on X", "News and updates", "https://x.com/NewsBlur"),
+                        Triple(
+                            stringResource(R.string.setup_newsblur_forum),
+                            stringResource(R.string.setup_newsblur_forum_description),
+                            "https://forum.newsblur.com",
+                        ),
+                        Triple(
+                            stringResource(R.string.setup_handle_on_x, "@samuelclay"),
+                            stringResource(R.string.setup_samuelclay_on_x_description),
+                            "https://x.com/samuelclay",
+                        ),
+                        Triple(
+                            stringResource(R.string.setup_handle_on_x, "@NewsBlur"),
+                            stringResource(R.string.setup_newsblur_on_x_description),
+                            "https://x.com/NewsBlur",
+                        ),
                     )
                 links.forEachIndexed { i, link ->
                     if (i > 0) HorizontalDivider(Modifier.padding(start = 80.dp), color = colors.border.copy(alpha = .5f))
@@ -974,10 +1017,16 @@ private fun categoryIcon(name: String): ImageVector =
     Column {
         progress.failures.forEach { failure ->
             Text(
-                "${failure.feeds.size} feeds could not be added to ${failure.folder.ifEmpty { "All Site Stories" }}. ${failure.message}",
+                pluralStringResource(
+                    R.plurals.setup_feeds_could_not_be_added,
+                    failure.feeds.size,
+                    failure.feeds.size,
+                    failure.folder.ifEmpty { stringResource(R.string.all_stories_title) },
+                    failure.message,
+                ),
                 color = colors.textSecondary,
             )
-            TextButton(onClick = { model.queue.retry(failure) }) { Text("Retry", color = colors.siteLink) }
+            TextButton(onClick = { model.queue.retry(failure) }) { Text(stringResource(R.string.i18n_retry), color = colors.siteLink) }
         }
     }
 }
@@ -989,11 +1038,21 @@ private fun categoryIcon(name: String): ImageVector =
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                "${java.text.NumberFormat.getIntegerInstance().format(feed.subscribers)} subscribers",
+                pluralStringResource(
+                    R.plurals.discover_subscribers,
+                    feed.subscribers,
+                    java.text.NumberFormat.getIntegerInstance().format(feed.subscribers),
+                ),
                 color = colors.textSecondary,
                 fontSize = 12.sp,
             )
-            if (feed.storiesPerMonth > 0) Text("${feed.storiesPerMonth} stories/month", color = colors.textSecondary, fontSize = 12.sp)
+            if (feed.storiesPerMonth > 0) {
+                Text(
+                    pluralStringResource(R.plurals.setup_stories_per_month, feed.storiesPerMonth, feed.storiesPerMonth),
+                    color = colors.textSecondary,
+                    fontSize = 12.sp,
+                )
+            }
         }
         val date =
             com.newsblur.util.DiscoverFeedFreshnessFormatter
@@ -1001,12 +1060,9 @@ private fun categoryIcon(name: String): ImageVector =
                 ?: feed.stories.mapNotNull { it.timestamp?.times(1000) }.maxOrNull()
         if (date != null) {
             val stale = System.currentTimeMillis() - date > 365L * 86400000
+            val relative = DateUtils.getRelativeTimeSpanString(date, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
             Text(
-                "● ${if (stale) "Stale · last story" else "Updated"} ${DateUtils.getRelativeTimeSpanString(
-                    date,
-                    System.currentTimeMillis(),
-                    DateUtils.MINUTE_IN_MILLIS,
-                )}",
+                "● " + stringResource(if (stale) R.string.setup_feed_stale_last_story else R.string.discover_updated_relative, relative),
                 color = if (stale) colors.stale else colors.fresh,
                 fontSize = 12.sp,
             )

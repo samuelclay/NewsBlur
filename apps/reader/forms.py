@@ -21,13 +21,13 @@ class LoginForm(forms.Form):
         label=_("Username or Email"),
         max_length=30,
         widget=forms.TextInput(
-            attrs={"tabindex": 1, "class": "NB-input", "placeholder": "Username or email"}
+            attrs={"tabindex": 1, "class": "NB-input", "placeholder": _("Username or email")}
         ),
         error_messages={"required": "Please enter a username."},
     )
     password = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": "Password"}),
+        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": _("Password")}),
         required=False,
     )
     # error_messages={'required': 'Please enter a password.'})
@@ -95,7 +95,7 @@ class SignupForm(forms.Form):
     username = forms.RegexField(
         regex=r"^\w+$",
         max_length=30,
-        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": "Username"}),
+        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": _("Username")}),
         label=_("Username"),
         error_messages={
             "required": "Please enter a username.",
@@ -103,14 +103,16 @@ class SignupForm(forms.Form):
         },
     )
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={"maxlength": 75, "class": "NB-input", "placeholder": "Email address"}),
+        widget=forms.TextInput(
+            attrs={"maxlength": 75, "class": "NB-input", "placeholder": _("Email address")}
+        ),
         label=_("Email"),
         required=True,
         error_messages={"required": "Please enter an email."},
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "NB-input", "placeholder": "Password (optional)"},
+            attrs={"class": "NB-input", "placeholder": _("Password (optional)")},
             render_value=True,
         ),
         label=_("Password"),
@@ -147,13 +149,13 @@ class SignupForm(forms.Form):
                         email,
                     )
                 )
-                raise forms.ValidationError("Seriously, fuck off spammer.")
+                raise forms.ValidationError(_("Seriously, fuck off spammer."))
             try:
                 domain = email.rsplit("@", 1)[-1]
                 if not query(domain, "MX"):
-                    raise forms.ValidationError("Sorry, that email is invalid.")
+                    raise forms.ValidationError(_("Sorry, that email is invalid."))
             except (NXDOMAIN, NoNameservers, NoAnswer):
-                raise forms.ValidationError("Sorry, that email is invalid.")
+                raise forms.ValidationError(_("Sorry, that email is invalid."))
             except NoResolverConfiguration as e:
                 logging.info(f" ***> ~FRFailed to check spamminess of domain: ~FY{domain} ~FR{e}")
                 pass

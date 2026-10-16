@@ -19,7 +19,7 @@ struct NewslettersTabView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 DiscoverSearchBarView(
-                    placeholder: "Search newsletters...",
+                    placeholder: NBLocalization.text("Search newsletters..."),
                     text: $viewModel.newslettersState.searchQuery,
                     isLoading: viewModel.newslettersState.isSearching,
                     onSubmit: {
@@ -98,7 +98,7 @@ struct NewslettersTabView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
                 platformPill(
-                    label: "All", count: nil, isActive: viewModel.newslettersState.platformFilter == nil
+                    label: NBLocalization.text("All"), count: nil, isActive: viewModel.newslettersState.platformFilter == nil
                 ) {
                     viewModel.newslettersState.platformFilter = nil
                     reloadFeeds()

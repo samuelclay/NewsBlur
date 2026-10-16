@@ -8,6 +8,7 @@ plugins {
 }
 
 android {
+    bundle { language { enableSplit = false } }
     namespace = "com.newsblur"
     compileSdk =
         libs.versions.compileSdk

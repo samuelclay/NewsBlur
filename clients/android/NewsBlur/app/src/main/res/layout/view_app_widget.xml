@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center_vertical|start"
             android:contentDescription="@string/description_login_logo"
             android:scaleType="centerInside"
             android:src="@drawable/logo" />
