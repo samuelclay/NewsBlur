@@ -865,8 +865,11 @@ elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
 elif (os.cpu_count() or 0) <= 4:
     # newsblur_web/settings.py: The 4 CPU, 7 GB fetch servers (htask-celery-01 through 10) ran CPU
     # saturated at 24 processes and are the only ones the kernel OOM killer and the slow-start
-    # SIGKILLs hit. Fewer processes, each recycled sooner, so 16 of them fit in memory. Chosen by
-    # the CPU count the worker sees, so a server that's resized picks up the right setting.
+    # SIGKILLs hit. The memory cap is measured on RSS, which counts the ~190 MB a pool process
+    # shares with its parent: processes measured ~355 MB RSS, ~160 MB of it their own. 16 at the
+    # usual size use ~3 GB; 16 all at the 600 MB cap would use ~7 GB of the 7.7 GB, which is why
+    # the cap is lower here than on the 15 GB servers. Chosen by the CPU count the worker sees, so
+    # a server that's resized picks up the right setting.
     CELERY_WORKER_CONCURRENCY = 16
     CELERY_WORKER_MAX_MEMORY_PER_CHILD = 600 * 1024
 else:
