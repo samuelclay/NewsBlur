@@ -657,8 +657,9 @@
       "Clean cuts including brief native navigation into Saved Stories",
       "French captions and two-line disclosure fit without clipping"
     ],
-    "real_time_playback": "pending",
-    "reviewed_at": "2026-10-16"
+    "real_time_playback": "passed",
+    "reviewed_at": "2026-10-16",
+    "playback_method": "Played through at normal speed in QuickTime via native UI; observed feeds, stories, actual article scroll and settled Saved Stories ending. Closed only this preview document."
   },
   "output_sha256": "78a229bba54fd743da7d52ba8491ba0a47a6b25060dfa3a891f84256fa4955ba"
 }
