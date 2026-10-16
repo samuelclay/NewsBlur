@@ -1,0 +1,3 @@
+L’interface de NewsBlur est disponible en 21 langues. Choisissez la vôtre dans l’application, avec un aperçu dans votre langue et en anglais. L’arabe et l’hébreu se lisent de droite à gauche. Les articles restent tels que publiés.
+
+Les commandes de l’article suivant restent fixes, même lorsque Suivant devient Terminé. Les boutons de connexion sont plus lisibles dans les thèmes sombres.

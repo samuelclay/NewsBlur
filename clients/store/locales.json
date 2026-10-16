@@ -1,0 +1,239 @@
+{
+  "verified_at": "2026-10-16",
+  "language_source": "localization/languages.json",
+  "language_count": 21,
+  "locales": [
+    {
+      "language": "en",
+      "name": "English",
+      "apple": "en-US",
+      "google": "en-US"
+    },
+    {
+      "language": "es",
+      "name": "Español",
+      "apple": "es-ES",
+      "google": "es-ES"
+    },
+    {
+      "language": "fr",
+      "name": "Français",
+      "apple": "fr-FR",
+      "google": "fr-FR"
+    },
+    {
+      "language": "de",
+      "name": "Deutsch",
+      "apple": "de-DE",
+      "google": "de-DE"
+    },
+    {
+      "language": "pt-BR",
+      "name": "Português (Brasil)",
+      "apple": "pt-BR",
+      "google": "pt-BR"
+    },
+    {
+      "language": "it",
+      "name": "Italiano",
+      "apple": "it",
+      "google": "it-IT"
+    },
+    {
+      "language": "nl",
+      "name": "Nederlands",
+      "apple": "nl-NL",
+      "google": "nl-NL"
+    },
+    {
+      "language": "pl",
+      "name": "Polski",
+      "apple": "pl",
+      "google": "pl-PL"
+    },
+    {
+      "language": "tr",
+      "name": "Türkçe",
+      "apple": "tr",
+      "google": "tr-TR"
+    },
+    {
+      "language": "ru",
+      "name": "Русский",
+      "apple": "ru",
+      "google": "ru-RU"
+    },
+    {
+      "language": "uk",
+      "name": "Українська",
+      "apple": "uk",
+      "google": "uk"
+    },
+    {
+      "language": "ar",
+      "name": "العربية",
+      "apple": "ar-SA",
+      "google": "ar"
+    },
+    {
+      "language": "he",
+      "name": "עברית",
+      "apple": "he",
+      "google": "iw-IL"
+    },
+    {
+      "language": "hi",
+      "name": "हिन्दी",
+      "apple": "hi",
+      "google": "hi-IN"
+    },
+    {
+      "language": "id",
+      "name": "Bahasa Indonesia",
+      "apple": "id",
+      "google": "id"
+    },
+    {
+      "language": "vi",
+      "name": "Tiếng Việt",
+      "apple": "vi",
+      "google": "vi"
+    },
+    {
+      "language": "th",
+      "name": "ไทย",
+      "apple": "th",
+      "google": "th"
+    },
+    {
+      "language": "ja",
+      "name": "日本語",
+      "apple": "ja",
+      "google": "ja-JP"
+    },
+    {
+      "language": "ko",
+      "name": "한국어",
+      "apple": "ko",
+      "google": "ko-KR"
+    },
+    {
+      "language": "zh-Hans",
+      "name": "简体中文",
+      "apple": "zh-Hans",
+      "google": "zh-CN"
+    },
+    {
+      "language": "zh-Hant",
+      "name": "繁體中文",
+      "apple": "zh-Hant",
+      "google": "zh-TW"
+    }
+  ],
+  "unsupported": [],
+  "locale_notes": [
+    "The generic repo Spanish locale maps to Spain for the canonical 21-locale set. For Latin American distribution also generate/adapt es-MX on Apple and es-419 (and optionally es-US) on Google; do not assume es-ES serves every Spanish storefront.",
+    "Other optional regional variants: Apple English en-AU/en-CA/en-GB and French fr-CA; Google corresponding English/French and Traditional Chinese zh-HK. These are regional expansions, not additional supported app languages.",
+    "Never derive store identifiers by blindly appending regions. In particular Google Hebrew is iw-IL, Indonesian is id, Ukrainian is uk, Thai is th, Vietnamese is vi.",
+    "Inventory existing store locales before upload and preserve unrelated existing locales. Canonical mappings do not authorize deleting regional variants.",
+    "Locale text localization does not translate screenshots, screenshot captions, preview audio, privacy documents, or websites. Existing default assets can be inherited; distinguish that from localized assets."
+  ],
+  "limits": {
+    "apple": {
+      "name": {
+        "max": 30,
+        "min": 2,
+        "unit": "characters"
+      },
+      "subtitle": {
+        "max": 30,
+        "unit": "characters"
+      },
+      "promotionalText": {
+        "max": 170,
+        "unit": "characters"
+      },
+      "description": {
+        "max": 4000,
+        "unit": "characters",
+        "format": "plain text"
+      },
+      "keywords": {
+        "max": 100,
+        "unit": "UTF-8 bytes",
+        "notes": "Official platform-version reference explicitly says bytes. Use conservative UTF-8 validation."
+      },
+      "whatsNew": {
+        "max": 4000,
+        "unit": "characters"
+      }
+    },
+    "google": {
+      "title": {
+        "max": 30,
+        "unit": "Unicode characters"
+      },
+      "shortDescription": {
+        "max": 80,
+        "unit": "Unicode characters"
+      },
+      "fullDescription": {
+        "max": 4000,
+        "unit": "Unicode characters"
+      },
+      "releaseNotes": {
+        "max": 500,
+        "unit": "Unicode characters"
+      }
+    }
+  },
+  "localizable_fields": {
+    "apple_appInfoLocalizations": [
+      "name",
+      "subtitle",
+      "privacyPolicyUrl",
+      "privacyChoicesUrl"
+    ],
+    "apple_appStoreVersionLocalizations": [
+      "description",
+      "keywords",
+      "marketingUrl",
+      "promotionalText",
+      "supportUrl",
+      "whatsNew"
+    ],
+    "google_editsListings": [
+      "title",
+      "shortDescription",
+      "fullDescription",
+      "video"
+    ],
+    "google_trackReleaseNotes": [
+      "language",
+      "text"
+    ]
+  },
+  "global_or_separate": [
+    "Apple version/build/copyright, category, release settings and App Review notes/contact/test login are not per-locale marketing fields.",
+    "Google developer contact email/phone/website and default language are edits.details/global fields; privacy URL is separate console configuration.",
+    "In-app purchase/subscription localized display names and descriptions are separate resources and require an explicit inventory if all store language is intended to include them.",
+    "Keep valid shared URLs unchanged unless localized destinations actually exist. Brand NewsBlur stays unchanged."
+  ],
+  "api_upload": {
+    "apple": "Read appInfos and editable appStoreVersions. Upsert appInfoLocalizations and appStoreVersionLocalizations by exact locale with POST for missing/PATCH for existing. Fetch every resulting field again and compare. Metadata must be editable; submission/release is a separate operation.",
+    "google": "Create one edit; read existing listings and target track. Upsert edits.listings.update per locale, merging any existing video. Set releaseNotes=[{language,text},...] on target version release through edits.tracks. Preserve versionCodes/status/other release attributes. Validate edit, commit only within release authorization, then open a new read edit and compare. Listings are shared across tracks."
+  },
+  "sources": {
+    "apple_locale_codes": "https://developer.apple.com/documentation/appstoreconnectapi/managing-metadata-in-your-app-by-using-locale-shortcodes",
+    "apple_locale_codes_json": "https://developer.apple.com/tutorials/data/documentation/appstoreconnectapi/managing-metadata-in-your-app-by-using-locale-shortcodes.json",
+    "apple_supported_languages": "https://developer.apple.com/help/app-store-connect/reference/app-information/app-store-localizations/",
+    "apple_app_fields": "https://developer.apple.com/help/app-store-connect/reference/app-information/app-information/",
+    "apple_version_fields": "https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/",
+    "apple_localizing": "https://developer.apple.com/help/app-store-connect/manage-app-information/localize-app-information/",
+    "google_locales": "https://support.google.com/googleplay/android-developer/answer/9844778?hl=en",
+    "google_listing_limits": "https://support.google.com/googleplay/android-developer/answer/9859152?hl=en",
+    "google_release_notes_limit": "https://support.google.com/googleplay/android-developer/answer/9859348?hl=en",
+    "google_listings_api": "https://developers.google.com/android-publisher/api-ref/rest/v3/edits.listings",
+    "google_tracks_api": "https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks"
+  }
+}

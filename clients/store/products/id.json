@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Baca folder, cari, beri tag artikel tersimpan"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium dan arsip artikel permanen"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feed diambil setiap 5 hingga 15 menit"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "Langganan NewsBlur",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "Langganan NewsBlur Premium",
+        "description": "Baca isi folder dalam satu daftar, cari di feed Anda, beri tag artikel tersimpan, dan dapatkan pembaruan feed lebih cepat.",
+        "benefits": [
+          "Baca folder dalam satu daftar artikel",
+          "Cari di seluruh feed",
+          "Beri tag pada artikel tersimpan",
+          "Pembaruan feed lebih cepat"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "Langganan NewsBlur Premium Archive",
+        "description": "Semua fitur Premium, ditambah pengarsipan artikel permanen dan pencarian. Biarkan artikel berstatus belum dibaca selama yang Anda inginkan.",
+        "benefits": [
+          "Semua fitur Premium",
+          "Artikel belum dibaca tanpa batas waktu",
+          "Arsipkan setiap artikel secara permanen",
+          "Cari di seluruh arsip artikel Anda"
+        ]
+      }
+    }
+  }
+}

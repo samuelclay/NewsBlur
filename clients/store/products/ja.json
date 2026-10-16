@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "フォルダーをまとめて読む、検索、保存した記事へのタグ付け"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premiumの全機能に加え、記事を永久にアーカイブ"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "フィードを5〜15分ごとに取得"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlurのサブスクリプション",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premiumのサブスクリプション",
+        "description": "フォルダー内の記事をまとめて読み、フィードを検索し、保存した記事にタグを付けられます。フィードもより速く更新されます。",
+        "benefits": [
+          "フォルダー内の記事を1つの一覧で読む",
+          "複数のフィードを横断検索",
+          "保存した記事にタグを付ける",
+          "フィードをより速く更新"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archiveのサブスクリプション",
+        "description": "Premiumの全機能に加え、記事の永久アーカイブと検索が利用できます。記事を好きなだけ未読のまま残せます。",
+        "benefits": [
+          "Premiumのすべての機能",
+          "記事をいつまでも未読のまま残せる",
+          "すべての記事を永久にアーカイブ",
+          "記事アーカイブ全体を検索"
+        ]
+      }
+    }
+  }
+}

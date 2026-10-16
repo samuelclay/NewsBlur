@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "Ordner, Suche, Tags für gespeicherte Artikel"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium mit dauerhaftem Artikelarchiv"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "Feeds alle 5 bis 15 Minuten aktualisiert"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur-Abonnements",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium-Abonnement",
+        "description": "Lies Ordner in einer Liste, durchsuche deine Feeds, tagge gespeicherte Artikel und erhalte häufigere Feed-Updates.",
+        "benefits": [
+          "Ordner in einer Artikelliste lesen",
+          "Feeds übergreifend durchsuchen",
+          "Gespeicherte Artikel mit Tags ordnen",
+          "Häufigere Feed-Aktualisierungen"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive-Abonnement",
+        "description": "Alles aus Premium plus ein dauerhaftes, durchsuchbares Artikelarchiv. Lass Artikel so lange ungelesen, wie du möchtest.",
+        "benefits": [
+          "Alles aus Premium",
+          "Artikel für immer ungelesen lassen",
+          "Jeden Artikel dauerhaft archivieren",
+          "Das gesamte Artikelarchiv durchsuchen"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "ios": {
+    "subscriptions": {
+      "newsblur_premium_auto_renew_36": {
+        "name": "NewsBlur Premium",
+        "description": "फ़ोल्डर पढ़ें, खोजें, सहेजे गए लेख टैग करें"
+      },
+      "newsblur_premium_archive": {
+        "name": "NewsBlur Premium Archive",
+        "description": "Premium और लेखों का स्थायी संग्रह"
+      },
+      "newsblur_premium_pro": {
+        "name": "NewsBlur Premium Pro",
+        "description": "हर 5 से 15 मिनट में फ़ीड प्राप्त करें"
+      }
+    },
+    "subscription_groups": {
+      "20421002": {
+        "name": "NewsBlur सदस्यताएँ",
+        "app_name": "NewsBlur"
+      }
+    }
+  },
+  "android": {
+    "subscriptions": {
+      "nb.premium.36": {
+        "title": "NewsBlur Premium सदस्यता",
+        "description": "फ़ोल्डर एक साथ पढ़ें, अपनी फ़ीड में खोजें, सहेजे गए लेखों पर टैग लगाएँ और फ़ीड अपडेट जल्दी पाएँ।",
+        "benefits": [
+          "फ़ोल्डर एक ही लेख सूची में पढ़ें",
+          "सभी फ़ीड में खोजें",
+          "सहेजे गए लेखों पर टैग लगाएँ",
+          "ज़्यादा तेज़ फ़ीड अपडेट"
+        ]
+      },
+      "nb.premium.archive.99": {
+        "title": "NewsBlur Premium Archive सदस्यता",
+        "description": "Premium की सभी सुविधाएँ, साथ में लेखों का स्थायी संग्रह और खोज। लेखों को जितने समय चाहें, अपठित रखें।",
+        "benefits": [
+          "Premium की सभी सुविधाएँ",
+          "लेख हमेशा अपठित रख सकते हैं",
+          "हर लेख स्थायी रूप से संग्रहित करें",
+          "लेखों के पूरे संग्रह में खोजें"
+        ]
+      }
+    }
+  }
+}

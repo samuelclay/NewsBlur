@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur ora parla 21 lingue. Menu, pulsanti, impostazioni e configurazione iniziale seguono la lingua del dispositivo, oppure puoi sceglierne una nelle Preferenze. I tuoi articoli restano esattamente come sono stati pubblicati.\n\nIl selettore della lingua mostra un’anteprima del titolo, del messaggio e del pulsante nella lingua scelta, con l’inglese sotto. Arabo ed ebraico usano un’interfaccia da destra a sinistra.\n\nLe scorciatoie da tastiera ora funzionano quando l’elenco degli articoli ha il focus, e N apre il primo articolo non letto.\n\nSe una traduzione suona strana, segnalaci la lingua e dove l’hai vista sul forum di NewsBlur."
+  },
+  "android": {
+    "release_notes": "L’interfaccia di NewsBlur ora supporta 21 lingue. Scegli la tua nell’app, con un’anteprima nella tua lingua e in inglese. Arabo ed ebraico si leggono da destra a sinistra. Gli articoli restano come pubblicati.\n\nI controlli dell’articolo successivo restano fissi, anche quando Avanti diventa Fatto. I pulsanti di accesso sono più leggibili nei temi scuri."
+  }
+}
