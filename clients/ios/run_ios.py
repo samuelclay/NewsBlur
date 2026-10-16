@@ -12,6 +12,8 @@ Options:
 Actions:
     list                  - List available simulators with UDIDs
     boot                  - Boot the specified simulator if it is not already booted
+    shutdown              - Shut down the specified simulator, preserving its data
+    reconnect             - Reconnect this simulator's idb companion using the current environment
     restart               - Restart the specified simulator, preserving its data
     tap:<x>,<y>           - Tap at coordinates
     tap:<x>,<y>,<seconds> - Long press at coordinates for the given duration
@@ -141,8 +143,8 @@ def do_boot():
     subprocess.run(["xcrun", "simctl", "bootstatus", UDID, "-b"], check=True)
 
 
-def do_restart():
-    """run_ios.py restarts only the selected simulator without erasing its data."""
+def do_shutdown():
+    """run_ios.py shuts down only the selected simulator without erasing its data."""
     devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
     selected = next(
         (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
@@ -152,6 +154,11 @@ def do_restart():
         sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
     if selected["state"] != "Shutdown":
         subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
+
+
+def do_restart():
+    """run_ios.py restarts only the selected simulator without erasing its data."""
+    do_shutdown()
     do_boot()
 
 
@@ -400,6 +407,12 @@ def parse_and_execute(action):
 
     if cmd == "boot":
         do_boot()
+    elif cmd == "shutdown":
+        do_shutdown()
+    elif cmd == "reconnect":
+        # run_ios.py refreshes only this target's connection after a toolchain change.
+        subprocess.run(["idb", "disconnect", UDID], check=True)
+        subprocess.run(["idb", "connect", UDID], check=True)
     elif cmd == "tap":
         do_tap(arg)
     elif cmd == "restart":
