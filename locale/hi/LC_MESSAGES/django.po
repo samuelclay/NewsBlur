@@ -256,7 +256,7 @@ msgstr ""
 
 #, python-format
 msgid "%(username)s has requested to follow your Blurblog on NewsBlur"
-msgstr "%(username)s ने NewsBlur पर आपके Blurblog को फ़ॉलो करने का अनुरोध किया है।"
+msgstr "%(username)s ने NewsBlur पर आपके Blurblog को फ़ॉलो करने का अनुरोध किया है"
 
 #, python-format
 msgid "%(username)s is now following your Blurblog on NewsBlur!"
@@ -296,7 +296,7 @@ msgstr ""
 
 #, python-format
 msgid "%(username)s replied to you on \"%(story_title)s\" on NewsBlur"
-msgstr "%(username)s ने NewsBlur को “%(story_title)s” पर आपको जवाब दिया"
+msgstr "%(username)s ने NewsBlur पर “%(story_title)s” लेख पर आपको जवाब दिया"
 
 #, python-format
 msgid "%(username)s replied to you:"
@@ -412,7 +412,7 @@ msgid ""
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Archive</a> ($99/वर्ष) से आपके सभी लेख हमेशा के लिए संग्रहित और खोजने योग्य रहते हैं, "
-"साथ ही AI से पूछें, दैनिक ब्रीफ़िंग, 4,096 तक साइटें और कस्टम ऑटो-रीड सेटिंग्स मिलती हैं।"
+"साथ ही ‘AI से पूछें’, दैनिक ब्रीफ़िंग, 4,096 तक साइटें और कस्टम ऑटो-रीड सेटिंग्स मिलती हैं।"
 
 #, python-format
 msgid ""
@@ -421,8 +421,8 @@ msgid ""
 "to 10,000 sites, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> ($29/महीना) में सभी फ़ीड हर 5-15 मिनट में फ़ेच की जाती हैं, regex प्रशिक्षण, "
-"अधिकतम 10,000 साइटें और प्राथमिकता वाला सपोर्ट शामिल है।"
+"#366944;\">Premium Pro</a> ($29/माह) में आपकी सभी फ़ीड हर 5–15 मिनट में फ़ेच होती हैं, और साथ ही रेगेक्स "
+"प्रशिक्षण, 10,000 तक साइटें और प्राथमिकता वाली सहायता मिलती है।"
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -480,7 +480,7 @@ msgid ""
 "<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
 "access to your complete story archive."
 msgstr ""
-"<b>Premium Archive ($99/वर्ष) पर अपग्रेड करें</b> — इसमें अधिकतम 4,096 साइटें, पूर्ण-पाठ खोज और आपके पूरे "
+"<b>Premium Archive ($99/वर्ष) में अपग्रेड करें</b> — इसमें अधिकतम 4,096 साइटें, पूर्ण-पाठ खोज और आपके पूरे "
 "लेख संग्रह तक पहुँच शामिल है।"
 
 #, python-format
@@ -541,13 +541,13 @@ msgid "A *huge* thanks for going premium."
 msgstr "Premium लेने के लिए आपका *बहुत-बहुत* धन्यवाद।"
 
 msgid "A *huge* thanks for subscribing to the premium archive tier!"
-msgstr "Premium Archive टियर की सदस्यता लेने के लिए आपका *बहुत-बहुत* धन्यवाद!"
+msgstr "Premium Archive प्लान की सदस्यता लेने के लिए आपका *बहुत-बहुत* धन्यवाद!"
 
 msgid ""
 "A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the "
 "machines which store and process your archive."
 msgstr ""
-"प्रीमियम आर्काइव स्तर की सदस्यता लेने के लिए आपका <b>बहुत-बहुत</b> धन्यवाद। आपकी सदस्यता उन मशीनों के खर्च "
+"Premium Archive प्लान की सदस्यता लेने के लिए आपका <b>बहुत-बहुत</b> धन्यवाद। आपकी सदस्यता उन मशीनों के खर्च "
 "में मदद करती है जो आपके संग्रह को संग्रहीत और संसाधित करती हैं।"
 
 msgid "A <b>huge</b> thanks for going premium."
@@ -879,8 +879,8 @@ msgstr "स्वीकृत करें"
 #, python-format
 msgid "Approve or ignore this follow request <a href=\"https://%(domain)s%(autologin_url)s\">on NewsBlur</a>."
 msgstr ""
-"इस फ़ॉलो अनुरोध को स्वीकार करें या अनदेखा करें <a href=\"https://%(domain)s%(autologin_url)s\">on "
-"NewsBlur</a>।"
+"<a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur पर</a> इस फ़ॉलो अनुरोध को स्वीकार करें या अनदेखा "
+"करें।"
 
 msgid "Approve or ignore this follow request on NewsBlur:"
 msgstr "NewsBlur पर इस फ़ॉलो अनुरोध को स्वीकार करें या अनदेखा करें:"
@@ -1058,8 +1058,8 @@ msgid ""
 "price."
 msgstr ""
 "चूँकि आपकी सदस्यता PayPal के ज़रिए चलती है, PayPal ने NewsBlur को इस पुरानी सदस्यता को मौजूदा दर पर बदलने "
-"की अनुमति नहीं दी। पुराने PayPal सदस्यता को पुरानी रियायती दर पर फिर से नवीनीकृत होने से पहले मैंने रद्द कर"
-" दिया।"
+"की अनुमति नहीं दी। पुरानी रियायती दर पर दोबारा नवीनीकृत होने से पहले ही मैंने पुरानी PayPal सदस्यता रद्द कर"
+" दी है।"
 
 msgid ""
 "Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in "
@@ -1710,7 +1710,7 @@ msgid "Download the free iOS App"
 msgstr "मुफ़्त iOS ऐप डाउनलोड करें"
 
 msgid "Download the free iPad/iPhone App"
-msgstr "मुफ़्त iPad/iPhone ऐप डाउनलोड करें।"
+msgstr "मुफ़्त iPad/iPhone ऐप डाउनलोड करें"
 
 msgid "Download the latest version of the NewsBlur iOS app"
 msgstr "NewsBlur iOS ऐप का नवीनतम संस्करण डाउनलोड करें"
@@ -2083,8 +2083,8 @@ msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
 msgstr ""
-"न्यूज़लेटर्स के नाम बदलकर उन्हें अधिक उपयुक्त नाम दें। कभी-कभी न्यूज़लेटर्स के नाम किसी व्यक्ति के नाम जैसे"
-" होते हैं, जबकि उन्हें संगठन का नाम होना चाहिए। इन्हें आसानी से बदला जा सकता है!"
+"बेझिझक न्यूज़लेटरों के नाम बदलकर उन्हें अधिक उपयुक्त नाम दें। कभी-कभी न्यूज़लेटरों के नाम किसी व्यक्ति के "
+"नाम जैसे होते हैं, जबकि उन्हें संगठन का नाम होना चाहिए। इन्हें आसानी से बदला जा सकता है!"
 
 msgid "Fetching your feeds"
 msgstr "आपकी फ़ीड लाई जा रही हैं"
@@ -2347,7 +2347,7 @@ msgid "Full-text search"
 msgstr "पूर्ण-पाठ खोज"
 
 msgid "Full-text search across all your sites"
-msgstr "आपकी सभी साइटों पर पूरे लेख में खोजें"
+msgstr "आपकी सभी साइटों में पूर्ण-पाठ खोज"
 
 msgid ""
 "Full-text search every page the browser extension captured from your web browsing, or ask the Archive "
@@ -2712,8 +2712,8 @@ msgid ""
 "I am grateful you have stuck with NewsBlur for so long."
 msgstr ""
 "मैं आपके अगले नवीनीकरण से पहले आपको सूचित करना चाहता हूँ। NewsBlur Premium की दर अब <b>$36 प्रति वर्ष</b> "
-"होगी। अब तक आपको पुरानी, विशेष दर <b>$%(old_amount)s प्रति वर्ष</b> मिलती रही है, और इतने समय तक हमारे साथ "
-"बने रहने के लिए मैं आपका आभारी हूँ NewsBlur।"
+"होगी। अब तक आपको पुरानी, विशेष दर <b>$%(old_amount)s प्रति वर्ष</b> मिलती रही है, और इतने लंबे समय तक "
+"NewsBlur के साथ बने रहने के लिए मैं आपका आभारी हूँ।"
 
 #, python-format
 msgid ""
@@ -2996,11 +2996,11 @@ msgstr[1] ""
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
 msgstr ""
-"बस <a href=\"https://%(domain)s/?next=opml\">प्रबंधित करें NewsBlur > साइटें इंपोर्ट करें या अपलोड करें</a>"
-" पर जाएँ।"
+"बस <a href=\"https://%(domain)s/?next=opml\">NewsBlur प्रबंधित करें > साइटें आयात करें या अपलोड करें</a> पर"
+" जाएँ।"
 
 msgid "Just go to Manage NewsBlur > Import or upload sites."
-msgstr "बस प्रबंधित करें NewsBlur > साइटें इंपोर्ट करें या अपलोड करें पर जाएँ।"
+msgstr "बस “NewsBlur प्रबंधित करें > साइटें आयात करें या अपलोड करें” पर जाएँ।"
 
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "ज़्यादा मुफ़्त सदस्यता समय पाने के लिए अपना रेफ़रल लिंक साझा करते रहें। हर रेफ़रल से लाभ बढ़ता है!"
@@ -3487,8 +3487,8 @@ msgstr[1] "NewsBlur के संग्रह में पुराने ल�
 #, python-format
 msgid "NewsBlur archive backfill is complete: from %(before)s to %(after)s story"
 msgid_plural "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories"
-msgstr[0] "NewsBlur संग्रह का बैकफ़िल पूरा हुआ: %(before)s से %(after)s तक लेख"
-msgstr[1] "NewsBlur संग्रह का बैकफ़िल पूरा हुआ: %(before)s से %(after)s तक लेख"
+msgstr[0] "NewsBlur के संग्रह में पुराने लेख जोड़ने का काम पूरा हुआ: %(before)s से बढ़कर %(after)s लेख"
+msgstr[1] "NewsBlur के संग्रह में पुराने लेख जोड़ने का काम पूरा हुआ: %(before)s से बढ़कर %(after)s लेख"
 
 msgid ""
 "NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
@@ -3593,8 +3593,8 @@ msgid ""
 "NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an "
 "old instrument."
 msgstr ""
-"NewsBlur एक व्यक्तिगत ख़बर-पाठक है, जो लोगों को दुनिया के बारे में बातचीत करने के लिए जोड़ता है। एक पुराने "
-"वाद्य का नया स्वर।"
+"NewsBlur एक व्यक्तिगत न्यूज़ रीडर है, जो लोगों को दुनिया के बारे में बातचीत करने के लिए जोड़ता है। एक "
+"पुराने वाद्य का नया स्वर।"
 
 msgid ""
 "NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured"
@@ -4050,7 +4050,7 @@ msgstr ""
 
 #, python-format
 msgid "On a story entitled \"%(story_title)s\" from %(feed_title)s, %(username)s replied to you:"
-msgstr "%(feed_title)s के एक लेख, जिसका शीर्षक “%(story_title)s” है, पर %(username)s ने आपको जवाब दिया:"
+msgstr "%(feed_title)s के लेख “%(story_title)s” पर %(username)s ने आपको जवाब दिया:"
 
 #, python-format
 msgid ""
@@ -4273,8 +4273,8 @@ msgid ""
 "Premium Archive ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, "
 "up to 4,096 sites, and custom auto-read settings."
 msgstr ""
-"Premium Archive ($99/year) में आपके हर लेख को हमेशा के लिए संग्रहित और खोजने योग्य रखने की सुविधा, AI से "
-"पूछें, दैनिक ब्रीफ़िंग, 4,096 तक साइटें और अपनी पसंद के अनुसार स्वचालित-पठन सेटिंग्स शामिल हैं।"
+"Premium Archive ($99/वर्ष) में आपके हर लेख को हमेशा के लिए संग्रहित और खोजने योग्य रखने की सुविधा, ‘AI से "
+"पूछें’, दैनिक ब्रीफ़िंग, 4,096 तक साइटें और कस्टम ऑटो-रीड सेटिंग्स शामिल हैं।"
 
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur की कीमतें"
@@ -4298,8 +4298,8 @@ msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
 " and priority support."
 msgstr ""
-"Premium Pro ($29/माह) से सभी फ़ीड हर 5–15 मिनट में फ़ेच होती हैं, रेगेक्स प्रशिक्षण, 10,000 तक साइटें और "
-"प्राथमिकता वाली सहायता मिलती है।"
+"Premium Pro ($29/माह) में आपकी सभी फ़ीड हर 5–15 मिनट में फ़ेच होती हैं, और साथ ही रेगेक्स प्रशिक्षण, 10,000"
+" तक साइटें और प्राथमिकता वाली सहायता मिलती है।"
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur की कीमतें"
@@ -4468,7 +4468,7 @@ msgid "Re-analyzing page"
 msgstr "पृष्ठ का फिर से विश्लेषण हो रहा है"
 
 msgid "Re-subscribe at the new $36/year rate"
-msgstr "नई $36/वर्ष की दर पर फिर से सदस्यता लें।"
+msgstr "नई $36/वर्ष की दर पर फिर से सदस्यता लें"
 
 msgid "Read Stories"
 msgstr "पढ़े गए लेख"
@@ -4868,7 +4868,7 @@ msgstr ""
 "योजना आवश्यक है।"
 
 msgid "Say hello to your newest follower:"
-msgstr "आपके सबसे नए फ़ॉलोअर का स्वागत करें:"
+msgstr "अपने नए फ़ॉलोअर का स्वागत करें:"
 
 #, python-format
 msgid "Say hello to your newest follower: %(username)s."
@@ -4954,7 +4954,7 @@ msgid "Search your entire archive with full-text search"
 msgstr "पूर्ण-पाठ खोज से अपना पूरा संग्रह खोजें"
 
 msgid "Searching your sites and saved stories"
-msgstr "आपकी साइटों और सहेजे गए लेखों में खोज जारी है"
+msgstr "अपनी साइटों और सहेजे गए लेखों में खोज करना"
 
 msgid "Security Engineer"
 msgstr "सुरक्षा इंजीनियर"
@@ -5541,8 +5541,8 @@ msgstr "NewsBlur आज़माने के लिए धन्यवाद!"
 
 msgid "Thanks for trying out NewsBlur! I hope NewsBlur can make your daily reading more personal and intelligent."
 msgstr ""
-"NewsBlur आज़माने के लिए धन्यवाद! आशा है कि NewsBlur आपकी रोज़ाना की पढ़ाई को और व्यक्तिगत और समझदार बना "
-"सकेगा।"
+"NewsBlur आज़माने के लिए धन्यवाद! मुझे उम्मीद है कि NewsBlur आपके रोज़ाना के पढ़ने को अधिक व्यक्तिगत और "
+"समझदार बना सकेगा।"
 
 msgid "Thanks!"
 msgstr "धन्यवाद!"
@@ -6286,11 +6286,11 @@ msgstr "NewsBlur में आपका स्वागत है, %(username)s"
 
 #, python-format
 msgid "Welcome to NewsBlur, %(username)s!"
-msgstr "NewsBlur, %(username)s में आपका स्वागत है!"
+msgstr "NewsBlur में आपका स्वागत है, %(username)s!"
 
 #, python-format
 msgid "Welcome to NewsBlur, %(username)s."
-msgstr "NewsBlur, %(username)s में आपका स्वागत है।"
+msgstr "NewsBlur में आपका स्वागत है, %(username)s।"
 
 msgid "Welcome to your premium trial!"
 msgstr "आपके Premium ट्रायल में आपका स्वागत है!"
@@ -6626,7 +6626,7 @@ msgstr[1] "अब आपने <b>%(counter)s</b> साइटों की स�
 msgid "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved story."
 msgid_plural "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved stories."
 msgstr[0] "अब आपने <b>%(feed_count)s</b> साइट की सदस्यता ले ली है और आपके पास <b>%(counter)s</b> सहेजा गया लेख है।"
-msgstr[1] "अब आपने <b>%(feed_count)s</b> साइटों की सदस्यता ले ली है और आपके पास <b>%(counter)s</b> सहेजे गए लेख हैं।"
+msgstr[1] "अब आपने <b>%(feed_count)s</b> साइट की सदस्यता ले ली है और आपके पास <b>%(counter)s</b> सहेजे गए लेख हैं।"
 
 #, python-format
 msgid "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved story."
@@ -6638,9 +6638,9 @@ msgid ""
 "You can also move and delete newsletters just as if they were independent feeds. Training even works on "
 "newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do."
 msgstr ""
-"आप न्यूज़लेटर्स को ऐसे ही स्थानांतरित और हटा सकते हैं, जैसे वे स्वतंत्र फ़ीड हों। प्रशिक्षण न्यूज़लेटर्स पर"
-" भी काम करता है, इसलिए आप उन न्यूज़लेटर्स को छिपा सकते हैं जिन्हें आप पढ़ना नहीं चाहते, और जिन्हें पढ़ना "
-"चाहते हैं उन्हें प्रमुखता दे सकते हैं।"
+"आप न्यूज़लेटरों को भी ठीक वैसे ही स्थानांतरित और हटा सकते हैं, जैसे वे स्वतंत्र फ़ीड हों। प्रशिक्षण "
+"न्यूज़लेटरों पर भी काम करता है, इसलिए आप उन न्यूज़लेटरों को छिपा सकते हैं जिन्हें आप पढ़ना नहीं चाहते, और "
+"जिन्हें पढ़ना चाहते हैं उन्हें प्रमुखता दे सकते हैं।"
 
 msgid "You can change your password by visiting this link:"
 msgstr "आप इस लिंक पर जाकर अपना पासवर्ड बदल सकते हैं:"
@@ -6698,8 +6698,8 @@ msgstr ""
 #, python-format
 msgid "You follow %(counter)s person that %(username)s also follows:"
 msgid_plural "You follow %(counter)s people that %(username)s also follows:"
-msgstr[0] "आप %(username)s को भी फ़ॉलो करने वाले %(counter)s व्यक्ति को फ़ॉलो करते हैं:"
-msgstr[1] "आप %(username)s को भी फ़ॉलो करने वाले %(counter)s लोगों को फ़ॉलो करते हैं:"
+msgstr[0] "आप ऐसे %(counter)s व्यक्ति को फ़ॉलो करते हैं, जिसे %(username)s भी फ़ॉलो करते हैं:"
+msgstr[1] "आप ऐसे %(counter)s लोगों को फ़ॉलो करते हैं, जिन्हें %(username)s भी फ़ॉलो करते हैं:"
 
 #, python-format
 msgid "You follow %(counter)s person who follows %(username)s:"
@@ -6768,8 +6768,8 @@ msgid ""
 "You have just received your first email newsletter in NewsBlur. You can find your newsletters under the "
 "<b>%(folder)s</b> folder."
 msgstr ""
-"आपको NewsBlur में अपना पहला ईमेल न्यूज़लेटर मिला है। आप अपने न्यूज़लेटर्स <b>%(folder)s</b> फ़ोल्डर में पा "
-"सकते हैं।"
+"आपको NewsBlur में अभी अपना पहला ईमेल न्यूज़लेटर मिला है। आप अपने न्यूज़लेटर <b>%(folder)s</b> फ़ोल्डर में "
+"पा सकते हैं।"
 
 msgid "You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
 msgstr "आपने एक साथ कई फ़ीड स्थानांतरित की हैं, इसलिए एहतियात के तौर पर यहाँ आपकी सभी सदस्यताओं का बैकअप है।"
@@ -6900,8 +6900,8 @@ msgid ""
 "You'll be charged %(amount)s to continue your %(tier_name)s account on NewsBlur. No action needed on your "
 "part."
 msgstr ""
-"NewsBlur को आपका %(tier_name)s खाता जारी रखने के लिए आपसे %(amount)s लिया जाएगा। आपको कुछ करने की ज़रूरत "
-"नहीं है।"
+"आपके %(tier_name)s खाते को NewsBlur पर जारी रखने के लिए आपसे %(amount)s शुल्क लिया जाएगा। आपको कुछ करने की "
+"ज़रूरत नहीं है।"
 
 #, python-format
 msgid ""
@@ -6951,16 +6951,16 @@ msgstr "आपको प्रीमियम सदस्यता उपहा
 #, python-format
 msgid "You've earned %(credit_text)s of free %(tier_name)s as a thank you for spreading the word about NewsBlur."
 msgstr ""
-"NewsBlur के बारे में लोगों को बताने के लिए धन्यवादस्वरूप आपने %(credit_text)s की मुफ़्त %(tier_name)s "
-"अर्जित की है।"
+"NewsBlur के बारे में लोगों को बताने के लिए धन्यवाद के तौर पर आपको मुफ़्त %(tier_name)s मिला है, जो "
+"%(credit_text)s चलेगा।"
 
 #, python-format
 msgid ""
 "You've earned <b>%(credit_text)s</b> of free %(tier_name)s as a thank you for spreading the word about "
 "NewsBlur."
 msgstr ""
-"NewsBlur के बारे में दूसरों को बताने के लिए धन्यवाद के तौर पर आपको %(tier_name)s का <b>%(credit_text)s</b> "
-"मुफ़्त मिला है।"
+"NewsBlur के बारे में लोगों को बताने के लिए धन्यवाद के तौर पर आपको मुफ़्त %(tier_name)s मिला है, जो "
+"<b>%(credit_text)s</b> चलेगा।"
 
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
@@ -6981,7 +6981,7 @@ msgid "Your %(tier_name)s subscription renews soon"
 msgstr "आपकी %(tier_name)s सदस्यता जल्द ही नवीनीकृत होगी"
 
 msgid "Your 30-day NewsBlur premium trial has ended"
-msgstr "आपका 30-दिन का NewsBlur प्रीमियम ट्रायल समाप्त हो गया है।"
+msgstr "आपका 30-दिन का NewsBlur प्रीमियम ट्रायल समाप्त हो गया है"
 
 msgid "Your 30-day trial premium subscription has started. You now have full access to all premium features:"
 msgstr "आपका 30-दिन का Premium ट्रायल शुरू हो गया है। अब आपको सभी Premium सुविधाओं का पूरा ऐक्सेस है:"
