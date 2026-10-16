@@ -1,4 +1,4 @@
-# NewsBlur 16.0 release preparation
+# NewsBlur 16.0 release verification
 
 Prepared from source commit `69901cdd6`, tagged `iOS_16.0` and `Android_16.0`. Store copy is maintained separately from the tagged app binaries.
 
@@ -25,4 +25,18 @@ Export verification covered 21 listing/release locales, 63 Apple subscription lo
 
 ## Store status
 
-This document records preparation and source-based review. It does not establish that localized store text was uploaded, a release was submitted, or either version is publicly available. Record store readback and submission results separately after those steps complete. Screenshot assets and linked privacy/terms documents have not been translated by this text workflow.
+### iOS
+
+Submitted on October 16, 2026 at 11:05 AM PDT. [App Review submission 7d9b11c7-4321-47a3-a56c-57c0c21edb67](https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/7d9b11c7-4321-47a3-a56c-57c0c21edb67) shows **Waiting for Review** for all five items:
+
+- iOS 16.0, build 343.
+- Premium, Archive, and Pro subscriptions.
+- Subscription group `20421002`.
+
+All 21 app and version localizations, all 63 subscription localizations, and all 21 subscription-group localizations were saved and read back against the canonical files. The existing British English Premium localization was also updated. Product identifiers, billing periods, prices, and offers were preserved. Automatic release after approval is selected, with immediate availability to all users rather than phased release. Submission does not mean approval or public availability.
+
+### Android
+
+The signed 16.0 bundle (version code 292), 21 store listings, and 21 release-note localizations are staged and verified in an uncommitted Play API edit. Subscription text and production submission are still in progress; Android is not yet submitted.
+
+Screenshot assets and linked privacy/terms documents have not been translated by this text workflow.
