@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NewsBlur · App Store screenshot directions</title>
+<style>
+:root{color-scheme:light;--cream:#edefeb;--sage:#dbe1d3;--ink:#272c25;--muted:#68715d;--gold:#ba9940;--rule:#ccd3c4}*{box-sizing:border-box}body{margin:0;background:#f7f8f5;color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,a{font:inherit}button{cursor:pointer}header,main,footer{max-width:1500px;margin:auto;padding:28px 32px}header{padding-top:36px;padding-bottom:24px}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted)}h1{font-size:30px;font-weight:580;letter-spacing:-1px;margin:6px 0}header p{max-width:840px;margin:0;color:var(--muted)}.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:22px}.controls button,.back{border:1px solid var(--rule);border-radius:7px;background:white;padding:8px 13px;color:var(--ink);text-decoration:none}.controls button[aria-pressed=true]{background:var(--ink);color:white;border-color:var(--ink)}button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.spacer{flex:1}.capture-status{font-size:12px;margin-top:15px;color:var(--muted)}.capture-status.missing{color:#934323}main.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:38px 28px;padding-top:0}.concept{min-width:0}.concept-heading{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}.concept-heading a{color:inherit;text-decoration:none}.concept-heading a:hover{text-decoration:underline}.concept-number{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}.concept h2{font-size:20px;font-weight:580;letter-spacing:-.35px;margin:0}.concept-description{font-size:13px;color:var(--muted);margin:0 0 13px;min-height:39px}.sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.panel{container-type:inline-size;position:relative;overflow:hidden;aspect-ratio:1320/2868;background:var(--cream);color:var(--ink);isolation:isolate}.ipad .panel{aspect-ratio:2064/2752}.panel:before,.panel:after{content:"";position:absolute;pointer-events:none;z-index:-1}.brand{position:absolute;left:8%;top:4.3%;display:flex;align-items:center;gap:1.7cqw;font-size:3.2cqw;line-height:1;font-weight:600}.brand img{width:5.2cqw;height:5.2cqw;border-radius:1.1cqw}.headline{position:absolute;left:8%;top:10%;width:84%;margin:0;font-size:8.8cqw;line-height:1.09;letter-spacing:-.35cqw;font-weight:580;text-wrap:balance}.section-tag{position:absolute;left:8%;bottom:2.7%;color:var(--muted);font-size:2.8cqw;letter-spacing:.1cqw}.index-mark{position:absolute;right:8%;bottom:2.7%;font-size:2.8cqw;color:var(--muted)}.device{position:absolute;width:76%;aspect-ratio:1470/3000;left:12%;bottom:6.2%;z-index:2}.device .bezel{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:block}.display{position:absolute;left:5.1020408%;right:5.1020408%;top:2.2%;bottom:2.2%;overflow:hidden;background:#e8eae5;border-radius:14% / 6.5%}.display img{width:100%;height:100%;display:block}.ipad .device{width:70%;left:15%;aspect-ratio:2300/3000;bottom:6.5%}.ipad .display{inset:4.1333333% 5.1304348%;border-radius:3.1% / 2.3%}.ipad .brand{top:4%}.ipad .headline{font-size:7.7cqw;top:11%;line-height:1.08}.missing-image{position:absolute;inset:0;display:grid;place-items:center;padding:15%;text-align:center;color:#65705b;font-size:3cqw;line-height:1.3}.missing-image[hidden]{display:none}.detail{display:none}.footer-ticks{display:none}
+/* Direction 01: a full-width sage field anchors the unbroken device. */
+.sage-panels:before{inset:26% 0 0;background:var(--sage);border-top:1px solid #c8d0be}.sage-panels .headline{width:80%}.sage-panels .section-tag{border-top:1px solid #b8c3ac;padding-top:1cqw;width:35%}
+.sage-panels .headline,.sage-panels .section-tag{unicode-bidi:plaintext}.sage-panels .headline[dir=rtl]{text-align:right;letter-spacing:normal}.sage-panels .section-tag[dir=rtl]{text-align:right;letter-spacing:normal}.sage-panels .section-tag{white-space:nowrap}.export .panel{width:var(--export-width);height:var(--export-height);aspect-ratio:auto}.sequence.four-panels{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* Direction 02: an inset gallery mat with a thin offset rule. */
+.quiet-gallery{background:#f6f3ec}.quiet-gallery:before{inset:25% 6% 5%;background:#dce3d6;border-radius:3cqw}.quiet-gallery:after{inset:27% 9% 7%;border:1px solid #b8c2ae;border-radius:2cqw}.quiet-gallery .headline{font-size:8.25cqw}.quiet-gallery .device{width:72%;left:14%;bottom:8.4%}.quiet-gallery .section-tag{bottom:1.7%}.quiet-gallery .index-mark{bottom:1.7%}.ipad .quiet-gallery .device{width:67%;left:16.5%;bottom:8%}
+/* Direction 03: asymmetrical editorial column, with the device kept whole. */
+.reading-columns:before{inset:0 0 0 37%;background:var(--sage);border-left:1px solid #c7d0bd}.reading-columns .headline{left:7%;top:24%;width:32%;font-size:8cqw;line-height:1.09;letter-spacing:-.3cqw;text-wrap:pretty}.reading-columns .device{width:59%;left:39%;bottom:18%}.reading-columns .brand{left:7%;top:6%}.reading-columns .section-tag{left:7%;bottom:10%;width:25%;font-size:3.1cqw}.reading-columns .index-mark{left:7%;right:auto;bottom:6%;border-top:1px solid #b5beab;padding-top:2cqw;width:20%}.reading-columns.panel-2:before{background:#cbd5bd}.reading-columns.panel-3:before{background:#e1d8c3}.ipad .reading-columns .device{width:61%;left:37%;bottom:16%}.ipad .reading-columns .headline{font-size:7.2cqw;top:27%;width:29%}
+/* Direction 04: aligned horizontal bands join the sequence without depending on adjacent cards. */
+.connected-shelf:before{left:0;right:0;top:45%;height:31%;background:#d0dbc4;border-top:1px solid #c1cdb5;border-bottom:1px solid #b5c3a7}.connected-shelf:after{left:8%;right:8%;bottom:5%;border-top:1px solid #c7ccbf}.connected-shelf .device{width:73%;left:13.5%;bottom:7%}.connected-shelf .headline{top:11%;font-size:8.1cqw}.connected-shelf .index-mark{color:#9b7c28}.connected-shelf .section-tag{font-size:2.7cqw}.ipad .connected-shelf .device{width:68%;left:16%;bottom:7%}
+/* Direction 05 changes the exterior only; source screenshots retain their actual theme. */
+.evening-reading{background:#252e27;color:#f2f1e9}.evening-reading:before{inset:25% 6% 5%;background:#354338;border:1px solid #4e5c4a}.evening-reading:after{left:8%;top:8.7%;width:16%;height:1px;background:#ba9940}.evening-reading .headline{font-size:8.2cqw;top:11.5%;font-weight:540}.evening-reading .section-tag,.evening-reading .index-mark{color:#c1cbb6}.evening-reading .device{width:72%;left:14%;bottom:7.5%}.ipad .evening-reading .device{width:68%;left:16%;bottom:7%}
+/* Direction 06 uses typography and rules, without textures or illustration. */
+.editorial-folio{background:#f4f0e7}.editorial-folio:before{left:8%;right:8%;top:8%;height:1px;background:#adaf99}.editorial-folio:after{left:8%;right:8%;bottom:5%;height:1px;background:#adaf99}.editorial-folio .brand{top:4%;font-size:2.8cqw;letter-spacing:.15cqw}.editorial-folio .brand img{width:4.5cqw;height:4.5cqw}.editorial-folio .headline{font-family:Georgia,"Times New Roman",serif;font-size:9.9cqw;font-weight:400;letter-spacing:-.4cqw;line-height:1.02;top:10.4%}.editorial-folio .device{width:70%;left:15%;bottom:7.3%}.editorial-folio .index-mark{font-family:Georgia,serif}.ipad .editorial-folio .headline{font-size:8.7cqw}.ipad .editorial-folio .device{width:66%;left:17%;bottom:7%}
+/* Direction 07's detail is a crop of the same capture, never a reconstructed control. */
+.feature-window:before{inset:29% 0 0;background:#dbe1d3}.feature-window:after{left:65%;width:4%;top:64.6%;height:1px;background:#a7b49a}.feature-window .headline{font-size:8.5cqw}.feature-window .device{width:60%;left:5%;bottom:10%}.feature-window .detail{display:block;position:absolute;z-index:3;width:27%;aspect-ratio:1.16;right:4%;bottom:30%;background:#fff;border:.7cqw solid #f9faf7;outline:1px solid #a7b49a;overflow:hidden;border-radius:2.3cqw}.feature-window .detail img{width:300%;max-width:none;height:auto;position:absolute;top:0;left:0;transform:translate(-8%,-23%)}.feature-window.panel-2 .detail img{transform:translate(-3%,-12%)}.feature-window.panel-3 .detail img{transform:translate(-3%,-25%)}.feature-window .detail:after{content:"";position:absolute;inset:0;border:1px solid #cbd4c3;pointer-events:none}.feature-window .section-tag{bottom:3.2%}.ipad .feature-window .device{width:60%;left:5%;bottom:9%}.ipad .feature-window:after{top:61.3%}.ipad .feature-window .detail img{transform:translate(-8%,-20%)}
+/* Direction 08: a contained cream panel and modest sequence markers. */
+.framed-collection{background:#d2dcc6}.framed-collection:before{inset:3%;background:#f2f3ee;border:1px solid #c3ceba;border-radius:4cqw}.framed-collection .brand{left:10%;top:6%}.framed-collection .headline{left:10%;top:12%;width:80%;font-size:9cqw}.framed-collection .device{width:72%;left:14%;bottom:10%}.framed-collection .section-tag{display:none}.framed-collection .index-mark{right:10%;bottom:5.8%;font-size:2.4cqw}.framed-collection .footer-ticks{position:absolute;display:flex;left:10%;bottom:6%;gap:1.8cqw}.footer-ticks i{width:5cqw;height:.65cqw;background:#c3ccba}.footer-ticks i.current{background:#899c70}.ipad .framed-collection .headline{font-size:8cqw}.ipad .framed-collection .device{width:65%;left:17.5%;bottom:10%}
+.focus main.gallery{display:block;max-width:1300px}.focus .concept-description{min-height:0}.focus .sequence{gap:18px}.focus .concept-heading{margin-bottom:7px}.contact header{padding-top:20px}.contact header p,.contact .controls,.contact footer{display:none}.contact main.gallery{gap:20px 24px}.contact .concept-description{font-size:11px;min-height:0}.contact .concept h2{font-size:17px}.export header,.export footer,.export .concept-heading,.export .concept-description{display:none}.export main.gallery{padding:0;max-width:none;display:block}.export .sequence{display:block}.export .panel{width:100vw}.export .concept{margin:0}.export .export-error{position:fixed;inset:0;z-index:100;background:#fff4e9;display:grid;place-items:center;padding:15%;font:20px/1.5 system-ui}.export-error[hidden]{display:none!important}footer{padding-top:0;font-size:12px;color:var(--muted)}footer a{color:inherit}@media(max-width:900px){main.gallery{grid-template-columns:1fr}.concept-description{min-height:0}.focus .sequence{gap:7px}}@media(max-width:550px){header,main,footer{padding-left:16px;padding-right:16px}h1{font-size:25px}.controls{gap:6px}.controls button,.back{font-size:13px}.spacer{display:none}.focus .sequence{display:block}.focus .panel{margin-bottom:15px}.concept-description{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">NewsBlur · iOS 16.0 · Screenshot design study</div>
+  <h1>Eight ways to tell the same story.</h1>
+  <p>A curated cooking demo account in the current NewsBlur app, official Apple devices, and a quieter visual language. The selected Sage panels direction includes four images; the other seven retain their original three-image studies.</p>
+  <div class="controls">
+    <button type="button" data-device="iphone">iPhone</button>
+    <button type="button" data-device="ipad">iPad</button>
+    <span class="spacer"></span>
+    <button type="button" data-mode="gallery">Compare eight</button>
+    <button type="button" data-mode="contact">Contact sheet</button>
+    <a class="back" href="../selected/">Approved creative artwork</a>
+  </div>
+  <div class="capture-status" aria-live="polite">Checking source captures…</div>
+</header>
+<main class="gallery" aria-label="Screenshot concepts"></main>
+<footer>Editable HTML, CSS, copy, and raw captures live in this directory. The current native app renders an isolated demo account with ten fictional cooking sources, twenty original stories, and five licensed Unsplash photographs. Screenshots preserve the actual app interface. Device bezels are the original <a href="https://developer.apple.com/design/resources/#product-bezels">Apple Design Resources</a> files already approved for this project. These are concept previews, not submitted store assets.</footer>
+<div class="export-error" hidden></div>
+<script>
+const concepts = [
+  {id:'01',style:'sage-panels',name:'Sage panels',description:'A confident sage base, a clean headline, and one large upright device.',headlines:['Your daily reading, in one place.','A home for your favorite sources.','Settle into a good read.'],captures:['stories','feeds','reader'],labels:['Daily reading','Favorite sources','Reading view']},
+  {id:'02',style:'quiet-gallery',name:'Quiet gallery',description:'Warm cream, an inset sage mat, and a fine offset border.',headlines:['Follow your favorite food writers.','Browse their latest stories.','Keep something good for later.'],captures:['feeds','stories','saved'],labels:['Follow','Browse','Save']},
+  {id:'03',style:'reading-columns',name:'Reading columns',description:'A narrow editorial column balances the device against a broad color field.',headlines:['All your favorite sources.','One reading list.','Read in comfort.'],captures:['feeds','stories','reader'],labels:['Your sources','Together','Your reading']},
+  {id:'04',style:'connected-shelf',name:'Connected shelf',description:'A continuous horizontal band gives the three images a shared rhythm.',headlines:['Find your next good read.','Read it your way.','Save it for another day.'],captures:['stories','reader','saved'],labels:['Find','Read','Keep']},
+  {id:'05',style:'evening-reading',name:'Evening reading',description:'Deep green surrounds, warm ivory type, and a restrained gold rule.',headlines:['Make time for your favorite reads.','A view that suits you.','Your saved stories, close at hand.'],captures:['stories','reader','saved'],labels:['Your reading','Your view','Your collection']},
+  {id:'06',style:'editorial-folio',name:'Editorial folio',description:'A literary serif, fine rules, and a generous device make a quiet reading journal.',headlines:['A little inspiration, every day.','The sources you come back to.','Read beyond the headline.'],captures:['stories','feeds','reader'],labels:['The daily edit','The collection','The full story']},
+  {id:'07',style:'feature-window',name:'Feature window',description:'A complete device and one precise crop reveal the real interface in more detail.',headlines:['Bring your sources together.','Keep a good read for later.','Make room for a good story.'],captures:['feeds','saved','reader'],labels:['Your sources','Saved stories','Reading view']},
+  {id:'08',style:'framed-collection',name:'Framed collection',description:'A softly framed cream panel with compact sequence markers and generous devices.',headlines:['Follow what you love.','Browse what’s new.','Read at your own pace.'],captures:['feeds','stories','reader'],labels:['Follow','Browse','Read']}
+];
+const params=new URLSearchParams(location.search);
+let device=params.get('device')==='ipad'?'ipad':'iphone';
+let mode=params.get('mode')==='contact'?'contact':'gallery';
+const requested=params.get('concept');
+const focused=concepts.find(c=>c.id===String(requested||'').padStart(2,'0'));
+const exporting=params.get('export')==='1';
+const language=params.get('lang')||'en';
+const direction=['ar','he'].includes(language)?'rtl':'ltr';
+const panelIndex=(Number(params.get('panel'))||1)-1;
+const exportSizes={'1320x2868':'iphone','1206x2622':'iphone','2064x2752':'ipad'};
+const requestedSize=params.get('size');
+if(requestedSize&&exportSizes[requestedSize]&&!params.has('device'))device=exportSizes[requestedSize];
+const escapeHtml=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+// index.html permits existing root captures only for English, never for another locale.
+function screenshotPath(capture){return `captures/${language==='en'?'':'localized/'+language+'/'}${device}-${capture}.png`}
+const localizedCopy=(async()=>{
+ if(!/^[a-z]{2}(?:-[A-Za-z]{2,4})?$/.test(language))throw new Error('Invalid language code.');
+ const response=await fetch(`copy/${language}.json`);
+ if(!response.ok)throw new Error(`Missing canonical copy for ${language}.`);
+ const copy=await response.json();
+ if(copy.language!==language||!Array.isArray(copy.headlines)||copy.headlines.length!==4||!Array.isArray(copy.labels)||copy.labels.length!==4||![...copy.headlines,...copy.labels].every(value=>typeof value==='string'&&value.trim()))throw new Error(`Invalid canonical copy for ${language}.`);
+ concepts[0].headlines=copy.headlines;
+ concepts[0].labels=copy.labels;
+ concepts[0].captures=['stories','feeds','reader','saved'];
+ return copy;
+})();
+function panel(concept,i){
+ const capture=screenshotPath(concept.captures[i]);
+ const bezel=device==='ipad'?'ipad-pro-m5.png':'iphone-18-pro-max.png';
+ const textDirection=concept.id==='01'?direction:'ltr';
+ return `<section class="panel ${concept.style} panel-${i+1}" aria-label="${escapeHtml(concept.headlines[i])}"><div class="brand"><img src="../selected/assets/icon.png" alt="">NewsBlur</div><h3 class="headline" dir="${textDirection}">${escapeHtml(concept.headlines[i])}</h3><div class="device"><div class="display"><img class="capture" src="${capture}" alt="NewsBlur ${escapeHtml(concept.captures[i])} screen"><div class="missing-image" hidden>Missing ${escapeHtml(language)} ${device==='ipad'?'iPad':'iPhone'} capture</div></div><img class="bezel" src="../selected/assets/${bezel}" alt=""></div>${concept.style==='feature-window'?`<div class="detail" aria-hidden="true"><img class="capture" src="${capture}" alt=""></div>`:''}<span class="section-tag" dir="${textDirection}">${escapeHtml(concept.labels[i])}</span><span class="index-mark">0${i+1} / 0${concept.captures.length}</span><div class="footer-ticks" aria-hidden="true">${concept.captures.map((_,n)=>`<i class="${n===i?'current':''}"></i>`).join('')}</div></section>`;
+}
+function url(values){const q=new URLSearchParams({lang:language,...values});return '?'+q.toString()}
+function fitText(element,maxHeight){
+ const initial=parseFloat(getComputedStyle(element).fontSize);
+ const minimum=initial*.55;
+ let size=initial;
+ while((element.scrollWidth>element.clientWidth+1||element.getBoundingClientRect().height>maxHeight)&&size>minimum){
+  size=Math.max(minimum,size-.5);
+  element.style.fontSize=`${size}px`;
+ }
+ return element.scrollWidth<=element.clientWidth+1&&element.getBoundingClientRect().height<=maxHeight;
+}
+function fitLocalizedPanels(){
+ return [...document.querySelectorAll('.sage-panels')].every(panel=>{
+  const headline=panel.querySelector('.headline');
+  const deviceTop=panel.querySelector('.device').getBoundingClientRect().top;
+  const gap=panel.clientWidth*.018;
+  const headlineFits=fitText(headline,deviceTop-headline.getBoundingClientRect().top-gap);
+  const labelFits=fitText(panel.querySelector('.section-tag'),panel.clientHeight*.05);
+  return headlineFits&&labelFits;
+ });
+}
+function showError(message){
+ document.documentElement.dataset.ready='false';
+ document.documentElement.dataset.error=message;
+ const error=document.querySelector('.export-error');
+ error.hidden=false;
+ error.textContent=message;
+ document.querySelector('.capture-status').textContent=message;
+}
+let renderGeneration=0;
+async function render(){
+ const generation=++renderGeneration;
+ document.documentElement.dataset.ready='false';
+ delete document.documentElement.dataset.error;
+ document.documentElement.lang=language;
+ document.body.className=[device,mode,focused?'focus':'',exporting?'export':''].join(' ');
+ await localizedCopy;
+ if(generation!==renderGeneration)return;
+ const size=requestedSize||(device==='ipad'?'2064x2752':'1320x2868');
+ if(!exportSizes[size]||exportSizes[size]!==device)throw new Error(`Unsupported export size ${size} for ${device}.`);
+ const [width,height]=size.split('x').map(Number);
+ document.documentElement.style.setProperty('--export-width',`${width}px`);
+ document.documentElement.style.setProperty('--export-height',`${height}px`);
+ document.documentElement.dataset.exportSize=size;
+ const list=focused?[focused]:exporting?[concepts[0]]:concepts;
+ if(exporting&&(!Number.isInteger(panelIndex)||panelIndex<0||panelIndex>=list[0].captures.length))throw new Error('Panel number is outside the selected sequence.');
+ if(exporting&&language!=='en'&&list[0].id!=='01')throw new Error('Only selected concept 01 has approved localized copy.');
+ document.querySelector('main').innerHTML=list.map(c=>`<article class="concept" id="concept-${c.id}"><div class="concept-heading"><span class="concept-number">${c.id}</span><h2><a href="${url({concept:c.id,device})}">${c.name}</a></h2></div><p class="concept-description">${c.description}</p><div class="sequence ${c.captures.length===4?'four-panels':''}">${(exporting?[panelIndex]:c.captures.map((_,i)=>i)).map(i=>panel(c,i)).join('')}</div></article>`).join('');
+ document.querySelectorAll('[data-device]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.device===device)));
+ document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(!focused&&b.dataset.mode===mode)));
+ const images=[...document.querySelectorAll('main img')];
+ const checks=await Promise.all(images.map(img=>new Promise(resolve=>{
+  const done=()=>resolve({img,ok:img.naturalWidth>0});
+  if(img.complete)done();else{img.addEventListener('load',done,{once:true});img.addEventListener('error',done,{once:true})}
+ })));
+ await Promise.all(checks.filter(check=>check.ok).map(async check=>{
+  try{await check.img.decode()}catch{check.ok=false}
+ }));
+ await document.fonts.ready;
+ await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ if(generation!==renderGeneration)return;
+ const failed=checks.filter(x=>!x.ok);
+ const expectedCapture=device==='ipad'?[2064,2752]:[1320,2868];
+ const wrongSize=checks.filter(({img,ok})=>ok&&img.classList.contains('capture')&&(img.naturalWidth!==expectedCapture[0]||img.naturalHeight!==expectedCapture[1]));
+ const fontFits=fitLocalizedPanels();
+ failed.forEach(({img})=>{const notice=img.parentElement.querySelector('.missing-image');if(notice)notice.hidden=false});
+ const status=document.querySelector('.capture-status');
+ status.classList.toggle('missing',failed.length>0);
+ const missing=[...new Set(failed.map(x=>x.img.getAttribute('src')))];
+ status.textContent=missing.length?`Internal preview: ${missing.length} source image${missing.length===1?' is':'s are'} still missing for ${language}. Final review requires every capture.`:`All ${language} source images loaded. Showing ${device==='ipad'?'iPad':'iPhone'} captures of the curated cooking demo account.`;
+ const error=document.querySelector('.export-error');
+ error.hidden=!exporting||!failed.length;
+ error.textContent='Export blocked: source captures or device artwork are missing. Supply the real images and reload.';
+ document.documentElement.dataset.missingImages=String(missing.length);
+ document.documentElement.dataset.fontFit=String(fontFits);
+ if(wrongSize.length)throw new Error(`Export blocked: native ${device} captures must be ${expectedCapture.join('×')} pixels.`);
+ if(!fontFits)throw new Error('Export blocked: localized headline or label does not fit.');
+ if(exporting&&(innerWidth!==width||innerHeight!==height))throw new Error(`Export blocked: use an exact ${width}×${height} viewport at device scale 1.`);
+ if(exporting&&devicePixelRatio!==1)throw new Error('Export blocked: use device scale 1 for exact output dimensions.');
+ document.documentElement.dataset.ready=failed.length?'false':'true';
+}
+document.querySelectorAll('[data-device]').forEach(b=>b.addEventListener('click',()=>{device=b.dataset.device;const q=new URLSearchParams(location.search);q.set('device',device);history.replaceState(null,'','?'+q);render().catch(error=>showError(error.message))}));
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{location.search=url({device,mode:b.dataset.mode})}));
+render().catch(error=>showError(error.message));
+</script>
+</body>
+</html>
