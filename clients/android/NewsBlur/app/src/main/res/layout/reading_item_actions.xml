@@ -205,7 +205,7 @@
 
     </RelativeLayout>
 
-    <!-- reading_item_actions.xml reserves one real traversal row after all comments. -->
+    <!-- reading_item_actions.xml reserves space after comments and marks when to reveal the fixed traversal row. -->
     <LinearLayout
         android:id="@+id/reader_traversal_footer"
         android:layout_width="match_parent"

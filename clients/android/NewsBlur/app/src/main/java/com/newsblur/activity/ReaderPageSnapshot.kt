@@ -38,8 +38,15 @@ internal class ReaderPageSnapshot(
                     location[0], location[1],
                     location[0] + binding.content.width, location[1] + binding.content.height,
                 )
+                // ReaderPageSnapshot.kt excludes the fixed controls from the window capture so their
+                // pixels cannot become a second, sliding navigation strip during the page animation.
+                if (listOf(binding.readingOverlayLeftGroup, binding.readingOverlayRightGroup).any { it.isShown && it.alpha > 0f }) {
+                    val overlayLocation = IntArray(2)
+                    binding.contentBottomOverlay.getLocationInWindow(overlayLocation)
+                    bounds.bottom = minOf(bounds.bottom, overlayLocation[1])
+                }
                 val decor = activity.window.decorView
-                if (!decor.isAttachedToWindow || !bounds.intersect(0, 0, decor.width, decor.height)) {
+                if (!decor.isAttachedToWindow || bounds.isEmpty || !bounds.intersect(0, 0, decor.width, decor.height)) {
                     completion(false)
                     return@post
                 }
@@ -64,7 +71,7 @@ internal class ReaderPageSnapshot(
                             contentDescription = activity.getString(R.string.loading)
                             binding.content.addView(
                                 this,
-                                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT),
+                                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, bounds.height()),
                             )
                         }
                         prepareReaderSurface(pager)
@@ -90,10 +97,8 @@ internal class ReaderPageSnapshot(
             return
         }
         pager.translationX = distance
-        binding.contentBottomOverlay.translationX = distance
         val interpolator = DecelerateInterpolator()
         snapshot?.animate()?.translationX(-distance)?.setDuration(180L)?.setInterpolator(interpolator)?.start()
-        binding.contentBottomOverlay.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).start()
         pager.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).withEndAction(completion).start()
     }
 
@@ -101,7 +106,6 @@ internal class ReaderPageSnapshot(
         generation++
         snapshot?.animate()?.cancel()
         pager.animate().cancel()
-        binding.contentBottomOverlay.animate().cancel()
     }
 
     fun release() {
@@ -109,7 +113,6 @@ internal class ReaderPageSnapshot(
         pager.alpha = 1f
         pager.translationX = 0f
         pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-        binding.contentBottomOverlay.translationX = 0f
         snapshot?.let {
             it.setImageDrawable(null)
             binding.content.removeView(it)
