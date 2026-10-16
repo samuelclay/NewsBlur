@@ -193,6 +193,78 @@
       "sampled_visual_review": "passed",
       "real_time_playback": "pending",
       "submission": "not_submitted"
+    },
+    {
+      "locale": "fr",
+      "device": "ipad",
+      "file": "fr/ipad-cooking-preview.mp4",
+      "sha256": "245eac143a9385cf29531bb9d57f2c05dfb18c7d2e3a8ae0451914abc0761df2",
+      "bytes": 12803681,
+      "duration_seconds": 20,
+      "width": 1200,
+      "height": 1600,
+      "frame_rate": "30/1",
+      "frames": 599,
+      "codec": "h264",
+      "profile": "High",
+      "level": 40,
+      "audio": {
+        "codec": "aac",
+        "channels": 2,
+        "sample_rate": 48000,
+        "content": "silence"
+      },
+      "source": {
+        "file": "../../screenshots/footage/localized/fr/ipad/scroll.mp4",
+        "sha256": "6bd49966c2f425ab398a70f062b198970439da773606e0159ad23766876ab9e2",
+        "ui_locale": "fr",
+        "content": "Isolated cooking demo: ten fictional feeds, twenty original English stories, five licensed photographs"
+      },
+      "copy_file": "../copy/fr.json",
+      "copy_sha256": "84057b29b247023a833aca996e7ea8f33d04f4a5e106931663943a0e006c3017",
+      "edit_file": "../edits/fr.json",
+      "render_plan": "fr/ipad-cooking-preview-edit/render-plan.json",
+      "poster_seconds": 8,
+      "technical_checks": "passed",
+      "sampled_visual_review": "passed",
+      "real_time_playback": "pending",
+      "submission": "not_submitted"
+    },
+    {
+      "locale": "ar",
+      "device": "ipad",
+      "file": "ar/ipad-cooking-preview.mp4",
+      "sha256": "df818f3072bae648883d0c79dfc5aa90dc29f3d6fd29e88ca4e3b4a3c704f692",
+      "bytes": 9618711,
+      "duration_seconds": 22,
+      "width": 1200,
+      "height": 1600,
+      "frame_rate": "30/1",
+      "frames": 660,
+      "codec": "h264",
+      "profile": "High",
+      "level": 40,
+      "audio": {
+        "codec": "aac",
+        "channels": 2,
+        "sample_rate": 48000,
+        "content": "silence"
+      },
+      "source": {
+        "file": "../../screenshots/footage/localized/ar/ipad/scroll.mp4",
+        "sha256": "b4e6a7009ec204d95d710c46a9e97e029d012b379f4d55a88cb31b087a26e262",
+        "ui_locale": "ar",
+        "content": "Isolated cooking demo: ten fictional feeds, twenty original English stories, five licensed photographs"
+      },
+      "copy_file": "../copy/ar.json",
+      "copy_sha256": "a4a5a7e7d9e0a905e9b0d17da76001a39832e4a2dda93084b803a115626d7dc8",
+      "edit_file": "../edits/ar.json",
+      "render_plan": "ar/ipad-cooking-preview-edit/render-plan.json",
+      "poster_seconds": 8,
+      "technical_checks": "passed",
+      "sampled_visual_review": "passed",
+      "real_time_playback": "pending",
+      "submission": "not_submitted"
     }
   ],
   "path_base": "All file paths in this manifest are relative to its containing exports directory."
