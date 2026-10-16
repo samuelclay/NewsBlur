@@ -28,6 +28,8 @@ The supported CUA browser screenshot API currently returns JPEG bytes. Save thos
 
 `export-cua.mjs` provides the repeatable capture loop for the approved CUA REPL. Import it there and call `exportScreenshots({tab, viewport, language: 'fr', sizes: ['1320x2868', '1206x2622']})` using an already selected dedicated rendering tab and the documented browser viewport capability. It uses only those CUA handles, checks rendered copy and readiness, rejects captures changed during rendering, records source/checksum evidence, and resets the temporary viewport. Omit `sizes` for all three formats. Do not run this helper with an external browser driver. Its default local server URL is the one above; the server must already be running.
 
+After visually checking all four exact PNGs, run `ruby clients/store/artwork/ios/16.0/screenshots/stage-uploads.rb --language fr --size 1206x2622 --reviewed`. It verifies the validation checksums and stages uniquely named files such as `newsblur-16.0-fr-1206x2622-01.png` in `/tmp/newsblur-ios16-ready-uploads/`, merging their entries into that directory's existing manifest without removing videos or creative artwork. Changed images reset their placement to unverified. Staging files or seeing them in the store's asset library does not establish persisted attachment to a locale.
+
 ## Editable sources
 
 - `index.html`: composition CSS, the eight concept descriptions, capture selection, text fitting, and gallery/export behavior. The selected concept loads canonical locale copy; other studies retain their English copy in the `concepts` array.
