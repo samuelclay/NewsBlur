@@ -17,5 +17,36 @@
     "main_screenshots": "01_sage_panels_selected_localization_in_progress",
     "app_preview_video": "authorized_preparation_in_progress"
   },
-  "automatic_release_after_approval": true
+  "automatic_release_after_approval": true,
+  "main_creative_attachments": {
+    "verified_complete_languages": [
+      "en",
+      "ar",
+      "zh-Hans"
+    ],
+    "verified_header_only": [
+      "zh-Hant"
+    ],
+    "remaining_languages": [
+      "nl",
+      "fr",
+      "de",
+      "he",
+      "hi",
+      "id",
+      "it",
+      "ja",
+      "ko",
+      "pl",
+      "pt-BR",
+      "ru",
+      "es",
+      "th",
+      "tr",
+      "uk",
+      "vi"
+    ],
+    "note": "Assigned through App Store Connect Asset Library and observed 1 of 1 asset after each save. Traditional Chinese search remains pending. Browser became unavailable during host overload."
+  },
+  "capture_status": "English iPhone/iPad complete; localized batch paused for host resource relief"
 }
