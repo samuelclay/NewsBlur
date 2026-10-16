@@ -1,0 +1,5 @@
+NewsBlur now speaks 21 languages. Menus, settings, dialogs and setup appear in your language, picked up automatically from your phone. Your stories stay exactly as published.
+
+The first time you open the app, NewsBlur shows the language it picked next to English, so you can keep it or switch back in one tap. Change it anytime in Settings or in Android's per-app language settings.
+
+The next story controls now stay in place as you read, and sign-in buttons are easier to read in dark themes.
