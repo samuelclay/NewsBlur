@@ -1,0 +1,419 @@
+{
+  "language": "tr",
+  "register": "Siz throughout (the catalog has ~440 -iniz/-ınız forms and no sen forms): buttons, menu items and tabs use the bare imperative stem as Apple and Google Turkish UIs do (Kaydet, Sil, Paylaş, Okundu olarak işaretle); instructions and sentences use the siz imperative and possessive (Seçin, Girin, hesabınız). Any sen form (seç- in a sentence, senin, -sin) is a register error.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "haber (pl. haberler)",
+      "avoid": [
+        "hikâye",
+        "hikaye"
+      ],
+      "note": "Catalog majority (~680 vs ~350 hikâye). hikâye is a literal calque of 'story' (tale/narrative, or Instagram Stories); flag low in sentences, medium in folder/feature labels that must match their siblings (Saved Stories, Shared Stories, Read Stories, Unread Stories). 'makale' is fine where the English says article. Also avoid where it means this concept: yazı, makale, içerik."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "akış (pl. akışlar)",
+      "avoid": [
+        "besleme"
+      ],
+      "note": "~500 uses. Web Feed → Web akışı. Also avoid where it means this concept: feed."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "site (siteler)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "klasör",
+      "avoid": [],
+      "note": "Also avoid where it means this concept: dizin."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "okunmamış (state/filter label); Mark as unread → Okunmadı olarak işaretle",
+      "avoid": [
+        "Okunmadı as a filter/count label"
+      ],
+      "note": "Android 'Unread' filter shows 'Okunmadı'; prefer Okunmamış for the filter."
+    },
+    {
+      "concept": "read stories folder",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "Okunmuş Haberler",
+      "avoid": [
+        "Hikâyeleri Oku (imperative)"
+      ],
+      "note": "'Read Stories' is the folder of already-read stories (high if imperative). Okunmuş keeps it apart from Çok Okunan (Widely Read). Also avoid where it means this concept: Haberleri Oku."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "Okundu olarak işaretle",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "save",
+      "en": "\\b(un)?sav(e|ed|es|ing)\\b",
+      "use": "Kaydet; Saved Stories → Kaydedilen Haberler; Unsave → Kaydedilenlerden kaldır",
+      "avoid": [
+        "Kayıtlı klasörler for Save folders",
+        "kaydı kaldır (reads as cancelling a registration)"
+      ],
+      "note": "kaydedilmiş is fine in sentences."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "Paylaş; Shared Stories → Paylaşılan Haberler",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (Blurblog'unuz, Blurblog'da)",
+      "avoid": [],
+      "note": "Proper name kept; apostrophe before suffix."
+    },
+    {
+      "concept": "intelligence trainer",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Zekâ Eğitmeni; Trainer → Eğitmen; Train → Eğit; training → eğitim; intelligence training → zekâ eğitimi",
+      "avoid": [
+        "İlgi Alanları Eğitmeni (title only)",
+        "Eğitim zekâsı",
+        "Eğitmeni'ni (apostrophe on common noun)"
+      ],
+      "note": "eğitici is an acceptable synonym of eğitmen; akıllı eğitim / akıllı içerik eğitimi in long marketing prose is not flagged."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Odak; Focus stories → Odak haberleri; Unread + Focus → Okunmamış + Odak",
+      "avoid": [
+        "Odaklan as a label (imperative)",
+        "Haberlere odaklan for 'Focus stories'",
+        "Focus (English)"
+      ],
+      "note": "In sentences 'odaklandığınız haberler' is fine."
+    },
+    {
+      "concept": "like dislike training",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Beğen / Beğenme; Super dislike → Hiç beğenme; liked/disliked → beğenilen/beğenilmeyen",
+      "avoid": [
+        "Çok Beğenme (reads as 'like a lot')",
+        "Süper Beğenmeme"
+      ],
+      "note": "iOS past-tense state labels (Beğenmedim) are left alone. 'beats' and 'beats any' between the explainer pills → a bare '>' on every platform (not '> her', which produces the mixed 'Hiç Beğenme > her Beğen'); 'baskındır' in prose. '(like wins)' → '(beğeni baskın)'. The trainer question inserts finite verbs: like → beğeniyorsunuz, dislike → beğenmiyorsunuz, template 'Bu sitede/haberde neyi %(like)s, neyi %(dislike)s?'."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "sınıflandırıcı",
+      "avoid": [],
+      "note": "regex → düzenli ifade or regex, both fine."
+    },
+    {
+      "concept": "plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro (English names); suffixes Premium'a, Archive'a/'ı/'da, Pro'ya",
+      "avoid": [
+        "Premium Arşiv",
+        "Premium arşiv",
+        "Arşiv planı / Arşiv'e (plan)",
+        "Professional"
+      ],
+      "note": "Lead instruction: plan names stay English. Story archive as a feature stays arşiv. Generic 'premium özellik' / 'premium hesap' is fine."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Yükselt; Upgrade to X → X'e yükselt; Upgrade from X (pricing card for current X users) → 'X'ten yükselt' only if it can't read as leaving; prefer 'X kullanıcıları için yükseltme'",
+      "avoid": [
+        "Arşivden yükselt (common noun archive)",
+        "Premium'a yükselt for 'Upgrade from Premium' (reversed)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "preferences settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferences → Tercihler; Settings → Ayarlar",
+      "avoid": [],
+      "note": "Consistent across platforms."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Abone ol; subscription → abonelik; subscriber → abone",
+      "avoid": [],
+      "note": "Email Unsubscribe → 'E-posta aboneliğinden çık' / 'Bu e-postaları almayı durdur', never cancelling the paid subscription."
+    },
+    {
+      "concept": "river of news",
+      "en": "\\briver of news\\b",
+      "use": "Haber Akışı",
+      "avoid": [
+        "Haber Nehri",
+        "nehir görünümü"
+      ],
+      "note": "Catalog has 8 Haber Akışı vs 6 Haber Nehri; Haber Nehri is a literal calque."
+    },
+    {
+      "concept": "all site stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Tüm Sitelerin Haberleri",
+      "avoid": [
+        "Tüm Site Haberleri/Hikâyeleri (reads as one whole site)",
+        "Sitenin Tüm Haberleri (high)",
+        "Bir sitenin tüm haberleri"
+      ],
+      "note": "Stories from all sites."
+    },
+    {
+      "concept": "infrequent site stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Seyrek Güncellenen Sitelerin Haberleri; short Seyrek Haberler",
+      "avoid": [
+        "Sitedeki Seyrek Haberler",
+        "Seyrek Site Hikâyeleri",
+        "nadir ziyaret ettiğiniz siteler"
+      ],
+      "note": "Sites that publish rarely, not sites the user rarely visits."
+    },
+    {
+      "concept": "good reads",
+      "en": "\\bgood reads?\\b",
+      "use": "Okumaya Değer (folder/section); Show Good Reads → Okumaya değer haberleri göster",
+      "avoid": [
+        "İyi Okumalar (reads as the greeting 'Happy reading!')",
+        "Beğenilenler"
+      ],
+      "note": "Section of high-quality, deeply read stories (apps/statistics/rtrending.py). Also avoid where it means this concept: Good Reads."
+    },
+    {
+      "concept": "long reads",
+      "en": "\\blong reads?\\b",
+      "use": "Uzun Okumalar",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "widely read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)",
+      "use": "Çok Okunan Haberler",
+      "avoid": [
+        "NewsBlur tarihinde"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "global shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "Genel Paylaşılan Haberler",
+      "avoid": [
+        "Küresel Paylaşılan Hikâyeler"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Kontrol paneli",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Günlük Özet; Briefing → Özet",
+      "avoid": [
+        "Brifing",
+        "Bilgilendirme",
+        "Günlük bilgilendirme"
+      ],
+      "note": "Morning/Afternoon/Evening Briefing → Sabah/Öğleden Sonra/Akşam Özeti."
+    },
+    {
+      "concept": "tag author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "etiket / yazar",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "bülten (e-posta bülteni)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "discover related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Keşfet; Related Sites → İlgili Siteler",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "comment reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "yorum; Reply → Yanıtla, a reply → yanıt",
+      "avoid": [],
+      "note": "'Comment' as a button → Yorum yap; as a noun → Yorum."
+    },
+    {
+      "concept": "follow",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Takip et; follower → takipçi; I'm Following → Takip ettiklerim; Following Me → Beni takip edenler; Following (count) → Takip edilen",
+      "avoid": [
+        "Takip ediliyor for the user's own following state"
+      ],
+      "note": "Follow-ups (briefing section of new posts from feeds you recently read) → Takip haberleri (sentence case, like the sibling section names Öne çıkan haberler / Geniş yer bulan haberler), never 'Takip edenler' (followers) or 'Takip ettikleriniz'. Ask AI 'Follow up...' placeholder → Ek bir soru sorun..."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Sessize al; Unmute → Sesini aç / Sessizden çıkar; Muted → Sessize alındı; Mute All → Tümünü sessize al; Mute None → Hiçbirini sessize alma",
+      "avoid": [
+        "Tümünün sesini kapat (mixed)",
+        "Sesi kapatıldı"
+      ],
+      "note": "Sessize al is the established Turkish app term (Twitter/WhatsApp)."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "Bildirimler",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Metin görünümü, Haber görünümü, Akış görünümü, Orijinal görünüm",
+      "avoid": [],
+      "note": "Özgün is acceptable in prose."
+    },
+    {
+      "concept": "ask ai",
+      "en": "\\bask ai\\b",
+      "use": "Yapay zekâya sor (button); Yapay Zekâya Sor (feature name in prose)",
+      "avoid": [
+        "Ask AI",
+        "Yapay Zekâ'ya Sor (apostrophe on common noun)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "import export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "İçe aktar / Dışa aktar",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "Giriş yap / Çıkış yap / Kaydol / Hesap",
+      "avoid": [],
+      "note": "Oturum aç / Oturumu kapat are acceptable synonyms; not flagged."
+    },
+    {
+      "concept": "password",
+      "en": "\\bpasswords?\\b",
+      "use": "şifre",
+      "avoid": [],
+      "note": "parola is an acceptable synonym (Apple TR); flag only when one string or form mixes both."
+    },
+    {
+      "concept": "trial",
+      "en": "\\btrials?\\b",
+      "use": "deneme",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "Klavye kısayolları",
+      "avoid": [],
+      "note": "'%(shortcut)s to send' → 'Göndermek için %(shortcut)s' is fine."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Web akışı (Web Akışları as feature name)",
+      "avoid": [
+        "Web Feed",
+        "Web Feeds",
+        "web beslemesi"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Haber kümeleme; cluster → küme",
+      "avoid": [
+        "Hikâye Gruplandırma"
+      ],
+      "note": "grupla- as a verb in prose is fine."
+    },
+    {
+      "concept": "positive confirm",
+      "en": "\\bpositive\\?",
+      "use": "Emin misiniz?",
+      "avoid": [
+        "Olumlu?"
+      ],
+      "note": "'Positive?' is an are-you-sure title."
+    },
+    {
+      "concept": "insta fetch",
+      "en": "\\binsta-?fetch\\b",
+      "use": "Hemen getir / Anında getir",
+      "avoid": [
+        "Instagram"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "stop any time",
+      "en": "\\bany ?time\\b",
+      "use": "İstediğiniz zaman durdurabilirsiniz (about stopping a tour/tips, not cancelling)",
+      "avoid": [],
+      "note": "Also avoid where it means this concept: iptal."
+    },
+    {
+      "concept": "ask ai modes",
+      "en": "(?:\\bask ai\\b)|(?:\\b(fast|thinking|models?)\\b)",
+      "use": "Fast → Hızlı; Thinking (model mode toggle) → Düşünen",
+      "avoid": [
+        "Düşünme (reads as the negative imperative 'don't think')",
+        "Düşünüyor (a progress message)"
+      ],
+      "note": "Mode labels, not status text."
+    },
+    {
+      "concept": "over limit",
+      "en": "\\blimits?\\b",
+      "use": "N over limit → Sınırı %d aşıyor / Sınırı %(count)s site aşıyor",
+      "avoid": [
+        "%d sınırın üzerinde",
+        "Sınır %(count)s site aşıldı"
+      ],
+      "note": "Count of items exceeding the limit, phrased with the finite verb aşıyor."
+    }
+  ]
+}

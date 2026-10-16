@@ -1,0 +1,438 @@
+{
+  "language": "pt-BR",
+  "register": "Brazilian Portuguese with você throughout (312 strings, no tu or o senhor in the catalog), which is standard for consumer apps; buttons and menu items use the infinitive or a noun phrase (Salvar, Adicionar site, Marcar como lido), running instructions use the você imperative (Clique, Toque, Digite, Escolha); European Portuguese forms (tu, ficheiro, ecrã, telemóvel, utilizador, transferir for download, a carregar, registo, equipa, contacto, partilhar, guardar) are flagged as terminology.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "artigo (o artigo, os artigos; masculine agreement: lido, salvo, compartilhado, oculto, mais recentes/antigos)",
+      "avoid": [
+        "matéria / matérias",
+        "notícia / notícias (for a NewsBlur story)",
+        "história / histórias",
+        "publicação / post (for a story)",
+        "Story (English)"
+      ],
+      "note": "The catalog mixes matéria (~450 strings), notícia (~370), história (~185) and artigo (~105). Artigo is the term Brazilian RSS readers use (Feedly, Inoreader) and fits blog posts, podcasts and videos; matéria and notícia are newspaper-specific and história is a calque of 'story'. Normalizing a story term is low severity; história in a short label is still low unless it misleads. Keep notícias where the English says 'news' (leitor de notícias, Ler notícias é melhor com amigos, Fluxo de notícias). When switching to artigo, fix the agreement of every adjective, participle and pronoun in the string (lida→lido, salvas→salvos, ela→ele)."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "site (o site, os sites)",
+      "avoid": [
+        "sítio",
+        "página (for a whole site)"
+      ],
+      "note": "Página is fine for a single web page."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "feed (o feed, os feeds)",
+      "avoid": [
+        "fonte (for a feed)",
+        "canal (for a feed)",
+        "alimentação"
+      ],
+      "note": "Compounds: feed RSS, feed da web, lista de feeds, ícone do feed. 'Feed view' → Visualização do feed."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "pasta",
+      "avoid": [],
+      "note": "Parent folder → pasta principal or pasta superior (Pasta pai is tolerated, do not churn)."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "não lido / não lidos (masculine, agreeing with artigo)",
+      "avoid": [
+        "não lida / não lidas (feminine, from matéria/notícia)"
+      ],
+      "note": "Slider and filter labels: Todos / Não lidos / Foco. Unread only → Somente não lidos. Next unread story → Próximo artigo não lido. Mark as unread → Marcar como não lido. Leave unread keeps stories unread → Manter como não lido."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Marcar como lido / Marcar tudo como lido / Artigos lidos",
+      "avoid": [
+        "Marcar como lida (feminine)",
+        "Ler notícias / Ler matérias / Ler artigos (for the Read Stories folder)"
+      ],
+      "note": "'Read Stories' is the folder of stories already read: Artigos lidos, never the imperative (high when imperative). Siri/Spotlight 'Read %@' opens a feed to read it: Ler %@. Mark newer/older as read → Marcar os mais recentes/antigos como lidos. 'Read' as a state label → Lido."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "salvar / salvo / Artigos salvos",
+      "avoid": [
+        "favoritos / favoritar / Desfavoritar (for saved stories)",
+        "guardar"
+      ],
+      "note": "Unsave → Remover dos salvos; Unsave this story → Remover este artigo dos salvos; Unsaved → Removido dos salvos."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "compartilhar / compartilhado / Artigos compartilhados",
+      "avoid": [
+        "partilhar (European)"
+      ],
+      "note": "A share as a noun: compartilhamento (%d compartilhamentos)."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog / blurblog (o blurblog, masculine)",
+      "avoid": [],
+      "note": "Product name, never translated; follow the English capitalization. 'Profile & Blurblog' → Perfil e Blurblog (keep &amp; token when the English has it: Perfil &amp; Blurblog)."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Treinador de inteligência / treinamento / treinar",
+      "avoid": [
+        "Intelligence Trainer (English)",
+        "Story Trainer (English)"
+      ],
+      "note": "Intelligence training → treinamento de inteligência; Train this story → Treinar este artigo; story trainer → treinador de artigos; site trainer → treinador do site. 'Train' as a verb is treinar, never formação or ensinar. Also avoid where it means this concept: treino."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Foco (as the name of the level/mode: modo Foco, visualização Foco, artigos em foco, Não lidos + Foco)",
+      "avoid": [
+        "destaque / em destaque / destacar (for the Focus level)",
+        "prioridade",
+        "interesse",
+        "Focus (English)"
+      ],
+      "note": "Slider: Todos / Não lidos / Foco. 'Focus stories' → Artigos em foco. In prose 'highlight stories' → destacar is fine (that is the English word highlight). 'focus on what matters' may use concentrar-se/focar."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Gostei / Não gostei / Detestei",
+      "avoid": [
+        "Curtir (paired with Não gostei)",
+        "Superdescurtir",
+        "Não gosto muito / Não gosto nem um pouco",
+        "como (for the verb like)"
+      ],
+      "note": "Dislike is consistently Não gostei in the catalog, so Like → Gostei completes the familiar YouTube-style pair; Super dislike → Detestei (it always hides). The trainer's 'beats' means Like outranks Dislike: vence / tem prioridade sobre. '(like wins)' → (Gostei prevalece). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read as conjugated verbs in that sentence (check each template)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "ocultar / oculto",
+      "avoid": [],
+      "note": "Hidden stories → artigos ocultos."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "classificador",
+      "avoid": [],
+      "note": "Prompt classifier → classificador por prompt; Regex classifiers → classificadores regex (or de expressões regulares; do not churn)."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "Arquivo Premium / arquivo premium (for the plan)",
+        "Arquivo (for the Archive plan)",
+        "Pro Premium"
+      ],
+      "note": "Plan names stay in English as product names, matching the App Store and Play Store products and the German, Spanish and French decisions. With an article: o Premium Archive, o plano Archive, assinatura do Premium Archive. 'Arquivo' stays for the story archive itself (arquivo de artigos, seu arquivo). Flag Arquivo Premium as medium terminology."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Fazer upgrade / Faça upgrade para o …",
+      "avoid": [
+        "Atualizar (where it reads as update/refresh)"
+      ],
+      "note": "Catalog-consistent; do not churn. 'Upgrade from X' (Android/iOS pricing) means upgrading away from the current plan."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferências (NewsBlur's Preferences) / Configurações (settings in general)",
+      "avoid": [],
+      "note": "The iOS system Settings app is Ajustes; when a string sends the user to the iOS Settings app, Ajustes is correct, otherwise Configurações. Do not churn between them."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "assinar / assinatura / assinante",
+      "avoid": [
+        "inscrever-se / inscrito / inscrição (for feed subscriptions)"
+      ],
+      "note": "Subscribing to a feed and the paid subscription both use assinar/assinatura in the catalog's majority; subscribers → assinantes. Subscribed → Assinado (feed)."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Fluxo de notícias",
+      "avoid": [
+        "River of News (English)",
+        "Rio de notícias / rio"
+      ],
+      "note": "Sentence case. 'your river' in prose → seu fluxo."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Artigos de todos os sites",
+      "avoid": [
+        "Todas as matérias do site / Todos os artigos do site (= all stories of one site)"
+      ],
+      "note": "It means stories from all sites (high when it says one site)."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Artigos de sites pouco ativos",
+      "avoid": [
+        "Matérias pouco frequentes",
+        "sites visitados raramente",
+        "Matérias ocasionais do site",
+        "Matérias esporádicas do site"
+      ],
+      "note": "Stories from sites that publish rarely (below a stories-per-month threshold); the stories are not infrequent, it is not one site, and it is not about how often the reader visits. 'Infrequent stories per month' (threshold setting) → Limite de artigos por mês dos sites pouco ativos (or Artigos/mês para sites pouco ativos)."
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Artigos mais lidos / Leituras longas / Boas leituras / Artigos compartilhados globalmente",
+      "avoid": [
+        "Good Reads (English)",
+        "Ler Good Reads",
+        "notícias populares (for Widely Read)"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Painel",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Resumo diário / resumo",
+      "avoid": [
+        "Briefing / briefing (English) for the feature",
+        "Resumo Diário (Title Case)"
+      ],
+      "note": "Catalog majority (52 strings). Morning/Afternoon/Evening Briefing → Resumo da manhã/da tarde/da noite. 'Brief' (summary length next to Medium/Detailed) → Breve. 'Editorial' (narrative style) → Editorial."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "tag (a tag) / autor",
+      "avoid": [
+        "etiqueta (for a story tag)",
+        "Marcar (for the noun Tag)"
+      ],
+      "note": "Catalog majority (105 vs 15). Verb 'tag' → marcar com tags."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "newsletter (a newsletter, as newsletters)",
+      "avoid": [
+        "boletim informativo"
+      ],
+      "note": "Catalog majority (50 vs 8) and common Brazilian usage. Email newsletters → newsletters por e-mail."
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Descobrir / sites relacionados",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "comentário, comentar / resposta, responder",
+      "avoid": [],
+      "note": "'Follow up…' (Ask AI follow-up question) → Pergunta complementar…, not Acompanhar."
+    },
+    {
+      "concept": "follow",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "seguir / seguidor / Seguindo",
+      "avoid": [
+        "Me seguindo",
+        "Estou seguindo (as a tab label)"
+      ],
+      "note": "Friends tabs must be distinguishable: I'm Following → Quem eu sigo; Following Me → Quem me segue."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "silenciar / Silenciado / Reativar (unmute)",
+      "avoid": [
+        "Ativar som (for unmuting a feed, site or folder: there is no sound)",
+        "Reativar notificações (for unmute)",
+        "Ocultar / Desativar (for mute)"
+      ],
+      "note": "Unmute site → Reativar site; Unmute All → Reativar todos. Muting a user (profile badge) is a different action: silenciar usuário."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "notificações",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Visualização do feed / Visualização de texto (em texto) / Visualização do artigo / Visualização original / Site original",
+      "avoid": [
+        "Visualização da história / da notícia / da matéria"
+      ],
+      "note": "de texto vs em texto are both fine; do not churn."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Perguntar à IA",
+      "avoid": [
+        "Ask AI (English)",
+        "Pergunte à IA (as the feature label or button)"
+      ],
+      "note": "Button and feature label on all platforms. In prose: o recurso Perguntar à IA. A real imperative sentence ('Ask AI questions about stories') may stay Faça perguntas à IA."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "importar / exportar / OPML",
+      "avoid": [],
+      "note": "Upload → enviar (carregar tolerated)."
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "conta / Entrar / Sair / Criar conta (Cadastre-se as a call to action)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "e-mail / senha",
+      "avoid": [
+        "email (without hyphen)",
+        "correio eletrônico"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "trial / renew",
+      "en": "(?:\\btrials?\\b)|(?:\\brenew(al|als|ed|s|ing)?\\b)",
+      "use": "período de avaliação (teste in tight space) / renovar / renovação",
+      "avoid": [],
+      "note": "Do not churn between avaliação and teste."
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "atalhos de teclado",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "feed da web (feeds da web)",
+      "avoid": [
+        "Web Feeds (English)",
+        "Feed da Web (Title Case)"
+      ],
+      "note": "Sentence case as a feature name: Feeds da web."
+    },
+    {
+      "concept": "story clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "agrupamento de artigos / grupo",
+      "avoid": [],
+      "note": "Clustered story → artigo agrupado."
+    },
+    {
+      "concept": "tap / click",
+      "en": "\\b(tap|click)(ed|s|ing)?\\b",
+      "use": "toque / clique",
+      "avoid": [
+        "pressione (for a screen tap)"
+      ],
+      "note": "Mantenha pressionado for long press."
+    },
+    {
+      "concept": "download / file / screen / phone / user",
+      "en": "\\b(download|file|screen|phone|user)s?\\b",
+      "use": "baixar / arquivo / tela / celular / usuário",
+      "avoid": [
+        "transferir",
+        "ficheiro",
+        "ecrã",
+        "telemóvel",
+        "utilizador"
+      ],
+      "note": "European Portuguese forms are terminology findings (medium)."
+    },
+    {
+      "concept": "stale site",
+      "en": "(?:\\bsites?\\b)|(?:\\bstale\\b)",
+      "use": "Inativo / Inativo desde %s",
+      "avoid": [
+        "Desatualizado (reads as out-of-date data that needs refreshing)"
+      ],
+      "note": "Site-freshness badges: 'Stale %s' takes a month and year, so 'Inativo desde %s'; 'Stale — updated %s' → 'Inativo — atualizado %s'."
+    },
+    {
+      "concept": "trainer explainer",
+      "en": "(?:\\btrain(er|ers|ing|ed|s)?\\b)|(?:\\b(beats|wins)\\b)",
+      "use": "vence / Tem certeza? / (Gostei prevalece)",
+      "avoid": [
+        "Positivo?",
+        "batidas / ritmos (for beats)"
+      ],
+      "note": "'Positive?' is an 'Are you sure?' confirmation title → Tem certeza?"
+    },
+    {
+      "concept": "bundle",
+      "en": "\\bbundles?\\b",
+      "use": "pacote de feeds",
+      "avoid": [],
+      "note": "Feed bundles in the import/discover screen."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "“…” for quotes the English adds, sentence case, no space before ? ! : ;",
+      "avoid": [
+        "English Title Case in labels (Resumo Diário, Próxima Matéria Não Lida)",
+        "« » or „ “ quotes"
+      ],
+      "note": "Keep ASCII quotes only where the English has them (the build forbids adding new ones). Ellipsis follows the English (… or ...). Month and weekday names are lowercase in Portuguese. Thousands separator is a dot (1.024) in prose. Also avoid where it means this concept: space before ? ! :."
+    },
+    {
+      "concept": "plural forms",
+      "en": null,
+      "use": "count first, singular noun for one",
+      "avoid": [
+        "site %@ / feed %1$d (count read as a name)",
+        "plural noun in the one form"
+      ],
+      "note": "Several one forms put the count after the noun (Silenciar site %@); fix to Silenciar %@ site."
+    }
+  ]
+}

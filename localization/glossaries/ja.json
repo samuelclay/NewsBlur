@@ -1,0 +1,357 @@
+{
+  "language": "ja",
+  "register": "Polite です/ます style for full sentences, messages and questions, and plain noun or dictionary-form verb phrases (〜を追加, 〜を保存) for buttons, menu items and labels; this is what the catalog mostly uses and what Japanese consumer apps use.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "記事",
+      "avoid": [
+        "ストーリー"
+      ],
+      "note": "The catalog mostly uses 記事 (Story → 記事, 次の記事, 保存した記事); ストーリー appears in ~130 strings and is an inconsistency. 記事 also covers 'article'."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "サイト",
+      "avoid": [],
+      "note": "Counts: N件のサイト / Nサイト both fine."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "フィード",
+      "avoid": [],
+      "note": "Never translate as food."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "フォルダー",
+      "avoid": [],
+      "note": "Catalog majority uses the long-vowel form フォルダー on all platforms. Also avoid where it means this concept: フォルダ."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "未読",
+      "avoid": [],
+      "note": "未読の記事 / 未読記事 both fine."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "既読にする",
+      "avoid": [],
+      "note": "'Read Stories' (the folder of stories already read) is 既読の記事, never 記事を読む."
+    },
+    {
+      "concept": "saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "保存した記事",
+      "avoid": [
+        "保存済みの記事 is acceptable"
+      ],
+      "note": "Save (button) → 保存."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "共有",
+      "avoid": [
+        "シェア"
+      ],
+      "note": "Shared Stories → 共有した記事 / 共有記事; re-share → 再共有."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "ブログ",
+        "ブロッグ",
+        "blurblog (lowercase)"
+      ],
+      "note": "Product name kept in Latin script with a capital B."
+    },
+    {
+      "concept": "intelligence trainer",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "インテリジェンストレーナー",
+      "avoid": [
+        "インテリジェンス・トレーナー"
+      ],
+      "note": "Train → 学習させる (button: 学習); training → 学習 (avoid トレーニング); Intelligence Training → インテリジェンス学習."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "フォーカス",
+      "avoid": [
+        "注目 when it names the Focus level",
+        "これだけに絞る"
+      ],
+      "note": "Focus is the name of the green intelligence level and the third slider position (すべて／未読／フォーカス). Focus stories → フォーカス記事. 注目記事 collides with 'Top Stories' (注目記事) in the Daily Briefing, so 注目 should not be used for Focus in UI labels. The plain verb 'focus on' (注目する) in descriptive sentences is acceptable; only the name of the level/mode and 'focus stories' were flagged. 'Top stories' stays 注目記事."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "いいね / 低評価",
+      "avoid": [
+        "よくない",
+        "嫌い",
+        "大嫌い",
+        "超嫌い"
+      ],
+      "note": "Thumbs up/down → 高評価/低評価 in prose; Super dislike → 強い低評価."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "非表示",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "分類器",
+      "avoid": [
+        "分類ルール"
+      ],
+      "note": "Prompt classifier → プロンプト分類器; Regex classifiers → 正規表現分類器."
+    },
+    {
+      "concept": "Premium",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "プレミアム",
+      "avoid": [
+        "Premium (Latin) inside Japanese UI text"
+      ],
+      "note": "Premium Archive → プレミアムアーカイブ; Premium Pro → プレミアム Pro; Archive plan → アーカイブプラン. Store-facing iOS strings that already use Premium consistently are tolerated. Plan names left in Latin script on web marketing pages (Premium Archive, Archive plan) were flagged low for consistency with the app UI."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "設定",
+      "avoid": [
+        "環境設定 is acceptable on web"
+      ],
+      "note": "Same word for Preferences and Settings on all platforms."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "購読 / 購読する",
+      "avoid": [
+        "登録者 for subscribers"
+      ],
+      "note": "Subscribers → 購読者; paid subscription → サブスクリプション or 購読; 'Subscribe by URL' → URLで登録 is acceptable."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "ニュースの流れ (ニュース一覧 also acceptable); lowercase 'river' → 記事一覧",
+      "avoid": [
+        "ニュースフィード",
+        "リバー",
+        "River of News (left in English)"
+      ],
+      "note": "Catalog is split between ニュースの流れ and ニュース一覧; both read fine, so only the misleading variants were flagged."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "すべてのサイトの記事",
+      "avoid": [
+        "サイトのすべての記事",
+        "サイト内のすべての記事"
+      ],
+      "note": "The reversed order reads as 'all stories of one site'."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "ダッシュボード",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "デイリーブリーフィング",
+      "avoid": [
+        "毎日のブリーフィング (as the feature name)",
+        "今日のブリーフィング"
+      ],
+      "note": "Lowercase descriptive 'daily briefing(s)' in prose may be 毎日のブリーフィング."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "タグ / 著者",
+      "avoid": [
+        "作成者",
+        "投稿者"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "ニュースレター / メールニュースレター",
+      "avoid": [
+        "メールマガジン"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "discover",
+      "en": "\\bdiscover\\b",
+      "use": "探す / 見つける",
+      "avoid": [
+        "発見",
+        "検索 for Discover"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "コメント / 返信",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "フォロー / 友達",
+      "avoid": [],
+      "note": "Ask AI follow-up → 追加の質問 / 続けて質問."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "ミュート",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "通知",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "更新頻度の低いサイトの記事",
+      "avoid": [
+        "低頻度の記事"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "おすすめ記事 / 長文記事 / よく読まれている記事",
+      "avoid": [
+        "おすすめの本",
+        "Good Reads"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "全体で共有された記事",
+      "avoid": [
+        "全体共有ストーリー"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "フィード表示 / テキスト表示 / 記事表示 / オリジナル表示",
+      "avoid": [
+        "フィードビュー",
+        "ストーリー表示"
+      ],
+      "note": "Original site → 元のサイト."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "AIに質問",
+      "avoid": [
+        "Ask AI (left in English)"
+      ],
+      "note": "Feature name translated everywhere the catalog already does."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "インポート / エクスポート",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "ログイン / ログアウト / 登録 / アカウントを作成",
+      "avoid": [],
+      "note": "Sign in → ログイン."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "メール / メールアドレス / パスワード",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "無料トライアル / アップグレード",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "キーボードショートカット",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "ウェブフィード",
+      "avoid": [
+        "Web Feed",
+        "Webフィード"
+      ],
+      "note": "Catalog majority is ウェブフィード."
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "クラスター / 記事のクラスタリング",
+      "avoid": [],
+      "note": "Also avoid where it means this concept: クラスタ."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Full-width 。、！？「」（）：",
+      "avoid": [
+        "ASCII double quotes in Japanese text",
+        "English Title Case"
+      ],
+      "note": "Ellipsis … or ... is tolerated; spaces between Japanese and Latin/digits are tolerated."
+    }
+  ]
+}

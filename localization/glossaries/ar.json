@@ -1,0 +1,361 @@
+{
+  "language": "ar",
+  "register": "Modern Standard Arabic addressing the reader in the second person masculine singular (أنت: لديك، اضغط، اختر), which is the standard neutral form in Arabic iOS/Android UIs and what the catalog uses throughout; buttons, menu items and titles use verbal nouns (حفظ، مشاركة، حذف، إلغاء) where the catalog does, polite requests use يُرجى, no (ة)/(ي) gender hedges, no plural أنتم forms.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "قصة / القصص (plural count forms: قصة واحدة، قصتان/قصتين، 3 قصص، 11 قصةً/قصة، 100 قصة)",
+      "avoid": [
+        "مقالة/مقالات/مقال for story",
+        "خبر/أخبار for story"
+      ],
+      "note": "Catalog majority (~1,077 strings vs ~174 مقالة/مقال and ~53 خبر). قصة is the established journalistic term for a news story and NewsBlur's own term. مقالة is fine where the English says article; أخبار is fine in fixed phrases about news in general (قارئ الأخبار، قراءة الأخبار). مقالة/خبر for 'story' → low terminology; medium in folder, view or feature labels that must match their siblings."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "موقع / المواقع",
+      "avoid": [],
+      "note": "Consistent already."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "خلاصة / الخلاصات (RSS feed: خلاصة RSS)",
+      "avoid": [
+        "موجز/موجزات for feed",
+        "تلقيمة",
+        "تغذية"
+      ],
+      "note": "Catalog majority (408 vs 182). موجز is reserved for Daily Briefing, so موجز for feed → low terminology (medium where it sits next to the briefing or in a feed-view/feed-list label)."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "خلاصة ويب / خلاصات الويب",
+      "avoid": [
+        "موجز ويب",
+        "موجزات الويب",
+        "الموجزات عبر الويب"
+      ],
+      "note": "Feature name follows feed."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "مجلد / المجلدات",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "غير مقروءة (agreeing with قصة) / غير مقروء as a bare state label",
+      "avoid": [],
+      "note": "Both genders appear; only flag when agreement is wrong inside a sentence."
+    },
+    {
+      "concept": "read (state) / mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "مقروءة / وضع علامة «مقروءة»، وضع علامة مقروء على الكل",
+      "avoid": [
+        "قراءة القصص for the Read Stories folder"
+      ],
+      "note": "Mark-read variants (وضع علامة، تعليم كمقروء، تحديد كمقروءة) are all understood and not flagged. The Read Stories folder is «القصص المقروءة»; «قراءة القصص»/«قراءة المقالات» (reading stories, imperative-like) → high."
+    },
+    {
+      "concept": "saved stories / save / unsave",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "حفظ (button) / تم الحفظ (status) / القصص المحفوظة (folder) / إلغاء الحفظ (unsave)",
+      "avoid": [
+        "الأخبار المحفوظة",
+        "مجلدات الحفظ"
+      ],
+      "note": "Unsave = إلغاء الحفظ or إزالة من المحفوظة."
+    },
+    {
+      "concept": "share / shared",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "مشاركة / تمت المشاركة / القصص المشتركة or القصص التي تمت مشاركتها",
+      "avoid": [],
+      "note": "المشتركة for shared stories is acceptable and not flagged."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (Latin, product name), «مدونة Blurblog» / «مدونتك على Blurblog» in running text",
+      "avoid": [
+        "المدونة الضبابية (blurry blog)",
+        "المدونة المجمّعة",
+        "مدونة الخلاصات",
+        "بلورغ",
+        "Blurblogs with an Arabic plural"
+      ],
+      "note": "الضبابية → medium meaning; other descriptive renderings → low terminology."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "مدرّب الذكاء (Intelligence Trainer); التدريب / تدريب الذكاء; Train (button) درّب or تدريب; Train intelligence → تدريب الذكاء / درّب الذكاء",
+      "avoid": [
+        "مدرّب التعلّم",
+        "درّب عامل التصفية &amp; for Train & filter"
+      ],
+      "note": "التدريب الذكي for intelligence training is acceptable. Imperative vs verbal-noun buttons not flagged."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "مصنّف / المصنّفات",
+      "avoid": [
+        "قواعد التصنيف"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "التركيز (mode/label); قصص التركيز (focus stories); غير المقروءة + التركيز",
+      "avoid": [
+        "المميزة (reads as premium/featured)",
+        "المفضلة (favorites)",
+        "Focus in Latin",
+        "التركيز على القصص as a label (imperative-like)"
+      ],
+      "note": "The green state. Verb forms (ما تريد التركيز عليه) are fine in sentences."
+    },
+    {
+      "concept": "like / dislike (trainer)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "أعجبني / لا يعجبني; Super dislike → لا يعجبني إطلاقًا; Likes/Dislikes lists → الإعجابات / عدم الإعجاب",
+      "avoid": [
+        "عدم إعجاب شديد mixed with لا يعجبني إطلاقًا on the same screen"
+      ],
+      "note": "beats → «>»-style comparison (يتفوّق على) never a rhythm/music beat; (like wins) → (الإعجاب له الأولوية)."
+    },
+    {
+      "concept": "premium / plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro kept in Latin script: اشتراك Premium، خطة Archive، الترقية إلى Premium Archive",
+      "avoid": [
+        "مميز / الاشتراك المميز / المستخدمون المميزون for the Premium plan",
+        "الأرشيف المميز / أرشيف Premium / أرشيف بريميوم for Premium Archive",
+        "بريميوم",
+        "الأرشيف for the Archive plan"
+      ],
+      "note": "premium feature → ميزة مدفوعة or ميزة Premium («ميزة مميزة» = special feature, medium). Upgrade from Archive → الترقية من Archive. The story archive feature stays الأرشيف."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "التفضيلات (NewsBlur Preferences on all platforms); الإعدادات for OS/other settings",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "subscribe / subscription",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "اشتراك / الاشتراك في / المشتركون",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "all site stories / river",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\briver of news\\b)|(?:\\ball site stories\\b)",
+      "use": "قصص كل المواقع (also accepted: كل قصص المواقع، جميع قصص المواقع); River of News → تدفّق الأخبار",
+      "avoid": [
+        "كل قصص الموقع / جميع مقالات الموقع / أخبار الموقع (singular = one site, high)",
+        "ساق الأخبار (garbled)",
+        "نهر الأخبار (calque)",
+        "عرض الأخبار الكامل",
+        "موجز الأخبار for river"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "الموجز اليومي; Briefing → الموجز; briefing settings → إعدادات الموجز",
+      "avoid": [
+        "الإحاطة اليومية",
+        "الملخص اليومي (except where English says summary)",
+        "ملخص الذكاء الاصطناعي اليومي"
+      ],
+      "note": "Catalog majority (63 vs 33 ملخص vs 23 إحاطة). Brief (summary length) → قصير/موجز قصير, not الموجز."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "وسم / الوسوم; الكاتب or المؤلف (both correct, not flagged)",
+      "avoid": [
+        "العلامات for tags"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "النشرات البريدية / النشرات الإخبارية (both fine)",
+      "avoid": [
+        "رسالة إخبارية mixed with نشرة"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "اكتشاف / اكتشف المواقع / مواقع ذات صلة",
+      "avoid": [],
+      "note": "استكشف also fine."
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "تعليق / رد",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "متابعة; Followers → المتابِعون; Following (count/list) → المتابَعون or يتابع; tabs: I'm Following → من أتابعهم, Following Me → من يتابعونني",
+      "avoid": [
+        "two tabs that differ only by a diacritic"
+      ],
+      "note": "Follow-ups (briefing section) → المتابعات is acceptable; Ask AI 'Follow up…' box → «اطرح سؤالًا للمتابعة…» (bare «متابعة…» reads as Following/Continue → medium)."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "كتم / إلغاء الكتم / تم الكتم; Mute None → إلغاء كتم الكل",
+      "avoid": [
+        "كتم الصوت (audio sense) for sites/folders"
+      ],
+      "note": "كتم صوت … → low unnatural."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "الإشعارات",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "infrequent site stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "قصص المواقع قليلة التحديث",
+      "avoid": [
+        "غير المتكررة (non-recurring/unique)",
+        "قليلة التكرار"
+      ],
+      "note": "Catalog majority. قليلة النشر is acceptable."
+    },
+    {
+      "concept": "good reads / long reads / widely read / global shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "قراءات جيدة / القراءات الطويلة (قراءات طويلة) / القصص الأكثر قراءة / القصص المشتركة عالميًا",
+      "avoid": [
+        "Good Reads in Latin",
+        "القصص الجيدة / المقالات الجيدة"
+      ],
+      "note": "قراءات جيدة is a folder of good stories, never books."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "عرض الخلاصة (Feed view), عرض النص (Text view), عرض القصة (Story view), العرض الأصلي / عرض الموقع الأصلي",
+      "avoid": [
+        "عرض الموجز",
+        "وضع النص"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "اسأل الذكاء الاصطناعي (feature name, in «» inside sentences when helpful)",
+      "avoid": [
+        "Ask AI in Latin in UI text"
+      ],
+      "note": "English Ask AI → medium untranslated in UI, low in admin/dev strings."
+    },
+    {
+      "concept": "import / export / OPML",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "استيراد / تصدير / OPML",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "account / login",
+      "en": "(?:\\baccounts?\\b)|(?:\\b(log ?(in|out)|sign(ed|ing)? (in|up))\\b)",
+      "use": "الحساب / تسجيل الدخول / تسجيل الخروج / إنشاء حساب",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "password / email",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "كلمة المرور / البريد الإلكتروني",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade / renew",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)|(?:\\brenew(al|als|ed|s|ing)?\\b)",
+      "use": "الفترة التجريبية / ترقية، الترقية إلى / تجديد",
+      "avoid": [
+        "تجربة بريميوم"
+      ],
+      "note": "Upgrade from X → الترقية من X (fine, means from the current plan)."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "لوحة التحكم (also لوحة المعلومات, not flagged)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "story clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "تجميع القصص / المجموعة",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "اختصارات لوحة المفاتيح",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "punctuation and digits",
+      "en": null,
+      "use": "، ؟ ؛ and «…» quotes; Western digits (0-9) like the rest of the catalog",
+      "avoid": [
+        "ASCII ? , ; after Arabic text",
+        "Arabic-Indic digits (٢٠) in a few isolated strings"
+      ],
+      "note": "ASCII \"…\" kept only where the English has them; protected tokens unchanged."
+    },
+    {
+      "concept": "language dialog",
+      "en": "\\b(use|detected) %",
+      "use": "Use %(language)s → استخدام %(language)s (العربية stays nominative); detection → «اكتشف NewsBlur أن لغة متصفحك هي %(language)s.»",
+      "avoid": [
+        "لغة %(language)s (gives «لغة العربية»)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "relative times",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "منذ %(time)s / خلال %(time)s / بعد %(time)s",
+      "avoid": [],
+      "note": "Server units are prepositional objects, so the two-form must be genitive (يومين، ساعتين، دقيقتين), not nominative يومان."
+    }
+  ]
+}

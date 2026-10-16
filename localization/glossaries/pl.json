@@ -1,0 +1,361 @@
+{
+  "language": "pl",
+  "register": "Informal ty throughout with the capitalized courtesy pronouns Ty/Twój/Ciebie/Cię (215 strings use the capitalized forms, 1 uses lowercase, none use Pan/Pani), which is the usual convention for Polish consumer apps; buttons and menu items use the 2nd person singular imperative (Zapisz, Dodaj witrynę, Oznacz jako przeczytane) or a noun phrase, confirmation titles use the infinitive question (Usunąć folder?, Oznaczyć wszystkie jako przeczytane?), and the user is never addressed with a gendered past tense or a hedge like Udostępniłeś(-aś) or wykrył(a): use impersonal forms (Udostępniono, Zapisano, Nie udało się…) or the present tense instead.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "artykuł (masculine inanimate: ten artykuł, przeczytany, zapisany, ukryty, udostępniony; plural artykuły; counts 1 artykuł / 2–4 artykuły / 5+ artykułów)",
+      "avoid": [
+        "historia / historie (calque of story)",
+        "wpis / wpisy (for a NewsBlur story)",
+        "wiadomość (for a single story)",
+        "Story (English)"
+      ],
+      "note": "Catalog: artykuł ~1069 strings, historia ~86, wpis ~28. Normalizing the story term is low severity terminology unless it misleads, and every switch must fix agreement (Udostępniona historia → Udostępniony artykuł, Następna nieprzeczytana historia → Następny nieprzeczytany artykuł). Keep wiadomości where the English says news (czytnik wiadomości, Strumień wiadomości). Keep historia where the English says history (Historia czytania, Hide history)."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "witryna (witryna, witryny, witryn; Dodaj witrynę, Ta witryna)",
+      "avoid": [
+        "serwis / serwisy",
+        "strona (for a whole subscribed site)"
+      ],
+      "note": "Catalog: witryna ~464, strona ~47, serwis ~10. strona stays for a single web page (strona internetowa, adres strony, Original page) and for 'Original Site' when the meaning is the publisher's page. Flag serwis and site-meaning strona as low terminology, only where the string clearly names a NewsBlur site/feed."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "kanał (kanał, kanały, kanałów; Lista kanałów, Dodaj kanał, kanał RSS)",
+      "avoid": [
+        "źródło (for a feed)",
+        "feed / feedy"
+      ],
+      "note": "Consistent in the catalog (~536). źródło stays for 'source'."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "folder (folder, foldery, folderów; Folder nadrzędny)",
+      "avoid": [
+        "katalog"
+      ],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "nieprzeczytane (agreeing: nieprzeczytany artykuł, nieprzeczytane artykuły, nieprzeczytanych artykułów)",
+      "avoid": [
+        "do przeczytania (as the Unread state)"
+      ],
+      "note": "Slider/filter labels: Wszystkie / Nieprzeczytane / Wyróżnione. Unread only → Tylko nieprzeczytane. Next unread story → Następny nieprzeczytany artykuł."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Oznacz jako przeczytane; the Read Stories folder → Przeczytane artykuły",
+      "avoid": [
+        "Czytaj artykuły / Przeczytaj artykuły (imperative) for the Read Stories folder"
+      ],
+      "note": "Read Stories is the folder of already read stories: an imperative is high severity. Siri/Spotlight 'Read %@' titles open a feed or folder (Czytaj %@), they never mark it read."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "Zapisz; Saved Stories → Zapisane artykuły; status Saved → Zapisano (action feedback) or Zapisane (state label); Unsave → Usuń z zapisanych",
+      "avoid": [
+        "Cofnij zapis (unclear)",
+        "Zapisz for Unsave (opposite action)"
+      ],
+      "note": "Offline cache wording uses pamięć podręczna, never zapisane artykuły."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "Udostępnij; Shared stories → Udostępnione artykuły; Unshare / Delete share → Usuń udostępnienie",
+      "avoid": [
+        "Udostępniona historia",
+        "Udostępniłeś(-aś)"
+      ],
+      "note": "Another user's action in activity lists: present tense, %1$s udostępnia %2$s."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (product name, declined: blurbloga, na blurblogu / w blurblogu; keep the source capitalization, do not churn case)",
+      "avoid": [
+        "blog społecznościowy as a replacement name"
+      ],
+      "note": "Blurblogs → Blurblogi."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Intelligence Trainer → Trener inteligencji; Train → Trenuj; training (the activity/feature) → trenowanie (trening acceptable in compounds such as Zapisz trening); trained → wytrenowany",
+      "avoid": [
+        "szkolenie (staff training / courses)",
+        "uczenie (only in uczenie maszynowe)",
+        "Trener inteligentnego filtrowania (one-off variant)",
+        "trener historii"
+      ],
+      "note": "Catalog: trenowanie ~84, trening ~28, szkolenie ~12, uczenie ~4. Flag szkolenie as low terminology (medium if it reads as a course). Story trainer → trener artykułu / trener artykułów; Site trainer → trener witryny."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Wyróżnione (slider and filter label); Focus stories → wyróżnione artykuły; to focus (verb, training) → wyróżniać / wyróżnić; Focus view/mode → widok Wyróżnione",
+      "avoid": [
+        "Skupienie",
+        "Fokus",
+        "Focus (English)",
+        "Artykuły do obserwowania",
+        "Wybrane artykuły",
+        "Główny cel (unless the English really means a goal)"
+      ],
+      "note": "Catalog already uses Wyróżnij lub ukryj, Tylko wyróżnione:, Nieprzeczytane+Wyróżnione:. Green stories = wyróżnione, yellow = neutralne, red = ukryte. Focus mismatch on the slider is medium terminology."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Lubię; Dislike → Nie lubię; Super dislike → Zdecydowanie nie lubię; inserted trainer words like → lubisz, dislike → nie lubisz",
+      "avoid": [
+        "Polub / Lubię to (for the trainer Like button, low)",
+        "Nie podoba mi się (for the trainer Dislike button, low)",
+        "Bardzo nie lubię / Superniepolubienie / silna niechęć (for Super dislike)"
+      ],
+      "note": "Trainer question templates must read with the inserted words: web 'Co %(like)s, a czego %(dislike)s w tym artykule?' → 'Co lubisz, a czego nie lubisz w tym artykule?'. Social likes on comments keep polubienie (%(count)s polubienie/polubienia/polubień). beats → wygrywa z / ma pierwszeństwo przed; (like wins) → (wygrywa Lubię)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "Ukryj / ukryte",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "klasyfikator",
+      "avoid": [
+        "filtr (for a classifier count)"
+      ],
+      "note": "Regex classifiers → klasyfikatory wyrażeń regularnych."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro stay in English (plan Premium, plan Archive, subskrypcja Premium Archive)",
+      "avoid": [
+        "Archiwum Premium",
+        "archiwum Premium",
+        "Przejdź na Archiwum (for the Archive plan)",
+        "konto z archiwum Premium"
+      ],
+      "note": "Catalog: Premium Archive ~40 strings, Archiwum Premium ~22 → flag the latter as medium terminology. archiwum (lowercase) stays for the story archive itself. On pricing pages Archive and Pro are plan names."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Przejdź na … (Przejdź na Premium); Upgrade from Premium/Archive (shown on a higher plan's card) → Przejdź na wyższy plan z Premium / z Archive",
+      "avoid": [
+        "Przejdź z planu Premium (reads as leaving Premium)",
+        "Ulepsz (as a bare plan button, low)"
+      ],
+      "note": "Trial → okres próbny. Renewal → odnowienie."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferences (NewsBlur's settings screen) → Preferencje on web, iOS and Android; generic settings → ustawienia",
+      "avoid": [],
+      "note": "Do not churn 'Ustawienia X' for '<X> settings'. Polish OS vocabulary: Anuluj, Gotowe, Usuń, Udostępnij, Ustawienia (the system app)."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Subskrybuj; Subscribed → Subskrybujesz (state); subscription → subskrypcja; subscribers → subskrybenci",
+      "avoid": [
+        "Zasubskrybowano for a button state"
+      ],
+      "note": "Same word for feeds and paid plans, which is normal in Polish."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Strumień wiadomości",
+      "avoid": [
+        "Rzeka wiadomości",
+        "rzeka"
+      ],
+      "note": "Catalog: strumień ~18, rzeka ~4."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Wszystkie artykuły z witryn (stories from all sites)",
+      "avoid": [
+        "Wszystkie artykuły z witryny (one site)",
+        "artykuły w witrynie"
+      ],
+      "note": "Singular witryny/witrynie means one site: high meaning."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Artykuły z rzadko aktualizowanych witryn (short label where needed: Rzadko aktualizowane witryny); From infrequent sites → Z rzadko aktualizowanych witryn",
+      "avoid": [
+        "Rzadkie historie z witryn",
+        "Rzadziej publikowane artykuły (the sites are infrequent, not the stories)",
+        "Rzadkie artykuły",
+        "rzadko odwiedzanych witryn (visited, wrong)"
+      ],
+      "note": "The monthly threshold setting means sites with fewer than N stories per month."
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Widely Read Stories → Najczęściej czytane artykuły; Long Reads → Długie artykuły; Good Reads → Warte przeczytania; Global Shared Stories → Globalnie udostępnione artykuły",
+      "avoid": [
+        "Good Reads (English)",
+        "Dobre lektury / Polecane lektury (reads as a book list)",
+        "Długie lektury"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Panel",
+      "avoid": [
+        "Pulpit"
+      ],
+      "note": "Catalog: panel 5, pulpit 2."
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Daily Briefing → Codzienny przegląd; Briefing → Przegląd; Morning/Afternoon/Evening Briefing → Poranny / Popołudniowy / Wieczorny przegląd; Weekly → Cotygodniowy przegląd",
+      "avoid": [
+        "Codzienne podsumowanie / Dzienne podsumowanie",
+        "Daily Briefing (English)",
+        "briefing",
+        "skrót"
+      ],
+      "note": "Catalog: przegląd ~52, podsumowanie ~44, briefing ~16. podsumowanie stays reserved for summary (AI summaries, summary length). Flag podsumowanie/briefing for the feature as low terminology, the English name as medium untranslated. Also avoid where it means this concept: dzienny przegląd."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Zapytaj AI (funkcja Zapytaj AI)",
+      "avoid": [
+        "Ask AI (English) inside Polish text",
+        "SI"
+      ],
+      "note": "AI stays AI."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "tag / autor",
+      "avoid": [
+        "etykieta (for a story tag)"
+      ],
+      "note": "Consistent."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "newsletter (newslettery, newsletterów)",
+      "avoid": [
+        "biuletyn"
+      ],
+      "note": "Catalog: newsletter ~54, biuletyn ~5 (low)."
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Odkrywaj / Odkryj; Related Sites → Powiązane witryny",
+      "avoid": [],
+      "note": "Do not churn Odkryj vs Odkrywaj."
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Follow → Obserwuj; Following (button state) → Obserwujesz; Following (people I follow) → Obserwowani; Followers → Obserwujący; I'm Following / Following Me → Obserwuję / Obserwujący mnie; Unfollow → Przestań obserwować",
+      "avoid": [
+        "Obserwowane (neuter, for people)",
+        "identical Follow/Following button labels"
+      ],
+      "note": "Follow-up (Ask AI) → Dodatkowe pytanie / Zadaj kolejne pytanie; Follow-ups (briefing section) → Ciąg dalszy / Dalsze doniesienia."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Mute → Wycisz; Unmute → Wyłącz wyciszenie; Muted → Wyciszone",
+      "avoid": [
+        "Wycisz for Unmute (opposite action)"
+      ],
+      "note": "Consistent."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Feed view → Widok kanału; Text view → Widok tekstowy; Story view → Widok artykułu; Original view → Widok oryginalny",
+      "avoid": [
+        "Widok pełnego tekstu (for Text view)"
+      ],
+      "note": "Do not churn small wording differences."
+    },
+    {
+      "concept": "web feeds",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Web Feed → kanał internetowy",
+      "avoid": [
+        "Web Feeds (English)",
+        "Kanały Web",
+        "kanał WWW"
+      ],
+      "note": "Catalog is consistent with kanał internetowy."
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Story clustering → grupowanie artykułów; cluster → grupa",
+      "avoid": [
+        "klaster"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "gender",
+      "en": null,
+      "use": "User actions: impersonal past (Udostępniono, Zapisano, Dodano) or present tense; other users' actions in activity/interaction lists: present tense (%1$s udostępnia %2$s, %1$s obserwuje %2$s, %1$s odpowiada na Twój komentarz)",
+      "avoid": [
+        "(a), (-a), eś(-aś), zaczął/zaczęła hedges"
+      ],
+      "note": "Hedges are medium unnatural."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "„…” quotes; sentence case for labels and titles; lowercase month and weekday names; 4-digit numbers without a separator (1024, 4096) or with a space (1 024); comma decimals",
+      "avoid": [
+        "English Title Case",
+        "1,024 (reads as a decimal)",
+        "\"…\" ASCII quotes the English does not have"
+      ],
+      "note": "Do not churn em dash vs en dash or … vs ..."
+    },
+    {
+      "concept": "relative ages",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "Clients wrap the server units in '%(time)s temu' / '%@ temu' / '%1$s temu'; 'temu', 'za' and 'na' all take the accusative, so the server one forms must be accusative: %(number)d minutę, %(number)d godzinę, %(number)d sekundę (dzień/tydzień/miesiąc are unchanged)",
+      "avoid": [
+        "%(number)d minuta / godzina / sekunda (gives '1 godzina temu')"
+      ],
+      "note": "Server units live in chunk-22 (utils/feed_functions.py:142-157); few/many forms (minuty/minut, godziny/godzin) already match the accusative."
+    }
+  ]
+}

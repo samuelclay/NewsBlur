@@ -1,0 +1,382 @@
+{
+  "language": "hi",
+  "register": "Formal आप throughout (the catalog already uses it everywhere, no तुम/तू found): -एँ imperatives in buttons and sentences (करें, चुनें, दिखाएँ, सहेजें), आप + masculine-plural verb for generic statements (आप ... कर सकते हैं); first-person FAQ questions may use सकता हूँ or सकता/सकती हूँ, neither is flagged.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "लेख (masculine, invariant plural: 1 लेख, 5 लेख; oblique लेखों). Agreement: अगला लेख, सहेजे गए लेख, साझा किए गए लेख, पढ़े गए लेख, छिपे हुए लेख, अपठित लेख, लेख का शीर्षक, लेख दृश्य, लेख ट्रेनर, इस लेख को …",
+      "avoid": [
+        "कहानी / कहानियाँ / कहानियों (tale, reads as fiction)",
+        "स्टोरी / स्टोरीज़ / स्टोरियाँ (Hinglish newsroom jargon, also Instagram Stories)",
+        "ख़बर / खबर / ख़बरें (news item) for a NewsBlur story",
+        "पोस्ट for a story"
+      ],
+      "note": "Catalog is split: ~550 कहानी, ~290 स्टोरी, ~180 लेख, ~120 ख़बर. कहानी is the calque of 'story' and reads as a tale; Hindi journalism never calls a news item कहानी. लेख (article/piece of writing) is standard Hindi, works for blog posts and news alike, matches the 'article' choice of the other languages and has an invariant plural that suits count forms. Because कहानी/स्टोरी/ख़बर are feminine and लेख is masculine, every fix must also change agreement (सहेजी गई → सहेजे गए, अगली → अगला, छिपी हुई → छिपे हुए, की → के, दिखाई देती है → दिखाई देता है). Severity: medium for labels, buttons, menu items, titles, folder/view names and count/plural forms; low inside prose sentences. ख़बरें may stay where English says news (News, newsreader). VERIFIER: confirmed लेख over स्टोरी. स्टोरी is newsroom Hinglish and, in app UI, reads as Instagram/WhatsApp Stories (स्टोरी सहेजें = save a Story); लेख is the everyday word for an article/blog post and is what Hindi Wikipedia, Google Translate and Hindi news apps use for an item. Keep ख़बरें only where the English says news."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "साइट (feminine; plural साइटें, oblique साइटों)",
+      "avoid": [],
+      "note": "Consistent in the catalog."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "फ़ीड (with nukta; invariant plural)",
+      "avoid": [
+        "फीड (no nukta)"
+      ],
+      "note": "Consistent. Gender of फ़ीड varies in the catalog (feminine mostly); not flagged unless one string contradicts itself."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "फ़ोल्डर (masculine)",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "अपठित (labels: केवल अपठित, अपठित लेख, अगला अपठित लेख)",
+      "avoid": [],
+      "note": "Mark as unread: अपठित चिह्नित करें; बिना पढ़ा (हुआ) चिह्नित करें and अपठित के रूप में चिह्नित करें are accepted and not flagged."
+    },
+    {
+      "concept": "read (past participle)",
+      "en": "\\bread\\b",
+      "use": "पढ़ा हुआ / पढ़े गए",
+      "avoid": [
+        "imperative पढ़ें where English means already-read"
+      ],
+      "note": "Mark as read: पढ़ा हुआ चिह्नित करें (catalog standard)."
+    },
+    {
+      "concept": "Read Stories (folder of already-read stories)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "पढ़े गए लेख",
+      "avoid": [
+        "स्टोरीज़ पढ़ें / लेख पढ़ें (imperative 'read stories')"
+      ],
+      "note": "Imperative versions are high severity. iOS Siri/Spotlight 'Read %@' titles open a feed: '%@ पढ़ें' is fine there."
+    },
+    {
+      "concept": "save / saved / unsave",
+      "en": "\\b(un)?sav(e|ed|es|ing)\\b",
+      "use": "सहेजें; सहेजा गया / सहेजे गए लेख; Unsave: सहेजे गए से हटाएँ",
+      "avoid": [
+        "असहेज (non-word)",
+        "सहेजना रद्द करें only when it reads as cancelling a save in progress"
+      ],
+      "note": "सेव करें is accepted (Google-style Hindi) and not flagged on its own."
+    },
+    {
+      "concept": "share / shared",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "साझा करें; साझा किया गया / साझा किए गए लेख",
+      "avoid": [],
+      "note": "शेयर करें and noun शेयर (counts) are accepted."
+    },
+    {
+      "concept": "Blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog (Latin, feature/brand name): आपका Blurblog, अपने Blurblog पर",
+      "avoid": [
+        "ब्लरब्लॉग (transliteration, low)",
+        "ब्लरबॉग / ब्लर्बलॉग / ब्लर्ब्लॉग (misspelled, low)",
+        "plain ब्लॉग when it stands for the Blurblog (low)",
+        "any translation like 'blur blog'"
+      ],
+      "note": "Catalog mixes Latin (~26) and Devanagari spellings (~20, several misspelled). Latin matches the plan-name convention."
+    },
+    {
+      "concept": "Intelligence Trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "इंटेलिजेंस ट्रेनर; training: प्रशिक्षण or ट्रेनिंग (both accepted); Train: प्रशिक्षित करें or ट्रेन करें (both accepted)",
+      "avoid": [
+        "बुद्धिमत्ता for the feature name (cleverness; low)",
+        "ख़ुफ़िया / गुप्तचर (spy intelligence; high)"
+      ],
+      "note": "Story trainer → लेख ट्रेनर; Site trainer → साइट ट्रेनर."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "क्लासिफ़ायर",
+      "avoid": [
+        "वर्गीकारक / वर्गीकार / वर्गीकरणकर्ता (obscure technical coinages, low)",
+        "वर्गीकरण (= classification) for classifiers (low)"
+      ],
+      "note": "Catalog mixes ~32 क्लासिफ़ायर with ~38 Sanskritized forms."
+    },
+    {
+      "concept": "Focus",
+      "en": "\\bfocus\\b",
+      "use": "फ़ोकस (Focus stories: फ़ोकस लेख; Focus only: केवल फ़ोकस; Unread + Focus: अपठित + फ़ोकस)",
+      "avoid": [
+        "imperative फ़ोकस करें / ध्यान केंद्रित करें / ध्यान दें for the Focus filter label (medium meaning)",
+        "Latin Focus in Hindi text"
+      ],
+      "note": "Verb uses in prose ('focus on what matters') may use ध्यान दें."
+    },
+    {
+      "concept": "Like / Dislike / Super Dislike (trainer)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "पसंद / नापसंद; buttons पसंद करें / नापसंद करें; Super Dislike: सुपर नापसंद or बहुत नापसंद (both accepted)",
+      "avoid": [
+        "नापसंदियाँ (non-word)",
+        "लाइक/नापसंदगी mixed inside one trainer sentence"
+      ],
+      "note": "Counts of marks: %(count)s पसंद / %(count)s नापसंद."
+    },
+    {
+      "concept": "beats / (like wins)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "use": "beats: से ऊपर (or >); (like wins): (पसंद को प्राथमिकता)",
+      "avoid": [
+        "बीट्स (music beats; high)",
+        "जैसे पसंद मिलने पर (meaning lost)"
+      ],
+      "note": "Tiny separator between trainer level labels."
+    },
+    {
+      "concept": "Hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "छिपाएँ; छिपा हुआ / छिपे हुए लेख",
+      "avoid": [],
+      "note": "छुपाएँ also accepted."
+    },
+    {
+      "concept": "Premium / Premium Archive / Premium Pro / Archive / Pro (plan names)",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Latin: Premium, Premium Archive, Premium Pro, Archive, Pro (Premium में अपग्रेड करें, Premium Archive आवश्यक है, Archive से अपग्रेड करें)",
+      "avoid": [
+        "प्रीमियम / प्रीमियम प्रो / प्रीमियम आर्काइव / आर्काइव as plan names (transliteration, low)",
+        "प्रीमियम संग्रह / संग्रह for the Archive plan (translates the plan into 'collection', medium)"
+      ],
+      "note": "Only flagged when English capitalizes the plan name. Lowercase descriptive 'premium feature/premium account' (प्रीमियम सुविधा/खाता) is accepted. 'Upgrade from Archive' means upgrading beyond that plan: 'Archive से अपग्रेड करें' is correct, never 'leave'."
+    },
+    {
+      "concept": "archive (story archive feature)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\barchive\\b)",
+      "use": "संग्रह (अपने संग्रह में), आर्काइव also accepted",
+      "avoid": [],
+      "note": "Distinct from the Archive plan."
+    },
+    {
+      "concept": "Preferences / Settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferences: प्राथमिकताएँ (all platforms); Settings: सेटिंग्स or सेटिंग (both accepted)",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "subscribe / subscription / subscriber",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "सदस्यता लें; सदस्यता; subscriber: सब्सक्राइबर or सदस्य (both accepted); unsubscribe from a feed: सदस्यता छोड़ें / समाप्त करें",
+      "avoid": [
+        "सदस्यता रद्द for the email opt-out page's Unsubscribe button (reads as cancelling the paid plan): use ईमेल बंद करें / ईमेल पाना बंद करें"
+      ],
+      "note": "Paid plan subscription also सदस्यता."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "सभी साइटों के लेख",
+      "avoid": [
+        "साइट के सभी लेख / साइट की सभी कहानियाँ (one site's stories; high)",
+        "Latin All Site Stories in Hindi text"
+      ],
+      "note": "'सभी साइट की कहानियाँ' is ambiguous and also uses the wrong story term: fix to सभी साइटों के लेख."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "समाचार धारा (समाचारों की धारा accepted)",
+      "avoid": [
+        "Latin River of News in Hindi prose (low)",
+        "रिवर (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Daily Briefing / briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "दैनिक ब्रीफ़िंग (feminine: आपकी दैनिक ब्रीफ़िंग); Briefing: ब्रीफ़िंग",
+      "avoid": [
+        "दैनिक सारांश / दैनिक संक्षिप्त विवरण / दैनिक संक्षिप्त समाचार / संक्षिप्त जानकारी for the feature (medium on labels, low in prose)",
+        "डेली ब्रीफिंग (low)",
+        "ब्रीफिंग without nukta (low typography)"
+      ],
+      "note": "Keep सारांश where English says summary."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "AI से पूछें; as a named feature in prose: ‘AI से पूछें’ सुविधा",
+      "avoid": [
+        "Latin 'Ask AI' in Hindi UI labels (medium) or prose (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Ask AI 'Follow up…' box / briefing 'Follow-ups'",
+      "en": "(?:\\bask ai\\b)|(?:\\bbriefings?\\b)|(?:\\bfollow[- ]?ups?\\b)",
+      "use": "Follow up…: आगे पूछें…; Follow-ups: फ़ॉलो-अप (आगे की ख़बरें accepted)",
+      "avoid": [
+        "बाद में याद दिलाएँ (remind me later; high)",
+        "फ़ॉलो अप करें… (medium)"
+      ],
+      "note": "'Follow up to N sites' = up to N sites: N साइटों तक फ़ॉलो करें."
+    },
+    {
+      "concept": "Follow / Following / Follower / Friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "फ़ॉलो करें; Following: फ़ॉलो कर रहे हैं (button state) / फ़ॉलो किए गए; Follower: फ़ॉलोअर; Friends: दोस्त or मित्र",
+      "avoid": [
+        "अनुयायी (low, inconsistent)"
+      ],
+      "note": "I'm Following / Following Me must differ."
+    },
+    {
+      "concept": "Mute / Unmute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "म्यूट करें / अनम्यूट करें; Mute None: सभी अनम्यूट करें",
+      "avoid": [
+        "आवाज़ चालू करें (turn the sound on; medium meaning)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "कम प्रकाशित होने वाली साइटों के लेख",
+      "avoid": [
+        "साइट की कम आने वाली कहानियाँ (one site; medium)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Global Shared Stories / Widely Read Stories / Long Reads / Good Reads",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bread stories\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "वैश्विक साझा लेख / व्यापक रूप से पढ़े गए लेख / लंबे लेख / अच्छे लेख",
+      "avoid": [
+        "अच्छी पुस्तकें / पढ़ाई / रीड्स for Good Reads (books or studying; high)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Text view: टेक्स्ट दृश्य; Story view: लेख दृश्य; Feed view: फ़ीड दृश्य; Original view: मूल दृश्य",
+      "avoid": [],
+      "note": "पाठ दृश्य and टेक्स्ट व्यू are accepted, not flagged on their own. The web story-view tab itself (feeds_skeleton.xhtml:336, ctx 'story view mode') is translated पाठ and is not changed, so FAQ/feature prose that tells the reader to click the Text tab must quote ‘पाठ’ (and may say पाठ दृश्य); iOS uses टेक्स्ट for its own TEXT button."
+    },
+    {
+      "concept": "Web Feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "वेब फ़ीड",
+      "avoid": [
+        "Latin Web Feeds in Hindi prose (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "न्यूज़लेटर",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "सूचनाएँ",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Discover",
+      "en": "\\bdiscover\\b",
+      "use": "खोजें",
+      "avoid": [],
+      "note": "Same word as Search in the catalog; accepted."
+    },
+    {
+      "concept": "Insta-fetch",
+      "en": "\\binsta-?fetch\\b",
+      "use": "तुरंत लोड करें / तुरंत फ़ेच करें",
+      "avoid": [
+        "Insta-Fetch in Latin (reads as Instagram; medium)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "ट्रायल; अपग्रेड करें",
+      "avoid": [
+        "परीक्षण for a free trial (reads as a test; low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "account / login",
+      "en": "(?:\\baccounts?\\b)|(?:\\b(log ?(in|out)|sign(ed|ing)? (in|up))\\b)",
+      "use": "खाता; लॉग इन करें / लॉग आउट; साइन अप करें",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "क्लस्टरिंग (समूहीकरण accepted)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Devanagari danda । at sentence end (catalog: ~945 vs 2 periods); nukta in loanwords (फ़ीड, फ़ोल्डर, ज़्यादा, ब्रीफ़िंग); typographic quotes “…” when adding quotes; keep … and &amp; as in English",
+      "avoid": [
+        "ASCII . ending a Hindi sentence (low)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "plurals",
+      "en": null,
+      "use": "Web gettext nplurals=2 (n != 1): :0 = 1, :1 = everything else; iOS CLDR one = 0 and 1, other. Number before noun: 1 लेख, %(count)s साइट/साइटें",
+      "avoid": [],
+      "note": "Placeholders that are names (%(category)s, %(topic)s, %(value_1)s) never get count grammar."
+    },
+    {
+      "concept": "relative times",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "%(time)s पहले / %(time)s में; the server's bare units must be in the oblique form that the postposition needs: 1 घंटे, 3 दिन, 5 मिनट, 2 महीने, 1 साल (दिन/मिनट/सेकंड/साल are invariant, घंटा→घंटे, महीना→महीने)",
+      "avoid": [
+        "%(number)d घंटा / महीना as the bare unit (gives 1 घंटा में, 1 घंटा से)"
+      ],
+      "note": "Every web wrapper adds a postposition (पहले, में, से), so the unit is never shown bare; the auditor's घंटा→घंटे fix for 22#34 is right."
+    },
+    {
+      "concept": "language dialog",
+      "en": "\\b(use|detected) %",
+      "use": "%1$s का उपयोग करें; NewsBlur ने आपके डिवाइस की भाषा %1$s पहचानी।",
+      "avoid": [],
+      "note": "Hindi does not inflect the native language name; bare name before का/को reads fine."
+    },
+    {
+      "concept": "Positive? (confirmation title)",
+      "en": "\\bpositive\\?",
+      "use": "क्या आप सुनिश्चित हैं? (iOS confirm sheets for Delete Site/Folder, Mute Site, Logout); full sentences keep the catalog's क्या आप वाकई … चाहते हैं?",
+      "avoid": [
+        "सकारात्मक? (sentiment 'positive', high)",
+        "पक्का? (too colloquial for the formal आप register)"
+      ],
+      "note": ""
+    }
+  ]
+}

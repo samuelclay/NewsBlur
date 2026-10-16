@@ -3,6 +3,9 @@ from unittest.mock import patch
 
 from localization.manage import (
     BudgetExhausted,
+    glossary_prompt,
+    glossary_violation,
+    is_valid,
     Translator,
     entry,
     gettext_catalog,
@@ -97,3 +100,22 @@ class Test_Translation(unittest.TestCase):
         contexts = {item["context"] for item in source_entries() if item["platform"] == "ios"}
         for key in ("Medium [grid height]", "Medium [text size]", "Medium [theme]", "Short [preview length]"):
             self.assertIn(key, contexts)
+
+    @patch("localization.manage.load_glossary")
+    def test_glossary_steers_new_translations_and_rejects_avoided_forms(self, glossary):
+        import re
+
+        term = {"concept": "sign up", "en": r"\bsigned up\b", "use": "registriert", "avoid": ["angemeldet"]}
+        glossary.return_value = ("Informal du.", [(re.compile(term["en"], re.I), term)])
+        prompt = glossary_prompt("de", ["You signed up for NewsBlur"])
+        self.assertIn('sign up: use "registriert"', prompt)
+        self.assertEqual(glossary_prompt("de", ["Save story"]), "Register: Informal du.\n")
+        self.assertTrue(glossary_violation("de", "You signed up for NewsBlur", "Du hast dich angemeldet"))
+        self.assertIsNone(glossary_violation("de", "You logged in", "Du hast dich angemeldet"))
+        rule = {"concept": "typography", "en": None, "use": None, "avoid": ["  "], "note": "single spaces"}
+        glossary.return_value = ("", [(re.compile(term["en"], re.I), term), (None, rule)])
+        self.assertIn("typography", glossary_prompt("de", ["Save story"]))
+        self.assertTrue(glossary_violation("de", "Save story", "Story  speichern"))
+        memory = {"k": "Du hast dich bei NewsBlur angemeldet"}
+        self.assertFalse(is_valid("You signed up for NewsBlur", memory, "k", "de"))
+        self.assertTrue(is_valid("You signed up for NewsBlur", memory, "k"))

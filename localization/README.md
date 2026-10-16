@@ -28,6 +28,10 @@ docker exec -t newsblur_web_i18n python localization/manage.py compile
 
 Run `python localization/audit.py` inside the container to detect hardcoded literals in common web and native UI APIs. It checks multiline calls too, but cannot prove complete coverage: dynamic messages, custom rendering helpers and text baked into images need review. Its small exception list identifies user-data examples, never translated interface copy.
 
+## Reviewed terminology
+
+`glossaries/<language>.json` holds each language's reviewed terminology from the native-language audit: a `register` sentence and `terms`, each with a human-readable `concept`, an English regex `en`, the preferred translation `use`, literal `avoid` forms and a `note`. `translate` adds the register and only the terms whose `en` pattern appears in a batch to the prompt, so new strings match reviewed ones. A translation containing an `avoid` form for a term its English source uses counts as invalid: `check` reports it and the next `translate` replaces it. Update a glossary when reviewers settle a term, then run `check`.
+
 ## Automatic updates
 
 The Localization workflow checks every PR without exposing API secrets to PR code. On main pushes and a daily schedule, it translates missing strings using the existing `OPENAI_API_KEY` repository secret and opens an `automated-translations` PR. A manual workflow run also works. Translation PRs need the normal review and release process; mobile translations reach users in the next app release. A failed API request cannot replace good translations or affect the running site.

@@ -254,12 +254,60 @@ def validate(source, translated):
         raise ValueError(f"Stray % in a format string: {translated!r}")
 
 
-def is_valid(source, memory, key):
+def is_valid(source, memory, key, code=None):
     try:
         validate(source, memory[key])
+        if code and glossary_violation(code, source, memory[key]):
+            return False
     except (KeyError, ValueError):
         return False
     return True
+
+
+@lru_cache(maxsize=None)
+def load_glossary(code):
+    """Return (register, [(compiled English pattern, term)]) from localization/glossaries/<code>.json."""
+    path = ROOT / f"localization/glossaries/{code}.json"
+    if not path.exists():
+        return "", []
+    glossary = json.loads(path.read_text())
+    # A term without an English pattern is a general rule (typography, numbers) that applies to every string.
+    terms = [
+        (re.compile(term["en"], re.IGNORECASE) if term.get("en") else None, term)
+        for term in glossary.get("terms", [])
+    ]
+    return glossary.get("register", ""), terms
+
+
+def glossary_violation(code, source, translated):
+    """Name the audited term a translation breaks by using one of its "avoid" forms, if any."""
+    for pattern, term in load_glossary(code)[1]:
+        if pattern is None or pattern.search(source):
+            for form in term.get("avoid") or []:
+                if form in translated:
+                    return f"{term.get('concept') or term.get('en')}: use {term.get('use')!r}, not {form!r}"
+    return None
+
+
+def glossary_prompt(code, sources):
+    """The register and the audited terms that appear in this batch, so new strings match reviewed ones."""
+    register, terms = load_glossary(code)
+    lines = []
+    for pattern, term in terms:
+        if pattern is not None and not any(pattern.search(source) for source in sources):
+            continue
+        line = f"- {term.get('concept') or term.get('en')}"
+        if term.get("use"):
+            line += f': use "{term["use"]}"'
+        if term.get("avoid"):
+            line += f"; never {', '.join(repr(form) for form in term['avoid'])}"
+        if term.get("note"):
+            line += f" ({term['note']})"
+        lines.append(line)
+    text = f"Register: {register}\n" if register else ""
+    if lines:
+        text += "Use this reviewed terminology:\n" + "\n".join(lines) + "\n"
+    return text
 
 
 def gettext_catalog(code, **kwargs):
@@ -377,6 +425,7 @@ class Translator:
             "Use natural concise UI wording. Do not add the product name where the source does not have it. Preserve NewsBlur, URLs, HTML tags, escape sequences, format placeholders "
             "and their order EXACTLY. Preserve every __NB_TOKEN_N__ token exactly once. Never translate preference keys or invent markup. Context identifies UI usage; "
             "plural contexts specify the target-language grammatical form.\n"
+            + glossary_prompt(code, [source for _, source, _ in batch])
             + json.dumps(
                 [{"id": key, "text": source, "context": context} for key, source, context in protected_batch],
                 ensure_ascii=False,
@@ -458,6 +507,9 @@ class Translator:
                 value = value.replace(marker, token)
             values[key] = value
             validate(source, value)
+            violation = glossary_violation(code, source, value)
+            if violation:
+                raise ValueError(f"Glossary: {violation}")
         return values
 
 
@@ -635,7 +687,7 @@ def main():
         entries = source_entries(code)
         memory = load_memory(code)
         language_units = units(entries, code)
-        pending = [unit for unit in language_units if not is_valid(unit[1], memory, unit[0])]
+        pending = [unit for unit in language_units if not is_valid(unit[1], memory, unit[0], code)]
         invalid = [key for key, _, _ in pending if key in memory]
         print(f"{code}: {len(entries)} messages, {len(pending)} untranslated", flush=True)
         if args.command == "extract":
@@ -645,7 +697,9 @@ def main():
             translate_language(translator, code, pending, memory, failures)
         if args.command in ("translate", "compile"):
             # Invalid or missing translations compile as English fallback.
-            valid = {key: memory[key] for key, source, _ in language_units if is_valid(source, memory, key)}
+            valid = {
+                key: memory[key] for key, source, _ in language_units if is_valid(source, memory, key, code)
+            }
             compile_catalogs(code, entries, valid)
         elif invalid:
             failures.append(f"{code}: {len(invalid)} invalid translations, e.g. {invalid[0]}")

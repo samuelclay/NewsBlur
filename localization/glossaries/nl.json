@@ -1,0 +1,408 @@
+{
+  "language": "nl",
+  "register": "Informal je/jij/jouw throughout (about 790 strings use je/jij/jouw, no u/uw addressed to the reader), which is the norm for Dutch consumer apps; 'je' is the default, 'jij'/'jou' only for emphasis; buttons and menu items use the infinitive (Opslaan, Site toevoegen, Markeren als gelezen), instructions in sentences use the je-imperative (Voer … in, Kies …), and any u/uw form addressed to the reader is flagged as register (the hour abbreviation '%d u geleden' is not a register problem).",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "artikel (het artikel, de artikelen; dit artikel, elk artikel, een nieuw artikel, het nieuwe artikel; compounds artikellijst, artikeltitel, artikeltrainer, artikelweergave, topartikelen)",
+      "avoid": [
+        "verhaal / verhalen (calque, about 84 strings)",
+        "Story / Stories (English)",
+        "bericht / berichten (for a NewsBlur story; fine for a forum post or a message)",
+        "verhaaltrainer / verhalentrainer / verhaalclustering"
+      ],
+      "note": "artikel is used about 900 times. Both artikel and verhaal are neuter, so the switch only changes plurals and compounds; keep 'nieuws' where the English says news (nieuwslezer, Nieuwsstroom). Severity low, category terminology."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "site (de site, de sites); website where the English says website or in running prose",
+      "avoid": [
+        "pagina (for a whole site)",
+        "Sitesstatistieken (wrong compound, use Sitestatistieken)"
+      ],
+      "note": "Do not churn site/website in prose."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "feed (de feed, de feeds; feedlijst, feedtitel, RSS-feed, webfeed)",
+      "avoid": [
+        "Nieuwsfeed (for a single feed or for River of News)",
+        "kanaal (for a feed)",
+        "space-split compounds (feed lijst)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "map (de map, de mappen; mapnaam, mappictogram)",
+      "avoid": [
+        "mapicoon (use mappictogram)"
+      ],
+      "note": "Also avoid where it means this concept: folder."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "ongelezen (Ongelezen, Alleen ongelezen, Ongelezen artikelen)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Markeren als gelezen / Als gelezen markeren (both fine, do not churn) / Alles als gelezen markeren; the folder Read Stories = Gelezen artikelen",
+      "avoid": [
+        "Artikelen lezen (imperative) for the Read Stories folder",
+        "Verhalen opnieuw lezen"
+      ],
+      "note": "Read Stories is a folder of already read stories (high when rendered as an action)."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "opslaan / opgeslagen / Opgeslagen artikelen; Unsave = Niet meer opslaan / Uit opgeslagen verwijderen",
+      "avoid": [
+        "bewaren for the Saved Stories feature when the label elsewhere says opgeslagen",
+        "Opgeslagen verhalen",
+        "opslaan ongedaan maken where it reads as undoing a save action (tolerated)"
+      ],
+      "note": "Watch Unsave rendered as Save (opposite action)."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "delen / gedeeld / Gedeelde artikelen",
+      "avoid": [
+        "gedeelde berichten (for shares count, use 'keer gedeeld')"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog / blurblog (de blurblog); capitalisation follows the English, do not churn",
+      "avoid": [
+        "Blurbloggen"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Intelligentietrainer / intelligentietraining / trainen / training; Story trainer = artikeltrainer; Site trainer = sitetrainer",
+      "avoid": [
+        "Verhaaltrainer / Verhalentrainer",
+        "intelligente training (reads as 'smart training')",
+        "trainen van je nieuwsprofiel (invented)",
+        "Train &amp; filter left in English"
+      ],
+      "note": "'Train' as a button: Trainen."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "Focus as the level name (Focus, Alleen focus, Ongelezen + focus); compounds focusartikelen, focusweergave, focusmodus; the verb 'focus (on) or hide' = uitlichten of verbergen",
+      "avoid": [
+        "Alleen focussen (verb for the label)",
+        "Verhalen uitlichten / Focusverhalen for the noun 'Focus stories' (use Focusartikelen)",
+        "any warning-like word"
+      ],
+      "note": "The slider is Alle / Ongelezen / Focus. Also avoid where it means this concept: Hoofdfocus."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Vind ik leuk / Vind ik niet leuk / Vind ik helemaal niet leuk (Super dislike); short state words leuk / niet leuk / neutraal",
+      "avoid": [
+        "zoals (for the verb like)",
+        "Zeer sterk afkeuren",
+        "Extra sterk niet-leuk",
+        "Niet leuk vinden as the Dislike button when the Like button is Vind ik leuk",
+        "afkeuren"
+      ],
+      "note": "Trainer question: check that the inserted like/dislike words and the template produce one grammatical sentence on web (reader_classifier.js) and iOS (TrainerView.swift)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "verbergen / verborgen",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "classifier (de classifier, de classifiers; AI-classifier, regex-classifier, promptclassifier)",
+      "avoid": [
+        "classificatie / classificaties (means classification)",
+        "classificator",
+        "classificatiemodel"
+      ],
+      "note": "Catalog mixes classificatie 37, classifier 24, classificator 3. Severity low terminology. 'Natural language text and image classifiers' = Classifiers in natuurlijke taal voor tekst en afbeeldingen (same wording on iOS, the upgrade dialog and the pricing page)."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro (English plan names); Premium-abonnement / Premiumabonnement both fine; Archive-abonnement for 'Archive plan/subscription'",
+      "avoid": [
+        "Premiumarchief / Premium-archief / het premiumarchief (for the plan)",
+        "Archief / Archiefabonnement / Archief-abonnement (for the Archive plan)",
+        "premium lowercase as the plan name in a label"
+      ],
+      "note": "archief stays for the story archive itself. 'Upgrade from Premium/Archive' = upgrading to this plan from your current one, not leaving it."
+    },
+    {
+      "concept": "upgrade / trial / renew",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)|(?:\\brenew(al|als|ed|s|ing)?\\b)",
+      "use": "upgraden / Upgraden naar Premium (Upgrade naar … imperative also fine, do not churn) / proefperiode / verlengen / verlenging",
+      "avoid": [
+        "Neem Premium (for Get Premium, use Premium nemen / Ontvang Premium only if clearly better)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Voorkeuren (NewsBlur's Preferences on web, iOS and Android) / Instellingen (generic settings and the OS Settings app)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "abonneren / je abonneren op / abonnement / abonnee (also for feeds; standard Dutch usage)",
+      "avoid": [
+        "inschrijven (for a feed)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Nieuwsstroom",
+      "avoid": [
+        "River of News (English)",
+        "rivier",
+        "Nieuwsfeed (clashes with feed)",
+        "Nieuwsoverzicht",
+        "overzichtsstroom"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Artikelen van alle sites",
+      "avoid": [
+        "Alle artikelen van de site / Alle verhalen van de site (= one site; high)",
+        "Alle artikelen op de site doorzoeken (one site)",
+        "Alle siteartikelen",
+        "Alle artikelen van sites (tolerated but inconsistent)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Artikelen van weinig actieve sites; threshold 'Infrequent stories per month' = Grens voor weinig actieve sites (artikelen per maand)",
+      "avoid": [
+        "weinig bezochte sites / sites die je minder vaak bezoekt (= rarely visited; medium meaning)",
+        "Onregelmatige artikelen / Minder frequente artikelen",
+        "Zeldzame siteberichten"
+      ],
+      "note": "The feature collects stories from feeds that publish rarely."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Goede leestips / Lange artikelen / Veelgelezen artikelen / Wereldwijd gedeelde artikelen",
+      "avoid": [
+        "Goede boeken (books; high)",
+        "Goede recensies (reviews; high)",
+        "Good Reads (English)",
+        "Goede artikelen / Interessante verhalen (inconsistent)",
+        "Uitgebreide artikelen",
+        "Globaal gedeelde verhalen",
+        "Veel gelezen artikelen (split)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Dashboard (het dashboard)",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Dagelijkse briefing (de briefing); Ochtendbriefing / Middagbriefing / Avondbriefing",
+      "avoid": [
+        "Dagelijks overzicht (for the feature)",
+        "Daily Briefing (English)",
+        "Dagelijkse Briefing (Title Case)",
+        "samenvatting (for the briefing itself; fine for summary)"
+      ],
+      "note": "Section 'Follow-ups' = Vervolgartikelen (not Vervolgreacties)."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Vraag AI as the feature name in prose, toggles and titles (Met Vraag AI kun je …, Vraag AI tonen); action buttons and menu items may use the infinitive AI vragen (do not churn those)",
+      "avoid": [
+        "Ask AI (English) in translated prose",
+        "Vraag het aan AI / Vraag het AI / AI-vragen (as the feature name)"
+      ],
+      "note": "'Ask AI questions about stories' = Stel AI vragen over artikelen is fine. Ask AI 'Follow up…' placeholder = Stel een vervolgvraag… (not opvolgen). The web story button (story_detail_view.js:2639, chunk 16) should read 'Vraag AI' so the feature page sentence 'klik op \"Vraag AI\"' (11#110) matches."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "tag (de tag, de tags) / auteur",
+      "avoid": [
+        "label (for a NewsBlur tag)",
+        "RSS-feed taggen (for Tag RSS Feed, the RSS feed of a tag)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "nieuwsbrief / nieuwsbrieven / e-mailnieuwsbrief",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Ontdekken / Gerelateerde sites (label) / verwante or gerelateerde artikelen in prose",
+      "avoid": [
+        "Verwante sites as the Related Sites label (inconsistent with Gerelateerde sites)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "reactie / reageren / antwoord",
+      "avoid": [],
+      "note": "opmerking is fine for a note added when sharing."
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Volgen (button) / volgers / Volgend (the people I follow, X/Instagram NL convention) / Ik volg (I'm Following tab) / Mijn volgers (Following Me tab) / Ontvolgen (Unfollow) / Ontvolgd (Unfollowed state)",
+      "avoid": [
+        "Volgen for the Following state when the Follow button is also Volgen",
+        "Volgen mij / Volgt mij for the Following Me tab (no subject, reads oddly as a label)",
+        "Niet meer volgen / Niet meer gevolgd for the Unfollowed state (the action is Ontvolgen, the state is Ontvolgd)"
+      ],
+      "note": "Cancel unfollow keeps following."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "dempen / gedempt / Dempen opheffen or Niet meer dempen (Unmute)",
+      "avoid": [
+        "Unmute rendered as Dempen (opposite action)"
+      ],
+      "note": "weer inschakelen is tolerated."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "meldingen",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Feedweergave / Tekstweergave / Artikelweergave / Oorspronkelijke weergave / Oorspronkelijke site",
+      "avoid": [
+        "Verhaalweergave"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "account / Inloggen (Log in, Sign in, Login) / Uitloggen (Log out) / Registreren (Sign up label) / Meld je aan (sign up in a sentence) / Account aanmaken",
+      "avoid": [
+        "Aanmelden for Sign in (Android 'Sign in' and 'Sign Up' are both Aanmelden)",
+        "afmelden for logout"
+      ],
+      "note": "Vendor sign-in buttons keep the vendors' own Dutch labels: 'Log in met Apple' (Apple) and 'Inloggen met Google' (Google); do not align them with each other."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "e-mail / e-mailadres / wachtwoord",
+      "avoid": [
+        "paswoord"
+      ],
+      "note": "Also avoid where it means this concept: email."
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "sneltoetsen",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "webfeed / Webfeeds (one word)",
+      "avoid": [
+        "Web Feed / Web feed (English or split)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "groeperen / groepering / gegroepeerd artikel / cluster (noun for a group is fine); Story clustering = Artikelen groeperen; Enable/Disable story clustering = Groeperen van artikelen in-/uitschakelen (avoid stacking two infinitives: 'Artikelen groeperen inschakelen')",
+      "avoid": [
+        "Verhaalclustering / Verhaalgroepering / Verhalen clusteren"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Sentence case for labels and titles; month and weekday names lowercase (maandag, januari); compounds written as one word or hyphenated (feedlijst, RSS-feed, iOS-app, AI-functie, e-mailadres); typographic quotes ‘…’ or “…” when a translation adds quotes; thousands separator . (1.024); keep the English ellipsis style",
+      "avoid": [
+        "English Title Case copied into Dutch",
+        "space-split compounds (feed lijst)",
+        "ASCII double quotes the English does not have",
+        "1,024"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "misc labels",
+      "en": null,
+      "use": "Positive? = Weet je het zeker?; beats = wint van (>); (like wins) = (leuk wint); Insta-fetch = Direct ophalen (never Instagram); Stale = Inactief; Play Next / Play Last = Hierna afspelen / Als laatste afspelen; Short (card height) = Laag; Leave unread = Ongelezen laten; Brief (summary length) = Kort; On its way = Onderweg / Wordt geladen; Newer:/Older: (archive date filter, feed_options_popover.js) = Nieuwer dan:/Ouder dan: (each label sits above a date input and 1d/1w/1m/1y chips, so 'Nieuwer dan: 1w' reads as a bound; 'Na: 1w' does not); Unmute (a user, profile_badge_view.js) = Niet meer dempen (never Geluid inschakelen)",
+      "avoid": [
+        "Positief?",
+        "Na:/Vóór: for the date-filter labels"
+      ],
+      "note": "Also avoid where it means this concept: Instagram."
+    },
+    {
+      "concept": "relative ages",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "web '%(time)s geleden', iOS '%@ geleden', Android '%1$s geleden' wrap the server's bare units ('%(number)d dagen'); Dutch needs no case change, so the wrappers are fine. Compact forms: %d u geleden / %d min geleden / %d d geleden",
+      "avoid": [
+        "plural noun in a one form (1 dagen geleden)"
+      ],
+      "note": ""
+    }
+  ]
+}
