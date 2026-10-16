@@ -1,6 +1,6 @@
 # Native capture checkpoint, 2026-10-16
 
-The existing iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`, is active for localized capture. The capture iPhone 18 Pro Max is shut down; its three preference files were restored and SHA-256 verified against `/tmp/newsblur-iphone-capture-resume-backup`. The iPad has a fresh five-file backup at `/tmp/newsblur-ipad-capture-resume-backup` to restore after shutdown. Another task’s iPhone 17e is untouched. No production account is used.
+All 21 iPad locales have four visually verified native stills and finalized raw footage. The iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`, is shut down; its five preference files were restored and SHA-256 verified against `/tmp/newsblur-ipad-capture-resume-backup`. The task iPhone 18 Pro Max, UDID `011EB534-697E-4855-BACA-4D4C6E4E92EF`, is being resumed for its remaining 17 locales; its three preference files still matched `/tmp/newsblur-iphone-capture-resume-backup` before boot. Another task’s iPhone 17e remains untouched. No production account is used.
 
 ## Verified complete native groups
 
@@ -25,12 +25,12 @@ The existing iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`,
 | Thai | Pending | Four stills and finalized raw video, `36d45eced` |
 | Japanese | Pending | Four stills and finalized raw video, `8f19cc5d6` |
 | Korean | Pending | Four stills and finalized raw video, `beb55c757` |
-| Chinese (Simplified) | Pending | Pending |
-| Chinese (Traditional) | Pending | Pending |
+| Chinese (Simplified) | Pending | Four stills and finalized raw video, `dc9a0f474` |
+| Chinese (Traditional) | Pending | Four stills and finalized raw video, `6a6f4b247` |
 
 Canonical English stills are in `../captures/`. Localized native stills are in `../captures/localized/<locale>/`. Raw videos and checkpoints are in `../footage/<device>/` for English and `../footage/localized/<locale>/<device>/` for localized takes. Raw videos require editing and visual timing review before upload. Video time can diverge from wall-clock checkpoints when CoreSimulator stalls.
 
-Hebrew iPhone has valid feed/story/Saved states but its article remained blank through a bounded 90-second readiness check. It is incomplete and not promoted. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. The remaining iPad locales are next, in serial groups of three or four. Other supported locales remain pending.
+Hebrew iPhone has valid feed/story/Saved states but its article remained blank through a bounded 90-second readiness check. It is incomplete and not promoted. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. All iPad locales are complete. The remaining iPhone locales are next, beginning with a bounded Hebrew retry on the freshly booted capture target.
 
 The native Arabic/Hebrew Saved title has an existing clock-icon overlap at its left end; captures preserve the actual app UI. This is separate from the fixed capture-coordinate error: RTL reader Back uses x420, while the story-list All button requires x390.
 
