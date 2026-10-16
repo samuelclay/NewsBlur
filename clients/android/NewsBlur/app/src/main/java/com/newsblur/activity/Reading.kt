@@ -629,10 +629,8 @@ abstract class Reading :
         traverseBar.setup()
         endControls = ReaderEndControls(
             binding.contentBottomOverlay,
-            binding.contentBottomOverlayInner,
             { if (parked) null else readingFragment?.traversalControlsSlot() },
             { setOverlayAlpha(toolbarVisibleFraction) },
-            shouldDock = { !prefsRepo.isReaderControlsAlwaysVisible() },
         )
         endControls?.start()
 
@@ -1449,7 +1447,7 @@ abstract class Reading :
 
             val alpha = when {
                 overlaysSuppressed -> 0f
-                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isDocked == true -> 1f
+                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isAtArticleEnd == true -> 1f
                 else -> a
             }
             UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)

@@ -27,6 +27,19 @@ import org.junit.Test
 @Suppress("ktlint:standard:class-naming")
 class Test_ReaderEndControls {
     @Test
+    fun test_next_stays_in_floating_host_across_short_stories() = withFixture { f ->
+        f.controller.start()
+        f.reading.enableOverlays()
+        assertSame("Short stories must not move Next into their footer", f.host, f.parent)
+        assertEquals(1f, f.lastAlpha, 0f)
+
+        f.activeFooter = f.footer(top = 500)
+        f.frame.captured.onPreDraw()
+        assertSame("The next story must keep the same navigation host", f.host, f.parent)
+        assertEquals(1f, f.lastAlpha, 0f)
+    }
+
+    @Test
     fun test_pinned_controls_stay_visible_with_a_hidden_toolbar() = withFixture { f ->
         f.firstFooter.top = 1100
         f.alwaysShowControls = true
@@ -79,28 +92,27 @@ class Test_ReaderEndControls {
         f.firstFooter.top = -100
         f.frame.captured.onPreDraw()
         f.applyAlpha(0f)
-        assertFalse(f.controller.isDocked)
+        assertTrue(f.controller.isAtArticleEnd)
         assertSame(f.host, f.parent)
         assertEquals(1f, f.lastAlpha, 0f)
         verify(exactly = 0) { f.firstFooter.view.addView(any(), any<ViewGroup.LayoutParams>()) }
     }
 
     @Test
-    fun test_preference_changes_return_docked_controls_to_host_and_restore_default_docking() = withFixture { f ->
+    fun test_preference_changes_preserve_fixed_controls_and_restore_default_fade() = withFixture { f ->
         f.controller.start()
-        assertSame(f.firstFooter.view, f.parent)
+        assertSame(f.host, f.parent)
 
         f.alwaysShowControls = true
         f.controller.update()
         assertSame(f.host, f.parent)
-        assertFalse(f.controller.isDocked)
+        assertTrue(f.controller.isAtArticleEnd)
         assertEquals(1f, f.lastAlpha, 0f)
-        verify { f.firstFooter.view.removeOnAttachStateChangeListener(any()) }
 
         f.alwaysShowControls = false
         f.controller.update()
-        assertSame(f.firstFooter.view, f.parent)
-        assertTrue(f.controller.isDocked)
+        assertSame(f.host, f.parent)
+        assertTrue(f.controller.isAtArticleEnd)
         assertEquals(1f, f.lastAlpha, 0f)
 
         f.firstFooter.top = 1100
@@ -115,17 +127,16 @@ class Test_ReaderEndControls {
         f.reading.enableOverlays()
 
         // Test_ReaderEndControls.kt keeps the original S22 regression: the top toolbar is hidden,
-        // but the same Text/Share and Previous/Next views are now visible inside the article end.
-        assertTrue(f.controller.isDocked)
-        assertSame(f.firstFooter.view, f.parent)
+        // but the same Text/Share and Previous/Next views are visible in their fixed bottom position.
+        assertTrue(f.controller.isAtArticleEnd)
+        assertSame(f.host, f.parent)
         assertEquals(1f, f.lastAlpha, 0f)
-        verify { f.firstFooter.view.addView(f.controls, f.params) }
         f.frame.captured.onPreDraw()
-        verify(exactly = 1) { f.firstFooter.view.addView(f.controls, f.params) }
+        verify(exactly = 0) { f.host.removeView(f.controls) }
     }
 
     @Test
-    fun test_scrolling_back_to_article_body_restores_floating_controls_and_auto_hide() = withFixture { f ->
+    fun test_scrolling_back_to_article_body_restores_auto_hide_without_moving_controls() = withFixture { f ->
         f.firstFooter.top = 1100
         f.controller.start()
         f.reading.enableOverlays()
@@ -134,13 +145,13 @@ class Test_ReaderEndControls {
 
         f.firstFooter.top = 700
         f.frame.captured.onPreDraw()
-        assertSame(f.firstFooter.view, f.parent)
+        assertSame(f.host, f.parent)
         assertEquals(1f, f.lastAlpha, 0f)
 
         f.firstFooter.top = 1100
         f.frame.captured.onPreDraw()
         assertSame(f.host, f.parent)
-        assertFalse(f.controller.isDocked)
+        assertFalse(f.controller.isAtArticleEnd)
         assertEquals(0f, f.lastAlpha, 0f)
     }
 
@@ -150,15 +161,15 @@ class Test_ReaderEndControls {
         f.firstFooter.top = 790
         f.controller.start()
         f.reading.enableOverlays()
-        assertSame(f.firstFooter.view, f.parent)
+        assertSame(f.host, f.parent)
         assertEquals(1f, f.lastAlpha, 0f)
 
         f.firstFooter.top = 700
         f.frame.captured.onPreDraw()
         f.firstFooter.top = 790
         f.frame.captured.onPreDraw()
-        assertSame(f.firstFooter.view, f.parent)
-        verify(exactly = 1) { f.firstFooter.view.addView(f.controls, f.params) }
+        assertSame(f.host, f.parent)
+        verify(exactly = 0) { f.host.removeView(f.controls) }
 
         f.firstFooter.top = 800
         f.frame.captured.onPreDraw()
@@ -167,16 +178,18 @@ class Test_ReaderEndControls {
     }
 
     @Test
-    fun test_page_changes_only_attach_controls_to_active_footer_and_detach_returns_them() = withFixture { f ->
+    fun test_page_changes_track_only_active_footer_and_detach_restores_auto_hide() = withFixture { f ->
         f.controller.start()
         val nextFooter = f.footer(top = 1100)
         f.activeFooter = nextFooter
         f.frame.captured.onPreDraw()
         assertSame(f.host, f.parent)
+        assertEquals(0f, f.lastAlpha, 0f)
 
         nextFooter.top = 700
         f.frame.captured.onPreDraw()
-        assertSame(nextFooter.view, f.parent)
+        assertSame(f.host, f.parent)
+        assertEquals(1f, f.lastAlpha, 0f)
         verify { f.firstFooter.view.removeOnAttachStateChangeListener(any()) }
 
         nextFooter.attached = false
@@ -188,7 +201,7 @@ class Test_ReaderEndControls {
     }
 
     @Test
-    fun test_fullscreen_suppresses_docked_controls_until_video_exits() = withFixture { f ->
+    fun test_fullscreen_suppresses_article_end_controls_until_video_exits() = withFixture { f ->
         f.controller.start()
         f.reading.disableOverlays()
         assertEquals(0f, f.lastAlpha, 0f)
@@ -279,8 +292,7 @@ class Test_ReaderEndControls {
             val hostParams = mockk<ViewGroup.MarginLayoutParams>(relaxed = true)
             hostParams.bottomMargin = 12
             every { host.layoutParams } returns hostParams
-            // Test_ReaderEndControls.kt models the floating host shrinking after its only control row moves out.
-            every { host.height } answers { if (parent === host) 68 else 24 }
+            every { host.height } returns 68
             every { host.getLocationOnScreen(any()) } answers { firstArg<IntArray>()[1] = 812 - host.height }
             every { host.viewTreeObserver } returns observer
             every { observer.isAlive } returns true
@@ -290,10 +302,8 @@ class Test_ReaderEndControls {
             every { host.addView(controls, params) } answers { parent = host }
             controller = ReaderEndControls(
                 host,
-                controls,
                 { activeFooter?.view },
                 { applyAlpha(0f) },
-                shouldDock = { !reading.prefsRepo.isReaderControlsAlwaysVisible() },
             )
             field(reading, Reading::class.java, "endControls", controller)
         }

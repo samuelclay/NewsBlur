@@ -34,12 +34,14 @@ internal class ReaderPageSnapshot(
                 if (generation != requestGeneration) return@post
                 val location = IntArray(2)
                 binding.content.getLocationInWindow(location)
-                val bounds = Rect(
-                    location[0], location[1],
-                    location[0] + binding.content.width, location[1] + binding.content.height,
-                )
+                val bounds = Rect().apply {
+                    left = location[0]
+                    top = location[1]
+                    right = left + binding.content.width
+                    bottom = top + binding.content.height
+                }
                 val decor = activity.window.decorView
-                if (!decor.isAttachedToWindow || !bounds.intersect(0, 0, decor.width, decor.height)) {
+                if (!decor.isAttachedToWindow || bounds.isEmpty || !bounds.intersect(0, 0, decor.width, decor.height)) {
                     completion(false)
                     return@post
                 }
@@ -64,7 +66,7 @@ internal class ReaderPageSnapshot(
                             contentDescription = activity.getString(R.string.loading)
                             binding.content.addView(
                                 this,
-                                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT),
+                                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, bounds.height()),
                             )
                         }
                         prepareReaderSurface(pager)
@@ -90,18 +92,16 @@ internal class ReaderPageSnapshot(
             return
         }
         pager.translationX = distance
-        binding.contentBottomOverlay.translationX = distance
+        // ReaderPageSnapshot.kt keeps the complete outgoing article stationary while the prepared
+        // page slides over it. Captured controls stay aligned beneath the live fixed controls.
+        pager.bringToFront()
         val interpolator = DecelerateInterpolator()
-        snapshot?.animate()?.translationX(-distance)?.setDuration(180L)?.setInterpolator(interpolator)?.start()
-        binding.contentBottomOverlay.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).start()
         pager.animate().translationX(0f).setDuration(180L).setInterpolator(interpolator).withEndAction(completion).start()
     }
 
     fun freezeForExit() {
         generation++
-        snapshot?.animate()?.cancel()
         pager.animate().cancel()
-        binding.contentBottomOverlay.animate().cancel()
     }
 
     fun release() {
@@ -109,7 +109,6 @@ internal class ReaderPageSnapshot(
         pager.alpha = 1f
         pager.translationX = 0f
         pager.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-        binding.contentBottomOverlay.translationX = 0f
         snapshot?.let {
             it.setImageDrawable(null)
             binding.content.removeView(it)
