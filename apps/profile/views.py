@@ -26,7 +26,7 @@ from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.utils.translation import gettext
+from django.utils.translation import gettext, gettext_lazy
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
@@ -1825,7 +1825,9 @@ def delete_classifiers(request):
 @json.json_view
 def delete_all_sites(request):
     request.user.profile.send_opml_export_email(
-        reason="You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+        reason=gettext_lazy(
+            "You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+        )
     )
 
     subs = UserSubscription.objects.filter(user=request.user)

@@ -47,6 +47,15 @@ TOKENS = re.compile(
     r"NewsBlur|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|&(?:[a-zA-Z]+|#\d+|#x[0-9a-fA-F]+);|\\[nrt]|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
 )
 PROTECTED = re.compile(PRINTF.pattern + "|" + TOKENS.pattern)
+MARKUP_TAG = re.compile(r"<(/?)([a-zA-Z][\w:-]*)\b[^>]*?(/?)>")
+VOID_TAGS = {"img", "br", "hr", "input", "meta", "link", "wbr"}
+# manage.py checks glossary "avoid" forms against a translation's own words, not the placeholders, markup and
+# URLs it must copy verbatim (%(classifier_match_desc)s, /briefing?next=...). NewsBlur stays, since glossary
+# forms like Korean particles attach to it.
+COPIED_VERBATIM = re.compile(
+    PRINTF.pattern
+    + r"|\{\{.*?\}\}|\{[a-zA-Z_][\w.]*\}|</?[^>]+>|https?://[A-Za-z0-9/:?&=._~%+#@!$()*;,\[\]-]*"
+)
 APPLE_STRING = re.compile(r'"((?:\\.|[^"\\])*)"\s*=\s*"((?:\\.|[^"\\])*)"\s*;')
 EXTRACTION_KEYWORDS = {
     **DEFAULT_KEYWORDS,
@@ -192,6 +201,8 @@ def common_entries():
 
     for base, extension, method in [
         ("templates", "*html", "python"),
+        # manage.py reads the plain-text halves of the emails too (templates/mail/*.txt).
+        ("templates/mail", "*.txt", "python"),
         ("media/js/newsblur", "*.js", "javascript"),
         ("apps", "*.py", "python"),
         ("utils", "*.py", "python"),
@@ -200,7 +211,7 @@ def common_entries():
             if "/tests/" in str(path) or path.name.startswith("test"):
                 continue
             content = path.read_text()
-            if base == "templates":
+            if base.startswith("templates"):
                 try:
                     content = templatize(content, origin=str(path))
                     content = "\n".join(line.lstrip() for line in content.splitlines())
@@ -233,6 +244,20 @@ def protected(value):
     return Counter(PRINTF.findall(value) + TOKENS.findall(value))
 
 
+def markup_nests(value):
+    """True when every tag closes after it opens and inside the tag opened after it."""
+    stack = []
+    for closing, name, self_closing in MARKUP_TAG.findall(value):
+        name = name.lower()
+        if name in VOID_TAGS or self_closing:
+            continue
+        if not closing:
+            stack.append(name)
+        elif not stack or stack.pop() != name:
+            return False
+    return not stack
+
+
 def validate(source, translated):
     if not isinstance(translated, str) or not translated.strip():
         raise ValueError("Empty or non-string translation")
@@ -247,6 +272,12 @@ def validate(source, translated):
         raise ValueError("Reordered unnumbered format arguments")
     if "\x00" in translated:
         raise ValueError("NUL in translation")
+    if markup_nests(source) and not markup_nests(translated):
+        # manage.py counts tags but not their order, and a model once moved "</a>" ahead of its "<a href>".
+        raise ValueError(f"Markup closes before it opens or crosses: {translated!r}")
+    if "__NB_TOKEN_" in translated and "__NB_TOKEN_" not in source:
+        # manage.py unmasks only the markers it made, so one a model invented would reach readers verbatim.
+        raise ValueError(f"Leftover masking token: {translated!r}")
     if translated.count('"') > source.count('"'):
         # Django's trans output isn't escaped, so a new double quote would end an HTML attribute.
         raise ValueError(f"Added double quote: {translated!r}")
@@ -281,10 +312,12 @@ def load_glossary(code):
 
 def glossary_violation(code, source, translated):
     """Name the audited term a translation breaks by using one of its "avoid" forms, if any."""
+    # A NUL stands in for each copied span, so removing one can't join words or create double spaces.
+    words = COPIED_VERBATIM.sub("\x00", translated)
     for pattern, term in load_glossary(code)[1]:
         if pattern is None or pattern.search(source):
             for form in term.get("avoid") or []:
-                if form in translated:
+                if form in words:
                     return f"{term.get('concept') or term.get('en')}: use {term.get('use')!r}, not {form!r}"
     return None
 

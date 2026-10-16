@@ -1,28 +1,41 @@
 {% extends "mail/email_base.xhtml" %}
-{% load social_tags %}
+{% load i18n social_tags utils_tags %}
 
 {% block header %}{% endblock %}
 
 {% block body %}
-    
+
     <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
-        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: 0 12px 0 0;border-radius: 1px;border: none;float: left;vertical-align: middle"></a> {{ from_name }} shares "<a href="{{ story.story_permalink|safe }}">{{ story.story_title }}</a>"{% if feed %} from <img src="{{ feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed.feed_title }}{% endif %}{% if comments %}:
+        <a href="{{ share_user_profile.blurblog_url }}"><img src="{{ share_user_profile.email_photo_url }}" style="width: 36px; height: 36px;margin: {% bidi "0 12px 0 0" "0 0 0 12px" %};border-radius: 1px;border: none;float: {% bidi "left" "right" %};vertical-align: middle"></a>
+        {% if feed %}
+            {% if comments %}
+                {% blocktrans trimmed with permalink=story.story_permalink|safe story_title=story.story_title favicon_url=feed.favicon_url_fqdn feed_title=feed.feed_title %}{{ from_name }} shares "<a href="{{ permalink }}">{{ story_title }}</a>" from <img src="{{ favicon_url }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed_title }}:{% endblocktrans %}
+            {% else %}
+                {% blocktrans trimmed with permalink=story.story_permalink|safe story_title=story.story_title favicon_url=feed.favicon_url_fqdn feed_title=feed.feed_title %}{{ from_name }} shares "<a href="{{ permalink }}">{{ story_title }}</a>" from <img src="{{ favicon_url }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ feed_title }}{% endblocktrans %}
+            {% endif %}
+        {% else %}
+            {% if comments %}
+                {% blocktrans trimmed with permalink=story.story_permalink|safe story_title=story.story_title %}{{ from_name }} shares "<a href="{{ permalink }}">{{ story_title }}</a>":{% endblocktrans %}
+            {% else %}
+                {% blocktrans trimmed with permalink=story.story_permalink|safe story_title=story.story_title %}{{ from_name }} shares "<a href="{{ permalink }}">{{ story_title }}</a>"{% endblocktrans %}
+            {% endif %}
+        {% endif %}
     </h2>
-    
-    <p>{{ comments }}</p>
-    {% else %}</h2>
+    {% if comments %}
+
+    <p dir="auto">{{ comments }}</p>
     {% endif %}
-    
+
     <hr>
 
-    <h2>{{ story.story_title }}</h2>
+    <h2 dir="auto">{{ story.story_title }}</h2>
 
     <a href="{{ story.story_permalink|safe }}">{{ story.story_permalink|safe }}</a>
 
-    <p>{{ story.story_content|safe }}</p>
-    
+    <p dir="auto">{{ story.story_content|safe }}</p>
+
     <hr>
-    
+
 {% endblock %}
 
 {% block footer %}{% endblock footer %}

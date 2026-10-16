@@ -8,7 +8,7 @@ import struct
 from django import template
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.utils import formats
+from django.utils import dateformat, formats, translation
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
@@ -49,6 +49,25 @@ def localdate(context, date, english_format):
     """utils_tags.py shows a calendar date in the viewer's timezone and language."""
     user = get_user(context["user"])
     return localized_date(localtime_for_timezone(date, user.profile.timezone), english_format)
+
+
+@register.simple_tag
+def bidi(left_to_right, right_to_left):
+    """utils_tags.py picks a style value by the active language's direction, so emails mirror their layout for
+    Arabic and Hebrew readers: float: {% bidi "left" "right" %}."""
+    return right_to_left if translation.get_language_bidi() else left_to_right
+
+
+@register.filter
+def language_date(date, english_format):
+    """utils_tags.py writes a date in NewsBlur's English style (a Django date format like "F j, Y") for English
+    readers and in the active language's own DATE_FORMAT otherwise, as in emails sent in their reader's language.
+    """
+    if not date:
+        return ""
+    if uses_english_dates():
+        return dateformat.format(date, english_format)
+    return formats.date_format(date, "DATE_FORMAT", use_l10n=True)
 
 
 @register.inclusion_tag("reader/feeds_skeleton.xhtml", takes_context=True)

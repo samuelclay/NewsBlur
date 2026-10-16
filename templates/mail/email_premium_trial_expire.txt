@@ -1,18 +1,20 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}Hey {{ user.username }}, your 30-day trial premium subscription has ended.
+{% load i18n %}
 
-You've been enjoying NewsBlur's premium features. We hope you loved:
+{% block body %}{% blocktrans with username=user.username %}Hey {{ username }}, your 30-day trial premium subscription has ended.{% endblocktrans %}
 
-    * Reading stories across folders with River of News
-    * Searching your sites and saved stories
-    * Tagging and organizing saved stories
-    * Faster feed updates
-    * And all the other premium features
+{% trans "You've been enjoying NewsBlur's premium features. We hope you loved:" %}
 
-Your account is now on the free plan with some limitations. But you can unlock everything again for just $36/year.
+    * {% trans "Reading stories across folders with River of News" %}
+    * {% trans "Searching your sites and saved stories" %}
+    * {% trans "Tagging and organizing saved stories" %}
+    * {% trans "Faster feed updates" %}
+    * {% trans "And all the other premium features" %}
 
-Upgrade now: https://newsblur.com/?next=premium
+{% trans "Your account is now on the free plan with some limitations. But you can unlock everything again for just $36/year." %}
 
-Thanks for trying NewsBlur!
+{% trans "Upgrade now:" %} https://newsblur.com/?next=premium
+
+{% trans "Thanks for trying NewsBlur!" %}
 - Sam Clay{% endblock body %}

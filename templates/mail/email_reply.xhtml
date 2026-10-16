@@ -1,19 +1,19 @@
 {% extends "mail/email_base.xhtml" %}
-{% load social_tags %}
+{% load i18n social_tags utils_tags %}
 
 {% block body %}
-    
+
     <p style="margin-top: 12px;">
-        On a story entitled "<a href="{{ shared_story.blurblog_permalink }}">{{ shared_story.story_title }}</a>" from <img src="{{ story_feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: bottom"> {{ story_feed.feed_title }}...
+        {% blocktrans trimmed with permalink=shared_story.blurblog_permalink story_title=shared_story.story_title favicon_url=story_feed.favicon_url_fqdn feed_title=story_feed.feed_title %}On a story entitled "<a href="{{ permalink }}">{{ story_title }}</a>" from <img src="{{ favicon_url }}" style="width: 16px;height: 16px;vertical-align: bottom"> {{ feed_title }}...{% endblocktrans %}
     </p>
-    
+
     <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;line-height: 48px;">
-        <a href="{{ reply_user_profile.blurblog_url }}"><img src="{{ reply_user_profile.email_photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ reply_user_profile.username }} replied to you:
+        <a href="{{ reply_user_profile.blurblog_url }}"><img src="{{ reply_user_profile.email_photo_url }}" style="width: 48px; height: 48px;margin: {% bidi "0 12px 0 0" "0 0 0 12px" %};border-radius: 3px;border: none;float: {% bidi "left" "right" %}"></a> {% blocktrans trimmed with username=reply_user_profile.username %}{{ username }} replied to you:{% endblocktrans %}
     </p>
 
     {% render_email_comment comment %}
-    
+
     <p style="padding-top: 12px;">
-        Don't want any more emails from this story? <a href="{{ mute_url }}">Mute this conversion</a>.
+        {% blocktrans trimmed %}Don't want any more emails from this story? <a href="{{ mute_url }}">Mute this conversation</a>.{% endblocktrans %}
     </p>
 {% endblock %}

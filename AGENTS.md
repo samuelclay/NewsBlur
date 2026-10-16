@@ -160,6 +160,7 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - `make deploy` - Deploy to the web/app servers. Runs `ansible-playbook ansible/deploy.yml -l app`. This is the command for regular web code changes (views, models, settings served by web).
 - `make celery` - Deploy to the task/Celery servers. Runs `ansible-playbook ansible/deploy.yml -l task`. Required whenever the change touches code that runs inside a Celery task (tasks, models called by tasks, scoring, etc.).
 - A change spanning both web and task code needs **both** `make deploy` and `make celery`.
+- Both migrate the database first. `ansible/playbooks/deploy_migrate.yml` checks out the code being deployed into `/srv/newsblur_migrate` on one server, runs `manage.py migrate` from it in a throwaway container, and stops the whole deploy if that fails, all before any server pulls code or restarts. So `make deploy` and `make celery` are safe in either order, and no server ever runs models its database lacks. `make deploy_migrate` runs just that step. The catch: every migration must keep the previous release working (see Database Migrations below).
 
 **Do NOT run the full `apd`/`ansible-playbook ansible/deploy.yml` (no `-l`) for routine deploys.** A full apd can strand prod web servers in HAProxy MAINT if the hstaging disable step fails. Prefer the scoped `make deploy` / `make celery` targets above.
 
@@ -169,6 +170,21 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 - Grafana dashboard changes deploy separately via `aps -l hdb-metrics -t prometheus,grafana`.
 
 Unless asked, don't run any of these. Assume I will deploy or ask you to deploy when ready.
+
+## Database Migrations
+Deploys migrate before restarting anything, so the release already in production keeps running against the new schema: web Group B while Group A restarts, every Celery worker until `make celery` finishes, and any rollback. **Every migration must be backward compatible with the code currently in production.** `apps/test_migration_safety.py` enforces this in CI.
+
+- **Add columns with `null=True`.** Django 3.1 adds a column's `default` only while creating it, then drops it, so a NOT NULL column makes the old release's inserts fail. Backfill and tighten to NOT NULL in a later deploy, once no running code omits it.
+- **New tables are always safe.** So are nullable columns, new indexes and loosening a constraint.
+- **Never drop or rename a column or table in the deploy that stops using it.** Expand, then contract:
+  1. Deploy code that no longer reads or writes it. Leave the field on the model, made `null=True` first if it isn't, so inserts that leave it out still work.
+  2. In a later deploy, remove the field with a migration whose `Migration` class sets `contract_step = "<what stopped using it, and the deploy that shipped that>"`. The safety test lets an explained contract step through.
+  - For a rename, add the new column, write both, backfill, switch reads, then contract the old one. Keeping the old column name with `db_column` is usually simpler.
+- **Don't tighten constraints** (NOT NULL, unique, a narrower type) until no running code can write values that break them. `RunSQL` that drops, renames or sets NOT NULL is flagged like the matching operations.
+- **Bound the lock on busy tables.** Even an instant ALTER needs a brief exclusive lock, and while it waits behind a long query every new query on that table queues behind it. Start schema changes to hot tables (`profile_profile`, `auth_user`, `reader_usersubscription`) with `migrations.RunSQL("SET LOCAL lock_timeout = '5s'", migrations.RunSQL.noop)` so the migration fails fast and the deploy stops instead of stalling the site.
+- **Index large tables concurrently.** A plain `AddIndex` locks writes on Postgres while it builds. Use `AddIndexConcurrently` from `django.contrib.postgres.operations` in a migration with `atomic = False`.
+- **Keep data migrations idempotent and fast.** The deploy waits on them. Large backfills belong in a management command or Celery task run after the deploy.
+- **Mongo has no migrations, but the same rule applies.** mongoengine loads documents strictly by default, so the old release raises `FieldDoesNotExist` on any document carrying a field it doesn't define. Unless the document's `meta` sets `"strict": False`, add a new field to the model in one deploy and start writing it in the next.
 
 ## SSH Access to Servers
 To SSH into NewsBlur servers non-interactively:

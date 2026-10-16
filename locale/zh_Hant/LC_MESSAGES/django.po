@@ -98,8 +98,65 @@ msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d 分鐘前"
 
 #, python-format
+msgid "%(count)s day"
+msgid_plural "%(count)s days"
+msgstr[0] "%(count)s 天"
+
+#, python-format
+msgid "%(count)s month"
+msgid_plural "%(count)s months"
+msgstr[0] "%(count)s 個月"
+
+#, python-format
+msgid "%(count)s year"
+msgid_plural "%(count)s years"
+msgstr[0] "%(count)s 年"
+
+#, python-format
+msgid "%(counter)s follower"
+msgid_plural "%(counter)s followers"
+msgstr[0] "%(counter)s 位追蹤者"
+
+#, python-format
+msgid "%(counter)s shared story"
+msgid_plural "%(counter)s shared stories"
+msgstr[0] "%(counter)s 篇分享的文章"
+
+#, python-format
 msgid "%(date)s, %(time)s"
 msgstr "%(date)s %(time)s"
+
+#, python-format
+msgid "%(from_name)s shares \"%(story_title)s\" from %(feed_title)s."
+msgstr "%(from_name)s 分享了 %(feed_title)s 的「%(story_title)s」。"
+
+#, python-format
+msgid "%(from_name)s shares \"%(story_title)s\" from %(feed_title)s:"
+msgstr "%(from_name)s 分享了來自 %(feed_title)s 的「%(story_title)s」："
+
+#, python-format
+msgid "%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\""
+msgstr "%(from_name)s 分享了「<a href=\"%(permalink)s\">%(story_title)s</a>」"
+
+#, python-format
+msgid ""
+"%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s"
+msgstr ""
+"%(from_name)s 分享了來自 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\">"
+" %(feed_title)s 的「<a href=\"%(permalink)s\">%(story_title)s</a>」"
+
+#, python-format
+msgid ""
+"%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
+msgstr ""
+"%(from_name)s 分享了來自 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: middle\">"
+" %(feed_title)s 的「<a href=\"%(permalink)s\">%(story_title)s</a>」："
+
+#, python-format
+msgid "%(from_name)s shares \"<a href=\"%(permalink)s\">%(story_title)s</a>\":"
+msgstr "%(from_name)s 分享了「<a href=\"%(permalink)s\">%(story_title)s</a>」："
 
 #, python-format
 msgid "%(number)d day"
@@ -122,9 +179,18 @@ msgid_plural "%(number)d seconds"
 msgstr[0] "%(number)d 秒"
 
 #, python-format
+msgid "%(referred_username)s just signed up for a premium subscription through your referral link."
+msgstr "%(referred_username)s 剛透過你的推薦連結註冊付費訂閱。"
+
+#, python-format
 msgid "%(shares)s Share"
 msgid_plural "%(shares)s Shares"
 msgstr[0] "%(shares)s 次分享"
+
+#, python-format
+msgid "%(story_count)s story across %(site_count)s sites"
+msgid_plural "%(story_count)s stories across %(site_count)s sites"
+msgstr[0] "在 %(site_count)s 個網站中有 %(story_count)s 篇文章"
 
 #, python-format
 msgid "%(time)s ago"
@@ -173,12 +239,52 @@ msgstr ""
 "id=\"%(user_id)s\">%(other_username)s</span>。"
 
 #, python-format
+msgid "%(username)s has requested to follow your Blurblog on NewsBlur"
+msgstr "%(username)s 已於 NewsBlur 要求追蹤你的 Blurblog"
+
+#, python-format
+msgid "%(username)s is now following your Blurblog on NewsBlur!"
+msgstr "%(username)s 現在開始在 NewsBlur 追蹤你的 Blurblog 了！"
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\" from %(feed_title)s:"
+msgstr "%(username)s 重新分享了來自 %(feed_title)s 的「%(story_title)s」："
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\" from you on NewsBlur"
+msgstr "%(username)s 在 NewsBlur 重新分享了你分享的「%(story_title)s」"
+
+#, python-format
+msgid "%(username)s re-shared \"%(story_title)s\":"
+msgstr "%(username)s 再次分享了「%(story_title)s」："
+
+#, python-format
+msgid ""
+"%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: middle\"> %(feed_title)s:"
+msgstr ""
+"%(username)s 重新分享了來自 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: "
+"middle\"> %(feed_title)s 的「<a href=\"%(permalink)s\">%(story_title)s</a>」："
+
+#, python-format
+msgid "%(username)s re-shared \"<a href=\"%(permalink)s\">%(story_title)s</a>\":"
+msgstr "%(username)s 再次分享了「<a href=\"%(permalink)s\">%(story_title)s</a>」："
+
+#, python-format
 msgid ""
 "%(username)s replied to <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>:"
 msgstr ""
 "%(username)s 回覆了 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>："
+
+#, python-format
+msgid "%(username)s replied to you on \"%(story_title)s\" on NewsBlur"
+msgstr "%(username)s 在 NewsBlur 回覆了你於「%(story_title)s」的留言"
+
+#, python-format
+msgid "%(username)s replied to you:"
+msgstr "%(username)s 回覆了你："
 
 #, python-format
 msgid "%(username)s shared <span class=\"NB-interaction-sharedstory-title NB-splash-link\">%(title)s</span>."
@@ -277,9 +383,41 @@ msgid ""
 msgstr "<a href=\"/features#web-feeds\">網頁訂閱來源</a>讓你追蹤任何網站，即使沒有 RSS 也可以。NewsBlur 會監控頁面變更，並自動將新內容傳送給你。"
 
 #, python-format
+msgid ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Archive</a> ($99/year) gives you every story archived and searchable forever, Ask AI, "
+"daily briefings, up to 4,096 sites, and custom auto-read settings."
+msgstr ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Archive</a>（每年 $99）可讓你永久封存並搜尋所有文章、使用「詢問 AI」和每日簡報、訂閱最多 4,096 個網站，並自訂自動標記為已讀的設定。"
+
+#, python-format
+msgid ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
+"to 10,000 sites, and priority support."
+msgstr ""
+"<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
+"#366944;\">Premium Pro</a>（每月 $29）可讓所有訂閱來源每 5–15 分鐘擷取一次、使用正規表示式訓練、追蹤最多 10,000 個網站，並享有優先支援。"
+
+#, python-format
+msgid "<b>%(counter)s</b> follower"
+msgid_plural "<b>%(counter)s</b> followers"
+msgstr[0] "<b>%(counter)s</b> 位追蹤者"
+
+#, python-format
+msgid "<b>%(counter)s</b> shared story"
+msgid_plural "<b>%(counter)s</b> shared stories"
+msgstr[0] "<b>%(counter)s</b> 篇分享的文章"
+
+#, python-format
 msgid "<b>%(followers)s</b> follower"
 msgid_plural "<b>%(followers)s</b> followers"
 msgstr[0] "<b>%(followers)s</b> 位追蹤者"
+
+#, python-format
+msgid "<b>%(referred_username)s</b> just signed up for a premium subscription through your referral link."
+msgstr "<b>%(referred_username)s</b> 剛透過你的推薦連結註冊了付費訂閱。"
 
 #, python-format
 msgid "<b>%(stories)s</b> story"
@@ -295,6 +433,19 @@ msgstr[0] "每月 <b>%(stories)s</b> 篇文章"
 msgid "<b>%(subscribers)s</b> subscriber"
 msgid_plural "<b>%(subscribers)s</b> subscribers"
 msgstr[0] "<b>%(subscribers)s</b> 位訂閱者"
+
+msgid ""
+"<b>Choose which 1,024 sites to keep active</b> - You can use the Mute Sites feature to select which sites "
+"you want to continue following."
+msgstr "<b>選擇要保留啟用的 1,024 個網站</b>：你可以使用「靜音網站」功能，選擇要繼續追蹤哪些網站。"
+
+msgid "<b>No credit card required.</b> After 30 days, you can continue enjoying these features for just $36/year."
+msgstr "<b>不需要信用卡。</b>試用 30 天後，只要每年 $36，就能繼續使用這些功能。"
+
+msgid ""
+"<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and "
+"access to your complete story archive."
+msgstr "<b>升級至 Premium Archive（每年 $99）</b>：包含最多 4,096 個網站、全文搜尋，以及完整文章封存的存取權。"
 
 #, python-format
 msgid ""
@@ -350,6 +501,20 @@ msgstr ""
 "<span class=\"NB-interaction-username NB-splash-link\" data-user-id=\"%(user_id)s\"> %(username)s </span> "
 "回覆了你的回覆："
 
+msgid "A *huge* thanks for going premium."
+msgstr "非常感謝你升級至 Premium。"
+
+msgid "A *huge* thanks for subscribing to the premium archive tier!"
+msgstr "非常感謝你訂閱 Premium Archive！"
+
+msgid ""
+"A <b>huge</b> thank you for subscribing to the premium archive tier. Your subscription helps pay for the "
+"machines which store and process your archive."
+msgstr "<b>非常</b>感謝你訂閱 Premium Archive 方案。你的訂閱有助於支付儲存和處理你封存內容的伺服器費用。"
+
+msgid "A <b>huge</b> thanks for going premium."
+msgstr "<b>非常</b>感謝你升級至 Premium。"
+
 msgid "A Note about OAuth"
 msgstr "關於 OAuth 的說明"
 
@@ -388,8 +553,16 @@ msgstr "AI 功能"
 msgid "AI built into every story"
 msgstr "每篇文章都內建 AI"
 
+msgctxt "notification email classifier match"
+msgid "AI image filter"
+msgstr "AI 圖片篩選器"
+
 msgid "AI skill"
 msgstr "AI 技能"
+
+msgctxt "notification email classifier match"
+msgid "AI text filter"
+msgstr "AI 文字篩選器"
 
 msgid "AI-based topic prioritization"
 msgstr "AI 主題優先排序"
@@ -476,6 +649,9 @@ msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
 "training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
 msgstr "加入 Y Combinator 後，Samuel 推出了 Blurblog、iPad 與 Android 應用程式，並改進了智慧訓練。Samuel 和他的狗 Shiloh 以香檳和餅乾慶祝。"
+
+msgid "After years at the old price, NewsBlur Premium is moving to $36/year"
+msgstr "沿用多年舊價格後，NewsBlur Premium 即將調整為每年 $36"
 
 msgid "Algorithm decides for you"
 msgstr "由演算法為你決定"
@@ -587,6 +763,17 @@ msgstr "為長期閱讀而打造的 RSS 閱讀器"
 msgid "Analyzing page"
 msgstr "正在分析頁面"
 
+msgid "And a huge thanks for going premium. I'm a solo developer, so it goes a long way."
+msgstr "也非常感謝你升級為付費方案。我是獨立開發者，因此你的支持對我幫助很大。"
+
+msgid "And all the other premium features"
+msgstr "以及其他所有進階功能"
+
+msgid ""
+"And if you like using NewsBlur, consider going premium to help fund further development. I'm a solo "
+"developer, so it goes a long way."
+msgstr "如果你喜歡使用 NewsBlur，不妨升級至 Premium，協助支持後續開發。我是獨立開發者，你的支持對我幫助很大。"
+
 msgid "Android support"
 msgstr "Android 支援"
 
@@ -612,6 +799,16 @@ msgstr "全域套用訓練"
 
 msgid "Approve"
 msgstr "核准"
+
+#, python-format
+msgid "Approve or ignore this follow request <a href=\"https://%(domain)s%(autologin_url)s\">on NewsBlur</a>."
+msgstr "你可以<a href=\"https://%(domain)s%(autologin_url)s\">在 NewsBlur 上</a>核准或忽略這項追蹤請求。"
+
+msgid "Approve or ignore this follow request on NewsBlur:"
+msgstr "在 NewsBlur 上核准或忽略這項追蹤請求："
+
+msgid "Approve the new $36/year rate"
+msgstr "同意新的每年 $36 費率"
 
 msgid "Archive"
 msgstr "Archive"
@@ -648,6 +845,9 @@ msgstr "確定要刪除此應用程式嗎？"
 
 msgid "Artificial Intelligence"
 msgstr "人工智慧"
+
+msgid "As always, you have access to a number of resources:"
+msgstr "一如往常，你可以使用多種資源："
 
 msgid "Ask AI"
 msgstr "詢問 AI"
@@ -710,6 +910,10 @@ msgstr "驗證使用 OAuth 2.0 &mdash; 你的用戶端會自動處理流程。"
 msgid "Author"
 msgstr "作者"
 
+msgctxt "notification email classifier match"
+msgid "Author"
+msgstr "作者"
+
 msgid "Author & Journalist"
 msgstr "作者與記者"
 
@@ -747,11 +951,25 @@ msgstr "返回帳戶"
 msgid "Back to login"
 msgstr "返回登入"
 
+msgid "Backup OPML file of your NewsBlur sites"
+msgstr "你的 NewsBlur 網站 OPML 備份檔案"
+
 msgid "Basic"
 msgstr "基本"
 
 msgid "Basic filters"
 msgstr "基本篩選器"
+
+msgid ""
+"Because your subscription runs through PayPal, PayPal needs you to approve the new rate yourself, so I "
+"cannot make the change for you. It takes a few seconds:"
+msgstr "由於你的訂閱是透過 PayPal 付款，PayPal 需要你自行同意新的費率，因此我無法代你更改。只需幾秒鐘："
+
+msgid ""
+"Because your subscription runs through PayPal, PayPal would not let NewsBlur move this older subscription "
+"to the current rate. I cancelled the old PayPal subscription before it renews again at the grandfathered "
+"price."
+msgstr "由於你的訂閱是透過 PayPal 處理，PayPal 不允許 NewsBlur 將這筆較早期的訂閱調整為目前的費率。我已在舊 PayPal 訂閱再次以原有價格續訂前將其取消。"
 
 msgid ""
 "Ben Thompson argues AI agents are fundamentally changing compute demand and he no longer believes we're in "
@@ -788,6 +1006,11 @@ msgstr "Blurblog 個人檔案"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid ""
+"Blurblogs were built so you would have a way to share stories with people who aren't on NewsBlur and don't "
+"want to load the entire reader just to read and comment on your shared stories."
+msgstr "建立 Blurblog 是為了讓你能與不使用 NewsBlur 的人分享文章，讓他們不必載入整個閱讀器，也能閱讀並留言回覆你分享的文章。"
 
 msgid "Bookmarklet to easily add sites"
 msgstr "可輕鬆新增網站的書籤小工具"
@@ -933,6 +1156,9 @@ msgstr "改變心意了嗎？管理電子郵件設定"
 msgid "Cheapest Paid Plan"
 msgstr "最便宜的付費方案"
 
+msgid "Check the FAQ"
+msgstr "查看常見問題"
+
 msgid "Chief Morale Officer"
 msgstr "首席士氣官"
 
@@ -941,6 +1167,11 @@ msgstr "選擇你的 64 個網站"
 
 msgid "Choose when stories are marked as read"
 msgstr "選擇何時將文章標記為已讀"
+
+msgid ""
+"Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want"
+" to continue following."
+msgstr "選擇要保留啟用的 1,024 個網站：你可以使用「靜音網站」功能，選擇要繼續追蹤的網站。"
 
 msgid "Choose your preferred AI model: Claude, GPT, Gemini, or Grok"
 msgstr "選擇偏好的 AI 模型：Claude、GPT、Gemini 或 Grok"
@@ -1317,8 +1548,31 @@ msgstr "Pro 方案是否包含 Archive 的所有功能？"
 msgid "Does training work across all my feeds?"
 msgstr "訓練設定會套用到我所有的訂閱來源嗎？"
 
+#, python-format
+msgid "Don't want any more emails from this story? <a href=\"%(mute_url)s\">Mute this conversation</a>."
+msgstr "不想再收到這篇文章的電子郵件？<a href=\"%(mute_url)s\">將這段對話設為靜音</a>。"
+
+msgid "Don't want any more emails from this story? Mute this conversation:"
+msgstr "不想再收到這篇文章的電子郵件？將這段對話設為靜音："
+
+#, python-format
+msgid "Don't want any more emails? <a href=\"%(mute_url)s\">Mute everything from this story</a>."
+msgstr "不想再收到電子郵件？<a href=\"%(mute_url)s\">將這篇文章的所有通知設為靜音</a>。"
+
+msgid "Don't want any more emails? Mute everything from this story:"
+msgstr "不想再收到電子郵件？將這篇文章的所有通知設為靜音："
+
+msgid "Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur:"
+msgstr "不想收到任何與 NewsBlur 相關的通知？取消訂閱 NewsBlur 的電子郵件："
+
 msgid "Download NewsBlur from the App Store or Google Play"
 msgstr "從 App Store 或 Google Play 下載 NewsBlur"
+
+msgid "Download browser extensions for Safari, Firefox, and Chrome"
+msgstr "下載 Safari、Firefox 和 Chrome 瀏覽器擴充功能"
+
+msgid "Download the free Android App"
+msgstr "下載免費的 Android App"
 
 #, python-format
 msgid "Download the free NewsBlur Android app on <br /><span class=\"NB-big\">%(store)s</span>"
@@ -1327,6 +1581,12 @@ msgstr "在 <br /><span class=\"NB-big\">%(store)s</span> 下載免費的 NewsBl
 #, python-format
 msgid "Download the free NewsBlur iOS app on the<br /><span class=\"NB-big\">%(store)s</span>"
 msgstr "在<br /><span class=\"NB-big\">%(store)s</span>下載免費的 NewsBlur iOS App"
+
+msgid "Download the free iOS App"
+msgstr "下載免費 iOS App"
+
+msgid "Download the free iPad/iPhone App"
+msgstr "下載免費的 iPad／iPhone App"
 
 msgid "Download the latest version of the NewsBlur iOS app"
 msgstr "下載最新版本的 NewsBlur iOS App"
@@ -1389,6 +1649,9 @@ msgstr "電子報以訂閱來源形式顯示於 NewsBlur"
 
 msgid "Enable Daily Briefing for an AI-generated summary of your top stories"
 msgstr "啟用每日簡報，取得 AI 生成的熱門文章摘要"
+
+msgid "Enable unlimited sites (up to 1,024 feeds)"
+msgstr "啟用不限數量的網站（最多 1,024 個訂閱來源）"
 
 msgid "Engineer"
 msgstr "工程師"
@@ -1526,6 +1789,9 @@ msgstr "拓展你的社群"
 msgid "Explore Archive"
 msgstr "探索 Archive"
 
+msgid "Explore NewsBlur:"
+msgstr "探索 NewsBlur："
+
 msgid "Explore Premium"
 msgstr "探索 Premium"
 
@@ -1577,6 +1843,9 @@ msgstr "搜尋 Podcast 失敗"
 
 msgid "Familiar roots, different trajectory"
 msgstr "熟悉的根源，不同的發展軌跡"
+
+msgid "Faster feed updates"
+msgstr "加快訂閱來源更新速度"
 
 msgid "Feature"
 msgstr "功能"
@@ -1657,6 +1926,11 @@ msgstr "回填訂閱來源的歷史文章，建立完整封存"
 msgid "Feeds fetched"
 msgstr "已擷取的訂閱來源"
 
+msgid ""
+"Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
+"should be the name of the organization. Easy to change!"
+msgstr "你可以隨意重新命名電子報，讓名稱更貼切。有時電子報會顯示為某個人的名字，但其實應該是所屬機構的名稱。修改很簡單！"
+
 msgid "Fetching your feeds"
 msgstr "正在擷取你的訂閱來源"
 
@@ -1714,6 +1988,14 @@ msgstr "必須填寫資料夾標題"
 msgid "Folder tree with unread counts"
 msgstr "顯示未讀數量的資料夾樹狀清單"
 
+#, python-format
+msgid "Follow %(handle)s on GitHub"
+msgstr "在 GitHub 追蹤 %(handle)s"
+
+#, python-format
+msgid "Follow %(handle)s on X"
+msgstr "在 X 上追蹤 %(handle)s"
+
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
 "delivers new content automatically."
@@ -1737,6 +2019,9 @@ msgid ""
 "Follow any website, even without RSS. NewsBlur generates a feed from any page, monitors it for changes, and"
 " delivers new content to you."
 msgstr "追蹤任何網站，即使沒有 RSS。NewsBlur 會從任何頁面產生訂閱來源、監控更新，並將新內容送達給你。"
+
+msgid "Follow friends from X, Facebook, and NewsBlur"
+msgstr "追蹤來自 X、Facebook 和 NewsBlur 的朋友"
 
 msgid "Follow friends, shared items"
 msgstr "追蹤朋友和分享項目"
@@ -1786,6 +2071,12 @@ msgstr ""
 
 msgid "Forgot password?"
 msgstr "忘記密碼？"
+
+msgid "Forgot your password on NewsBlur?"
+msgstr "忘記了 NewsBlur 上的密碼？"
+
+msgid "Forgot your password? No problem."
+msgstr "忘記密碼了嗎？別擔心。"
 
 msgid "Forward or subscribe newsletters to that address"
 msgstr "將電子報轉寄至該地址，或直接用該地址訂閱電子報"
@@ -1882,6 +2173,9 @@ msgstr "全文文章"
 msgid "Full-text search"
 msgstr "全文搜尋"
 
+msgid "Full-text search across all your sites"
+msgstr "跨所有網站全文搜尋"
+
 msgid ""
 "Full-text search every page the browser extension captured from your web browsing, or ask the Archive "
 "Assistant AI about what you've read"
@@ -1967,6 +2261,9 @@ msgstr "在訂閱來源發布新文章時接收通知。可為每個訂閱來源
 msgid "Get started"
 msgstr "開始使用"
 
+msgid "Get support on NewsBlur's support forum"
+msgstr "前往 NewsBlur 的支援論壇取得協助"
+
 msgid ""
 "Get unread stories from any feed or folder, list all your folders and feeds, search across all "
 "subscriptions, retrieve saved stories by tag"
@@ -2013,6 +2310,15 @@ msgstr "前往「帳戶設定」取得你的專屬 NewsBlur 電子郵件地址"
 msgid "Good Reads"
 msgstr "優質閱讀"
 
+msgid "Good news! NewsBlur has finished importing your OPML file."
+msgstr "好消息！NewsBlur 已完成匯入你的 OPML 檔案。"
+
+msgid "Good news! NewsBlur has finished importing your sites from Google Reader."
+msgstr "好消息！NewsBlur 已完成從 Google Reader 匯入你的網站。"
+
+msgid "Good news! NewsBlur has finished importing your starred stories from Google Reader."
+msgstr "好消息！NewsBlur 已完成從 Google Reader 匯入你加星號的文章。"
+
 msgid "Goodies & Apps"
 msgstr "實用工具與應用程式"
 
@@ -2036,6 +2342,10 @@ msgstr "知道了！<br>電子郵件應會在幾分鐘內寄出。"
 
 msgid "Graceful iFrame Busting"
 msgstr "優雅地解除 iFrame 限制"
+
+#, python-format
+msgid "Great news, %(username)s!"
+msgstr "好消息，%(username)s！"
 
 msgctxt "story layout"
 msgid "Grid"
@@ -2063,8 +2373,48 @@ msgid ""
 "support forum</a> and we'll consider it for a future release."
 msgstr "對新工具或工作流程有想法嗎？請發佈到 <a href=\"https://forum.newsblur.com\">NewsBlur 支援論壇</a>，我們會考慮在未來版本中推出。"
 
+#, python-format
+msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
+msgstr "前往 <a href=\"https://%(domain)s\">NewsBlur</a>，開始閱讀。"
+
+msgid "Head over to NewsBlur and get reading:"
+msgstr "前往 NewsBlur，開始閱讀："
+
 msgid "Health Economist, NY Times"
 msgstr "《紐約時報》健康經濟學家"
+
+msgid "Here are some easy ways to have a great time on NewsBlur:"
+msgstr "以下是幾個在 NewsBlur 享受美好時光的簡單方法："
+
+msgid "Here are some ways to make NewsBlur work for you:"
+msgstr "以下是幾種讓 NewsBlur 更符合你需求的方法："
+
+msgid "Here's a backup of all of your subscriptions on NewsBlur."
+msgstr "這是你在 NewsBlur 的所有訂閱來源備份。"
+
+#, python-format
+msgid "Hey %(username)s, just a heads up"
+msgstr "嗨，%(username)s，有件事想先提醒你"
+
+#, python-format
+msgid "Hey %(username)s, just a heads up -- your %(tier_name)s subscription renews on %(date)s."
+msgstr "嗨，%(username)s，提醒你一下：你的 %(tier_name)s 訂閱將於 %(date)s 續訂。"
+
+#, python-format
+msgid "Hey %(username)s, your 30-day trial premium subscription has ended."
+msgstr "嗨，%(username)s，你的 30 天進階訂閱試用期已結束。"
+
+#, python-format
+msgid "Hey %(username)s, your premium account has just expired."
+msgstr "嗨，%(username)s，你的 Premium 帳戶剛剛到期。"
+
+#, python-format
+msgid "Hey %(username)s, your premium account is about to expire..."
+msgstr "嗨，%(username)s，你的付費帳戶即將到期……"
+
+#, python-format
+msgid "Hi %(username)s,"
+msgstr "嗨，%(username)s："
 
 msgid "Hide"
 msgstr "隱藏"
@@ -2086,6 +2436,11 @@ msgstr "首頁"
 
 msgid "Hook NewsBlur up to nearly every service on the web"
 msgstr "將 NewsBlur 連結至網路上幾乎所有服務"
+
+msgid ""
+"Hope everything on NewsBlur is working well for you. Let me know if you see any issues. I rely on folks "
+"like you who know how to email me to be my eyes and ears on the site."
+msgstr "希望 NewsBlur 的一切運作順利。如果你遇到任何問題，請告訴我。我仰賴像你這樣願意寄電子郵件給我的使用者，幫我留意網站上的狀況。"
 
 msgid "Hosted Service"
 msgstr "代管服務"
@@ -2120,6 +2475,57 @@ msgstr "我可以儲存多少篇文章？"
 msgid "How often are Web Feeds checked?"
 msgstr "網頁訂閱來源多久檢查一次？"
 
+msgid ""
+"I made NewsBlur because I wanted a better way to read the news and talk about it with people. I hope you "
+"love it, too."
+msgstr "我建立 NewsBlur，是因為我想要更好的方式來閱讀新聞並與他人交流。希望你也會喜歡它。"
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"$36 per year, and your subscription will renew at that rate on %(date)s."
+msgstr "在下次續訂前先提醒你。NewsBlur Premium 即將調整為目前每年 $36 的價格，你的訂閱將於 %(date)s 按此價格續訂。"
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"$36 per year. You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful "
+"you have stuck with NewsBlur for so long."
+msgstr "我想在你下次續訂前先提醒你。NewsBlur Premium 將調整為目前每年 $36 的費率。你一直享有較早期的優惠價格，每年 $%(old_amount)s；很感謝你長久以來支持 NewsBlur。"
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"<b>$36 per year</b>, and your subscription will renew at that rate on <b>%(date)s</b>."
+msgstr "在你下次續訂前，先提醒你一聲。NewsBlur Premium 即將調整為目前<b>每年 $36</b> 的價格，你的訂閱將於 <b>%(date)s</b> 按此價格續訂。"
+
+#, python-format
+msgid ""
+"I want to give you a heads up before your next renewal. NewsBlur Premium is moving to its current rate of "
+"<b>$36 per year</b>. You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and "
+"I am grateful you have stuck with NewsBlur for so long."
+msgstr ""
+"在你下次續訂前，我想先提醒你。NewsBlur Premium 即將調整為目前<b>每年 $36</b> 的價格。你一直享有<b>每年 $%(old_amount)s</b> 的舊有優惠價格，很感謝你長期支持 "
+"NewsBlur。"
+
+#, python-format
+msgid ""
+"I'm reaching out because your NewsBlur account has %(feed_count)s active site, and I wanted to give you a "
+"heads up about an upcoming change."
+msgid_plural ""
+"I'm reaching out because your NewsBlur account has %(feed_count)s active sites, and I wanted to give you a "
+"heads up about an upcoming change."
+msgstr[0] "我聯絡你是因為你的 NewsBlur 帳戶目前有 %(feed_count)s 個啟用中的網站，想提前告訴你一項即將發生的變更。"
+
+#, python-format
+msgid ""
+"I'm reaching out because your NewsBlur account has <b>%(feed_count)s</b> active site, and I wanted to give "
+"you a heads up about an upcoming change."
+msgid_plural ""
+"I'm reaching out because your NewsBlur account has <b>%(feed_count)s</b> active sites, and I wanted to give"
+" you a heads up about an upcoming change."
+msgstr[0] "我聯絡你是因為你的 NewsBlur 帳戶有 <b>%(feed_count)s</b> 個啟用中的網站，想先提醒你即將發生的變更。"
+
 msgid "IFTTT & Zapier"
 msgstr "IFTTT 與 Zapier"
 
@@ -2135,6 +2541,12 @@ msgstr "如果我是一隻鳥，我會是隻鴿子。"
 msgid "If no RSS feed is found, NewsBlur offers to create a Web Feed"
 msgstr "如果找不到 RSS 訂閱來源，NewsBlur 會提供建立網頁訂閱來源的選項"
 
+msgid "If the gift isn't redeemed within 90 days, you'll receive a full refund automatically."
+msgstr "如果 90 天內未兌換禮物，你將自動收到全額退款。"
+
+msgid "If you enjoy using NewsBlur, these resources might be of interest to you:"
+msgstr "如果你喜歡使用 NewsBlur，以下資源或許會讓你感興趣："
+
 msgid ""
 "If you used Google Reader, you'll feel at home in NewsBlur. Folder-based organization, keyboard shortcuts "
 "for navigating and managing stories, a clean reading interface, and full OPML import and export are all "
@@ -2142,6 +2554,12 @@ msgid ""
 msgstr ""
 "如果你用過 Google Reader，在 NewsBlur 中會很快上手。資料夾分類、用於瀏覽和管理文章的鍵盤快速鍵、簡潔的閱讀介面，以及完整的 OPML 匯入與匯出功能，一應俱全。NewsBlur 保留了 "
 "Google Reader 深受喜愛的核心閱讀體驗。"
+
+msgid ""
+"If you would rather not, that is completely fine. Your current subscription will simply come to an end at "
+"your renewal, and you are welcome to resubscribe anytime at the current rate. Either way, nothing changes "
+"today and your account stays exactly as it is."
+msgstr "如果你不想續訂，也完全沒問題。你目前的訂閱會在續訂日到期，之後隨時都可以按目前的費率重新訂閱。無論如何，今天都不會有任何變動，你的帳戶也會維持原樣。"
 
 msgid ""
 "If you've been searching for a Google Reader replacement, you've found it. NewsBlur isn't just an "
@@ -2313,6 +2731,39 @@ msgstr "這和 RSS 有什麼不同？"
 
 msgid "Is training available on the free plan?"
 msgstr "免費方案可以使用訓練功能嗎？"
+
+#, python-format
+msgid "It contains %(counter)s site."
+msgid_plural "It contains %(counter)s sites."
+msgstr[0] "其中包含 %(counter)s 個網站。"
+
+#, python-format
+msgid "It contains <b style=\"#484F53\">%(counter)s</b> site."
+msgid_plural "It contains <b style=\"#484F53\">%(counter)s</b> sites."
+msgstr[0] "其中包含 <b style=\"#484F53\">%(counter)s</b> 個網站。"
+
+#, python-format
+msgid ""
+"It's been %(counter)s month since you last saw NewsBlur. A lot has changed since then. We just launched a "
+"full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the"
+" old Google Reader features, you'll love the new NewsBlur."
+msgid_plural ""
+"It's been %(counter)s months since you last saw NewsBlur. A lot has changed since then. We just launched a "
+"full-scale re-design, complete with shared stories (blurblogs) and native iOS/Android apps. If you miss the"
+" old Google Reader features, you'll love the new NewsBlur."
+msgstr[0] ""
+"距離你上次造訪 NewsBlur 已經過了 %(counter)s 個月。這段時間改變了許多。我們剛推出全面重新設計的版本，加入分享文章（Blurblog）功能，以及原生 iOS／Android "
+"App。如果你懷念舊版 Google Reader 的功能，一定會喜歡全新的 NewsBlur。"
+
+#, python-format
+msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
+msgstr "只要前往<a href=\"https://%(domain)s/?next=opml\">「管理 NewsBlur」>「匯入或上傳網站」</a>即可。"
+
+msgid "Just go to Manage NewsBlur > Import or upload sites."
+msgstr "只要前往「管理 NewsBlur」>「匯入或上傳網站」即可。"
+
+msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
+msgstr "持續分享你的推薦連結，即可獲得更多免費訂閱時間。每次推薦都會累積！"
 
 msgid "Keep the signal, lose the noise."
 msgstr "保留重點，排除雜訊。"
@@ -2757,6 +3208,16 @@ msgstr ""
 "著重於簡潔、精簡的閱讀體驗。NewsBlur 則在同樣清爽的介面上，加入智慧訓練、AI 功能、社群分享和原生行動應用程式。若你想要盡可能簡單的閱讀器，Feedbin "
 "是絕佳選擇。若你想要更多功能，又不犧牲易用性，NewsBlur 就能滿足需求。"
 
+#, python-format
+msgid "NewsBlur archive backfill is complete: %(count)s story"
+msgid_plural "NewsBlur archive backfill is complete: %(count)s stories"
+msgstr[0] "NewsBlur 封存回填已完成：%(count)s 篇文章"
+
+#, python-format
+msgid "NewsBlur archive backfill is complete: from %(before)s to %(after)s story"
+msgid_plural "NewsBlur archive backfill is complete: from %(before)s to %(after)s stories"
+msgstr[0] "NewsBlur 封存回填已完成：從 %(before)s 到 %(after)s 篇文章"
+
 msgid ""
 "NewsBlur builds and maintains its own native iOS and Android apps with full feature parity, including "
 "intelligence training, blurblog sharing, and text view. Feedbin relies entirely on third-party apps like "
@@ -2836,6 +3297,16 @@ msgstr ""
 
 msgid "NewsBlur is a news reader and aggregator developed by Samuel Clay at NewsBlur, Inc."
 msgstr "NewsBlur 是由 Samuel Clay 在 NewsBlur 公司開發的新聞閱讀器與聚合器。"
+
+msgid ""
+"NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an "
+"old instrument."
+msgstr "NewsBlur 是一款個人新聞閱讀器，讓人們聚在一起討論世界。用舊樂器，奏出新聲音。"
+
+msgid ""
+"NewsBlur is an archive for the web you follow. Search it, clip highlights and share notes, and rest assured"
+" that your data will remain even as the web it pulls from may not. Thanks again for supporting NewsBlur."
+msgstr "NewsBlur 是你追蹤的網路內容封存庫。你可以搜尋、擷取重點並分享筆記，也可以放心，你的資料會一直保留下來，即使它擷取內容的網站可能不復存在。再次感謝你支持 NewsBlur。"
 
 msgid ""
 "NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a "
@@ -3119,6 +3590,9 @@ msgstr "沒有可儲存的分類器"
 msgid "No credit card required"
 msgstr "不需要信用卡"
 
+msgid "No credit card required. After 30 days, you can continue enjoying these features for just $36/year."
+msgstr "不需要信用卡。30 天後，只要每年 $36，就能繼續使用這些功能。"
+
 msgid "No feed found for this URL."
 msgstr "找不到此網址的訂閱來源。"
 
@@ -3177,6 +3651,20 @@ msgstr "通知"
 msgid "Notifications on trained intelligence classifiers"
 msgstr "接收經訓練的智慧分類器通知"
 
+msgid "Now everything you read on the web is archived, searchable, shareable, and not going anywhere"
+msgstr "現在，你在網路上閱讀的所有內容都會封存、可搜尋、可分享，而且不會消失"
+
+msgid "Now that you have premium access, you may want to follow a few resources:"
+msgstr "現在你已取得進階功能，不妨追蹤幾個資源："
+
+msgid "Now that you're premium, you may want to follow a few resources:"
+msgstr "現在你已是 Premium 訂閱者，不妨追蹤幾個資源："
+
+msgid ""
+"OK, firstly, thank you for trying out NewsBlur. I hope NewsBlur can make your daily reading more personal "
+"and intelligent."
+msgstr "好，首先，感謝你試用 NewsBlur。希望 NewsBlur 能讓你的日常閱讀更貼近個人喜好，也更有智慧。"
+
 msgid "OPML Import & Export"
 msgstr "OPML 匯入與匯出"
 
@@ -3189,8 +3677,28 @@ msgstr "用於從其他閱讀器匯入訂閱來源的 OPML 匯入對話框"
 msgid "Official Hosted Option"
 msgstr "官方代管方案"
 
+#, python-format
+msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
+msgstr "你的訂閱將於 %(deadline_date)s 續訂，屆時你需要選擇以下其中一個選項："
+
+#, python-format
+msgid "On <b>%(deadline_date)s</b>, when your subscription renews, you'll need to choose one of these options:"
+msgstr "你的訂閱將於 <b>%(deadline_date)s</b> 續訂，屆時你需要選擇以下其中一個選項："
+
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "Premium 可搜尋近期文章。Premium Archive 則可搜尋所有曾封存的文章。"
+
+#, python-format
+msgid "On a story entitled \"%(story_title)s\" from %(feed_title)s, %(username)s replied to you:"
+msgstr "在 %(feed_title)s 的文章「%(story_title)s」中，%(username)s 回覆了你："
+
+#, python-format
+msgid ""
+"On a story entitled \"<a href=\"%(permalink)s\">%(story_title)s</a>\" from <img src=\"%(favicon_url)s\" "
+"style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s..."
+msgstr ""
+"在 <img src=\"%(favicon_url)s\" style=\"width: 16px;height: 16px;vertical-align: bottom\"> %(feed_title)s "
+"的文章「<a href=\"%(permalink)s\">%(story_title)s</a>」中…"
 
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "首次使用時，瀏覽器視窗會開啟，讓你登入並授權存取。"
@@ -3342,6 +3850,9 @@ msgstr "請提供電子報網址。"
 msgid "Please provide a search query."
 msgstr "請輸入搜尋字詞。"
 
+msgid "Please provide at least one email address."
+msgstr "請至少提供一個電子郵件地址。"
+
 msgid "Please type \"DELETE\" to confirm deletion."
 msgstr "請輸入「DELETE」以確認刪除。"
 
@@ -3392,6 +3903,11 @@ msgstr "Premium - NewsBlur 價格"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid ""
+"Premium Archive ($99/year) gives you every story archived and searchable forever, Ask AI, daily briefings, "
+"up to 4,096 sites, and custom auto-read settings."
+msgstr "Premium Archive（每年 $99）提供永久封存並可搜尋的所有文章、詢問 AI、每日簡報、最多 4,096 個網站，以及自訂自動標記為已讀設定。"
+
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur 價格"
 
@@ -3409,6 +3925,11 @@ msgstr "Premium Archive 訂閱"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
+
+msgid ""
+"Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
+" and priority support."
+msgstr "Premium Pro（每月 $29）提供所有訂閱來源每 5–15 分鐘擷取一次、正規表示式訓練、最多 10,000 個網站，以及優先支援。"
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur 價格"
@@ -3572,6 +4093,9 @@ msgstr "僅限 RSS/Atom"
 msgid "Re-analyzing page"
 msgstr "正在重新分析頁面"
 
+msgid "Re-subscribe at the new $36/year rate"
+msgstr "以新的每年 $36 費率重新訂閱"
+
 msgid "Read Stories"
 msgstr "已讀文章"
 
@@ -3612,6 +4136,9 @@ msgstr "在 NewsBlur 內嵌呈現原始網站上的文章。無須開啟新分�
 
 msgid "Read the Full Story"
 msgstr "閱讀完整文章"
+
+msgid "Read the NewsBlur Blog"
+msgstr "閱讀 NewsBlur 部落格"
 
 msgid "Read the community"
 msgstr "閱讀社群內容"
@@ -3661,6 +4188,9 @@ msgstr "搭配搜尋的閱讀記錄"
 msgid "Reading news is better with friends. Share stories on your public blurblog"
 msgstr "和朋友一起閱讀新聞更有趣。在你的公開 Blurblog 分享文章"
 
+msgid "Reading stories across folders with River of News"
+msgstr "使用新聞流瀏覽各資料夾中的文章"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -3671,6 +4201,9 @@ msgstr ""
 "Readwise Reader 是一款全方位閱讀應用程式，整合 RSS 訂閱來源、稍後閱讀文章、PDF、EPUB "
 "和電子報，並提供深入的螢光標記與註解功能。它專為希望將所有內容集中一處，且重視閱讀筆記的人打造。NewsBlur 則是專為追蹤許多訂閱來源、並希望透過智慧篩選掌握重要內容的人打造的 RSS "
 "閱讀器。如果你主要需要具備強大訓練與篩選功能的 RSS 工具，NewsBlur 會是更合適的選擇。"
+
+msgid "Ready to take your reading to the next level?"
+msgstr "準備好讓閱讀體驗更上一層樓了嗎？"
 
 msgid "Real examples of what it looks like when an AI agent connects to your NewsBlur."
 msgstr "AI 代理連線至你的 NewsBlur 時的實際範例。"
@@ -3745,6 +4278,12 @@ msgstr "取消訂閱"
 msgid "Renders original website"
 msgstr "呈現原始網站"
 
+msgid "Renew now:"
+msgstr "立即續訂："
+
+msgid "Renew your premium account for only $36/year"
+msgstr "只要每年 $36，即可續訂你的付費帳戶"
+
 msgid "Reply comments cannot be empty."
 msgstr "回覆留言不可為空。"
 
@@ -3799,6 +4338,9 @@ msgstr "新聞流"
 
 msgid "River of News (reading by folder)"
 msgstr "新聞流（依資料夾閱讀）"
+
+msgid "River of News - read all stories from folders"
+msgstr "新聞流——閱讀資料夾中的所有文章"
 
 msgid "River of News showing stories from multiple feeds in one stream"
 msgstr "新聞流：在同一串流中顯示多個訂閱來源的文章"
@@ -3925,6 +4467,13 @@ msgstr "已儲存的文章標籤"
 msgid "Saving stories is available on all plans. Tags and tag RSS feeds require Premium ($36/year) or higher."
 msgstr "所有方案皆可儲存文章。標籤和標籤 RSS 訂閱來源則需訂閱 Premium（每年 $36）或更高級方案。"
 
+msgid "Say hello to your newest follower:"
+msgstr "向你最新的追蹤者打聲招呼："
+
+#, python-format
+msgid "Say hello to your newest follower: %(username)s."
+msgstr "向最新追蹤你的使用者打聲招呼：%(username)s。"
+
 msgid "Screenshots"
 msgstr "螢幕截圖"
 
@@ -3997,6 +4546,9 @@ msgstr "搜尋你的瀏覽閱讀封存"
 
 msgid "Search your entire archive with full-text search"
 msgstr "使用全文搜尋搜尋整個封存庫"
+
+msgid "Searching your sites and saved stories"
+msgstr "搜尋你的網站和已儲存的文章"
 
 msgid "Security Engineer"
 msgstr "資安工程師"
@@ -4098,6 +4650,11 @@ msgid ""
 "Sending stories to third-party services now uses full Text if available. Useful for storing full story text"
 " in Evernote or Pocket."
 msgstr "現在將文章傳送至第三方服務時，若有全文可用便會一併傳送。適合將文章全文儲存至 Evernote 或 Pocket。"
+
+msgid ""
+"Sent from NewsBlur - www.newsblur.com - a personal news reader bringing people together to talk about the "
+"world."
+msgstr "由 NewsBlur 傳送——www.newsblur.com——匯聚人們、一起討論世界的個人新聞閱讀器。"
 
 msgid "Seriously, fuck off spammer."
 msgstr "說真的，垃圾訊息發送者，滾開。"
@@ -4254,6 +4811,15 @@ msgstr "來源："
 msgid "Specify a search 'term'."
 msgstr "請指定搜尋參數「term」。"
 
+#, python-format
+msgid ""
+"Spend a few days trying out <a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur</a> again. We hope you"
+" love it."
+msgstr "花幾天時間再次試用 <a href=\"https://%(domain)s%(autologin_url)s\">NewsBlur</a>。希望你會喜歡。"
+
+msgid "Spend a few days trying out NewsBlur again. We hope you love it."
+msgstr "花幾天時間再次試用 NewsBlur 吧。希望你會喜歡。"
+
 msgctxt "story layout"
 msgid "Split"
 msgstr "分割"
@@ -4278,6 +4844,9 @@ msgstr "保持聰明"
 
 msgid "Stay tuned..."
 msgstr "敬請期待…"
+
+msgid "Stay up to date and in touch with a few different ways:"
+msgstr "透過幾種不同方式掌握最新消息並保持聯繫："
 
 msgid "Still have questions?"
 msgstr "還有疑問嗎？"
@@ -4438,11 +5007,18 @@ msgstr "不到一分鐘即可切換"
 msgid "Switch to this Credit Card"
 msgstr "切換至這張信用卡"
 
+msgctxt "notification email classifier match"
+msgid "Tag"
+msgstr "標籤"
+
 msgid "Tag name is required."
 msgstr "必須填寫標籤名稱。"
 
 msgid "Tag name must be 128 characters or less."
 msgstr "標籤名稱不得超過 128 個字元。"
+
+msgid "Tagging and organizing saved stories"
+msgstr "為已儲存的文章加上標籤並整理"
 
 msgid "Take action"
 msgstr "採取動作"
@@ -4468,6 +5044,10 @@ msgstr "科技專家、BYU 教授"
 msgid "Terms of Service"
 msgstr "服務條款"
 
+msgctxt "notification email classifier match"
+msgid "Text"
+msgstr "文字"
+
 msgctxt "story view mode"
 msgid "Text"
 msgstr "文字"
@@ -4484,8 +5064,14 @@ msgstr "文字檢視模式可方便地擷取文章內容"
 msgid "Text view extracting full article content from a website"
 msgstr "從網站擷取完整文章內容的文字檢視"
 
+msgid "Text view extracts full story content"
+msgstr "文字檢視會擷取完整文章內容"
+
 msgid "Text view extracts the story"
 msgstr "文字檢視會擷取文章內容"
+
+msgid "Thank you for being a premium member. It genuinely keeps NewsBlur going."
+msgstr "感謝你成為付費會員。你的支持確實讓 NewsBlur 得以持續運作。"
 
 msgid "Thank you for subscribing to NewsBlur"
 msgstr "感謝你訂閱 NewsBlur"
@@ -4496,11 +5082,32 @@ msgstr "感謝你訂閱 NewsBlur Premium Archive"
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "感謝你訂閱 NewsBlur Premium Pro"
 
+msgid "Thank you for subscribing to NewsBlur Premium!"
+msgstr "感謝你訂閱 NewsBlur Premium！"
+
 msgid "Thank you for supporting NewsBlur!"
 msgstr "感謝你支持 NewsBlur！"
 
 msgid "Thank you for your interest in NewsBlur. NewsBlur is built by a solo developer:"
 msgstr "感謝你對 NewsBlur 的興趣。NewsBlur 由一位獨立開發者打造："
+
+msgid "Thank you, thank you, thank you!"
+msgstr "謝謝你，謝謝你，真的非常感謝！"
+
+msgid "Thanks again for trying out NewsBlur! Your account is ready to go. Just log right in and start reading."
+msgstr "再次感謝你試用 NewsBlur！你的帳戶已準備就緒。直接登入就能開始閱讀。"
+
+msgid "Thanks for being a long-time NewsBlur subscriber. I really appreciate your support."
+msgstr "感謝你長期訂閱 NewsBlur。我由衷感謝你的支持。"
+
+msgid "Thanks for subscribing to NewsBlur Premium Pro!"
+msgstr "感謝你訂閱 NewsBlur Premium Pro！"
+
+msgid "Thanks for trying NewsBlur!"
+msgstr "感謝你試用 NewsBlur！"
+
+msgid "Thanks for trying out NewsBlur! I hope NewsBlur can make your daily reading more personal and intelligent."
+msgstr "感謝你試用 NewsBlur！希望 NewsBlur 能讓你的日常閱讀更貼近個人喜好，也更有智慧。"
 
 msgid "Thanks!"
 msgstr "謝謝！"
@@ -4607,6 +5214,11 @@ msgid "The highest limit available. Monitor everything."
 msgstr "可用的最高上限。監控所有內容。"
 
 msgid ""
+"The honest reason for the change is that it costs real money to run and keep improving NewsBlur, and moving"
+" everyone to the sustainable $36 rate is how I can keep building it."
+msgstr "坦白說，調整的原因是營運並持續改進 NewsBlur 確實需要花費，而讓所有人都改用可持續的每年 $36 費率，才能讓我繼續打造它。"
+
+msgid ""
 "The lesson of Google Reader was clear: if your reading tool is owned by a corporation that doesn't value "
 "it, it can disappear overnight. Google shut down Reader not because it was unpopular, but because it didn't"
 " align with their business priorities."
@@ -4636,6 +5248,15 @@ msgstr "主題"
 msgid "Themes & Customization"
 msgstr "佈景主題與自訂"
 
+msgid "There are a couple resources you can use if you end up loving NewsBlur:"
+msgstr "如果你最後很喜歡 NewsBlur，可以參考幾項資源："
+
+msgid "There are plenty of ways to use NewsBlur beyond the web:"
+msgstr "除了網頁版，還有許多方式可以使用 NewsBlur："
+
+msgid "There are plenty of ways to use NewsBlur beyond the website:"
+msgstr "除了網站之外，還有許多方式可以使用 NewsBlur："
+
 #, python-format
 msgid ""
 "There is %(position_display)s person in front of you <span style=\"color:#999\">%(behind_clause)s</span>, "
@@ -4654,8 +5275,22 @@ msgid_plural ""
 "on NewsBlur."
 msgstr[0] "你前面還有 %(position_display)s 人，正耐心等待<br />NewsBlur 的免費帳戶。"
 
+msgid ""
+"There is nothing you need to do. The new rate takes effect automatically at your next renewal. Your "
+"account, your sites, and everything you have saved stay exactly as they are. You can adjust your "
+"subscription anytime in your account settings."
+msgstr "你不需要進行任何操作。新費率會在下次續訂時自動生效。你的帳戶、網站和所有已儲存的內容都會保持原樣。你隨時可以在帳戶設定中調整訂閱。"
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "沒有數量限制。想儲存多少文章都可以，而且會永久保留。"
+
+msgid ""
+"There's still a ton of great work to be done, and you are personally keeping the dream alive. Thanks again,"
+" paying users like you make this entire endeavor worthwhile."
+msgstr "還有很多很棒的工作等著完成，而你正親自讓這個夢想延續下去。再次感謝你，像你這樣的付費使用者，讓這一切努力都值得。"
+
+msgid "They'll be able to sign up or log in and activate their subscription instantly."
+msgstr "他們可以註冊或登入，立即啟用訂閱。"
 
 msgid "Third-Party App Support"
 msgstr "第三方應用程式支援"
@@ -4687,6 +5322,11 @@ msgstr "此功能需要 Archive 訂閱"
 msgid "This gift link expires in 90 days. If it's not redeemed, you'll be automatically refunded."
 msgstr "此贈禮連結將於 90 天後失效。若未兌換，系統會自動退款。"
 
+msgid ""
+"This is a personal website made for you that you can customize. You can also share out links to your "
+"blurblog, where friends and followers can reply and re-share your stories."
+msgstr "這是一個為你打造、可自行自訂的個人網站。你也可以分享 Blurblog 連結，讓朋友和追蹤者回覆並再次分享你的文章。"
+
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "這已是 RSS 訂閱來源，正在直接訂閱。"
 
@@ -4708,6 +5348,10 @@ msgstr "為你喜愛的作者、標籤或標題關鍵字按讚"
 msgid "Tips"
 msgstr "提示"
 
+msgctxt "notification email classifier match"
+msgid "Title"
+msgstr "標題"
+
 msgid "Title matching catches exact and fuzzy duplicates using significant-word overlap"
 msgstr "標題比對會依據重要詞彙的重疊，找出完全相同及模糊重複的項目"
 
@@ -4716,6 +5360,17 @@ msgstr "標題、文字和網址模式（Pro）"
 
 msgid "To complete the import,<br />just choose a username."
 msgstr "若要完成匯入，<br />只要選擇使用者名稱即可。"
+
+msgid "To get the most out of NewsBlur, here are a few resources:"
+msgstr "若要充分運用 NewsBlur，以下提供一些資源："
+
+msgid ""
+"To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now "
+"include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites."
+msgstr "為了平衡伺服器負載，讓 NewsBlur 為所有人順暢運作，Premium 訂閱現在最多包含 1,024 個網站。Premium Archive 訂閱最多包含 4,096 個網站。"
+
+msgid "To keep Premium after your current paid period, re-subscribe at the new $36/year rate:"
+msgstr "若要在目前的付費期間結束後繼續使用 Premium，請按新的每年 $36 費率重新訂閱："
 
 #, python-format
 msgid ""
@@ -4859,6 +5514,10 @@ msgstr "輸入「Delete」以確認"
 msgid "Type keywords, phrases, or combinations"
 msgstr "輸入關鍵字、詞組或組合"
 
+msgctxt "notification email classifier match"
+msgid "URL"
+msgstr "網址"
+
 msgid "URL is blocked"
 msgstr "網址已封鎖"
 
@@ -4889,8 +5548,36 @@ msgstr "已取消訂閱"
 msgid "Unsupported language"
 msgstr "不支援的語言"
 
+#, python-format
+msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
+msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
+msgstr[0] "在那之前，你的使用方式不會有任何變更。你的 %(feed_count)s 個網站仍會正常運作。"
+
+msgid "Upgrade here:"
+msgstr "在此升級："
+
+msgid "Upgrade now"
+msgstr "立即升級"
+
+msgid "Upgrade now:"
+msgstr "立即升級："
+
 msgid "Upgrade to Premium"
 msgstr "升級至 Premium"
+
+msgid ""
+"Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access "
+"to your complete story archive."
+msgstr "升級至 Premium Archive（每年 $99）：包含最多 4,096 個網站、全文搜尋，以及完整的文章封存存取權。"
+
+msgid "Upgrade to a premium account for only $36/year"
+msgstr "只要每年 $36，即可升級為進階帳戶"
+
+msgid "Upgrade to a premium account for only $36/year, and get access to an unlimited number of RSS feeds"
+msgstr "只要每年 $36，升級至付費帳戶，即可使用不限數量的 RSS 訂閱來源"
+
+msgid "Upgrade to a premium subscription to send more than one story per day by email."
+msgstr "升級為付費訂閱，即可每天透過電子郵件傳送多篇文章。"
 
 msgid "Upgrade to premium archive"
 msgstr "升級至 Premium Archive"
@@ -4952,6 +5639,16 @@ msgstr "在 GitHub 上查看"
 msgid "View on NewsBlur"
 msgstr "在 NewsBlur 上檢視"
 
+msgid "View this conversation:"
+msgstr "查看這段對話："
+
+msgid ""
+"Visit <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The People Have Spoken</a>, "
+"our blog of the most popular and talked-about articles posted by NewsBlur readers"
+msgstr ""
+"造訪我們的部落格 <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The People Have "
+"Spoken</a>，看看 NewsBlur 讀者發布、最受歡迎且最受討論的文章"
+
 msgid ""
 "Visit the <a href=\"https://forum.newsblur.com\">NewsBlur support forum</a> to ask questions, report "
 "problems, or suggest features."
@@ -4959,6 +5656,16 @@ msgstr "前往 <a href=\"https://forum.newsblur.com\">NewsBlur 支援論壇</a>�
 
 msgid "Visit the forum"
 msgstr "前往論壇"
+
+msgid "Visit the popular blurblog, The People Have Spoken"
+msgstr "造訪熱門 Blurblog「The People Have Spoken」"
+
+msgid ""
+"Visit the popular blurblog: <a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The "
+"People Have Spoken</a>."
+msgstr ""
+"造訪熱門的 Blurblog：<a href=\"https://popular.newsblur.com\" style=\"text-decoration:none\">The People Have "
+"Spoken</a>。"
 
 msgid "Visual Training (Thumbs Up/Down)"
 msgstr "視覺訓練（按讚／倒讚）"
@@ -4971,6 +5678,9 @@ msgstr "想要更多 CLI 功能嗎？"
 
 msgid "Want more MCP features?"
 msgstr "想要更多 MCP 功能嗎？"
+
+msgid "Want to unlock even more?"
+msgstr "想解鎖更多功能嗎？"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett 用 64 位元組 RAM 寫出了 BASIC 解譯器。最多 9 行、64 個符號，整數範圍為 0&ndash;99。"
@@ -5051,6 +5761,24 @@ msgstr "僅限網頁版"
 
 msgid "Web page monitoring (Pro)"
 msgstr "網頁監控（專業版）"
+
+msgid "Welcome aboard!"
+msgstr "歡迎加入！"
+
+msgid "Welcome to NewsBlur! Your 30-day premium trial has started"
+msgstr "歡迎使用 NewsBlur！你的 30 天進階試用期已開始"
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s"
+msgstr "歡迎來到 NewsBlur，%(username)s"
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s!"
+msgstr "歡迎來到 NewsBlur，%(username)s！"
+
+#, python-format
+msgid "Welcome to NewsBlur, %(username)s."
+msgstr "歡迎來到 NewsBlur，%(username)s。"
 
 msgid "Welcome to your premium trial!"
 msgstr "歡迎開始 Premium 試用！"
@@ -5313,6 +6041,11 @@ msgstr "昨天，%(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "昨天，%(time)s"
 
+#, python-format
+msgid "You and %(username)s both follow %(counter)s person:"
+msgid_plural "You and %(username)s both follow %(counter)s people:"
+msgstr[0] "你和 %(username)s 都追蹤 %(counter)s 個人："
+
 msgid ""
 "You are at the front of the line! Just a few more minutes<br />until you receive your free invite to use "
 "NewsBlur."
@@ -5329,8 +6062,48 @@ msgstr ""
 msgid "You are not subscribed to this feed"
 msgstr "你尚未訂閱此來源"
 
+#, python-format
+msgid "You are now subscribed to <b>%(counter)s</b> site."
+msgid_plural "You are now subscribed to <b>%(counter)s</b> sites."
+msgstr[0] "你已訂閱 <b>%(counter)s</b> 個網站。"
+
+#, python-format
+msgid "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved story."
+msgid_plural "You are now subscribed to <b>%(feed_count)s</b> site and have <b>%(counter)s</b> saved stories."
+msgstr[0] "你現在已訂閱 <b>%(feed_count)s</b> 個網站，並有 <b>%(counter)s</b> 篇已儲存的文章。"
+
+#, python-format
+msgid "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved story."
+msgid_plural "You are now subscribed to <b>%(feed_count)s</b> sites and have <b>%(counter)s</b> saved stories."
+msgstr[0] "你現在已訂閱 <b>%(feed_count)s</b> 個網站，並有 <b>%(counter)s</b> 篇已儲存的文章。"
+
+msgid ""
+"You can also move and delete newsletters just as if they were independent feeds. Training even works on "
+"newsletters, so you can hide the newsletters you don't want to read while highlighting the ones you do."
+msgstr "你也可以像管理獨立訂閱來源一樣，移動或刪除電子報。電子報也能使用訓練功能，因此你可以隱藏不想閱讀的電子報，並突顯想閱讀的電子報。"
+
+msgid "You can change your password by visiting this link:"
+msgstr "你可以造訪這個連結來變更密碼："
+
+#, python-format
+msgid "You can only send %(count)s story per day by email."
+msgid_plural "You can only send %(count)s stories per day by email."
+msgstr[0] "你每天只能透過電子郵件傳送 %(count)s 篇文章。"
+
+msgid "You can re-upload the attached file to NewsBlur and get all of your sites back."
+msgstr "你可以將附加的檔案重新上傳至 NewsBlur，找回所有網站。"
+
+msgid "You can re-upload the attached file to NewsBlur and immediately get any deleted sites back."
+msgstr "你可以將附加的檔案重新上傳至 NewsBlur，立即找回已刪除的網站。"
+
 msgid "You can train per-feed, per-folder (Archive), or globally (Archive). Per-feed training is free."
 msgstr "你可以針對個別訂閱來源、資料夾（Archive）或全域（Archive）進行訓練。個別訂閱來源訓練免費。"
+
+msgid "You can upgrade here:"
+msgstr "你可以在這裡升級："
+
+msgid "You can view your Blurblog here:"
+msgstr "你可以在這裡查看你的 Blurblog："
 
 msgid "You cannot favorite your own shared story comment."
 msgstr "你無法將自己分享的文章留言加入最愛。"
@@ -5340,6 +6113,14 @@ msgstr "你無法分享電子報，別人可能會藉此取消你的訂閱！"
 
 msgid "You decide what to focus and hide"
 msgstr "由你決定要關注或隱藏哪些內容"
+
+#, python-format
+msgid "You earned free %(tier_name)s from a referral!"
+msgstr "你透過推薦獲得了免費的 %(tier_name)s！"
+
+#, python-format
+msgid "You earned free %(tier_name)s!"
+msgstr "你獲得了免費的 %(tier_name)s！"
 
 #, python-format
 msgid ""
@@ -5352,6 +6133,16 @@ msgstr ""
 "link\">%(title)s</span> 的留言加入最愛："
 
 #, python-format
+msgid "You follow %(counter)s person that %(username)s also follows:"
+msgid_plural "You follow %(counter)s people that %(username)s also follows:"
+msgstr[0] "你追蹤了 %(counter)s 位 %(username)s 也追蹤的使用者："
+
+#, python-format
+msgid "You follow %(counter)s person who follows %(username)s:"
+msgid_plural "You follow %(counter)s people who follow %(username)s:"
+msgstr[0] "你追蹤了 %(counter)s 位追蹤 %(username)s 的使用者："
+
+#, python-format
 msgid ""
 "You followed <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
@@ -5359,8 +6150,60 @@ msgstr ""
 "你已追蹤 <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>。"
 
+msgid "You have a follow request:"
+msgstr "你收到一個追蹤請求："
+
+#, python-format
+msgid "You have a follow request: %(username)s."
+msgstr "你收到一個追蹤請求：%(username)s。"
+
 msgid "You have a lot of subscriptions! We're preparing your OPML export file now."
 msgstr "你的訂閱來源很多！我們正在準備 OPML 匯出檔案。"
+
+#, python-format
+msgid ""
+"You have been on an older grandfathered price of $%(old_amount)s per year, and I am grateful you have stuck"
+" with NewsBlur for so long. The honest reason for the change is that it costs real money to run and keep "
+"improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
+msgstr ""
+"你一直享有每年 $%(old_amount)s 的舊有優惠價格，很感謝你長期支持 NewsBlur。坦白說，調整價格是因為營運並持續改進 NewsBlur 確實需要成本，而讓所有人改用可持續的 $36 "
+"年費，才能讓我繼續打造它。"
+
+#, python-format
+msgid ""
+"You have been on an older grandfathered price of <b>$%(old_amount)s per year</b>, and I am grateful you "
+"have stuck with NewsBlur for so long. The honest reason for the change is that it costs real money to run "
+"and keep improving NewsBlur, and moving everyone to the sustainable $36 rate is how I can keep building it."
+msgstr ""
+"你一直享有<b>每年 $%(old_amount)s</b> 的舊有優惠價格，很感謝你長期支持 NewsBlur。坦白說，這次調整是因為維運並持續改進 NewsBlur "
+"確實需要成本，而將所有人的價格調整為可持續的每年 $36，才能讓我繼續打造它。"
+
+msgid "You have deleted a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+msgstr "你一次刪除了多個訂閱來源，因此這裡附上所有訂閱來源的備份，以備不時之需。"
+
+msgid "You have deleted all of your sites, so here's a backup of all of your subscriptions just in case."
+msgstr "你已刪除所有網站，這裡提供一份所有訂閱項目的備份，以備不時之需。"
+
+msgid "You have deleted an entire folder of feeds, so here's a backup of all of your subscriptions just in case."
+msgstr "你已刪除整個訂閱來源資料夾，這裡提供一份所有訂閱項目的備份，以備不時之需。"
+
+#, python-format
+msgid ""
+"You have just received your first email newsletter in NewsBlur. You can find your newsletters under the "
+"%(folder)s folder."
+msgstr "你剛收到第一封寄至 NewsBlur 的電子報。你可以在 %(folder)s 資料夾中找到電子報。"
+
+#, python-format
+msgid ""
+"You have just received your first email newsletter in NewsBlur. You can find your newsletters under the "
+"<b>%(folder)s</b> folder."
+msgstr "你剛在 NewsBlur 收到第一封電子報。你可以在 <b>%(folder)s</b> 資料夾中找到電子報。"
+
+msgid "You have moved a number of feeds at once, so here's a backup of all of your subscriptions just in case."
+msgstr "你一次移動了多個訂閱來源，這是你所有訂閱項目的備份，以備不時之需。"
+
+msgid "You just shared your first story on NewsBlur. All of your shared stories are available on your Blurblog."
+msgstr "你剛在 NewsBlur 分享了第一篇文章。你分享的所有文章都可在你的 Blurblog 中查看。"
 
 msgid ""
 "You may use the API commercially, by which we mean you may charge people money to use your project which "
@@ -5370,6 +6213,63 @@ msgid ""
 msgstr ""
 "你可以將 API 用於商業用途，也就是說，你可以向他人收費，讓他們使用採用此 API 的專案。不過，你不得在從 NewsBlur 的 API 擷取的任何資料上刊登廣告。簡單來說，你可以對應用程式或服務收費，但不得在"
 " NewsBlur 外包裝廣告。"
+
+msgid "You need to provide your email address."
+msgstr "你需要提供電子郵件地址。"
+
+msgid "You need to provide your name."
+msgstr "你需要填寫姓名。"
+
+msgid "You need to send the email to a valid email address."
+msgstr "你必須將電子郵件寄到有效的電子郵件地址。"
+
+msgid ""
+"You now have a free account with all the limitations of a free account. But that doesn't mean you can't "
+"renew your premium subscription and enjoy the many benefits of using NewsBlur."
+msgstr "你現在使用的是免費帳戶，並受到免費帳戶的所有限制。但這不代表你不能續訂進階訂閱，享受使用 NewsBlur 的許多好處。"
+
+#, python-format
+msgid "You received this because of a classifier match (%(classifier_match_desc)s) on %(feed_title)s."
+msgstr "你收到這封郵件，是因為 %(feed_title)s 上符合分類器條件（%(classifier_match_desc)s）。"
+
+#, python-format
+msgid ""
+"You received this because of a classifier match (%(classifier_match_desc)s) on <a "
+"href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>."
+msgstr ""
+"你收到這封通知，是因為 <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a> 上符合分類器條件（%(classifier_match_desc)s）。"
+
+#, python-format
+msgid ""
+"You received this because of a classifier match (%(classifier_match_desc)s) on <a "
+"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a>."
+msgstr ""
+"你收到這則通知，是因為 <a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s</a> 上的分類器符合條件（%(classifier_match_desc)s）。"
+
+#, python-format
+msgid ""
+"You received this because you have <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" "
+"style=\"text-decoration:none;\">email notifications for %(feed_title)s</a>."
+msgstr ""
+"你收到這則通知，是因為你已啟用 <a href=\"https://%(domain)s/briefing?next=briefing-notifications\" style=\"text-"
+"decoration:none;\">%(feed_title)s 的電子郵件通知</a>。"
+
+#, python-format
+msgid ""
+"You received this because you have <a "
+"href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style=\"text-"
+"decoration:none;\">email notifications for %(feed_title)s</a>."
+msgstr ""
+"你收到這則通知，是因為你已啟用 <a href=\"https://%(domain)s/site/%(feed_id)s/%(feed_slug)s?next=notifications\" style"
+"=\"text-decoration:none;\">%(feed_title)s 的電子郵件通知</a>。"
+
+#, python-format
+msgid "You received this because you have email notifications for %(feed_title)s."
+msgstr "你收到這則通知，是因為你已啟用 %(feed_title)s 的電子郵件通知。"
 
 #, python-format
 msgid ""
@@ -5401,6 +6301,9 @@ msgstr "你已訂閱 <span class=\"NB-interaction-feed-title NB-splash-link\">%(
 msgid "You train the reader, not the other way around"
 msgstr "是你訓練閱讀器，而不是反過來"
 
+msgid "You will be auto-logged into your account and presented with a form to change your password."
+msgstr "你將自動登入帳戶，並看到變更密碼的表單。"
+
 msgid "You will no longer receive any emails from NewsBlur."
 msgstr "你將不會再收到來自 NewsBlur 的電子郵件。"
 
@@ -5414,17 +6317,105 @@ msgstr "直到 %(date)s 才會向你收費"
 msgid "You will receive an email shortly with your subscription backup attached."
 msgstr "稍後你會收到一封電子郵件，內附你的訂閱備份。"
 
+#, python-format
+msgid ""
+"You'll be charged %(amount)s to continue your %(tier_name)s account on NewsBlur. No action needed on your "
+"part."
+msgstr "你將支付 %(amount)s，以便在 NewsBlur 繼續使用你的 %(tier_name)s 帳戶。你不需要採取任何行動。"
+
+#, python-format
+msgid ""
+"You'll be charged <b>%(amount)s</b> to continue your %(tier_name)s account on NewsBlur. No action needed on"
+" your part."
+msgstr "你將支付 <b>%(amount)s</b>，以便在 NewsBlur 繼續使用你的 %(tier_name)s 帳戶。你不需要採取任何行動。"
+
 msgid "You're in control, not an algorithm"
 msgstr "由你掌控，而不是由演算法決定"
+
+msgid ""
+"You're receiving this because you opted into renewal notifications. You can turn this off in Account &gt; "
+"Payments."
+msgstr "你會收到這封郵件，是因為你已選擇接收續訂通知。你可以前往「帳戶」&gt;「付款」關閉通知。"
+
+msgid ""
+"You're receiving this because you opted into renewal notifications. You can turn this off in Account > "
+"Payments."
+msgstr "你會收到這封郵件，是因為你已選擇接收續訂通知。你可以前往「帳戶」>「付款」關閉通知。"
+
+#, python-format
+msgid ""
+"You've already shared %(counter)s story, but you may not have known that your shared stories are on your "
+"Blurblog."
+msgid_plural ""
+"You've already shared %(counter)s stories, but you may not have known that your shared stories are on your "
+"Blurblog."
+msgstr[0] "你已分享 %(counter)s 篇文章，但你可能不知道，分享的文章都會出現在你的 Blurblog 上。"
+
+msgid "You've been enjoying NewsBlur's premium features. We hope you loved:"
+msgstr "你一直在享用 NewsBlur 的進階功能。希望你喜歡："
 
 msgid "You've been gifted a premium subscription! Sign up to claim it."
 msgstr "你獲贈了 Premium 訂閱！註冊即可領取。"
 
+#, python-format
+msgid "You've earned %(credit_text)s of free %(tier_name)s as a thank you for spreading the word about NewsBlur."
+msgstr "為了感謝你幫忙宣傳 NewsBlur，你獲得了 %(credit_text)s 的免費 %(tier_name)s。"
+
+#, python-format
+msgid ""
+"You've earned <b>%(credit_text)s</b> of free %(tier_name)s as a thank you for spreading the word about "
+"NewsBlur."
+msgstr "為了感謝你向他人推薦 NewsBlur，你獲得了 <b>%(credit_text)s</b> 的免費 %(tier_name)s。"
+
+msgid ""
+"You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
+"you just need to renew your premium account. Let's help you do that."
+msgstr "你最近使用過 NewsBlur，所以你可能不是有意要轉回免費帳戶？也許你只需要續訂進階帳戶。我們來幫你處理。"
+
 msgid "YouTube search request failed."
 msgstr "YouTube 搜尋請求失敗。"
 
+#, python-format
+msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"
+msgstr "你的 %(tier_name)s 贈送訂閱已準備就緒。請將此連結分享給幸運的收禮者："
+
+#, python-format
+msgid "Your %(tier_name)s subscription renews soon"
+msgstr "你的 %(tier_name)s 訂閱即將續訂"
+
+msgid "Your 30-day NewsBlur premium trial has ended"
+msgstr "你的 30 天 NewsBlur 進階試用已結束"
+
+msgid "Your 30-day trial premium subscription has started. You now have full access to all premium features:"
+msgstr "你的 30 天 Premium 試用訂閱已開始。現在你可以完整使用所有進階功能："
+
+#, python-format
+msgid "Your <b>%(tier_name)s</b> subscription renews on <b>%(date)s</b>."
+msgstr "你的 <b>%(tier_name)s</b> 訂閱將於 <b>%(date)s</b> 續訂。"
+
+msgid "Your <b>30-day trial premium subscription</b> has started. You now have full access to all premium features:"
+msgstr "你的 <b>30 天 Premium 試用訂閱</b>已開始。你現在可以完整使用所有進階功能："
+
+msgid "Your Blurblog also has an RSS feed:"
+msgstr "你的 Blurblog 也有 RSS 訂閱來源："
+
 msgid "Your Gift is Ready!"
 msgstr "你的禮物已準備就緒！"
+
+msgid "Your Google Reader import is complete. Get going with NewsBlur!"
+msgstr "Google Reader 匯入作業已完成。開始使用 NewsBlur 吧！"
+
+msgid "Your Google Reader starred stories import is complete. Get going with NewsBlur!"
+msgstr "你在 Google Reader 加星號的文章已全部匯入完成。快開始使用 NewsBlur 吧！"
+
+#, python-format
+msgid "Your NewsBlur %(tier_name)s gift is ready to share!"
+msgstr "你的 NewsBlur %(tier_name)s 禮物已可分享！"
+
+#, python-format
+msgid "Your NewsBlur subscription and your %(count)s site"
+msgid_plural "Your NewsBlur subscription and your %(count)s sites"
+msgstr[0] "你的 NewsBlur 訂閱和 %(count)s 個網站"
 
 msgid "Your OPML export is being processed"
 msgstr "正在處理你的 OPML 匯出檔"
@@ -5432,16 +6423,39 @@ msgstr "正在處理你的 OPML 匯出檔"
 msgid "Your OPML export is being processed. You will receive an email shortly with your subscription backup."
 msgstr "你的 OPML 匯出正在處理中。你很快會收到一封電子郵件，其中附有你的訂閱備份。"
 
+msgid "Your OPML export is ready."
+msgstr "你的 OPML 匯出檔已準備就緒。"
+
+msgid "Your OPML upload is complete. Get going with NewsBlur!"
+msgstr "OPML 上傳完成。立即開始使用 NewsBlur！"
+
 msgid "Your account"
 msgstr "你的帳戶"
+
+msgid ""
+"Your account is now on the free plan with some limitations. But you can unlock everything again for just "
+"$36/year."
+msgstr "你的帳戶現在已改用免費方案，部分功能會受到限制。只要每年 $36，就能再次解鎖所有功能。"
+
+msgid ""
+"Your account is now on the free plan with some limitations. But you can unlock everything again for just "
+"<b>$36/year</b>."
+msgstr "你的帳戶現在已改用免費方案，部分功能會受到限制。只要每年 <b>$36</b>，就能再次解鎖所有功能。"
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "
 "data is deleted. Upgrade again anytime and everything is restored."
 msgstr "你的帳戶將恢復為免費方案。你仍可保留所有訂閱來源（最多 64 個）、訓練設定和已儲存的文章。不會刪除任何資料。隨時再次升級，即可恢復所有內容。"
 
+#, python-format
+msgid "Your account stays Premium through %(date)s. Nothing else changes today."
+msgstr "你的帳戶將維持 Premium 狀態至 %(date)s。今天不會有任何其他變更。"
+
 msgid "Your applications"
 msgstr "你的應用程式"
+
+msgid "Your archive sits in the cloud"
+msgstr "你的封存內容儲存在雲端"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "你封存的文章仍可存取，但新文章將依照標準保留政策處理。"
@@ -5457,11 +6471,24 @@ msgstr "由 AI 提供智慧功能的完整新聞封存。包含 4,096 個網站�
 msgid "Your email address"
 msgstr "你的電子郵件地址"
 
+msgid "Your email newsletters are now being sent to NewsBlur"
+msgstr "你的電子報現在會寄送至 NewsBlur"
+
+msgid "Your email newsletters are now being sent to NewsBlur."
+msgstr "你的電子報現在會寄送到 NewsBlur。"
+
 msgid ""
 "Your feeds and saved stories are never deleted. If you downgrade from Archive, older stories will no longer"
 " appear in search results but will be available again if you re-upgrade. If you exceed the feed limit of a "
 "lower tier, you'll be asked to mute some feeds."
 msgstr "你的訂閱來源和已儲存文章永遠不會被刪除。若從 Archive 降級，較舊的文章將不再出現在搜尋結果中，但重新升級後即可再次存取。若超出較低方案的訂閱來源上限，系統會請你將部分訂閱來源設為靜音。"
+
+msgid "Your free account is now ready to go on NewsBlur"
+msgstr "你的 NewsBlur 免費帳戶已準備就緒"
+
+#, python-format
+msgid "Your free account is ready, %(username)s."
+msgstr "你的免費帳戶已準備就緒，%(username)s。"
 
 msgid "Your gift code is invalid. Check it for errors."
 msgstr "禮物代碼無效。請檢查是否有誤。"
@@ -5484,10 +6511,36 @@ msgstr "密碼不符。"
 msgid "Your payment is being processed. Your gift link will be available shortly."
 msgstr "正在處理你的付款。你的贈禮連結稍後即可使用。"
 
+msgid "Your premium account on NewsBlur has expired"
+msgstr "你在 NewsBlur 的付費帳戶已到期"
+
+msgid "Your premium account on NewsBlur has one more month!"
+msgstr "你在 NewsBlur 的付費帳戶還剩一個月！"
+
+msgid ""
+"Your premium account was set to expire today, but you've been given a free month grace period, so you can "
+"continue using your premium account to try out NewsBlur."
+msgstr "你的進階帳戶原定今天到期，但我們提供了一個月的免費寬限期，讓你可以繼續使用進階帳戶並試用 NewsBlur。"
+
 #, python-format
 msgid "Your premium trial has <strong class=\"NB-trial-days\">%(days)s day</strong> remaining"
 msgid_plural "Your premium trial has <strong class=\"NB-trial-days\">%(days)s days</strong> remaining"
 msgstr[0] "你的 Premium 試用期還剩 <strong class=\"NB-trial-days\">%(days)s 天</strong>"
+
+msgid "Your shared stories on NewsBlur are available on your Blurblog"
+msgstr "你在 NewsBlur 分享的文章可在你的 Blurblog 上查看"
+
+msgid "Your shared story is now on your Blurblog"
+msgstr "你分享的文章現在已刊登在你的 Blurblog 上"
+
+msgid "Your shared story is now on your Blurblog."
+msgstr "你分享的文章現在已刊登在你的 Blurblog 上。"
+
+msgid "Your subscription goes a long way towards funding the further development of NewsBlur."
+msgstr "你的訂閱為 NewsBlur 的後續開發提供了很大的支持。"
+
+msgid "Your subscription helps pay for the machines which store and process your archive."
+msgstr "你的訂閱有助於支付儲存及處理封存內容的伺服器費用。"
 
 msgctxt "joins the comment count and the share count"
 msgid "and"

@@ -1,22 +1,24 @@
 {% extends "mail/email_base.xhtml" %}
 
+{% load i18n %}
+
 {% block body %}
-    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">Hi {{ username }},</h2>
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">{% blocktrans %}Hi {{ username }},{% endblocktrans %}</h2>
 
-    <p style="line-height: 20px;">I'm reaching out because your NewsBlur account has <b>{{ feed_count }}</b> active sites, and I wanted to give you a heads up about an upcoming change.</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with feed_count=feed_count count counter=feed_count_number %}I'm reaching out because your NewsBlur account has <b>{{ feed_count }}</b> active site, and I wanted to give you a heads up about an upcoming change.{% plural %}I'm reaching out because your NewsBlur account has <b>{{ feed_count }}</b> active sites, and I wanted to give you a heads up about an upcoming change.{% endblocktrans %}</p>
 
-    <p style="line-height: 20px;">To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites.</p>
+    <p style="line-height: 20px;">{% trans "To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites." %}</p>
 
-    <p style="line-height: 20px;">On <b>{{ deadline_date }}</b>, when your subscription renews, you'll need to choose one of these options:</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed %}On <b>{{ deadline_date }}</b>, when your subscription renews, you'll need to choose one of these options:{% endblocktrans %}</p>
 
     <ol style="line-height: 24px; margin-left: 20px;">
-        <li style="margin-bottom: 12px;"><b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and access to your complete story archive.<br><a href="https://newsblur.com/?next=premium" style="color: #1251ba;">Upgrade now</a></li>
-        <li><b>Choose which 1,024 sites to keep active</b> - You can use the Mute Sites feature to select which sites you want to continue following.</li>
+        <li style="margin-bottom: 12px;">{% blocktrans trimmed %}<b>Upgrade to Premium Archive ($99/year)</b> - This includes up to 4,096 sites, plus full-text search and access to your complete story archive.{% endblocktrans %}<br><a href="https://newsblur.com/?next=premium" style="color: #1251ba;">{% trans "Upgrade now" %}</a></li>
+        <li>{% blocktrans trimmed %}<b>Choose which 1,024 sites to keep active</b> - You can use the Mute Sites feature to select which sites you want to continue following.{% endblocktrans %}</li>
     </ol>
 
-    <p style="line-height: 20px;">Until then, nothing changes for you. All {{ feed_count }} of your sites will continue working normally.</p>
+    <p style="line-height: 20px;">{% blocktrans with feed_count=feed_count count counter=feed_count_number %}Until then, nothing changes for you. Your {{ feed_count }} site will continue working normally.{% plural %}Until then, nothing changes for you. All {{ feed_count }} of your sites will continue working normally.{% endblocktrans %}</p>
 
-    <p style="line-height: 20px;">Thanks for being a long-time NewsBlur subscriber. I really appreciate your support.</p>
+    <p style="line-height: 20px;">{% trans "Thanks for being a long-time NewsBlur subscriber. I really appreciate your support." %}</p>
 
     <p style="line-height: 20px;">- Samuel</p>
 {% endblock %}

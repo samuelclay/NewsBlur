@@ -76,10 +76,11 @@ _.extend(NEWSBLUR.LanguageChooser, {
                 use: interpolate(gettext("Use %(language)s"), { language: native_name }, true)
             };
         }
+        // gettext_noop returns the English source untranslated, since this catalog is a different language.
         return {
-            title: "Choose your language",
-            pick: "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.",
-            use: interpolate("Use %(language)s", { language: native_name }, true)
+            title: gettext_noop("Choose your language"),
+            pick: gettext_noop("Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."),
+            use: interpolate(gettext_noop("Use %(language)s"), { language: native_name }, true)
         };
     },
 

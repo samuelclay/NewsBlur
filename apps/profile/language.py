@@ -100,15 +100,37 @@ def detect_language(header):
     return "en"
 
 
+def remember_device_language(request, detected):
+    """language.py keeps the language an account's devices last asked for, so emails, which are sent without
+    a request, reach Automatic users in it (utils/languages.py:account_language). It writes only when the
+    language changes."""
+    if not request.user.is_authenticated:
+        return
+    try:
+        profile = request.user.profile
+    except ObjectDoesNotExist:
+        return
+    if profile.last_seen_language == detected:
+        return
+    # language.py updates just this column; LastSeenMiddleware's later profile.save() keeps it too, since
+    # both share request.user.profile.
+    profile.last_seen_language = detected
+    type(profile).objects.filter(pk=profile.pk).update(last_seen_language=detected)
+
+
 class NewsBlurLocaleMiddleware(LocaleMiddleware):
     def process_request(self, request):
         override = preference(request)
-        detected = detect_language(request.META.get("HTTP_ACCEPT_LANGUAGE", ""))
+        header = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
+        detected = detect_language(header)
         language = detected if override == "auto" else override
         translation.activate(language.lower())
         request.LANGUAGE_CODE = language
         request.detected_language = detected
         request.language_preference = override
+        # Scripts and API clients that send no Accept-Language say nothing about the reader.
+        if header.strip():
+            remember_device_language(request, detected)
 
     def process_response(self, request, response):
         response = super().process_response(request, response)
