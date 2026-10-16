@@ -1,0 +1,25 @@
+{
+  "locale": "es",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "es",
+      "source_sha256": "e3b00d7bbd43b4f71b8d58170e6539d34d825dfdebe947fa451ef99cbbe382a6",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        34,
+        46.8
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native Spanish iPad UI. Includes actual article scrolling and Saved Stories, with a real article selection near the ending."
+    }
+  },
+  "status": "ipad_source_intervals_reviewed",
+  "remaining": "iPad encoding, visual review, normal-speed playback and store upload pending. Existing iPhone status is recorded in exports/manifest.json."
+}

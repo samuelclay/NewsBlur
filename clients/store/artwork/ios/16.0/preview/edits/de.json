@@ -18,8 +18,26 @@
         4
       ],
       "notes": "Native German UI. Source intervals exclude initial thumbnail loading and include the actual article scroll near seconds 44–46. The last interval shows navigation into the verified Saved Stories collection."
+    },
+    "ipad": {
+      "source_ui_locale": "de",
+      "source_sha256": "33aa1f2d2776182c60d543c22a6221bf5503f6cb82c8f67f29d88cd0c932da15",
+      "source_intervals_reviewed": true,
+      "starts": [
+        5,
+        23,
+        44,
+        56.2
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native German iPad UI. Includes the actual fullscreen article scroll, then a settled Saved Stories collection."
     }
   },
-  "status": "encoded_sampled_visual_review_passed",
-  "remaining": "Real-time playback and store upload pending. iPad capture/edit pending."
+  "status": "ipad_source_intervals_reviewed",
+  "remaining": "iPad encoding, visual review, normal-speed playback and store upload pending. Existing iPhone status is recorded in exports/manifest.json."
 }
