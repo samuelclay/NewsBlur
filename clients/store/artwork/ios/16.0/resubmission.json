@@ -1,0 +1,21 @@
+{
+  "version": "16.0",
+  "build": 343,
+  "removed_submission_id": "7d9b11c7-4321-47a3-a56c-57c0c21edb67",
+  "status": "removed_from_review_preparing_assets",
+  "removed_items": [
+    "iOS App 16.0",
+    "NewsBlur Premium Archive Subscription",
+    "NewsBlur Premium Subscription 36",
+    "NewsBlur Premium Pro Subscription",
+    "newsblur_premium_subscription"
+  ],
+  "evidence": "proof/ios16-removed.jpg",
+  "requirements": {
+    "languages": 21,
+    "header_and_search": "approved_assets_prepared",
+    "main_screenshots": "01_sage_panels_selected_localization_in_progress",
+    "app_preview_video": "authorized_preparation_in_progress"
+  },
+  "automatic_release_after_approval": true
+}
