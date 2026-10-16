@@ -22,6 +22,6 @@
       "saved_final_frame_reviewed": true
     }
   },
-  "status": "source_intervals_reviewed",
-  "remaining": "Encode in a coordinated gap and verify final held-frame identity, caption legibility and normal-speed playback."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
