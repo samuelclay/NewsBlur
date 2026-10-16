@@ -58,7 +58,7 @@
     "verified_proof": "proof/fr-main-search-persisted.jpg",
     "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "English, French and Arabic native captures complete for iPhone and iPad. German iPhone complete. Hebrew iPad in progress; Hebrew iPhone stopped safely on non-rendering article. Remaining locales pending. One task capture simulator active.",
+  "capture_status": "English, French, Arabic and German iPhone/iPad captures complete; Hebrew, Spanish and Dutch iPad complete. Italian initial still normalization pending. Further locales in progress, one task capture simulator.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -93,8 +93,25 @@
       ],
       "placement_status": "persisted_after_full_reload",
       "proof": "proof/fr-main-screenshots-persisted.jpg",
-      "note": "Four reviewed Sage panels uploaded through native picker; all four filenames and 4 of 10 count verified after full reload and explicitly reselecting French."
+      "note": "Four reviewed Sage panels uploaded through native picker; all four filenames and 4 of 10 count verified after full reload and explicitly reselecting French.",
+      "additional_sizes": {
+        "2064x2752": {
+          "placement_status": "persisted_after_full_reload",
+          "count": 4,
+          "proof": "proof/fr-ipad-screenshots-persisted.jpg"
+        }
+      }
     }
   },
-  "app_preview_status": "English iPhone and iPad final videos passed real-time playback; French, Arabic and German iPhone encoded and sampled QA passed, playback review pending."
+  "app_preview_status": "English iPhone/iPad and French iPhone playback passed. French iPhone uploaded and persisted after reload. Other localized videos in progress.",
+  "app_preview_uploads": {
+    "fr": {
+      "iphone": {
+        "placement_status": "persisted_after_full_reload",
+        "count": 1,
+        "proof": "proof/fr-preview-persisted.jpg",
+        "processing_status": "not_yet_verified"
+      }
+    }
+  }
 }
