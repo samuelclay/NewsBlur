@@ -2,6 +2,14 @@
 
 The selected **01 Sage panels** direction has four portrait marketing panels in all 21 supported languages: daily reading, favorite sources, reading view, and saved stories. The other seven directions remain in the gallery as their original three-panel studies. Screenshot preparation and export do not establish store submission.
 
+## Canonical offline export
+
+The accepted offline renderer produces new Sage sets without a browser or UI automation. Run `ruby clients/store/artwork/ios/16.0/screenshots/export-native.rb --language ar --size 2064x2752`. It compiles `native-render.swift`, reads the canonical copy and unchanged native capture and bezel PNGs, renders all four panels with CoreGraphics/CoreText, and validates PNG signatures, exact dimensions, opacity, source hashes and native-content pixels before installing the set. It refuses to overwrite any existing panel set, preserving approved browser exports already uploaded. Missing localized captures fail explicitly.
+
+Review every panel in `exports/<language>/<size>/contact.png` and the full-resolution images for correct native interface language/state and readable copy. Only then use `stage-uploads.rb --language ar --size 2064x2752 --reviewed`. The generated render evidence records all source hashes and the exact native screen rectangle. Validation and staging remain separate from store attachment and fresh-read persistence checks.
+
+English iPad, French iPhone and Arabic iPhone comparisons were reviewed and accepted against the browser exports. The geometry and line breaks match closely; CoreText font fitting and antialiasing are not pixel-identical to Chromium (the French first headline fits 0.5 pixel smaller). The output uses lossless PNG encoding. The original native capture is scaled into the official device opening without edited controls, reconstructed UI or content cropping. The HTML gallery remains an editable design reference, and the CUA route below remains available for browser comparison.
+
 ## Preview
 
 Serve the parent release directory with the existing local server:
