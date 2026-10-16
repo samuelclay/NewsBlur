@@ -1,0 +1,25 @@
+{
+  "locale": "th",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "th",
+      "source_sha256": "267f75f8575b0b7508a2de3f27d5c08c57b6fe4b890946a30445d0675fc2db74",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        20,
+        46,
+        61
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Matching native iPad UI with loaded photographs and normal reader sizing. Real fullscreen reader scroll followed by Saved collection and an actual bread-article selection near the ending."
+    }
+  },
+  "status": "source_intervals_reviewed",
+  "remaining": "Encode in a coordinated recording gap, then inspect script shaping, final frames and normal-speed playback before staging."
+}
