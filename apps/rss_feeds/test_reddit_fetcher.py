@@ -4,17 +4,91 @@ These avoid the database and the network: the feed is a small stub, Redis is a
 MagicMock, and requests is patched. See utils/reddit_fetcher.py.
 """
 
+import datetime
 from unittest.mock import MagicMock, patch
 
 import feedparser
 from django.test import SimpleTestCase
 
 from apps.rss_feeds.models import Feed
+from utils.feed_fetcher import FEED_ERRHTTP, FetchFeed
 from utils.reddit_fetcher import MAX_COMMENTS, REDDIT_REQUESTS_PER_MINUTE, RedditFetcher
 
 
 class StubFeedData:
     feed_tagline = "A subreddit feed"
+
+
+class Test_RedditHTTPHistory(SimpleTestCase):
+    addresses = (
+        "https://www.reddit.com/r/python/.rss",
+        "https://www.reddit.com/r/python/comments/abc123/title/.rss",
+        "https://www.reddit.com/.rss?feed=example-token&user=alice",
+    )
+
+    def fetch_history(self, address):
+        feed = Feed(pk=1, feed_address=address, feed_title="Reddit", last_update=datetime.datetime.now())
+        with patch.object(Feed, "get_by_id", return_value=feed), patch.object(
+            Feed, "save", return_value=feed
+        ), patch.object(Feed, "save_feed_history") as history, patch(
+            "utils.feed_fetcher.validate_public_url"
+        ):
+            result, parsed = FetchFeed(feed.pk, {}).fetch()
+        self.assertEqual(result, FEED_ERRHTTP)
+        self.assertIsNone(parsed)
+        history.assert_called_once()
+        return history.call_args.args
+
+    def test_http_errors_keep_their_status_in_history(self):
+        # Exercise both fetchers so utils/feed_fetcher.py cannot relabel Reddit's 403 as 404.
+        for address in self.addresses:
+            for status in (401, 403, 404, 429, 503):
+                with self.subTest(address=address, status=status), patch.object(
+                    RedditFetcher, "reserve_rate_limit_slot", return_value=True
+                ), patch.object(RedditFetcher, "access_token", return_value="test-token"), patch.object(
+                    RedditFetcher, "clear_cached_token"
+                ) as clear_token, patch(
+                    "utils.reddit_fetcher.requests.get", return_value=MagicMock(status_code=status)
+                ):
+                    history = self.fetch_history(address)
+                    self.assertEqual(history[0], status)
+                    self.assertEqual(clear_token.call_count, int(status == 401 and "feed=" not in address))
+                    if status == 429:
+                        self.assertEqual(history[1], "Reddit API rate limit reached")
+
+    def test_local_budget_exhaustion_is_recorded_as_429_without_request(self):
+        for address in self.addresses[:2]:
+            with self.subTest(address=address):
+                with patch.object(RedditFetcher, "reserve_rate_limit_slot", return_value=False), patch.object(
+                    RedditFetcher, "access_token"
+                ) as token, patch("utils.reddit_fetcher.requests.get") as request:
+                    self.assertEqual(self.fetch_history(address), (429, "Reddit API rate limit reached"))
+                    token.assert_not_called()
+                    request.assert_not_called()
+
+    def test_token_endpoint_errors_keep_their_status_in_history(self):
+        redis_mock = MagicMock()
+        redis_mock.get.return_value = None
+        for status in (401, 403, 429, 503):
+            with self.subTest(status=status), self.settings(
+                REDDIT_CLIENT_ID="id", REDDIT_CLIENT_SECRET="secret"
+            ), patch.object(RedditFetcher, "reserve_rate_limit_slot", return_value=True), patch.object(
+                RedditFetcher, "redis_connection", return_value=redis_mock
+            ), patch(
+                "utils.reddit_fetcher.requests.post", return_value=MagicMock(status_code=status)
+            ), patch(
+                "utils.reddit_fetcher.requests.get"
+            ) as listing_request:
+                self.assertEqual(self.fetch_history(self.addresses[0])[0], status)
+                listing_request.assert_not_called()
+
+    def test_invalid_payload_does_not_record_success(self):
+        response = MagicMock(status_code=200)
+        response.json.side_effect = ValueError("Invalid JSON")
+        with patch.object(RedditFetcher, "reserve_rate_limit_slot", return_value=True), patch.object(
+            RedditFetcher, "access_token", return_value="test-token"
+        ), patch("utils.reddit_fetcher.requests.get", return_value=response):
+            self.assertEqual(self.fetch_history(self.addresses[0]), (404, "Reddit fetch failed"))
 
 
 class StubFeed:
