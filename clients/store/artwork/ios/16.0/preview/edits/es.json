@@ -9,7 +9,7 @@
         4,
         18,
         34,
-        46.8
+        46.2
       ],
       "durations": [
         4,
@@ -17,7 +17,7 @@
         7,
         4
       ],
-      "notes": "Native Spanish iPad UI. Includes actual article scrolling and Saved Stories, with a real article selection near the ending."
+      "notes": "Native Spanish iPad UI. Includes actual article scrolling and brief navigation into Saved Stories. Ends on the settled collection before the later article-selection animation."
     }
   },
   "status": "ipad_source_intervals_reviewed",
