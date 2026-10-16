@@ -20,6 +20,6 @@
       "notes": "Native Spanish iPad UI. Includes actual article scrolling and brief navigation into Saved Stories. Ends on the settled collection before the later article-selection animation."
     }
   },
-  "status": "ipad_source_intervals_reviewed",
-  "remaining": "iPad encoding, visual review, normal-speed playback and store upload pending. Existing iPhone status is recorded in exports/manifest.json."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }

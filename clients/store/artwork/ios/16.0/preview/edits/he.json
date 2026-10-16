@@ -20,6 +20,6 @@
       "notes": "Native Hebrew RTL iPad UI. Includes the actual fullscreen article scroll and a settled Saved Stories collection; no English interface fallback."
     }
   },
-  "status": "ipad_source_intervals_reviewed",
-  "remaining": "iPad encoding, visual review, normal-speed playback and store upload pending. Existing iPhone status is recorded in exports/manifest.json."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
