@@ -21,6 +21,8 @@ Four reviewed, opaque PNGs at 1206 × 2622 were uploaded using the native macOS 
 
 The browser extension and native uploader both exhibited the English failure. The browser connection was separately recovered by opening and closing its existing ChatGPT sidebar. Recovery did not make English placements persist.
 
+An independent `sips` inspection found the English and successful French medium screenshots both use opaque RGB PNG, 1206 × 2622, and the same sRGB IEC61966-2.1 profile. Their header PNGs are both opaque RGB, 3840 × 1646, and use the same embedded Google/Skia profile. These checks do not explain the English-only failure.
+
 All 20 non-English header/search pairs passed readback after a full page reload and explicit locale selection. Reloading resets the locale to English (U.S.), so that reset was accounted for during verification.
 
 ## Evidence
