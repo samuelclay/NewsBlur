@@ -18,8 +18,26 @@
         4
       ],
       "notes": "Native Arabic RTL UI. Includes actual article scroll near source 41–43 seconds. The last interval includes brief native navigation into Saved Stories; final collection is verified."
+    },
+    "ipad": {
+      "source_ui_locale": "ar",
+      "source_sha256": "b4e6a7009ec204d95d710c46a9e97e029d012b379f4d55a88cb31b087a26e262",
+      "source_intervals_reviewed": true,
+      "starts": [
+        5,
+        24,
+        47,
+        61
+      ],
+      "durations": [
+        4,
+        5,
+        8,
+        5
+      ],
+      "notes": "Native Arabic RTL iPad UI. Includes the real fullscreen article scroll; Saved Stories remains loaded and settled throughout the final interval."
     }
   },
   "status": "encoded_sampled_visual_review_passed",
-  "remaining": "Real-time playback and store upload pending. iPad capture/edit pending."
+  "remaining": "Real-time playback and store upload pending."
 }

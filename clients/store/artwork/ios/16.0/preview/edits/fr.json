@@ -18,8 +18,26 @@
         4
       ],
       "notes": "Native French UI. Includes actual article scroll near source 62–64 seconds, and navigation into Saved Stories at the beginning of the last interval."
+    },
+    "ipad": {
+      "source_ui_locale": "fr",
+      "source_sha256": "6bd49966c2f425ab398a70f062b198970439da773606e0159ad23766876ab9e2",
+      "source_intervals_reviewed": true,
+      "starts": [
+        5,
+        18,
+        34.5,
+        46.7
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native French iPad UI with loaded article photos. Includes the real article scroll and brief native navigation into Saved Stories, then a bread article selection near the ending."
     }
   },
   "status": "encoded_sampled_visual_review_passed",
-  "remaining": "Real-time playback and store upload pending. iPad capture/edit pending."
+  "remaining": "Real-time playback and store upload pending."
 }

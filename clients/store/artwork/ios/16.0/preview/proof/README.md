@@ -7,3 +7,5 @@ The full-resolution `*-poster.png` files are actual encoded frames at 8 seconds.
 The review checked the entire timeline through these sampled frames, with larger frames for readability. Both English exports also played through in QuickTime at normal speed, with UI observations of the beginning, reader progression and Saved Stories ending. App Store processing remains a separate check. Their status is recorded in `../exports/manifest.json`; this folder does not establish submission or approval.
 
 Localized folders use the same half-second contact-sheet sampling. Their `*-title.png`, `*-reader.png` and `*-ending.png` images show full-resolution caption layout from the actual encoded video. Each export's playback status is recorded separately in the manifest; English playback verification does not establish localized playback verification.
+
+French and Arabic iPad contact sheets cover 20 and 22 seconds respectively. French’s ending image is at 19.9 seconds, after the real article-selection transition; Arabic’s is at 21.5 seconds. Native transitions remain in the videos and are not retouched.
