@@ -1377,4 +1377,10 @@ people together to talk about the world.</string>
     <string name="briefing_section_follow_up_subtitle">New posts from feeds you recently read</string>
     <string name="briefing_section_widely_covered">Widely covered</string>
     <string name="briefing_section_widely_covered_subtitle">Stories covered by 3+ feeds</string>
+    <string name="feed_list_enter_fullscreen">Show feeds full screen</string>
+    <string name="feed_list_exit_fullscreen">Show feeds beside story titles</string>
+    <string name="story_list_enter_fullscreen">Show story titles full screen</string>
+    <string name="story_list_exit_fullscreen">Show tablet columns</string>
+    <string name="resize_feed_list">Resize feed list</string>
+    <string name="resize_story_list">Resize story titles</string>
 </resources>

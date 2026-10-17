@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.Lifecycle
@@ -15,6 +16,7 @@ import androidx.window.WindowSdkExtensions
 import androidx.window.embedding.ActivityEmbeddingController
 import androidx.window.embedding.ActivityFilter
 import androidx.window.embedding.ActivityRule
+import androidx.window.embedding.EmbeddingAnimationParams
 import androidx.window.embedding.EmbeddingAspectRatio
 import androidx.window.embedding.EmbeddingRule
 import androidx.window.embedding.RuleController
@@ -25,6 +27,7 @@ import androidx.window.embedding.SplitPairRule
 import androidx.window.embedding.SplitPlaceholderRule
 import androidx.window.embedding.SplitRule
 import com.newsblur.NbApplication
+import com.newsblur.R
 import com.newsblur.activity.AllSharedStoriesItemsList
 import com.newsblur.activity.AllSharedStoriesReading
 import com.newsblur.activity.AllStoriesItemsList
@@ -66,8 +69,8 @@ import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidelyReadStoriesItemsList
 import com.newsblur.activity.WidelyReadStoriesReading
 import com.newsblur.image.StoryImageViewerHost
-import kotlinx.coroutines.launch
 import java.util.WeakHashMap
+import kotlinx.coroutines.launch
 
 /**
  * Puts the story list and the reader side by side on tablets and unfolded foldables.
@@ -99,7 +102,7 @@ object StorySplitView {
             ReadStoriesItemsList::class.java,
             SavedStoriesItemsList::class.java,
             SocialFeedItemsList::class.java,
-            WidelyReadStoriesItemsList::class.java,
+            WidelyReadStoriesItemsList::class.java
         )
 
     internal val READING_ACTIVITIES =
@@ -116,7 +119,7 @@ object StorySplitView {
             ReadStoriesReading::class.java,
             SavedStoriesReading::class.java,
             SocialFeedReading::class.java,
-            WidelyReadStoriesReading::class.java,
+            WidelyReadStoriesReading::class.java
         )
 
     // Screens opened from inside a split that need the whole window rather than one pane.
@@ -137,13 +140,12 @@ object StorySplitView {
             Settings::class.java,
             SubscriptionActivity::class.java,
             // A photo opened from the reader pane covers the story list too.
-            StoryImageViewerHost::class.java,
-            // The feed list slides over both panes.
-            FeedListDrawer::class.java,
+            StoryImageViewerHost::class.java
         )
 
     private var rulesInstalled = false
     private var readerFullscreenSupported = false
+    private var feedFullscreenRequested: Boolean? = null
 
     /**
      * Registers the split rules the first time a window is wide enough to split: from
@@ -159,7 +161,9 @@ object StorySplitView {
         if (rulesInstalled) return
         if (!shouldInstallRules(context.resources.configuration.smallestScreenWidthDp)) return
         val splitController = SplitController.getInstance(context)
-        if (splitController.splitSupportStatus != SplitController.SplitSupportStatus.SPLIT_AVAILABLE) {
+        if (splitController.splitSupportStatus !=
+            SplitController.SplitSupportStatus.SPLIT_AVAILABLE
+        ) {
             return
         }
         // StorySplitView.kt needs extension 3 to update the current reader without relaunching
@@ -167,11 +171,37 @@ object StorySplitView {
         if (WindowSdkExtensions.getInstance().extensionVersion >= 3) {
             val application = context.applicationContext as NbApplication
             splitController.setSplitAttributesCalculator { params ->
+                val prefs = application.prefsRepo.get()
+                val windowWidthDp =
+                    params.parentWindowMetrics.bounds.width() /
+                        context.resources.displayMetrics.density
+                val feeds = params.splitRuleTag == TAG_STORY_LIST_FEEDS
+                val ratio = if (feeds) {
+                    1f -
+                        TabletPaneSizing.feedRatio(prefs.getFeedListWidthRatio(), windowWidthDp)
+                } else {
+                    TabletPaneSizing.storyRatio(prefs.getStoryListSplitRatio(), windowWidthDp)
+                }
+                val defaults = SplitAttributes.Builder()
+                    .setLayoutDirection(
+                        // LanguageSettings.kt can change the app locale without restarting its process.
+                        if (feeds) feedPaneLayoutDirection(params.parentConfiguration.layoutDirection)
+                        else params.defaultSplitAttributes.layoutDirection
+                    )
+                    .setSplitType(SplitAttributes.SplitType.ratio(ratio))
+                    .setAnimationParams(
+                        resizeAnimationParams(
+                            isResizingPanes(),
+                            WindowSdkExtensions.getInstance().extensionVersion
+                        )
+                    )
                 calculateSplitAttributes(
                     params.splitRuleTag,
                     params.areDefaultConstraintsSatisfied,
                     application.prefsRepo.get().isReaderFullscreenEnabled(),
-                    params.defaultSplitAttributes,
+                    defaults.build(),
+                    application.prefsRepo.get().isStoryListFullscreenEnabled(),
+                    feedFullscreenRequested ?: prefs.isFeedListFullscreenEnabled()
                 )
             }
             readerFullscreenSupported = true
@@ -180,23 +210,29 @@ object StorySplitView {
         rulesInstalled = true
     }
 
-    internal fun shouldInstallRules(smallestScreenWidthDp: Int): Boolean = smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
+    internal fun shouldInstallRules(smallestScreenWidthDp: Int): Boolean =
+        smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
 
     internal fun calculateSplitAttributes(
         tag: String?,
         constraintsSatisfied: Boolean,
         fullscreenRequested: Boolean,
         defaults: SplitAttributes,
-    ): SplitAttributes =
-        if (!constraintsSatisfied || (tag == TAG_STORY_LIST_READER && fullscreenRequested)) {
-            SplitAttributes
-                .Builder()
-                .setSplitType(SplitAttributes.SplitType.SPLIT_TYPE_EXPAND)
-                .setLayoutDirection(defaults.layoutDirection)
-                .build()
-        } else {
-            defaults
-        }
+        storyListFullscreenRequested: Boolean = false,
+        feedListFullscreenRequested: Boolean = false
+    ): SplitAttributes = if (!constraintsSatisfied ||
+        (tag == TAG_STORY_LIST_READER && fullscreenRequested) ||
+        (tag == TAG_EMPTY_READER && storyListFullscreenRequested) ||
+        (tag == TAG_STORY_LIST_FEEDS && feedListFullscreenRequested)
+    ) {
+        SplitAttributes
+            .Builder()
+            .setSplitType(SplitAttributes.SplitType.SPLIT_TYPE_EXPAND)
+            .setLayoutDirection(defaults.layoutDirection)
+            .build()
+    } else {
+        defaults
+    }
 
     // Split membership for each story list and reader, as last reported by splitInfoList (trackSplit).
     private val reportedSplitMembership = WeakHashMap<Activity, Boolean>()
@@ -206,9 +242,11 @@ object StorySplitView {
     /** Reading.kt's paired window stays opaque even when too narrow to show both panes. */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
     @JvmStatic
-    fun isPairedReader(activity: Activity): Boolean =
-        rulesInstalled && activity is Reading &&
-            !activity.isFinishing && !activity.isDestroyed && reportedReaderPairing[activity] == true
+    fun isPairedReader(activity: Activity): Boolean = rulesInstalled &&
+        activity is Reading &&
+        !activity.isFinishing &&
+        !activity.isDestroyed &&
+        reportedReaderPairing[activity] == true
 
     /** Reading.kt offers the toggle only when the current whole window can restore both panes. */
     @JvmStatic
@@ -223,25 +261,92 @@ object StorySplitView {
         val bounds = activity.windowManager.currentWindowMetrics.bounds
         val minimumSizePx = MIN_SPLIT_WIDTH_DP * activity.resources.displayMetrics.density
         // Match buildRules' minWidthDp and minSmallestWidthDp, including short landscape windows.
-        return bounds.width() >= minimumSizePx && minOf(bounds.width(), bounds.height()) >= minimumSizePx
+        return bounds.width() >= minimumSizePx &&
+            minOf(bounds.width(), bounds.height()) >= minimumSizePx
     }
 
     /** Returns the requested mode from PrefsRepo.kt, rather than mistaking a narrow window for it. */
     @JvmStatic
-    fun isReaderFullscreen(activity: Activity): Boolean =
-        canToggleReaderFullscreen(activity) &&
-            (activity.applicationContext as NbApplication).prefsRepo.get().isReaderFullscreenEnabled()
+    fun isReaderFullscreen(activity: Activity): Boolean = canToggleReaderFullscreen(activity) &&
+        (activity.applicationContext as NbApplication).prefsRepo.get().isReaderFullscreenEnabled()
 
     /** Persists the mode in PrefsRepo.kt and updates the existing Reading.kt activity in place. */
     @JvmStatic
-    fun setReaderFullscreen(
-        activity: Activity,
-        enabled: Boolean,
-    ): Boolean {
+    fun setReaderFullscreen(activity: Activity, enabled: Boolean): Boolean {
         if (!canToggleReaderFullscreen(activity)) return false
-        (activity.applicationContext as NbApplication).prefsRepo.get().setReaderFullscreenEnabled(enabled)
+        (activity.applicationContext as NbApplication).prefsRepo.get().setReaderFullscreenEnabled(
+            enabled
+        )
         ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
         return true
+    }
+
+    /** ItemsList.java can expand independently of the mode Reading.kt uses when a story opens. */
+    @JvmStatic
+    fun canToggleStoryListFullscreen(activity: Activity): Boolean = readerFullscreenSupported &&
+        activity is ItemsList &&
+        (isInSplit(activity) || usesTabletNavigation(activity))
+
+    @JvmStatic
+    fun isStoryListFullscreen(activity: Activity): Boolean =
+        canToggleStoryListFullscreen(activity) &&
+            !isInSplit(activity) &&
+            (activity.applicationContext as NbApplication).prefsRepo.get().isStoryListFullscreenEnabled()
+
+    @JvmStatic
+    fun setStoryListFullscreen(activity: Activity, enabled: Boolean): Boolean {
+        if (!canToggleStoryListFullscreen(activity)) return false
+        (activity.applicationContext as NbApplication).prefsRepo.get().setStoryListFullscreenEnabled(
+            enabled
+        )
+        // StorySplitView.kt expands the empty split to dismiss its nonsticky placeholder. A
+        // selected article must close first: EXPAND would otherwise put it above the titles.
+        if (enabled) {
+            Reading.peekSplitReader(activity.taskId)?.finish()
+            FeedListDrawer.peek(activity.taskId)?.finish()
+        } else {
+            FeedListDrawer.open(activity, focusFeeds = false)
+        }
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+        return true
+    }
+
+    @JvmStatic
+    fun canToggleFeedListFullscreen(): Boolean = readerFullscreenSupported
+
+    @JvmStatic
+    fun isFeedListFullscreen(activity: Activity): Boolean = !isInSplit(activity) &&
+        (
+            feedFullscreenRequested
+                ?: (activity.applicationContext as NbApplication).prefsRepo.get().isFeedListFullscreenEnabled()
+            )
+
+    @JvmStatic
+    fun prepareFeedList(activity: Activity, focusFeeds: Boolean) {
+        val prefs = (activity.applicationContext as NbApplication).prefsRepo.get()
+        feedFullscreenRequested = focusFeeds && prefs.isFeedListFullscreenEnabled()
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+    }
+
+    @JvmStatic
+    fun setFeedListFullscreen(activity: Activity, enabled: Boolean) {
+        (activity.applicationContext as NbApplication).prefsRepo.get().setFeedListFullscreenEnabled(
+            enabled
+        )
+        feedFullscreenRequested = enabled
+        if (!enabled) ItemsList.peekReadingLaunchParent(activity.taskId)?.startDeferredStories()
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+    }
+
+    @JvmStatic
+    fun showStoryTitles(feeds: FeedListDrawer) {
+        val prefs = (feeds.applicationContext as NbApplication).prefsRepo.get()
+        if (prefs.isStoryListFullscreenEnabled()) {
+            feeds.finish()
+        } else {
+            feedFullscreenRequested = false
+            ActivityEmbeddingController.getInstance(feeds).invalidateVisibleActivityStacks()
+        }
     }
 
     /**
@@ -266,7 +371,7 @@ object StorySplitView {
     // moment before splitInfoList first reports, such as Reading.kt's onCreate.
     internal fun resolveInSplit(
         reportedInSplit: Boolean?,
-        beforeFirstReport: () -> Boolean,
+        beforeFirstReport: () -> Boolean
     ): Boolean = reportedInSplit ?: beforeFirstReport()
 
     // Jetpack keeps a SplitInfo with its containers stacked (expanded) when the window gets too
@@ -278,10 +383,8 @@ object StorySplitView {
     // open, like Daily Briefing's reader) are embedded too, but fill the window. Only split
     // panes are in multi-window mode, which is checked first so full screen activities never
     // reach the embedding controller.
-    internal fun isSplitPane(
-        isInMultiWindowMode: Boolean,
-        isEmbedded: () -> Boolean,
-    ): Boolean = isInMultiWindowMode && isEmbedded()
+    internal fun isSplitPane(isInMultiWindowMode: Boolean, isEmbedded: () -> Boolean): Boolean =
+        isInMultiWindowMode && isEmbedded()
 
     /**
      * Follows a story list or reader in and out of splits, recording its membership for isInSplit.
@@ -302,45 +405,77 @@ object StorySplitView {
 
     /** Notifies Reading.kt only while STARTED, after its onCreate has initialized the binding. */
     @JvmStatic
-    fun trackSplit(
-        activity: ComponentActivity,
-        callback: () -> Unit,
-    ) {
+    fun trackSplit(activity: ComponentActivity, callback: () -> Unit) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
         // Without rules (every phone) nothing can land in a split, so skip the subscription.
         if (!rulesInstalled) return
         if (activity is ItemsList) trackedStoryLists[activity] = true
+        val divider = if (readerFullscreenSupported) TabletPaneDivider.attach(activity) else null
         var isOpaque = false
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 SplitController.getInstance(activity).splitInfoList(activity).collect { splits ->
-                    val inSplit = isSideBySide(splits.map { split -> split.splitAttributes.splitType })
+                    val inSplit =
+                        isSideBySide(splits.map { split -> split.splitAttributes.splitType })
                     reportedSplitMembership[activity] = inSplit
                     // ActivityStack exposes contains(), not its activities. Track ItemsList.java
                     // instances weakly so expanded readers stay eligible without retaining tasks.
                     val pairedReader =
-                        activity is Reading && splits.any { split ->
-                            activity in split.secondaryActivityStack &&
-                                trackedStoryLists.keys.any { storyList ->
-                                    !storyList.isFinishing && !storyList.isDestroyed &&
-                                        storyList in split.primaryActivityStack
-                                }
-                        }
+                        activity is Reading &&
+                            splits.any { split ->
+                                activity in split.secondaryActivityStack &&
+                                    trackedStoryLists.keys.any { storyList ->
+                                        !storyList.isFinishing &&
+                                            !storyList.isDestroyed &&
+                                            storyList in split.primaryActivityStack
+                                    }
+                            }
                     reportedReaderPairing[activity] = pairedReader
                     // A saved fullscreen preference can launch Reading.kt already expanded.
                     if ((inSplit || pairedReader) && !isOpaque) {
                         isOpaque = true
                         activity.setTranslucent(false)
                     }
+                    divider?.update(splits)
                     callback()
                 }
             }
         }
     }
 
+    private var resizingUntil = 0L
+    private var resizingTaskId = -1
+
+    private fun isResizingPanes(): Boolean = android.os.SystemClock.uptimeMillis() < resizingUntil
+
+    @JvmStatic
+    fun isResizingPanes(activity: Activity): Boolean =
+        activity.taskId == resizingTaskId && isResizingPanes()
+
+    internal fun resizeAnimationParams(
+        resizing: Boolean,
+        extensionVersion: Int
+    ): EmbeddingAnimationParams {
+        val builder = EmbeddingAnimationParams.Builder()
+        if (resizing && extensionVersion >= 7) {
+            // TabletPaneDivider.kt follows the finger; animating intermediate widths stretches
+            // stale frame edges and queues transitions behind the user's drag.
+            builder.setChangeAnimation(EmbeddingAnimationParams.AnimationSpec.JUMP_CUT)
+        }
+        return builder.build()
+    }
+
+    internal fun resizePane(activity: Activity, feeds: Boolean, ratio: Float, finished: Boolean) {
+        val prefs = (activity.applicationContext as NbApplication).prefsRepo.get()
+        if (feeds) prefs.setFeedListWidthRatio(ratio) else prefs.setStoryListSplitRatio(ratio)
+        resizingTaskId = activity.taskId
+        resizingUntil = android.os.SystemClock.uptimeMillis() + if (finished) 400 else 2000
+        ActivityEmbeddingController.getInstance(activity).invalidateVisibleActivityStacks()
+    }
+
     /**
      * Starts a story list. On a tablet, a story list opened from inside the split or an always
-     * expanded screen (a reader's Go to feed, the next folder, Discover, the feed list slide-over)
+     * expanded screen (a reader's Go to feed, the next folder, Discover, the feed list)
      * would land wherever Activity Embedding's defaults put it: beside the old list in the reader
      * pane, or in an expanded container that never splits. So those launches start the story list
      * as the root of a fresh task instead, which gives it a new split with the placeholder pane;
@@ -348,10 +483,7 @@ object StorySplitView {
      * start the list directly.
      */
     @JvmStatic
-    fun startStoryList(
-        context: Context,
-        storyList: Intent,
-    ) {
+    fun startStoryList(context: Context, storyList: Intent) {
         val activity = if (rulesInstalled) findActivity(context) else null
         val restartTask =
             activity != null &&
@@ -367,12 +499,12 @@ object StorySplitView {
     // Without rules (every phone) nothing is ever embedded, so the embedding controller is never asked.
     internal fun shouldRestartTaskForStoryList(
         rulesInstalled: Boolean,
-        isEmbedded: () -> Boolean,
+        isEmbedded: () -> Boolean
     ): Boolean = rulesInstalled && isEmbedded()
 
     /**
-     * True when this window uses tablet navigation: story list and reader side by side, with the
-     * feed list sliding over them (FeedListDrawer.kt) instead of filling the screen. Matches the
+     * True when this window uses tablet navigation: FeedListDrawer.kt beside story titles while
+     * browsing, and titles beside Reading.kt while reading. Matches the
      * split rules' own width checks, so a narrow window (system split screen, a folded foldable)
      * keeps the phone flow.
      */
@@ -380,7 +512,8 @@ object StorySplitView {
     fun usesTabletNavigation(context: Context): Boolean {
         if (!rulesInstalled) return false
         val configuration = context.resources.configuration
-        return configuration.screenWidthDp >= MIN_SPLIT_WIDTH_DP && configuration.smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
+        return configuration.screenWidthDp >= MIN_SPLIT_WIDTH_DP &&
+            configuration.smallestScreenWidthDp >= MIN_SPLIT_WIDTH_DP
     }
 
     /**
@@ -392,12 +525,11 @@ object StorySplitView {
      * back to Main.java.
      */
     @JvmStatic
-    fun slidesOverFeedDrawer(storyList: Activity): Boolean = shouldSlideOverFeedDrawer(rulesInstalled, storyList.isTaskRoot)
+    fun slidesOverFeedDrawer(storyList: Activity): Boolean =
+        shouldSlideOverFeedDrawer(rulesInstalled, storyList.isTaskRoot)
 
-    internal fun shouldSlideOverFeedDrawer(
-        rulesInstalled: Boolean,
-        isTaskRoot: Boolean,
-    ): Boolean = rulesInstalled && isTaskRoot
+    internal fun shouldSlideOverFeedDrawer(rulesInstalled: Boolean, isTaskRoot: Boolean): Boolean =
+        rulesInstalled && isTaskRoot
 
     /** True when [intent] opens one of the story lists in the split rules. */
     @JvmStatic
@@ -428,7 +560,11 @@ object StorySplitView {
             STORY_LIST_ACTIVITIES
                 .flatMap { storyList ->
                     READING_ACTIVITIES.map { reader ->
-                        SplitPairFilter(ComponentName(context, storyList), ComponentName(context, reader), null)
+                        SplitPairFilter(
+                            ComponentName(context, storyList),
+                            ComponentName(context, reader),
+                            null
+                        )
                     }
                 }.toSet()
 
@@ -449,7 +585,9 @@ object StorySplitView {
                 .build()
 
         val storyListFilters =
-            STORY_LIST_ACTIVITIES.map { storyList -> ActivityFilter(ComponentName(context, storyList), null) }.toSet()
+            STORY_LIST_ACTIVITIES.map { storyList ->
+                ActivityFilter(ComponentName(context, storyList), null)
+            }.toSet()
 
         val emptyReaderPane =
             SplitPlaceholderRule
@@ -464,8 +602,34 @@ object StorySplitView {
                 .setSticky(false)
                 .build()
 
+        val feedsBesideTitles = SplitPairRule.Builder(
+            STORY_LIST_ACTIVITIES.map {
+                SplitPairFilter(
+                    ComponentName(context, it),
+                    ComponentName(context, FeedListDrawer::class.java),
+                    null
+                )
+            }.toSet()
+        )
+            .setTag(TAG_STORY_LIST_FEEDS)
+            .setDefaultSplitAttributes(
+                SplitAttributes.Builder().setSplitType(
+                    SplitAttributes.SplitType.ratio(0.6f)
+                ).setLayoutDirection(feedPaneLayoutDirection(context.resources.configuration.layoutDirection)).build()
+            )
+            .setMinWidthDp(MIN_SPLIT_WIDTH_DP)
+            .setMinSmallestWidthDp(MIN_SPLIT_WIDTH_DP)
+            .setMaxAspectRatioInPortrait(EmbeddingAspectRatio.ALWAYS_ALLOW)
+            .setMaxAspectRatioInLandscape(EmbeddingAspectRatio.ALWAYS_ALLOW)
+            .setFinishPrimaryWithSecondary(SplitRule.FinishBehavior.NEVER)
+            .setFinishSecondaryWithPrimary(SplitRule.FinishBehavior.ALWAYS)
+            .setClearTop(true)
+            .build()
+
         val fullWindowFilters =
-            FULL_WINDOW_ACTIVITIES.map { activity -> ActivityFilter(ComponentName(context, activity), null) }.toSet()
+            FULL_WINDOW_ACTIVITIES.map { activity ->
+                ActivityFilter(ComponentName(context, activity), null)
+            }.toSet()
 
         val fullWindow =
             ActivityRule
@@ -474,10 +638,20 @@ object StorySplitView {
                 .setAlwaysExpand(true)
                 .build()
 
-        return setOf(storyListToReader, emptyReaderPane, fullWindow)
+        return setOf(storyListToReader, feedsBesideTitles, emptyReaderPane, fullWindow)
     }
 
+    // FeedListDrawer.kt is the secondary activity, so reverse the normal primary-first order
+    // to keep feeds at the start edge in both left-to-right and right-to-left languages.
+    internal fun feedPaneLayoutDirection(layoutDirection: Int): SplitAttributes.LayoutDirection =
+        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            SplitAttributes.LayoutDirection.LEFT_TO_RIGHT
+        } else {
+            SplitAttributes.LayoutDirection.RIGHT_TO_LEFT
+        }
+
     private const val TAG_STORY_LIST_READER = "story_list_reader"
+    private const val TAG_STORY_LIST_FEEDS = "story_list_feeds"
     private const val TAG_EMPTY_READER = "empty_reader"
     private const val TAG_FULL_WINDOW = "full_window"
 }
