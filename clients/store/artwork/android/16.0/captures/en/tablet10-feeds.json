@@ -4,8 +4,9 @@
   "serial": "R8YW810E3FF",
   "scene": "feeds",
   "package": "com.newsblur.storecapture",
-  "captured_at": "2026-10-17 15:37:15 UTC",
-  "sha256": "ed182e205ea108137c564862ceaa9c123d46916032d5c2053aef27edce97a62d",
+  "captured_at": "2026-10-17 15:39:50 UTC",
+  "sha256": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457",
   "native_readiness": "expected fixture content visible",
+  "tablet_composition": "populated_native_split",
   "visual_review": "required"
 }
