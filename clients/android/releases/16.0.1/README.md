@@ -11,7 +11,7 @@ The original commits reported version 15.1 but were never included in the shared
 
 Version 16.0 (292) was already available on Google Play. On October 17, its completed rollout was halted through Play Console. Console and Publisher API both confirmed `halted`, with 15.1 (291) serving as the fallback. Existing 16.0 installations are not downgraded. See `proof/play-16.0-halted.png`, its text snapshot, and `proof/play-before.json`.
 
-16.0.1 is being prepared. No corrected artifact has been uploaded or submitted yet.
+16.0.1 (293), source tag `Android_16.0.1` at `8eb2afd5698a729f454864e5fbd3efcd5fb3cc58`, was built, signed, and uploaded to a Play draft with all21 release-note locales. It has not been submitted. Physical tablet testing exposed delayed divider dragging, so this artifact must be replaced before submission. See `clients/android/Performance/tablet-controls-recovery-2026-10-17/drag-regression/` for the reproduction and follow-up. Build293 cannot be reused for the corrected upload.
 
 ## Localized notes and store assets
 
