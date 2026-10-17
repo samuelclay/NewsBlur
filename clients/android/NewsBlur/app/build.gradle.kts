@@ -28,8 +28,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 294
-        versionName = "16.0.2"
+        versionCode = 295
+        versionName = "16.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
