@@ -8,7 +8,12 @@ A fresh App Store Connect tab reproduced the English screenshot failure while re
 
 The page's placement-list response returned only **50 of 81** records and supplied a next-page cursor. All 50 returned records were legacy screenshots: 8 iPad 13-inch, 8 iPad 12.9-inch second-generation, 5 iPad 9.7-inch, and 29 older Home-button iPhone screenshots. No modern medium-iPhone placements appeared in that first page. The UI's zero count therefore cannot be treated as evidence that earlier uploads were not saved. Repeated attempts created placements that the truncated readback did not display.
 
-Recovery is to remove the obsolete draft placements through Media Manager, retaining their Asset Library files, then inspect and deduplicate the newly visible modern groups. The UI explicitly confirms that removal from this device leaves files in Asset Library. The first removal confirmation was opened but not completed when desktop focus changed. No removal is claimed yet. Header/search behavior will be rechecked after this cleanup rather than assumed fixed.
+Recovery is complete for screenshots. Removed obsolete draft placements through Media Manager while retaining their Asset Library files. The revealed medium-iPhone group contained two copies of `panel-1.png` through `panel-4.png` and two uniquely named retry files, explaining the ten-image limit. Replaced this group and the old large-iPhone and iPad sets with the four approved, uniquely named panels per size. Removed the remaining older device overrides so they inherit the new sets.
+
+After a full reload, English showed exactly four expected filenames at each of 1206 × 2622, 1320 × 2868 and 2064 × 2752. Recovery evidence is committed in `814425c3e`. Header/search behavior still needs a separate recheck; screenshot recovery does not establish that those placements are fixed.
+
+- [Recovered English iPhone sets](en-iphone-screenshots-persisted.jpg)
+- [Recovered English iPad set](en-ipad-screenshots-persisted.jpg)
 
 - [Placement-limit error responses](en-placement-limit-errors.json)
 - [Observed first-page counts](en-placement-pagination.json)
@@ -32,7 +37,7 @@ Four reviewed, opaque PNGs at 1206 × 2622 were uploaded using the native macOS 
 - English: panels 1 and 2 temporarily appeared; panels 3 and 4 reported **“An error occurred during upload.”** After a full reload, English showed **0 of 10 App Screenshots**.
 - An earlier English upload and subsequent Asset Library assignment both temporarily showed four screenshots, then returned to zero after reloading. Files remained in Asset Library.
 
-The browser extension and native uploader both exhibited the English failure. The browser connection was separately recovered by opening and closing its existing ChatGPT sidebar. Recovery did not make English placements persist.
+The browser extension and native uploader both exhibited the misleading English readback. The browser connection was separately recovered by opening and closing its existing ChatGPT sidebar, but that did not resolve the truncated placement list.
 
 An independent `sips` inspection found the English and successful French medium screenshots both use opaque RGB PNG, 1206 × 2622, and the same sRGB IEC61966-2.1 profile. Their header PNGs are both opaque RGB, 3840 × 1646, and use the same embedded Google/Skia profile. These checks do not explain the English-only failure.
 
