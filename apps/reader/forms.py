@@ -176,7 +176,7 @@ class SignupForm(forms.Form):
 
         return self.cleaned_data
 
-    def save(self, profile_callback=None):
+    def save(self, profile_callback=None, request=None):
         username = self.cleaned_data["username"]
         password = self.cleaned_data["password"]
         email = self.cleaned_data["email"]
@@ -207,6 +207,11 @@ class SignupForm(forms.Form):
             Profile.objects.filter(user=new_user).update(last_seen_language=signup_language)
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
+
+        if request is not None:
+            from apps.profile.language import record_signup_language
+
+            record_signup_language(new_user, request)
 
         def finish_signup():
             # forms.py must not publish users that apps/api/social_auth.py may still roll back.

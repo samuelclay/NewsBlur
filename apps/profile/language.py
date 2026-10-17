@@ -118,6 +118,20 @@ def remember_device_language(request, detected):
     type(profile).objects.filter(pk=profile.pk).update(last_seen_language=detected)
 
 
+def record_signup_language(user, request):
+    """Called only for newly created accounts by apps/reader/forms.py, before login changes the user."""
+    from apps.profile.models import Profile
+
+    language = normalize_language(getattr(request, "LANGUAGE_CODE", None))
+    if language is None or language == "auto":
+        override = preference(request)
+        language = (
+            detect_language(request.META.get("HTTP_ACCEPT_LANGUAGE", "")) if override == "auto" else override
+        )
+    if Profile.objects.filter(user=user, signup_language__isnull=True).update(signup_language=language):
+        user.profile.signup_language = language
+
+
 class NewsBlurLocaleMiddleware(LocaleMiddleware):
     def process_request(self, request):
         override = preference(request)

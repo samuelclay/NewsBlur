@@ -105,6 +105,8 @@ MANAGERS = ADMINS
 PAYPAL_RECEIVER_EMAIL = "samuel@ofbrooklyn.com"
 TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
+# settings.py: new-signup language revenue starts at the requested October 16, 2026 cutoff (UTC).
+LANGUAGE_ANALYTICS_COHORT_START = "2026-10-16T23:25:40"
 SITE_ID = 1
 USE_I18N = True
 from utils.languages import LANGUAGES as UI_LANGUAGES
