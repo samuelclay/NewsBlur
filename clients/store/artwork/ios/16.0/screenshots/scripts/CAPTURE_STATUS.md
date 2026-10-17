@@ -1,6 +1,6 @@
 # Native capture checkpoint, 2026-10-16
 
-All 21 iPad locales have four visually verified native stills and finalized raw footage. The iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`, is shut down; its five preference files were restored and SHA-256 verified against `/tmp/newsblur-ipad-capture-resume-backup`. The task iPhone 18 Pro Max, UDID `011EB534-697E-4855-BACA-4D4C6E4E92EF`, is being resumed for its remaining 17 locales; its three preference files still matched `/tmp/newsblur-iphone-capture-resume-backup` before boot. Another task’s iPhone 17e remains untouched. No production account is used.
+All 21 iPad locales and six iPhone locales have four visually verified native stills and finalized raw footage. The iPad Pro 13-inch (M5), UDID `883650D4-245E-4265-84A5-97606867CB5B`, is shut down; its five preference files were restored and SHA-256 verified against `/tmp/newsblur-ipad-capture-resume-backup`. Capture is currently paused because another task launched Turn Touch on the capture iPhone 18 Pro Max, UDID `011EB534-697E-4855-BACA-4D4C6E4E92EF`. The phone remains booted and untouched pending device coordination. Its three original preference files remain backed up at `/tmp/newsblur-iphone-capture-resume-backup`; do not restore them while the other task uses the device. Another task’s iPhone 17e remains untouched. No production account is used.
 
 ## Verified complete native groups
 
@@ -10,7 +10,7 @@ All 21 iPad locales have four visually verified native stills and finalized raw 
 | French | Four stills and finalized raw video, `bdb0a7fc6` | Four stills and finalized raw video, `4953ca956` |
 | Arabic | Four stills and finalized raw video, `454438c1a` | Four stills and finalized raw video, `f790aeaef` |
 | German | Four stills and finalized raw video, `aca5de841` | Four stills and finalized raw video, `4057de826` |
-| Spanish | Pending | Four stills and finalized raw video, `da506fae3` |
+| Spanish | Four stills and finalized raw video, `b7d1d7782` | Four stills and finalized raw video, `da506fae3` |
 | Hebrew | Four stills and finalized raw video, `c3977de10` | Four stills and finalized raw video, visually verified |
 | Dutch | Pending | Four stills and finalized raw video, `08829b4f2` |
 | Portuguese (Brazil) | Pending | Four stills and finalized raw video, `25f4e43a0` |
@@ -30,7 +30,7 @@ All 21 iPad locales have four visually verified native stills and finalized raw 
 
 Canonical English stills are in `../captures/`. Localized native stills are in `../captures/localized/<locale>/`. Raw videos and checkpoints are in `../footage/<device>/` for English and `../footage/localized/<locale>/<device>/` for localized takes. Raw videos require editing and visual timing review before upload. Video time can diverge from wall-clock checkpoints when CoreSimulator stalls.
 
-The earlier Hebrew iPhone attempt had a blank article through a bounded 90-second readiness check. A fresh simulator boot resolved the transient WebKit state; the replacement take now has four visually verified states and complete footage. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. All iPad locales are complete. Sixteen iPhone locales remain, captured in serial groups of four on the existing target.
+The earlier Hebrew iPhone attempt had a blank article through a bounded 90-second readiness check. The replacement take succeeded after a fresh simulator boot and now has four visually verified states and complete footage. Failed takes are preserved under `/tmp/newsblur-he-delayed-transition-take` and `/tmp/newsblur-he-reader-timeout-take`; rejected blank frames are under `/tmp/newsblur-he-rejected-stills`. Hebrew iPad rendered correctly and is complete. All iPad locales are complete. Fifteen iPhone locales remain: Italian, Dutch, Brazilian Portuguese, Polish, Turkish, Russian, Ukrainian, Hindi, Indonesian, Vietnamese, Thai, Japanese, Korean, simplified Chinese, and traditional Chinese.
 
 The native Arabic/Hebrew Saved title has an existing clock-icon overlap at its left end; captures preserve the actual app UI. This is separate from the fixed capture-coordinate error: RTL reader Back uses x420, while the story-list All button requires x390.
 
@@ -53,3 +53,5 @@ Final localized rendering, App Preview editing, store upload, and resubmission a
 Hindi exposed an additional native transition: selecting the already-open Cooking folder reloaded the WebKit reader at a smaller initial size. The capture now closes the sidebar with its native button, preserving the normalized reader. The replacement Hindi take passed all four visual checks. Indonesian Saved retains the pasta article with four saved items; its final decoded frame is fully loaded and can be held explicitly by the preview editor.
 
 The first Spanish iPhone take stalled after opening Cooking: a later live frame showed a partial navigation animation with a gray placeholder, and accessibility returned an empty application. Reconnecting the target HID companion alone did not recover it. The rejected take is preserved at `/tmp/newsblur-es-input-timeout-take`; the same simulator was shut down, its three preferences restored and verified, then booted for a bounded retry. No app rebuild or animation speed change was made.
+
+Spanish then completed successfully, but Italian failed its first story-list readiness check. A fresh screenshot from the same explicit UDID showed Turn Touch's Language screen with a return-to-NewsBlur indicator. Evidence is saved in `../evidence/iphone18-cross-task-interference.png`. This proves concurrent use of the capture device; it also means the earlier transition stalls cannot confidently be attributed solely to resource pressure. All simulator actions stopped immediately. The rejected Italian take is preserved outside canonical assets at `/tmp/newsblur-it-cross-task-interference-take`. No Italian iPhone asset is promoted. Resume only after the coordinator establishes exclusive capture access to this target or another authorized target.
