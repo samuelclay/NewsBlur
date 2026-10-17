@@ -1,11 +1,11 @@
 {
-  "paused_at": "2026-10-17 16:22:33 UTC",
-  "reason": "Investigating user-reported resize handles in installed Alpha",
+  "paused_at": "2026-10-17 16:35:22 UTC",
+  "reason": "User requested locating the remembered Android resize work before proceeding",
   "tablet_serial": "R8YW810E3FF",
-  "capture_host_pid": 89962,
-  "capture_host_state": "SIGSTOP; no running adb or screenrecord child",
-  "capture_session": 68903,
-  "alpha_left_open": "All Site Stories beside ReadingPlaceholder; no unread story opened",
+  "capture_host_pid": null,
+  "capture_host_state": "Terminated; no capture automation remains",
+  "capture_session": null,
+  "alpha_left_open": "Existing task1050 focused on All Site Stories beside ReadingPlaceholder",
   "inventory": {
     "en": {
       "tablet10": [
@@ -37,7 +37,12 @@
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "de": {
       "tablet10": [
@@ -118,7 +123,11 @@
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader"
+      ]
     },
     "he": {
       "tablet10": [
@@ -195,10 +204,20 @@
     "zh-Hant": {
       "tablet10": [
         "feeds",
-        "stories"
+        "stories",
+        "reader",
+        "saved"
       ],
       "tablet7": []
     }
   },
-  "resume": "Coordinate with root before SIGCONT. Finish Traditional Chinese tablet10, then capture tablet7. Restore tablet baseline settings after completion."
+  "resume": "Wait for coordinator instruction. Keep complete tablet10 groups. Explicitly disable auto-rotation and select portrait before tablet7. Replace French/Arabic tablet7 raw groups, then capture every missing tablet7 scene; restore device baseline afterward.",
+  "device_settings": "Restored and verified against baseline; see device-restored.json",
+  "tablet7_recapture_required": {
+    "languages": [
+      "fr",
+      "ar"
+    ],
+    "reason": "Auto-rotate produced native landscape1920x1080; lock portrait explicitly to match approved English1080x1920 before redoing these partial groups"
+  }
 }
