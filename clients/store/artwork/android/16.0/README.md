@@ -74,6 +74,8 @@ The isolated `com.newsblur.storecapture` build seeds offline cooking fixtures an
 
 ## Store upload and readback
 
+Before a large upload, inspect the selected service account's existing Play permissions and validate the untouched edit. Successful image uploads do not prove permission to commit: the configured billing account accepted all 294 images on October 17 but returned HTTP 403 for both validation and commit because it lacked `Manage store presence`. The separate reporting account has read-only access. Confirm any access expansion with the user, or use the authenticated Console upload workflow. Do not silently grant production-release or administrator access for a listing-only refresh.
+
 Run the complete audit before uploading:
 
 ```sh

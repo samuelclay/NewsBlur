@@ -1,0 +1,15 @@
+{
+  "editId": "03809724643036911628",
+  "startedAt": "2026-10-17T18:16:25.670071+00:00",
+  "manifestDigest": "47fb6a09b64979b900a28f0d0e94660ecd359d3c9baa43b221eca47cf4daf66c",
+  "behavior": "ERROR_IF_IN_REVIEW",
+  "status": "commit_rejected",
+  "validationError": {
+    "status": 403,
+    "message": "The caller does not have permission"
+  },
+  "commitError": {
+    "status": 403,
+    "message": "The caller does not have permission"
+  }
+}
