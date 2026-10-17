@@ -1,0 +1,3 @@
+The following is a diff from the previous accessibility tree for Window: "Publishing overview | NewsBlur: RSS News Reader" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~		346 text https://play.google.com/console/u/1/developers/6280481402178293168/app/4972990522498280751/publishing
+The focused UI element is 319 button Publishing overview
