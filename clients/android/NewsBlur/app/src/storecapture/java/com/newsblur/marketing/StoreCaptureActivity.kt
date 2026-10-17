@@ -1,5 +1,7 @@
 package com.newsblur.marketing
 
+import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -28,6 +30,7 @@ import com.newsblur.util.LanguageSettings
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StorySplitView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,10 +67,12 @@ class StoreCaptureActivity : ComponentActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { seed() }
             val fs = if (screen == "saved") FeedSet.allSaved() else FeedSet.allFeeds()
+            val tabletList = screen != "feeds" && StorySplitView.usesTabletNavigation(this@StoreCaptureActivity)
+            if (tabletList) prepareTabletLaunch()
             val destination =
                 when (screen) {
                     "feeds" -> Main::class.java
-                    "reader" -> AllStoriesReading::class.java
+                    "reader" -> if (tabletList) AllStoriesItemsList::class.java else AllStoriesReading::class.java
                     "saved" -> SavedStoriesItemsList::class.java
                     else -> AllStoriesItemsList::class.java
                 }
@@ -76,10 +81,35 @@ class StoreCaptureActivity : ComponentActivity() {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     putExtra(ItemsList.EXTRA_FEED_SET, fs)
                     putExtra(Reading.EXTRA_STORY_HASH, CookingFixture.FIRST_STORY_HASH)
+                    putExtra(ItemsList.EXTRA_DEFER_STORIES, tabletList)
+                    putExtra(ItemsList.EXTRA_AUTO_OPEN_STORY, tabletList && screen == "reader")
                 },
             )
             finish()
         }
+    }
+
+    private fun prepareTabletLaunch() {
+        // StoreCaptureActivity.kt uses ItemsList's normal deferred path after Activity Embedding creates its panes.
+        // Starting rows during the initial full-window-to-split resize can strand the list's old invisible grid.
+        val app = application
+        app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityResumed(activity: Activity) {
+                if (activity !is ItemsList) return
+                activity.window.decorView.postDelayed({
+                    if (!activity.isDestroyed && !activity.isFinishing && activity.areStoriesDeferred()) {
+                        activity.startDeferredStories()
+                        app.unregisterActivityLifecycleCallbacks(this)
+                    }
+                }, 500)
+            }
+            override fun onActivityCreated(activity: Activity, state: Bundle?) {}
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
     }
 
     private fun seed() {
