@@ -50,7 +50,9 @@ class CookingFixture
             // CookingFixture.kt keeps photographs out of JSON/SQLite; ReadingItemFragment swaps these real cache URLs into its WebView.
             recipes.map { it.getString("photo") }.distinct().forEach { photo ->
                 val target = requireNotNull(storyCache.getCachedFile("$SERVER/cooking-photo/$photo.jpg"))
-            context.assets.open("photos/$photo.jpg").use { input -> target.outputStream().use { output -> input.copyTo(output) } }
+                context.assets.open("photos/$photo.jpg").use { input ->
+                    target.outputStream().use { output -> input.copyTo(output) }
+                }
             }
             feeds.forEach { feed ->
                 val id = feed.getString("id")
