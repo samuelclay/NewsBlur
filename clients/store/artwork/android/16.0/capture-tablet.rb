@@ -35,7 +35,8 @@ languages.each do |language|
     FileUtils.mkdir_p(directory)
     image = File.join(directory, "#{device}-#{scene}.png")
     proof = image.sub('.png', '.json')
-    next if File.exist?(image) && File.exist?(proof) && JSON.parse(File.read(proof))['tablet_composition'] == 'populated_native_split'
+    video = File.join(root, 'captures', 'footage', language, "#{device}-#{scene}.mp4")
+    next if File.exist?(image) && File.exist?(proof) && JSON.parse(File.read(proof))['tablet_composition'] == 'populated_native_split' && (device == 'tablet7' || File.exist?(video))
     command(*adb, 'shell', 'am', 'force-stop', 'com.newsblur.storecapture')
     launch_scene = scene == 'feeds' ? 'reader' : scene
     command(*adb, 'shell', 'am', 'start', '-W', '-n', 'com.newsblur.storecapture/com.newsblur.marketing.StoreCaptureActivity', '--es', 'language', language, '--es', 'screen', launch_scene)
@@ -45,11 +46,12 @@ languages.each do |language|
     width, height = screenshot[16, 8].unpack('NN')
     if scene == 'feeds'
       # The native story-list back button opens the real feed drawer over its populated reader.
-      command(*adb, 'shell', 'input', 'tap', (rtl ? width - 39 : 39).to_s, '78')
+      # Android's native split keeps its 40% list pane on the left in RTL too.
+      command(*adb, 'shell', 'input', 'tap', (rtl ? (width * 0.4).to_i - 39 : 39).to_s, '78')
       xml = await_content(adb, 'A Bowl of Greens')
     elsif %w[stories saved].include?(scene)
       # Select the first real story in the list rather than presenting the tablet placeholder pane.
-      command(*adb, 'shell', 'input', 'tap', (width * (rtl ? 0.8 : 0.2)).to_i.to_s, '202')
+      command(*adb, 'shell', 'input', 'tap', (width * 0.2).to_i.to_s, '202')
       xml = await_content(adb, 'Pesto pasta with blistered tomatoes')
     else
       xml = read_window(adb)
@@ -67,7 +69,6 @@ languages.each do |language|
     pid = Process.spawn(*adb, 'shell', 'screenrecord', '--bit-rate', '10000000', '--time-limit', '6', remote, out: File::NULL)
     sleep 1
     ratio = scene == 'reader' ? 0.75 : 0.2
-    ratio = 1 - ratio if rtl
     x = (width * ratio).to_i
     command(*adb, 'shell', 'input', 'swipe', x.to_s, (height * 0.72).to_i.to_s, x.to_s, (height * 0.47).to_i.to_s, '1200')
     Process.wait(pid)
