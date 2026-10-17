@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-10-17T18:19:12Z",
+  "status": "staged_assets_verified_but_edit_commit_permission_missing",
+  "edit_id": "03809724643036911628",
+  "configured_publisher_identity": "newsblur-play-billing@newsblur-premium.iam.gserviceaccount.com",
+  "configured_project": "newsblur-premium",
+  "configured_source": "clients/store/google_play.py::service uses settings.GOOGLE_PLAY_SERVICE_ACCOUNT_INFO",
+  "existing_alternate_identity": "newsblur@appspot.gserviceaccount.com",
+  "alternate_key_tested": false,
+  "notes": [
+    "All 294 images and 10 video fields were staged and read back before the coordinator received 403 for validate and guarded commit.",
+    "Existing secrets repository android/README.md already documents that the reporting project publishing API is disabled and the billing account cannot commit edits.",
+    "Coordinator independently inspected Console permissions: current accounts lack app-scoped Manage store presence. No permission grants were performed by this agent.",
+    "Future graphics workflows must establish publishing authority and required app-scoped permissions before uploading the asset batch. An earlier successful empty-edit validation is not sufficient proof that a populated edit can be committed."
+  ],
+  "readme_source": "/Users/sclay/projects/secrets-newsblur/android/README.md",
+  "changes_made": "No credentials changed, no alternate-account API calls, no new edits, no additional Play mutations."
+}
