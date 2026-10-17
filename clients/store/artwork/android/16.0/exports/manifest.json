@@ -3,6 +3,72 @@
   "version": "16.0",
   "assets": [
     {
+      "language": "ar",
+      "locale": "ar",
+      "imageType": "icon",
+      "position": 1,
+      "path": "ar/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ar.json": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "ar",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "de",
+      "locale": "de-DE",
+      "imageType": "icon",
+      "position": 1,
+      "path": "de/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/de.json": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "de",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
       "language": "en",
       "locale": "en-US",
       "imageType": "featureGraphic",
@@ -123,8 +189,8 @@
       },
       "visual_review": "approved",
       "store_upload": "unverified",
-      "visual_reviewed_at": "2026-10-17T15:36:29Z",
-      "visual_review_note": "Each final PNG inspected in full: native content, readable English text, complete screen bounds, Sage layout, no clipping."
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
     },
     {
       "language": "en",
@@ -401,6 +467,1334 @@
       "store_upload": "unverified",
       "visual_reviewed_at": "2026-10-17T15:36:29Z",
       "visual_review_note": "Each final PNG inspected in full: native content, readable English text, complete screen bounds, Sage layout, no clipping."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "featureGraphic",
+      "position": 1,
+      "path": "es/featureGraphic/panel-01.png",
+      "sha256": "4f21a1f80554124cd4a81e06c11bf2d944d5b91947ed490f40c66f2960c4ee8f",
+      "width": 1024,
+      "height": 500,
+      "bytes": 239290,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/es/phone-stories.png": "7f4e65e6694696f5c901deaab16ac70d51c25d287c3939157e0f2b2cb37da659",
+        "captures/es/phone-reader.png": "1fd5779801cdc5d1d6226755dee1cd57f20e8d69b9d2e0415a1f49bfdda1dffc"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 3.8082,
+          "largest_tile_error": 6.7682,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-stories.png"
+        },
+        {
+          "mean_absolute_rgb_error": 3.6191,
+          "largest_tile_error": 7.944,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 416,
+              "width": 192,
+              "x": 564,
+              "y": 42
+            },
+            "path": "captures/es/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          },
+          {
+            "bounds": {
+              "height": 416,
+              "width": 192,
+              "x": 786,
+              "y": 42
+            },
+            "path": "captures/es/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 500,
+        "language": "es",
+        "panel": 1,
+        "placement": "featureGraphic",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 25,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 48,
+            "line_count": 2,
+            "text": "Tus lecturas diarias, en un solo lugar."
+          },
+          {
+            "font_size": 24,
+            "line_count": 1,
+            "text": "Un hogar para tus fuentes favoritas."
+          }
+        ],
+        "width": 1024
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:42Z",
+      "visual_review_note": "Final localized PNGs inspected: Spanish headlines and native controls, full app bounds, no layout clipping."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "icon",
+      "position": 1,
+      "path": "es/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "es",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "phoneScreenshots",
+      "position": 1,
+      "path": "es/phoneScreenshots/panel-01.png",
+      "sha256": "bdafbdf62600f13e54929263d83458ab1ea62b490af7d0e52ff36aed8ba83018",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1067887,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/es/phone-stories.png": "7f4e65e6694696f5c901deaab16ac70d51c25d287c3939157e0f2b2cb37da659",
+        "captures/es/phone-feeds.png": "63485bdd42455c8f27ac5e3144658f3b47791d93984fa75c6c331c44fea34bca",
+        "captures/es/phone-reader.png": "1fd5779801cdc5d1d6226755dee1cd57f20e8d69b9d2e0415a1f49bfdda1dffc",
+        "captures/es/phone-saved.png": "fb3c2108b3fff5e0921de3c65c1a7f301aa75d4a2dcfc52653b9a089ef078ef6"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.561,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/es/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "es",
+        "panel": 1,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Tus lecturas diarias, en un solo lugar."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:42Z",
+      "visual_review_note": "Final localized PNGs inspected: Spanish headlines and native controls, full app bounds, no layout clipping."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "phoneScreenshots",
+      "position": 2,
+      "path": "es/phoneScreenshots/panel-02.png",
+      "sha256": "e9222d2662048af2ab48f70e2a198ef28f5b972db4fae77eec54aeaf09286343",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 309745,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/es/phone-stories.png": "7f4e65e6694696f5c901deaab16ac70d51c25d287c3939157e0f2b2cb37da659",
+        "captures/es/phone-feeds.png": "63485bdd42455c8f27ac5e3144658f3b47791d93984fa75c6c331c44fea34bca",
+        "captures/es/phone-reader.png": "1fd5779801cdc5d1d6226755dee1cd57f20e8d69b9d2e0415a1f49bfdda1dffc",
+        "captures/es/phone-saved.png": "fb3c2108b3fff5e0921de3c65c1a7f301aa75d4a2dcfc52653b9a089ef078ef6"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.261,
+          "largest_tile_error": 0.6862,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/es/phone-feeds.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "es",
+        "panel": 2,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Un hogar para tus fuentes favoritas."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:42Z",
+      "visual_review_note": "Final localized PNGs inspected: Spanish headlines and native controls, full app bounds, no layout clipping."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "phoneScreenshots",
+      "position": 3,
+      "path": "es/phoneScreenshots/panel-03.png",
+      "sha256": "4b72dff1c50552d838b572de5d5b3a66913486c3f9e7036e01583260975c9294",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1095103,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/es/phone-stories.png": "7f4e65e6694696f5c901deaab16ac70d51c25d287c3939157e0f2b2cb37da659",
+        "captures/es/phone-feeds.png": "63485bdd42455c8f27ac5e3144658f3b47791d93984fa75c6c331c44fea34bca",
+        "captures/es/phone-reader.png": "1fd5779801cdc5d1d6226755dee1cd57f20e8d69b9d2e0415a1f49bfdda1dffc",
+        "captures/es/phone-saved.png": "fb3c2108b3fff5e0921de3c65c1a7f301aa75d4a2dcfc52653b9a089ef078ef6"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.406,
+          "largest_tile_error": 0.8568,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/es/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "es",
+        "panel": 3,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Disfruta de una buena lectura."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:42Z",
+      "visual_review_note": "Final localized PNGs inspected: Spanish headlines and native controls, full app bounds, no layout clipping."
+    },
+    {
+      "language": "es",
+      "locale": "es-ES",
+      "imageType": "phoneScreenshots",
+      "position": 4,
+      "path": "es/phoneScreenshots/panel-04.png",
+      "sha256": "b5a42b8623d6f95d80825e15e4906e483ec7a02603ac3feeb4976ec93478853b",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1074680,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/es.json": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/es/phone-stories.png": "7f4e65e6694696f5c901deaab16ac70d51c25d287c3939157e0f2b2cb37da659",
+        "captures/es/phone-feeds.png": "63485bdd42455c8f27ac5e3144658f3b47791d93984fa75c6c331c44fea34bca",
+        "captures/es/phone-reader.png": "1fd5779801cdc5d1d6226755dee1cd57f20e8d69b9d2e0415a1f49bfdda1dffc",
+        "captures/es/phone-saved.png": "fb3c2108b3fff5e0921de3c65c1a7f301aa75d4a2dcfc52653b9a089ef078ef6"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5645,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/es/phone-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/es/phone-saved.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "es",
+        "panel": 4,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 54,
+            "line_count": 1,
+            "text": "Guarda una buena lectura para después."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:42Z",
+      "visual_review_note": "Final localized PNGs inspected: Spanish headlines and native controls, full app bounds, no layout clipping."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "featureGraphic",
+      "position": 1,
+      "path": "fr/featureGraphic/panel-01.png",
+      "sha256": "a40da09b1eefd8326506b743600a2b8d4963bb9a9d9e51606a87fd1a563e0a3b",
+      "width": 1024,
+      "height": 500,
+      "bytes": 247386,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/fr/phone-stories.png": "f0cab2114785c5dc0269511b07f36d96d954a5e3982a36b1ebf4f14e93c0378a",
+        "captures/fr/phone-reader.png": "dfbdb9126a4410378904940335abf7a11da89cad836621a97e911d65ee3861d2"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 3.8067,
+          "largest_tile_error": 6.7682,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-stories.png"
+        },
+        {
+          "mean_absolute_rgb_error": 3.6073,
+          "largest_tile_error": 7.944,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 416,
+              "width": 192,
+              "x": 564,
+              "y": 42
+            },
+            "path": "captures/fr/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          },
+          {
+            "bounds": {
+              "height": 416,
+              "width": 192,
+              "x": 786,
+              "y": 42
+            },
+            "path": "captures/fr/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 500,
+        "language": "fr",
+        "panel": 1,
+        "placement": "featureGraphic",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 25,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 48,
+            "line_count": 3,
+            "text": "Vos lectures quotidiennes, au même endroit."
+          },
+          {
+            "font_size": 24,
+            "line_count": 1,
+            "text": "Un lieu pour vos sources préférées."
+          }
+        ],
+        "width": 1024
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:38:56Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "icon",
+      "position": 1,
+      "path": "fr/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "fr",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "phoneScreenshots",
+      "position": 1,
+      "path": "fr/phoneScreenshots/panel-01.png",
+      "sha256": "66a174ba6c9e6d69f324cc43b673b0432de2c710afff91638c97b0cb754d3c17",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1073145,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/fr/phone-stories.png": "f0cab2114785c5dc0269511b07f36d96d954a5e3982a36b1ebf4f14e93c0378a",
+        "captures/fr/phone-feeds.png": "c4ab62b3ee23ba05030a047a3b9a27f6de4f6d5ee3b11413736bb99876467125",
+        "captures/fr/phone-reader.png": "dfbdb9126a4410378904940335abf7a11da89cad836621a97e911d65ee3861d2",
+        "captures/fr/phone-saved.png": "e04fe42d3883f96e2e9b750d4c6f5b8a57fa5e440e41899e1d7e9dd13127e0fb"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5634,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/fr/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "fr",
+        "panel": 1,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 53.5,
+            "line_count": 2,
+            "text": "Vos lectures quotidiennes, au même endroit."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:38:56Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "phoneScreenshots",
+      "position": 2,
+      "path": "fr/phoneScreenshots/panel-02.png",
+      "sha256": "537a1c7b8f248dd05bee253a035014d51a67f7e04958ba74aedcbb1349ec6451",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 306721,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/fr/phone-stories.png": "f0cab2114785c5dc0269511b07f36d96d954a5e3982a36b1ebf4f14e93c0378a",
+        "captures/fr/phone-feeds.png": "c4ab62b3ee23ba05030a047a3b9a27f6de4f6d5ee3b11413736bb99876467125",
+        "captures/fr/phone-reader.png": "dfbdb9126a4410378904940335abf7a11da89cad836621a97e911d65ee3861d2",
+        "captures/fr/phone-saved.png": "e04fe42d3883f96e2e9b750d4c6f5b8a57fa5e440e41899e1d7e9dd13127e0fb"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.27,
+          "largest_tile_error": 0.6862,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/fr/phone-feeds.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "fr",
+        "panel": 2,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Un lieu pour vos sources préférées."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:38:56Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "phoneScreenshots",
+      "position": 3,
+      "path": "fr/phoneScreenshots/panel-03.png",
+      "sha256": "223459d588e6f4ca6d540cdb38b66a418da2919707af562999ebb04a34465e77",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1099762,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/fr/phone-stories.png": "f0cab2114785c5dc0269511b07f36d96d954a5e3982a36b1ebf4f14e93c0378a",
+        "captures/fr/phone-feeds.png": "c4ab62b3ee23ba05030a047a3b9a27f6de4f6d5ee3b11413736bb99876467125",
+        "captures/fr/phone-reader.png": "dfbdb9126a4410378904940335abf7a11da89cad836621a97e911d65ee3861d2",
+        "captures/fr/phone-saved.png": "e04fe42d3883f96e2e9b750d4c6f5b8a57fa5e440e41899e1d7e9dd13127e0fb"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.4044,
+          "largest_tile_error": 0.8568,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/fr/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "fr",
+        "panel": 3,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Installez-vous pour une bonne lecture."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:38:56Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "fr",
+      "locale": "fr-FR",
+      "imageType": "phoneScreenshots",
+      "position": 4,
+      "path": "fr/phoneScreenshots/panel-04.png",
+      "sha256": "1218c877ecd3c4b2d7acad8e8ce644105b21de42082eeefedbca261660e6578f",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1072723,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/fr.json": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/fr/phone-stories.png": "f0cab2114785c5dc0269511b07f36d96d954a5e3982a36b1ebf4f14e93c0378a",
+        "captures/fr/phone-feeds.png": "c4ab62b3ee23ba05030a047a3b9a27f6de4f6d5ee3b11413736bb99876467125",
+        "captures/fr/phone-reader.png": "dfbdb9126a4410378904940335abf7a11da89cad836621a97e911d65ee3861d2",
+        "captures/fr/phone-saved.png": "e04fe42d3883f96e2e9b750d4c6f5b8a57fa5e440e41899e1d7e9dd13127e0fb"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5669,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/fr/phone-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/fr/phone-saved.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "fr",
+        "panel": 4,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 54,
+            "line_count": 1,
+            "text": "Gardez une bonne lecture pour plus tard."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:38:56Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "he",
+      "locale": "iw-IL",
+      "imageType": "icon",
+      "position": 1,
+      "path": "he/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/he.json": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "he",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "hi",
+      "locale": "hi-IN",
+      "imageType": "icon",
+      "position": 1,
+      "path": "hi/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/hi.json": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "hi",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "id",
+      "locale": "id",
+      "imageType": "icon",
+      "position": 1,
+      "path": "id/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/id.json": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "id",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "it",
+      "locale": "it-IT",
+      "imageType": "icon",
+      "position": 1,
+      "path": "it/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/it.json": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "it",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "imageType": "icon",
+      "position": 1,
+      "path": "ja/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ja.json": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "ja",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "ko",
+      "locale": "ko-KR",
+      "imageType": "icon",
+      "position": 1,
+      "path": "ko/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ko.json": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "ko",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "imageType": "icon",
+      "position": 1,
+      "path": "nl/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/nl.json": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "nl",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "pl",
+      "locale": "pl-PL",
+      "imageType": "icon",
+      "position": 1,
+      "path": "pl/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/pl.json": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "pl",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "pt-BR",
+      "locale": "pt-BR",
+      "imageType": "icon",
+      "position": 1,
+      "path": "pt-BR/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/pt-BR.json": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "pt-BR",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "ru",
+      "locale": "ru-RU",
+      "imageType": "icon",
+      "position": 1,
+      "path": "ru/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ru.json": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "ru",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "th",
+      "locale": "th",
+      "imageType": "icon",
+      "position": 1,
+      "path": "th/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/th.json": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "th",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "tr",
+      "locale": "tr-TR",
+      "imageType": "icon",
+      "position": 1,
+      "path": "tr/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/tr.json": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "tr",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "uk",
+      "locale": "uk",
+      "imageType": "icon",
+      "position": 1,
+      "path": "uk/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/uk.json": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "uk",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "vi",
+      "locale": "vi",
+      "imageType": "icon",
+      "position": 1,
+      "path": "vi/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/vi.json": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "vi",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "zh-Hans",
+      "locale": "zh-CN",
+      "imageType": "icon",
+      "position": 1,
+      "path": "zh-Hans/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/zh-Hans.json": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "zh-Hans",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    },
+    {
+      "language": "zh-Hant",
+      "locale": "zh-TW",
+      "imageType": "icon",
+      "position": 1,
+      "path": "zh-Hant/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/zh-Hant.json": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "zh-Hant",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
     }
   ],
   "videos": []
