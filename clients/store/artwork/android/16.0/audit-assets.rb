@@ -15,6 +15,7 @@ OptionParser.new do |parser|
   parser.on('--manifest PATH') { |value| options[:manifest] = File.expand_path(value) }
   parser.on('--output PATH') { |value| options[:output] = File.expand_path(value) }
   parser.on('--partial') { options[:partial] = true }
+  parser.on('--language CODE') { |value| options[:language] = value; options[:partial] = true }
   parser.on('--allow-unreviewed') { options[:allow_unreviewed] = true }
 end.parse!
 abort 'A new --output path is required.' unless options[:output] && !File.exist?(options[:output])
@@ -28,6 +29,10 @@ languages = JSON.parse(File.read(File.join(root, '../../../../../localization/la
 abort 'Canonical app/store language mismatch.' unless locales.keys.sort == languages.sort && locales.values.uniq.size == 21
 types = %w[icon featureGraphic phoneScreenshots sevenInchScreenshots tenInchScreenshots]
 assets = manifest.fetch('assets')
+if options[:language]
+  abort 'Unknown audit language.' unless languages.include?(options[:language])
+  assets = assets.select { |row| row.fetch('language') == options[:language] }
+end
 groups = assets.group_by { |row| [row.fetch('language'), row.fetch('imageType')] }
 expected_groups = languages.product(types)
 missing = expected_groups - groups.keys
