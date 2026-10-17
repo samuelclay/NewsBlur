@@ -1544,8 +1544,15 @@
     "/Users/sclay/projects/newsblur/clients/store/artwork/android/16.0/preview/exports/he/newsblur-android-16.0.mp4"
   ],
   "working_directory": "/Users/sclay/projects/newsblur/clients/store/artwork/android/16.0/preview/exports/he/newsblur-android-16.0-edit",
-  "visual_review": "sampled_scene_frames_passed_full_playback_pending",
-  "youtube_upload": "unverified",
+  "visual_review": "approved",
+  "youtube_upload": {
+    "url": "https://www.youtube.com/watch?v=6I7E1GrRemA",
+    "status": "published_unlisted",
+    "captions_status": "published",
+    "embedding": true,
+    "made_for_kids": false,
+    "checked_at": "2026-10-17T16:10:25Z"
+  },
   "play_listing": "unverified",
   "output_probe": {
     "streams": [
@@ -1644,6 +1651,8 @@
     "native_phone_and_tablet_bounds": "passed",
     "localized_captions": "passed",
     "full_decode": "passed",
-    "full_player_playback": "pending"
+    "full_player_playback": "passed",
+    "playback_note": "YouTube Studio playback reached completion; phone and tablet segments observed without errors",
+    "playback_evidence_source": "preview/upload-metadata.json maintained by the browser upload agent"
   }
 }
