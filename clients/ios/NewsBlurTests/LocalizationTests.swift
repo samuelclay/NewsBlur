@@ -4,6 +4,27 @@ import XCTest
 
 @MainActor
 final class Test_Localization: XCTestCase {
+    func test_macPreferencesRetainExistingLayoutAndPlaybackValues() {
+        let mac = PreferencesViewModel(isMac: true)
+        let phone = PreferencesViewModel(isMac: false)
+        func choices(_ model: PreferencesViewModel) -> [String: [String]] {
+            Dictionary(uniqueKeysWithValues: model.sections.flatMap(\.items).compactMap { item in
+                guard case let .multiValue(key, _, values, _) = item.type,
+                      let strings = values as? [String] else { return nil }
+                return (key, strings)
+            })
+        }
+        let macChoices = choices(mac)
+        let phoneChoices = choices(phone)
+        // LocalizationTests.swift protects the saved values used by mac/Settings.bundle before its UI replacement.
+        for (key, values) in ["split_behavior": ["auto", "tile", "displace", "overlay"],
+                              "dashboard_layout": ["none", "single", "vertical", "horizontal"],
+                              "video_playback": ["inline", "fullscreen"]] {
+            XCTAssertEqual(macChoices[key], values)
+            XCTAssertNil(phoneChoices[key], "Mac-only settings must not appear on the phone")
+        }
+    }
+
     func test_manualLanguageChoicePinsTheAutomaticallyResolvedLanguageAndAllowsRetry() {
         let defaults = UserDefaults.standard
         let previous = defaults.object(forKey: NBLocalization.preferenceKey)

@@ -204,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Объединять дублирующиеся статьи во всех лентах";
 "Cluster matches" = "Совпадения в группах";
 "Cluster related stories" = "Группировать похожие статьи";
+"Column layout" = "Расположение колонок";
 "Columns" = "Колонки";
 "Comfortable" = "Комфортный";
 "Coming soon" = "Скоро";
@@ -374,6 +375,7 @@
 "Full Screen" = "На весь экран";
 "Full screen" = "На весь экран";
 "Full window" = "На весь экран";
+"Full-screen" = "На весь экран";
 "General" = "Общие";
 "Generate Daily Briefing" = "Создать ежедневную сводку";
 "Generate Now" = "Сгенерировать сейчас";
@@ -423,6 +425,7 @@
 "Infrequent Site Stories" = "Статьи с редко обновляемых сайтов";
 "Infrequent Stories" = "Редко обновляемые сайты";
 "Infrequent stories per month" = "Порог редко обновляемых сайтов";
+"Inline" = "В статье";
 "Insta-Fetch Stories" = "Мгновенная загрузка статей";
 "Insta-fetch stories" = "Мгновенно загружать статьи";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Вместо системной тёмной или светлой темы автоматически переключать оформление в зависимости от яркости экрана. Полезно для подстройки темы под окружающее освещение.";
@@ -630,6 +633,7 @@
 "On its way..." = "Уже в пути…";
 "On scroll or selection" = "При прокрутке или выборе";
 "One" = "Один";
+"One column" = "Одна колонка";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Для поиска проиндексировано только %1$@ из %2$@ ваших сайтов. Перейдите на платный тариф, чтобы проиндексировать все сайты и получать персональные рекомендации.";
 "Only Title" = "Только заголовок";
 "Only on Selection" = "Только при выборе";
@@ -665,6 +669,7 @@
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Выберите язык, который хотите использовать в NewsBlur. Его можно изменить в любой момент в меню NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Выберите модель для создания ежедневной сводки";
 "Place the story list controls above or below the stories" = "Разместить панель управления списком статей над статьями или под ними";
+"Play videos" = "Воспроизведение видео";
 "Plum Berry" = "Сливово-ягодный";
 "Positive?" = "Вы уверены?";
 "Preferences" = "Настройки";
@@ -844,6 +849,7 @@
 "Sign in with Google" = "Войти через Google";
 "Single" = "Один";
 "Single Column" = "Одна колонка";
+"Single column" = "Одна колонка";
 "Site" = "Сайт";
 "Site Settings" = "Настройки сайта";
 "Site URL or search by name…" = "URL сайта или поиск по названию…";
@@ -953,8 +959,10 @@
 "This feature requires iOS 15 or later." = "Для этой функции требуется iOS 15 или новее.";
 "This might take a minute.\nFeel free to continue..." = "Это может занять минуту.\nМожете пока продолжить…";
 "This removes the subscription from your feeds." = "Подписка будет удалена из ваших лент.";
+"This setting only applies after the app is restarted." = "Эта настройка применяется только после перезапуска приложения.";
 "This site already has a feed" = "У этого сайта уже есть лента";
 "Three" = "Три";
+"Three columns" = "Три колонки";
 "Thursday" = "Четверг";
 "Title" = "Название";
 "Title match only" = "Совпадение только в заголовке";
@@ -992,7 +1000,9 @@
 "Two" = "Два";
 "Two Columns" = "Два столбца";
 "Two Rows" = "Два ряда";
+"Two columns" = "Две колонки";
 "Two finger double tap" = "Двойное касание двумя пальцами";
+"Two rows" = "Два ряда";
 "Two-finger swipe to switch" = "Проведите двумя пальцами, чтобы переключить";
 "Type %1$@ to permanently delete %2$@." = "Введите %1$@, чтобы навсегда удалить %2$@.";
 "UNREAD" = "НЕПРОЧИТАННОЕ";
