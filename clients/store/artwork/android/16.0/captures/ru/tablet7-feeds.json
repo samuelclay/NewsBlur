@@ -1,0 +1,12 @@
+{
+  "language": "ru",
+  "device": "tablet7",
+  "serial": "R8YW810E3FF",
+  "scene": "feeds",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 16:57:23 UTC",
+  "sha256": "8694c55882ff52b6a6eddc183d0a70c5dc0bc878e1e71742e16a1d7a055f341a",
+  "native_readiness": "expected fixture content visible",
+  "tablet_composition": "populated_native_split",
+  "visual_review": "passed_native_ui"
+}
