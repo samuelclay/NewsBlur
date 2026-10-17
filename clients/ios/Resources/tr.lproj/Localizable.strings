@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Bu habere yanıt verilemiyor";
 "Change Story List" = "Haber listesini değiştir";
 "Choose Icon" = "Simge seç";
+"Choose Language…" = "Dil seç…";
 "Choose Story List" = "Haber Listesini Seç";
 "Choose a Topic" = "Bir Konu Seçin";
 "Choose another category to discover more." = "Daha fazlasını keşfetmek için başka bir kategori seçin.";
@@ -661,6 +662,7 @@
 "Pause" = "Duraklat";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
 "Place the story list controls above or below the stories" = "Haber listesi denetimlerini haberlerin üstüne veya altına yerleştir";
 "Plum Berry" = "Erik Böğürtleni";

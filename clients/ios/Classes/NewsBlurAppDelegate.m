@@ -1129,7 +1129,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showPreferences {
-    if (self.isMac) {
+    if (self.isMac && (!self.splitViewController.viewIfLoaded.window ||
+                       self.splitViewController.presentedViewController)) {
         return;
     }
 
@@ -1141,7 +1142,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
 
-        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        swiftUIPrefs.modalPresentationStyle = self.isMac ? UIModalPresentationFormSheet : UIModalPresentationPageSheet;
+        if (self.isMac) {
+            swiftUIPrefs.preferredContentSize = CGSizeMake(720.0, 800.0);
+        }
         if (swiftUIPrefs.sheetPresentationController) {
             swiftUIPrefs.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
             swiftUIPrefs.sheetPresentationController.prefersGrabberVisible = YES;

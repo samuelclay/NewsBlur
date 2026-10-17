@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Cannot reply to this story";
 "Change Story List" = "Change Story List";
 "Choose Icon" = "Choose Icon";
+"Choose Language…" = "Choose Language…";
 "Choose Story List" = "Choose Story List";
 "Choose a Topic" = "Choose a Topic";
 "Choose another category to discover more." = "Choose another category to discover more.";
@@ -661,6 +662,7 @@
 "Pause" = "Pause";
 "Permanently delete account" = "Permanently delete account";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
 "Plum Berry" = "Plum Berry";

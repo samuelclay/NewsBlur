@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "この記事には返信できません";
 "Change Story List" = "記事一覧を変更";
 "Choose Icon" = "アイコンを選択";
+"Choose Language…" = "言語を選択…";
 "Choose Story List" = "記事リストを選択";
 "Choose a Topic" = "トピックを選択";
 "Choose another category to discover more." = "別のカテゴリを選んで、さらに見つけましょう。";
@@ -661,6 +662,7 @@
 "Pause" = "一時停止";
 "Permanently delete account" = "アカウントを完全に削除";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
 "Plum Berry" = "プラムベリー";

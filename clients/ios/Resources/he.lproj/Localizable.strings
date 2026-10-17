@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "אי אפשר להשיב לכתבה הזו";
 "Change Story List" = "שינוי רשימת הכתבות";
 "Choose Icon" = "בחירת סמל";
+"Choose Language…" = "בחירת שפה…";
 "Choose Story List" = "בחירת רשימת כתבות";
 "Choose a Topic" = "בחירת נושא";
 "Choose another category to discover more." = "בחר קטגוריה אחרת כדי לגלות עוד.";
@@ -661,6 +662,7 @@
 "Pause" = "השהה";
 "Permanently delete account" = "מחיקת החשבון לצמיתות";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בהעדפות.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בתפריט NewsBlur.";
 "Pick which model writes your Daily Briefing" = "בחרו איזה מודל יכתוב את התדריך היומי שלכם";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
 "Plum Berry" = "שזיף ופירות יער";

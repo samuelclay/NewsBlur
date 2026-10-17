@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "无法回复此文章";
 "Change Story List" = "更改文章列表";
 "Choose Icon" = "选择图标";
+"Choose Language…" = "选择语言…";
 "Choose Story List" = "选择文章列表";
 "Choose a Topic" = "选择主题";
 "Choose another category to discover more." = "选择其他类别，发现更多内容。";
@@ -661,6 +662,7 @@
 "Pause" = "暂停";
 "Permanently delete account" = "永久删除账户";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
 "Place the story list controls above or below the stories" = "将文章列表控件放在文章上方或下方";
 "Plum Berry" = "李子莓果";

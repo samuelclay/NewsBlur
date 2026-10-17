@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "無法回覆這則文章";
 "Change Story List" = "變更文章清單";
 "Choose Icon" = "選擇圖示";
+"Choose Language…" = "選擇語言…";
 "Choose Story List" = "選擇文章列表";
 "Choose a Topic" = "選擇主題";
 "Choose another category to discover more." = "選擇其他類別以探索更多內容。";
@@ -661,6 +662,7 @@
 "Pause" = "暫停";
 "Permanently delete account" = "永久刪除帳戶";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
 "Place the story list controls above or below the stories" = "將文章清單控制項放在文章上方或下方";
 "Plum Berry" = "李子莓";
