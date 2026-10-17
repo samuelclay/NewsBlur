@@ -188,6 +188,7 @@ open class SyncService :
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(this, "onStopJob")
+        if (!hiltInjected) return false
         val stoppedJob = scheduledJob
         scheduledJob = null
         // SyncService.kt coalesces scheduled and foreground wakeups onto the same worker.
@@ -289,7 +290,10 @@ open class SyncService :
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
-        syncServiceState.setServiceState(ServiceState.Idle)
+        // SyncService.kt also receives teardown after onCreate stops a failed Hilt injection.
+        if (::syncServiceState.isInitialized) {
+            syncServiceState.setServiceState(ServiceState.Idle)
+        }
         coroutineContext.cancel()
         super.onDestroy()
     }
