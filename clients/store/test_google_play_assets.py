@@ -1,10 +1,11 @@
 """Failure and recovery checks for google_play_assets.py's asset-only mutations."""
 
 import copy
+import json
 import unittest
 from unittest.mock import Mock, patch
 
-from google_play_assets import assert_preserved, stage, stage_group, verify
+from google_play_assets import assert_preserved, image_list, stage, stage_group, verify
 
 
 class Test_GooglePlayAssets(unittest.TestCase):
@@ -17,8 +18,46 @@ class Test_GooglePlayAssets(unittest.TestCase):
         self.api = Mock()
         self.images = self.api.edits.return_value.images.return_value
         self.remote = copy.deepcopy(self.old)
-        self.images.list.return_value.execute.side_effect = lambda: {"images": copy.deepcopy(self.remote)}
+        self.images.list.return_value.execute.side_effect = lambda **kwargs: {
+            "images": copy.deepcopy(self.remote)
+        }
         self.images.deleteall.return_value.execute.side_effect = lambda: self.remote.clear()
+
+    def test_image_inventory_retries_transient_http_failure(self):
+        from googleapiclient.http import HttpRequest
+        from httplib2 import Response
+
+        transport = Mock()
+        transport.request.side_effect = [
+            (Response({"status": "503"}), b'{"error":{"message":"Unavailable"}}'),
+            (Response({"status": "200"}), b'{"images":[{"id":"saved","sha256":"exact"}]}'),
+        ]
+        request = HttpRequest(
+            transport, lambda response, content: json.loads(content), "https://example.test"
+        )
+        request._sleep = Mock()
+        self.images.list.return_value = request
+        self.assertEqual(image_list(self.api, "edit", self.key), [{"id": "saved", "sha256": "exact"}])
+        self.assertEqual(transport.request.call_count, 2)
+
+    def test_image_inventory_does_not_retry_permission_failure(self):
+        from googleapiclient.errors import HttpError
+        from googleapiclient.http import HttpRequest
+        from httplib2 import Response
+
+        transport = Mock()
+        transport.request.return_value = (
+            Response({"status": "403"}),
+            b'{"error":{"message":"Permission denied","errors":[{"reason":"forbidden"}]}}',
+        )
+        request = HttpRequest(
+            transport, lambda response, content: json.loads(content), "https://example.test"
+        )
+        request._sleep = Mock()
+        self.images.list.return_value = request
+        with self.assertRaises(HttpError):
+            image_list(self.api, "edit", self.key)
+        self.assertEqual(transport.request.call_count, 1)
 
     def upload(self, api, edit_id, key, row):
         self.remote.append({"id": str(row["position"]), "sha256": row["sha256"]})

@@ -128,7 +128,7 @@ def image_list(api, edit_id, key):
         api.edits()
         .images()
         .list(packageName=PACKAGE, editId=edit_id, language=locale, imageType=kind)
-        .execute()
+        .execute(num_retries=3)
         .get("images", [])
     )
 
@@ -142,8 +142,14 @@ def identities(images):
 
 
 def snapshot(api, edit_id):
-    edit = api.edits().get(packageName=PACKAGE, editId=edit_id).execute()
-    listings = api.edits().listings().list(packageName=PACKAGE, editId=edit_id).execute().get("listings", [])
+    edit = api.edits().get(packageName=PACKAGE, editId=edit_id).execute(num_retries=3)
+    listings = (
+        api.edits()
+        .listings()
+        .list(packageName=PACKAGE, editId=edit_id)
+        .execute(num_retries=3)
+        .get("listings", [])
+    )
     images = {}
     for listing in listings:
         for kind in IMAGE_TYPES:
@@ -155,8 +161,12 @@ def snapshot(api, edit_id):
         "edit": edit,
         "listings": listings,
         "images": images,
-        "tracks": api.edits().tracks().list(packageName=PACKAGE, editId=edit_id).execute().get("tracks", []),
-        "details": api.edits().details().get(packageName=PACKAGE, editId=edit_id).execute(),
+        "tracks": api.edits()
+        .tracks()
+        .list(packageName=PACKAGE, editId=edit_id)
+        .execute(num_retries=3)
+        .get("tracks", []),
+        "details": api.edits().details().get(packageName=PACKAGE, editId=edit_id).execute(num_retries=3),
     }
 
 
@@ -282,13 +292,13 @@ def stage(api, edit_id, baseline, groups, videos, checkpoint, save):
     previous = indexed(baseline["listings"], "language")
     for locale, row in videos.items():
         resource = api.edits().listings()
-        current = resource.get(packageName=PACKAGE, editId=edit_id, language=locale).execute()
+        current = resource.get(packageName=PACKAGE, editId=edit_id, language=locale).execute(num_retries=3)
         desired = {**previous[locale], "video": row["url"]}
         if current not in [previous[locale], desired]:
             raise ValueError(f"Listing changed before video update: {locale}")
         if current != desired:
             resource.update(packageName=PACKAGE, editId=edit_id, language=locale, body=desired).execute()
-        actual = resource.get(packageName=PACKAGE, editId=edit_id, language=locale).execute()
+        actual = resource.get(packageName=PACKAGE, editId=edit_id, language=locale).execute(num_retries=3)
         if actual != desired:
             raise ValueError(f"Video read-back mismatch: {locale}")
         checkpoint["videos"][locale] = "verified"
