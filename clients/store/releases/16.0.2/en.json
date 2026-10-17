@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Tablet controls are back: expand the feed list, story titles, or article independently to full screen. Drag the dividers to resize your panes; NewsBlur remembers your widths.\n\nIncludes support for 21 interface languages and fixed-position Next story controls from 16.0."
+  }
+}
