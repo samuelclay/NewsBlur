@@ -1,0 +1,38 @@
+{
+  "checked_at": "2026-10-17T15:36:51Z",
+  "assets": [
+    {
+      "language": "zh-Hant",
+      "locale": "zh-TW",
+      "imageType": "icon",
+      "position": 1,
+      "path": "zh-Hant/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "width": 512,
+      "height": 512,
+      "bytes": 56650,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/zh-Hant.json": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e"
+      },
+      "native_pixel_checks": [],
+      "render": {
+        "captures": [],
+        "height": 512,
+        "language": "zh-Hant",
+        "panel": 1,
+        "placement": "icon",
+        "status": "rendered_requires_visual_review",
+        "text": [],
+        "width": 512
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
+    }
+  ]
+}

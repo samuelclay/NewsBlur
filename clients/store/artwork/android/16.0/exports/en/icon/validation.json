@@ -31,8 +31,8 @@
       },
       "visual_review": "approved",
       "store_upload": "unverified",
-      "visual_reviewed_at": "2026-10-17T15:36:29Z",
-      "visual_review_note": "Each final PNG inspected in full: native content, readable English text, complete screen bounds, Sage layout, no clipping."
+      "visual_reviewed_at": "2026-10-17T15:37:06Z",
+      "visual_review_note": "Byte-identical SHA256 to individually visually reviewed English brand icon; no localized text."
     }
   ]
 }
