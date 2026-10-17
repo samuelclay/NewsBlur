@@ -64,7 +64,10 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/pt-BR/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "published_unlisted",
+    "youtube_url": "https://www.youtube.com/watch?v=RtomW35_WGI",
+    "captions_status": "published",
+    "playback_review": "YouTube Studio playback reached completion; phone and tablet segments observed without errors"
   },
   {
     "language": "it",
@@ -141,7 +144,10 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/ar/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "published_unlisted",
+    "youtube_url": "https://www.youtube.com/watch?v=-nSi5n5XJ4E",
+    "captions_status": "published",
+    "playback_review": "YouTube Studio playback reached completion; phone and tablet segments observed without errors"
   },
   {
     "language": "he",
