@@ -1,0 +1,1282 @@
+{
+  "reviewed_at": "2026-10-17T15:59:40Z",
+  "scope": "Notification review of raw footage; does not replace full final-video playback. Arabic phone recapture passed.",
+  "clips": [
+    {
+      "path": "captures/footage/en/phone-feeds.mp4",
+      "sha256": "851d28926777e888ff8c8052d9fc8d68a78cc3a79629f5d5979ca1f2c8334d2a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/phone-stories.mp4",
+      "sha256": "ec08f76b185507d43cf67ab9f6f18fb3e5ca1bbc172526d6b3b6eab0a824b623",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/phone-reader.mp4",
+      "sha256": "c669e3b7ab840d88b7789471cd1198f17ff1fc4343483986f12c4f7b330c0ebb",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/phone-saved.mp4",
+      "sha256": "89ea559f9070154c1b4e97e2fcd4859a4eb0a0e1282dc2cddee7db9ccdb056b8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/phone-feeds.mp4",
+      "sha256": "c05e6d0a445feb618fb7dd70d0dad61e342086cdb3b138520f35bbb40290cd2c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/phone-stories.mp4",
+      "sha256": "63ba9815da609fe302deca51af4037a122b1ac4754ef2c612fe1ccd2d963054e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/phone-reader.mp4",
+      "sha256": "572104ccc9b5468f7069f45370519a1206d4380a932c200261eb2d64061b371a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/phone-saved.mp4",
+      "sha256": "92ae5137979dc953466e9fd5420bb78dd0b7c2673786a4070a217efba12a6b3a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/phone-feeds.mp4",
+      "sha256": "1c7fb0afe28e53c3b0702af11dd8ca57bcac0e76898d57fcb3643e1353e0bc06",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/phone-stories.mp4",
+      "sha256": "be1a12ccbb66a6de58e652b42f969eed893701941bb9add5b9db18ada6519053",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/phone-reader.mp4",
+      "sha256": "ff6e995e1cf31b3c8e2a03c7361a3a34ccbf87b6949eb664dc0237d690dae7cc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/phone-saved.mp4",
+      "sha256": "26cbf3fdff64885460f05d6365ea0fa5e7a0cd233f02802455185f2a7ee086a4",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/phone-feeds.mp4",
+      "sha256": "505515e357bcedb027ffe8858083d11d16683376c36b1115df9a972cadb4a24e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/phone-stories.mp4",
+      "sha256": "ae3863faa4a5fb4b6b54f2dfe2f41c16226f4c5acd265346a3f41154124497db",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/phone-reader.mp4",
+      "sha256": "d013be1013931df24b6c7bcbdcde41d9c858ee0b27bb4b4ecd39e8f9345715e7",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/phone-saved.mp4",
+      "sha256": "c71513bbdc6977661e9de979f7086f78574d0e166a2a184ff256ae4ab5a80a9e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-feeds.mp4",
+      "sha256": "37504ab6e3a09a33ec5913cc3216f41817a526250ff92144c0c9849588bfbd88",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-stories.mp4",
+      "sha256": "ab93738d6543d61d9a3a21a7c61cb3afaee9e512eb5de0420c361550f96b2c45",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-reader.mp4",
+      "sha256": "fa7472c280b8fcd5f885d4e0c6986f7daeb5c62ecce9e67a7662ac4f35954487",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/phone-saved.mp4",
+      "sha256": "bcf27271456aa25dd1255206bae5034da46e15185b7b139b987db1ce7cbd1406",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/it/phone-feeds.mp4",
+      "sha256": "972d45c82f8ddd62d2fa82fc7db9853d7d46f7c11910c81d7159d2475b6f9d5e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/it/phone-stories.mp4",
+      "sha256": "a65ee3b5817fc5fb570e332a0e5f4545bbe2a4c8c0632eaa15421a116efa4a03",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/it/phone-reader.mp4",
+      "sha256": "74d2f931b1c3279d26ae42a1a4afe5bc01cad08006a067b51b779401f090b61b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/it/phone-saved.mp4",
+      "sha256": "4755fc06b797a8430b5574d963a8fa3ec69dce72fca4f04dd8e21bd29ce528c8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/phone-feeds.mp4",
+      "sha256": "40aa70dd550e21a3f13671b2e9d4295630f4e57cccbdc91bfcfbe110a7b6dcbd",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/phone-stories.mp4",
+      "sha256": "d481bc4abeadda0f869d13cd0fdab6444cf2164cff05a085b068ae76860c4974",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/phone-reader.mp4",
+      "sha256": "073290b096b6e7768fb2d3b0b2e8e9e95e2dc5428e5a9436a214e5c6f0c8f052",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/phone-saved.mp4",
+      "sha256": "624bfb5e7444be73b1f46fe8222442a2a37a4450c3fd420ba174986b4e645520",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/phone-feeds.mp4",
+      "sha256": "17bf51cff29027cdb73ceaacce67bc3ab91743cad5f03ae881975b8d7957bbc4",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/phone-stories.mp4",
+      "sha256": "ff6a06aaa77cbca8ac6dce47379c8dc9837980bf71fd7440e3526d2a445fcb70",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/phone-reader.mp4",
+      "sha256": "46cff6b1c3bd23c7cb3fa082490b9076780e2c32af8a5ae46102a41cd0392e20",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/phone-saved.mp4",
+      "sha256": "ef5a46a600fd8fe23dd1245440c5c4295b600b5ca0e0b2e5056aeb150780ec6b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/phone-feeds.mp4",
+      "sha256": "63b0160dc936ccf6bf02d089fa1f5da7cebc616e1fc220684018566a80477b92",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/phone-stories.mp4",
+      "sha256": "ea886a3e26ba3d8815b204fe15982b30d91f9c83de5b4fcfa392f0ec720ba495",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/phone-reader.mp4",
+      "sha256": "ffb34b89a3305fb61074a2782e23bac4bbe0aef02f944d35a7a4d502ff4df301",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/phone-saved.mp4",
+      "sha256": "dad89d45fe8ba062a2ec0b5c400846b101ac6f01cbd2d6415a1b482dbd4a1303",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/phone-feeds.mp4",
+      "sha256": "5b57bf33e343b4d6fd7f7d04fce4fe90df93c5840f0dc0c5cd5d401e26a5a595",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/phone-stories.mp4",
+      "sha256": "1f2cae50df69bf6bb5a9cdbc3bd9d764a0201505d8765005aff74630c82b4d78",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/phone-reader.mp4",
+      "sha256": "a69aa71b78e12160d7150da1ecfb72cab704bd0000bb8eac29554f95da247975",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/phone-saved.mp4",
+      "sha256": "38fe1300d8782770f2cf9fe1fef74c88c189a74e47718eb5cfcbfc9c7fc04942",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/phone-feeds.mp4",
+      "sha256": "af8c8fbc532eeb611488f49b80f4ca89f9877f8c08a44d9f2504b41bf61bc05d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/phone-stories.mp4",
+      "sha256": "8c91b24e1077be0eaac963f529eb6de8a353ee98b4a25f67e211f03602cdef65",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/phone-reader.mp4",
+      "sha256": "8a63315021c1c9d2a22dd7b7d74f98d016e600fe384072b2446ff6caed39a0db",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/phone-saved.mp4",
+      "sha256": "df93fbb9944914c66a3a91521d9df99aaa4a8646683eb31b7f4e3e6f3d581402",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/phone-feeds.mp4",
+      "sha256": "3d3b17359929d0ba635a1567536b8ba7ffbbfc34dbabddaa2dcdd958e2a2ba6d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/phone-stories.mp4",
+      "sha256": "a989ecc704626db42caf89d56ddc851f8fbb9911e68b26eaeb254c8065f26039",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/phone-reader.mp4",
+      "sha256": "897d48c4b97ef1e80d9acb9c9dcf160dc01bfa5a23a021bcbb96038de88056ae",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/phone-saved.mp4",
+      "sha256": "cd10e8cfc838f4ac300c35aaa11509135e88f7298c278b733f669c95dd378d68",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/phone-feeds.mp4",
+      "sha256": "31724f7316a7c9c9a09d047f53a181a15864115e4e0458d605a71034b4382590",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/phone-stories.mp4",
+      "sha256": "3c3fbfbcea0dff972bb5e52c72ef9c7e13078593cd11efec91e0e567f6d68522",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/phone-reader.mp4",
+      "sha256": "df8741ab6150ba8500b99d381e9457dab71934b452177ad814d195c57e6b81c8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/phone-saved.mp4",
+      "sha256": "b3e2c6b5f3c9faaf0bef7e5980304a7cf386910eea9166d4d6fb94b71c5d9244",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/phone-feeds.mp4",
+      "sha256": "d62b779742d6129fa74919e1b84596533b4956309673501b1b014ca0ed1ecafe",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/phone-stories.mp4",
+      "sha256": "d90d631f8a26a41dd47936c850c46780ed7edd7ec10cee26c48cf19b17a3da57",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/phone-reader.mp4",
+      "sha256": "98a82865cfcd5dacd75d6bd0ff68620c757988c6f647ff0555fd3019ade05cb5",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/phone-saved.mp4",
+      "sha256": "c5d7fdb1353e7c2a3e785d5b455936d992d550a6000e1413f14ed5ddd91019c7",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/phone-feeds.mp4",
+      "sha256": "4ece0f0304a0e48a723b5f4c474ff0416f3f5ddb8edc15caa36fc88468d8c77f",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/phone-stories.mp4",
+      "sha256": "87dbcc57bcdccef4113834c3b1d413ca68d06e7fba4fc25c3765f6212c43a73b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/phone-reader.mp4",
+      "sha256": "2f5ba0bcdbea4d439abba68bf00ee52ca8f9ee3378ab450d3c43b0a49a44bbcb",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/phone-saved.mp4",
+      "sha256": "812edd4cbabd87b429f91647aaa04aea49411165125508995f7dbd0b7c69bc70",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/phone-feeds.mp4",
+      "sha256": "fae53a9d155709b49ab0654d6e3841927c63316bf675cc6563beba4e6400ee18",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/phone-stories.mp4",
+      "sha256": "5a177eaf5af98b55582f026c0a4f387efa5aa612eddbd167c1ef33732a959df4",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/phone-reader.mp4",
+      "sha256": "6168bf3aec44f6e83758009dd25b1ea464cb663a260aac94bf9488f3f0965741",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/phone-saved.mp4",
+      "sha256": "59da202b56c0e7ffabbf884bf77fd791f807ffafcc7578d04b886778f2c40944",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/phone-feeds.mp4",
+      "sha256": "e6d4b6c338b7a54506b42fd86323c93366d40998ce9e0c4255de46edeab9cb9e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/phone-stories.mp4",
+      "sha256": "6a89bab41200a1c8d6ec4ed1ca38de38d3791c69bc51b66bdca0d52346ae8c00",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/phone-reader.mp4",
+      "sha256": "f0daefc81f25478d32fc114f14d4033ac2dccf7f36cd37755acb3be751ae35b1",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/phone-saved.mp4",
+      "sha256": "7a49271d96fd149f7561ea3d7695f331e66586bf93b353a90fa13ce1e10dfec4",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/phone-feeds.mp4",
+      "sha256": "c51269a073ca955c384748b205f199723d42f9a69292754df7ecc8152e046919",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/phone-stories.mp4",
+      "sha256": "8134338de514518b55337a2a127eacf2bd34e6b0f9f16bc676c3246dab59df78",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/phone-reader.mp4",
+      "sha256": "ccc939036c2532352e16314fd19742654e9dd391b457523c0cd79da6ffd4b9f6",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/phone-saved.mp4",
+      "sha256": "c21e9272b8bfb6986e5ba2af001621e1c51f56463bf5d7ad30c25ee46c12c576",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-feeds.mp4",
+      "sha256": "97d06a706181db7e22bb2b35a1a580c60bfa98df42681b4e59d49563fb02e5a7",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-stories.mp4",
+      "sha256": "f1febe890d80145cdc71acccab08b35708f288251311c0245d7b0d5d1783c15b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-reader.mp4",
+      "sha256": "b433bba80ee2be494144bd1651d2fbb30f03ccfab765155e30e0fffe672fcd2d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/phone-saved.mp4",
+      "sha256": "8686ed9ccc498b677c5a1d53649adfe4941d6dae16f654ff04cc8d75a2d0dd9c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-feeds.mp4",
+      "sha256": "b3229ad0be7900db7287664906c7c260e5db5e834b546e8e6db8a83e28eddb83",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-stories.mp4",
+      "sha256": "f3e41b5e362af0dee11de28f0298e529e639a5b6b79c541aa14a631c7edf919c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-reader.mp4",
+      "sha256": "94147c13e38d94a9f7711ae0cf706712464d73f2508f7df75c9c457ae51cfcdc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/phone-saved.mp4",
+      "sha256": "e2f3ac7cbc757e6eeb631c49fd45d40e422a8d63880ac72bfdb6a46583e88438",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/tablet10-feeds.mp4",
+      "sha256": "f8781b4f2ea4bc2d1318c0b90bd576adaada9e906d8489142a4bc618c07fd59e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/en/tablet10-stories.mp4",
+      "sha256": "25cb655e9ae699832d95e8484de10159b1cfa6869a14d29d5931e44ef9f81b4d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/en/tablet10-reader.mp4",
+      "sha256": "9365a26a1098b1638daa29f3dbcda1ce7cc8015f21a3f9a87dbbc29bd0f00cfc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/en/tablet10-saved.mp4",
+      "sha256": "5ca080b0d138b1ae22deac5c45ece785d355d949283087e63d9c69a4751fade8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-feeds.mp4",
+      "sha256": "599e04002d96823d44efcfcc33ae575b9054cfd5406876b2fc1e83fbd7a76ed9",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-stories.mp4",
+      "sha256": "c967612e8814c4b747602cc1ec9a9776212c1c8732a6cab9165f2cb90762f1dc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-reader.mp4",
+      "sha256": "085ce2adf6ce3fb08ac1a3c653b3d5172359f8e9e693564af576d9bfe4b1f0ab",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-saved.mp4",
+      "sha256": "455bc6b445d11db65d3e9fa016dd2cadb0910fede711260cb513504a13a93c96",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-feeds.mp4",
+      "sha256": "44299e76b6a62932b0417459295ffc7396d57e87a646a41115012ad7471efa8a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-stories.mp4",
+      "sha256": "904405bd9bec081a6529e1f157915a46219c5065cd9a72c706f183a5083fb8c7",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-reader.mp4",
+      "sha256": "8eccea1d38855831f300c02790a8bdd695168dd26973c3527a24caedce1c9a5d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-saved.mp4",
+      "sha256": "2ffdb18e9b1990b464c8ee6ea5ff67ce0861c0dc910150a29ed5a1de3a9ba6d1",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/he/tablet10-feeds.mp4",
+      "sha256": "6e8c0a9b3da3f26da3260477d6057d1863b9673f6b2722f192f7a9315c082c4a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/he/tablet10-stories.mp4",
+      "sha256": "28f4f962be26cf4006130c17962fe30f9606c1bf836d373b62003b2d4d541002",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/he/tablet10-reader.mp4",
+      "sha256": "a883bdca75fbbb8a050b07b85e1097350f5de4d3cbf7d8c738fed4936f16ad1a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/he/tablet10-saved.mp4",
+      "sha256": "1ebfc913cb6d59ed93338cdac976c7e05c9db935dd6589b6e222cb4ce485a75c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/es/tablet10-feeds.mp4",
+      "sha256": "6014d0db20ca3be37a3c71e90503a11b0ea3e9aaf0105b944a5f1efaed6fef35",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/es/tablet10-stories.mp4",
+      "sha256": "15772f341279103d80c04bdaac6644e1c43eb174a607227916113b1357248a79",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/es/tablet10-reader.mp4",
+      "sha256": "63b8da0195a4b3aeca5142dcc4a54296f62c0bb5b92ec052f3bab6ee261adc4b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/es/tablet10-saved.mp4",
+      "sha256": "3ddf5d64192f3d8c06720bd8bc961d22f83e8e258bcf28a152cda11d4d8db089",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/de/tablet10-feeds.mp4",
+      "sha256": "c6ed9db8c08bf725804dc94d269cae5780fca1e54f2f17bdf8ed6ae2fde13446",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/de/tablet10-stories.mp4",
+      "sha256": "1d76ce009836ec027fd7c9efa2a5d5cbd409a4358b48379f409297432bf4d3ff",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/de/tablet10-reader.mp4",
+      "sha256": "fd3e65166f63f138185feab21b4cd00714002dd8ba907e09897e1120c4279771",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/de/tablet10-saved.mp4",
+      "sha256": "e61dcbcfe6da212d400c5e646fd1be3c14f8ac01a580908850597bba46faa2fb",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-feeds.mp4",
+      "sha256": "c02cb6076f81c8bb846e8ac278368368fba75f89597c62dcedc64473b0314612",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-stories.mp4",
+      "sha256": "20e35ba2aff361fda89ff2d0f2bac17981165384e41e487804fa881bea7eb167",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-reader.mp4",
+      "sha256": "2e4f851de5422c49a41d590e35eacc17d4eea05953bad5dee8100c54bb9db710",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-saved.mp4",
+      "sha256": "b8ea038490d9bc5fa8660375e39d91f7e149c7e43d14971b8912b413abb81091",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/phone-feeds.mp4",
+      "sha256": "75ce0902f9746e3211f7ee7648ed64e151a481ff0de28c8c0f89008292da75b8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/phone-stories.mp4",
+      "sha256": "c64bd4f1566db9b2ff7a8eb2a51b38b91b1fdf9c02dd72b0f798d3e2f64adcba",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/phone-reader.mp4",
+      "sha256": "f89424f56ae01652343408a9c48548b0063b8cb29d587875417262b22356075e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/ar/phone-saved.mp4",
+      "sha256": "91f33bfcdb45545f2a301d91d4599270f8616f619cf308036a2784a28ee9ca65",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/it/tablet10-feeds.mp4",
+      "sha256": "5851f4e5cf5e39149a4ed51632c0c883b7fce14e7159015e854ee778832346a4",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/it/tablet10-stories.mp4",
+      "sha256": "3e7d0a09aa8bf1b002212542fa449599830494e2fa361a23fb879699976443e9",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/it/tablet10-reader.mp4",
+      "sha256": "1f54ccb9234824b6a06767ed8b8c4ed1f6fdb17c0ec9af8a2bf018fee1e743a9",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    },
+    {
+      "path": "captures/footage/it/tablet10-saved.mp4",
+      "sha256": "238ef58fe505eb1ce56d990dcd18ebc3812484bab17113f2c4021170428ffdd3",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "last decoded frame"
+      ],
+      "area": "top 360 source pixels"
+    }
+  ]
+}

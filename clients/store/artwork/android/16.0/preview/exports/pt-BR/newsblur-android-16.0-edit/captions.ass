@@ -1,0 +1,23 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Title,Helvetica Neue,46,&H00252C27,&H00252C27,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,8,120,120,35,1
+Style: Disclosure,Helvetica Neue,30,&H005D7168,&H005D7168,&H00EBEDEF,&H00EBEDEF,0,0,0,0,100,100,0,0,1,0,0,2,130,130,28,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.50,Title,,0,0,0,,Um lar para suas fontes favoritas.
+Dialogue: 0,0:00:03.50,0:00:07.00,Title,,0,0,0,,Suas leituras diárias em um só lugar.
+Dialogue: 0,0:00:07.00,0:00:10.50,Title,,0,0,0,,Acomode-se para uma boa leitura.
+Dialogue: 0,0:00:10.50,0:00:14.00,Title,,0,0,0,,Salve uma boa leitura para depois.
+Dialogue: 0,0:00:14.00,0:00:17.50,Title,,0,0,0,,Um lar para suas fontes favoritas.
+Dialogue: 0,0:00:17.50,0:00:21.00,Title,,0,0,0,,Suas leituras diárias em um só lugar.
+Dialogue: 0,0:00:21.00,0:00:24.50,Title,,0,0,0,,Acomode-se para uma boa leitura.
+Dialogue: 0,0:00:24.50,0:00:28.00,Title,,0,0,0,,Salve uma boa leitura para depois.
+Dialogue: 1,0:00:21.00,0:00:28.00,Disclosure,,0,0,0,,É necessário ter uma conta do NewsBlur. Alguns recursos exigem uma assinatura paga.
