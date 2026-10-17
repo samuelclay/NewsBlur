@@ -7,45 +7,46 @@ import com.newsblur.database.DatabaseConstants
 import java.io.Serializable
 
 class Classifier : Serializable {
+    // Classifier.kt travels in fragment state; concrete maps avoid Gson serialization hooks stripped by R8.
     @JvmField
     @SerializedName("authors")
-    val authors: MutableMap<String, Int> = mutableMapOf()
+    val authors: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("author_regex")
-    val authorRegex: MutableMap<String, Int> = mutableMapOf()
+    val authorRegex: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("titles")
-    val title: MutableMap<String, Int> = mutableMapOf()
+    val title: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("tags")
-    val tags: MutableMap<String, Int> = mutableMapOf()
+    val tags: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("feeds")
-    val feeds: MutableMap<String, Int> = mutableMapOf()
+    val feeds: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("texts")
-    val texts: MutableMap<String, Int> = mutableMapOf()
+    val texts: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("text_regex")
-    val textRegex: MutableMap<String, Int> = mutableMapOf()
+    val textRegex: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("urls")
-    val urls: MutableMap<String, Int> = mutableMapOf()
+    val urls: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("url_regex")
-    val urlRegex: MutableMap<String, Int> = mutableMapOf()
+    val urlRegex: HashMap<String, Int> = hashMapOf()
 
     @JvmField
     @SerializedName("title_regex")
-    val titleRegex: MutableMap<String, Int> = mutableMapOf()
+    val titleRegex: HashMap<String, Int> = hashMapOf()
 
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
