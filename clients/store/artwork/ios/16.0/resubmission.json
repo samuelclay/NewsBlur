@@ -161,6 +161,15 @@
       "placement_status": "persisted_after_full_reload",
       "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count."
     },
+    "pl": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868"
+      ],
+      "count_per_size": 4,
+      "placement_status": "uploaded_pending_authenticated_reload_readback",
+      "note": "Uploaded both iPhone sets through the browser file chooser. Medium showed all four exact filenames and 4 of 10; large showed Processing before verification reload redirected to App Store Connect sign-in. Do not count either set as persisted until authenticated reload and explicit Polish selection. The Polish iPad set was also visible with four expected filenames before reload, but was not freshly verified."
+    },
     "es": {
       "sizes": [
         "2064x2752"
@@ -190,7 +199,7 @@
     }
   },
   "capture_checkpoint": "screenshots/scripts/CAPTURE_STATUS.md",
-  "upload_status": "paused_at_user_request_while_turn_touch_uses_edge",
+  "upload_status": "resumed_at_user_request_waiting_for_app_store_connect_sign_in",
   "preparation_counts": {
     "screenshots_planned": 252,
     "screenshots_reviewed_staged": 252,
