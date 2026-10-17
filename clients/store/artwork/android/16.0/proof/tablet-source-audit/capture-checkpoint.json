@@ -1,0 +1,204 @@
+{
+  "paused_at": "2026-10-17 16:22:33 UTC",
+  "reason": "Investigating user-reported resize handles in installed Alpha",
+  "tablet_serial": "R8YW810E3FF",
+  "capture_host_pid": 89962,
+  "capture_host_state": "SIGSTOP; no running adb or screenrecord child",
+  "capture_session": 68903,
+  "alpha_left_open": "All Site Stories beside ReadingPlaceholder; no unread story opened",
+  "inventory": {
+    "en": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "es": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "fr": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "de": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "pt-BR": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "it": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "nl": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "pl": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "tr": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "ru": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "uk": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "ar": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "he": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "hi": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "id": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "vi": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "th": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "ja": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "ko": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "zh-Hans": {
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet7": []
+    },
+    "zh-Hant": {
+      "tablet10": [
+        "feeds",
+        "stories"
+      ],
+      "tablet7": []
+    }
+  },
+  "resume": "Coordinate with root before SIGCONT. Finish Traditional Chinese tablet10, then capture tablet7. Restore tablet baseline settings after completion."
+}
