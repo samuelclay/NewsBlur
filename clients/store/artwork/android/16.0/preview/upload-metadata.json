@@ -1,0 +1,233 @@
+[
+  {
+    "language": "en",
+    "language_name": "English",
+    "title": "NewsBlur: RSS News Reader · English",
+    "description": "Your favorite sites in one place. Read, save, and share stories.\n\nA NewsBlur account is required. Some features require a paid subscription.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/en/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "es",
+    "language_name": "Español",
+    "title": "NewsBlur: lector RSS · Español",
+    "description": "Tus sitios favoritos juntos. Lee, guarda y comparte artículos.\n\nSe necesita una cuenta de NewsBlur. Algunas funciones requieren una suscripción de pago.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/es/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "fr",
+    "language_name": "Français",
+    "title": "NewsBlur : lecteur RSS · Français",
+    "description": "Vos sites favoris réunis. Lisez, enregistrez et partagez des articles.\n\nUn compte NewsBlur est nécessaire. Certaines fonctionnalités nécessitent un abonnement payant.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/fr/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "de",
+    "language_name": "Deutsch",
+    "title": "NewsBlur: RSS-Reader · Deutsch",
+    "description": "Deine Lieblingswebsites an einem Ort. Artikel lesen, speichern und teilen.\n\nEin NewsBlur-Konto ist erforderlich. Einige Funktionen erfordern ein kostenpflichtiges Abonnement.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/de/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "pt-BR",
+    "language_name": "Português (Brasil)",
+    "title": "NewsBlur: leitor RSS · Português (Brasil)",
+    "description": "Seus sites favoritos juntos. Leia, salve e compartilhe artigos.\n\nÉ necessário ter uma conta do NewsBlur. Alguns recursos exigem uma assinatura paga.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/pt-BR/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "it",
+    "language_name": "Italiano",
+    "title": "NewsBlur: lettore RSS · Italiano",
+    "description": "I tuoi siti preferiti insieme. Leggi, salva e condividi articoli.\n\nÈ necessario un account NewsBlur. Alcune funzioni richiedono un abbonamento a pagamento.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/it/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "nl",
+    "language_name": "Nederlands",
+    "title": "NewsBlur: RSS-lezer · Nederlands",
+    "description": "Je favoriete sites op één plek. Lees artikelen, sla ze op en deel ze.\n\nEen NewsBlur-account is vereist. Voor sommige functies is een betaald abonnement nodig.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/nl/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "pl",
+    "language_name": "Polski",
+    "title": "NewsBlur: czytnik RSS · Polski",
+    "description": "Ulubione witryny razem. Czytaj, zapisuj i udostępniaj artykuły.\n\nWymagane jest konto NewsBlur. Niektóre funkcje wymagają płatnej subskrypcji.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/pl/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "tr",
+    "language_name": "Türkçe",
+    "title": "NewsBlur: RSS Haber Okuyucu · Türkçe",
+    "description": "Sevdiğiniz siteler tek yerde. Haberleri okuyun, kaydedin ve paylaşın.\n\nNewsBlur hesabı gereklidir. Bazı özellikler ücretli abonelik gerektirir.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/tr/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "ru",
+    "language_name": "Русский",
+    "title": "NewsBlur: RSS и новости · Русский",
+    "description": "Любимые сайты в одном месте. Читайте, сохраняйте статьи и делитесь ими.\n\nТребуется аккаунт NewsBlur. Для некоторых функций нужна платная подписка.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/ru/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "uk",
+    "language_name": "Українська",
+    "title": "NewsBlur: RSS і новини · Українська",
+    "description": "Улюблені сайти в одному місці. Читайте, зберігайте статті й діліться ними.\n\nПотрібен обліковий запис NewsBlur. Для деяких функцій потрібна платна підписка.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/uk/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "ar",
+    "language_name": "العربية",
+    "title": "NewsBlur: قارئ أخبار RSS · العربية",
+    "description": "مواقعك المفضلة في مكان واحد. اقرأ القصص واحفظها وشاركها.\n\nيلزم وجود حساب NewsBlur. تتطلب بعض الميزات اشتراكًا مدفوعًا.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/ar/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "he",
+    "language_name": "עברית",
+    "title": "NewsBlur: קורא חדשות RSS · עברית",
+    "description": "האתרים האהובים שלך במקום אחד. קוראים, שומרים ומשתפים כתבות.\n\nנדרש חשבון NewsBlur. חלק מהתכונות דורשות מינוי בתשלום.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/he/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "hi",
+    "language_name": "हिन्दी",
+    "title": "NewsBlur: RSS समाचार रीडर · हिन्दी",
+    "description": "पसंदीदा साइटें एक जगह। लेख पढ़ें, सहेजें और साझा करें।\n\nNewsBlur खाता आवश्यक है। कुछ सुविधाओं के लिए सशुल्क सदस्यता आवश्यक है।\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/hi/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "id",
+    "language_name": "Bahasa Indonesia",
+    "title": "NewsBlur: Pembaca Berita RSS · Bahasa Indonesia",
+    "description": "Situs favorit di satu tempat. Baca, simpan, dan bagikan artikel.\n\nAkun NewsBlur diperlukan. Beberapa fitur memerlukan langganan berbayar.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/id/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "vi",
+    "language_name": "Tiếng Việt",
+    "title": "NewsBlur: Trình đọc tin RSS · Tiếng Việt",
+    "description": "Các trang web yêu thích, cùng một nơi. Đọc, lưu và chia sẻ bài viết.\n\nCần có tài khoản NewsBlur. Một số tính năng yêu cầu gói đăng ký trả phí.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/vi/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "th",
+    "language_name": "ไทย",
+    "title": "NewsBlur: อ่านข่าว RSS · ไทย",
+    "description": "รวมเว็บไซต์โปรดไว้ในที่เดียว อ่าน บันทึก และแชร์บทความ\n\nต้องมีบัญชี NewsBlur บางฟีเจอร์ต้องสมัครสมาชิกแบบชำระเงิน\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/th/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "ja",
+    "language_name": "日本語",
+    "title": "NewsBlur：RSSニュースリーダー · 日本語",
+    "description": "お気に入りのサイトを1か所に。記事を読んで、保存して、共有できます。\n\nNewsBlurアカウントが必要です。一部の機能には有料サブスクリプションが必要です。\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/ja/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "ko",
+    "language_name": "한국어",
+    "title": "NewsBlur: RSS 뉴스 리더 · 한국어",
+    "description": "좋아하는 사이트를 한곳에 모아 스토리를 읽고 저장하고 공유하세요.\n\nNewsBlur 계정이 필요합니다. 일부 기능은 유료 구독이 필요합니다.\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/ko/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "zh-Hans",
+    "language_name": "简体中文",
+    "title": "NewsBlur：RSS 新闻阅读器 · 简体中文",
+    "description": "将喜欢的网站汇集一处，阅读、保存和分享文章。\n\n需要 NewsBlur 账户。部分功能需要付费订阅。\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/zh-Hans/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  },
+  {
+    "language": "zh-Hant",
+    "language_name": "繁體中文",
+    "title": "NewsBlur：RSS 新聞閱讀器 · 繁體中文",
+    "description": "將喜愛的網站集中一處，閱讀、儲存和分享文章。\n\n需要 NewsBlur 帳號。部分功能需要付費訂閱。\n\nhttps://play.google.com/store/apps/details?id=com.newsblur\n\nhttps://www.newsblur.com",
+    "visibility": "unlisted",
+    "made_for_kids": false,
+    "embedding": true,
+    "video": "exports/zh-Hant/newsblur-android-16.0.mp4",
+    "upload_status": "not_uploaded"
+  }
+]
