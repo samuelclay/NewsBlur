@@ -35,6 +35,7 @@ languages.each do |language|
     command(*adb, 'shell', 'am', 'force-stop', 'com.newsblur.storecapture')
     command(*adb, 'shell', 'am', 'start', '-W', '-n', 'com.newsblur.storecapture/com.newsblur.marketing.StoreCaptureActivity', '--es', 'language', language, '--es', 'screen', scene)
     ready = false
+    xml = nil
     12.times do
       sleep 1
       command(*adb, 'shell', 'uiautomator', 'dump', '/sdcard/newsblur-capture.xml')
