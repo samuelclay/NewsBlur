@@ -1,0 +1,105 @@
+name: Android Release and F-Droid
+
+on:
+  push:
+    branches: [main]
+    tags: ['Android_*']
+    paths:
+      - 'clients/android/NewsBlur/**'
+      - '.github/workflows/android-release.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'clients/android/NewsBlur/**'
+      - '.github/workflows/android-release.yml'
+  workflow_dispatch:
+    inputs:
+      backfill_tag:
+        description: 'Tag the current main version at its original bump commit after F-Droid checks'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  select:
+    name: Select exact Android release commit
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+      tag: ${{ steps.release.outputs.tag }}
+      publish: ${{ steps.release.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test release selection and immutable tags
+        run: node --test clients/android/NewsBlur/ci/release_tag.test.mjs
+      - name: Select release or compatibility-only commit
+        id: release
+        run: node clients/android/NewsBlur/ci/release_tag.mjs
+
+  fdroid:
+    name: F-Droid compatibility and unsigned APK
+    needs: select
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clients/android/NewsBlur
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.select.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '21'
+          cache: gradle
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan the F-Droid source export for non-free SDKs
+        run: |
+          python -m venv "$RUNNER_TEMP/fdroid-venv"
+          "$RUNNER_TEMP/fdroid-venv/bin/pip" install fdroidserver==2.4.5
+          rm -rf app/src/play
+          "$RUNNER_TEMP/fdroid-venv/bin/python" ci/check_fdroid_source.py .
+      - name: Reject non-free runtime dependencies
+        run: bash ci/check_fdroid_dependencies.sh
+      - name: Test and assemble unsigned F-Droid release
+        run: ./gradlew -Pfdroid -Pci --console=plain :app:testDebugUnitTest :app:assembleRelease
+      - name: Upload unsigned F-Droid APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: fdroid-${{ needs.select.outputs.tag || github.sha }}
+          path: clients/android/NewsBlur/app/build/outputs/apk/release/*-unsigned.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  tag:
+    name: Publish immutable Android version tag
+    needs: [select, fdroid]
+    if: needs.select.outputs.publish == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Push tag without moving existing releases
+        env:
+          RELEASE_SHA: ${{ needs.select.outputs.sha }}
+          RELEASE_TAG: ${{ needs.select.outputs.tag }}
+        run: node clients/android/NewsBlur/ci/release_tag.mjs publish
+      # GITHUB_TOKEN tag pushes do not start workflows. The fdroid job above already
+      # checked this exact commit; externally pushed Android_* tags run it as well.

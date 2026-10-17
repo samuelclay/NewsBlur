@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
-import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.newsblur.compose.LanguageChooserGate
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.discover.DiscoveryFeed
@@ -30,13 +29,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 data class SetupState(
     val loading: Boolean = true,
@@ -86,7 +82,7 @@ class SetupViewModel
         private val candidates = mutableMapOf<String, List<DiscoveryFeed>>()
         private val candidateTasks = mutableMapOf<String, Job>()
         private var searchJob: Job? = null
-        private val language = LanguageIdentification.getClient()
+        private val language = OnboardingLanguageFilter()
 
         // SetupViewModel.kt opens first-run setup on the language page (SetupLanguageStep.kt). Both flags live in the
         // saved state, so the activity recreation a new language causes resumes on the next page.
@@ -238,22 +234,6 @@ class SetupViewModel
             mutable.value.iconFailures.forEach(::loadIcons)
         }
 
-        private suspend fun english(text: String): List<Pair<String, Float>> =
-            suspendCancellableCoroutine { continuation ->
-                language
-                    .identifyPossibleLanguages(text)
-                    .addOnSuccessListener {
-                        if (continuation.isActive) {
-                            continuation.resume(
-                                it.map { result ->
-                                    result.languageTag to
-                                        result.confidence
-                                },
-                            )
-                        }
-                    }.addOnFailureListener { if (continuation.isActive) continuation.resumeWithException(it) }
-            }
-
         private suspend fun validate(
             entries: List<com.google.gson.JsonObject>,
             category: String,
@@ -283,21 +263,7 @@ class SetupViewModel
                 if (age !in -86400..365L * 86400) continue
                 val titles = feed.stories.map { it.title.replace(Regex("<[^>]+>"), " ") }.filter { it.count(Char::isLetter) >= 8 }
                 if (titles.size < 3) continue
-                val dominant = english(titles.joinToString(". ")).maxByOrNull { it.second }
-                if (dominant == null || dominant.first != "en" || dominant.second < .6f) continue
-                var multilingual = false
-                for (title in titles.filter { it.split(" ").size >= 4 }) {
-                    val detected = english(title).maxByOrNull { it.second }
-                    if (detected != null &&
-                        detected.first != "en" &&
-                        detected.first != "und" &&
-                        detected.second >= .7f
-                    ) {
-                        multilingual = true
-                        break
-                    }
-                }
-                if (multilingual) continue
+                if (!language.accepts(titles)) continue
                 val bitmap =
                     OnboardingCatalog.bitmap(raw.string("favicon"))?.takeIf { OnboardingCatalog.fingerprint(it) != null } ?: icon(feed.id)
                         ?: try {

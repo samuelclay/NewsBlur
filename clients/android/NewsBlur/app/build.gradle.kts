@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.ktlint)
 }
 
+// app/build.gradle.kts keeps existing task and artifact names for both distributions.
+val fdroid = providers.gradleProperty("fdroid").isPresent
+
 android {
     bundle { language { enableSplit = false } }
     namespace = "com.newsblur"
@@ -31,6 +34,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
         manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android"
+        manifestPlaceholders["playBillingEnabled"] = (!fdroid).toString()
     }
 
     buildTypes {
@@ -73,6 +77,7 @@ android {
     }
     // StoreCaptureActivity.kt shares the licensed cooking fixture with the iOS capture harness.
     sourceSets.getByName("storecapture").assets.srcDir("../../../ios/MarketingCooking")
+    sourceSets.getByName("main").java.srcDir(if (fdroid) "src/fdroid/java" else "src/play/java")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -97,8 +102,9 @@ ktlint {
     }
 }
 
+if (!fdroid) apply(from = "src/play/dependencies.gradle")
+
 dependencies {
-    implementation("com.google.mlkit:language-id:17.0.6")
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
@@ -107,8 +113,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.okhttp)
     implementation(libs.gson)
-    implementation(libs.billing.ktx)
-    implementation(libs.play.review)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)

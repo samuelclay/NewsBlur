@@ -7,7 +7,6 @@ minSdk = "26"
 targetSdk = "36"
 
 agp = "8.13.0"
-billing = "8.0.0"
 coil2 = "2.7.0"
 coreKtxVersion = "1.7.0"
 kotlin = "2.2.20"
@@ -15,7 +14,6 @@ kotlinxCoroutinesTest = "1.10.2"
 ksp = "2.2.20-2.0.3"
 kotlinSerialization = "1.9.0"
 gson = "2.12.1"
-playReview = "2.0.2"
 preference = "1.2.1"
 profileInstaller = "1.4.1"
 
@@ -66,7 +64,6 @@ androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", v
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-ui-tooling-preview-android = { module = "androidx.compose.ui:ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
-billing-ktx = { module = "com.android.billingclient:billing", version.ref = "billing" }
 coil-kt-coil = { module = "io.coil-kt:coil", version.ref = "coil2" }
 coil-kt-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil2" }
 core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtxVersion" }
@@ -86,7 +83,6 @@ material = { group = "com.google.android.material", name = "material", version.r
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
-play-review = { module = "com.google.android.play:review", version.ref = "playReview" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 ui-automator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiAutomator" }
 benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }

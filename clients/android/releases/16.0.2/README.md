@@ -8,6 +8,8 @@ All 21 release-note translations are reused byte-for-byte from the reviewed 16.0
 
 Source and tag: `0094bd4f869ce70e7286211ff6f3808edb2af156`, `Android_16.0.2`, pushed to GitHub and pulled onto ClayBook. All 871 local unit tests passed with no failures, errors or skips. The signed bundle's version, upload certificate and SHA-256 were verified; see `proof/build-validation.json`. Play reported no lost supported devices and one nonblocking warning about missing native debug symbols. The ReTrace mapping is included.
 
+GitHub checks on that exact source are green: Android unit/instrumentation tests on both the main push and release tag, Django tests, and Localization. See `proof/github-checks.json`.
+
 Fresh Alpha and regular debug APKs were installed on the Samsung SM-X200 without clearing app data. Both report 16.0.2 (294), and their installed SHA-256 hashes match the fresh build outputs. The divider guide and exact released width were checked again, including width persistence after restarting. Earlier captures cover both dividers, cancellation, Arabic/Hebrew direction, fullscreen controls and light/dark/black/sepia colors. Tablet auto-rotation, Wi-Fi and pointer-display settings were restored.
 
 Device evidence and regression tests are in `clients/android/Performance/tablet-controls-recovery-2026-10-17/drag-regression/`.
