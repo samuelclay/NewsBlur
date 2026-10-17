@@ -30,8 +30,14 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     private var startRatio = 0f
     private var parentWidth = 1f
     private var ratio = 0f
+    private var frameUpdatePosted = false
     private val prefs get() = (activity.applicationContext as NbApplication).prefsRepo.get()
-    private val frameUpdate = Runnable { StorySplitView.resizePane(activity, feeds, ratio, false) }
+    private val frameUpdate = Runnable { applyPendingResize() }
+
+    private fun applyPendingResize() {
+        frameUpdatePosted = false
+        if (dragging) StorySplitView.resizePane(activity, feeds, ratio, false)
+    }
 
     init {
         visibility = GONE
@@ -43,6 +49,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
         if (splits.isEmpty()) {
             visibility = GONE
             removeCallbacks(frameUpdate)
+            frameUpdatePosted = false
             if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
             return
@@ -75,6 +82,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
         visibility = if (split != null && ownsDivider) VISIBLE else GONE
         if (split == null || !ownsDivider) {
             removeCallbacks(frameUpdate)
+            frameUpdatePosted = false
             if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
             return
@@ -158,37 +166,54 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                // TabletPaneDivider.kt's wider invisible strip must leave toolbar buttons usable.
+                for (id in listOf(R.id.toolbar, R.id.bottom_toolbar, R.id.itemlist_story_header, R.id.bottom_next_feed_control)) {
+                    val controls = activity.findViewById<View>(id) ?: continue
+                    if (!controls.isShown) continue
+                    val location = IntArray(2)
+                    controls.getLocationOnScreen(location)
+                    if (event.rawX >= location[0] && event.rawX < location[0] + controls.width &&
+                        event.rawY >= location[1] && event.rawY < location[1] + controls.height
+                    ) return false
+                }
                 prepareDrag()
                 startX = event.rawX
                 dragging = true
                 parent.requestDisallowInterceptTouchEvent(true)
                 invalidate()
             }
-            MotionEvent.ACTION_MOVE -> {
+            MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (!dragging) return false
-                val requested = TabletPaneSizing.draggedRatio(
-                    startRatio,
-                    event.rawX - startX,
-                    parentWidth,
-                    // Follow the owner's actual edge, including while its locale is changing.
-                    !rightEdge
-                )
-                ratio = if (feeds) {
-                    TabletPaneSizing.feedRatio(requested, parentWidth / density)
-                } else {
-                    TabletPaneSizing.storyRatio(requested, parentWidth / density)
+                if (event.actionMasked != MotionEvent.ACTION_CANCEL) {
+                    val requested = TabletPaneSizing.draggedRatio(
+                        startRatio,
+                        event.rawX - startX,
+                        parentWidth,
+                        // Follow the owner's actual edge, including while its locale is changing.
+                        !rightEdge
+                    )
+                    ratio = if (feeds) {
+                        TabletPaneSizing.feedRatio(requested, parentWidth / density)
+                    } else {
+                        TabletPaneSizing.storyRatio(requested, parentWidth / density)
+                    }
                 }
-                removeCallbacks(frameUpdate)
-                postOnAnimation(frameUpdate)
-            }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                if (!dragging) return false
-                dragging = false
-                removeCallbacks(frameUpdate)
-                StorySplitView.resizePane(activity, feeds, ratio, true)
-                parent.requestDisallowInterceptTouchEvent(false)
-                invalidate()
-                if (event.actionMasked == MotionEvent.ACTION_UP) performClick()
+                if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+                    // TabletPaneDivider.kt must keep the pending callback: input runs before
+                    // animation callbacks, so canceling/reposting on every MOVE starves resizing.
+                    if (!frameUpdatePosted) {
+                        frameUpdatePosted = true
+                        postOnAnimation(frameUpdate)
+                    }
+                } else {
+                    dragging = false
+                    removeCallbacks(frameUpdate)
+                    frameUpdatePosted = false
+                    StorySplitView.resizePane(activity, feeds, ratio, true)
+                    parent.requestDisallowInterceptTouchEvent(false)
+                    invalidate()
+                    if (event.actionMasked == MotionEvent.ACTION_UP) performClick()
+                }
             }
         }
         return true
@@ -202,6 +227,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     override fun onDetachedFromWindow() {
         // TabletPaneDivider.kt must not update an old activity pair after its window closes.
         removeCallbacks(frameUpdate)
+        frameUpdatePosted = false
         if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
         dragging = false
         super.onDetachedFromWindow()
@@ -244,7 +270,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                 activity.addContentView(
                     it,
                     FrameLayout.LayoutParams(
-                        (12 * it.density).toInt(),
+                        (32 * it.density).toInt(),
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         Gravity.RIGHT
                     )
