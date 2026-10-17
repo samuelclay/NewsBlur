@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-17 16:29:02 UTC",
+  "checked_at": "2026-10-17 17:12:21 UTC",
   "serial": "R8YW810E3FF",
-  "reason": "Capture paused at user request to locate resize work",
+  "reason": "All 21 locales completed in both tablet sizes",
   "settings": {
     "accelerometer_rotation": "1",
     "user_rotation": "0",
@@ -16,6 +16,10 @@
   "size": "Physical size: 1200x1920",
   "density": "Physical density: 240",
   "baseline_mismatches": {},
-  "foreground": "Existing Alpha task1050 restored via am task focus",
-  "capture_process": "Terminated after Arabic tablet7 reader still"
+  "foreground": [
+    "mCurrentFocus=Window{e2a2558 u0 com.newsblur.alpha/com.newsblur.activity.ReadingPlaceholder}",
+    "mFocusedApp=ActivityRecord{897387c u0 com.newsblur.alpha/com.newsblur.activity.ReadingPlaceholder t1050}"
+  ],
+  "capture_process": "Stopped after completion; pidof returned no process",
+  "account_preservation": "Original NewsBlur and NB Alpha packages not reinstalled or cleared; existing Alpha task1050 restored"
 }

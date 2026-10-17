@@ -8,5 +8,5 @@
   "sha256": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9",
   "native_readiness": "expected fixture content visible",
   "tablet_composition": "populated_native_split",
-  "visual_review": "required"
+  "visual_review": "passed_native_ui"
 }
