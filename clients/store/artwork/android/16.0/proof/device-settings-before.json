@@ -12,7 +12,9 @@
     "transition_animation_scale": "1.0",
     "window_animation_scale": "1.0",
     "sysui_demo_allowed": "0",
-    "sysui_tuner_demo_on": "0"
+    "sysui_tuner_demo_on": "0",
+    "heads_up_notifications_enabled": "1",
+    "zen_mode": "0"
   },
   "tablet": {
     "serial": "R8YW810E3FF",
@@ -27,6 +29,7 @@
     "transition_animation_scale": "1.0",
     "window_animation_scale": "1.0",
     "sysui_demo_allowed": "0",
-    "sysui_tuner_demo_on": "0"
+    "sysui_tuner_demo_on": "0",
+    "heads_up_notifications_enabled": "1"
   }
 }
