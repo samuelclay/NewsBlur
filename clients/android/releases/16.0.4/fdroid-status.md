@@ -32,11 +32,16 @@ build. It published `Android_16.0.4` at the exact version-bump commit
 
 [F-Droid merge request !52997](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997)
 is open from `samuelclay/fdroiddata:newsblur-16.0.4-fdroid`. Its head is
-`61708c54f43742f5230854bfaf4a16773a143df3`. The live diff changes only
+`af77766bf8aafa0074a8bc3b291712d18d3785b0`. The live diff changes only
 `metadata/com.newsblur.yml`, and its description explicitly supersedes !51902.
 The bot request remains open. The author's fork master was not changed.
 
-The [merge-request pipeline](https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959280088)
-is running. Submission is complete; upstream acceptance, the official signed
-F-Droid build, and public availability of 16.0.4 remain pending. The public
-package API still reports 15.0.5 (290) as the suggested version.
+The [merge-request pipeline](https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959283737)
+passed all nine checks on the current head: source code, schema validation,
+tool scripts, canonical metadata formatting, lint, repository redirect, update
+detection, the F-Droid build, and APK inspection. The build log confirms
+`com.newsblur:296` was built from the exact source commit above.
+
+Submission and CI validation are complete. Upstream acceptance, the official
+signed F-Droid build, and public availability of 16.0.4 remain pending. At
+submission, the public package API reported 15.0.5 (290) as the suggested version.

@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-17T23:26:09Z",
+  "checked_at": "2026-10-17T23:44:44Z",
   "version": "16.0.4",
   "version_code": 296,
   "source_commit": "1b32c5b65bdf577402c055d34246691d53e534d9",
@@ -18,16 +18,73 @@
     "web_url": "https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997",
     "title": "Update NewsBlur to 16.0.4 (296) with upstream F-Droid build support",
     "description": "NewsBlur 16.0.4 (296) includes the Android crash fixes and the free build support introduced in 16.0.3. This supersedes !51902, whose old recipe fails source scanning on ML Kit.\n\nThe new recipe uses the upstream `fdroid` Gradle property and removes `app/src/play` from the disposable checkout before scanning. The application provides free implementations for billing, review prompts, and onboarding language detection, so the recipe no longer rewrites application source with sed. Google Play SDKs remain in the normal Play distribution.\n\nSource: `Android_16.0.4` at `1b32c5b65bdf577402c055d34246691d53e534d9`.\n\nThe metadata patch applies cleanly and parses as YAML. [Upstream release validation](https://github.com/samuelclay/NewsBlur/actions/runs/39076913158) passed source scanning, the resolved dependency graph, unit tests, and an unsigned F-Droid APK build at that exact source commit. F-Droid's own build and signing remain necessary before publication.\n\nRelated upstream issue: https://github.com/samuelclay/NewsBlur/issues/2172",
-    "sha": "61708c54f43742f5230854bfaf4a16773a143df3",
+    "sha": "af77766bf8aafa0074a8bc3b291712d18d3785b0",
     "state": "opened",
-    "merge_status": "can_be_merged",
-    "detailed_merge_status": "mergeable"
+    "merge_status": "unchecked",
+    "detailed_merge_status": "unchecked"
   },
   "pipeline": {
-    "id": 2959280088,
-    "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959280088",
-    "sha": "61708c54f43742f5230854bfaf4a16773a143df3",
-    "status": "running"
+    "id": 2959283737,
+    "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959283737",
+    "sha": "af77766bf8aafa0074a8bc3b291712d18d3785b0",
+    "status": "success",
+    "finished_at": "2026-10-17T23:43:55.113Z",
+    "jobs": [
+      {
+        "id": 17259907432,
+        "name": "check apk",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907432"
+      },
+      {
+        "id": 17259907431,
+        "name": "check source code",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907431"
+      },
+      {
+        "id": 17259907430,
+        "name": "schema validation",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907430"
+      },
+      {
+        "id": 17259907429,
+        "name": "tools check scripts",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907429"
+      },
+      {
+        "id": 17259907428,
+        "name": "fdroid rewritemeta",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907428"
+      },
+      {
+        "id": 17259907427,
+        "name": "fdroid lint",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907427"
+      },
+      {
+        "id": 17259907426,
+        "name": "git redirect",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907426"
+      },
+      {
+        "id": 17259907425,
+        "name": "checkupdates",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907425"
+      },
+      {
+        "id": 17259907424,
+        "name": "fdroid build",
+        "status": "success",
+        "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/jobs/17259907424"
+      }
+    ]
   },
   "changed_files": [
     "metadata/com.newsblur.yml"
@@ -53,5 +110,24 @@
       }
     ]
   },
-  "status": "metadata_submitted_official_publication_pending"
+  "status": "metadata_submitted_ci_green_official_publication_pending",
+  "ci_repairs": [
+    {
+      "finding": "fdroid rewritemeta canonical formatting",
+      "changes": [
+        "Move gradleprops after prebuild",
+        "Preserve canonical UpdateCheckData spacing"
+      ],
+      "commit": "af77766bf8aafa0074a8bc3b291712d18d3785b0"
+    }
+  ],
+  "build_evidence": {
+    "job_id": 17259907424,
+    "source_commit": "1b32c5b65bdf577402c055d34246691d53e534d9",
+    "version_code": 296,
+    "result": "Successfully built com.newsblur:296 from 1b32c5b65bdf577402c055d34246691d53e534d9",
+    "gradle_duration": "8m 25s",
+    "apk_inspection_job_id": 17259907432,
+    "apk_inspection_status": "success"
+  }
 }
