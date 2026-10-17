@@ -15,12 +15,15 @@ import com.newsblur.activity.Main
 import com.newsblur.activity.Reading
 import com.newsblur.activity.SavedStoriesItemsList
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.di.IconFileCache
+import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.StarredCount
 import com.newsblur.network.APIConstants
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
+import com.newsblur.util.FileCache
 import com.newsblur.util.LanguageSettings
 import com.newsblur.util.PrefConstants
 import com.newsblur.util.ReadFilter
@@ -35,10 +38,20 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class StoreCaptureActivity : ComponentActivity() {
     @Inject lateinit var prefsRepo: PrefsRepo
+
     @Inject lateinit var prefs: SharedPreferences
+
     @Inject lateinit var db: BlurDatabaseHelper
+
     @Inject lateinit var fixture: CookingFixture
+
     @Inject lateinit var gson: Gson
+
+    @Inject @StoryImageCache
+    lateinit var storyImageCache: FileCache
+
+    @Inject @IconFileCache
+    lateinit var iconCache: FileCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,26 +64,31 @@ class StoreCaptureActivity : ComponentActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { seed() }
             val fs = if (screen == "saved") FeedSet.allSaved() else FeedSet.allFeeds()
-            val destination = when (screen) {
-                "feeds" -> Main::class.java
-                "reader" -> AllStoriesReading::class.java
-                "saved" -> SavedStoriesItemsList::class.java
-                else -> AllStoriesItemsList::class.java
-            }
-            startActivity(Intent(this@StoreCaptureActivity, destination).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                putExtra(ItemsList.EXTRA_FEED_SET, fs)
-                putExtra(Reading.EXTRA_STORY_HASH, CookingFixture.FIRST_STORY_HASH)
-            })
+            val destination =
+                when (screen) {
+                    "feeds" -> Main::class.java
+                    "reader" -> AllStoriesReading::class.java
+                    "saved" -> SavedStoriesItemsList::class.java
+                    else -> AllStoriesItemsList::class.java
+                }
+            startActivity(
+                Intent(this@StoreCaptureActivity, destination).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    putExtra(ItemsList.EXTRA_FEED_SET, fs)
+                    putExtra(Reading.EXTRA_STORY_HASH, CookingFixture.FIRST_STORY_HASH)
+                },
+            )
             finish()
         }
     }
 
     private fun seed() {
+        fixture.prepareImages(storyImageCache, iconCache)
         prefsRepo.saveCustomServer(CookingFixture.SERVER)
         APIConstants.setCustomServer(CookingFixture.SERVER)
         prefsRepo.saveLogin("cooking-demo", "sessionid=offline-cooking-fixture")
-        prefs.edit()
+        prefs
+            .edit()
             .putString(PrefConstants.USER_USERNAME, "cooking-demo")
             .putString(PrefConstants.USER_ID, "1")
             .putString(PrefConstants.THEME, "LIGHT")
@@ -85,10 +103,17 @@ class StoreCaptureActivity : ComponentActivity() {
         prefsRepo.setPremium(true, 0)
         prefsRepo.setArchive(true, 0)
         val feedResponse = FeedFolderResponse(fixture.feedsResponse().toString(), gson)
-        val saved = StarredCount().apply { count = feedResponse.starredCount; tag = StarredCount.TOTAL_STARRED }
+        val saved =
+            StarredCount().apply {
+                count = feedResponse.starredCount
+                tag = StarredCount.TOTAL_STARRED
+            }
         db.setFeedsFolders(
-            feedResponse.folders.map { it.values }, feedResponse.feeds.map { it.values },
-            emptyList(), listOf(saved.values), emptyList(),
+            feedResponse.folders.map { it.values },
+            feedResponse.feeds.map { it.values },
+            emptyList(),
+            listOf(saved.values),
+            emptyList(),
         )
         val stories = gson.fromJson(fixture.storiesResponse().toString(), StoriesResponse::class.java)
         db.insertStories(stories, StateFilter.ALL, false)
