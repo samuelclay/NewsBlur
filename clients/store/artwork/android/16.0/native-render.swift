@@ -69,7 +69,8 @@ let dimensions: [Int] = placement == "icon" ? [512, 512] : placement == "feature
     isTablet ? [sources[0].1.width, sources[0].1.height] : [1080, 1920]
 let width = CGFloat(dimensions[0]), height = CGFloat(dimensions[1])
 guard let context = CGContext(data: nil, width: dimensions[0], height: dimensions[1], bitsPerComponent: 8,
-    bytesPerRow: dimensions[0] * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { fail("Cannot create image context.") }
+    bytesPerRow: dimensions[0] * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!,
+    bitmapInfo: (placement == "icon" ? CGImageAlphaInfo.premultipliedLast : CGImageAlphaInfo.noneSkipLast).rawValue) else { fail("Cannot create image context.") }
 context.setAllowsAntialiasing(true)
 context.setShouldAntialias(true)
 context.setShouldSmoothFonts(true)
