@@ -1,20 +1,17 @@
+diff --git a/metadata/com.newsblur.yml b/metadata/com.newsblur.yml
+index 9789b2ffcb..70c07d9974 100644
 --- a/metadata/com.newsblur.yml
 +++ b/metadata/com.newsblur.yml
-@@ -2744,9 +2744,27 @@
+@@ -2744,9 +2744,27 @@ Builds:
        - echo 'package com.newsblur.activity;class SubscriptionActivity:NbActivity()
          {}' > activity/SubscriptionActivity.kt
  
--AutoUpdateMode: Version
--UpdateCheckMode: Tags
--UpdateCheckData: 
 +  - versionName: 16.0.4
 +    versionCode: 296
 +    commit: Android_16.0.4
 +    subdir: clients/android/NewsBlur/app
 +    gradle:
 +      - yes
-+    gradleprops:
-+      - fdroid
 +    rm:
 +      - clients/android/NewsBlur/app/src/play
 +    prebuild:
@@ -24,10 +21,13 @@
 +      - mkdir -p clients/android
 +      - mv ../NewsBlur clients/android
 +      - popd
++    gradleprops:
++      - fdroid
 +
-+AutoUpdateMode: Version
+ AutoUpdateMode: Version
+-UpdateCheckMode: Tags
 +UpdateCheckMode: Tags ^Android_(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?$
-+UpdateCheckData:
+ UpdateCheckData: 
    clients/android/NewsBlur/app/build.gradle.kts|versionCode\s=\s(\d+)|.|versionName\s=\s"(.*)"
 -CurrentVersion: 15.0.5
 -CurrentVersionCode: 290

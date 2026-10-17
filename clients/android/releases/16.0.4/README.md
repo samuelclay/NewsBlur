@@ -42,9 +42,11 @@ Android Tests, Django Tests, and Android Release and F-Droid all passed on the e
 release commit. The F-Droid job passed source/dependency scans, unit tests, and the
 unsigned APK build before creating the immutable tag. See `proof/github-checks.json`
 and [F-Droid MR !52997](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997)
-for the submitted upstream recipe. Maintainer acceptance and official F-Droid
-publication are pending; `fdroid-status.md` records the external status. A successful compatibility build is not an official
-F-Droid package publication.
+for the submitted upstream recipe. All nine checks in the F-Droid merge-request
+pipeline passed, including its source scan, release APK build, and APK inspection.
+Maintainer acceptance, official signing, and publication remain pending;
+`fdroid-status.md` records the external status. A successful compatibility build
+is not an official F-Droid package publication.
 
 Canonical translations are under `clients/store/`; native Play notes and validated
 Google payloads are retained here. `proof/` records independent review hashes,
