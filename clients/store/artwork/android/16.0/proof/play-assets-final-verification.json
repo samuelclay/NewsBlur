@@ -1,0 +1,111 @@
+{
+  "verifiedAt": "2026-10-17T18:15:41.334905+00:00",
+  "editId": "03809724643036911628",
+  "images": 294,
+  "groups": 105,
+  "locales": 21,
+  "videos": 10,
+  "allImageHashesAndOrderMatch": true,
+  "unrelatedListingTextTracksDetailsAndImagesPreserved": true,
+  "production": [
+    {
+      "track": "production",
+      "releases": [
+        {
+          "name": "16.0",
+          "versionCodes": [
+            "292"
+          ],
+          "releaseNotes": [
+            {
+              "language": "en-US",
+              "text": "NewsBlur's interface now supports 21 languages. Choose yours in the app, with a preview in your language and English. Arabic and Hebrew read right to left. Stories stay exactly as published.\n\nNext story controls stay in a fixed position, including when Next becomes Done. Sign-in buttons are easier to read in dark themes."
+            },
+            {
+              "language": "es-ES",
+              "text": "\nLa interfaz de NewsBlur ya admite 21 idiomas. Elige el tuyo en la app, con una vista previa en tu idioma y en inglés. El árabe y el hebreo se leen de derecha a izquierda. Los artículos siguen tal como se publicaron.\n\nLos controles del siguiente artículo permanecen fijos, incluso cuando Siguiente cambia a Hecho. Los botones de inicio de sesión se leen mejor en los temas oscuros."
+            },
+            {
+              "language": "fr-FR",
+              "text": "\nL’interface de NewsBlur est disponible en 21 langues. Choisissez la vôtre dans l’application, avec un aperçu dans votre langue et en anglais. L’arabe et l’hébreu se lisent de droite à gauche. Les articles restent tels que publiés.\n\nLes commandes de l’article suivant restent fixes, même lorsque Suivant devient Terminé. Les boutons de connexion sont plus lisibles dans les thèmes sombres."
+            },
+            {
+              "language": "de-DE",
+              "text": "\nNewsBlurs Oberfläche unterstützt jetzt 21 Sprachen. Wähle deine in der App, mit Vorschau in deiner Sprache und auf Englisch. Arabisch und Hebräisch laufen von rechts nach links. Artikel bleiben unverändert.\n\nDie Steuerung zum nächsten Artikel bleibt an derselben Stelle, auch wenn Weiter zu Fertig wird. Anmeldeschaltflächen sind in dunklen Designs besser lesbar."
+            },
+            {
+              "language": "pt-BR",
+              "text": "\nA interface do NewsBlur agora tem 21 idiomas. Escolha o seu no app, com uma prévia no seu idioma e em inglês. Árabe e hebraico são lidos da direita para a esquerda. Os artigos permanecem como publicados.\n\nOs controles do próximo artigo ficam na mesma posição, mesmo quando Próximo muda para Concluído. Os botões de login estão mais legíveis nos temas escuros."
+            },
+            {
+              "language": "it-IT",
+              "text": "\nL’interfaccia di NewsBlur ora supporta 21 lingue. Scegli la tua nell’app, con un’anteprima nella tua lingua e in inglese. Arabo ed ebraico si leggono da destra a sinistra. Gli articoli restano come pubblicati.\n\nI controlli dell’articolo successivo restano fissi, anche quando Avanti diventa Fatto. I pulsanti di accesso sono più leggibili nei temi scuri."
+            },
+            {
+              "language": "nl-NL",
+              "text": "\nDe interface van NewsBlur ondersteunt nu 21 talen. Kies je taal in de app, met een voorbeeld in je taal en in het Engels. Arabisch en Hebreeuws lezen van rechts naar links. Artikelen blijven zoals gepubliceerd.\n\nDe knoppen voor het volgende artikel blijven op hun plek, ook wanneer Volgende verandert in Klaar. Aanmeldknoppen zijn beter leesbaar in donkere thema’s."
+            },
+            {
+              "language": "pl-PL",
+              "text": "\nInterfejs NewsBlur obsługuje teraz 21 języków. Wybierz swój w aplikacji, z podglądem w Twoim języku i po angielsku. Arabski i hebrajski czyta się od prawej do lewej. Artykuły pozostają bez zmian.\n\nPrzyciski następnego artykułu pozostają na miejscu, także gdy Dalej zmienia się w Gotowe. Przyciski logowania są czytelniejsze w ciemnych motywach."
+            },
+            {
+              "language": "tr-TR",
+              "text": "\nNewsBlur arayüzü artık 21 dili destekliyor. Dilinizi uygulama içinden seçin; önizlemeyi seçtiğiniz dilde ve İngilizce görün. Arapça ve İbranice sağdan sola okunur. Haberler yayımlandıkları haliyle kalır.\n\nSonraki haber kontrolleri, İleri düğmesi Tamam’a dönüştüğünde de aynı konumda kalır. Koyu temalarda giriş düğmeleri daha kolay okunur."
+            },
+            {
+              "language": "ru-RU",
+              "text": "\nИнтерфейс NewsBlur теперь на 21 языке. Выберите язык в приложении: предпросмотр доступен на нём и на английском. Арабский и иврит отображаются справа налево. Статьи остаются в исходном виде.\n\nКнопки перехода к следующей статье остаются на месте, даже когда «Далее» меняется на «Готово». Кнопки входа стали разборчивее в тёмных темах."
+            },
+            {
+              "language": "uk",
+              "text": "\nІнтерфейс NewsBlur тепер підтримує 21 мову. Виберіть мову в застосунку із попереднім переглядом нею та англійською. Арабська й іврит відображаються справа наліво. Статті залишаються такими, якими їх опублікували.\n\nКнопки переходу до наступної статті залишаються на місці, навіть коли «Далі» змінюється на «Готово». Кнопки входу краще видно в темних темах."
+            },
+            {
+              "language": "ar",
+              "text": "\nواجهة NewsBlur تدعم الآن 21 لغة. اختر لغتك داخل التطبيق مع معاينة بلغتك وبالإنجليزية. تُعرض العربية والعبرية من اليمين إلى اليسار. تبقى القصص كما نُشرت.\n\nتبقى عناصر الانتقال إلى القصة التالية في موضع ثابت، حتى عندما يتحول زر «التالي» إلى «تم». أصبحت أزرار تسجيل الدخول أوضح في المظاهر الداكنة."
+            },
+            {
+              "language": "iw-IL",
+              "text": "\nממשק NewsBlur תומך עכשיו ב־21 שפות. בחרו שפה באפליקציה עם תצוגה מקדימה בשפה שלכם ובאנגלית. ערבית ועברית מוצגות מימין לשמאל. הכתבות נשארות כפי שפורסמו.\n\nכפתורי המעבר לכתבה הבאה נשארים באותו מקום, גם כש״הבא״ הופך ל״סיום״. קל יותר לקרוא את כפתורי ההתחברות בערכות נושא כהות."
+            },
+            {
+              "language": "hi-IN",
+              "text": "\nNewsBlur का इंटरफ़ेस अब 21 भाषाओं में है। ऐप में भाषा चुनें और उसका पूर्वावलोकन अपनी भाषा और अंग्रेज़ी में देखें। अरबी और हिब्रू दाएँ से बाएँ दिखती हैं। लेख जैसे प्रकाशित हुए थे, वैसे ही रहते हैं।\n\nअगले लेख के बटन अब एक ही जगह रहते हैं, तब भी जब “अगला” बदलकर “हो गया” हो जाता है। गहरी थीम में साइन-इन बटन पढ़ना आसान हुआ है।"
+            },
+            {
+              "language": "id",
+              "text": "\nAntarmuka NewsBlur kini mendukung 21 bahasa. Pilih bahasa di aplikasi, dengan pratinjau dalam bahasa Anda dan Inggris. Arab dan Ibrani tampil dari kanan ke kiri. Artikel tetap seperti saat diterbitkan.\n\nKontrol artikel berikutnya tetap di posisi yang sama, termasuk saat Berikutnya berubah menjadi Selesai. Tombol masuk lebih mudah dibaca dalam tema gelap."
+            },
+            {
+              "language": "vi",
+              "text": "\nGiao diện NewsBlur nay hỗ trợ 21 ngôn ngữ. Chọn trong ứng dụng, với bản xem trước bằng ngôn ngữ của bạn và tiếng Anh. Tiếng Ả Rập và tiếng Do Thái hiển thị từ phải sang trái. Bài viết giữ nguyên như khi xuất bản.\n\nNút chuyển bài viết tiếp theo giữ vị trí cố định, kể cả khi Tiếp đổi thành Xong. Các nút đăng nhập dễ đọc hơn trong giao diện tối."
+            },
+            {
+              "language": "th",
+              "text": "\nอินเทอร์เฟซ NewsBlur รองรับ 21 ภาษาแล้ว เลือกภาษาในแอป พร้อมตัวอย่างในภาษาของคุณและภาษาอังกฤษ ภาษาอาหรับและฮีบรูแสดงจากขวาไปซ้าย บทความยังคงเหมือนต้นฉบับ\n\nปุ่มไปยังบทความถัดไปอยู่ในตำแหน่งเดิม แม้เปลี่ยนจาก ถัดไป เป็น เสร็จสิ้น ปุ่มลงชื่อเข้าใช้อ่านง่ายขึ้นในธีมมืด"
+            },
+            {
+              "language": "ja-JP",
+              "text": "\nNewsBlurのインターフェースが21言語に対応しました。アプリ内で言語を選び、その言語と英語でプレビューできます。アラビア語とヘブライ語は右から左に表示されます。記事の内容は公開時のまま変わりません。\n\n次の記事に進むボタンの位置が固定され、「次へ」が「完了」に変わるときも動かなくなりました。ダークテーマでログインボタンが読みやすくなりました。"
+            },
+            {
+              "language": "ko-KR",
+              "text": "\nNewsBlur 인터페이스가 이제 21개 언어를 지원합니다. 앱에서 언어를 선택하고 해당 언어와 영어로 미리 볼 수 있습니다. 아랍어와 히브리어는 오른쪽에서 왼쪽으로 표시됩니다. 스토리는 발행된 그대로 유지됩니다.\n\n다음 스토리 버튼의 위치가 고정되어 ‘다음’이 ‘완료’로 바뀔 때도 움직이지 않습니다. 어두운 테마에서 로그인 버튼이 더 잘 보입니다."
+            },
+            {
+              "language": "zh-CN",
+              "text": "\nNewsBlur 界面现已支持 21 种语言。在应用中选择语言，即可同时预览该语言和英文。阿拉伯语和希伯来语采用从右到左的界面。文章内容保持原样。\n\n下一篇文章按钮的位置现已固定，即使“下一步”变为“完成”也不会移动。深色主题中的登录按钮更加清晰易读。"
+            },
+            {
+              "language": "zh-TW",
+              "text": "\nNewsBlur 介面現已支援 21 種語言。在應用程式中選擇語言，即可同時預覽該語言和英文。阿拉伯文和希伯來文採用從右至左的介面。文章內容維持發佈時的原樣。\n\n下一篇文章按鈕的位置現已固定，即使「下一步」變成「完成」也不會移動。深色佈景主題中的登入按鈕更加清楚易讀。"
+            }
+          ],
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "status": "verified_in_uncommitted_edit"
+}
