@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.window.embedding.SplitAttributes
 import androidx.window.embedding.SplitInfo
 import androidx.window.embedding.ActivityStack
+import androidx.window.WindowSdkExtensions
 import com.newsblur.NbApplication
 import com.newsblur.R
 import com.newsblur.activity.FeedListDrawer
@@ -21,8 +22,83 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Before
+import org.junit.After
 
 class Test_TabletPaneDivider {
+    @Before
+    fun useLiveResizeByDefault() {
+        mockkObject(WindowSdkExtensions.Companion)
+        every { WindowSdkExtensions.getInstance().extensionVersion } returns 7
+    }
+
+    @After
+    fun restoreWindowExtensions() {
+        unmockkObject(WindowSdkExtensions.Companion)
+    }
+
+    @Test
+    fun test_old_embedding_previews_without_resizing_until_exact_release() = withLegacyGuide { divider, guide ->
+        divider.onTouchEvent(touch(MotionEvent.ACTION_DOWN, 500f))
+        divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 520f))
+        every { divider["applyPendingResize"]() } answers { callOriginal() }
+        TabletPaneDivider::class.java.getDeclaredMethod("applyPendingResize").apply { isAccessible = true }.invoke(divider)
+
+        verify(exactly = 0) { StorySplitView.resizePane(any(), any(), any(), any()) }
+        verify { guide.move(match { kotlin.math.abs(it - 420f) < 0.01f }) }
+        divider.onTouchEvent(touch(MotionEvent.ACTION_UP, 550f))
+        verify(exactly = 1) { StorySplitView.resizePane(any(), false, match { kotlin.math.abs(it - 0.45f) < 0.0001f }, true) }
+        verify(exactly = 1) { guide.dismiss() }
+    }
+
+    @Test
+    fun test_rtl_preview_moves_with_the_finger_and_cancellation_discards_it() = withLegacyGuide { divider, guide ->
+        field("rightEdge").setBoolean(divider, false)
+        divider.onTouchEvent(touch(MotionEvent.ACTION_DOWN, 500f))
+        divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 550f))
+        verify { guide.move(match { kotlin.math.abs(it - 650f) < 0.01f }) }
+        divider.onTouchEvent(touch(MotionEvent.ACTION_CANCEL, 550f))
+        verify(exactly = 0) { StorySplitView.resizePane(any(), any(), any(), any()) }
+        verify(exactly = 1) { guide.dismiss() }
+    }
+
+    @Test
+    fun test_hiding_or_detaching_removes_the_preview_without_applying_it() {
+        for (detach in listOf(false, true)) withLegacyGuide { divider, guide ->
+            divider.onTouchEvent(touch(MotionEvent.ACTION_DOWN, 500f))
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 520f))
+            if (detach) {
+                every { divider["onDetachedFromWindow"]() } answers { callOriginal() }
+                try {
+                    TabletPaneDivider::class.java.getDeclaredMethod("onDetachedFromWindow").apply { isAccessible = true }.invoke(divider)
+                } catch (error: java.lang.reflect.InvocationTargetException) {
+                    // The JVM's View stub throws at super.onDetachedFromWindow, after our cleanup.
+                    assertTrue(error.cause?.message?.contains("Method onDetachedFromWindow in android.view.View not mocked") == true)
+                }
+            } else {
+                every { divider.update(any()) } answers { callOriginal() }
+                divider.update(emptyList())
+            }
+            verify(exactly = 0) { StorySplitView.resizePane(any(), any(), any(), any()) }
+            verify(exactly = 1) { guide.dismiss() }
+        }
+    }
+
+    private fun withLegacyGuide(block: (TabletPaneDivider, TabletPaneResizeGuide) -> Unit) {
+        mockkObject(StorySplitView, WindowSdkExtensions.Companion, TabletPaneResizeGuide.Companion)
+        try {
+            val divider = dragFixture()
+            val guide = mockk<TabletPaneResizeGuide>(relaxed = true)
+            every { WindowSdkExtensions.getInstance().extensionVersion } returns 3
+            every { TabletPaneResizeGuide.show(any(), any(), any(), any(), any(), any()) } returns guide
+            every { StorySplitView.resizePane(any(), any(), any(), any()) } returns Unit
+            every { divider["prepareDrag"]() } returns Unit
+            block(divider, guide)
+        } finally {
+            unmockkObject(StorySplitView, WindowSdkExtensions.Companion, TabletPaneResizeGuide.Companion)
+        }
+    }
+
     @Test
     fun test_continuous_moves_do_not_postpone_the_already_scheduled_frame() {
         mockkObject(StorySplitView)
