@@ -1,7 +1,7 @@
 {
-  "saved_at": "2026-10-17T18:19:00.372397+00:00",
-  "status": "all_294_images_verified_in_edit_commit_blocked_by_permission",
-  "reason": "Google accepted all image uploads and video-field updates, but edits.validate and edits.commit both returned 403. Console confirms uploader lacks Manage store presence. User confirmation pending for app-scoped access change.",
+  "saved_at": "2026-10-17T18:36:07.967942+00:00",
+  "status": "all_294_images_committed_and_readback_verified_submitted_to_play",
+  "reason": "User approved app-scoped Manage store presence. Validation and guarded commit succeeded. Fresh edit verified all assets. Console lists all 115 changes under Changes in review while quick checks run.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
@@ -246,7 +246,7 @@
       "source_clips_verified": 8
     }
   ],
-  "pending": "Grant approved store presence permission or use browser upload fallback, commit and fresh readback; eleven YouTube videos remain blocked by daily limit.",
+  "pending": "Google quick checks and review; eleven YouTube uploads and playback checks after daily limit resets.",
   "notification_samples_reviewed": 168,
   "resumed_at": "2026-10-17T16:24:16Z",
   "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95",
@@ -262,7 +262,12 @@
     "verified_groups": 105,
     "verified_video_urls": 10,
     "verification": "play-assets-final-verification.json",
-    "commit_receipt": "play-assets-commit.json"
+    "commit_receipt": "play-assets-commit-after-permission.json",
+    "postcommit_verification": "play-assets-postcommit-verification.json",
+    "console_proof": "play-publishing-submitted.txt",
+    "submitted_at": "2026-10-17T18:32:20Z",
+    "managed_publishing": false,
+    "public_availability": "not_yet_verified"
   },
   "devices_restored": true,
   "browser_account": {
@@ -272,5 +277,13 @@
     "youtube_channel": "@NewsBlurRSS",
     "youtube_account": "samuel@newsblur.com",
     "youtube_quota_recheck": "youtube-daily-limit-after-restart.txt"
+  },
+  "permission_change": {
+    "user_approved": true,
+    "account": "newsblur-play-billing@newsblur-premium.iam.gserviceaccount.com",
+    "scope": "com.newsblur",
+    "permission": "Manage store presence",
+    "automatic_dependency": "Manage policy declarations",
+    "release_or_admin_granted": false
   }
 }
