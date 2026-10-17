@@ -1,5 +1,5 @@
 {
-  "reviewed_at": "2026-10-17T16:21:44Z",
+  "reviewed_at": "2026-10-17T16:26:57Z",
   "scope": "Notification review of raw footage; does not replace full final-video playback. Arabic phone recapture passed.",
   "clips": [
     {
@@ -1754,6 +1754,94 @@
     {
       "path": "captures/footage/ko/tablet10-saved.mp4",
       "sha256": "4e9cc815f0ca7ae1575d918c3fd915b568442a6c554accda0ce4f2c4566e2e3b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/tablet10-feeds.mp4",
+      "sha256": "219e5b4246d4bf72fe3c858cd5319d038c1e0c9a20bd6fc1a7c1ad0b070d73c6",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/tablet10-stories.mp4",
+      "sha256": "5c8414ae1eac47bdfd7be7368702e33880dd9b66f7460aacab6b2c85ac862a36",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/tablet10-reader.mp4",
+      "sha256": "70a68f393b07b25499f817e397d869ef4d412bc672a604eb4c74e28bbf041b31",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hans/tablet10-saved.mp4",
+      "sha256": "4da2a4cc662fbc11d8979df806c6452b6a13344746bea17e14faf40180580489",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/tablet10-feeds.mp4",
+      "sha256": "2e6893ac678814732080f79caab8f3c81707ebced18216f3f5195c6379d5c181",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/tablet10-stories.mp4",
+      "sha256": "8613a4ffbc1481b06af49bf97f68b62c4cdde13174307687ab1e3b343ee51202",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/tablet10-reader.mp4",
+      "sha256": "e7ad92c5e4590f4b30dc91929e7019e5472056876193fb420dc91c65a14c39cc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/zh-Hant/tablet10-saved.mp4",
+      "sha256": "c69f716a3aaf613398b3aa1a966ca5f7d87a1dce87527029ef756d8122d33756",
       "review": "passed",
       "samples": [
         "first visible frame",
