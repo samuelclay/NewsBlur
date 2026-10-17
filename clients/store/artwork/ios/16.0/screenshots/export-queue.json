@@ -1,277 +1,530 @@
 {
-  "created_at": "2026-10-16T22:43:31Z",
-  "browser_status": "handed_back_to_coordinator_after_bounded_batch",
+  "updated_at": "2026-10-17T00:16:21Z",
+  "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved",
+  "capture_checkpoint": "a42681e83",
+  "capture_status": "paused_pending_simulator_ownership",
   "required_next_steps": [
     "Wait for a verified complete native capture group",
     "Run export-native.rb for each missing size",
     "Visually inspect all four panels per size",
     "Stage reviewed files with unique locale, size and panel filenames"
   ],
-  "store_placement": "unverified",
-  "updated_at": "2026-10-17T00:12:38Z",
+  "store_placement_tracking": "Coordinator owns resubmission.json and /tmp/newsblur-ios16-ready-uploads/manifest.json; preparation status here does not establish store placement.",
   "completed_sets": [
+    {
+      "language": "ar",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ar",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ar",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "de",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "en",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "en",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-1320x2868-0[1-4].png"
+    },
     {
       "language": "en",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-en-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "es",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "fr",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "fr",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "legacy_review_evidence",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-1320x2868-0[1-4].png"
     },
     {
       "language": "fr",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-fr-2064x2752-0[1-4].png"
     },
     {
-      "language": "ar",
-      "size": "1320x2868",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1320x2868-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "ar",
+      "language": "he",
       "size": "1206x2622",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-1206x2622-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1206x2622-0[1-4].png"
     },
     {
-      "language": "de",
+      "language": "he",
       "size": "1320x2868",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1320x2868-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "de",
-      "size": "1206x2622",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-1206x2622-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "ar",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ar-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "de",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-de-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1320x2868-0[1-4].png"
     },
     {
       "language": "he",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "es",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "nl",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "pt-BR",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pt-BR-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "pl",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pl-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "it",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "tr",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "ru",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "uk",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-uk-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "id",
-      "size": "2064x2752",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-2064x2752-0[1-4].png"
     },
     {
       "language": "hi",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-hi-2064x2752-0[1-4].png"
     },
     {
-      "language": "vi",
+      "language": "id",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-vi-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-id-2064x2752-0[1-4].png"
     },
     {
-      "language": "th",
+      "language": "it",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-2064x2752-0[1-4].png"
     },
     {
       "language": "ja",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ja-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ja-2064x2752-0[1-4].png"
     },
     {
       "language": "ko",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "pl",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pl-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "pt-BR",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-pt-BR-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "ru",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "th",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "uk",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-uk-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "vi",
+      "size": "2064x2752",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-vi-2064x2752-0[1-4].png"
     },
     {
       "language": "zh-Hans",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hans-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hans-2064x2752-0[1-4].png"
     },
     {
       "language": "zh-Hant",
       "size": "2064x2752",
       "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
       "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hant-2064x2752-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "he",
-      "size": "1320x2868",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1320x2868-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "he",
-      "size": "1206x2622",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-he-1206x2622-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "es",
-      "size": "1320x2868",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1320x2868-0[1-4].png",
-      "store_placement": "unverified"
-    },
-    {
-      "language": "es",
-      "size": "1206x2622",
-      "panels": 4,
-      "technical_validation": "passed_including_native_pixel_comparison",
-      "visual_review": "passed",
-      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-es-1206x2622-0[1-4].png",
-      "store_placement": "unverified"
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-zh-Hant-2064x2752-0[1-4].png"
     }
   ],
-  "remaining_batch": [],
-  "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved"
+  "remaining_batch": [
+    {
+      "language": "hi",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "hi",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "id",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "id",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "it",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "it",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ja",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ja",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ko",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ko",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "nl",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "nl",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "pl",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "pl",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "pt-BR",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "pt-BR",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ru",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "ru",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "th",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "th",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "tr",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "tr",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "uk",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "uk",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "vi",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "vi",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "zh-Hans",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "zh-Hans",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "zh-Hant",
+      "size": "1320x2868",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    },
+    {
+      "language": "zh-Hant",
+      "size": "1206x2622",
+      "device": "iphone",
+      "status": "waiting_for_verified_native_capture",
+      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+    }
+  ],
+  "counts": {
+    "expected_panels": 252,
+    "staged_panels": 132,
+    "complete_sets": 33,
+    "pending_sets": 30
+  }
 }
