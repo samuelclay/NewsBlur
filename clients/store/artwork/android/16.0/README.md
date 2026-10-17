@@ -7,7 +7,7 @@ The approved direction adapts the iOS Sage panels and cooking demonstration for 
 - `native-render.swift`: offline CoreGraphics/CoreText layout. Soft cream, Sage, restrained typography and the actual Android app are the visual system.
 - `copy/<language>.json`: four localized screenshot headlines and labels, plus feature headline/subheadline, for all 21 supported languages. These platform-neutral strings reuse the approved, reviewed iOS artwork copy. The feature text comes from the approved selected creative; screenshot text comes from Sage panels.
 - `preview/copy/<language>.json`: four localized video captions and the account/paid-feature disclosure. These are platform-neutral captions from the approved iOS preview. They are text sources only; Android footage, encoding and YouTube upload remain separate work.
-- `assets/icon-source.png`: the 1024-pixel Android `app_icon_ember_orange.png` source, copied without modification from `clients/android/NewsBlur/app/src/main/res/drawable-nodpi/`. The Play export is opaque 512 × 512, without added rounding or shadows.
+- `assets/icon-source.png`: the 1024-pixel Android `app_icon_ember_orange.png` source, copied without modification from `clients/android/NewsBlur/app/src/main/res/drawable-nodpi/`. The Play export is 512 × 512 RGBA with fully opaque pixels, without added rounding or shadows.
 - `captures/<language>/<device>-<view>.png`: required fresh native captures. Devices are `phone`, `tablet7`, `tablet10`; views are `stories`, `feeds`, `reader`, `saved`. English also uses its own `captures/en/` directory. There is no language fallback.
 - `export-native.rb`: complete-group export, immutable-source checks, screenshot pixel comparison and inventory generation.
 - `verify-native-pixels.rb`: shared comparison logic adapted from the iOS renderer. It compares the interior of each actual screen with its source capture after scaling. No app text or imagery is recreated.
@@ -16,7 +16,7 @@ The approved direction adapts the iOS Sage panels and cooking demonstration for 
 
 | Play image type | Count per language | Output |
 |---|---:|---|
-| `icon` | 1 | 512 × 512 opaque PNG |
+| `icon` | 1 | 512 × 512 RGBA PNG, fully opaque pixels |
 | `featureGraphic` | 1 | 1024 × 500 opaque PNG |
 | `phoneScreenshots` | 4 | 1080 × 1920 opaque PNG |
 | `sevenInchScreenshots` | 4 | Full-screen source dimensions, opaque PNG |
@@ -38,7 +38,7 @@ ruby clients/store/artwork/android/16.0/export-native.rb --language en --placeme
 ruby clients/store/artwork/android/16.0/export-native.rb --language en --placement tenInchScreenshots
 ```
 
-Swift is compiled locally on macOS. No browser, simulator or network is used by the renderer. Captures must already exist. Missing captures, invalid copy, text that will not fit, unsupported dimensions, alpha channels, changed sources or mismatched app pixels stop export. Existing export groups are preserved; do not casually overwrite reviewed assets.
+Swift is compiled locally on macOS. No browser, simulator or network is used by the renderer. Captures must already exist. Missing captures, invalid copy, text that will not fit, unsupported dimensions, incorrect alpha-channel format, changed sources or mismatched app pixels stop export. Existing export groups are preserved; do not casually overwrite reviewed assets.
 
 Each complete group writes four panels (or one icon/feature image) and `validation.json` under `exports/<language>/<imageType>/`. `exports/manifest.json` aggregates the uploader schema:
 

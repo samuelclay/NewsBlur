@@ -55,7 +55,9 @@ Dir.mktmpdir('newsblur-play-', '/tmp') do |temporary|
     bytes = File.binread(output)
     width, height = item.values_at('width', 'height')
     abort 'Invalid PNG signature or dimensions.' unless bytes.start_with?("\x89PNG\r\n\x1a\n".b) && bytes[16, 8].unpack('NN') == [width, height]
-    abort 'PNG must be opaque.' unless run!('sips', '-g', 'hasAlpha', output).include?('hasAlpha: no')
+    expected_alpha = placement == 'icon' ? 'yes' : 'no'
+    abort 'PNG alpha channel does not match Play requirements.' unless
+      run!('sips', '-g', 'hasAlpha', output).include?("hasAlpha: #{expected_alpha}")
     abort 'Screenshot exceeds basic Play dimensions.' if is_screenshot &&
       ([width, height].min < 320 || [width, height].max > 3840 || [width, height].max > [width, height].min * 2)
     abort 'Icon exceeds Play 1 MB limit.' if placement == 'icon' && bytes.bytesize > 1_048_576
