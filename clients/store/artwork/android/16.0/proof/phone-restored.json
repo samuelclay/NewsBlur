@@ -1,0 +1,11 @@
+{
+  "serial": "R5CT601C8DA",
+  "restored_at": "2026-10-17 15:57:49 UTC",
+  "sysui_demo_allowed": "0",
+  "sysui_tuner_demo_on": "0",
+  "heads_up_notifications_enabled": "1",
+  "zen_mode": "0",
+  "display": "Physical size: 1080x2340",
+  "density": "Physical density: 480",
+  "foreground": "mCurrentFocus=Window{bee6146 u0 com.crabigator.app/com.crabigator.app.MainActivity}"
+}
