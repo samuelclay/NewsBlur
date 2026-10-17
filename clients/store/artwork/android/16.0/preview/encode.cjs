@@ -40,12 +40,14 @@ const inputs = scenes.map((scene, index) => {
   const info = probe(file);
   const video = info.streams.find(stream => stream.codec_type === 'video');
   const duration = Number(video?.duration || info.format.duration);
-  if (!video || !Number.isFinite(duration) || duration < starts[index] + sceneDuration) throw Error('Recording too short for selected interval: ' + file);
+  const available = duration - starts[index];
+  if (!video || !Number.isFinite(duration) || available < 1.5) throw Error('Recording must contain at least 1.5 seconds of genuine footage after the selected start: ' + file);
   if (Math.min(video.width, video.height) < 640 || Math.max(video.width, video.height) > 7680) throw Error('Unexpected recording dimensions: ' + file);
   if (video.tags?.rotate || video.side_data_list?.some(item => Number(item.rotation))) throw Error('Normalize recording rotation before editing: ' + file);
-  if (video.nb_frames && Number(video.nb_frames) < 30) throw Error('Input is not a substantive video recording: ' + file);
+  if (!Number.isFinite(Number(video.nb_frames)) || Number(video.nb_frames) < 30) throw Error('Input must contain at least 30 actual recorded frames: ' + file);
   return {...scene, file, sha256: hash(file), bytes: fs.statSync(file).size, source_start: starts[index], duration: sceneDuration,
-    timeline_start: index * sceneDuration, probe: info};
+    timeline_start: index * sceneDuration, native_interval_seconds: Math.min(sceneDuration, available),
+    final_frame_hold_seconds: Math.max(0, sceneDuration - available), probe: info};
 });
 const duration = inputs.length * sceneDuration;
 const copyHash = hash(copyPath);
@@ -70,13 +72,15 @@ const srt = inputs.map((input, index) => `${index + 1}\n${srtTime(input.timeline
 fs.writeFileSync(path.join(work, 'captions.srt'), srt);
 const ffmpegArgs = ['-hide_banner', '-nostdin', '-n', '-filter_complex_threads', '1'];
 for (const input of inputs) ffmpegArgs.push('-threads', '1', '-i', input.file);
-// Fixed camera framing and real-time cuts preserve recorded motion; no still animation, speed changes, interpolation or simulated interactions.
-const filters = inputs.map((input, index) => `[${index}:v]fps=30:start_time=0,trim=start=${input.source_start}:duration=${input.duration},setpts=PTS-STARTPTS,scale=1800:864:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:108:color=0xdbe1d3,drawbox=x=0:y=0:w=1920:h=104:color=0xedefeb:t=fill,drawbox=x=0:y=976:w=1920:h=104:color=0xedefeb:t=fill,setsar=1,settb=AVTB[v${index}]`);
+// Android VFR recordings may omit unchanged final frames. An explicit final-frame hold fills the cut without inventing motion.
+const filters = inputs.map((input, index) => `[${index}:v]fps=30:start_time=0,trim=start=${input.source_start}:duration=${input.duration},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${input.final_frame_hold_seconds + 0.1},trim=duration=${input.duration},scale=1800:864:force_original_aspect_ratio=decrease:force_divisible_by=2,pad=1920:1080:(ow-iw)/2:108:color=0xdbe1d3,drawbox=x=0:y=0:w=1920:h=104:color=0xedefeb:t=fill,drawbox=x=0:y=976:w=1920:h=104:color=0xedefeb:t=fill,setsar=1,settb=AVTB[v${index}]`);
 filters.push(inputs.map((_, index) => `[v${index}]`).join('') + `concat=n=${inputs.length}:v=1:a=0,ass=filename=captions.ass:shaping=complex[v]`);
 ffmpegArgs.push('-filter_complex', filters.join(';'), '-map', '[v]', '-an', '-t', String(duration), '-c:v', 'libx264', '-preset', 'fast', '-threads', '2', '-profile:v', 'high', '-level:v', '4.1', '-pix_fmt', 'yuv420p', '-b:v', '8M', '-maxrate', '10M', '-bufsize', '20M', '-r', '30', '-movflags', '+faststart', '-map_metadata', '-1', output);
 const planPath = path.join(work, 'render-plan.json');
 const plan = {status: 'prepared_not_encoded', locale, output, source_copy: copyPath, copy_sha256: copyHash, encoder_sha256: encoderHash,
-  inputs, width: 1920, height: 1080, duration, frame_rate: 30, audio: 'none', actual_app_footage_seconds: duration,
+  inputs, width: 1920, height: 1080, duration, frame_rate: 30, audio: 'none', actual_app_visible_seconds: duration,
+  native_recording_intervals_seconds: inputs.reduce((sum, input) => sum + input.native_interval_seconds, 0),
+  explicit_final_frame_holds_seconds: inputs.reduce((sum, input) => sum + input.final_frame_hold_seconds, 0),
   encoder: 'ffmpeg', encoder_args: ffmpegArgs, working_directory: work, visual_review: 'required', youtube_upload: 'unverified', play_listing: 'unverified'};
 const save = () => fs.writeFileSync(planPath, JSON.stringify(plan, null, 2) + '\n');
 save();

@@ -1,6 +1,6 @@
 # Android promotional video
 
-`encode.cjs` prepares a 28-second, 1920 × 1080, 30 fps silent H.264 video for each of the 21 supported languages. The eight cuts show the actual phone interface followed by the actual tablet interface. Each 3.5-second cut uses real recorded motion at normal speed. No motion is generated from still images, and the pipeline does not simulate taps, scrolling, zooms or transitions.
+`encode.cjs` prepares a 28-second, 1920 × 1080, 30 fps silent H.264 video for each of the 21 supported languages. The eight cuts show the actual phone interface followed by the actual tablet interface. Each 3.5-second cut uses real recorded motion at normal speed. When Android omits unchanged ending frames, an explicitly recorded hold of the last real frame fills the remaining cut. No motion is generated from still images, and the pipeline does not simulate taps, scrolling, zooms or transitions.
 
 ## Inputs and composition
 
@@ -17,7 +17,7 @@ Supply these eight real recordings for each language:
 ../captures/footage/<language>/tablet10-saved.mp4
 ```
 
-Capture approximately five usable seconds per scene. The default selects the first 3.5 seconds; `--starts` selects eight explicit offsets in the order above. Inputs must provide the full chosen interval. The script rejects missing recordings, short intervals, implausible dimensions, image-like inputs and unresolved video-rotation metadata.
+Capture approximately five usable seconds per scene. The default selects the first 3.5 seconds; `--starts` selects eight explicit offsets in the order above. Inputs must provide at least 1.5 seconds and 30 genuine recorded frames. A shorter-than-3.5-second interval receives a final-frame hold; its exact duration is recorded in the plan. The script rejects missing recordings, shorter intervals, implausible dimensions, image-like inputs and unresolved video-rotation metadata.
 
 The complete native image is fitted within 1800 × 864 without cropping or distorting the screen. Sage fills unused space, including the sides of portrait footage. Captions occupy the cream band above the app. The account/paid-feature disclosure appears in the bottom band during the final seven seconds. The app remains visible throughout all 28 seconds. The video is intentionally silent and remains understandable during muted autoplay.
 
@@ -48,4 +48,4 @@ Google recommends real app use early, most of the duration showing the experienc
 
 After encoding, review every localized video's complete playback and text. After YouTube processing, verify playback, visibility, embedding, age/advertising status, subtitle language and the actual watch URL. Only then attach the locale's URL to Play, preserving all other listing metadata and pending changes. Read back each persisted Play URL. YouTube upload and Play listing persistence are separate completion states.
 
-Initial validation: Node syntax and command help passed; absent footage correctly blocks preparation before encoding. Full encode and playback validation await authentic Android recordings.
+English validation: authentic eight-clip encode passed duration, codec, dimensions, frame count, source hashes and full ffmpeg decoding. All eight scene midpoint frames were visually checked; complete player playback remains a separate review step. Missing recordings and insufficient genuine footage fail closed.
