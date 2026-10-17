@@ -5,23 +5,25 @@ require "json"
 require "open3"
 require "time"
 
+stills_only = ARGV.delete("--stills-only")
 device, *locales = ARGV
 devices = {"iphone" => "011EB534-697E-4855-BACA-4D4C6E4E92EF", "ipad" => "883650D4-245E-4265-84A5-97606867CB5B"}
 abort "Usage: ruby capture_locales.rb iphone|ipad locale..." unless devices.key?(device) && !locales.empty?
 base = "clients/store/artwork/ios/16.0/screenshots"
-wrapper = ["python3", "clients/ios/run_ios.py", "--udid", devices.fetch(device)]
+wrapper = ["python3", "clients/ios/run_ios.py", "--udid", ENV.fetch("NEWSBLUR_CAPTURE_UDID", devices.fetch(device))]
 
 locales.each do |locale|
   abort "Unsupported locale: #{locale}" unless File.file?("clients/store/artwork/ios/16.0/selected/copy/#{locale}.json")
   captures = locale == "en" ? "#{base}/captures" : "#{base}/captures/localized/#{locale}"
   footage = locale == "en" ? "#{base}/footage/#{device}" : "#{base}/footage/localized/#{locale}/#{device}"
-  abort "Preserve the existing recording before recapturing: #{footage}" if File.exist?("#{footage}/scroll.mp4")
+  abort "Preserve the existing recording before recapturing: #{footage}" if !stills_only && File.exist?("#{footage}/scroll.mp4")
   FileUtils.mkdir_p(captures)
-  FileUtils.mkdir_p(footage)
+  FileUtils.mkdir_p(footage) unless stills_only
   rtl = %w[ar he].include?(locale)
   screen = device == "ipad" ? "reader-folder-tech" : "reader"
   arguments = "-newsblur-ui-testing -newsblur-marketing-cooking -newsblur-marketing-assets #{Dir.pwd}/clients/ios/MarketingCooking -newsblur-ui-test-screen #{screen} -newsblur-ui-test-story-titles-style standard -newsblur-ui-test-theme light -newsblur-ui-test-animations -ApplePersistenceIgnoreState YES -newsblur_language #{locale}"
   arguments += " -newsblur-ui-test-fill-window" if device == "ipad"
+  arguments = arguments.sub(" -newsblur-ui-test-animations", "") if stills_only
   env = {"IOS_LAUNCH_ARGUMENTS" => arguments, "IOS_CAPTURE_CPU" => "0", "PYTHONUNBUFFERED" => "1"}
   puts "START #{device} #{locale} #{Time.now.utc.iso8601}"
   STDOUT.flush
@@ -77,6 +79,8 @@ locales.each do |locale|
                "waittext:What to cook when autumn arrives", *list_ready, "tap:#{story_x},540", *article_ready, "sleep:3",
                "checkpoint:saved", screenshot.call("saved"), "sleep:5"]
   end
+  # capture_locales.rb retains real readiness checks while omitting video and editorial holds.
+  actions.reject! { |action| action.start_with?("capture:", "checkpoint:") || action == "sleep:5" } if stills_only
   abort "Capture failed: #{locale}" unless system(env, *wrapper, *actions)
   puts "DONE #{device} #{locale}"
   STDOUT.flush
