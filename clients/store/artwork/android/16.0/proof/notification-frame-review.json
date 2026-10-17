@@ -1,5 +1,5 @@
 {
-  "reviewed_at": "2026-10-17T15:59:40Z",
+  "reviewed_at": "2026-10-17T16:21:44Z",
   "scope": "Notification review of raw footage; does not replace full final-video playback. Arabic phone recapture passed.",
   "clips": [
     {
@@ -883,314 +883,6 @@
       "area": "top 360 source pixels, where heads-up banners appear"
     },
     {
-      "path": "captures/footage/en/tablet10-feeds.mp4",
-      "sha256": "f8781b4f2ea4bc2d1318c0b90bd576adaada9e906d8489142a4bc618c07fd59e",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/en/tablet10-stories.mp4",
-      "sha256": "25cb655e9ae699832d95e8484de10159b1cfa6869a14d29d5931e44ef9f81b4d",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/en/tablet10-reader.mp4",
-      "sha256": "9365a26a1098b1638daa29f3dbcda1ce7cc8015f21a3f9a87dbbc29bd0f00cfc",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/en/tablet10-saved.mp4",
-      "sha256": "5ca080b0d138b1ae22deac5c45ece785d355d949283087e63d9c69a4751fade8",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/fr/tablet10-feeds.mp4",
-      "sha256": "599e04002d96823d44efcfcc33ae575b9054cfd5406876b2fc1e83fbd7a76ed9",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/fr/tablet10-stories.mp4",
-      "sha256": "c967612e8814c4b747602cc1ec9a9776212c1c8732a6cab9165f2cb90762f1dc",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/fr/tablet10-reader.mp4",
-      "sha256": "085ce2adf6ce3fb08ac1a3c653b3d5172359f8e9e693564af576d9bfe4b1f0ab",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/fr/tablet10-saved.mp4",
-      "sha256": "455bc6b445d11db65d3e9fa016dd2cadb0910fede711260cb513504a13a93c96",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/ar/tablet10-feeds.mp4",
-      "sha256": "44299e76b6a62932b0417459295ffc7396d57e87a646a41115012ad7471efa8a",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/ar/tablet10-stories.mp4",
-      "sha256": "904405bd9bec081a6529e1f157915a46219c5065cd9a72c706f183a5083fb8c7",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/ar/tablet10-reader.mp4",
-      "sha256": "8eccea1d38855831f300c02790a8bdd695168dd26973c3527a24caedce1c9a5d",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/ar/tablet10-saved.mp4",
-      "sha256": "2ffdb18e9b1990b464c8ee6ea5ff67ce0861c0dc910150a29ed5a1de3a9ba6d1",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/he/tablet10-feeds.mp4",
-      "sha256": "6e8c0a9b3da3f26da3260477d6057d1863b9673f6b2722f192f7a9315c082c4a",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/he/tablet10-stories.mp4",
-      "sha256": "28f4f962be26cf4006130c17962fe30f9606c1bf836d373b62003b2d4d541002",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/he/tablet10-reader.mp4",
-      "sha256": "a883bdca75fbbb8a050b07b85e1097350f5de4d3cbf7d8c738fed4936f16ad1a",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/he/tablet10-saved.mp4",
-      "sha256": "1ebfc913cb6d59ed93338cdac976c7e05c9db935dd6589b6e222cb4ce485a75c",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/es/tablet10-feeds.mp4",
-      "sha256": "6014d0db20ca3be37a3c71e90503a11b0ea3e9aaf0105b944a5f1efaed6fef35",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/es/tablet10-stories.mp4",
-      "sha256": "15772f341279103d80c04bdaac6644e1c43eb174a607227916113b1357248a79",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/es/tablet10-reader.mp4",
-      "sha256": "63b8da0195a4b3aeca5142dcc4a54296f62c0bb5b92ec052f3bab6ee261adc4b",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/es/tablet10-saved.mp4",
-      "sha256": "3ddf5d64192f3d8c06720bd8bc961d22f83e8e258bcf28a152cda11d4d8db089",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/de/tablet10-feeds.mp4",
-      "sha256": "c6ed9db8c08bf725804dc94d269cae5780fca1e54f2f17bdf8ed6ae2fde13446",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/de/tablet10-stories.mp4",
-      "sha256": "1d76ce009836ec027fd7c9efa2a5d5cbd409a4358b48379f409297432bf4d3ff",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/de/tablet10-reader.mp4",
-      "sha256": "fd3e65166f63f138185feab21b4cd00714002dd8ba907e09897e1120c4279771",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/de/tablet10-saved.mp4",
-      "sha256": "e61dcbcfe6da212d400c5e646fd1be3c14f8ac01a580908850597bba46faa2fb",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/pt-BR/tablet10-feeds.mp4",
-      "sha256": "c02cb6076f81c8bb846e8ac278368368fba75f89597c62dcedc64473b0314612",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/pt-BR/tablet10-stories.mp4",
-      "sha256": "20e35ba2aff361fda89ff2d0f2bac17981165384e41e487804fa881bea7eb167",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/pt-BR/tablet10-reader.mp4",
-      "sha256": "2e4f851de5422c49a41d590e35eacc17d4eea05953bad5dee8100c54bb9db710",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
-      "path": "captures/footage/pt-BR/tablet10-saved.mp4",
-      "sha256": "b8ea038490d9bc5fa8660375e39d91f7e149c7e43d14971b8912b413abb81091",
-      "review": "passed",
-      "samples": [
-        "first visible frame",
-        "middle",
-        "last decoded frame"
-      ],
-      "area": "top 360 source pixels"
-    },
-    {
       "path": "captures/footage/ar/phone-feeds.mp4",
       "sha256": "75ce0902f9746e3211f7ee7648ed64e151a481ff0de28c8c0f89008292da75b8",
       "review": "passed",
@@ -1235,15 +927,235 @@
       "area": "top 360 source pixels"
     },
     {
+      "path": "captures/footage/en/tablet10-feeds.mp4",
+      "sha256": "f8781b4f2ea4bc2d1318c0b90bd576adaada9e906d8489142a4bc618c07fd59e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/tablet10-stories.mp4",
+      "sha256": "25cb655e9ae699832d95e8484de10159b1cfa6869a14d29d5931e44ef9f81b4d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/tablet10-reader.mp4",
+      "sha256": "9365a26a1098b1638daa29f3dbcda1ce7cc8015f21a3f9a87dbbc29bd0f00cfc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/en/tablet10-saved.mp4",
+      "sha256": "5ca080b0d138b1ae22deac5c45ece785d355d949283087e63d9c69a4751fade8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/tablet10-feeds.mp4",
+      "sha256": "6014d0db20ca3be37a3c71e90503a11b0ea3e9aaf0105b944a5f1efaed6fef35",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/tablet10-stories.mp4",
+      "sha256": "15772f341279103d80c04bdaac6644e1c43eb174a607227916113b1357248a79",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/tablet10-reader.mp4",
+      "sha256": "63b8da0195a4b3aeca5142dcc4a54296f62c0bb5b92ec052f3bab6ee261adc4b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/es/tablet10-saved.mp4",
+      "sha256": "3ddf5d64192f3d8c06720bd8bc961d22f83e8e258bcf28a152cda11d4d8db089",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-feeds.mp4",
+      "sha256": "599e04002d96823d44efcfcc33ae575b9054cfd5406876b2fc1e83fbd7a76ed9",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-stories.mp4",
+      "sha256": "c967612e8814c4b747602cc1ec9a9776212c1c8732a6cab9165f2cb90762f1dc",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-reader.mp4",
+      "sha256": "085ce2adf6ce3fb08ac1a3c653b3d5172359f8e9e693564af576d9bfe4b1f0ab",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/fr/tablet10-saved.mp4",
+      "sha256": "455bc6b445d11db65d3e9fa016dd2cadb0910fede711260cb513504a13a93c96",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/tablet10-feeds.mp4",
+      "sha256": "c6ed9db8c08bf725804dc94d269cae5780fca1e54f2f17bdf8ed6ae2fde13446",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/tablet10-stories.mp4",
+      "sha256": "1d76ce009836ec027fd7c9efa2a5d5cbd409a4358b48379f409297432bf4d3ff",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/tablet10-reader.mp4",
+      "sha256": "fd3e65166f63f138185feab21b4cd00714002dd8ba907e09897e1120c4279771",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/de/tablet10-saved.mp4",
+      "sha256": "e61dcbcfe6da212d400c5e646fd1be3c14f8ac01a580908850597bba46faa2fb",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-feeds.mp4",
+      "sha256": "c02cb6076f81c8bb846e8ac278368368fba75f89597c62dcedc64473b0314612",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-stories.mp4",
+      "sha256": "20e35ba2aff361fda89ff2d0f2bac17981165384e41e487804fa881bea7eb167",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-reader.mp4",
+      "sha256": "2e4f851de5422c49a41d590e35eacc17d4eea05953bad5dee8100c54bb9db710",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pt-BR/tablet10-saved.mp4",
+      "sha256": "b8ea038490d9bc5fa8660375e39d91f7e149c7e43d14971b8912b413abb81091",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
       "path": "captures/footage/it/tablet10-feeds.mp4",
       "sha256": "5851f4e5cf5e39149a4ed51632c0c883b7fce14e7159015e854ee778832346a4",
       "review": "passed",
       "samples": [
         "first visible frame",
         "middle",
-        "last decoded frame"
+        "end"
       ],
-      "area": "top 360 source pixels"
+      "area": "top 360 source pixels, where heads-up banners appear"
     },
     {
       "path": "captures/footage/it/tablet10-stories.mp4",
@@ -1252,9 +1164,9 @@
       "samples": [
         "first visible frame",
         "middle",
-        "last decoded frame"
+        "end"
       ],
-      "area": "top 360 source pixels"
+      "area": "top 360 source pixels, where heads-up banners appear"
     },
     {
       "path": "captures/footage/it/tablet10-reader.mp4",
@@ -1263,9 +1175,9 @@
       "samples": [
         "first visible frame",
         "middle",
-        "last decoded frame"
+        "end"
       ],
-      "area": "top 360 source pixels"
+      "area": "top 360 source pixels, where heads-up banners appear"
     },
     {
       "path": "captures/footage/it/tablet10-saved.mp4",
@@ -1274,9 +1186,581 @@
       "samples": [
         "first visible frame",
         "middle",
-        "last decoded frame"
+        "end"
       ],
-      "area": "top 360 source pixels"
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/tablet10-feeds.mp4",
+      "sha256": "1406fd135ea3f6a1ddedb4cd738197c6e8fd3acfa8aa91914178e77060bd1a3e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/tablet10-stories.mp4",
+      "sha256": "9c08d29fecf2c5934dc99e586d468f795aa4110cfee336e542430cd216124e0c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/tablet10-reader.mp4",
+      "sha256": "6f1df281711279114bb16bbf82c7a6a10bca6b3f6f30ff83ae30dedd6d1ad569",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/nl/tablet10-saved.mp4",
+      "sha256": "1b9f46bc5a2a3af68e258d23982ea68e31b5d62abbda718951a8a4f054e027fe",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/tablet10-feeds.mp4",
+      "sha256": "ef189d85170e6588c298fa47138e32707f3098b01527a3aa06acf1f3968414fe",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/tablet10-stories.mp4",
+      "sha256": "e50ff3950216a9ab0b61d6eb1cf246e0f8100c83b0116bc44f0cbbb8dd3b186f",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/tablet10-reader.mp4",
+      "sha256": "b4d367aa6465bd7bafdcddad1b7e793998a0f1d13c8ebdb6c93cc79316fa78d0",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/pl/tablet10-saved.mp4",
+      "sha256": "65b20642f1e2d620d357400e4350fec7519c7f5865b519cef414db6563c78473",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/tablet10-feeds.mp4",
+      "sha256": "1ef6429d160ee96341162b27b40664b630dafcb1b4b08f0e801b138e79786762",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/tablet10-stories.mp4",
+      "sha256": "51d76e9ff9c44e8d23c1d627a7b583b5c03cc45c8045b6b61bc97d91009d6543",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/tablet10-reader.mp4",
+      "sha256": "7a7c42474edfb70e7ffba080ff1d129010a021fc01a0ab366a8c055a7239aa34",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/tr/tablet10-saved.mp4",
+      "sha256": "773142ab5db642b4096db34e70e82f547e18200d5049f3f4c5f65be5308a0342",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/tablet10-feeds.mp4",
+      "sha256": "c80814cd2f03af982e786059b15df63821fbb77a3000f3aadddf9f269786fd75",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/tablet10-stories.mp4",
+      "sha256": "c4c9a5ded5eb8c4dd8a7d37fac151b4bf950c68c634f62576268deb2e1caf7b2",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/tablet10-reader.mp4",
+      "sha256": "4206b3c88dd3c4ad0446ace9f846782de2ebc62494a3a68ea365c9fe9a578e89",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ru/tablet10-saved.mp4",
+      "sha256": "d96ff4c784c561dd0a0e228545519a895cb135d9bb8ce503b79d0582302e05b9",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/tablet10-feeds.mp4",
+      "sha256": "670fa87951dc3a7ddc597128e918300a3070863e16cc09fffa7279a56acc343f",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/tablet10-stories.mp4",
+      "sha256": "47a27fd65be2678952e302fe218ce7634bac9b143fcd140ffa394b368bad6758",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/tablet10-reader.mp4",
+      "sha256": "d53ae7766f4804ae87d6c35a6ff876558e1db5293339c19bfbd899c599fc3f89",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/uk/tablet10-saved.mp4",
+      "sha256": "33469b80048152c19b6f0b1cb4b358da9460a18ab0e800d6981fbe743bbe8c26",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-feeds.mp4",
+      "sha256": "44299e76b6a62932b0417459295ffc7396d57e87a646a41115012ad7471efa8a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-stories.mp4",
+      "sha256": "904405bd9bec081a6529e1f157915a46219c5065cd9a72c706f183a5083fb8c7",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-reader.mp4",
+      "sha256": "8eccea1d38855831f300c02790a8bdd695168dd26973c3527a24caedce1c9a5d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ar/tablet10-saved.mp4",
+      "sha256": "2ffdb18e9b1990b464c8ee6ea5ff67ce0861c0dc910150a29ed5a1de3a9ba6d1",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/tablet10-feeds.mp4",
+      "sha256": "6e8c0a9b3da3f26da3260477d6057d1863b9673f6b2722f192f7a9315c082c4a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/tablet10-stories.mp4",
+      "sha256": "28f4f962be26cf4006130c17962fe30f9606c1bf836d373b62003b2d4d541002",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/tablet10-reader.mp4",
+      "sha256": "a883bdca75fbbb8a050b07b85e1097350f5de4d3cbf7d8c738fed4936f16ad1a",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/he/tablet10-saved.mp4",
+      "sha256": "1ebfc913cb6d59ed93338cdac976c7e05c9db935dd6589b6e222cb4ce485a75c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/tablet10-feeds.mp4",
+      "sha256": "3cf251cebda13ed6d4643f7adcfdda69d73d6e09ca1a6837eaf34809c16f873e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/tablet10-stories.mp4",
+      "sha256": "6220d937c4260a54184fc14d657fc5bf745f1abe806a0b11f2e29faab676641b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/tablet10-reader.mp4",
+      "sha256": "acc4f734828a3790baf58d5a433391282cc2353f918f0b78981e1ea276c5dde5",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/hi/tablet10-saved.mp4",
+      "sha256": "f407102f398fee17ef061321784f53ea9341d694a1495bf4c1effd0a5bb120a8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/tablet10-feeds.mp4",
+      "sha256": "4b6a58412c81de7f17a12d3fd78bd3c23853baa4f894ece31f8b4f06f5c3aa29",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/tablet10-stories.mp4",
+      "sha256": "299b26ff7d9971d0259375bd2500a94f71ac8b18cd09c818570953ef474a37ef",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/tablet10-reader.mp4",
+      "sha256": "e0503bf3069df0ed44d6b3770663a656f958e4d572b0d877cb3eab3debc3be6e",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/id/tablet10-saved.mp4",
+      "sha256": "055301aaa5d8a2c8fc9ecf28802dd8c5e8bb31512bf0457901e3a9db365cd564",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/tablet10-feeds.mp4",
+      "sha256": "89e789cc5a87f4fe0e1a5235de423018daa1b1d74f87eb71dd4184e146522fed",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/tablet10-stories.mp4",
+      "sha256": "301cb8a29c5fb7d3879f8d041a3058b041e72b69f312f84b6f9ac6c239f65348",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/tablet10-reader.mp4",
+      "sha256": "b303ce5b531e093b6c18db1b681c801fc486efbea7d95321bd72ac2dfd959e63",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/vi/tablet10-saved.mp4",
+      "sha256": "ff9e39065f6f7bacc69ac2f0d4a93844ef092ed6a535102c6958336058314a78",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/tablet10-feeds.mp4",
+      "sha256": "1b9a635ab2f42b2a21f7194566fadfed11547eb9d53b516d38b45aa1b1bcea5c",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/tablet10-stories.mp4",
+      "sha256": "2ea55b356dfc81e954d9eb6caa95d4f081ad8f9064905a4250d9fcc9ca616eb1",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/tablet10-reader.mp4",
+      "sha256": "bb1a5f316a90400ec443d032e3acb43f1d1673ec02eca4118843adc66b06e11d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/th/tablet10-saved.mp4",
+      "sha256": "9aa38fc5391393237f09bb4fe6f2e6e8d1bdb207ef38f9a8164abe40f02a97ec",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/tablet10-feeds.mp4",
+      "sha256": "9c8a50767bbc275a0bfc17b10c3b7bd97cc6d31ba216562d1b5bd6fb50a428ff",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/tablet10-stories.mp4",
+      "sha256": "6b45708e903885a4bd42c81a024f006dc27c2109d3292195ea654f0e7221310b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/tablet10-reader.mp4",
+      "sha256": "5540b24457374bd2cf5f5082c1292ceb8c881eea1f3bc923a66d9382a2f619c1",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ja/tablet10-saved.mp4",
+      "sha256": "bbab7b5917c0a576304fee03311aafcac00a056083f7a1eeb7da5428fc06bd2d",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/tablet10-feeds.mp4",
+      "sha256": "861c95e0dd1e04b94db1ce40842b104e78faf4c4c1fb7aba9fb42b7904dfd5b8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/tablet10-stories.mp4",
+      "sha256": "5ae892943dae3b0c5df0adf67c90252ab4a00a3939a4cdec7f0be96ca19989e8",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/tablet10-reader.mp4",
+      "sha256": "84f4871f29e34cc77395ffcd24e1ed818c0ac064466758a23350f5995bdfed90",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
+    },
+    {
+      "path": "captures/footage/ko/tablet10-saved.mp4",
+      "sha256": "4e9cc815f0ca7ae1575d918c3fd915b568442a6c554accda0ce4f2c4566e2e3b",
+      "review": "passed",
+      "samples": [
+        "first visible frame",
+        "middle",
+        "end"
+      ],
+      "area": "top 360 source pixels, where heads-up banners appear"
     }
   ]
 }
