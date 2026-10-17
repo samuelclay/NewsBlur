@@ -20,6 +20,6 @@
       "notes": "Matching native iPad interface. Full-size source frame at 18 seconds confirms normal readable split-reader text, without clipping. Includes actual fullscreen article scrolling and brief native navigation into Saved Stories, ending before the later article-selection animation. Final export inspection found the previous 45.8-second start ended mid-animation; moved Saved start to 45.2 seconds so the ending precedes article selection."
     }
   },
-  "status": "source_intervals_reviewed",
-  "remaining": "Corrected cut awaits re-encode in next capture gap; previous draft excluded from manifest."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
