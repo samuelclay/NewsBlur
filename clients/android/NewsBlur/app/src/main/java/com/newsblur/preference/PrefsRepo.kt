@@ -738,6 +738,30 @@ class PrefsRepo(
 
     fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
 
+    fun isStoryListFullscreenEnabled() = prefs.getBoolean(PrefConstants.STORY_LIST_FULLSCREEN, false)
+
+    fun getStoryListSplitRatio() = prefs.getFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, 0.4f)
+
+    fun setStoryListSplitRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, ratio) }
+    }
+
+    fun getFeedListWidthRatio() = prefs.getFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, 0.4f)
+
+    fun setFeedListWidthRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, ratio) }
+    }
+
+    fun setStoryListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.STORY_LIST_FULLSCREEN, enabled) }
+    }
+
+    fun isFeedListFullscreenEnabled() = prefs.getBoolean(PrefConstants.FEED_LIST_FULLSCREEN, false)
+
+    fun setFeedListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.FEED_LIST_FULLSCREEN, enabled) }
+    }
+
     fun setReaderFullscreenEnabled(enabled: Boolean) {
         prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }
     }

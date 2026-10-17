@@ -271,7 +271,6 @@ class MainFeedListMenuPopup(
                 if (theme != prefsRepo.getSelectedTheme()) {
                     popupWindow.dismiss()
                     prefsRepo.setSelectedTheme(theme)
-                    UIUtils.restartActivity(activity)
                 }
             },
         )

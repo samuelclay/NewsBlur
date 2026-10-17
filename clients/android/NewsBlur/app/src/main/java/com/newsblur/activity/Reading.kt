@@ -566,6 +566,12 @@ abstract class Reading :
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
+        // TabletPaneDivider.kt changes only bounds; keep the current WebView and scroll position.
+        if (StorySplitView.isResizingPanes(this)) {
+            super.onConfigurationChanged(newConfig)
+            updateReaderFullscreenButton()
+            return
+        }
         cancelStoryDwell(clearStory = true)
         pendingConfigChangeRestore = captureReadingConfigChangeRestore()
         logReaderRestore(
@@ -2383,6 +2389,11 @@ abstract class Reading :
         // The most recently resumed reader. It outlives the story list beside it in a tablet split
         // across rotation, so ItemsList.java asks here rather than keeping its own reference.
         private var latestReaderRef = WeakReference<Reading>(null)
+
+        /** ItemsList.java waits for this task's reader to close before restoring feeds beside titles. */
+        @JvmStatic
+        fun peekReader(taskId: Int): Reading? =
+            latestReaderRef.get()?.takeIf { !it.isFinishing && !it.isDestroyed && it.taskId == taskId }
 
         /**
          * The reader showing in the reader pane of a tablet split in [taskId] (StorySplitView.kt),

@@ -1,6 +1,7 @@
 package com.newsblur.activity
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +29,7 @@ import javax.inject.Inject
  * login state and tracking of sync/update broadcasts.
  */
 @AndroidEntryPoint
-open class NbActivity : AppCompatActivity() {
+open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
@@ -40,6 +41,7 @@ open class NbActivity : AppCompatActivity() {
 
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
+    private var themePreferences: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // A foldable that started folded gets its split rules once any window opens up wide.
@@ -83,7 +85,31 @@ open class NbActivity : AppCompatActivity() {
         super.onResume()
         finishIfNotLoggedIn()
 
-        // is is possible that another activity changed the theme while we were on the backstack
+        startObservingThemeChanges()
+    }
+
+    private fun startObservingThemeChanges() {
+        if (themePreferences == null) {
+            themePreferences = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE).also {
+                it.registerOnSharedPreferenceChangeListener(this)
+            }
+        }
+        refreshThemeIfChanged()
+    }
+
+    private fun stopObservingThemeChanges() {
+        val preferences = themePreferences
+        themePreferences = null
+        preferences?.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // NbActivity.kt observes each resumed pane, including peers that never leave the foreground.
+        if (themePreferences != null && key == PrefConstants.THEME) refreshThemeIfChanged()
+    }
+
+    private fun refreshThemeIfChanged() {
+        if (isFinishing || isDestroyed) return
         val currentSelectedTheme = prefsRepo.getSelectedTheme()
         if (lastTheme != currentSelectedTheme) {
             lastTheme = currentSelectedTheme
@@ -93,6 +119,7 @@ open class NbActivity : AppCompatActivity() {
 
     override fun onPause() {
         Log.d(this.javaClass.name, "onPause")
+        stopObservingThemeChanges()
         super.onPause()
     }
 

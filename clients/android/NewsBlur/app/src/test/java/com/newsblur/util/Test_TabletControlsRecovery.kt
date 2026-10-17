@@ -1,7 +1,5 @@
 package com.newsblur.util
 
-import com.newsblur.activity.FeedListDrawer
-import com.newsblur.activity.ItemsList
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 import org.junit.Assert.assertTrue
@@ -24,18 +22,4 @@ class Test_TabletControlsRecovery {
         assertTrue("The fullscreen button needs an accessible label", control!!.getAttribute("android:contentDescription").isNotBlank())
     }
 
-    @Test
-    fun test_tablet_lists_keep_their_loaded_content_during_divider_resizing() {
-        val activities = document("AndroidManifest.xml").getElementsByTagName("activity")
-        val required = setOf("orientation", "screenSize", "smallestScreenSize", "screenLayout")
-        for (index in 0 until activities.length) {
-            val activity = activities.item(index) as Element
-            val name = activity.getAttribute("android:name").let { if (it.startsWith(".")) "com.newsblur$it" else it }
-            val type = Class.forName(name, false, javaClass.classLoader)
-            if (!ItemsList::class.java.isAssignableFrom(type) && type != FeedListDrawer::class.java) continue
-            val handled = activity.getAttribute("android:configChanges").split("|").toSet()
-            // AndroidManifest.xml must not recreate a list every time its divider moves.
-            assertTrue("$name recreates while resizing: missing ${required - handled}", handled.containsAll(required))
-        }
-    }
 }

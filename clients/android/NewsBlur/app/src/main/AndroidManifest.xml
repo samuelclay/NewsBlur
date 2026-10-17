@@ -718,51 +718,63 @@
 
         <activity
             android:name=".activity.FeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.InfrequentItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.WidelyReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.LongReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GoodReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.ReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SavedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GlobalSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.FolderItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SocialFeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
@@ -847,9 +859,10 @@
 
         <activity android:name=".activity.ReadingPlaceholder" />
 
-        <!-- FeedListDrawer.kt slides the feed list over a tablet's story list and reader. -->
+        <!-- FeedListDrawer.kt sits beside story titles in the tablet browsing layout. -->
         <activity
             android:name=".activity.FeedListDrawer"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Translucent" />
 
