@@ -9,7 +9,7 @@ class TestCaptureResume < Minitest::Test
     @directory = Dir.mktmpdir
     @video = File.join(@directory, 'phone-stories.mp4')
     @expected = { 'language' => 'es', 'device' => 'phone', 'scene' => 'stories', 'serial' => 'device', 'package' => 'com.newsblur.storecapture' }
-    @probe = { 'width' => 1080, 'height' => 2340, 'duration' => 5.8, 'codec' => 'h264', 'frame_rate' => '30/1' }
+    @probe = { 'width' => 1080, 'height' => 2340, 'duration' => 5.8, 'codec' => 'h264', 'frame_rate' => '30/1', 'frame_count' => 174 }
     @source_hash = 'still-hash'
   end
 
@@ -70,5 +70,10 @@ class TestCaptureResume < Minitest::Test
     write_video
     File.write(@video.sub(/\.mp4$/, '.xml'), '<different/>')
     refute complete?
+  end
+
+  def test_variable_frame_rate_static_ending_is_valid_without_recapture
+    assert CaptureResume.valid_probe?(@probe.merge('duration' => 2.36, 'frame_count' => 192), [1080, 2340])
+    refute CaptureResume.valid_probe?(@probe.merge('frame_count' => 2), [1080, 2340])
   end
 end

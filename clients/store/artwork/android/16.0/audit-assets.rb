@@ -137,4 +137,4 @@ report = { checked_at: Time.now.utc.iso8601, packageName: 'com.newsblur', manife
   all_visually_reviewed: assets.all? { |row| row['visual_review'] == 'approved' }, assets: results,
   manual_checks: ['Actual interface language and RTL direction', 'No cut-off text or missing glyphs', 'Correct phone/tablet navigation and cooked-content images', 'No debug errors, alerts, loaders or stale content', 'English story/feed content intentionally remains English', 'Store readback and YouTube playback remain separate checks'] }
 File.write(options[:output], JSON.pretty_generate(report) + "\n")
-puts JSON.generate(report.reject { |key, _| key == :assets })
+puts JSON.generate(report.reject { |key, _| [:assets, :missing_groups].include?(key) }.merge(missing_group_count: missing.size))
