@@ -58,7 +58,7 @@
     "verified_proof": "proof/fr-main-search-persisted.jpg",
     "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "All 21 iPad languages and six iPhone languages (en, fr, ar, de, he, es) have verified native captures. All corresponding 132 screenshots are rendered, reviewed and staged. Fifteen iPhone languages remain. Capture is paused because Turn Touch is using the same iPhone 18 Pro Max UDID 011EB534-697E-4855-BACA-4D4C6E4E92EF. iPad is shut down with preferences restored; iPhone is left untouched while another task uses it, and its preference backup is preserved.",
+  "capture_status": "All 21 iPad languages and 14 iPhone languages have verified native captures. Twelve iPhone languages are rendered in both sizes, reviewed and staged, bringing the screenshot total to 180. Remaining captures run serially on isolated iPhone 18 Pro Max / iOS 27 simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE with the existing 16.0 (343) build. This batch captures stills only; preview footage status is unchanged. The original shared iPhone and other tasks' simulators are not used.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -193,11 +193,11 @@
   "upload_status": "paused_at_user_request_while_turn_touch_uses_edge",
   "preparation_counts": {
     "screenshots_planned": 252,
-    "screenshots_reviewed_staged": 132,
+    "screenshots_reviewed_staged": 180,
     "screenshots_verified_in_store": 56,
     "complete_ipad_languages": 21,
-    "complete_iphone_languages": 6,
-    "pending_iphone_languages": 15,
+    "complete_iphone_languages": 12,
+    "pending_iphone_languages": 9,
     "previews_planned": 42,
     "previews_encoded_visual_reviewed": 27,
     "previews_playback_passed": 10,
@@ -205,7 +205,7 @@
     "previews_awaiting_capture": 15
   },
   "resume_requirements": [
-    "Resolve exclusive ownership of iPhone 18 Pro Max UDID 011EB534-697E-4855-BACA-4D4C6E4E92EF before remaining 15 capture locales; do not interrupt Turn Touch or restore preferences while it uses the target.",
+    "Finish remaining iPhone captures and both-size exports on isolated simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE, then shut it down. Do not interrupt the original shared target or restore its preferences while another task uses it.",
     "Reserve desktop/browser for normal-speed video playback review and uploads.",
     "Recheck English header/search after screenshot recovery; do not assume creative placement is fixed.",
     "Verify every requested screenshot, creative placement and processed preview, then resubmit all five removed review items."
