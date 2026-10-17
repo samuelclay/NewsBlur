@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium-Abonnement",
-        "description": "Lies Ordner in einer Liste, durchsuche deine Feeds, tagge gespeicherte Artikel und erhalte häufigere Feed-Updates.",
+        "description": "Lies Ordner in einer Liste, durchsuche Feeds, ordne gespeicherte Artikel mit Tags und erhalte schnellere Feed-Aktualisierungen.",
         "benefits": [
           "Ordner in einer Artikelliste lesen",
           "Feeds übergreifend durchsuchen",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive-Abonnement",
-        "description": "Alles aus Premium plus ein dauerhaftes, durchsuchbares Artikelarchiv. Lass Artikel so lange ungelesen, wie du möchtest.",
+        "description": "Alles aus Premium plus ein dauerhaftes, durchsuchbares Archiv jedes Artikels. Lass Artikel so lange ungelesen, wie du möchtest.",
         "benefits": [
           "Alles aus Premium",
           "Artikel für immer ungelesen lassen",

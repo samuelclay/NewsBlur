@@ -1,0 +1,288 @@
+{
+  "version": "16.0.4",
+  "reviewer": "reader_crash",
+  "author": "sync_audit",
+  "independent": true,
+  "status": "passed_after_minor_corrections",
+  "findings": [
+    {
+      "locale": "id",
+      "file": "clients/store/releases/16.0.4/id.json",
+      "severity": "minor",
+      "before": "memeriksa jumlah belum dibaca",
+      "after": "memeriksa jumlah artikel belum dibaca",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    },
+    {
+      "locale": "id",
+      "file": "clients/store/releases/16.0.4/id.json",
+      "severity": "minor",
+      "before": "memulihkan status pembaca",
+      "after": "memulihkan status tampilan baca",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    },
+    {
+      "locale": "id",
+      "file": "clients/store/releases/16.0.4/id.json",
+      "severity": "minor",
+      "before": "kontrol layar penuh tablet dan lebar panel yang diingat",
+      "after": "kontrol layar penuh di tablet dan penyimpanan lebar panel",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    },
+    {
+      "locale": "ja",
+      "file": "clients/store/releases/16.0.4/ja.json",
+      "severity": "minor",
+      "before": "タブレットの全画面操作とペイン幅の記憶",
+      "after": "タブレット用の全画面表示ボタンとペイン幅の記憶",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    },
+    {
+      "locale": "ja",
+      "file": "clients/store/releases/16.0.4/ja.json",
+      "severity": "minor",
+      "before": "位置が固定された「次の記事」操作",
+      "after": "位置が固定された「次の記事」ボタン",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    },
+    {
+      "locale": "th",
+      "file": "clients/store/releases/16.0.4/th.json",
+      "severity": "minor",
+      "before": "คืนค่าสถานะตัวอ่าน",
+      "after": "คืนค่าสถานะหน้าการอ่าน",
+      "status": "corrected",
+      "reason": "Clarifies reader UI state or controls and improves natural phrasing without changing release claims."
+    }
+  ],
+  "locales": {
+    "ar": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 334,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/ar.json": "911d80bb6e7115e04bad2cd3e6e8ab00ad22f872987071cb683e010f23fb8281",
+        "clients/store/products/ar.json": "c11215baafc546665a5171791c07d163bda50f57f975b12bb1e90aa43ffb62c0",
+        "clients/store/releases/16.0.4/ar.json": "891e9a63cbdd992db7f19df3ebe6ada92a5cf784855aae80ab5423484051a5e6"
+      }
+    },
+    "he": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 274,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/he.json": "b11ff5159d77d536e90ad252e8b498670f387f53b99cb56a51b6107b8f54f097",
+        "clients/store/products/he.json": "70243c21fd5c79377bf1e756fbb28484f66237475e0e7a47c54abdc7152e92e7",
+        "clients/store/releases/16.0.4/he.json": "cc919e56cdf5a036d056d6457d7738d79eff88ac873fe90424fa05ff6e9c6d86"
+      }
+    },
+    "hi": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 360,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/hi.json": "46e994ab15a05a3479e4c5fa7ef05d713d907dcc12198857cf5ae95537f6bf41",
+        "clients/store/products/hi.json": "ede6fb7df74884b665d1f607bc61e635ed9c30a338ee0de31f81aabe80f1cde4",
+        "clients/store/releases/16.0.4/hi.json": "a01355c872be5ef3cadabd708f3ccab6b5f46c5de345fa97cdb6d3b3b85e3b0c"
+      }
+    },
+    "id": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 378,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/id.json": "028c3f801fd261cc265070a9fd13a7991e0e95ad4eeacb8fa6e1e9a96f6b7a5a",
+        "clients/store/products/id.json": "43fe84b4f727360a53cf816778d9c38afa93041269f474f35b8755dda9bd4d6d",
+        "clients/store/releases/16.0.4/id.json": "b300d3e68a59b273149fbf7c2a3140372c1a0ff9315f17b7303bef1ccf8bade5"
+      }
+    },
+    "vi": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 368,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/vi.json": "4e2333765ab248f7841cd6ba469ec752c4102c99fe5575d6b3eb3c46a3733a58",
+        "clients/store/products/vi.json": "0d2472645814c062c3cc39e3e0b739d030763c800197bed4fc7809818112ed17",
+        "clients/store/releases/16.0.4/vi.json": "e0e17308aeab8a8973b58dc12c8ac477b15c09d1493d50c1c5970e491432e918"
+      }
+    },
+    "th": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 301,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/th.json": "9a41243e5e853271de1f61dc3d0b14f1cbdf586715b497f218965cc4b20ddbe7",
+        "clients/store/products/th.json": "deef464bc5e88de7f324de1f76a4bbbe6a7fccfbc1a2bb90f18ed134fcf467b6",
+        "clients/store/releases/16.0.4/th.json": "561ed22f9c987c590479cecd90c1683af337e9b3dbee1d6da557e59c8c38e217"
+      }
+    },
+    "ja": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 162,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/ja.json": "9ce5074812c871da4c312528e8a452cf26ba925eb28eab6c4abc5c5a347dfed7",
+        "clients/store/products/ja.json": "9dc32eb345393cd28291eacc7e271a856d8633ed7ca3336fc0e6e1a64f57a0b7",
+        "clients/store/releases/16.0.4/ja.json": "60b8756095c7cedaf1de6386dd725d7127ade200638bd3d0c83ae5ac26347680"
+      }
+    },
+    "ko": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 185,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/ko.json": "4224cdf5f5cac52c4f086e3167af237561e6cadad88ff7dfc4ad1f2f82b51784",
+        "clients/store/products/ko.json": "f767e46f15f26e0eda1c38bd786d3a6b4af9045483da7271b7a9497da8bf5b00",
+        "clients/store/releases/16.0.4/ko.json": "a9c5936d36dc80ae3f61417dd5befccec8944ba2cdc46366131cf83527a49758"
+      }
+    },
+    "zh-Hans": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 112,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/zh-Hans.json": "e2031a62c9101f5cb7cda3752d73ae63697b5f1c2b1bec8a478fbfbc0cf3b9e2",
+        "clients/store/products/zh-Hans.json": "3cc86edb1e85dd2a385305111a7e133fe6fa36122fdaa97467e7c64117e38fe8",
+        "clients/store/releases/16.0.4/zh-Hans.json": "59a9cebe3d0b20cf4c85d02172ae34cda9c3d371a23ddf70172a845530815bfc"
+      }
+    },
+    "zh-Hant": {
+      "result": "pass",
+      "fields_reviewed": [
+        "title",
+        "short_description",
+        "full_description",
+        "release_notes",
+        "all_subscription_titles",
+        "all_subscription_descriptions",
+        "all_subscription_benefits"
+      ],
+      "release_notes_characters": 113,
+      "unchanged_ios": true,
+      "urls_product_ids_and_benefit_counts": "preserved",
+      "meaning_and_qualifications": "complete",
+      "script_and_register": "checked against glossary",
+      "file_sha256": {
+        "clients/store/metadata/zh-Hant.json": "ca1fdfa018feae9dd58a382898ba6ec307ac051e6c67615237723b77697f4fac",
+        "clients/store/products/zh-Hant.json": "ad0f0fbdd1e47cec318d65bbfbd40f9d54348f132c6fedaab48c558f9a551ca9",
+        "clients/store/releases/16.0.4/zh-Hant.json": "2cf7c382f16b2d4a2d100c5bd551bd35cc9ee286379f3030ff0ba7521705ef79"
+      }
+    }
+  },
+  "scope": "All Android listing, subscription title/description/benefit and release-note fields in assigned batch. Text-level RTL and Chinese-script review; no store-rendering or native-speaker review claimed.",
+  "rtl_review": "Arabic and Hebrew prose retain correct scripts, logical text ordering and Latin product names/URLs; no manually inserted bidi embedding or override controls.",
+  "chinese_review": "Simplified uses 网站/文章/文件夹/订阅源/标签/文本视图; Traditional uses 網站/文章/資料夾/訂閱來源/標籤/文字檢視 and Taiwan wording. No script crossover identified."
+}

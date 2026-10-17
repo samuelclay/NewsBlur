@@ -1,0 +1,6 @@
+{
+  "ios": null,
+  "android": {
+    "release_notes": "Corrige encerramentos inesperados ao abrir o NewsBlur, consultar a contagem de não lidos, confirmar ações de leitura e restaurar o leitor. As atualizações do banco de dados preservam artigos em cache e ações offline pendentes.\n\nInclui controles de tela cheia em tablets, larguras de painéis salvas, interface em 21 idiomas e controles de próximo artigo em posição fixa."
+  }
+}

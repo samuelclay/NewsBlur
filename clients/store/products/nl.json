@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium-abonnement",
-        "description": "Lees mappen in één lijst, doorzoek je feeds, tag opgeslagen artikelen en ontvang vaker feedupdates.",
+        "description": "Lees mappen in één lijst, doorzoek feeds, orden opgeslagen artikelen met tags en ontvang snellere feedupdates.",
         "benefits": [
           "Lees mappen in één artikellijst",
           "Doorzoek al je feeds",
@@ -35,10 +35,10 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive-abonnement",
-        "description": "Alles van Premium, plus een blijvend, doorzoekbaar artikelarchief. Laat artikelen zo lang ongelezen als je wilt.",
+        "description": "Alles van Premium, plus een blijvend, doorzoekbaar archief van elk artikel. Laat artikelen zo lang ongelezen als je wilt.",
         "benefits": [
           "Alles van Premium",
-          "Laat artikelen altijd ongelezen",
+          "Bewaar artikelen onbeperkt ongelezen",
           "Archiveer elk artikel blijvend",
           "Doorzoek je volledige artikelarchief"
         ]
