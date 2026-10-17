@@ -9,6 +9,7 @@ import androidx.window.embedding.SplitAttributes
 import androidx.window.embedding.SplitInfo
 import androidx.window.embedding.ActivityStack
 import com.newsblur.NbApplication
+import com.newsblur.R
 import com.newsblur.activity.FeedListDrawer
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.Reading
@@ -22,6 +23,94 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class Test_TabletPaneDivider {
+    @Test
+    fun test_continuous_moves_do_not_postpone_the_already_scheduled_frame() {
+        mockkObject(StorySplitView)
+        try {
+            val divider = dragFixture()
+            var frame = 0
+            val pending = mutableMapOf<Runnable, Int>()
+            val renderedRatios = mutableListOf<Float>()
+            every { StorySplitView.resizePane(any(), any(), any(), any()) } answers {
+                renderedRatios.add(thirdArg())
+            }
+            every { divider["applyPendingResize"]() } answers { callOriginal() }
+            val applyPending = TabletPaneDivider::class.java.getDeclaredMethod("applyPendingResize").apply { isAccessible = true }
+            val render = Runnable {
+                applyPending.invoke(divider)
+            }
+            field("frameUpdate").set(divider, render)
+            every { divider.postOnAnimation(any()) } answers {
+                pending[firstArg()] = frame + 1
+            }
+            every { divider.removeCallbacks(any()) } answers { pending.remove(firstArg()) != null }
+
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 510f))
+            // Choreographer dispatches the next input batch before animation callbacks in that frame.
+            frame = 1
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 520f))
+            pending.filterValues { it <= frame }.keys.toList().forEach { callback ->
+                pending.remove(callback)
+                callback.run()
+            }
+
+            assertEquals("Continuous input starved the resize frame", 1, renderedRatios.size)
+            assertEquals(0.42f, renderedRatios.single(), 0.0001f)
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 530f))
+            frame = 2
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 540f))
+            pending.filterValues { it <= frame }.keys.toList().forEach { callback ->
+                pending.remove(callback)
+                callback.run()
+            }
+            assertEquals("Resizing stopped after its first frame", 2, renderedRatios.size)
+            assertEquals(0.44f, renderedRatios.last(), 0.0001f)
+        } finally {
+            unmockkObject(StorySplitView)
+        }
+    }
+
+    @Test
+    fun test_release_uses_its_final_coordinate_and_cancels_the_older_frame() {
+        mockkObject(StorySplitView)
+        try {
+            val divider = dragFixture()
+            val activity = field("activity").get(divider) as Activity
+            val render = Runnable {}
+            field("frameUpdate").set(divider, render)
+            every { StorySplitView.resizePane(any(), any(), any(), any()) } returns Unit
+
+            divider.onTouchEvent(touch(MotionEvent.ACTION_MOVE, 520f))
+            divider.onTouchEvent(touch(MotionEvent.ACTION_UP, 550f))
+
+            // TabletPaneDivider.kt must not stop at the preceding MOVE's position when lifting.
+            verify(exactly = 1) { StorySplitView.resizePane(activity, false, match { kotlin.math.abs(it - 0.45f) < 0.0001f }, true) }
+            verify { divider.removeCallbacks(render) }
+        } finally {
+            unmockkObject(StorySplitView)
+        }
+    }
+
+    private fun dragFixture(): TabletPaneDivider {
+        val divider = mockk<TabletPaneDivider>(relaxed = true)
+        val activity = mockk<ItemsList>(relaxed = true)
+        for ((name, value) in mapOf(
+            "activity" to activity, "density" to 1f, "startRatio" to 0.4f,
+            "parentWidth" to 1000f, "startX" to 500f, "ratio" to 0.4f,
+            "dragging" to true, "rightEdge" to true
+        )) field(name).set(divider, value)
+        every { divider.onTouchEvent(any()) } answers { callOriginal() }
+        return divider
+    }
+
+    private fun field(name: String) =
+        TabletPaneDivider::class.java.getDeclaredField(name).apply { isAccessible = true }
+
+    private fun touch(action: Int, screenX: Float): MotionEvent = mockk {
+        every { actionMasked } returns action
+        every { rawX } returns screenX
+    }
+
     @Test
     fun test_drag_follows_actual_split_direction_when_view_locale_disagrees() {
         mockkObject(Reading.Companion, FeedListDrawer.Companion)
@@ -70,6 +159,7 @@ class Test_TabletPaneDivider {
     @Test
     fun test_drag_starts_anywhere_along_the_list_boundary() {
         val divider = mockk<TabletPaneDivider>(relaxed = true)
+        field("activity").set(divider, mockk<ItemsList>(relaxed = true))
         val parent = mockk<ViewParent>(relaxed = true)
         every { divider.parent } returns parent
         every { divider.height } returns 1200
@@ -85,6 +175,25 @@ class Test_TabletPaneDivider {
         // TabletPaneDivider.kt exposes the whole border, not only its small center indicator.
         assertTrue("A drag near the top of the border was rejected", divider.onTouchEvent(event))
         verify(exactly = 1) { parent.requestDisallowInterceptTouchEvent(true) }
+    }
+
+    @Test
+    fun test_wider_strip_leaves_toolbar_buttons_clickable() {
+        val divider = dragFixture()
+        val activity = field("activity").get(divider) as Activity
+        val toolbar = mockk<View>(relaxed = true)
+        every { activity.findViewById<View>(R.id.toolbar) } returns toolbar
+        every { toolbar.isShown } returns true
+        every { toolbar.width } returns 1000
+        every { toolbar.height } returns 80
+        every { toolbar.getLocationOnScreen(any()) } answers {
+            firstArg<IntArray>()[0] = 0
+            firstArg<IntArray>()[1] = 40
+        }
+        val event = touch(MotionEvent.ACTION_DOWN, 980f)
+        every { event.rawY } returns 75f
+
+        org.junit.Assert.assertFalse(divider.onTouchEvent(event))
     }
 
     @Test
