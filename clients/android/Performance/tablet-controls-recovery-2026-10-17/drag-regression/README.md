@@ -12,3 +12,7 @@ The feed screenshot sequence starts at boundary x=827, presses x=823, moves to x
 The code removes and reschedules its pending animation callback on every MOVE, which can postpone live updates under continuing input. ACTION_UP also ignores its final coordinate. Regression tests and fixed-build runtime evidence are required before release.
 
 The first fix keeps one pending resize callback while updating its target, uses the final UP position, and expands the invisible target from12dp to32dp inside the owning list. Toolbar and footer buttons remain available. Both baseline tests failed before the change; the focused31-test set passed afterward. Device validation of this first fix is still pending, especially the API3 embedding animation behavior.
+
+## Physical-device follow-up
+
+The first fix is committed as `debc02aba`, but does not resolve the Samsung animation delay. A temporary diagnostic Alpha build recorded `first-fix-device-trace.log`. During a continuous four-second drag, MOVE, frame, calculator, and split-bound updates all occur before UP. Steady input lag is about170ms, and each resize still uses `changeAnimation=DEFAULT` on Window Extensions API3. Recordings show repeated crossfades and delayed displayed content. Passing the scheduling tests alone is insufficient to release this build.
