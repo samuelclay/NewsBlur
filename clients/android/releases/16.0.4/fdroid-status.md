@@ -25,8 +25,18 @@ and publish its own APK.
 
 ## Submission state
 
-The replacement metadata change is prepared locally for the author's
-`samuelclay/fdroiddata` fork. The existing bot branch cannot be edited with the author's permissions.
-The replacement will explicitly supersede !51902, without closing that request.
-Publication of the metadata request waits for the release workflow to validate
-the exact 16.0.4 source commit and publish its immutable tag.
+The [release workflow](https://github.com/samuelclay/NewsBlur/actions/runs/39076913158)
+passed source scanning, dependency checks, tests, and the unsigned F-Droid APK
+build. It published `Android_16.0.4` at the exact version-bump commit
+`1b32c5b65bdf577402c055d34246691d53e534d9`; the remote tag was independently verified.
+
+[F-Droid merge request !52997](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997)
+is open from `samuelclay/fdroiddata:newsblur-16.0.4-fdroid`. Its head is
+`61708c54f43742f5230854bfaf4a16773a143df3`. The live diff changes only
+`metadata/com.newsblur.yml`, and its description explicitly supersedes !51902.
+The bot request remains open. The author's fork master was not changed.
+
+The [merge-request pipeline](https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959280088)
+is running. Submission is complete; upstream acceptance, the official signed
+F-Droid build, and public availability of 16.0.4 remain pending. The public
+package API still reports 15.0.5 (290) as the suggested version.

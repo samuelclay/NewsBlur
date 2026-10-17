@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-17T23:26:09Z",
+  "version": "16.0.4",
+  "version_code": 296,
+  "source_commit": "1b32c5b65bdf577402c055d34246691d53e534d9",
+  "remote_tag": {
+    "name": "Android_16.0.4",
+    "sha": "1b32c5b65bdf577402c055d34246691d53e534d9"
+  },
+  "release_workflow": {
+    "url": "https://github.com/samuelclay/NewsBlur/actions/runs/39076913158",
+    "status": "completed",
+    "conclusion": "success",
+    "headSha": "1b32c5b65bdf577402c055d34246691d53e534d9"
+  },
+  "merge_request": {
+    "iid": 52997,
+    "web_url": "https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997",
+    "title": "Update NewsBlur to 16.0.4 (296) with upstream F-Droid build support",
+    "description": "NewsBlur 16.0.4 (296) includes the Android crash fixes and the free build support introduced in 16.0.3. This supersedes !51902, whose old recipe fails source scanning on ML Kit.\n\nThe new recipe uses the upstream `fdroid` Gradle property and removes `app/src/play` from the disposable checkout before scanning. The application provides free implementations for billing, review prompts, and onboarding language detection, so the recipe no longer rewrites application source with sed. Google Play SDKs remain in the normal Play distribution.\n\nSource: `Android_16.0.4` at `1b32c5b65bdf577402c055d34246691d53e534d9`.\n\nThe metadata patch applies cleanly and parses as YAML. [Upstream release validation](https://github.com/samuelclay/NewsBlur/actions/runs/39076913158) passed source scanning, the resolved dependency graph, unit tests, and an unsigned F-Droid APK build at that exact source commit. F-Droid's own build and signing remain necessary before publication.\n\nRelated upstream issue: https://github.com/samuelclay/NewsBlur/issues/2172",
+    "sha": "61708c54f43742f5230854bfaf4a16773a143df3",
+    "state": "opened",
+    "merge_status": "can_be_merged",
+    "detailed_merge_status": "mergeable"
+  },
+  "pipeline": {
+    "id": 2959280088,
+    "web_url": "https://gitlab.com/samuelclay/fdroiddata/-/pipelines/2959280088",
+    "sha": "61708c54f43742f5230854bfaf4a16773a143df3",
+    "status": "running"
+  },
+  "changed_files": [
+    "metadata/com.newsblur.yml"
+  ],
+  "fork_master_before_and_after": "33209b95d69acc1fa33d0ae215e924a1673f43c0",
+  "superseded_bot_merge_request": 51902,
+  "bot_merge_request_closed": false,
+  "public_package": {
+    "package_name": "com.newsblur",
+    "suggested_version_code": 290,
+    "packages": [
+      {
+        "versionName": "15.0.5",
+        "versionCode": 290
+      },
+      {
+        "versionName": "15.0.4",
+        "versionCode": 289
+      },
+      {
+        "versionName": "15.0.3",
+        "versionCode": 288
+      }
+    ]
+  },
+  "status": "metadata_submitted_official_publication_pending"
+}
