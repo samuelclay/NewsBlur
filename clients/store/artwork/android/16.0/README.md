@@ -74,7 +74,11 @@ The isolated `com.newsblur.storecapture` build seeds offline cooking fixtures an
 
 ## Store upload and readback
 
+On October 17 at 18:32 UTC, edit `03809724643036911628` was validated and committed with `ERROR_IF_IN_REVIEW`. Fresh edit `06451369022117040990` verified all 294 images across 21 locales and all ten hosted promo URLs, including exact image hashes and ordering. Production 16.0/292, translated listing text, and unrelated assets remained unchanged. Console showed 115 listing changes under **Changes in review**, with automated quick checks running and managed publishing off. This confirms submission, not public availability. Eleven additional promos still await YouTube's daily upload reset. See `proof/play-assets-postcommit-verification.json` and `proof/play-publishing-submitted.txt`.
+
 Before a large upload, inspect the selected service account's existing Play permissions and validate the untouched edit. Successful image uploads do not prove permission to commit: the configured billing account accepted all 294 images on October 17 but returned HTTP 403 for both validation and commit because it lacked `Manage store presence`. The separate reporting account has read-only access. Confirm any access expansion with the user, or use the authenticated Console upload workflow. Do not silently grant production-release or administrator access for a listing-only refresh.
+
+The user subsequently approved `Manage store presence` for the billing service account on `com.newsblur` only. Google automatically included its `Manage policy declarations` dependency. No administrator or release permission was granted. Validation and commit then succeeded.
 
 Run the complete audit before uploading:
 
