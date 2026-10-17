@@ -1,0 +1,165 @@
+{
+  "reviewed_at": "2026-10-17T15:52:57Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/ar/featureGraphic/panel-01.png",
+      "sha256": "d710126a36fd9e7d126415952eb6c7381ff8be9a188150ecc557b4d3be7b590c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-01.png",
+      "sha256": "7a4d2918c889c3ef4b1cb9e5ff4cfd03105a2c6aaec21158692a81cc9838c5b8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-02.png",
+      "sha256": "824778e1557d334f7d3784f94eb08343ee94c7b43126f4ca666bbb5f5c127101",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-03.png",
+      "sha256": "45320321b1135944710610f13d01a9227991e1bc4324c489ca15735a17b7a45c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/phoneScreenshots/panel-04.png",
+      "sha256": "ae28e39e3b479b56784a24a1d12e04284a4f0ce746484799346c397c4abbf49a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/featureGraphic/panel-01.png",
+      "sha256": "6ad82868f01252c65bcdeb81e61b6f36319f03e7e6e6b1a7d9705ebc7d83818c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-01.png",
+      "sha256": "4c967683122ebef199b4f967068cb86051a377e13127d7a32fec19bcca2eabd6",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-02.png",
+      "sha256": "b2f0290c3145f4f4c5f3362401dd630ecd62d3b12ea1138d4ae1a150aa4500e8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-03.png",
+      "sha256": "09fedb23caf6a8ce1aef253d300ddc4684a9dbd1f2e7d7e272a08d31eb965759",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/phoneScreenshots/panel-04.png",
+      "sha256": "08ad6331a4d9e7bb3512fd1e153f039b0e4dbcfedab6714e5cec9151bc26deee",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/featureGraphic/panel-01.png",
+      "sha256": "84127afe739a324d1f92c2f9cdee328c05b9a00059b78cadfac840a441452a1b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-01.png",
+      "sha256": "d6b6a44816214ba31e658a88fb16befebc57e287ea3fb5d99fb953d85c1bccde",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-02.png",
+      "sha256": "9d98dfa72aa1874b6f1e6baa1a31ea58b528dc51348a3cb0366ef18832d1f0a4",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-03.png",
+      "sha256": "7aea30f50610222dbe6d4ed3f6a65a95e28fee88a4c5792be53e599f1d1b2812",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/phoneScreenshots/panel-04.png",
+      "sha256": "40e74a339ba7e3a7c8ad9de168a95a120e6b0ba46d5a76422dee769e1b26a275",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/id/featureGraphic/panel-01.png",
+      "sha256": "1fd37ef116cc5b5c1a6cc0b81fdf29fed738ab231e13c61939d6f30f8e1fbed8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-01.png",
+      "sha256": "64be1c0684450ed89499cefbde208b9a33527dd8b14b17220925485fbca2a5f5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-02.png",
+      "sha256": "1abe0b917ebc9920427686ae034a1834294394ba493651639440664ec785f499",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-03.png",
+      "sha256": "e817f92137dce4b1e1d1b7f93311b0df67783231f0bda9a1a4d84c57f1a3b88e",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/id/phoneScreenshots/panel-04.png",
+      "sha256": "130f46e73a13e2c7df7057e986150c96f610b674b2f75257a0751a97ff4346e2",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/featureGraphic/panel-01.png",
+      "sha256": "7d9229c6772939dc6513cb7f02bc32f77302c738b55a5d817a3a8575f1c82663",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-01.png",
+      "sha256": "340a3a145d6b4e25a064a0e77cae1f9a5cc16183b76beb190584d7a9144f526a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-02.png",
+      "sha256": "507071ba322d6f07f417181b0508e0f82734095d8e25231f7d87418219cdb298",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-03.png",
+      "sha256": "5ed83e0d3ef7fee9bff120f5591d8e0d546a8a3527122d8f3b0e805401fc5d70",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/phoneScreenshots/panel-04.png",
+      "sha256": "e2364ba6ac52e64f00769a3bc6dcab20e8f2f32aab67178bf8f7bf9729cb7ca4",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/vi/featureGraphic/panel-01.png",
+      "sha256": "62fa6bedb826009f422ae5476e9dbb81d0b0365a837ea4e1c8cac98a6aa54b9b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-01.png",
+      "sha256": "3b7de8315abef99a9e8ecfdbc02f271cd7c505895ef7038f1f4c4ac7a6b6faf5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-02.png",
+      "sha256": "96f3d1da491b371a7e23ce9e1ff745a9a60ce4d7ebe1f4b74aebf1ba9d47bbc5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-03.png",
+      "sha256": "0ad6104f9bfd222d0384a6a0b6a689fee1ee872a3c2e239622db649552190a00",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/vi/phoneScreenshots/panel-04.png",
+      "sha256": "1f513c0e1ce4bf58f6710411a8fa58c87fc0f6e4446c811ae72db32fddd3f6d9",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "All thirty feature and phone exports have fitting translated captions and visibly localized native controls, dates and actions.",
+    "Arabic and Hebrew headlines are right aligned with correct bidirectional punctuation; native lists, toolbar order and Next direction mirror for RTL while English article text stays readable.",
+    "Hindi shaping and Vietnamese diacritics are intact; Ukrainian and Indonesian text fits without missing glyphs.",
+    "No notification banners or private content are visible in these still exports. This is not video approval: the separate Arabic feeds clip was rejected for a notification and must be replaced.",
+    "Original fictional feed names and article content intentionally remain English."
+  ],
+  "scope": "Thirty still images only. Videos, tablet images and Play readback are separate checks."
+}
