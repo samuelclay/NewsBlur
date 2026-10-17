@@ -204,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "对所有订阅源中的重复文章进行聚类";
 "Cluster matches" = "聚类匹配";
 "Cluster related stories" = "将相关文章归类";
+"Column layout" = "分列布局";
 "Columns" = "列";
 "Comfortable" = "舒适";
 "Coming soon" = "即将推出";
@@ -374,6 +375,7 @@
 "Full Screen" = "全屏";
 "Full screen" = "全屏";
 "Full window" = "整个窗口";
+"Full-screen" = "全屏";
 "General" = "常规";
 "Generate Daily Briefing" = "生成每日简报";
 "Generate Now" = "立即生成";
@@ -423,6 +425,7 @@
 "Infrequent Site Stories" = "低频网站文章";
 "Infrequent Stories" = "低频更新的文章";
 "Infrequent stories per month" = "低频网站的每月文章数上限";
+"Inline" = "文章内";
 "Insta-Fetch Stories" = "即时抓取文章";
 "Insta-fetch stories" = "即时抓取文章";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "不跟随系统的深色/浅色模式，而是根据屏幕亮度自动切换主题。适合根据环境光线切换主题。";
@@ -630,6 +633,7 @@
 "On its way..." = "马上就好…";
 "On scroll or selection" = "滚动或选择时";
 "One" = "一列";
+"One column" = "一列";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "你的 %2$@ 个网站中，只有 %1$@ 个已编入发现索引。升级即可为所有网站建立索引，并获得个性化推荐。";
 "Only Title" = "仅标题";
 "Only on Selection" = "仅在选中时";
@@ -665,6 +669,7 @@
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
 "Place the story list controls above or below the stories" = "将文章列表控件放在文章上方或下方";
+"Play videos" = "播放视频";
 "Plum Berry" = "李子莓果";
 "Positive?" = "确定吗？";
 "Preferences" = "偏好设置";
@@ -844,6 +849,7 @@
 "Sign in with Google" = "使用 Google 登录";
 "Single" = "单栏";
 "Single Column" = "单列";
+"Single column" = "单列";
 "Site" = "网站";
 "Site Settings" = "网站设置";
 "Site URL or search by name…" = "网站网址或按名称搜索…";
@@ -953,8 +959,10 @@
 "This feature requires iOS 15 or later." = "此功能需要 iOS 15 或更高版本。";
 "This might take a minute.\nFeel free to continue..." = "这可能需要一分钟。\n请随意继续……";
 "This removes the subscription from your feeds." = "这会从你的订阅源中移除此订阅。";
+"This setting only applies after the app is restarted." = "此设置仅在重新启动应用后生效。";
 "This site already has a feed" = "此网站已有订阅源";
 "Three" = "三列";
+"Three columns" = "三列";
 "Thursday" = "星期四";
 "Title" = "标题";
 "Title match only" = "仅匹配标题";
@@ -992,7 +1000,9 @@
 "Two" = "两列";
 "Two Columns" = "双栏";
 "Two Rows" = "两行";
+"Two columns" = "两列";
 "Two finger double tap" = "双指双击";
+"Two rows" = "两行";
 "Two-finger swipe to switch" = "双指滑动切换";
 "Type %1$@ to permanently delete %2$@." = "输入 %1$@ 以永久删除 %2$@。";
 "UNREAD" = "未读";

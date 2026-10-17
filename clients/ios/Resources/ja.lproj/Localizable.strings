@@ -204,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "すべてのフィードで重複する記事をまとめる";
 "Cluster matches" = "クラスターの一致";
 "Cluster related stories" = "関連記事をまとめる";
+"Column layout" = "列のレイアウト";
 "Columns" = "列";
 "Comfortable" = "ゆったり";
 "Coming soon" = "近日公開";
@@ -374,6 +375,7 @@
 "Full Screen" = "全画面表示";
 "Full screen" = "全画面表示";
 "Full window" = "全画面";
+"Full-screen" = "全画面表示";
 "General" = "全般";
 "Generate Daily Briefing" = "デイリーブリーフィングを生成";
 "Generate Now" = "今すぐ生成";
@@ -423,6 +425,7 @@
 "Infrequent Site Stories" = "更新頻度の低いサイトの記事";
 "Infrequent Stories" = "更新頻度の低いサイトの記事";
 "Infrequent stories per month" = "月あたりの低頻度記事数";
+"Inline" = "記事内";
 "Insta-Fetch Stories" = "記事を即時取得";
 "Insta-fetch stories" = "記事を即時取得";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "システムのダーク／ライトモードに従う代わりに、画面の明るさに応じてテーマを自動で切り替えます。周囲の明るさに合わせてテーマを切り替えるのに便利です。";
@@ -630,6 +633,7 @@
 "On its way..." = "まもなく…";
 "On scroll or selection" = "スクロール時または選択時";
 "One" = "1つ";
+"One column" = "1列";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "サイト%2$@件のうち、おすすめ用にインデックスされているのは%1$@件のみです。アップグレードすると、すべてのサイトがインデックスされ、パーソナライズされたおすすめを利用できます。";
 "Only Title" = "タイトルのみ";
 "Only on Selection" = "選択した場合のみ";
@@ -665,6 +669,7 @@
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
+"Play videos" = "動画の再生";
 "Plum Berry" = "プラムベリー";
 "Positive?" = "よろしいですか？";
 "Preferences" = "設定";
@@ -844,6 +849,7 @@
 "Sign in with Google" = "Googleでサインイン";
 "Single" = "シングル";
 "Single Column" = "1列表示";
+"Single column" = "1列";
 "Site" = "サイト";
 "Site Settings" = "サイト設定";
 "Site URL or search by name…" = "サイトのURLを入力、または名前で検索…";
@@ -953,8 +959,10 @@
 "This feature requires iOS 15 or later." = "この機能にはiOS 15以降が必要です。";
 "This might take a minute.\nFeel free to continue..." = "1分ほどかかる場合があります。\nそのまま続けてご利用いただけます...";
 "This removes the subscription from your feeds." = "この操作を行うと、フィードから購読が削除されます。";
+"This setting only applies after the app is restarted." = "この設定はアプリを再起動した後にのみ適用されます。";
 "This site already has a feed" = "このサイトにはすでにフィードがあります";
 "Three" = "3つ";
+"Three columns" = "3列";
 "Thursday" = "木曜日";
 "Title" = "タイトル";
 "Title match only" = "タイトルのみ一致";
@@ -992,7 +1000,9 @@
 "Two" = "2つ";
 "Two Columns" = "2列";
 "Two Rows" = "2行";
+"Two columns" = "2列";
 "Two finger double tap" = "2本指でダブルタップ";
+"Two rows" = "2行";
 "Two-finger swipe to switch" = "2本指でスワイプして切り替え";
 "Type %1$@ to permanently delete %2$@." = "%2$@を完全に削除するには、%1$@と入力してください。";
 "UNREAD" = "未読";

@@ -204,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Agrupar artigos duplicados em todos os seus feeds";
 "Cluster matches" = "Correspondências do agrupamento";
 "Cluster related stories" = "Agrupar artigos relacionados";
+"Column layout" = "Layout das colunas";
 "Columns" = "Colunas";
 "Comfortable" = "Confortável";
 "Coming soon" = "Em breve";
@@ -374,6 +375,7 @@
 "Full Screen" = "Tela cheia";
 "Full screen" = "Tela cheia";
 "Full window" = "Janela inteira";
+"Full-screen" = "Tela cheia";
 "General" = "Geral";
 "Generate Daily Briefing" = "Gerar resumo diário";
 "Generate Now" = "Gerar agora";
@@ -423,6 +425,7 @@
 "Infrequent Site Stories" = "Artigos de sites pouco ativos";
 "Infrequent Stories" = "Artigos de sites pouco ativos";
 "Infrequent stories per month" = "Limite de artigos por mês dos sites pouco ativos";
+"Inline" = "No artigo";
 "Insta-Fetch Stories" = "Buscar artigos instantaneamente";
 "Insta-fetch stories" = "Buscar artigos instantaneamente";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Em vez de seguir o modo escuro/claro do sistema, alterne os temas automaticamente com base no nível de brilho da tela. Útil para alternar os temas conforme a iluminação ambiente.";
@@ -630,6 +633,7 @@
 "On its way..." = "A caminho...";
 "On scroll or selection" = "Ao rolar ou selecionar";
 "One" = "Uma";
+"One column" = "Uma coluna";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Apenas %1$@ dos seus %2$@ sites estão indexados para descoberta. Faça um upgrade para indexar todos os seus sites e receber recomendações personalizadas.";
 "Only Title" = "Somente título";
 "Only on Selection" = "Somente na seleção";
@@ -665,6 +669,7 @@
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Escolha o idioma que você quer usar no NewsBlur. Você pode alterá-lo a qualquer momento no menu do NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Escolha qual modelo escreve seu resumo diário";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de artigos acima ou abaixo dos artigos";
+"Play videos" = "Reproduzir vídeos";
 "Plum Berry" = "Amora";
 "Positive?" = "Tem certeza?";
 "Preferences" = "Preferências";
@@ -844,6 +849,7 @@
 "Sign in with Google" = "Entrar com o Google";
 "Single" = "Único";
 "Single Column" = "Coluna única";
+"Single column" = "Uma coluna";
 "Site" = "Site";
 "Site Settings" = "Configurações do site";
 "Site URL or search by name…" = "URL do site ou pesquise pelo nome…";
@@ -953,8 +959,10 @@
 "This feature requires iOS 15 or later." = "Este recurso requer o iOS 15 ou posterior.";
 "This might take a minute.\nFeel free to continue..." = "Isso pode levar um minuto.\nEnquanto isso, pode continuar...";
 "This removes the subscription from your feeds." = "Isso remove a assinatura dos seus feeds.";
+"This setting only applies after the app is restarted." = "Esta configuração só é aplicada depois que o app é reiniciado.";
 "This site already has a feed" = "Este site já tem um feed";
 "Three" = "Três";
+"Three columns" = "Três colunas";
 "Thursday" = "Quinta-feira";
 "Title" = "Título";
 "Title match only" = "Correspondência apenas no título";
@@ -992,7 +1000,9 @@
 "Two" = "Duas";
 "Two Columns" = "Duas colunas";
 "Two Rows" = "Duas linhas";
+"Two columns" = "Duas colunas";
 "Two finger double tap" = "Toque duplo com dois dedos";
+"Two rows" = "Duas linhas";
 "Two-finger swipe to switch" = "Deslize com dois dedos para alternar";
 "Type %1$@ to permanently delete %2$@." = "Digite %1$@ para excluir permanentemente %2$@.";
 "UNREAD" = "NÃO LIDOS";

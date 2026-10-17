@@ -402,8 +402,10 @@ class PreferencesViewModel: ObservableObject {
     @Published var refreshTrigger = false
 
     weak var delegate: PreferencesViewDelegate?
+    private let isMac: Bool
 
-    init() {
+    init(isMac: Bool = ProcessInfo.processInfo.isMacCatalystApp) {
+        self.isMac = isMac
         buildSections()
         updateHiddenKeys()
 
@@ -1102,6 +1104,24 @@ class PreferencesViewModel: ObservableObject {
                 ]
             )
         ]
+        if isMac {
+            // PreferencesView.swift retains the Mac-only options previously exposed by mac/Settings.bundle.
+            sections[0].items += [
+                PreferenceItem(title: NBLocalization.text("Column layout"), icon: "rectangle.split.3x1", iconColor: .blue,
+                               type: .multiValue(key: "split_behavior",
+                                                 titles: [NBLocalization.text("Automatic"), NBLocalization.text("Three columns"), NBLocalization.text("Two columns"), NBLocalization.text("One column")],
+                                                 values: ["auto", "tile", "displace", "overlay"], defaultValue: "auto")),
+                PreferenceItem(title: NBLocalization.text("Dashboard"), icon: "rectangle.grid.2x2", iconColor: .purple,
+                               type: .multiValue(key: "dashboard_layout",
+                                                 titles: [NBLocalization.text("Hidden"), NBLocalization.text("Single column"), NBLocalization.text("Two columns"), NBLocalization.text("Two rows")],
+                                                 values: ["none", "single", "vertical", "horizontal"], defaultValue: "vertical")),
+                PreferenceItem(title: NBLocalization.text("Play videos"), icon: "play.rectangle", iconColor: .orange,
+                               type: .multiValue(key: "video_playback",
+                                                 titles: [NBLocalization.text("Inline"), NBLocalization.text("Full-screen")],
+                                                 values: ["inline", "fullscreen"], defaultValue: "inline"),
+                               footerText: NBLocalization.text("This setting only applies after the app is restarted."))
+            ]
+        }
     }
 
     private func gestureSection() -> PreferenceSection {
