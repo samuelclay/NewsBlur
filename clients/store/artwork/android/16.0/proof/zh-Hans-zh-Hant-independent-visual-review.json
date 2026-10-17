@@ -1,0 +1,64 @@
+{
+  "reviewed_at": "2026-10-17T16:00:29Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/zh-Hans/featureGraphic/panel-01.png",
+      "sha256": "9632e0537d4ace1983884f1a0a009bc2ae2f2689882fc0a0fd98849579726a4c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-01.png",
+      "sha256": "246c3bd99f752ecb3aaaad3cfb393163f3287585d112387df7f87cbe41c3b106",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-02.png",
+      "sha256": "5e580e48caaba8204e1fe235815a93846e36d6972161fc274f031293d96bdab7",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-03.png",
+      "sha256": "3624d5a94713881c34c90b82621ecc130e28e1fc85c2866fdfce29549de5f01a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hans/phoneScreenshots/panel-04.png",
+      "sha256": "7701069ffa8d103d81be541530abacbc4c000c8115acb7574c77a44f23816753",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hant/featureGraphic/panel-01.png",
+      "sha256": "4d0367d506ed7b2611c53b1c457f253863c55880256d50f54e7fa70f181a0ff8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-01.png",
+      "sha256": "e54d60ef0d1442c142a76aa30286c28b05b259426ccf93bb14d4e57d369b9f8b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-02.png",
+      "sha256": "4c6a8cd3c19bac6d377a92416804fd6be796beb8611761471bb81b37ec243033",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-03.png",
+      "sha256": "bbd49e6fc7e99a68c4c7fec02bd3f1dd96a1851f5f24099f3ef40c6d76cf43ea",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/zh-Hant/phoneScreenshots/panel-04.png",
+      "sha256": "cfbafa0056ccf9ae9257e43bec972b29a0c1dcf752411ba716a4dedd88ec8f72",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Simplified and Traditional Chinese captions use their respective scripts, preserve the intended meaning and fit the allocated space.",
+    "Native search, titles, saved state, dates and Next controls are localized and legible without missing glyphs.",
+    "No notification banners, loaders, errors or private data are visible in these still exports.",
+    "Original fictional feed names and article content intentionally remain English."
+  ],
+  "scope": "Ten phone and feature stills only; tablet images and videos are separate checks."
+}
