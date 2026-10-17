@@ -47,7 +47,12 @@ groups.each do |(language, type), rows|
   count = %w[icon featureGraphic].include?(type) ? 1 : 4
   abort "Incomplete/duplicate positions: #{language}/#{type}" unless rows.map { |row| row.fetch('position') }.sort == (1..count).to_a
   validation = JSON.parse(File.read(File.join(root, 'exports', language, type, 'validation.json'))).fetch('assets')
-  abort "Aggregate differs from group validation: #{language}/#{type}" unless rows.sort_by { |row| row['position'] } == validation.sort_by { |row| row['position'] }
+  comparable = lambda do |records|
+    records.map do |row|
+      options[:allow_unreviewed] ? row.reject { |key, _| %w[visual_review store_upload].include?(key) } : row
+    end.sort_by { |row| row['position'] }
+  end
+  abort "Aggregate differs from group validation: #{language}/#{type}" unless comparable.call(rows) == comparable.call(validation)
   copy = JSON.parse(File.read(File.join(root, 'copy', "#{language}.json")))
   abort "Copy language mismatch: #{language}" unless copy.fetch('language') == language
   rows.each do |row|
