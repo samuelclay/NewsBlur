@@ -20,6 +20,6 @@
       "notes": "Native Traditional Chinese iPad UI with loaded photographs. Includes actual fullscreen reader scroll and a settled Saved collection before later article selection."
     }
   },
-  "status": "source_intervals_reviewed",
-  "remaining": "Encode in a coordinated gap, then verify CJK glyphs, exact final frame and normal-speed playback."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
