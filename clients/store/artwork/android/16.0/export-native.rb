@@ -31,7 +31,7 @@ abort "Existing export set is preserved: #{destination}" if Dir.glob(File.join(d
 device = { 'sevenInchScreenshots' => 'tablet7', 'tenInchScreenshots' => 'tablet10' }.fetch(placement, 'phone')
 views = placement == 'featureGraphic' ? %w[stories reader] : placement == 'icon' ? [] : %w[stories feeds reader saved]
 captures = views.map { |view| "captures/#{language}/#{device}-#{view}.png" }
-source_paths = ['native-render.swift', 'export-native.rb', "copy/#{language}.json", 'assets/icon-source.png', *captures]
+source_paths = ['native-render.swift', 'export-native.rb', 'verify-native-pixels.rb', "copy/#{language}.json", 'assets/icon-source.png', *captures]
 source_hashes = source_paths.to_h do |path|
   full = File.join(root, path)
   abort "Missing source: #{full}" unless File.file?(full)
