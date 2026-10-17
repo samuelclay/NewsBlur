@@ -1,8 +1,7 @@
 {
-  "updated_at": "2026-10-17T00:16:21Z",
+  "updated_at": "2026-10-17T01:46:48Z",
   "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved",
-  "capture_checkpoint": "a42681e83",
-  "capture_status": "paused_pending_simulator_ownership",
+  "capture_status": "waiting_for_verified_replacements_after_breadcrumb_review",
   "required_next_steps": [
     "Wait for a verified complete native capture group",
     "Run export-native.rb for each missing size",
@@ -315,210 +314,210 @@
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "hi",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "id",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "id",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "it",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "it",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ja",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ja",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ko",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ko",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "nl",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "nl",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "pl",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "pl",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "pt-BR",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "pt-BR",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ru",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "ru",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "th",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "th",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "tr",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "tr",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "uk",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "uk",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "vi",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "vi",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "zh-Hans",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "zh-Hans",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "zh-Hant",
       "size": "1320x2868",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
       "language": "zh-Hant",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
-      "reason": "Capture paused while another task uses the same simulator; coordinator will resolve ownership."
+      "reason": "Capture operator must verify and commit all four source frames before export."
     }
   ],
   "counts": {
