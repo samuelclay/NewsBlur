@@ -8,7 +8,10 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/en/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "published_unlisted",
+    "youtube_url": "https://www.youtube.com/watch?v=iUO8KcJc9DQ",
+    "captions_status": "published",
+    "playback_review": "Played in YouTube Studio through completion; observed phone and tablet segments; no errors"
   },
   {
     "language": "es",
