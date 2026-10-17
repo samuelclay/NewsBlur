@@ -1544,7 +1544,7 @@
     "/Users/sclay/projects/newsblur/clients/store/artwork/android/16.0/preview/exports/ko/newsblur-android-16.0.mp4"
   ],
   "working_directory": "/Users/sclay/projects/newsblur/clients/store/artwork/android/16.0/preview/exports/ko/newsblur-android-16.0-edit",
-  "visual_review": "required",
+  "visual_review": "sampled_scene_frames_passed_full_playback_pending",
   "youtube_upload": "unverified",
   "play_listing": "unverified",
   "output_probe": {
@@ -1637,5 +1637,13 @@
     }
   },
   "output_sha256": "25a29fbba70e5b923869bcb65aba493600cdf57f062e0d02052d52d76dc76c64",
-  "output_bytes": 26983505
+  "output_bytes": 26983505,
+  "visual_reviewed_at": "2026-10-17T16:23:35Z",
+  "review_evidence": {
+    "sampled_scene_frames": 8,
+    "native_phone_and_tablet_bounds": "passed",
+    "localized_captions": "passed",
+    "full_decode": "passed",
+    "full_player_playback": "pending"
+  }
 }

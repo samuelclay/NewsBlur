@@ -1,7 +1,7 @@
 {
   "saved_at": "2026-10-17T16:21:45Z",
-  "status": "paused_pending_native_tablet_resize_control_comparison",
-  "reason": "User remembers resize handles in Android NB Alpha; root and capture agent are comparing installed native behavior. Existing files retained without inventing controls. No additional render work while paused.",
+  "status": "preparation_resumed_current_native_android_build_verified",
+  "reason": "Root verified current reader source, APK and installed Alpha runtime; continue original authorized assets without invented UI controls. Counts below retain the previous checkpoint snapshot until final preparation completes.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
@@ -190,5 +190,6 @@
     }
   ],
   "pending": "Both Chinese ten-inch exports, twenty non-English seven-inch exports, Chinese promo videos, Japanese and Korean promo visual review, and remaining full-player video reviews. Japanese review-frame extraction was interrupted after the MP4 and technical checks completed.",
-  "notification_samples_reviewed": 160
+  "notification_samples_reviewed": 160,
+  "resumed_at": "2026-10-17T16:24:16Z"
 }
