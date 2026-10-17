@@ -205,13 +205,12 @@ class SignupForm(forms.Form):
             new_user.save()
             signup_language = match_language(translation.get_language() or "en") or "en"
             Profile.objects.filter(user=new_user).update(last_seen_language=signup_language)
+            if request is not None:
+                from apps.profile.language import record_signup_language
+
+                record_signup_language(new_user, request)
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
-
-        if request is not None:
-            from apps.profile.language import record_signup_language
-
-            record_signup_language(new_user, request)
 
         def finish_signup():
             # forms.py must not publish users that apps/api/social_auth.py may still roll back.
