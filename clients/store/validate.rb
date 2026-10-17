@@ -31,9 +31,12 @@ module StoreMetadata
   class ValidationError < StandardError; end
 
   class Catalog
-    attr_reader :languages, :locales, :metadata, :releases, :products, :counts, :version
+    attr_reader :languages, :locales, :metadata, :releases, :products, :counts, :version, :platforms
 
-    def initialize(version:, store_dir: ROOT.join('clients/store'), languages_file: ROOT.join('localization/languages.json'))
+    def initialize(version:, store_dir: ROOT.join('clients/store'), languages_file: ROOT.join('localization/languages.json'), platform: 'both')
+      raise ValidationError, "Unknown platform: #{platform}" unless %w[both android ios].include?(platform)
+
+      @platforms = platform == 'both' ? LIMITS.keys : [platform]
       @version = version
       @store_dir = Pathname.new(store_dir)
       @languages_file = Pathname.new(languages_file)
@@ -97,20 +100,27 @@ module StoreMetadata
       mapped_languages = entries.map { |entry| entry['language'] }
       @errors << 'locales.json: app language coverage differs from localization/languages.json' unless mapped_languages.sort_by(&:to_s) == languages.keys.sort
       @errors << 'locales.json: language_count differs from the app language count' unless map['language_count'] == languages.length
+      stores = platforms.map { |platform| platform == 'ios' ? 'apple' : 'google' }
       entries.each do |entry|
-        %w[language name apple google].each do |key|
+        (%w[language name] + stores).each do |key|
           value = entry[key]
           @errors << "locales.json: #{entry['language'].inspect}.#{key} must be nonempty text" unless value.is_a?(String) && !value.strip.empty?
         end
-        %w[apple google].each do |store|
+        stores.each do |store|
           value = entry[store]
           @errors << "locales.json: invalid #{store} locale #{value.inspect}" unless value.is_a?(String) && value.match?(/\A[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*\z/)
         end
       end
-      %w[apple google].each do |store|
+      stores.each do |store|
         values = entries.map { |entry| entry[store] }
         @errors << "locales.json: duplicate #{store} locales" unless values.uniq.length == values.length
       end
+    end
+
+    def platform_keys(document, label)
+      # validate.rb accepts shared files while requiring only the requested platform.
+      optional = document.is_a?(Hash) ? document.keys & (LIMITS.keys - platforms) : []
+      exact_keys(document, platforms + optional, label)
     end
 
     def validate_directory(directory, target, release:)
@@ -123,9 +133,10 @@ module StoreMetadata
         path = directory.join("#{language}.json")
         document = read_object(path)
         target[language] = document
-        next unless exact_keys(document, LIMITS.keys, path)
+        next unless platform_keys(document, path)
 
-        LIMITS.each do |platform, fields|
+        platforms.each do |platform|
+          fields = LIMITS.fetch(platform)
           expected = release ? RELEASE_FIELDS.fetch(platform) : fields.keys - RELEASE_FIELDS.fetch(platform)
           label = "#{path}: #{platform}"
           next unless exact_keys(document[platform], expected, label)
@@ -176,9 +187,10 @@ module StoreMetadata
       end
       products.each do |language, document|
         label = "#{directory.join("#{language}.json")}"
-        next unless exact_keys(document, %w[ios android], label)
+        next unless platform_keys(document, label)
 
-        { 'ios' => %w[subscriptions subscription_groups], 'android' => ['subscriptions'] }.each do |platform, kinds|
+        platforms.each do |platform|
+          kinds = platform == 'ios' ? %w[subscriptions subscription_groups] : ['subscriptions']
           next unless exact_keys(document[platform], kinds, "#{label}: #{platform}")
 
           kinds.each do |kind|
@@ -239,6 +251,7 @@ module StoreMetadata
       opts.banner = "Usage: ruby clients/store/#{export ? 'export' : 'validate'}.rb VERSION#{export ? ' --output DIRECTORY' : ''} [options]"
       opts.on('--store-dir DIRECTORY', 'Canonical metadata directory (also supports isolated validation fixtures)') { |value| options[:store_dir] = value }
       opts.on('--languages FILE', 'App-supported languages JSON') { |value| options[:languages_file] = value }
+      opts.on('--platform PLATFORM', %w[both android ios], 'Platform to validate/export: both (default), android, or ios') { |value| options[:platform] = value }
       if export
         opts.on('--output DIRECTORY', 'New directory for validated upload payloads') { |value| options[:output] = value }
         opts.on('--app-info-id ID', 'Add App Store appInfo relationships for create requests') { |value| options[:app_info_id] = value }
