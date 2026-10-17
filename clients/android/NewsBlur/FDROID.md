@@ -48,6 +48,13 @@ and creates the tag only if it is absent. The historical commit must already
 contain the F-Droid build support and CI helpers. Otherwise inspect and publish
 that historical tag explicitly instead of moving it to a newer compatibility fix.
 
+GitHub can also reject its built-in token when a historical release commit's
+workflow files differ from current main, reporting missing `workflows` permission.
+After verifying that exact release's build, publish the missing tag through an
+already-authorized local Git login and rerun the failed tag job. Do not move the
+tag or rewrite release history to work around this. This recovery was needed for
+16.0.3 because its CI repair came after the version bump.
+
 Tests for source selection, merged/batched commits and immutable remote tags:
 
 ```sh
