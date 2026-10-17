@@ -1,5 +1,5 @@
 {
-  "reviewed_at": "2026-10-17T17:06:47Z",
+  "reviewed_at": "2026-10-17T17:09:19Z",
   "reviewer": "play_asset_inventory",
   "status": "passed",
   "assets": [
@@ -362,6 +362,54 @@
       "sha256": "270f572b939d158fd2f1664d89e261fc112caa34793510ce5d8888d6acd56ff0",
       "review": "visually inspected",
       "reviewed_at": "2026-10-17T17:06:47Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-01.png",
+      "sha256": "7c44221179fd147b7fe01c54d4c4ebebcb62d5d0e0b4081234efc3e6176d8473",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-02.png",
+      "sha256": "ad4fcf64fb67d2e9edbdeecaef6d0f98b104210af235afd605932cea3a55d674",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-03.png",
+      "sha256": "f33fcf503a7992a5a729c0a70a62b2990170c696efc961d71c1ce634758ac1d5",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/th/sevenInchScreenshots/panel-04.png",
+      "sha256": "eff73ebb8b5a394b235b607e0081cb039ea1b93fa339b5cb8e7090d8f5a0a9b2",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:08:16Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-01.png",
+      "sha256": "3ef06c341c2e77b654055c0d977bf9909708c1702b0f7af4af8b1c897d2be2ed",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-02.png",
+      "sha256": "b02b80c127ce4885548434d38f5dbf160840988a789303dd384f9df2cd322884",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-03.png",
+      "sha256": "13254117ceda92d5eb3de2113a2335937c341babefc44de25f8ed51f6d769a01",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
+    },
+    {
+      "path": "exports/ja/sevenInchScreenshots/panel-04.png",
+      "sha256": "21eb5929d745515477ec8429fa0ac761a8c490ceab0cb9f30f07930d1e164c6a",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T17:09:19Z"
     }
   ],
   "findings": [
