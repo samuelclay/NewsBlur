@@ -1,0 +1,20 @@
+{
+  "language": "ar",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "saved",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:57:04 UTC",
+  "sha256": "91f33bfcdb45545f2a301d91d4599270f8616f619cf308036a2784a28ee9ca65",
+  "probe": {
+    "width": 1080,
+    "height": 2340,
+    "codec": "h264",
+    "frame_rate": "22410000/547627",
+    "frame_count": 249,
+    "duration": 6.084744
+  },
+  "source_still_sha256": "958db45d215396c9a22f287492a5296496a318db6b850a67cff8a1f2f3c20d2f",
+  "hierarchy_sha256": "74852eebec63a5bd7b5f9205577d8e8f476f417e8118b2112d5a1f38c0d18078",
+  "visual_review": "required"
+}

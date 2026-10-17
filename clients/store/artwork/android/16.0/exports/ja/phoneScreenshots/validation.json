@@ -1,0 +1,281 @@
+{
+  "checked_at": "2026-10-17T15:53:24Z",
+  "assets": [
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "imageType": "phoneScreenshots",
+      "position": 1,
+      "path": "ja/phoneScreenshots/panel-01.png",
+      "sha256": "dff3be11feadf319b3e2e1bf4ac70221fe4cc2d1ccc6d048b72314a0179aff2d",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1073725,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ja.json": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/ja/phone-stories.png": "c8b24cdb2e44f6d48f3d0e74cbe2602358122982dc9a24b486b6bc571894cb96",
+        "captures/ja/phone-feeds.png": "13c8ccf5eca699e50bc8031f63c525e13b42eb4430a5f17d95e31f2e29e28c6a",
+        "captures/ja/phone-reader.png": "13a3ded63cb03e009d6f1cadbde1f81acba07e4d4b846a4da3f63f668d5046ed",
+        "captures/ja/phone-saved.png": "cd63520b94b726390b9152432d74d093524fcc3a70dabe1601a72047962931e0"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5546,
+          "largest_tile_error": 0.8451,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/ja/phone-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/ja/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "ja",
+        "panel": 1,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "毎日の読みものを、ひとつの場所に。"
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:54:31Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "imageType": "phoneScreenshots",
+      "position": 2,
+      "path": "ja/phoneScreenshots/panel-02.png",
+      "sha256": "38259f050d12b0ef01850c5db36963885bb32204b0ed239d2e96ca07b033e388",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 312105,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ja.json": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/ja/phone-stories.png": "c8b24cdb2e44f6d48f3d0e74cbe2602358122982dc9a24b486b6bc571894cb96",
+        "captures/ja/phone-feeds.png": "13c8ccf5eca699e50bc8031f63c525e13b42eb4430a5f17d95e31f2e29e28c6a",
+        "captures/ja/phone-reader.png": "13a3ded63cb03e009d6f1cadbde1f81acba07e4d4b846a4da3f63f668d5046ed",
+        "captures/ja/phone-saved.png": "cd63520b94b726390b9152432d74d093524fcc3a70dabe1601a72047962931e0"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.2454,
+          "largest_tile_error": 0.7292,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/ja/phone-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/ja/phone-feeds.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "ja",
+        "panel": 2,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "お気に入りの情報源が集まる場所。"
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:54:31Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "imageType": "phoneScreenshots",
+      "position": 3,
+      "path": "ja/phoneScreenshots/panel-03.png",
+      "sha256": "c885cb1fc661f52fc7e11b0b96bdd83b02cf4536ed48518dfa38551ff29997da",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1103384,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ja.json": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/ja/phone-stories.png": "c8b24cdb2e44f6d48f3d0e74cbe2602358122982dc9a24b486b6bc571894cb96",
+        "captures/ja/phone-feeds.png": "13c8ccf5eca699e50bc8031f63c525e13b42eb4430a5f17d95e31f2e29e28c6a",
+        "captures/ja/phone-reader.png": "13a3ded63cb03e009d6f1cadbde1f81acba07e4d4b846a4da3f63f668d5046ed",
+        "captures/ja/phone-saved.png": "cd63520b94b726390b9152432d74d093524fcc3a70dabe1601a72047962931e0"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.3866,
+          "largest_tile_error": 0.8594,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/ja/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/ja/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "ja",
+        "panel": 3,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "くつろぎながら、じっくり読む。"
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:54:31Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "ja",
+      "locale": "ja-JP",
+      "imageType": "phoneScreenshots",
+      "position": 4,
+      "path": "ja/phoneScreenshots/panel-04.png",
+      "sha256": "afdf1b1776cca0468c8cb4019bc5359bc3a3f1d0cc91e0c5540969e757bc2779",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1079785,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/ja.json": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/ja/phone-stories.png": "c8b24cdb2e44f6d48f3d0e74cbe2602358122982dc9a24b486b6bc571894cb96",
+        "captures/ja/phone-feeds.png": "13c8ccf5eca699e50bc8031f63c525e13b42eb4430a5f17d95e31f2e29e28c6a",
+        "captures/ja/phone-reader.png": "13a3ded63cb03e009d6f1cadbde1f81acba07e4d4b846a4da3f63f668d5046ed",
+        "captures/ja/phone-saved.png": "cd63520b94b726390b9152432d74d093524fcc3a70dabe1601a72047962931e0"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5567,
+          "largest_tile_error": 0.8451,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/ja/phone-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/ja/phone-saved.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "ja",
+        "panel": 4,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 54,
+            "line_count": 1,
+            "text": "気になる記事を、あとで読むために保存。"
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:54:31Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    }
+  ]
+}
