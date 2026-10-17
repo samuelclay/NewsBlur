@@ -8,6 +8,8 @@ The accepted offline renderer produces new Sage sets without a browser or UI aut
 
 Review every panel in `exports/<language>/<size>/contact.png` and the full-resolution images for correct native interface language/state and readable copy. Only then use `stage-uploads.rb --language ar --size 2064x2752 --reviewed`. The generated render evidence records all source hashes and the exact native screen rectangle. Validation and staging remain separate from store attachment and fresh-read persistence checks.
 
+After staging a reviewed batch, run `ruby clients/store/artwork/ios/16.0/screenshots/refresh-export-queue.rb`. It checks all staged screenshot hashes against their validation records and reconciles the complete/pending sets for all 21 locales and three sizes. Optional `--capture-status STATUS` and `--capture-checkpoint SHA` record the capture coordinator's current checkpoint. It does not infer capture readiness from uncommitted file presence or report store placement from local staging.
+
 English iPad, French iPhone and Arabic iPhone comparisons were reviewed and accepted against the browser exports. The geometry and line breaks match closely; CoreText font fitting and antialiasing are not pixel-identical to Chromium (the French first headline fits 0.5 pixel smaller). The output uses lossless PNG encoding. The original native capture is scaled into the official device opening without edited controls, reconstructed UI or content cropping. The HTML gallery remains an editable design reference, and the CUA route below remains available for browser comparison.
 
 ## Preview
