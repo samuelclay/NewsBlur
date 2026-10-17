@@ -1,16 +1,16 @@
 {
-  "saved_at": "2026-10-17T16:27:39Z",
-  "status": "preparation_resumed_current_native_android_build_verified",
+  "saved_at": "2026-10-17T17:12:58Z",
+  "status": "all_294_images_rendered_and_visually_approved",
   "reason": "Root verified current reader source, APK and installed Alpha runtime; resumed original authorized artwork without invented controls.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
     "phoneScreenshots": 84,
-    "tenInchScreenshots": 84,
-    "sevenInchScreenshots": 4
+    "sevenInchScreenshots": 84,
+    "tenInchScreenshots": 84
   },
   "image_visual_reviews": {
-    "approved": 214
+    "approved": 294
   },
   "verified_youtube_links": [
     {
@@ -245,7 +245,8 @@
       "source_clips_verified": 8
     }
   ],
-  "pending": "Twenty non-English seven-inch export groups; eleven YouTube uploads and full-player reviews after quota reset; Play staging and publishing.",
+  "pending": "Independent final audit, Play staging and publishing; eleven YouTube uploads and full-player reviews after quota reset.",
   "notification_samples_reviewed": 168,
-  "resumed_at": "2026-10-17T16:24:16Z"
+  "resumed_at": "2026-10-17T16:24:16Z",
+  "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95"
 }
