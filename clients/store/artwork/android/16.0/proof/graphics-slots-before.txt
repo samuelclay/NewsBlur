@@ -1,0 +1,324 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - 'button "NewsBlur: RSS News Reader"':
+    - generic: "NewsBlur: RSS News Reader"
+  - button "Switch developer accounts":
+    - img "Switch developer accounts"
+- navigation:
+  - link "All apps":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - img: keyboard_backspace
+    - generic: All apps
+  - list:
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+        - generic: Dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+        - generic: Statistics
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+        - generic: Publishing overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+        - generic: Protected with Play
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+        - generic: Test and release
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+        - generic: Monitor and improve
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+        - generic: Grow users
+      - list:
+        - listitem "Store presence":
+          - button "Store presence":
+            - generic: Store presence
+            - img: expand_less
+          - list:
+            - listitem "Store listings":
+              - button "Store listings":
+                - generic: Store listings
+            - listitem "Store settings":
+              - button "Store settings":
+                - generic: Store settings
+        - listitem "Store performance":
+          - button "Store performance":
+            - generic: Store performance
+            - img: expand_more
+        - listitem "Translations":
+          - button "Translations":
+            - generic: Translations
+            - img: expand_more
+        - listitem "Deep links":
+          - button "Deep links":
+            - generic: Deep links
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+        - generic: Monetize with Play
+- link "Go back to Store listings":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/store-listings
+  - img: keyboard_backspace
+  - generic: Store listings
+- heading "Default store listing" [level=1]
+- tablist:
+  - tab "Step 1 of 2, Assets" [selected]:
+    - generic: "1"
+    - generic: Assets
+  - tab "Step 2 of 2, Review" [disabled]:
+    - generic: "2"
+    - generic: Review
+- tabpanel:
+  - generic: Select a language to edit
+  - button "Default – English (United States) – en-US":
+    - generic: Default – English (United States) – en-US
+    - img: arrow_drop_down
+  - button "Switch to the next language":
+    - generic: Next language
+    - img: arrow_right_alt
+  - heading "Import translations with AI" [level=3]
+  - generic: Save time by using AI to add translations instead of manually creating and adding a new translation for every language.
+  - button "Dismiss":
+    - generic: Dismiss
+  - button "Import a file":
+    - img: article_spark
+    - generic: Import a file
+  - heading "Common text assets" [level=2]
+  - generic "Required field": "*"
+  - 'button "Hide content: Common text assets" [expanded]':
+    - img: expand_more
+  - paragraph:
+    - text: Check the
+    - link "View metadata policy (opens in a new tab)":
+      - /url: https://play.google.com/about/storelisting-promotional/metadata
+      - text: Metadata policy
+    - text: and
+    - link "View Help Center guidance (opens in a new tab)":
+      - /url: https://support.google.com/googleplay/android-developer/answer/9866151
+      - text: Help Center guidance
+    - text: to avoid common issues with your store listing. Review all
+    - link "View program policies (opens in a new tab)":
+      - /url: https://play.google.com/about/developer-content-policy
+      - text: program policies
+    - text: before submitting your app.
+    - text: If you're eligible to
+    - link "View advance notice help (opens in a new tab)":
+      - /url: https://support.google.com/googleplay/android-developer/answer/6320428
+      - text: provide advance notice
+    - text: to the app review team, contact us before publishing your store listing.
+  - generic: App name
+  - generic "Required field": "*"
+  - generic: This is how your app will appear on Google Play
+  - textbox "App name": "NewsBlur: RSS News Reader"
+  - paragraph
+  - generic: 25 / 30
+  - generic: Text is 25 characters out of 30
+  - generic: Short description
+  - generic "Required field": "*"
+  - generic: Users can expand to view your full description.
+  - textbox "Short description": Your favorite sites in one place. Read, save, and share stories.
+  - paragraph
+  - generic: 64 / 80
+  - generic: Text is 64 characters out of 80
+  - generic: Full description
+  - generic "Required field": "*"
+  - textbox "Full description": "Follow the sites you care about with NewsBlur, a personal RSS news reader that brings your reading together. Keep up with news, blogs, newsletters, and more, with your subscriptions and reading progress synced across your phone, tablet, and the web. READ YOUR WAY Browse stories from individual sites or bring a folder together in one reading list. Choose a comfortable theme, adjust the text, and use gestures to move through your stories. Download stories for offline reading and pick up where you left off. On tablets and foldables, read with your story list and article side by side. FIND YOUR FOCUS Train NewsBlur on authors, tags, and words in headlines to highlight stories you want and hide ones you don't. You decide what matters. DISCOVER AND KEEP Find new sites, preview their latest stories, and try reading before subscribing. Save stories for later, organize them with tags, and search your reading. Share stories with comments on your NewsBlur blurblog and follow what friends are reading. GO DEEPER Use Text view to read an extracted article. Ask AI for a summary, background, or answers to questions about a story. Availability and usage limits depend on your account plan. IN YOUR LANGUAGE Use NewsBlur's interface in 21 languages, including right-to-left layouts for Arabic and Hebrew. Choose your language in the app or follow your device settings. Stories stay in the language they were published in. A NewsBlur account is required. Free accounts and optional paid subscriptions are available. Some features require a paid plan. Terms of use: https://www.newsblur.com/tos Privacy policy: https://www.newsblur.com/privacy"
+  - paragraph
+  - generic: 1648 / 4000
+  - generic: Text is 1648 characters out of 4000
+  - heading "Common visual assets" [level=2]
+  - generic "Required field": "*"
+  - 'button "Hide content: Common visual assets" [expanded]':
+    - img: expand_more
+  - paragraph:
+    - text: Manage your app icon, screenshots, and videos to promote your app on Google Play. Review the
+    - link "View content guidelines (opens in a new tab)":
+      - /url: https://support.google.com/googleplay/android-developer/answer/9866151#zippy=,app-icon
+      - text: content guidelines
+    - text: before uploading new graphics. If you add translations for your store listing without localized graphics, we will use the graphics from your default language.
+  - generic: App icon
+  - generic "Required field": "*"
+  - text: Your app icon must be a PNG or JPEG, up to 1 MB, 512 px by 512 px, and meet our
+  - link "View design specifications (opens in a new tab)":
+    - /url: https://developer.android.com/google-play/resources/icon-design-specifications
+    - text: design specifications
+  - text: and
+  - link "View metadata policy (opens in a new tab)":
+    - /url: https://support.google.com/googleplay/android-developer/answer/9898842
+    - text: metadata policy
+  - img "app icon image"
+  - button "Remove app icon image":
+    - img: delete
+  - button "View details for app icon image":
+    - img: arrow_right_alt
+  - generic "Icon 1 of 1": 1 / 1
+  - button "Add assets":
+    - generic: Add assets
+  - generic: Feature graphic
+  - generic "Required field": "*"
+  - text: Your featured graphic must be a PNG or JPEG, up to 15 MB, and 1,024 px by 500 px. This graphic will be used when you choose to feature your app.
+  - link "Learn more about featuring guidelines (opens in a new tab)":
+    - /url: https://play.google.com/console/about/guides/featuring/
+    - text: Learn more
+  - img "feature graphic image"
+  - button "Remove feature graphic image":
+    - img: delete
+  - button "View details for feature graphic image":
+    - img: arrow_right_alt
+  - generic "Image 1 of 1": 1 / 1
+  - button "Add assets":
+    - generic: Add assets
+  - generic: Video
+  - generic: Add a video by entering a YouTube URL. This video must be public or unlisted, ads must be turned off, and it must not be age restricted.
+  - textbox "Video":
+    - /placeholder: https://www.youtube.com/watch?v=
+  - paragraph
+  - heading "Phone assets" [level=2]
+  - generic "Required field": "*"
+  - 'button "Hide content: Phone assets" [expanded]':
+    - img: expand_more
+  - generic: Phone screenshots
+  - generic "Required field": "*"
+  - generic: Upload 2-8 phone screenshots. Screenshots must be PNG or JPEG, up to 8 MB each, 16:9 or 9:16 aspect ratio, with each side between 320 px and 3,840 px
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - img "phone screenshot image"
+  - button "Remove phone screenshot image":
+    - img: delete
+  - button "View details for phone screenshot image":
+    - img: arrow_right_alt
+  - generic "Screenshot 8 of 8": 8 / 8
+  - button "Add assets":
+    - generic: Add assets
+  - heading "Tablet assets" [level=2]
+  - 'button "Hide content: Tablet assets" [expanded]':
+    - img: expand_more
+  - generic: 7-inch tablet screenshots
+  - generic "Required field": "*"
+  - generic: Upload up to eight 7-inch tablet screenshots. Screenshots must be PNG or JPEG, up to 8 MB each, 16:9 or 9:16 aspect ratio, with each side between 320 px and 3,840 px
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - img "7-inch tablet screenshot image"
+  - button "Remove 7-inch tablet screenshot image":
+    - img: delete
+  - button "View details for 7-inch tablet screenshot image":
+    - img: arrow_right_alt
+  - generic "Screenshot 8 of 8": 8 / 8
+  - button "Add assets":
+    - generic: Add assets
+  - generic: 10-inch tablet screenshots
+  - generic "Required field": "*"
+  - generic: Upload up to eight 10-inch tablet screenshots. Screenshots must be PNG or JPEG, up to 8 MB each, 16:9 or 9:16 aspect ratio, with each side between 1,080 px and 7,680 px
+  - button "Add assets":
+    - generic: Add assets
+  - heading "Desktop assets" [level=2]
+  - 'button "Hide content: Desktop assets" [expanded] [active]':
+    - img: expand_more
+  - generic: Desktop screenshots
+  - generic: Upload 4-8 screenshots. Screenshots must be PNG or JPEG, up to 8 MB each, 16:9 or 9:16 aspect ratio, with each side between 1,080 px and 7,680 px
+  - button "Add assets":
+    - generic: Add assets
+  - heading "Android XR assets" [level=2]
+  - 'button "Show content: Android XR assets"':
+    - img: expand_more
+- button "Discard" [disabled]:
+  - generic: Discard
+- button "Save as draft" [disabled]:
+  - generic: Save as draft
+- button "Next":
+  - generic: Next
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/3/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/

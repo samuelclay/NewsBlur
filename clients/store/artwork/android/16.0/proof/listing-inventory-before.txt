@@ -1,0 +1,197 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - 'button "NewsBlur: RSS News Reader"':
+    - generic: "NewsBlur: RSS News Reader"
+  - button "Switch developer accounts":
+    - img "Switch developer accounts"
+- navigation:
+  - link "All apps":
+    - /url: /console/u/3/developers/6280481402178293168/app-list
+    - img: keyboard_backspace
+    - generic: All apps
+  - list:
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+        - generic: Dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+        - generic: Statistics
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+        - generic: Publishing overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+        - generic: Protected with Play
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+        - generic: Test and release
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+        - generic: Monitor and improve
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+        - generic: Grow users
+      - list:
+        - listitem "Store presence":
+          - button "Store presence":
+            - generic: Store presence
+            - img: expand_less
+          - list:
+            - listitem "Store listings":
+              - button "Store listings" [active]:
+                - generic: Store listings
+            - listitem "Store settings":
+              - button "Store settings":
+                - generic: Store settings
+        - listitem "Store performance":
+          - button "Store performance":
+            - generic: Store performance
+            - img: expand_more
+        - listitem "Translations":
+          - button "Translations":
+            - generic: Translations
+            - img: expand_more
+        - listitem "Deep links":
+          - button "Deep links":
+            - generic: Deep links
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+        - generic: Monetize with Play
+- heading "Store listings" [level=1]
+- button "Create custom listing":
+  - generic: Create custom listing
+- button "Create group":
+  - generic: Create group
+- heading "Manage how your app is presented to users on Play" [level=2]
+- paragraph:
+  - generic: Make a great first impression and help users find and engage with your app through your store listing. Use custom listings to target specific audiences with tailored content.
+- link "Learn more about Store listings (opens in a new tab)":
+  - /url: https://support.google.com/googleplay/android-developer/answer/9156429
+  - generic: Learn more
+- button "Hide detailed description about Store listings":
+  - generic: Hide
+- tablist:
+  - tab "Listings" [selected]:
+    - generic: Listings
+  - tab "Groups":
+    - generic: Groups
+- heading "Your performance on Play" [level=2]
+- button "Select metric":
+  - generic: Installs
+  - img: arrow_drop_down
+- button "Last 28 days Select date range to filter metrics":
+  - text: date_range
+  - generic: Last 28 days
+  - img: arrow_drop_down
+- button "Reach Show details for Visitors":
+  - generic: Reach
+  - img: expand_more
+  - generic: Show details for Visitors
+- button "Visitors"
+- generic: 1.34K
+- img: arrow_right_alt
+- generic: 18%
+- generic: delta, where an increase is good
+- generic: vs. previous period
+- img "Chart Use left and right keys to navigate through domain values.":
+  - generic: Chart Use left and right keys to navigate through domain values.
+- button "Acquire Show details for Unique user install clicks":
+  - generic: Acquire
+  - img: expand_more
+  - generic: Show details for Unique user install clicks
+- button "Unique user install clicks"
+- generic: "639"
+- img: arrow_right_alt
+- generic: 8%
+- generic: delta, where an increase is good
+- generic: vs. previous period
+- img "Chart Use left and right keys to navigate through domain values.":
+  - generic: Chart Use left and right keys to navigate through domain values.
+- button "Acquire (%) Show details for Click-through rate":
+  - generic: Acquire (%)
+  - img: expand_more
+  - generic: Show details for Click-through rate
+- button "Click-through rate"
+- generic: 48%
+- img: arrow_left_alt
+- generic: 8%
+- generic: delta, where an increase is good
+- generic: vs. previous period
+- img "Chart Use left and right keys to navigate through domain values.":
+  - generic: Chart Use left and right keys to navigate through domain values.
+- button "Default listing"
+- link "Edit default listing":
+  - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/store-listings/default/edit
+  - img: edit
+  - generic: Edit default listing
+- generic: 1,305 visitors
+- grid "Default store listing":
+  - row "Name Last updated Visitors Conversion rate Experiments Status":
+    - columnheader "Name"
+    - columnheader "Last updated"
+    - columnheader "Visitors":
+      - text: Visitors
+      - img: help_outline
+    - columnheader "Conversion rate":
+      - text: Conversion rate
+      - img: help_outline
+    - columnheader "Experiments"
+    - columnheader "Status"
+    - cell
+    - cell
+  - row "Default store listing Oct 16, 2026 1,305 29.1% Set up Live View default listing":
+    - gridcell "Default store listing":
+      - generic: Default store listing
+    - gridcell "Oct 16, 2026":
+      - generic: Oct 16, 2026
+    - gridcell "1,305":
+      - generic: 1,305
+    - gridcell "29.1%":
+      - generic: 29.1%
+    - gridcell "Set up":
+      - button "Set up":
+        - generic: Set up
+    - gridcell "Live":
+      - img: check_circle
+      - generic: Live
+    - gridcell:
+      - 'listbox "Select an action: view data, create new listing within group"':
+        - 'button "Select an action: view data, create new listing within group"':
+          - img: more_vert
+    - gridcell "View default listing":
+      - link "View default listing":
+        - /url: /console/u/3/developers/6280481402178293168/app/4972990522498280751/store-listings/0
+        - img: arrow_right_alt
+- heading "Target specific users with tailored content" [level=2]
+- generic: Create custom store listings to target specific users with tailored content. Once you've created a custom store listing, you can run experiments to test different graphics and localized text and see which perform best.
+- button "Create custom store listing":
+  - generic: Create custom store listing
+  - img: arrow_right_alt
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/3/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/
