@@ -1,0 +1,30 @@
+{
+  "phone": {
+    "serial": "R5CT601C8DA",
+    "model": "SM_S901U1",
+    "physical_size": "1080x2340",
+    "density": 480,
+    "foreground": "Crabigator",
+    "accelerometer_rotation": "1",
+    "user_rotation": "0",
+    "screen_off_timeout": "600000",
+    "animator_duration_scale": "1",
+    "transition_animation_scale": "1.0",
+    "window_animation_scale": "1.0",
+    "sysui_demo_allowed": "0",
+    "sysui_tuner_demo_on": "0"
+  },
+  "tablet": {
+    "serial": "R8YW810E3FF",
+    "model": "SM_X200",
+    "physical_size": "1200x1920",
+    "density": 240,
+    "foreground": "Crabigator",
+    "accelerometer_rotation": "1",
+    "user_rotation": "0",
+    "screen_off_timeout": "1800000",
+    "animator_duration_scale": "null",
+    "transition_animation_scale": "1.0",
+    "window_animation_scale": "1.0"
+  }
+}
