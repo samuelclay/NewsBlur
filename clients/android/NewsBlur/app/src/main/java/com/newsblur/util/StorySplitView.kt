@@ -146,19 +146,32 @@ object StorySplitView {
     private var rulesInstalled = false
     private var readerFullscreenSupported = false
     private var feedFullscreenRequested: Boolean? = null
+    private var paneLayoutDirection = View.LAYOUT_DIRECTION_LTR
 
     /**
      * Registers the split rules the first time a window is wide enough to split: from
      * NbApplication.kt at startup, and from NbActivity.kt for every activity after that, so a
-     * foldable that starts out folded picks them up once it opens (opening recreates its
-     * activities). Phones, flip phones included, never reach split width and never get the rules.
+     * foldable that starts out folded picks them up once it opens. trackSplit also retries when
+     * a pane handles the configuration change without recreation. Phones, flip phones included,
+     * never reach split width and never get the rules.
      * That matters because with rules installed, Activity Embedding moves matching activities
      * into embedded containers even while too narrow to split, which also changes their
      * transitions. Rules apply to activities launched after they are set.
      */
     @JvmStatic
     fun installIfWideEnough(context: Context) {
-        if (rulesInstalled) return
+        val layoutDirection =
+            LanguageSettings.localizedContext(context).resources.configuration.layoutDirection
+        if (rulesInstalled) {
+            if (paneLayoutDirection != layoutDirection) {
+                paneLayoutDirection = layoutDirection
+                RuleController.getInstance(context).setRules(buildRules(context))
+                if (readerFullscreenSupported) {
+                    ActivityEmbeddingController.getInstance(context).invalidateVisibleActivityStacks()
+                }
+            }
+            return
+        }
         if (!shouldInstallRules(context.resources.configuration.smallestScreenWidthDp)) return
         val splitController = SplitController.getInstance(context)
         if (splitController.splitSupportStatus !=
@@ -166,6 +179,7 @@ object StorySplitView {
         ) {
             return
         }
+        paneLayoutDirection = layoutDirection
         // StorySplitView.kt needs extension 3 to update the current reader without relaunching
         // Reading.kt. Do not apply a saved preference when this device cannot toggle it back.
         if (WindowSdkExtensions.getInstance().extensionVersion >= 3) {
@@ -184,9 +198,10 @@ object StorySplitView {
                 }
                 val defaults = SplitAttributes.Builder()
                     .setLayoutDirection(
-                        // LanguageSettings.kt can change the app locale without restarting its process.
-                        if (feeds) feedPaneLayoutDirection(params.parentConfiguration.layoutDirection)
-                        else params.defaultSplitAttributes.layoutDirection
+                        // Samsung's parent configuration and LOCALE follow the system language,
+                        // not LanguageSettings.kt's per-app locale. Resolve both orders explicitly.
+                        if (feeds) feedPaneLayoutDirection(paneLayoutDirection)
+                        else readerPaneLayoutDirection(paneLayoutDirection)
                     )
                     .setSplitType(SplitAttributes.SplitType.ratio(ratio))
                     .setAnimationParams(
@@ -238,6 +253,7 @@ object StorySplitView {
     private val reportedSplitMembership = WeakHashMap<Activity, Boolean>()
     private val reportedReaderPairing = WeakHashMap<Activity, Boolean>()
     private val trackedStoryLists = WeakHashMap<ItemsList, Boolean>()
+    private val registeredSplitActivities = WeakHashMap<ComponentActivity, Boolean>()
 
     /** Reading.kt's paired window stays opaque even when too narrow to show both panes. */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
@@ -406,9 +422,25 @@ object StorySplitView {
     /** Notifies Reading.kt only while STARTED, after its onCreate has initialized the binding. */
     @JvmStatic
     fun trackSplit(activity: ComponentActivity, callback: () -> Unit) {
+        if (registeredSplitActivities.put(activity, true) == true) return
+        var observerStarted = false
+        fun startIfReady() {
+            if (!observerStarted && rulesInstalled) {
+                observerStarted = true
+                startSplitTracking(activity, callback)
+            }
+        }
+        // ItemsList.java and FeedListDrawer.kt handle screen-size changes themselves. Keep
+        // their callback when launched folded, otherwise unfolding never attaches a divider.
+        activity.addOnConfigurationChangedListener {
+            installIfWideEnough(activity)
+            startIfReady()
+        }
+        startIfReady()
+    }
+
+    private fun startSplitTracking(activity: ComponentActivity, callback: () -> Unit) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        // Without rules (every phone) nothing can land in a split, so skip the subscription.
-        if (!rulesInstalled) return
         if (activity is ItemsList) trackedStoryLists[activity] = true
         val divider = if (readerFullscreenSupported) TabletPaneDivider.attach(activity) else null
         var isOpaque = false
@@ -549,11 +581,13 @@ object StorySplitView {
     }
 
     internal fun buildRules(context: Context): Set<EmbeddingRule> {
+        val layoutDirection =
+            LanguageSettings.localizedContext(context).resources.configuration.layoutDirection
         val splitAttributes =
             SplitAttributes
                 .Builder()
                 .setSplitType(SplitAttributes.SplitType.ratio(STORY_LIST_SPLIT_RATIO))
-                .setLayoutDirection(SplitAttributes.LayoutDirection.LOCALE)
+                .setLayoutDirection(readerPaneLayoutDirection(layoutDirection))
                 .build()
 
         val storyListToReaderFilters =
@@ -615,7 +649,7 @@ object StorySplitView {
             .setDefaultSplitAttributes(
                 SplitAttributes.Builder().setSplitType(
                     SplitAttributes.SplitType.ratio(0.6f)
-                ).setLayoutDirection(feedPaneLayoutDirection(context.resources.configuration.layoutDirection)).build()
+                ).setLayoutDirection(feedPaneLayoutDirection(layoutDirection)).build()
             )
             .setMinWidthDp(MIN_SPLIT_WIDTH_DP)
             .setMinSmallestWidthDp(MIN_SPLIT_WIDTH_DP)
@@ -648,6 +682,13 @@ object StorySplitView {
             SplitAttributes.LayoutDirection.LEFT_TO_RIGHT
         } else {
             SplitAttributes.LayoutDirection.RIGHT_TO_LEFT
+        }
+
+    private fun readerPaneLayoutDirection(layoutDirection: Int): SplitAttributes.LayoutDirection =
+        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            SplitAttributes.LayoutDirection.RIGHT_TO_LEFT
+        } else {
+            SplitAttributes.LayoutDirection.LEFT_TO_RIGHT
         }
 
     private const val TAG_STORY_LIST_READER = "story_list_reader"

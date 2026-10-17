@@ -1148,4 +1148,10 @@
     <string name="briefing_section_follow_up_subtitle">최근 읽은 피드의 새 게시물</string>
     <string name="briefing_section_widely_covered">여러 곳에서 다룸</string>
     <string name="briefing_section_widely_covered_subtitle">3개 이상의 피드에서 다룬 스토리</string>
+    <string name="feed_list_enter_fullscreen">피드 전체 화면으로 표시</string>
+    <string name="feed_list_exit_fullscreen">스토리 제목 옆에 피드 표시</string>
+    <string name="story_list_enter_fullscreen">스토리 제목 전체 화면으로 표시</string>
+    <string name="story_list_exit_fullscreen">태블릿 열 표시</string>
+    <string name="resize_feed_list">피드 목록 크기 조정</string>
+    <string name="resize_story_list">스토리 제목 크기 조정</string>
 </resources>

@@ -1,12 +1,126 @@
 package com.newsblur.util
 
+import android.app.Activity
+import android.view.MotionEvent
+import android.view.View
 import android.view.ViewParent
+import android.widget.FrameLayout
+import androidx.window.embedding.SplitAttributes
+import androidx.window.embedding.SplitInfo
+import androidx.window.embedding.ActivityStack
+import com.newsblur.NbApplication
+import com.newsblur.activity.FeedListDrawer
+import com.newsblur.activity.ItemsList
+import com.newsblur.activity.Reading
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class Test_TabletPaneDivider {
+    @Test
+    fun test_drag_follows_actual_split_direction_when_view_locale_disagrees() {
+        mockkObject(Reading.Companion, FeedListDrawer.Companion)
+        try {
+            for (feeds in listOf(false, true)) {
+                for (primaryOnRight in listOf(false, true)) {
+                    val drawer = if (feeds) mockk<FeedListDrawer>(relaxed = true) else null
+                    val activity: Activity = drawer ?: mockk<ItemsList>(relaxed = true)
+                    val app = mockk<NbApplication>(relaxed = true)
+                    every { activity.applicationContext } returns app
+                    val divider = mockk<TabletPaneDivider>(relaxed = true)
+                    every { Reading.peekReader(any()) } returns null
+                    every { FeedListDrawer.peek(any()) } returns drawer
+                    val primary = ActivityStack(if (feeds) emptyList() else listOf(activity), false)
+                    val secondary = ActivityStack(listOfNotNull(drawer), false)
+                    val attributes = SplitAttributes.Builder()
+                        .setLayoutDirection(if (primaryOnRight) SplitAttributes.LayoutDirection.RIGHT_TO_LEFT else SplitAttributes.LayoutDirection.LEFT_TO_RIGHT)
+                        .setSplitType(SplitAttributes.SplitType.ratio(0.4f)).build()
+                    val split = SplitInfo(primary, secondary, attributes)
+                    every { divider.layoutParams } returns mockk<FrameLayout.LayoutParams>(relaxed = true)
+                    every { divider.layoutDirection } returns if (primaryOnRight) View.LAYOUT_DIRECTION_LTR else View.LAYOUT_DIRECTION_RTL
+                    every { divider.update(any()) } answers { callOriginal() }
+                    every { divider.onTouchEvent(any()) } answers { callOriginal() }
+                    for ((name, value) in mapOf("activity" to activity, "density" to 1f, "startRatio" to 0.4f, "parentWidth" to 1000f, "startX" to 500f, "dragging" to true)) {
+                        TabletPaneDivider::class.java.getDeclaredField(name).apply { isAccessible = true; set(divider, value) }
+                    }
+                    divider.update(listOf(split))
+                    val event = mockk<MotionEvent> {
+                        every { actionMasked } returns MotionEvent.ACTION_MOVE
+                        every { rawX } returns 600f
+                    }
+                    divider.onTouchEvent(event)
+
+                    // TabletPaneDivider.kt must resize the pane under the finger during a locale transition.
+                    val resizedPaneOnRight = if (feeds) !primaryOnRight else primaryOnRight
+                    val expectedRatio = if (resizedPaneOnRight) 0.3f else 0.5f
+                    val ratio = TabletPaneDivider::class.java.getDeclaredField("ratio").apply { isAccessible = true }.getFloat(divider)
+                    assertEquals("feeds=$feeds, primaryOnRight=$primaryOnRight", expectedRatio, ratio, 0.0001f)
+                }
+            }
+        } finally {
+            unmockkObject(Reading.Companion, FeedListDrawer.Companion)
+        }
+    }
+
+    @Test
+    fun test_drag_starts_anywhere_along_the_list_boundary() {
+        val divider = mockk<TabletPaneDivider>(relaxed = true)
+        val parent = mockk<ViewParent>(relaxed = true)
+        every { divider.parent } returns parent
+        every { divider.height } returns 1200
+        every { divider["prepareDrag"]() } returns Unit
+        every { divider.onTouchEvent(any()) } answers { callOriginal() }
+        TabletPaneDivider::class.java.getDeclaredField("density").apply { isAccessible = true; setFloat(divider, 1f) }
+        val event = mockk<MotionEvent> {
+            every { actionMasked } returns MotionEvent.ACTION_DOWN
+            every { y } returns 100f
+            every { rawX } returns 500f
+        }
+
+        // TabletPaneDivider.kt exposes the whole border, not only its small center indicator.
+        assertTrue("A drag near the top of the border was rejected", divider.onTouchEvent(event))
+        verify(exactly = 1) { parent.requestDisallowInterceptTouchEvent(true) }
+    }
+
+    @Test
+    fun test_only_the_owner_list_pane_shows_the_divider() {
+        mockkObject(Reading.Companion, FeedListDrawer.Companion)
+        try {
+            val titles = mockk<ItemsList>(relaxed = true)
+            for (feeds in listOf(false, true)) {
+                val reader = if (feeds) null else mockk<Reading>(relaxed = true)
+                val drawer = if (feeds) mockk<FeedListDrawer>(relaxed = true) else null
+                val secondary: Activity = drawer ?: reader!!
+                val owner: Activity = drawer ?: titles
+                every { Reading.peekReader(any()) } returns reader
+                every { FeedListDrawer.peek(any()) } returns drawer
+                val split = SplitInfo(
+                    ActivityStack(listOf(titles), false),
+                    ActivityStack(listOf(secondary), false),
+                    SplitAttributes.Builder().setSplitType(SplitAttributes.SplitType.ratio(0.4f)).build()
+                )
+                for (activity in listOf(titles, secondary)) {
+                    val divider = mockk<TabletPaneDivider>(relaxed = true)
+                    every { divider.layoutParams } returns mockk<FrameLayout.LayoutParams>(relaxed = true)
+                    every { divider.update(any()) } answers { callOriginal() }
+                    TabletPaneDivider::class.java.getDeclaredField("activity").apply { isAccessible = true; set(divider, activity) }
+
+                    divider.update(listOf(split))
+
+                    val expected = if (activity === owner) View.VISIBLE else View.GONE
+                    verify { divider.visibility = expected }
+                }
+            }
+        } finally {
+            unmockkObject(Reading.Companion, FeedListDrawer.Companion)
+        }
+    }
+
     @Test
     fun test_hiding_a_dragging_divider_cancels_the_pending_pane_resize() {
         val divider = mockk<TabletPaneDivider>(relaxed = true)

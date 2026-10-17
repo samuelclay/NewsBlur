@@ -1243,4 +1243,10 @@
     <string name="briefing_section_follow_up_subtitle">منشورات جديدة من خلاصات قرأتها مؤخرًا</string>
     <string name="briefing_section_widely_covered">تغطية واسعة</string>
     <string name="briefing_section_widely_covered_subtitle">قصص تغطيها 3 خلاصات أو أكثر</string>
+    <string name="feed_list_enter_fullscreen">عرض الخلاصات بملء الشاشة</string>
+    <string name="feed_list_exit_fullscreen">عرض الخلاصات بجانب عناوين القصص</string>
+    <string name="story_list_enter_fullscreen">عرض عناوين القصص بملء الشاشة</string>
+    <string name="story_list_exit_fullscreen">عرض أعمدة الجهاز اللوحي</string>
+    <string name="resize_feed_list">تغيير حجم قائمة الخلاصات</string>
+    <string name="resize_story_list">تغيير حجم عناوين القصص</string>
 </resources>

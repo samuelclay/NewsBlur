@@ -18,7 +18,7 @@ import com.newsblur.activity.FeedListDrawer
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.Reading
 
-/** Each pane draws half a shared handle, centered on StorySplitView.kt's column boundary. */
+/** A quiet, full-height resize border inside StorySplitView.kt's owning list pane. */
 internal class TabletPaneDivider private constructor(private val activity: Activity) :
     View(activity) {
     private val density = resources.displayMetrics.density
@@ -37,7 +37,6 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
         visibility = GONE
         isFocusable = true
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
-        elevation = 8 * density
     }
 
     fun update(splits: List<SplitInfo>) {
@@ -49,7 +48,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
             return
         }
         // Reading.kt may cover a still-alive FeedListDrawer.kt. Prefer the foreground reader
-        // pair so the titles' half-handle never changes the hidden feed column's preference.
+        // pair so the titles' border never changes the hidden feed column's preference.
         val reader = Reading.peekReader(activity.taskId)
         val readerSplit = if (activity is FeedListDrawer ||
             reader == null
@@ -69,15 +68,17 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
             )?.takeIf {
             it.splitAttributes.splitType != SplitAttributes.SplitType.SPLIT_TYPE_EXPAND
         }
-        visibility = if (split == null) GONE else VISIBLE
-        if (split == null) {
+        val feedList = FeedListDrawer.peek(activity.taskId)
+        feeds = readerSplit == null && feedList != null &&
+            split != null && feedList in split.secondaryActivityStack
+        val ownsDivider = if (feeds) activity is FeedListDrawer else activity is ItemsList
+        visibility = if (split != null && ownsDivider) VISIBLE else GONE
+        if (split == null || !ownsDivider) {
             removeCallbacks(frameUpdate)
             if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
             return
         }
-        val feedList = FeedListDrawer.peek(activity.taskId)
-        feeds = readerSplit == null && feedList != null && feedList in split.secondaryActivityStack
         val primaryOnRight =
             split.splitAttributes.layoutDirection == SplitAttributes.LayoutDirection.RIGHT_TO_LEFT ||
                 (
@@ -97,7 +98,9 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     }
 
     override fun onDraw(canvas: Canvas) {
-        val edge = if (rightEdge) width.toFloat() else 0f
+        val borderWidth = 3 * density
+        val left = if (rightEdge) width - borderWidth else 0f
+        val right = left + borderWidth
         val center = height / 2f
         paint.color = context.getColor(
             when (prefs.getResolvedTheme(context)) {
@@ -107,30 +110,21 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                 else -> R.color.segmented_control_border_light
             }
         )
-        canvas.drawRect(edge - density / 2, 0f, edge + density / 2, height.toFloat(), paint)
+        // TabletPaneDivider.kt draws wholly inside the list; the adjacent pane stays untouched.
+        canvas.drawRect(left, 0f, right, height.toFloat(), paint)
         val colors = context.obtainStyledAttributes(
-            intArrayOf(android.R.attr.colorBackground, android.R.attr.textColorSecondary)
+            intArrayOf(android.R.attr.textColorSecondary)
         )
         paint.color = colors.getColor(0, paint.color)
-        canvas.drawRoundRect(
-            edge - 7 * density,
-            center - 25 * density,
-            edge + 7 * density,
-            center + 25 * density,
-            7 * density,
-            7 * density,
-            paint
-        )
-        paint.color = colors.getColor(1, paint.color)
         colors.recycle()
-        paint.alpha = if (dragging || isFocused) 255 else 170
+        paint.alpha = if (dragging || isFocused) 230 else 140
         canvas.drawRoundRect(
-            edge - 2 * density,
-            center - 15 * density,
-            edge + 2 * density,
-            center + 15 * density,
-            2 * density,
-            2 * density,
+            left,
+            center - 24 * density,
+            right,
+            center + 24 * density,
+            borderWidth / 2,
+            borderWidth / 2,
             paint
         )
         paint.alpha = 255
@@ -164,7 +158,6 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                if (kotlin.math.abs(event.y - height / 2f) > 32 * density) return false
                 prepareDrag()
                 startX = event.rawX
                 dragging = true
@@ -177,7 +170,8 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                     startRatio,
                     event.rawX - startX,
                     parentWidth,
-                    layoutDirection == LAYOUT_DIRECTION_RTL
+                    // Follow the owner's actual edge, including while its locale is changing.
+                    !rightEdge
                 )
                 ratio = if (feeds) {
                     TabletPaneSizing.feedRatio(requested, parentWidth / density)
@@ -242,7 +236,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     companion object {
         fun attach(activity: Activity): TabletPaneDivider? {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R ||
-                (activity !is ItemsList && activity !is Reading && activity !is FeedListDrawer)
+                (activity !is ItemsList && activity !is FeedListDrawer)
             ) {
                 return null
             }
@@ -250,7 +244,7 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                 activity.addContentView(
                     it,
                     FrameLayout.LayoutParams(
-                        (24 * it.density).toInt(),
+                        (12 * it.density).toInt(),
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         Gravity.RIGHT
                     )

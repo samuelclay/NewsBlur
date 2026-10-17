@@ -1186,4 +1186,10 @@ les gens pour parler du monde.</string>
     <string name="briefing_section_follow_up_subtitle">Nouveaux articles des flux que vous avez consultés récemment</string>
     <string name="briefing_section_widely_covered">Largement relayés</string>
     <string name="briefing_section_widely_covered_subtitle">Articles couverts par au moins 3 flux</string>
+    <string name="feed_list_enter_fullscreen">Afficher les flux en plein écran</string>
+    <string name="feed_list_exit_fullscreen">Afficher les flux à côté des titres des articles</string>
+    <string name="story_list_enter_fullscreen">Afficher les titres des articles en plein écran</string>
+    <string name="story_list_exit_fullscreen">Afficher les colonnes de la tablette</string>
+    <string name="resize_feed_list">Redimensionner la liste des flux</string>
+    <string name="resize_story_list">Redimensionner les titres des articles</string>
 </resources>

@@ -1148,4 +1148,10 @@
     <string name="briefing_section_follow_up_subtitle">你最近閱讀的訂閱來源發布的新文章</string>
     <string name="briefing_section_widely_covered">廣泛報導</string>
     <string name="briefing_section_widely_covered_subtitle">由 3 個以上訂閱來源報導的文章</string>
+    <string name="feed_list_enter_fullscreen">全螢幕顯示訂閱來源</string>
+    <string name="feed_list_exit_fullscreen">在文章標題旁顯示訂閱來源</string>
+    <string name="story_list_enter_fullscreen">全螢幕顯示文章標題</string>
+    <string name="story_list_exit_fullscreen">顯示平板欄位</string>
+    <string name="resize_feed_list">調整訂閱來源清單大小</string>
+    <string name="resize_story_list">調整文章標題清單大小</string>
 </resources>

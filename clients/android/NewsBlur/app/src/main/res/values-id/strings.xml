@@ -1148,4 +1148,10 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="briefing_section_follow_up_subtitle">Postingan baru dari feed yang baru-baru ini Anda baca</string>
     <string name="briefing_section_widely_covered">Banyak diliput</string>
     <string name="briefing_section_widely_covered_subtitle">Artikel yang diliput oleh 3+ feed</string>
+    <string name="feed_list_enter_fullscreen">Tampilkan feed layar penuh</string>
+    <string name="feed_list_exit_fullscreen">Tampilkan feed di samping judul artikel</string>
+    <string name="story_list_enter_fullscreen">Tampilkan judul artikel layar penuh</string>
+    <string name="story_list_exit_fullscreen">Tampilkan kolom tablet</string>
+    <string name="resize_feed_list">Ubah ukuran daftar feed</string>
+    <string name="resize_story_list">Ubah ukuran judul artikel</string>
 </resources>

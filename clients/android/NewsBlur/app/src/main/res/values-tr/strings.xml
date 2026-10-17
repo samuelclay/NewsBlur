@@ -1167,4 +1167,10 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="briefing_section_follow_up_subtitle">Yakın zamanda okuduğunuz akışlardan yeni gönderiler</string>
     <string name="briefing_section_widely_covered">Geniş yer bulan haberler</string>
     <string name="briefing_section_widely_covered_subtitle">3 veya daha fazla akışta yer alan haberler</string>
+    <string name="feed_list_enter_fullscreen">Akışları tam ekran göster</string>
+    <string name="feed_list_exit_fullscreen">Akışları haber başlıklarının yanında göster</string>
+    <string name="story_list_enter_fullscreen">Haber başlıklarını tam ekran göster</string>
+    <string name="story_list_exit_fullscreen">Tablet sütunlarını göster</string>
+    <string name="resize_feed_list">Akış listesini yeniden boyutlandır</string>
+    <string name="resize_story_list">Haber başlıklarını yeniden boyutlandır</string>
 </resources>

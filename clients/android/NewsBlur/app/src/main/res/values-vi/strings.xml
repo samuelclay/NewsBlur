@@ -1148,4 +1148,10 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="briefing_section_follow_up_subtitle">Bài đăng mới từ các nguồn cấp bạn vừa đọc</string>
     <string name="briefing_section_widely_covered">Được đưa tin rộng rãi</string>
     <string name="briefing_section_widely_covered_subtitle">Bài viết được ít nhất 3 nguồn cấp đăng tải</string>
+    <string name="feed_list_enter_fullscreen">Hiển thị nguồn cấp toàn màn hình</string>
+    <string name="feed_list_exit_fullscreen">Hiển thị nguồn cấp bên cạnh tiêu đề bài viết</string>
+    <string name="story_list_enter_fullscreen">Hiển thị tiêu đề bài viết toàn màn hình</string>
+    <string name="story_list_exit_fullscreen">Hiển thị các cột trên máy tính bảng</string>
+    <string name="resize_feed_list">Thay đổi kích thước danh sách nguồn cấp</string>
+    <string name="resize_story_list">Thay đổi kích thước tiêu đề bài viết</string>
 </resources>

@@ -1148,4 +1148,10 @@
     <string name="briefing_section_follow_up_subtitle">你最近阅读过的订阅源发布的新文章</string>
     <string name="briefing_section_widely_covered">广泛报道</string>
     <string name="briefing_section_widely_covered_subtitle">被 3 个或更多订阅源收录的文章</string>
+    <string name="feed_list_enter_fullscreen">全屏显示订阅源</string>
+    <string name="feed_list_exit_fullscreen">在文章标题旁显示订阅源</string>
+    <string name="story_list_enter_fullscreen">全屏显示文章标题</string>
+    <string name="story_list_exit_fullscreen">显示平板电脑分栏</string>
+    <string name="resize_feed_list">调整订阅源列表大小</string>
+    <string name="resize_story_list">调整文章标题列表大小</string>
 </resources>

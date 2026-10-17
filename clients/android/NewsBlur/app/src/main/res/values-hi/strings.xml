@@ -1167,4 +1167,10 @@
     <string name="briefing_section_follow_up_subtitle">हाल ही में पढ़े गए फ़ीड से नई पोस्ट</string>
     <string name="briefing_section_widely_covered">व्यापक रूप से कवर किया गया</string>
     <string name="briefing_section_widely_covered_subtitle">3 या अधिक फ़ीड में शामिल लेख</string>
+    <string name="feed_list_enter_fullscreen">फ़ीड को पूरी स्क्रीन पर दिखाएँ</string>
+    <string name="feed_list_exit_fullscreen">फ़ीड को लेख शीर्षकों के बगल में दिखाएँ</string>
+    <string name="story_list_enter_fullscreen">लेख शीर्षक पूरी स्क्रीन पर दिखाएँ</string>
+    <string name="story_list_exit_fullscreen">टैबलेट कॉलम दिखाएँ</string>
+    <string name="resize_feed_list">फ़ीड सूची का आकार बदलें</string>
+    <string name="resize_story_list">लेख शीर्षकों का आकार बदलें</string>
 </resources>

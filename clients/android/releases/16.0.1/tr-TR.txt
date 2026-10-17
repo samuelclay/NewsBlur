@@ -1,0 +1,3 @@
+Tablet kontrolleri geri döndü: akış listesini, haber başlıklarını veya haberi birbirinden bağımsız olarak tam ekrana genişletin. Panelleri yeniden boyutlandırmak için ayırıcıları sürükleyin; NewsBlur genişliklerinizi hatırlar.
+
+16.0 sürümündeki 21 arayüz dili ve sabit konumlu sonraki haber kontrollerini içerir.
