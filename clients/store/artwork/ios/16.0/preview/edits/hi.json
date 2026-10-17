@@ -20,6 +20,6 @@
       "notes": "Refreshed native Hindi iPad capture. Source contact sheet confirms normal split-reader text and loaded photos. Includes real fullscreen article scrolling, then the settled Saved collection with the bread article selected."
     }
   },
-  "status": "source_intervals_reviewed",
-  "remaining": "Encode in a coordinated recording gap, then inspect all captions/glyphs and normal-speed playback before staging."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
