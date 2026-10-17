@@ -9,7 +9,8 @@ Those assets and the capture activity are absent from release APKs.
 Both API and image OkHttp clients intercept every request in this variant.
 Unknown reads fail closed and writes return a local success response. The variant
 also removes the `INTERNET` permission as an independent safeguard. No request
-is passed to a production server. Article photographs are embedded offline.
+is passed to a production server. Article photographs are installed in the real
+offline image cache instead of inflating JSON and database rows with base64.
 
 Build with the usual Android Studio JDK:
 
