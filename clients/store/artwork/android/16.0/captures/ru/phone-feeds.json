@@ -1,0 +1,11 @@
+{
+  "language": "ru",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "feeds",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:43:21 UTC",
+  "sha256": "6a8875f2154cb1c77fb8a8cfe50874d61fd46cdd7c6e13d7f98a73274ce173ac",
+  "native_readiness": "expected fixture content visible",
+  "visual_review": "required"
+}

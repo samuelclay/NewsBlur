@@ -1,0 +1,38 @@
+{
+  "language": "tr",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "stories",
+  "package": "com.newsblur.storecapture",
+  "recorded_by": {
+    "script": "clients/store/artwork/android/16.0/capture-native.rb",
+    "commit": "cfad20329",
+    "source_sha256": "270accb68e6e857834a28d8f5c390588b47e4696e0977dc31d71b4bfcf663b29"
+  },
+  "sidecar_attested_at": "2026-10-17T15:45:14Z",
+  "attestation_basis": "Coordinator-confirmed serialized legacy capture batch; related still and observed UI hierarchy, matching first frame, full decode and fresh ffprobe verified retrospectively.",
+  "source_still_captured_at": "2026-10-17 15:42:39 UTC",
+  "recording_file_mtime": "2026-10-17T15:42:46Z",
+  "recording_timestamp_note": "Filesystem mtime is recorded separately; no exact recording timestamp was written by the legacy capture process.",
+  "sha256": "ea886a3e26ba3d8815b204fe15982b30d91f9c83de5b4fcfa392f0ec720ba495",
+  "source_still_sha256": "a1b8e79c8fcff9302371bf9436a92f7305c18e25a2e6392f4aafe567b6b1299b",
+  "hierarchy_sha256": "bbd109e90a291673ef972df48a365138f6c057a88ebc04a2bad1f13b06796ae9",
+  "hierarchy_source": "related still observed before recording",
+  "probe": {
+    "width": 1080,
+    "height": 2340,
+    "codec": "h264",
+    "frame_rate": "25110000/554699",
+    "frame_count": 279,
+    "duration": 6.163322
+  },
+  "full_decode": "passed",
+  "first_frame_native_pixels": {
+    "mean_absolute_rgb_error": 1.4578,
+    "largest_tile_error": 1.8607,
+    "mean_limit": 12,
+    "tile_limit": 25,
+    "status": "passed"
+  },
+  "visual_review": "required"
+}

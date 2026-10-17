@@ -1,0 +1,11 @@
+{
+  "language": "pl",
+  "device": "phone",
+  "serial": "R5CT601C8DA",
+  "scene": "feeds",
+  "package": "com.newsblur.storecapture",
+  "captured_at": "2026-10-17 15:41:31 UTC",
+  "sha256": "923fb28ab39f56656fc08c6ec691da3dcc727bc4e4f829815b54743de77d7ee5",
+  "native_readiness": "expected fixture content visible",
+  "visual_review": "required"
+}
