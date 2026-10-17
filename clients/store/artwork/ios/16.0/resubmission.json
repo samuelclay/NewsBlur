@@ -14,7 +14,7 @@
   "requirements": {
     "languages": 21,
     "header_and_search": "approved_assets_prepared",
-    "main_screenshots": "01_sage_panels_all_21_languages_prepared_reviewed_staged_uploads_incomplete",
+    "main_screenshots": "all_21_iphone_localizations_uploaded_verified_ipad_completion_in_progress",
     "app_preview_video": "authorized_preparation_in_progress"
   },
   "automatic_release_after_approval": true,
@@ -101,7 +101,16 @@
       "proof": [
         "proof/en-iphone-screenshots-persisted.jpg",
         "proof/en-ipad-screenshots-persisted.jpg"
-      ]
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/en-iphone-reloaded.txt"
+      }
     },
     "fr": {
       "size": "1206x2622",
@@ -125,6 +134,15 @@
           "count": 4,
           "proof": "proof/fr-large-screenshots-persisted.jpg"
         }
+      },
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/fr-iphone-reloaded.txt"
       }
     },
     "ar": {
@@ -138,7 +156,16 @@
       "proof": [
         "proof/ar-iphone-screenshots-persisted.jpg",
         "proof/ar-ipad-screenshots-persisted.jpg"
-      ]
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ar-iphone-reloaded.txt"
+      }
     },
     "de": {
       "sizes": [
@@ -151,7 +178,16 @@
       "proof": [
         "proof/de-iphone-screenshots-persisted.jpg",
         "proof/de-ipad-screenshots-persisted.jpg"
-      ]
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/de-iphone-reloaded.txt"
+      }
     },
     "he": {
       "sizes": [
@@ -159,7 +195,16 @@
       ],
       "count_per_size": 4,
       "placement_status": "persisted_after_full_reload",
-      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count."
+      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/he-iphone-reloaded.txt"
+      }
     },
     "pl": {
       "sizes": [
@@ -167,8 +212,17 @@
         "1320x2868"
       ],
       "count_per_size": 4,
-      "placement_status": "uploaded_pending_authenticated_reload_readback",
-      "note": "Uploaded both iPhone sets through the browser file chooser. Medium showed all four exact filenames and 4 of 10; large showed Processing before verification reload redirected to App Store Connect sign-in. Do not count either set as persisted until authenticated reload and explicit Polish selection. The Polish iPad set was also visible with four expected filenames before reload, but was not freshly verified."
+      "placement_status": "persisted_after_full_reload",
+      "note": "Both iPhone sizes verified after authenticated full reload with exact filenames and counts.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pl-iphone-reloaded.txt"
+      }
     },
     "es": {
       "sizes": [
@@ -176,7 +230,170 @@
       ],
       "count_per_size": 4,
       "placement_status": "persisted_after_full_reload",
-      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count."
+      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/es-iphone-reloaded.txt"
+      }
+    },
+    "it": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/it-iphone-reloaded.txt"
+      }
+    },
+    "nl": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/nl-iphone-reloaded.txt"
+      }
+    },
+    "pt-BR": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pt-BR-iphone-reloaded.txt"
+      }
+    },
+    "ru": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ru-iphone-reloaded.txt"
+      }
+    },
+    "tr": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/tr-iphone-reloaded.txt"
+      }
+    },
+    "uk": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/uk-iphone-reloaded.txt"
+      }
+    },
+    "hi": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/hi-iphone-reloaded.txt"
+      }
+    },
+    "id": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/id-iphone-reloaded.txt"
+      }
+    },
+    "vi": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/vi-iphone-reloaded.txt"
+      }
+    },
+    "th": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/th-iphone-reloaded.txt"
+      }
+    },
+    "ja": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ja-iphone-reloaded.txt"
+      }
+    },
+    "ko": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ko-iphone-reloaded.txt"
+      }
+    },
+    "zh-Hans": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hans-iphone-reloaded.txt"
+      }
+    },
+    "zh-Hant": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hant-iphone-reloaded.txt"
+      }
     }
   },
   "app_preview_status": "All available native footage is prepared: 27 videos (all 21 iPad languages and six iPhone languages) pass technical checks, full-timeline sampled visual review, and source/output/copy SHA audit. Ten have passed normal-speed playback and are staged; seventeen remain playback pending. Fifteen iPhone videos await native capture. French iPhone placement verified saved; Hebrew iPad upload awaits reload readback. Other uploads remain paused.",
@@ -199,11 +416,11 @@
     }
   },
   "capture_checkpoint": "screenshots/scripts/CAPTURE_STATUS.md",
-  "upload_status": "resumed_at_user_request_waiting_for_app_store_connect_sign_in",
+  "upload_status": "all_168_iphone_screenshots_verified_ipad_uploads_in_progress",
   "preparation_counts": {
     "screenshots_planned": 252,
     "screenshots_reviewed_staged": 252,
-    "screenshots_verified_in_store": 56,
+    "screenshots_verified_in_store": 204,
     "complete_ipad_languages": 21,
     "complete_iphone_languages": 21,
     "pending_iphone_languages": 0,
@@ -211,7 +428,9 @@
     "previews_encoded_visual_reviewed": 27,
     "previews_playback_passed": 10,
     "previews_playback_pending": 17,
-    "previews_awaiting_capture": 15
+    "previews_awaiting_capture": 15,
+    "iphone_screenshots_verified_in_store": 168,
+    "ipad_screenshots_verified_in_store": 36
   },
   "resume_requirements": [
     "Upload and verify the remaining prepared screenshot placements in all 21 languages. All 252 screenshots are ready in /tmp/newsblur-ios16-ready-uploads; preserve already verified placements.",
