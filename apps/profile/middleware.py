@@ -50,7 +50,11 @@ class LastSeenMiddleware(object):
             from utils.languages import normalize_language
 
             language = normalize_language(getattr(request, "LANGUAGE_CODE", None))
-            if language and language != "auto":
+            has_language_context = (
+                getattr(request, "language_preference", "auto") != "auto"
+                or request.META.get("HTTP_ACCEPT_LANGUAGE", "").strip()
+            )
+            if language and language != "auto" and has_language_context:
                 request.user.profile.last_read_language = language
             request.user.profile.save()
 
