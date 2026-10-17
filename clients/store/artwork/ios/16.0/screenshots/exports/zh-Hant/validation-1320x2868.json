@@ -1,0 +1,84 @@
+{
+  "language": "zh-Hant",
+  "checked_at": "2026-10-17T02:15:09Z",
+  "capture_format": "CoreGraphics/CoreText opaque PNG",
+  "note": "Technical validation does not establish visual approval or store persistence.",
+  "files": [
+    {
+      "path": "exports/zh-Hant/1320x2868/panel-1.png",
+      "panel": 1,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 1201592,
+      "sha256": "8811ae4f5aa5b8414d055d53d535dc83fcb9ef60a7bcef01dd1dc2602d89e6e7",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.8161,
+        "largest_tile_error": 1.4271,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hant/1320x2868/panel-2.png",
+      "panel": 2,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 562953,
+      "sha256": "baa932a84d37766867cb32fd899caf904a1f895165325e750a0994d9772fef11",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.1951,
+        "largest_tile_error": 1.0156,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hant/1320x2868/panel-3.png",
+      "panel": 3,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 2290283,
+      "sha256": "8ce341ca13b03f855c345a1667baebe1ac10576f7be79ab5bbc96d97f56d26d1",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 1.11,
+        "largest_tile_error": 2.6536,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    },
+    {
+      "path": "exports/zh-Hant/1320x2868/panel-4.png",
+      "panel": 4,
+      "width": 1320,
+      "height": 2868,
+      "opaque": true,
+      "bytes": 1020790,
+      "sha256": "20d7028d2dd460dada57a1ccb2d3e5c1cd2b08bab5a4c99fd656b11986e3231f",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.6093,
+        "largest_tile_error": 1.388,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "passed",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T02:17:07Z"
+    }
+  ]
+}

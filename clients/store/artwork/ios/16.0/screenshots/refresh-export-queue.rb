@@ -44,9 +44,11 @@ end
 report = {
   updated_at: Time.now.utc.iso8601,
   renderer: 'CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved',
-  capture_status: options[:status],
-  required_next_steps: ['Wait for a verified complete native capture group', 'Run export-native.rb for each missing size',
-    'Visually inspect all four panels per size', 'Stage reviewed files with unique locale, size and panel filenames'],
+  capture_status: pending.empty? ? 'complete' : options[:status],
+  required_next_steps: pending.empty? ? ['Upload the prepared screenshots to each matching store locale and display size',
+    'Verify persisted placement after a fresh store reload'] : ['Wait for a verified complete native capture group',
+    'Run export-native.rb for each missing size', 'Visually inspect all four panels per size',
+    'Stage reviewed files with unique locale, size and panel filenames'],
   store_placement_tracking: 'Coordinator owns resubmission.json and /tmp/newsblur-ios16-ready-uploads/manifest.json; preparation status here does not establish store placement.',
   completed_sets: completed, remaining_batch: pending,
   counts: { expected_panels: expected.length * 4, staged_panels: completed.length * 4, complete_sets: completed.length, pending_sets: pending.length }
