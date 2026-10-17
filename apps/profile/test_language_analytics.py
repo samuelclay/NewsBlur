@@ -154,6 +154,17 @@ class Test_LanguageAnalytics(TestCase):
         self.assertEqual(user.profile.last_read_language, "ja")
         self.assertEqual(user.profile.signup_language, "es")
 
+    def test_script_without_language_header_preserves_last_observed_automatic_language(self):
+        user = self.user("script", observed="fr")
+        Profile.objects.filter(user=user).update(last_seen_on=datetime.datetime.utcnow())
+        user.profile.refresh_from_db()
+        request = self.factory.get("/reader/feeds")
+        request.user = user
+        NewsBlurLocaleMiddleware(lambda request: None).process_request(request)
+        LastSeenMiddleware().process_response(request, HttpResponse())
+        user.profile.refresh_from_db()
+        self.assertEqual(user.profile.last_read_language, "fr")
+
     def test_preferences_activity_unknowns_and_legacy_nuls(self):
         self.user("auto_french", observed="fr")
         self.user("explicit_german", choice="de", observed="es")
