@@ -12,6 +12,8 @@ language, including zeros. Account identifiers never appear in labels.
 - **Language use:** the explicit preference, or `Profile.last_read_language` for automatic accounts.
   This is the language on the last reader activity request, not a count of devices. Accounts without an
   observation are `unknown`. Changing an explicit preference changes this distribution immediately.
+  Automatic requests without an `Accept-Language` header preserve the last observation, so scripts
+  cannot replace a known device language with the English fallback.
 - **Active:** `Profile.last_seen_on` within the preceding 30 days, matching the existing monthly active
   account definition. Activity is recorded on the home and feed loading/refresh endpoints, including
   native clients. Background refresh can count as activity, as it does in the existing metric.
