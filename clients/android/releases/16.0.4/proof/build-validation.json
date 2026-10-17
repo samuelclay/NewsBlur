@@ -8,10 +8,11 @@
     "errors": 0,
     "skipped": 0
   },
-  "bundleSha256": "4f4105f9d4a9cbf0253571866a05dd381427b30af36fa98c60898bdbcd6ab957",
-  "bundleBytes": 15068060,
+  "bundleSha256": "17e382f730fd2649e61f10675fceef46d2fc58f9a18d0121ae4ab6258931f99b",
+  "bundleBytes": 15166846,
   "zipIntegrity": "passed",
   "embeddedManifest": "bundle-manifest.xml",
-  "signingStatus": "unsigned; awaiting configured upload-key password",
-  "uploadedToPlay": false
+  "signingStatus": "verified",
+  "uploadedToPlay": true,
+  "certificateSha256": "5C:5E:93:50:3C:6A:C4:89:88:6A:29:BE:0C:28:6B:A6:04:82:E2:C2:5A:A6:D6:EF:56:84:FD:6E:8F:D7:C3:19"
 }

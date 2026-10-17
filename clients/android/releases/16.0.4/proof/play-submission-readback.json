@@ -1,0 +1,147 @@
+{
+  "capturedAt": "2026-10-17T23:15:59.039882+00:00",
+  "listings": {
+    "verifiedLocales": [
+      "ar",
+      "de-DE",
+      "en-US",
+      "es-ES",
+      "fr-FR",
+      "hi-IN",
+      "id",
+      "it-IT",
+      "iw-IL",
+      "ja-JP",
+      "ko-KR",
+      "nl-NL",
+      "pl-PL",
+      "pt-BR",
+      "ru-RU",
+      "th",
+      "tr-TR",
+      "uk",
+      "vi",
+      "zh-CN",
+      "zh-TW"
+    ],
+    "requestedLocales": 21
+  },
+  "products": [
+    {
+      "productId": "nb.premium.36",
+      "verifiedLocales": 21
+    },
+    {
+      "productId": "nb.premium.archive.99",
+      "verifiedLocales": 21
+    }
+  ],
+  "production": {
+    "track": "production",
+    "releases": [
+      {
+        "name": "16.0.4",
+        "versionCodes": [
+          "296"
+        ],
+        "releaseNotes": [
+          {
+            "language": "en-US",
+            "text": "Fixes crashes when opening NewsBlur, checking unread counts, confirming reading actions, and restoring reader state. Database upgrades preserve cached stories and queued offline actions.\n\nIncludes tablet fullscreen controls and remembered pane widths, 21 interface languages, and fixed-position Next story controls."
+          },
+          {
+            "language": "es-ES",
+            "text": "Corrige cierres al abrir NewsBlur, consultar el número de artículos sin leer, confirmar acciones de lectura y restaurar el lector. Las actualizaciones de la base de datos conservan los artículos en caché y las acciones sin conexión pendientes.\n\nIncluye controles de pantalla completa en tabletas, anchos de panel recordados, 21 idiomas de interfaz y controles de siguiente artículo en posición fija."
+          },
+          {
+            "language": "fr-FR",
+            "text": "Corrige des plantages à l’ouverture de NewsBlur, à la consultation du nombre de non lus, à la confirmation d’actions de lecture et à la restauration du lecteur. Les mises à niveau de la base préservent les articles en cache et les actions hors ligne en attente.\n\nInclut le plein écran sur tablette, la largeur mémorisée des volets, 21 langues d’interface et des commandes d’article suivant à position fixe."
+          },
+          {
+            "language": "de-DE",
+            "text": "Behebt Abstürze beim Öffnen von NewsBlur, Prüfen der Ungelesen-Zahl, Bestätigen von Leseaktionen und Wiederherstellen des Lesers. Datenbank-Upgrades erhalten zwischengespeicherte Artikel und ausstehende Offline-Aktionen.\n\nMit Vollbildsteuerung auf Tablets, gespeicherten Bereichsbreiten, 21 Oberflächensprachen und fest positionierten Steuerelementen für den nächsten Artikel."
+          },
+          {
+            "language": "pt-BR",
+            "text": "Corrige encerramentos inesperados ao abrir o NewsBlur, consultar a contagem de não lidos, confirmar ações de leitura e restaurar o leitor. As atualizações do banco de dados preservam artigos em cache e ações offline pendentes.\n\nInclui controles de tela cheia em tablets, larguras de painéis salvas, interface em 21 idiomas e controles de próximo artigo em posição fixa."
+          },
+          {
+            "language": "it-IT",
+            "text": "Corregge arresti anomali all’apertura di NewsBlur, al controllo dei non letti, alla conferma delle azioni di lettura e al ripristino del lettore. Gli aggiornamenti del database conservano articoli in cache e azioni offline in attesa.\n\nInclude controlli a schermo intero sui tablet, larghezze dei pannelli memorizzate, interfaccia in 21 lingue e controlli per l’articolo successivo in posizione fissa."
+          },
+          {
+            "language": "nl-NL",
+            "text": "Verhelpt crashes bij het openen van NewsBlur, bekijken van ongelezen aantallen, bevestigen van leesacties en herstellen van de lezer. Database-upgrades bewaren gecachte artikelen en offline acties in de wachtrij.\n\nMet bediening voor volledig scherm op tablets, onthouden paneelbreedtes, 21 interfacetalen en bediening voor het volgende artikel op een vaste plek."
+          },
+          {
+            "language": "pl-PL",
+            "text": "Naprawia awarie przy otwieraniu NewsBlur, sprawdzaniu liczby nieprzeczytanych artykułów, potwierdzaniu czynności związanych z czytaniem i przywracaniu czytnika. Aktualizacje bazy zachowują artykuły w pamięci podręcznej i oczekujące działania offline.\n\nObejmuje pełny ekran na tabletach, zapamiętywanie szerokości paneli, 21 języków interfejsu i elementy sterowania następnym artykułem w stałym miejscu."
+          },
+          {
+            "language": "tr-TR",
+            "text": "NewsBlur’u açarken, okunmamış sayısını kontrol ederken, okuma işlemlerini onaylarken ve okuyucu durumunu geri yüklerken oluşan çökmeleri düzeltir. Veritabanı yükseltmeleri önbellekteki haberleri ve bekleyen çevrimdışı işlemleri korur.\n\nTabletlerde tam ekran kontrolleri, hatırlanan panel genişlikleri, 21 arayüz dili ve sabit konumlu sonraki haber kontrolleri içerir."
+          },
+          {
+            "language": "ru-RU",
+            "text": "Исправлены сбои при открытии NewsBlur, проверке числа непрочитанных статей, подтверждении действий при чтении и восстановлении состояния чтения. Обновления базы сохраняют статьи в кеше и ожидающие действия без интернета.\n\nТакже доступны полноэкранные элементы управления на планшетах, запоминание ширины панелей, 21 язык интерфейса и элементы перехода к следующей статье на постоянном месте."
+          },
+          {
+            "language": "uk",
+            "text": "Виправлено збої під час відкриття NewsBlur, перевірки кількості непрочитаних статей, підтвердження дій під час читання й відновлення стану перегляду. Оновлення бази зберігають кешовані статті та дії офлайн у черзі.\n\nТакож є повноекранні елементи керування на планшетах, запам’ятовування ширини панелей, 21 мова інтерфейсу й елементи переходу до наступної статті на сталому місці."
+          },
+          {
+            "language": "ar",
+            "text": "إصلاح أعطال عند فتح NewsBlur، والتحقق من عدد القصص غير المقروءة، وتأكيد إجراءات القراءة، واستعادة حالة القارئ. تحافظ ترقيات قاعدة البيانات على القصص المخزنة مؤقتًا وإجراءات القراءة دون اتصال المنتظرة.\n\nيتضمن عناصر تحكم بملء الشاشة للأجهزة اللوحية وحفظ عرض اللوحات، و21 لغة للواجهة، وعناصر تحكم ثابتة الموضع للانتقال إلى القصة التالية."
+          },
+          {
+            "language": "iw-IL",
+            "text": "תוקנו קריסות בפתיחת NewsBlur, בבדיקת מספר הכתבות שלא נקראו, באישור פעולות קריאה ובשחזור מצב הקורא. שדרוגי מסד הנתונים שומרים על כתבות במטמון ועל פעולות ללא חיבור שממתינות בתור.\n\nכולל פקדי מסך מלא לטאבלטים ושמירת רוחב החלוניות, 21 שפות ממשק ופקדי מעבר לכתבה הבאה במיקום קבוע."
+          },
+          {
+            "language": "hi-IN",
+            "text": "NewsBlur खोलते समय, अपठित लेखों की संख्या देखते समय, पढ़ने की कार्रवाइयों की पुष्टि और रीडर की स्थिति बहाल करते समय होने वाले क्रैश ठीक किए। डेटाबेस अपग्रेड कैश किए गए लेख और कतार में मौजूद ऑफ़लाइन कार्रवाइयाँ सुरक्षित रखते हैं।\n\nटैबलेट पर फ़ुलस्क्रीन नियंत्रण और याद रखी गई पैन की चौड़ाई, 21 इंटरफ़ेस भाषाएँ और निश्चित स्थान पर अगले लेख के नियंत्रण शामिल हैं।"
+          },
+          {
+            "language": "id",
+            "text": "Memperbaiki crash saat membuka NewsBlur, memeriksa jumlah artikel belum dibaca, mengonfirmasi tindakan membaca, dan memulihkan status tampilan baca. Pembaruan basis data mempertahankan artikel dalam cache dan antrean tindakan offline.\n\nTermasuk kontrol layar penuh di tablet dan penyimpanan lebar panel, 21 bahasa antarmuka, serta kontrol Artikel berikutnya dengan posisi tetap."
+          },
+          {
+            "language": "vi",
+            "text": "Sửa lỗi văng ứng dụng khi mở NewsBlur, kiểm tra số bài chưa đọc, xác nhận thao tác đọc và khôi phục trạng thái trình đọc. Nâng cấp cơ sở dữ liệu giữ nguyên bài viết trong bộ nhớ đệm và thao tác ngoại tuyến đang chờ.\n\nCó điều khiển toàn màn hình trên máy tính bảng và ghi nhớ độ rộng các ngăn, 21 ngôn ngữ giao diện, cùng điều khiển Bài viết tiếp theo ở vị trí cố định."
+          },
+          {
+            "language": "th",
+            "text": "แก้ไขแอปขัดข้องเมื่อเปิด NewsBlur ตรวจสอบจำนวนบทความที่ยังไม่อ่าน ยืนยันการทำงานเกี่ยวกับการอ่าน และคืนค่าสถานะหน้าการอ่าน การอัปเกรดฐานข้อมูลจะเก็บบทความในแคชและการทำงานออฟไลน์ที่รออยู่ไว้\n\nมีปุ่มเต็มหน้าจอสำหรับแท็บเล็ตและการจำความกว้างแผง อินเทอร์เฟซ 21 ภาษา และปุ่มบทความถัดไปที่อยู่ในตำแหน่งคงที่"
+          },
+          {
+            "language": "ja-JP",
+            "text": "NewsBlurの起動時、未読数の確認時、読書操作の確定時、リーダーの状態復元時に発生するクラッシュを修正しました。データベースの更新時も、キャッシュした記事と待機中のオフライン操作を保持します。\n\nタブレット用の全画面表示ボタンとペイン幅の記憶、21言語のインターフェース、位置が固定された「次の記事」ボタンも含まれます。"
+          },
+          {
+            "language": "ko-KR",
+            "text": "NewsBlur 실행, 읽지 않은 스토리 수 확인, 읽기 작업 확인 및 리더 상태 복원 시 발생하는 비정상 종료를 수정했습니다. 데이터베이스를 업그레이드해도 캐시된 스토리와 대기 중인 오프라인 작업이 유지됩니다.\n\n태블릿 전체 화면 컨트롤과 패널 너비 기억, 21개 인터페이스 언어, 고정된 위치의 다음 스토리 컨트롤도 포함됩니다."
+          },
+          {
+            "language": "zh-CN",
+            "text": "修复了打开 NewsBlur、查看未读数量、确认阅读操作以及恢复阅读器状态时的崩溃。数据库升级会保留缓存文章和排队等待的离线操作。\n\n还包含平板电脑全屏控件和窗格宽度记忆、21 种界面语言，以及位置固定的“下一篇文章”控件。"
+          },
+          {
+            "language": "zh-TW",
+            "text": "修正開啟 NewsBlur、查看未讀數量、確認閱讀操作及還原閱讀器狀態時的當機。資料庫升級會保留快取文章和排隊等候的離線操作。\n\n另包含平板電腦全螢幕控制項和窗格寬度記憶、21 種介面語言，以及位置固定的「下一篇文章」控制項。"
+          }
+        ],
+        "status": "completed"
+      }
+    ]
+  },
+  "releaseNotesVerified": 21,
+  "otherTracksUnchanged": true,
+  "bundle": {
+    "versionCode": 296,
+    "sha1": "23a3a71ec428e175ee985ea2203bd4ea4f2270f9",
+    "sha256": "17e382f730fd2649e61f10675fceef46d2fc58f9a18d0121ae4ab6258931f99b"
+  },
+  "managedPublishing": false,
+  "consoleState": "Changes in review; automated quick checks running",
+  "publicAvailability": "Not yet verified; previous public release16.0.2"
+}
