@@ -1,0 +1,281 @@
+{
+  "checked_at": "2026-10-17T15:45:22Z",
+  "assets": [
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "imageType": "phoneScreenshots",
+      "position": 1,
+      "path": "nl/phoneScreenshots/panel-01.png",
+      "sha256": "0df8c53e6e0bd5fe748d20f98f7f2a52a57b1abaf3c0ae130561cd08566bb591",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1068240,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/nl.json": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/nl/phone-stories.png": "deea588e53e4d5675094c62d88d83c77da27273393beb1da277f3a18a7f88cf0",
+        "captures/nl/phone-feeds.png": "70114cc98e2d5114ceebee202c45e7c55f3bd3a22f24b21cd9748b519f5489b6",
+        "captures/nl/phone-reader.png": "33abf99e854279db807a61be7bb181cd8df4fb8e6a97bd369785539548985955",
+        "captures/nl/phone-saved.png": "f60d0b5ee276f088eb323abe0ae1a2be4ae27636b943eeb663d85be33603d8c7"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.5624,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/nl/phone-stories.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/nl/phone-stories.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "nl",
+        "panel": 1,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Je dagelijkse leesvoer op één plek."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "imageType": "phoneScreenshots",
+      "position": 2,
+      "path": "nl/phoneScreenshots/panel-02.png",
+      "sha256": "97354148fffb88f0809a03760d82fdfd7131b9bbe5cf89a9b24b4c907977db3b",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 308877,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/nl.json": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/nl/phone-stories.png": "deea588e53e4d5675094c62d88d83c77da27273393beb1da277f3a18a7f88cf0",
+        "captures/nl/phone-feeds.png": "70114cc98e2d5114ceebee202c45e7c55f3bd3a22f24b21cd9748b519f5489b6",
+        "captures/nl/phone-reader.png": "33abf99e854279db807a61be7bb181cd8df4fb8e6a97bd369785539548985955",
+        "captures/nl/phone-saved.png": "f60d0b5ee276f088eb323abe0ae1a2be4ae27636b943eeb663d85be33603d8c7"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.2642,
+          "largest_tile_error": 0.6862,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/nl/phone-feeds.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/nl/phone-feeds.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "nl",
+        "panel": 2,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Een thuis voor je favoriete bronnen."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "imageType": "phoneScreenshots",
+      "position": 3,
+      "path": "nl/phoneScreenshots/panel-03.png",
+      "sha256": "15d010fc3bbd0b82e1d08f4d2e6f6ea4fb3896c40adf0f1d66b854cdd8db500a",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1096435,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/nl.json": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/nl/phone-stories.png": "deea588e53e4d5675094c62d88d83c77da27273393beb1da277f3a18a7f88cf0",
+        "captures/nl/phone-feeds.png": "70114cc98e2d5114ceebee202c45e7c55f3bd3a22f24b21cd9748b519f5489b6",
+        "captures/nl/phone-reader.png": "33abf99e854279db807a61be7bb181cd8df4fb8e6a97bd369785539548985955",
+        "captures/nl/phone-saved.png": "f60d0b5ee276f088eb323abe0ae1a2be4ae27636b943eeb663d85be33603d8c7"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.4052,
+          "largest_tile_error": 0.8568,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/nl/phone-reader.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/nl/phone-reader.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "nl",
+        "panel": 3,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Ga er lekker voor zitten en lees."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    },
+    {
+      "language": "nl",
+      "locale": "nl-NL",
+      "imageType": "phoneScreenshots",
+      "position": 4,
+      "path": "nl/phoneScreenshots/panel-04.png",
+      "sha256": "bdbf79b202fb12018af9a282b90024bdcd59f10b58f9da20490188d604937c6d",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 1075055,
+      "source_sha256": {
+        "native-render.swift": "ad85d1d1e59fb1ee6669dd3fd3b5b905a4aa0a80e26068bbb91e099d5c7eb29c",
+        "export-native.rb": "25e76b7fc4183d5c6848105e8e7c3b9c74ebaf2e52ef703387d2b16e3b936a26",
+        "verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+        "copy/nl.json": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
+        "assets/icon-source.png": "86feb2959060bc7bea846d5a9aa1a4746a99f73025c4fd18f7e6e1b99bcd6b7e",
+        "captures/nl/phone-stories.png": "deea588e53e4d5675094c62d88d83c77da27273393beb1da277f3a18a7f88cf0",
+        "captures/nl/phone-feeds.png": "70114cc98e2d5114ceebee202c45e7c55f3bd3a22f24b21cd9748b519f5489b6",
+        "captures/nl/phone-reader.png": "33abf99e854279db807a61be7bb181cd8df4fb8e6a97bd369785539548985955",
+        "captures/nl/phone-saved.png": "f60d0b5ee276f088eb323abe0ae1a2be4ae27636b943eeb663d85be33603d8c7"
+      },
+      "native_pixel_checks": [
+        {
+          "mean_absolute_rgb_error": 0.564,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/nl/phone-saved.png"
+        }
+      ],
+      "render": {
+        "captures": [
+          {
+            "bounds": {
+              "height": 1608,
+              "width": 742.1538461538462,
+              "x": 168.9230769230769,
+              "y": 280
+            },
+            "path": "captures/nl/phone-saved.png",
+            "source_height": 2340,
+            "source_width": 1080
+          }
+        ],
+        "height": 1920,
+        "language": "nl",
+        "panel": 4,
+        "placement": "phoneScreenshots",
+        "status": "rendered_requires_visual_review",
+        "text": [
+          {
+            "font_size": 32,
+            "line_count": 1,
+            "text": "NewsBlur"
+          },
+          {
+            "font_size": 56,
+            "line_count": 1,
+            "text": "Sla een goed artikel op voor later."
+          }
+        ],
+        "width": 1080
+      },
+      "visual_review": "approved",
+      "store_upload": "unverified",
+      "visual_reviewed_at": "2026-10-17T15:46:32Z",
+      "visual_review_note": "Final localized PNGs visually inspected: headline and native controls, source screen proportions, full app bounds, no clipping or overlapping artwork."
+    }
+  ]
+}
