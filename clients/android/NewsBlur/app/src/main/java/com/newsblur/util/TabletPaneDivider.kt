@@ -12,11 +12,13 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.window.embedding.SplitAttributes
 import androidx.window.embedding.SplitInfo
+import androidx.window.WindowSdkExtensions
 import com.newsblur.NbApplication
 import com.newsblur.R
 import com.newsblur.activity.FeedListDrawer
 import com.newsblur.activity.ItemsList
 import com.newsblur.activity.Reading
+import com.newsblur.activity.ReadingPlaceholder
 
 /** A quiet, full-height resize border inside StorySplitView.kt's owning list pane. */
 internal class TabletPaneDivider private constructor(private val activity: Activity) :
@@ -29,14 +31,17 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     private var startX = 0f
     private var startRatio = 0f
     private var parentWidth = 1f
+    private var parentLeft = 0f
     private var ratio = 0f
     private var frameUpdatePosted = false
+    private var previewResize = false
+    private var resizeGuide: TabletPaneResizeGuide? = null
     private val prefs get() = (activity.applicationContext as NbApplication).prefsRepo.get()
     private val frameUpdate = Runnable { applyPendingResize() }
 
     private fun applyPendingResize() {
         frameUpdatePosted = false
-        if (dragging) StorySplitView.resizePane(activity, feeds, ratio, false)
+        if (dragging && !previewResize) StorySplitView.resizePane(activity, feeds, ratio, false)
     }
 
     init {
@@ -50,6 +55,8 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
             visibility = GONE
             removeCallbacks(frameUpdate)
             frameUpdatePosted = false
+            resizeGuide?.dismiss()
+            resizeGuide = null
             if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
             return
@@ -83,6 +90,8 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
         if (split == null || !ownsDivider) {
             removeCallbacks(frameUpdate)
             frameUpdatePosted = false
+            resizeGuide?.dismiss()
+            resizeGuide = null
             if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
             dragging = false
             return
@@ -106,25 +115,16 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
     }
 
     override fun onDraw(canvas: Canvas) {
+        if (dragging && previewResize) return
         val borderWidth = 3 * density
         val left = if (rightEdge) width - borderWidth else 0f
         val right = left + borderWidth
         val center = height / 2f
-        paint.color = context.getColor(
-            when (prefs.getResolvedTheme(context)) {
-                PrefConstants.ThemeValue.DARK -> R.color.segmented_control_border_dark
-                PrefConstants.ThemeValue.BLACK -> R.color.segmented_control_border_black
-                PrefConstants.ThemeValue.SEPIA -> R.color.segmented_control_border_sepia
-                else -> R.color.segmented_control_border_light
-            }
-        )
+        val colors = TabletPaneResizeGuide.colors(activity)
+        paint.color = colors.border
         // TabletPaneDivider.kt draws wholly inside the list; the adjacent pane stays untouched.
         canvas.drawRect(left, 0f, right, height.toFloat(), paint)
-        val colors = context.obtainStyledAttributes(
-            intArrayOf(android.R.attr.textColorSecondary)
-        )
-        paint.color = colors.getColor(0, paint.color)
-        colors.recycle()
+        paint.color = colors.indicator
         paint.alpha = if (dragging || isFocused) 230 else 140
         canvas.drawRoundRect(
             left,
@@ -146,11 +146,12 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                 activity.taskId
             )
         } else {
-            Reading.peekReader(activity.taskId)
+            Reading.peekReader(activity.taskId) ?: ReadingPlaceholder.peek(activity.taskId)
         }
         if (titles != null) bounds.union(titles.windowManager.currentWindowMetrics.bounds)
         if (secondary != null) bounds.union(secondary.windowManager.currentWindowMetrics.bounds)
         parentWidth = bounds.width().toFloat().coerceAtLeast(1f)
+        parentLeft = bounds.left.toFloat()
         startRatio =
             if (feeds) {
                 TabletPaneSizing.feedRatio(
@@ -179,6 +180,19 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                 prepareDrag()
                 startX = event.rawX
                 dragging = true
+                // API3 embedding on Samsung queues resize animations. Preview the exact width
+                // until release; API7's JUMP_CUT in StorySplitView.kt supports live reflow.
+                previewResize = WindowSdkExtensions.getInstance().extensionVersion < 7
+                if (previewResize) {
+                    val peer = if (feeds) ItemsList.peekReadingLaunchParent(activity.taskId)
+                        else Reading.peekReader(activity.taskId) ?: ReadingPlaceholder.peek(activity.taskId)
+                    val location = IntArray(2)
+                    getLocationOnScreen(location)
+                    resizeGuide = TabletPaneResizeGuide.show(
+                        activity, peer, location[1], location[1] + height, rightEdge, density
+                    )
+                    resizeGuide?.move(parentLeft + (if (rightEdge) ratio else 1f - ratio) * parentWidth)
+                }
                 parent.requestDisallowInterceptTouchEvent(true)
                 invalidate()
             }
@@ -199,6 +213,10 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                     }
                 }
                 if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+                    if (previewResize) {
+                        resizeGuide?.move(parentLeft + (if (rightEdge) ratio else 1f - ratio) * parentWidth)
+                        return true
+                    }
                     // TabletPaneDivider.kt must keep the pending callback: input runs before
                     // animation callbacks, so canceling/reposting on every MOVE starves resizing.
                     if (!frameUpdatePosted) {
@@ -209,7 +227,11 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
                     dragging = false
                     removeCallbacks(frameUpdate)
                     frameUpdatePosted = false
-                    StorySplitView.resizePane(activity, feeds, ratio, true)
+                    resizeGuide?.dismiss()
+                    resizeGuide = null
+                    if (event.actionMasked != MotionEvent.ACTION_CANCEL || !previewResize) {
+                        StorySplitView.resizePane(activity, feeds, ratio, true)
+                    }
                     parent.requestDisallowInterceptTouchEvent(false)
                     invalidate()
                     if (event.actionMasked == MotionEvent.ACTION_UP) performClick()
@@ -228,6 +250,8 @@ internal class TabletPaneDivider private constructor(private val activity: Activ
         // TabletPaneDivider.kt must not update an old activity pair after its window closes.
         removeCallbacks(frameUpdate)
         frameUpdatePosted = false
+        resizeGuide?.dismiss()
+        resizeGuide = null
         if (dragging) parent?.requestDisallowInterceptTouchEvent(false)
         dragging = false
         super.onDetachedFromWindow()

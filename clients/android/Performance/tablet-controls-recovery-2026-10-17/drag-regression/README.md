@@ -16,3 +16,9 @@ The first fix keeps one pending resize callback while updating its target, uses 
 ## Physical-device follow-up
 
 The first fix is committed as `debc02aba`, but does not resolve the Samsung animation delay. A temporary diagnostic Alpha build recorded `first-fix-device-trace.log`. During a continuous four-second drag, MOVE, frame, calculator, and split-bound updates all occur before UP. Steady input lag is about170ms, and each resize still uses `changeAnimation=DEFAULT` on Window Extensions API3. Recordings show repeated crossfades and delayed displayed content. Passing the scheduling tests alone is insufficient to release this build.
+
+## Approved guide behavior
+
+Sam approved a live divider guide with exact-width release and no snapping. Window Extensions below7 now draw a themed guide across the two activity decor overlays during dragging and perform a single pane resize on release. Newer devices keep live resizing with JUMP_CUT. The guide is noninteractive, uses the same theme colors as the resting border, and disappears without changing the width on cancellation, fullscreen, or detach. Placeholder reader bounds are included in whole-pair sizing.
+
+The34-test focused suite passed. Samsung physical checks confirmed continuous guide movement in `newsblur-guide-continuous.mp4`, exact released feed/story boundaries, cancellation, and Arabic/Hebrew guide direction. Held/released captures are saved beside this README. Arabic released capture catches the native window transition; the subsequent Hebrew settled capture confirms content reflow. The guide's colors are shared with the resting border, whose light/dark/black/sepia captures are in `../after/quiet-divider-*.png`.
