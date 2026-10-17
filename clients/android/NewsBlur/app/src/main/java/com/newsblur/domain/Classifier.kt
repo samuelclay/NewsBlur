@@ -7,46 +7,46 @@ import com.newsblur.database.DatabaseConstants
 import java.io.Serializable
 
 class Classifier : Serializable {
-    // Classifier.kt travels in fragment state; concrete maps avoid Gson serialization hooks stripped by R8.
+    // Classifier.kt keeps trainer order while avoiding Gson serialization hooks stripped by R8.
     @JvmField
     @SerializedName("authors")
-    val authors: HashMap<String, Int> = hashMapOf()
+    val authors: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("author_regex")
-    val authorRegex: HashMap<String, Int> = hashMapOf()
+    val authorRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("titles")
-    val title: HashMap<String, Int> = hashMapOf()
+    val title: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("tags")
-    val tags: HashMap<String, Int> = hashMapOf()
+    val tags: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("feeds")
-    val feeds: HashMap<String, Int> = hashMapOf()
+    val feeds: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("texts")
-    val texts: HashMap<String, Int> = hashMapOf()
+    val texts: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("text_regex")
-    val textRegex: HashMap<String, Int> = hashMapOf()
+    val textRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("urls")
-    val urls: HashMap<String, Int> = hashMapOf()
+    val urls: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("url_regex")
-    val urlRegex: HashMap<String, Int> = hashMapOf()
+    val urlRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("title_regex")
-    val titleRegex: HashMap<String, Int> = hashMapOf()
+    val titleRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
