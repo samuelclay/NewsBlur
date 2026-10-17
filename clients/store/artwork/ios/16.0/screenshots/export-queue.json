@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-17T02:03:21Z",
+  "updated_at": "2026-10-17T02:06:16Z",
   "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved",
   "capture_status": "active_waiting_for_verified_captures",
   "required_next_steps": [
@@ -318,6 +318,24 @@
     },
     {
       "language": "ru",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "ru",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ru-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "ru",
       "size": "2064x2752",
       "panels": 4,
       "technical_validation": "passed",
@@ -333,6 +351,24 @@
       "native_pixel_check": "passed",
       "visual_review": "passed",
       "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-th-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "tr",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-tr-1320x2868-0[1-4].png"
     },
     {
       "language": "tr",
@@ -438,20 +474,6 @@
       "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
-      "language": "ru",
-      "size": "1320x2868",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "ru",
-      "size": "1206x2622",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
       "language": "th",
       "size": "1320x2868",
       "device": "iphone",
@@ -460,20 +482,6 @@
     },
     {
       "language": "th",
-      "size": "1206x2622",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "tr",
-      "size": "1320x2868",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "tr",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
@@ -538,9 +546,9 @@
   ],
   "counts": {
     "expected_panels": 252,
-    "staged_panels": 164,
-    "complete_sets": 41,
-    "pending_sets": 22
+    "staged_panels": 180,
+    "complete_sets": 45,
+    "pending_sets": 18
   },
-  "capture_checkpoint": "5986d0eb3"
+  "capture_checkpoint": "d88a93a55"
 }
