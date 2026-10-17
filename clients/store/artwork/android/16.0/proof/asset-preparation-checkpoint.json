@@ -1,7 +1,7 @@
 {
-  "saved_at": "2026-10-17T17:12:58Z",
-  "status": "all_294_images_rendered_and_visually_approved",
-  "reason": "Root verified current reader source, APK and installed Alpha runtime; resumed original authorized artwork without invented controls.",
+  "saved_at": "2026-10-17T17:27:51Z",
+  "status": "all_294_images_ready_upload_waiting_for_docker_recovery",
+  "reason": "Docker stopped responding after host disk exhaustion; user freed space; restart approval pending because other local containers would be interrupted.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
@@ -10,7 +10,8 @@
     "tenInchScreenshots": 84
   },
   "image_visual_reviews": {
-    "approved": 294
+    "approved": 294,
+    "independent_reviewed": 294
   },
   "verified_youtube_links": [
     {
@@ -245,8 +246,17 @@
       "source_clips_verified": 8
     }
   ],
-  "pending": "Independent final audit, Play staging and publishing; eleven YouTube uploads and full-player reviews after quota reset.",
+  "pending": "Docker recovery, Play staging/commit/readback; eleven YouTube uploads and hosted playback checks after quota reset.",
   "notification_samples_reviewed": 168,
   "resumed_at": "2026-10-17T16:24:16Z",
-  "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95"
+  "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95",
+  "play_staging": {
+    "edit_id": "03809724643036911628",
+    "expiry": "2026-10-17T19:16:43Z",
+    "baseline": "play-assets-before-staging.json",
+    "manifest": "../exports/manifest-staging.json",
+    "mutations_started": false,
+    "pending_client_terminated": true
+  },
+  "devices_restored": true
 }
