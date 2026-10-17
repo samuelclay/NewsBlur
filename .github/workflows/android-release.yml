@@ -69,7 +69,10 @@ jobs:
           python -m venv "$RUNNER_TEMP/fdroid-venv"
           "$RUNNER_TEMP/fdroid-venv/bin/pip" install fdroidserver==2.4.5
           rm -rf app/src/play
-          "$RUNNER_TEMP/fdroid-venv/bin/python" ci/check_fdroid_source.py .
+          mkdir "$RUNNER_TEMP/fdroid-source"
+          cp -a . "$RUNNER_TEMP/fdroid-source/"
+          "$RUNNER_TEMP/fdroid-venv/bin/python" ci/check_fdroid_source.py "$RUNNER_TEMP/fdroid-source"
+          test -x gradlew && test -f gradle/wrapper/gradle-wrapper.jar
       - name: Reject non-free runtime dependencies
         run: bash ci/check_fdroid_dependencies.sh
       - name: Test and assemble unsigned F-Droid release
