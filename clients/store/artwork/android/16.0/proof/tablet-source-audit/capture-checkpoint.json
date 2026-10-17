@@ -1,20 +1,20 @@
 {
-  "paused_at": "2026-10-17 16:35:22 UTC",
-  "reason": "User requested locating the remembered Android resize work before proceeding",
+  "completed_at": "2026-10-17 17:12:42 UTC",
+  "reason": "User deferred resize handles and requested completion with current 16.0 native interface",
   "tablet_serial": "R8YW810E3FF",
   "capture_host_pid": null,
-  "capture_host_state": "Terminated; no capture automation remains",
+  "capture_host_state": "Completed; no capture automation remains",
   "capture_session": null,
-  "alpha_left_open": "Existing task1050 focused on All Site Stories beside ReadingPlaceholder",
+  "alpha_left_open": "Existing task1050 restored without clearing or reinstalling original apps",
   "inventory": {
     "en": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": [
+      "tablet10": [
         "feeds",
         "stories",
         "reader",
@@ -22,22 +22,27 @@
       ]
     },
     "es": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "fr": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": [
+      "tablet10": [
         "feeds",
         "stories",
         "reader",
@@ -45,179 +50,1607 @@
       ]
     },
     "de": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "pt-BR": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "it": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "nl": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "pl": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "tr": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "ru": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "uk": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
-      "tablet7": []
-    },
-    "ar": {
-      "tablet10": [
-        "feeds",
-        "stories",
-        "reader",
-        "saved"
-      ],
       "tablet7": [
         "feeds",
         "stories",
-        "reader"
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "pt-BR": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "it": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "nl": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "pl": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "tr": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "ru": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "uk": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
+    },
+    "ar": {
+      "tablet7": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ],
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
       ]
     },
     "he": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "hi": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "id": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "vi": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "th": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "ja": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "ko": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "zh-Hans": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     },
     "zh-Hant": {
-      "tablet10": [
+      "tablet7": [
         "feeds",
         "stories",
         "reader",
         "saved"
       ],
-      "tablet7": []
+      "tablet10": [
+        "feeds",
+        "stories",
+        "reader",
+        "saved"
+      ]
     }
   },
-  "resume": "Wait for coordinator instruction. Keep complete tablet10 groups. Explicitly disable auto-rotation and select portrait before tablet7. Replace French/Arabic tablet7 raw groups, then capture every missing tablet7 scene; restore device baseline afterward.",
+  "validated_stills": 168,
+  "tablet10_footage_count": 84,
+  "tablet7_recapture_required": [],
   "device_settings": "Restored and verified against baseline; see device-restored.json",
-  "tablet7_recapture_required": {
-    "languages": [
-      "fr",
-      "ar"
-    ],
-    "reason": "Auto-rotate produced native landscape1920x1080; lock portrait explicitly to match approved English1080x1920 before redoing these partial groups"
-  }
+  "validation": "All native PNG dimensions and SHA256 match capture proofs; all 168 stills visually reviewed",
+  "raw_stills": [
+    {
+      "path": "captures/en/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "7d0cba37a8600d5a4ebab87a368cdce426fe68c1c6d98db879e2b5a7436f5ed9"
+    },
+    {
+      "path": "captures/en/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1220fc30f017c4614d84e231e945da24738df7c2cc7ef3ad7ae28afffbb12cd4"
+    },
+    {
+      "path": "captures/en/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "f91136c7d784b11e900b68f1d41fe47272d214a416101408714b98d80c330d49"
+    },
+    {
+      "path": "captures/en/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "55872dd68c4f4101c23195b0c862ab4a7500b6e4f90d9c89a315cddf6b145c70"
+    },
+    {
+      "path": "captures/en/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "f8a0a2111f4cbe76425bf127e87aff758feac4972484ae173d82e6cfd4e73457"
+    },
+    {
+      "path": "captures/en/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c5c1fb7554533817e8cdb59c1d3007991bc5a5d928ff2baaf6a0d5f68f728dc9"
+    },
+    {
+      "path": "captures/en/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "99b49e03728cf73b321eefc20c630146a41591cb9c2b63454af0898e4a2293f0"
+    },
+    {
+      "path": "captures/en/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "db2fd8081c81389af053ebc0ae0b9ecf5b0fb775c2d3217fce70a646a37f6198"
+    },
+    {
+      "path": "captures/es/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1e3352532c8e86e4bf890da75389ae926ce2443c939f74f348ae765d048f5868"
+    },
+    {
+      "path": "captures/es/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c1e5099c896684c5da7e152b140a33f4a99001968adee110c0379fad4d40276b"
+    },
+    {
+      "path": "captures/es/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "e644f18618d1505d1037f477fc3924502c267d809d45542c0ea2aaf0292a678b"
+    },
+    {
+      "path": "captures/es/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "62910d7b77bd0ec0c47ef010f96e3a2e287178ac74903b648b04c47d6168be96"
+    },
+    {
+      "path": "captures/es/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "22994c65f0c799eed4a670864ad2b3a3a65e9dee9a0e48a31811808c29d2baa0"
+    },
+    {
+      "path": "captures/es/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "112ca33c62ccc16260c2ad1f1c53391a8f7164227854cfbd1e04a608b03d919f"
+    },
+    {
+      "path": "captures/es/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "bb3bfaeae28bb2b6c0dfadb4610a030bd1dfe20de2d916081814fd1c24dc4871"
+    },
+    {
+      "path": "captures/es/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "687897cb4bb9931ef0e42358fc9801a0b5fc2b94ceee4efac8e1e7282ff82b85"
+    },
+    {
+      "path": "captures/fr/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "9c56b48a4b6bb3b7a4d64e513680535660c73a1f646e668d7b62f58bb60b1386"
+    },
+    {
+      "path": "captures/fr/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "72f5119028c663864533265ba2f8839ea58872f70e64e934b946bc9ea33321bb"
+    },
+    {
+      "path": "captures/fr/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "72f5119028c663864533265ba2f8839ea58872f70e64e934b946bc9ea33321bb"
+    },
+    {
+      "path": "captures/fr/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "8162341c0612ed4a11c60bd005552a350eff8ff6fff6026830fe3201e3ddc246"
+    },
+    {
+      "path": "captures/fr/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "a602e2c1163e2cd95a5ba788b8bbaae8527ef017861fc317086842221fe98bec"
+    },
+    {
+      "path": "captures/fr/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "ffbc77bbbb02abefd50dbd2a924f13114a07e2d4758ea554aaa60d1f59168c0c"
+    },
+    {
+      "path": "captures/fr/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "b3ae979953365ac93989b94485412dbf958f0eb0f37fd13b75c97ccb1a458856"
+    },
+    {
+      "path": "captures/fr/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "64d1cd4643de927f3b31e97d38893cde8b338c998c44af8b6f7619153c975bd5"
+    },
+    {
+      "path": "captures/de/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "ff9bf255ad529e915e6613693b2cc4e516605d846d8447e716dc97e4007ac3bb"
+    },
+    {
+      "path": "captures/de/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "87146acf00316001a301107015a0dd915dc68cfa5ee93b8a536ba50c42f17abc"
+    },
+    {
+      "path": "captures/de/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1282841ea3bdc5ea2bb29b1c8ed8fc6ed19c3f5e38c00e2e2f5c2401f1f37f5a"
+    },
+    {
+      "path": "captures/de/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "d718f70e055ece3d9205c7a9054edaf5f347e0caf2318ab8a338360e479605f9"
+    },
+    {
+      "path": "captures/de/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c7544af976937262ff638038543662e42c87803e9ea43f5ad6412dd54bb62041"
+    },
+    {
+      "path": "captures/de/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "8e554a713a1b4e3675519bdd19006d674cb810eb2e042e3b564863b87eff26b6"
+    },
+    {
+      "path": "captures/de/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d015b86d77249c40e6f62c456baf1bff0f56a7056cd69091ecd8f2022989b51d"
+    },
+    {
+      "path": "captures/de/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "216aec0dda366562b2fb7aa2efde9936251bc97ae1aa9eae4ca887b8989a7850"
+    },
+    {
+      "path": "captures/pt-BR/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "ee517b3c8e86947cdaf2d6ed6c28595b73f8f3544f184fb00db1e36e4533cb0a"
+    },
+    {
+      "path": "captures/pt-BR/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3a6d3968b2234dbefad7bb9042c291f6eb2f1082692640fb2265174fe896c7a9"
+    },
+    {
+      "path": "captures/pt-BR/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3d3c2a1b30bc63fdf1e5b2fced415dcd528f0fa8ea2b234f77dc1fcb82146547"
+    },
+    {
+      "path": "captures/pt-BR/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "26c9973b3f674a6670eaacb3384b8e193f523680b800ac81e681acd429d3315e"
+    },
+    {
+      "path": "captures/pt-BR/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "aa29bc68b735adb3bd8620b4c63c2b8d9e148a284e12377b55cbc999fe6ca857"
+    },
+    {
+      "path": "captures/pt-BR/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "f5d67794f2aceefa9ebb016c6f8609daaab8375f700a6d711022f2d38c8ed371"
+    },
+    {
+      "path": "captures/pt-BR/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "78e195045fca0c46484bf719fe91b47c8fb891a2bb495d773812dd328c44a9b7"
+    },
+    {
+      "path": "captures/pt-BR/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "273c2906b5a38d49596bfce46ace66a1d191cb6cbf5f08d5beb07ed69f55dc9d"
+    },
+    {
+      "path": "captures/it/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4212dce5cff294f7a781420c0dd57dd02bf3c73a095cc4868f295828cab9eb2d"
+    },
+    {
+      "path": "captures/it/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "234a79282c7f8652bb004cd2b55ff10e1efe99dd29927da47d9a57bcdd809ac3"
+    },
+    {
+      "path": "captures/it/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "234a79282c7f8652bb004cd2b55ff10e1efe99dd29927da47d9a57bcdd809ac3"
+    },
+    {
+      "path": "captures/it/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "61fbb1700f50a65763d66290eb45a97f5bae5a5d9d9aa5072faaa58ddbdd2744"
+    },
+    {
+      "path": "captures/it/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "dd6fc1bab6ec899a718a76f6465081d7c0700f687544f1aabbf0ebb0b14d160e"
+    },
+    {
+      "path": "captures/it/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "7d1d1744581c65e2f70e763db4180476272cd366b9f6a664642bd475e52f4662"
+    },
+    {
+      "path": "captures/it/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "64ce57f15b48e326e2886df68f26d7b0bb62cbf3119bee83b0d0fa15eadbb8b1"
+    },
+    {
+      "path": "captures/it/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "1a779af3c979acb26b100a5c044c9e7949284ea808db0234e94444567a12b085"
+    },
+    {
+      "path": "captures/nl/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "edb1299060ce023661c52152511865fc63f348dc83b4555e26e1c9385b9f6533"
+    },
+    {
+      "path": "captures/nl/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "fd02da1c8e9eedb3e7320b53527310a7ba662c16f57118f14a6bf1f302e1b484"
+    },
+    {
+      "path": "captures/nl/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "088eb4d97d951045fd180c8d4af9eff850810067850de6ab6e16d5a4fe8ce5a2"
+    },
+    {
+      "path": "captures/nl/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "ad5315ac479132a5d9e5d252a446beb387e9077acb4db765a1fae39fb7ecfbfa"
+    },
+    {
+      "path": "captures/nl/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "b08b9e66f8b74947a856bf9c4fbbf9605b86fe7af057f7cb1d430c0d59428b88"
+    },
+    {
+      "path": "captures/nl/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d3db3b003369a4ee3ec1d3f47ec8695360895860ef77bdeb2888102a6db54e06"
+    },
+    {
+      "path": "captures/nl/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "9bac4e057bc0505312394f77a1120d8d48424963f58644db6a61336a7ad165a3"
+    },
+    {
+      "path": "captures/nl/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "e9610842bfbd2f004b0a489af0ad845693b90ce4b119c126cc20f3d6eac49dd5"
+    },
+    {
+      "path": "captures/pl/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "bc81211f51ea3bcdb0c42e169b4ea008d21b2522a4681776560b88d243434d6e"
+    },
+    {
+      "path": "captures/pl/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1e333e60e05778592ca50d523ba873f8b060f6fd4f85b4a1ea866147fa2923bf"
+    },
+    {
+      "path": "captures/pl/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "85b067a608ee8f5650972cbd0c50d25fad26cb25c0a69053504f24f9fe4513e0"
+    },
+    {
+      "path": "captures/pl/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3f81542a821fe5c77a1f1601f58691aac886aef8035d51f9ca8c7b1be908379e"
+    },
+    {
+      "path": "captures/pl/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "e88a8fd73f00d0ff6c5288c0d65f78c8cc2400fa6aabbc6feed7a7aa5b9653d2"
+    },
+    {
+      "path": "captures/pl/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "760d0d4ee5a9d876424443f7b15fa003e70f343dbc54ed85776eac745290a067"
+    },
+    {
+      "path": "captures/pl/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "5b348a67b1fff17294750eb0c5ea969e7fe160264d112dd1135c69165b9aa678"
+    },
+    {
+      "path": "captures/pl/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "cc035b6c1150a8d68d94c197f876d50bd7cac96d200451239f0c643055331b8a"
+    },
+    {
+      "path": "captures/tr/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "f7c351029b24a4cf96ed77a943c38416f5392d334ac9792b8f14496b34a79135"
+    },
+    {
+      "path": "captures/tr/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "699b54e8559efbc178b6efd6dbc6856a9afbae054dd22082eae0c03936323126"
+    },
+    {
+      "path": "captures/tr/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4922b50405f02c16cd888c4ba4266891da2c854b29b1b33ead5107c639b8278a"
+    },
+    {
+      "path": "captures/tr/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c9b42c93015591d0f79618b173dc548ad612274acb60698f6ff9dc89b8fc821f"
+    },
+    {
+      "path": "captures/tr/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d1bd4cd7a0572ea626a03b52edc0adf5b2f1919c407bd2bde21efccab308b78b"
+    },
+    {
+      "path": "captures/tr/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d64162b027336ae5142159551f6a066d2fd8a4a45591713dd4b87bea7dd6ca5d"
+    },
+    {
+      "path": "captures/tr/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "54cbddb1d5f9754b5eef0aef99ce0564b675789c451c106362d7fa59143dc138"
+    },
+    {
+      "path": "captures/tr/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "47b595b3a2030dd397da79c3c274f3c1e9dded95097cc7bde4fe86237d62c15e"
+    },
+    {
+      "path": "captures/ru/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "8694c55882ff52b6a6eddc183d0a70c5dc0bc878e1e71742e16a1d7a055f341a"
+    },
+    {
+      "path": "captures/ru/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3c2758df05013bb273346ddf010284b96ec34a0e373bae6b3dc0cf3a324d5b0c"
+    },
+    {
+      "path": "captures/ru/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4b1e2e97b79b09d4f224798a2dc2a93356e1344dd48f9c1080fdaf5ab2dcd3a1"
+    },
+    {
+      "path": "captures/ru/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c4e3d94a2ce96d5bfcf9d67cebda50a81faaacab3d2c1bf867582443a8933755"
+    },
+    {
+      "path": "captures/ru/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "4e3175011e64f64cfef4e994a17f130e1332f518d65be28c3fe9d1219950ab7f"
+    },
+    {
+      "path": "captures/ru/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d0a57abc234f3c6a3f361876551bad31ad5506f2fbccd3d53834a205f0d7c82d"
+    },
+    {
+      "path": "captures/ru/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "86ee68154745f6e1c01b9648b4dca825dde16a88635807b9b8ab238c2254592f"
+    },
+    {
+      "path": "captures/ru/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "bba16aa057fb76919827e81d28c0f1cb3ed5e5e3cce7245d3ffc0b12e0769cf9"
+    },
+    {
+      "path": "captures/uk/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "00c1a14a724b6d052407f403be1b66ba39048496de6350e253c46c2362042fac"
+    },
+    {
+      "path": "captures/uk/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "f07c320ec8f363a16919643dac59caa501a08b1a36861839f605627f318de18f"
+    },
+    {
+      "path": "captures/uk/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3c166bc190fb03315594170917c3b4e564894734e31182f1ae4f262e31189a29"
+    },
+    {
+      "path": "captures/uk/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1bcd40585651301ebb5f4d882ef58d2d13f797787bc166a3ac868b296a2d5e19"
+    },
+    {
+      "path": "captures/uk/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "72001e83cea03917d4c792925fd3641b5b2264c6a0ec38cff3b601107d114a54"
+    },
+    {
+      "path": "captures/uk/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "59018e7db7b5b80423bac1d0aa314c9f45de6e5d69210b51a943fbe6b3f5c64c"
+    },
+    {
+      "path": "captures/uk/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "43f4e45b50b19af09b2d4a2bad969732d6e75c12ea57c498afa366210f3e8351"
+    },
+    {
+      "path": "captures/uk/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "9d8df49f64d5de861edc7928f0bc8b3b21b4f2e216cd8b3e8e85e5023fc9706b"
+    },
+    {
+      "path": "captures/ar/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "5206cb53a7112a28211eb7decef5ded9e58d46a38a27ce40618bc06917bad385"
+    },
+    {
+      "path": "captures/ar/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "7e0366fca68b3729c06fea16d5bbd5b19c3d07fb5855a92c4a28b63d1c7bb346"
+    },
+    {
+      "path": "captures/ar/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "7e0366fca68b3729c06fea16d5bbd5b19c3d07fb5855a92c4a28b63d1c7bb346"
+    },
+    {
+      "path": "captures/ar/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "d2148fb1d824b39413f9765ed94cb0b824087cd2344ddd632129f9537f4bf8c5"
+    },
+    {
+      "path": "captures/ar/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "4d27077bc0422730b557d34f475e690c02a3efb075dc0b65ec96429c3abb61e0"
+    },
+    {
+      "path": "captures/ar/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d5dfabbf3289f85fbae13a771d52a3e31f4ce533f9364569c6bba340e9b9acd6"
+    },
+    {
+      "path": "captures/ar/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "6329206237709e9c3cb2b0fcfd9e85898a22cff3a247152fd9cc9226aa68cde5"
+    },
+    {
+      "path": "captures/ar/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "6f6039cebcda3ad8a3724fef63aad9c8a889cd13fa1a6a2576c0755592bd61b0"
+    },
+    {
+      "path": "captures/he/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "744543f1d0132d85ea62354f229ca442a901bbd57dbf26f1b8f3e6528cb71243"
+    },
+    {
+      "path": "captures/he/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "592ed684bd22802028d0aae614aa92c67ec3f4d9745b4a22a467a64f268cb307"
+    },
+    {
+      "path": "captures/he/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "517d01047ee26e8124d4f4b1d3383e5edbf67af1a18ff51f0916dfcb7b525c7f"
+    },
+    {
+      "path": "captures/he/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "2f966ec5c2731261752f1628780fe0dd5f4c24981ec5440e65bb6df4e1fd4a75"
+    },
+    {
+      "path": "captures/he/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "de3d17186266b88a3064b22ca878178375a306172c2bca95a7f1815f031fd489"
+    },
+    {
+      "path": "captures/he/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "e779b3c1c310d02747d39323b6596eb50cae9b29401c8517b54470c349e60467"
+    },
+    {
+      "path": "captures/he/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "e779b3c1c310d02747d39323b6596eb50cae9b29401c8517b54470c349e60467"
+    },
+    {
+      "path": "captures/he/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "388f331ee38738c4b5da3ca73a37d98427610a476ebf0cdc18c6cdaa96021145"
+    },
+    {
+      "path": "captures/hi/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "f48de0f69fc65d0e123a9e3af94b75abcbc526d979d875ff4ac2232735cb91d6"
+    },
+    {
+      "path": "captures/hi/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "8ac276576cc2ec41c84a4d167dcce38224e4211b1c4baa244d8d10cc27e50100"
+    },
+    {
+      "path": "captures/hi/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "0eb48fa3f54f86e052f73dba146dc49bc502c6fa32daf9dd4ec1af396cce565c"
+    },
+    {
+      "path": "captures/hi/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "6bc2500c4ca29317ba38a641d32b0972930759e650191038152df94349a93bf5"
+    },
+    {
+      "path": "captures/hi/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c682c4330aaefd289bce0117b103e3f7cfde17a7c606db3607d86a9660b6cb0b"
+    },
+    {
+      "path": "captures/hi/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "32796aedf85daa1a9e793ad8ebb5297a82e75f536f4da745153ede5abb60d5ea"
+    },
+    {
+      "path": "captures/hi/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "443416cf792c4903f99002a5eec4988674c0c8b61d1c215b103f3653ec9d1961"
+    },
+    {
+      "path": "captures/hi/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "e93c994eb18405d1260749a748df21b3c1713453a3337741d426c0326e3b8a8d"
+    },
+    {
+      "path": "captures/id/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "712cf7d87cae4746586266356625574a4a97e4c6a47e929a2135ba1c440ccdc0"
+    },
+    {
+      "path": "captures/id/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "647dec3160cb1c1f173bfa74fcc2cbed706b95fcdf92f7df7a75f4af96f726b1"
+    },
+    {
+      "path": "captures/id/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3302792bf1bf30c947a77b26a50d500d4185435a8f2a72ed8956b649482c83d5"
+    },
+    {
+      "path": "captures/id/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "d5a7fdf4100face3282cfcffdbe3471e3b5890e025410d83c79a6b5759b74ede"
+    },
+    {
+      "path": "captures/id/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "819c93c2b3f81a7436118e05dc5933cfa582d07cf07666e3b195e370b6977c1a"
+    },
+    {
+      "path": "captures/id/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "1ed0df2898e89e3519c90ecf5207917b5a6bdcd7cc58ec21ee32fac88cb80b19"
+    },
+    {
+      "path": "captures/id/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "85d5591ee70fed80a09a4ad7961831636ebcd99cb9b6a7b046546ff5ec054356"
+    },
+    {
+      "path": "captures/id/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "a7119b0e826f71ee1c7c7fa6be9f7d51e4b540e694139b1460afba34a863849b"
+    },
+    {
+      "path": "captures/vi/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c9b8a5765b0ca7c40457275d1daa111fb133c4bd0d84f7853b4fe441f2d58b26"
+    },
+    {
+      "path": "captures/vi/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "1ffb0b6e8c484289724f17b2ad230148490ccacaa2284db1f0a7a5a0e9e1b668"
+    },
+    {
+      "path": "captures/vi/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "9b1795dc201d21faf1bb2a1e32109e8dcdb8b569c3e2740efa6b87fb4d59acbf"
+    },
+    {
+      "path": "captures/vi/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "25432c859eb3c3dd9657d8398e888c84fe1df00b96d8db7768cc20383467ec7b"
+    },
+    {
+      "path": "captures/vi/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "8a5b02283c4cee2d7e6cade3f09ca11fbd620f543ec020c3a6e770b7f50b826b"
+    },
+    {
+      "path": "captures/vi/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "f1f41e8d8da855ff3ce921ff5189f129bb7d95f5c9c5fd300b6a5d3fc299484f"
+    },
+    {
+      "path": "captures/vi/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "6dc84150f62bbaf6e2602d67ebc2a480dee35b73c1a2a8d756ec713a9611e415"
+    },
+    {
+      "path": "captures/vi/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "83e469463462371f41ff9936397ef6df8ae28e60d5f1685f8124fd9c01079ce3"
+    },
+    {
+      "path": "captures/th/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "6480874776301babd3b5c806c16dc36f6dd15412e4f4548db4f5ea16e681ec5b"
+    },
+    {
+      "path": "captures/th/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c8b23e955b8b0304578839eb0bb54fd1882662cdce93349d47fc1fdc9175cfc0"
+    },
+    {
+      "path": "captures/th/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4a5a3f9228ad9339609c821cc43ace6c1ec404060129f9ea329422d7290d6ffd"
+    },
+    {
+      "path": "captures/th/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "855aaaf8a4a887dea4790c70c79190b0a5f96f2819455f4ce5f1bb12724cff31"
+    },
+    {
+      "path": "captures/th/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "933cac72616a7632e8ef45c7559dfeea51acdbac684784e43136a209cb756df0"
+    },
+    {
+      "path": "captures/th/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "040a0b205f843355ed4fa2b4f56678a052df4b1dbe2ecde4f5bfe305e8249acb"
+    },
+    {
+      "path": "captures/th/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "b44878d10dbadb9a9c509ff23ce7db792a28cf064cebedfe8fc33a86a7ed6276"
+    },
+    {
+      "path": "captures/th/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "7e674a4106744c590aac9104e9dbcc30a31b77777e391c2ff57f6eb938d0cb09"
+    },
+    {
+      "path": "captures/ja/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "fcd82a7683b6b172da1c8911f075101310b272407b9a7f09f814a4066ab8c4e4"
+    },
+    {
+      "path": "captures/ja/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "b9e82316b9a107936110f28f62c004ddad586adbb614c11c36399dfd57f2a673"
+    },
+    {
+      "path": "captures/ja/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "d9b2c8c2f120e85a2150506260fedf5baa49312bf9e914977e5c88412e4b15d7"
+    },
+    {
+      "path": "captures/ja/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "8b9d403a0f2b40c6ebbe3efb3d3406500aa57aa12508def81098ce4e1bbf07fa"
+    },
+    {
+      "path": "captures/ja/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d3c33eab0fc842c88140158545191f36ca8db264851faccb956023dba326350c"
+    },
+    {
+      "path": "captures/ja/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d8e6000356f34ffe293ecebae1043d3298b966caacf390c89fea24c52869d599"
+    },
+    {
+      "path": "captures/ja/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "66e80d93a709b250c7c3fe12bc2aaa1d12c052e84c02810ab141448762755865"
+    },
+    {
+      "path": "captures/ja/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d6749423363b3f557082f9eadbe60c6bbb7fd4103e78b84189800836b01b70ff"
+    },
+    {
+      "path": "captures/ko/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "740da78c5dff19ecae1c3687413e58ac08050fb9657e21b4cd2f8a1d7bd88c3b"
+    },
+    {
+      "path": "captures/ko/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "ffe5f13ab356d3de273b95e5b43688003204b5752a725cdb0490b141e037bf59"
+    },
+    {
+      "path": "captures/ko/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4f9b6d899876b24666c252fd49db7c84533fafa8cb92d1caab215cf8bb4f6353"
+    },
+    {
+      "path": "captures/ko/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "499aba68e39e573278220aa568ef0178e21974feb81ad3e39f0e812247680828"
+    },
+    {
+      "path": "captures/ko/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "55ac5404e7c72512581f923417807b3e86ce1a1bd4520e88680b047a39cb12b6"
+    },
+    {
+      "path": "captures/ko/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "f249f78f7da2dae811e88b8ee3d0f8dc57a834dec887e5d321fb3ab1978f509d"
+    },
+    {
+      "path": "captures/ko/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c34c8e0d1f22525058f563e50af5484bcc23bf5fa6a200656cd17255059a96f8"
+    },
+    {
+      "path": "captures/ko/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "ef9dadcaa782bfb19824f2a853b7cb90debab55b7bb68807b93e26b0a0312080"
+    },
+    {
+      "path": "captures/zh-Hans/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "4f594a8405d3867dbfbe4b85418c9b82ae0df903e9c50ae0b07be0c256a2621e"
+    },
+    {
+      "path": "captures/zh-Hans/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "f69b3d405cd61d41541877519ce1e9334aecc1854479e2cd708c782c6ba1f10f"
+    },
+    {
+      "path": "captures/zh-Hans/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "c5b37cb4a2ef9f817229b0d9d0c2a44aadbdecc837bfb58757c484767dfba137"
+    },
+    {
+      "path": "captures/zh-Hans/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "677c43ff9878b65a00c532153f39c4a5ae17c20a6da0b8f807cc2abce6f34455"
+    },
+    {
+      "path": "captures/zh-Hans/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "5d66fa3cf3011b1131be4870d0493a8319b08e0bc11411e563b4e877f3d65df6"
+    },
+    {
+      "path": "captures/zh-Hans/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "d42feb5d622ae2f6ed65587a07faa3af300fab12241bf7640d4c16125a02a945"
+    },
+    {
+      "path": "captures/zh-Hans/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "c2a62442343d44396d8c97980f9d9fa13bd895a85165a419ce6e882991995582"
+    },
+    {
+      "path": "captures/zh-Hans/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "01e3b13992aae41f339126d0198a67d3f9735d3f02c60d14e293fd8a966d7e77"
+    },
+    {
+      "path": "captures/zh-Hant/tablet7-feeds.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "ce3612ae2b4b75c84a080dd49382047b5b020bd8707c269930ad4c7ba82cf318"
+    },
+    {
+      "path": "captures/zh-Hant/tablet7-stories.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "227a2e1db74ab5e50257629ff7985e9e905ce8541f98b34edb4448131008616b"
+    },
+    {
+      "path": "captures/zh-Hant/tablet7-reader.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "426d6e7ead4128288826f158e689931f4efdb8052ca09c734ec9a0c6db96ac8e"
+    },
+    {
+      "path": "captures/zh-Hant/tablet7-saved.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "sha256": "3066b6107033f9c4b8c74310e44c4e7d006d4fde1c87066689d99d445ee0b69c"
+    },
+    {
+      "path": "captures/zh-Hant/tablet10-feeds.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "ec46a06ce58d242682e04de9f1543cfdcde664ed086df942f336915365badeae"
+    },
+    {
+      "path": "captures/zh-Hant/tablet10-stories.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "eb452656119881d22757ce805e30cccef0945337f533aeceb3666e90f63eddf5"
+    },
+    {
+      "path": "captures/zh-Hant/tablet10-reader.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "68624b0cc4cbb621681cba45726296c5008eba3381eb62db06598a4cba449fc2"
+    },
+    {
+      "path": "captures/zh-Hant/tablet10-saved.png",
+      "dimensions": [
+        1920,
+        1200
+      ],
+      "sha256": "06662e8b6f3cc61f1709cc3a2bdc8b0c0b5cebcd6277c3d14ba914779ad099c2"
+    }
+  ]
 }
