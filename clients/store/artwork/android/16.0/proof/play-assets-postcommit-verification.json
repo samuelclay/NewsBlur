@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-10-17T18:34:41.984877+00:00",
+  "committedEditId": "03809724643036911628",
+  "readbackEditId": "06451369022117040990",
+  "images": 294,
+  "groups": 105,
+  "locales": 21,
+  "videos": 10,
+  "allImageHashesAndOrderMatch": true,
+  "allVideoUrlsMatch": true,
+  "unrelatedListingTextTracksDetailsAndImagesPreserved": true,
+  "production": [
+    {
+      "name": "16.0",
+      "versionCodes": [
+        "292"
+      ],
+      "status": "completed",
+      "releaseNoteLocales": 21
+    }
+  ],
+  "status": "verified_saved_state_after_commit",
+  "limitation": "Fresh Publisher API edit confirms saved state; Console review/public availability checked separately by coordinator."
+}
