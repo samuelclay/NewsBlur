@@ -1,0 +1,218 @@
+{
+  "checked_at": "2026-10-17T04:51:55.241Z",
+  "version": "16.0",
+  "languages": 21,
+  "count": 168,
+  "filenames": {
+    "en": [
+      "newsblur-16.0-en-1206x2622-01.png",
+      "newsblur-16.0-en-1206x2622-02.png",
+      "newsblur-16.0-en-1206x2622-03.png",
+      "newsblur-16.0-en-1206x2622-04.png",
+      "newsblur-16.0-en-1320x2868-01.png",
+      "newsblur-16.0-en-1320x2868-02.png",
+      "newsblur-16.0-en-1320x2868-03.png",
+      "newsblur-16.0-en-1320x2868-04.png"
+    ],
+    "ar": [
+      "newsblur-16.0-ar-1206x2622-01.png",
+      "newsblur-16.0-ar-1206x2622-02.png",
+      "newsblur-16.0-ar-1206x2622-03.png",
+      "newsblur-16.0-ar-1206x2622-04.png",
+      "newsblur-16.0-ar-1320x2868-01.png",
+      "newsblur-16.0-ar-1320x2868-02.png",
+      "newsblur-16.0-ar-1320x2868-03.png",
+      "newsblur-16.0-ar-1320x2868-04.png"
+    ],
+    "de": [
+      "newsblur-16.0-de-1206x2622-01.png",
+      "newsblur-16.0-de-1206x2622-02.png",
+      "newsblur-16.0-de-1206x2622-03.png",
+      "newsblur-16.0-de-1206x2622-04.png",
+      "newsblur-16.0-de-1320x2868-01.png",
+      "newsblur-16.0-de-1320x2868-02.png",
+      "newsblur-16.0-de-1320x2868-03.png",
+      "newsblur-16.0-de-1320x2868-04.png"
+    ],
+    "fr": [
+      "newsblur-16.0-fr-1206x2622-01.png",
+      "newsblur-16.0-fr-1206x2622-02.png",
+      "newsblur-16.0-fr-1206x2622-03.png",
+      "newsblur-16.0-fr-1206x2622-04.png",
+      "newsblur-16.0-fr-1320x2868-01.png",
+      "newsblur-16.0-fr-1320x2868-02.png",
+      "newsblur-16.0-fr-1320x2868-03.png",
+      "newsblur-16.0-fr-1320x2868-04.png"
+    ],
+    "he": [
+      "newsblur-16.0-he-1206x2622-01.png",
+      "newsblur-16.0-he-1206x2622-02.png",
+      "newsblur-16.0-he-1206x2622-03.png",
+      "newsblur-16.0-he-1206x2622-04.png",
+      "newsblur-16.0-he-1320x2868-01.png",
+      "newsblur-16.0-he-1320x2868-02.png",
+      "newsblur-16.0-he-1320x2868-03.png",
+      "newsblur-16.0-he-1320x2868-04.png"
+    ],
+    "es": [
+      "newsblur-16.0-es-1206x2622-01.png",
+      "newsblur-16.0-es-1206x2622-02.png",
+      "newsblur-16.0-es-1206x2622-03.png",
+      "newsblur-16.0-es-1206x2622-04.png",
+      "newsblur-16.0-es-1320x2868-01.png",
+      "newsblur-16.0-es-1320x2868-02.png",
+      "newsblur-16.0-es-1320x2868-03.png",
+      "newsblur-16.0-es-1320x2868-04.png"
+    ],
+    "it": [
+      "newsblur-16.0-it-1206x2622-01.png",
+      "newsblur-16.0-it-1206x2622-02.png",
+      "newsblur-16.0-it-1206x2622-03.png",
+      "newsblur-16.0-it-1206x2622-04.png",
+      "newsblur-16.0-it-1320x2868-01.png",
+      "newsblur-16.0-it-1320x2868-02.png",
+      "newsblur-16.0-it-1320x2868-03.png",
+      "newsblur-16.0-it-1320x2868-04.png"
+    ],
+    "nl": [
+      "newsblur-16.0-nl-1206x2622-01.png",
+      "newsblur-16.0-nl-1206x2622-02.png",
+      "newsblur-16.0-nl-1206x2622-03.png",
+      "newsblur-16.0-nl-1206x2622-04.png",
+      "newsblur-16.0-nl-1320x2868-01.png",
+      "newsblur-16.0-nl-1320x2868-02.png",
+      "newsblur-16.0-nl-1320x2868-03.png",
+      "newsblur-16.0-nl-1320x2868-04.png"
+    ],
+    "pl": [
+      "newsblur-16.0-pl-1206x2622-01.png",
+      "newsblur-16.0-pl-1206x2622-02.png",
+      "newsblur-16.0-pl-1206x2622-03.png",
+      "newsblur-16.0-pl-1206x2622-04.png",
+      "newsblur-16.0-pl-1320x2868-01.png",
+      "newsblur-16.0-pl-1320x2868-02.png",
+      "newsblur-16.0-pl-1320x2868-03.png",
+      "newsblur-16.0-pl-1320x2868-04.png"
+    ],
+    "pt-BR": [
+      "newsblur-16.0-pt-BR-1206x2622-01.png",
+      "newsblur-16.0-pt-BR-1206x2622-02.png",
+      "newsblur-16.0-pt-BR-1206x2622-03.png",
+      "newsblur-16.0-pt-BR-1206x2622-04.png",
+      "newsblur-16.0-pt-BR-1320x2868-01.png",
+      "newsblur-16.0-pt-BR-1320x2868-02.png",
+      "newsblur-16.0-pt-BR-1320x2868-03.png",
+      "newsblur-16.0-pt-BR-1320x2868-04.png"
+    ],
+    "ru": [
+      "newsblur-16.0-ru-1206x2622-01.png",
+      "newsblur-16.0-ru-1206x2622-02.png",
+      "newsblur-16.0-ru-1206x2622-03.png",
+      "newsblur-16.0-ru-1206x2622-04.png",
+      "newsblur-16.0-ru-1320x2868-01.png",
+      "newsblur-16.0-ru-1320x2868-02.png",
+      "newsblur-16.0-ru-1320x2868-03.png",
+      "newsblur-16.0-ru-1320x2868-04.png"
+    ],
+    "tr": [
+      "newsblur-16.0-tr-1206x2622-01.png",
+      "newsblur-16.0-tr-1206x2622-02.png",
+      "newsblur-16.0-tr-1206x2622-03.png",
+      "newsblur-16.0-tr-1206x2622-04.png",
+      "newsblur-16.0-tr-1320x2868-01.png",
+      "newsblur-16.0-tr-1320x2868-02.png",
+      "newsblur-16.0-tr-1320x2868-03.png",
+      "newsblur-16.0-tr-1320x2868-04.png"
+    ],
+    "uk": [
+      "newsblur-16.0-uk-1206x2622-01.png",
+      "newsblur-16.0-uk-1206x2622-02.png",
+      "newsblur-16.0-uk-1206x2622-03.png",
+      "newsblur-16.0-uk-1206x2622-04.png",
+      "newsblur-16.0-uk-1320x2868-01.png",
+      "newsblur-16.0-uk-1320x2868-02.png",
+      "newsblur-16.0-uk-1320x2868-03.png",
+      "newsblur-16.0-uk-1320x2868-04.png"
+    ],
+    "hi": [
+      "newsblur-16.0-hi-1206x2622-01.png",
+      "newsblur-16.0-hi-1206x2622-02.png",
+      "newsblur-16.0-hi-1206x2622-03.png",
+      "newsblur-16.0-hi-1206x2622-04.png",
+      "newsblur-16.0-hi-1320x2868-01.png",
+      "newsblur-16.0-hi-1320x2868-02.png",
+      "newsblur-16.0-hi-1320x2868-03.png",
+      "newsblur-16.0-hi-1320x2868-04.png"
+    ],
+    "id": [
+      "newsblur-16.0-id-1206x2622-01.png",
+      "newsblur-16.0-id-1206x2622-02.png",
+      "newsblur-16.0-id-1206x2622-03.png",
+      "newsblur-16.0-id-1206x2622-04.png",
+      "newsblur-16.0-id-1320x2868-01.png",
+      "newsblur-16.0-id-1320x2868-02.png",
+      "newsblur-16.0-id-1320x2868-03.png",
+      "newsblur-16.0-id-1320x2868-04.png"
+    ],
+    "vi": [
+      "newsblur-16.0-vi-1206x2622-01.png",
+      "newsblur-16.0-vi-1206x2622-02.png",
+      "newsblur-16.0-vi-1206x2622-03.png",
+      "newsblur-16.0-vi-1206x2622-04.png",
+      "newsblur-16.0-vi-1320x2868-01.png",
+      "newsblur-16.0-vi-1320x2868-02.png",
+      "newsblur-16.0-vi-1320x2868-03.png",
+      "newsblur-16.0-vi-1320x2868-04.png"
+    ],
+    "th": [
+      "newsblur-16.0-th-1206x2622-01.png",
+      "newsblur-16.0-th-1206x2622-02.png",
+      "newsblur-16.0-th-1206x2622-03.png",
+      "newsblur-16.0-th-1206x2622-04.png",
+      "newsblur-16.0-th-1320x2868-01.png",
+      "newsblur-16.0-th-1320x2868-02.png",
+      "newsblur-16.0-th-1320x2868-03.png",
+      "newsblur-16.0-th-1320x2868-04.png"
+    ],
+    "ja": [
+      "newsblur-16.0-ja-1206x2622-01.png",
+      "newsblur-16.0-ja-1206x2622-02.png",
+      "newsblur-16.0-ja-1206x2622-03.png",
+      "newsblur-16.0-ja-1206x2622-04.png",
+      "newsblur-16.0-ja-1320x2868-01.png",
+      "newsblur-16.0-ja-1320x2868-02.png",
+      "newsblur-16.0-ja-1320x2868-03.png",
+      "newsblur-16.0-ja-1320x2868-04.png"
+    ],
+    "ko": [
+      "newsblur-16.0-ko-1206x2622-01.png",
+      "newsblur-16.0-ko-1206x2622-02.png",
+      "newsblur-16.0-ko-1206x2622-03.png",
+      "newsblur-16.0-ko-1206x2622-04.png",
+      "newsblur-16.0-ko-1320x2868-01.png",
+      "newsblur-16.0-ko-1320x2868-02.png",
+      "newsblur-16.0-ko-1320x2868-03.png",
+      "newsblur-16.0-ko-1320x2868-04.png"
+    ],
+    "zh-Hans": [
+      "newsblur-16.0-zh-Hans-1206x2622-01.png",
+      "newsblur-16.0-zh-Hans-1206x2622-02.png",
+      "newsblur-16.0-zh-Hans-1206x2622-03.png",
+      "newsblur-16.0-zh-Hans-1206x2622-04.png",
+      "newsblur-16.0-zh-Hans-1320x2868-01.png",
+      "newsblur-16.0-zh-Hans-1320x2868-02.png",
+      "newsblur-16.0-zh-Hans-1320x2868-03.png",
+      "newsblur-16.0-zh-Hans-1320x2868-04.png"
+    ],
+    "zh-Hant": [
+      "newsblur-16.0-zh-Hant-1206x2622-01.png",
+      "newsblur-16.0-zh-Hant-1206x2622-02.png",
+      "newsblur-16.0-zh-Hant-1206x2622-03.png",
+      "newsblur-16.0-zh-Hant-1206x2622-04.png",
+      "newsblur-16.0-zh-Hant-1320x2868-01.png",
+      "newsblur-16.0-zh-Hant-1320x2868-02.png",
+      "newsblur-16.0-zh-Hant-1320x2868-03.png",
+      "newsblur-16.0-zh-Hant-1320x2868-04.png"
+    ]
+  }
+}
