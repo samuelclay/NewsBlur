@@ -43,6 +43,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.Interceptor
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -67,10 +68,11 @@ object NetworkModule {
     @Singleton
     @Provides
     @ApiOkHttpClient
-    fun provideApiOkHttpClient(): OkHttpClient =
+    fun provideApiOkHttpClient(interceptors: Set<@JvmSuppressWildcards Interceptor>): OkHttpClient =
         OkHttpClient
             .Builder()
             .apply {
+                interceptors.forEach(::addInterceptor)
                 connectTimeout(AppConstants.API_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 readTimeout(AppConstants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 followSslRedirects(true)
@@ -79,10 +81,11 @@ object NetworkModule {
     @Singleton
     @Provides
     @ImageOkHttpClient
-    fun provideImageOkHttpClient(): OkHttpClient =
+    fun provideImageOkHttpClient(interceptors: Set<@JvmSuppressWildcards Interceptor>): OkHttpClient =
         OkHttpClient
             .Builder()
             .apply {
+                interceptors.forEach(::addInterceptor)
                 connectTimeout(AppConstants.IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 readTimeout(AppConstants.IMAGE_PREFETCH_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 followSslRedirects(true)

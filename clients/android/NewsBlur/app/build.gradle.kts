@@ -45,6 +45,13 @@ android {
             manifestPlaceholders["defaultLauncherEnabled"] = "false"
             manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android-alpha"
         }
+        create("storecapture") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".storecapture"
+            matchingFallbacks += listOf("debug")
+            manifestPlaceholders["defaultLauncherEnabled"] = "false"
+            manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android-storecapture"
+        }
         maybeCreate("benchmark")
         getByName("benchmark") {
             signingConfig = signingConfigs.getByName("debug")
@@ -64,6 +71,8 @@ android {
     packaging {
         resources.excludes.add("META-INF/*")
     }
+    // StoreCaptureActivity.kt shares the licensed cooking fixture with the iOS capture harness.
+    sourceSets.getByName("storecapture").assets.srcDir("../../../ios/MarketingCooking")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
