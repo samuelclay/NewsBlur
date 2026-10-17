@@ -1186,4 +1186,10 @@ le persone per parlare del mondo.</string>
     <string name="briefing_section_follow_up_subtitle">Nuovi articoli dai feed che hai letto di recente</string>
     <string name="briefing_section_widely_covered">Ampia copertura</string>
     <string name="briefing_section_widely_covered_subtitle">Articoli presenti in almeno 3 feed</string>
+    <string name="feed_list_enter_fullscreen">Mostra i feed a schermo intero</string>
+    <string name="feed_list_exit_fullscreen">Mostra i feed accanto ai titoli degli articoli</string>
+    <string name="story_list_enter_fullscreen">Mostra i titoli degli articoli a schermo intero</string>
+    <string name="story_list_exit_fullscreen">Mostra le colonne sul tablet</string>
+    <string name="resize_feed_list">Ridimensiona l’elenco dei feed</string>
+    <string name="resize_story_list">Ridimensiona i titoli degli articoli</string>
 </resources>

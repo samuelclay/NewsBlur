@@ -1148,4 +1148,10 @@
     <string name="briefing_section_follow_up_subtitle">最近読んだフィードの新着記事</string>
     <string name="briefing_section_widely_covered">広く取り上げられている</string>
     <string name="briefing_section_widely_covered_subtitle">3つ以上のフィードで取り上げられた記事</string>
+    <string name="feed_list_enter_fullscreen">フィードを全画面表示</string>
+    <string name="feed_list_exit_fullscreen">記事タイトルの横にフィードを表示</string>
+    <string name="story_list_enter_fullscreen">記事タイトルを全画面表示</string>
+    <string name="story_list_exit_fullscreen">タブレットのカラムを表示</string>
+    <string name="resize_feed_list">フィード一覧のサイズを変更</string>
+    <string name="resize_story_list">記事タイトル一覧のサイズを変更</string>
 </resources>

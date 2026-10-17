@@ -1167,4 +1167,10 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="briefing_section_follow_up_subtitle">Neue Artikel aus Feeds, die du kürzlich gelesen hast</string>
     <string name="briefing_section_widely_covered">Weit verbreitet</string>
     <string name="briefing_section_widely_covered_subtitle">Artikel, die in mindestens 3 Feeds erscheinen</string>
+    <string name="feed_list_enter_fullscreen">Feeds im Vollbild anzeigen</string>
+    <string name="feed_list_exit_fullscreen">Feeds neben Artikeltiteln anzeigen</string>
+    <string name="story_list_enter_fullscreen">Artikeltitel im Vollbild anzeigen</string>
+    <string name="story_list_exit_fullscreen">Tablet-Spalten anzeigen</string>
+    <string name="resize_feed_list">Breite der Feedliste ändern</string>
+    <string name="resize_story_list">Breite der Artikelliste ändern</string>
 </resources>

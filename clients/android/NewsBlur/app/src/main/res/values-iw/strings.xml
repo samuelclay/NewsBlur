@@ -1186,4 +1186,10 @@
     <string name="briefing_section_follow_up_subtitle">פוסטים חדשים מפידים שקראת לאחרונה</string>
     <string name="briefing_section_widely_covered">סיקור נרחב</string>
     <string name="briefing_section_widely_covered_subtitle">כתבות שמופיעות ב־3 פידים או יותר</string>
+    <string name="feed_list_enter_fullscreen">הצגת פידים במסך מלא</string>
+    <string name="feed_list_exit_fullscreen">הצגת פידים לצד כותרות הכתבות</string>
+    <string name="story_list_enter_fullscreen">הצגת כותרות הכתבות במסך מלא</string>
+    <string name="story_list_exit_fullscreen">הצגת העמודות בטאבלט</string>
+    <string name="resize_feed_list">שינוי גודל רשימת הפידים</string>
+    <string name="resize_story_list">שינוי גודל כותרות הכתבות</string>
 </resources>

@@ -1205,4 +1205,10 @@
     <string name="briefing_section_follow_up_subtitle">Новые публикации из недавно прочитанных вами лент</string>
     <string name="briefing_section_widely_covered">Широко освещается</string>
     <string name="briefing_section_widely_covered_subtitle">Статьи, встречающиеся в 3 и более лентах</string>
+    <string name="feed_list_enter_fullscreen">Развернуть список лент на весь экран</string>
+    <string name="feed_list_exit_fullscreen">Показать ленты рядом с заголовками статей</string>
+    <string name="story_list_enter_fullscreen">Развернуть заголовки статей на весь экран</string>
+    <string name="story_list_exit_fullscreen">Показать столбцы на планшете</string>
+    <string name="resize_feed_list">Изменить размер списка лент</string>
+    <string name="resize_story_list">Изменить размер списка заголовков статей</string>
 </resources>

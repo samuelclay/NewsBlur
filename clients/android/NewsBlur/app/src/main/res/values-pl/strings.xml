@@ -1205,4 +1205,10 @@
     <string name="briefing_section_follow_up_subtitle">Nowe wpisy z kanałów, które ostatnio czytano</string>
     <string name="briefing_section_widely_covered">Szeroko omawiane</string>
     <string name="briefing_section_widely_covered_subtitle">Artykuły omawiane w co najmniej 3 kanałach</string>
+    <string name="feed_list_enter_fullscreen">Pokaż kanały na pełnym ekranie</string>
+    <string name="feed_list_exit_fullscreen">Pokaż kanały obok tytułów artykułów</string>
+    <string name="story_list_enter_fullscreen">Pokaż tytuły artykułów na pełnym ekranie</string>
+    <string name="story_list_exit_fullscreen">Pokaż kolumny tabletu</string>
+    <string name="resize_feed_list">Zmień rozmiar listy kanałów</string>
+    <string name="resize_story_list">Zmień rozmiar listy tytułów artykułów</string>
 </resources>

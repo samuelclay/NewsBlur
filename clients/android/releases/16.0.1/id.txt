@@ -1,0 +1,3 @@
+Kontrol tablet kembali: tampilkan daftar feed, judul artikel, atau artikel dalam layar penuh secara terpisah. Seret pembatas untuk mengubah ukuran panel; NewsBlur mengingat lebarnya.
+
+Termasuk dukungan untuk 21 bahasa antarmuka dan kontrol artikel berikutnya dengan posisi tetap dari versi 16.0.
