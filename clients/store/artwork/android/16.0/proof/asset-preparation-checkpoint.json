@@ -1,7 +1,7 @@
 {
-  "saved_at": "2026-10-17T18:02:02.592079+00:00",
-  "status": "all_294_images_ready_play_staging_in_progress",
-  "reason": "User restarted the Mac and Docker and freed space. API upload resumed with read-back verification.",
+  "saved_at": "2026-10-17T18:19:00.372397+00:00",
+  "status": "all_294_images_verified_in_edit_commit_blocked_by_permission",
+  "reason": "Google accepted all image uploads and video-field updates, but edits.validate and edits.commit both returned 403. Console confirms uploader lacks Manage store presence. User confirmation pending for app-scoped access change.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
@@ -246,7 +246,7 @@
       "source_clips_verified": 8
     }
   ],
-  "pending": "Complete Play staging, commit and post-commit readback; eleven YouTube uploads remain blocked by the verified daily limit after restart.",
+  "pending": "Grant approved store presence permission or use browser upload fallback, commit and fresh readback; eleven YouTube videos remain blocked by daily limit.",
   "notification_samples_reviewed": 168,
   "resumed_at": "2026-10-17T16:24:16Z",
   "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95",
@@ -257,7 +257,12 @@
     "manifest": "../exports/manifest-staging.json",
     "mutations_started": true,
     "pending_client_terminated": false,
-    "checkpoint": "play-assets-staging.json"
+    "checkpoint": "play-assets-staging.json",
+    "verified_images": 294,
+    "verified_groups": 105,
+    "verified_video_urls": 10,
+    "verification": "play-assets-final-verification.json",
+    "commit_receipt": "play-assets-commit.json"
   },
   "devices_restored": true,
   "browser_account": {
