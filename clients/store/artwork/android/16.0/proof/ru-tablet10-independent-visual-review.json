@@ -1,0 +1,33 @@
+{
+  "reviewed_at": "2026-10-17T16:08:04Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-01.png",
+      "sha256": "3b1368b2dede0cd4a73a7e9e1fd6c2f67a9f279a9cc06bd5853e9ba2db93864f",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-02.png",
+      "sha256": "fe892bb5cf2d73030960bc28af3c5fccd89beb71b3735b9c2b767051efe64d81",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-03.png",
+      "sha256": "9d4937bf246f32477a3587a3336aa0dc8e5d7132a153031d4218ce8ead8335e8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/tenInchScreenshots/panel-04.png",
+      "sha256": "3850b457fa96125dc58e2a0c556c0adc871349be5862eb65249e7bafdabb79d8",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Russian native titles, search, dates, saved state and navigation are localized and legible in Cyrillic.",
+    "Populated native tablet split views contain no notification banners, outside marketing text or missing content.",
+    "The drawer scrim and dimmed read article reflect native state; original fictional article content intentionally remains English."
+  ],
+  "scope": "Four Russian ten-inch tablet still exports only; video playback and store readback are separate checks."
+}
