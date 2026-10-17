@@ -11,6 +11,24 @@ import java.io.ObjectOutputStream
 
 class Test_ReaderStateSerialization {
     @Test
+    fun test_trainer_classifier_order_survives_api_and_saved_state() {
+        val fields = listOf("authors", "author_regex", "titles", "title_regex", "tags", "feeds",
+            "texts", "text_regex", "urls", "url_regex")
+        val json = fields.joinToString(prefix = "{", postfix = "}") {
+            "\"$it\":{\"zebra\":1,\"alpha\":-1,\"middle\":1}"
+        }
+        val classifier = Gson().fromJson(json, Classifier::class.java)
+
+        for (state in listOf(classifier, roundTrip(classifier))) {
+            val maps = listOf(state.authors, state.authorRegex, state.title, state.titleRegex,
+                state.tags, state.feeds, state.texts, state.textRegex, state.urls, state.urlRegex)
+            for (map in maps) {
+                assertEquals(listOf("zebra", "alpha", "middle"), map.keys.toList())
+            }
+        }
+    }
+
+    @Test
     fun test_api_classifier_survives_fragment_state_serialization() {
         val classifier = Gson().fromJson(
             """{
