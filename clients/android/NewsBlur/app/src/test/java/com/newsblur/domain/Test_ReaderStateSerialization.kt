@@ -2,6 +2,7 @@ package com.newsblur.domain
 
 import com.google.gson.Gson
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -22,6 +23,18 @@ class Test_ReaderStateSerialization {
             Classifier::class.java,
         )
 
+        // Test_ReaderStateSerialization.kt avoids Gson writeReplace hooks removed by R8.
+        val maps = listOf(
+            classifier.authors, classifier.authorRegex, classifier.title, classifier.titleRegex,
+            classifier.tags, classifier.feeds, classifier.texts, classifier.textRegex,
+            classifier.urls, classifier.urlRegex,
+        )
+        for (map in maps) {
+            assertTrue(
+                "Classifier state must use platform serializable maps: ${map.javaClass.name}",
+                map.javaClass.name.startsWith("java.util."),
+            )
+        }
         val restored = roundTrip(classifier)
 
         assertEquals(classifier.authors, restored.authors)
