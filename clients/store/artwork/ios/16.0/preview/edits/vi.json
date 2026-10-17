@@ -20,6 +20,6 @@
       "notes": "Matching native iPad UI with loaded photographs and normal reader sizing. Real fullscreen reader scroll followed by a settled Saved collection."
     }
   },
-  "status": "source_intervals_reviewed",
-  "remaining": "Encode in a coordinated recording gap, then inspect script shaping, final frames and normal-speed playback before staging."
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
 }
