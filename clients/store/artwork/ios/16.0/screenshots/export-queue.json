@@ -1,7 +1,7 @@
 {
-  "updated_at": "2026-10-17T01:46:48Z",
+  "updated_at": "2026-10-17T02:01:55Z",
   "renderer": "CoreGraphics/CoreText canonical for unfinished sets; existing approved browser exports preserved",
-  "capture_status": "waiting_for_verified_replacements_after_breadcrumb_review",
+  "capture_status": "active_waiting_for_verified_captures",
   "required_next_steps": [
     "Wait for a verified complete native capture group",
     "Run export-native.rb for each missing size",
@@ -192,6 +192,24 @@
     },
     {
       "language": "it",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "it",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-it-1320x2868-0[1-4].png"
+    },
+    {
+      "language": "it",
       "size": "2064x2752",
       "panels": 4,
       "technical_validation": "passed",
@@ -216,6 +234,24 @@
       "native_pixel_check": "passed",
       "visual_review": "passed",
       "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-ko-2064x2752-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "1206x2622",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-1206x2622-0[1-4].png"
+    },
+    {
+      "language": "nl",
+      "size": "1320x2868",
+      "panels": 4,
+      "technical_validation": "passed",
+      "native_pixel_check": "passed",
+      "visual_review": "passed",
+      "staged_upload_pattern": "/tmp/newsblur-ios16-ready-uploads/newsblur-16.0-nl-1320x2868-0[1-4].png"
     },
     {
       "language": "nl",
@@ -338,20 +374,6 @@
       "reason": "Capture operator must verify and commit all four source frames before export."
     },
     {
-      "language": "it",
-      "size": "1320x2868",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "it",
-      "size": "1206x2622",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
       "language": "ja",
       "size": "1320x2868",
       "device": "iphone",
@@ -374,20 +396,6 @@
     },
     {
       "language": "ko",
-      "size": "1206x2622",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "nl",
-      "size": "1320x2868",
-      "device": "iphone",
-      "status": "waiting_for_verified_native_capture",
-      "reason": "Capture operator must verify and commit all four source frames before export."
-    },
-    {
-      "language": "nl",
       "size": "1206x2622",
       "device": "iphone",
       "status": "waiting_for_verified_native_capture",
@@ -522,8 +530,9 @@
   ],
   "counts": {
     "expected_panels": 252,
-    "staged_panels": 132,
-    "complete_sets": 33,
-    "pending_sets": 30
-  }
+    "staged_panels": 148,
+    "complete_sets": 37,
+    "pending_sets": 26
+  },
+  "capture_checkpoint": "0855bd9f8"
 }
