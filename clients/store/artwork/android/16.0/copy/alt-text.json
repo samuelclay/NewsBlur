@@ -20,7 +20,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -32,7 +32,7 @@
       "alt_text": "NewsBlur. Your daily reading, in one place. A home for your favorite sources.",
       "characters": 77,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -44,7 +44,7 @@
       "alt_text": "Daily reading: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -56,7 +56,7 @@
       "alt_text": "Favorite sources: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -68,7 +68,7 @@
       "alt_text": "Reading view: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -80,7 +80,7 @@
       "alt_text": "Saved stories: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 91,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -92,7 +92,7 @@
       "alt_text": "Daily reading: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -104,7 +104,7 @@
       "alt_text": "Favorite sources: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -116,7 +116,7 @@
       "alt_text": "Reading view: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -128,7 +128,7 @@
       "alt_text": "Saved stories: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 91,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -140,7 +140,7 @@
       "alt_text": "Daily reading: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -152,7 +152,7 @@
       "alt_text": "Favorite sources: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -164,7 +164,7 @@
       "alt_text": "Reading view: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -176,7 +176,7 @@
       "alt_text": "Saved stories: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 91,
       "source_copy_sha256": "2876e54e9e516830204dd18dd43bd9cce04def03bc9026a4f184b2dba5dc2d00",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -188,7 +188,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -200,7 +200,7 @@
       "alt_text": "NewsBlur. Tus lecturas diarias, en un solo lugar. Un hogar para tus fuentes favoritas.",
       "characters": 86,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -212,7 +212,7 @@
       "alt_text": "Lectura diaria: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -224,7 +224,7 @@
       "alt_text": "Fuentes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -236,7 +236,7 @@
       "alt_text": "Vista de lectura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -248,7 +248,7 @@
       "alt_text": "Artículos guardados: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -260,7 +260,7 @@
       "alt_text": "Lectura diaria: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -272,7 +272,7 @@
       "alt_text": "Fuentes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -284,7 +284,7 @@
       "alt_text": "Vista de lectura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -296,7 +296,7 @@
       "alt_text": "Artículos guardados: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -308,7 +308,7 @@
       "alt_text": "Lectura diaria: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -320,7 +320,7 @@
       "alt_text": "Fuentes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -332,7 +332,7 @@
       "alt_text": "Vista de lectura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -344,7 +344,7 @@
       "alt_text": "Artículos guardados: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "02085a6468d0983bcb568ab6d3a5b106bc0502a88b7130640cece761b93fcd49",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -356,7 +356,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -368,7 +368,7 @@
       "alt_text": "NewsBlur. Vos lectures quotidiennes, au même endroit. Un lieu pour vos sources préférées.",
       "characters": 89,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -380,7 +380,7 @@
       "alt_text": "Lectures quotidiennes: Weeknight Kitchen; Garden to Bowl.",
       "characters": 57,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -392,7 +392,7 @@
       "alt_text": "Sources préférées: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -404,7 +404,7 @@
       "alt_text": "Vue de lecture: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -416,7 +416,7 @@
       "alt_text": "Articles enregistrés: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -428,7 +428,7 @@
       "alt_text": "Lectures quotidiennes: Weeknight Kitchen; Garden to Bowl.",
       "characters": 57,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -440,7 +440,7 @@
       "alt_text": "Sources préférées: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -452,7 +452,7 @@
       "alt_text": "Vue de lecture: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -464,7 +464,7 @@
       "alt_text": "Articles enregistrés: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -476,7 +476,7 @@
       "alt_text": "Lectures quotidiennes: Weeknight Kitchen; Garden to Bowl.",
       "characters": 57,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -488,7 +488,7 @@
       "alt_text": "Sources préférées: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -500,7 +500,7 @@
       "alt_text": "Vue de lecture: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -512,7 +512,7 @@
       "alt_text": "Articles enregistrés: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "e701d5f9cdf2bf742e90974cdde24859f2cf11e48895a27cb785c0534b93dafa",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -524,7 +524,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -536,7 +536,7 @@
       "alt_text": "NewsBlur. Deine tägliche Lektüre an einem Ort. Ein Zuhause für deine Lieblingsquellen.",
       "characters": 86,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -548,7 +548,7 @@
       "alt_text": "Tägliche Lektüre: Weeknight Kitchen; Garden to Bowl.",
       "characters": 52,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -560,7 +560,7 @@
       "alt_text": "Lieblingsquellen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -572,7 +572,7 @@
       "alt_text": "Leseansicht: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -584,7 +584,7 @@
       "alt_text": "Gespeicherte Artikel: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -596,7 +596,7 @@
       "alt_text": "Tägliche Lektüre: Weeknight Kitchen; Garden to Bowl.",
       "characters": 52,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -608,7 +608,7 @@
       "alt_text": "Lieblingsquellen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -620,7 +620,7 @@
       "alt_text": "Leseansicht: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -632,7 +632,7 @@
       "alt_text": "Gespeicherte Artikel: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -644,7 +644,7 @@
       "alt_text": "Tägliche Lektüre: Weeknight Kitchen; Garden to Bowl.",
       "characters": 52,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -656,7 +656,7 @@
       "alt_text": "Lieblingsquellen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -668,7 +668,7 @@
       "alt_text": "Leseansicht: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -680,7 +680,7 @@
       "alt_text": "Gespeicherte Artikel: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "b656609038c1df5e8487d8ec09218516b00ac425d4f61662dc5678257b9d9edb",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -692,7 +692,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -704,7 +704,7 @@
       "alt_text": "NewsBlur. Suas leituras diárias em um só lugar. Um lar para suas fontes favoritas.",
       "characters": 82,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -716,7 +716,7 @@
       "alt_text": "Leitura diária: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -728,7 +728,7 @@
       "alt_text": "Fontes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -740,7 +740,7 @@
       "alt_text": "Visualização de leitura: Pesto pasta with blistered tomatoes.",
       "characters": 61,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -752,7 +752,7 @@
       "alt_text": "Artigos salvos: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -764,7 +764,7 @@
       "alt_text": "Leitura diária: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -776,7 +776,7 @@
       "alt_text": "Fontes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -788,7 +788,7 @@
       "alt_text": "Visualização de leitura: Pesto pasta with blistered tomatoes.",
       "characters": 61,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -800,7 +800,7 @@
       "alt_text": "Artigos salvos: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -812,7 +812,7 @@
       "alt_text": "Leitura diária: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -824,7 +824,7 @@
       "alt_text": "Fontes favoritas: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -836,7 +836,7 @@
       "alt_text": "Visualização de leitura: Pesto pasta with blistered tomatoes.",
       "characters": 61,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -848,7 +848,7 @@
       "alt_text": "Artigos salvos: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "c2fba1a1edbc4234672654ec3101340b3ba14b385733c37d697a3d7097331715",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -860,7 +860,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -872,7 +872,7 @@
       "alt_text": "NewsBlur. Le tue letture quotidiane, in un solo posto. Una casa per le tue fonti preferite.",
       "characters": 91,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -884,7 +884,7 @@
       "alt_text": "Letture quotidiane: Weeknight Kitchen; Garden to Bowl.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -896,7 +896,7 @@
       "alt_text": "Fonti preferite: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -908,7 +908,7 @@
       "alt_text": "Vista di lettura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -920,7 +920,7 @@
       "alt_text": "Articoli salvati: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -932,7 +932,7 @@
       "alt_text": "Letture quotidiane: Weeknight Kitchen; Garden to Bowl.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -944,7 +944,7 @@
       "alt_text": "Fonti preferite: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -956,7 +956,7 @@
       "alt_text": "Vista di lettura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -968,7 +968,7 @@
       "alt_text": "Articoli salvati: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -980,7 +980,7 @@
       "alt_text": "Letture quotidiane: Weeknight Kitchen; Garden to Bowl.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -992,7 +992,7 @@
       "alt_text": "Fonti preferite: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1004,7 +1004,7 @@
       "alt_text": "Vista di lettura: Pesto pasta with blistered tomatoes.",
       "characters": 54,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1016,7 +1016,7 @@
       "alt_text": "Articoli salvati: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "22d1e7813388c0391dc963e4dc2309b44d113feebbb3f642c8f646f6a462f129",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1028,7 +1028,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1040,7 +1040,7 @@
       "alt_text": "NewsBlur. Je dagelijkse leesvoer op één plek. Een thuis voor je favoriete bronnen.",
       "characters": 82,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1052,7 +1052,7 @@
       "alt_text": "Dagelijks lezen: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1064,7 +1064,7 @@
       "alt_text": "Favoriete bronnen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1076,7 +1076,7 @@
       "alt_text": "Leesweergave: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1088,7 +1088,7 @@
       "alt_text": "Opgeslagen artikelen: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1100,7 +1100,7 @@
       "alt_text": "Dagelijks lezen: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1112,7 +1112,7 @@
       "alt_text": "Favoriete bronnen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1124,7 +1124,7 @@
       "alt_text": "Leesweergave: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1136,7 +1136,7 @@
       "alt_text": "Opgeslagen artikelen: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1148,7 +1148,7 @@
       "alt_text": "Dagelijks lezen: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1160,7 +1160,7 @@
       "alt_text": "Favoriete bronnen: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1172,7 +1172,7 @@
       "alt_text": "Leesweergave: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1184,7 +1184,7 @@
       "alt_text": "Opgeslagen artikelen: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 98,
       "source_copy_sha256": "cd06fbdbe2c97dbf5b02bb10b0d9e41bfaa9718821a64808d3795c70c6da7358",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1196,7 +1196,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1208,7 +1208,7 @@
       "alt_text": "NewsBlur. Twoja codzienna lektura w jednym miejscu. Miejsce dla Twoich ulubionych źródeł.",
       "characters": 89,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1220,7 +1220,7 @@
       "alt_text": "Codzienna lektura: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1232,7 +1232,7 @@
       "alt_text": "Ulubione źródła: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1244,7 +1244,7 @@
       "alt_text": "Widok czytania: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1256,7 +1256,7 @@
       "alt_text": "Zapisane artykuły: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1268,7 +1268,7 @@
       "alt_text": "Codzienna lektura: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1280,7 +1280,7 @@
       "alt_text": "Ulubione źródła: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1292,7 +1292,7 @@
       "alt_text": "Widok czytania: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1304,7 +1304,7 @@
       "alt_text": "Zapisane artykuły: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1316,7 +1316,7 @@
       "alt_text": "Codzienna lektura: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1328,7 +1328,7 @@
       "alt_text": "Ulubione źródła: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1340,7 +1340,7 @@
       "alt_text": "Widok czytania: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1352,7 +1352,7 @@
       "alt_text": "Zapisane artykuły: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "a5ee96732e693ddbcf8a74e7315882e86cd8e796613ea7796417499fb9407859",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1364,7 +1364,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1376,7 +1376,7 @@
       "alt_text": "NewsBlur. Günlük okumalarınız tek bir yerde. Sevdiğiniz kaynaklar için bir yuva.",
       "characters": 80,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1388,7 +1388,7 @@
       "alt_text": "Günlük okuma: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1400,7 +1400,7 @@
       "alt_text": "Sevilen kaynaklar: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1412,7 +1412,7 @@
       "alt_text": "Okuma görünümü: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1424,7 +1424,7 @@
       "alt_text": "Kaydedilen haberler: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1436,7 +1436,7 @@
       "alt_text": "Günlük okuma: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1448,7 +1448,7 @@
       "alt_text": "Sevilen kaynaklar: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1460,7 +1460,7 @@
       "alt_text": "Okuma görünümü: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1472,7 +1472,7 @@
       "alt_text": "Kaydedilen haberler: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1484,7 +1484,7 @@
       "alt_text": "Günlük okuma: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1496,7 +1496,7 @@
       "alt_text": "Sevilen kaynaklar: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1508,7 +1508,7 @@
       "alt_text": "Okuma görünümü: Pesto pasta with blistered tomatoes.",
       "characters": 52,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1520,7 +1520,7 @@
       "alt_text": "Kaydedilen haberler: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 97,
       "source_copy_sha256": "5496e76afdd1c615bea4d37b5fd6e1ada96463491df0605d48dc827fba8164ec",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1532,7 +1532,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1544,7 +1544,7 @@
       "alt_text": "NewsBlur. Ваше ежедневное чтение в одном месте. Дом для ваших любимых источников.",
       "characters": 81,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1556,7 +1556,7 @@
       "alt_text": "Ежедневное чтение: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1568,7 +1568,7 @@
       "alt_text": "Любимые источники: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1580,7 +1580,7 @@
       "alt_text": "Режим чтения: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1592,7 +1592,7 @@
       "alt_text": "Сохранённые статьи: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1604,7 +1604,7 @@
       "alt_text": "Ежедневное чтение: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1616,7 +1616,7 @@
       "alt_text": "Любимые источники: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1628,7 +1628,7 @@
       "alt_text": "Режим чтения: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1640,7 +1640,7 @@
       "alt_text": "Сохранённые статьи: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1652,7 +1652,7 @@
       "alt_text": "Ежедневное чтение: Weeknight Kitchen; Garden to Bowl.",
       "characters": 53,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1664,7 +1664,7 @@
       "alt_text": "Любимые источники: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 61,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1676,7 +1676,7 @@
       "alt_text": "Режим чтения: Pesto pasta with blistered tomatoes.",
       "characters": 50,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1688,7 +1688,7 @@
       "alt_text": "Сохранённые статьи: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "acb0d2a058ee2e7742f44e1adfc496dd925c8b5d0ee926c646e71d7ca2df4cb4",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1700,7 +1700,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1712,7 +1712,7 @@
       "alt_text": "NewsBlur. Ваше щоденне читання в одному місці. Дім для ваших улюблених джерел.",
       "characters": 78,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1724,7 +1724,7 @@
       "alt_text": "Щоденне читання: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1736,7 +1736,7 @@
       "alt_text": "Улюблені джерела: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1748,7 +1748,7 @@
       "alt_text": "Режим читання: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1760,7 +1760,7 @@
       "alt_text": "Збережені статті: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1772,7 +1772,7 @@
       "alt_text": "Щоденне читання: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1784,7 +1784,7 @@
       "alt_text": "Улюблені джерела: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1796,7 +1796,7 @@
       "alt_text": "Режим читання: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1808,7 +1808,7 @@
       "alt_text": "Збережені статті: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1820,7 +1820,7 @@
       "alt_text": "Щоденне читання: Weeknight Kitchen; Garden to Bowl.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1832,7 +1832,7 @@
       "alt_text": "Улюблені джерела: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 60,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1844,7 +1844,7 @@
       "alt_text": "Режим читання: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1856,7 +1856,7 @@
       "alt_text": "Збережені статті: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 94,
       "source_copy_sha256": "bbc49f38558c6742f6e55ab47bcecf1f254b7b63aea0d6165ed16a52cac9dfa1",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1868,7 +1868,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1880,7 +1880,7 @@
       "alt_text": "NewsBlur. قراءاتك اليومية، في مكان واحد. مساحة تجمع مصادرك المفضلة.",
       "characters": 67,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1892,7 +1892,7 @@
       "alt_text": "قراءتك اليومية: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1904,7 +1904,7 @@
       "alt_text": "مصادرك المفضلة: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1916,7 +1916,7 @@
       "alt_text": "عرض القراءة: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1928,7 +1928,7 @@
       "alt_text": "القصص المحفوظة: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1940,7 +1940,7 @@
       "alt_text": "قراءتك اليومية: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1952,7 +1952,7 @@
       "alt_text": "مصادرك المفضلة: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1964,7 +1964,7 @@
       "alt_text": "عرض القراءة: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1976,7 +1976,7 @@
       "alt_text": "القصص المحفوظة: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -1988,7 +1988,7 @@
       "alt_text": "قراءتك اليومية: Weeknight Kitchen; Garden to Bowl.",
       "characters": 50,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2000,7 +2000,7 @@
       "alt_text": "مصادرك المفضلة: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2012,7 +2012,7 @@
       "alt_text": "عرض القراءة: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2024,7 +2024,7 @@
       "alt_text": "القصص المحفوظة: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 92,
       "source_copy_sha256": "93f8a2ab168c7a07dbe892518f0e964336e1dcd2dddd03a171ce2f57a6982d9f",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2036,7 +2036,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2048,7 +2048,7 @@
       "alt_text": "NewsBlur. הקריאה היומית שלך, במקום אחד. בית למקורות האהובים עליך.",
       "characters": 65,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2060,7 +2060,7 @@
       "alt_text": "קריאה יומית: Weeknight Kitchen; Garden to Bowl.",
       "characters": 47,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2072,7 +2072,7 @@
       "alt_text": "מקורות מועדפים: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2084,7 +2084,7 @@
       "alt_text": "תצוגת קריאה: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2096,7 +2096,7 @@
       "alt_text": "כתבות שמורות: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2108,7 +2108,7 @@
       "alt_text": "קריאה יומית: Weeknight Kitchen; Garden to Bowl.",
       "characters": 47,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2120,7 +2120,7 @@
       "alt_text": "מקורות מועדפים: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2132,7 +2132,7 @@
       "alt_text": "תצוגת קריאה: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2144,7 +2144,7 @@
       "alt_text": "כתבות שמורות: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2156,7 +2156,7 @@
       "alt_text": "קריאה יומית: Weeknight Kitchen; Garden to Bowl.",
       "characters": 47,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2168,7 +2168,7 @@
       "alt_text": "מקורות מועדפים: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2180,7 +2180,7 @@
       "alt_text": "תצוגת קריאה: Pesto pasta with blistered tomatoes.",
       "characters": 49,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2192,7 +2192,7 @@
       "alt_text": "כתבות שמורות: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "d5c237e9778ea30dd02c8c6542bbcc6624fd2b84937d85ee5cddb82aed37e51d",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2204,7 +2204,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2216,7 +2216,7 @@
       "alt_text": "NewsBlur. आपकी रोज़ की पठन सामग्री, एक जगह। आपके पसंदीदा स्रोतों के लिए एक जगह।",
       "characters": 79,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2228,7 +2228,7 @@
       "alt_text": "दैनिक पठन: Weeknight Kitchen; Garden to Bowl.",
       "characters": 45,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2240,7 +2240,7 @@
       "alt_text": "पसंदीदा स्रोत: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 57,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2252,7 +2252,7 @@
       "alt_text": "पठन दृश्य: Pesto pasta with blistered tomatoes.",
       "characters": 47,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2264,7 +2264,7 @@
       "alt_text": "सहेजे गए लेख: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2276,7 +2276,7 @@
       "alt_text": "दैनिक पठन: Weeknight Kitchen; Garden to Bowl.",
       "characters": 45,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2288,7 +2288,7 @@
       "alt_text": "पसंदीदा स्रोत: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 57,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2300,7 +2300,7 @@
       "alt_text": "पठन दृश्य: Pesto pasta with blistered tomatoes.",
       "characters": 47,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2312,7 +2312,7 @@
       "alt_text": "सहेजे गए लेख: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2324,7 +2324,7 @@
       "alt_text": "दैनिक पठन: Weeknight Kitchen; Garden to Bowl.",
       "characters": 45,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2336,7 +2336,7 @@
       "alt_text": "पसंदीदा स्रोत: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 57,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2348,7 +2348,7 @@
       "alt_text": "पठन दृश्य: Pesto pasta with blistered tomatoes.",
       "characters": 47,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2360,7 +2360,7 @@
       "alt_text": "सहेजे गए लेख: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 90,
       "source_copy_sha256": "59cd359f7ba14b196b075a1e280899d45904aeb83c9152dfd320c423db7e6145",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2372,7 +2372,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2384,7 +2384,7 @@
       "alt_text": "NewsBlur. Bacaan harian Anda, di satu tempat. Tempat untuk sumber favorit Anda.",
       "characters": 79,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2396,7 +2396,7 @@
       "alt_text": "Bacaan harian: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2408,7 +2408,7 @@
       "alt_text": "Sumber favorit: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2420,7 +2420,7 @@
       "alt_text": "Tampilan baca: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2432,7 +2432,7 @@
       "alt_text": "Artikel tersimpan: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2444,7 +2444,7 @@
       "alt_text": "Bacaan harian: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2456,7 +2456,7 @@
       "alt_text": "Sumber favorit: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2468,7 +2468,7 @@
       "alt_text": "Tampilan baca: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2480,7 +2480,7 @@
       "alt_text": "Artikel tersimpan: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2492,7 +2492,7 @@
       "alt_text": "Bacaan harian: Weeknight Kitchen; Garden to Bowl.",
       "characters": 49,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2504,7 +2504,7 @@
       "alt_text": "Sumber favorit: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 58,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2516,7 +2516,7 @@
       "alt_text": "Tampilan baca: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2528,7 +2528,7 @@
       "alt_text": "Artikel tersimpan: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 95,
       "source_copy_sha256": "4599939f6c11745c485cdc74b1d98a7aa294bf50393a616b47e090c14d167dbe",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2540,7 +2540,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2552,7 +2552,7 @@
       "alt_text": "NewsBlur. Nội dung bạn đọc mỗi ngày, ở cùng một nơi. Nơi hội tụ những nguồn tin bạn yêu thích.",
       "characters": 94,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2564,7 +2564,7 @@
       "alt_text": "Đọc mỗi ngày: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2576,7 +2576,7 @@
       "alt_text": "Nguồn yêu thích: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2588,7 +2588,7 @@
       "alt_text": "Chế độ đọc: Pesto pasta with blistered tomatoes.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2600,7 +2600,7 @@
       "alt_text": "Bài viết đã lưu: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 93,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2612,7 +2612,7 @@
       "alt_text": "Đọc mỗi ngày: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2624,7 +2624,7 @@
       "alt_text": "Nguồn yêu thích: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2636,7 +2636,7 @@
       "alt_text": "Chế độ đọc: Pesto pasta with blistered tomatoes.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2648,7 +2648,7 @@
       "alt_text": "Bài viết đã lưu: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 93,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2660,7 +2660,7 @@
       "alt_text": "Đọc mỗi ngày: Weeknight Kitchen; Garden to Bowl.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2672,7 +2672,7 @@
       "alt_text": "Nguồn yêu thích: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2684,7 +2684,7 @@
       "alt_text": "Chế độ đọc: Pesto pasta with blistered tomatoes.",
       "characters": 48,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2696,7 +2696,7 @@
       "alt_text": "Bài viết đã lưu: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 93,
       "source_copy_sha256": "b0602cc1893686b1dd3a7365311eef90c98ba792a55f95891fe0844831175381",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2708,7 +2708,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2720,7 +2720,7 @@
       "alt_text": "NewsBlur. เรื่องที่คุณอ่านทุกวัน รวมไว้ในที่เดียว รวมแหล่งข้อมูลโปรดของคุณไว้ด้วยกัน",
       "characters": 84,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2732,7 +2732,7 @@
       "alt_text": "อ่านทุกวัน: Weeknight Kitchen; Garden to Bowl.",
       "characters": 46,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2744,7 +2744,7 @@
       "alt_text": "แหล่งข้อมูลโปรด: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2756,7 +2756,7 @@
       "alt_text": "มุมมองการอ่าน: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2768,7 +2768,7 @@
       "alt_text": "บทความที่บันทึกไว้: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2780,7 +2780,7 @@
       "alt_text": "อ่านทุกวัน: Weeknight Kitchen; Garden to Bowl.",
       "characters": 46,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2792,7 +2792,7 @@
       "alt_text": "แหล่งข้อมูลโปรด: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2804,7 +2804,7 @@
       "alt_text": "มุมมองการอ่าน: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2816,7 +2816,7 @@
       "alt_text": "บทความที่บันทึกไว้: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2828,7 +2828,7 @@
       "alt_text": "อ่านทุกวัน: Weeknight Kitchen; Garden to Bowl.",
       "characters": 46,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2840,7 +2840,7 @@
       "alt_text": "แหล่งข้อมูลโปรด: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 59,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2852,7 +2852,7 @@
       "alt_text": "มุมมองการอ่าน: Pesto pasta with blistered tomatoes.",
       "characters": 51,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2864,7 +2864,7 @@
       "alt_text": "บทความที่บันทึกไว้: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 96,
       "source_copy_sha256": "af731aa9d5f895802bc4634b9758ee58811fa8f5242246097d90c40a5cd66d06",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2876,7 +2876,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2888,7 +2888,7 @@
       "alt_text": "NewsBlur. 毎日の読みものを、ひとつの場所に。 お気に入りの情報源が集まる場所。",
       "characters": 44,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2900,7 +2900,7 @@
       "alt_text": "毎日の読みもの: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2912,7 +2912,7 @@
       "alt_text": "お気に入りの情報源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 53,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2924,7 +2924,7 @@
       "alt_text": "閲覧画面: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2936,7 +2936,7 @@
       "alt_text": "保存した記事: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2948,7 +2948,7 @@
       "alt_text": "毎日の読みもの: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2960,7 +2960,7 @@
       "alt_text": "お気に入りの情報源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 53,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2972,7 +2972,7 @@
       "alt_text": "閲覧画面: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2984,7 +2984,7 @@
       "alt_text": "保存した記事: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -2996,7 +2996,7 @@
       "alt_text": "毎日の読みもの: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3008,7 +3008,7 @@
       "alt_text": "お気に入りの情報源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 53,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3020,7 +3020,7 @@
       "alt_text": "閲覧画面: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3032,7 +3032,7 @@
       "alt_text": "保存した記事: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "8525b24b8da3c5ed85d499bc3ccf81c852747a306dfc9c32430186d013560943",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3044,7 +3044,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3056,7 +3056,7 @@
       "alt_text": "NewsBlur. 매일 읽는 콘텐츠를 한곳에. 즐겨 찾는 정보 출처를 위한 공간.",
       "characters": 45,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3068,7 +3068,7 @@
       "alt_text": "매일 읽을거리: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3080,7 +3080,7 @@
       "alt_text": "즐겨 찾는 소스: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 52,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3092,7 +3092,7 @@
       "alt_text": "읽기 화면: Pesto pasta with blistered tomatoes.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3104,7 +3104,7 @@
       "alt_text": "저장한 스토리: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 85,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3116,7 +3116,7 @@
       "alt_text": "매일 읽을거리: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3128,7 +3128,7 @@
       "alt_text": "즐겨 찾는 소스: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 52,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3140,7 +3140,7 @@
       "alt_text": "읽기 화면: Pesto pasta with blistered tomatoes.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3152,7 +3152,7 @@
       "alt_text": "저장한 스토리: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 85,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3164,7 +3164,7 @@
       "alt_text": "매일 읽을거리: Weeknight Kitchen; Garden to Bowl.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3176,7 +3176,7 @@
       "alt_text": "즐겨 찾는 소스: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 52,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3188,7 +3188,7 @@
       "alt_text": "읽기 화면: Pesto pasta with blistered tomatoes.",
       "characters": 43,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3200,7 +3200,7 @@
       "alt_text": "저장한 스토리: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 85,
       "source_copy_sha256": "a194dc49be42fe80c6b5df7d1e9b218dc406b5590de21c576935b3f482fa89ad",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3212,7 +3212,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3224,7 +3224,7 @@
       "alt_text": "NewsBlur. 每天想读的，都在这里。 汇聚你喜爱的信息来源。",
       "characters": 33,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3236,7 +3236,7 @@
       "alt_text": "每日阅读: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3248,7 +3248,7 @@
       "alt_text": "喜爱的来源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3260,7 +3260,7 @@
       "alt_text": "阅读视图: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3272,7 +3272,7 @@
       "alt_text": "已保存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3284,7 +3284,7 @@
       "alt_text": "每日阅读: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3296,7 +3296,7 @@
       "alt_text": "喜爱的来源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3308,7 +3308,7 @@
       "alt_text": "阅读视图: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3320,7 +3320,7 @@
       "alt_text": "已保存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3332,7 +3332,7 @@
       "alt_text": "每日阅读: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3344,7 +3344,7 @@
       "alt_text": "喜爱的来源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3356,7 +3356,7 @@
       "alt_text": "阅读视图: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3368,7 +3368,7 @@
       "alt_text": "已保存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "a081d66b5394c28db29796bf459024d8d4cd8780399332cd1993e7dde1c64a1b",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3380,7 +3380,7 @@
       "alt_text": "NewsBlur",
       "characters": 8,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3392,7 +3392,7 @@
       "alt_text": "NewsBlur. 每天想讀的，都在這裡。 匯聚你喜愛的資訊來源。",
       "characters": 33,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3404,7 +3404,7 @@
       "alt_text": "每日閱讀: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3416,7 +3416,7 @@
       "alt_text": "喜愛的來源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3428,7 +3428,7 @@
       "alt_text": "閱讀檢視: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3440,7 +3440,7 @@
       "alt_text": "已儲存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3452,7 +3452,7 @@
       "alt_text": "每日閱讀: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3464,7 +3464,7 @@
       "alt_text": "喜愛的來源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3476,7 +3476,7 @@
       "alt_text": "閱讀檢視: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3488,7 +3488,7 @@
       "alt_text": "已儲存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3500,7 +3500,7 @@
       "alt_text": "每日閱讀: Weeknight Kitchen; Garden to Bowl.",
       "characters": 40,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3512,7 +3512,7 @@
       "alt_text": "喜愛的來源: Cooking; A Bowl of Greens; Bread & Butter.",
       "characters": 49,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3524,7 +3524,7 @@
       "alt_text": "閱讀檢視: Pesto pasta with blistered tomatoes.",
       "characters": 42,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     },
     {
@@ -3536,8 +3536,9 @@
       "alt_text": "已儲存的文章: Pesto pasta with blistered tomatoes; A generous salad for a sunny afternoon.",
       "characters": 84,
       "source_copy_sha256": "96a8e618fc6331ecbc5d809443fb1e6c51d9b416bfae617c819023a4afe07c8e",
-      "review": "pending_coordinator",
+      "review": "approved_coordinator",
       "store_status": "not_uploaded"
     }
-  ]
+  ],
+  "review_note": "Reviewed all21 localized labels and descriptions against existing approved artwork copy and actual cooking-scene names; original feed names and story titles remain unchanged."
 }
