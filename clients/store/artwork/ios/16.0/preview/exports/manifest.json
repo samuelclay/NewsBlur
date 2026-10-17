@@ -23,7 +23,8 @@
       "hi",
       "vi",
       "th",
-      "ja"
+      "ja",
+      "ko"
     ],
     "remaining": "Require the matching native-language recording, reviewed cuts and per-export visual review; English interface fallback is not permitted."
   },
@@ -814,6 +815,42 @@
       "copy_sha256": "70d1fb0f1780fea59a1dc5c3d1600e83f9f5a466b1babea0a7422b5889665a54",
       "edit_file": "../edits/ja.json",
       "render_plan": "ja/ipad-cooking-preview-edit/render-plan.json",
+      "poster_seconds": 8,
+      "technical_checks": "passed",
+      "sampled_visual_review": "passed",
+      "real_time_playback": "pending",
+      "submission": "not_submitted"
+    },
+    {
+      "locale": "ko",
+      "device": "ipad",
+      "file": "ko/ipad-cooking-preview.mp4",
+      "sha256": "3f262130459b01ce1446c35d48ba6bdc4cf450c8dc1b3613b3acb73f987650cf",
+      "bytes": 10274571,
+      "duration_seconds": 20,
+      "width": 1200,
+      "height": 1600,
+      "frame_rate": "30/1",
+      "frames": 600,
+      "codec": "h264",
+      "profile": "High",
+      "level": 40,
+      "audio": {
+        "codec": "aac",
+        "channels": 2,
+        "sample_rate": 48000,
+        "content": "silence"
+      },
+      "source": {
+        "file": "../../screenshots/footage/localized/ko/ipad/scroll.mp4",
+        "sha256": "6ec5f981bfdd8de3688b814c82cec59a3f9fc3d5a0192cf9a53e03cf4793b68b",
+        "ui_locale": "ko",
+        "content": "Isolated cooking demo: ten fictional feeds, twenty original English stories, five licensed photographs"
+      },
+      "copy_file": "../copy/ko.json",
+      "copy_sha256": "1be32f809fffc4a0f6625ea3b64e01a8a71a831cf44921320de3043337dc872b",
+      "edit_file": "../edits/ko.json",
+      "render_plan": "ko/ipad-cooking-preview-edit/render-plan.json",
       "poster_seconds": 8,
       "technical_checks": "passed",
       "sampled_visual_review": "passed",

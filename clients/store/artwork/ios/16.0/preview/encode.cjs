@@ -58,7 +58,8 @@ const folder = path.dirname(output);
 const stem = path.basename(output, '.mp4');
 const work = path.join(folder, stem + '-edit');
 fs.mkdirSync(work, {recursive: true});
-const fontNames = {ar: 'Geeza Pro', he: 'Arial Hebrew', hi: 'Kohinoor Devanagari', th: 'Thonburi', ja: 'Hiragino Sans', ko: 'Apple SD Gothic Neo', 'zh-Hans': 'PingFang SC', 'zh-Hant': 'PingFang TC'};
+// encode.cjs uses accessible Heiti font files; CoreText's reserved PingFang files cannot be opened by libass on this host.
+const fontNames = {ar: 'Geeza Pro', he: 'Arial Hebrew', hi: 'Kohinoor Devanagari', th: 'Thonburi', ja: 'Hiragino Sans', ko: 'Apple SD Gothic Neo', 'zh-Hans': 'Heiti SC', 'zh-Hant': 'Heiti TC'};
 const font = fontNames[options.locale] || 'Helvetica Neue';
 // encode.cjs uses libass RTL paragraph ordering and one box across shaped glyph runs.
 const rtl = ['ar', 'he'].includes(options.locale);
