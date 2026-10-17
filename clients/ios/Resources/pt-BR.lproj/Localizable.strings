@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Não é possível responder a este artigo";
 "Change Story List" = "Alterar lista de artigos";
 "Choose Icon" = "Escolher ícone";
+"Choose Language…" = "Escolher idioma…";
 "Choose Story List" = "Escolher lista de artigos";
 "Choose a Topic" = "Escolha um tópico";
 "Choose another category to discover more." = "Escolha outra categoria para descobrir mais.";
@@ -661,6 +662,7 @@
 "Pause" = "Pausar";
 "Permanently delete account" = "Excluir conta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Escolha o idioma que você quer que NewsBlur use. Você pode mudar isso a qualquer momento em Preferências.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Escolha o idioma que você quer usar no NewsBlur. Você pode alterá-lo a qualquer momento no menu do NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Escolha qual modelo escreve seu resumo diário";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de artigos acima ou abaixo dos artigos";
 "Plum Berry" = "Amora";

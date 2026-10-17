@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "इस लेख का जवाब नहीं दिया जा सकता";
 "Change Story List" = "लेख सूची बदलें";
 "Choose Icon" = "आइकन चुनें";
+"Choose Language…" = "भाषा चुनें…";
 "Choose Story List" = "लेख सूची चुनें";
 "Choose a Topic" = "कोई विषय चुनें";
 "Choose another category to discover more." = "और खोजने के लिए कोई दूसरी श्रेणी चुनें।";
@@ -661,6 +662,7 @@
 "Pause" = "रोकें";
 "Permanently delete account" = "खाता हमेशा के लिए हटाएँ";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "वह भाषा चुनें जिसका उपयोग आप NewsBlur से करवाना चाहते हैं। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur में इस्तेमाल करने के लिए अपनी पसंद की भाषा चुनें। आप इसे कभी भी NewsBlur मेनू में बदल सकते हैं।";
 "Pick which model writes your Daily Briefing" = "चुनें कि आपकी दैनिक ब्रीफ़िंग कौन-सा मॉडल लिखे";
 "Place the story list controls above or below the stories" = "लेख सूची के नियंत्रण लेखों के ऊपर या नीचे रखें";
 "Plum Berry" = "प्लम बेरी";

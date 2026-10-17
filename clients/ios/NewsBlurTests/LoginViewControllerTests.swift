@@ -511,7 +511,9 @@ final class Test_FeedDetailEmptyState: XCTestCase {
         messageView.addSubview(messageLabel)
         view.addSubview(messageView)
         searchField = UITextField()
+        #if !targetEnvironment(macCatalyst)
         refreshControl = UIRefreshControl()
+        #endif
         storyTitlesHeaderBar = StoryTitlesHeaderBar()
         storyTitlesHeaderBar.setup(in: view)
         storyTitlesHeaderBar.addSearchField(searchField)

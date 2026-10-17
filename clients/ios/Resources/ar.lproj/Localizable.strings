@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "لا يمكن الرد على هذه القصة";
 "Change Story List" = "تغيير قائمة القصص";
 "Choose Icon" = "اختيار أيقونة";
+"Choose Language…" = "اختيار اللغة…";
 "Choose Story List" = "اختر قائمة القصص";
 "Choose a Topic" = "اختر موضوعًا";
 "Choose another category to discover more." = "اختر فئة أخرى لاكتشاف المزيد.";
@@ -661,6 +662,7 @@
 "Pause" = "إيقاف مؤقت";
 "Permanently delete account" = "حذف الحساب نهائيًا";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
 "Plum Berry" = "توت برقوقي";

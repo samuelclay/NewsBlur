@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Je kunt niet reageren op dit artikel";
 "Change Story List" = "Artikellijst wijzigen";
 "Choose Icon" = "Pictogram kiezen";
+"Choose Language…" = "Taal kiezen…";
 "Choose Story List" = "Artikellijst kiezen";
 "Choose a Topic" = "Kies een onderwerp";
 "Choose another category to discover more." = "Kies een andere categorie om meer te ontdekken.";
@@ -661,6 +662,7 @@
 "Pause" = "Pauzeren";
 "Permanently delete account" = "Account definitief verwijderen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
 "Plum Berry" = "Pruimenbes";

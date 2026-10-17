@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Не можна відповісти на цю статтю";
 "Change Story List" = "Змінити список статей";
 "Choose Icon" = "Вибрати значок";
+"Choose Language…" = "Вибрати мову…";
 "Choose Story List" = "Вибрати список статей";
 "Choose a Topic" = "Виберіть тему";
 "Choose another category to discover more." = "Виберіть іншу категорію, щоб знайти більше.";
@@ -661,6 +662,7 @@
 "Pause" = "Призупинити";
 "Permanently delete account" = "Назавжди видалити обліковий запис";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Виберіть мову, якою має користуватися NewsBlur. Ви можете будь-коли змінити її в налаштуваннях.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Виберіть мову, яку хочете використовувати в NewsBlur. Її можна змінити будь-коли в меню NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Виберіть модель для створення щоденного огляду";
 "Place the story list controls above or below the stories" = "Розмістити елементи керування списком статей над статтями або під ними";
 "Plum Berry" = "Сливово-ягідний";

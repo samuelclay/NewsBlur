@@ -289,16 +289,24 @@ import XCTest
         XCTAssertEqual(fixture.hashes, (20..<28).map { "first-page-\($0)" })
     }
 
-    func test_cancellingEmptyTryFeedRefreshEndsPullToRefresh() async throws {
+    func test_cancellingEmptyTryFeedRefreshStopsLoadingAndEndsPullToRefresh() async throws {
         let fixture = makeFixture()
         await startEmptyTryFeed(fixture)
+        XCTAssertTrue(fixture.controller.isAutomaticallyRefreshingTryFeed)
+        XCTAssertTrue(fixture.controller.pageFetching)
+        // FeedDetailObjCViewController.h exposes pull-to-refresh only outside Mac Catalyst.
+        #if !targetEnvironment(macCatalyst)
         fixture.controller.refreshControl = UIRefreshControl()
         fixture.controller.refreshControl.beginRefreshing()
+        #endif
         fixture.controller.instafetchFeed()
-        XCTAssertEqual(fixture.app.requests.count, 2, "Pulling during the active fetch must not duplicate it")
+        XCTAssertEqual(fixture.app.requests.count, 2, "Refreshing during the active fetch must not duplicate it")
         fixture.controller.resetFeedDetail()
+        #if !targetEnvironment(macCatalyst)
         XCTAssertFalse(fixture.controller.refreshControl.isRefreshing)
+        #endif
         XCTAssertFalse(fixture.controller.isAutomaticallyRefreshingTryFeed)
+        XCTAssertFalse(fixture.controller.pageFetching)
     }
 
     func test_emptySearchWithinTryFeedDoesNotRefreshUnfilteredStories() async throws {

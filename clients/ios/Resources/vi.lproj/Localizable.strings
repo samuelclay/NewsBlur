@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Không thể trả lời bài viết này";
 "Change Story List" = "Thay đổi danh sách bài viết";
 "Choose Icon" = "Chọn biểu tượng";
+"Choose Language…" = "Chọn ngôn ngữ…";
 "Choose Story List" = "Chọn danh sách bài viết";
 "Choose a Topic" = "Chọn chủ đề";
 "Choose another category to discover more." = "Chọn danh mục khác để khám phá thêm.";
@@ -661,6 +662,7 @@
 "Pause" = "Tạm dừng";
 "Permanently delete account" = "Xóa tài khoản vĩnh viễn";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Chọn mô hình viết Bản tin hằng ngày của bạn";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
 "Plum Berry" = "Mận mọng";

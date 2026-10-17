@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Tidak dapat membalas artikel ini";
 "Change Story List" = "Ubah Daftar Artikel";
 "Choose Icon" = "Pilih Ikon";
+"Choose Language…" = "Pilih Bahasa…";
 "Choose Story List" = "Pilih Daftar Artikel";
 "Choose a Topic" = "Pilih Topik";
 "Choose another category to discover more." = "Pilih kategori lain untuk menemukan lebih banyak.";
@@ -661,6 +662,7 @@
 "Pause" = "Jeda";
 "Permanently delete account" = "Hapus akun secara permanen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pilih bahasa yang ingin Anda gunakan di NewsBlur. Anda dapat mengubahnya kapan saja di menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
 "Plum Berry" = "Plum Berry";

@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "ไม่สามารถตอบกลับบทความนี้ได้";
 "Change Story List" = "เปลี่ยนรายการบทความ";
 "Choose Icon" = "เลือกไอคอน";
+"Choose Language…" = "เลือกภาษา…";
 "Choose Story List" = "เลือกรายการบทความ";
 "Choose a Topic" = "เลือกหัวข้อ";
 "Choose another category to discover more." = "เลือกหมวดหมู่อื่นเพื่อค้นพบเพิ่มเติม";
@@ -661,6 +662,7 @@
 "Pause" = "หยุดชั่วคราว";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
 "Plum Berry" = "พลัมเบอร์รี";
