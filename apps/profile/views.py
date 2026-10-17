@@ -208,7 +208,7 @@ def signup(request):
     if request.method == "POST":
         form = SignupForm(data=request.POST, prefix="signup")
         if form.is_valid() and not recaptcha_error:
-            new_user = form.save()
+            new_user = form.save(request=request)
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
             new_user.profile.activate_free()

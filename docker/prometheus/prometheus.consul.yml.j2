@@ -300,6 +300,16 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'languages'
+      scrape_interval: 5m
+      scrape_timeout: 30s
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/languages
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'django'
 {% if disable_consul_services_ie_staging is defined %}
       static_configs:

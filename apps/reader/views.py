@@ -478,7 +478,7 @@ def signup(request):
 
         form = SignupForm(prefix="signup", data=request.POST)
         if form.is_valid():
-            new_user = form.save()
+            new_user = form.save(request=request)
             login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
             logging.user(new_user, "~FG~SB~BBNEW SIGNUP: ~FW%s" % new_user.email)
 

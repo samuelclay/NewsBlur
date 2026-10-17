@@ -19914,6 +19914,715 @@
    ],
    "title": "Users Charged This Period",
    "type": "stat"
+  },
+  {
+   "id": 361,
+   "type": "row",
+   "title": "Languages & Localization Revenue",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 732,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 362,
+   "title": "Explicit non-English choices",
+   "type": "stat",
+   "description": "Accounts that explicitly chose a non-English interface language. Automatic is counted separately below.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 733,
+    "w": 6,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "sum(newsblur_language_preferences{activity=\"all\",language!~\"auto|en\"})",
+     "legendFormat": "{{language}}",
+     "range": false,
+     "instant": true
+    }
+   ]
+  },
+  {
+   "id": 363,
+   "title": "Active non-English readers (30 days)",
+   "type": "stat",
+   "description": "Unique accounts active through the existing reader last-seen tracking in the last 30 days. Explicit preference or last observed automatic language; one bucket per account.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 6,
+    "y": 733,
+    "w": 6,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "sum(newsblur_language_users{activity=\"active_30d\",language!~\"en|unknown\"})",
+     "legendFormat": "{{language}}",
+     "range": false,
+     "instant": true
+    }
+   ]
+  },
+  {
+   "id": 364,
+   "title": "Non-English signup payments since start",
+   "type": "stat",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Signed ledger dollars, including renewals and recorded negative refunds. Not net store payouts. Subscription providers only; excludes gifts, promotional credits and scheduled payments.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 733,
+    "w": 6,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "sum(newsblur_language_payments_dollars{period=\"since_start\",language!~\"en|unknown\"})",
+     "legendFormat": "{{language}}",
+     "range": false,
+     "instant": true
+    }
+   ]
+  },
+  {
+   "id": 365,
+   "title": "New signups with unknown language",
+   "type": "stat",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Includes the gap between the cutoff and deployment and creation paths without request language.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 18,
+    "y": 733,
+    "w": 6,
+    "h": 4
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto"
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_signups{activity=\"all\",language=\"unknown\"}",
+     "legendFormat": "{{language}}",
+     "range": false,
+     "instant": true
+    }
+   ]
+  },
+  {
+   "id": 366,
+   "title": "Explicit language choices (all accounts)",
+   "type": "timeseries",
+   "description": "Accounts that explicitly chose an interface language. Includes explicit English; automatic detection is excluded.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 737,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_preferences{activity=\"all\",language!=\"auto\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 367,
+   "title": "Active explicit language choices (30 days)",
+   "type": "timeseries",
+   "description": "Accounts active in the last 30 days, grouped by explicit preference. Automatic detection is excluded.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 737,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_preferences{activity=\"active_30d\",language!=\"auto\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 368,
+   "title": "Active readers by resolved language",
+   "type": "timeseries",
+   "description": "Current explicit language or the last automatic language observed on a reader activity request. Unknown remains until an automatic account visits after tracking ships. Multiple devices count once.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 745,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_users{activity=\"active_30d\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 369,
+   "title": "New signups by language",
+   "type": "timeseries",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 745,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_signups{activity=\"all\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 370,
+   "title": "New-signup payments by non-English language (30 days)",
+   "type": "timeseries",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Payments dated in the trailing 30 days, including renewals and signed refunds. Whole-dollar ledger values; mobile values are recorded plan amounts, not net payouts. Subscription providers only; excludes gifts, promotional credits and scheduled payments.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 753,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_payments_dollars{period=\"last_30d\",language!~\"en|unknown\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 371,
+   "title": "New-signup payments by non-English language (since start)",
+   "type": "timeseries",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Signed ledger dollars, not annualized revenue. Refunds can reduce the total; use this gauge directly, never rate() or increase(). Subscription providers only; excludes gifts, promotional credits and scheduled payments.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 753,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_payments_dollars{period=\"since_start\",language!~\"en|unknown\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 372,
+   "title": "Active new signups by language (30 days)",
+   "type": "timeseries",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Accounts in the cohort whose last reader activity was in the past 30 days.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 761,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_signups{activity=\"active_30d\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
+  },
+  {
+   "id": 373,
+   "title": "Recorded refunds by signup language (30 days)",
+   "type": "timeseries",
+   "description": "Cohort starts October 16, 2026 at 23:25:40 UTC. Signup language is fixed at account creation, including automatic detection. Older accounts are excluded. Unknown means signup language was not recorded. This measures cohort revenue, not causality. Negative ledger entries shown as positive refund dollars. Refunded flags without a negative entry cannot establish refund amounts.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 761,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "drawStyle": "line",
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "mode": "none",
+       "group": "A"
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "bottom",
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "refId": "A",
+     "expr": "newsblur_language_refunds_dollars{period=\"last_30d\"}",
+     "legendFormat": "{{language}}",
+     "range": true,
+     "instant": false
+    }
+   ]
   }
  ],
  "refresh": "5s",
