@@ -176,7 +176,7 @@ class SignupForm(forms.Form):
 
         return self.cleaned_data
 
-    def save(self, profile_callback=None):
+    def save(self, profile_callback=None, request=None):
         username = self.cleaned_data["username"]
         password = self.cleaned_data["password"]
         email = self.cleaned_data["email"]
@@ -205,6 +205,10 @@ class SignupForm(forms.Form):
             new_user.save()
             signup_language = match_language(translation.get_language() or "en") or "en"
             Profile.objects.filter(user=new_user).update(last_seen_language=signup_language)
+            if request is not None:
+                from apps.profile.language import record_signup_language
+
+                record_signup_language(new_user, request)
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
 

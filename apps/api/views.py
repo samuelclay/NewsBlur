@@ -70,7 +70,7 @@ def signup(request):
             errors = form.errors
         if form.is_valid():
             try:
-                new_user = form.save()
+                new_user = form.save(request=request)
                 login_user(request, new_user, backend="django.contrib.auth.backends.ModelBackend")
                 logging.user(request, "~FG~SB~BBAPI NEW SIGNUP: ~FW%s / %s" % (new_user.email, ip))
                 code = 1
