@@ -1,5 +1,5 @@
 {
-  "reviewed_at": "2026-10-17T16:51:20Z",
+  "reviewed_at": "2026-10-17T16:54:39Z",
   "reviewer": "play_asset_inventory",
   "status": "passed",
   "assets": [
@@ -74,6 +74,78 @@
       "sha256": "cfcdfa2c004e0d97de855c824bec8776067b254f6e97dd4573bb748d0e4052b2",
       "review": "visually inspected",
       "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-01.png",
+      "sha256": "c37f09533f55ef9ce25b6c259861ecf3d18f02492fd0d1018ec1ec3a62177d7f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-02.png",
+      "sha256": "1b43e15ab8a8f1032e8e7bee0ad69459c5957b0f7815bd0c838c29f7e2ca9818",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-03.png",
+      "sha256": "50dd1ecf8e23d37794b920b711938e552c144ddda39b3bb2b65c5ba86be25633",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/es/sevenInchScreenshots/panel-04.png",
+      "sha256": "947a14de686e68eb7d87ba03a1d87020315bb561203cdc4216dd4cdbfd86e6e7",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:52:30Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-01.png",
+      "sha256": "ce7f762dc6be0d46f80cdcdcddb9c20f980da0160274c068b3c1389a4d8402df",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-02.png",
+      "sha256": "dc63de3a6f7a4ede36b85cf8c9da69a906a97e1b357a937d9c093967810d0fba",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-03.png",
+      "sha256": "737481850f3a0c4b55d2d6691f69dec8c218b61742274c8c6cf0b26f1fc2c50f",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/de/sevenInchScreenshots/panel-04.png",
+      "sha256": "7f43414e90b6b66b3f07c28739666da63bad4b830d5ceff40dcb0fde606fa302",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-01.png",
+      "sha256": "7f1c7a96097bc92090436f253ea06d5fefd10c475a55dc16f2f8907e661d307d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-02.png",
+      "sha256": "003f80b20dec7ec158124867a2c8babf48b46ca5694ed85306aca098c59d9729",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-03.png",
+      "sha256": "304ec33c3fa540ef9629b4c0ffc30e8138ab925f5ce109dbc4506bb5835a18e5",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
+    },
+    {
+      "path": "exports/pt-BR/sevenInchScreenshots/panel-04.png",
+      "sha256": "7ca70c8ef2606b41b33d15213df6c4c0fa5a38baaffa6a303db7b0cd2acb2b47",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:54:39Z"
     }
   ],
   "findings": [
