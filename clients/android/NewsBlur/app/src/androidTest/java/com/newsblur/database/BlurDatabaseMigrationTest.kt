@@ -63,6 +63,32 @@ class BlurDatabaseMigrationTest {
     fun opening_version_nine_preserves_cached_state_and_backfills_cluster_metadata() = verifyClusterMetadataMigration(9)
 
     @Test
+    fun opening_version_ten_repairs_missing_icons_and_preserves_offline_actions() {
+        context.deleteDatabase(dbName)
+        BlurDatabase(context, dbName).use { helper ->
+            val database = helper.writableDatabase
+            database.execSQL("DROP TABLE ${DatabaseConstants.CUSTOM_ICON_TABLE}")
+            database.insertOrThrow(DatabaseConstants.ACTION_TABLE, null, ContentValues().apply {
+                put(DatabaseConstants.ACTION_TIME, 3000L)
+                put(DatabaseConstants.ACTION_PARAMS, "preserved pending action")
+            })
+            database.version = 10
+        }
+
+        BlurDatabase(context, dbName).use { helper ->
+            val database = helper.writableDatabase
+            assertEquals(BlurDatabase.VERSION, database.version)
+            database.query(DatabaseConstants.CUSTOM_ICON_TABLE, null, null, null, null, null, null).use {
+                assertFalse(it.moveToFirst())
+            }
+            database.rawQuery("SELECT ${DatabaseConstants.ACTION_PARAMS} FROM ${DatabaseConstants.ACTION_TABLE}", null).use {
+                assertTrue(it.moveToFirst())
+                assertEquals("preserved pending action", it.getString(0))
+            }
+        }
+    }
+
+    @Test
     fun known_read_members_do_not_decode_parent_payloads_on_repeated_unread_refreshes() {
         context.deleteDatabase(dbName)
         BlurDatabase(context, dbName).use { helper ->

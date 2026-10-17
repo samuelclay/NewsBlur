@@ -7,45 +7,46 @@ import com.newsblur.database.DatabaseConstants
 import java.io.Serializable
 
 class Classifier : Serializable {
+    // Classifier.kt keeps trainer order while avoiding Gson serialization hooks stripped by R8.
     @JvmField
     @SerializedName("authors")
-    val authors: MutableMap<String, Int> = mutableMapOf()
+    val authors: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("author_regex")
-    val authorRegex: MutableMap<String, Int> = mutableMapOf()
+    val authorRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("titles")
-    val title: MutableMap<String, Int> = mutableMapOf()
+    val title: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("tags")
-    val tags: MutableMap<String, Int> = mutableMapOf()
+    val tags: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("feeds")
-    val feeds: MutableMap<String, Int> = mutableMapOf()
+    val feeds: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("texts")
-    val texts: MutableMap<String, Int> = mutableMapOf()
+    val texts: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("text_regex")
-    val textRegex: MutableMap<String, Int> = mutableMapOf()
+    val textRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("urls")
-    val urls: MutableMap<String, Int> = mutableMapOf()
+    val urls: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("url_regex")
-    val urlRegex: MutableMap<String, Int> = mutableMapOf()
+    val urlRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     @JvmField
     @SerializedName("title_regex")
-    val titleRegex: MutableMap<String, Int> = mutableMapOf()
+    val titleRegex: LinkedHashMap<String, Int> = linkedMapOf()
 
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
