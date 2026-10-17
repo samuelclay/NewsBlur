@@ -122,7 +122,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation("org.xerial:sqlite-jdbc:3.46.1.0")
+    testImplementation(libs.sqlite.jdbc)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
