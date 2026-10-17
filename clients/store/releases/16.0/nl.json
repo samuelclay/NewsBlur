@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "De interface van NewsBlur ondersteunt nu 21 talen. Kies je taal in de app, met een voorbeeld in je taal en in het Engels. Arabisch en Hebreeuws lezen van rechts naar links. Artikelen blijven zoals gepubliceerd.\n\nDe knoppen voor het volgende artikel blijven op hun plek, ook wanneer Volgende verandert in Klaar. Aanmeldknoppen zijn beter leesbaar in donkere thema’s."
+  },
+  "macos": {
+    "whats_new": "NewsBlur voor Mac spreekt nu 21 talen. Menu’s, knoppen, instellingen en de eerste configuratie volgen de taal van je Mac. Je kunt ook een taal kiezen via het NewsBlur-menu. Je artikelen blijven precies zoals ze zijn gepubliceerd.\n\nOpen Taal kiezen in het submenu Taal voor een voorbeeld van de titel, uitleg en knop in de gekozen taal, met Engels eronder. Kies Automatisch om weer de taalinstellingen van je Mac te volgen. Arabisch en Hebreeuws gebruiken een interface van rechts naar links.\n\nSneltoetsen werken nu wanneer de artikellijst de focus heeft. N opent het eerste ongelezen artikel.\n\nKlinkt een vertaling vreemd? Laat op het NewsBlur-forum weten om welke taal het gaat en waar je de tekst zag."
   }
 }

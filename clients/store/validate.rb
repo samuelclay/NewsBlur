@@ -8,15 +8,17 @@ require 'pathname'
 # validate.rb validates the canonical store text before export.rb builds upload data.
 module StoreMetadata
   ROOT = Pathname.new(__dir__).join('../..').expand_path
+  APPLE_LIMITS = {
+    'name' => 30,
+    'subtitle' => 30,
+    'promotional_text' => 170,
+    'description' => 4000,
+    'keywords' => 100,
+    'whats_new' => 4000
+  }.freeze
   LIMITS = {
-    'ios' => {
-      'name' => 30,
-      'subtitle' => 30,
-      'promotional_text' => 170,
-      'description' => 4000,
-      'keywords' => 100,
-      'whats_new' => 4000
-    },
+    'ios' => APPLE_LIMITS,
+    'macos' => APPLE_LIMITS,
     'android' => {
       'title' => 30,
       'short_description' => 80,
@@ -24,7 +26,7 @@ module StoreMetadata
       'release_notes' => 500
     }
   }.freeze
-  RELEASE_FIELDS = { 'ios' => ['whats_new'], 'android' => ['release_notes'] }.freeze
+  RELEASE_FIELDS = { 'ios' => ['whats_new'], 'macos' => ['whats_new'], 'android' => ['release_notes'] }.freeze
   URLS = ['https://www.newsblur.com/tos', 'https://www.newsblur.com/privacy'].freeze
   MULTILINE_FIELDS = %w[description full_description whats_new release_notes].freeze
 
@@ -34,9 +36,9 @@ module StoreMetadata
     attr_reader :languages, :locales, :metadata, :releases, :products, :counts, :version, :platforms
 
     def initialize(version:, store_dir: ROOT.join('clients/store'), languages_file: ROOT.join('localization/languages.json'), platform: 'both')
-      raise ValidationError, "Unknown platform: #{platform}" unless %w[both android ios].include?(platform)
+      raise ValidationError, "Unknown platform: #{platform}" unless %w[both android ios macos].include?(platform)
 
-      @platforms = platform == 'both' ? LIMITS.keys : [platform]
+      @platforms = platform == 'both' ? %w[ios android] : [platform]
       @version = version
       @store_dir = Pathname.new(store_dir)
       @languages_file = Pathname.new(languages_file)
@@ -100,7 +102,7 @@ module StoreMetadata
       mapped_languages = entries.map { |entry| entry['language'] }
       @errors << 'locales.json: app language coverage differs from localization/languages.json' unless mapped_languages.sort_by(&:to_s) == languages.keys.sort
       @errors << 'locales.json: language_count differs from the app language count' unless map['language_count'] == languages.length
-      stores = platforms.map { |platform| platform == 'ios' ? 'apple' : 'google' }
+      stores = platforms.map { |platform| platform == 'android' ? 'google' : 'apple' }.uniq
       entries.each do |entry|
         (%w[language name] + stores).each do |key|
           value = entry[key]
@@ -117,10 +119,10 @@ module StoreMetadata
       end
     end
 
-    def platform_keys(document, label)
+    def platform_keys(document, label, required: platforms, allowed: LIMITS.keys)
       # validate.rb accepts shared files while requiring only the requested platform.
-      optional = document.is_a?(Hash) ? document.keys & (LIMITS.keys - platforms) : []
-      exact_keys(document, platforms + optional, label)
+      optional = document.is_a?(Hash) ? document.keys & (allowed - required) : []
+      exact_keys(document, required + optional, label)
     end
 
     def validate_directory(directory, target, release:)
@@ -144,6 +146,20 @@ module StoreMetadata
           expected.each do |field|
             validate_text(document[platform][field], fields.fetch(field), field, "#{label}.#{field}")
           end
+        end
+        validate_shared_app_info(document, path) if !release && platforms.include?('macos')
+      end
+    end
+
+    def validate_shared_app_info(document, path)
+      return unless document.key?('ios')
+
+      # export.rb writes appInfoLocalizations shared by iOS and macOS.
+      %w[name subtitle].each do |field|
+        ios = document['ios']
+        macos = document['macos']
+        unless ios.is_a?(Hash) && macos.is_a?(Hash) && ios[field] == macos[field]
+          @errors << "#{path}: macos.#{field} must match ios.#{field} because Apple app information is shared"
         end
       end
     end
@@ -187,9 +203,11 @@ module StoreMetadata
       end
       products.each do |language, document|
         label = "#{directory.join("#{language}.json")}"
-        next unless platform_keys(document, label)
+        # products/*.json keeps one shared Apple inventory under ios.
+        product_platforms = platforms.map { |platform| platform == 'macos' ? 'ios' : platform }.uniq
+        next unless platform_keys(document, label, required: product_platforms, allowed: %w[ios android])
 
-        platforms.each do |platform|
+        product_platforms.each do |platform|
           kinds = platform == 'ios' ? %w[subscriptions subscription_groups] : ['subscriptions']
           next unless exact_keys(document[platform], kinds, "#{label}: #{platform}")
 
@@ -251,7 +269,7 @@ module StoreMetadata
       opts.banner = "Usage: ruby clients/store/#{export ? 'export' : 'validate'}.rb VERSION#{export ? ' --output DIRECTORY' : ''} [options]"
       opts.on('--store-dir DIRECTORY', 'Canonical metadata directory (also supports isolated validation fixtures)') { |value| options[:store_dir] = value }
       opts.on('--languages FILE', 'App-supported languages JSON') { |value| options[:languages_file] = value }
-      opts.on('--platform PLATFORM', %w[both android ios], 'Platform to validate/export: both (default), android, or ios') { |value| options[:platform] = value }
+      opts.on('--platform PLATFORM', %w[both android ios macos], 'Platform: both (iOS + Android, default), android, ios, or macos') { |value| options[:platform] = value }
       if export
         opts.on('--output DIRECTORY', 'New directory for validated upload payloads') { |value| options[:output] = value }
         opts.on('--app-info-id ID', 'Add App Store appInfo relationships for create requests') { |value| options[:app_info_id] = value }

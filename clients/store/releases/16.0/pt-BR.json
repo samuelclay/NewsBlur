@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "A interface do NewsBlur agora tem 21 idiomas. Escolha o seu no app, com uma prévia no seu idioma e em inglês. Árabe e hebraico são lidos da direita para a esquerda. Os artigos permanecem como publicados.\n\nOs controles do próximo artigo ficam na mesma posição, mesmo quando Próximo muda para Concluído. Os botões de login estão mais legíveis nos temas escuros."
+  },
+  "macos": {
+    "whats_new": "O NewsBlur para Mac agora fala 21 idiomas. Menus, botões, configurações e a configuração inicial seguem o idioma do seu Mac. Você também pode escolher um idioma no menu do NewsBlur. Seus artigos permanecem exatamente como foram publicados.\n\nAbra Escolher idioma no submenu Idioma para ver uma prévia do título, da mensagem e do botão no idioma escolhido, com inglês logo abaixo. Escolha Automático para voltar a seguir as configurações de idioma do seu Mac. Árabe e hebraico usam uma interface da direita para a esquerda.\n\nOs atalhos de teclado agora funcionam quando a lista de artigos está em foco, e N abre o primeiro artigo não lido.\n\nSe alguma tradução soar estranha, conte no fórum do NewsBlur qual é o idioma e onde você a viu."
   }
 }

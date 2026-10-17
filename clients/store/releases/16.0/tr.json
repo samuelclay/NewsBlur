@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "NewsBlur arayüzü artık 21 dili destekliyor. Dilinizi uygulama içinden seçin; önizlemeyi seçtiğiniz dilde ve İngilizce görün. Arapça ve İbranice sağdan sola okunur. Haberler yayımlandıkları haliyle kalır.\n\nSonraki haber kontrolleri, İleri düğmesi Tamam’a dönüştüğünde de aynı konumda kalır. Koyu temalarda giriş düğmeleri daha kolay okunur."
+  },
+  "macos": {
+    "whats_new": "Mac için NewsBlur artık 21 dil konuşuyor. Menüler, düğmeler, ayarlar ve kurulum Mac’inizin dilini izler. İsterseniz NewsBlur menüsünden başka bir dil seçebilirsiniz. Haberleriniz yayımlandıkları haliyle kalır.\n\nBaşlığı, açıklamayı ve düğmeyi seçtiğiniz dilde, altında İngilizcesiyle önizlemek için Dil alt menüsünden “Dil seç” seçeneğini açın. Mac’inizin dil ayarlarını yeniden izlemek için “Otomatik” seçeneğini seçin. Arapça ve İbranice arayüz sağdan sola düzenlenir.\n\nKlavye kısayolları artık haber listesi odaktayken de çalışır. N tuşu ilk okunmamış haberi açar.\n\nBir çeviri kulağınıza tuhaf gelirse NewsBlur forumunda hangi dilde ve nerede gördüğünüzü bize bildirin."
   }
 }
