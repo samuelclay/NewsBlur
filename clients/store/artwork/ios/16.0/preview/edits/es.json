@@ -18,8 +18,26 @@
         4
       ],
       "notes": "Native Spanish iPad UI. Includes actual article scrolling and brief navigation into Saved Stories. Ends on the settled collection before the later article-selection animation."
+    },
+    "iphone": {
+      "source_ui_locale": "es",
+      "source_sha256": "28c9eaf2341421f40340be856b5502407815fa5d98c2b77b6fcaeb973b01e1ec",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        14,
+        28,
+        40
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Fresh native Spanish iPhone capture after simulator restart. Includes actual article scroll and settled four-item Saved collection; all content and thumbnails loaded."
     }
   },
   "status": "encoded_playback_review_passed",
-  "remaining": "Store placement and submission are tracked separately by the release coordinator; each encoded device passed normal-speed playback. Unencoded devices remain pending."
+  "remaining": "iPad playback passed; iPhone source edit awaits encode, final frame review and normal-speed playback. Store status tracked separately."
 }
