@@ -1,0 +1,86 @@
+{
+  "reviewed_at": "2026-10-17T16:51:20Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-01.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-02.png",
+      "sha256": "6a2387f4d89e750b84f088378d0a327a1ae6be15ac19bca745ec92072ca475fb",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-03.png",
+      "sha256": "e7f48107b953a1493caa6a67532a28290ccc154d3fe1e634e262f0b9bef56ea9",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/fr/sevenInchScreenshots/panel-04.png",
+      "sha256": "e20af52bcbf881f1b4d321c81de25d27acca18498a1c56de40b0f6cf208b2171",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:48:41Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-01.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-02.png",
+      "sha256": "4f3ed242236bd83201287f3c2d303284180facfe96e236b4100ba1f5f1723982",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-03.png",
+      "sha256": "669c17bc7f04800ae7d474394117a84f82670ff491a77bee181cea4bc36b3904",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/ar/sevenInchScreenshots/panel-04.png",
+      "sha256": "30fa5f98353c04fd8d5a2c893f238bc3e37f1864b08b99fc6dc8494f6a88be1d",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-01.png",
+      "sha256": "395b0f36270763e9f7ccc46a092013c8609b3e3eaa89d9ba9f1e5022f9f9a0ab",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-02.png",
+      "sha256": "be01ad32a035e08be4781c0538709407f2ab694ad2c8b8151b7df41657c5e7e3",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-03.png",
+      "sha256": "660eda9635cb830c2daa65df2fd618b3f543f98dfeef46c6cb826ae3d366daff",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    },
+    {
+      "path": "exports/he/sevenInchScreenshots/panel-04.png",
+      "sha256": "cfcdfa2c004e0d97de855c824bec8776067b254f6e97dd4573bb748d0e4052b2",
+      "review": "visually inspected",
+      "reviewed_at": "2026-10-17T16:51:20Z"
+    }
+  ],
+  "findings": [
+    "Populated native portrait tablet scenes show localized controls, cooking feeds and articles, without notification banners or missing glyphs.",
+    "Narrow story-pane headings and content use native ellipses; original geometry is preserved without artwork cropping.",
+    "English feed names and article content remain original content.",
+    "Arabic and Hebrew preserve native RTL controls and right-edge feed drawers; English original article paragraphs retain their natural direction."
+  ],
+  "scope": "Only individually listed and exact-hash matched seven-inch stills; full inventory audit and store upload are separate."
+}
