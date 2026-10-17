@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 10;
+	static final int VERSION = 11;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -101,6 +101,11 @@ public class BlurDatabase extends SQLiteOpenHelper {
                 ClusterReadStore.addMemberMetadata(db);
             }
             ClusterReadStore.backfill(db);
+        }
+        if (previousVersion >= 6 && previousVersion < 11) {
+            // BlurDatabaseHelper.java reads custom_icons during startup. Repair missing tables
+            // without discarding cached stories, existing icons, or queued offline actions.
+            db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
             return;
         }
         dropAndRecreateTables(db);

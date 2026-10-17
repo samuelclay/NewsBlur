@@ -28,6 +28,7 @@ navigation = "2.9.5"
 okhttp = "5.1.0"
 pagingRuntimeKtx = "3.3.6"
 splashScreen = "1.0.1"
+sqliteJdbc = "3.46.1.0"
 swiperefreshlayout = "1.1.0"
 uiTooling = "1.9.3"
 uiToolingPreviewAndroid = "1.9.2"
@@ -81,6 +82,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqliteJdbc" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
