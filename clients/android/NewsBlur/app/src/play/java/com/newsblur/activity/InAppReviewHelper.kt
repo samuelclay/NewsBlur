@@ -8,8 +8,8 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.newsblur.preference.PrefsRepo
 
 /**
- * Encapsulates Google Play in-app review logic. F-Droid replaces this file
- * with a no-op stub so no Play Services code is needed.
+ * Encapsulates Google Play in-app review logic. app/build.gradle.kts selects
+ * the separate F-Droid implementation when Play Services are unavailable.
  */
 class InAppReviewHelper(
     private val activity: Activity,

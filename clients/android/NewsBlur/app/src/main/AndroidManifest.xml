@@ -884,6 +884,7 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name=".service.SubscriptionSyncService"
+            android:enabled="${playBillingEnabled}"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
