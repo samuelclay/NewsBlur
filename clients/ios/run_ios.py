@@ -11,6 +11,7 @@ Options:
 
 Actions:
     list                  - List available simulators with UDIDs
+    create:<name>,<type>,<runtime> - Create an explicitly authorized isolated simulator
     boot                  - Boot the specified simulator if it is not already booted
     shutdown              - Shut down the specified simulator, preserving its data
     reconnect             - Reconnect this simulator's idb companion using the current environment
@@ -528,9 +529,13 @@ def main():
         print(__doc__)
         sys.exit(1)
 
-    # "list" doesn't require a UDID
+    # run_ios.py allows inventory and explicitly requested device creation without a UDID.
     if actions == ["list"]:
         do_list()
+        return
+    if len(actions) == 1 and actions[0].startswith("create:"):
+        name, device_type, runtime = actions[0].split(":", 1)[1].split(",", 2)
+        subprocess.run(["xcrun", "simctl", "create", name, device_type, runtime], check=True)
         return
 
     # All other actions require a UDID
