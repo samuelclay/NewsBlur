@@ -355,7 +355,7 @@ public class DatabaseConstants {
         SYNC_METADATA_VALUE + TEXT +
         ")";
 
-    static final String CUSTOM_ICON_SQL = "CREATE TABLE " + CUSTOM_ICON_TABLE + " (" +
+    static final String CUSTOM_ICON_SQL = "CREATE TABLE IF NOT EXISTS " + CUSTOM_ICON_TABLE + " (" +
         CUSTOM_ICON_ID + TEXT + ", " +
         CUSTOM_ICON_IS_FEED + INTEGER + ", " +
         CUSTOM_ICON_TYPE + TEXT + ", " +
