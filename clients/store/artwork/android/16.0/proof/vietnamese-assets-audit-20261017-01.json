@@ -1,0 +1,551 @@
+{
+  "checked_at": "2026-10-17T15:52:58Z",
+  "packageName": "com.newsblur",
+  "manifest_sha256": "a2277f852da1b9b72f22a60837b5d2b95d6452de89616d1df5daebd8167917f4",
+  "asset_count": 6,
+  "expected_asset_count": 294,
+  "locale_count": 1,
+  "group_count": 3,
+  "expected_group_count": 105,
+  "missing_groups": [
+    [
+      "en",
+      "icon"
+    ],
+    [
+      "en",
+      "featureGraphic"
+    ],
+    [
+      "en",
+      "phoneScreenshots"
+    ],
+    [
+      "en",
+      "sevenInchScreenshots"
+    ],
+    [
+      "en",
+      "tenInchScreenshots"
+    ],
+    [
+      "es",
+      "icon"
+    ],
+    [
+      "es",
+      "featureGraphic"
+    ],
+    [
+      "es",
+      "phoneScreenshots"
+    ],
+    [
+      "es",
+      "sevenInchScreenshots"
+    ],
+    [
+      "es",
+      "tenInchScreenshots"
+    ],
+    [
+      "fr",
+      "icon"
+    ],
+    [
+      "fr",
+      "featureGraphic"
+    ],
+    [
+      "fr",
+      "phoneScreenshots"
+    ],
+    [
+      "fr",
+      "sevenInchScreenshots"
+    ],
+    [
+      "fr",
+      "tenInchScreenshots"
+    ],
+    [
+      "de",
+      "icon"
+    ],
+    [
+      "de",
+      "featureGraphic"
+    ],
+    [
+      "de",
+      "phoneScreenshots"
+    ],
+    [
+      "de",
+      "sevenInchScreenshots"
+    ],
+    [
+      "de",
+      "tenInchScreenshots"
+    ],
+    [
+      "pt-BR",
+      "icon"
+    ],
+    [
+      "pt-BR",
+      "featureGraphic"
+    ],
+    [
+      "pt-BR",
+      "phoneScreenshots"
+    ],
+    [
+      "pt-BR",
+      "sevenInchScreenshots"
+    ],
+    [
+      "pt-BR",
+      "tenInchScreenshots"
+    ],
+    [
+      "it",
+      "icon"
+    ],
+    [
+      "it",
+      "featureGraphic"
+    ],
+    [
+      "it",
+      "phoneScreenshots"
+    ],
+    [
+      "it",
+      "sevenInchScreenshots"
+    ],
+    [
+      "it",
+      "tenInchScreenshots"
+    ],
+    [
+      "nl",
+      "icon"
+    ],
+    [
+      "nl",
+      "featureGraphic"
+    ],
+    [
+      "nl",
+      "phoneScreenshots"
+    ],
+    [
+      "nl",
+      "sevenInchScreenshots"
+    ],
+    [
+      "nl",
+      "tenInchScreenshots"
+    ],
+    [
+      "pl",
+      "icon"
+    ],
+    [
+      "pl",
+      "featureGraphic"
+    ],
+    [
+      "pl",
+      "phoneScreenshots"
+    ],
+    [
+      "pl",
+      "sevenInchScreenshots"
+    ],
+    [
+      "pl",
+      "tenInchScreenshots"
+    ],
+    [
+      "tr",
+      "icon"
+    ],
+    [
+      "tr",
+      "featureGraphic"
+    ],
+    [
+      "tr",
+      "phoneScreenshots"
+    ],
+    [
+      "tr",
+      "sevenInchScreenshots"
+    ],
+    [
+      "tr",
+      "tenInchScreenshots"
+    ],
+    [
+      "ru",
+      "icon"
+    ],
+    [
+      "ru",
+      "featureGraphic"
+    ],
+    [
+      "ru",
+      "phoneScreenshots"
+    ],
+    [
+      "ru",
+      "sevenInchScreenshots"
+    ],
+    [
+      "ru",
+      "tenInchScreenshots"
+    ],
+    [
+      "uk",
+      "icon"
+    ],
+    [
+      "uk",
+      "featureGraphic"
+    ],
+    [
+      "uk",
+      "phoneScreenshots"
+    ],
+    [
+      "uk",
+      "sevenInchScreenshots"
+    ],
+    [
+      "uk",
+      "tenInchScreenshots"
+    ],
+    [
+      "ar",
+      "icon"
+    ],
+    [
+      "ar",
+      "featureGraphic"
+    ],
+    [
+      "ar",
+      "phoneScreenshots"
+    ],
+    [
+      "ar",
+      "sevenInchScreenshots"
+    ],
+    [
+      "ar",
+      "tenInchScreenshots"
+    ],
+    [
+      "he",
+      "icon"
+    ],
+    [
+      "he",
+      "featureGraphic"
+    ],
+    [
+      "he",
+      "phoneScreenshots"
+    ],
+    [
+      "he",
+      "sevenInchScreenshots"
+    ],
+    [
+      "he",
+      "tenInchScreenshots"
+    ],
+    [
+      "hi",
+      "icon"
+    ],
+    [
+      "hi",
+      "featureGraphic"
+    ],
+    [
+      "hi",
+      "phoneScreenshots"
+    ],
+    [
+      "hi",
+      "sevenInchScreenshots"
+    ],
+    [
+      "hi",
+      "tenInchScreenshots"
+    ],
+    [
+      "id",
+      "icon"
+    ],
+    [
+      "id",
+      "featureGraphic"
+    ],
+    [
+      "id",
+      "phoneScreenshots"
+    ],
+    [
+      "id",
+      "sevenInchScreenshots"
+    ],
+    [
+      "id",
+      "tenInchScreenshots"
+    ],
+    [
+      "vi",
+      "sevenInchScreenshots"
+    ],
+    [
+      "vi",
+      "tenInchScreenshots"
+    ],
+    [
+      "th",
+      "icon"
+    ],
+    [
+      "th",
+      "featureGraphic"
+    ],
+    [
+      "th",
+      "phoneScreenshots"
+    ],
+    [
+      "th",
+      "sevenInchScreenshots"
+    ],
+    [
+      "th",
+      "tenInchScreenshots"
+    ],
+    [
+      "ja",
+      "icon"
+    ],
+    [
+      "ja",
+      "featureGraphic"
+    ],
+    [
+      "ja",
+      "phoneScreenshots"
+    ],
+    [
+      "ja",
+      "sevenInchScreenshots"
+    ],
+    [
+      "ja",
+      "tenInchScreenshots"
+    ],
+    [
+      "ko",
+      "icon"
+    ],
+    [
+      "ko",
+      "featureGraphic"
+    ],
+    [
+      "ko",
+      "phoneScreenshots"
+    ],
+    [
+      "ko",
+      "sevenInchScreenshots"
+    ],
+    [
+      "ko",
+      "tenInchScreenshots"
+    ],
+    [
+      "zh-Hans",
+      "icon"
+    ],
+    [
+      "zh-Hans",
+      "featureGraphic"
+    ],
+    [
+      "zh-Hans",
+      "phoneScreenshots"
+    ],
+    [
+      "zh-Hans",
+      "sevenInchScreenshots"
+    ],
+    [
+      "zh-Hans",
+      "tenInchScreenshots"
+    ],
+    [
+      "zh-Hant",
+      "icon"
+    ],
+    [
+      "zh-Hant",
+      "featureGraphic"
+    ],
+    [
+      "zh-Hant",
+      "phoneScreenshots"
+    ],
+    [
+      "zh-Hant",
+      "sevenInchScreenshots"
+    ],
+    [
+      "zh-Hant",
+      "tenInchScreenshots"
+    ]
+  ],
+  "complete": false,
+  "all_visually_reviewed": true,
+  "assets": [
+    {
+      "path": "vi/featureGraphic/panel-01.png",
+      "sha256": "62fa6bedb826009f422ae5476e9dbb81d0b0365a837ea4e1c8cac98a6aa54b9b",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [
+        {
+          "mean_absolute_rgb_error": 3.8165,
+          "largest_tile_error": 6.7682,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-stories.png",
+          "native_locale_label": "all_stories_title",
+          "hierarchy_sha256": "fa07770cbf91fd8257316c0d6c0c2104a16c29cc1e1876c2d9a8dd0114d8c0ac"
+        },
+        {
+          "mean_absolute_rgb_error": 3.6061,
+          "largest_tile_error": 7.944,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-reader.png",
+          "native_locale_label": "manual_reader_review",
+          "hierarchy_sha256": "33d096aca9a6d4e49096b64c7b8ab3880c98864716ddca80a331fc39e9d8e12e"
+        }
+      ],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": null
+    },
+    {
+      "path": "vi/icon/panel-01.png",
+      "sha256": "ac093006742a3771bdeda278dbe37f7832b4e9e2b9e81abc8dd1aa666a2f4305",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": null
+    },
+    {
+      "path": "vi/phoneScreenshots/panel-01.png",
+      "sha256": "3b7de8315abef99a9e8ecfdbc02f271cd7c505895ef7038f1f4c4ac7a6b6faf5",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [
+        {
+          "mean_absolute_rgb_error": 0.5578,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-stories.png",
+          "native_locale_label": "all_stories_title",
+          "hierarchy_sha256": "fa07770cbf91fd8257316c0d6c0c2104a16c29cc1e1876c2d9a8dd0114d8c0ac"
+        }
+      ],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": true
+    },
+    {
+      "path": "vi/phoneScreenshots/panel-02.png",
+      "sha256": "96f3d1da491b371a7e23ce9e1ff745a9a60ce4d7ebe1f4b74aebf1ba9d47bbc5",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [
+        {
+          "mean_absolute_rgb_error": 0.2662,
+          "largest_tile_error": 0.6862,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-feeds.png",
+          "native_locale_label": "all_stories_title",
+          "hierarchy_sha256": "ae68341f5886814c962744a0ea35a429f00735f4f215a70fa3a69d8d87472528"
+        }
+      ],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": true
+    },
+    {
+      "path": "vi/phoneScreenshots/panel-03.png",
+      "sha256": "0ad6104f9bfd222d0384a6a0b6a689fee1ee872a3c2e239622db649552190a00",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [
+        {
+          "mean_absolute_rgb_error": 0.4067,
+          "largest_tile_error": 0.8568,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-reader.png",
+          "native_locale_label": "manual_reader_review",
+          "hierarchy_sha256": "33d096aca9a6d4e49096b64c7b8ab3880c98864716ddca80a331fc39e9d8e12e"
+        }
+      ],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": true
+    },
+    {
+      "path": "vi/phoneScreenshots/panel-04.png",
+      "sha256": "1f513c0e1ce4bf58f6710411a8fa58c87fc0f6e4446c811ae72db32fddd3f6d9",
+      "source_hashes": "passed",
+      "captions": "passed",
+      "native_pixels": [
+        {
+          "mean_absolute_rgb_error": 0.563,
+          "largest_tile_error": 0.8607,
+          "mean_limit": 12,
+          "tile_limit": 25,
+          "status": "passed",
+          "capture": "captures/vi/phone-saved.png",
+          "native_locale_label": "saved_stories_title",
+          "hierarchy_sha256": "8867ceb9843d29047bcbbaa28b7abc9b1500d6d5f7e371bd675ca5238fa4b8ac"
+        }
+      ],
+      "visual_review": "approved",
+      "recommended_screenshot_ratio": true
+    }
+  ],
+  "manual_checks": [
+    "Actual interface language and RTL direction",
+    "No cut-off text or missing glyphs",
+    "Correct phone/tablet navigation and cooked-content images",
+    "No debug errors, alerts, loaders or stale content",
+    "English story/feed content intentionally remains English",
+    "Store readback and YouTube playback remain separate checks"
+  ]
+}
