@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Đăng ký NewsBlur Premium",
-        "description": "Đọc chung các thư mục, tìm kiếm trong nguồn cấp, gắn thẻ bài viết đã lưu và nhận cập nhật nguồn cấp nhanh hơn.",
+        "description": "Đọc thư mục trong một danh sách, tìm kiếm nguồn cấp, sắp xếp bài viết đã lưu bằng thẻ và nhận cập nhật nguồn cấp nhanh hơn.",
         "benefits": [
           "Đọc thư mục trong một danh sách bài viết",
           "Tìm kiếm trên các nguồn cấp",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "Đăng ký NewsBlur Premium Archive",
-        "description": "Mọi tính năng của Premium, thêm lưu trữ bài viết vĩnh viễn và tìm kiếm. Giữ bài viết chưa đọc bao lâu tùy thích.",
+        "description": "Nhận mọi tính năng của Premium, cùng kho lưu trữ vĩnh viễn có thể tìm kiếm cho mọi bài viết. Giữ bài viết chưa đọc bao lâu tùy thích.",
         "benefits": [
           "Mọi tính năng của Premium",
           "Giữ bài viết chưa đọc mãi mãi",

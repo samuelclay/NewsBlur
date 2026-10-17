@@ -1,0 +1,17 @@
+{
+  "source": "1b32c5b65bdf577402c055d34246691d53e534d9",
+  "version": "16.0.4",
+  "versionCode": 296,
+  "unitTests": {
+    "tests": 890,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "bundleSha256": "4f4105f9d4a9cbf0253571866a05dd381427b30af36fa98c60898bdbcd6ab957",
+  "bundleBytes": 15068060,
+  "zipIntegrity": "passed",
+  "embeddedManifest": "bundle-manifest.xml",
+  "signingStatus": "unsigned; awaiting configured upload-key password",
+  "uploadedToPlay": false
+}

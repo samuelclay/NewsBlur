@@ -1,0 +1,6 @@
+{
+  "ios": null,
+  "android": {
+    "release_notes": "NewsBlur’u açarken, okunmamış sayısını kontrol ederken, okuma işlemlerini onaylarken ve okuyucu durumunu geri yüklerken oluşan çökmeleri düzeltir. Veritabanı yükseltmeleri önbellekteki haberleri ve bekleyen çevrimdışı işlemleri korur.\n\nTabletlerde tam ekran kontrolleri, hatırlanan panel genişlikleri, 21 arayüz dili ve sabit konumlu sonraki haber kontrolleri içerir."
+  }
+}

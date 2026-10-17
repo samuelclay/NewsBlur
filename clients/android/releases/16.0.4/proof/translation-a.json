@@ -1,0 +1,195 @@
+{
+  "version": "16.0.4",
+  "source_commit": "e8208a8e4",
+  "source_sha256": {
+    "metadata/en.json": "26185d735ac5023182e555e5c66d49365f3b72b83587f1ed58f98e6bfcec9ed4",
+    "products/en.json": "d77538c0737652f6a7411c057a6fbe5c499c0334cdc5d38aab0ea73af21267d3",
+    "releases/16.0.4/en.json": "de31e6408e00b9971ef5e7c837bcf5dbe43605230278168ceefba1acd826227b"
+  },
+  "independent_review": "pending",
+  "locales": {
+    "es": {
+      "files": [
+        "clients/store/metadata/es.json",
+        "clients/store/products/es.json",
+        "clients/store/releases/16.0.4/es.json"
+      ],
+      "lengths": {
+        "title": 20,
+        "short_description": 72,
+        "full_description": 1786,
+        "release_notes": 399
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "fr": {
+      "files": [
+        "clients/store/metadata/fr.json",
+        "clients/store/products/fr.json",
+        "clients/store/releases/16.0.4/fr.json"
+      ],
+      "lengths": {
+        "title": 22,
+        "short_description": 75,
+        "full_description": 2051,
+        "release_notes": 406
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "de": {
+      "files": [
+        "clients/store/metadata/de.json",
+        "clients/store/products/de.json",
+        "clients/store/releases/16.0.4/de.json"
+      ],
+      "lengths": {
+        "title": 20,
+        "short_description": 72,
+        "full_description": 1865,
+        "release_notes": 376
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "pt-BR": {
+      "files": [
+        "clients/store/metadata/pt-BR.json",
+        "clients/store/products/pt-BR.json",
+        "clients/store/releases/16.0.4/pt-BR.json"
+      ],
+      "lengths": {
+        "title": 20,
+        "short_description": 73,
+        "full_description": 1719,
+        "release_notes": 369
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "it": {
+      "files": [
+        "clients/store/metadata/it.json",
+        "clients/store/products/it.json",
+        "clients/store/releases/16.0.4/it.json"
+      ],
+      "lengths": {
+        "title": 21,
+        "short_description": 75,
+        "full_description": 1832,
+        "release_notes": 400
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "nl": {
+      "files": [
+        "clients/store/metadata/nl.json",
+        "clients/store/products/nl.json",
+        "clients/store/releases/16.0.4/nl.json"
+      ],
+      "lengths": {
+        "title": 19,
+        "short_description": 70,
+        "full_description": 1739,
+        "release_notes": 362
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "pl": {
+      "files": [
+        "clients/store/metadata/pl.json",
+        "clients/store/products/pl.json",
+        "clients/store/releases/16.0.4/pl.json"
+      ],
+      "lengths": {
+        "title": 21,
+        "short_description": 76,
+        "full_description": 1752,
+        "release_notes": 402
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "tr": {
+      "files": [
+        "clients/store/metadata/tr.json",
+        "clients/store/products/tr.json",
+        "clients/store/releases/16.0.4/tr.json"
+      ],
+      "lengths": {
+        "title": 27,
+        "short_description": 79,
+        "full_description": 1806,
+        "release_notes": 367
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "ru": {
+      "files": [
+        "clients/store/metadata/ru.json",
+        "clients/store/products/ru.json",
+        "clients/store/releases/16.0.4/ru.json"
+      ],
+      "lengths": {
+        "title": 23,
+        "short_description": 68,
+        "full_description": 1700,
+        "release_notes": 391
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    },
+    "uk": {
+      "files": [
+        "clients/store/metadata/uk.json",
+        "clients/store/products/uk.json",
+        "clients/store/releases/16.0.4/uk.json"
+      ],
+      "lengths": {
+        "title": 22,
+        "short_description": 71,
+        "full_description": 1719,
+        "release_notes": 388
+      },
+      "ios_preserved": true,
+      "product_ids_preserved": true,
+      "benefits_count": 4,
+      "urls_preserved": true,
+      "notes": "Reviewed all Android fields against finalized English and locale glossary. Retained accurate titles, benefits and unchanged listing sections; translated changed descriptive copy and release notes. Independent review pending."
+    }
+  },
+  "issues": [
+
+  ]
+}

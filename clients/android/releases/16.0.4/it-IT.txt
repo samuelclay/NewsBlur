@@ -1,0 +1,3 @@
+Corregge arresti anomali all’apertura di NewsBlur, al controllo dei non letti, alla conferma delle azioni di lettura e al ripristino del lettore. Gli aggiornamenti del database conservano articoli in cache e azioni offline in attesa.
+
+Include controlli a schermo intero sui tablet, larghezze dei pannelli memorizzate, interfaccia in 21 lingue e controlli per l’articolo successivo in posizione fissa.

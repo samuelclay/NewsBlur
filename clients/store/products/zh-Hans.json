@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium 订阅",
-        "description": "集中阅读文件夹内的文章、搜索订阅源、为已保存的文章添加标签，并享受更快的订阅源更新。",
+        "description": "在同一列表中阅读文件夹内的文章、搜索订阅源、用标签整理已保存的文章，并享受更快的订阅源更新。",
         "benefits": [
           "在同一列表中阅读文件夹内的文章",
           "跨订阅源搜索",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive 订阅",
-        "description": "包含 Premium 的全部功能，另加文章永久归档和搜索。文章想保留未读状态多久都可以。",
+        "description": "包含 Premium 的全部功能，还可永久归档并搜索每篇文章。文章想保持未读状态多久都可以。",
         "benefits": [
           "Premium 的全部功能",
           "文章可永远保持未读状态",

@@ -267,5 +267,6 @@
         "Subscription-group display name and custom app-name limits were verified from empty live App Store Connect form counters. The official subscription reference distinguishes customer-facing display names from internal reference names but does not state these numerical limits."
       ]
     }
-  }
+  },
+  "google_verified_at": "2026-10-17"
 }

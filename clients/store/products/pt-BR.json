@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Assinatura do NewsBlur Premium",
-        "description": "Leia pastas em uma só lista, pesquise nos feeds, adicione tags aos artigos salvos e receba atualizações de feeds mais frequentes.",
+        "description": "Leia pastas em uma só lista, pesquise nos feeds, organize artigos salvos com tags e receba atualizações de feeds mais rápidas.",
         "benefits": [
           "Leia pastas em uma lista de artigos",
           "Pesquise em todos os feeds",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "Assinatura do NewsBlur Premium Archive",
-        "description": "Tudo do Premium, mais arquivo permanente de artigos e pesquisa. Mantenha artigos não lidos pelo tempo que quiser.",
+        "description": "Tudo do Premium, mais um arquivo permanente e pesquisável de cada artigo. Mantenha artigos não lidos pelo tempo que quiser.",
         "benefits": [
           "Tudo do Premium",
           "Mantenha artigos não lidos para sempre",
