@@ -28,52 +28,64 @@ module StoreMetadata
         language = mapping.fetch('language')
         metadata = @catalog.metadata.fetch(language)
         release = @catalog.releases.fetch(language)
-        ios = metadata.fetch('ios')
-        android = metadata.fetch('android')
-        info << apple_payload('appInfoLocalizations', {
-          'locale' => mapping.fetch('apple'), 'name' => ios.fetch('name'), 'subtitle' => ios.fetch('subtitle')
-        }, 'appInfo', 'appInfos', @app_info_id)
-        versions << apple_payload('appStoreVersionLocalizations', {
-          'locale' => mapping.fetch('apple'), 'description' => ios.fetch('description'),
-          'keywords' => ios.fetch('keywords'), 'promotionalText' => ios.fetch('promotional_text'),
-          'whatsNew' => release.fetch('ios').fetch('whats_new')
-        }, 'appStoreVersion', 'appStoreVersions', @app_store_version_id)
-        listings << {
-          'language' => mapping.fetch('google'), 'title' => android.fetch('title'),
-          'shortDescription' => android.fetch('short_description'), 'fullDescription' => android.fetch('full_description')
-        }
-        release_notes << { 'language' => mapping.fetch('google'), 'text' => release.fetch('android').fetch('release_notes') }
-        products = @catalog.products.fetch(language)
-        products.fetch('ios').fetch('subscriptions').each do |product_id, product|
-          apple_subscriptions[product_id] ||= { 'productId' => product_id, 'localizations' => [] }
-          apple_subscriptions[product_id]['localizations'] << apple_payload('subscriptionLocalizations', {
-            'locale' => mapping.fetch('apple'), 'name' => product.fetch('name'), 'description' => product.fetch('description')
-          }, nil, nil, nil)
+        if @catalog.platforms.include?('ios')
+          ios = metadata.fetch('ios')
+          info << apple_payload('appInfoLocalizations', {
+            'locale' => mapping.fetch('apple'), 'name' => ios.fetch('name'), 'subtitle' => ios.fetch('subtitle')
+          }, 'appInfo', 'appInfos', @app_info_id)
+          versions << apple_payload('appStoreVersionLocalizations', {
+            'locale' => mapping.fetch('apple'), 'description' => ios.fetch('description'),
+            'keywords' => ios.fetch('keywords'), 'promotionalText' => ios.fetch('promotional_text'),
+            'whatsNew' => release.fetch('ios').fetch('whats_new')
+          }, 'appStoreVersion', 'appStoreVersions', @app_store_version_id)
         end
-        products.fetch('ios').fetch('subscription_groups').each do |group_id, group|
-          apple_groups << apple_payload('subscriptionGroupLocalizations', {
-            'locale' => mapping.fetch('apple'), 'name' => group.fetch('name'), 'customAppName' => group.fetch('app_name')
-          }, 'subscriptionGroup', 'subscriptionGroups', group_id)
-        end
-        products.fetch('android').fetch('subscriptions').each do |product_id, product|
-          google_subscriptions[product_id] ||= { 'productId' => product_id, 'listings' => [] }
-          google_subscriptions[product_id]['listings'] << {
-            'languageCode' => mapping.fetch('google'), 'title' => product.fetch('title'),
-            'description' => product.fetch('description'), 'benefits' => product.fetch('benefits')
+        if @catalog.platforms.include?('android')
+          android = metadata.fetch('android')
+          listings << {
+            'language' => mapping.fetch('google'), 'title' => android.fetch('title'),
+            'shortDescription' => android.fetch('short_description'), 'fullDescription' => android.fetch('full_description')
           }
+          release_notes << { 'language' => mapping.fetch('google'), 'text' => release.fetch('android').fetch('release_notes') }
+        end
+        products = @catalog.products.fetch(language)
+        if @catalog.platforms.include?('ios')
+          products.fetch('ios').fetch('subscriptions').each do |product_id, product|
+            apple_subscriptions[product_id] ||= { 'productId' => product_id, 'localizations' => [] }
+            apple_subscriptions[product_id]['localizations'] << apple_payload('subscriptionLocalizations', {
+              'locale' => mapping.fetch('apple'), 'name' => product.fetch('name'), 'description' => product.fetch('description')
+            }, nil, nil, nil)
+          end
+          products.fetch('ios').fetch('subscription_groups').each do |group_id, group|
+            apple_groups << apple_payload('subscriptionGroupLocalizations', {
+              'locale' => mapping.fetch('apple'), 'name' => group.fetch('name'), 'customAppName' => group.fetch('app_name')
+            }, 'subscriptionGroup', 'subscriptionGroups', group_id)
+          end
+        end
+        if @catalog.platforms.include?('android')
+          products.fetch('android').fetch('subscriptions').each do |product_id, product|
+            google_subscriptions[product_id] ||= { 'productId' => product_id, 'listings' => [] }
+            google_subscriptions[product_id]['listings'] << {
+              'languageCode' => mapping.fetch('google'), 'title' => product.fetch('title'),
+              'description' => product.fetch('description'), 'benefits' => product.fetch('benefits')
+            }
+          end
         end
       end
-      FileUtils.mkdir_p(@output.join('apple'))
-      FileUtils.mkdir_p(@output.join('google'))
-      write_json('apple/app-info-localizations.json', info)
-      write_json('apple/version-localizations.json', versions)
-      write_json('google/listings.json', listings)
-      write_json('google/release-notes.json', release_notes)
-      write_json('apple/subscription-localizations.json', apple_subscriptions.values)
-      write_json('apple/subscription-group-localizations.json', apple_groups)
-      write_json('google/subscriptions.json', google_subscriptions.values)
-      tagged_notes = release_notes.map { |note| "<#{note.fetch('language')}>\n#{note.fetch('text')}\n</#{note.fetch('language')}>" }.join("\n\n")
-      File.write(@output.join('google/release-notes.txt'), tagged_notes + "\n", encoding: 'UTF-8')
+      if @catalog.platforms.include?('ios')
+        FileUtils.mkdir_p(@output.join('apple'))
+        write_json('apple/app-info-localizations.json', info)
+        write_json('apple/version-localizations.json', versions)
+        write_json('apple/subscription-localizations.json', apple_subscriptions.values)
+        write_json('apple/subscription-group-localizations.json', apple_groups)
+      end
+      if @catalog.platforms.include?('android')
+        FileUtils.mkdir_p(@output.join('google'))
+        write_json('google/listings.json', listings)
+        write_json('google/release-notes.json', release_notes)
+        write_json('google/subscriptions.json', google_subscriptions.values)
+        tagged_notes = release_notes.map { |note| "<#{note.fetch('language')}>\n#{note.fetch('text')}\n</#{note.fetch('language')}>" }.join("\n\n")
+        File.write(@output.join('google/release-notes.txt'), tagged_notes + "\n", encoding: 'UTF-8')
+      end
       write_json('validation.json', { 'version' => @catalog.version, 'languages' => @catalog.languages.keys, 'fields' => @catalog.counts })
       @output
     end
