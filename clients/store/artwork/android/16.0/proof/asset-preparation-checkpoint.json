@@ -1,16 +1,16 @@
 {
-  "saved_at": "2026-10-17T16:21:45Z",
+  "saved_at": "2026-10-17T16:27:39Z",
   "status": "preparation_resumed_current_native_android_build_verified",
-  "reason": "Root verified current reader source, APK and installed Alpha runtime; continue original authorized assets without invented UI controls. Counts below retain the previous checkpoint snapshot until final preparation completes.",
+  "reason": "Root verified current reader source, APK and installed Alpha runtime; resumed original authorized artwork without invented controls.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
     "phoneScreenshots": 84,
-    "tenInchScreenshots": 76,
+    "tenInchScreenshots": 84,
     "sevenInchScreenshots": 4
   },
   "image_visual_reviews": {
-    "approved": 206
+    "approved": 214
   },
   "verified_youtube_links": [
     {
@@ -57,139 +57,195 @@
   "videos": [
     {
       "language": "ar",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "aeb5e7ff005e31a7d9b3bc734199f434d8cb2f3f9e14597bf69fd66c72bfb57e",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "aeb5e7ff005e31a7d9b3bc734199f434d8cb2f3f9e14597bf69fd66c72bfb57e"
+      "source_clips_verified": 8
     },
     {
       "language": "de",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "d8c75e0a32d644349488e2277e54958445ee113d06b95a885c5fe6b16134748f",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "d8c75e0a32d644349488e2277e54958445ee113d06b95a885c5fe6b16134748f"
+      "source_clips_verified": 8
     },
     {
       "language": "en",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "42cb634ec107672f64a63404330b9dab4cbd53bf5375fd1073b630a7243c2e25",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "42cb634ec107672f64a63404330b9dab4cbd53bf5375fd1073b630a7243c2e25"
+      "source_clips_verified": 8
     },
     {
       "language": "es",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "fa2ca1b7365b16a1a0c8f261ddaa5d2fae13366a8ae0c83198c0190ad115bae5",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "fa2ca1b7365b16a1a0c8f261ddaa5d2fae13366a8ae0c83198c0190ad115bae5"
+      "source_clips_verified": 8
     },
     {
       "language": "fr",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "48ee25dad7a68f14322e974b56e76f928b95c26cf65c0c7c595700c66b8b66aa",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "48ee25dad7a68f14322e974b56e76f928b95c26cf65c0c7c595700c66b8b66aa"
+      "source_clips_verified": 8
     },
     {
       "language": "he",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "7903add6f316acc428c0f1295d57c0b1b73b17e13b672b71c439f50b45e1d15d",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "7903add6f316acc428c0f1295d57c0b1b73b17e13b672b71c439f50b45e1d15d"
+      "source_clips_verified": 8
     },
     {
       "language": "hi",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "f8f27d83a86b54e940f3703b0caabfa145fd30fe3666db116eb57843cb383e53",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "f8f27d83a86b54e940f3703b0caabfa145fd30fe3666db116eb57843cb383e53"
+      "source_clips_verified": 8
     },
     {
       "language": "id",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "d425c91887069b752d6e6a3b7cf8c510e5b1b1870946579be860730cd73ea29c",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "d425c91887069b752d6e6a3b7cf8c510e5b1b1870946579be860730cd73ea29c"
+      "source_clips_verified": 8
     },
     {
       "language": "it",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "86e65e21d683dbff4f92ffc1f45b08993fa06a4fb9ecebbf49a2f9d0c7409364",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "86e65e21d683dbff4f92ffc1f45b08993fa06a4fb9ecebbf49a2f9d0c7409364"
+      "source_clips_verified": 8
     },
     {
       "language": "ja",
-      "status": "encoded_technical_checks_passed",
-      "visual_review": "required",
-      "review_frames_saved": 2,
-      "output_sha256": "f60c2d5a111a39d368612d8b6cd180dbddedb29db3e5d9bdfa8804491ebd39ee"
+      "output_sha256": "f60c2d5a111a39d368612d8b6cd180dbddedb29db3e5d9bdfa8804491ebd39ee",
+      "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
+      "review_frames_saved": 8,
+      "source_clips_verified": 8
     },
     {
       "language": "ko",
-      "status": "encoded_technical_checks_passed",
-      "visual_review": "required",
+      "output_sha256": "25a29fbba70e5b923869bcb65aba493600cdf57f062e0d02052d52d76dc76c64",
+      "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "25a29fbba70e5b923869bcb65aba493600cdf57f062e0d02052d52d76dc76c64"
+      "source_clips_verified": 8
     },
     {
       "language": "nl",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "3105528cd9211ad7d1aeed3db3c7f515b6f4074276173d02f9b6231638de2113",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "3105528cd9211ad7d1aeed3db3c7f515b6f4074276173d02f9b6231638de2113"
+      "source_clips_verified": 8
     },
     {
       "language": "pl",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "f09174b25232ef6f14d868b53a53ba25f0ce5fee8953c3ea4f29c7815a379cf3",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "f09174b25232ef6f14d868b53a53ba25f0ce5fee8953c3ea4f29c7815a379cf3"
+      "source_clips_verified": 8
     },
     {
       "language": "pt-BR",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "938c37e01edc8a99be0e3a369500bfae6fd622ac988f160af2e95e09937d1782",
       "visual_review": "approved",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "938c37e01edc8a99be0e3a369500bfae6fd622ac988f160af2e95e09937d1782"
+      "source_clips_verified": 8
     },
     {
       "language": "ru",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "3a4edf5166bf58c02a7cee13740c435ef78b83c7c5055ce34a5c2ec159d98dcf",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "3a4edf5166bf58c02a7cee13740c435ef78b83c7c5055ce34a5c2ec159d98dcf"
+      "source_clips_verified": 8
     },
     {
       "language": "th",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "ab20f80b7dedeb87144b619f2fc09ffbf82ba120659e1d26ded64a67d2067c6e",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "ab20f80b7dedeb87144b619f2fc09ffbf82ba120659e1d26ded64a67d2067c6e"
+      "source_clips_verified": 8
     },
     {
       "language": "tr",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "f0bef8faf2a1e1b1f48bd3fad187dff66a9b69f533d366f7a9dd6ee300aa6db9",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "f0bef8faf2a1e1b1f48bd3fad187dff66a9b69f533d366f7a9dd6ee300aa6db9"
+      "source_clips_verified": 8
     },
     {
       "language": "uk",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "6a1b46baa6409c1566b5e67115849df2226db0fc4081a4f8075b4f9d47803de5",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "6a1b46baa6409c1566b5e67115849df2226db0fc4081a4f8075b4f9d47803de5"
+      "source_clips_verified": 8
     },
     {
       "language": "vi",
-      "status": "encoded_technical_checks_passed",
+      "output_sha256": "4d4b2e05ccbf31e6a065c1c1f9c7b3865fcaad06595d196dc57ea04d9aa9ed7c",
       "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
       "review_frames_saved": 8,
-      "output_sha256": "4d4b2e05ccbf31e6a065c1c1f9c7b3865fcaad06595d196dc57ea04d9aa9ed7c"
+      "source_clips_verified": 8
+    },
+    {
+      "language": "zh-Hans",
+      "output_sha256": "af4b81b255a574b356d226330a1427a0e62ca1907a428423c88cb802670338ed",
+      "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
+      "review_frames_saved": 8,
+      "source_clips_verified": 8
+    },
+    {
+      "language": "zh-Hant",
+      "output_sha256": "10dc819882c33ec8fa8a43064d76e59404e9864554a85f34adceeb30df32f40f",
+      "visual_review": "sampled_scene_frames_passed_full_playback_pending",
+      "technical_status": "encoded_technical_checks_passed",
+      "duration_seconds": 28,
+      "review_frames_saved": 8,
+      "source_clips_verified": 8
     }
   ],
-  "pending": "Both Chinese ten-inch exports, twenty non-English seven-inch exports, Chinese promo videos, Japanese and Korean promo visual review, and remaining full-player video reviews. Japanese review-frame extraction was interrupted after the MP4 and technical checks completed.",
-  "notification_samples_reviewed": 160,
+  "pending": "Twenty non-English seven-inch export groups; eleven YouTube uploads and full-player reviews after quota reset; Play staging and publishing.",
+  "notification_samples_reviewed": 168,
   "resumed_at": "2026-10-17T16:24:16Z"
 }
