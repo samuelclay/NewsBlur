@@ -630,7 +630,7 @@ def complete_ticket(request, ticket, verifier):
                         provider=identity["provider"], subject=identity["subject"]
                     ).exists():
                         return failure("Your account was just connected. Please sign in again.")
-                    user = form.save()
+                    user = form.save(request=request)
                     user.set_unusable_password()
                     user.save(update_fields=["password"])
                     SocialIdentity.objects.create(user=user, **identity)

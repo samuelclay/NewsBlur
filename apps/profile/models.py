@@ -70,6 +70,9 @@ class Profile(models.Model):
     premium_expire = models.DateTimeField(blank=True, null=True)
     send_emails = models.BooleanField(default=True)
     preferences = models.TextField(default="{}")
+    # models.py keeps acquisition language immutable; current device language can change independently.
+    signup_language = models.CharField(max_length=16, null=True, blank=True)
+    last_read_language = models.CharField(max_length=16, null=True, blank=True)
     view_settings = models.TextField(default="{}")
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size = models.IntegerField(default=282)

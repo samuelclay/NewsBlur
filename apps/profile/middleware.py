@@ -46,6 +46,16 @@ class LastSeenMiddleware(object):
 
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
             request.user.profile.last_seen_ip = ip[-15:]
+            # middleware.py records the same activity used by the existing monthly-active user metric.
+            from utils.languages import normalize_language
+
+            language = normalize_language(getattr(request, "LANGUAGE_CODE", None))
+            has_language_context = (
+                getattr(request, "language_preference", "auto") != "auto"
+                or request.META.get("HTTP_ACCEPT_LANGUAGE", "").strip()
+            )
+            if language and language != "auto" and has_language_context:
+                request.user.profile.last_read_language = language
             request.user.profile.save()
 
         return response
