@@ -85,9 +85,12 @@ def load_manifest(path):
                 valid = image.mode == "RGB"
                 if kind == "featureGraphic":
                     valid = valid and (width, height) == (1024, 500)
+                elif kind == "phoneScreenshots":
+                    valid = valid and (width, height) == (1080, 1920)
                 else:
-                    valid = valid and min(width, height) >= 1080 and max(width, height) <= 3840
-                    valid = valid and (width * 16 == height * 9 or width * 9 == height * 16)
+                    # Google recommends 16:9, but accepts native tablets up to 2:1.
+                    valid = valid and min(width, height) >= 320 and max(width, height) <= 3840
+                    valid = valid and max(width, height) <= 2 * min(width, height)
             if not valid:
                 raise ValueError(f"Image does not match this refresh's reviewed format: {filename}")
             mimetype = "image/png" if image.format == "PNG" else "image/jpeg"
