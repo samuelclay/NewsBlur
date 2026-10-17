@@ -4,6 +4,8 @@ The approved, editable artwork is in [`selected/`](selected/README.md). It combi
 
 The `concepts/` directory retains the earlier concept rounds for reference. Use `selected/index.html` as the source for future header and search-artwork edits. The approved main screenshots use **01 Sage panels**, with native cooking-demo captures in each language.
 
+Screenshot preparation is complete for all 21 supported languages: four panels in each of two iPhone sizes (168 PNGs) and the iPad size (84 PNGs). All 252 exports were visually reviewed and staged with matching validation checksums. The dedicated capture simulator is shut down. The headlines and native interface are localized; demonstration feed titles and stories retain their original English. Store placement verification and the remaining App Preview videos are still incomplete; see `resubmission.json` for those separate statuses.
+
 - [`selected/`](selected/README.md): editable header/search artwork, official device frames, license provenance and 42 localized exports. `selected/submission.json` tracks the separate custom product page submission.
 - [`screenshots/`](screenshots/README.md): native captures, localized copy, editable layout, offline renderer and four panels in each of three display sizes per language.
 - [`preview/`](preview/README.md): native recordings, localized captions, editable cuts and iPhone/iPad App Preview videos.

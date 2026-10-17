@@ -14,7 +14,7 @@
   "requirements": {
     "languages": 21,
     "header_and_search": "approved_assets_prepared",
-    "main_screenshots": "01_sage_panels_selected_localization_in_progress",
+    "main_screenshots": "01_sage_panels_all_21_languages_prepared_reviewed_staged_uploads_incomplete",
     "app_preview_video": "authorized_preparation_in_progress"
   },
   "automatic_release_after_approval": true,
@@ -58,7 +58,7 @@
     "verified_proof": "proof/fr-main-search-persisted.jpg",
     "readback_evidence": "proof/non-english-creative-readback.json"
   },
-  "capture_status": "All 21 iPad languages and 14 iPhone languages have verified native captures. Twelve iPhone languages are rendered in both sizes, reviewed and staged, bringing the screenshot total to 180. Remaining captures run serially on isolated iPhone 18 Pro Max / iOS 27 simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE with the existing 16.0 (343) build. This batch captures stills only; preview footage status is unchanged. The original shared iPhone and other tasks' simulators are not used.",
+  "capture_status": "All 21 supported languages have verified native iPhone and iPad captures. All 252 final screenshots are rendered, reviewed and staged: 168 iPhone PNGs across 1320x2868 and 1206x2622, plus 84 iPad PNGs at 2064x2752. The last 15 iPhone languages used isolated iPhone 18 Pro Max / iOS 27 simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE with the existing 16.0 (343) build. That simulator is shut down. This batch captured stills only; preview footage status is unchanged. Capture provenance is committed at 343652d24. Final inventory verified 21 languages, 63 complete sets, zero pending sets, and matching exported/staged PNG SHA-256 values against validation records. Store uploads remain incomplete.",
   "progress_proof": "proof/main-artwork-partial.jpg",
   "main_screenshot_uploads": {
     "en": {
@@ -193,11 +193,11 @@
   "upload_status": "paused_at_user_request_while_turn_touch_uses_edge",
   "preparation_counts": {
     "screenshots_planned": 252,
-    "screenshots_reviewed_staged": 180,
+    "screenshots_reviewed_staged": 252,
     "screenshots_verified_in_store": 56,
     "complete_ipad_languages": 21,
-    "complete_iphone_languages": 12,
-    "pending_iphone_languages": 9,
+    "complete_iphone_languages": 21,
+    "pending_iphone_languages": 0,
     "previews_planned": 42,
     "previews_encoded_visual_reviewed": 27,
     "previews_playback_passed": 10,
@@ -205,7 +205,8 @@
     "previews_awaiting_capture": 15
   },
   "resume_requirements": [
-    "Finish remaining iPhone captures and both-size exports on isolated simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE, then shut it down. Do not interrupt the original shared target or restore its preferences while another task uses it.",
+    "Upload and verify the remaining prepared screenshot placements in all 21 languages. All 252 screenshots are ready in /tmp/newsblur-ios16-ready-uploads; preserve already verified placements.",
+    "Finish the separate preview-video work: 15 iPhone languages still need footage, and 17 prepared videos await normal-speed playback review. Screenshot completion does not complete videos.",
     "Reserve desktop/browser for normal-speed video playback review and uploads.",
     "Recheck English header/search after screenshot recovery; do not assume creative placement is fixed.",
     "Verify every requested screenshot, creative placement and processed preview, then resubmit all five removed review items."
