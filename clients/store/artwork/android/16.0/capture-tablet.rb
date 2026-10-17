@@ -36,7 +36,9 @@ languages.each do |language|
     image = File.join(directory, "#{device}-#{scene}.png")
     proof = image.sub('.png', '.json')
     video = File.join(root, 'captures', 'footage', language, "#{device}-#{scene}.mp4")
-    next if File.exist?(image) && File.exist?(proof) && JSON.parse(File.read(proof))['tablet_composition'] == 'populated_native_split' && (device == 'tablet7' || File.exist?(video))
+    existing_dimensions = File.exist?(image) ? File.binread(image, 24)[16, 8].unpack('NN') : nil
+    orientation_matches = existing_dimensions && (device == 'tablet7' ? existing_dimensions[0] < existing_dimensions[1] : existing_dimensions[0] > existing_dimensions[1])
+    next if orientation_matches && File.exist?(proof) && JSON.parse(File.read(proof))['tablet_composition'] == 'populated_native_split' && (device == 'tablet7' || File.exist?(video))
     command(*adb, 'shell', 'am', 'force-stop', 'com.newsblur.storecapture')
     launch_scene = scene == 'feeds' ? 'reader' : scene
     command(*adb, 'shell', 'am', 'start', '-W', '-n', 'com.newsblur.storecapture/com.newsblur.marketing.StoreCaptureActivity', '--es', 'language', language, '--es', 'screen', launch_scene)
@@ -44,6 +46,8 @@ languages.each do |language|
     sleep 2
     screenshot = command(*adb, 'exec-out', 'screencap', '-p')
     width, height = screenshot[16, 8].unpack('NN')
+    correct_orientation = device == 'tablet7' ? width < height : width > height
+    raise "Unexpected #{device} orientation: #{width}x#{height}; check Android auto-rotate and rotation lock" unless correct_orientation
     if scene == 'feeds'
       # The native story-list back button opens the real feed drawer over its populated reader.
       # Android's native split keeps its 40% list pane on the left in RTL too.
