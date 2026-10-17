@@ -120,7 +120,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/tr/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "ru",
@@ -131,7 +132,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/ru/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "uk",
@@ -142,7 +144,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/uk/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "ar",
@@ -181,7 +184,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/hi/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "id",
@@ -192,7 +196,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/id/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "vi",
@@ -203,7 +208,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/vi/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "th",
@@ -214,7 +220,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/th/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "ja",
@@ -225,7 +232,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/ja/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "ko",
@@ -236,7 +244,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/ko/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "zh-Hans",
@@ -247,7 +256,8 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/zh-Hans/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   },
   {
     "language": "zh-Hant",
@@ -258,6 +268,7 @@
     "made_for_kids": false,
     "embedding": true,
     "video": "exports/zh-Hant/newsblur-android-16.0.mp4",
-    "upload_status": "not_uploaded"
+    "upload_status": "pending_youtube_daily_limit",
+    "upload_blocker": "YouTube reported Daily upload limit reached on 2026-10-17 after accepting ten localized promos. No fallback video is assigned."
   }
 ]
