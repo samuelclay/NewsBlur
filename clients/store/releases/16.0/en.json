@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "NewsBlur's interface now supports 21 languages. Choose yours in the app, with a preview in your language and English. Arabic and Hebrew read right to left. Stories stay exactly as published.\n\nNext story controls stay in a fixed position, including when Next becomes Done. Sign-in buttons are easier to read in dark themes."
+  },
+  "macos": {
+    "whats_new": "NewsBlur for Mac now speaks 21 languages. Menus, buttons, settings, and setup follow your Mac’s language, or you can choose a language from the NewsBlur menu. Your stories stay exactly as published.\n\nOpen Choose Language from the Language submenu to preview the title, prompt, and button in your selected language, with English underneath. Choose Automatic to follow your Mac’s language settings again. Arabic and Hebrew use a right-to-left interface.\n\nKeyboard shortcuts now work while the story list has focus, and N opens the first unread story.\n\nIf a translation sounds awkward, tell us the language and where you saw it on the NewsBlur forum."
   }
 }

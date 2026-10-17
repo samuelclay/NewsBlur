@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Antarmuka NewsBlur kini mendukung 21 bahasa. Pilih bahasa di aplikasi, dengan pratinjau dalam bahasa Anda dan Inggris. Arab dan Ibrani tampil dari kanan ke kiri. Artikel tetap seperti saat diterbitkan.\n\nKontrol artikel berikutnya tetap di posisi yang sama, termasuk saat Berikutnya berubah menjadi Selesai. Tombol masuk lebih mudah dibaca dalam tema gelap."
+  },
+  "macos": {
+    "whats_new": "NewsBlur untuk Mac kini tersedia dalam 21 bahasa. Menu, tombol, pengaturan, dan penyiapan mengikuti bahasa Mac Anda, atau Anda dapat memilih bahasa dari menu NewsBlur. Artikel tetap persis seperti saat diterbitkan.\n\nBuka Pilih Bahasa dari submenu Bahasa untuk melihat pratinjau judul, petunjuk, dan tombol dalam bahasa pilihan Anda, dengan bahasa Inggris di bawahnya. Pilih Otomatis untuk kembali mengikuti pengaturan bahasa Mac Anda. Bahasa Arab dan Ibrani menggunakan antarmuka kanan ke kiri.\n\nPintasan keyboard kini berfungsi saat fokus berada pada daftar artikel, dan N membuka artikel pertama yang belum dibaca.\n\nJika terjemahan terasa janggal, beri tahu kami bahasa dan letaknya di forum NewsBlur."
   }
 }
