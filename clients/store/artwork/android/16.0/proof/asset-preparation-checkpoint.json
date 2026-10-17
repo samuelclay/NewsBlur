@@ -1,7 +1,7 @@
 {
-  "saved_at": "2026-10-17T17:27:51Z",
-  "status": "all_294_images_ready_upload_waiting_for_docker_recovery",
-  "reason": "Docker stopped responding after host disk exhaustion; user freed space; restart approval pending because other local containers would be interrupted.",
+  "saved_at": "2026-10-17T17:54:28.010377+00:00",
+  "status": "all_294_images_ready_play_staging_in_progress",
+  "reason": "User restarted the Mac and Docker and freed space. API upload resumed with read-back verification.",
   "assets_by_type": {
     "featureGraphic": 21,
     "icon": 21,
@@ -246,17 +246,18 @@
       "source_clips_verified": 8
     }
   ],
-  "pending": "Docker recovery, Play staging/commit/readback; eleven YouTube uploads and hosted playback checks after quota reset.",
+  "pending": "Complete Play staging, commit and post-commit readback; browser Google login for Console review-state verification and remaining eleven YouTube uploads after quota reset.",
   "notification_samples_reviewed": 168,
   "resumed_at": "2026-10-17T16:24:16Z",
   "manifest_sha256": "908c535d4d7f260a2b5cc91511f5097f8f8bec5ed10fdfc53c927c6602fc2e95",
   "play_staging": {
     "edit_id": "03809724643036911628",
     "expiry": "2026-10-17T19:16:43Z",
-    "baseline": "play-assets-before-staging.json",
+    "baseline": "play-assets-after-restart-before-staging.json",
     "manifest": "../exports/manifest-staging.json",
-    "mutations_started": false,
-    "pending_client_terminated": true
+    "mutations_started": true,
+    "pending_client_terminated": false,
+    "checkpoint": "play-assets-staging.json"
   },
   "devices_restored": true
 }
