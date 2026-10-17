@@ -1,6 +1,7 @@
 # Language adoption and signup revenue
 
-The **Languages & Localization Revenue** row in the existing NewsBlur Grafana dashboard uses
+The **Languages & Localization Revenue** row sits directly below **AI Classifier Billing** and above
+**Trending Feeds** in the existing NewsBlur Grafana dashboard. It uses
 `/monitor/languages`. Both Prometheus configurations scrape it every five minutes. The endpoint caches
 three grouped PostgreSQL queries for five minutes and emits a bounded series for every supported
 language, including zeros. Account identifiers never appear in labels.
