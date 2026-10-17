@@ -1,0 +1,16 @@
+[
+  {
+    "package": "com.newsblur.alpha",
+    "variant": "alpha",
+    "version": "16.0.2",
+    "versionCode": 294,
+    "installedApkSha256": "b29dff3a545ce810c51215b96779a73b89ce5a625a87ed4f2b44fe9e4974ba15"
+  },
+  {
+    "package": "com.newsblur",
+    "variant": "debug",
+    "version": "16.0.2",
+    "versionCode": 294,
+    "installedApkSha256": "bae9ec72380f6484741cf05aa5c98c253c0950da189ec5dc46d663bc7d9da00d"
+  }
+]
