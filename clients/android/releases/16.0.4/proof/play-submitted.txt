@@ -69,14 +69,11 @@
 - 'button "Hide content: Changes in review" [expanded]':
   - generic: Hide
   - img: expand_less
-- heading "Running quick checks for commonly found issues" [level=4]
-- meter "Running quick checks for commonly found issues"
-- paragraph:
-  - text: These checks help to find certain policy and app quality issues, so you can fix them before review. Changes will be sent for review as soon as checks complete successfully.
-  - link "Go to the Help center to learn more about the automated checks we run to detect issues before you send your changes for review":
-    - /url: https://support.google.com/googleplay/android-developer/answer/14807773
-    - text: Learn more
-- paragraph: Up to 10 minutes remaining
+- img: inventory
+- generic: Your changes are now in review. We may find additional issues when reviewing your app.
+- link "Go to the Help center to learn more about the automated checks we run to detect issues before you send your changes for review":
+  - /url: https://support.google.com/googleplay/android-developer/answer/14807773
+  - generic: Learn more
 - grid "Changes":
   - row "Item changed Description":
     - columnheader "Item changed"

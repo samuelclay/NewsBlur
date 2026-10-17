@@ -10,7 +10,7 @@ Subsequent store-copy and export-tool commits do not change the Android source.
 ## Google Play
 
 Submitted on October 17, 2026 for a full production rollout. Publishing overview
-shows **Changes in review**, with automated quick checks still running and managed
+shows **Changes in review** after automated quick checks completed, with managed
 publishing off. Approval and public availability are not yet verified. The
 submission contains release 16.0.4 and 42 listing text changes across 21 locales;
 there were no unrelated pending changes. The previous public release was 16.0.2
@@ -41,8 +41,9 @@ folder. `proof/build-validation.json` records the source and signing evidence.
 Android Tests, Django Tests, and Android Release and F-Droid all passed on the exact
 release commit. The F-Droid job passed source/dependency scans, unit tests, and the
 unsigned APK build before creating the immutable tag. See `proof/github-checks.json`
-and `fdroid-status.md` for the separate upstream metadata submission and official
-F-Droid publication status. A successful compatibility build is not an official
+and [F-Droid MR !52997](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/52997)
+for the submitted upstream recipe. Maintainer acceptance and official F-Droid
+publication are pending; `fdroid-status.md` records the external status. A successful compatibility build is not an official
 F-Droid package publication.
 
 Canonical translations are under `clients/store/`; native Play notes and validated

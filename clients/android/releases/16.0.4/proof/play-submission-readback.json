@@ -142,6 +142,7 @@
     "sha256": "17e382f730fd2649e61f10675fceef46d2fc58f9a18d0121ae4ab6258931f99b"
   },
   "managedPublishing": false,
-  "consoleState": "Changes in review; automated quick checks running",
-  "publicAvailability": "Not yet verified; previous public release16.0.2"
+  "consoleState": "Your changes are now in review; automated quick checks completed",
+  "publicAvailability": "Not yet verified; previous public release16.0.2",
+  "consoleCheckedAt": "2026-10-17T23:24:30Z"
 }
