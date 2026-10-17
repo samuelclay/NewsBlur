@@ -22,6 +22,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
@@ -1746,8 +1747,8 @@ abstract class Reading :
             )
         snackbar.anchorView = binding.contentBottomOverlay
         val snackView = snackbar.view
-        val params = snackView.layoutParams as FrameLayout.LayoutParams
-        params.width = FrameLayout.LayoutParams.WRAP_CONTENT
+        val params = snackView.layoutParams as CoordinatorLayout.LayoutParams
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT
         params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
         snackView.layoutParams = params
         snackView.background =
