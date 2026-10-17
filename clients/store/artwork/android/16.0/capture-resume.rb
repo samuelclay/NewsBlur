@@ -31,7 +31,7 @@ module CaptureResume
   def self.valid_probe?(probe, dimensions)
     rate = probe.fetch('frame_rate').split('/').map { |value| Float(value) }
     probe.values_at('width', 'height') == dimensions && probe.fetch('codec') == 'h264' &&
-      probe.fetch('duration').between?(1.5, 10) && probe.fetch('frame_count') >= 30 &&
+      probe.fetch('duration') >= 1.5 && probe.fetch('frame_count') >= 30 &&
       rate.length == 2 && rate.last.positive? && rate.first.positive?
   rescue KeyError, ArgumentError, TypeError
     false
