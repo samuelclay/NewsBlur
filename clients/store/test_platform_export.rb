@@ -24,7 +24,7 @@ class Test_PlatformExport < Minitest::Test
       %w[metadata products].each do |directory|
         FileUtils.cp(File.join(__dir__, directory, 'en.json'), path(directory, language))
       end
-      File.write(path('releases/16.0.4', language), JSON.generate('android' => { 'release_notes' => 'NewsBlur crash fixes.' }))
+      File.write(path('releases/16.0.4', language), JSON.generate('android' => { 'release_notes' => "NewsBlur crash fixes.\n\nKeeps offline actions." }))
     end
   end
 
@@ -39,6 +39,9 @@ class Test_PlatformExport < Minitest::Test
     refute File.exist?(File.join(@temporary, 'output', 'apple'))
     notes = JSON.parse(File.read(File.join(@temporary, 'output', 'google', 'release-notes.json')))
     assert_equal %w[en-US fr-FR], notes.map { |note| note.fetch('language') }
+    tagged_notes = File.read(File.join(@temporary, 'output', 'google', 'release-notes.txt'))
+    assert_equal "<en-US>\nNewsBlur crash fixes.\n\nKeeps offline actions.\n</en-US>\n" \
+                 "<fr-FR>\nNewsBlur crash fixes.\n\nKeeps offline actions.\n</fr-FR>\n", tagged_notes
   end
 
   def test_selected_platform_rejects_missing_malformed_fields_and_unknown_platforms

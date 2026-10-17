@@ -83,7 +83,7 @@ module StoreMetadata
         write_json('google/listings.json', listings)
         write_json('google/release-notes.json', release_notes)
         write_json('google/subscriptions.json', google_subscriptions.values)
-        tagged_notes = release_notes.map { |note| "<#{note.fetch('language')}>\n#{note.fetch('text')}\n</#{note.fetch('language')}>" }.join("\n\n")
+        tagged_notes = release_notes.map { |note| "<#{note.fetch('language')}>\n#{note.fetch('text')}\n</#{note.fetch('language')}>" }.join("\n")
         File.write(@output.join('google/release-notes.txt'), tagged_notes + "\n", encoding: 'UTF-8')
       end
       write_json('validation.json', { 'version' => @catalog.version, 'languages' => @catalog.languages.keys, 'fields' => @catalog.counts })
