@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Vegen vanaf de linkerrand brengt je altijd terug naar feeds, ook als vegen door artikelen is uitgeschakeld.";
 "Switch to All or Unread." = "Schakel over naar Alles of Ongelezen.";
 "Syncing stories..." = "Artikelen synchroniseren...";
+"System Default" = "Systeemstandaard";
 "TEXT" = "TEKST";
 "Tall [grid height]" = "Hoog";
 "Teal Mint" = "Tealmunt";

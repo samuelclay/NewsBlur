@@ -175,10 +175,19 @@ import UIKit
         if value != language { apply(value, pending: false) }
     }
     @MainActor static func save(_ value: String, completion: @escaping (Bool) -> Void) {
-        guard let app = NewsBlurAppDelegate.shared, let base = app.url else { completion(false); return }
+        save(value, settled: {}, completion: completion)
+    }
+    // NBLocalization.swift releases a caller's busy state even when a newer request suppresses its result.
+    @MainActor static func save(_ value: String, settled: @escaping () -> Void, completion: @escaping (Bool) -> Void) {
+        guard let app = NewsBlurAppDelegate.shared, let base = app.url else {
+            settled()
+            completion(false)
+            return
+        }
         latestRequest = value
         app.post("\(base)/profile/set_preference", parameters: ["language": value], success: { _, response in
             MainActor.assumeIsolated {
+                defer { settled() }
                 guard latestRequest == value else { return }
                 let succeeded = (response as? [String: Any])?["code"] as? Int == 1
                 if succeeded { apply(value, pending: false) }
@@ -186,6 +195,7 @@ import UIKit
             }
         }, failure: { _, _ in
             MainActor.assumeIsolated {
+                defer { settled() }
                 guard latestRequest == value else { return }
                 completion(false)
             }

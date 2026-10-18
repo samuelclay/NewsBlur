@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Un balayage depuis le bord gauche ramène toujours aux flux, même si le balayage des articles est désactivé.";
 "Switch to All or Unread." = "Passez à « Tout » ou « Non lus ».";
 "Syncing stories..." = "Synchronisation des articles...";
+"System Default" = "Par défaut du système";
 "TEXT" = "TEXTE";
 "Tall [grid height]" = "Haut";
 "Teal Mint" = "Menthe turquoise";

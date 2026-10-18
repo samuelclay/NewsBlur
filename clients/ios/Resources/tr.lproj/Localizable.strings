@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Haber kaydırmaları kapalı olsa bile sol kenardan kaydırmak her zaman akışlara döndürür.";
 "Switch to All or Unread." = "Tümü veya Okunmamış görünümüne geçin.";
 "Syncing stories..." = "Haberler eşitleniyor...";
+"System Default" = "Sistem varsayılanı";
 "TEXT" = "METİN";
 "Tall [grid height]" = "Uzun";
 "Teal Mint" = "Turkuaz Nane";

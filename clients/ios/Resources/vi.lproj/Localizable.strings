@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Vuốt từ mép trái luôn quay lại danh sách nguồn cấp dữ liệu, ngay cả khi đã tắt thao tác vuốt trên bài viết.";
 "Switch to All or Unread." = "Chuyển sang Tất cả hoặc Chưa đọc.";
 "Syncing stories..." = "Đang đồng bộ bài viết...";
+"System Default" = "Mặc định hệ thống";
 "TEXT" = "VĂN BẢN";
 "Tall [grid height]" = "Cao";
 "Teal Mint" = "Xanh bạc hà ngọc lam";

@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Проведення від лівого краю завжди повертає до стрічок, навіть коли гортання статей вимкнено.";
 "Switch to All or Unread." = "Перемкніться на режим «Усі» або «Непрочитані».";
 "Syncing stories..." = "Синхронізація статей...";
+"System Default" = "Типовий у системі";
 "TEXT" = "ТЕКСТ";
 "Tall [grid height]" = "Високий";
 "Teal Mint" = "Бірюзова м’ята";
