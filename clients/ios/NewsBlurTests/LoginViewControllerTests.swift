@@ -3,6 +3,170 @@ import WebKit
 
 @testable import NewsBlur
 
+@MainActor
+final class Test_MacSignedOutPreferences: XCTestCase {
+    func test_doneAppliesChangedServerBeforeReturningToLogin() async throws {
+        let defaults = UserDefaults.standard
+        let previousDomain = defaults.object(forKey: "custom_domain")
+        addTeardownBlock { defaults.set(previousDomain, forKey: "custom_domain") }
+        defaults.set("https://old-reader.example.test", forKey: "custom_domain")
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        XCTAssertEqual(fixture.app.url, "https://old-reader.example.test", "Prime the URL cache used by login")
+        fixture.app.resetNetworkManagerForTesting()
+        let previousManager = fixture.app.networkManager
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+        fixture.login.showAppPreferences(nil)
+        let preferences = try XCTUnwrap(fixture.login.presentedViewController as? PreferencesViewHostingController)
+        await waitUntilPresented(preferences)
+
+        defaults.set("https://new-reader.example.test", forKey: "custom_domain")
+        preferences.finishPreferences()
+
+        XCTAssertEqual(fixture.app.url, "https://new-reader.example.test",
+                       "The next login must not send credentials to the previously cached server")
+        XCTAssertEqual(fixture.app.host, "new-reader.example.test")
+        XCTAssertFalse(fixture.app.networkManager === previousManager,
+                       "Changing server must cancel old requests before login can resume")
+    }
+
+    func test_dismissingWithoutDoneAlsoAppliesChangedServer() async throws {
+        let defaults = UserDefaults.standard
+        let previousDomain = defaults.object(forKey: "custom_domain")
+        addTeardownBlock { defaults.set(previousDomain, forKey: "custom_domain") }
+        defaults.set("https://old-reader.example.test", forKey: "custom_domain")
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        XCTAssertEqual(fixture.app.url, "https://old-reader.example.test")
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+        fixture.login.showAppPreferences(nil)
+        let preferences = try XCTUnwrap(fixture.login.presentedViewController as? PreferencesViewHostingController)
+        await waitUntilPresented(preferences)
+
+        defaults.set("https://new-reader.example.test", forKey: "custom_domain")
+        preferences.dismiss(animated: false)
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            fixture.login.presentedViewController == nil
+        }, object: nil)
+        await fulfillment(of: [dismissed], timeout: 3)
+
+        XCTAssertEqual(fixture.app.url, "https://new-reader.example.test")
+        XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login)
+    }
+
+    func test_preferencesCommandWorksWhileFullScreenLoginHidesTheReader() async throws {
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        fixture.app.resetNetworkManagerForTesting()
+        let previousManager = fixture.app.networkManager
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+
+        XCTAssertNotNil(fixture.login.view.window)
+        XCTAssertNil(fixture.app.splitViewController.viewIfLoaded?.window)
+        XCTAssertTrue(fixture.login.canPerformAction(#selector(BaseViewController.showAppPreferences(_:)), withSender: nil))
+        fixture.login.showAppPreferences(nil)
+
+        let preferences = try XCTUnwrap(fixture.login.presentedViewController as? PreferencesViewHostingController,
+                                       "Command-comma must open Preferences above login so self-hosted users can set their server")
+        XCTAssertTrue(preferences.presentingViewController === fixture.login)
+        await waitUntilPresented(preferences)
+        fixture.login.showAppPreferences(nil)
+        XCTAssertTrue(fixture.login.presentedViewController === preferences)
+        XCTAssertNil(preferences.presentedViewController, "Repeated commands must not stack Preferences sheets")
+
+        let model = PreferencesViewModel(isMac: true)
+        XCTAssertTrue(model.sections.flatMap(\.items).contains { item in
+            if case .textField(let key, _, let keyboardType) = item.type {
+                return key == "custom_domain" && keyboardType == .URL
+            }
+            return false
+        }, "Signed-out Preferences must retain the editable self-hosted server URL field")
+
+        preferences.finishPreferences()
+        let returnedToLogin = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            fixture.login.presentedViewController == nil && fixture.login.viewIfLoaded?.window != nil
+        }, object: nil)
+        await fulfillment(of: [returnedToLogin], timeout: 3)
+        XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login,
+                      "Done must not dismiss the login along with Preferences")
+        XCTAssertTrue(fixture.app.networkManager === previousManager,
+                      "Closing unchanged Preferences must not cancel unrelated requests")
+    }
+
+    func test_preferencesDoesNotStackAboveAnotherLoginModal() async throws {
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+        let otherModal = UIViewController()
+        otherModal.preferredContentSize = CGSize(width: 400, height: 300)
+        fixture.login.present(otherModal, animated: false)
+        await waitUntilPresented(otherModal)
+
+        fixture.login.showAppPreferences(nil)
+
+        XCTAssertTrue(fixture.login.presentedViewController === otherModal)
+        XCTAssertNil(otherModal.presentedViewController)
+    }
+
+    private func waitUntilPresented(_ controller: UIViewController) async {
+        let presented = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            controller.viewIfLoaded?.window != nil && !controller.isBeingPresented
+        }, object: nil)
+        await fulfillment(of: [presented], timeout: 3)
+    }
+}
+
+@MainActor private final class MacSignedOutPreferencesApp: NewsBlurAppDelegate {
+    override var isMac: Bool { true }
+    override func hidePopover() {}
+}
+
+@MainActor private final class MacPreferencesLoginController: LoginViewController {
+    // LoginViewControllerTests.swift retains login's responder chain without its network/background setup.
+    override func loadView() { view = UIView() }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewDidDisappear(_ animated: Bool) {}
+}
+
+@MainActor private final class MacSignedOutPreferencesFixture {
+    let app = MacSignedOutPreferencesApp()
+    let login = MacPreferencesLoginController()
+    let navigation = UINavigationController(rootViewController: UIViewController())
+    let window: UIWindow
+
+    init() throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        window = UIWindow(windowScene: scene)
+        app.splitViewController = SplitViewController()
+        app.feedsNavigationController = navigation
+        app.loginViewController = login
+        login.appDelegate = app
+        login.modalPresentationStyle = .fullScreen
+        window.rootViewController = navigation
+        window.isHidden = false
+    }
+
+    func showLogin() {
+        navigation.present(login, animated: false)
+    }
+
+    func close() async {
+        navigation.dismiss(animated: false)
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { [self] _, _ in
+            navigation.presentedViewController == nil && !login.isBeingDismissed
+        }, object: nil)
+        let result = await XCTWaiter.fulfillment(of: [dismissed], timeout: 3)
+        XCTAssertEqual(result, .completed, "The fixture must finish dismissing before hiding its window")
+        window.isHidden = true
+    }
+}
+
 final class Test_NewsBlurSocketClient: XCTestCase {
     func test_backgroundConnectionReadsServerConfigurationOnMainWithoutOpeningASocket() async {
         let configured = expectation(description: "Server configuration read")
@@ -511,7 +675,9 @@ final class Test_FeedDetailEmptyState: XCTestCase {
         messageView.addSubview(messageLabel)
         view.addSubview(messageView)
         searchField = UITextField()
+        #if !targetEnvironment(macCatalyst)
         refreshControl = UIRefreshControl()
+        #endif
         storyTitlesHeaderBar = StoryTitlesHeaderBar()
         storyTitlesHeaderBar.setup(in: view)
         storyTitlesHeaderBar.addSearchField(searchField)

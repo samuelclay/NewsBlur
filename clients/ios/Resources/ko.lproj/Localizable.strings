@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "이 스토리에 답글을 달 수 없습니다";
 "Change Story List" = "스토리 목록 변경";
 "Choose Icon" = "아이콘 선택";
+"Choose Language…" = "언어 선택…";
 "Choose Story List" = "스토리 목록 선택";
 "Choose a Topic" = "주제 선택";
 "Choose another category to discover more." = "더 알아보려면 다른 카테고리를 선택하세요.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "모든 피드에서 중복 스토리 묶기";
 "Cluster matches" = "클러스터 일치";
 "Cluster related stories" = "관련 스토리 묶기";
+"Column layout" = "열 레이아웃";
 "Columns" = "열";
 "Comfortable" = "편안함";
 "Coming soon" = "곧 출시";
@@ -373,6 +375,7 @@
 "Full Screen" = "전체 화면";
 "Full screen" = "전체 화면";
 "Full window" = "전체 창";
+"Full-screen" = "전체 화면";
 "General" = "일반";
 "Generate Daily Briefing" = "데일리 브리핑 생성";
 "Generate Now" = "지금 생성";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "업데이트가 드문 사이트의 스토리";
 "Infrequent Stories" = "드물게 올라오는 스토리";
 "Infrequent stories per month" = "업데이트가 드문 사이트 기준(월 스토리 수)";
+"Inline" = "기사 내";
 "Insta-Fetch Stories" = "스토리 즉시 가져오기";
 "Insta-fetch stories" = "스토리 즉시 가져오기";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "시스템의 다크/라이트 모드를 따르는 대신, 화면 밝기에 따라 테마를 자동으로 전환합니다. 주변 조명에 맞춰 테마를 전환할 때 유용합니다.";
@@ -629,6 +633,7 @@
 "On its way..." = "곧 도착합니다...";
 "On scroll or selection" = "스크롤하거나 선택할 때";
 "One" = "1열";
+"One column" = "1열";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "사이트 %2$@개 중 %1$@개만 탐색을 위해 색인되었습니다. 업그레이드하여 모든 사이트를 색인하고 맞춤 추천을 받아보세요.";
 "Only Title" = "제목만";
 "Only on Selection" = "선택한 항목에서만";
@@ -661,8 +666,10 @@
 "Pause" = "일시 중지";
 "Permanently delete account" = "계정 영구 삭제";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 NewsBlur 메뉴에서 변경할 수 있습니다.";
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
+"Play videos" = "동영상 재생";
 "Plum Berry" = "자두 베리";
 "Positive?" = "확실한가요?";
 "Preferences" = "환경 설정";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Google로 로그인";
 "Single" = "싱글";
 "Single Column" = "단일 열";
+"Single column" = "단일 열";
 "Site" = "사이트";
 "Site Settings" = "사이트 설정";
 "Site URL or search by name…" = "사이트 URL을 입력하거나 이름으로 검색…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "스토리 스와이프가 꺼져 있어도 왼쪽 가장자리에서 스와이프하면 항상 피드로 돌아갑니다.";
 "Switch to All or Unread." = "전체 또는 읽지 않음으로 전환하세요.";
 "Syncing stories..." = "스토리 동기화 중...";
+"System Default" = "시스템 기본값";
 "TEXT" = "텍스트";
 "Tall [grid height]" = "높음";
 "Teal Mint" = "청록 민트";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "이 기능을 사용하려면 iOS 15 이상이 필요합니다.";
 "This might take a minute.\nFeel free to continue..." = "1분 정도 걸릴 수 있습니다.\n계속 이용하셔도 됩니다...";
 "This removes the subscription from your feeds." = "이렇게 하면 피드에서 구독이 삭제됩니다.";
+"This setting only applies after the app is restarted." = "이 설정은 앱을 다시 시작한 후에만 적용됩니다.";
 "This site already has a feed" = "이 사이트에는 이미 피드가 있습니다";
 "Three" = "3열";
+"Three columns" = "3열";
 "Thursday" = "목요일";
 "Title" = "제목";
 "Title match only" = "제목만 일치";
@@ -990,7 +1001,9 @@
 "Two" = "2열";
 "Two Columns" = "2단 레이아웃";
 "Two Rows" = "두 줄";
+"Two columns" = "2열";
 "Two finger double tap" = "두 손가락으로 두 번 탭";
+"Two rows" = "2행";
 "Two-finger swipe to switch" = "두 손가락으로 쓸어넘겨 전환";
 "Type %1$@ to permanently delete %2$@." = "%2$@을(를) 영구적으로 삭제하려면 %1$@을(를) 입력하세요.";
 "UNREAD" = "읽지 않음";

@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "אי אפשר להשיב לכתבה הזו";
 "Change Story List" = "שינוי רשימת הכתבות";
 "Choose Icon" = "בחירת סמל";
+"Choose Language…" = "בחירת שפה…";
 "Choose Story List" = "בחירת רשימת כתבות";
 "Choose a Topic" = "בחירת נושא";
 "Choose another category to discover more." = "בחר קטגוריה אחרת כדי לגלות עוד.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "קבץ כתבות כפולות מכל הפידים שלך";
 "Cluster matches" = "התאמות באשכול";
 "Cluster related stories" = "קיבוץ כתבות קשורות";
+"Column layout" = "פריסת עמודות";
 "Columns" = "עמודות";
 "Comfortable" = "נוח";
 "Coming soon" = "בקרוב";
@@ -373,6 +375,7 @@
 "Full Screen" = "מסך מלא";
 "Full screen" = "מסך מלא";
 "Full window" = "חלון מלא";
+"Full-screen" = "מסך מלא";
 "General" = "כללי";
 "Generate Daily Briefing" = "יצירת תדריך יומי";
 "Generate Now" = "צור עכשיו";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "כתבות מאתרים שמפרסמים לעיתים רחוקות";
 "Infrequent Stories" = "כתבות מאתרים שמתעדכנים לעיתים רחוקות";
 "Infrequent stories per month" = "כתבות בחודש באתרים שמתעדכנים לעיתים רחוקות";
+"Inline" = "בתוך הכתבה";
 "Insta-Fetch Stories" = "כתבות בשליפה מיידית";
 "Insta-fetch stories" = "טעינה מיידית של כתבות";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "במקום להשתמש בערכת הנושא הכהה או הבהירה של המערכת, מעבר אוטומטי בין ערכות נושא בהתאם לרמת הבהירות של המסך. שימושי להתאמת ערכת הנושא לתאורת הסביבה.";
@@ -629,6 +633,7 @@
 "On its way..." = "בדרך...";
 "On scroll or selection" = "בעת גלילה או בחירה";
 "One" = "אחת";
+"One column" = "עמודה אחת";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "רק %1$@ מתוך %2$@ האתרים שלך מאונדקסים לגילוי. שדרג כדי לאנדקס את כל האתרים שלך ולקבל המלצות מותאמות אישית.";
 "Only Title" = "כותרת בלבד";
 "Only on Selection" = "רק בעת בחירה";
@@ -661,8 +666,10 @@
 "Pause" = "השהה";
 "Permanently delete account" = "מחיקת החשבון לצמיתות";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בהעדפות.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בתפריט NewsBlur.";
 "Pick which model writes your Daily Briefing" = "בחרו איזה מודל יכתוב את התדריך היומי שלכם";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
+"Play videos" = "הפעלת סרטונים";
 "Plum Berry" = "שזיף ופירות יער";
 "Positive?" = "להמשיך?";
 "Preferences" = "העדפות";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "התחברות באמצעות Google";
 "Single" = "יחיד";
 "Single Column" = "עמודה אחת";
+"Single column" = "עמודה אחת";
 "Site" = "אתר";
 "Site Settings" = "הגדרות האתר";
 "Site URL or search by name…" = "כתובת האתר או חיפוש לפי שם…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "החלקה מקצה המסך השמאלי תמיד מחזירה לרשימת הפידים, גם כשהחלקה בכתבות מושבתת.";
 "Switch to All or Unread." = "עברו אל הכול או אל שלא נקראו.";
 "Syncing stories..." = "מסנכרן כתבות...";
+"System Default" = "ברירת המחדל של המערכת";
 "TEXT" = "טקסט";
 "Tall [grid height]" = "גבוה";
 "Teal Mint" = "מנטה טורקיז";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "התכונה הזו דורשת iOS 15 ואילך.";
 "This might take a minute.\nFeel free to continue..." = "זה עשוי לקחת דקה.\nאפשר להמשיך בינתיים...";
 "This removes the subscription from your feeds." = "הפעולה תסיר את המינוי מהפידים שלך.";
+"This setting only applies after the app is restarted." = "ההגדרה תיכנס לתוקף רק לאחר הפעלה מחדש של האפליקציה.";
 "This site already has a feed" = "לאתר הזה כבר יש פיד";
 "Three" = "שלוש";
+"Three columns" = "שלוש עמודות";
 "Thursday" = "יום חמישי";
 "Title" = "כותרת";
 "Title match only" = "התאמה לכותרת בלבד";
@@ -990,7 +1001,9 @@
 "Two" = "שתיים";
 "Two Columns" = "שתי עמודות";
 "Two Rows" = "שתי שורות";
+"Two columns" = "שתי עמודות";
 "Two finger double tap" = "הקשה כפולה בשתי אצבעות";
+"Two rows" = "שתי שורות";
 "Two-finger swipe to switch" = "החלקה בשתי אצבעות למעבר";
 "Type %1$@ to permanently delete %2$@." = "הקלידו %1$@ כדי למחוק לצמיתות את %2$@.";
 "UNREAD" = "לא נקרא";

@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "لا يمكن الرد على هذه القصة";
 "Change Story List" = "تغيير قائمة القصص";
 "Choose Icon" = "اختيار أيقونة";
+"Choose Language…" = "اختيار اللغة…";
 "Choose Story List" = "اختر قائمة القصص";
 "Choose a Topic" = "اختر موضوعًا";
 "Choose another category to discover more." = "اختر فئة أخرى لاكتشاف المزيد.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "جمّع القصص المكررة عبر جميع خلاصاتك";
 "Cluster matches" = "تطابقات المجموعة";
 "Cluster related stories" = "تجميع القصص المرتبطة";
+"Column layout" = "تخطيط الأعمدة";
 "Columns" = "الأعمدة";
 "Comfortable" = "مريح";
 "Coming soon" = "قريبًا";
@@ -373,6 +375,7 @@
 "Full Screen" = "ملء الشاشة";
 "Full screen" = "ملء الشاشة";
 "Full window" = "نافذة كاملة";
+"Full-screen" = "ملء الشاشة";
 "General" = "عام";
 "Generate Daily Briefing" = "إنشاء موجز يومي";
 "Generate Now" = "إنشاء الآن";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "قصص المواقع قليلة التحديث";
 "Infrequent Stories" = "قصص المواقع قليلة التحديث";
 "Infrequent stories per month" = "حد القصص الشهري للمواقع قليلة التحديث";
+"Inline" = "داخل المقال";
 "Insta-Fetch Stories" = "جلب القصص فورًا";
 "Insta-fetch stories" = "جلب القصص فورًا";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "بدلًا من اتباع الوضع الداكن أو الفاتح للنظام، بدّل السمات تلقائيًا حسب مستوى سطوع الشاشة. مفيد لتغيير السمات وفق الإضاءة المحيطة.";
@@ -629,6 +633,7 @@
 "On its way..." = "في الطريق...";
 "On scroll or selection" = "عند التمرير أو التحديد";
 "One" = "واحد";
+"One column" = "عمود واحد";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "لم تتم فهرسة سوى %1$@ من أصل %2$@ من مواقعك لاكتشاف المحتوى. قم بالترقية لفهرسة جميع مواقعك والحصول على توصيات مخصصة.";
 "Only Title" = "العنوان فقط";
 "Only on Selection" = "عند التحديد فقط";
@@ -661,8 +666,10 @@
 "Pause" = "إيقاف مؤقت";
 "Permanently delete account" = "حذف الحساب نهائيًا";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
+"Play videos" = "تشغيل الفيديوهات";
 "Plum Berry" = "توت برقوقي";
 "Positive?" = "هل أنت متأكد؟";
 "Preferences" = "التفضيلات";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "تسجيل الدخول باستخدام Google";
 "Single" = "مفرد";
 "Single Column" = "عمود واحد";
+"Single column" = "عمود واحد";
 "Site" = "الموقع";
 "Site Settings" = "إعدادات الموقع";
 "Site URL or search by name…" = "عنوان URL للموقع أو ابحث بالاسم…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "يعيدك السحب من الحافة اليسرى دائمًا إلى الخلاصات، حتى عند إيقاف السحب بين القصص.";
 "Switch to All or Unread." = "التبديل إلى «الكل» أو «غير مقروءة».";
 "Syncing stories..." = "جارٍ مزامنة القصص...";
+"System Default" = "إعداد النظام الافتراضي";
 "TEXT" = "نص";
 "Tall [grid height]" = "طويل";
 "Teal Mint" = "نعناعي فيروزي";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "تتطلب هذه الميزة iOS 15 أو أحدث.";
 "This might take a minute.\nFeel free to continue..." = "قد يستغرق هذا دقيقة.\nيمكنك المتابعة أثناء ذلك...";
 "This removes the subscription from your feeds." = "سيؤدي هذا إلى إزالة الاشتراك من خلاصاتك.";
+"This setting only applies after the app is restarted." = "لا يُطبَّق هذا الإعداد إلا بعد إعادة تشغيل التطبيق.";
 "This site already has a feed" = "هذا الموقع لديه خلاصة بالفعل";
 "Three" = "ثلاثة";
+"Three columns" = "ثلاثة أعمدة";
 "Thursday" = "الخميس";
 "Title" = "العنوان";
 "Title match only" = "مطابقة العنوان فقط";
@@ -990,7 +1001,9 @@
 "Two" = "اثنان";
 "Two Columns" = "عمودان";
 "Two Rows" = "صفّان";
+"Two columns" = "عمودان";
 "Two finger double tap" = "نقر مزدوج بإصبعين";
+"Two rows" = "صفان";
 "Two-finger swipe to switch" = "اسحب بإصبعين للتبديل";
 "Type %1$@ to permanently delete %2$@." = "اكتب %1$@ لحذف %2$@ نهائيًا.";
 "UNREAD" = "غير مقروء";

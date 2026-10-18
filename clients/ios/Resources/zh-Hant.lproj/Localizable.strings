@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "無法回覆這則文章";
 "Change Story List" = "變更文章清單";
 "Choose Icon" = "選擇圖示";
+"Choose Language…" = "選擇語言…";
 "Choose Story List" = "選擇文章列表";
 "Choose a Topic" = "選擇主題";
 "Choose another category to discover more." = "選擇其他類別以探索更多內容。";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "在所有訂閱來源中將重複文章分群";
 "Cluster matches" = "分群比對";
 "Cluster related stories" = "將相關文章分群";
+"Column layout" = "分欄版面配置";
 "Columns" = "欄";
 "Comfortable" = "舒適";
 "Coming soon" = "即將推出";
@@ -373,6 +375,7 @@
 "Full Screen" = "全螢幕";
 "Full screen" = "全螢幕";
 "Full window" = "整個視窗";
+"Full-screen" = "全螢幕";
 "General" = "一般";
 "Generate Daily Briefing" = "產生每日簡報";
 "Generate Now" = "立即產生";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "不常更新的網站文章";
 "Infrequent Stories" = "不常更新的網站文章";
 "Infrequent stories per month" = "不常更新網站的每月文章數";
+"Inline" = "文章內";
 "Insta-Fetch Stories" = "即時擷取文章";
 "Insta-fetch stories" = "即時擷取文章";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "不跟隨系統的深色／淺色模式，而是根據螢幕亮度自動切換佈景主題。適合依環境光線切換佈景主題。";
@@ -629,6 +633,7 @@
 "On its way..." = "馬上就好…";
 "On scroll or selection" = "捲動或選取時";
 "One" = "一";
+"One column" = "一欄";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "你的 %2$@ 個網站中，只有 %1$@ 個已編入探索索引。升級即可將所有網站編入索引，並取得個人化推薦。";
 "Only Title" = "僅標題";
 "Only on Selection" = "僅在選取時";
@@ -661,8 +666,10 @@
 "Pause" = "暫停";
 "Permanently delete account" = "永久刪除帳戶";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
 "Place the story list controls above or below the stories" = "將文章清單控制項放在文章上方或下方";
+"Play videos" = "播放影片";
 "Plum Berry" = "李子莓";
 "Positive?" = "確定嗎？";
 "Preferences" = "偏好設定";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "使用 Google 登入";
 "Single" = "單一";
 "Single Column" = "單欄";
+"Single column" = "單欄";
 "Site" = "網站";
 "Site Settings" = "網站設定";
 "Site URL or search by name…" = "網站網址或依名稱搜尋…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "即使關閉文章滑動手勢，從左側邊緣滑動也會返回訂閱來源。";
 "Switch to All or Unread." = "切換至「全部」或「未讀」。";
 "Syncing stories..." = "正在同步文章…";
+"System Default" = "系統預設";
 "TEXT" = "文字";
 "Tall [grid height]" = "高";
 "Teal Mint" = "藍綠薄荷";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "此功能需要 iOS 15 或更新版本。";
 "This might take a minute.\nFeel free to continue..." = "這可能需要一分鐘。\n請隨時繼續操作……";
 "This removes the subscription from your feeds." = "這會從你的訂閱來源中移除此訂閱。";
+"This setting only applies after the app is restarted." = "這項設定會在重新啟動應用程式後才生效。";
 "This site already has a feed" = "此網站已有訂閱來源";
 "Three" = "三";
+"Three columns" = "三欄";
 "Thursday" = "星期四";
 "Title" = "標題";
 "Title match only" = "僅比對標題";
@@ -990,7 +1001,9 @@
 "Two" = "二";
 "Two Columns" = "雙欄";
 "Two Rows" = "兩列";
+"Two columns" = "兩欄";
 "Two finger double tap" = "雙指點兩下";
+"Two rows" = "兩列";
 "Two-finger swipe to switch" = "雙指滑動即可切換";
 "Type %1$@ to permanently delete %2$@." = "輸入 %1$@ 以永久刪除 %2$@。";
 "UNREAD" = "未讀";

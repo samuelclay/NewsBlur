@@ -9,6 +9,42 @@ import UIKit
 // MARK: - When the dialog shows
 
 @MainActor final class LanguageDialog {
+    private static var savingAutomaticLanguage = false
+
+    private static var menuPresenter: UIViewController? {
+        guard !savingAutomaticLanguage, let app = NewsBlurAppDelegate.shared,
+              let username = app.activeUsername, !username.isEmpty,
+              let presenter = app.splitViewController,
+              presenter.viewIfLoaded?.window != nil, presenter.presentedViewController == nil else { return nil }
+        return presenter
+    }
+
+    static var canPresentFromMenu: Bool { menuPresenter != nil }
+
+    static func presentFromMenu() {
+        guard let presenter = menuPresenter else { return }
+        // LanguageChooserView.swift bypasses the one-time offer when opened from the Mac menu.
+        let controller = LanguageDialogViewController(startsInGrid: true, presenter: presenter, manualSelection: true)
+        presenter.present(controller, animated: true)
+    }
+
+    static func useAutomaticLanguage() {
+        guard let presenter = menuPresenter, NBLocalization.language != "auto" else { return }
+        savingAutomaticLanguage = true
+        UIMenuSystem.main.setNeedsRebuild()
+        NBLocalization.save("auto", settled: {
+            savingAutomaticLanguage = false
+            UIMenuSystem.main.setNeedsRebuild()
+        }) { success in
+            guard !success else { return }
+            let alert = UIAlertController(title: NBLocalization.text("Could not save your language. Please try again."),
+                                          message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NBLocalization.text("OK"), style: .default))
+            guard presenter.viewIfLoaded?.window != nil, presenter.presentedViewController == nil else { return }
+            presenter.present(alert, animated: true)
+        }
+    }
+
     static let seenKey = "language_dialog_seen"
     // LanguageChooserView.swift screenshot hooks. The first forces the dialog regardless of the seen flag and
     // account language, the second opens it in grid mode, the third shows it as the first onboarding step instead.
@@ -82,12 +118,17 @@ import UIKit
     @Published private(set) var openedFromBilingual: Bool
     @Published private(set) var savingCode: String?
     @Published var saveFailed = false
+    let manualSelection: Bool
+    private let saveLanguage: (String, @escaping (Bool) -> Void) -> Void
 
-    init(startsInGrid: Bool) {
+    init(startsInGrid: Bool, manualSelection: Bool = false,
+         saveLanguage: @escaping (String, @escaping (Bool) -> Void) -> Void = NBLocalization.save) {
+        self.manualSelection = manualSelection
+        self.saveLanguage = saveLanguage
         current = NBLocalization.resolvedLanguage
         let english = current == "en"
         mode = english || startsInGrid ? .grid : .bilingual
-        openedFromBilingual = !english && startsInGrid
+        openedFromBilingual = !manualSelection && !english && startsInGrid
         selection = current
     }
 
@@ -113,12 +154,14 @@ import UIKit
     // which applies the language live once the server accepts it.
     func choose(_ code: String, then finish: @escaping () -> Void) {
         LanguageDialog.seen = true
-        guard code != NBLocalization.resolvedLanguage else {
+        // LanguageChooserView.swift pins an explicit menu choice even when Automatic currently resolves to it.
+        let unchanged = manualSelection ? NBLocalization.language : NBLocalization.resolvedLanguage
+        guard code != unchanged else {
             finish()
             return
         }
         savingCode = code
-        NBLocalization.save(code) { [weak self] success in
+        saveLanguage(code) { [weak self] success in
             guard let self else { return }
             savingCode = nil
             if success { finish() } else { saveFailed = true }
@@ -350,8 +393,13 @@ struct LanguageChooserView: View {
                 .font(.system(size: titleSize, weight: .semibold))
                 .foregroundColor(muted ? LanguageChooserColors.muted : LanguageChooserColors.ink)
                 .accessibilityAddTraits(.isHeader)
+            #if targetEnvironment(macCatalyst)
+            paragraph(NBLocalization.text("Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.",
+                                          language: code), code: code, color: muted ? LanguageChooserColors.muted : nil)
+            #else
             paragraph(NBLocalization.text("Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.",
                                           language: code), code: code, color: muted ? LanguageChooserColors.muted : nil)
+            #endif
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .languageDirection(code)
@@ -411,6 +459,9 @@ struct LanguageChooserView: View {
             .fixedSize(horizontal: false, vertical: true)
             if model.openedFromBilingual {
                 link(NBLocalization.text("Back"), code: model.current) { model.showBilingual() }
+            } else if model.manualSelection {
+                link(NBLocalization.text("Cancel"), code: model.current, action: onFinish)
+                    .keyboardShortcut(.cancelAction)
             }
         }
         .padding(.horizontal, horizontalPadding)
@@ -492,8 +543,8 @@ final class LanguageDialogViewController: UIViewController, UIAdaptivePresentati
     private let model: LanguageChooserModel
     private var contentHeight: CGFloat
 
-    init(startsInGrid: Bool, presenter: UIViewController) {
-        model = LanguageChooserModel(startsInGrid: startsInGrid)
+    init(startsInGrid: Bool, presenter: UIViewController, manualSelection: Bool = false) {
+        model = LanguageChooserModel(startsInGrid: startsInGrid, manualSelection: manualSelection)
         // LanguageDialogViewController.swift measures the chooser without scrolling first, so the sheet opens
         // at its final height instead of growing after the first layout pass.
         let regular = presenter.traitCollection.horizontalSizeClass == .regular

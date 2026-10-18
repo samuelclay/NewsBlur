@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Je kunt niet reageren op dit artikel";
 "Change Story List" = "Artikellijst wijzigen";
 "Choose Icon" = "Pictogram kiezen";
+"Choose Language…" = "Taal kiezen…";
 "Choose Story List" = "Artikellijst kiezen";
 "Choose a Topic" = "Kies een onderwerp";
 "Choose another category to discover more." = "Kies een andere categorie om meer te ontdekken.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Groepeer dubbele artikelen in al je feeds";
 "Cluster matches" = "Overeenkomsten groeperen";
 "Cluster related stories" = "Verwante artikelen groeperen";
+"Column layout" = "Kolomindeling";
 "Columns" = "Kolommen";
 "Comfortable" = "Comfortabel";
 "Coming soon" = "Binnenkort beschikbaar";
@@ -373,6 +375,7 @@
 "Full Screen" = "Volledig scherm";
 "Full screen" = "Volledig scherm";
 "Full window" = "Volledig venster";
+"Full-screen" = "Volledig scherm";
 "General" = "Algemeen";
 "Generate Daily Briefing" = "Dagelijkse briefing genereren";
 "Generate Now" = "Nu genereren";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Artikelen van weinig actieve sites";
 "Infrequent Stories" = "Artikelen van weinig actieve sites";
 "Infrequent stories per month" = "Grens voor weinig actieve sites";
+"Inline" = "In het artikel";
 "Insta-Fetch Stories" = "Artikelen direct ophalen";
 "Insta-fetch stories" = "Artikelen direct ophalen";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Schakel thema's automatisch op basis van de helderheid van je scherm, in plaats van de donkere of lichte systeemmodus te volgen. Handig om thema's aan te passen aan het omgevingslicht.";
@@ -629,6 +633,7 @@
 "On its way..." = "Onderweg...";
 "On scroll or selection" = "Bij scrollen of selecteren";
 "One" = "Eén";
+"One column" = "Eén kolom";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Slechts %1$@ van je %2$@ sites zijn geïndexeerd om te ontdekken. Upgrade om al je sites te indexeren en persoonlijke aanbevelingen te krijgen.";
 "Only Title" = "Alleen titel";
 "Only on Selection" = "Alleen bij selectie";
@@ -661,8 +666,10 @@
 "Pause" = "Pauzeren";
 "Permanently delete account" = "Account definitief verwijderen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
+"Play videos" = "Video’s afspelen";
 "Plum Berry" = "Pruimenbes";
 "Positive?" = "Weet je het zeker?";
 "Preferences" = "Voorkeuren";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Inloggen met Google";
 "Single" = "Enkel";
 "Single Column" = "Enkele kolom";
+"Single column" = "Eén kolom";
 "Site" = "Site";
 "Site Settings" = "Site-instellingen";
 "Site URL or search by name…" = "Site-URL of zoeken op naam…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Vegen vanaf de linkerrand brengt je altijd terug naar feeds, ook als vegen door artikelen is uitgeschakeld.";
 "Switch to All or Unread." = "Schakel over naar Alles of Ongelezen.";
 "Syncing stories..." = "Artikelen synchroniseren...";
+"System Default" = "Systeemstandaard";
 "TEXT" = "TEKST";
 "Tall [grid height]" = "Hoog";
 "Teal Mint" = "Tealmunt";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "Voor deze functie is iOS 15 of hoger vereist.";
 "This might take a minute.\nFeel free to continue..." = "Dit kan een minuut duren.\nGa gerust verder...";
 "This removes the subscription from your feeds." = "Hiermee wordt het abonnement uit je feeds verwijderd.";
+"This setting only applies after the app is restarted." = "Deze instelling wordt pas toegepast nadat de app opnieuw is gestart.";
 "This site already has a feed" = "Deze site heeft al een feed";
 "Three" = "Drie";
+"Three columns" = "Drie kolommen";
 "Thursday" = "donderdag";
 "Title" = "Titel";
 "Title match only" = "Alleen overeenkomst met titel";
@@ -990,7 +1001,9 @@
 "Two" = "Twee";
 "Two Columns" = "Twee kolommen";
 "Two Rows" = "Twee rijen";
+"Two columns" = "Twee kolommen";
 "Two finger double tap" = "Dubbeltikken met twee vingers";
+"Two rows" = "Twee rijen";
 "Two-finger swipe to switch" = "Veeg met twee vingers om te wisselen";
 "Type %1$@ to permanently delete %2$@." = "Typ %1$@ om %2$@ definitief te verwijderen.";
 "UNREAD" = "ONGELEZEN";

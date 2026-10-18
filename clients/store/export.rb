@@ -24,19 +24,20 @@ module StoreMetadata
       apple_subscriptions = {}
       apple_groups = []
       google_subscriptions = {}
+      apple_platform = @catalog.platforms.find { |platform| %w[ios macos].include?(platform) }
       @catalog.locales.each do |mapping|
         language = mapping.fetch('language')
         metadata = @catalog.metadata.fetch(language)
         release = @catalog.releases.fetch(language)
-        if @catalog.platforms.include?('ios')
-          ios = metadata.fetch('ios')
+        if apple_platform
+          apple = metadata.fetch(apple_platform)
           info << apple_payload('appInfoLocalizations', {
-            'locale' => mapping.fetch('apple'), 'name' => ios.fetch('name'), 'subtitle' => ios.fetch('subtitle')
+            'locale' => mapping.fetch('apple'), 'name' => apple.fetch('name'), 'subtitle' => apple.fetch('subtitle')
           }, 'appInfo', 'appInfos', @app_info_id)
           versions << apple_payload('appStoreVersionLocalizations', {
-            'locale' => mapping.fetch('apple'), 'description' => ios.fetch('description'),
-            'keywords' => ios.fetch('keywords'), 'promotionalText' => ios.fetch('promotional_text'),
-            'whatsNew' => release.fetch('ios').fetch('whats_new')
+            'locale' => mapping.fetch('apple'), 'description' => apple.fetch('description'),
+            'keywords' => apple.fetch('keywords'), 'promotionalText' => apple.fetch('promotional_text'),
+            'whatsNew' => release.fetch(apple_platform).fetch('whats_new')
           }, 'appStoreVersion', 'appStoreVersions', @app_store_version_id)
         end
         if @catalog.platforms.include?('android')
@@ -48,7 +49,7 @@ module StoreMetadata
           release_notes << { 'language' => mapping.fetch('google'), 'text' => release.fetch('android').fetch('release_notes') }
         end
         products = @catalog.products.fetch(language)
-        if @catalog.platforms.include?('ios')
+        if apple_platform
           products.fetch('ios').fetch('subscriptions').each do |product_id, product|
             apple_subscriptions[product_id] ||= { 'productId' => product_id, 'localizations' => [] }
             apple_subscriptions[product_id]['localizations'] << apple_payload('subscriptionLocalizations', {
@@ -71,7 +72,7 @@ module StoreMetadata
           end
         end
       end
-      if @catalog.platforms.include?('ios')
+      if apple_platform
         FileUtils.mkdir_p(@output.join('apple'))
         write_json('apple/app-info-localizations.json', info)
         write_json('apple/version-localizations.json', versions)

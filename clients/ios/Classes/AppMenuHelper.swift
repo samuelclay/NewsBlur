@@ -34,14 +34,54 @@ class AppMenuHelper: NSObject {
     
     private static let siteMenuIdentifier = UIMenu.Identifier("com.newsblur.site")
     private static let storyMenuIdentifier = UIMenu.Identifier("com.newsblur.story")
+    private static let languageMenuIdentifier = UIMenu.Identifier("com.newsblur.language")
 
-    @objc(buildMenuWithBuilder:)
+    @MainActor static func languageMenu() -> UIMenu {
+        // AppMenuHelper.swift evaluates availability when the menu opens, after sign-in or sheet dismissal.
+        UIMenu(title: NBLocalization.text("Language"), identifier: languageMenuIdentifier, children: [
+            UIDeferredMenuElement.uncached { completion in completion(languageMenuActions()) }
+        ])
+    }
+
+    @MainActor static func languageMenuActions() -> [UIMenuElement] {
+        let attributes: UIMenuElement.Attributes = LanguageDialog.canPresentFromMenu ? [] : [.disabled]
+        return [
+            UIAction(title: NBLocalization.text("Choose Language…"), attributes: attributes) { _ in
+                LanguageDialog.presentFromMenu()
+            },
+            UIAction(title: NBLocalization.automaticLabel, attributes: attributes,
+                     state: NBLocalization.language == "auto" ? .on : .off) { _ in
+                LanguageDialog.useAutomaticLanguage()
+            }
+        ]
+    }
+
+    @MainActor @objc(buildMenuWithBuilder:)
     func buildMenu(with builder: UIMenuBuilder) {
         guard builder.system == .main else { return }
 
         // Remove existing custom menus to prevent duplicates on rebuild
         builder.remove(menu: Self.siteMenuIdentifier)
         builder.remove(menu: Self.storyMenuIdentifier)
+        #if targetEnvironment(macCatalyst)
+        // AppMenuHelper.swift replaces the system Settings.bundle pane with account-localized preferences.
+        let preferences = UIMenu(title: "", identifier: .preferences, options: .displayInline, children: [
+            UIKeyCommand(title: NBLocalization.text("Preferences"), action: #selector(BaseViewController.showAppPreferences(_:)),
+                         input: ",", modifierFlags: .command)
+        ])
+        if builder.menu(for: .preferences) != nil {
+            builder.replace(menu: .preferences, with: preferences)
+        } else {
+            builder.insertChild(preferences, atStartOfMenu: .application)
+        }
+        // AppMenuHelper.swift keeps language selection available after the first-run dialog is dismissed.
+        builder.remove(menu: Self.languageMenuIdentifier)
+        if builder.menu(for: .preferences) != nil {
+            builder.insertSibling(Self.languageMenu(), afterMenu: .preferences)
+        } else {
+            builder.insertChild(Self.languageMenu(), atStartOfMenu: .application)
+        }
+        #endif
 
         // Remove/adjust system menus first
         if #available(iOS 16.0, *) {
@@ -566,5 +606,12 @@ class AppMenuHelper: NSObject {
                               action: #selector(BaseViewController.showManageAccount(_:)))
                 ])
             ]), atEndOfMenu: .help)
+    }
+}
+
+extension BaseViewController {
+    // AppMenuHelper.swift routes Command-comma through the active reader's responder chain.
+    @objc func showAppPreferences(_ sender: Any?) {
+        appDelegate.showPreferences()
     }
 }

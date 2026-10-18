@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "No se puede responder a este artículo";
 "Change Story List" = "Cambiar lista de artículos";
 "Choose Icon" = "Elegir icono";
+"Choose Language…" = "Elegir idioma…";
 "Choose Story List" = "Elegir lista de artículos";
 "Choose a Topic" = "Elige un tema";
 "Choose another category to discover more." = "Elige otra categoría para descubrir más.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Agrupar artículos duplicados de todos tus feeds";
 "Cluster matches" = "Agrupar coincidencias";
 "Cluster related stories" = "Agrupar artículos relacionados";
+"Column layout" = "Diseño de columnas";
 "Columns" = "Columnas";
 "Comfortable" = "Cómodo";
 "Coming soon" = "Próximamente";
@@ -373,6 +375,7 @@
 "Full Screen" = "Pantalla completa";
 "Full screen" = "Pantalla completa";
 "Full window" = "Ventana completa";
+"Full-screen" = "Pantalla completa";
 "General" = "General";
 "Generate Daily Briefing" = "Generar resumen diario";
 "Generate Now" = "Generar ahora";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Artículos de sitios poco activos";
 "Infrequent Stories" = "Sitios poco activos";
 "Infrequent stories per month" = "Umbral de artículos al mes";
+"Inline" = "En el artículo";
 "Insta-Fetch Stories" = "Obtener artículos al instante";
 "Insta-fetch stories" = "Obtener artículos al instante";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "En lugar de seguir el modo oscuro o claro del sistema, cambia automáticamente de tema según el brillo de la pantalla. Útil para cambiar de tema según la iluminación ambiental.";
@@ -629,6 +633,7 @@
 "On its way..." = "En camino...";
 "On scroll or selection" = "Al desplazarse o seleccionar";
 "One" = "Uno";
+"One column" = "Una columna";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Solo %1$@ de tus %2$@ sitios están indexados para el descubrimiento. Mejora tu plan para indexar todos tus sitios y recibir recomendaciones personalizadas.";
 "Only Title" = "Solo título";
 "Only on Selection" = "Solo al seleccionar";
@@ -661,8 +666,10 @@
 "Pause" = "Pausar";
 "Permanently delete account" = "Eliminar cuenta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Elige el idioma que quieres que use NewsBlur. Puedes cambiarlo cuando quieras en Preferencias.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Elige el idioma que quieres usar en NewsBlur. Puedes cambiarlo en cualquier momento desde el menú de NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Elige qué modelo redacta tu resumen diario";
 "Place the story list controls above or below the stories" = "Colocar los controles de la lista de artículos encima o debajo de los artículos";
+"Play videos" = "Reproducir videos";
 "Plum Berry" = "Baya ciruela";
 "Positive?" = "¿Seguro?";
 "Preferences" = "Preferencias";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Iniciar sesión con Google";
 "Single" = "Individual";
 "Single Column" = "Una sola columna";
+"Single column" = "Una columna";
 "Site" = "Sitio";
 "Site Settings" = "Configuración del sitio";
 "Site URL or search by name…" = "URL del sitio o buscar por nombre…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Deslizar desde el borde izquierdo siempre vuelve a los feeds, incluso si los deslizamientos en los artículos están desactivados.";
 "Switch to All or Unread." = "Cambia a Todos o No leído.";
 "Syncing stories..." = "Sincronizando artículos...";
+"System Default" = "Predeterminado del sistema";
 "TEXT" = "TEXTO";
 "Tall [grid height]" = "Alto";
 "Teal Mint" = "Menta verde azulado";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "Esta función requiere iOS 15 o posterior.";
 "This might take a minute.\nFeel free to continue..." = "Esto puede tardar un minuto.\nPuedes continuar mientras tanto...";
 "This removes the subscription from your feeds." = "Esto elimina la suscripción de tus feeds.";
+"This setting only applies after the app is restarted." = "Este ajuste solo se aplica después de reiniciar la aplicación.";
 "This site already has a feed" = "Este sitio ya tiene un feed";
 "Three" = "Tres";
+"Three columns" = "Tres columnas";
 "Thursday" = "Jueves";
 "Title" = "Título";
 "Title match only" = "Solo coincidencia con el título";
@@ -990,7 +1001,9 @@
 "Two" = "Dos";
 "Two Columns" = "Dos columnas";
 "Two Rows" = "Dos filas";
+"Two columns" = "Dos columnas";
 "Two finger double tap" = "Doble toque con dos dedos";
+"Two rows" = "Dos filas";
 "Two-finger swipe to switch" = "Desliza con dos dedos para cambiar";
 "Type %1$@ to permanently delete %2$@." = "Escribe %1$@ para eliminar permanentemente %2$@.";
 "UNREAD" = "NO LEÍDOS";

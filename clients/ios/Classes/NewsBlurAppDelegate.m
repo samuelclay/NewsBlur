@@ -1129,8 +1129,21 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showPreferences {
+    UIViewController *presenter = self.feedsNavigationController;
+    BOOL presentsOverLogin = NO;
     if (self.isMac) {
-        return;
+        // NewsBlurAppDelegate.m keeps server settings reachable when full-screen login hides the reader.
+        LoginViewController *login = self.loginViewController;
+        if (login.viewIfLoaded.window && login.presentingViewController && !login.isBeingDismissed) {
+            if (login.presentedViewController || login.isBeingPresented) {
+                return;
+            }
+            presenter = login;
+            presentsOverLogin = YES;
+        } else if (!self.splitViewController.viewIfLoaded.window ||
+                   self.splitViewController.presentedViewController) {
+            return;
+        }
     }
 
     [self hidePopover];
@@ -1140,16 +1153,36 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
+        if (presentsOverLogin) {
+            __weak NewsBlurAppDelegate *weakSelf = self;
+            [swiftUIPrefs configureForLoginPresentation:^{
+                NewsBlurAppDelegate *appDelegate = weakSelf;
+                if (!appDelegate) {
+                    return;
+                }
+                NSString *previousURL = appDelegate.url;
+                appDelegate.cachedURL = nil;
+                if (![appDelegate.url isEqualToString:previousURL]) {
+                    // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+                    [appDelegate clearNetworkManager];
+                }
+            }];
+        }
 
-        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        swiftUIPrefs.modalPresentationStyle = self.isMac ? UIModalPresentationFormSheet : UIModalPresentationPageSheet;
+        if (self.isMac) {
+            swiftUIPrefs.preferredContentSize = CGSizeMake(720.0, 800.0);
+        }
         if (swiftUIPrefs.sheetPresentationController) {
             swiftUIPrefs.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
             swiftUIPrefs.sheetPresentationController.prefersGrabberVisible = YES;
             swiftUIPrefs.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
-        [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
-            [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
+        [presenter presentViewController:swiftUIPrefs animated:YES completion:^{
+            if (!presentsOverLogin) {
+                [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
+            }
             [[ThemeManager themeManager] addThemeGestureRecognizerToView:swiftUIPrefs.view];
         }];
     }

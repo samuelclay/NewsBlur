@@ -402,8 +402,10 @@ class PreferencesViewModel: ObservableObject {
     @Published var refreshTrigger = false
 
     weak var delegate: PreferencesViewDelegate?
+    private let isMac: Bool
 
-    init() {
+    init(isMac: Bool = ProcessInfo.processInfo.isMacCatalystApp) {
+        self.isMac = isMac
         buildSections()
         updateHiddenKeys()
 
@@ -963,9 +965,13 @@ class PreferencesViewModel: ObservableObject {
                         type: .multiValue(
                             key: "story_browser",
                             // PreferencesView.swift keeps browser brand names untranslated.
-                            titles: [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
-                            values: ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
-                            defaultValue: "inappsafari"
+                            titles: isMac
+                                ? [NBLocalization.text("System Default"), "Chrome", "Opera Mini", "Firefox", "Edge", "Brave", NBLocalization.text("In-app browser")]
+                                : [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
+                            values: isMac
+                                ? ["system", "chrome", "opera_mini", "firefox", "edge", "brave", "inapp"]
+                                : ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
+                            defaultValue: isMac ? "system" : "inappsafari"
                         )
                     ),
                     PreferenceItem(
@@ -1102,6 +1108,24 @@ class PreferencesViewModel: ObservableObject {
                 ]
             )
         ]
+        if isMac {
+            // PreferencesView.swift retains the Mac-only options previously exposed by mac/Settings.bundle.
+            sections[0].items += [
+                PreferenceItem(title: NBLocalization.text("Column layout"), icon: "rectangle.split.3x1", iconColor: .blue,
+                               type: .multiValue(key: "split_behavior",
+                                                 titles: [NBLocalization.text("Automatic"), NBLocalization.text("Three columns"), NBLocalization.text("Two columns"), NBLocalization.text("One column")],
+                                                 values: ["auto", "tile", "displace", "overlay"], defaultValue: "auto")),
+                PreferenceItem(title: NBLocalization.text("Dashboard"), icon: "rectangle.grid.2x2", iconColor: .purple,
+                               type: .multiValue(key: "dashboard_layout",
+                                                 titles: [NBLocalization.text("Hidden"), NBLocalization.text("Single column"), NBLocalization.text("Two columns"), NBLocalization.text("Two rows")],
+                                                 values: ["none", "single", "vertical", "horizontal"], defaultValue: "vertical")),
+                PreferenceItem(title: NBLocalization.text("Play videos"), icon: "play.rectangle", iconColor: .orange,
+                               type: .multiValue(key: "video_playback",
+                                                 titles: [NBLocalization.text("Inline"), NBLocalization.text("Full-screen")],
+                                                 values: ["inline", "fullscreen"], defaultValue: "inline"),
+                               footerText: NBLocalization.text("This setting only applies after the app is restarted."))
+            ]
+        }
     }
 
     private func gestureSection() -> PreferenceSection {
@@ -2546,6 +2570,8 @@ private struct AppIconPreviewImage: View {
 @objc class PreferencesViewHostingController: UIViewController {
     private var viewModel: PreferencesViewModel!
     private var hostingController: UIViewController?
+    private var isPresentedOverLogin = false
+    private var applyLoginSettings: (() -> Void)?
     @objc weak var delegate: PreferencesViewDelegate?
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -2576,7 +2602,7 @@ private struct AppIconPreviewImage: View {
         let preferencesView = PreferencesView(
             viewModel: viewModel,
             onDismiss: { [weak self] in
-                self?.delegate?.preferencesDidDismiss()
+                self?.finishPreferences()
             }
         )
 
@@ -2602,8 +2628,34 @@ private struct AppIconPreviewImage: View {
         viewModel.delegate = newDelegate
     }
 
+    @objc func configureForLoginPresentation(_ applySettings: @escaping () -> Void) {
+        isPresentedOverLogin = true
+        applyLoginSettings = applySettings
+        configureDelegate(nil)
+    }
+
+    @objc func finishPreferences() {
+        if isPresentedOverLogin {
+            // PreferencesView.swift dismisses only this sheet, retaining the login underneath it.
+            view.endEditing(true)
+            applyLoginSettings?()
+            dismiss(animated: true)
+        } else {
+            delegate?.preferencesDidDismiss()
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.updateHiddenKeys()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // PreferencesView.swift also refreshes the login endpoint when a sheet closes without the Done button.
+        if let applyLoginSettings {
+            view.endEditing(true)
+            applyLoginSettings()
+        }
     }
 }

@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "NewsBlurs Oberfläche unterstützt jetzt 21 Sprachen. Wähle deine in der App, mit Vorschau in deiner Sprache und auf Englisch. Arabisch und Hebräisch laufen von rechts nach links. Artikel bleiben unverändert.\n\nDie Steuerung zum nächsten Artikel bleibt an derselben Stelle, auch wenn Weiter zu Fertig wird. Anmeldeschaltflächen sind in dunklen Designs besser lesbar."
+  },
+  "macos": {
+    "whats_new": "NewsBlur für Mac spricht jetzt 21 Sprachen. Menüs, Schaltflächen, Einstellungen und die Ersteinrichtung folgen der Sprache deines Mac. Du kannst auch im NewsBlur-Menü eine Sprache wählen. Deine Artikel bleiben unverändert, wie sie veröffentlicht wurden.\n\nÖffne Sprache auswählen im Untermenü Sprache, um Titel, Hinweis und Schaltfläche in der gewählten Sprache anzuzeigen, mit Englisch darunter. Wähle Automatisch, um wieder die Spracheinstellungen deines Mac zu übernehmen. Arabisch und Hebräisch verwenden eine Oberfläche von rechts nach links.\n\nTastenkürzel funktionieren jetzt auch, wenn die Artikelliste den Fokus hat. N öffnet den ersten ungelesenen Artikel.\n\nFalls eine Übersetzung ungewohnt klingt, nenne uns im NewsBlur-Forum die Sprache und die Stelle, an der du sie gesehen hast."
   }
 }
