@@ -965,9 +965,13 @@ class PreferencesViewModel: ObservableObject {
                         type: .multiValue(
                             key: "story_browser",
                             // PreferencesView.swift keeps browser brand names untranslated.
-                            titles: [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
-                            values: ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
-                            defaultValue: "inappsafari"
+                            titles: isMac
+                                ? [NBLocalization.text("System Default"), "Chrome", "Opera Mini", "Firefox", "Edge", "Brave", NBLocalization.text("In-app browser")]
+                                : [NBLocalization.text("In-app browser"), NBLocalization.text("In-app Safari"), NBLocalization.text("Safari Reader Mode"), "Safari", "Chrome", "Opera Mini", "Firefox", "Edge", "Brave"],
+                            values: isMac
+                                ? ["system", "chrome", "opera_mini", "firefox", "edge", "brave", "inapp"]
+                                : ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"],
+                            defaultValue: isMac ? "system" : "inappsafari"
                         )
                     ),
                     PreferenceItem(
@@ -2566,6 +2570,7 @@ private struct AppIconPreviewImage: View {
 @objc class PreferencesViewHostingController: UIViewController {
     private var viewModel: PreferencesViewModel!
     private var hostingController: UIViewController?
+    private var isPresentedOverLogin = false
     @objc weak var delegate: PreferencesViewDelegate?
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -2596,7 +2601,7 @@ private struct AppIconPreviewImage: View {
         let preferencesView = PreferencesView(
             viewModel: viewModel,
             onDismiss: { [weak self] in
-                self?.delegate?.preferencesDidDismiss()
+                self?.finishPreferences()
             }
         )
 
@@ -2620,6 +2625,20 @@ private struct AppIconPreviewImage: View {
     @objc func configureDelegate(_ newDelegate: PreferencesViewDelegate?) {
         self.delegate = newDelegate
         viewModel.delegate = newDelegate
+    }
+
+    @objc func configureForLoginPresentation() {
+        isPresentedOverLogin = true
+        configureDelegate(nil)
+    }
+
+    @objc func finishPreferences() {
+        if isPresentedOverLogin {
+            // PreferencesView.swift dismisses only this sheet, retaining the login underneath it.
+            dismiss(animated: true)
+        } else {
+            delegate?.preferencesDidDismiss()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

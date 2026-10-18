@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "ปัดจากขอบซ้ายเพื่อกลับไปยังฟีดได้เสมอ แม้จะปิดการปัดเพื่อเปลี่ยนเรื่องแล้วก็ตาม";
 "Switch to All or Unread." = "สลับไปที่ทั้งหมดหรือยังไม่อ่าน";
 "Syncing stories..." = "กำลังซิงค์บทความ...";
+"System Default" = "ค่าเริ่มต้นของระบบ";
 "TEXT" = "ข้อความ";
 "Tall [grid height]" = "สูง";
 "Teal Mint" = "มิ้นต์เขียวอมฟ้า";

@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Przesunięcie od lewej krawędzi zawsze przenosi z powrotem do listy kanałów, nawet gdy gesty przesuwania w artykułach są wyłączone.";
 "Switch to All or Unread." = "Przełącz na widok Wszystkie lub Nieprzeczytane.";
 "Syncing stories..." = "Synchronizowanie artykułów...";
+"System Default" = "Domyślna przeglądarka systemowa";
 "TEXT" = "TEKST";
 "Tall [grid height]" = "Wysoki";
 "Teal Mint" = "Miętowy turkus";

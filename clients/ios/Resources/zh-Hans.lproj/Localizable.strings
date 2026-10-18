@@ -933,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "即使关闭了文章滑动，从左边缘向右滑动也始终会返回订阅源列表。";
 "Switch to All or Unread." = "切换到“全部”或“未读”。";
 "Syncing stories..." = "正在同步文章…";
+"System Default" = "系统默认";
 "TEXT" = "文本";
 "Tall [grid height]" = "高";
 "Teal Mint" = "青绿色薄荷";

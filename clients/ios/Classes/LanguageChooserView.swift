@@ -32,9 +32,10 @@ import UIKit
         guard let presenter = menuPresenter, NBLocalization.language != "auto" else { return }
         savingAutomaticLanguage = true
         UIMenuSystem.main.setNeedsRebuild()
-        NBLocalization.save("auto") { success in
+        NBLocalization.save("auto", settled: {
             savingAutomaticLanguage = false
             UIMenuSystem.main.setNeedsRebuild()
+        }) { success in
             guard !success else { return }
             let alert = UIAlertController(title: NBLocalization.text("Could not save your language. Please try again."),
                                           message: nil, preferredStyle: .alert)
