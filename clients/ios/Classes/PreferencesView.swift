@@ -2571,6 +2571,7 @@ private struct AppIconPreviewImage: View {
     private var viewModel: PreferencesViewModel!
     private var hostingController: UIViewController?
     private var isPresentedOverLogin = false
+    private var applyLoginSettings: (() -> Void)?
     @objc weak var delegate: PreferencesViewDelegate?
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -2627,14 +2628,17 @@ private struct AppIconPreviewImage: View {
         viewModel.delegate = newDelegate
     }
 
-    @objc func configureForLoginPresentation() {
+    @objc func configureForLoginPresentation(_ applySettings: @escaping () -> Void) {
         isPresentedOverLogin = true
+        applyLoginSettings = applySettings
         configureDelegate(nil)
     }
 
     @objc func finishPreferences() {
         if isPresentedOverLogin {
             // PreferencesView.swift dismisses only this sheet, retaining the login underneath it.
+            view.endEditing(true)
+            applyLoginSettings?()
             dismiss(animated: true)
         } else {
             delegate?.preferencesDidDismiss()
@@ -2644,5 +2648,14 @@ private struct AppIconPreviewImage: View {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.updateHiddenKeys()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // PreferencesView.swift also refreshes the login endpoint when a sheet closes without the Done button.
+        if let applyLoginSettings {
+            view.endEditing(true)
+            applyLoginSettings()
+        }
     }
 }
