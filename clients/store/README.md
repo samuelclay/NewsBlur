@@ -1,6 +1,6 @@
 # Localized store copy
 
-`metadata/<language>.json` holds the current App Store and Google Play listing text. `releases/<version>/<language>.json` holds only iOS `whats_new` and Android `release_notes`. `products/<language>.json` holds localized subscription and subscription-group text; the English file defines the inventoried product IDs. Each directory must cover exactly the languages in `localization/languages.json`. `locales.json` maps those language identifiers to the stores' supported locale codes and records the source references.
+`metadata/<language>.json` holds the current App Store and Google Play listing text under `ios`, `macos`, and `android` keys. `releases/<version>/<language>.json` holds iOS and macOS `whats_new` and Android `release_notes` for the platforms in that release. `products/<language>.json` holds localized subscription and subscription-group text; the English file defines the inventoried product IDs. Apple products remain shared under `ios` for both iOS and macOS; do not duplicate them under `macos`. Each directory must cover exactly the languages in `localization/languages.json`. `locales.json` maps those language identifiers to the stores' supported locale codes and records the source references.
 
 For each release, rewrite the English listing, release notes, and product copy first. Translate all supported languages in parallel using `localization/glossaries/`, then have different agents review the translations against English. Preserve NewsBlur, actual feature availability, account qualifications, subscription disclosures, and the terms/privacy URLs. Adapt short fields naturally; never truncate text to pass a limit. Inventory live subscriptions and groups before changing the English product IDs. Storefront screenshots are separate assets and are not translated by these scripts.
 
@@ -18,7 +18,16 @@ ruby clients/store/validate.rb 16.0.4 --platform android
 ruby clients/store/export.rb 16.0.4 --platform android --output /tmp/newsblur-store-16.0.4
 ```
 
-`--platform ios` selects Apple instead. The default, `both`, still requires and exports both platforms. A selected platform must have complete text for every app language; shared files may retain the other platform's content, which is ignored. Unknown platform keys are rejected. A single-platform export writes only that store's directory and `validation.json`. Run `ruby clients/store/test_platform_export.rb` for the export regression tests.
+`--platform ios` selects the iOS App Store listing. For the native Mac app, select macOS explicitly:
+
+```sh
+ruby clients/store/validate.rb 16.0 --platform macos
+ruby clients/store/export.rb 16.0 --platform macos --output /tmp/newsblur-mac-store-16.0
+```
+
+Mac exports use `macos` listing and release text, the Apple locale mapping and field limits, and the shared `ios` products. When an `ios` listing is present, its name and subtitle must match macOS because App Store Connect shares that app information across platforms. Descriptions, keywords, promotional text, and release notes may differ. Use the **macOS** App Store version ID with `--app-store-version-id`.
+
+The default, `both`, continues to require and export iOS and Android only, so historical releases do not need Mac documents. A selected platform must have complete text for every app language; shared files may retain the other platforms' content, which is ignored except for the shared Apple name and subtitle check above. Unknown platform keys are rejected. A single-platform export writes only that store's directory and `validation.json`; macOS writes `apple/` only. Run `ruby clients/store/test_platform_export.rb` for the export regression tests.
 
 The exporter validates all inputs before writing and requires a new output directory. `--store-dir` and `--languages` support isolated fixtures. Validation checks exact language, field, and product coverage, nonempty text, store length limits, keywords in UTF-8 bytes, forbidden control characters, the brand, and canonical description URLs. Product benefits must match the English count, with at most four benefits of 40 characters each. It does not prove translation quality or replace independent review.
 

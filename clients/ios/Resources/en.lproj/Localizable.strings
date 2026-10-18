@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Cannot reply to this story";
 "Change Story List" = "Change Story List";
 "Choose Icon" = "Choose Icon";
+"Choose Language…" = "Choose Language…";
 "Choose Story List" = "Choose Story List";
 "Choose a Topic" = "Choose a Topic";
 "Choose another category to discover more." = "Choose another category to discover more.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Cluster duplicate stories across all your feeds";
 "Cluster matches" = "Cluster matches";
 "Cluster related stories" = "Cluster related stories";
+"Column layout" = "Column layout";
 "Columns" = "Columns";
 "Comfortable" = "Comfortable";
 "Coming soon" = "Coming soon";
@@ -373,6 +375,7 @@
 "Full Screen" = "Full Screen";
 "Full screen" = "Full screen";
 "Full window" = "Full window";
+"Full-screen" = "Full-screen";
 "General" = "General";
 "Generate Daily Briefing" = "Generate Daily Briefing";
 "Generate Now" = "Generate Now";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Infrequent Site Stories";
 "Infrequent Stories" = "Infrequent Stories";
 "Infrequent stories per month" = "Infrequent stories per month";
+"Inline" = "Inline";
 "Insta-Fetch Stories" = "Insta-Fetch Stories";
 "Insta-fetch stories" = "Insta-fetch stories";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting.";
@@ -629,6 +633,7 @@
 "On its way..." = "On its way...";
 "On scroll or selection" = "On scroll or selection";
 "One" = "One";
+"One column" = "One column";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.";
 "Only Title" = "Only Title";
 "Only on Selection" = "Only on Selection";
@@ -661,8 +666,10 @@
 "Pause" = "Pause";
 "Permanently delete account" = "Permanently delete account";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
+"Play videos" = "Play videos";
 "Plum Berry" = "Plum Berry";
 "Positive?" = "Positive?";
 "Preferences" = "Preferences";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Sign in with Google";
 "Single" = "Single";
 "Single Column" = "Single Column";
+"Single column" = "Single column";
 "Site" = "Site";
 "Site Settings" = "Site Settings";
 "Site URL or search by name…" = "Site URL or search by name…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Swiping from the left edge always returns to feeds, even when story swipes are off.";
 "Switch to All or Unread." = "Switch to All or Unread.";
 "Syncing stories..." = "Syncing stories...";
+"System Default" = "System Default";
 "TEXT" = "TEXT";
 "Tall [grid height]" = "Tall";
 "Teal Mint" = "Teal Mint";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "This feature requires iOS 15 or later.";
 "This might take a minute.\nFeel free to continue..." = "This might take a minute.\nFeel free to continue...";
 "This removes the subscription from your feeds." = "This removes the subscription from your feeds.";
+"This setting only applies after the app is restarted." = "This setting only applies after the app is restarted.";
 "This site already has a feed" = "This site already has a feed";
 "Three" = "Three";
+"Three columns" = "Three columns";
 "Thursday" = "Thursday";
 "Title" = "Title";
 "Title match only" = "Title match only";
@@ -990,7 +1001,9 @@
 "Two" = "Two";
 "Two Columns" = "Two Columns";
 "Two Rows" = "Two Rows";
+"Two columns" = "Two columns";
 "Two finger double tap" = "Two finger double tap";
+"Two rows" = "Two rows";
 "Two-finger swipe to switch" = "Two-finger swipe to switch";
 "Type %1$@ to permanently delete %2$@." = "Type %1$@ to permanently delete %2$@.";
 "UNREAD" = "UNREAD";

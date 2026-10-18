@@ -1,9 +1,121 @@
 import XCTest
+import ObjectiveC.runtime
 
 @testable import NewsBlur
 
 @MainActor
 final class Test_Localization: XCTestCase {
+    func test_macPreferencesRetainExistingLayoutAndPlaybackValues() {
+        let mac = PreferencesViewModel(isMac: true)
+        let phone = PreferencesViewModel(isMac: false)
+        func choices(_ model: PreferencesViewModel) -> [String: [String]] {
+            Dictionary(uniqueKeysWithValues: model.sections.flatMap(\.items).compactMap { item in
+                guard case let .multiValue(key, _, values, _) = item.type,
+                      let strings = values as? [String] else { return nil }
+                return (key, strings)
+            })
+        }
+        let macChoices = choices(mac)
+        let phoneChoices = choices(phone)
+        // LocalizationTests.swift protects the saved values used by mac/Settings.bundle before its UI replacement.
+        for (key, values) in ["split_behavior": ["auto", "tile", "displace", "overlay"],
+                              "dashboard_layout": ["none", "single", "vertical", "horizontal"],
+                              "video_playback": ["inline", "fullscreen"]] {
+            XCTAssertEqual(macChoices[key], values)
+            XCTAssertNil(phoneChoices[key], "Mac-only settings must not appear on the phone")
+        }
+        XCTAssertEqual(macChoices["story_browser"],
+                       ["system", "chrome", "opera_mini", "firefox", "edge", "brave", "inapp"])
+        XCTAssertEqual(phoneChoices["story_browser"],
+                       ["inapp", "inappsafari", "inappsafarireader", "safari", "chrome", "opera_mini", "firefox", "edge", "brave"])
+        for (model, expectedDefault) in [(mac, "system"), (phone, "inappsafari")] {
+            let browser = model.sections.flatMap(\.items).first { item in
+                guard case let .multiValue(key, _, _, _) = item.type else { return false }
+                return key == "story_browser"
+            }
+            guard let browser,
+                  case let .multiValue(_, titles, _, defaultValue) = browser.type else {
+                return XCTFail("Default browser picker must be available")
+            }
+            XCTAssertEqual(defaultValue as? String, expectedDefault)
+            if expectedDefault == "system" {
+                XCTAssertEqual(titles.first, NBLocalization.text("System Default"))
+            }
+        }
+    }
+
+    func test_manualLanguageChoicePinsTheAutomaticallyResolvedLanguageAndAllowsRetry() {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: NBLocalization.preferenceKey)
+        let previousSeen = defaults.object(forKey: LanguageDialog.seenKey)
+        defer {
+            defaults.set(previous, forKey: NBLocalization.preferenceKey)
+            defaults.set(previousSeen, forKey: LanguageDialog.seenKey)
+        }
+        defaults.set("auto", forKey: NBLocalization.preferenceKey)
+        var requested: [String] = []
+        var reply: ((Bool) -> Void)?
+        let model = LanguageChooserModel(startsInGrid: true, manualSelection: true) { code, completion in
+            requested.append(code)
+            reply = completion
+        }
+        var finished = false
+        // LocalizationTests.swift catches treating a deliberate Mac-menu selection as keeping Automatic.
+        model.choose(model.current) { finished = true }
+        XCTAssertEqual(requested, [NBLocalization.deviceLanguage])
+        XCTAssertTrue(model.isSaving)
+        XCTAssertFalse(finished)
+        reply?(false)
+        XCTAssertTrue(model.saveFailed)
+        XCTAssertFalse(model.isSaving)
+        XCTAssertFalse(finished)
+        XCTAssertEqual(NBLocalization.language, "auto")
+
+        model.choose(model.current) { finished = true }
+        reply?(true)
+        XCTAssertTrue(finished)
+        XCTAssertFalse(model.isSaving)
+    }
+
+    func test_firstRunLanguageChoiceKeepsAutomaticButManualChooserDoesNotClaimDeviceDetection() {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: NBLocalization.preferenceKey)
+        let previousSeen = defaults.object(forKey: LanguageDialog.seenKey)
+        defer {
+            defaults.set(previous, forKey: NBLocalization.preferenceKey)
+            defaults.set(previousSeen, forKey: LanguageDialog.seenKey)
+        }
+        defaults.set("auto", forKey: NBLocalization.preferenceKey)
+        var writes = 0
+        var finished = false
+        let firstRun = LanguageChooserModel(startsInGrid: true) { _, _ in writes += 1 }
+        firstRun.choose(firstRun.current) { finished = true }
+        XCTAssertTrue(finished)
+        XCTAssertEqual(writes, 0)
+        XCTAssertEqual(NBLocalization.language, "auto")
+
+        defaults.set("fr", forKey: NBLocalization.preferenceKey)
+        let manual = LanguageChooserModel(startsInGrid: true, manualSelection: true)
+        XCTAssertEqual(manual.selection, "fr")
+        XCTAssertEqual(manual.mode, .grid)
+        XCTAssertFalse(manual.openedFromBilingual,
+                       "The Mac chooser must not offer a return to a screen saying an account override came from the device")
+    }
+
+    func test_macLanguageMenuTracksAutomaticSelectionAfterAnOverride() throws {
+        let defaults = UserDefaults.standard
+        let previous = defaults.object(forKey: NBLocalization.preferenceKey)
+        defer { defaults.set(previous, forKey: NBLocalization.preferenceKey) }
+        for (language, expectedState) in [("auto", UIMenuElement.State.on), ("fr", .off)] {
+            defaults.set(language, forKey: NBLocalization.preferenceKey)
+            let actions = AppMenuHelper.languageMenuActions()
+            let automatic = try XCTUnwrap(actions.last as? UIAction)
+            XCTAssertEqual(automatic.state, expectedState)
+            XCTAssertEqual(automatic.title, NBLocalization.automaticLabel)
+        }
+        XCTAssertEqual(AppMenuHelper.languageMenu().title, "Langue")
+    }
+
     func test_missingObjectiveCCountOmitsTheStatistic() {
         // LocalizationTests.swift reproduces NotificationsViewController.m passing a missing feed statistic.
         let result = NBLocalization.perform(#selector(NBLocalization.plural(_:count:)),
@@ -525,4 +637,69 @@ private final class LocalizationPagerApp: NewsBlurAppDelegate {
 @MainActor private final class LocalizationShareBarPage: StoryDetailViewController {
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
+}
+
+extension Test_Localization {
+    func test_supersededAutomaticLanguageSaveReenablesMenuWithoutApplyingOrAlerting() throws {
+        let defaults = UserDefaults.standard
+        let previousLanguage = defaults.object(forKey: NBLocalization.preferenceKey)
+        let previousPending = defaults.object(forKey: NBLocalization.pendingKey)
+        let app = LocalizationLanguageSaveApp()
+        app.activeUsername = "localization-save-fixture"
+        let presenter = LocalizationLanguageSavePresenter()
+        app.splitViewController = presenter
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = presenter
+        window.isHidden = false
+        let shared = try XCTUnwrap(class_getClassMethod(NewsBlurAppDelegate.self, NSSelectorFromString("shared")))
+        let original = method_getImplementation(shared)
+        let replacement = imp_implementationWithBlock({ app } as @convention(block) () -> NewsBlurAppDelegate)
+        method_setImplementation(shared, replacement)
+        defer {
+            method_setImplementation(shared, original)
+            imp_removeBlock(replacement)
+            window.isHidden = true
+            defaults.set(previousLanguage, forKey: NBLocalization.preferenceKey)
+            defaults.set(previousPending, forKey: NBLocalization.pendingKey)
+        }
+        defaults.set("fr", forKey: NBLocalization.preferenceKey)
+        for staleSuccess in [true, false] {
+            XCTAssertTrue(LanguageDialog.canPresentFromMenu)
+            LanguageDialog.useAutomaticLanguage()
+            XCTAssertFalse(LanguageDialog.canPresentFromMenu)
+            let automatic = try XCTUnwrap(app.replies.last)
+            var newerResult: Bool?
+            NBLocalization.save("de") { newerResult = $0 }
+            let newer = try XCTUnwrap(app.replies.last)
+            // LocalizationTests.swift reproduces a Preferences save superseding the Mac Automatic command.
+            automatic(staleSuccess)
+            XCTAssertTrue(LanguageDialog.canPresentFromMenu, "A discarded response must still release the menu's busy state")
+            XCTAssertEqual(NBLocalization.language, "fr", "The superseded Automatic response must not change the language")
+            XCTAssertNil(presenter.presentedViewController, "Supersession must not display a network-failure alert")
+            XCTAssertNil(newerResult)
+            newer(false)
+            XCTAssertEqual(newerResult, false)
+        }
+    }
+}
+
+@MainActor private final class LocalizationLanguageSaveApp: NewsBlurAppDelegate {
+    var replies: [(Bool) -> Void] = []
+    override var url: String! { "https://localization-fixture.invalid" }
+    override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        replies.append { succeeded in
+            if succeeded { success(nil, ["code": 1]) }
+            else { failure(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)) }
+        }
+    }
+}
+
+@MainActor private final class LocalizationLanguageSavePresenter: SplitViewController {
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 600, height: 400)) }
+    override func viewDidLoad() {}
+    override func viewWillAppear(_ animated: Bool) {}
+    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillLayoutSubviews() {}
+    override func viewDidLayoutSubviews() {}
 }

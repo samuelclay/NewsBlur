@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Không thể trả lời bài viết này";
 "Change Story List" = "Thay đổi danh sách bài viết";
 "Choose Icon" = "Chọn biểu tượng";
+"Choose Language…" = "Chọn ngôn ngữ…";
 "Choose Story List" = "Chọn danh sách bài viết";
 "Choose a Topic" = "Chọn chủ đề";
 "Choose another category to discover more." = "Chọn danh mục khác để khám phá thêm.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Nhóm các bài viết trùng lặp trên tất cả nguồn cấp dữ liệu của bạn";
 "Cluster matches" = "Các kết quả khớp trong cụm";
 "Cluster related stories" = "Nhóm các bài viết liên quan";
+"Column layout" = "Bố cục cột";
 "Columns" = "Cột";
 "Comfortable" = "Thoải mái";
 "Coming soon" = "Sắp ra mắt";
@@ -373,6 +375,7 @@
 "Full Screen" = "Toàn màn hình";
 "Full screen" = "Toàn màn hình";
 "Full window" = "Toàn cửa sổ";
+"Full-screen" = "Toàn màn hình";
 "General" = "Chung";
 "Generate Daily Briefing" = "Tạo Bản tin hằng ngày";
 "Generate Now" = "Tạo ngay";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Bài viết từ trang ít cập nhật";
 "Infrequent Stories" = "Bài viết từ trang ít cập nhật";
 "Infrequent stories per month" = "Số bài viết mỗi tháng của trang ít cập nhật";
+"Inline" = "Trong bài viết";
 "Insta-Fetch Stories" = "Tải bài viết ngay";
 "Insta-fetch stories" = "Tải bài viết tức thì";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Thay vì theo chế độ sáng/tối của hệ thống, tự động chuyển giao diện dựa trên độ sáng màn hình. Hữu ích khi muốn đổi giao diện theo ánh sáng môi trường.";
@@ -629,6 +633,7 @@
 "On its way..." = "Đang tải...";
 "On scroll or selection" = "Khi cuộn hoặc chọn";
 "One" = "Một";
+"One column" = "Một cột";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Chỉ %1$@ trong số %2$@ trang web của bạn được lập chỉ mục để khám phá. Nâng cấp để lập chỉ mục tất cả trang web và nhận đề xuất được cá nhân hóa.";
 "Only Title" = "Chỉ tiêu đề";
 "Only on Selection" = "Chỉ khi chọn";
@@ -661,8 +666,10 @@
 "Pause" = "Tạm dừng";
 "Permanently delete account" = "Xóa tài khoản vĩnh viễn";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Chọn mô hình viết Bản tin hằng ngày của bạn";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
+"Play videos" = "Phát video";
 "Plum Berry" = "Mận mọng";
 "Positive?" = "Bạn chắc chứ?";
 "Preferences" = "Tùy chọn";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Đăng nhập bằng Google";
 "Single" = "Đơn";
 "Single Column" = "Một cột";
+"Single column" = "Một cột";
 "Site" = "Trang web";
 "Site Settings" = "Cài đặt trang web";
 "Site URL or search by name…" = "URL trang web hoặc tìm theo tên…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Vuốt từ mép trái luôn quay lại danh sách nguồn cấp dữ liệu, ngay cả khi đã tắt thao tác vuốt trên bài viết.";
 "Switch to All or Unread." = "Chuyển sang Tất cả hoặc Chưa đọc.";
 "Syncing stories..." = "Đang đồng bộ bài viết...";
+"System Default" = "Mặc định hệ thống";
 "TEXT" = "VĂN BẢN";
 "Tall [grid height]" = "Cao";
 "Teal Mint" = "Xanh bạc hà ngọc lam";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "Tính năng này yêu cầu iOS 15 trở lên.";
 "This might take a minute.\nFeel free to continue..." = "Việc này có thể mất một phút.\nBạn cứ tiếp tục nhé...";
 "This removes the subscription from your feeds." = "Thao tác này sẽ xóa đăng ký theo dõi khỏi các nguồn cấp của bạn.";
+"This setting only applies after the app is restarted." = "Cài đặt này chỉ có hiệu lực sau khi khởi động lại ứng dụng.";
 "This site already has a feed" = "Trang web này đã có nguồn cấp dữ liệu";
 "Three" = "Ba";
+"Three columns" = "Ba cột";
 "Thursday" = "Thứ Năm";
 "Title" = "Tiêu đề";
 "Title match only" = "Chỉ khớp tiêu đề";
@@ -990,7 +1001,9 @@
 "Two" = "Hai";
 "Two Columns" = "Hai cột";
 "Two Rows" = "Hai hàng";
+"Two columns" = "Hai cột";
 "Two finger double tap" = "Chạm đúp bằng hai ngón tay";
+"Two rows" = "Hai hàng";
 "Two-finger swipe to switch" = "Vuốt bằng hai ngón tay để chuyển đổi";
 "Type %1$@ to permanently delete %2$@." = "Nhập %1$@ để xóa vĩnh viễn %2$@.";
 "UNREAD" = "CHƯA ĐỌC";

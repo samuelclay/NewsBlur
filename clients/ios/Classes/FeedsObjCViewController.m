@@ -2317,6 +2317,10 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     if ([identifier isEqualToString:@"split_behavior"]) {
         [self.appDelegate updateSplitBehavior:YES];
+    } else if ([identifier isEqualToString:@"dashboard_layout"]) {
+        // FeedsObjCViewController.m applies the localized Preferences choice through the existing menu action.
+        NSString *layout = [[NSUserDefaults standardUserDefaults] stringForKey:identifier];
+        [self chooseDashboard:[UICommand commandWithTitle:@"" image:nil action:@selector(chooseDashboard:) propertyList:layout]];
     } else if ([identifier isEqualToString:@"feed_list_sort_order"]) {
         [self.appDelegate reloadFeedsView:YES];
     } else if ([identifier isEqual:@"feed_list_font_size"]) {

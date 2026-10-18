@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "ไม่สามารถตอบกลับบทความนี้ได้";
 "Change Story List" = "เปลี่ยนรายการบทความ";
 "Choose Icon" = "เลือกไอคอน";
+"Choose Language…" = "เลือกภาษา…";
 "Choose Story List" = "เลือกรายการบทความ";
 "Choose a Topic" = "เลือกหัวข้อ";
 "Choose another category to discover more." = "เลือกหมวดหมู่อื่นเพื่อค้นพบเพิ่มเติม";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "จัดกลุ่มบทความซ้ำจากทุกฟีดของคุณ";
 "Cluster matches" = "การจับคู่กลุ่ม";
 "Cluster related stories" = "จัดกลุ่มบทความที่เกี่ยวข้อง";
+"Column layout" = "เค้าโครงคอลัมน์";
 "Columns" = "คอลัมน์";
 "Comfortable" = "สบายตา";
 "Coming soon" = "เร็ว ๆ นี้";
@@ -373,6 +375,7 @@
 "Full Screen" = "เต็มหน้าจอ";
 "Full screen" = "เต็มหน้าจอ";
 "Full window" = "เต็มหน้าต่าง";
+"Full-screen" = "เต็มหน้าจอ";
 "General" = "ทั่วไป";
 "Generate Daily Briefing" = "สร้างสรุปข่าวประจำวัน";
 "Generate Now" = "สร้างเลย";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent Stories" = "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย";
 "Infrequent stories per month" = "บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย";
+"Inline" = "ภายในบทความ";
 "Insta-Fetch Stories" = "ดึงบทความทันที";
 "Insta-fetch stories" = "ดึงบทความทันที";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "แทนที่จะใช้โหมดมืด/สว่างของระบบ ให้สลับธีมโดยอัตโนมัติตามระดับความสว่างของหน้าจอ เหมาะสำหรับการสลับธีมตามแสงโดยรอบ";
@@ -629,6 +633,7 @@
 "On its way..." = "กำลังโหลด...";
 "On scroll or selection" = "เมื่อเลื่อนหรือเลือก";
 "One" = "หนึ่ง";
+"One column" = "หนึ่งคอลัมน์";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "มีเพียง %1$@ จาก %2$@ เว็บไซต์ของคุณที่ได้รับการจัดทำดัชนีเพื่อค้นพบเนื้อหา อัปเกรดเพื่อจัดทำดัชนีเว็บไซต์ทั้งหมดและรับคำแนะนำที่ปรับให้เหมาะกับคุณ";
 "Only Title" = "เฉพาะชื่อเรื่อง";
 "Only on Selection" = "เฉพาะเมื่อเลือก";
@@ -661,8 +666,10 @@
 "Pause" = "หยุดชั่วคราว";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
+"Play videos" = "เล่นวิดีโอ";
 "Plum Berry" = "พลัมเบอร์รี";
 "Positive?" = "แน่ใจหรือไม่?";
 "Preferences" = "การตั้งค่า";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "ลงชื่อเข้าใช้ด้วย Google";
 "Single" = "เดี่ยว";
 "Single Column" = "คอลัมน์เดียว";
+"Single column" = "คอลัมน์เดียว";
 "Site" = "เว็บไซต์";
 "Site Settings" = "การตั้งค่าเว็บไซต์";
 "Site URL or search by name…" = "URL เว็บไซต์ หรือค้นหาตามชื่อ…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "ปัดจากขอบซ้ายเพื่อกลับไปยังฟีดได้เสมอ แม้จะปิดการปัดเพื่อเปลี่ยนเรื่องแล้วก็ตาม";
 "Switch to All or Unread." = "สลับไปที่ทั้งหมดหรือยังไม่อ่าน";
 "Syncing stories..." = "กำลังซิงค์บทความ...";
+"System Default" = "ค่าเริ่มต้นของระบบ";
 "TEXT" = "ข้อความ";
 "Tall [grid height]" = "สูง";
 "Teal Mint" = "มิ้นต์เขียวอมฟ้า";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "ฟีเจอร์นี้ต้องใช้ iOS 15 ขึ้นไป";
 "This might take a minute.\nFeel free to continue..." = "อาจใช้เวลาสักครู่\nทำอย่างอื่นต่อได้เลย...";
 "This removes the subscription from your feeds." = "การดำเนินการนี้จะนำการสมัครรับข้อมูลออกจากฟีดของคุณ";
+"This setting only applies after the app is restarted." = "การตั้งค่านี้จะมีผลหลังจากเริ่มแอปใหม่เท่านั้น";
 "This site already has a feed" = "เว็บไซต์นี้มีฟีดอยู่แล้ว";
 "Three" = "สาม";
+"Three columns" = "สามคอลัมน์";
 "Thursday" = "วันพฤหัสบดี";
 "Title" = "ชื่อเรื่อง";
 "Title match only" = "ตรงกับชื่อเรื่องเท่านั้น";
@@ -990,7 +1001,9 @@
 "Two" = "สอง";
 "Two Columns" = "สองคอลัมน์";
 "Two Rows" = "สองแถว";
+"Two columns" = "สองคอลัมน์";
 "Two finger double tap" = "แตะสองครั้งด้วยสองนิ้ว";
+"Two rows" = "สองแถว";
 "Two-finger swipe to switch" = "ปัดด้วยสองนิ้วเพื่อสลับ";
 "Type %1$@ to permanently delete %2$@." = "พิมพ์ %1$@ เพื่อลบ %2$@ อย่างถาวร";
 "UNREAD" = "ยังไม่อ่าน";

@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Tidak dapat membalas artikel ini";
 "Change Story List" = "Ubah Daftar Artikel";
 "Choose Icon" = "Pilih Ikon";
+"Choose Language…" = "Pilih Bahasa…";
 "Choose Story List" = "Pilih Daftar Artikel";
 "Choose a Topic" = "Pilih Topik";
 "Choose another category to discover more." = "Pilih kategori lain untuk menemukan lebih banyak.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Kelompokkan artikel duplikat dari semua feed Anda";
 "Cluster matches" = "Kecocokan klaster";
 "Cluster related stories" = "Kelompokkan artikel terkait";
+"Column layout" = "Tata letak kolom";
 "Columns" = "Kolom";
 "Comfortable" = "Nyaman";
 "Coming soon" = "Segera hadir";
@@ -373,6 +375,7 @@
 "Full Screen" = "Layar Penuh";
 "Full screen" = "Layar penuh";
 "Full window" = "Jendela penuh";
+"Full-screen" = "Layar penuh";
 "General" = "Umum";
 "Generate Daily Briefing" = "Buat Ringkasan Harian";
 "Generate Now" = "Buat Sekarang";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Artikel Situs yang Jarang Diperbarui";
 "Infrequent Stories" = "Artikel yang Jarang Muncul";
 "Infrequent stories per month" = "Artikel tidak rutin per bulan";
+"Inline" = "Di dalam artikel";
 "Insta-Fetch Stories" = "Ambil Artikel Seketika";
 "Insta-fetch stories" = "Ambil artikel seketika";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Alih-alih mengikuti mode gelap/terang sistem, tema akan berganti otomatis berdasarkan tingkat kecerahan layar Anda. Berguna untuk menyesuaikan tema dengan pencahayaan sekitar.";
@@ -629,6 +633,7 @@
 "On its way..." = "Sedang dimuat...";
 "On scroll or selection" = "Saat menggulir atau memilih";
 "One" = "Satu";
+"One column" = "Satu kolom";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Hanya %1$@ dari %2$@ situs Anda yang diindeks untuk penemuan. Tingkatkan paket untuk mengindeks semua situs Anda dan mendapatkan rekomendasi yang dipersonalisasi.";
 "Only Title" = "Hanya Judul";
 "Only on Selection" = "Hanya Saat Dipilih";
@@ -661,8 +666,10 @@
 "Pause" = "Jeda";
 "Permanently delete account" = "Hapus akun secara permanen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pilih bahasa yang ingin Anda gunakan di NewsBlur. Anda dapat mengubahnya kapan saja di menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
+"Play videos" = "Putar video";
 "Plum Berry" = "Plum Berry";
 "Positive?" = "Yakin?";
 "Preferences" = "Preferensi";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Masuk dengan Google";
 "Single" = "Tunggal";
 "Single Column" = "Satu Kolom";
+"Single column" = "Satu kolom";
 "Site" = "Situs";
 "Site Settings" = "Pengaturan Situs";
 "Site URL or search by name…" = "URL situs atau cari berdasarkan nama…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Mengusap dari tepi kiri selalu kembali ke daftar feed, meskipun fitur usap artikel dinonaktifkan.";
 "Switch to All or Unread." = "Beralih ke Semua atau Belum dibaca.";
 "Syncing stories..." = "Menyinkronkan artikel...";
+"System Default" = "Default sistem";
 "TEXT" = "TEKS";
 "Tall [grid height]" = "Tinggi";
 "Teal Mint" = "Mint Teal";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "Fitur ini memerlukan iOS 15 atau lebih baru.";
 "This might take a minute.\nFeel free to continue..." = "Ini mungkin memerlukan waktu sebentar.\nSilakan lanjutkan...";
 "This removes the subscription from your feeds." = "Ini akan menghapus langganan dari feed Anda.";
+"This setting only applies after the app is restarted." = "Pengaturan ini hanya berlaku setelah aplikasi dimulai ulang.";
 "This site already has a feed" = "Situs ini sudah memiliki feed";
 "Three" = "Tiga";
+"Three columns" = "Tiga kolom";
 "Thursday" = "Kamis";
 "Title" = "Judul";
 "Title match only" = "Hanya cocokkan judul";
@@ -990,7 +1001,9 @@
 "Two" = "Dua";
 "Two Columns" = "Dua Kolom";
 "Two Rows" = "Dua Baris";
+"Two columns" = "Dua kolom";
 "Two finger double tap" = "Ketuk dua kali dengan dua jari";
+"Two rows" = "Dua baris";
 "Two-finger swipe to switch" = "Geser dengan dua jari untuk beralih";
 "Type %1$@ to permanently delete %2$@." = "Ketik %1$@ untuk menghapus %2$@ secara permanen.";
 "UNREAD" = "BELUM DIBACA";

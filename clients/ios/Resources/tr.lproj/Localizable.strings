@@ -178,6 +178,7 @@
 "Cannot reply to this story" = "Bu habere yanıt verilemiyor";
 "Change Story List" = "Haber listesini değiştir";
 "Choose Icon" = "Simge seç";
+"Choose Language…" = "Dil seç…";
 "Choose Story List" = "Haber Listesini Seç";
 "Choose a Topic" = "Bir Konu Seçin";
 "Choose another category to discover more." = "Daha fazlasını keşfetmek için başka bir kategori seçin.";
@@ -203,6 +204,7 @@
 "Cluster duplicate stories across all your feeds" = "Tüm akışlarınızdaki yinelenen haberleri kümeleyin";
 "Cluster matches" = "Küme eşleşmeleri";
 "Cluster related stories" = "İlgili haberleri kümelendir";
+"Column layout" = "Sütun düzeni";
 "Columns" = "Sütunlar";
 "Comfortable" = "Rahat";
 "Coming soon" = "Çok yakında";
@@ -373,6 +375,7 @@
 "Full Screen" = "Tam Ekran";
 "Full screen" = "Tam ekran";
 "Full window" = "Tam pencere";
+"Full-screen" = "Tam ekran";
 "General" = "Genel";
 "Generate Daily Briefing" = "Günlük Özeti Oluştur";
 "Generate Now" = "Şimdi oluştur";
@@ -422,6 +425,7 @@
 "Infrequent Site Stories" = "Seyrek Güncellenen Sitelerin Haberleri";
 "Infrequent Stories" = "Seyrek Haberler";
 "Infrequent stories per month" = "Seyrek haber eşiği (aylık)";
+"Inline" = "Haberin içinde";
 "Insta-Fetch Stories" = "Haberleri Anında Getir";
 "Insta-fetch stories" = "Haberleri anında getir";
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Sisteminizin koyu/açık modunu izlemek yerine temaları ekran parlaklığına göre otomatik değiştirin. Ortam ışığına göre tema değiştirmek için kullanışlıdır.";
@@ -629,6 +633,7 @@
 "On its way..." = "Yolda...";
 "On scroll or selection" = "Kaydırınca veya seçince";
 "One" = "Bir";
+"One column" = "Bir sütun";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "Keşif için %2$@ sitenizin yalnızca %1$@ kadarı dizine eklendi. Tüm sitelerinizi dizine eklemek ve kişiselleştirilmiş öneriler almak için planınızı yükseltin.";
 "Only Title" = "Yalnızca başlık";
 "Only on Selection" = "Yalnızca seçilince";
@@ -661,8 +666,10 @@
 "Pause" = "Duraklat";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
+"Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
 "Place the story list controls above or below the stories" = "Haber listesi denetimlerini haberlerin üstüne veya altına yerleştir";
+"Play videos" = "Videoları oynat";
 "Plum Berry" = "Erik Böğürtleni";
 "Positive?" = "Emin misiniz?";
 "Preferences" = "Tercihler";
@@ -842,6 +849,7 @@
 "Sign in with Google" = "Google ile giriş yap";
 "Single" = "Tekli";
 "Single Column" = "Tek Sütun";
+"Single column" = "Tek sütun";
 "Site" = "Site";
 "Site Settings" = "Site Ayarları";
 "Site URL or search by name…" = "Site URL'si veya ada göre arayın…";
@@ -925,6 +933,7 @@
 "Swiping from the left edge always returns to feeds, even when story swipes are off." = "Haber kaydırmaları kapalı olsa bile sol kenardan kaydırmak her zaman akışlara döndürür.";
 "Switch to All or Unread." = "Tümü veya Okunmamış görünümüne geçin.";
 "Syncing stories..." = "Haberler eşitleniyor...";
+"System Default" = "Sistem varsayılanı";
 "TEXT" = "METİN";
 "Tall [grid height]" = "Uzun";
 "Teal Mint" = "Turkuaz Nane";
@@ -951,8 +960,10 @@
 "This feature requires iOS 15 or later." = "Bu özellik için iOS 15 veya üzeri gerekir.";
 "This might take a minute.\nFeel free to continue..." = "Bu işlem bir dakika sürebilir.\nBu sırada devam edebilirsiniz...";
 "This removes the subscription from your feeds." = "Bu işlem aboneliği akışlarınızdan kaldırır.";
+"This setting only applies after the app is restarted." = "Bu ayar yalnızca uygulama yeniden başlatıldıktan sonra uygulanır.";
 "This site already has a feed" = "Bu sitenin zaten bir akışı var";
 "Three" = "Üç";
+"Three columns" = "Üç sütun";
 "Thursday" = "Perşembe";
 "Title" = "Başlık";
 "Title match only" = "Yalnızca başlık eşleşmesi";
@@ -990,7 +1001,9 @@
 "Two" = "İki";
 "Two Columns" = "İki Sütun";
 "Two Rows" = "İki Satır";
+"Two columns" = "İki sütun";
 "Two finger double tap" = "İki parmakla çift dokunma";
+"Two rows" = "İki satır";
 "Two-finger swipe to switch" = "Geçiş yapmak için iki parmakla kaydırın";
 "Type %1$@ to permanently delete %2$@." = "%2$@ öğesini kalıcı olarak silmek için %1$@ yazın.";
 "UNREAD" = "OKUNMAMIŞ";
