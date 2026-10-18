@@ -1154,7 +1154,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
         if (presentsOverLogin) {
-            [swiftUIPrefs configureForLoginPresentation];
+            __weak NewsBlurAppDelegate *weakSelf = self;
+            [swiftUIPrefs configureForLoginPresentation:^{
+                NewsBlurAppDelegate *appDelegate = weakSelf;
+                if (!appDelegate) {
+                    return;
+                }
+                NSString *previousURL = appDelegate.url;
+                appDelegate.cachedURL = nil;
+                if (![appDelegate.url isEqualToString:previousURL]) {
+                    // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+                    [appDelegate clearNetworkManager];
+                }
+            }];
         }
 
         swiftUIPrefs.modalPresentationStyle = self.isMac ? UIModalPresentationFormSheet : UIModalPresentationPageSheet;

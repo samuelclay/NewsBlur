@@ -5,9 +5,62 @@ import WebKit
 
 @MainActor
 final class Test_MacSignedOutPreferences: XCTestCase {
+    func test_doneAppliesChangedServerBeforeReturningToLogin() async throws {
+        let defaults = UserDefaults.standard
+        let previousDomain = defaults.object(forKey: "custom_domain")
+        addTeardownBlock { defaults.set(previousDomain, forKey: "custom_domain") }
+        defaults.set("https://old-reader.example.test", forKey: "custom_domain")
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        XCTAssertEqual(fixture.app.url, "https://old-reader.example.test", "Prime the URL cache used by login")
+        fixture.app.resetNetworkManagerForTesting()
+        let previousManager = fixture.app.networkManager
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+        fixture.login.showAppPreferences(nil)
+        let preferences = try XCTUnwrap(fixture.login.presentedViewController as? PreferencesViewHostingController)
+        await waitUntilPresented(preferences)
+
+        defaults.set("https://new-reader.example.test", forKey: "custom_domain")
+        preferences.finishPreferences()
+
+        XCTAssertEqual(fixture.app.url, "https://new-reader.example.test",
+                       "The next login must not send credentials to the previously cached server")
+        XCTAssertEqual(fixture.app.host, "new-reader.example.test")
+        XCTAssertFalse(fixture.app.networkManager === previousManager,
+                       "Changing server must cancel old requests before login can resume")
+    }
+
+    func test_dismissingWithoutDoneAlsoAppliesChangedServer() async throws {
+        let defaults = UserDefaults.standard
+        let previousDomain = defaults.object(forKey: "custom_domain")
+        addTeardownBlock { defaults.set(previousDomain, forKey: "custom_domain") }
+        defaults.set("https://old-reader.example.test", forKey: "custom_domain")
+        let fixture = try MacSignedOutPreferencesFixture()
+        addTeardownBlock { @MainActor in await fixture.close() }
+        XCTAssertEqual(fixture.app.url, "https://old-reader.example.test")
+        fixture.showLogin()
+        await waitUntilPresented(fixture.login)
+        fixture.login.showAppPreferences(nil)
+        let preferences = try XCTUnwrap(fixture.login.presentedViewController as? PreferencesViewHostingController)
+        await waitUntilPresented(preferences)
+
+        defaults.set("https://new-reader.example.test", forKey: "custom_domain")
+        preferences.dismiss(animated: false)
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            fixture.login.presentedViewController == nil
+        }, object: nil)
+        await fulfillment(of: [dismissed], timeout: 3)
+
+        XCTAssertEqual(fixture.app.url, "https://new-reader.example.test")
+        XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login)
+    }
+
     func test_preferencesCommandWorksWhileFullScreenLoginHidesTheReader() async throws {
         let fixture = try MacSignedOutPreferencesFixture()
         addTeardownBlock { @MainActor in await fixture.close() }
+        fixture.app.resetNetworkManagerForTesting()
+        let previousManager = fixture.app.networkManager
         fixture.showLogin()
         await waitUntilPresented(fixture.login)
 
@@ -39,6 +92,8 @@ final class Test_MacSignedOutPreferences: XCTestCase {
         await fulfillment(of: [returnedToLogin], timeout: 3)
         XCTAssertTrue(fixture.navigation.presentedViewController === fixture.login,
                       "Done must not dismiss the login along with Preferences")
+        XCTAssertTrue(fixture.app.networkManager === previousManager,
+                      "Closing unchanged Preferences must not cancel unrelated requests")
     }
 
     func test_preferencesDoesNotStackAboveAnotherLoginModal() async throws {
