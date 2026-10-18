@@ -7,6 +7,97 @@ NEWSBLUR.utils = {
         return !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro;
     },
 
+    // reader_utils.js: True when the interface language is written right to left
+    // (Arabic, Hebrew). templates/base.html sets <html dir> from the account
+    // language, and the page links CSS mirrored by utils/rtl_css.py plus the
+    // overrides in media/css/reader/reader_rtl.css.
+    is_rtl: function () {
+        return document.documentElement.dir == 'rtl';
+    },
+
+    // reader_utils.js: jQuery Layout pane names are physical ("west" is always
+    // the left side). Callers name the logical edge they mean for LTR, and in RTL
+    // this returns the mirrored pane, so the feed list and the side-by-side story
+    // titles pane sit on the right.
+    layout_edge: function (edge) {
+        if (!NEWSBLUR.utils.is_rtl()) return edge;
+        if (edge == 'west') return 'east';
+        if (edge == 'east') return 'west';
+        return edge;
+    },
+
+    // reader_utils.js: $.fn.align (media/js/vendor/jquery.newsblur.js) only knows
+    // LTR placements. In RTL, flip an aligned popover or menu horizontally around
+    // its anchor so it opens toward the inline end, mirroring the LTR geometry.
+    mirror_aligned_element: function ($el, $anchor) {
+        if (!NEWSBLUR.utils.is_rtl()) return;
+        $anchor = $($anchor).first();
+        if (!$el || !$el.length || !$anchor.length) return;
+        var anchor_offset = $anchor.offset();
+        var el_offset = $el.offset();
+        if (!anchor_offset || !el_offset) return;
+        var el_width = $el.outerWidth();
+        var anchor_width = $anchor.outerWidth();
+        var client_width = document.documentElement.clientWidth;
+        var mirrored_left = 2 * anchor_offset.left + anchor_width - el_offset.left - el_width;
+        mirrored_left = Math.max(0, Math.min(mirrored_left, client_width - el_width));
+        // Pin the mirrored element by its right edge, so if it grows later (scrollbars,
+        // late content) it grows toward the inline end like the LTR original does.
+        var $parent = $el.offsetParent();
+        var parent = $parent[0];
+        var parent_right = client_width;
+        if (parent && parent != document.documentElement && parent != document.body) {
+            parent_right = $parent.offset().left + parent.clientLeft + parent.clientWidth;
+        }
+        $el.css({ right: parent_right - (mirrored_left + el_width), left: 'auto' });
+    },
+
+    // reader_utils.js: CSS for a position: fixed popover whose inline-end edge lines up
+    // with its trigger's inline-end edge, so it opens toward the middle of the screen:
+    // from the trigger's right edge leftward in LTR, from its left edge rightward in RTL.
+    inline_end_alignment_css: function (rect, inset) {
+        inset = inset || 0;
+        if (NEWSBLUR.utils.is_rtl()) {
+            return { left: rect.left - inset, right: 'auto' };
+        }
+        return { right: window.innerWidth - rect.right - inset, left: 'auto' };
+    },
+
+    // reader_utils.js: jquery.corners takes physical corner names (tl, tr, bl, br).
+    // Swap them in RTL so rounded corners follow the mirrored menus.
+    rtl_corners: function (spec) {
+        if (!NEWSBLUR.utils.is_rtl()) return spec;
+        return spec.replace(/\b(t|b)(l|r)\b/g, function (match, vertical, horizontal) {
+            return vertical + (horizontal == 'l' ? 'r' : 'l');
+        });
+    },
+
+    // reader_utils.js: Splits a translated message around %(name)s placeholders
+    // and inserts the matching DOM nodes, so links, badges, selects and styled
+    // words stay inside one complete translatable sentence that translators can
+    // reorder. A string or number in `nodes` is inserted as text. Text pieces
+    // become text nodes, or whatever wrap_text returns for them; wrap_text can
+    // return null to drop a piece, such as whitespace between two flex items.
+    // Returns an array usable as $.make children or with $.fn.append.
+    interpolate_nodes: function (message, nodes, wrap_text) {
+        var parts = [];
+        _.each(message.split(/(%\([a-z_]+\)s)/), function (part) {
+            var match = part.match(/^%\(([a-z_]+)\)s$/);
+            var node;
+            if (match && _.has(nodes, match[1])) {
+                node = nodes[match[1]];
+                if (_.isString(node) || _.isNumber(node)) {
+                    node = document.createTextNode(String(node));
+                }
+                parts.push(node);
+            } else if (part) {
+                node = wrap_text ? wrap_text(part) : document.createTextNode(part);
+                if (node) parts.push(node);
+            }
+        });
+        return parts;
+    },
+
     // reader_utils.js: Shared Premium Archive callout — a light strip with the
     // archive badge and a one-line message that opens the upgrade modal. Used by
     // the briefing views and the related stories upsell. Pass
@@ -15,7 +106,7 @@ NEWSBLUR.utils = {
     make_archive_callout: function (message, options) {
         options = options || {};
         var $callout = $.make('div', { className: 'NB-archive-callout', role: 'button' }, [
-            $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive'),
+            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive')),
             $.make('span', { className: 'NB-archive-callout-text' }, message)
         ]);
         $callout.on('click', function (e) {
@@ -27,6 +118,17 @@ NEWSBLUR.utils = {
             }
         });
         return $callout;
+    },
+
+    // reader_utils.js: "[Upgrade to Premium] for up to 14 days" as one plural
+    // message, with the upgrade badge as a placeholder so translations can put
+    // it anywhere. Shown under the mark-as-unread sliders in reader_mark_read.js
+    // and reader_feed_exception.js when the reader picks more days than their
+    // plan keeps.
+    make_upgrade_days_notice: function ($badge, days) {
+        return NEWSBLUR.utils.interpolate_nodes(
+            ngettext("%(badge)s for up to %(count)s day", "%(badge)s for up to %(count)s days", days),
+            { badge: $badge, count: days });
     },
 
     service_name: function (service) {
@@ -197,27 +299,43 @@ NEWSBLUR.utils = {
         return _.string.include(feed_id, 'social:');
     },
 
-    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    shortMonthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    monthNames: [gettext('January'), gettext('February'), gettext('March'), gettext('April'), gettext('May'), gettext('June'), gettext('July'), gettext('August'), gettext('September'), gettext('October'), gettext('November'), gettext('December')],
+    // reader_utils.js: The page language abbreviates month names, since gettext cannot tell a short "May" from the full name.
+    shortMonthNames: _.map(_.range(12), function (month) {
+        return new Date(2000, month, 1).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short' });
+    }),
+    dayNames: [gettext('Sunday'), gettext('Monday'), gettext('Tuesday'), gettext('Wednesday'), gettext('Thursday'), gettext('Friday'), gettext('Saturday')],
 
     format_date: function (date) {
+        var language = document.documentElement.lang || 'en';
+        if (language.indexOf('en') !== 0) {
+            // reader_utils.js lets Intl inflect the month (Polish "15 października", Russian "15 октября"),
+            // which a translated list of nominative month names can't do. English keeps its format below.
+            return date.toLocaleDateString(language + '-u-nu-latn', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+        }
         var dayOfWeek = date.getDay();
         var month = date.getMonth();
         var year = date.getUTCFullYear();
         var day = date.getDate();
 
-        return this.dayNames[dayOfWeek] + ", " + this.monthNames[month] + " " + day + ", " + year;
+        return interpolate(gettext("%(weekday)s, %(month)s %(day)s, %(year)s"), {
+            weekday: this.dayNames[dayOfWeek],
+            month: this.monthNames[month],
+            day: day,
+            year: year
+        }, true);
     },
 
     make_feed_chooser: function (options) {
         options = options || {};
         var $chooser = $.make('select', { name: 'feed', className: 'NB-modal-feed-chooser' });
-        var $folders_optgroup = $.make('optgroup', { label: "Folders" });
-        var $feeds_optgroup = $.make('optgroup', { label: "Sites" });
-        var $social_feeds_optgroup = $.make('optgroup', { label: "Blurblogs" });
-        var $saved_searches_optgroup = $.make('optgroup', { label: "Saved Searches" });
-        var $starred_feeds_optgroup = $.make('optgroup', { label: "Saved Tags" });
+        var $folders_optgroup = $.make('optgroup', { label: gettext("Folders") });
+        var $feeds_optgroup = $.make('optgroup', { label: gettext("Sites") });
+        var $social_feeds_optgroup = $.make('optgroup', { label: gettext("Blurblogs") });
+        var $saved_searches_optgroup = $.make('optgroup', { label: gettext("Saved Searches") });
+        var $starred_feeds_optgroup = $.make('optgroup', { label: gettext("Saved Tags") });
         var current_feed_id = options.feed_id;
         var selected_feed_prefix = '';
 
@@ -303,37 +421,37 @@ NEWSBLUR.utils = {
         var $options = $.make('select', { className: 'NB-folders', name: select_name });
 
         if (include_special_folders) {
-            var $option = $.make('option', { value: 'river:global' }, "Global Shared Stories");
+            var $option = $.make('option', { value: 'river:global' }, gettext("Global Shared Stories"));
             $options.append($option);
             if (selected_folder_title == "river:global") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'river:blurblogs' }, "All Shared Stories");
+            var $option = $.make('option', { value: 'river:blurblogs' }, gettext("All Shared Stories"));
             $options.append($option);
             if (selected_folder_title == "river:blurblogs") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'river:infrequent' }, "Infrequent Site Stories");
+            var $option = $.make('option', { value: 'river:infrequent' }, gettext("Infrequent Site Stories"));
             $options.append($option);
             if (selected_folder_title == "river:infrequent") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:well_read' }, "Widely Read Stories");
+            var $option = $.make('option', { value: 'trending:well_read' }, gettext("Widely Read Stories"));
             $options.append($option);
             if (selected_folder_title == "trending:well_read") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:long_reads' }, "Long Reads");
+            var $option = $.make('option', { value: 'trending:long_reads' }, gettext("Long Reads"));
             $options.append($option);
             if (selected_folder_title == "trending:long_reads") {
                 $option.attr('selected', true);
             }
 
-            var $option = $.make('option', { value: 'trending:good_reads' }, "Good Reads");
+            var $option = $.make('option', { value: 'trending:good_reads' }, gettext("Good Reads"));
             $options.append($option);
             if (selected_folder_title == "trending:good_reads") {
                 $option.attr('selected', true);
@@ -352,7 +470,7 @@ NEWSBLUR.utils = {
             });
         }
         if (show_top_level) {
-            var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
+            var $option = $.make('option', { value: 'river:' }, toplevel || gettext("Top Level"));
             $options.append($option);
             if (selected_folder_title == "river:") {
                 $option.attr('selected', true);
@@ -416,13 +534,21 @@ NEWSBLUR.utils = {
         var interval_end = update_interval_minutes * 1.25;
         var interval = '';
         if (interval_start < 60) {
-            interval = interval_start + ' to ' + interval_end + ' minutes';
+            interval = interpolate(ngettext("%(start)s to %(end)s minute", "%(start)s to %(end)s minutes", interval_end), {
+                start: interval_start,
+                end: interval_end
+            }, true);
         } else {
             var interval_start_hours = parseInt(interval_start / 60, 10);
             var interval_end_hours = parseInt(interval_end / 60, 10);
             var dec_start = interval_start % 60;
             var dec_end = interval_end % 60;
-            interval = interval_start_hours + (dec_start >= 30 ? '.5' : '') + ' to ' + interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '') + ' hours';
+            var start_hours = interval_start_hours + (dec_start >= 30 ? '.5' : '');
+            var end_hours = interval_end_hours + (dec_end >= 30 || interval_start_hours == interval_end_hours ? '.5' : '');
+            interval = interpolate(ngettext("%(start)s to %(end)s hour", "%(start)s to %(end)s hours", parseFloat(end_hours)), {
+                start: start_hours,
+                end: end_hours
+            }, true);
         }
 
         return interval;
@@ -447,40 +573,58 @@ NEWSBLUR.utils = {
     },
 
     format_mute_days: function (days) {
-        if (days == 1) return '1 day';
-        if (days < 7) return days + ' days';
-        if (days == 7) return '1 week';
-        if (days == 10) return '10 days';
-        if (days == 14) return '2 weeks';
-        if (days == 21) return '3 weeks';
-        if (days == 30) return '1 month';
-        if (days == 60) return '2 months';
-        if (days == 90) return '3 months';
-        if (days == 180) return '6 months';
-        if (days == 270) return '9 months';
-        if (days == 365) return '1 year';
-        if (days < 30) return days + ' days';
-        if (days < 365) {
-            var months = Math.round(days / 30);
-            return months + (months == 1 ? ' month' : ' months');
+        // reader_utils.js: Mute slider stops read as days, whole weeks, months, or a year.
+        if (days >= 365) {
+            return interpolate(ngettext("%(count)s year", "%(count)s years", 1), {count: 1}, true);
         }
-        return '1 year';
+        if (days >= 30) {
+            var months = Math.round(days / 30);
+            return interpolate(ngettext("%(count)s month", "%(count)s months", months), {count: months}, true);
+        }
+        if (days == 7 || days == 14 || days == 21) {
+            var weeks = days / 7;
+            return interpolate(ngettext("%(count)s week", "%(count)s weeks", weeks), {count: weeks}, true);
+        }
+        return interpolate(ngettext("%(count)s day", "%(count)s days", days), {count: days}, true);
     },
 
-    mute_time_remaining: function (expires_at_iso) {
+    // reader_utils.js: Label for the save button under every mute duration slider.
+    format_mute_button_label: function (days) {
+        return interpolate(gettext("Mute for %(duration)s"), {duration: this.format_mute_days(days)}, true);
+    },
+
+    // reader_utils.js: Localized time until a mute expires, or null once it has expired.
+    mute_duration_remaining: function (expires_at_iso) {
         var now = new Date();
         var expires = new Date(expires_at_iso);
         var diff_ms = expires - now;
-        if (diff_ms <= 0) return 'unmuting soon';
+        if (diff_ms <= 0) return null;
 
         var days = Math.floor(diff_ms / (1000 * 60 * 60 * 24));
         var hours = Math.floor(diff_ms / (1000 * 60 * 60));
 
-        if (days >= 365) return Math.round(days / 365) + (days >= 730 ? ' years' : ' year') + ' left';
-        if (days >= 30) return Math.round(days / 30) + (days >= 60 ? ' months' : ' month') + ' left';
-        if (days >= 7) return Math.round(days / 7) + (days >= 14 ? ' weeks' : ' week') + ' left';
-        if (days >= 1) return days + (days > 1 ? ' days' : ' day') + ' left';
-        return hours + (hours > 1 ? ' hours' : ' hour') + ' left';
+        if (days >= 365) {
+            var years = Math.round(days / 365);
+            return interpolate(ngettext("%(count)s year", "%(count)s years", years), {count: years}, true);
+        }
+        if (days >= 30) {
+            var months = Math.round(days / 30);
+            return interpolate(ngettext("%(count)s month", "%(count)s months", months), {count: months}, true);
+        }
+        if (days >= 7) {
+            var weeks = Math.round(days / 7);
+            return interpolate(ngettext("%(count)s week", "%(count)s weeks", weeks), {count: weeks}, true);
+        }
+        if (days >= 1) {
+            return interpolate(ngettext("%(count)s day", "%(count)s days", days), {count: days}, true);
+        }
+        return interpolate(ngettext("%(count)s hour", "%(count)s hours", hours), {count: hours}, true);
+    },
+
+    mute_time_remaining: function (expires_at_iso) {
+        var remaining = this.mute_duration_remaining(expires_at_iso);
+        if (!remaining) return gettext('unmuting soon');
+        return interpolate(gettext("%(time)s left"), {time: remaining}, true);
     }
 
 };

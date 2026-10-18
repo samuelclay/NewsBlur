@@ -157,6 +157,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
 
     render_folder: function ($feeds) {
+        // folder_view.js: dir="auto" on .folder_title_text isolates the folder name, so a name in
+        // another script keeps its punctuation and truncates at its own end (see reader_rtl.css).
         var $folder = _.template('<<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel NB-sticky-sidebar-folder<% } %>">\
@@ -179,21 +181,21 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                               var end_date = NEWSBLUR.reader.flags.date_filter_end;\
                               if (start_date && end_date) { %>\
                                 <% if (start_date === end_date) { %>\
-                                Stories on <%= start_date %>\
+                                <%- interpolate(gettext("Stories on %(date)s"), {date: start_date}, true) %>\
                                 <% } else { %>\
-                                Stories from <%= start_date %> to <%= end_date %>\
+                                <%- interpolate(gettext("Stories from %(start_date)s to %(end_date)s"), {start_date: start_date, end_date: end_date}, true) %>\
                                 <% } %>\
                                 &middot;\
                             <% } else if (start_date) { %>\
-                              Stories newer than <%= start_date %>\
+                              <%- interpolate(gettext("Stories newer than %(date)s"), {date: start_date}, true) %>\
                               &middot;\
                             <% } else if (end_date) { %>\
-                              Stories older than <%= end_date %>\
+                              <%- interpolate(gettext("Stories older than %(date)s"), {date: end_date}, true) %>\
                               &middot;\
                             <% } %>\
-                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
+                            <%- setting_label(NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter")) %>\
                             &middot;\
-                            <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                            <%- setting_label(NEWSBLUR.assets.view_setting("river:"+folder_title, "order")) %>\
                             <% if (has_auto_mark_read) { %>\
                                 &middot;\
                                 <div class="NB-feedbar-auto-mark-read-icon"></div>\
@@ -202,12 +204,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     </div>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
-                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                        <span class="NB-story-title-indicator-text"><%- gettext("show hidden stories") %></span>\
                     </div>\
                     <% if (show_discover) { %>\
                         <div class="NB-feedbar-discover-container">\
                             <div class="NB-feedbar-discover-icon"></div>\
-                            <span class="NB-feedbar-discover-text">Related Sites</span>\
+                            <span class="NB-feedbar-discover-text"><%- gettext("Related Sites") %></span>\
                             <div class="NB-icon"></div>\
                         </div>\
                     <% } %>\
@@ -217,9 +219,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 <div class="NB-folder-icon<% if (is_custom) { %> NB-has-custom-icon<% } %>">\
                     <%= $.favicon_html("river:"+folder_title) %>\
                 </div>\
-                <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
+                <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %><%- gettext("Expand Folder") %><% } else {%><%- gettext("Collapse Folder") %><% } %>"></div>\
                 <div class="NB-feedlist-manage-icon" role="button"></div>\
-                <span class="folder_title_text">\
+                <span class="folder_title_text" dir="auto">\
                     <span><%= folder_title %></span>\
                 </span>\
             </div>\
@@ -236,6 +238,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             root: this.options.root,
             feedbar: this.options.feedbar,
             show_discover: NEWSBLUR.assets.preference("show_discover"),
+            setting_label: this.setting_label,
             list_type: this.options.feedbar ? 'div' : 'li',
             has_auto_mark_read: (function () {
                 var setting = NEWSBLUR.assets.get_folder_auto_mark_read(this.options.folder_title);
@@ -259,6 +262,18 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             }
         }
         return $folder;
+    },
+
+    // folder_view.js: Display label for read_filter/order view setting identifiers,
+    // which stay untranslated because they are stored preferences and sent to the server.
+    setting_label: function (value) {
+        var labels = {
+            all: gettext("All"),
+            unread: gettext("Unread"),
+            newest: gettext("Newest"),
+            oldest: gettext("Oldest")
+        };
+        return labels[value] || value;
     },
 
     update_title: function () {
@@ -528,9 +543,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var none_highlighted = this.no_children_highlighted();
 
         if (all_highlighted) {
-            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-on' }, 'ON'));
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-on' }, gettext('ON')));
         } else if (none_highlighted) {
-            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-off' }, 'OFF'));
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-off' }, gettext('OFF')));
         }
         // If mixed, don't show any status
     },

@@ -33,6 +33,8 @@ final class OnboardingAPI {
     }
 
     static func send(_ request: URLRequest) async throws -> [String: Any] {
+        var request = request
+        request.setValue(NBLocalization.resolvedLanguage, forHTTPHeaderField: "Accept-Language")
         let (data, response) = try await session.data(for: request)
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw error("The server returned an unreadable response. Please try again.")
@@ -43,7 +45,7 @@ final class OnboardingAPI {
               (json["code"] as? Int ?? 1) >= 0 else {
             let errors = json["errors"] as? [String: Any]
             let details = errors?.values.flatMap { ($0 as? [String]) ?? [String(describing: $0)] }.joined(separator: " ")
-            throw error(json["message"] as? String ?? details ?? "The request failed. Please try again.")
+            throw error(json["message"] as? String ?? details ?? NBLocalization.text("The request failed. Please try again."))
         }
         return json
     }
@@ -468,7 +470,7 @@ struct OnboardingFeed: Identifiable {
         message = nil
         feeds = []
         selection = []
-        folder = interest.map(OnboardingCatalogSelector.displayTitle) ?? "My Favorites"
+        folder = interest.map(OnboardingCatalogSelector.displayTitle) ?? NBLocalization.text("My Favorites")
         defer { if generation == current { busy = false } }
         appendCandidateCards(candidateProgress[key] ?? [], for: key)
         do {
@@ -609,7 +611,9 @@ struct OnboardingFeed: Identifiable {
         let pending = urls.intersection(queued).count
         let count = completed + pending
         guard count > 0 else { return nil }
-        return "\(count) \(count == 1 ? "feed" : "feeds") \(pending > 0 ? "selected" : "added")"
+        // OnboardingViewController.swift words the category status with the interface language's plural rules.
+        return pending > 0 ? NBLocalization.plural("%@ feeds selected", groupedCount: count)
+            : NBLocalization.plural("%@ feeds added", groupedCount: count)
     }
 
     func subscribe() async {
@@ -742,8 +746,13 @@ struct OnboardingFeed: Identifiable {
                 if generation == selectionGeneration { selection.formUnion(failures.map(\.url)) }
             }
             if generation == selectionGeneration {
-                message = failures.isEmpty ? "Added \(successes) feeds\(destination.isEmpty ? "" : " to " + destination)."
-                    : "Added \(successes) feeds. \(failures.count) could not be added. \(failureMessage ?? "You can retry them below.")"
+                // OnboardingViewController.swift joins complete translated sentences about the added and failed feeds.
+                let added = destination.isEmpty ? NBLocalization.plural("Added %@ feeds.", groupedCount: successes)
+                    : NBLocalization.plural("Added %1$@ feeds to %2$@.", count: successes, with: destination)
+                message = failures.isEmpty ? added
+                    : [NBLocalization.plural("Added %@ feeds.", groupedCount: successes),
+                       NBLocalization.plural("%@ could not be added.", groupedCount: failures.count),
+                       failureMessage ?? NBLocalization.text("You can retry them below.")].joined(separator: " ")
             }
             if OnboardingFeedLoading.shared.finishWork(loadingToken) { onSubscriptionsChanged() }
         }
@@ -813,8 +822,8 @@ private struct OnboardingCatalogLoader: View {
                     .foregroundStyle(DiscoverColors.textSecondary.opacity(0.7))
             }.frame(width: 88, height: 88).accessibilityHidden(true)
             VStack(spacing: 8) {
-                Text("Loading interests").font(.title3.weight(.medium))
-                Text("Finding feeds for you to explore.")
+                Text(NBLocalization.text("Loading interests")).font(.title3.weight(.medium))
+                Text(NBLocalization.text("Finding feeds for you to explore."))
                     .font(.subheadline).foregroundStyle(DiscoverColors.textSecondary)
             }.multilineTextAlignment(.center)
         }
@@ -831,6 +840,11 @@ private struct OnboardingView: View {
     let onFinish: () -> Void
     @StateObject private var bundles = OnboardingBundles()
     @StateObject private var discovery = DiscoverSitesViewModel(session: OnboardingAPI.session)
+    @StateObject private var languageChooser = LanguageChooserModel(startsInGrid: LanguageDialog.startsInGrid)
+    // OnboardingViewController.swift opens with LanguageChooserView.swift when the device language was detected
+    // automatically and the language dialog hasn't been seen yet.
+    @State private var includesLanguageStep: Bool
+    @State private var choosingLanguage: Bool
     @State private var step = 0
     @State private var showImporter = false
     @State private var importing = false
@@ -848,39 +862,63 @@ private struct OnboardingView: View {
     private var matchingInterests: [String] {
         bundles.interests.filter { query.isEmpty || $0.localizedCaseInsensitiveContains(query) }
     }
+    private var stepCount: Int { includesLanguageStep ? 3 : 2 }
+    private var stepIndex: Int { choosingLanguage ? 0 : step + (includesLanguageStep ? 1 : 0) }
+
+    init(onDismiss: @escaping () -> Void, onFinish: @escaping () -> Void) {
+        self.onDismiss = onDismiss
+        self.onFinish = onFinish
+        let offersLanguage = LanguageDialog.offersOnboardingStep()
+        _includesLanguageStep = State(initialValue: offersLanguage)
+        _choosingLanguage = State(initialValue: offersLanguage)
+    }
 
     var body: some View {
         ZStack {
             DiscoverColors.background.ignoresSafeArea()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    if step == 0 {
-                        importPage
-                        discoveryPage
-                    } else {
-                        finishedPage
-                    }
-                }.padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 24)
+            if choosingLanguage {
+                // OnboardingViewController.swift advances to import and discovery after any language choice.
+                LanguageChooserView(model: languageChooser, background: DiscoverColors.background, topPadding: 8,
+                                    wideHint: horizontalSizeClass == .regular, onFinish: { choosingLanguage = false })
                     .frame(maxWidth: contentWidth).frame(maxWidth: .infinity)
-            }.id(step)
-                .scrollDismissesKeyboard(.interactively)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        if step == 0 {
+                            importPage
+                            discoveryPage
+                        } else {
+                            finishedPage
+                        }
+                    }.padding(.horizontal, 24).padding(.top, 8).padding(.bottom, 24)
+                        .frame(maxWidth: contentWidth).frame(maxWidth: .infinity)
+                }.id(step)
+                    .scrollDismissesKeyboard(.interactively)
+            }
         }
         .safeAreaInset(edge: .top, spacing: 0) { header }
         .safeAreaInset(edge: .bottom) {
-            VStack(spacing: 12) {
-                if step == 0 {
-                    Button("Continue") { showCompletion() }
-                        .buttonStyle(OnboardingPrimaryButton())
-                } else {
-                    Button("Start reading") {
-                        bundles.prepareToRead()
-                        onFinish()
-                    }.buttonStyle(OnboardingPrimaryButton())
-                }
-            }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: contentWidth)
-                .frame(maxWidth: .infinity).background(DiscoverColors.background)
+            if !choosingLanguage {
+                VStack(spacing: 12) {
+                    if step == 0 {
+                        Button(NBLocalization.text("Continue")) { showCompletion() }
+                            .buttonStyle(OnboardingPrimaryButton())
+                    } else {
+                        Button(NBLocalization.text("Start reading")) {
+                            bundles.prepareToRead()
+                            onFinish()
+                        }.buttonStyle(OnboardingPrimaryButton())
+                    }
+                }.padding(.horizontal, 24).padding(.vertical, 12).frame(maxWidth: contentWidth)
+                    .frame(maxWidth: .infinity).background(DiscoverColors.background)
+            }
         }
         .foregroundColor(DiscoverColors.textPrimary)
+        // OnboardingViewController.swift skips the language step when the account language synced after setup
+        // opened turns out to be an explicit choice.
+        .onReceive(NotificationCenter.default.publisher(for: NBLocalization.changed)) { _ in
+            if choosingLanguage && NBLocalization.language != "auto" { choosingLanguage = false }
+        }
         .onAppear { NewsBlurAppDelegate.shared()?.feedsViewController.syncNotifier?.isPresentationSuppressed = true }
         .onDisappear { NewsBlurAppDelegate.shared()?.feedsViewController.syncNotifier?.isPresentationSuppressed = false }
         .onChange(of: bundles.added) { discovery.addedFeedURLs.formUnion($0) }
@@ -920,9 +958,9 @@ private struct OnboardingView: View {
             HStack(spacing: 8) {
                 Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "sun.max.fill")!)
                     .resizable().frame(width: 36, height: 36)
-                Text("NewsBlur").font(.title3.bold())
+                Text(verbatim: "NewsBlur").font(.title3.bold())
                 Spacer(minLength: 8)
-                Text("\(step + 1) / 2").font(.subheadline.monospacedDigit())
+                Text("\(stepIndex + 1) / \(stepCount)").font(.subheadline.monospacedDigit())
                     .foregroundStyle(DiscoverColors.textSecondary)
                 Button {
                     bundles.prepareToRead()
@@ -933,11 +971,11 @@ private struct OnboardingView: View {
                         .background(DiscoverColors.cardBackground, in: Circle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Close import and discovery")
+                .accessibilityLabel(NBLocalization.text("Close import and discovery"))
             }
             HStack(spacing: 6) {
-                ForEach(0..<2) { index in
-                    Capsule().fill(index <= step ? DiscoverColors.textSecondary : DiscoverColors.border.opacity(0.5)).frame(height: 3)
+                ForEach(0..<stepCount, id: \.self) { index in
+                    Capsule().fill(index <= stepIndex ? DiscoverColors.textSecondary : DiscoverColors.border.opacity(0.5)).frame(height: 3)
                 }
             }
         }
@@ -977,8 +1015,8 @@ private struct OnboardingView: View {
                 .foregroundStyle(DiscoverColors.textSecondary)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 5) {
-                Text("Already have feeds?").font(.headline)
-                Text("Bring your feeds and folders from another reader.")
+                Text(NBLocalization.text("Already have feeds?")).font(.headline)
+                Text(NBLocalization.text("Bring your feeds and folders from another reader."))
                     .font(.subheadline).foregroundStyle(DiscoverColors.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -986,7 +1024,7 @@ private struct OnboardingView: View {
     }
 
     private var importButton: some View {
-        Button("Import OPML") { showImporter = true }
+        Button(NBLocalization.text("Import OPML")) { showImporter = true }
             .font(.subheadline.weight(.semibold)).buttonStyle(.plain)
             .padding(.horizontal, 16).frame(height: 44)
             .background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
@@ -999,17 +1037,17 @@ private struct OnboardingView: View {
             discoveryHeader
             if bundles.iconLoadFailed {
                 HStack(spacing: 10) {
-                    Text("Some feed icons couldn’t load.").foregroundStyle(DiscoverColors.textSecondary)
+                    Text(NBLocalization.text("Some feed icons couldn’t load.")).foregroundStyle(DiscoverColors.textSecondary)
                     Spacer(minLength: 0)
                     if bundles.retryingIcons { ProgressView() }
-                    Button("Retry icons") { Task { await bundles.retryIcons() } }
+                    Button(NBLocalization.text("Retry icons")) { Task { await bundles.retryIcons() } }
                         .disabled(bundles.retryingIcons)
                 }.font(.subheadline)
             }
             if bundles.catalogLoading && bundles.interests.isEmpty { OnboardingCatalogLoader() }
             if let message = bundles.message, bundles.interests.isEmpty {
                 Text(message).font(.subheadline)
-                Button("Try again") { Task { await bundles.loadCatalog() } }
+                Button(NBLocalization.text("Try again")) { Task { await bundles.loadCatalog() } }
             }
             LazyVGrid(columns: columns, spacing: 16) {
                 if query.isEmpty && !bundles.interests.isEmpty { bundleCard("A little of everything", interest: nil, symbol: "sparkles") }
@@ -1020,7 +1058,7 @@ private struct OnboardingView: View {
             if !query.isEmpty { searchResults }
             subscriptionStatus
             if !bundles.added.isEmpty {
-                Label("\(bundles.added.count) feeds added.", systemImage: "checkmark.circle.fill").foregroundColor(DiscoverColors.textSecondary)
+                Label(NBLocalization.plural("%@ feeds added.", groupedCount: bundles.added.count), systemImage: "checkmark.circle.fill").foregroundColor(DiscoverColors.textSecondary)
             }
         }
         .task { await bundles.loadCatalog() }
@@ -1028,13 +1066,13 @@ private struct OnboardingView: View {
             NavigationStack {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
-                        Text("Choose feeds for your folder").font(.title.bold())
+                        Text(NBLocalization.text("Choose feeds for your folder")).font(.title.bold())
                         HStack(spacing: 12) {
                             Image(systemName: "folder.fill").foregroundStyle(DiscoverColors.textSecondary)
                                 .accessibilityHidden(true)
-                            TextField("Folder name", text: $bundles.folder).font(.title3.bold())
+                            TextField(NBLocalization.text("Folder name"), text: $bundles.folder).font(.title3.bold())
                                 .submitLabel(.done)
-                                .accessibilityLabel("Bundle folder name")
+                                .accessibilityLabel(NBLocalization.text("Bundle folder name"))
                                 .accessibilityIdentifier("onboarding.bundleFolder")
                         }.padding(16)
                             .background(DiscoverColors.textFieldBackground, in: RoundedRectangle(cornerRadius: 12))
@@ -1051,7 +1089,7 @@ private struct OnboardingView: View {
                         if bundles.busy {
                             HStack(spacing: 14) {
                                 ProgressView().tint(DiscoverColors.textSecondary)
-                                Text(bundles.feeds.isEmpty ? "Loading feeds to choose from…" : "Loading more feeds…").font(.subheadline)
+                                Text(bundles.feeds.isEmpty ? NBLocalization.text("Loading feeds to choose from…") : NBLocalization.text("Loading more feeds…")).font(.subheadline)
                                     .foregroundStyle(DiscoverColors.textSecondary)
                                 Spacer(minLength: 0)
                             }.padding(24).frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
@@ -1059,8 +1097,8 @@ private struct OnboardingView: View {
                                 .accessibilityIdentifier("onboarding.bundleLoading")
                         }
                         if !bundles.busy && bundles.feeds.isEmpty {
-                            Text("No feeds to show yet. Try another interest or search all sites.")
-                            Button("Try again") { Task { await bundles.load(selectedInterest) } }
+                            Text(NBLocalization.text("No feeds to show yet. Try another interest or search all sites."))
+                            Button(NBLocalization.text("Try again")) { Task { await bundles.load(selectedInterest) } }
                         }
                         if let message = bundles.message { Text(message).font(.subheadline) }
                         subscriptionStatus
@@ -1079,7 +1117,7 @@ private struct OnboardingView: View {
                     }
                 }
                 .navigationTitle(selectedInterest.map(OnboardingCatalogSelector.displayTitle) ?? "A little of everything").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showBundle = false } } }
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button(NBLocalization.text("Done")) { showBundle = false } } }
             }.foregroundColor(DiscoverColors.textPrimary).interactiveDismissDisabled()
         }
     }
@@ -1087,19 +1125,19 @@ private struct OnboardingView: View {
     private var bundleActionTitle: String {
         let count = bundles.selection.count
         let folder = bundles.folder.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard count > 0 else { return "Select feeds to add" }
-        guard !folder.isEmpty else { return "Name your folder to continue" }
-        return "Add \(count) \(count == 1 ? "feed" : "feeds") to “\(folder)” folder"
+        guard count > 0 else { return NBLocalization.text("Select feeds to add") }
+        guard !folder.isEmpty else { return NBLocalization.text("Name your folder to continue") }
+        return NBLocalization.plural("Add %1$@ feeds to “%2$@” folder", count: count, with: folder)
     }
 
     private var discoveryHeader: some View {
         HStack(spacing: 16) {
             if !searchFocused || horizontalSizeClass == .regular {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Explore interests").font(.title2.weight(.semibold))
+                    Text(NBLocalization.text("Explore interests")).font(.title2.weight(.semibold))
                         .fixedSize(horizontal: true, vertical: false)
                     if !bundles.interests.isEmpty {
-                        Text("\(bundles.interests.count) categories to choose from")
+                        Text(NBLocalization.plural("%@ categories to choose from", groupedCount: bundles.interests.count))
                             .font(.caption).foregroundStyle(DiscoverColors.textSecondary)
                     }
                 }.accessibilityIdentifier("onboarding.categoryHeading")
@@ -1116,11 +1154,11 @@ private struct OnboardingView: View {
             TextField("", text: $interestSearch)
                 .focused($searchFocused)
                 .textInputAutocapitalization(.never).autocorrectionDisabled()
-                .submitLabel(.search).accessibilityLabel("Search interests and sites")
+                .submitLabel(.search).accessibilityLabel(NBLocalization.text("Search interests and sites"))
                 .onChange(of: interestSearch) { discovery.searchAutocomplete(query: $0.trimmingCharacters(in: .whitespacesAndNewlines)) }
             if !interestSearch.isEmpty {
                 Button { interestSearch = "" } label: { Image(systemName: "xmark.circle.fill") }
-                    .foregroundStyle(DiscoverColors.textSecondary).accessibilityLabel("Clear search")
+                    .foregroundStyle(DiscoverColors.textSecondary).accessibilityLabel(NBLocalization.text("Clear search"))
             }
         }.padding(.horizontal, 14).frame(minWidth: 76).frame(height: 44)
             .background(DiscoverColors.textFieldBackground, in: RoundedRectangle(cornerRadius: 12))
@@ -1130,11 +1168,11 @@ private struct OnboardingView: View {
     private var searchResults: some View {
         VStack(alignment: .leading, spacing: 16) {
             if !discovery.searchState.isSearching && !discovery.searchState.results.isEmpty {
-                Text("Sites").font(.headline).foregroundStyle(DiscoverColors.textSecondary)
+                Text(NBLocalization.text("Sites")).font(.headline).foregroundStyle(DiscoverColors.textSecondary)
                 ForEach(discovery.searchState.results) { result in
                     let feed = DiscoverPopularFeed(autocompleteResult: result)
                     if bundles.queued.contains(feed.feedAddress) {
-                        Label("Adding \(feed.feedTitle)…", systemImage: "arrow.triangle.2.circlepath")
+                        Label(String(format: NBLocalization.text("Adding %@…"), feed.feedTitle), systemImage: "arrow.triangle.2.circlepath")
                     } else {
                         DiscoverFeedCardView(feed: feed, onAddFeed: { feed in
                             bundles.queueSearchResult(feed, folder: discovery.selectedFolder)
@@ -1145,9 +1183,9 @@ private struct OnboardingView: View {
             if discovery.searchState.isSearching { ProgressView("Searching sites…") }
             if let error = discovery.searchState.errorMessage {
                 Text(error).font(.subheadline).foregroundStyle(DiscoverColors.errorText)
-                Button("Try search again") { discovery.searchAutocomplete(query: query) }
+                Button(NBLocalization.text("Try search again")) { discovery.searchAutocomplete(query: query) }
             } else if !discovery.searchState.isSearching && discovery.searchState.results.isEmpty && matchingInterests.isEmpty {
-                Text("No interests or sites found. Try another search.").foregroundStyle(DiscoverColors.textSecondary)
+                Text(NBLocalization.text("No interests or sites found. Try another search.")).foregroundStyle(DiscoverColors.textSecondary)
             }
         }
     }
@@ -1157,14 +1195,15 @@ private struct OnboardingView: View {
             ForEach(bundles.failedBundles) { failure in
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("\(failure.feeds.count) feeds couldn’t be added\(failure.folder.isEmpty ? "" : " to " + failure.folder).")
+                        Text(failure.folder.isEmpty ? NBLocalization.plural("%@ feeds couldn’t be added.", groupedCount: failure.feeds.count)
+                             : NBLocalization.plural("%1$@ feeds couldn’t be added to %2$@.", count: failure.feeds.count, with: failure.folder))
                         if let message = failure.message {
                             Text(message).foregroundStyle(DiscoverColors.textSecondary)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     Spacer()
-                    Button("Retry") { bundles.retry(failure) }
+                    Button(NBLocalization.text("Retry")) { bundles.retry(failure) }
                 }.font(.subheadline)
             }
         }
@@ -1213,7 +1252,8 @@ private struct OnboardingView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("onboarding.interest.\(interest ?? "all")")
-        .accessibilityValue(status ?? (bundles.icons[interest ?? ""].map { "\($0.count) sources" } ?? "Loading sources"))
+        .accessibilityValue(status ?? (bundles.icons[interest ?? ""].map { NBLocalization.plural("%@ sources", groupedCount: $0.count) }
+            ?? NBLocalization.text("Loading sources")))
         .task { await bundles.loadIcons(interest) }
     }
 
@@ -1243,7 +1283,7 @@ private struct OnboardingView: View {
                     Image(systemName: "checkmark").font(.system(size: 30, weight: .medium))
                         .foregroundStyle(completionAccent)
                 }.accessibilityHidden(true)
-                Text("You’re all set up.").font(.largeTitle.bold())
+                Text(NBLocalization.text("You’re all set up.")).font(.largeTitle.bold())
                     .fixedSize(horizontal: false, vertical: true)
                 Text(bundles.summaryFeedCount == 0
                      ? "Your reader is ready. Add feeds anytime from Add + Discover Sites."
@@ -1255,9 +1295,9 @@ private struct OnboardingView: View {
             if !bundles.folderSummaries.isEmpty {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text("Your reading list").font(.title3.weight(.semibold))
+                        Text(NBLocalization.text("Your reading list")).font(.title3.weight(.semibold))
                         Spacer()
-                        Text("\(bundles.summaryFeedCount) \(bundles.summaryFeedCount == 1 ? "feed" : "feeds")")
+                        Text(NBLocalization.plural("%@ feeds", groupedCount: bundles.summaryFeedCount))
                             .font(.subheadline.weight(.medium)).foregroundStyle(completionAccent)
                     }
                     ForEach(bundles.folderSummaries) { folder in
@@ -1290,7 +1330,7 @@ private struct OnboardingView: View {
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                Text("Stay connected").font(.subheadline.weight(.semibold))
+                Text(NBLocalization.text("Stay connected")).font(.subheadline.weight(.semibold))
                     .foregroundStyle(DiscoverColors.textSecondary).padding(.horizontal, 4)
                 VStack(spacing: 0) {
                     completionLink(title: "NewsBlur Forum", subtitle: "Ask questions and share ideas", destination: "https://forum.newsblur.com", avatar: nil)

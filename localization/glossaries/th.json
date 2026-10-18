@@ -1,0 +1,429 @@
+{
+  "language": "th",
+  "register": "Polite neutral Thai as in well-localized consumer apps: mostly pronoun-free, «คุณ» when a pronoun is needed (601 uses, no ท่าน anywhere), «โปรด» for please, no sentence-final particles (ครับ/ค่ะ, none in the catalog), buttons and menu items are bare verbs («บันทึก», «ยกเลิก», «เสร็จสิ้น»); FAQ questions written in the user's voice use «ฉัน».",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "บทความ",
+      "avoid": [
+        "เรื่อง (as a story noun in short labels)",
+        "ข่าว (for a single NewsBlur story)",
+        "สตอรี่"
+      ],
+      "note": "Catalog: ~690 เรื่องราว, ~300 เรื่อง, ~90 ข่าว, ~80 บทความ. «เรื่องราว» is a tale/narrative (a calque of 'story') and reads wrong for a feed item; «บทความ» is what Thai RSS/news readers use and also covers blog posts, newsletters and podcast entries. Severity: «เรื่องราว» medium in labels, buttons, menu items, titles, folder/view names, counts and short status/error/empty lines; low in prose. «เรื่อง» (short form) low in short labels for consistency; accepted in prose, as a count classifier («5 เรื่อง»), in «ชื่อเรื่อง» (title) and «เรื่องนี้» inside prose. «ข่าว» medium in labels, low in prose; keep it where the English says news (news reader → โปรแกรมอ่านข่าว, news sources, newsletters) and «ข่าวเด่น/เรื่องเด่น» for Top stories. Counts: «5 บทความ» or «บทความ 5 รายการ»; «5 เรื่องราว» is not a classifier (medium). Leave «เรื่องราว» where English really means a narrative (the NewsBlur story, a story about…). Briefing content (section subtitles like 'Stories matching your trained topics', 'Story count' in briefing settings, Top stories «ข่าวเด่น/เรื่องเด่น») may keep «ข่าว»; part A did not flag those. Also avoid where it means this concept: เรื่องราว."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "เว็บไซต์",
+      "avoid": [
+        "ไซต์ (bare)"
+      ],
+      "note": "Catalog: 422 เว็บไซต์, 11 bare ไซต์ (iOS mostly). Bare ไซต์ → low. Counts: «12 เว็บไซต์» or «เว็บไซต์ 12 แห่ง» both fine. «หน้าเว็บ» is fine for a single web page (page scraping)."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "ฟีด",
+      "avoid": [],
+      "note": "Consistent (502). RSS feed → «ฟีด RSS»."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "ฟีดเว็บ",
+      "avoid": [
+        "Web Feed(s) left in English"
+      ],
+      "note": "Catalog 26 ฟีดเว็บ, 4 เว็บฟีด, 9 English. English in short labels/errors → medium; in prose low. «เว็บฟีด» → low only in labels next to ฟีดเว็บ. Also avoid where it means this concept: เว็บฟีด."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "โฟลเดอร์",
+      "avoid": [],
+      "note": "Consistent."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "ยังไม่อ่าน",
+      "avoid": [],
+      "note": "«ยังไม่ได้อ่าน» is the same term; do not flag the variation."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "ทำเครื่องหมายว่าอ่านแล้ว",
+      "avoid": [],
+      "note": "«…เป็นอ่านแล้ว» also acceptable."
+    },
+    {
+      "concept": "Read Stories (folder)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "บทความที่อ่านแล้ว",
+      "avoid": [
+        "อ่านเรื่องราว / อ่านบทความ (imperative)"
+      ],
+      "note": "Imperative → high. Siri/Spotlight 'Read %@' opens a feed: «อ่าน %@» is right; any mark-as-read wording → high."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "บันทึก; Saved Stories → บทความที่บันทึกไว้; Unsave → เลิกบันทึก (ยกเลิกการบันทึก also fine)",
+      "avoid": [],
+      "note": "Offline cached stories must not reuse «บันทึกไว้» in a way that collides with Saved Stories."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "แชร์; Shared Stories → บทความที่แชร์",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "บล็อกเบลอ (blurry blog)",
+        "บล็อกข่าว",
+        "บล็อกที่แชร์",
+        "บล็อกบน Blurblogs",
+        "บล็อก Blurblog"
+      ],
+      "note": "Product name stays Latin. «บล็อกเบลอ» → medium (literal 'blurry blog'); other descriptive paraphrases → low in prose, medium in labels. Lowercase 'blurblog' in Thai text is not flagged."
+    },
+    {
+      "concept": "intelligence trainer / train",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Train → ฝึก; Intelligence Trainer → เครื่องมือฝึกระบบอัจฉริยะ; Trainer → เครื่องมือฝึก; Story Trainer → เครื่องมือฝึกบทความ; Intelligence → (ระบบ)อัจฉริยะ",
+      "avoid": [
+        "ฝึก Intelligence Trainer",
+        "Story Trainer (English)",
+        "ตัวฝึกสอน (a coach)",
+        "ฝึกความฉลาด / ความฉลาด for Intelligence in labels"
+      ],
+      "note": "«ตัวฝึก» is an accepted short form of «เครื่องมือฝึก». English left in a label → medium. «ความฉลาด» → low (labels) / accept in prose. «ระบบคัดกรอง» paraphrases in prose accepted."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "ตัวจำแนก",
+      "avoid": [],
+      "note": "«ตัวจัดประเภท» and «ตัวแยกประเภท» are equally correct; do not flag the variation."
+    },
+    {
+      "concept": "like / dislike",
+      "en": "\\b(super )?(dis)?lik(e|ed|es)\\b",
+      "use": "Like → ชอบ, Dislike → ไม่ชอบ, Super Dislike → ไม่ชอบอย่างยิ่ง",
+      "avoid": [
+        "ถูกใจ next to ไม่ชอบ in trainer labels"
+      ],
+      "note": "Catalog like: 19 ชอบ / 16 ถูกใจ; dislike: 27 ไม่ชอบ / 4 ไม่ถูกใจ. A ถูกใจ/ไม่ชอบ pair in trainer buttons → low. Prose «กดถูกใจ / กดไม่ถูกใจ» (press the thumbs) is idiomatic and accepted. Super dislike variants «ไม่ชอบมาก», «ไม่ชอบอย่างมาก» accepted."
+    },
+    {
+      "concept": "beats / like wins",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\b(beats|wins)\\b)",
+      "use": "beats → ชนะ (or a > sign); (like wins) → (ชอบชนะ) / (ชอบมีผลเหนือกว่า)",
+      "avoid": [
+        "จังหวะ (musical beat)",
+        "ตี (hit)"
+      ],
+      "note": "Wrong sense → high."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "โฟกัส",
+      "avoid": [
+        "เน้น for the Focus view name in labels"
+      ],
+      "note": "Matches the iOS/Android Focus-mode word. Focus stories → «บทความโฟกัส» (not «โฟกัสเรื่อง», which reads as the verb 'focus on stories' → medium). Prose verbs «เน้น/สนใจ» for 'focus or hide' are fine."
+    },
+    {
+      "concept": "hide",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "ซ่อน",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "ปิดเสียง; Unmute → เปิดเสียง (เลิกปิดเสียง also fine)",
+      "avoid": [
+        "ปิดเสียง: ไม่มี (Mute None calque)"
+      ],
+      "note": "Same word as X/LINE Thai for muting accounts."
+    },
+    {
+      "concept": "premium / plan names",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium, Premium Archive, Premium Pro, Archive, Pro stay Latin. Plan → แพ็กเกจ (แผน also fine).",
+      "avoid": [
+        "คลังพรีเมียม",
+        "คลังเก็บ(ถาวร) Premium/พรีเมียม",
+        "คลังเก็บแบบพรีเมียม",
+        "Archive translated as คลัง/เก็บถาวร when it is the plan"
+      ],
+      "note": "Translating Archive as storage → medium in labels/buttons/titles/short errors, low in prose. «พรีเมียม» for the plan name in a short label next to Latin forms → low; generic prose «ฟีเจอร์พรีเมียม», «สมาชิกพรีเมียม» accepted. The story archive (the feature) is «คลังบทความ / คลังเก็บถาวร», correct."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "การตั้งค่า (all platforms)",
+      "avoid": [
+        "ค่ากำหนด"
+      ],
+      "note": "Catalog 19 การตั้งค่า vs 7 ค่ากำหนด for Preferences. «ค่ากำหนด» → low. iOS/Android system words: Settings การตั้งค่า, Done เสร็จสิ้น, Cancel ยกเลิก, Delete ลบ, Share แชร์, Edit แก้ไข."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "สมัครรับ / สมัครรับข้อมูล (ติดตาม also fine for a feed, YouTube Thai uses it)",
+      "avoid": [],
+      "note": "Paid subscription → «การสมัครสมาชิก». Subscribers of a feed → «ผู้ติดตาม». Flag only where a paid subscription and a feed subscription are confused."
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "ติดตาม; Following → กำลังติดตาม; Followers → ผู้ติดตาม; Friends → เพื่อน",
+      "avoid": [],
+      "note": "I'm Following «ฉันกำลังติดตาม» vs Following Me «กำลังติดตามฉัน» are distinguishable."
+    },
+    {
+      "concept": "follow up / follow-ups",
+      "en": "\\bfollow[- ]?ups?\\b",
+      "use": "Follow up… (Ask AI input) → ถามต่อ…; Follow-ups (briefing section) → ข่าวความคืบหน้า / ติดตามความคืบหน้า",
+      "avoid": [
+        "ติดตามผล / ติดตามภายหลัง for the Ask AI input"
+      ],
+      "note": "Ask AI 'Follow up…' as 'track later' → high."
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "สรุปข่าวประจำวัน; Briefing → สรุปข่าว",
+      "avoid": [
+        "บรีฟ",
+        "บทสรุป (for the briefing name)",
+        "สรุปประจำวัน (missing ข่าว) in labels"
+      ],
+      "note": "«บรีฟ» → medium; «สรุปประจำวัน / บทสรุปรายวัน» → low. Weekly/Twice-daily briefing → «สรุปข่าวรายสัปดาห์ / วันละสองครั้ง». Newsletters are «จดหมายข่าว» (no collision)."
+    },
+    {
+      "concept": "ask ai",
+      "en": "\\bask ai\\b",
+      "use": "ถาม AI",
+      "avoid": [
+        "Ask AI left in English"
+      ],
+      "note": "English in a short label/error → medium; in prose → low. As a noun inside a sentence «ฟีเจอร์ถาม AI»."
+    },
+    {
+      "concept": "all site stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "บทความจากทุกเว็บไซต์",
+      "avoid": [
+        "เรื่องราวทั้งหมดจากเว็บไซต์ (reads as one site)",
+        "บทความทั้งหมดในเว็บไซต์",
+        "เรื่องราวทั้งหมดของเว็บไซต์"
+      ],
+      "note": "One-site reading → high."
+    },
+    {
+      "concept": "infrequent site stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "บทความจากเว็บไซต์ที่อัปเดตไม่บ่อย",
+      "avoid": [
+        "เรื่องราวที่มานานๆ ครั้ง",
+        "เรื่องราวที่พบน้อย"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "good reads / long reads / widely read / global shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Good Reads → บทความน่าอ่าน; Long Reads → บทความอ่านยาว; Widely Read Stories → บทความที่มีผู้อ่านมาก; Global Shared Stories → บทความที่แชร์ทั่วโลก",
+      "avoid": [
+        "หนังสือดี (good books)",
+        "รีวิวดีๆ (good reviews)",
+        "Good Reads / Long Reads in English"
+      ],
+      "note": "Books/reviews readings → high."
+    },
+    {
+      "concept": "river of news",
+      "en": "\\briver of news\\b",
+      "use": "ฟีดข่าวรวม",
+      "avoid": [
+        "สายน้ำข่าว / สายน้ำแห่งข่าว (literal river)"
+      ],
+      "note": "Literal river → low unnatural; English 'River of News' in prose → low. «ฟีดข่าวต่อเนื่อง» (Android) is also accepted; do not flag it."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Text view → มุมมองข้อความ; Story view → มุมมองบทความ; Feed view → มุมมองฟีด; Original view → มุมมองต้นฉบับ",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "positive?",
+      "en": "\\bpositive\\?",
+      "use": "แน่ใจหรือไม่",
+      "avoid": [
+        "เชิงบวก",
+        "บวก"
+      ],
+      "note": "It is an 'Are you sure?' confirmation title; a literal positive → high."
+    },
+    {
+      "concept": "insta-fetch",
+      "en": "\\binsta-?fetch\\b",
+      "use": "ดึงบทความทันที",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "goodies",
+      "en": "\\bgoodies\\b",
+      "use": "เครื่องมือเสริม (ของน่าใช้ also accepted)",
+      "avoid": [
+        "ของดี (good things/delicacies)",
+        "ของแถม"
+      ],
+      "note": "low unnatural."
+    },
+    {
+      "concept": "theme",
+      "en": "\\bthemes?\\b",
+      "use": "ธีม",
+      "avoid": [
+        "หัวข้อ"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "editorial",
+      "en": "\\beditorial\\b",
+      "use": "แบบบทบรรณาธิการ / แบบเล่าเรื่อง",
+      "avoid": [],
+      "note": "Narrative briefing style next to Bullets/Headlines."
+    },
+    {
+      "concept": "relative time",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "%(time)s ที่แล้ว / %1$s ที่แล้ว; bare units «3 วัน»; 'in %(time)s' → «อีก %(time)s»",
+      "avoid": [
+        "ใน %(time)s (reads as 'within')"
+      ],
+      "note": "«…ก่อน» also fine. iOS 'ผ่านมาแล้ว %@' → low."
+    },
+    {
+      "concept": "numbers / prices",
+      "en": null,
+      "use": "Comma thousands (1,024); «$36/ปี» is accepted",
+      "avoid": [],
+      "note": "Thai uses Western digits and commas; nothing to fix."
+    },
+    {
+      "concept": "spacing",
+      "en": null,
+      "use": "Space between phrases/clauses; a space around Latin tokens and placeholders is optional",
+      "avoid": [
+        "spaces that split a word",
+        "Thai sentence-final full stops copied from English"
+      ],
+      "note": "Only flag spacing that breaks a word or makes a run-on clearly hard to read."
+    },
+    {
+      "concept": "yes answers",
+      "en": "^yes\\b",
+      "use": "ใช่ for yes/no questions (Is…? Are…? Is this different…?); ได้ only for can-questions (Can I…? Does it work…?)",
+      "avoid": [
+        "ได้ answering an is/are question"
+      ],
+      "note": "FAQ answers starting 'Yes.' were often rendered «ได้»; medium grammar where the question is not a can-question."
+    },
+    {
+      "concept": "widget sites",
+      "en": "(?:\\bsites?\\b)|(?:\\bwidgets?\\b)",
+      "use": "เว็บไซต์ในวิดเจ็ต / เว็บไซต์สำหรับวิดเจ็ต",
+      "avoid": [
+        "เว็บไซต์วิดเจ็ต (reads 'widget websites')",
+        "ไซต์วิดเจ็ต"
+      ],
+      "note": "low."
+    },
+    {
+      "concept": "favorite (a comment)",
+      "en": "(?:\\bcomments?\\b)|(?:\\bfavorit(e|ed|es|ing)\\b)",
+      "use": "ถูกใจ / เลิกถูกใจ",
+      "avoid": [
+        "รายการโปรด for the comment action"
+      ],
+      "note": "«รายการโปรด» stays for a Favorites list or icon category."
+    },
+    {
+      "concept": "AI model",
+      "en": "\\b(fast|thinking|models?)\\b",
+      "use": "โมเดล",
+      "avoid": [
+        "รุ่น"
+      ],
+      "note": "low."
+    },
+    {
+      "concept": "train button",
+      "en": "\\btrain(er|ers|ing|ed|s)?\\b",
+      "use": "ฝึก",
+      "avoid": [
+        "Train left in English inside instructions"
+      ],
+      "note": "Prose that tells the user to click Train should name the Thai button «ฝึก»."
+    },
+    {
+      "concept": "status words",
+      "en": null,
+      "use": "Stale → ไม่อัปเดตตั้งแต่ … / ไม่มีการอัปเดต; On its way → กำลังโหลด…; Leave unread → คงสถานะยังไม่อ่าน; Unsaved → เลิกบันทึกแล้ว; Play Next → เล่นถัดไป; Play Last → เล่นต่อท้าย",
+      "avoid": [
+        "ข้อมูลเก่า/ข้อมูลล้าสมัย for a stale feed",
+        "ทำเครื่องหมายว่ายังไม่อ่าน for Leave unread (medium meaning)",
+        "ยังไม่ได้บันทึก for Unsaved",
+        "เล่นรายการสุดท้าย"
+      ],
+      "note": "Also avoid where it means this concept: กำลังมา."
+    },
+    {
+      "concept": "read-status filter",
+      "en": "\\bread\\b",
+      "use": "Read story filter → ตัวกรองสถานะการอ่าน",
+      "avoid": [
+        "ตัวกรองเรื่องราวที่อ่านแล้ว (a filter of read stories)"
+      ],
+      "note": "medium meaning."
+    },
+    {
+      "concept": "image position options",
+      "en": "\\bimage\\b",
+      "use": "ขนาดใหญ่ด้านซ้าย / ขนาดเล็กด้านซ้าย / ขนาดใหญ่ด้านขวา / ขนาดเล็กด้านขวา; Android L/R segments → ซ้ายใหญ่ / ซ้ายเล็ก / ขวาใหญ่ / ขวาเล็ก",
+      "avoid": [
+        "L/R Latin abbreviations"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "placeholders that are names",
+      "en": null,
+      "use": "No classifier after %(topic)s/%(category)s/usernames: «เว็บไซต์ %(topic)s», «หัวข้อ %(category)s», «ความคิดเห็นของ %1$s»",
+      "avoid": [
+        "เว็บไซต์ %(topic)s แห่ง",
+        "%1$s ความคิดเห็น (username read as a count)"
+      ],
+      "note": "high when a username reads as a count; medium otherwise."
+    }
+  ]
+}

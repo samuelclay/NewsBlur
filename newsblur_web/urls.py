@@ -9,6 +9,12 @@ from django.views.generic import RedirectView
 from apps.mcp import views as mcp_views
 from apps.profile import views as profile_views
 from apps.profile import web_social_auth
+from apps.profile.language import (
+    FLIPPED_STYLESHEET_PATTERN,
+    JAVASCRIPT_CATALOG_PATTERN,
+    flipped_stylesheet,
+    javascript_catalog,
+)
 from apps.reader import views as reader_views
 from apps.social import views as social_views
 from apps.static import views as static_views
@@ -17,6 +23,8 @@ from apps.static.sitemaps import StaticSitemap
 admin.autodiscover()
 
 urlpatterns = [
+    url(JAVASCRIPT_CATALOG_PATTERN, javascript_catalog, name="javascript-catalog"),
+    url(FLIPPED_STYLESHEET_PATTERN, flipped_stylesheet, name="flipped-stylesheet"),
     url(r"^account/social/start/?$", web_social_auth.start, name="web-social-start"),
     url(
         r"^account/social/(?P<provider>apple|google)/callback/?$",

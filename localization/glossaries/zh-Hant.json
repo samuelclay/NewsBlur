@@ -1,0 +1,451 @@
+{
+  "language": "zh-Hant",
+  "register": "Informal-polite 你 throughout: the catalog is split exactly 258 to 258 strings between 你 and 您, Apple and Google Taiwan consumer apps address the reader as 你, and the Simplified catalog was standardized on 你 too, so 您 strings and strings mixing 你/您 are flagged (low). Buttons and menu items are bare verb or noun phrases (新增網站, 儲存), sentences end in full-width 。, and 請 is fine for instructions.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "文章",
+      "avoid": [
+        "報導 (when it means a NewsBlur story)",
+        "新聞 (when it means a NewsBlur story)",
+        "項目 (for a story)"
+      ],
+      "note": "Catalog majority (about 970 strings). 故事 reads as 'tale', 報導 as 'news report'. Counter: N 篇文章. 'News coverage' or 'widely covered topics' may stay 報導. Also avoid where it means this concept: 故事."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "網站",
+      "avoid": [
+        "站點"
+      ],
+      "note": "Counter: N 個網站. 'site-wide' → 全站."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "訂閱來源",
+      "avoid": [
+        "資訊來源",
+        "動態 (for a feed)",
+        "摘要 (means summary)",
+        "訂閱源",
+        "供稿",
+        "新聞來源",
+        "Feed / feed (Latin)",
+        "來源 alone in labels"
+      ],
+      "note": "The catalog mixes 資訊來源 (134), 動態消息 (132), 訂閱來源 (98), 摘要 (55), 訂閱源 (29) and others. 訂閱來源 is unambiguous in Taiwan, parallels the Simplified 订阅源, and does not collide with Facebook's 動態消息 or with 摘要 (summary, used for Brief/summaries). Counter: N 個訂閱來源. RSS feed → RSS 訂閱來源 (RSS 來源 tolerated in prose). Feed view → 訂閱來源檢視. 摘要 used for a feed is flagged medium because NewsBlur also has summaries; the other synonyms are low. Verifier: when the verb 訂閱 immediately precedes the noun, avoid 訂閱訂閱來源 / 訂閱新的訂閱來源; write 新增訂閱來源 (subscribe to / add a feed), 訂閱此來源 (subscribe to this feed) or 新增網頁訂閱來源 (Subscribe to Web Feed) instead, as a native Taiwan localizer would. Also avoid where it means this concept: 動態消息, 資訊流."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "資料夾",
+      "avoid": [
+        "文件夾"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "未讀 / 未讀文章",
+      "avoid": [
+        "未讀故事",
+        "未讀新聞"
+      ],
+      "note": "Next unread story → 下一篇未讀文章."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "標記為已讀",
+      "avoid": [
+        "標示為已讀",
+        "標為已讀 (except where space is tight)"
+      ],
+      "note": "標記 is the catalog majority (91 vs 51). 'Read Stories' (the folder of stories already read) is 已讀文章, never 閱讀文章 (imperative 'read stories'). Siri/Spotlight 'Read %@' opens a feed to read it: 閱讀 %@. 'Mark newer/older as read' → 將較新／較舊的文章標記為已讀."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "儲存 / 已儲存的文章",
+      "avoid": [
+        "收藏 (inconsistent with 儲存)",
+        "已儲存的故事"
+      ],
+      "note": "Unsave → 取消儲存. Also avoid where it means this concept: 保存."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "分享 / 已分享 / 分享的文章",
+      "avoid": [
+        "共享 (for sharing a story)"
+      ],
+      "note": "Shared Stories → 分享的文章."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "blurblog (lowercase)",
+        "Blurblogs (plural)",
+        "部落格 (loses the product name)"
+      ],
+      "note": "Product name kept in Latin script with a capital B; Chinese has no plural."
+    },
+    {
+      "concept": "intelligence trainer",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "智慧訓練器",
+      "avoid": [
+        "智慧判讀",
+        "智能 (Simplified usage)",
+        "Story Trainer (Latin)"
+      ],
+      "note": "Train → 訓練; Intelligence Training → 智慧訓練; Train this site/story → 訓練此網站／這篇文章; Story trainer → 文章訓練器; Train intelligence → 訓練智慧分類器 is tolerated. Also avoid where it means this concept: 智慧功能."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "焦點",
+      "avoid": [
+        "專注 (collides with iOS 專注模式, the system Focus feature)",
+        "聚焦 (for the level)",
+        "重點",
+        "關注 (for the level)",
+        "優先"
+      ],
+      "note": "Catalog plurality. The slider is 全部 / 未讀 / 焦點; Focus stories → 焦點文章; Focus view/mode → 焦點檢視／焦點模式; Unread + Focus → 未讀 + 焦點. The plain verb 'focus on what matters' may stay 專注於 in prose."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "喜歡 / 不喜歡",
+      "avoid": [
+        "讚 / 倒讚 for the classifier states",
+        "超級倒讚",
+        "非常不喜歡"
+      ],
+      "note": "Super dislike → 超級不喜歡 (catalog plurality). Thumbs up/down in marketing prose may stay 按讚/按倒讚. The trainer's 'beats' means Like outranks Dislike: 喜歡勝過不喜歡 or 喜歡 > 不喜歡."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "隱藏 / 已隱藏",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "分類器",
+      "avoid": [
+        "分類條件 (for the classifier itself)"
+      ],
+      "note": "Prompt classifier → 提示分類器; Regex classifiers → 正規表示式分類器."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "進階封存",
+        "進階版封存",
+        "進階典藏版",
+        "Premium 封存",
+        "Premium 封存庫",
+        "高級版",
+        "NewsBlur 高級版",
+        "從封存方案升級 (for the Archive plan)"
+      ],
+      "note": "The catalog keeps the plan names in Latin most of the time (Premium Archive 33 of 56, Premium Pro 22 of 23, Premium about 55 of 76), which reads like YouTube Premium in Taiwan. Lowercase generic 'premium feature/account' → 進階功能 / 付費功能 / 進階帳戶 is fine. The story archive itself (not the plan) is 封存; avoid 典藏, 存檔, 歸檔 for it."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "偏好設定 / 設定",
+      "avoid": [
+        "設置",
+        "首選項"
+      ],
+      "note": "Preferences → 偏好設定 on all platforms; Settings → 設定."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "訂閱 / 訂閱者",
+      "avoid": [],
+      "note": "Paying premium subscribers → 付費訂閱者 is fine."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "新聞流",
+      "avoid": [
+        "新聞河流",
+        "河流",
+        "河流檢視",
+        "新聞之河",
+        "新聞串流",
+        "文章動態"
+      ],
+      "note": "Catalog plurality. Lowercase 'your river' → 新聞流."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "所有網站文章",
+      "avoid": [
+        "網站所有文章",
+        "網站的所有文章 (reads as 'all stories of the site')",
+        "此網站的所有文章"
+      ],
+      "note": "It is the river of every subscribed site, not all stories of one site."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "儀表板",
+      "avoid": [
+        "控制面板"
+      ],
+      "note": "Taiwan standard and catalog majority."
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "每日簡報 / 簡報",
+      "avoid": [
+        "每日摘要 (摘要 is summary)",
+        "日報",
+        "Daily Briefing (Latin)"
+      ],
+      "note": "Catalog majority (簡報 76 vs 摘要 36). The briefing's 'summary' stays 摘要; 'Brief' (a summary length) → 簡短. Verifier: the briefing writing styles are 重點條列 (Bullets), 敘事 (Editorial, the flowing narrative style) and 標題 (Headlines)."
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "標籤 / 作者",
+      "avoid": [
+        "標記 (for a noun tag)"
+      ],
+      "note": "Tag RSS feed → 標籤 RSS 訂閱來源."
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "電子報",
+      "avoid": [
+        "電子郵件電子報 (redundant)",
+        "新聞通訊"
+      ],
+      "note": "Email Newsletters → 電子報."
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "探索 / 相關網站",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "comment / reply",
+      "en": "(?:\\bcomments?\\b)|(?:\\brepl(y|ies|ied)\\b)",
+      "use": "留言 / 回覆",
+      "avoid": [
+        "評論 (for a NewsBlur comment)"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "follow / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "追蹤 / 追蹤者 / 朋友",
+      "avoid": [
+        "好友 (for the Friends feature)",
+        "關注 (for following a user)"
+      ],
+      "note": "I'm Following → 我追蹤的人; Following Me → 追蹤我的人 (must be distinguishable). Ask AI follow-up → 追問."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "靜音 / 取消靜音",
+      "avoid": [
+        "封鎖 (that is Block)"
+      ],
+      "note": "Catalog majority (35 vs 2) and Taiwan social apps' term for muting."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "通知",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "不常更新的網站文章",
+      "avoid": [
+        "低頻網站的文章",
+        "較少出現的文章",
+        "較少更新網站的報導",
+        "網站不常更新的文章",
+        "每月低頻故事數"
+      ],
+      "note": "Sites that publish rarely, not sites the reader rarely sees. In prose 不常更新的網站 is fine."
+    },
+    {
+      "concept": "Good Reads / Long Reads / Widely Read",
+      "en": "(?:\\bread\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "優質閱讀 / 長篇閱讀 / 廣受閱讀的文章",
+      "avoid": [
+        "好讀",
+        "好文章",
+        "好文推薦 (folder name)",
+        "優質讀物 (sounds like books)",
+        "熱門文章 (that is Top stories)",
+        "廣泛閱讀的故事"
+      ],
+      "note": "Good Reads is a folder of good stories, not books. Long Reads → 長篇閱讀 (長篇文章 tolerated in 'Show Long Reads' style labels)."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "全域分享文章",
+      "avoid": [
+        "全球分享文章",
+        "全球分享的文章"
+      ],
+      "note": "Global → 全域 elsewhere (global classifiers, global settings)."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "訂閱來源檢視 / 文字檢視 / 文章檢視 / 原始網站檢視 (原始檢視 tolerated)",
+      "avoid": [
+        "動態消息檢視",
+        "資訊來源檢視",
+        "視圖 (Simplified usage)"
+      ],
+      "note": "Original site → 原始網站."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "詢問 AI",
+      "avoid": [
+        "Ask AI (Latin)"
+      ],
+      "note": "In prose the feature name may be quoted as 「詢問 AI」. Full sentences like 向 AI 提問 are fine when not the feature name. Also avoid where it means this concept: AI 詢問."
+    },
+    {
+      "concept": "import / export",
+      "en": "\\b(import|export|opml)\\b",
+      "use": "匯入 / 匯出",
+      "avoid": [
+        "導入",
+        "導出"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "account",
+      "en": "\\baccounts?\\b",
+      "use": "帳戶 / 登入 / 登出 / 註冊 / 建立帳戶",
+      "avoid": [
+        "賬戶",
+        "用戶 (for user)"
+      ],
+      "note": "帳戶 is the catalog majority (104 vs 1). User → 使用者."
+    },
+    {
+      "concept": "email / password",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "電子郵件 / 密碼",
+      "avoid": [
+        "郵箱"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "trial / upgrade",
+      "en": "(?:\\bupgrad(e|ed|es|ing)\\b)|(?:\\btrials?\\b)",
+      "use": "試用 / 升級 / 續訂",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "鍵盤快速鍵 / 快速鍵",
+      "avoid": [
+        "快捷鍵 (mainland usage)"
+      ],
+      "note": "Apple and Microsoft Taiwan use 快速鍵. Android app shortcuts (launcher) stay 捷徑."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "網頁訂閱來源",
+      "avoid": [
+        "網頁動態消息",
+        "網頁摘要",
+        "網頁供稿",
+        "網路資訊源",
+        "網頁資訊來源",
+        "Web Feed(s) (Latin)"
+      ],
+      "note": "Follows the feed term."
+    },
+    {
+      "concept": "cluster",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "文章分群 / 分群 (a cluster: 群組)",
+      "avoid": [
+        "叢集 (server cluster)",
+        "聚類 (mainland statistics term)",
+        "群集",
+        "故事分群"
+      ],
+      "note": "Catalog majority is 分群."
+    },
+    {
+      "concept": "Taiwan vocabulary",
+      "en": null,
+      "use": "檔案, 設定, 資料夾, 訊息, 網路, 影片, 程式, 使用者, 預設, 支援, 搜尋, 列印, 螢幕, 視窗, 連結, 伺服器",
+      "avoid": [
+        "文件 (for file)",
+        "設置",
+        "文件夾",
+        "信息",
+        "網絡",
+        "視頻",
+        "程序 (for a program)",
+        "默認",
+        "支持 (for a feature supporting something)",
+        "屏幕",
+        "鏈接",
+        "服務器"
+      ],
+      "note": "Flag Simplified-Chinese vocabulary or characters as terminology/untranslated. Also avoid where it means this concept: 用戶."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Full-width ，。：；？！（） in Chinese text; Taiwan quotes 「」 and nested 『』; one space between Chinese and Latin words, numbers and placeholders; no space next to full-width punctuation; ellipsis …",
+      "avoid": [
+        "ASCII , . : ? ! ( ) after Chinese text",
+        "ASCII ... after Chinese text",
+        "“” curly quotes",
+        "missing space around Latin words or placeholders"
+      ],
+      "note": "Apple-style single … in menus and progress labels; …… is tolerated in prose. ASCII punctuation inside code, URLs or placeholders is left alone."
+    }
+  ]
+}

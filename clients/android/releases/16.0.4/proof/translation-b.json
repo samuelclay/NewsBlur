@@ -1,0 +1,356 @@
+{
+  "version": "16.0.4",
+  "version_code": 296,
+  "source_commit": "1b32c5b65bdf577402c055d34246691d53e534d9",
+  "english_sha256": {
+    "metadata": "26185d735ac5023182e555e5c66d49365f3b72b83587f1ed58f98e6bfcec9ed4",
+    "products": "d77538c0737652f6a7411c057a6fbe5c499c0334cdc5d38aab0ea73af21267d3",
+    "release": "de31e6408e00b9971ef5e7c837bcf5dbe43605230278168ceefba1acd826227b"
+  },
+  "translator": "sync_audit",
+  "independent_review": "pending",
+  "locales": {
+    "ar": {
+      "metadata": {
+        "title": 24,
+        "short_description": 62,
+        "full_description": 1377
+      },
+      "release_notes": 334,
+      "products": {
+        "nb.premium.36": {
+          "title": 23,
+          "description": 111,
+          "benefits": [
+            32,
+            21,
+            29,
+            21
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 31,
+          "description": 118,
+          "benefits": [
+            16,
+            35,
+            21,
+            25
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/ar.json"
+    },
+    "he": {
+      "metadata": {
+        "title": 24,
+        "short_description": 56,
+        "full_description": 1304
+      },
+      "release_notes": 274,
+      "products": {
+        "nb.premium.36": {
+          "title": 22,
+          "description": 99,
+          "benefits": [
+            29,
+            16,
+            19,
+            24
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 30,
+          "description": 112,
+          "benefits": [
+            21,
+            29,
+            29,
+            25
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/he.json"
+    },
+    "hi": {
+      "metadata": {
+        "title": 25,
+        "short_description": 70,
+        "full_description": 1670
+      },
+      "release_notes": 360,
+      "products": {
+        "nb.premium.36": {
+          "title": 24,
+          "description": 108,
+          "benefits": [
+            32,
+            18,
+            27,
+            23
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 32,
+          "description": 111,
+          "benefits": [
+            23,
+            27,
+            34,
+            30
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/hi.json"
+    },
+    "id": {
+      "metadata": {
+        "title": 28,
+        "short_description": 71,
+        "full_description": 1722
+      },
+      "release_notes": 362,
+      "products": {
+        "nb.premium.36": {
+          "title": 26,
+          "description": 124,
+          "benefits": [
+            37,
+            20,
+            31,
+            26
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 34,
+          "description": 155,
+          "benefits": [
+            19,
+            38,
+            39,
+            34
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/id.json"
+    },
+    "vi": {
+      "metadata": {
+        "title": 27,
+        "short_description": 79,
+        "full_description": 1759
+      },
+      "release_notes": 368,
+      "products": {
+        "nb.premium.36": {
+          "title": 24,
+          "description": 123,
+          "benefits": [
+            40,
+            27,
+            23,
+            28
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 32,
+          "description": 133,
+          "benefits": [
+            25,
+            29,
+            30,
+            29
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/vi.json"
+    },
+    "th": {
+      "metadata": {
+        "title": 22,
+        "short_description": 62,
+        "full_description": 1410
+      },
+      "release_notes": 297,
+      "products": {
+        "nb.premium.36": {
+          "title": 31,
+          "description": 103,
+          "benefits": [
+            31,
+            13,
+            22,
+            17
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 39,
+          "description": 106,
+          "benefits": [
+            18,
+            26,
+            25,
+            24
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/th.json"
+    },
+    "ja": {
+      "metadata": {
+        "title": 20,
+        "short_description": 44,
+        "full_description": 883
+      },
+      "release_notes": 157,
+      "products": {
+        "nb.premium.36": {
+          "title": 26,
+          "description": 61,
+          "benefits": [
+            18,
+            12,
+            13,
+            11
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 34,
+          "description": 60,
+          "benefits": [
+            14,
+            16,
+            15,
+            12
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/ja.json"
+    },
+    "ko": {
+      "metadata": {
+        "title": 19,
+        "short_description": 48,
+        "full_description": 975
+      },
+      "release_notes": 185,
+      "products": {
+        "nb.premium.36": {
+          "title": 19,
+          "description": 65,
+          "benefits": [
+            19,
+            10,
+            14,
+            12
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 27,
+          "description": 75,
+          "benefits": [
+            14,
+            21,
+            12,
+            13
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/ko.json"
+    },
+    "zh-Hans": {
+      "metadata": {
+        "title": 18,
+        "short_description": 28,
+        "full_description": 627
+      },
+      "release_notes": 112,
+      "products": {
+        "nb.premium.36": {
+          "title": 19,
+          "description": 46,
+          "benefits": [
+            15,
+            6,
+            11,
+            8
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 27,
+          "description": 46,
+          "benefits": [
+            13,
+            11,
+            8,
+            9
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/zh-Hans.json"
+    },
+    "zh-Hant": {
+      "metadata": {
+        "title": 18,
+        "short_description": 31,
+        "full_description": 640
+      },
+      "release_notes": 113,
+      "products": {
+        "nb.premium.36": {
+          "title": 19,
+          "description": 48,
+          "benefits": [
+            15,
+            7,
+            11,
+            9
+          ]
+        },
+        "nb.premium.archive.99": {
+          "title": 27,
+          "description": 46,
+          "benefits": [
+            13,
+            11,
+            8,
+            10
+          ]
+        }
+      },
+      "ios_preserved": true,
+      "unchanged_titles_and_benefits_reviewed": true,
+      "glossary": "localization/glossaries/zh-Hant.json"
+    }
+  },
+  "validation": {
+    "assigned_languages": 10,
+    "metadata_files": 10,
+    "product_files": 10,
+    "new_release_files": 10,
+    "all_unicode_limits_pass": true,
+    "ios_and_product_ids_and_urls_verified_against_head": true,
+    "release_ios_absent_in_16_0_2_and_preserved_absent": true,
+    "arabic_hebrew_rtl_text_reviewed": true,
+    "simplified_traditional_scripts_reviewed": true,
+    "committed": false
+  }
+}

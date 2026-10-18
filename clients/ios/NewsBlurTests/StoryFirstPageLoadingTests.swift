@@ -144,7 +144,7 @@ import XCTest
         fixture.app.dictSocialProfile = ["id": "social:1", "user_id": 1, "username": "preview-test"]
         await startEmptyTryFeed(fixture)
         XCTAssertEqual(fixture.app.requests.count, 2, "An empty preview must force a feed refresh")
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         XCTAssertTrue(fixture.controller.pageFetching)
         guard fixture.app.requests.count == 2 else { return }
         XCTAssertEqual(URLComponents(string: fixture.app.requests[1].url)?.path, "/reader/refresh_feed/1")
@@ -230,7 +230,7 @@ import XCTest
         fixture.app.reply(to: 1, with: pending)
         await settle()
         XCTAssertEqual(fixture.app.requests.count, 3)
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         guard fixture.app.requests.count == 3 else { return }
         XCTAssertEqual(URLComponents(string: fixture.app.requests[2].url)?.path, "/reader/feed/1")
         XCTAssertEqual(fixture.app.requests[2].parameters?["insta_fetch"] as? Bool, true)
@@ -256,7 +256,7 @@ import XCTest
         fixture.controller.testRefreshTimeout = 60
         fixture.controller.instafetchFeed()
         XCTAssertEqual(fixture.app.requests.count, 3)
-        XCTAssertEqual(fixture.controller.fetchingTitle, "Fetching stories from this site...")
+        XCTAssertEqual(fixture.controller.fetchingTitle, NBLocalization.text("Fetching stories from this site..."))
         XCTAssertTrue(fixture.controller.pageFetching)
         fixture.app.reply(to: 2, with: response(stories: makeStories(30..<34)))
         await settle()
@@ -289,16 +289,24 @@ import XCTest
         XCTAssertEqual(fixture.hashes, (20..<28).map { "first-page-\($0)" })
     }
 
-    func test_cancellingEmptyTryFeedRefreshEndsPullToRefresh() async throws {
+    func test_cancellingEmptyTryFeedRefreshStopsLoadingAndEndsPullToRefresh() async throws {
         let fixture = makeFixture()
         await startEmptyTryFeed(fixture)
+        XCTAssertTrue(fixture.controller.isAutomaticallyRefreshingTryFeed)
+        XCTAssertTrue(fixture.controller.pageFetching)
+        // FeedDetailObjCViewController.h exposes pull-to-refresh only outside Mac Catalyst.
+        #if !targetEnvironment(macCatalyst)
         fixture.controller.refreshControl = UIRefreshControl()
         fixture.controller.refreshControl.beginRefreshing()
+        #endif
         fixture.controller.instafetchFeed()
-        XCTAssertEqual(fixture.app.requests.count, 2, "Pulling during the active fetch must not duplicate it")
+        XCTAssertEqual(fixture.app.requests.count, 2, "Refreshing during the active fetch must not duplicate it")
         fixture.controller.resetFeedDetail()
+        #if !targetEnvironment(macCatalyst)
         XCTAssertFalse(fixture.controller.refreshControl.isRefreshing)
+        #endif
         XCTAssertFalse(fixture.controller.isAutomaticallyRefreshingTryFeed)
+        XCTAssertFalse(fixture.controller.pageFetching)
     }
 
     func test_emptySearchWithinTryFeedDoesNotRefreshUnfilteredStories() async throws {
@@ -1062,15 +1070,9 @@ import XCTest
         article.appDelegate = fixture.app
         article.pageIndex = 12
         article.activeStory = NSMutableDictionary(dictionary: fixture.app.activeStory ?? [:])
-        article.webView = WKWebView(frame: article.view.bounds)
+        article.webView = FirstPageArticleWebView(frame: article.view.bounds)
         article.webView.scrollView.addObserver(article, forKeyPath: "contentOffset", options: [], context: nil)
         article.view.addSubview(article.webView)
-        article.webView.loadHTMLString("""
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <body style="margin:0"><div style="height:4000px">Exact notification article reading position</div></body>
-            """, baseURL: nil)
-        await waitForArticleLayout(article.webView)
-        XCTAssertGreaterThanOrEqual(article.webView.scrollView.contentSize.height, 4_000)
         article.webView.scrollView.contentOffset.y = 215
         pages.currentPage = article
         pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
@@ -1987,17 +1989,9 @@ import XCTest
         let current = FirstPageLoadingStoryPage()
         current.appDelegate = fixture.app
         current.pageIndex = 8
-        current.webView = WKWebView(frame: current.view.bounds)
+        current.webView = FirstPageArticleWebView(frame: current.view.bounds)
         current.webView.scrollView.addObserver(current, forKeyPath: "contentOffset", options: [], context: nil)
         current.view.addSubview(current.webView)
-        // StoryFirstPageLoadingTests.swift waits for actual document geometry; an unloaded
-        // WKWebView can replace a manually assigned contentSize with its blank-page size.
-        current.webView.loadHTMLString("""
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <body style="margin:0"><div style="height:4000px">Retained article scroll fixture</div></body>
-            """, baseURL: nil)
-        await waitForArticleLayout(current.webView)
-        XCTAssertGreaterThanOrEqual(current.webView.scrollView.contentSize.height, 4_000)
         current.webView.scrollView.contentOffset.y = 321
         pages.currentPage = current
         pages.scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
@@ -2192,18 +2186,6 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.count, 1)
         fixture.app.reply(to: 0, with: response(stories: stories))
         await settle()
-    }
-
-    private func waitForArticleLayout(_ webView: WKWebView) async {
-        // StoryFirstPageLoadingTests.swift waits for WebKit's asynchronous layout, which can
-        // take longer than the cache queue on a cold CI simulator, before seeding scroll position.
-        let scroll = webView.scrollView
-        guard scroll.contentSize.height < 4_000 else { return }
-        let laidOut = XCTKVOExpectation(keyPath: "contentSize", object: scroll)
-        laidOut.handler = { observed, _ in
-            (observed as? UIScrollView)?.contentSize.height ?? 0 >= 4_000
-        }
-        await fulfillment(of: [laidOut], timeout: 30)
     }
 
     private func settle() async {
@@ -2671,4 +2653,20 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
 @MainActor private final class FirstPageGestureScroll: UIScrollView {
     var testingDrag = false
     override var isDragging: Bool { testingDrag }
+}
+
+// StoryFirstPageLoadingTests.swift gives a retained article a fixed 4,000pt document instead of waiting on WebKit layout.
+// These tests are about pagination keeping the article and its reading offset; an off-window WKWebView's layout
+// depends on WebKit process scheduling and has taken longer than 30s on CI.
+@MainActor private final class FirstPageArticleWebView: WKWebView {
+    private let documentScroll = UIScrollView()
+    override var scrollView: UIScrollView { documentScroll }
+
+    init(frame: CGRect) {
+        super.init(frame: frame, configuration: WKWebViewConfiguration())
+        documentScroll.frame = bounds
+        documentScroll.contentSize = CGSize(width: frame.width, height: 4_000)
+    }
+
+    required init?(coder: NSCoder) { fatalError("StoryFirstPageLoadingTests.swift creates article web views programmatically") }
 }

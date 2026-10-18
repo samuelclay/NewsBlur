@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  OriginalStoryViewController.m
 //  NewsBlur
@@ -39,7 +40,7 @@
     titleView = [[UILabel alloc] init];
     titleView.textColor = UIColorFromRGB(0x303030);
     titleView.font = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
-    titleView.text = @"Loading...";
+    titleView.text = [NBLocalization text:@"Loading..."];
     [titleView sizeToFit];
     titleView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.navigationItem.titleView = titleView;
@@ -285,7 +286,7 @@
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
-    HUD.labelText = @"On its way...";
+    HUD.labelText = [NBLocalization text:@"On its way..."];
     [HUD hide:YES afterDelay:2];
     HUD.userInteractionEnabled = NO;
     
@@ -382,7 +383,7 @@
     }
     
     if (![[appDelegate.activeStory objectForKey:@"story_permalink"] isEqualToString:activeUrl]) {
-        titleView.text = @"Loading...";
+        titleView.text = [NBLocalization text:@"Loading..."];
     } else {
         titleView.text = [[[appDelegate activeStory] objectForKey:@"story_title"]
                           stringByDecodingHTMLEntities];

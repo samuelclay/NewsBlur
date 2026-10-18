@@ -6,6 +6,7 @@ import com.newsblur.di.ApiOkHttpClient
 import com.newsblur.domain.ValueMultimap
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.AppConstants
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.Log
 import com.newsblur.util.NetworkUtils
 import com.newsblur.util.PrefConstants
@@ -65,6 +66,7 @@ class NetworkClientImpl(
         val request = Request.Builder().url(urlString + "?" + valueMap.getParameterString())
         addCookieHeader(request)
         request.header("User-Agent", customUserAgent)
+        LanguageSettings.addLanguageHeader(request, context)
         return suspendCancellableCoroutine { continuation ->
             // NetworkClientImpl.kt keeps bounded preview refreshes cancellable during headers and body reads.
             val call = client.newCall(request.build())
@@ -186,6 +188,7 @@ class NetworkClientImpl(
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.header("User-Agent", customUserAgent)
+        LanguageSettings.addLanguageHeader(requestBuilder, context)
 
         return APIResponse(client, requestBuilder.build())
     }
@@ -215,6 +218,7 @@ class NetworkClientImpl(
         val requestBuilder = Request.Builder().url(urlString)
         addCookieHeader(requestBuilder)
         requestBuilder.post(formBody)
+        LanguageSettings.addLanguageHeader(requestBuilder, context)
 
         return APIResponse(requestClient, requestBuilder.build())
     }

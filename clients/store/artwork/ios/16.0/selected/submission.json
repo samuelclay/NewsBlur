@@ -1,0 +1,60 @@
+{
+  "app_id": "463981119",
+  "prepared_at": "2026-10-16",
+  "asset_count": 42,
+  "language_count": 21,
+  "status": "Waiting for Review",
+  "uploaded": true,
+  "submitted": true,
+  "uploaded_asset_count": 42,
+  "canonical_manifest": "exports/manifest.json",
+  "custom_product_page": {
+    "name": "Daily reading • 16.0",
+    "id": "c6a28881-7983-48f2-a2c7-0eb62cf8802c",
+    "ui_record_id": "bd910948-98c0-491c-8c33-a5a71c001e0b",
+    "assigned_languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "pt-BR",
+      "it",
+      "nl",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "ar",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "remaining_languages": [],
+    "assigned_language_count": 21,
+    "remaining_language_count": 0,
+    "submitted": true,
+    "attached_asset_count": 42,
+    "status": "Waiting for Review"
+  },
+  "notes": "All 42 approved creative files are attached across all 21 locales of Daily reading • 16.0, submitted and Waiting for Review. The separate iOS 16.0 app submission was removed for updated main-page assets; see ../resubmission.json.",
+  "attached_asset_count": 42,
+  "submitted_at": "2026-10-16T12:42:00-07:00",
+  "submitted_timezone": "America/Los_Angeles",
+  "submission_id": "095b78c7-53b0-4c44-816b-b6962f83cf94",
+  "review_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/095b78c7-53b0-4c44-816b-b6962f83cf94",
+  "proof": [
+    "proof/submitted-review.jpg",
+    "proof/submitted-review.txt"
+  ],
+  "main_default_product_page": {
+    "header_search_slots_filled": false,
+    "status": "editable_after_developer_rejection",
+    "new_screenshot_design_status": "01_sage_panels_selected"
+  }
+}

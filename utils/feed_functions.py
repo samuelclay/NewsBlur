@@ -16,7 +16,7 @@ import urllib.request
 import warnings
 
 from django.utils.encoding import smart_str
-from django.utils.translation import ungettext
+from django.utils.translation import gettext, ngettext
 from qurl import qurl
 
 from utils import log as logging
@@ -128,9 +128,9 @@ def _do_timesince(d, chunks, now=None):
             count = since // seconds
             if count != 0:
                 break
-        s = "%(number)d %(type)s" % {"number": count, "type": name(count)}
+        s = name(count) % {"number": count}
     else:
-        s = "just a second"
+        s = gettext("just a second")
     return s
 
 
@@ -139,11 +139,11 @@ def relative_timesince(value):
         return ""
 
     chunks = (
-        (60 * 60 * 24, lambda n: ungettext("day", "days", n)),
-        (60 * 60, lambda n: ungettext("hour", "hours", n)),
-        (60, lambda n: ungettext("minute", "minutes", n)),
-        (1, lambda n: ungettext("second", "seconds", n)),
-        (0, lambda n: "just now"),
+        (60 * 60 * 24, lambda n: ngettext("%(number)d day", "%(number)d days", n)),
+        (60 * 60, lambda n: ngettext("%(number)d hour", "%(number)d hours", n)),
+        (60, lambda n: ngettext("%(number)d minute", "%(number)d minutes", n)),
+        (1, lambda n: ngettext("%(number)d second", "%(number)d seconds", n)),
+        (0, lambda n: gettext("just now")),
     )
     return _do_timesince(value, chunks)
 
@@ -153,8 +153,8 @@ def relative_timeuntil(value):
         return ""
 
     chunks = (
-        (60 * 60, lambda n: ungettext("hour", "hours", n)),
-        (60, lambda n: ungettext("minute", "minutes", n)),
+        (60 * 60, lambda n: ngettext("%(number)d hour", "%(number)d hours", n)),
+        (60, lambda n: ngettext("%(number)d minute", "%(number)d minutes", n)),
     )
 
     now = datetime.datetime.utcnow()

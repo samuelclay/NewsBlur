@@ -1,0 +1,3 @@
+Corrige cierres al abrir NewsBlur, consultar el número de artículos sin leer, confirmar acciones de lectura y restaurar el lector. Las actualizaciones de la base de datos conservan los artículos en caché y las acciones sin conexión pendientes.
+
+Incluye controles de pantalla completa en tabletas, anchos de panel recordados, 21 idiomas de interfaz y controles de siguiente artículo en posición fija.

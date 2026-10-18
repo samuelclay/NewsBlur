@@ -6,14 +6,16 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, NoResolverConfiguration, query
 
-from apps.profile.models import RNewUserQueue, blank_authenticate
+from apps.profile.models import Profile, RNewUserQueue, blank_authenticate
 from apps.profile.tasks import EmailNewUser
 from apps.reader.models import Feature
 from apps.social.models import MActivity
 from utils import log as logging
+from utils.languages import match_language
 
 
 class LoginForm(forms.Form):
@@ -21,13 +23,13 @@ class LoginForm(forms.Form):
         label=_("Username or Email"),
         max_length=30,
         widget=forms.TextInput(
-            attrs={"tabindex": 1, "class": "NB-input", "placeholder": "Username or email"}
+            attrs={"tabindex": 1, "class": "NB-input", "placeholder": _("Username or email")}
         ),
         error_messages={"required": "Please enter a username."},
     )
     password = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": "Password"}),
+        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": _("Password")}),
         required=False,
     )
     # error_messages={'required': 'Please enter a password.'})
@@ -95,7 +97,7 @@ class SignupForm(forms.Form):
     username = forms.RegexField(
         regex=r"^\w+$",
         max_length=30,
-        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": "Username"}),
+        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": _("Username")}),
         label=_("Username"),
         error_messages={
             "required": "Please enter a username.",
@@ -103,14 +105,16 @@ class SignupForm(forms.Form):
         },
     )
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={"maxlength": 75, "class": "NB-input", "placeholder": "Email address"}),
+        widget=forms.TextInput(
+            attrs={"maxlength": 75, "class": "NB-input", "placeholder": _("Email address")}
+        ),
         label=_("Email"),
         required=True,
         error_messages={"required": "Please enter an email."},
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "NB-input", "placeholder": "Password (optional)"},
+            attrs={"class": "NB-input", "placeholder": _("Password (optional)")},
             render_value=True,
         ),
         label=_("Password"),
@@ -147,13 +151,13 @@ class SignupForm(forms.Form):
                         email,
                     )
                 )
-                raise forms.ValidationError("Seriously, fuck off spammer.")
+                raise forms.ValidationError(_("Seriously, fuck off spammer."))
             try:
                 domain = email.rsplit("@", 1)[-1]
                 if not query(domain, "MX"):
-                    raise forms.ValidationError("Sorry, that email is invalid.")
+                    raise forms.ValidationError(_("Sorry, that email is invalid."))
             except (NXDOMAIN, NoNameservers, NoAnswer):
-                raise forms.ValidationError("Sorry, that email is invalid.")
+                raise forms.ValidationError(_("Sorry, that email is invalid."))
             except NoResolverConfiguration as e:
                 logging.info(f" ***> ~FRFailed to check spamminess of domain: ~FY{domain} ~FR{e}")
                 pass
@@ -172,7 +176,7 @@ class SignupForm(forms.Form):
 
         return self.cleaned_data
 
-    def save(self, profile_callback=None):
+    def save(self, profile_callback=None, request=None):
         username = self.cleaned_data["username"]
         password = self.cleaned_data["password"]
         email = self.cleaned_data["email"]
@@ -194,7 +198,17 @@ class SignupForm(forms.Form):
             new_user.is_active = False
         new_user.email = email
         new_user.last_login = datetime.datetime.now()
-        new_user.save()
+        # forms.py records the language this signup arrived in, since the anonymous signup request never
+        # reaches apps/profile/language.py:remember_device_language. One transaction holds back the trial
+        # welcome email that create_profile queues on commit until the language is stored.
+        with transaction.atomic():
+            new_user.save()
+            signup_language = match_language(translation.get_language() or "en") or "en"
+            Profile.objects.filter(user=new_user).update(last_seen_language=signup_language)
+            if request is not None:
+                from apps.profile.language import record_signup_language
+
+                record_signup_language(new_user, request)
         new_user = authenticate(username=username, password=password)
         new_user = User.objects.get(username=username)
 

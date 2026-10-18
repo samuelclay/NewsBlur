@@ -60,7 +60,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             (!this.options.embedded && $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Statistics &amp; History',
+                gettext('Statistics &amp; History'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ])),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
-                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
+                    $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true))
                 ])
             ]),
             $.make('div', { className: 'NB-modal-statistics-info' })
@@ -103,11 +103,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
 
         var $stats = this.make_stats(data);
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
-        $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(Inflector.pluralize(' subscriber', data.num_subscribers, true));
+        $(".NB-modal-feed-subscribers", this.$modal).removeClass('NB-hidden').text(interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", data.num_subscribers), {count: Inflector.commas(data.num_subscribers)}, true));
         var $expires_label = $(".NB-statistics-push-expires-label", this.$modal);
         var $expires = $(".NB-statistics-push-expires", this.$modal);
         if (data['push_expires']) {
-            $expires_label.html("Push expires");
+            $expires_label.html(gettext("Push expires"));
             $expires.html(data['push_expires']);
         } else {
             $expires_label.html("");
@@ -133,79 +133,71 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $stats = $.make('div', { className: 'NB-modal-statistics-info' }, [
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-updates' }, [
                 $.make('div', { className: 'NB-statistics-update' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Last Update'),
-                    $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] && (data['last_update'] + ' ago')))
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Last Update')),
+                    $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['last_update'] ? interpolate(gettext("%(time)s ago"), {time: data['last_update']}, true) : ''))
                 ]),
                 $.make('div', { className: 'NB-statistics-update' }, [
                     (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
                         $.make('div', { className: 'NB-statistics-label' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/realtime_spinner.gif', className: 'NB-statisics-realtime-spinner' }),
-                            'Real-time'
+                            gettext('Real-time')
                         ]),
-                        $.make('div', { className: 'NB-statistics-count' }, 'Supplemented by checks every ' + update_interval)
+                        $.make('div', { className: 'NB-statistics-count' }, interpolate(gettext("Supplemented by checks every %(value_1)s"), {value_1: update_interval}, true))
                     ])),
                     (!data['push'] && $.make('div', [
-                        $.make('div', { className: 'NB-statistics-label' }, 'Every'),
+                        $.make('div', { className: 'NB-statistics-label' }, gettext('Every')),
                         $.make('div', { className: 'NB-statistics-count' }, update_interval)
                     ]))
                 ]),
                 $.make('div', { className: 'NB-statistics-update' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
-                    (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
-                    (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Next Update')),
+                    (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] ? interpolate(gettext("in %(time)s"), {time: data['next_update']}, true) : ''))),
+                    (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, gettext("Not active")))
                 ]),
 
                 $.make('div', { className: 'NB-statistics-update' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Stories in archive'),
-                    (data['archive_count'] && $.make('div', { className: 'NB-statistics-count', title: Inflector.commas(data['fs_size_bytes']) + " bytes" }, '&nbsp;' + ((Inflector.commas(data['archive_count'])) + " " + Inflector.pluralize("story", data['archive_count']))))
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Stories in archive')),
+                    (data['archive_count'] && $.make('div', { className: 'NB-statistics-count', title: interpolate(ngettext("%(count)s byte", "%(count)s bytes", data['fs_size_bytes']), {count: Inflector.commas(data['fs_size_bytes'])}, true) }, '&nbsp;' + interpolate(ngettext("%(count)s story", "%(count)s stories", data['archive_count']), {count: Inflector.commas(data['archive_count'])}, true)))
                 ]),
 
                 ((data.average_stories_per_month == 0 || data.stories_last_month == 0) &&
                     data.update_interval_minutes > 60 &&
                     $.make('div', { className: 'NB-statistics-update-explainer' }, [
-                        $.make('b', 'Why so infrequently?'),
-                        'This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.'
+                        $.make('b', gettext('Why so infrequently?')),
+                        gettext('This site has published zero stories in the past month or has averaged less than a single story a month. As soon as it starts publishing at least once a month, it will automatically fetch more frequently.')
                     ])),
                 (data.errors_since_good &&
                     $.make('div', { className: 'NB-statistics-update-explainer' }, [
-                        $.make('b', 'Why is the next update not at the normal rate?'),
-                        'This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to see the exact status codes for the feed. The more errors for the feed, the longer time taken between fetches.'
+                        $.make('b', gettext('Why is the next update not at the normal rate?')),
+                        gettext('This site has is throwing exceptions and is not in a healthy state. Look at the bottom of this dialog to see the exact status codes for the feed. The more errors for the feed, the longer time taken between fetches.')
                     ])),
                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                     $.make('div', { className: 'NB-statistics-update' }, [
-                        $.make('div', { className: 'NB-statistics-label' }, [
-                            'If you went ',
-                            $.make('a', { href: '#', className: 'NB-premium-link NB-splash-link' }, 'premium'),
-                            ', ',
-                            $.make('br'),
-                            'this site would update every'
-                        ]),
+                        $.make('div', { className: 'NB-statistics-label' }, interpolate(gettext("If you went %(premium_link)s,<br>this site would update every"), {
+                            premium_link: '<a href="#" class="NB-premium-link NB-splash-link">' + _.escape(gettext('premium')) + '</a>'
+                        }, true)),
                         $.make('div', { className: 'NB-statistics-count' }, premium_update_interval),
                         (data['push'] && $.make('div', { className: 'NB-statistics-realtime' }, [
-                            $.make('div', { className: 'NB-statistics-label' }, [
-                                'but it wouldn\'t matter because',
-                                $.make('br'),
-                                'this site is already in real-time'
-                            ])
+                            $.make('div', { className: 'NB-statistics-label' }, gettext("but it wouldn't matter because<br>this site is already in real-time"))
                         ]))
                     ])
                 ]))
             ])),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history' }, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Stories per month')
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Stories per month'))
                 ]),
                 $.make('canvas', { id: 'NB-statistics-history-count-chart', className: 'NB-statistics-history-count-chart' })
             ]),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history' }, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Stories per day')
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Stories per day'))
                 ]),
                 $.make('canvas', { id: 'NB-statistics-history-days-chart', className: 'NB-statistics-history-days-chart' })
             ]),
             $.make('div', { className: 'NB-statistics-stat NB-statistics-history' }, [
                 $.make('div', { className: 'NB-statistics-history-stat' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Daily distribution of stories')
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Daily distribution of stories'))
                 ]),
                 $.make('div', { className: 'NB-statistics-history-hours-chart' })
             ]),
@@ -217,17 +209,17 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             ])),
             (!this.options.social_feed && $.make('div', { className: 'NB-statistics-stat NB-statistics-fetches' }, [
                 $.make('div', { className: 'NB-statistics-fetches-half' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Fetch'),
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Feed Fetch')),
                     $.make('div', this.make_history(data, 'feed_fetch'))
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Page Fetch'),
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Page Fetch')),
                     $.make('div', this.make_history(data, 'page_fetch'))
                 ]),
                 $.make('div', { className: 'NB-statistics-fetches-half' }, [
-                    $.make('div', { className: 'NB-statistics-label' }, 'Feed Push'),
+                    $.make('div', { className: 'NB-statistics-label' }, gettext('Feed Push')),
                     $.make('div', this.make_history(data, 'feed_push')),
-                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires-label' }, 'Push Expires'),
+                    $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires-label' }, gettext('Push Expires')),
                     $.make('div', { className: 'NB-statistics-label NB-statistics-push-expires' })
                 ])
             ]))
@@ -240,8 +232,15 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var self = this;
         if (!data) return;
 
+        // reader_statistics.js: Facet headings name the classifier type, singular when only one was trained.
+        var facet_titles = {
+            'tag': data.length == 1 ? gettext('Tag') : gettext('Tags'),
+            'author': data.length == 1 ? gettext('Author') : gettext('Authors'),
+            'title': data.length == 1 ? gettext('Title') : gettext('Titles'),
+            'feed': data.length == 1 ? gettext('Feed') : gettext('Feeds')
+        };
         var $facets = $.make('div', { className: 'NB-statistics-facets' }, [
-            $.make('div', { className: 'NB-statistics-facet-title' }, Inflector.pluralize(facet, data.length))
+            $.make('div', { className: 'NB-statistics-facet-title' }, facet_titles[facet])
         ]);
 
         var max = 10;
@@ -284,11 +283,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var $facet = $.make('div', { className: 'NB-statistics-facet' }, [
                 (pos && $.make('div', { className: 'NB-statistics-facet-pos' }, [
                     $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(pos)),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, Inflector.pluralize(' like', pos, true)).css('margin-left', calculate_width(pos) + 5)
+                    $.make('div', { className: 'NB-statistics-facet-count' }, interpolate(ngettext("%(count)s like", "%(count)s likes", pos), {count: Inflector.commas(pos)}, true)).css('margin-left', calculate_width(pos) + 5)
                 ])),
                 (neg && $.make('div', { className: 'NB-statistics-facet-neg' }, [
                     $.make('div', { className: 'NB-statistics-facet-bar' }).css('width', calculate_width(neg)),
-                    $.make('div', { className: 'NB-statistics-facet-count' }, Inflector.pluralize(' dislike', neg, true)).css('margin-right', calculate_width(neg) + 5)
+                    $.make('div', { className: 'NB-statistics-facet-count' }, interpolate(ngettext("%(count)s dislike", "%(count)s dislikes", neg), {count: Inflector.commas(neg)}, true)).css('margin-right', calculate_width(neg) + 5)
                 ])),
                 $.make('div', { className: 'NB-statistics-facet-separator' }),
                 $.make('div', { className: 'NB-statistics-facet-name' }, key)
@@ -304,7 +303,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $history;
 
         if (!fetches || !fetches.length) {
-            $history = $.make('div', { className: 'NB-history-empty' }, "Nothing recorded.");
+            $history = $.make('div', { className: 'NB-history-empty' }, gettext("Nothing recorded."));
         } else {
             $history = _.map(fetches, function (fetch) {
                 var feed_ok = _.contains([200, 304], fetch.status_code) || !fetch.status_code;
@@ -326,7 +325,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var labels = _.map(data['story_count_history'], function (date) {
             var date_matched = date[0].match(/(\d{4})-(\d{1,2})/);
             var date = (new Date(parseInt(date_matched[1], 10), parseInt(date_matched[2], 10) - 1));
-            return NEWSBLUR.utils.shortMonthNames[date.getMonth()] + " " + date.getUTCFullYear();
+            // reader_statistics.js: The page language orders the abbreviated month and year.
+            return date.toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', year: 'numeric' });
         });
         if (labels.length > 16) {
             var cut_size = Math.round(labels.length / 16.0);
@@ -380,9 +380,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             ]),
             $.make('tr', { className: 'NB-statistics-history-chart-hours-text-row' }, [
                 _.compact(_.map(_.range(24), function (hour, count) {
-                    var am = hour < 12;
-                    if (hour == 0) hour = 12;
-                    var hour_name = am ? (hour + "am") : ((hour > 12 ? hour - 12 : hour) + "pm");
+                    // reader_statistics.js: The page language picks a 12 or 24 hour clock for the hour labels.
+                    var hour_name = new Date(2000, 0, 1, hour).toLocaleTimeString(document.documentElement.lang || undefined, { hour: 'numeric' });
                     if (hour % 3 == 0) {
                         return $.make('td', { colSpan: 3 }, hour_name);
                     }

@@ -25,6 +25,8 @@
 @property (readwrite) int leftMargin;
 @property (readwrite) int rightMargin;
 @property (readwrite) int avatarSize;
+// ActivityCell.h takes the avatar frame measured from the left edge; ActivityCell.m mirrors it right to left.
+@property (nonatomic) CGRect faviconLeftToRightFrame;
 
 + (BOOL)shouldCollapseActivity:(NSDictionary *)activity;
 - (void)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile;

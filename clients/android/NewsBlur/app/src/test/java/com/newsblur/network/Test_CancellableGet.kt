@@ -78,7 +78,10 @@ class Test_CancellableGet {
     private fun onlineContext(): Context {
         val network = mockk<NetworkInfo> { every { isConnected } returns true }
         val manager = mockk<ConnectivityManager> { every { activeNetworkInfo } returns network }
-        val preferences = mockk<SharedPreferences> { every { getString(any(), any()) } returns null }
+        val preferences = mockk<SharedPreferences> {
+            every { getString(any(), any()) } returns null
+            every { getString("language", "auto") } returns "en"
+        }
         return mockk {
             every { getSystemService(Context.CONNECTIVITY_SERVICE) } returns manager
             every { getSharedPreferences(any(), any()) } returns preferences

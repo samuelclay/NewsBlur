@@ -48,6 +48,7 @@ public class FeedFolderResponse {
     public Boolean storyClustering;
     public String clusterMode;
     public boolean clusterMarkRead;
+    public String language = "auto";
 
     public String shareExtToken;
 	
@@ -79,6 +80,9 @@ public class FeedFolderResponse {
             }
             if (profile.has("preferences")) {
                 JsonObject preferences = parsePreferences(profile.get("preferences"));
+                if (preferences != null && preferences.has("language") && !preferences.get("language").isJsonNull()) {
+                    this.language = preferences.get("language").getAsString();
+                }
                 if (preferences != null && preferences.has("story_clustering")) {
                     this.storyClustering = preferences.get("story_clustering").getAsBoolean();
                 }

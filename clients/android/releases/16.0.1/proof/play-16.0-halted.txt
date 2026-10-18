@@ -1,0 +1,149 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/1/developers/6280481402178293168/app-list
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - 'button "NewsBlur: RSS News Reader"':
+    - generic: "NewsBlur: RSS News Reader"
+  - button "Switch developer accounts":
+    - img "Switch developer accounts"
+- navigation:
+  - link "All apps":
+    - /url: /console/u/1/developers/6280481402178293168/app-list
+    - img: keyboard_backspace
+    - generic: All apps
+  - list:
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+        - generic: Dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+        - generic: Statistics
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+        - generic: Publishing overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+        - generic: Protected with Play
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+        - generic: Test and release
+      - list:
+        - listitem "Latest releases and bundles":
+          - button "Latest releases and bundles":
+            - generic: Latest releases and bundles
+        - listitem "Production":
+          - button "Production":
+            - generic: Production
+        - listitem "Testing":
+          - button "Testing":
+            - generic: Testing
+            - img: expand_more
+        - listitem "Pre-registration":
+          - button "Pre-registration":
+            - generic: Pre-registration
+        - listitem "App integrity":
+          - button "App integrity":
+            - generic: App integrity
+        - listitem "Advanced settings":
+          - button "Advanced settings":
+            - generic: Advanced settings
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+        - generic: Monitor and improve
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+        - generic: Grow users
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+        - generic: Monetize with Play
+- heading "Production" [level=1]
+- button "Select form factors. Phones, Tablets, Desktop (Googlebook OS, ChromeOS), Android XR":
+  - img: phonelink
+  - generic: Phones, Tablets, Desktop (Googlebook OS, ChromeOS), Android XR
+  - img: arrow_drop_down
+- button "Create new release":
+  - generic: Create new release
+- text: Create and manage production releases to make your app available to all users in your chosen countries.
+- link "Learn more about Production (opens in a new tab)":
+  - /url: https://play.google.com/console/about/publicreleases
+  - text: Learn more
+- img: do_not_disturb_on
+- generic: Rollout halted at 100% on Oct 17.
+- generic: "Developer notes: Replacing 16.0 with 16.0.1 to restore the Android tablet feed-list and story-title fullscreen controls and draggable pane resizing recovered from the October 12 ClayBook commits."
+- text: New users will get your previous release 15.1.
+- link "Learn more about release rollout.":
+  - /url: https://support.google.com/googleplay/android-developer/answer/7159011
+  - text: Learn more
+- button "Resume rollout":
+  - generic: Resume rollout
+- heading "Track summary (Phones, Tablets, Desktop, Android XR)" [level=4]
+- list:
+  - listitem: Active
+  - listitem: Release halted (16.0)
+  - listitem: 175 countries / regions
+  - listitem: 7,541 installs
+- tablist:
+  - tab "Release dashboard":
+    - generic: Release dashboard
+  - tab "Releases" [selected]:
+    - generic: Releases
+  - tab "Countries / regions":
+    - generic: Countries / regions
+- heading "Releases" [level=2]
+- heading "Release 16.0" [level=3]: "16.0"
+- link "Manage release 16.0":
+  - /url: /console/u/1/developers/6280481402178293168/app/4972990522498280751/tracks/4699046005160626232/releases/96/details
+  - generic: Manage release
+- button "Resume rollout": Resume rollout
+- paragraph:
+  - img: do_not_disturb_on
+  - generic: Rollout halted on Oct 17
+- button "Show summary for 16.0":
+  - generic: Show summary
+  - img: expand_more
+- heading "Release 15.1" [level=3]: "15.1"
+- link "Manage release 15.1":
+  - /url: /console/u/1/developers/6280481402178293168/app/4972990522498280751/tracks/4699046005160626232/releases/95/details
+  - generic: Manage release
+- paragraph:
+  - img: check_circle
+  - generic: Available on Google Play
+  - img: brightness_1
+  - generic: 1 version code
+  - img: brightness_1
+  - generic: Released on Oct 9 9:48 AM
+- button "Show summary for 15.1":
+  - generic: Show summary
+  - img: expand_more
+- heading "Release history" [level=2]
+- 'button "Show content: Release history"':
+  - generic: Show
+  - img: expand_more
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/1/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/
+- status
+- status: 1Password menu is available. Press down arrow to select.

@@ -105,8 +105,14 @@ MANAGERS = ADMINS
 PAYPAL_RECEIVER_EMAIL = "samuel@ofbrooklyn.com"
 TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
+# settings.py: new-signup language revenue starts at the requested October 16, 2026 cutoff (UTC).
+LANGUAGE_ANALYTICS_COHORT_START = "2026-10-16T23:25:40"
 SITE_ID = 1
-USE_I18N = False
+USE_I18N = True
+from utils.languages import LANGUAGES as UI_LANGUAGES
+
+LANGUAGES = [(code.lower(), name) for code, name in UI_LANGUAGES.items()]
+LOCALE_PATHS = (os.path.join(NEWSBLUR_DIR, "locale"),)
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
@@ -153,6 +159,7 @@ MIDDLEWARE = (
     "utils.prometheus_middleware.PrometheusBeforeMiddlewareWrapper",
     "apps.profile.middleware.UserAgentBanMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "apps.profile.language.LanguageCatalogMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "subdomains.middleware.SubdomainMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -167,6 +174,7 @@ MIDDLEWARE = (
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "apps.profile.language.NewsBlurLocaleMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     "utils.request_introspection_middleware.DumpRequestMiddleware",
     "apps.profile.middleware.DBProfilerMiddleware",
@@ -602,8 +610,16 @@ CELERY_IMPORTS = (
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 10
+# newsblur_web/settings.py: Each pool process is replaced after this many tasks. At 10, a busy fetch
+# server forked a new process every couple of seconds, and on the 4 CPU servers some of those new
+# processes couldn't get the CPU to report in before CELERY_WORKER_PROC_ALIVE_TIMEOUT and were
+# SIGKILLed (most of the worker SIGKILLs in Sentry). CELERY_WORKER_MAX_MEMORY_PER_CHILD still
+# recycles any process that grows too large.
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 50
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = 750 * 1024
+# newsblur_web/settings.py: How long a freshly forked pool process has to report it's ready before
+# celery kills it. The 4 second default is too short on a CPU-saturated server.
+CELERY_WORKER_PROC_ALIVE_TIMEOUT = 30
 CELERY_TASK_TIME_LIMIT = 12 * 30
 CELERY_WORKER_DISABLE_RATE_LIMITS = True
 SECONDS_TO_DELAY_CELERY_EMAILS = 60
@@ -854,6 +870,16 @@ if DOCKERBUILD:
     CELERY_WORKER_CONCURRENCY = 2
 elif "task-work" in SERVER_NAME or SERVER_NAME.startswith("task-"):
     CELERY_WORKER_CONCURRENCY = 4
+elif (os.cpu_count() or 0) <= 4:
+    # newsblur_web/settings.py: The 4 CPU, 7 GB fetch servers (htask-celery-01 through 10) ran CPU
+    # saturated at 24 processes and are the only ones the kernel OOM killer and the slow-start
+    # SIGKILLs hit. The memory cap is measured on RSS, which counts the ~190 MB a pool process
+    # shares with its parent: processes measured ~355 MB RSS, ~160 MB of it their own. 16 at the
+    # usual size use ~3 GB; 16 all at the 600 MB cap would use ~7 GB of the 7.7 GB, which is why
+    # the cap is lower here than on the 15 GB servers. Chosen by the CPU count the worker sees, so
+    # a server that's resized picks up the right setting.
+    CELERY_WORKER_CONCURRENCY = 16
+    CELERY_WORKER_MAX_MEMORY_PER_CHILD = 600 * 1024
 else:
     CELERY_WORKER_CONCURRENCY = 24
 
@@ -933,6 +959,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.media",
                 "django.template.context_processors.request",
+                "apps.profile.language.language_context",
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": template_loaders,
@@ -1045,7 +1072,18 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULER = "newsblur_web.celery_beat:DedupPersistentScheduler"
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# newsblur_web/settings.py: The celery app reads settings with the CELERY_ prefix
+# (newsblur_web/celeryapp.py), so these were ignored while they were named BROKER_TRANSPORT_OPTIONS.
+# max_retries and interval_* apply for the first time, on purpose: publishing a task gives up after
+# about a second of broker connection errors instead of retrying forever, so a request fails rather
+# than hangs (payment providers retry a webhook that fails).
+# visibility_timeout stays at kombu's 1 hour default. A task waits unacknowledged in a worker until
+# it finishes, countdown tasks included, and the broker hands it to another worker once that passes.
+# A worker that is killed instead of restarted (a forced container stop, autoheal, an OOM kill)
+# hands nothing back, so its tasks come back only after the timeout; raising it would hold every
+# queue's tasks that long. Keep countdowns well under an hour instead: the archive backfill queues
+# one batch of walks at a time for that reason (apps/reader/models.py dispatch_archive_backfill).
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,
@@ -1187,6 +1225,10 @@ PIPELINE = {
         "common": {
             "source_filenames": assets["stylesheets"]["common"],
             "output_filename": "css/common.css",
+        },
+        "rtl": {
+            "source_filenames": assets["stylesheets"]["rtl"],
+            "output_filename": "css/rtl.css",
         },
         "bookmarklet": {
             "source_filenames": assets["stylesheets"]["bookmarklet"],

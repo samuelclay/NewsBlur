@@ -346,6 +346,18 @@ class FeedsViewController: FeedsObjCViewController {
         refreshHeaderCounts()
     }
     
+    override func finishLoadingFeedList(withDict results: [AnyHashable: Any]!, finished: Bool) {
+        super.finishLoadingFeedList(withDict: results, finished: finished)
+
+        // FeedsViewController.swift offers the language dialog only after a network feed list, never the offline
+        // cache. FeedsObjCViewController.m syncs the account language right after this returns, so the check
+        // waits until the reader has rendered and an explicit account language has arrived.
+        guard finished, !isOffline else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            LanguageDialog.feedListDidLoad()
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         

@@ -118,11 +118,12 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         // Timeless copy based on trigger
         var title, subtitle;
         if (trigger === 'feed_added') {
-            title = "Upgrade your reading";
-            subtitle = "You follow " + this.get_feed_count() + " sites. Premium makes all of them better.";
+            var feed_count = this.get_feed_count();
+            title = gettext("Upgrade your reading");
+            subtitle = interpolate(ngettext("You follow %(count)s site. Premium makes all of them better.", "You follow %(count)s sites. Premium makes all of them better.", feed_count), {count: feed_count}, true);
         } else {
-            title = "Get more from NewsBlur";
-            subtitle = "Faster updates. Full-text search. Read by folder.";
+            title = gettext("Get more from NewsBlur");
+            subtitle = gettext("Faster updates. Full-text search. Read by folder.");
         }
 
         var $prompt = $.make('div', { className: 'NB-growth-prompt NB-growth-prompt-milestone NB-growth-prompt-entering' }, [
@@ -148,20 +149,20 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
                 $.make('div', { className: 'NB-growth-prompt-features' }, [
                     $.make('div', { className: 'NB-growth-prompt-feature' }, [
                         $.make('div', { className: 'NB-growth-prompt-feature-icon' }),
-                        $.make('span', 'Read stories by folder')
+                        $.make('span', gettext('Read stories by folder'))
                     ]),
                     $.make('div', { className: 'NB-growth-prompt-feature' }, [
                         $.make('div', { className: 'NB-growth-prompt-feature-icon' }),
-                        $.make('span', 'Full-text search across all stories')
+                        $.make('span', gettext('Full-text search across all stories'))
                     ]),
                     $.make('div', { className: 'NB-growth-prompt-feature' }, [
                         $.make('div', { className: 'NB-growth-prompt-feature-icon' }),
-                        $.make('span', '5× faster feed updates')
+                        $.make('span', gettext('5× faster feed updates'))
                     ])
                 ]),
                 $.make('div', { className: 'NB-growth-prompt-actions' }, [
-                    $.make('div', { className: 'NB-growth-prompt-cta' }, 'Go Premium — $36/year'),
-                    $.make('div', { className: 'NB-growth-prompt-dismiss' }, 'Maybe later')
+                    $.make('div', { className: 'NB-growth-prompt-cta' }, gettext('Go Premium — $36/year')),
+                    $.make('div', { className: 'NB-growth-prompt-dismiss' }, gettext('Maybe later'))
                 ])
             ])
         ]);
@@ -201,13 +202,13 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
                 ])
             ]),
             $.make('div', { className: 'NB-growth-prompt-content' }, [
-                $.make('div', { className: 'NB-growth-prompt-title' }, feature_name + " is Premium"),
+                $.make('div', { className: 'NB-growth-prompt-title' }, interpolate(gettext("%(value_1)s is Premium"), {value_1: feature_name}, true)),
                 $.make('div', { className: 'NB-growth-prompt-body' },
-                    feature_description + " Unlock this and all premium features."
+                    interpolate(gettext("%(value_1)s Unlock this and all premium features."), {value_1: feature_description}, true)
                 ),
                 $.make('div', { className: 'NB-growth-prompt-actions' }, [
-                    $.make('div', { className: 'NB-growth-prompt-cta' }, 'Unlock for $36/year'),
-                    $.make('div', { className: 'NB-growth-prompt-dismiss' }, 'Not now')
+                    $.make('div', { className: 'NB-growth-prompt-cta' }, gettext('Unlock for $36/year')),
+                    $.make('div', { className: 'NB-growth-prompt-dismiss' }, gettext('Not now'))
                 ])
             ])
         ]);

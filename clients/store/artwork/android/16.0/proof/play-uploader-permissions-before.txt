@@ -1,0 +1,210 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/1/developers/6280481402178293168/app-list
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - button "Switch developer accounts":
+    - img "Switch developer accounts"
+- navigation:
+  - list:
+    - listitem "Home":
+      - button "Home":
+        - img: features
+        - generic: Home
+    - listitem "Policy status":
+      - button "Policy status":
+        - img: android_security_privacy_safe
+        - generic: Policy status
+    - listitem "Users and permissions":
+      - button "Users and permissions":
+        - img: user_attributes
+        - generic: Users and permissions
+    - listitem "Order management":
+      - button "Order management":
+        - img: credit_card
+        - generic: Order management
+    - listitem "Download reports":
+      - button "Download reports":
+        - img: arrow_right
+        - img: download
+        - generic: Download reports
+    - listitem "Developer account":
+      - button "Developer account":
+        - img: badge
+        - generic: Developer account
+    - listitem "Activity log":
+      - button "Activity log":
+        - img: description
+        - generic: Activity log
+    - listitem "Settings":
+      - button "Settings":
+        - img: settings
+        - generic: Settings
+    - listitem "Help":
+      - button "Help":
+        - img: contact_support
+        - generic: Help
+    - listitem "Android developer verification":
+      - button "Android developer verification":
+        - img: app_promotion
+        - generic: Android developer verification
+- link "Go back to Users and permissions":
+  - /url: /console/u/1/developers/6280481402178293168/users-and-permissions
+  - img: keyboard_backspace
+  - generic: Users and permissions
+- heading "newsblur-play-billing@newsblur-premium.iam.gserviceaccount.com" [level=1]
+- img: check_circle
+- generic: Active
+- img: brightness_1
+- generic: Access never expires
+- img: brightness_1
+- generic: newsblur-play-billing@newsblur-premium.iam.gserviceaccount.com
+- heading "User details" [level=2]
+- button "Remove user":
+  - generic: Remove user
+- button "Make account owner":
+  - generic: Make account owner
+- group "Access expiry":
+  - text: Access expiry
+  - button "More information about \"Access expiry\"":
+    - img: help
+  - checkbox "Set access expiry date"
+  - generic: Set access expiry date
+- heading "Permissions" [level=2]
+- generic: Choose the apps and areas of your developer account that this user has access to. Grant permissions for individual apps, or use Account permissions to grant access to all apps in your developer account. Some account permissions give additional access.
+- tablist:
+  - tab "App permissions" [selected]:
+    - generic: App permissions
+  - tab "Account permissions":
+    - generic: Account permissions
+  - tab "Permission groups":
+    - generic: Permission groups
+- heading "App permissions" [level=3]
+- button "Add app":
+  - generic: Add app
+  - img: arrow_drop_down
+- generic: Grant permissions for 1 or more apps
+- grid "App permissions":
+  - row "App Permissions":
+    - columnheader "App"
+    - columnheader "Permissions"
+    - cell
+    - cell
+  - 'row "App icon for NewsBlur: RSS News Reader NewsBlur: RSS News Reader com.newsblur 4 Remove app Manage permissions"':
+    - 'gridcell "App icon for NewsBlur: RSS News Reader NewsBlur: RSS News Reader com.newsblur"':
+      - 'img "App icon for NewsBlur: RSS News Reader"'
+      - generic: "NewsBlur: RSS News Reader"
+      - generic: com.newsblur
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "Remove app":
+      - button "Remove app":
+        - img: delete
+    - gridcell "Manage permissions":
+      - button "Manage permissions":
+        - img: arrow_right_alt
+- generic: "Show rows:"
+- 'button "Show rows: 10 selected."':
+  - generic: "10"
+  - img: arrow_drop_down
+- generic: 1 - 1 of 1
+- button "Go to the first page" [disabled]:
+  - img: first_page
+- button "Go to the previous page" [disabled]:
+  - img: chevron_left
+- button "Go to the next page" [disabled]:
+  - img: chevron_right
+- button "Go to the last page" [disabled]:
+  - img: last_page
+- button "Save changes" [disabled]:
+  - generic: Save changes
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/1/developers/6280481402178293168/help-and-support
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/
+- 'dialog "Permissions for NewsBlur: RSS News Reader"':
+  - 'heading "Permissions for NewsBlur: RSS News Reader" [level=2]'
+  - button "Close":
+    - img: close
+  - region:
+    - img: info
+    - generic: Some permissions are automatically granted by account permissions
+    - paragraph: "* — Required"
+    - group "App access":
+      - generic: App access *
+      - checkbox "Admin (all permissions) Users with this permission get all other permissions for this app. They can also invite new users to your developer account, and add and remove permissions for other users who have access to the same apps."
+      - text: Admin (all permissions)
+      - generic: Users with this permission get all other permissions for this app. They can also invite new users to your developer account, and add and remove permissions for other users who have access to the same apps.
+      - checkbox "View app information (read-only) View all information for this app, including any associated Play Games Services projects - but not financial data. This permission does not allow users to edit information, or make any changes. To grant access to financial data, give users the 'View financial data' permission." [checked]
+      - text: View app information (read-only)
+      - text: View all information for this app, including any associated Play Games Services projects - but not financial data.
+      - text: This permission does not allow users to edit information, or make any changes. To grant access to financial data, give users the 'View financial data' permission.
+      - checkbox "View app quality information (read-only) This permission allows users to view Android vitals and pre-launch reports, as well as basic information about artifacts, tracks, and releases. Users with this permission are not able to edit information or make any changes. To provide access to any other app data, or to allow these users to make changes, select the \"View app information and download in bulk reports (read only)\" permission before granting access to other account permissions." [checked] [disabled]
+      - text: View app quality information (read-only)
+      - text: This permission allows users to view Android vitals and pre-launch reports, as well as basic information about artifacts, tracks, and releases.
+      - text: Users with this permission are not able to edit information or make any changes. To provide access to any other app data, or to allow these users to make changes, select the "View app information and download in bulk reports (read only)" permission before granting access to other account permissions.
+    - group "Draft apps":
+      - generic: Draft apps
+      - checkbox "Edit and delete draft apps This permission does not allow users to publish apps on Google Play"
+      - text: Edit and delete draft apps
+      - generic: This permission does not allow users to publish apps on Google Play
+    - group "Financial data":
+      - generic: Financial data
+      - checkbox "View financial data View financial and sales reports; view buyer metrics on the User acquisition page; access the Purchases API; and view revenue information for any associated Play Games Services projects" [checked] [disabled]
+      - text: View financial data
+      - generic: View financial and sales reports; view buyer metrics on the User acquisition page; access the Purchases API; and view revenue information for any associated Play Games Services projects
+      - checkbox "Manage orders and subscriptions View orders, refund orders, and cancel subscriptions. Users also need the ‘View financial data’ permission to view aggregate financial reports." [checked] [disabled]
+      - text: Manage orders and subscriptions
+      - generic: View orders, refund orders, and cancel subscriptions. Users also need the ‘View financial data’ permission to view aggregate financial reports.
+    - group "Releases":
+      - generic: Releases
+      - checkbox "Release to production, exclude devices, and use Play App Signing Create, edit, and roll out releases to production; unpublish and republish apps; exclude devices in the device catalog; and use app signing by Google Play to sign APKs. Users with this permission can publish apps to users on Google Play."
+      - text: Release to production, exclude devices, and use Play App Signing
+      - text: Create, edit, and roll out releases to production; unpublish and republish apps; exclude devices in the device catalog; and use app signing by Google Play to sign APKs.
+      - text: Users with this permission can publish apps to users on Google Play.
+      - checkbox "Release apps to testing tracks Upload draft apps; create, edit, and rollout releases to testing tracks; unpublish and republish apps that have already been published to a testing track; upload and modify .obb files; edit release notes for apps which are not active in production; and upload app bundles for internal sharing. This permission does not allow users to publish apps to production on Google Play."
+      - text: Release apps to testing tracks
+      - text: Upload draft apps; create, edit, and rollout releases to testing tracks; unpublish and republish apps that have already been published to a testing track; upload and modify .obb files; edit release notes for apps which are not active in production; and upload app bundles for internal sharing.
+      - text: This permission does not allow users to publish apps to production on Google Play.
+      - checkbox "Manage testing tracks and edit tester lists Manage users, groups, and domains on tester lists; disable testing tracks; update country targeting for testing tracks; and set up uploaders and testers for internal app sharing. This permission does not allow users to publish apps to production on Google Play."
+      - text: Manage testing tracks and edit tester lists
+      - text: Manage users, groups, and domains on tester lists; disable testing tracks; update country targeting for testing tracks; and set up uploaders and testers for internal app sharing.
+      - text: This permission does not allow users to publish apps to production on Google Play.
+    - group "Store presence":
+      - generic: Store presence
+      - checkbox "Manage store presence Edit your store listing and run store listing experiments; edit pricing; manage in-app products; edit distribution information and content ratings; create and edit promotions; and create and save filters to sort the device catalog. This permission does not allow users to exclude devices in the device catalog."
+      - text: Manage store presence
+      - text: Edit your store listing and run store listing experiments; edit pricing; manage in-app products; edit distribution information and content ratings; create and edit promotions; and create and save filters to sort the device catalog.
+      - text: This permission does not allow users to exclude devices in the device catalog.
+    - group "User feedback":
+      - generic: User feedback
+      - checkbox "Reply to reviews Reply to reviews on Google Play, report inappropriate reviews, and change the contact information used in suggested replies. Users without this permission can still view ratings and reviews, but can’t reply to them."
+      - text: Reply to reviews
+      - generic: Reply to reviews on Google Play, report inappropriate reviews, and change the contact information used in suggested replies. Users without this permission can still view ratings and reviews, but can’t reply to them.
+    - group "Policy":
+      - generic: Policy
+      - checkbox "Manage policy declarations Users with this permission can edit and submit policy declarations"
+      - text: Manage policy declarations
+      - generic: Users with this permission can edit and submit policy declarations
+    - group "Deep links":
+      - generic: Deep links
+      - checkbox "Manage deep links Users with this permission can add, edit and manage deep links for this app"
+      - text: Manage deep links
+      - generic: Users with this permission can add, edit and manage deep links for this app
+  - button "Cancel" [active]:
+    - generic: Cancel
+  - button "Apply" [disabled]:
+    - generic: Apply

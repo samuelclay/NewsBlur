@@ -1,0 +1,126 @@
+[
+  {
+    "capture": "captures/localized/uk/ipad-stories.png",
+    "capture_bounds": {
+      "height": 1728.7346086956522,
+      "width": 1296.5509565217392,
+      "x": 383.7245217391304,
+      "y": 766.4918260869568
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 158.928,
+    "language": "uk",
+    "output": "exports/uk/2064x2752/panel-1.png",
+    "panel": 1,
+    "size": "2064x2752",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "76e722a209616502f026e39a626bbad1219dd9d6859274d35cfd772891486524",
+    "source_sha256": {
+      "native-render.swift": "451bba4e083ec0a8bf4100bcbbb88c99a07bb757ee57a96098882c7e96f5e69c",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/ipad-pro-m5.png": "0f995b4f4f48ea4f50f4da416eb18979ca4b0987a653158730a3b272901c2cc6",
+      "captures/localized/uk/ipad-stories.png": "76e722a209616502f026e39a626bbad1219dd9d6859274d35cfd772891486524",
+      "captures/localized/uk/ipad-feeds.png": "d721dd2b41bf58dd17c4185c4d27b99012e2b5032fa156f810983bbb79727076",
+      "captures/localized/uk/ipad-reader.png": "c6a1d79a7cf32f739fa7f45f712414b564158ac4e747817f9533f202fa8ae082",
+      "captures/localized/uk/ipad-saved.png": "2c5c123ab5b2ecbd25686df13d464aaf2cbb5461d75646ddb8ac2a16f0d94049"
+    },
+    "output_sha256": "063bfcbd0c8b3cb9e2482f2f30ed931ece5ae76d12e803dd390c037d77a18af1"
+  },
+  {
+    "capture": "captures/localized/uk/ipad-feeds.png",
+    "capture_bounds": {
+      "height": 1728.7346086956522,
+      "width": 1296.5509565217392,
+      "x": 383.7245217391304,
+      "y": 766.4918260869568
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 158.928,
+    "language": "uk",
+    "output": "exports/uk/2064x2752/panel-2.png",
+    "panel": 2,
+    "size": "2064x2752",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "d721dd2b41bf58dd17c4185c4d27b99012e2b5032fa156f810983bbb79727076",
+    "source_sha256": {
+      "native-render.swift": "451bba4e083ec0a8bf4100bcbbb88c99a07bb757ee57a96098882c7e96f5e69c",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/ipad-pro-m5.png": "0f995b4f4f48ea4f50f4da416eb18979ca4b0987a653158730a3b272901c2cc6",
+      "captures/localized/uk/ipad-stories.png": "76e722a209616502f026e39a626bbad1219dd9d6859274d35cfd772891486524",
+      "captures/localized/uk/ipad-feeds.png": "d721dd2b41bf58dd17c4185c4d27b99012e2b5032fa156f810983bbb79727076",
+      "captures/localized/uk/ipad-reader.png": "c6a1d79a7cf32f739fa7f45f712414b564158ac4e747817f9533f202fa8ae082",
+      "captures/localized/uk/ipad-saved.png": "2c5c123ab5b2ecbd25686df13d464aaf2cbb5461d75646ddb8ac2a16f0d94049"
+    },
+    "output_sha256": "e83d5711a8bffb7dcdaef354c786bbf6c557c6909d6369303e1ec8e44bd2aac4"
+  },
+  {
+    "capture": "captures/localized/uk/ipad-reader.png",
+    "capture_bounds": {
+      "height": 1728.7346086956522,
+      "width": 1296.5509565217392,
+      "x": 383.7245217391304,
+      "y": 766.4918260869568
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 158.928,
+    "language": "uk",
+    "output": "exports/uk/2064x2752/panel-3.png",
+    "panel": 3,
+    "size": "2064x2752",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "c6a1d79a7cf32f739fa7f45f712414b564158ac4e747817f9533f202fa8ae082",
+    "source_sha256": {
+      "native-render.swift": "451bba4e083ec0a8bf4100bcbbb88c99a07bb757ee57a96098882c7e96f5e69c",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/ipad-pro-m5.png": "0f995b4f4f48ea4f50f4da416eb18979ca4b0987a653158730a3b272901c2cc6",
+      "captures/localized/uk/ipad-stories.png": "76e722a209616502f026e39a626bbad1219dd9d6859274d35cfd772891486524",
+      "captures/localized/uk/ipad-feeds.png": "d721dd2b41bf58dd17c4185c4d27b99012e2b5032fa156f810983bbb79727076",
+      "captures/localized/uk/ipad-reader.png": "c6a1d79a7cf32f739fa7f45f712414b564158ac4e747817f9533f202fa8ae082",
+      "captures/localized/uk/ipad-saved.png": "2c5c123ab5b2ecbd25686df13d464aaf2cbb5461d75646ddb8ac2a16f0d94049"
+    },
+    "output_sha256": "55ab6d2c2503392a1b0c1cbb8b00ce8f9c1fc8d2a35ebc08a4c55f1e3e1a07f2"
+  },
+  {
+    "capture": "captures/localized/uk/ipad-saved.png",
+    "capture_bounds": {
+      "height": 1728.7346086956522,
+      "width": 1296.5509565217392,
+      "x": 383.7245217391304,
+      "y": 766.4918260869568
+    },
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 2,
+    "headline_size": 158.928,
+    "language": "uk",
+    "output": "exports/uk/2064x2752/panel-4.png",
+    "panel": 4,
+    "size": "2064x2752",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "renderer": "CoreGraphics/CoreText offline Sage01",
+    "capture_sha256": "2c5c123ab5b2ecbd25686df13d464aaf2cbb5461d75646ddb8ac2a16f0d94049",
+    "source_sha256": {
+      "native-render.swift": "451bba4e083ec0a8bf4100bcbbb88c99a07bb757ee57a96098882c7e96f5e69c",
+      "export-native.rb": "48c66d6c1598ac31bf6faeec3490d860e890fe6645bc678a5ecbda8ebfebbdf5",
+      "copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "../selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "../selected/assets/ipad-pro-m5.png": "0f995b4f4f48ea4f50f4da416eb18979ca4b0987a653158730a3b272901c2cc6",
+      "captures/localized/uk/ipad-stories.png": "76e722a209616502f026e39a626bbad1219dd9d6859274d35cfd772891486524",
+      "captures/localized/uk/ipad-feeds.png": "d721dd2b41bf58dd17c4185c4d27b99012e2b5032fa156f810983bbb79727076",
+      "captures/localized/uk/ipad-reader.png": "c6a1d79a7cf32f739fa7f45f712414b564158ac4e747817f9533f202fa8ae082",
+      "captures/localized/uk/ipad-saved.png": "2c5c123ab5b2ecbd25686df13d464aaf2cbb5461d75646ddb8ac2a16f0d94049"
+    },
+    "output_sha256": "5b9fc692471e300cb888aae24ec8903b295c8b822eacd37e1a08c27e6dcdb563"
+  }
+]

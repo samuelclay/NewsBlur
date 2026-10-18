@@ -1,6 +1,6 @@
 {% extends "oauth2_provider/base.html" %}
-
 {% load i18n %}
+
 {% block content %}
     <div class="block-center">
         <h3 class="block-center-heading">{% trans "Your applications" %}</h3>
@@ -11,9 +11,9 @@
                 {% endfor %}
             </ul>
 
-            <a class="btn btn-success" href="{% url "oauth2_provider:register" %}">New Application</a>
+            <a class="btn btn-success" href="{% url "oauth2_provider:register" %}">{% trans "New Application" %}</a>
         {% else %}
-            <p>{% trans "No applications defined" %}. <a href="{% url 'oauth2_provider:register' %}">{% trans "Click here" %}</a> {% trans "if you want to register a new one" %}</p>
+            <p>{% url 'oauth2_provider:register' as register_url %}{% blocktrans trimmed %}No applications defined. <a href="{{ register_url }}">Click here</a> if you want to register a new one{% endblocktrans %}</p>
         {% endif %}
     </div>
 {% endblock content %}

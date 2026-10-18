@@ -31,7 +31,7 @@ class AddSiteSearchApiTest {
             assertEquals("kottke", values["term"])
             assertEquals("kottke.org", result.label)
             assertEquals("https://feeds.kottke.org/main", result.url)
-            assertEquals("2d ago", SiteFreshness.from(result.lastStorySecondsAgo)?.text)
+            assertEquals(SiteFreshness.Recent(2, SiteFreshness.FreshnessUnit.DAYS), SiteFreshness.from(result.lastStorySecondsAgo))
             assertEquals(15430, result.numberOfSubscriber)
         }
 }

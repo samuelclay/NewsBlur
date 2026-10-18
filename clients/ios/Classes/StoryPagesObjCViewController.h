@@ -109,6 +109,7 @@
 - (void)resizeScrollView;
 - (BOOL)hasHiddenReaderAncestor;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController supressRedraw:(BOOL)suppressRedraw;
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
@@ -156,6 +157,8 @@
 - (void)changedAutoscroll;
 - (void)changedScrollOrientation;
 - (void)updateStoriesTheme;
+- (void)updateStoriesDirection;
+- (void)updateReaderDirection;
 - (void)showShareHUD:(NSString *)msg;
 - (void)showFetchingTextNotifier;
 - (void)hideNotifier;

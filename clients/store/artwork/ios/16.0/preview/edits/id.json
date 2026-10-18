@@ -1,0 +1,27 @@
+{
+  "locale": "id",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "id",
+      "source_sha256": "0da826eba832dcfd7124c3e50e12d314145267783b3948f77e9175dc2623cb77",
+      "source_intervals_reviewed": true,
+      "notes": "Actual Indonesian native footage. Final decoded frame 384 is fully loaded: four Saved items, localized UI, pasta detail/photo. The final scene explicitly holds those unchanged pixels for four seconds to permit reading the disclosure. Earlier scenes use real navigation/scrolling; no interaction is synthesized. Source frame proof is proof/id/ipad-final-source.png.",
+      "starts": [
+        4,
+        20,
+        60,
+        0
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "saved_final_frame_hold": true,
+      "saved_final_frame_reviewed": true
+    }
+  },
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
+}

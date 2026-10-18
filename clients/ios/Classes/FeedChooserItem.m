@@ -58,7 +58,7 @@
     NSString *title = self.info[@"feed_title"];
     
     if (self.search != nil) {
-        return [NSString stringWithFormat:@"\"%@\" in %@", self.search, title];
+        return [NSString stringWithFormat:[NBLocalization text:@"\"%1$@\" in %2$@"], self.search, title];
     }
     
     if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
@@ -134,17 +134,17 @@
     
     switch (sort) {
         case FeedChooserSortSubscribers:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ subscribers", @"number of subscribers"), self.info[@"num_subscribers"]];
+            return [NBLocalization plural:@"%@ subscribers" count:self.info[@"num_subscribers"]];
             break;
             
         case FeedChooserSortFrequency:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ stories/month", @"average stories per month"), self.info[@"average_stories_per_month"]];
+            return [NBLocalization plural:@"%@ stories/month" count:self.info[@"average_stories_per_month"]];
             break;
             
         case FeedChooserSortRecency:
         {
             static NSDateFormatter *dateFormatter = nil;
-            static NSDateComponentsFormatter *componentsFormatter = nil;
+            static NSRelativeDateTimeFormatter *relativeFormatter = nil;
             
             if (!dateFormatter) {
                 dateFormatter = [NSDateFormatter new];
@@ -152,23 +152,24 @@
                 dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
             }
             
-            if (!componentsFormatter)
-            {
-                componentsFormatter = [NSDateComponentsFormatter new];
-                
-                componentsFormatter.unitsStyle = NSDateComponentsFormatterUnitsStyleFull;
-                componentsFormatter.maximumUnitCount = 1;
-                componentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
+            if (!relativeFormatter) {
+                relativeFormatter = [NSRelativeDateTimeFormatter new];
+                relativeFormatter.unitsStyle = NSRelativeDateTimeFormatterUnitsStyleFull;
+                relativeFormatter.dateTimeStyle = NSRelativeDateTimeFormatterStyleNumeric;
             }
+            // FeedChooserItem.m lets the formatter phrase the whole age ("3 days ago", "vor 3 Tagen"),
+            // since wrapping a bare "3 Tage" in a translated "ago" breaks languages with case endings.
+            relativeFormatter.locale = NBLocalization.formattingLocale;
             
             NSDate *date = [dateFormatter dateFromString:self.info[@"last_story_date"]];
+            if (!date) return @"";
             
-            return [NSString stringWithFormat:@"%@ ago",  [componentsFormatter stringFromTimeInterval:-date.timeIntervalSinceNow]];
+            return [relativeFormatter localizedStringForDate:date relativeToDate:[NSDate date]];
             break;
         }
         
         default:
-            return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ opens", @"number of feed opens"), self.info[@"feed_opens"]];
+            return [NBLocalization plural:@"%@ opens" count:self.info[@"feed_opens"]];
             break;
     }
 }

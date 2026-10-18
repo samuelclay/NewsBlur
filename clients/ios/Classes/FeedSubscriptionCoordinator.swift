@@ -207,8 +207,8 @@ import ObjectiveC
         while let presented = presenter.presentedViewController { presenter = presented }
         guard !(presenter is UIAlertController), !presenter.isBeingDismissed else { return }
         errorMessage = nil
-        let alert = UIAlertController(title: "Unable to Subscribe", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in self?.resume() })
+        let alert = UIAlertController(title: NBLocalization.text("Unable to Subscribe"), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NBLocalization.text("OK"), style: .default) { [weak self] _ in self?.resume() })
         presenter.present(alert, animated: true)
     }
 }

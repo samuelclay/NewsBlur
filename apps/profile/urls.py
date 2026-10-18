@@ -1,8 +1,10 @@
 from django.conf.urls import *
 
 from apps.profile import views
+from apps.profile.language import language_preference
 
 urlpatterns = [
+    url(r"^language/?$", language_preference, name="language-preference"),
     url(r"^get_preferences?/?", views.get_preference),
     url(r"^set_preference/?", views.set_preference),
     url(r"^set_account_settings/?", views.set_account_settings),

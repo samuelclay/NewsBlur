@@ -74,6 +74,10 @@ public class PrefConstants {
     public static final String STORIES_THUMBNAIL_STYLE = "pref_thumbnail_style";
     public static final String STORY_TOOLBAR_POSITION = "story_toolbar_position";
     public static final String READER_FULLSCREEN = "reader_fullscreen";
+    public static final String STORY_LIST_FULLSCREEN = "story_list_fullscreen";
+    public static final String FEED_LIST_FULLSCREEN = "feed_list_fullscreen";
+    public static final String STORY_LIST_SPLIT_RATIO = "story_list_split_ratio";
+    public static final String FEED_LIST_WIDTH_RATIO = "feed_list_width_ratio";
     public static final String STORY_MARK_READ_BEHAVIOR = "pref_story_mark_read_behavior";
     public static final String STORY_CLUSTERING = "story_clustering";
     public static final String CLUSTER_MODE = "cluster_mode";
@@ -109,6 +113,11 @@ public class PrefConstants {
 
     public static final String FEED_LIST_ORDER_ALPHABETICAL = "feed_list_order_alphabetical";
     public static final String FEED_LIST_ORDER_MOST_USED_AT_TOP = "feed_list_order_most_used_at_top";
+
+    // LanguageChooserDialog.kt shows the language dialog once per device. Debug builds also read a language code
+    // that forces it, with that language as the detected one, for screenshots.
+    public static final String LANGUAGE_DIALOG_SEEN = "language_dialog_seen";
+    public static final String LANGUAGE_DIALOG_DEBUG = "language_dialog_debug";
 
     public static final String THEME = "theme";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";

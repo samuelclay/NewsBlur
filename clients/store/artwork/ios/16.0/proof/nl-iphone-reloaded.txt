@@ -1,0 +1,117 @@
+
+							49 HTML content App Store Connect, URL: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/iphone
+								50 container
+									51 container App Store Connect
+										52 container
+											53 heading App Store Connect, Value: 1
+												54 link App Store Connect, Value: appstoreconnect.apple.com/
+											55 container Global
+												56 content list
+													57 link Apps, Value: appstoreconnect.apple.com/apps
+													58 link Xcode Cloud, Value: appstoreconnect.apple.com/teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/xcode-cloud
+													59 link Trends, Value: appstoreconnect.apple.com/trends
+													60 link Reports, Value: appstoreconnect.apple.com/itc/payments_and_financial_reports
+													61 link Business, Value: appstoreconnect.apple.com/business
+											62 button Samuel Clay NewsBlur, Inc. Account name menu
+									63 container
+									64 container
+										65 pop up button Apps menu, NewsBlur: RSS News Reader, selected
+											66 container
+												67 image NewsBlur: RSS News Reader
+												68 text NewsBlur: RSS News Reader
+											69 image
+										70 container Apps
+											71 content list
+												72 link Distribution, Value: appstoreconnect.apple.com/apps/463981119/distribution
+												73 link Analytics, Value: appstoreconnect.apple.com/apps/463981119/analytics
+												74 link TestFlight, Value: appstoreconnect.apple.com/teams/69a6de74-9a8f-47e3-e053-5b8c7c11a4d1/apps/463981119/testflight
+									75 container
+										76 container
+											77 container
+												78 image
+												79 text iOS App 16.0
+											80 heading Media Manager, Value: 2
+												81 text Media Manager
+											82 link iPhone, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/iphone
+											83 link iPad, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/ipad
+											84 link Apple Watch, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/apple-watch
+											85 link iMessage App, Value: appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight/media-manager/imessage
+											86 container
+												87 pop up button Dutch
+													88 text Dutch
+													89 image
+												90 button ?
+											91 text Use app previews and screenshots to visually communicate your app's user experience. Screenshots will automatically scale down to smaller device sizes unless you add specific app previews and screenshots for other device sizes and localizations. Screenshots must show your app in use or primarily depict your app's user experience. 
+											92 link Learn more..., Value: developer.apple.com/app-store/asset-best-practices/#screenshots
+											93 heading Required, Value: 3
+												94 text Required
+											95 text App previews and screenshots are required to accurately represent your app on these devices.
+											96 button DropZone
+											97 text iPhone with Dynamic Island
+											98 text (medium display)
+											99 container
+												100 content list
+													101 button Screenshot newsblur-16.0-nl-1206x2622-01.png
+													102 button Screenshot newsblur-16.0-nl-1206x2622-02.png
+													103 button Screenshot newsblur-16.0-nl-1206x2622-03.png
+													104 button Screenshot newsblur-16.0-nl-1206x2622-04.png
+												105 text 0 of 3 App Previews
+												106 text 4 of 10 App Screenshots
+												107 pop up button Browse Assets
+												108 button Upload
+												109 pop up button Remove All
+												110 text Drag and drop to add assets or choose from your Asset Library for iPhone 6.1" or 6.3" displays. Supported sizes for app previews include 1920 × 886px and 886 × 1920px. For app screenshots, supported sizes include 2556 × 1179px, 1179 × 2556px, 2622 × 1206px and 1206 × 2622px.
+											111 heading Optional, Value: 3
+												112 text Optional
+											113 text You can add app previews and screenshots to better represent your app on these devices.
+											114 button DropZone
+											115 button iPhone with Dynamic Island (large display)
+											116 container iPhone with Dynamic Island (large display)
+												117 content list
+													118 draggable item. press space bar to lift Screenshot newsblur-16.0-nl-1320x2868-01.png
+														119 button Screenshot newsblur-16.0-nl-1320x2868-01.png
+															120 pop up button Remove
+													121 draggable item. press space bar to lift Screenshot newsblur-16.0-nl-1320x2868-02.png
+														122 button Screenshot newsblur-16.0-nl-1320x2868-02.png
+															123 pop up button Remove
+													124 button Screenshot newsblur-16.0-nl-1320x2868-03.png
+													125 button Screenshot newsblur-16.0-nl-1320x2868-04.png
+												126 text 0 of 3 App Previews
+												127 text 4 of 10 App Screenshots
+												128 pop up button Browse Assets
+												129 button Upload
+												130 pop up button Remove All
+												131 text Drag and drop to add assets or choose from your Asset Library for iPhone 6.5", 6.7", or 6.9" displays. Supported sizes for app previews include 1920 × 886px and 886 × 1920px. For app screenshots, supported sizes include 2796 × 1290px, 1290 × 2796px, 2868 × 1320px, 1320 × 2868px, 2736 × 1260px and 1260 × 2736px.
+											132 button DropZone
+											133 button iPhone with Face ID (large display)
+											134 container iPhone with Face ID (large display)
+											135 button DropZone
+											136 button iPhone Duo
+											137 container iPhone Duo
+											138 button DropZone
+											139 button iPhone with Face ID (medium display)
+											140 container iPhone with Face ID (medium display)
+											141 button DropZone
+											142 button iPhone with Home Button (large display)
+											143 container iPhone with Home Button (large display)
+											144 button DropZone
+											145 button iPhone with Home Button (medium display)
+											146 container iPhone with Home Button (medium display)
+											147 button DropZone
+											148 button iPhone with Home Button (4" display)
+											149 container iPhone with Home Button (4" display)
+											150 button DropZone
+											151 button iPhone with Home Button (3.5" display)
+											152 container iPhone with Home Button (3.5" display)
+									153 content list
+										154 link App Store Connect, Value: appstoreconnect.apple.com/apps
+									155 content list
+										156 container
+											157 text Copyright © 2026 Apple Inc. All rights reserved. |
+										158 container
+											159 link Terms of Service, Value: appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/wa/termsOfService
+											160 text |
+										161 container
+											162 link Privacy Policy, Value: apple.com/legal/privacy
+											163 text |
+										164 link Contact Us, Value: appstoreconnect.apple.com/contact-us

@@ -1,4 +1,5 @@
-<html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{{ story.story_title }}</title>
     <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
@@ -16,7 +17,7 @@
 <h5>{{ story.story_authors }} {% if story.story_authors %} &middot; {% endif %} {{ local_datetime }}</h5>
 <p>{{ story.story_content|safe }}</p>
 
-<button onclick="print_document()">Print</button>
+<button onclick="print_document()">{% trans "Print" %}</button>
 
 <script>
     {% comment %} Hide the print button until after printing {% endcomment %}

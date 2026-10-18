@@ -99,7 +99,8 @@ struct DiscoverPopularFeed: Identifiable {
         ])
     }
 
-    func freshness(now: Date = Date(), locale: Locale = .current, timeZone: TimeZone = .current) -> DiscoverFeedFreshness? {
+    func freshness(now: Date = Date(), locale: Locale = NBLocalization.formattingLocale,
+                   timeZone: TimeZone = .current) -> DiscoverFeedFreshness? {
         DiscoverFeedFreshness(lastStoryDate: rawFeedDict["last_story_date"], now: now, locale: locale, timeZone: timeZone)
     }
 }
@@ -114,14 +115,16 @@ struct DiscoverFeedFreshness: Equatable {
     let status: Status
     let label: String
 
+    // DiscoverSitesModels.swift words each label as a complete translated sentence with the interface language's
+    // plural rules, and writes a stale date in that language (NBLocalization.formattingLocale).
     init?(lastStoryDate: Any?, now: Date = Date(), showEmpty: Bool = true,
-          locale: Locale = .current, timeZone: TimeZone = .current) {
+          locale: Locale = NBLocalization.formattingLocale, timeZone: TimeZone = .current) {
         let missing = lastStoryDate == nil || lastStoryDate is NSNull ||
             (lastStoryDate as? String) == "" || (lastStoryDate as? NSNumber)?.doubleValue == 0
         if missing {
             guard showEmpty else { return nil }
             status = .noStories
-            label = "No stories yet"
+            label = NBLocalization.text("No stories yet")
             return
         }
         guard let date = Self.parseDate(lastStoryDate, timeZone: timeZone) else { return nil }
@@ -129,16 +132,13 @@ struct DiscoverFeedFreshness: Equatable {
         let days = floor(now.timeIntervalSince(date) / 86400)
         if days < 365 {
             status = .active
-            if days < 1 { label = "Updated today" }
+            if days < 1 { label = NBLocalization.text("Updated today") }
             else if days < 7 {
-                let count = Int(days)
-                label = "Updated \(count) \(count == 1 ? "day" : "days") ago"
+                label = NBLocalization.plural("Updated %@ days ago", groupedCount: Int(days))
             } else if days < 30 {
-                let count = Int(days / 7)
-                label = "Updated \(count) \(count == 1 ? "week" : "weeks") ago"
+                label = NBLocalization.plural("Updated %@ weeks ago", groupedCount: Int(days / 7))
             } else {
-                let count = Int(days / 30)
-                label = "Updated \(count) \(count == 1 ? "month" : "months") ago"
+                label = NBLocalization.plural("Updated %@ months ago", groupedCount: Int(days / 30))
             }
         } else {
             status = .stale
@@ -146,7 +146,7 @@ struct DiscoverFeedFreshness: Equatable {
             formatter.locale = locale
             formatter.timeZone = timeZone
             formatter.setLocalizedDateFormatFromTemplate("yMMMd")
-            label = "Stale — last story \(formatter.string(from: date))"
+            label = String(format: NBLocalization.text("Stale — last story %@"), formatter.string(from: date))
         }
     }
 
@@ -243,7 +243,8 @@ struct WebFeedVariant: Identifiable {
 
     init(index: Int, dict: [String: Any]) {
         self.id = index
-        self.label = dict["label"] as? String ?? "Variant \(index + 1)"
+        self.label = dict["label"] as? String ??
+            String(format: NBLocalization.text("Variant %@"), NBLocalization.formattedCount(index + 1))
         self.storyContainerXpath = dict["story_container"] as? String ?? dict["story_container_xpath"] as? String ?? ""
         self.titleXpath = dict["title"] as? String ?? dict["title_xpath"] as? String ?? ""
         self.linkXpath = dict["link"] as? String ?? dict["link_xpath"] as? String ?? ""

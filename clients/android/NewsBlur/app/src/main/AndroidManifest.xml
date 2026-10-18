@@ -20,7 +20,13 @@
         android:fullBackupContent="@xml/backupscheme"
         android:icon="@mipmap/app_icon_sunrise_gold"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <service android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false" android:exported="false">
+            <meta-data android:name="autoStoreLocales" android:value="true" />
+        </service>
 
         <profileable
             android:shell="true"
@@ -712,51 +718,63 @@
 
         <activity
             android:name=".activity.FeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:launchMode="singleTask"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.InfrequentItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.WidelyReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.LongReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GoodReadsItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.ReadStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SavedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.AllSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.GlobalSharedStoriesItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.FolderItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
             android:name=".activity.SocialFeedItemsList"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:theme="@style/Theme.Translucent" />
 
         <activity
@@ -841,9 +859,10 @@
 
         <activity android:name=".activity.ReadingPlaceholder" />
 
-        <!-- FeedListDrawer.kt slides the feed list over a tablet's story list and reader. -->
+        <!-- FeedListDrawer.kt sits beside story titles in the tablet browsing layout. -->
         <activity
             android:name=".activity.FeedListDrawer"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Translucent" />
 
@@ -865,6 +884,7 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
             android:name=".service.SubscriptionSyncService"
+            android:enabled="${playBillingEnabled}"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 

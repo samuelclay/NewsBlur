@@ -1,0 +1,324 @@
+{
+  "language": "it",
+  "register": "Informal tu throughout (545 strings with tu/tuo/puoi/hai, no Lei forms found), which is the standard for Italian consumer apps; buttons and menu items use the imperative 2nd person singular (Salva, Aggiungi sito, Segna come letto) or a noun phrase, confirmation titles use the infinitive question (Eliminare la cartella?), and any Lei form (Inserisca, Selezioni, La preghiamo, Suo/Sua addressed to the reader) is flagged as register.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "articolo (l'articolo, gli articoli; masculine agreement: letto, salvato, condiviso, nascosto, i più recenti / i più vecchi, lo/li, un)",
+      "avoid": [
+        "notizia / notizie (for a NewsBlur story)",
+        "storia / storie",
+        "post (for a story)",
+        "Story (English)"
+      ],
+      "note": "The catalog mixes articolo (~426 strings), notizia (~375) and storia (~321), often on the same screen. Articolo is the term Italian RSS readers use and fits blog posts, podcasts and videos; notizia is newspaper-specific and storia is a calque of 'story'. Normalizing the story term is low severity (terminology) unless the wording misleads. Keep notizie where the English says 'news' (lettore di notizie, Flusso di notizie, 'Leggere le notizie è più bello con gli amici'). When switching to articolo, fix every adjective, participle, article and pronoun in the string (la storia letta → l'articolo letto, salvate → salvati, le più recenti → i più recenti, una → un, la/le → lo/li)."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "sito (il sito, i siti)",
+      "avoid": [
+        "pagina (for a whole site)"
+      ],
+      "note": "Sito web is fine in prose."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "feed (il feed, i feed; invariable plural)",
+      "avoid": [
+        "fonte (for a feed)",
+        "canale (for a feed)"
+      ],
+      "note": "Compounds: feed RSS, feed web, elenco dei feed, icona del feed. Also avoid where it means this concept: feeds."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "cartella",
+      "avoid": [],
+      "note": "Parent folder → cartella superiore or cartella principale (do not churn)."
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "non letto / non letti (masculine, agreeing with articolo)",
+      "avoid": [
+        "da leggere (as the Unread label/state)",
+        "non letta / non lette (feminine, from notizia/storia)"
+      ],
+      "note": "Slider and filter labels: Tutti / Non letti / In evidenza. Unread only → Solo non letti. Next unread story → Articolo non letto successivo (or Prossimo articolo non letto). Mark as unread → Segna come non letto. 'Leave unread' keeps stories unread → Lascia non letto / Lascia come non letti. 'Da leggere' reads as a to-read list; flag it as low terminology on labels, fine only in running prose such as 'nessun articolo da leggere'."
+    },
+    {
+      "concept": "mark as read / read stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread stories\\b)|(?:\\bread\\b)",
+      "use": "Segna come letto / Segna tutto come letto / Articoli letti",
+      "avoid": [
+        "Segna come letta (feminine)",
+        "Leggi articoli / Leggi le notizie (for the Read Stories folder)",
+        "Contrassegna (do not churn, but prefer Segna)"
+      ],
+      "note": "'Read Stories' is the folder of stories already read: Articoli letti, never the imperative (high when imperative). Siri/Spotlight 'Read %@' opens a feed to read it: Leggi %@ (high if it says mark as read). Mark newer/older as read → Segna come letti i più recenti / i più vecchi."
+    },
+    {
+      "concept": "save / saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "salvare / salvato / Articoli salvati",
+      "avoid": [
+        "preferiti (for saved stories)"
+      ],
+      "note": "Unsave → Rimuovi dai salvati; Unsaved → Rimosso dai salvati. Also avoid where it means this concept: memorizza."
+    },
+    {
+      "concept": "share / shared stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)",
+      "use": "condividere / condiviso / Articoli condivisi",
+      "avoid": [],
+      "note": "A share as a noun: condivisione (%d condivisioni)."
+    },
+    {
+      "concept": "blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog / blurblog (il blurblog, masculine)",
+      "avoid": [],
+      "note": "Product name, never translated; follow the English capitalization. 'Profile & Blurblog' → Profilo e Blurblog (keep the &amp; token when the English has it: Profilo &amp; Blurblog)."
+    },
+    {
+      "concept": "intelligence trainer / training",
+      "en": "(?:\\bintelligence\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Addestramento dell'intelligenza / addestramento / addestrare",
+      "avoid": [
+        "Allenatore di intelligenza (a sports coach)",
+        "allenamento",
+        "Story Trainer / Intelligence Trainer (English)",
+        "addestratore"
+      ],
+      "note": "The catalog uses Addestramento dell'intelligenza for both the Trainer dialog and Training; keep it. Train → Addestra; Train this story → Addestra questo articolo; story trainer → addestramento dell'articolo; site trainer → addestramento del sito. 'Addestramento intelligente' (smart training) is a slightly different phrase but tolerated in marketing prose; do not churn it."
+    },
+    {
+      "concept": "focus",
+      "en": "\\bfocus\\b",
+      "use": "In evidenza (as the name of the level: articoli in evidenza, Non letti + In evidenza, Solo in evidenza)",
+      "avoid": [
+        "Focus (English loanword for the level)",
+        "Concentrati / Concentrazione",
+        "Attenzione",
+        "a fuoco / mettere a fuoco (photographic focus)",
+        "interesse"
+      ],
+      "note": "Catalog plurality (in evidenza 14, focus 9, plus five other words). Slider: Tutti / Non letti / In evidenza. Focus stories → articoli in evidenza; 'Focus view/mode' → vista In evidenza (or rephrase: tra gli articoli in evidenza); verb 'focus or hide' → mettere in evidenza o nascondere. NewsBlur's English itself says 'highlight stories' for focus. The text highlighter is evidenziare/evidenziazione (Evidenzia, Rimuovi evidenziazione); that is a different, verb-based term and does not clash. In prose 'focus on what matters' may stay concentrarsi su. Also avoid where it means this concept: Obiettivo."
+    },
+    {
+      "concept": "like / dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Mi piace / Non mi piace / Non mi piace per niente",
+      "avoid": [
+        "Dislike / Super dislike (English)",
+        "Dislike totale / Dislike assoluto",
+        "come (for the verb like)",
+        "simile (for like)"
+      ],
+      "note": "Super dislike → Non mi piace per niente (already the Android wording; it always hides). The trainer's 'beats' means Like outranks Dislike: batte / prevale su (never ritmi). '(like wins)' → (prevale Mi piace). Words inserted into 'What do you %(like)s and %(dislike)s about this…' must read correctly inside the template (check reader_classifier.js and TrainerView.swift)."
+    },
+    {
+      "concept": "hide / hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "nascondere / nascosto",
+      "avoid": [],
+      "note": "Hidden stories → articoli nascosti."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "classificatore",
+      "avoid": [],
+      "note": "Prompt classifier → classificatore con prompt (not 'dei prompt'); Regex classifiers → classificatori regex."
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "Archivio Premium / archivio Premium / l'Archivio Premium (for the plan)",
+        "Archivio (for the Archive plan)",
+        "premium lowercase as the plan name"
+      ],
+      "note": "Plan names stay in English as product names, matching the App Store and Play Store products and the German, Spanish, French and Portuguese decisions (catalog split 31 Archivio Premium vs 31 Premium Archive). 'Archivio Premium' reads as a premium story archive. Use them without an article (Passa a Premium Archive) or with piano/abbonamento (il piano Archive, un abbonamento Premium Archive). Archivio stays for the story archive itself (archivio degli articoli, il tuo archivio). Flag Archivio Premium as medium terminology. Generic lowercase 'premium feature/account' → funzionalità Premium / account Premium."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Passa a … (Passa a Premium)",
+      "avoid": [
+        "Aggiorna (where it reads as update/refresh)"
+      ],
+      "note": "Catalog-consistent. 'Upgrade from X' (Android/iOS pricing) means upgrading away from the current plan to a higher one; check it does not read as a downgrade."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferenze (NewsBlur's Preferences) / Impostazioni (settings in general and the iOS/Android system Settings)",
+      "avoid": [],
+      "note": "Do not churn between them when the English says Settings."
+    },
+    {
+      "concept": "subscribe (feeds) vs subscription (paid)",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b)",
+      "use": "feeds, sites, newsletters: iscriversi / iscrizione / iscritti; paid plan: abbonarsi / abbonamento / abbonati",
+      "avoid": [
+        "Abbonati as a feed Subscribe button (also reads as the noun 'subscribers' and suggests paying)",
+        "abbonamenti for the list of followed feeds"
+      ],
+      "note": "Italian uses iscriviti for free content (YouTube, newsletters, podcasts) and abbonamento for paid plans; the catalog mixes abbona 135 / iscri 82 with no split. Flag feed-context abbonarsi/abbonamenti as low terminology (medium when it misleads, e.g. 'Hai molti abbonamenti!' in the OPML export, or an 'Abbonati' button). A feed's subscriber count → %s iscritti. Unsubscribe from a feed → Annulla l'iscrizione. Keep abbonamento/abbonati for Premium, renewals, billing and 'premium subscribers'."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Flusso di notizie",
+      "avoid": [
+        "River of News (English)",
+        "Fiume di notizie / fiume"
+      ],
+      "note": "Sentence case. 'your river' in prose → il tuo flusso."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Articoli di tutti i siti",
+      "avoid": [
+        "Tutte le storie del sito / Tutte le notizie del sito / Tutti gli articoli del sito (= all stories of one site)"
+      ],
+      "note": "It means stories from all sites (high when it says one site)."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Articoli dei siti poco attivi",
+      "avoid": [
+        "Articoli poco frequenti / Notizie poco frequenti",
+        "Articoli occasionali del sito / meno frequenti del sito (one site)",
+        "siti poco frequentati (= rarely visited)"
+      ],
+      "note": "Stories from sites that publish rarely (below a stories-per-month threshold); the stories are not infrequent, it is not one site, and it is not about how often the reader visits. 'siti aggiornati di rado' is a correct prose paraphrase (From infrequent sites → Dai siti aggiornati di rado is fine). 'Infrequent stories per month' (the threshold setting) → Soglia dei siti poco attivi (articoli al mese)."
+    },
+    {
+      "concept": "Widely Read / Long Reads / Good Reads / Global Shared",
+      "en": "(?:\\bread\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)|(?:\\bwidely read\\b)|(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Articoli più letti / Letture lunghe / Letture consigliate / Articoli condivisi globalmente",
+      "avoid": [
+        "Good Reads (English)",
+        "Buone letture (reads as the wish 'happy reading')",
+        "Leggi Good Reads"
+      ],
+      "note": "Good Reads is a folder of good stories, not books."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Dashboard (la dashboard)",
+      "avoid": [],
+      "note": "Catalog-consistent."
+    },
+    {
+      "concept": "daily briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Briefing quotidiano / briefing (il briefing)",
+      "avoid": [
+        "Riepilogo quotidiano / Riepilogo giornaliero (for the feature)",
+        "Daily Briefing (English)",
+        "Briefing Quotidiano (Title Case)"
+      ],
+      "note": "Catalog plurality (briefing 44 vs riepilogo quotidiano 27 + riepilogo giornaliero 15), matching the French decision. Riepilogo is reserved for summaries (Ask AI summaries, story summaries, the briefing's summary style), which the catalog already translates as riepilogo in ~30 strings, so naming the briefing 'riepilogo' collides ('Briefing quotidiano con riepiloghi degli articoli'). Morning/Afternoon/Evening Briefing → Briefing del mattino / del pomeriggio / della sera; Weekly → Briefing settimanale; Twice-daily → Briefing due volte al giorno. 'Brief' (a summary length next to Medium/Detailed) → Breve; 'Editorial' (narrative style) → Editoriale (fine)."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Chiedi all'IA",
+      "avoid": [
+        "Ask AI (English)",
+        "Domanda ad Ask AI"
+      ],
+      "note": "Catalog-consistent. The Ask AI input placeholder 'Follow up…' may stay Domanda successiva… (Android) or Approfondisci… (iOS); flag 'Da seguire...' (web), which means 'to be followed'. The Daily Briefing section 'Follow-ups' (new posts from feeds you recently read) → Sviluppi, never Risposte."
+    },
+    {
+      "concept": "tag",
+      "en": "\\btags?\\b",
+      "use": "tag (il tag, i tag)",
+      "avoid": [
+        "etichetta"
+      ],
+      "note": "Catalog majority."
+    },
+    {
+      "concept": "follow / followers / following",
+      "en": "\\bfollow(s|ed|ing|ers?)?\\b",
+      "use": "Segui (button) / Follower (followers) / Seguiti (the people I follow) / Persone che seguo / Mi seguono",
+      "avoid": [
+        "Segui (imperative) for the 'Following' count/tab",
+        "Follower for 'Following' (reverses it)",
+        "Mi segue (singular for the tab)"
+      ],
+      "note": "'I'm Following' and 'Following Me' tabs must be distinguishable: Persone che seguo / Mi seguono (or Seguiti / Follower)."
+    },
+    {
+      "concept": "mute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "silenziare / silenziato / riattivare (unmute)",
+      "avoid": [
+        "Disattiva (for mute, collides with disable notifications)",
+        "Riattiva l'audio / Disattiva audio (sound)"
+      ],
+      "note": "Mute site → Silenzia sito; Unmute → Riattiva; Muted → Silenziato."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "vista (Vista feed, Vista testo, Vista articolo, Vista originale)",
+      "avoid": [],
+      "note": "Visualizzazione is tolerated; do not churn unless two labels of the same switcher disagree."
+    },
+    {
+      "concept": "notifications / newsletters / discover / dashboard",
+      "en": "(?:\\bdashboard\\b)|(?:\\bnewsletters?\\b)|(?:\\bnotifications?\\b)|(?:\\bdiscover\\b)",
+      "use": "notifiche / newsletter (invariable) / Scopri (iOS, Android, verbs) and Esplora (web tab, tolerated)",
+      "avoid": [
+        "Bollettino (for newsletter)"
+      ],
+      "note": "Do not churn Scopri/Esplora."
+    },
+    {
+      "concept": "typography",
+      "en": null,
+      "use": "Sentence case for labels and titles; month and weekday names lowercase; typographic quotes “…” (or « ») when a translation adds quotes; keep the English ellipsis style (… or ...); apostrophes ' or ’ both tolerated (do not churn)",
+      "avoid": [
+        "English Title Case copied into Italian (Riepilogo Giornaliero, Articoli Salvati)",
+        "ASCII double quotes the English does not have",
+        "thousand separators with a comma (1,024 → 1.024)"
+      ],
+      "note": "Prices are written 36 $/anno in the catalog; fine."
+    },
+    {
+      "concept": "misc labels",
+      "en": null,
+      "use": "Positive? → Sei sicuro?; Stale → Inattivo / Inattivo da %s; beats → batte (BEATS → BATTE); (like wins) → (prevale Mi piace); Upgrade from Premium/Archive → Passa a questo piano da Premium/Archive; pattern → pattern (or schema), never modello (collides with the AI Modello); Unsaved (HUD) → Rimosso dai salvati; Replied (HUD) → Risposta inviata; Cancel unfollow → Continua a seguire; Mute None → Riattiva tutto",
+      "avoid": [
+        "Positivo?",
+        "Obsoleto",
+        "ritmi / è meglio di",
+        "Passa da Premium (reads as leaving the plan)",
+        "modello for a URL/author pattern"
+      ],
+      "note": "Decisions made while auditing chunks 1-11."
+    },
+    {
+      "concept": "relative ages",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "web '%(time)s fa', iOS '%@ fa', Android '%1$s fa' wrap the server's bare units ('%(number)d giorni'); Italian 'N giorni fa' needs no case change, so the wrappers are fine. Compact forms: %dg fa, %dh fa, %d min fa, %d sett. fa, %d mese fa / %d mesi fa",
+      "avoid": [
+        "plural nouns in a one form or a non-plural compact string (1 giorni fa, 1 mesi fa)"
+      ],
+      "note": "iOS compact '%ldd ago'/'%ldh ago' are non-plural keys, so they use the abbreviations g/h."
+    }
+  ]
+}

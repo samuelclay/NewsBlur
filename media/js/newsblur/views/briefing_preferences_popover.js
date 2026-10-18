@@ -1,59 +1,60 @@
 NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
-    {key: "top_stories", name: "Top stories", subtitle: "The most important stories from your feeds"},
-    {key: "infrequent", name: "From infrequent sites", subtitle: "Stories from feeds that rarely publish"},
-    {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
-    {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
-    {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"},
-    {key: "widely_read", name: "Widely Read on NewsBlur", subtitle: "What the NewsBlur community is reading"},
-    {key: "long_reads", name: "Long Reads on NewsBlur", subtitle: "Deep reads the community gave real time to"},
-    {key: "good_reads", name: "Good Reads on NewsBlur", subtitle: "Stories readers finished, saved, and shared"},
-    {key: "global_shared", name: "Global Shared Stories", subtitle: "Hand-picked shares from across NewsBlur"}
+    {key: "top_stories", name: gettext("Top stories"), subtitle: gettext("The most important stories from your feeds")},
+    {key: "infrequent", name: gettext("From infrequent sites"), subtitle: gettext("Stories from feeds that rarely publish")},
+    {key: "long_read", name: gettext("Long reads for later"), subtitle: gettext("Longer articles worth setting time aside for")},
+    {key: "classifier_match", name: gettext("Based on your interests"), subtitle: gettext("Stories matching your trained topics and authors")},
+    {key: "follow_up", name: gettext("Follow-ups"), subtitle: gettext("New posts from feeds you recently read")},
+    {key: "widely_covered", name: gettext("Widely covered"), subtitle: gettext("Stories covered by 3+ feeds")},
+    {key: "widely_read", name: gettext("Widely Read on NewsBlur"), subtitle: gettext("What the NewsBlur community is reading")},
+    {key: "long_reads", name: gettext("Long Reads on NewsBlur"), subtitle: gettext("Deep reads the community gave real time to")},
+    {key: "good_reads", name: gettext("Good Reads on NewsBlur"), subtitle: gettext("Stories readers finished, saved, and shared")},
+    {key: "global_shared", name: gettext("Global Shared Stories"), subtitle: gettext("Hand-picked shares from across NewsBlur")}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
 
+// briefing_preferences_popover.js: Example keywords are only shown as placeholders and hints, so they are translated.
 NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES = [
-    'artificial intelligence',
-    'climate change',
-    'open source',
-    'electric vehicles',
-    'space exploration',
-    'cybersecurity',
-    'remote work',
-    'machine learning',
-    'renewable energy',
-    'supply chain',
-    'quantum computing',
-    'gene therapy',
-    'indie games',
-    'urban planning',
-    'book reviews',
-    'interest rates',
-    'browser engines',
-    'labor unions',
-    'nuclear fusion',
-    'food science',
-    'housing market',
-    'public transit',
-    'podcast industry',
-    'data privacy',
-    'autonomous vehicles',
-    'bird migration',
-    'film criticism',
-    'central banking',
-    'web standards',
-    'microplastics',
-    'board games',
-    'trade policy',
-    'dark matter',
-    'local elections',
-    'vintage computing',
-    'soil health',
-    'streaming wars',
-    'right to repair',
-    'coral reefs',
-    'typography'
+    gettext("artificial intelligence"),
+    gettext("climate change"),
+    gettext("open source"),
+    gettext("electric vehicles"),
+    gettext("space exploration"),
+    gettext("cybersecurity"),
+    gettext("remote work"),
+    gettext("machine learning"),
+    gettext("renewable energy"),
+    gettext("supply chain"),
+    gettext("quantum computing"),
+    gettext("gene therapy"),
+    gettext("indie games"),
+    gettext("urban planning"),
+    gettext("book reviews"),
+    gettext("interest rates"),
+    gettext("browser engines"),
+    gettext("labor unions"),
+    gettext("nuclear fusion"),
+    gettext("food science"),
+    gettext("housing market"),
+    gettext("public transit"),
+    gettext("podcast industry"),
+    gettext("data privacy"),
+    gettext("autonomous vehicles"),
+    gettext("bird migration"),
+    gettext("film criticism"),
+    gettext("central banking"),
+    gettext("web standards"),
+    gettext("microplastics"),
+    gettext("board games"),
+    gettext("trade policy"),
+    gettext("dark matter"),
+    gettext("local elections"),
+    gettext("vintage computing"),
+    gettext("soil health"),
+    gettext("streaming wars"),
+    gettext("right to repair"),
+    gettext("coral reefs"),
+    gettext("typography")
 ];
 
 NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
@@ -149,50 +150,50 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var selected_folder = sources.indexOf('folder:') === 0 ? sources.slice(7) : null;
 
         // briefing_preferences_popover.js: Folder-only chooser
-        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
+        var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, gettext("All Site Stories"), 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
         var sections = [
-            this.make_section('Auto-generate', 'Automatically generate briefings on schedule', [
+            this.make_section(gettext('Auto-generate'), gettext('Automatically generate briefings on schedule'), [
                 this.make_control('enabled', [
-                    ['true', 'On'],
-                    ['false', 'Off']
+                    ['true', gettext('On')],
+                    ['false', gettext('Off')]
                 ])
             ]),
-            this.make_section('How often', 'Schedule when your briefing is generated', [
+            this.make_section(gettext('How often'), gettext('Schedule when your briefing is generated'), [
                 this.make_control('frequency', [
-                    ['thrice_daily', '3x daily'],
-                    ['twice_daily', '2x daily'],
-                    ['daily', 'Daily'],
-                    ['weekly', 'Weekly']
+                    ['thrice_daily', gettext('3x daily')],
+                    ['twice_daily', gettext('2x daily')],
+                    ['daily', gettext('Daily')],
+                    ['weekly', gettext('Weekly')]
                 ]),
                 $.make('div', { className: 'NB-briefing-schedule-controls' }, [
                     this.make_control('preferred_time', [
-                        ['morning', 'Morning'],
-                        ['afternoon', 'Afternoon'],
-                        ['evening', 'Evening']
+                        ['morning', gettext('Morning')],
+                        ['afternoon', gettext('Afternoon')],
+                        ['evening', gettext('Evening')]
                     ]),
                     this.make_control('twice_daily_time', [
-                        ['afternoon', 'Morning + Afternoon'],
-                        ['evening', 'Morning + Evening']
+                        ['afternoon', gettext('Morning + Afternoon')],
+                        ['evening', gettext('Morning + Evening')]
                     ]),
                     this.make_control('thrice_daily_time', [
-                        ['morning', 'Morning'],
-                        ['afternoon', 'Afternoon'],
-                        ['evening', 'Evening']
+                        ['morning', gettext('Morning')],
+                        ['afternoon', gettext('Afternoon')],
+                        ['evening', gettext('Evening')]
                     ]),
                     this.make_control('preferred_day', [
-                        ['sun', 'Sun'],
-                        ['mon', 'Mon'],
-                        ['tue', 'Tue'],
-                        ['wed', 'Wed'],
-                        ['thu', 'Thu'],
-                        ['fri', 'Fri'],
-                        ['sat', 'Sat']
+                        ['sun', gettext('Sun')],
+                        ['mon', gettext('Mon')],
+                        ['tue', gettext('Tue')],
+                        ['wed', gettext('Wed')],
+                        ['thu', gettext('Thu')],
+                        ['fri', gettext('Fri')],
+                        ['sat', gettext('Sat')]
                     ])
                 ])
             ]),
-            this.make_section('Briefing length', 'Number of stories to include in each briefing', [
+            this.make_section(gettext('Briefing length'), gettext('Number of stories to include in each briefing'), [
                 this.make_control('story_count', [
                     ['10', 'S'],
                     ['15', 'M'],
@@ -200,20 +201,20 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                     ['25', 'XL']
                 ])
             ]),
-            this.make_section('Writing style', null, [
+            this.make_section(gettext('Writing style'), null, [
                 this.make_style_chooser()
             ]),
-            this.make_section('Source feeds', 'Choose which feeds are used to build your briefing', [
+            this.make_section(gettext('Source feeds'), gettext('Choose which feeds are used to build your briefing'), [
                 $.make('div', { className: 'NB-briefing-folder-chooser-container' }, [
                     $folder_chooser
                 ]),
                 this.make_icon_control('read_filter', [
-                    ['unread', 'Unread', 'NB-unread-icon'],
-                    ['focus', 'Focus', 'NB-focus-icon']
+                    ['unread', gettext('Unread'), 'NB-unread-icon'],
+                    ['focus', gettext('Focus'), 'NB-focus-icon']
                 ]),
                 this.make_control('include_read', [
-                    ['false', 'Unread only'],
-                    ['true', 'Include read']
+                    ['false', gettext('Unread only')],
+                    ['true', gettext('Include read')]
                 ])
             ]),
             this.make_sections_ui(),
@@ -229,8 +230,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // behind the popover overlay.
         if (NEWSBLUR.utils.is_briefing_preview()) {
             sections.unshift(NEWSBLUR.utils.make_archive_callout(
-                "Scheduled briefings require a Premium Archive subscription. On your plan, " +
-                "briefings are only generated when you use the Generate button.",
+                gettext("Scheduled briefings require a Premium Archive subscription. On your plan, briefings are only generated when you use the Generate button."),
                 {
                     on_upgrade: _.bind(function () {
                         this.close(function () {
@@ -366,12 +366,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             items.push(this.make_section_item(def, is_enabled));
         }, this));
 
-        var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
+        var $section = this.make_section(gettext('Sections'), gettext('Choose which sections appear in your briefing'), [
             $.make('div', { className: 'NB-briefing-sections' }, items)
         ]);
         $section.find('.NB-popover-section-label').append(
             $.make('div', { className: 'NB-briefing-notification-hint' },
-                'Drag to reorder priority. Only shown when matching stories are found.')
+                gettext('Drag to reorder priority. Only shown when matching stories are found.'))
         );
         return $section;
     },
@@ -389,11 +389,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
             items.push($.make('div', { className: 'NB-briefing-add-keyword-section', role: 'button' }, [
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add keyword section'
+                gettext('Add keyword section')
             ]));
         }
 
-        return this.make_section('Keyword sections', 'Add keyword filters that create their own briefing section. All keywords must match.', [
+        return this.make_section(gettext('Keyword sections'), gettext('Add keyword filters that create their own briefing section. All keywords must match.'), [
             $.make('div', { className: 'NB-briefing-sections NB-briefing-keyword-sections' }, items)
         ]);
     },
@@ -404,7 +404,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
             'data-section': def.key
         }, [
-            $.make('div', { className: 'NB-briefing-drag-handle', title: 'Drag to reorder' }, this.SVG_DRAG_HANDLE),
+            $.make('div', { className: 'NB-briefing-drag-handle', title: gettext('Drag to reorder') }, this.SVG_DRAG_HANDLE),
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('img', { className: 'NB-briefing-section-item-icon', src: icon_url }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
@@ -418,20 +418,20 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var STYLE_OPTIONS = [
             {
                 value: 'bullets',
-                name: 'Bullets',
-                subtitle: 'Concise bullet points highlighting key takeaways from each story',
+                name: gettext('Bullets'),
+                subtitle: gettext('Concise bullet points highlighting key takeaways from each story'),
                 icon: 'layout-magazine.svg'
             },
             {
                 value: 'editorial',
-                name: 'Editorial',
-                subtitle: 'Flowing narrative that connects stories into a readable digest',
+                name: gettext('Editorial'),
+                subtitle: gettext('Flowing narrative that connects stories into a readable digest'),
                 icon: 'paragraph.svg'
             },
             {
                 value: 'headlines',
-                name: 'Headlines',
-                subtitle: 'Just the headlines, no commentary',
+                name: gettext('Headlines'),
+                subtitle: gettext('Just the headlines, no commentary'),
                 icon: 'content-preview-m.svg'
             }
         ];
@@ -463,15 +463,15 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, [
-                    'Keyword section ' + index,
+                    interpolate(gettext("Keyword section %(value_1)s"), {value_1: index}, true),
                     $.make('img', {
                         className: 'NB-briefing-remove-custom-section',
                         'data-custom-index': index,
-                        title: 'Remove',
+                        title: gettext('Remove'),
                         src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/close.svg'
                     })
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Matches story titles containing all keywords')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, gettext('Matches story titles containing all keywords'))
             ])
         ]);
 
@@ -482,7 +482,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 type: 'text',
                 className: 'NB-briefing-custom-prompt-input',
                 'data-custom-index': index,
-                placeholder: 'e.g. ' + NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)],
+                placeholder: interpolate(gettext('e.g. %(example)s'), {example: NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES[Math.floor(Math.random() * NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES.length)]}, true),
                 value: prompt || ''
             }),
             $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
@@ -498,10 +498,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     make_hint_popover: function () {
         return $.make('div', { className: 'NB-briefing-section-hint-popover' }, [
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
-                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, gettext('Keyword Section')),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
-                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
+                    gettext('Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.')),
+                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, gettext('Examples')),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' },
                     _.shuffle(NEWSBLUR.BRIEFING_KEYWORD_EXAMPLES).slice(0, 4).map(function (ex) {
                         return $.make('li', ex);
@@ -749,7 +749,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             var new_index = idx + 1;
             var $el = $(this);
             $el.attr('data-section', 'custom_' + new_index);
-            $el.find('.NB-briefing-section-name').contents().first().replaceWith('Keyword section ' + new_index);
+            $el.find('.NB-briefing-section-name').contents().first().replaceWith(interpolate(gettext("Keyword section %(value_1)s"), {value_1: new_index}, true));
             $el.find('.NB-briefing-remove-custom-section').attr('data-custom-index', new_index);
             $el.find('.NB-briefing-custom-prompt-input').attr('data-custom-index', new_index);
         });
@@ -758,7 +758,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS && !$sections_container.find('.NB-briefing-add-keyword-section').length) {
             $sections_container.append($.make('div', { className: 'NB-briefing-add-keyword-section' }, [
                 $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add keyword section'
+                gettext('Add keyword section')
             ]));
         }
 
@@ -821,12 +821,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var space_above = icon_rect.top - 8;
         var place_above = space_below < popover_height && space_above > space_below;
 
-        $popover.css({
+        // briefing_preferences_popover.js: inline_end_alignment_css opens the popover toward the screen's middle in LTR and RTL.
+        $popover.css(_.extend({
             visibility: '',
-            display: '',
-            right: window.innerWidth - icon_rect.right,
-            left: 'auto'
-        });
+            display: ''
+        }, NEWSBLUR.utils.inline_end_alignment_css(icon_rect)));
         if (place_above) {
             $popover.css({ top: 'auto', bottom: (window.innerHeight - icon_rect.top + 8) + 'px' });
         } else {
@@ -865,8 +864,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var notification_types = this.prefs.notification_types || [];
 
         var items = _.map([
-            ['email', 'Email'],
-            ['web', 'Web'],
+            ['email', gettext('Email')],
+            ['web', gettext('Web')],
             ['ios', 'iOS'],
             ['android', 'Android']
         ], function (opt) {
@@ -885,7 +884,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             }, items)
         ];
 
-        var $section = this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+        var $section = this.make_section(gettext('Notifications'), gettext('Get notified when a new briefing is ready'), controls);
         // briefing_preferences_popover.js: Marker class so scroll_to: 'notifications' can find this section
         $section.addClass('NB-popover-section-notifications');
         return $section;
@@ -952,7 +951,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             }, items)
         ];
 
-        return this.make_section('AI Model', 'Choose which AI model writes your briefing', controls);
+        return this.make_section(gettext('AI Model'), gettext('Choose which AI model writes your briefing'), controls);
     },
 
     change_model: function (e) {

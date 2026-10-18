@@ -41,6 +41,7 @@ import com.newsblur.delegate.StoryMenuPopover
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.util.AppConstants
+import com.newsblur.util.BidiText
 import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.ReturnedStoryScrollDecider
 import com.newsblur.fragment.StoryIntelTrainerFragment
@@ -923,9 +924,17 @@ class StoryViewAdapter(
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                 gestureDebounce = false
                 gestureStoryHash = story?.storyHash
+                val pane = itemView.parent as? View
                 val paneOrigin = IntArray(2)
-                (itemView.parent as? View)?.getLocationOnScreen(paneOrigin)
-                edgeGesture = context is ItemsList && event.rawX - paneOrigin[0] < UIUtils.dp2px(context, 24)
+                pane?.getLocationOnScreen(paneOrigin)
+                // The back swipe owns the start edge, which is the right edge in right-to-left layouts.
+                val fromStartEdge =
+                    if (UIUtils.towardEndSign(context) < 0f) {
+                        paneOrigin[0] + (pane?.width ?: 0) - event.rawX
+                    } else {
+                        event.rawX - paneOrigin[0]
+                    }
+                edgeGesture = context is ItemsList && fromStartEdge < UIUtils.dp2px(context, 24)
             }
             if (edgeGesture || gestureStoryHash != story?.storyHash) {
                 rowSwipe.cancel()
@@ -1224,11 +1233,11 @@ class StoryViewAdapter(
 
         // dynamic spacing
         val verticalTitlePadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        val rightTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        val endTitlePadding = spacingStyle.getStoryContentRightPadding(context, thumbnailStyle)
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             verticalTitlePadding,
-            rightTitlePadding,
+            endTitlePadding,
             verticalTitlePadding,
         )
 
@@ -1312,7 +1321,8 @@ class StoryViewAdapter(
         if (TextUtils.isEmpty(story.authors)) {
             vh.storyAuthor.text = ""
         } else {
-            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, story.authors)
+            // StoryViewAdapter.kt isolates the author so the bullet stays between the date and the author in either direction.
+            vh.storyAuthor.text = vh.storyAuthor.context.getString(R.string.story_author, BidiText.isolate(story.authors))
         }
 
         val typography = StoryRowTypography.forScale(textSize)
@@ -1321,34 +1331,34 @@ class StoryViewAdapter(
         vh.storyAuthor.typeface = storyMediumTypeface
         vh.storySnippet.typeface = storyBookTypeface
 
-        val contentRightPadding =
+        val contentEndPadding =
             spacingStyle.getStoryContentRightPadding(
                 context,
                 if (showRightThumbnail) thumbnailStyle else ThumbnailStyle.OFF,
             )
         val titleVerticalPadding = spacingStyle.getStoryTitleVerticalPadding(context)
-        vh.storyTitleView.setPadding(
-            vh.storyTitleView.paddingLeft,
+        vh.storyTitleView.setPaddingRelative(
+            vh.storyTitleView.paddingStart,
             titleVerticalPadding,
-            contentRightPadding,
+            contentEndPadding,
             titleVerticalPadding,
         )
         val contentVerticalPadding = spacingStyle.getStoryContentVerticalPadding(context)
-        vh.storySnippet.setPadding(
-            vh.storySnippet.paddingLeft,
+        vh.storySnippet.setPaddingRelative(
+            vh.storySnippet.paddingStart,
             vh.storySnippet.paddingTop,
-            contentRightPadding,
+            contentEndPadding,
             contentVerticalPadding,
         )
-        vh.storyMetadata.setPadding(0, 0, contentRightPadding, 0)
+        vh.storyMetadata.setPaddingRelative(0, 0, contentEndPadding, 0)
 
         val verticalContainerMargin = spacingStyle.getStoryContainerMargin(context)
         val feedIconLp = vh.feedIconView.layoutParams as RelativeLayout.LayoutParams
-        feedIconLp.setMargins(feedIconLp.leftMargin, verticalContainerMargin, feedIconLp.rightMargin, feedIconLp.bottomMargin)
+        feedIconLp.topMargin = verticalContainerMargin
         val feedTitleLp = vh.feedTitleView.layoutParams as RelativeLayout.LayoutParams
-        feedTitleLp.setMargins(feedTitleLp.leftMargin, verticalContainerMargin, feedTitleLp.rightMargin, feedTitleLp.bottomMargin)
+        feedTitleLp.topMargin = verticalContainerMargin
         val metadataLp = vh.storyMetadata.layoutParams as RelativeLayout.LayoutParams
-        metadataLp.setMargins(metadataLp.leftMargin, metadataLp.topMargin, metadataLp.rightMargin, verticalContainerMargin)
+        metadataLp.bottomMargin = verticalContainerMargin
 
         if (!thumbnailStyle.isOff() && vh.thumbViewRight != null && vh.thumbViewLeft != null) {
             // the view will display a stale, recycled thumb before the new one loads if the old is not cleared
@@ -1431,9 +1441,9 @@ class StoryViewAdapter(
                         targetThumbView.setExpandedLayout(
                             layout.widthPx,
                             initialHeight,
-                            layout.leftMarginPx,
+                            layout.startMarginPx,
                             layout.topMarginPx,
-                            layout.rightMarginPx,
+                            layout.endMarginPx,
                             layout.bottomMarginPx,
                         )
                         vh.itemView.doOnLayout { itemView ->
@@ -1450,9 +1460,9 @@ class StoryViewAdapter(
                             targetThumbView.setExpandedLayout(
                                 layout.widthPx,
                                 targetHeight,
-                                layout.leftMarginPx,
+                                layout.startMarginPx,
                                 layout.topMarginPx,
-                                layout.rightMarginPx,
+                                layout.endMarginPx,
                                 layout.bottomMarginPx,
                             )
                             // RecyclerView suppresses requestLayout() during its layout pass,
@@ -1481,9 +1491,9 @@ class StoryViewAdapter(
                     thumbView?.setExpandedLayout(
                         layout.widthPx,
                         0,
-                        layout.leftMarginPx,
+                        layout.startMarginPx,
                         layout.topMarginPx,
-                        layout.rightMarginPx,
+                        layout.endMarginPx,
                         layout.bottomMarginPx,
                     )
                 }
@@ -1559,7 +1569,7 @@ class StoryViewAdapter(
             }
 
         vh.title.text = titleCache.get(clusterStory.title)
-        vh.date.text = StoryUtils.formatRelativeShortDate(clusterStory.timestamp)
+        vh.date.text = StoryUtils.formatRelativeShortDate(context, clusterStory.timestamp)
         vh.title.textSize = textSize * DEFAULT_TEXT_SIZE_STORY_SNIP
         vh.date.textSize = textSize * 10f
         StoryClusterBadgeViewBinder.bind(vh.badge, context, clusterStory.clusterTier, palette, false)

@@ -15,7 +15,7 @@ struct SearchTabView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
                 DiscoverSearchBarView(
-                    placeholder: "Site URL or search by name…",
+                    placeholder: NBLocalization.text("Site URL or search by name…"),
                     text: $viewModel.searchState.query,
                     isLoading: viewModel.searchState.isSearching,
                     onSubmit: { viewModel.searchAutocomplete(query: query) },
@@ -30,7 +30,7 @@ struct SearchTabView: View {
                         Button {
                             viewModel.addFeed(url: query)
                         } label: {
-                            Label(viewModel.isAdding ? "Adding site…" : "Add this site", systemImage: "plus.circle.fill")
+                            Label(viewModel.isAdding ? NBLocalization.text("Adding site…") : NBLocalization.text("Add this site"), systemImage: "plus.circle.fill")
                                 .font(.headline).frame(minHeight: 44)
                         }
                         .buttonStyle(.borderedProminent)
@@ -41,7 +41,7 @@ struct SearchTabView: View {
                 }
 
                 if query.isEmpty {
-                    Label("Trending Sites", systemImage: "waveform.path")
+                    Label(NBLocalization.text("Trending Sites"), systemImage: "waveform.path")
                         .font(.headline).foregroundColor(DiscoverColors.textPrimary)
                     feedGrid(viewModel.searchState.trendingFeeds)
                     DiscoverResultsStatusView(isLoading: viewModel.searchState.isTrendingLoading,

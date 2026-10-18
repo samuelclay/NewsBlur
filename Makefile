@@ -418,12 +418,13 @@ down:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
 stop: down
 nbdown: down
+# Makefile: local previews skip hosted fonts and leave production _site output intact.
 jekyll:
 	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
-	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
+	cd blog && JEKYLL_ENV=development bundle exec jekyll serve --config _config.yml --destination /tmp/newsblur-blog-preview
 jekyll_drafts:
 	-pkill -f "jekyll serve" 2>/dev/null; sleep 0.5
-	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --incremental --config _config.yml
+	cd blog && JEKYLL_ENV=development bundle exec jekyll serve --drafts --incremental --config _config.yml --destination /tmp/newsblur-blog-preview
 lint:
 	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
 	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*|\.claude/.*' .
@@ -573,6 +574,9 @@ deploy_task:
 	ansible-playbook ansible/deploy.yml -l task
 task: deploy_task
 celery: deploy_task
+# Makefile: deploy, celery and staging already migrate first (ansible/playbooks/deploy_migrate.yml); this runs only that step.
+deploy_migrate:
+	ansible-playbook ansible/deploy.yml -l app --tags migrate
 deploy_www:
 	ansible-playbook ansible/deploy.yml -l haproxy
 www: deploy_www

@@ -27,10 +27,10 @@ _.extend(NEWSBLUR.ReaderAuthLost.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-authlost NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
-                'Your cookie has expired — Please login again'
+                gettext('Your cookie has expired — Please login again')
             ]),
             $.make('div', { className: 'NB-authlost-group' }, [
-                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Reload NewsBlur')
+                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, gettext('Reload NewsBlur'))
             ])
         ]);
     },

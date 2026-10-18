@@ -1,0 +1,3 @@
+Antarmuka NewsBlur kini mendukung 21 bahasa. Pilih bahasa di aplikasi, dengan pratinjau dalam bahasa Anda dan Inggris. Arab dan Ibrani tampil dari kanan ke kiri. Artikel tetap seperti saat diterbitkan.
+
+Kontrol artikel berikutnya tetap di posisi yang sama, termasuk saat Berikutnya berubah menjadi Selesai. Tombol masuk lebih mudah dibaca dalam tema gelap.

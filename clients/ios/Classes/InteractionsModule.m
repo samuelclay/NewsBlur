@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  InteractionsModule.m
 //  NewsBlur
@@ -305,7 +306,7 @@
         [cell.contentView addSubview:fleuron];
         fleuron.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     } else {
-        cell.textLabel.text = @"Loading...";
+        cell.textLabel.text = [NBLocalization text:@"Loading..."];
 
         UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc]
                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];

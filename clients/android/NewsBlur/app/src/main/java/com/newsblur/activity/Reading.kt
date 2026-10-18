@@ -22,6 +22,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
@@ -211,10 +212,23 @@ private fun shouldInsertRestoredStoryBefore(
     }
 }
 
+/**
+ * Reading.kt works in story positions. ReadingAdapter.kt mirrors ViewPager's pages in right-to-left
+ * layouts (ReadingPageOrder.kt), so the pager's current item is always read and set through it.
+ */
+private val ViewPager.currentStoryPosition: Int
+    get() = (adapter as? ReadingAdapter)?.storyPositionForPage(currentItem) ?: currentItem
+
+private fun ViewPager.showStoryPosition(
+    position: Int,
+    smoothScroll: Boolean,
+) {
+    setCurrentItem((adapter as? ReadingAdapter)?.pageForStoryPosition(position) ?: position, smoothScroll)
+}
+
 @AndroidEntryPoint
 abstract class Reading :
     NbActivity(),
-    OnPageChangeListener,
     ScrollChangeListener,
     KeyboardListener {
     @Inject
@@ -426,7 +440,7 @@ abstract class Reading :
         val pagerStory = pagerReadingStory()
         logReaderRestore(
             "onSave storyHash=$storyHash active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
-                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1}",
         )
         val currentStoryForSave = currentReadingStory()
         if (storyHash != null) {
@@ -468,9 +482,9 @@ abstract class Reading :
         preparedPageNavigation?.resume()
         if (waitingForPreparedEntrance || preparedPageNavigation?.isPreparing == true) schedulePreparedLoading()
         if (waitingForPreparedEntrance) {
-            pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageNativeReady)
+            pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }?.let(::onReaderPageNativeReady)
         }
-        pager?.currentItem?.let { position ->
+        pager?.currentStoryPosition?.let { position ->
             if (readingAdapter?.getExistingItem(position)?.isArticleVisible() == true) {
                 readingAdapter?.getStory(position)?.storyHash?.let(::onReaderArticleVisible)
             }
@@ -531,7 +545,7 @@ abstract class Reading :
         logReaderRestore(
             "onTrimMemory level=$level scope=$releaseScope changing=$isChangingConfigurations " +
                 "active=${storyDebug(activeReadingStory())} pager=${storyDebug(pagerReadingStory())} " +
-                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1}",
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1}",
         )
         when (releaseScope) {
             ReaderWebViewReleaseScope.BACKGROUND_ONLY ->
@@ -553,6 +567,12 @@ abstract class Reading :
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
+        // TabletPaneDivider.kt changes only bounds; keep the current WebView and scroll position.
+        if (StorySplitView.isResizingPanes(this)) {
+            super.onConfigurationChanged(newConfig)
+            updateReaderFullscreenButton()
+            return
+        }
         cancelStoryDwell(clearStory = true)
         pendingConfigChangeRestore = captureReadingConfigChangeRestore()
         logReaderRestore(
@@ -616,10 +636,8 @@ abstract class Reading :
         traverseBar.setup()
         endControls = ReaderEndControls(
             binding.contentBottomOverlay,
-            binding.contentBottomOverlayInner,
             { if (parked) null else readingFragment?.traversalControlsSlot() },
             { setOverlayAlpha(toolbarVisibleFraction) },
-            shouldDock = { !prefsRepo.isReaderControlsAlwaysVisible() },
         )
         endControls?.start()
 
@@ -668,7 +686,7 @@ abstract class Reading :
         if (pager == null || readingAdapter == null) {
             null
         } else {
-            readingAdapter!!.getStory(pager!!.currentItem)
+            readingAdapter!!.getStory(pager!!.currentStoryPosition)
         }
 
     private fun restoreReadingAfterConfigurationChange() {
@@ -685,10 +703,10 @@ abstract class Reading :
             val restorePosition = adapter.findHash(restore.storyHash)
             logReaderRestore(
                 "restore post restore=${restoreDebug(restore)} position=$restorePosition " +
-                    "pagerIndex=${pager.currentItem} count=${adapter.count}",
+                    "pagerIndex=${pager.currentStoryPosition} count=${adapter.count}",
             )
             if (restorePosition >= 0) {
-                pager.setCurrentItem(restorePosition, false)
+                pager.showStoryPosition(restorePosition, false)
                 onPageSelected(restorePosition)
                 loadActiveStories()
             } else if (restore.story != null) {
@@ -731,7 +749,7 @@ abstract class Reading :
                         !parked &&
                         supportsPredictiveReaderBack() &&
                         isInteractiveReaderBackEnabled() &&
-                        backEvent.swipeEdge == BackEventCompat.EDGE_LEFT
+                        backEvent.swipeEdge == readerBackSwipeEdge()
                     if (predictiveBackInProgress) {
                         beginInteractiveReaderBackSwipe()
                     }
@@ -833,7 +851,7 @@ abstract class Reading :
                 "target=$storyHash targetInRaw=${storyHash?.let { target -> batch.stories.any { it.storyHash == target } }} " +
                 "restored=${storyDebug(restoredCurrentStory)} recent=${storyDebug(recentlyMarkedReadStory)} " +
                 "active=${storyDebug(activeStory)} " +
-                "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentItem ?: -1} " +
+                "pager=${storyDebug(pagerStory)} pagerIndex=${pager?.currentStoryPosition ?: -1} " +
                 "first=[${storiesDebug(stories)}]",
         )
         com.newsblur.util.Log
@@ -886,7 +904,7 @@ abstract class Reading :
                 "firstUnread=$lastBatchFirstUnreadIndex count=${readingAdapter?.count ?: -1}",
         )
         if (position >= 0) {
-            pager!!.setCurrentItem(position, false)
+            pager!!.showStoryPosition(position, false)
             onPageSelected(position)
             val restoreState = readingStateAfterPagerTargetFound(restoredCurrentStory)
             isRestoringState = restoreState.isRestoringState
@@ -946,7 +964,7 @@ abstract class Reading :
 
     fun onReaderPageVisualReady(readyStoryHash: String) {
         WebViewPrewarm.release()
-        val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
+        val activeHash = pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }
         if (fadeInSplitReader && activeHash == readyStoryHash) {
             binding.content.doOnPreDraw {
                 splitReaderStoryPainted = true
@@ -955,7 +973,7 @@ abstract class Reading :
         }
         if (preparedPageNavigation?.isPreparing == true && activeHash == readyStoryHash) {
             binding.content.doOnPreDraw {
-                val position = pager?.currentItem
+                val position = pager?.currentStoryPosition
                 if (!isFinishing && !isDestroyed && position != null &&
                     readingAdapter?.getStory(position)?.storyHash == readyStoryHash &&
                     readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
@@ -1076,11 +1094,11 @@ abstract class Reading :
     }
 
     fun onReaderPageNativeReady(readyStoryHash: String) {
-        val activeHash = pager?.currentItem?.let { readingAdapter?.getStory(it)?.storyHash }
+        val activeHash = pager?.currentStoryPosition?.let { readingAdapter?.getStory(it)?.storyHash }
         if (!shouldRevealPreparedReader(waitingForPreparedEntrance, storyHash, activeHash, readyStoryHash, readerIsPaused)) return
         // Reading.kt validates identity again after layout because the pager can change targets in this interval.
         interactiveBackSurface().doOnPreDraw {
-            val position = pager?.currentItem
+            val position = pager?.currentStoryPosition
             if (position != null && readingAdapter?.getStory(position)?.storyHash == readyStoryHash) {
                 revealPreparedEntrance("native_ready")
             }
@@ -1089,7 +1107,7 @@ abstract class Reading :
 
     fun onReaderArticleVisible(visibleStoryHash: String) {
         if (readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
-        val position = pager?.currentItem ?: return
+        val position = pager?.currentStoryPosition ?: return
         if (readingAdapter?.getStory(position)?.storyHash != visibleStoryHash) return
         if (!waitingForInitialArticle) return
         waitingForInitialArticle = false
@@ -1101,7 +1119,7 @@ abstract class Reading :
 
     private fun revealPreparedEntrance(reason: String) {
         if (reason != "native_ready" || !waitingForPreparedEntrance || readerIsPaused || isFinishing || isDestroyed || storyHash != null) return
-        val activePosition = pager?.currentItem ?: return
+        val activePosition = pager?.currentStoryPosition ?: return
         val activeHash = readingAdapter?.getStory(activePosition)?.storyHash ?: return
         val fragment = readingAdapter?.getExistingItem(activePosition) ?: return
         if (!fragment.isNativeHeaderReady(activeHash)) return
@@ -1117,7 +1135,7 @@ abstract class Reading :
         if (BuildConfig.DEBUG) {
             Log.d("NB.Reader", "entrance reason=$reason elapsed=${SystemClock.uptimeMillis() - preparedEntranceStartedAt}")
         }
-        surface.translationX = surface.width.toFloat()
+        surface.translationX = surface.width.toFloat() * UIUtils.towardEndSign(this)
         binding.root.alpha = 1f
         binding.root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         surface
@@ -1160,7 +1178,7 @@ abstract class Reading :
         val activePager = pager ?: return
         val adapter = readingAdapter ?: return
         val destination = adapter.getStory(position) ?: return
-        val sourcePosition = activePager.currentItem
+        val sourcePosition = activePager.currentStoryPosition
         val source = adapter.getStory(sourcePosition) ?: return
         val navigation = preparedPageNavigation ?: return
         if (!navigation.isActive) preparedPageStartedAt = SystemClock.uptimeMillis()
@@ -1171,7 +1189,7 @@ abstract class Reading :
             adapter.getExistingItem(position)?.isReadyForDisplay() == true
         ) {
             if (isHistoryBack) trimHistoryToStory(destination.storyHash)
-            activePager.setCurrentItem(position, true)
+            activePager.showStoryPosition(position, true)
             return
         }
         navigation.request(
@@ -1221,7 +1239,7 @@ abstract class Reading :
                 }
                 val position = readingAdapter?.findHash(target.storyHash) ?: -1
                 if (position >= 0) {
-                    pager.setCurrentItem(position, false)
+                    pager.showStoryPosition(position, false)
                     if (readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true) {
                         onReaderPageVisualReady(target.storyHash)
                     }
@@ -1269,6 +1287,24 @@ abstract class Reading :
         childFragmentManager: FragmentManager,
     ) {
         this.pager = pager
+        pager.addOnPageChangeListener(
+            object : OnPageChangeListener {
+                override fun onPageScrollStateChanged(state: Int) = this@Reading.onPageScrollStateChanged(state)
+
+                override fun onPageScrolled(
+                    page: Int,
+                    pageOffset: Float,
+                    pageOffsetPixels: Int,
+                ) = Unit
+
+                override fun onPageSelected(page: Int) {
+                    // ReadingAdapter.kt drops a mirrored pager's repeat of the current story after more stories load.
+                    val adapter = pager.adapter as? ReadingAdapter
+                    val position = if (adapter == null) page else adapter.storySelectionForPage(page) ?: return
+                    this@Reading.onPageSelected(position)
+                }
+            },
+        )
 
         // since it might start on the wrong story, create the pager as invisible
         pager.visibility = View.INVISIBLE
@@ -1293,7 +1329,7 @@ abstract class Reading :
         // if the first story in the list was "viewed" before the page change listener was set,
         // the calback was probably missed
         if (storyHash == null) {
-            onPageSelected(pager.currentItem)
+            onPageSelected(pager.currentStoryPosition)
         }
 
         updateOverlayNav()
@@ -1344,7 +1380,7 @@ abstract class Reading :
         }
 
         // update the current fragment
-        val currentPosition = pager?.currentItem ?: return
+        val currentPosition = pager?.currentStoryPosition ?: return
         val currentFragment = readingAdapter?.getExistingItem(currentPosition)
         currentFragment?.handleUpdate(updateType)
 
@@ -1357,22 +1393,15 @@ abstract class Reading :
         nextFragment?.let { if (it.shouldReceiveUpdateText(updateType)) it.handleUpdate(updateType) }
     }
 
-    // interface OnPageChangeListener
-    override fun onPageScrollStateChanged(arg0: Int) {
+    // Pager callbacks from offerPager, already translated from ViewPager's pages into story positions.
+    fun onPageScrollStateChanged(arg0: Int) {
         if (arg0 == ViewPager.SCROLL_STATE_DRAGGING) {
             cancelUnreadSearch()
             clearCurrentStoryPins()
         }
     }
 
-    override fun onPageScrolled(
-        arg0: Int,
-        arg1: Float,
-        arg2: Int,
-    ) {
-    }
-
-    override fun onPageSelected(position: Int) {
+    fun onPageSelected(position: Int) {
         if (parked || preparedPageNavigation?.isPreparing == true) return
         cancelStoryDwell(clearStory = true)
         val isRestoringSelection = isRestoringState
@@ -1425,7 +1454,7 @@ abstract class Reading :
 
             val alpha = when {
                 overlaysSuppressed -> 0f
-                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isDocked == true -> 1f
+                prefsRepo.isReaderControlsAlwaysVisible() || endControls?.isAtArticleEnd == true -> 1f
                 else -> a
             }
             UIUtils.setViewAlpha(binding.readingOverlayLeftGroup, alpha, true)
@@ -1718,8 +1747,8 @@ abstract class Reading :
             )
         snackbar.anchorView = binding.contentBottomOverlay
         val snackView = snackbar.view
-        val params = snackView.layoutParams as FrameLayout.LayoutParams
-        params.width = FrameLayout.LayoutParams.WRAP_CONTENT
+        val params = snackView.layoutParams as CoordinatorLayout.LayoutParams
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT
         params.gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
         snackView.layoutParams = params
         snackView.background =
@@ -1775,16 +1804,16 @@ abstract class Reading :
             if (readingAdapter == null || pager == null) {
                 null
             } else {
-                readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentItem)
+                readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
             }
 
     fun viewModeChanged() {
-        var frag = readingAdapter!!.getExistingItem(pager!!.currentItem)
+        var frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
         frag?.viewModeChanged()
         // fragments to the left or the right may have already preloaded content and need to also switch
-        frag = readingAdapter!!.getExistingItem(pager!!.currentItem - 1)
+        frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition - 1)
         frag?.viewModeChanged()
-        frag = readingAdapter!!.getExistingItem(pager!!.currentItem + 1)
+        frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition + 1)
         frag?.viewModeChanged()
         updateOverlayText()
     }
@@ -1860,7 +1889,7 @@ abstract class Reading :
 
     private fun requestedReadingPosition(): Int =
         preparedPageNavigation?.requestedTarget?.let { readingAdapter?.findHash(it.storyHash) }
-            ?.takeIf { it >= 0 } ?: pager?.currentItem ?: 0
+            ?.takeIf { it >= 0 } ?: pager?.currentStoryPosition ?: 0
 
     override fun onKeyUp(
         keyCode: Int,
@@ -1994,7 +2023,7 @@ abstract class Reading :
             RESULT_OK,
             Intent().apply {
                 putExtra(EXTRA_TOOLBAR_HIDDEN, toolbarVisibleFraction == 0f)
-                pager?.currentItem?.let { pagerPosition ->
+                pager?.currentStoryPosition?.let { pagerPosition ->
                     val visibleStory = currentReadingStory()
                     val position = visibleStory?.storyHash?.let { readingAdapter?.findHash(it) }
                         ?.takeIf { it >= 0 } ?: pagerPosition
@@ -2089,8 +2118,12 @@ abstract class Reading :
         if (width > 0) {
             clampedOffset = clampedOffset.coerceAtMost(width.toFloat())
         }
-        surface.translationX = clampedOffset
+        // The offset counts toward the end edge, so the reader slides left in right-to-left layouts.
+        surface.translationX = clampedOffset * UIUtils.towardEndSign(this)
     }
+
+    // Reading.kt follows the system back swipe from the start edge, the right edge in Arabic and Hebrew.
+    private fun readerBackSwipeEdge(): Int = if (UIUtils.towardEndSign(this) < 0f) BackEventCompat.EDGE_RIGHT else BackEventCompat.EDGE_LEFT
 
     private fun cancelInteractiveReaderBackSwipe() {
         animateInteractiveReaderBackSwipe(0f, finishWhenComplete = false)
@@ -2110,12 +2143,13 @@ abstract class Reading :
         preparedEntranceTimeout = null
         preparedEntranceLoading?.dismiss()
         preparedEntranceLoading = null
-        val targetTranslation =
+        val slideDistance =
             if (surface.width > 0) {
                 surface.width.toFloat()
             } else {
                 resources.displayMetrics.widthPixels.toFloat()
             }
+        val targetTranslation = slideDistance * UIUtils.towardEndSign(this)
         animateInteractiveReaderBackSwipe(targetTranslation, finishWhenComplete = true)
     }
 
@@ -2187,7 +2221,7 @@ abstract class Reading :
         logReaderRestore(
             "mismatch phase=$phase active=${storyDebug(activeStory)} pager=${storyDebug(pagerStory)} " +
                 "storyHash=$storyHash restored=${storyDebug(restoredCurrentStory)} " +
-                "pagerIndex=${pager?.currentItem ?: -1} count=${readingAdapter?.count ?: -1} " +
+                "pagerIndex=${pager?.currentStoryPosition ?: -1} count=${readingAdapter?.count ?: -1} " +
                 "mark=$markStoryReadBehavior loadNext=${prefsRepo.loadNextOnMarkRead()} fs=${feedSetDebug()}",
         )
     }
@@ -2246,7 +2280,8 @@ abstract class Reading :
 
                 MotionEvent.ACTION_MOVE -> {
                     trackMovement(event)
-                    val deltaX = event.rawX - downRawX
+                    // deltaX counts toward the end edge, so the swipe mirrors in right-to-left layouts.
+                    val deltaX = (event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)
                     val deltaY = event.rawY - downRawY
                     if (!isDragging &&
                         deltaX > touchSlopPx &&
@@ -2263,7 +2298,7 @@ abstract class Reading :
 
                 MotionEvent.ACTION_UP -> {
                     if (isDragging) {
-                        val totalDeltaX = (event.rawX - downRawX).coerceAtLeast(0f)
+                        val totalDeltaX = ((event.rawX - downRawX) * UIUtils.towardEndSign(this@Reading)).coerceAtLeast(0f)
                         val shouldComplete =
                             totalDeltaX >= view.rootView.width * READING_BACK_SWIPE_TRIGGER_RATIO ||
                                 getXVelocity() > minimumFlingVelocityPx * 4f
@@ -2299,7 +2334,7 @@ abstract class Reading :
         private fun getXVelocity(): Float {
             val tracker = velocityTracker ?: return 0f
             tracker.computeCurrentVelocity(1000)
-            return tracker.xVelocity
+            return tracker.xVelocity * UIUtils.towardEndSign(this@Reading)
         }
 
         private fun trackMovement(event: MotionEvent) {
@@ -2355,6 +2390,11 @@ abstract class Reading :
         // The most recently resumed reader. It outlives the story list beside it in a tablet split
         // across rotation, so ItemsList.java asks here rather than keeping its own reference.
         private var latestReaderRef = WeakReference<Reading>(null)
+
+        /** ItemsList.java waits for this task's reader to close before restoring feeds beside titles. */
+        @JvmStatic
+        fun peekReader(taskId: Int): Reading? =
+            latestReaderRef.get()?.takeIf { !it.isFinishing && !it.isDestroyed && it.taskId == taskId }
 
         /**
          * The reader showing in the reader pane of a tablet split in [taskId] (StorySplitView.kt),

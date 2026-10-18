@@ -1,0 +1,54 @@
+{
+  "reviewed_at": "2026-10-17T16:09:26Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-01.png",
+      "sha256": "527db9acf4aec57320ba1a09dbec01512138e132fc06e350070e8337bb41488c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-02.png",
+      "sha256": "84bbe4ff24feab037dd7898dde860e6aeb2411e984cb471293f0772408b34bf5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-03.png",
+      "sha256": "28f6f51ef0d0e1d7826b9d8baf820851bb2014eefd1faa8eeaa98be0cb68bcae",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/uk/tenInchScreenshots/panel-04.png",
+      "sha256": "8fa9592863a4d6d3d5b0b4a0871bdeca4667f35e90ebe0b711092b13fae000b1",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-01.png",
+      "sha256": "5e30e350feb628f44e85688f642587f89969d974ff93408b5e76df75d57131f6",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-02.png",
+      "sha256": "df56a6c00a93996155773a2913264dc2cb0181944a6ec7ac2cea7f555b55838e",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-03.png",
+      "sha256": "305e60389500551e87be4e4ea5c6739389d6c1167d93c573d70d8f9a6f654c94",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/hi/tenInchScreenshots/panel-04.png",
+      "sha256": "7ec165550a66762bf911a0015659bcfbb6d55532738b96b9f9d04c695c384f61",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Ukrainian and Hindi native titles, search, dates, saved state and navigation are localized and legible.",
+    "Cyrillic and Devanagari glyphs render without missing characters or clipping.",
+    "Populated native tablet split views contain no notification banners, outside marketing text or missing content.",
+    "The drawer scrim and dimmed read article reflect native state; original fictional article content intentionally remains English."
+  ],
+  "scope": "Eight ten-inch tablet still exports only; video playback and store readback are separate checks."
+}

@@ -1,0 +1,123 @@
+{
+  "packageName": "com.newsblur",
+  "capturedAt": "2026-10-17T22:04:14.346706+00:00",
+  "operation": "Verification only; fresh edit created and read; never committed or modified. Tracks, listings, products and binary uploads untouched.",
+  "readOnlyEdit": {
+    "id": "17774103804440302160",
+    "expiryTimeSeconds": "1792281852"
+  },
+  "canonicalLanguageCount": 21,
+  "listingLocalesChecked": [
+    "ar",
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "fr-FR",
+    "hi-IN",
+    "id",
+    "it-IT",
+    "iw-IL",
+    "ja-JP",
+    "ko-KR",
+    "nl-NL",
+    "pl-PL",
+    "pt-BR",
+    "ru-RU",
+    "th",
+    "tr-TR",
+    "uk",
+    "vi",
+    "zh-CN",
+    "zh-TW"
+  ],
+  "actualListingLocales": [
+    "ar",
+    "de-DE",
+    "en-US",
+    "es-ES",
+    "fr-FR",
+    "hi-IN",
+    "id",
+    "it-IT",
+    "iw-IL",
+    "ja-JP",
+    "ko-KR",
+    "nl-NL",
+    "pl-PL",
+    "pt-BR",
+    "ru-RU",
+    "th",
+    "tr-TR",
+    "uk",
+    "vi",
+    "zh-CN",
+    "zh-TW"
+  ],
+  "listingFieldsChecked": 63,
+  "subscriptionsChecked": [
+    {
+      "productId": "nb.premium.36",
+      "canonicalLocalesChecked": 21,
+      "actualLocaleCount": 21
+    },
+    {
+      "productId": "nb.premium.archive.99",
+      "canonicalLocalesChecked": 21,
+      "actualLocaleCount": 21
+    }
+  ],
+  "subscriptionFieldsChecked": 126,
+  "baseline": "clients/android/releases/16.0.1/proof/play-before.json",
+  "configurationChecks": [
+    "Subscription product IDs",
+    "All subscription fields except localized listings",
+    "One-time products",
+    "App details",
+    "All baseline listings including video URLs"
+  ],
+  "tracksObserved": [
+    {
+      "track": "production",
+      "releases": [
+        {
+          "name": "16.0.2",
+          "versionCodes": [
+            "294"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "track": "beta",
+      "releases": [
+        {
+          "name": "15.0.4",
+          "versionCodes": [
+            "289"
+          ],
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "track": "alpha",
+      "releases": []
+    },
+    {
+      "track": "internal",
+      "releases": [
+        {
+          "name": "175 (10.1b7)",
+          "versionCodes": [
+            "175"
+          ],
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "mismatchCount": 0,
+  "mismatches": [],
+  "passed": true
+}

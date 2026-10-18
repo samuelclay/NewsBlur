@@ -1,0 +1,53 @@
+{
+  "reviewed_at": "2026-10-17T15:56:34Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-01.png",
+      "sha256": "f082360208df41f0553c1dc4fc28d337b94a92ca32aeeccddab39f1f7d87f2bb",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-02.png",
+      "sha256": "a8e08cb41ccac8f82c40f31fc5718609cb08df3c6fa1a71844f6759909b2df62",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-03.png",
+      "sha256": "19c906deb47c00c3f1797b4c0b1bc799597f5675d6a0551e3bdfc295cd785cef",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ar/tenInchScreenshots/panel-04.png",
+      "sha256": "3a955c89da226c42d8d21f12771facf5df7fbddb6b1093e8368828a4b56806fe",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-01.png",
+      "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-02.png",
+      "sha256": "1a2ad8550025dc1b78300e5d74a7073d8e6128d43f9c2ad1c891d24298cde494",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-03.png",
+      "sha256": "8cd01af6fdad1ec8cd00b46fad985e17b3d991d736aa826d2452044a591d4790",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/he/tenInchScreenshots/panel-04.png",
+      "sha256": "e9f0358a2f8367499bd34f75ab360e3e087177ac96a6640ea458ada78e84e885",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Arabic and Hebrew ten-inch native layouts show right-side feed drawers and mirrored list rows, headers, navigation and action controls.",
+    "All eight images are populated, readable, correctly localized and free of notification banners.",
+    "Article English text retains LTR reading direction; app-native selected read-story dimming and drawer scrim are expected."
+  ],
+  "scope": "Eight ten-inch tablet stills only."
+}

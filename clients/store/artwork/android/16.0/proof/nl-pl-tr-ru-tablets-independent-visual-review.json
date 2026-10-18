@@ -1,0 +1,154 @@
+{
+  "reviewed_at": "2026-10-17T15:50:27Z",
+  "reviewer": "play_asset_inventory",
+  "status": "passed",
+  "assets": [
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-01.png",
+      "sha256": "db259bacb6bdb50e0904eb8ba0a70f6df0d4fcfed36743a00e4d2367fe253fb3",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-02.png",
+      "sha256": "a8d2f058c0a7b6f14873ca7c8cb7c27cedf867b8794207a02bc6d12d6cb5d699",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-03.png",
+      "sha256": "c869bbe336364c258fdb05e7984bbea6a890cba38884dac4119fdf543b6f2718",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/en/sevenInchScreenshots/panel-04.png",
+      "sha256": "d7fefbc3a00b7cdf5cd1405e879715b3724b97a0e1fb1be69f54b27ff8940958",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-01.png",
+      "sha256": "6054d261f7936d690afb57986ac10983b925e380fa15d9b2d28a3439cccf6fa5",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-02.png",
+      "sha256": "6fef2fbfa9ff6ea3d33d1777183dd5bab95576d01af470261d2872550a7a6ea3",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-03.png",
+      "sha256": "5e4256a7cfed8c7b0c66d21f7d3021bb450f19eccf5deb709b667a45f0527714",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/fr/tenInchScreenshots/panel-04.png",
+      "sha256": "738bb3065f36cac171348a2167b1c9a7673568f8bf34bac11e72ab4e137869b8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/nl/featureGraphic/panel-01.png",
+      "sha256": "154ee922833cd8c562463e4ba85b4a609ca6b951e0a25cd2996bb96a8b9f07e4",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-01.png",
+      "sha256": "0df8c53e6e0bd5fe748d20f98f7f2a52a57b1abaf3c0ae130561cd08566bb591",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-02.png",
+      "sha256": "97354148fffb88f0809a03760d82fdfd7131b9bbe5cf89a9b24b4c907977db3b",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-03.png",
+      "sha256": "15d010fc3bbd0b82e1d08f4d2e6f6ea4fb3896c40adf0f1d66b854cdd8db500a",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/nl/phoneScreenshots/panel-04.png",
+      "sha256": "bdbf79b202fb12018af9a282b90024bdcd59f10b58f9da20490188d604937c6d",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/featureGraphic/panel-01.png",
+      "sha256": "fa602a08d5fa82f3c842cf86a54457e682a4ce91a1b6aada6627994dd968efe3",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-01.png",
+      "sha256": "99cb4f30f0f296ce248773b3e72573af59ccf3ba1a0d1ba62f07e537d3410295",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-02.png",
+      "sha256": "80b78e8441048359f35e5f0c6daca36fd83ececcb82f45a4d782bf71e7eab766",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-03.png",
+      "sha256": "3f590451122222cb86efa161456099f576d16072e8375923ff8c66c48cefafaa",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/pl/phoneScreenshots/panel-04.png",
+      "sha256": "2b3b3a26f424775e6028b1d01eccec93522033363e95c14d75e4a29afb1a955f",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/featureGraphic/panel-01.png",
+      "sha256": "6312fc7d312a28fdea7caa6ea7addf96c57a93636fb7d6354743242c9547a5f8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-01.png",
+      "sha256": "2afc07a880f180205d7e2a7b8805953cebaa133522c359af323f4eb6ea336447",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-02.png",
+      "sha256": "04a5ebe0d92adccb4a0fdaea327acf2e06e843706e2943cd0c89ea8a9d8dd038",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-03.png",
+      "sha256": "dd9bcde03a0753dd8a2715d8e7b248ba1cbd8fa89c10b02db52d91ad8fccb20c",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/ru/phoneScreenshots/panel-04.png",
+      "sha256": "f5474273cfbdd591c7bf3a4abdfa73f8919bbd0440d8107b754902fb98fe2d17",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/featureGraphic/panel-01.png",
+      "sha256": "9c26440e4350674b2037c726b35e0c57372480d6a01a2f6e273cc0419fdda2da",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-01.png",
+      "sha256": "48c8bd5cde451474e7eadbcecdbb5d6a625157a794fa6d68e74a657feb77e5da",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-02.png",
+      "sha256": "d2aca130529b59a6f1a21f5c697d7a663b0fad641aacd9eabdcb0117dc196cac",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-03.png",
+      "sha256": "fcc1e7e803adc8aaa5bf35a2e2c4c274a3c02766eec766e1e3da1885ca6fdab8",
+      "review": "visually inspected"
+    },
+    {
+      "path": "exports/tr/phoneScreenshots/panel-04.png",
+      "sha256": "1244453169c95e6eda1bb61b1409ec9e294b55a08bd452b29675bed4920a2c85",
+      "review": "visually inspected"
+    }
+  ],
+  "findings": [
+    "Dutch, Polish, Turkish and Russian captions fit and preserve intended meaning; native controls are localized without missing glyphs.",
+    "English 7-inch portrait and French 10-inch landscape show genuine populated split views with no invented device framing or extra text.",
+    "Tablet story and reader panels show nearly identical split views; optional variety improvement, not a rendering or language defect.",
+    "Turkish feeds shows a genuine sync-complete badge. English story content, feed names and system status-bar date intentionally remain unchanged."
+  ],
+  "scope": "20 phone and feature images plus eight tablet images; store upload and video playback remain separate."
+}

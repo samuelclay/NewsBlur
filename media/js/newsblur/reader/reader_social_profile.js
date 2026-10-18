@@ -40,7 +40,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('div', { className: 'NB-profile-info-header' }, $(this.$profile)),
             $.make('fieldset', { className: 'NB-profile-section NB-profile-section-activities' }, [
-                $.make('legend', 'Recent interactions'),
+                $.make('legend', gettext('Recent interactions')),
                 $.make('div', { className: 'NB-profile-activities' })
             ]),
             $.make('div', { className: 'NB-profile-section' }, [
@@ -48,15 +48,15 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                     $.make('tr', [
                         $.make('td', { className: 'NB-profile-follow-count' }, [
                             $.make('div', { className: 'NB-profile-following-count' }, this.profile.get('following_count')),
-                            $.make('h3', 'Following')
+                            $.make('h3', gettext('Following'))
                         ]),
                         $.make('td', [
                             $.make('fieldset', [
-                                $.make('legend', 'People you know'),
+                                $.make('legend', gettext('People you know')),
                                 $.make('div', { className: 'NB-modal-section NB-profile-following-youknow' })
                             ]),
                             $.make('fieldset', [
-                                $.make('legend', 'Everybody'),
+                                $.make('legend', gettext('Everybody')),
                                 $.make('div', { className: 'NB-modal-section NB-profile-following-everybody' })
                             ])
                         ])
@@ -68,15 +68,15 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                     $.make('tr', [
                         $.make('td', { className: 'NB-profile-follow-count' }, [
                             $.make('div', { className: 'NB-profile-follower-count' }, this.profile.get('followers_count')),
-                            $.make('h3', 'Followers')
+                            $.make('h3', gettext('Followers'))
                         ]),
                         $.make('td', [
                             $.make('fieldset', [
-                                $.make('legend', 'People you know'),
+                                $.make('legend', gettext('People you know')),
                                 $.make('div', { className: 'NB-modal-section NB-profile-followers-youknow' })
                             ]),
                             $.make('fieldset', [
-                                $.make('legend', 'Everybody'),
+                                $.make('legend', gettext('Everybody')),
                                 $.make('div', { className: 'NB-modal-section NB-profile-followers-everybody' })
                             ])
                         ])

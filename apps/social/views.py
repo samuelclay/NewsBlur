@@ -14,16 +14,12 @@ from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.http import (
-    Http404,
-    HttpResponse,
-    HttpResponseForbidden,
-    HttpResponseRedirect,
-)
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import feedgenerator
+from django.utils.translation import gettext
 from mongoengine.queryset import NotUniqueError
 
 from apps.analyzer.models import (
@@ -129,10 +125,7 @@ def load_social_stories(request, user_id, username=None):
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     # Normalize date filters from user timezone to UTC
-    from apps.reader.views import (
-        adjust_read_filter_for_date_range,
-        normalize_date_filters,
-    )
+    from apps.reader.views import adjust_read_filter_for_date_range, normalize_date_filters
     from utils import log as logging_util
 
     date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
@@ -404,7 +397,7 @@ def load_river_blurblog(request):
     if relative_user_id and not global_feed:
         relative_user_id = int(relative_user_id)
         if relative_user_id != user.pk:
-            return json.json_response(request, {"code": -1, "message": "Access denied."})
+            return json.json_response(request, {"code": -1, "message": gettext("Access denied.")})
     elif not relative_user_id:
         relative_user_id = user.pk
 
@@ -423,10 +416,7 @@ def load_river_blurblog(request):
     limit = page * limit - 1
 
     # Normalize date filters from user timezone to UTC
-    from apps.reader.views import (
-        adjust_read_filter_for_date_range,
-        normalize_date_filters,
-    )
+    from apps.reader.views import adjust_read_filter_for_date_range, normalize_date_filters
 
     date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
         date_filter_start, date_filter_end, user.profile.timezone
@@ -872,7 +862,7 @@ def story_public_comments(request):
     if relative_user_id:
         relative_user_id = int(relative_user_id)
         if relative_user_id != current_user.pk:
-            return json.json_response(request, {"code": -1, "message": "Access denied."})
+            return json.json_response(request, {"code": -1, "message": gettext("Access denied.")})
     else:
         relative_user_id = current_user.pk
 
@@ -881,7 +871,7 @@ def story_public_comments(request):
         return json.json_response(
             request,
             {
-                "message": "Story not found.",
+                "message": gettext("Story not found."),
                 "code": -1,
             },
         )
@@ -931,13 +921,17 @@ def mark_story_as_shared(request):
     if not story:
         return json.json_response(
             request,
-            {"code": -1, "message": "Could not find the original story and no copies could be found."},
+            {
+                "code": -1,
+                "message": gettext("Could not find the original story and no copies could be found."),
+            },
         )
 
     feed = Feed.get_by_id(feed_id)
     if feed and feed.is_newsletter:
         return json.json_response(
-            request, {"code": -1, "message": "You cannot share newsletters. Somebody could unsubscribe you!"}
+            request,
+            {"code": -1, "message": gettext("You cannot share newsletters. Somebody could unsubscribe you!")},
         )
 
     if not request.user.profile.is_premium and MSharedStory.feed_quota(
@@ -947,7 +941,9 @@ def mark_story_as_shared(request):
             request,
             {
                 "code": -1,
-                "message": "Only premium users can share multiple stories per day from the same site.",
+                "message": gettext(
+                    "Only premium users can share multiple stories per day from the same site."
+                ),
             },
         )
 
@@ -1007,7 +1003,9 @@ def mark_story_as_shared(request):
                 request,
                 {
                     "code": -1,
-                    "message": "Story already shared but then not shared. I don't really know. Did you submit this twice very quickly?",
+                    "message": gettext(
+                        "Story already shared but then not shared. I don't really know. Did you submit this twice very quickly?"
+                    ),
                 },
             )
         if source_user_id:
@@ -1104,7 +1102,10 @@ def mark_story_as_unshared(request):
     if not story:
         return json.json_response(
             request,
-            {"code": -1, "message": "Could not find the original story and no copies could be found."},
+            {
+                "code": -1,
+                "message": gettext("Could not find the original story and no copies could be found."),
+            },
         )
 
     shared_story = (
@@ -1113,7 +1114,7 @@ def mark_story_as_unshared(request):
         .first()
     )
     if not shared_story:
-        return json.json_response(request, {"code": -1, "message": "Shared story not found."})
+        return json.json_response(request, {"code": -1, "message": gettext("Shared story not found.")})
 
     shared_story.unshare_story()
 
@@ -1141,7 +1142,7 @@ def mark_story_as_unshared(request):
             request,
             {
                 "code": 1,
-                "message": "Story unshared.",
+                "message": gettext("Story unshared."),
                 "story": stories[0],
                 "user_profiles": profiles,
             },
@@ -1175,7 +1176,7 @@ def save_comment_reply(request):
             request,
             {
                 "code": -1,
-                "message": "Reply comments cannot be empty.",
+                "message": gettext("Reply comments cannot be empty."),
             },
         )
 
@@ -1199,7 +1200,7 @@ def save_comment_reply(request):
             request,
             {
                 "code": -1,
-                "message": "Shared story cannot be found.",
+                "message": gettext("Shared story cannot be found."),
             },
         )
 
@@ -1392,14 +1393,14 @@ def profile(request):
     try:
         user_id = int(request.GET.get("user_id", user.pk))
     except (ValueError, TypeError):
-        return json.json_response(request, {"code": -1, "message": "Invalid user_id parameter."})
+        return json.json_response(request, {"code": -1, "message": gettext("Invalid user_id parameter.")})
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 
     try:
         social_profile = MSocialProfile.get_user(user_id)
     except User.DoesNotExist:
-        return json.json_response(request, {"code": -1, "message": "User not found."})
+        return json.json_response(request, {"code": -1, "message": gettext("User not found.")})
     social_profile.count_follows()
 
     activities = []
@@ -1505,7 +1506,7 @@ def upload_avatar(request):
     # required_params can't reach request.FILES, so check the upload by hand.
     photo = request.FILES.get("photo")
     if not photo:
-        return {"code": -1, "message": "Missing parameter: photo"}
+        return {"code": -1, "message": gettext("Missing parameter: photo")}
 
     profile = MSocialProfile.get_user(request.user.pk)
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
@@ -1780,7 +1781,7 @@ def like_comment(request):
 
     if comment_user_id == request.user.pk:
         return json.json_response(
-            request, {"code": -1, "message": "You cannot favorite your own shared story comment."}
+            request, {"code": -1, "message": gettext("You cannot favorite your own shared story comment.")}
         )
 
     try:
@@ -1788,7 +1789,9 @@ def like_comment(request):
             user_id=comment_user_id, story_feed_id=feed_id, story_guid=story_id
         )
     except MSharedStory.DoesNotExist:
-        return json.json_response(request, {"code": -1, "message": "The shared comment cannot be found."})
+        return json.json_response(
+            request, {"code": -1, "message": gettext("The shared comment cannot be found.")}
+        )
 
     shared_story.add_liking_user(request.user.pk)
     comment, profiles = shared_story.comment_with_author_and_profiles()
@@ -2057,7 +2060,7 @@ def load_interactions(request):
     else:
         user_id = int(user_id)
         if user_id != request.user.pk:
-            return json.json_response(request, {"code": -1, "message": "Access denied."})
+            return json.json_response(request, {"code": -1, "message": gettext("Access denied.")})
     page = max(1, int(request.GET.get("page", 1)))
     limit = request.GET.get("limit")
     interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit, categories=categories)

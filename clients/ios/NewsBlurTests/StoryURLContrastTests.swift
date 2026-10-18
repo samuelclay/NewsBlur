@@ -39,7 +39,7 @@ import XCTest
         <html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>\(base)</style><style>\(theme)</style></head>
         <body><div class="NB-header"><div class="NB-story-title">Tom's Hardware: Micron announces new memory modules</div>\(rows)</div></body></html>
         """, baseURL: Bundle.main.bundleURL)
-        await fulfillment(of: [ready], timeout: 10)
+        await fulfillment(of: [ready], timeout: SimulatorTestTiming.realWorkTimeout)
         let styles = try await web.evaluateJavaScript("""
         Array.from(document.querySelectorAll('.NB-story-url')).map(pill => ({
           score: pill.className,

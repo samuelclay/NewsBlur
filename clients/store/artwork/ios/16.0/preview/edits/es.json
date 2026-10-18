@@ -1,0 +1,43 @@
+{
+  "locale": "es",
+  "devices": {
+    "ipad": {
+      "source_ui_locale": "es",
+      "source_sha256": "e3b00d7bbd43b4f71b8d58170e6539d34d825dfdebe947fa451ef99cbbe382a6",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        18,
+        34,
+        46.2
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Native Spanish iPad UI. Includes actual article scrolling and brief navigation into Saved Stories. Ends on the settled collection before the later article-selection animation."
+    },
+    "iphone": {
+      "source_ui_locale": "es",
+      "source_sha256": "28c9eaf2341421f40340be856b5502407815fa5d98c2b77b6fcaeb973b01e1ec",
+      "source_intervals_reviewed": true,
+      "starts": [
+        4,
+        14,
+        28,
+        40
+      ],
+      "durations": [
+        4,
+        5,
+        7,
+        4
+      ],
+      "notes": "Fresh native Spanish iPhone capture after simulator restart. Includes actual article scroll and settled four-item Saved collection; all content and thumbnails loaded."
+    }
+  },
+  "status": "encoded_sampled_visual_review_passed",
+  "remaining": "Normal-speed playback and store upload pending; each device status is recorded in exports/manifest.json."
+}

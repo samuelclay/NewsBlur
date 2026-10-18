@@ -1,0 +1,680 @@
+{
+  "version": "16.0",
+  "build": 343,
+  "removed_submission_id": "7d9b11c7-4321-47a3-a56c-57c0c21edb67",
+  "status": "removed_from_review_preparing_assets",
+  "removed_items": [
+    "iOS App 16.0",
+    "NewsBlur Premium Archive Subscription",
+    "NewsBlur Premium Subscription 36",
+    "NewsBlur Premium Pro Subscription",
+    "newsblur_premium_subscription"
+  ],
+  "evidence": "proof/ios16-removed.jpg",
+  "requirements": {
+    "languages": 21,
+    "header_and_search": "approved_assets_prepared",
+    "main_screenshots": "all_252_sage_screenshots_uploaded_verified_across_21_languages",
+    "app_preview_video": "authorized_preparation_in_progress"
+  },
+  "automatic_release_after_approval": true,
+  "main_creative_attachments": {
+    "verified_complete_languages": [
+      "fr",
+      "de",
+      "nl",
+      "it",
+      "es",
+      "pt-BR",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "ar",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "verified_header_only": [],
+    "remaining_languages": [
+      "en"
+    ],
+    "note": "All 20 non-English header/search pairs verified after a full page reload and explicit locale selection. English still returns An error has occurred. Try again later. after explicitly switching French to English and selecting the library header. Primary-locale workaround did not resolve it.",
+    "persistence_status": "all_20_non_english_verified_english_save_failing",
+    "previously_observed_unverified_languages": [
+      "en",
+      "ar",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "save_error_proof": "proof/main-artwork-save-error.jpg",
+    "assigned_pending_readback_languages": [],
+    "verified_proof": "proof/fr-main-search-persisted.jpg",
+    "readback_evidence": "proof/non-english-creative-readback.json"
+  },
+  "capture_status": "All 21 supported languages have verified native iPhone and iPad captures. All 252 final screenshots are rendered, reviewed and staged: 168 iPhone PNGs across 1320x2868 and 1206x2622, plus 84 iPad PNGs at 2064x2752. The last 15 iPhone languages used isolated iPhone 18 Pro Max / iOS 27 simulator 7DC67F2D-270D-4798-917A-105C5BCB00DE with the existing 16.0 (343) build. That simulator is shut down. This batch captured stills only; preview footage status is unchanged. Capture provenance is committed at 343652d24. Final inventory verified 21 languages, 63 complete sets, zero pending sets, and matching exported/staged PNG SHA-256 values against validation records. All 252 main screenshot placements now verified in App Store Connect after full reload and explicit locale selection.",
+  "progress_proof": "proof/main-artwork-partial.jpg",
+  "main_screenshot_uploads": {
+    "en": {
+      "size": "1206x2622",
+      "asset_library_files": [
+        "panel-1.png",
+        "panel-2.png",
+        "panel-3.png",
+        "panel-4.png"
+      ],
+      "placement_status": "persisted_after_full_reload",
+      "note": "Removed obsolete legacy placements through Media Manager while retaining library files. This revealed duplicated medium iPhone uploads. Replaced all three current sets with exactly four uniquely named approved Sage panels each; verified filenames and counts after full reload. Cleared older English device overrides for inheritance.",
+      "native_retry": {
+        "files": [
+          "newsblur-16.0-en-1206x2622-01.png",
+          "newsblur-16.0-en-1206x2622-02.png",
+          "newsblur-16.0-en-1206x2622-03.png",
+          "newsblur-16.0-en-1206x2622-04.png"
+        ],
+        "initial_result": "Two displayed, two returned An error occurred during upload",
+        "after_full_reload": "0 of 10 App Screenshots",
+        "proof": "proof/en-native-upload-error.jpg"
+      },
+      "diagnosis": {
+        "error": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED",
+        "visible_records": 50,
+        "total_records": 81,
+        "note": "All visible records are legacy groups. The modern medium group already contains ten placements; zero in UI did not establish failed persistence. Remove obsolete draft placements through UI, then inspect and deduplicate modern sets.",
+        "proof": [
+          "proof/en-placement-limit-errors.json",
+          "proof/en-placement-pagination.json"
+        ]
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "proof": [
+        "proof/en-iphone-screenshots-persisted.jpg",
+        "proof/en-ipad-screenshots-persisted.jpg"
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/en-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/en-ipad-reloaded.txt"
+      }
+    },
+    "fr": {
+      "size": "1206x2622",
+      "asset_library_files": [
+        "newsblur-16.0-fr-1206x2622-01.png",
+        "newsblur-16.0-fr-1206x2622-02.png",
+        "newsblur-16.0-fr-1206x2622-03.png",
+        "newsblur-16.0-fr-1206x2622-04.png"
+      ],
+      "placement_status": "persisted_after_full_reload",
+      "proof": "proof/fr-main-screenshots-persisted.jpg",
+      "note": "Four reviewed Sage panels uploaded through native picker; all four filenames and 4 of 10 count verified after full reload and explicitly reselecting French.",
+      "additional_sizes": {
+        "2064x2752": {
+          "placement_status": "persisted_after_full_reload",
+          "count": 4,
+          "proof": "proof/fr-ipad-screenshots-persisted.jpg"
+        },
+        "1320x2868": {
+          "placement_status": "persisted_after_full_reload",
+          "count": 4,
+          "proof": "proof/fr-large-screenshots-persisted.jpg"
+        }
+      },
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/fr-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/fr-ipad-reloaded.txt"
+      }
+    },
+    "ar": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "proof": [
+        "proof/ar-iphone-screenshots-persisted.jpg",
+        "proof/ar-ipad-screenshots-persisted.jpg"
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ar-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ar-ipad-reloaded.txt"
+      }
+    },
+    "de": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "proof": [
+        "proof/de-iphone-screenshots-persisted.jpg",
+        "proof/de-ipad-screenshots-persisted.jpg"
+      ],
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/de-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/de-ipad-reloaded.txt"
+      }
+    },
+    "he": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/he-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/he-ipad-reloaded.txt"
+      }
+    },
+    "pl": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "note": "Both iPhone sizes verified after authenticated full reload with exact filenames and counts.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pl-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pl-ipad-reloaded.txt"
+      }
+    },
+    "es": {
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "note": "After a full Media Manager reload, explicitly selected this locale and read all four uniquely named screenshot filenames and the four-of-ten count.",
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/es-iphone-reloaded.txt"
+      },
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/es-ipad-reloaded.txt"
+      }
+    },
+    "it": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/it-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/it-ipad-reloaded.txt"
+      }
+    },
+    "nl": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/nl-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/nl-ipad-reloaded.txt"
+      }
+    },
+    "pt-BR": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pt-BR-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/pt-BR-ipad-reloaded.txt"
+      }
+    },
+    "ru": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ru-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ru-ipad-reloaded.txt"
+      }
+    },
+    "tr": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/tr-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/tr-ipad-reloaded.txt"
+      }
+    },
+    "uk": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/uk-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/uk-ipad-reloaded.txt"
+      }
+    },
+    "hi": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/hi-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/hi-ipad-reloaded.txt"
+      }
+    },
+    "id": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/id-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/id-ipad-reloaded.txt"
+      }
+    },
+    "vi": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/vi-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/vi-ipad-reloaded.txt"
+      }
+    },
+    "th": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/th-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/th-ipad-reloaded.txt"
+      }
+    },
+    "ja": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ja-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ja-ipad-reloaded.txt"
+      }
+    },
+    "ko": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ko-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/ko-ipad-reloaded.txt"
+      }
+    },
+    "zh-Hans": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hans-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hans-ipad-reloaded.txt"
+      }
+    },
+    "zh-Hant": {
+      "iphone_readback": {
+        "sizes": [
+          "1206x2622",
+          "1320x2868"
+        ],
+        "count": 8,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hant-iphone-reloaded.txt"
+      },
+      "sizes": [
+        "1206x2622",
+        "1320x2868",
+        "2064x2752"
+      ],
+      "count_per_size": 4,
+      "placement_status": "persisted_after_full_reload",
+      "ipad_readback": {
+        "size": "2064x2752",
+        "count": 4,
+        "placement_status": "persisted_after_full_reload",
+        "proof": "proof/zh-Hant-ipad-reloaded.txt"
+      }
+    }
+  },
+  "app_preview_status": "All available native footage is prepared: 27 videos (all 21 iPad languages and six iPhone languages) pass technical checks, full-timeline sampled visual review, and source/output/copy SHA audit. Ten have passed normal-speed playback and are staged; seventeen remain playback pending. Fifteen iPhone videos await native capture. French iPhone placement verified saved; Hebrew iPad upload awaits reload readback. Other uploads remain paused.",
+  "app_preview_uploads": {
+    "fr": {
+      "iphone": {
+        "placement_status": "persisted_after_full_reload",
+        "count": 1,
+        "proof": "proof/fr-preview-persisted.jpg",
+        "processing_status": "not_yet_verified"
+      }
+    },
+    "he": {
+      "ipad": {
+        "placement_status": "uploaded_pending_reload_readback",
+        "count": 1,
+        "file": "newsblur-16.0-he-ipad-preview.mp4",
+        "processing_status": "not_yet_verified"
+      }
+    }
+  },
+  "capture_checkpoint": "screenshots/scripts/CAPTURE_STATUS.md",
+  "upload_status": "all_252_screenshots_uploaded_verified_previews_and_english_creative_check_remaining",
+  "preparation_counts": {
+    "screenshots_planned": 252,
+    "screenshots_reviewed_staged": 252,
+    "screenshots_verified_in_store": 252,
+    "complete_ipad_languages": 21,
+    "complete_iphone_languages": 21,
+    "pending_iphone_languages": 0,
+    "previews_planned": 42,
+    "previews_encoded_visual_reviewed": 27,
+    "previews_playback_passed": 10,
+    "previews_playback_pending": 17,
+    "previews_awaiting_capture": 15,
+    "iphone_screenshots_verified_in_store": 168,
+    "ipad_screenshots_verified_in_store": 84
+  },
+  "resume_requirements": [
+    "Finish the separate preview-video work: 15 iPhone languages still need footage, and 17 prepared videos await normal-speed playback review. Screenshot completion does not complete videos.",
+    "Reserve desktop/browser for normal-speed video playback review and uploads.",
+    "Recheck English header/search after screenshot recovery; do not assume creative placement is fixed.",
+    "Verify every requested screenshot, creative placement and processed preview, then resubmit all five removed review items."
+  ],
+  "screenshot_readback_evidence": [
+    "proof/iphone-upload-readback.json",
+    "proof/ipad-upload-readback.json"
+  ]
+}

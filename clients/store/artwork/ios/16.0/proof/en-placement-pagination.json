@@ -1,0 +1,17 @@
+{
+  "observed_count": 50,
+  "total": 81,
+  "limit": 50,
+  "next_page_present": true,
+  "visible_groups": {
+    "IPAD_13_PROFILE": 8,
+    "IPAD_129_PROFILE": 8,
+    "IPAD_97_PROFILE": 5,
+    "IPHONE_HOME_BUTTON_35_PROFILE": 5,
+    "IPHONE_HOME_BUTTON_40_PROFILE": 5,
+    "IPHONE_HOME_BUTTON_MEDIUM_PROFILE": 10,
+    "IPHONE_HOME_BUTTON_LARGE_PROFILE": 9
+  },
+  "failed_group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+  "failed_code": "STATE_ERROR.ASSETS_PER_PLACEMENT_LIMIT_EXCEEDED"
+}

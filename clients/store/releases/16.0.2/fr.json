@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Les commandes pour tablette sont de retour : affichez la liste des flux, les titres des articles ou l’article en plein écran, indépendamment. Faites glisser les séparateurs pour redimensionner les volets ; NewsBlur mémorise leurs largeurs.\n\nInclut l’interface en 21 langues et les commandes fixes de l’article suivant de la version 16.0."
+  }
+}

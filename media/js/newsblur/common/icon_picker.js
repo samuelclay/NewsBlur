@@ -857,71 +857,71 @@ NEWSBLUR.IconPicker = {
 
     // Lucide outline icons organized by category
     PRESET_ICON_CATEGORIES: [
-        { label: 'Files', icons: ['folder', 'folder-open', 'folder-archive', 'folder-check', 'folder-cog', 'folder-heart', 'folder-minus', 'folder-plus', 'folders', 'file', 'file-text', 'file-badge', 'file-check', 'file-cog', 'file-lock', 'files', 'archive', 'clipboard', 'inbox', 'layers'] },
-        { label: 'Places', icons: ['home', 'house', 'building', 'building-2', 'store', 'landmark', 'factory', 'warehouse', 'castle', 'church', 'hospital', 'tent', 'mountain', 'fence', 'school'] },
-        { label: 'Favorites', icons: ['star', 'heart', 'heart-handshake', 'bookmark', 'flag', 'tag', 'tags', 'award', 'crown', 'gem', 'diamond', 'sparkles', 'trophy', 'medal'] },
-        { label: 'Reading', icons: ['book', 'book-open', 'book-marked', 'library', 'newspaper', 'scroll', 'notebook', 'graduation-cap', 'brain', 'kanban', 'sticker'] },
-        { label: 'Audio', icons: ['music', 'headphones', 'headset', 'mic', 'radio', 'podcast', 'disc', 'album', 'boom-box', 'cassette-tape', 'speaker', 'drum', 'bluetooth', 'signal'] },
-        { label: 'Visual', icons: ['video', 'video-off', 'film', 'tv', 'monitor', 'camera', 'image', 'images', 'eye', 'eye-off', 'picture-in-picture', 'youtube'] },
-        { label: 'Games', icons: ['gamepad-2', 'joystick', 'dice-5', 'puzzle', 'drama', 'wand', 'wand-2', 'origami'] },
-        { label: 'Sports', icons: ['volleyball', 'dumbbell', 'target', 'bike', 'trophy', 'medal', 'thumbs-up'] },
-        { label: 'Travel', icons: ['plane', 'ship', 'sailboat', 'rocket', 'train', 'bus', 'car', 'tractor', 'cable-car', 'backpack', 'compass', 'navigation', 'map', 'map-pin'] },
-        { label: 'Tech', icons: ['code', 'terminal', 'database', 'server', 'cpu', 'hard-drive', 'laptop', 'computer', 'keyboard', 'mouse', 'printer', 'usb', 'wifi', 'globe', 'rss', 'git-merge', 'git-branch', 'webhook', 'scan', 'settings'] },
-        { label: 'Nature', icons: ['sun', 'sun-dim', 'sun-snow', 'sunrise', 'sunset', 'moon', 'cloud', 'umbrella', 'tree-pine', 'tree-deciduous', 'flower-2', 'leaf', 'clover', 'droplets', 'snowflake', 'wind', 'haze', 'orbit', 'earth'] },
-        { label: 'Animals', icons: ['bird', 'cat', 'dog', 'fish', 'rabbit', 'turtle', 'bug', 'feather', 'egg', 'baby', 'shrimp'] },
-        { label: 'Food', icons: ['coffee', 'utensils', 'chef-hat', 'pizza', 'sandwich', 'croissant', 'apple', 'banana', 'cherry', 'citrus', 'grape', 'carrot', 'beef', 'drumstick', 'soup', 'popcorn', 'cake', 'cookie', 'lollipop', 'popsicle', 'ice-cream-cone', 'flame', 'wine', 'martini', 'bottle-wine', 'cup-soda', 'milk'] },
-        { label: 'Shopping', icons: ['shopping-cart', 'shopping-bag', 'shopping-basket', 'gift', 'package', 'wallet', 'credit-card', 'coins', 'piggy-bank', 'box', 'briefcase', 'ticket', 'barcode'] },
-        { label: 'Home', icons: ['bed', 'bath', 'lamp', 'lamp-ceiling', 'lamp-desk', 'lamp-floor', 'refrigerator', 'washing-machine'] },
-        { label: 'Health', icons: ['stethoscope', 'syringe', 'thermometer', 'thermometer-sun', 'test-tube', 'microscope'] },
-        { label: 'Fashion', icons: ['shirt', 'glasses', 'watch'] },
-        { label: 'Tools', icons: ['hammer', 'wrench', 'scissors', 'ruler', 'highlighter', 'paintbrush', 'palette', 'brush', 'pen', 'pencil-line', 'stamp', 'key', 'lock', 'link', 'magnet', 'plug', 'battery', 'flashlight', 'hourglass', 'timer', 'clock', 'calendar'] },
-        { label: 'Social', icons: ['mail', 'mailbox', 'message-square', 'message-circle', 'phone', 'at-sign', 'send', 'users', 'user', 'contact', 'hand', 'handshake', 'megaphone', 'share-2'] },
-        { label: 'Status', icons: ['circle-check', 'circle-x', 'repeat', 'undo', 'upload', 'search', 'trash', 'x', 'recycle'] },
-        { label: 'Misc', icons: ['anchor', 'axe', 'barrel', 'bell', 'binoculars', 'bone', 'candy', 'cone', 'construction', 'fan', 'fuel', 'hash', 'hop', 'logs', 'milestone', 'pin', 'satellite', 'skull', 'slice', 'sword', 'table', 'telescope', 'traffic-cone', 'vegan', 'weight', 'wheat', 'zap', 'atom', 'dna', 'hexagon', 'triangle', 'circle', 'square', 'octagon', 'lightbulb'] }
+        { label: gettext('Files'), icons: ['folder', 'folder-open', 'folder-archive', 'folder-check', 'folder-cog', 'folder-heart', 'folder-minus', 'folder-plus', 'folders', 'file', 'file-text', 'file-badge', 'file-check', 'file-cog', 'file-lock', 'files', 'archive', 'clipboard', 'inbox', 'layers'] },
+        { label: gettext('Places'), icons: ['home', 'house', 'building', 'building-2', 'store', 'landmark', 'factory', 'warehouse', 'castle', 'church', 'hospital', 'tent', 'mountain', 'fence', 'school'] },
+        { label: gettext('Favorites'), icons: ['star', 'heart', 'heart-handshake', 'bookmark', 'flag', 'tag', 'tags', 'award', 'crown', 'gem', 'diamond', 'sparkles', 'trophy', 'medal'] },
+        { label: gettext('Reading'), icons: ['book', 'book-open', 'book-marked', 'library', 'newspaper', 'scroll', 'notebook', 'graduation-cap', 'brain', 'kanban', 'sticker'] },
+        { label: gettext('Audio'), icons: ['music', 'headphones', 'headset', 'mic', 'radio', 'podcast', 'disc', 'album', 'boom-box', 'cassette-tape', 'speaker', 'drum', 'bluetooth', 'signal'] },
+        { label: gettext('Visual'), icons: ['video', 'video-off', 'film', 'tv', 'monitor', 'camera', 'image', 'images', 'eye', 'eye-off', 'picture-in-picture', 'youtube'] },
+        { label: gettext('Games'), icons: ['gamepad-2', 'joystick', 'dice-5', 'puzzle', 'drama', 'wand', 'wand-2', 'origami'] },
+        { label: gettext('Sports'), icons: ['volleyball', 'dumbbell', 'target', 'bike', 'trophy', 'medal', 'thumbs-up'] },
+        { label: gettext('Travel'), icons: ['plane', 'ship', 'sailboat', 'rocket', 'train', 'bus', 'car', 'tractor', 'cable-car', 'backpack', 'compass', 'navigation', 'map', 'map-pin'] },
+        { label: gettext('Tech'), icons: ['code', 'terminal', 'database', 'server', 'cpu', 'hard-drive', 'laptop', 'computer', 'keyboard', 'mouse', 'printer', 'usb', 'wifi', 'globe', 'rss', 'git-merge', 'git-branch', 'webhook', 'scan', 'settings'] },
+        { label: gettext('Nature'), icons: ['sun', 'sun-dim', 'sun-snow', 'sunrise', 'sunset', 'moon', 'cloud', 'umbrella', 'tree-pine', 'tree-deciduous', 'flower-2', 'leaf', 'clover', 'droplets', 'snowflake', 'wind', 'haze', 'orbit', 'earth'] },
+        { label: gettext('Animals'), icons: ['bird', 'cat', 'dog', 'fish', 'rabbit', 'turtle', 'bug', 'feather', 'egg', 'baby', 'shrimp'] },
+        { label: gettext('Food'), icons: ['coffee', 'utensils', 'chef-hat', 'pizza', 'sandwich', 'croissant', 'apple', 'banana', 'cherry', 'citrus', 'grape', 'carrot', 'beef', 'drumstick', 'soup', 'popcorn', 'cake', 'cookie', 'lollipop', 'popsicle', 'ice-cream-cone', 'flame', 'wine', 'martini', 'bottle-wine', 'cup-soda', 'milk'] },
+        { label: gettext('Shopping'), icons: ['shopping-cart', 'shopping-bag', 'shopping-basket', 'gift', 'package', 'wallet', 'credit-card', 'coins', 'piggy-bank', 'box', 'briefcase', 'ticket', 'barcode'] },
+        { label: gettext('Home'), icons: ['bed', 'bath', 'lamp', 'lamp-ceiling', 'lamp-desk', 'lamp-floor', 'refrigerator', 'washing-machine'] },
+        { label: gettext('Health'), icons: ['stethoscope', 'syringe', 'thermometer', 'thermometer-sun', 'test-tube', 'microscope'] },
+        { label: gettext('Fashion'), icons: ['shirt', 'glasses', 'watch'] },
+        { label: gettext('Tools'), icons: ['hammer', 'wrench', 'scissors', 'ruler', 'highlighter', 'paintbrush', 'palette', 'brush', 'pen', 'pencil-line', 'stamp', 'key', 'lock', 'link', 'magnet', 'plug', 'battery', 'flashlight', 'hourglass', 'timer', 'clock', 'calendar'] },
+        { label: gettext('Social'), icons: ['mail', 'mailbox', 'message-square', 'message-circle', 'phone', 'at-sign', 'send', 'users', 'user', 'contact', 'hand', 'handshake', 'megaphone', 'share-2'] },
+        { label: gettext('Status'), icons: ['circle-check', 'circle-x', 'repeat', 'undo', 'upload', 'search', 'trash', 'x', 'recycle'] },
+        { label: gettext('Misc'), icons: ['anchor', 'axe', 'barrel', 'bell', 'binoculars', 'bone', 'candy', 'cone', 'construction', 'fan', 'fuel', 'hash', 'hop', 'logs', 'milestone', 'pin', 'satellite', 'skull', 'slice', 'sword', 'table', 'telescope', 'traffic-cone', 'vegan', 'weight', 'wheat', 'zap', 'atom', 'dna', 'hexagon', 'triangle', 'circle', 'square', 'octagon', 'lightbulb'] }
     ],
 
     // Heroicons solid icons organized by category
     FILLED_ICON_CATEGORIES: [
-        { label: 'Files', icons: ['folder', 'folder-open', 'folder-plus', 'folder-minus', 'folder-arrow-down', 'document', 'document-text', 'document-chart-bar', 'document-check', 'document-duplicate', 'document-plus', 'document-minus', 'document-arrow-down', 'document-arrow-up', 'document-magnifying-glass', 'archive-box', 'clipboard', 'clipboard-document', 'clipboard-document-check', 'clipboard-document-list', 'inbox', 'inbox-arrow-down', 'inbox-stack', 'rectangle-stack', 'circle-stack', 'square-3-stack-3d'] },
-        { label: 'Places', icons: ['home', 'home-modern', 'building-office', 'building-office-2', 'building-library', 'building-storefront', 'map', 'map-pin', 'globe-alt', 'globe-americas', 'globe-asia-australia', 'globe-europe-africa', 'academic-cap', 'briefcase'] },
-        { label: 'People', icons: ['users', 'user', 'user-circle', 'user-group', 'user-plus', 'user-minus', 'face-smile', 'face-frown', 'identification', 'hand-raised', 'hand-thumb-up', 'hand-thumb-down'] },
-        { label: 'Messages', icons: ['envelope', 'envelope-open', 'phone', 'megaphone', 'chat-bubble-left', 'chat-bubble-bottom-center', 'chat-bubble-left-right', 'chat-bubble-oval-left', 'chat-bubble-oval-left-ellipsis', 'paper-airplane', 'at-symbol', 'hashtag', 'signal', 'signal-slash', 'share'] },
-        { label: 'Media', icons: ['musical-note', 'film', 'camera', 'photo', 'video-camera', 'tv', 'radio', 'play', 'play-circle', 'pause', 'pause-circle', 'play-pause', 'stop', 'backward', 'forward', 'speaker-wave', 'speaker-x-mark', 'microphone', 'gif'] },
-        { label: 'Markers', icons: ['star', 'heart', 'bookmark', 'bookmark-square', 'bookmark-slash', 'flag', 'tag', 'sparkles', 'trophy', 'gift', 'ticket', 'cake', 'check-badge'] },
-        { label: 'Creative', icons: ['book-open', 'newspaper', 'pencil', 'paint-brush', 'scissors', 'paper-clip', 'light-bulb', 'puzzle-piece', 'swatch', 'eye', 'eye-slash', 'eye-dropper', 'viewfinder-circle', 'italic', 'underline', 'strikethrough'] },
-        { label: 'Finance', icons: ['shopping-cart', 'shopping-bag', 'wallet', 'banknotes', 'credit-card', 'currency-dollar', 'receipt-percent', 'calculator', 'chart-bar', 'chart-bar-square', 'chart-pie', 'presentation-chart-bar', 'presentation-chart-line', 'table-cells', 'arrow-trending-up', 'arrow-trending-down'] },
-        { label: 'Devices', icons: ['computer-desktop', 'device-phone-mobile', 'device-tablet', 'printer', 'server', 'server-stack', 'cpu-chip', 'wifi', 'code-bracket', 'command-line', 'window', 'battery-100', 'battery-50', 'battery-0', 'power'] },
-        { label: 'Tools', icons: ['cog-6-tooth', 'cog-8-tooth', 'cog', 'wrench', 'wrench-screwdriver', 'adjustments-horizontal', 'funnel', 'bars-3', 'bars-2', 'bars-4', 'list-bullet', 'numbered-list', 'queue-list', 'magnifying-glass', 'key', 'lock-closed', 'lock-open', 'bell', 'bell-alert', 'bell-slash', 'trash'] },
-        { label: 'Security', icons: ['finger-print', 'shield-check', 'link', 'qr-code', 'rss', 'no-symbol'] },
-        { label: 'Weather', icons: ['sun', 'moon', 'cloud', 'cloud-arrow-down', 'cloud-arrow-up', 'fire', 'bolt', 'bolt-slash'] },
-        { label: 'Science', icons: ['beaker', 'bug-ant', 'scale', 'lifebuoy', 'variable', 'cube', 'cube-transparent'] },
-        { label: 'Objects', icons: ['truck', 'rocket-launch', 'square-2-stack', 'squares-2x2', 'squares-plus', 'view-columns', 'language', 'clock', 'calendar', 'calendar-days', 'calendar-date-range'] },
-        { label: 'Arrows', icons: ['arrow-path', 'arrow-down-tray', 'arrow-up-tray', 'arrow-up-circle', 'arrow-down-circle', 'arrows-pointing-out', 'arrows-pointing-in', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron-right', 'chevron-double-up', 'chevron-double-down', 'chevron-double-left', 'chevron-double-right', 'backspace'] },
-        { label: 'Status', icons: ['check-circle', 'check', 'x-circle', 'x-mark', 'plus-circle', 'plus', 'minus-circle', 'minus', 'question-mark-circle', 'exclamation-circle', 'exclamation-triangle', 'information-circle', 'ellipsis-horizontal', 'ellipsis-vertical', 'ellipsis-horizontal-circle'] },
-        { label: 'Cursors', icons: ['cursor-arrow-rays', 'cursor-arrow-ripple'] }
+        { label: gettext('Files'), icons: ['folder', 'folder-open', 'folder-plus', 'folder-minus', 'folder-arrow-down', 'document', 'document-text', 'document-chart-bar', 'document-check', 'document-duplicate', 'document-plus', 'document-minus', 'document-arrow-down', 'document-arrow-up', 'document-magnifying-glass', 'archive-box', 'clipboard', 'clipboard-document', 'clipboard-document-check', 'clipboard-document-list', 'inbox', 'inbox-arrow-down', 'inbox-stack', 'rectangle-stack', 'circle-stack', 'square-3-stack-3d'] },
+        { label: gettext('Places'), icons: ['home', 'home-modern', 'building-office', 'building-office-2', 'building-library', 'building-storefront', 'map', 'map-pin', 'globe-alt', 'globe-americas', 'globe-asia-australia', 'globe-europe-africa', 'academic-cap', 'briefcase'] },
+        { label: gettext('People'), icons: ['users', 'user', 'user-circle', 'user-group', 'user-plus', 'user-minus', 'face-smile', 'face-frown', 'identification', 'hand-raised', 'hand-thumb-up', 'hand-thumb-down'] },
+        { label: gettext('Messages'), icons: ['envelope', 'envelope-open', 'phone', 'megaphone', 'chat-bubble-left', 'chat-bubble-bottom-center', 'chat-bubble-left-right', 'chat-bubble-oval-left', 'chat-bubble-oval-left-ellipsis', 'paper-airplane', 'at-symbol', 'hashtag', 'signal', 'signal-slash', 'share'] },
+        { label: gettext('Media'), icons: ['musical-note', 'film', 'camera', 'photo', 'video-camera', 'tv', 'radio', 'play', 'play-circle', 'pause', 'pause-circle', 'play-pause', 'stop', 'backward', 'forward', 'speaker-wave', 'speaker-x-mark', 'microphone', 'gif'] },
+        { label: gettext('Markers'), icons: ['star', 'heart', 'bookmark', 'bookmark-square', 'bookmark-slash', 'flag', 'tag', 'sparkles', 'trophy', 'gift', 'ticket', 'cake', 'check-badge'] },
+        { label: gettext('Creative'), icons: ['book-open', 'newspaper', 'pencil', 'paint-brush', 'scissors', 'paper-clip', 'light-bulb', 'puzzle-piece', 'swatch', 'eye', 'eye-slash', 'eye-dropper', 'viewfinder-circle', 'italic', 'underline', 'strikethrough'] },
+        { label: gettext('Finance'), icons: ['shopping-cart', 'shopping-bag', 'wallet', 'banknotes', 'credit-card', 'currency-dollar', 'receipt-percent', 'calculator', 'chart-bar', 'chart-bar-square', 'chart-pie', 'presentation-chart-bar', 'presentation-chart-line', 'table-cells', 'arrow-trending-up', 'arrow-trending-down'] },
+        { label: gettext('Devices'), icons: ['computer-desktop', 'device-phone-mobile', 'device-tablet', 'printer', 'server', 'server-stack', 'cpu-chip', 'wifi', 'code-bracket', 'command-line', 'window', 'battery-100', 'battery-50', 'battery-0', 'power'] },
+        { label: gettext('Tools'), icons: ['cog-6-tooth', 'cog-8-tooth', 'cog', 'wrench', 'wrench-screwdriver', 'adjustments-horizontal', 'funnel', 'bars-3', 'bars-2', 'bars-4', 'list-bullet', 'numbered-list', 'queue-list', 'magnifying-glass', 'key', 'lock-closed', 'lock-open', 'bell', 'bell-alert', 'bell-slash', 'trash'] },
+        { label: gettext('Security'), icons: ['finger-print', 'shield-check', 'link', 'qr-code', 'rss', 'no-symbol'] },
+        { label: gettext('Weather'), icons: ['sun', 'moon', 'cloud', 'cloud-arrow-down', 'cloud-arrow-up', 'fire', 'bolt', 'bolt-slash'] },
+        { label: gettext('Science'), icons: ['beaker', 'bug-ant', 'scale', 'lifebuoy', 'variable', 'cube', 'cube-transparent'] },
+        { label: gettext('Objects'), icons: ['truck', 'rocket-launch', 'square-2-stack', 'squares-2x2', 'squares-plus', 'view-columns', 'language', 'clock', 'calendar', 'calendar-days', 'calendar-date-range'] },
+        { label: gettext('Arrows'), icons: ['arrow-path', 'arrow-down-tray', 'arrow-up-tray', 'arrow-up-circle', 'arrow-down-circle', 'arrows-pointing-out', 'arrows-pointing-in', 'chevron-up', 'chevron-down', 'chevron-left', 'chevron-right', 'chevron-double-up', 'chevron-double-down', 'chevron-double-left', 'chevron-double-right', 'backspace'] },
+        { label: gettext('Status'), icons: ['check-circle', 'check', 'x-circle', 'x-mark', 'plus-circle', 'plus', 'minus-circle', 'minus', 'question-mark-circle', 'exclamation-circle', 'exclamation-triangle', 'information-circle', 'ellipsis-horizontal', 'ellipsis-vertical', 'ellipsis-horizontal-circle'] },
+        { label: gettext('Cursors'), icons: ['cursor-arrow-rays', 'cursor-arrow-ripple'] }
     ],
 
     // Emojis organized by category
     // Each emoji entry is [emoji, title]
     EMOJI_CATEGORIES: [
-        { label: 'Files', emojis: [['📁', 'Folder'], ['📂', 'Open folder'], ['📚', 'Books'], ['📖', 'Open book'], ['📰', 'Newspaper'], ['📄', 'Document'], ['📑', 'Bookmarks'], ['📋', 'Clipboard'], ['📝', 'Memo'], ['✏️', 'Pencil'], ['🗂️', 'Card dividers'], ['📎', 'Paperclip'], ['📌', 'Pushpin'], ['🗃️', 'Card file box'], ['📓', 'Notebook']] },
-        { label: 'Tech', emojis: [['💻', 'Laptop'], ['📱', 'Phone'], ['📺', 'Television'], ['🎬', 'Clapperboard'], ['🎵', 'Music'], ['🎧', 'Headphones'], ['🎮', 'Game controller'], ['📷', 'Camera'], ['📹', 'Video camera'], ['🖨️', 'Printer'], ['⌨️', 'Keyboard'], ['🖥️', 'Desktop'], ['🖱️', 'Mouse'], ['💾', 'Floppy disk'], ['📡', 'Satellite dish']] },
-        { label: 'Stars', emojis: [['⭐', 'Star'], ['🌟', 'Glowing star'], ['✨', 'Sparkles'], ['💫', 'Dizzy star'], ['⚡', 'Lightning'], ['🔥', 'Fire'], ['💥', 'Explosion'], ['❄️', 'Snowflake'], ['🌈', 'Rainbow'], ['🎇', 'Sparkler'], ['🎆', 'Fireworks'], ['💎', 'Gem'], ['🔮', 'Crystal ball'], ['🪩', 'Disco ball'], ['☄️', 'Comet']] },
-        { label: 'Weather', emojis: [['☀️', 'Sun'], ['🌙', 'Crescent moon'], ['☁️', 'Cloud'], ['🌧️', 'Rain'], ['⛈️', 'Thunderstorm'], ['🌪️', 'Tornado'], ['🌊', 'Wave'], ['💧', 'Droplet'], ['🌤️', 'Mostly sunny'], ['🌥️', 'Mostly cloudy'], ['🌦️', 'Sun and rain'], ['🌬️', 'Wind'], ['☔', 'Umbrella'], ['🌫️', 'Fog'], ['⛅', 'Partly cloudy']] },
-        { label: 'Nature', emojis: [['🌲', 'Evergreen'], ['🌳', 'Deciduous tree'], ['🌴', 'Palm tree'], ['🌻', 'Sunflower'], ['🌺', 'Hibiscus'], ['🌸', 'Cherry blossom'], ['🌷', 'Tulip'], ['🌹', 'Rose'], ['🍀', 'Four leaf clover'], ['🌿', 'Herb'], ['💐', 'Bouquet'], ['🪻', 'Hyacinth'], ['🪷', 'Lotus'], ['🌼', 'Blossom'], ['🏵️', 'Rosette']] },
+        { label: gettext('Files'), emojis: [['📁', 'Folder'], ['📂', 'Open folder'], ['📚', 'Books'], ['📖', 'Open book'], ['📰', 'Newspaper'], ['📄', 'Document'], ['📑', 'Bookmarks'], ['📋', 'Clipboard'], ['📝', 'Memo'], ['✏️', 'Pencil'], ['🗂️', 'Card dividers'], ['📎', 'Paperclip'], ['📌', 'Pushpin'], ['🗃️', 'Card file box'], ['📓', 'Notebook']] },
+        { label: gettext('Tech'), emojis: [['💻', 'Laptop'], ['📱', 'Phone'], ['📺', 'Television'], ['🎬', 'Clapperboard'], ['🎵', 'Music'], ['🎧', 'Headphones'], ['🎮', 'Game controller'], ['📷', 'Camera'], ['📹', 'Video camera'], ['🖨️', 'Printer'], ['⌨️', 'Keyboard'], ['🖥️', 'Desktop'], ['🖱️', 'Mouse'], ['💾', 'Floppy disk'], ['📡', 'Satellite dish']] },
+        { label: gettext('Stars'), emojis: [['⭐', 'Star'], ['🌟', 'Glowing star'], ['✨', 'Sparkles'], ['💫', 'Dizzy star'], ['⚡', 'Lightning'], ['🔥', 'Fire'], ['💥', 'Explosion'], ['❄️', 'Snowflake'], ['🌈', 'Rainbow'], ['🎇', 'Sparkler'], ['🎆', 'Fireworks'], ['💎', 'Gem'], ['🔮', 'Crystal ball'], ['🪩', 'Disco ball'], ['☄️', 'Comet']] },
+        { label: gettext('Weather'), emojis: [['☀️', 'Sun'], ['🌙', 'Crescent moon'], ['☁️', 'Cloud'], ['🌧️', 'Rain'], ['⛈️', 'Thunderstorm'], ['🌪️', 'Tornado'], ['🌊', 'Wave'], ['💧', 'Droplet'], ['🌤️', 'Mostly sunny'], ['🌥️', 'Mostly cloudy'], ['🌦️', 'Sun and rain'], ['🌬️', 'Wind'], ['☔', 'Umbrella'], ['🌫️', 'Fog'], ['⛅', 'Partly cloudy']] },
+        { label: gettext('Nature'), emojis: [['🌲', 'Evergreen'], ['🌳', 'Deciduous tree'], ['🌴', 'Palm tree'], ['🌻', 'Sunflower'], ['🌺', 'Hibiscus'], ['🌸', 'Cherry blossom'], ['🌷', 'Tulip'], ['🌹', 'Rose'], ['🍀', 'Four leaf clover'], ['🌿', 'Herb'], ['💐', 'Bouquet'], ['🪻', 'Hyacinth'], ['🪷', 'Lotus'], ['🌼', 'Blossom'], ['🏵️', 'Rosette']] },
         { label: '', emojis: [['🍂', 'Fallen leaf'], ['🍁', 'Maple leaf'], ['🌵', 'Cactus'], ['🌾', 'Sheaf of rice'], ['🌱', 'Seedling'], ['🪴', 'Potted plant'], ['🎋', 'Tanabata tree'], ['🎍', 'Pine decoration'], ['🍃', 'Leaves'], ['☘️', 'Shamrock'], ['🪹', 'Nest'], ['🪸', 'Coral'], ['🍄', 'Mushroom'], ['🪵', 'Wood'], ['🪨', 'Rock']] },
-        { label: 'Food', emojis: [['☕', 'Coffee'], ['🍵', 'Tea'], ['🍺', 'Beer'], ['🍷', 'Wine'], ['🥤', 'Cup with straw'], ['🧃', 'Juice box'], ['🍽️', 'Place setting'], ['🍴', 'Fork and knife'], ['🥢', 'Chopsticks'], ['🧂', 'Salt'], ['🍶', 'Sake'], ['🥂', 'Clinking glasses'], ['🍸', 'Cocktail'], ['🫖', 'Teapot'], ['🥛', 'Milk']] },
+        { label: gettext('Food'), emojis: [['☕', 'Coffee'], ['🍵', 'Tea'], ['🍺', 'Beer'], ['🍷', 'Wine'], ['🥤', 'Cup with straw'], ['🧃', 'Juice box'], ['🍽️', 'Place setting'], ['🍴', 'Fork and knife'], ['🥢', 'Chopsticks'], ['🧂', 'Salt'], ['🍶', 'Sake'], ['🥂', 'Clinking glasses'], ['🍸', 'Cocktail'], ['🫖', 'Teapot'], ['🥛', 'Milk']] },
         { label: '', emojis: [['🍕', 'Pizza'], ['🍔', 'Hamburger'], ['🍟', 'French fries'], ['🌮', 'Taco'], ['🍜', 'Noodles'], ['🍣', 'Sushi'], ['🍰', 'Cake'], ['🍩', 'Doughnut'], ['🍎', 'Apple'], ['🍇', 'Grapes'], ['🥑', 'Avocado'], ['🍓', 'Strawberry'], ['🌽', 'Corn'], ['🧁', 'Cupcake'], ['🥐', 'Croissant']] },
-        { label: 'Animals', emojis: [['🐶', 'Dog'], ['🐱', 'Cat'], ['🐦', 'Bird'], ['🐟', 'Fish'], ['🦋', 'Butterfly'], ['🐝', 'Bee'], ['🦊', 'Fox'], ['🐼', 'Panda'], ['🦁', 'Lion'], ['🐸', 'Frog'], ['🐧', 'Penguin'], ['🦜', 'Parrot'], ['🐙', 'Octopus'], ['🐞', 'Ladybug'], ['🦒', 'Giraffe']] },
+        { label: gettext('Animals'), emojis: [['🐶', 'Dog'], ['🐱', 'Cat'], ['🐦', 'Bird'], ['🐟', 'Fish'], ['🦋', 'Butterfly'], ['🐝', 'Bee'], ['🦊', 'Fox'], ['🐼', 'Panda'], ['🦁', 'Lion'], ['🐸', 'Frog'], ['🐧', 'Penguin'], ['🦜', 'Parrot'], ['🐙', 'Octopus'], ['🐞', 'Ladybug'], ['🦒', 'Giraffe']] },
         { label: '', emojis: [['🦄', 'Unicorn'], ['🐯', 'Tiger'], ['🐻', 'Bear'], ['🐨', 'Koala'], ['🐰', 'Rabbit'], ['🦉', 'Owl'], ['🦅', 'Eagle'], ['🐢', 'Turtle'], ['🐬', 'Dolphin'], ['🦈', 'Shark'], ['🐘', 'Elephant'], ['🦩', 'Flamingo'], ['🐺', 'Wolf'], ['🦝', 'Raccoon'], ['🐳', 'Whale']] },
-        { label: 'Places', emojis: [['🏠', 'House'], ['🏢', 'Office building'], ['🏫', 'School'], ['🏥', 'Hospital'], ['🏰', 'Castle'], ['⛪', 'Church'], ['🕌', 'Mosque'], ['🗼', 'Tower'], ['🏛️', 'Classical building'], ['🎪', 'Circus tent'], ['🏟️', 'Stadium'], ['🗽', 'Statue of Liberty'], ['⛩️', 'Shrine'], ['🏗️', 'Construction'], ['🏘️', 'Houses']] },
-        { label: 'Transport', emojis: [['✈️', 'Airplane'], ['🚗', 'Car'], ['🚲', 'Bicycle'], ['🚀', 'Rocket'], ['⛵', 'Sailboat'], ['🚂', 'Train'], ['🚁', 'Helicopter'], ['🛸', 'Flying saucer'], ['🏎️', 'Race car'], ['🚌', 'Bus'], ['🛶', 'Canoe'], ['🚢', 'Ship'], ['🛵', 'Scooter'], ['🚃', 'Railway car'], ['🛩️', 'Small airplane']] },
-        { label: 'Sports', emojis: [['⚽', 'Soccer'], ['🏀', 'Basketball'], ['🎾', 'Tennis'], ['🎯', 'Bullseye'], ['🏆', 'Trophy'], ['🎭', 'Performing arts'], ['🎨', 'Art palette'], ['🎸', 'Guitar'], ['🎹', 'Piano'], ['🏋️', 'Weightlifting'], ['🏈', 'Football'], ['🎳', 'Bowling'], ['🏓', 'Ping pong'], ['🥊', 'Boxing'], ['🎺', 'Trumpet']] },
-        { label: 'Hearts', emojis: [['❤️', 'Red heart'], ['💛', 'Yellow heart'], ['💚', 'Green heart'], ['💙', 'Blue heart'], ['💜', 'Purple heart'], ['🧡', 'Orange heart'], ['🖤', 'Black heart'], ['🤍', 'White heart'], ['💖', 'Sparkling heart'], ['💝', 'Heart with ribbon'], ['💗', 'Growing heart'], ['💞', 'Revolving hearts'], ['💕', 'Two hearts'], ['🤎', 'Brown heart'], ['❣️', 'Heart exclamation']] },
-        { label: 'Status', emojis: [['✅', 'Check mark'], ['❌', 'Cross mark'], ['⚠️', 'Warning'], ['ℹ️', 'Info'], ['❓', 'Question'], ['🔔', 'Bell'], ['🔒', 'Lock'], ['🔑', 'Key'], ['💡', 'Light bulb'], ['🎁', 'Gift'], ['🔗', 'Link'], ['⏰', 'Alarm clock'], ['📢', 'Loudspeaker'], ['🚫', 'Prohibited'], ['✳️', 'Sparkle']] },
-        { label: 'Objects', emojis: [['💰', 'Money bag'], ['💼', 'Briefcase'], ['🎓', 'Graduation cap'], ['🏅', 'Medal'], ['💎', 'Gem stone'], ['🛒', 'Shopping cart'], ['🌍', 'Globe Europe'], ['🌎', 'Globe Americas'], ['🌏', 'Globe Asia'], ['🗺️', 'World map'], ['🧲', 'Magnet'], ['🔭', 'Telescope'], ['🧪', 'Test tube'], ['💊', 'Pill'], ['🪙', 'Coin']] },
-        { label: 'Faces', emojis: [['😀', 'Grinning'], ['😊', 'Smiling'], ['🥳', 'Party face'], ['🤔', 'Thinking'], ['😎', 'Cool'], ['🤩', 'Star-struck'], ['🙄', 'Eye roll'], ['😴', 'Sleeping'], ['🤗', 'Hugging'], ['🥰', 'Love face'], ['😂', 'Laughing'], ['🫡', 'Salute'], ['😇', 'Halo'], ['🤓', 'Nerd'], ['😏', 'Smirk']] },
-        { label: 'Gestures', emojis: [['👍', 'Thumbs up'], ['👎', 'Thumbs down'], ['👋', 'Wave'], ['✋', 'Raised hand'], ['🤝', 'Handshake'], ['🙏', 'Pray'], ['👏', 'Clap'], ['🎉', 'Party popper'], ['🎊', 'Confetti'], ['🔖', 'Bookmark'], ['✌️', 'Peace'], ['🤞', 'Crossed fingers'], ['👆', 'Point up'], ['💪', 'Flexed bicep'], ['🫶', 'Heart hands']] }
+        { label: gettext('Places'), emojis: [['🏠', 'House'], ['🏢', 'Office building'], ['🏫', 'School'], ['🏥', 'Hospital'], ['🏰', 'Castle'], ['⛪', 'Church'], ['🕌', 'Mosque'], ['🗼', 'Tower'], ['🏛️', 'Classical building'], ['🎪', 'Circus tent'], ['🏟️', 'Stadium'], ['🗽', 'Statue of Liberty'], ['⛩️', 'Shrine'], ['🏗️', 'Construction'], ['🏘️', 'Houses']] },
+        { label: gettext('Transport'), emojis: [['✈️', 'Airplane'], ['🚗', 'Car'], ['🚲', 'Bicycle'], ['🚀', 'Rocket'], ['⛵', 'Sailboat'], ['🚂', 'Train'], ['🚁', 'Helicopter'], ['🛸', 'Flying saucer'], ['🏎️', 'Race car'], ['🚌', 'Bus'], ['🛶', 'Canoe'], ['🚢', 'Ship'], ['🛵', 'Scooter'], ['🚃', 'Railway car'], ['🛩️', 'Small airplane']] },
+        { label: gettext('Sports'), emojis: [['⚽', 'Soccer'], ['🏀', 'Basketball'], ['🎾', 'Tennis'], ['🎯', 'Bullseye'], ['🏆', 'Trophy'], ['🎭', 'Performing arts'], ['🎨', 'Art palette'], ['🎸', 'Guitar'], ['🎹', 'Piano'], ['🏋️', 'Weightlifting'], ['🏈', 'Football'], ['🎳', 'Bowling'], ['🏓', 'Ping pong'], ['🥊', 'Boxing'], ['🎺', 'Trumpet']] },
+        { label: gettext('Hearts'), emojis: [['❤️', 'Red heart'], ['💛', 'Yellow heart'], ['💚', 'Green heart'], ['💙', 'Blue heart'], ['💜', 'Purple heart'], ['🧡', 'Orange heart'], ['🖤', 'Black heart'], ['🤍', 'White heart'], ['💖', 'Sparkling heart'], ['💝', 'Heart with ribbon'], ['💗', 'Growing heart'], ['💞', 'Revolving hearts'], ['💕', 'Two hearts'], ['🤎', 'Brown heart'], ['❣️', 'Heart exclamation']] },
+        { label: gettext('Status'), emojis: [['✅', 'Check mark'], ['❌', 'Cross mark'], ['⚠️', 'Warning'], ['ℹ️', 'Info'], ['❓', 'Question'], ['🔔', 'Bell'], ['🔒', 'Lock'], ['🔑', 'Key'], ['💡', 'Light bulb'], ['🎁', 'Gift'], ['🔗', 'Link'], ['⏰', 'Alarm clock'], ['📢', 'Loudspeaker'], ['🚫', 'Prohibited'], ['✳️', 'Sparkle']] },
+        { label: gettext('Objects'), emojis: [['💰', 'Money bag'], ['💼', 'Briefcase'], ['🎓', 'Graduation cap'], ['🏅', 'Medal'], ['💎', 'Gem stone'], ['🛒', 'Shopping cart'], ['🌍', 'Globe Europe'], ['🌎', 'Globe Americas'], ['🌏', 'Globe Asia'], ['🗺️', 'World map'], ['🧲', 'Magnet'], ['🔭', 'Telescope'], ['🧪', 'Test tube'], ['💊', 'Pill'], ['🪙', 'Coin']] },
+        { label: gettext('Faces'), emojis: [['😀', 'Grinning'], ['😊', 'Smiling'], ['🥳', 'Party face'], ['🤔', 'Thinking'], ['😎', 'Cool'], ['🤩', 'Star-struck'], ['🙄', 'Eye roll'], ['😴', 'Sleeping'], ['🤗', 'Hugging'], ['🥰', 'Love face'], ['😂', 'Laughing'], ['🫡', 'Salute'], ['😇', 'Halo'], ['🤓', 'Nerd'], ['😏', 'Smirk']] },
+        { label: gettext('Gestures'), emojis: [['👍', 'Thumbs up'], ['👎', 'Thumbs down'], ['👋', 'Wave'], ['✋', 'Raised hand'], ['🤝', 'Handshake'], ['🙏', 'Pray'], ['👏', 'Clap'], ['🎉', 'Party popper'], ['🎊', 'Confetti'], ['🔖', 'Bookmark'], ['✌️', 'Peace'], ['🤞', 'Crossed fingers'], ['👆', 'Point up'], ['💪', 'Flexed bicep'], ['🫶', 'Heart hands']] }
     ],
 
     // Color palette organized by columns (each column is one hue, rows go light to dark)
@@ -1031,8 +1031,8 @@ NEWSBLUR.IconPicker = {
                 $.make('div', { className: 'NB-folder-icon-upload-button' }, [
                     $.make('div', { className: 'NB-folder-icon-upload-icon' }),
                     $.make('div', { className: 'NB-folder-icon-upload-text' }, [
-                        $.make('span', { className: 'NB-folder-icon-upload-label' }, 'Upload Custom Image'),
-                        $.make('span', { className: 'NB-folder-icon-upload-hint' }, 'PNG, JPG, GIF, SVG, or WebP \u2014 max 5 MB, any size')
+                        $.make('span', { className: 'NB-folder-icon-upload-label' }, gettext('Upload Custom Image')),
+                        $.make('span', { className: 'NB-folder-icon-upload-hint' }, gettext('PNG, JPG, GIF, SVG, or WebP \u2014 max 5 MB, any size'))
                     ]),
                     $.make('div', { className: 'NB-loading' })
                 ]),
@@ -1050,7 +1050,7 @@ NEWSBLUR.IconPicker = {
             $.make('input', {
                 type: 'text',
                 className: 'NB-folder-icon-search-input',
-                placeholder: 'Filter icons...'
+                placeholder: gettext('Filter icons...')
             }),
             $.make('div', { className: 'NB-folder-icon-search-clear NB-hidden' }, '\u00d7')
         ]);
@@ -1145,7 +1145,7 @@ NEWSBLUR.IconPicker = {
         // Show/hide no results message
         $('.NB-folder-icon-no-results', $editor).remove();
         if (!has_any_match) {
-            $editor.append($.make('div', { className: 'NB-folder-icon-no-results' }, 'No icons match "' + query + '"'));
+            $editor.append($.make('div', { className: 'NB-folder-icon-no-results' }, interpolate(gettext("No icons match \"%(value_1)s\""), {value_1: query}, true)));
         }
     },
 
@@ -1169,7 +1169,7 @@ NEWSBLUR.IconPicker = {
 
         sections.push(
             $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Color'),
+                $.make('div', { className: 'NB-folder-icon-section-label' }, gettext('Color')),
                 this.make_color_palette()
             ])
         );
@@ -1178,7 +1178,7 @@ NEWSBLUR.IconPicker = {
         sections.push(
             $.make('div', { className: 'NB-folder-icon-section' }, [
                 $.make('div', { className: 'NB-folder-icon-section-header' }, [
-                    $.make('div', { className: 'NB-folder-icon-section-label' }, 'Outline Icons'),
+                    $.make('div', { className: 'NB-folder-icon-section-label' }, gettext('Outline Icons')),
                     this.make_search_input()
                 ]),
                 this.make_preset_icons()
@@ -1187,14 +1187,14 @@ NEWSBLUR.IconPicker = {
 
         sections.push(
             $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Filled Icons'),
+                $.make('div', { className: 'NB-folder-icon-section-label' }, gettext('Filled Icons')),
                 this.make_filled_icons()
             ])
         );
 
         sections.push(
             $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Emoji'),
+                $.make('div', { className: 'NB-folder-icon-section-label' }, gettext('Emoji')),
                 this.make_emoji_picker()
             ])
         );

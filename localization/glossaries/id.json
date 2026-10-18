@@ -1,0 +1,412 @@
+{
+  "language": "id",
+  "register": "Neutral formal-polite consumer-app register with capitalised “Anda” (683 uses, no kamu/kau/-mu anywhere); bare imperatives without -lah on buttons (Simpan, Bagikan, Tandai); keep it.",
+  "terms": [
+    {
+      "concept": "story",
+      "en": "\\bstor(y|ies)\\b",
+      "use": "artikel",
+      "avoid": [
+        "cerita",
+        "kisah",
+        "berita (for a single story / story label)"
+      ],
+      "note": "Catalog: ~536 artikel, ~377 cerita, ~192 berita, ~10 kisah. cerita/kisah is a tale (fiction calque); berita is ‘news’. Severity medium in labels, buttons, menu items, titles, view/folder names, counts and short status lines; low in prose. berita may stay where the English says news (River of News, news reader). No reduplication after numbers or quantifiers (5 artikel, semua artikel)."
+    },
+    {
+      "concept": "feed",
+      "en": "\\bfeeds?\\b",
+      "use": "feed",
+      "avoid": [
+        "umpan",
+        "suapan"
+      ],
+      "note": "feed is the standard Indonesian tech term and the catalog's majority (513). umpan (‘bait’) → medium in labels, low in prose; suapan (‘spoon-feeding’) → medium/high."
+    },
+    {
+      "concept": "site",
+      "en": "\\bsites?\\b",
+      "use": "situs",
+      "avoid": [],
+      "note": "situs web for website."
+    },
+    {
+      "concept": "folder",
+      "en": "\\bfolders?\\b",
+      "use": "folder",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "unread",
+      "en": "\\bunread\\b",
+      "use": "belum dibaca",
+      "avoid": [],
+      "note": "Next Unread Story → Artikel Belum Dibaca Berikutnya."
+    },
+    {
+      "concept": "mark as read",
+      "en": "(?:\\bmark(ed|s|ing)?\\b[\\w ]{0,20}\\bread\\b)|(?:\\bread\\b)",
+      "use": "Tandai sudah dibaca / Tandai telah dibaca / Tandai sebagai telah dibaca",
+      "avoid": [],
+      "note": "sudah/telah and with or without sebagai are all fine; not flagged."
+    },
+    {
+      "concept": "Read Stories (folder)",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bfolders?\\b)|(?:\\bread stories\\b)",
+      "use": "Artikel yang Sudah Dibaca",
+      "avoid": [
+        "Baca Berita / Baca Cerita / Baca Artikel (imperative)"
+      ],
+      "note": "Folder of stories already read. Imperative = high. Siri/Spotlight ‘Read %@’ opens a feed: Baca %@ is correct."
+    },
+    {
+      "concept": "saved stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\b(un)?sav(e|ed|es|ing)\\b)",
+      "use": "Artikel Tersimpan",
+      "avoid": [
+        "Cerita tersimpan"
+      ],
+      "note": "Saved (state) → Tersimpan / Disimpan both fine."
+    },
+    {
+      "concept": "Unsave",
+      "en": "\\b(un)?sav(e|ed|es|ing)\\b",
+      "use": "Batal simpan",
+      "avoid": [
+        "Batalkan simpan",
+        "Hapus dari simpanan"
+      ],
+      "note": "Hapus dari tersimpan is acceptable; flag only broken forms."
+    },
+    {
+      "concept": "share",
+      "en": "\\bshar(e|ed|es|ing)\\b",
+      "use": "Bagikan / Dibagikan / berbagi",
+      "avoid": [
+        "Hapus berbagi",
+        "Hapus Bagikan"
+      ],
+      "note": "Delete share → Hapus bagikan is broken; use Hapus artikel yang dibagikan / Batalkan berbagi depending on context."
+    },
+    {
+      "concept": "Blurblog",
+      "en": "\\bblurblogs?\\b",
+      "use": "Blurblog",
+      "avoid": [
+        "Blurblogs"
+      ],
+      "note": "Brand name, Latin, no -s plural."
+    },
+    {
+      "concept": "intelligence (feature)",
+      "en": "\\bintelligence\\b",
+      "use": "kecerdasan",
+      "avoid": [
+        "intelijen (spy intelligence)"
+      ],
+      "note": "Intelligence Trainer → Pelatih Kecerdasan; intelligence training → pelatihan kecerdasan. intelijen → medium."
+    },
+    {
+      "concept": "trainer / train / training",
+      "en": "\\btrain(er|ers|ing|ed|s)?\\b",
+      "use": "Pelatih / Latih / pelatihan",
+      "avoid": [],
+      "note": "Story trainer → Pelatih Artikel; Site trainer → Pelatih Situs."
+    },
+    {
+      "concept": "classifier",
+      "en": "\\bclassifiers?\\b",
+      "use": "pengklasifikasi",
+      "avoid": [
+        "klasifikasi (classification) for a classifier",
+        "classifier"
+      ],
+      "note": "klasifikasi for classifiers → low."
+    },
+    {
+      "concept": "Focus",
+      "en": "\\bfocus\\b",
+      "use": "Fokus",
+      "avoid": [
+        "Sorot (as the Focus level name)"
+      ],
+      "note": "Focus stories → Artikel Fokus; Focus only → Hanya Fokus / Fokus saja. ‘Fokus pada artikel’ (imperative-ish ‘focus on articles’) for the Focus Stories label → medium. Verb ‘focus or hide’ may be menyorot/memfokuskan in prose."
+    },
+    {
+      "concept": "Like / Dislike (training)",
+      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Suka / Tidak suka; Super Dislike → Sangat Tidak Suka",
+      "avoid": [],
+      "note": "beats → ‘>’ or ‘mengalahkan’ (Like outranks Dislike)."
+    },
+    {
+      "concept": "Hidden",
+      "en": "\\bhid(e|den|es|ing)\\b",
+      "use": "Tersembunyi / Disembunyikan",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "Premium plans",
+      "en": "\\b(premium|premium archive|premium pro|pro plan|archive plan)\\b",
+      "use": "Premium / Premium Archive / Premium Pro / Archive / Pro",
+      "avoid": [
+        "Arsip Premium (for the plan)",
+        "Arsip (for the Archive plan)"
+      ],
+      "note": "Plan names stay English as product names, matching the App Store / Play Store and the es/fr/pt-BR/tr decisions; the catalog is split ~30 Arsip Premium vs ~26 Premium Archive. Arsip Premium → low in prose, medium in short labels/buttons/titles; bare Arsip for the Archive plan → medium (confusable with the story archive). Lowercase descriptive premium (fitur premium, akun premium, pelanggan premium) left alone."
+    },
+    {
+      "concept": "upgrade",
+      "en": "\\bupgrad(e|ed|es|ing)\\b",
+      "use": "Tingkatkan ke … / Upgrade ke …",
+      "avoid": [
+        "Beralih dari Premium (for Upgrade from)"
+      ],
+      "note": "Both Tingkatkan and Upgrade are common in Indonesian apps; mixing not flagged."
+    },
+    {
+      "concept": "trial",
+      "en": "\\btrials?\\b",
+      "use": "uji coba",
+      "avoid": [],
+      "note": "Premium Trial → Uji Coba Premium."
+    },
+    {
+      "concept": "preferences / settings",
+      "en": "\\b(preferences|settings)\\b",
+      "use": "Preferensi (NewsBlur's Preferences screen, all platforms); Pengaturan (generic settings, all platforms)",
+      "avoid": [],
+      "note": "Catalog uses Preferensi for Preferences (21) and Pengaturan for settings (50). Android's own UI says Setelan, but Pengaturan is equally standard (Samsung One UI, many apps) and consistent here, so not flagged."
+    },
+    {
+      "concept": "subscribe",
+      "en": "\\bsubscri(be|bed|bes|bing|ption|ptions|ber|bers)\\b",
+      "use": "Berlangganan / langganan / pelanggan",
+      "avoid": [],
+      "note": "Subscribed (state) → Berlangganan / Sudah berlangganan."
+    },
+    {
+      "concept": "River of News",
+      "en": "\\briver of news\\b",
+      "use": "Aliran Berita",
+      "avoid": [
+        "River of News (English)",
+        "sungai berita",
+        "Arus Berita"
+      ],
+      "note": "English left in → low untranslated; Arus Berita acceptable, low."
+    },
+    {
+      "concept": "All Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\ball site stories\\b)",
+      "use": "Artikel Semua Situs",
+      "avoid": [
+        "Semua Artikel Situs (ambiguous: all of the site's articles)",
+        "Semua Artikel di Situs / dari situs ini (one site)"
+      ],
+      "note": "Stories from all sites. Readings that clearly mean one site → high; the ambiguous Semua Artikel/Cerita/Berita Situs → low (medium when it also has the wrong story term)."
+    },
+    {
+      "concept": "Infrequent Site Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bsites?\\b)|(?:\\binfrequent\\b)",
+      "use": "Artikel Situs yang Jarang Diperbarui",
+      "avoid": [
+        "Cerita yang Jarang Muncul"
+      ],
+      "note": "Majority form; keep."
+    },
+    {
+      "concept": "Global Shared Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bshar(e|ed|es|ing)\\b)|(?:\\bglobal shared\\b)",
+      "use": "Artikel yang Dibagikan Secara Global",
+      "avoid": [
+        "Kisah/Cerita/Berita …"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Widely Read Stories",
+      "en": "(?:\\bstor(y|ies)\\b)|(?:\\bread stories\\b)|(?:\\bwidely read\\b)",
+      "use": "Artikel yang Banyak Dibaca",
+      "avoid": [
+        "Kisah/Cerita …"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "Good Reads / Long Reads",
+      "en": "(?:\\blong reads?\\b)|(?:\\bgood reads?\\b)",
+      "use": "Bacaan Bagus / Bacaan Panjang",
+      "avoid": [
+        "Good Reads (English)",
+        "books"
+      ],
+      "note": "Good Reads is a folder of good stories."
+    },
+    {
+      "concept": "Daily Briefing",
+      "en": "\\bbriefings?\\b",
+      "use": "Ringkasan Harian",
+      "avoid": [
+        "Briefing (English)"
+      ],
+      "note": "Briefing alone → Ringkasan. English ‘Briefing’ left in labels → low/medium untranslated."
+    },
+    {
+      "concept": "Ask AI",
+      "en": "\\bask ai\\b",
+      "use": "Tanya AI",
+      "avoid": [
+        "Ask AI (English)"
+      ],
+      "note": "English in a short UI label → medium, in prose → low."
+    },
+    {
+      "concept": "Follow up (Ask AI)",
+      "en": "(?:\\bask ai\\b)|(?:\\bfollow[- ]?ups?\\b)",
+      "use": "Pertanyaan lanjutan… (input placeholder) / Pertanyaan lanjutan (Follow-ups section)",
+      "avoid": [
+        "Tindak lanjuti… (take action)"
+      ],
+      "note": "Follow up to N sites → Ikuti hingga N situs (correct)."
+    },
+    {
+      "concept": "follow / followers / friends",
+      "en": "(?:\\bfollow(s|ed|ing|ers?)?\\b)|(?:\\bfriends?\\b)",
+      "use": "Ikuti / Mengikuti / Pengikut / Teman",
+      "avoid": [],
+      "note": "I'm Following → Saya Ikuti / Saya Mengikuti, Following Me → Mengikuti Saya; distinguishable."
+    },
+    {
+      "concept": "mute / unmute",
+      "en": "\\b(un)?mut(e|ed|es|ing)\\b",
+      "use": "Bisukan / Batal bisukan; Muted → Dibisukan",
+      "avoid": [
+        "Bunyikan / Suarakan / Aktifkan suara (sound) for unmute"
+      ],
+      "note": "Muting a site hides it. Batal bisukan is the clearest antonym and is used consistently in the verified set. Note that Bunyikan/Suarakan are attested as the Bisukan antonym in Instagram and WhatsApp Indonesian, so the sound wording is a clarity/consistency problem for a hidden feed rather than text readers cannot parse; Aktifkan suara (turn on the sound) is the genuinely misleading form."
+    },
+    {
+      "concept": "notifications",
+      "en": "\\bnotifications?\\b",
+      "use": "Notifikasi",
+      "avoid": [],
+      "note": "pemberitahuan also acceptable."
+    },
+    {
+      "concept": "dashboard",
+      "en": "\\bdashboard\\b",
+      "use": "Dasbor",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "discover / related",
+      "en": "(?:\\bdiscover\\b)|(?:\\brelated (sites|stories)\\b)",
+      "use": "Temukan / Jelajahi; Situs Terkait",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "newsletter",
+      "en": "\\bnewsletters?\\b",
+      "use": "Buletin / buletin email",
+      "avoid": [],
+      "note": "Newsletter (English) is also common in Indonesian; mixing not flagged."
+    },
+    {
+      "concept": "web feed",
+      "en": "(?:\\bfeeds?\\b)|(?:\\bweb feeds?\\b)",
+      "use": "Feed Web",
+      "avoid": [
+        "Umpan Web",
+        "Web Feed(s) (English)"
+      ],
+      "note": "Umpan Web → medium in labels; English Web Feeds left in → low."
+    },
+    {
+      "concept": "views",
+      "en": "\\b(original|text|story|feed) view\\b",
+      "use": "Tampilan Teks / Tampilan Artikel / Tampilan Feed / Tampilan Asli (Original)",
+      "avoid": [
+        "Tampilan Suapan",
+        "Tampilan Cerita"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "tag / author",
+      "en": "(?:\\btags?\\b)|(?:\\bauthors?\\b)",
+      "use": "Tag / Penulis",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "clustering",
+      "en": "\\bclust(er|ers|ering|ered)\\b",
+      "use": "Pengelompokan Artikel; cluster → klaster",
+      "avoid": [
+        "Pengelompokan Cerita/Berita"
+      ],
+      "note": ""
+    },
+    {
+      "concept": "account / log in / sign up",
+      "en": "(?:\\baccounts?\\b)|(?:\\b(log ?(in|out)|sign(ed|ing)? (in|up))\\b)",
+      "use": "Akun / Masuk / Daftar / Keluar",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "password / email",
+      "en": "(?:\\be-?mails?\\b)|(?:\\bpasswords?\\b)",
+      "use": "Kata sandi / Email",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "keyboard shortcuts",
+      "en": "\\b(keyboard )?shortcuts?\\b",
+      "use": "Pintasan keyboard",
+      "avoid": [],
+      "note": ""
+    },
+    {
+      "concept": "relative time",
+      "en": "\\b(ago|minutes?|hours?|days?|weeks?|months?|years?)\\b",
+      "use": "%(time)s yang lalu / %@ yang lalu; bare units %(number)d hari/jam/menit/detik",
+      "avoid": [],
+      "note": "Indonesian has no case or plural change, wrappers work with bare units."
+    },
+    {
+      "concept": "numbers",
+      "en": null,
+      "use": "1.024 / 4.096 / 10.000 (period thousands separator)",
+      "avoid": [
+        "1,024"
+      ],
+      "note": "Comma thousands → low typography."
+    },
+    {
+      "concept": "date filter Newer:/Older:",
+      "en": "\\b(newer|older)\\b",
+      "use": "Setelah: / Sebelum: (date bounds)",
+      "avoid": [
+        "Lebih baru: / Lebih lama: as sort order"
+      ],
+      "note": "Lebih baru dari / Lebih lama dari also fine."
+    },
+    {
+      "concept": "briefing slots (Morning/Afternoon/Evening)",
+      "en": "(?:\\bbriefings?\\b)|(?:\\b(morning|afternoon|evening)\\b)",
+      "use": "Pagi / Siang / Sore (Morning + Afternoon → Pagi + Siang, Morning + Evening → Pagi + Sore)",
+      "avoid": [
+        "Malam for Evening",
+        "Sore for Afternoon"
+      ],
+      "note": "apps/briefing/tasks.py SLOT_TIMES: morning 8:30, afternoon 12:30, evening 17:00. 12:30 is siang and 17:00 is sore; malam begins after dark, so an Evening briefing at 17:00 must not be Ringkasan Malam. Web and iOS already use Siang/Sore; the iOS Afternoon Briefing title and Android Evening were the outliers."
+    }
+  ]
+}

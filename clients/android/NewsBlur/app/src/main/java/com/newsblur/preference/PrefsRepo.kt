@@ -31,6 +31,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FolderViewFilter
 import com.newsblur.util.Font
 import com.newsblur.util.GestureAction
+import com.newsblur.util.LanguageSettings
 import com.newsblur.util.ListOrderFilter
 import com.newsblur.util.MarkAllReadConfirmation
 import com.newsblur.util.MarkStoryReadBehavior
@@ -221,6 +222,7 @@ class PrefsRepo(
                 if (value is Boolean) putBoolean(key, value)
             }
         }
+        LanguageSettings.select(context, "auto")
 
         // wipe the local DB
         dbHelper.dropAndRecreateTables()
@@ -735,6 +737,30 @@ class PrefsRepo(
     fun isAutoOpenFirstUnread() = prefs.getBoolean(PrefConstants.STORIES_AUTO_OPEN_FIRST, false)
 
     fun isReaderFullscreenEnabled() = prefs.getBoolean(PrefConstants.READER_FULLSCREEN, false)
+
+    fun isStoryListFullscreenEnabled() = prefs.getBoolean(PrefConstants.STORY_LIST_FULLSCREEN, false)
+
+    fun getStoryListSplitRatio() = prefs.getFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, 0.4f)
+
+    fun setStoryListSplitRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.STORY_LIST_SPLIT_RATIO, ratio) }
+    }
+
+    fun getFeedListWidthRatio() = prefs.getFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, 0.4f)
+
+    fun setFeedListWidthRatio(ratio: Float) {
+        prefs.edit { putFloat(PrefConstants.FEED_LIST_WIDTH_RATIO, ratio) }
+    }
+
+    fun setStoryListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.STORY_LIST_FULLSCREEN, enabled) }
+    }
+
+    fun isFeedListFullscreenEnabled() = prefs.getBoolean(PrefConstants.FEED_LIST_FULLSCREEN, false)
+
+    fun setFeedListFullscreenEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.FEED_LIST_FULLSCREEN, enabled) }
+    }
 
     fun setReaderFullscreenEnabled(enabled: Boolean) {
         prefs.edit { putBoolean(PrefConstants.READER_FULLSCREEN, enabled) }

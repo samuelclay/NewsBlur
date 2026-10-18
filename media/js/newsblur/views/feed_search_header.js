@@ -42,7 +42,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
             // Show "Save Search" button for searches, close icon for date filters, hide for exceptions
             if (searching) {
-                var saved = this.is_saved() ? 'Saved' : 'Save Search';
+                var saved = this.is_saved() ? gettext('Saved') : gettext('Save Search');
                 this.$(".NB-search-header-save").text(saved).removeClass('NB-search-header-clear').show();
             } else if (has_date_filter) {
                 this.$(".NB-search-header-save").html('').addClass('NB-search-header-clear').show();
@@ -68,10 +68,10 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             var $view = $('<div class="NB-feed-exception-header">\
                 <div class="NB-feed-exception-icon-large"></div>\
                 <div class="NB-feed-exception-message">\
-                    This site has not been fetched in <b>' + feed.get("updated") + '</b> and is throwing errors.\
+                    ' + interpolate(gettext("This site has not been fetched in <b>%(time)s</b> and is throwing errors."), { time: feed.get("updated") }, true) + '\
                 </div>\
                 <div class="NB-feed-exception-button" role="button">\
-                    Fix misbehaving site\
+                    ' + _.escape(gettext("Fix misbehaving site")) + '\
                 </div>\
             </div>');
             return $view;
@@ -79,42 +79,35 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
             var $view = $('<div class="NB-webfeed-paused-header">\
                 <div class="NB-webfeed-paused-icon"></div>\
                 <div class="NB-webfeed-paused-message">\
-                    This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories.\
+                    ' + gettext("This web feed is <b>paused</b>. Upgrade to Premium Archive to resume fetching new stories.") + '\
                 </div>\
                 <div class="NB-webfeed-paused-button" role="button">\
-                    Upgrade to Premium Archive\
+                    ' + _.escape(gettext("Upgrade to Premium Archive")) + '\
                 </div>\
             </div>');
             return $view;
         } else if (searching) {
             var $view = $(_.template('<div>\
-                Searching \
-                <b><%= feed_title %></b> for "<b><%= query %></b>"\
+                <%= search_text %>\
             </div>', {
-                feed_title: feed_title,
-                query: NEWSBLUR.reader.flags.search
+                search_text: interpolate(gettext('Searching <b>%(feed_title)s</b> for "<b>%(query)s</b>"'), {
+                    feed_title: feed_title,
+                    query: NEWSBLUR.reader.flags.search
+                }, true)
             }));
             return $view;
         } else if (date_filter_start || date_filter_end) {
-            // Format dates to be more readable
+            // Format dates to be more readable, using the interface language's date conventions
             var format_date = function (date_string) {
                 if (!date_string) return '';
                 var date = new Date(date_string + 'T00:00:00');
-                var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-                var day_name = days[date.getDay()];
-                var month_name = months[date.getMonth()];
-                var day = date.getDate();
-                var year = date.getFullYear();
-
-                // Add ordinal suffix (st, nd, rd, th)
-                var suffix = 'th';
-                if (day % 10 === 1 && day !== 11) suffix = 'st';
-                else if (day % 10 === 2 && day !== 12) suffix = 'nd';
-                else if (day % 10 === 3 && day !== 13) suffix = 'rd';
-
-                return day_name + ', ' + month_name + ' ' + day + suffix + ', ' + year;
+                return date.toLocaleDateString(document.documentElement.lang || undefined, {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
             };
 
             // Format the date filter message
@@ -124,18 +117,18 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
             if (date_filter_start && date_filter_end) {
                 if (date_filter_start === date_filter_end) {
-                    filter_text = 'on <b>' + formatted_start + '</b>';
+                    filter_text = interpolate(gettext("Showing stories on <b>%(date)s</b>"), { date: formatted_start }, true);
                 } else {
-                    filter_text = 'between <b>' + formatted_start + '</b> and <b>' + formatted_end + '</b>';
+                    filter_text = interpolate(gettext("Showing stories between <b>%(start_date)s</b> and <b>%(end_date)s</b>"), { start_date: formatted_start, end_date: formatted_end }, true);
                 }
             } else if (date_filter_start) {
-                filter_text = 'newer than <b>' + formatted_start + '</b>';
+                filter_text = interpolate(gettext("Showing stories newer than <b>%(date)s</b>"), { date: formatted_start }, true);
             } else if (date_filter_end) {
-                filter_text = 'older than <b>' + formatted_end + '</b>';
+                filter_text = interpolate(gettext("Showing stories older than <b>%(date)s</b>"), { date: formatted_end }, true);
             }
 
             var $view = $(_.template('<div>\
-                Showing stories <%= filter_text %>\
+                <%= filter_text %>\
             </div>', {
                 filter_text: filter_text
             }));

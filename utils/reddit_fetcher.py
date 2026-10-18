@@ -94,6 +94,8 @@ class RedditFetcher:
         # not an error, so the caller reads the flag instead of catching an exception
         # and records a 429 in fetch history to back the feed off. See utils/feed_fetcher.py.
         self.rate_limited = False
+        # Preserve Reddit's HTTP failures for fetch history in utils/feed_fetcher.py.
+        self.http_error_status = None
 
     def fetch(self):
         """Return an Atom feed string for this Reddit feed, or None if unfetchable.
@@ -171,6 +173,8 @@ class RedditFetcher:
             )
             return None
 
+        if resp.status_code != 200:
+            self.http_error_status = resp.status_code
         if resp.status_code == 429:
             self.rate_limited = True
             return None
@@ -309,6 +313,8 @@ class RedditFetcher:
             )
             return None
 
+        if resp.status_code != 200:
+            self.http_error_status = resp.status_code
         if resp.status_code == 429:
             # Reddit disagrees with our local counter (clock skew, shared client); treat
             # it as backpressure too so the feed backs off.
@@ -449,6 +455,8 @@ class RedditFetcher:
             )
             return None
 
+        if resp.status_code != 200:
+            self.http_error_status = resp.status_code
         if resp.status_code == 429:
             # Reddit disagrees with our local counter (clock skew, shared client).
             # Treat it the same as a local budget miss so the feed backs off.
@@ -686,6 +694,8 @@ class RedditFetcher:
             return None
 
         if resp.status_code != 200:
+            self.http_error_status = resp.status_code
+            self.rate_limited = resp.status_code == 429
             logging.debug("   ***> ~FRReddit auth failed: HTTP %s" % resp.status_code)
             return None
 

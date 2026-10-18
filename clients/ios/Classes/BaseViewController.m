@@ -173,7 +173,9 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 - (void)addKeyCommandWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags action:(SEL)action discoverabilityTitle:(NSString *)discoverabilityTitle wantPriority:(BOOL)wantPriority {
     UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifierFlags action:action];
     if ([keyCommand respondsToSelector:@selector(discoverabilityTitle)] && [self respondsToSelector:@selector(addKeyCommand:)]) {
-        keyCommand.discoverabilityTitle = discoverabilityTitle;
+        // BaseViewController.m translates every shortcut title here; localization/manage.py extracts the
+        // discoverabilityTitle:@"..." literals passed by callers.
+        keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
         if (@available(iOS 15.0, *)) {
             keyCommand.wantsPriorityOverSystemBehavior = wantPriority;
         }
@@ -208,7 +210,42 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
             [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
         }
         [self addKeyCommandWithInput:@"s" modifierFlags:0 action:@selector(saveStoryFromKeyboard:) discoverabilityTitle:@"Save/Unsave Story" wantPriority:YES];
+
+        // BaseViewController.m mirrors the reader's story shortcuts so the Mac story list doesn't beep at J or V (forum #13881).
+        [self addKeyCommandWithInput:@"j" modifierFlags:0 action:@selector(nextStory:) discoverabilityTitle:@"Next Story" wantPriority:YES];
+        [self addKeyCommandWithInput:@"k" modifierFlags:0 action:@selector(previousStory:) discoverabilityTitle:@"Previous Story" wantPriority:YES];
+        [self addReaderShortcutWithInput:@"n" modifierFlags:0 readerAction:@selector(doNextUnreadStory:) discoverabilityTitle:@"Next Unread Story"];
+        [self addReaderShortcutWithInput:@"u" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"m" modifierFlags:0 readerAction:@selector(toggleStoryUnread:) discoverabilityTitle:@"Toggle Read/Unread"];
+        [self addReaderShortcutWithInput:@"o" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"v" modifierFlags:0 readerAction:@selector(showOriginalSubview:) discoverabilityTitle:@"Open in Browser"];
+        [self addReaderShortcutWithInput:@"t" modifierFlags:0 readerAction:@selector(openStoryTrainerFromKeyboard:) discoverabilityTitle:@"Open Story Trainer"];
+        [self addReaderShortcutWithInput:@"\r" modifierFlags:UIKeyModifierShift readerAction:@selector(toggleTextView:) discoverabilityTitle:@"Text View"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:0 readerAction:@selector(scrollPageDown:) discoverabilityTitle:@"Page Down"];
+        [self addReaderShortcutWithInput:@" " modifierFlags:UIKeyModifierShift readerAction:@selector(scrollPageUp:) discoverabilityTitle:@"Page Up"];
+        [self addReaderShortcutWithInput:@"c" modifierFlags:0 readerAction:@selector(scrolltoComment) discoverabilityTitle:@"Scroll to Comments"];
+        [self addReaderShortcutWithInput:@"s" modifierFlags:UIKeyModifierShift readerAction:@selector(openShareDialog) discoverabilityTitle:@"Share This Story"];
     }
+}
+
+- (void)addReaderShortcutWithInput:(NSString *)input modifierFlags:(UIKeyModifierFlags)modifierFlags readerAction:(SEL)readerAction discoverabilityTitle:(NSString *)discoverabilityTitle {
+    // BaseViewController.m carries the reader's selector in the command so performReaderShortcut: can forward it to the story pane.
+    UIKeyCommand *keyCommand = [UIKeyCommand commandWithTitle:@""
+                                                        image:nil
+                                                       action:@selector(performReaderShortcut:)
+                                                        input:input
+                                                modifierFlags:modifierFlags
+                                                 propertyList:NSStringFromSelector(readerAction)];
+    keyCommand.discoverabilityTitle = [NBLocalization text:discoverabilityTitle];
+    keyCommand.wantsPriorityOverSystemBehavior = YES;
+    [self addKeyCommand:keyCommand];
+}
+
+- (SEL)readerActionForShortcut:(id)sender {
+    if (![sender isKindOfClass:UIKeyCommand.class]) return NULL;
+    id propertyList = [(UIKeyCommand *)sender propertyList];
+    if (![propertyList isKindOfClass:NSString.class]) return NULL;
+    return NSSelectorFromString(propertyList);
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -335,6 +372,19 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         return self.isStoryShown || (self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0);
     }
     
+    if (action == @selector(performReaderShortcut:)) {
+        // BaseViewController.m enables a mirrored shortcut only when the open reader would accept it from its own pane.
+        StoryPagesViewController *reader = appDelegate.storyPagesViewController;
+        SEL readerAction = [self readerActionForShortcut:sender];
+        if (!readerAction || ![self readerKeyboardContextAvailable]) return NO;
+        BOOL storyOpen = self.isStoryShown && NBReaderViewIsVisible(reader.viewIfLoaded, self.viewIfLoaded.window);
+        // BaseViewController.m lets N open the first unread story from the list, the way J and the arrows open the first story.
+        BOOL opensFirstUnread = readerAction == @selector(doNextUnreadStory:) &&
+            self.isFeedShown && appDelegate.storiesCollection.storyLocationsCount > 0;
+        if (!storyOpen && !opensFirstUnread) return NO;
+        return [reader respondsToSelector:readerAction] && [reader canPerformAction:readerAction withSender:sender];
+    }
+
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
@@ -389,7 +439,7 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         BOOL isSidebarVisible = !self.appDelegate.splitViewController.isFeedsListHidden;
-        command.title = isSidebarVisible ? @"Hide Sidebar" : @"Show Sidebar";
+        command.title = isSidebarVisible ? [NBLocalization text:@"Hide Sidebar"] : [NBLocalization text:@"Show Sidebar"];
     } else if (command.action == @selector(chooseTitle:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"story_list_preview_text_size"];
         command.state = [command.propertyList isEqualToString:value];
@@ -425,29 +475,29 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         }
     } else if (command.action == @selector(openRenameSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Rename Folder…";
+            command.title = [NBLocalization text:@"Rename Folder…"];
         } else {
-            command.title = @"Rename Site…";
+            command.title = [NBLocalization text:@"Rename Site…"];
         }
     } else if (command.action == @selector(deleteSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
-            command.title = @"Delete Folder…";
+            command.title = [NBLocalization text:@"Delete Folder…"];
         } else {
-            command.title = @"Delete Site…";
+            command.title = [NBLocalization text:@"Delete Site…"];
         }
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
-            command.title = @"Unsave This Story";
+            command.title = [NBLocalization text:@"Unsave This Story"];
         } else {
-            command.title = @"Save This Story";
+            command.title = [NBLocalization text:@"Save This Story"];
         }
     } else if (command.action == @selector(toggleStoryUnread:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            command.title = @"Mark as Unread";
+            command.title = [NBLocalization text:@"Mark as Unread"];
         } else {
-            command.title = @"Mark as Read";
+            command.title = [NBLocalization text:@"Mark as Read"];
         }
     } else if (command.action == @selector(chooseMarkRead:)) {
         NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:@"default_mark_read_filter"];
@@ -706,23 +756,23 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 }
 
 - (IBAction)muteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to mute %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Mute Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to mute %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Mute Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController muteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)deleteSite:(id)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Are you sure you wish to delete %@?", self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Site" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:[NBLocalization text:@"Are you sure you wish to delete %@?"], self.appDelegate.storiesCollection.activeTitle] message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Delete Site"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
         [self.appDelegate.feedDetailViewController deleteSite];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+    [alertController addAction:[UIAlertAction actionWithTitle:[NBLocalization text:@"Cancel"]
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -812,6 +862,12 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)saveStoryFromKeyboard:(id)sender {
     [self.appDelegate.storyPagesViewController toggleStorySaved:sender];
+}
+
+- (IBAction)performReaderShortcut:(id)sender {
+    SEL readerAction = [self readerActionForShortcut:sender];
+    if (!readerAction) return;
+    [UIApplication.sharedApplication sendAction:readerAction to:self.appDelegate.storyPagesViewController from:sender forEvent:nil];
 }
 
 - (IBAction)previousStory:(id)sender {

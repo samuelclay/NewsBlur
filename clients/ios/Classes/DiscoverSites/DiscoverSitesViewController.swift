@@ -23,7 +23,7 @@ import Combine
         super.viewDidLoad()
 
         if self.appDelegate == nil { self.appDelegate = NewsBlurAppDelegate.shared() }
-        self.title = "Add + Discover Sites"
+        self.title = NBLocalization.text("Add + Discover Sites")
 
         updateBackgroundColor()
 

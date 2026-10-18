@@ -1,0 +1,3 @@
+Memperbaiki crash saat membuka NewsBlur, memeriksa jumlah artikel belum dibaca, mengonfirmasi tindakan membaca, dan memulihkan status tampilan baca. Pembaruan basis data mempertahankan artikel dalam cache dan antrean tindakan offline.
+
+Termasuk kontrol layar penuh di tablet dan penyimpanan lebar panel, 21 bahasa antarmuka, serta kontrol Artikel berikutnya dengan posisi tetap.

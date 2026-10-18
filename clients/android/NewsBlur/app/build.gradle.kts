@@ -7,7 +7,11 @@ plugins {
     alias(libs.plugins.ktlint)
 }
 
+// app/build.gradle.kts keeps existing task and artifact names for both distributions.
+val fdroid = providers.gradleProperty("fdroid").isPresent
+
 android {
+    bundle { language { enableSplit = false } }
     namespace = "com.newsblur"
     compileSdk =
         libs.versions.compileSdk
@@ -24,12 +28,13 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 291
-        versionName = "15.1"
+        versionCode = 296
+        versionName = "16.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
         manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android"
+        manifestPlaceholders["playBillingEnabled"] = (!fdroid).toString()
     }
 
     buildTypes {
@@ -43,6 +48,13 @@ android {
             matchingFallbacks += listOf("debug")
             manifestPlaceholders["defaultLauncherEnabled"] = "false"
             manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android-alpha"
+        }
+        create("storecapture") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".storecapture"
+            matchingFallbacks += listOf("debug")
+            manifestPlaceholders["defaultLauncherEnabled"] = "false"
+            manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android-storecapture"
         }
         maybeCreate("benchmark")
         getByName("benchmark") {
@@ -63,6 +75,9 @@ android {
     packaging {
         resources.excludes.add("META-INF/*")
     }
+    // StoreCaptureActivity.kt shares the licensed cooking fixture with the iOS capture harness.
+    sourceSets.getByName("storecapture").assets.srcDir("../../../ios/MarketingCooking")
+    sourceSets.getByName("main").java.srcDir(if (fdroid) "src/fdroid/java" else "src/play/java")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -87,8 +102,9 @@ ktlint {
     }
 }
 
+if (!fdroid) apply(from = "src/play/dependencies.gradle")
+
 dependencies {
-    implementation("com.google.mlkit:language-id:17.0.6")
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
@@ -97,8 +113,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.okhttp)
     implementation(libs.gson)
-    implementation(libs.billing.ktx)
-    implementation(libs.play.review)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.process)
     implementation(libs.androidx.core.splashscreen)
@@ -112,6 +126,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.sqlite.jdbc)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -47,10 +47,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 <blockquote><%= quote %></blockquote>\
             </div>\
             <% } %>\
-            <div class="NB-sideoption-share-title">Comments:</div>\
+            <div class="NB-sideoption-share-title"><%- gettext("Comments:") %></div>\
             <textarea class="NB-sideoption-share-comments"><%= comments_without_quote %></textarea>\
-            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
-            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
+            <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button"><%- gettext("Share") %></div>\
+            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button"><%- gettext("Delete Share") %></div>\
         </div>\
     </div>\
     '),
@@ -308,8 +308,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $facebook_button.hasClass('NB-active') && 'facebook',
         ]);
 
-        $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
+        $share_button.addClass('NB-saving').addClass('NB-disabled').text(gettext('Sharing...'));
+        $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text(gettext('Sharing...'));
 
         var data = {
             story_id: this.model.id,
@@ -338,7 +338,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button_menu = $('.NB-menu-manage-story-share-unshare');
         var $share_menu = $unshare_button_menu.closest('.NB-sideoption-share');
 
-        $unshare_button.addClass('NB-saving').addClass('NB-disabled').text('Deleting...');
+        $unshare_button.addClass('NB-saving').addClass('NB-disabled').text(gettext('Deleting...'));
         var params = {
             story_id: this.model.id,
             story_feed_id: this.model.get('story_feed_id'),
@@ -363,11 +363,11 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_sideoption = this.$('.NB-feed-story-share .NB-sideoption-title');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
-        var shared_text = this.model.get('shared') ? 'Shared' : 'Unshared';
+        var shared_text = this.model.get('shared') ? gettext('Shared') : gettext('Unshared');
 
         this.toggle_feed_story_share_dialog({ 'close': true });
-        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Share'));
+        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Delete Share'));
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
 
         // Extract quote from shared_comments so textarea only shows the comment
@@ -387,7 +387,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         }
 
         if (this.model.get('shared') && $share_star) {
-            $share_star.attr({ 'title': shared_text + '!' });
+            $share_star.attr({ 'title': gettext('Shared!') });
             $share_star.tipsy({
                 gravity: 'sw',
                 fade: true,
@@ -417,20 +417,22 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $share_button = this.$('.NB-sideoption-share-save');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
-        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably Adblock.");
+        var message = data && data.message || (shared ?
+            gettext("Sorry, this story could not be shared. Probably Adblock.") :
+            gettext("Sorry, this story could not be unshared. Probably Adblock."));
 
         if (!NEWSBLUR.Globals.is_authenticated) {
-            message = "You need to be logged in to share a story.";
+            message = gettext("You need to be logged in to share a story.");
         }
         var $error = $.make('div', { className: 'NB-error' }, message);
 
-        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Share'));
+        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text(gettext('Delete Share'));
         $share_button.siblings('.NB-error').remove();
         $share_button.after($error);
 
         if ($share_button_menu.length) {
-            $share_button_menu.removeClass('NB-disabled').text('Share');
+            $share_button_menu.removeClass('NB-disabled').text(gettext('Share'));
             $share_button_menu.siblings('.NB-error').remove();
             $share_button_menu.after($error.clone());
         }
@@ -450,9 +452,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_button.removeClass('NB-saving').removeClass('NB-disabled');
 
         if (!_.string.isBlank($comment_input.val()) || this.pending_quote) {
-            $share_button.text('Share with comment');
+            $share_button.text(gettext('Share with comment'));
         } else {
-            $share_button.text('Share');
+            $share_button.text(gettext('Share'));
         }
     },
 

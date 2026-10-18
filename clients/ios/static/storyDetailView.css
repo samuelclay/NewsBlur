@@ -1836,3 +1836,292 @@ a.NB-show-profile {
     font-size: 12px;
     font-weight: 600;
 }
+
+/* ===================================== */
+/* = Right-to-left interface (ar, he)  = */
+/* ===================================== */
+/* storyDetailView.css mirrors the reader's own controls when StoryDetailObjCViewController.m sets dir="rtl"
+   on html for an Arabic or Hebrew interface. Story text, titles and comments carry dir="auto", so English
+   stories keep reading left to right; :dir(rtl) rules only touch content that is itself right to left.
+   None of these selectors match a left-to-right interface. */
+
+/* Header */
+html[dir="rtl"] .NB-story-title {
+    clear: right;
+}
+html[dir="rtl"] .NB-story-unread {
+    float: inline-start;
+    margin: 6px 0 0 0;
+    margin-inline-end: 6px;
+}
+html[dir="rtl"] .NB-story-toggle-changes {
+    float: right;
+    padding-left: 0;
+    padding-right: 24px;
+    background-position: right center;
+}
+html[dir="rtl"] .NB-story-url-match {
+    padding-left: 0;
+    padding-right: 12px;
+}
+html[dir="rtl"] .NB-score-icon,
+html[dir="rtl"] .NB-score-icon-double {
+    margin-left: 0;
+    margin-right: 4px;
+}
+html[dir="rtl"] .NB-story-tags,
+html[dir="rtl"] .NB-user-tags {
+    padding-left: 2px;
+    padding-right: 0;
+}
+html[dir="rtl"] .NB-story-tag {
+    float: right;
+    margin: 0 0 12px 4px;
+}
+html[dir="rtl"] .NB-user-tag {
+    float: right;
+    padding: 1px 18px 1px 5px;
+    margin: 4px 0 4px 4px;
+    background-position: right 2px top 0;
+}
+html[dir="rtl"] .NB-user-tag.NB-add-user-tag {
+    background-position: right 6px top 3px;
+}
+html[dir="rtl"] .NB-story-starred-date {
+    padding: 0 20px 0 0;
+    background-position: right 0 top 0;
+}
+
+/* Story text that is itself right to left */
+html[dir="rtl"] .NB-story blockquote:dir(rtl) {
+    border-left: none;
+    border-right: 2px solid #ECEFE9;
+}
+html[dir="rtl"] .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-story .NB-medium-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-width-375 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-width-414 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -12px !important;
+}
+html[dir="rtl"] .NB-mac .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-12-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-10-narrow .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-12-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-ipad-pro-10-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-iphone-wide .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-480 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-667 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-724 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-736 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+html[dir="rtl"] .NB-width-768 .NB-story .NB-large-image:dir(rtl) {
+    margin-right: -30px !important;
+}
+
+/* Train, Share, Save and Ask AI buttons (a flex row, which mirrors by itself) and comment buttons */
+html[dir="rtl"] .NB-button-wrapper .NB-button {
+    float: left;
+    padding: 0px 4px 4px 0px;
+}
+html[dir="rtl"] .NB-button.NB-share-button .NB-icon {
+    margin-right: 0;
+    margin-left: 8px;
+}
+/* A long Arabic or Hebrew label ("Ask AI") ends with an ellipsis inside its button instead of spilling out. */
+html[dir="rtl"] .NB-button.NB-share-button .NB-sideoption-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+html[dir="rtl"] .NB-iphone .NB-button.NB-share-button .NB-icon {
+    right: auto;
+    left: 6px;
+}
+
+/* Comments and shares */
+html[dir="rtl"] a.NB-show-profile {
+    margin: 0 2px 0 0;
+}
+html[dir="rtl"] .NB-story-comments-label {
+    float: right;
+    margin-right: 0;
+    margin-left: 2px;
+}
+html[dir="rtl"] .NB-story-share-label {
+    float: left;
+    margin-left: 0;
+    margin-right: 2px;
+}
+html[dir="rtl"] .NB-story-share-profiles-comments-friends,
+html[dir="rtl"] .NB-story-share-profiles-comments-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles {
+    float: right;
+}
+html[dir="rtl"] .NB-story-share-profiles-shares-friends,
+html[dir="rtl"] .NB-story-share-profiles-shares-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles.NB-story-share-profiles-public,
+html[dir="rtl"] #story_pane .NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+    float: left;
+}
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-avatar,
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-username {
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-share-profile .NB-user-avatar {
+    margin: 0 0 0 4px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment {
+    padding: 0 64px 2px 12px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment {
+    padding: 0 110px 2px 30px;
+}
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment {
+    padding: 0 90px 2px 30px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 6px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 26px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar {
+    left: auto;
+    right: 12px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare {
+    left: auto;
+    right: 18px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar img,
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
+    margin-left: 0;
+    margin-right: 6px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-story-share-profile .NB-user-avatar img,
+html[dir="rtl"] #story_pane .NB-story-comment-friend-shares .NB-user-avatar.NB-story-comment-reshare img {
+    margin-right: 0;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-reshares {
+    left: auto;
+    right: 8px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    left: auto;
+    right: 26px;
+}
+html[dir="rtl"] .NB-mac#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-iphone-wide#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar,
+html[dir="rtl"] .NB-ipad-narrow#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    left: auto;
+    right: 45px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-username {
+    float: right;
+    margin: 0 0 0 10px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-date,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-location,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-content {
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-icon,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-user,
+html[dir="rtl"] #story_pane .NB-story-comment .NB-button-wrapper {
+    float: left;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-icon {
+    margin: 0 0 0 10px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment .NB-story-comment-likes-user {
+    margin: 2px 0 0 2px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply {
+    padding: 8px 34px 4px 0;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply .NB-show-profile {
+    float: right;
+    left: auto;
+    right: -34px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
+    left: auto;
+    right: 0px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-username {
+    margin: 1px 0 6px 8px;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-story-comment-reply-comments {
+    margin: 0 0 4px 8px;
+    float: right;
+}
+html[dir="rtl"] #story_pane .NB-story-comment-reply-form .NB-modal-submit-button {
+    float: right;
+}
+html[dir="rtl"] .NB-button .NB-story-comment-like-button-wrapper span {
+    float: right;
+}
+
+/* Related stories: each title carries dir="auto" so an English title truncates at its end, and stays beside
+   its favicon on the right. */
+html[dir="rtl"] .NB-cluster-detail-title-text {
+    text-align: right;
+}
+html[dir="rtl"] .NB-story-cluster-detail-item,
+html[dir="rtl"] .NB-cluster-locked-upsell {
+    padding: 0 32px 0 12px;
+}
+html[dir="rtl"] .NB-cluster-feed-border-outer {
+    left: auto;
+    right: 0;
+}
+html[dir="rtl"] .NB-cluster-feed-border-inner {
+    left: auto;
+    right: 4px;
+}

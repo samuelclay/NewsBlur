@@ -1,3 +1,4 @@
+#import "NewsBlur-Swift.h"
 //
 //  Utilities.m
 //  NewsBlur
@@ -197,7 +198,12 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
         otherFormatter.doesRelativeDateFormatting = YES;
     }
     
-    return [otherFormatter stringFromDate:date];
+    // Utilities.m writes a non-English interface's story dates in its language (NBLocalization.swift); English
+    // keeps the device-locale format it always had.
+    NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterLongStyle
+                                                                                   timeStyle:NSDateFormatterShortStyle
+                                                                                    relative:YES];
+    return [interfaceFormatter ?: otherFormatter stringFromDate:date];
     
     
     
@@ -273,10 +279,17 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
         otherFormatter.doesRelativeDateFormatting = YES;
     }
     
+    // Utilities.m writes a non-English interface's dates in its language (NBLocalization.swift).
     if ([calendar isDateInToday:date]) {
-        return [todayFormatter stringFromDate:date];
+        NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterNoStyle
+                                                                                       timeStyle:NSDateFormatterShortStyle
+                                                                                        relative:NO];
+        return [interfaceFormatter ?: todayFormatter stringFromDate:date];
     } else {
-        return [otherFormatter stringFromDate:date];
+        NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterMediumStyle
+                                                                                       timeStyle:NSDateFormatterShortStyle
+                                                                                        relative:YES];
+        return [interfaceFormatter ?: otherFormatter stringFromDate:date];
     }
     
     /*
@@ -337,22 +350,22 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
 
     NSInteger minutesAgo = MAX(1, (NSInteger)floor(secondsAgo / 60.0));
     if (minutesAgo < 60) {
-        return [NSString stringWithFormat:@"%ldm ago", (long)minutesAgo];
+        return [NSString stringWithFormat:[NBLocalization text:@"%ldm ago"], (long)minutesAgo];
     }
 
     NSInteger hoursAgo = MAX(1, (NSInteger)floor(secondsAgo / 3600.0));
     if (hoursAgo < 24) {
-        return [NSString stringWithFormat:@"%ldh ago", (long)hoursAgo];
+        return [NSString stringWithFormat:[NBLocalization text:@"%ldh ago"], (long)hoursAgo];
     }
 
     NSInteger daysAgo = MAX(1, (NSInteger)floor(secondsAgo / (3600.0 * 24.0)));
     if (daysAgo < 7) {
-        return [NSString stringWithFormat:@"%ldd ago", (long)daysAgo];
+        return [NSString stringWithFormat:[NBLocalization text:@"%ldd ago"], (long)daysAgo];
     }
 
     NSInteger weeksAgo = MAX(1, (NSInteger)floor(secondsAgo / (3600.0 * 24.0 * 7.0)));
     if (weeksAgo < 5) {
-        return [NSString stringWithFormat:@"%ldw ago", (long)weeksAgo];
+        return [NSString stringWithFormat:[NBLocalization text:@"%ldw ago"], (long)weeksAgo];
     }
 
     static NSDateFormatter *formatter = nil;
@@ -364,8 +377,12 @@ void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor
     });
 
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)timestamp];
+    // Utilities.m writes a non-English interface's cluster dates in its language (NBLocalization.swift).
+    NSDateFormatter *interfaceFormatter = [NBLocalization interfaceDateFormatterWithDateStyle:NSDateFormatterShortStyle
+                                                                                   timeStyle:NSDateFormatterNoStyle
+                                                                                    relative:NO];
 
-    return [formatter stringFromDate:date];
+    return [interfaceFormatter ?: formatter stringFromDate:date];
 }
 
 /*

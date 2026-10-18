@@ -11,7 +11,10 @@ Options:
 
 Actions:
     list                  - List available simulators with UDIDs
+    create:<name>,<type>,<runtime> - Create an explicitly authorized isolated simulator
     boot                  - Boot the specified simulator if it is not already booted
+    shutdown              - Shut down the specified simulator, preserving its data
+    reconnect             - Reconnect this simulator's idb companion using the current environment
     restart               - Restart the specified simulator, preserving its data
     tap:<x>,<y>           - Tap at coordinates
     tap:<x>,<y>,<seconds> - Long press at coordinates for the given duration
@@ -26,6 +29,8 @@ Actions:
     fuzz:<seed>,<count>    - Repeat deterministic vertical scrolling gestures (portrait iPhone)
     pagerfuzz:<seed>,<count>[,forward] - Consecutive swipes over one HID connection; forward advances steadily
     describe              - Print simulator accessibility elements
+    waittext:<text>        - Wait up to 90 seconds for accessibility content
+    waitphoto:<x>,<y>,<w>,<h> - Wait for a photo in a normalized screenshot region
     crashes               - Show recent app exception messages from the simulator
     logs                  - Show recent NewsBlur logs from the simulator
     push:<payload.apns>    - Deliver a local notification payload to the selected app
@@ -60,6 +65,7 @@ import signal
 import subprocess
 import sys
 import time
+import tempfile
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "")
@@ -141,8 +147,8 @@ def do_boot():
     subprocess.run(["xcrun", "simctl", "bootstatus", UDID, "-b"], check=True)
 
 
-def do_restart():
-    """run_ios.py restarts only the selected simulator without erasing its data."""
+def do_shutdown():
+    """run_ios.py shuts down only the selected simulator without erasing its data."""
     devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "--json"]))
     selected = next(
         (device for group in devices["devices"].values() for device in group if device["udid"] == UDID),
@@ -152,6 +158,11 @@ def do_restart():
         sys.exit(f"run_ios.py: no simulator with UDID {UDID}")
     if selected["state"] != "Shutdown":
         subprocess.run(["xcrun", "simctl", "shutdown", UDID], check=True)
+
+
+def do_restart():
+    """run_ios.py restarts only the selected simulator without erasing its data."""
+    do_shutdown()
     do_boot()
 
 
@@ -185,6 +196,42 @@ def do_swipe(coords):
     print(f"  Swipe: ({x1},{y1}) -> ({x2},{y2})")
     subprocess.run(["idb", "ui", "swipe", "--udid", UDID, x1, y1, x2, y2,
                     "--duration", str(duration)], check=True)
+
+
+def do_wait_text(text):
+    """run_ios.py waits for actual accessibility state, not a guessed animation delay."""
+    deadline = time.monotonic() + 90
+    while time.monotonic() < deadline:
+        output = subprocess.check_output(
+            ["idb", "ui", "describe-all", "--udid", UDID, "--json"], text=True
+        )
+        if text in output:
+            print(f"  Ready accessibility: {text}", flush=True)
+            return
+        time.sleep(2)
+    raise RuntimeError(f"Accessibility content did not appear: {text}")
+
+
+def do_wait_photo(region):
+    """run_ios.py rejects blank frames by inspecting real captured pixels."""
+    coordinates = region.split(",")
+    if len(coordinates) != 4:
+        raise ValueError("waitphoto requires normalized x,y,width,height")
+    source = os.path.join(os.path.dirname(__file__), "ScreenshotReadiness.swift")
+    executable = os.path.join(tempfile.gettempdir(), "newsblur-screenshot-readiness")
+    if not os.path.exists(executable) or os.path.getmtime(source) > os.path.getmtime(executable):
+        subprocess.run(["xcrun", "swiftc", source, "-o", executable], check=True)
+    deadline = time.monotonic() + 90
+    with tempfile.TemporaryDirectory(prefix="newsblur-frame-") as directory:
+        path = os.path.join(directory, "frame.png")
+        while time.monotonic() < deadline:
+            do_screenshot(path)
+            fraction = float(subprocess.check_output([executable, path, *coordinates], text=True))
+            if fraction > 0.20:
+                print(f"  Ready photo: {fraction:.3f} colored pixels", flush=True)
+                return
+            time.sleep(2)
+    raise RuntimeError(f"Photo did not render in screenshot region {region}")
 
 
 def do_capture(path, cold=False):
@@ -400,6 +447,12 @@ def parse_and_execute(action):
 
     if cmd == "boot":
         do_boot()
+    elif cmd == "shutdown":
+        do_shutdown()
+    elif cmd == "reconnect":
+        # run_ios.py refreshes only this target's connection after a toolchain change.
+        subprocess.run(["idb", "disconnect", UDID], check=True)
+        subprocess.run(["idb", "connect", UDID], check=True)
     elif cmd == "tap":
         do_tap(arg)
     elif cmd == "restart":
@@ -424,6 +477,10 @@ def parse_and_execute(action):
         do_pager_fuzz(arg)
     elif cmd == "describe":
         subprocess.run(["idb", "ui", "describe-all", "--udid", UDID, "--json"], check=True)
+    elif cmd == "waittext":
+        do_wait_text(arg)
+    elif cmd == "waitphoto":
+        do_wait_photo(arg)
     elif cmd == "push":
         subprocess.run(["xcrun", "simctl", "push", UDID, BUNDLE_ID, arg], check=True)
     elif cmd == "logs":
@@ -472,9 +529,13 @@ def main():
         print(__doc__)
         sys.exit(1)
 
-    # "list" doesn't require a UDID
+    # run_ios.py allows inventory and explicitly requested device creation without a UDID.
     if actions == ["list"]:
         do_list()
+        return
+    if len(actions) == 1 and actions[0].startswith("create:"):
+        name, device_type, runtime = actions[0].split(":", 1)[1].split(",", 2)
+        subprocess.run(["xcrun", "simctl", "create", name, device_type, runtime], check=True)
         return
 
     # All other actions require a UDID

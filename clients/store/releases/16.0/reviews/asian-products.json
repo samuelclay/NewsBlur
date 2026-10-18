@@ -1,0 +1,19 @@
+{
+  "reviewer": "Independent store_copy agent; did not author these product translations",
+  "languages": [
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "fields_reviewed": 120,
+  "status": "passed_after_corrections",
+  "semantic_review": "Compared all localized products with English and the app glossaries. Product IDs, NewsBlur plan brands, saved story tagging, Premium inclusion in Archive, permanent archival and unread retention, and Pro 5 to 15 minute intervals are preserved.",
+  "corrections": {
+    "vi": "Naturalized the Pro feed update wording.",
+    "zh-Hans_zh-Hant": "Clarified reading the articles within folders instead of literally reading folders."
+  },
+  "validation": "All product schemas and character limits passed the combined Ruby validator."
+}

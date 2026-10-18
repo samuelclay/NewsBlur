@@ -40,13 +40,13 @@ import SwiftUI
             return
         }
         pendingAppleRevocationNotice = false
-        let alert = UIAlertController(title: "Finish disconnecting Apple",
-                                      message: "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it.",
+        let alert = UIAlertController(title: NBLocalization.text("Finish disconnecting Apple"),
+                                      message: NBLocalization.text("Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it."),
                                       preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "View instructions", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NBLocalization.text("View instructions"), style: .default) { _ in
             UIApplication.shared.open(URL(string: "https://support.apple.com/en-us/102571")!)
         })
-        alert.addAction(UIAlertAction(title: "Done", style: .cancel))
+        alert.addAction(UIAlertAction(title: NBLocalization.text("Done"), style: .cancel))
         present(alert, animated: true)
     }
 }
@@ -436,27 +436,28 @@ private struct AccountDeletionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack {
-                Text("Delete account").font(.title2.weight(.semibold))
+                Text(NBLocalization.text("Delete account")).font(.title2.weight(.semibold))
                 Spacer()
-                Button("Cancel", action: cancel).disabled(model.deleting)
+                Button(NBLocalization.text("Cancel"), action: cancel).disabled(model.deleting)
             }
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Image(systemName: model.isVerified ? "person.crop.circle.badge.checkmark" : "person.crop.circle.badge.minus")
                         .font(.system(size: 42, weight: .light)).foregroundStyle(DiscoverColors.textSecondary).accessibilityHidden(true)
-                    Text(model.isVerified ? "Your identity is verified" : "Verify your identity first")
+                    Text(model.isVerified ? NBLocalization.text("Your identity is verified") : NBLocalization.text("Verify your identity first"))
                         .font(.title3.weight(.semibold))
-                    Text("Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone.")
+                    Text(NBLocalization.text("Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone."))
                         .foregroundStyle(DiscoverColors.textSecondary)
                     if model.loading { ProgressView("Loading account…").frame(maxWidth: .infinity).padding() }
                     else if model.isVerified {
-                        Text("Type Delete to permanently delete \(model.session.username ?? "your account").").font(.subheadline)
-                        TextField("Delete", text: $model.confirmation)
+                        Text(String(format: NBLocalization.text("Type %1$@ to permanently delete %2$@."),
+                                    "Delete", model.session.username ?? NBLocalization.text("your account"))).font(.subheadline)
+                        TextField(text: $model.confirmation) { Text(verbatim: "Delete") }
                             .textInputAutocapitalization(.never).autocorrectionDisabled()
                             .padding(14).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
                             .accessibilityIdentifier("account-deletion.confirmation")
                         Button(role: .destructive) { Task { await model.deleteAccount() } } label: {
-                            Text("Permanently delete account").fontWeight(.semibold).frame(maxWidth: .infinity).padding(.vertical, 8)
+                            Text(NBLocalization.text("Permanently delete account")).fontWeight(.semibold).frame(maxWidth: .infinity).padding(.vertical, 8)
                         }.buttonStyle(.borderedProminent).tint(.red)
                             .disabled(model.confirmation != "Delete" || model.deleting)
                             .accessibilityIdentifier("account-deletion.submit")
@@ -467,14 +468,14 @@ private struct AccountDeletionView: View {
                                 HStack(spacing: 12) {
                                     if provider == "apple" { Image(systemName: "apple.logo").font(.title2) }
                                     else { Image("google-signin").resizable().frame(width: 22, height: 22) }
-                                    Text(provider == "apple" ? "Verify with Apple" : "Verify with Google").fontWeight(.semibold)
+                                    Text(provider == "apple" ? NBLocalization.text("Verify with Apple") : NBLocalization.text("Verify with Google")).fontWeight(.semibold)
                                     Spacer()
                                 }.padding(16).background(DiscoverColors.cardBackground, in: RoundedRectangle(cornerRadius: 12))
                             }.buttonStyle(.plain).disabled(authentication.busy)
                         }
                         if authentication.busy { ProgressView("Verifying your identity…") }
                         if model.providers.isEmpty && model.message != nil {
-                            Button("Try again") { Task { await model.load() } }
+                            Button(NBLocalization.text("Try again")) { Task { await model.load() } }
                         }
                     }
                     if let message = model.message ?? authentication.message {
@@ -489,6 +490,7 @@ private struct AccountDeletionView: View {
 }
 
 private struct OnboardingAccountView: View {
+    @State private var language = NBLocalization.language
     @ObservedObject var model: OnboardingAccountModel
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     private let gold = Color(red: 251 / 255, green: 219 / 255, blue: 155 / 255)
@@ -497,21 +499,31 @@ private struct OnboardingAccountView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(spacing: 22) {
+                    Picker(NBLocalization.text("Language"), selection: $language) {
+                        Text(NBLocalization.automaticLabel).tag("auto")
+                        ForEach(NBLocalization.languages, id: \.0) { code, name in
+                            Text(name).tag(code)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(gold)
+                    .onChange(of: language) { _, value in NBLocalization.apply(value, pending: true) }
+                    .disabled(model.busy)
                     VStack(spacing: 10) {
                         Image(uiImage: UIImage(named: "logo_512.png") ?? UIImage(systemName: "sun.max.fill")!)
                             .resizable().scaledToFit().frame(width: 120, height: 120)
                             .shadow(color: gold.opacity(0.4), radius: 30)
                             .accessibilityHidden(true)
-                        Text("NewsBlur")
+                        Text(verbatim: "NewsBlur")
                             .font(.custom("GothamNarrow-Medium", size: 38, relativeTo: .largeTitle))
                             .shadow(color: .black.opacity(0.5), radius: 2, y: 1)
-                        Text("A personal news reader bringing\npeople together to talk about the world.")
+                        Text(NBLocalization.text("A personal news reader bringing\npeople together to talk about the world."))
                             .font(.custom("ChronicleSSm-BookItalic", size: 16, relativeTo: .subheadline))
                             .multilineTextAlignment(.center).foregroundColor(gold)
                             .shadow(color: .black.opacity(0.3), radius: 0, y: 1)
                     }.padding(.top, 16)
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(continuation ? (model.needsLink ? "Connect your account" : "Choose your username") : (model.signup ? "Create an account" : "Welcome back"))
+                        Text(continuation ? (model.needsLink ? NBLocalization.text("Connect your account") : NBLocalization.text("Choose your username")) : (model.signup ? NBLocalization.text("Create an account") : NBLocalization.text("Welcome back")))
                             .font(.custom("GothamNarrow-Medium", size: 24, relativeTo: .title2))
                         if !continuation {
                             VStack(alignment: .trailing, spacing: 6) {
@@ -519,47 +531,47 @@ private struct OnboardingAccountView: View {
                                     .signInWithAppleButtonStyle(.white).frame(height: 50)
                                     .allowsHitTesting(false)
                                     .accessibilityHidden(true)
-                                    .overlay { Button { model.social("apple") } label: { Color.clear.contentShape(Rectangle()) }.accessibilityLabel("Sign in with Apple") }
+                                    .overlay { Button { model.social("apple") } label: { Color.clear.contentShape(Rectangle()) }.accessibilityLabel(NBLocalization.text("Sign in with Apple")) }
                                 if model.lastUsed == "apple" { badge }
                             }
                             VStack(alignment: .trailing, spacing: 6) {
                                 Button { model.social("google") } label: {
-                                    HStack(spacing: 12) { Image("google-signin").resizable().frame(width: 20, height: 20); Text("Sign in with Google").font(.system(size: 17, weight: .medium)) }.frame(maxWidth: .infinity).frame(height: 50)
+                                    HStack(spacing: 12) { Image("google-signin").resizable().frame(width: 20, height: 20); Text(NBLocalization.text("Sign in with Google")).font(.system(size: 17, weight: .medium)) }.frame(maxWidth: .infinity).frame(height: 50)
                                         .foregroundColor(.black).background(.white).clipShape(RoundedRectangle(cornerRadius: 7))
                                 }
                                 if model.lastUsed == "google" { badge }
                             }
-                            HStack { Rectangle().frame(height: 1); Text("or").font(.caption); Rectangle().frame(height: 1) }.foregroundColor(.white.opacity(0.35))
+                            HStack { Rectangle().frame(height: 1); Text(NBLocalization.text("or")).font(.caption); Rectangle().frame(height: 1) }.foregroundColor(.white.opacity(0.35))
                         }
                         if model.signup && !continuation {
                             field("Email", text: $model.email).keyboardType(.emailAddress).textContentType(.emailAddress)
                         }
                         if model.needsLink {
-                            Text("Enter your existing NewsBlur username or email and NewsBlur password.")
+                            Text(NBLocalization.text("Enter your existing NewsBlur username or email and NewsBlur password."))
                                 .font(.subheadline)
                         }
                         field(model.needsUsername || (model.signup && !continuation) ? "Username" : "Username or email", text: $model.username).textContentType(.username)
                         if !model.needsUsername {
                             SecureField(model.needsLink ? "NewsBlur password" : "Password", text: $model.password,
-                                        prompt: Text(model.needsLink ? "NewsBlur password" : "Password").foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
+                                        prompt: Text(model.needsLink ? NBLocalization.text("NewsBlur password") : NBLocalization.text("Password")).foregroundColor(.white.opacity(0.65))).textContentType(model.signup && !continuation ? .newPassword : .password)
                                 .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         if !continuation && model.lastUsed == "email" { HStack { Spacer(); badge } }
                         if let message = model.message { Text(message).font(.subheadline).foregroundColor(Color(red: 1, green: 0.84, blue: 0.60)).fixedSize(horizontal: false, vertical: true) }
-                        Button(continuation ? "Continue" : model.signup ? "Create account" : "Sign in") { model.emailSignIn() }
+                        Button(continuation ? NBLocalization.text("Continue") : model.signup ? NBLocalization.text("Create account") : NBLocalization.text("Sign in")) { model.emailSignIn() }
                             .buttonStyle(OnboardingAccountButtonStyle())
                         if model.busy { ProgressView("Signing in…").tint(.white).frame(maxWidth: .infinity) }
                         if model.needsUsername {
-                            Button("Connect an existing account") { model.connectExistingAccount() }
+                            Button(NBLocalization.text("Connect an existing account")) { model.connectExistingAccount() }
                                 .accessibilityIdentifier("onboarding.connect-existing-account")
                         }
                         if model.needsLink && model.canChooseUsername {
-                            Button("Create a new account instead") { model.createNewAccountInstead() }
+                            Button(NBLocalization.text("Create a new account instead")) { model.createNewAccountInstead() }
                                 .accessibilityIdentifier("onboarding.create-new-account")
                         }
-                        if continuation { Button("Use another sign-in method") { model.cancelContinuation() } }
+                        if continuation { Button(NBLocalization.text("Use another sign-in method")) { model.cancelContinuation() } }
                         if model.needsLink || (!continuation && !model.signup) {
-                            Link("Forgot your password?", destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
+                            Link(NBLocalization.text("Forgot your password?"), destination: URL(string: (NewsBlurAppDelegate.shared()?.url ?? "https://www.newsblur.com") + "/profile/forgot_password")!)
                         }
                     }.padding(22)
                         .background {
@@ -570,7 +582,7 @@ private struct OnboardingAccountView: View {
                         .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(.white.opacity(0.15), lineWidth: 0.5))
                         .disabled(model.busy)
                     if !continuation {
-                        Button(model.signup ? "Already have an account? Sign in" : "New to NewsBlur? Create an account") {
+                        Button(model.signup ? NBLocalization.text("Already have an account? Sign in") : NBLocalization.text("New to NewsBlur? Create an account")) {
                             model.signup.toggle(); model.message = nil
                         }.disabled(model.busy)
                     }
@@ -578,7 +590,7 @@ private struct OnboardingAccountView: View {
             }
         }.font(.custom("WhitneySSm-Book", size: 16, relativeTo: .body)).foregroundColor(.white).tint(gold).preferredColorScheme(.dark)
     }
-    private var badge: some View { Text("Last used").font(.caption.weight(.semibold)).padding(.horizontal, 8).padding(.vertical, 3).background(.white.opacity(0.15)).clipShape(Capsule()) }
+    private var badge: some View { Text(NBLocalization.text("Last used")).font(.caption.weight(.semibold)).padding(.horizontal, 8).padding(.vertical, 3).background(.white.opacity(0.15)).clipShape(Capsule()) }
     private func field(_ title: String, text: Binding<String>) -> some View {
         TextField(title, text: text, prompt: Text(title).foregroundColor(.white.opacity(0.65))).textInputAutocapitalization(.never).autocorrectionDisabled()
             .padding(15).background(.white.opacity(0.12)).clipShape(RoundedRectangle(cornerRadius: 12))

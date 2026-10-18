@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils_tags %}
 {% block bodyclass %}NB-static NB-static-features NB-static-feature-web-feeds{% endblock %}
-{% block title %}Web Feeds - NewsBlur{% endblock %}
-{% block nav_title %}Web Feeds{% endblock %}
+{% block title %}{% trans "Web Feeds - NewsBlur" %}{% endblock %}
+{% block nav_title %}{% trans "Web Feeds" %}{% endblock %}
 {% block head %}
     <meta name="description" content="Follow any website, even ones that don't publish an RSS feed. NewsBlur generates a custom feed for any web page by monitoring it for changes.">
     <meta property="og:title" content="Web Feeds - NewsBlur">
@@ -22,45 +23,45 @@
 <div class="NB-feature-detail-container">
 
     <div class="NB-feature-detail-hero">
-        <div class="NB-feature-section-badge NB-feature-badge-archive">Premium Archive</div>
-        <h1 class="NB-feature-detail-title">Web Feeds</h1>
-        <p class="NB-feature-detail-subtitle">Follow any website, even ones that don't publish an RSS feed.</p>
+        <div class="NB-feature-section-badge NB-feature-badge-archive">{% trans "Premium Archive" %}</div>
+        <h1 class="NB-feature-detail-title">{% trans "Web Feeds" %}</h1>
+        <p class="NB-feature-detail-subtitle">{% trans "Follow any website, even ones that don't publish an RSS feed." %}</p>
     </div>
 
     <div class="NB-feature-detail-screenshots NB-feature-detail-screenshots-single">
         <div class="NB-feature-detail-screenshot">
-            <img src="{{ MEDIA_URL }}img/features/web-feeds-old.png" alt="Web feed creation showing a page being converted to a feed">
-            <div class="NB-feature-detail-caption">Web feed creation showing page conversion</div>
+            <img src="{{ MEDIA_URL }}img/features/web-feeds-old.png" alt="{% trans 'Web feed creation showing a page being converted to a feed' %}">
+            <div class="NB-feature-detail-caption">{% trans "Web feed creation showing page conversion" %}</div>
         </div>
     </div>
 
     <div class="NB-feature-detail-how">
-        <h2>How it works</h2>
+        <h2>{% trans "How it works" %}</h2>
         <ol class="NB-feature-detail-steps">
             <li class="NB-feature-detail-step">Paste any URL into the "Add Site" dialog</li>
-            <li class="NB-feature-detail-step">If no RSS feed is found, NewsBlur offers to create a Web Feed</li>
-            <li class="NB-feature-detail-step">NewsBlur monitors the page for changes automatically</li>
-            <li class="NB-feature-detail-step">New content appears in your feed just like regular RSS</li>
-            <li class="NB-feature-detail-step">Works with social media profiles, job boards, product pages, and more</li>
+            <li class="NB-feature-detail-step">{% trans "If no RSS feed is found, NewsBlur offers to create a Web Feed" %}</li>
+            <li class="NB-feature-detail-step">{% trans "NewsBlur monitors the page for changes automatically" %}</li>
+            <li class="NB-feature-detail-step">{% trans "New content appears in your feed just like regular RSS" %}</li>
+            <li class="NB-feature-detail-step">{% trans "Works with social media profiles, job boards, product pages, and more" %}</li>
         </ol>
     </div>
 
     <div class="NB-feature-detail-faq">
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">What sites can I follow with Web Feeds?</h3>
-            <p class="NB-feature-detail-faq-a">Any public web page. Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government sites, and more.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "What sites can I follow with Web Feeds?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Any public web page. Twitter profiles, Reddit threads, GitHub repos, product pages, job boards, government sites, and more." %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">How often are Web Feeds checked?</h3>
-            <p class="NB-feature-detail-faq-a">The same as regular feeds. Premium and Pro users get faster update frequencies.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "How often are Web Feeds checked?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "The same as regular feeds. Premium and Pro users get faster update frequencies." %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">Is this different from RSS?</h3>
-            <p class="NB-feature-detail-faq-a">Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work even when sites don't offer RSS.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "Is this different from RSS?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Yes. Web Feeds monitor a page's HTML for changes, while RSS reads a structured feed file. Web Feeds work even when sites don't offer RSS." %}</p>
         </div>
         <div class="NB-feature-detail-faq-item">
-            <h3 class="NB-feature-detail-faq-q">Is this available on the free plan?</h3>
-            <p class="NB-feature-detail-faq-a">Web Feeds require a Premium Archive ($99/year) or Premium Pro ($29/month) subscription. Page-scraping is more resource-intensive than RSS fetching, so it's reserved for paid tiers.</p>
+            <h3 class="NB-feature-detail-faq-q">{% trans "Is this available on the free plan?" %}</h3>
+            <p class="NB-feature-detail-faq-a">{% trans "Web Feeds require a Premium Archive ($99/year) or Premium Pro ($29/month) subscription. Page-scraping is more resource-intensive than RSS fetching, so it's reserved for paid tiers." %}</p>
         </div>
     </div>
 
