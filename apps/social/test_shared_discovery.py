@@ -77,6 +77,22 @@ class Test_SharedDiscovery(TestCase):
         self.assertEqual(stories[shared.story_hash]["count"], 6)
         self.assertEqual(len(collect_candidates(now=self.now)), 1)
 
+    def test_duplicate_story_records_count_as_one_reader(self):
+        shared = self.share(self.users[0], "one-off")
+        duplicate = shared.to_mongo().to_dict()
+        duplicate.pop("_id")
+        # apps/social/test_shared_discovery.py: The unique key is (story_guid, user_id),
+        # so distinct GUIDs can still refer to one canonical story_hash after repairs.
+        duplicate["story_guid"] += "-alias"
+        MSharedStory._get_collection().insert_one(duplicate)
+
+        stories, _ = MSharedStory.collect_popular_stories(cutoff=2)
+        self.assertEqual(stories, {})
+
+        self.share(self.users[1], "one-off")
+        stories, _ = MSharedStory.collect_popular_stories(cutoff=2)
+        self.assertEqual(stories[shared.story_hash]["count"], 2)
+
     def test_two_readers_repeating_comments_are_not_a_campaign(self):
         for user in self.users[:2]:
             self.share(user, "first")
