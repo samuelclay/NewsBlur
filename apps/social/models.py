@@ -54,6 +54,7 @@ from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStory, renew_merge_feeds_locks
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.text_importer import TextImporter
+from apps.social.discovery import discovery_excluded_pairs
 from utils import json_functions as json
 from utils import log as logging
 from utils import s3_utils
@@ -2116,19 +2117,27 @@ class MSharedStory(mongo.DynamicDocument):
             shared_feed_ids = []
         # shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         # cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
-        today = datetime.datetime.now() - datetime.timedelta(days=days)
+        now = datetime.datetime.now()
+        today = now - datetime.timedelta(days=days)
 
         excluded_feed_ids = [int(fid) for fid in shared_feed_ids if fid.isdigit()]
+        eligible_shares = {"shared_date": {"$gte": today}}
+        excluded_pairs = discovery_excluded_pairs(now=now)
+        if excluded_pairs:
+            eligible_shares["$nor"] = [
+                {"user_id": user_id, "story_feed_id": feed_id} for user_id, feed_id in sorted(excluded_pairs)
+            ]
         pipeline = [
-            {"$match": {"shared_date": {"$gte": today}}},
+            {"$match": eligible_shares},
             {
                 "$group": {
                     "_id": "$story_hash",
                     "feed_id": {"$first": "$story_feed_id"},
                     "title": {"$first": "$story_title"},
-                    "count": {"$sum": 1},
+                    "users": {"$addToSet": "$user_id"},
                 }
             },
+            {"$addFields": {"count": {"$size": "$users"}}},
             {"$match": {"count": {"$gte": cutoff}}},
         ]
         if excluded_feed_ids:
