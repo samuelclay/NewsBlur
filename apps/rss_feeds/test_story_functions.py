@@ -17,6 +17,28 @@ class StripNonEmbeddableIframesTest(SimpleTestCase):
         content = "<p>Before</p>%s<p>After</p>" % FACEBOOK_POST
         self.assertEqual(strip_non_embeddable_iframes(content), content)
 
+    def test_keeps_facebook_embed_urls(self):
+        for src in [
+            "https://www.facebook.com/plugins/post.php?href=x",
+            "https://facebook.com/plugins/post.php",
+            "https://m.facebook.com/plugins/video.php?href=x",
+        ]:
+            with self.subTest(src=src):
+                content = '<iframe src="%s"></iframe>' % src
+                self.assertEqual(strip_non_embeddable_iframes(content), content)
+
+    def test_strips_other_facebook_urls(self):
+        for src in [
+            "https://www.facebook.com/UrbanComics",
+            "https://www.facebook.com/plugins/page.php",
+            "https://www.facebook.com/plugins/post.php/extra",
+            "https://evil.facebook.com/plugins/post.php",
+            "https://www.facebook.com.evil.example/plugins/post.php",
+        ]:
+            with self.subTest(src=src):
+                content = '<iframe src="%s"></iframe>' % src
+                self.assertEqual(strip_non_embeddable_iframes(content), "")
+
     def test_does_not_match_lookalike_domain(self):
         content = '<iframe src="https://notfacebook.com/plugins/post.php"></iframe>'
         self.assertEqual(strip_non_embeddable_iframes(content), "")
