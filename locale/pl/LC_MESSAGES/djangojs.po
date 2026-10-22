@@ -129,6 +129,11 @@ msgstr " — Dwie lub więcej wielkich liter"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — tylko całe słowo „%(word)s”"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "29 USD/miesiąc"
 
@@ -257,6 +262,13 @@ msgstr[1] "%(count)s obserwujących"
 msgstr[2] "%(count)s obserwujących"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "Pozostał dziś %(count)s darmowy podgląd artykułu"
+msgstr[1] "Pozostały dziś %(count)s darmowe podglądy artykułów"
+msgstr[2] "Pozostało dziś %(count)s darmowych podglądów artykułów"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s godzina"
@@ -283,6 +295,13 @@ msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s polubienie"
 msgstr[1] "%(count)s polubienia"
 msgstr[2] "%(count)s polubień"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s dopasowanie"
+msgstr[1] "%(count)s dopasowania"
+msgstr[2] "%(count)s dopasowań"
 
 #, python-format
 msgid "%(count)s member"
@@ -497,6 +516,13 @@ msgstr[1] "%(count)s filmy"
 msgstr[2] "%(count)s filmów"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "Pozostał %(count)s podgląd głosu"
+msgstr[1] "Pozostały %(count)s podglądy głosu"
+msgstr[2] "Pozostało %(count)s podglądów głosu"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s tydzień"
@@ -593,6 +619,13 @@ msgstr[2] "Zindeksowano %(indexed)s z %(count)s witryn. Zindeksuj pozostałe kan
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Przejdź na wyższy plan, aby zobaczyć powiązane artykuły z całego archiwum."
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "Pozostała %(minutes)s minuta w tym miesiącu"
+msgstr[1] "Pozostały %(minutes)s minuty w tym miesiącu"
+msgstr[2] "Pozostało %(minutes)s minut w tym miesiącu"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -1023,6 +1056,12 @@ msgstr "Dostępnych jest 28 narzędzi do czytania, wykonywania działań, trenow
 msgid "2x daily"
 msgstr "2 razy dziennie"
 
+msgid "30 second preview"
+msgstr "30-sekundowy podgląd"
+
+msgid "30s preview"
+msgstr "30-sekundowy podgląd"
+
 msgid "3x daily"
 msgstr "3 razy dziennie"
 
@@ -1066,6 +1105,9 @@ msgstr[2] "<strong>%(count)s dni</strong> pozostało do końca okresu próbnego 
 
 msgid "A blurblog of shared stories"
 msgstr "Blurblog udostępnionych artykułów"
+
+msgid "A clearer, closer sound"
+msgstr "Czystszy, bardziej bezpośredni dźwięk"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Folder kanałów wyświetlanych jako jeden strumień"
@@ -1116,6 +1158,10 @@ msgstr "WSZYSTKIE KATEGORIE (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Oczywiście. Otwórz trenera i usuń dowolne kciuki w górę lub w dół, aby go zresetować."
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "Akcent"
 
 msgid "Account"
 msgstr "Konto"
@@ -1196,12 +1242,19 @@ msgstr "Dodaj do Chrome"
 msgid "Add to Firefox"
 msgstr "Dodaj do Firefoksa"
 
+msgid "Add to Up Next"
+msgstr "Dodaj do kolejki „Następne”"
+
 msgid "Add to folder"
 msgstr "Dodaj do folderu"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "Dodano %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "Dodano do kolejki „Następne” · %(position)s"
 
 msgid "Added!"
 msgstr "Dodano!"
@@ -1224,6 +1277,10 @@ msgstr "Po oznaczeniu kanału/folderu jako przeczytanego"
 
 msgid "Afternoon"
 msgstr "Popołudnie"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "Wiek"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1520,6 +1577,9 @@ msgstr "Automatycznie oznaczaj jako przeczytane"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Automatyczny motyw dopasowuje się do harmonogramu jasnego i ciemnego motywu w systemie."
+
+msgid "Auto-continue"
+msgstr "Automatyczne kontynuowanie"
 
 msgid "Auto-follow<br>my friends"
 msgstr "Automatycznie obserwuj<br>moich znajomych"
@@ -1927,6 +1987,9 @@ msgstr "Wyczyść zakres dat"
 msgid "Clear filter"
 msgstr "Wyczyść filtr"
 
+msgid "Clear filters"
+msgstr "Wyczyść filtry"
+
 msgid "Clear icon"
 msgstr "Wyczyść ikonę"
 
@@ -1957,6 +2020,9 @@ msgstr "Zamknij trenowanie i zacznij czytać"
 
 msgid "Close player"
 msgstr "Zamknij odtwarzacz"
+
+msgid "Closeness to the original voice"
+msgstr "Podobieństwo do oryginalnego głosu"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "Grupuj zduplikowane artykuły ze wszystkich kanałów"
@@ -2098,6 +2164,9 @@ msgstr "Nie znaleziono kanału RSS dla tego adresu URL"
 msgid "Could not load FAQ. Please try again."
 msgstr "Nie udało się wczytać FAQ. Spróbuj ponownie."
 
+msgid "Couldn't load audio for this story."
+msgstr "Nie udało się wczytać dźwięku tego artykułu."
+
 msgid "Counting is difficult"
 msgstr "Liczenie jest trudne"
 
@@ -2130,6 +2199,10 @@ msgstr "Nagroda"
 
 msgid "Cursors"
 msgstr "Wskaźniki"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "Niestandardowy"
 
 msgid "Custom Add Site URL"
 msgstr "Własny adres URL do dodawania witryn"
@@ -2296,6 +2369,9 @@ msgstr "Usunięto!"
 
 msgid "Deleting..."
 msgstr "Usuwanie..."
+
+msgid "Delivery"
+msgstr "Sposób przekazywania"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Opisz artykuł, którego szukasz, a ponownie przeanalizujemy stronę, aby go znaleźć."
@@ -2713,6 +2789,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "Dokładna fraza"
 
+msgid "Exaggerates the voice's style"
+msgstr "Wyolbrzymia styl głosu"
+
 msgid "Examples"
 msgstr "Przykłady"
 
@@ -2748,6 +2827,10 @@ msgstr "Wygasa po 1 roku"
 
 msgid "Export trained stories from folders"
 msgstr "Eksportuj wytrenowane artykuły z folderów"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "Ekspresyjny"
 
 msgid "Extras"
 msgstr "Dodatki"
@@ -2988,6 +3071,9 @@ msgstr "Znajdź znajomych"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Znajdź swój unikalny adres e-mail NewsBlur w oknie dialogowym „Newslettery e-mailowe”"
 
+msgid "Fine-tune voice"
+msgstr "Dostosuj głos"
+
 msgid "Finish recording..."
 msgstr "Zakończ nagrywanie..."
 
@@ -3055,6 +3141,9 @@ msgstr "Obserwuj"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "Obserwuj %(value_1)s"
+
+msgid "Follow along"
+msgstr "Śledź na bieżąco"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "Obserwuj dowolną witrynę, nawet taką, która nie publikuje kanału RSS."
@@ -3269,6 +3358,10 @@ msgstr "Gry"
 msgid "Gaming"
 msgstr "Gry"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "Płeć"
+
 msgid "General"
 msgstr "Ogólne"
 
@@ -3436,6 +3529,9 @@ msgstr "Nagłówki"
 msgid "Health"
 msgstr "Zdrowie"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "Posłuchaj, jak czytane jest pierwsze 30 sekund. Premium Archive odczytuje całe artykuły."
+
 msgid "Hearts"
 msgstr "Serca"
 
@@ -3475,6 +3571,9 @@ msgstr "Ukryj zmiany w artykule"
 msgid "Highlight"
 msgstr "Podświetl"
 
+msgid "Highlight the paragraph being read"
+msgstr "Podświetl czytany akapit"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Zaznacz słowa w tytule, aby trenować rozpoznawanie konkretnych fraz."
 
@@ -3507,6 +3606,9 @@ msgstr "Jak to działa"
 
 msgid "How many stories can I save?"
 msgstr "Ile artykułów mogę zapisać?"
+
+msgid "How much emotion"
+msgstr "Ile emocji"
 
 msgid "How often"
 msgstr "Jak często"
@@ -3820,6 +3922,21 @@ msgstr "Widok listy"
 msgid "List view"
 msgstr "Widok listy"
 
+msgid "Listen"
+msgstr "Odsłuchaj"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "Przekroczono limit czasu słuchania. Spróbuj ponownie za chwilę."
+
+msgid "Listen to stories read aloud"
+msgstr "Słuchaj artykułów czytanych na głos"
+
+msgid "Listen to story"
+msgstr "Słuchaj artykułu"
+
+msgid "Listen to this story"
+msgstr "Posłuchaj tego artykułu"
+
 msgid "Loading PayPal..."
 msgstr "Wczytywanie PayPal..."
 
@@ -3837,6 +3954,9 @@ msgstr "Wczytywanie kanałów..."
 
 msgid "Loading more briefings..."
 msgstr "Wczytywanie kolejnych przeglądów..."
+
+msgid "Loading voices..."
+msgstr "Wczytywanie głosów..."
 
 msgid "Loading your blocklist settings..."
 msgstr "Wczytywanie ustawień listy blokowanych…"
@@ -4111,6 +4231,9 @@ msgstr "Więcej funkcji"
 msgid "More from Reddit"
 msgstr "Więcej z Reddita"
 
+msgid "More voices"
+msgstr "Więcej głosów"
+
 msgid "Morning"
 msgstr "Poranek"
 
@@ -4201,6 +4324,10 @@ msgstr "Nazwa"
 
 msgid "Native Apps"
 msgstr "Aplikacje natywne"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "Naturalny"
 
 msgid "Natural Language Image Classifier"
 msgstr "Klasyfikator obrazów w języku naturalnym"
@@ -4531,6 +4658,9 @@ msgstr "Nie skonfigurowano rozliczania za użycie."
 
 msgid "No valid merge groups to apply"
 msgstr "Brak prawidłowych grup do scalenia"
+
+msgid "No voices match these filters"
+msgstr "Żaden głos nie pasuje do tych filtrów"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "Nikt jeszcze nie subskrybuje udostępnionych przez Ciebie artykułów."
@@ -4923,6 +5053,15 @@ msgstr "Wklej adres URL dowolnej strony..."
 msgid "Pattern: %(value_1)s"
 msgstr "Wzorzec: %(value_1)s"
 
+msgid "Pause"
+msgstr "Wstrzymaj"
+
+msgid "Pause listening"
+msgstr "Wstrzymaj odtwarzanie"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "Wstrzymaj lub wznów czytanie na głos (y)"
+
 msgid "Payment history"
 msgstr "Historia płatności"
 
@@ -4973,6 +5112,9 @@ msgstr "Odtwórz jako następne"
 
 msgid "Play in Mini Media Player"
 msgstr "Odtwórz w miniodtwarzaczu multimediów"
+
+msgid "Play the next unread story"
+msgstr "Odtwórz następny nieprzeczytany artykuł"
 
 msgid "Play/Pause"
 msgstr "Odtwórz/Wstrzymaj"
@@ -5058,6 +5200,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive odczytuje całe artykuły na głos."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -5096,6 +5241,9 @@ msgstr "Status Premium"
 msgid "Premium users can make their blurblog private."
 msgstr "Użytkownicy Premium mogą ustawić swój blurblog jako prywatny."
 
+msgid "Preparing audio..."
+msgstr "Przygotowywanie dźwięku..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "Naciśnij / w dowolnym miejscu, aby przejść bezpośrednio do pola wyszukiwania."
 
@@ -5116,6 +5264,16 @@ msgstr "Poprzednia witryna"
 
 msgid "Preview"
 msgstr "Podgląd"
+
+msgid "Preview this voice"
+msgstr "Odsłuchaj ten głos"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "Podgląd: %(seconds)s sekundę. Premium Archive odblokowuje pełne artykuły"
+msgstr[1] "Podgląd: %(seconds)s sekundy. Premium Archive odblokowuje pełne artykuły"
+msgstr[2] "Podgląd: %(seconds)s sekund. Premium Archive odblokowuje pełne artykuły"
 
 msgid "Previous story"
 msgstr "Poprzedni artykuł"
@@ -5221,6 +5379,9 @@ msgstr[2] ""
 "Dodano do kolejki %(count)s artykułów do kategoryzacji. Kategorie pojawią się w miarę przetwarzania "
 "artykułów."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "Dodano do kolejki. Kliknij, aby usunąć z kolejki „Następne”"
+
 msgid "Quick search for a site"
 msgstr "Szybkie wyszukiwanie witryny"
 
@@ -5278,6 +5439,13 @@ msgstr ""
 "Czytaj wszystkie kanały w folderze jako jeden przewijany strumień, w kolejności chronologicznej. Dzięki "
 "trenowaniu strumień wyświetla najlepsze artykuły ze wszystkich subskrypcji."
 
+msgid "Read aloud"
+msgstr "Czytaj na głos"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "Czyta %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "Czytaj więcej na blogu NewsBlur"
 
@@ -5292,6 +5460,9 @@ msgstr "Czytaj artykuły według folderu"
 
 msgid "Read the whole story"
 msgstr "Przeczytaj cały artykuł"
+
+msgid "Read this story aloud (y)"
+msgstr "Przeczytaj ten artykuł na głos (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "Czytaj nieprzeczytane artykuły za pomocą: newsblur stories list"
@@ -5317,6 +5488,10 @@ msgstr "Wczytywanie zapisanego artykułu..."
 
 msgid "Reading view"
 msgstr "Widok czytania"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "Czyta Twoje artykuły: %(language)s"
 
 msgid "Real-time"
 msgstr "W czasie rzeczywistym"
@@ -5350,6 +5525,10 @@ msgstr "Poleć tę witrynę"
 
 msgid "Recommended"
 msgstr "Polecane"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "Polecane dla %(language)s"
 
 msgid "Record voice question"
 msgstr "Nagraj pytanie głosowe"
@@ -5419,6 +5598,9 @@ msgstr "Zapamiętuj miejsce odtwarzania każdego odcinka"
 msgid "Remove"
 msgstr "Usuń"
 
+msgid "Remove from Up Next"
+msgstr "Usuń z kolejki „Następne”"
+
 msgid "Remove this list"
 msgstr "Usuń tę listę"
 
@@ -5427,6 +5609,9 @@ msgstr "Usuń tę grupę scalania"
 
 msgid "Removed"
 msgstr "Usunięto"
+
+msgid "Removed from Up Next"
+msgstr "Usunięto z kolejki „Następne”"
 
 msgid "Rename"
 msgstr "Zmień nazwę"
@@ -5487,6 +5672,10 @@ msgstr "Resetuj"
 
 msgid "Reset to original favicon"
 msgstr "Przywróć oryginalną ikonę favicon"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "Resetuje %(date)s"
 
 msgid "Resetting..."
 msgstr "Resetowanie..."
@@ -5758,6 +5947,9 @@ msgstr "Szukaj subredditów (np. programowanie, wiadomości, gry)..."
 
 msgid "Search the FAQ..."
 msgstr "Szukaj w FAQ..."
+
+msgid "Search voices"
+msgstr "Szukaj głosów"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Szukaj w pojedynczym kanale, folderze lub we wszystkich"
@@ -6105,6 +6297,9 @@ msgstr "Zarejestruj się, aby czytać własne kanały."
 msgid "Signup"
 msgstr "Rejestracja"
 
+msgid "Similarity"
+msgstr "Podobieństwo"
+
 msgid "Single Story"
 msgstr "Pojedynczy artykuł"
 
@@ -6224,8 +6419,14 @@ msgstr "Odstęp między kanałami a tytułami artykułów"
 msgid "Spanish"
 msgstr "Hiszpański"
 
+msgid "Speaker boost"
+msgstr "Wzmocnienie głosu"
+
 msgid "Special Folders"
 msgstr "Foldery specjalne"
+
+msgid "Speed"
+msgstr "Szybkość"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Osiągnięto limit wydatków. Klasyfikatory wstrzymano do następnego cyklu."
@@ -6273,6 +6474,12 @@ msgstr "Sport"
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "Ulepsz slogan witryny. Jeśli zostanie wybrany, witryna będzie wyróżniona przez tydzień w panelu NewsBlur."
 
+msgid "Stability"
+msgstr "Stabilność"
+
+msgid "Stability, similarity and style"
+msgstr "Stabilność, podobieństwo i styl"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "Brak artykułów od %(date)s"
@@ -6314,12 +6521,22 @@ msgstr "Status"
 msgid "Stay on the same feed/folder"
 msgstr "Pozostań w tym samym kanale/folderze"
 
+msgid "Steadier or more varied"
+msgstr "Bardziej jednostajny lub bardziej zróżnicowany"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "Równy"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "Krok %(step)s z %(count)s"
 
 msgid "Stop any time you like."
 msgstr "Możesz przerwać w dowolnym momencie."
+
+msgid "Stop preview"
+msgstr "Zatrzymaj podgląd"
 
 msgid "Stop recording"
 msgstr "Zatrzymaj nagrywanie"
@@ -6437,6 +6654,9 @@ msgstr "Podgląd treści artykułu"
 msgid "Story is always hidden"
 msgstr "Artykuł jest zawsze ukryty"
 
+msgid "Story language"
+msgstr "Język artykułu"
+
 msgid "Story layout"
 msgstr "Układ artykułów"
 
@@ -6463,6 +6683,13 @@ msgstr "Strumień przerwany. Brak odpowiedzi od 10 sekund."
 
 msgid "Stripe Id:"
 msgstr "Identyfikator Stripe:"
+
+msgid "Style"
+msgstr "Styl"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "Styl"
 
 msgid "Submit Payment"
 msgstr "Wyślij płatność"
@@ -6731,6 +6958,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "Blog NewsBlur"
 
+msgid "The audio stream was interrupted."
+msgstr "Strumień audio został przerwany."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "Pełny %(icon)s widok tekstowy to %(link_start)sfunkcja Premium%(link_end)s."
@@ -6781,6 +7011,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "Motywy i personalizacja"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "Następnie z %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "Jest zbyt wiele witryn i artykułów do przetworzenia. "
@@ -6838,6 +7072,9 @@ msgstr "Wystąpił błąd podczas wylogowywania. Ojej."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Nie ma limitu. Zapisuj dowolną liczbę artykułów — będą przechowywane na zawsze."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "Nie ma nic do odczytania na głos w tym artykule."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Te grupy znaleziono, ponieważ inni subskrybenci udostępniają te kanały."
@@ -7361,6 +7598,9 @@ msgstr[2] "Aktualizowanie witryn co %(count)s sekund..."
 msgid "Updating sites in real-time..."
 msgstr "Aktualizowanie witryn w czasie rzeczywistym..."
 
+msgid "Upgrade"
+msgstr "Przejdź na wyższy plan"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "Przejdź na %(value_1)s"
@@ -7511,8 +7751,14 @@ msgstr "Wyświetl ustawienia"
 msgid "Visual"
 msgstr "Wizualny"
 
+msgid "Voice"
+msgstr "Głos"
+
 msgid "Voice recording failed. Please try again."
 msgstr "Nagrywanie głosu nie powiodło się. Spróbuj ponownie."
+
+msgid "Voice settings"
+msgstr "Ustawienia głosu"
 
 msgid "Warning: This is actually permanent"
 msgstr "Ostrzeżenie: tej operacji nie można cofnąć"
@@ -7938,6 +8184,10 @@ msgstr "Statystyki poleceń"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Zarchiwizowane artykuły pozostaną dostępne, ale nowe będą podlegać standardowym zasadom przechowywania."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "Wybrany przez Ciebie głos jest teraz niedostępny, dlatego ten artykuł czyta %(voice)s."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Sesja cookie wygasła — zaloguj się ponownie"
 
@@ -8113,6 +8363,10 @@ msgstr "związki zawodowe"
 msgid "like"
 msgstr "lubisz"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "Słuchaj"
+
 msgid "local elections"
 msgstr "wybory lokalne"
 
@@ -8194,6 +8448,9 @@ msgstr "subskrybowano"
 
 msgid "supply chain"
 msgstr "łańcuch dostaw"
+
+msgid "this list"
+msgstr "ta lista"
 
 msgid "trade policy"
 msgstr "polityka handlowa"

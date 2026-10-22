@@ -88,6 +88,11 @@ msgid_plural "%(count)d days ago"
 msgstr[0] "%(count)d일 전"
 
 #, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d시간"
+
+#, python-format
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d시간 전"
@@ -650,6 +655,9 @@ msgstr "<code>%(path)s</code>의 <code>%(key)s</code>에 추가:"
 msgid "Add to <code>%(path)s</code>:"
 msgstr "<code>%(path)s</code>에 추가:"
 
+msgid "Advertising"
+msgstr "광고"
+
 msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
 "training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
@@ -1113,6 +1121,9 @@ msgstr "CLI를 이용하려면 프리미엄 아카이브(연 $99) 또는 프리�
 msgid "CTO, Parse.ly"
 msgstr "Parse.ly CTO"
 
+msgid "Calm"
+msgstr "차분한"
+
 msgid "Can I automatically mark duplicates as read?"
 msgstr "중복 항목을 자동으로 읽음 처리할 수 있나요?"
 
@@ -1170,11 +1181,17 @@ msgstr "모든 URL 추가 가능"
 msgid "Cancel"
 msgstr "취소"
 
+msgid "Casual"
+msgstr "편안한"
+
 msgid "Category-based rules"
 msgstr "카테고리 기반 규칙"
 
 msgid "Changed your mind? Manage your email settings"
 msgstr "마음이 바뀌셨나요? 이메일 설정 관리"
+
+msgid "Characters"
+msgstr "문자"
 
 msgid "Cheapest Paid Plan"
 msgstr "가장 저렴한 유료 요금제"
@@ -1287,6 +1304,9 @@ msgstr "완료!"
 msgid "Comprehensive"
 msgstr "종합"
 
+msgid "Confident"
+msgstr "자신감 있는"
+
 msgid "Confirm your password"
 msgstr "비밀번호 확인"
 
@@ -1362,6 +1382,9 @@ msgstr "NewsBlur로 계속하기"
 msgid "Control the Original View"
 msgstr "원본 보기 제어"
 
+msgid "Conversational"
+msgstr "대화체"
+
 msgid "Could not determine RSS feed URL."
 msgstr "RSS 피드 URL을 확인할 수 없습니다."
 
@@ -1415,6 +1438,9 @@ msgstr "계정 만들기"
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Stripe 및 PayPal을 통한 신용/직불 카드 결제."
 
+msgid "Crisp"
+msgstr "선명함"
+
 msgid "Currently viewing"
 msgstr "현재 보고 있는 항목"
 
@@ -1430,6 +1456,9 @@ msgstr "맞춤 질문은 필수입니다"
 #, python-format
 msgid "Custom questions are limited to %(limit)d characters"
 msgstr "사용자 지정 질문은 %(limit)d자까지 입력할 수 있습니다"
+
+msgid "Custom voice"
+msgstr "사용자 지정 음성"
 
 msgid "Customizable AI summaries"
 msgstr "맞춤 설정 가능한 AI 요약"
@@ -1503,6 +1532,9 @@ msgstr "파리 여행 중 목련이 피어 있는 모습에서 영감을 얻은 
 
 msgid "Decline"
 msgstr "거절"
+
+msgid "Deep"
+msgstr "심층"
 
 msgid "Deep highlighting and annotation"
 msgstr "세밀한 강조 표시 및 주석"
@@ -1692,6 +1724,9 @@ msgstr "프리미엄 기능이 마음에 드시나요? 계속 이용해 보세�
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "이메일 주소를 입력하시면 새 비밀번호를 설정할 수 있는 링크를 보내드립니다."
+
+msgid "Entertainment"
+msgstr "엔터테인먼트"
 
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "RSS 피드를 제공하지 않는 사이트도 팔로우할 수 있습니다"
@@ -1964,6 +1999,9 @@ msgid ""
 "should be the name of the organization. Easy to change!"
 msgstr "뉴스레터 이름은 더 알맞은 이름으로 자유롭게 바꾸셔도 됩니다. 뉴스레터가 발행 기관 이름이 아니라 사람 이름으로 표시되는 경우가 있습니다. 쉽게 바꿀 수 있습니다!"
 
+msgid "Female"
+msgstr "여성"
+
 msgid "Fetching your feeds"
 msgstr "피드를 가져오는 중"
 
@@ -2113,6 +2151,9 @@ msgstr "NewsBlur의 비밀번호를 잊으셨나요?"
 msgid "Forgot your password? No problem."
 msgstr "비밀번호를 잊으셨나요? 걱정하지 마세요."
 
+msgid "Formal"
+msgstr "격식체"
+
 msgid "Forward or subscribe newsletters to that address"
 msgstr "뉴스레터를 해당 주소로 전달하거나 구독하세요"
 
@@ -2171,6 +2212,10 @@ msgstr ""
 "FreshRSS, Miniflux, Tiny Tiny RSS는 모두 훌륭한 프로젝트이지만, 직접 서버를 설정하고 유지 관리해야 합니다. 즉, VPS를 마련하고 데이터베이스를 구성하며 업데이트와"
 " 백업을 관리해야 합니다. NewsBlur는 선택권을 제공합니다. newsblur.com에서 가입해 몇 초 만에 읽기 시작하거나, Docker로 전체 스택을 직접 호스팅할 수 있습니다. 이 두"
 " 가지 옵션을 모두 제공하는 오픈 소스 RSS 리더는 없습니다."
+
+#, python-format
+msgid "From %(feed_title)s."
+msgstr "%(feed_title)s에서."
 
 msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
 msgstr "가벼운 읽을거리부터 전문적인 뉴스 인사이트까지. 모든 요금제에서 프리미엄 30일 무료 체험을 이용할 수 있습니다."
@@ -2462,6 +2507,9 @@ msgstr "안녕하세요, %(username)s님. 프리미엄 계정이 곧 만료됩�
 msgid "Hi %(username)s,"
 msgstr "안녕하세요, %(username)s님."
 
+msgid "Hi, I'm one of the voices that can read your stories to you on NewsBlur."
+msgstr "안녕하세요. 저는 NewsBlur에서 스토리를 읽어 드리는 음성 중 하나입니다."
+
 msgid "Hide"
 msgstr "숨기기"
 
@@ -2631,6 +2679,9 @@ msgstr "사이트 가져오기"
 
 msgid "Import sites"
 msgstr "사이트 가져오기"
+
+msgid "Informative"
+msgstr "정보 전달형"
 
 msgid "Infrequent Site Stories"
 msgstr "업데이트가 드문 사이트의 스토리"
@@ -2881,6 +2932,12 @@ msgctxt "story layout"
 msgid "List"
 msgstr "목록"
 
+msgid "Listening is busy. Try again in a moment."
+msgstr "Listen이 사용 중입니다. 잠시 후 다시 시도하세요."
+
+msgid "Listening isn't available right now."
+msgstr "현재 듣기 기능을 사용할 수 없습니다."
+
 msgid "Load stories from feeds, folders, or all"
 msgstr "피드, 폴더 또는 전체에서 스토리 불러오기"
 
@@ -2985,6 +3042,9 @@ msgstr "Blurblog를 비공개로 설정해 공유한 스토리를 나만 볼 수
 msgid "Maker"
 msgstr "제작자"
 
+msgid "Male"
+msgstr "남성"
+
 msgid "Manage NewsBlur"
 msgstr "NewsBlur 관리"
 
@@ -3023,6 +3083,9 @@ msgid ""
 "Mark stories as read, save stories with tags and notes, subscribe to new feeds, share stories to your "
 "blurblog"
 msgstr "스토리를 읽음으로 표시하고, 태그와 메모를 추가해 저장하고, 새 피드를 구독하고, 스토리를 Blurblog에 공유하세요."
+
+msgid "Middle aged"
+msgstr "중년"
 
 msgid "Migrating is easy with OPML import"
 msgstr "OPML 가져오기로 간편하게 이전"
@@ -3105,6 +3168,9 @@ msgstr ""
 " 패턴을 학습시켜 관심 있는 스토리를 강조하고 나머지는 숨길 수 있습니다. 학습 결과는 스토리에 초록색, 빨간색 또는 중립색으로 표시되어 작동 상태를 확인할 수 있습니다. 여기에 AI에게 질문"
 " 기능을 사용하면 Claude, GPT, Gemini 또는 Grok으로 모든 스토리에 질문해 요약을 받고, 핵심 내용을 추출하거나 후속 질문을 할 수 있습니다."
 
+msgid "Most used"
+msgstr "가장 많이 사용됨"
+
 msgid "Move and rename feeds"
 msgstr "피드 이동 및 이름 변경"
 
@@ -3119,6 +3185,9 @@ msgstr "사이트 음소거"
 
 msgid "Muted!"
 msgstr "음소거됨!"
+
+msgid "Narration"
+msgstr "낭독"
 
 msgid "Native"
 msgstr "네이티브"
@@ -3170,6 +3239,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "날짜 필터로 아카이브를 탐색하세요. 원하는 기간의 스토리를 찾아보세요."
 
+msgid "Neutral"
+msgstr "중립"
+
 msgid ""
 "Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
 "feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
@@ -3216,6 +3288,9 @@ msgstr "새로 구독한 피드의 전체 기록을 자동으로 가져와 첫�
 
 msgid "New tag name is required."
 msgstr "새 태그 이름을 입력해야 합니다."
+
+msgid "Newest"
+msgstr "최신순"
 
 msgid "NewsBlur - Connecting..."
 msgstr "NewsBlur - 연결 중..."
@@ -3763,6 +3838,9 @@ msgstr "다른 리더에서 피드를 가져오는 OPML 가져오기 대화상�
 msgid "Official Hosted Option"
 msgstr "공식 호스팅 옵션"
 
+msgid "Old"
+msgstr "이전"
+
 #, python-format
 msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
 msgstr "%(deadline_date)s에 구독이 갱신되면 다음 옵션 중 하나를 선택해야 합니다:"
@@ -4015,6 +4093,10 @@ msgstr "몇 달 전까지 읽지 않은 스토리를 볼 수 있는 프리미엄
 msgid "Premium Archive subscription"
 msgstr "프리미엄 아카이브 구독"
 
+#, python-format
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "프리미엄 아카이브를 이용하면 한 달에 최대 %(limit)s까지 스토리 전문을 음성으로 들을 수 있습니다."
+
 msgid "Premium Pro"
 msgstr "프리미엄 프로"
 
@@ -4119,6 +4201,9 @@ msgstr "프로: 모든 피드, 5분마다 업데이트"
 
 msgid "Processing question"
 msgstr "질문 처리 중"
+
+msgid "Professional"
+msgstr "전문가"
 
 msgid "Professional-grade feed monitoring"
 msgstr "전문가급 피드 모니터링"
@@ -4895,6 +4980,12 @@ msgstr "소셜 / 공유"
 msgid "Social Features"
 msgstr "소셜 기능"
 
+msgid "Social media"
+msgstr "소셜 미디어"
+
+msgid "Soft"
+msgstr "부드러운"
+
 msgid "Software Engineer"
 msgstr "소프트웨어 엔지니어"
 
@@ -5220,6 +5311,9 @@ msgstr "NewsBlur를 사용해 주셔서 감사합니다! NewsBlur가 매일의 �
 msgid "Thanks!"
 msgstr "감사합니다!"
 
+msgid "That part of the story doesn't exist."
+msgstr "스토리의 해당 부분이 존재하지 않습니다."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "이 스토리는 피드에서 삭제되었으므로 읽지 않음으로 표시할 필요가 없습니다."
 
@@ -5359,6 +5453,9 @@ msgstr "스토리"
 msgid "The team"
 msgstr "팀"
 
+msgid "The voice library couldn't be reached. Try again in a moment."
+msgstr "음성 라이브러리에 연결할 수 없습니다. 잠시 후 다시 시도하세요."
+
 msgid "Themes"
 msgstr "테마"
 
@@ -5452,6 +5549,12 @@ msgstr "이미 RSS 피드입니다. 바로 구독합니다."
 msgid "This payment has been refunded."
 msgstr "결제가 환불되었습니다."
 
+msgid "This story has no text to read aloud."
+msgstr "이 스토리에는 소리 내어 읽을 텍스트가 없습니다."
+
+msgid "This story needs to be reloaded."
+msgstr "이 스토리를 다시 불러와야 합니다."
+
 msgid "This user has limited their shared stories only to followers."
 msgstr "이 사용자는 공유 스토리를 팔로워에게만 공개하도록 설정했습니다."
 
@@ -5519,6 +5622,9 @@ msgstr "토큰이 이미 저장되었습니다."
 
 msgid "Token saved."
 msgstr "토큰이 저장되었습니다."
+
+msgid "Too many stories started at once. Try again in a few minutes."
+msgstr "한 번에 너무 많은 스토리가 시작되었습니다. 몇 분 후에 다시 시도하세요."
 
 msgid "Top Level"
 msgstr "최상위"
@@ -5589,6 +5695,9 @@ msgstr "작성자, 태그, 제목에 좋아요와 싫어요를 표시하는 학�
 
 msgid "Training dialog with thumbs up/down"
 msgstr "좋아요/싫어요 버튼이 있는 학습 대화상자"
+
+msgid "Trending"
+msgstr "인기 급상승"
 
 msgid "Trial Premium Subscription"
 msgstr "프리미엄 구독 체험"
@@ -5678,6 +5787,9 @@ msgstr "지원되지 않는 언어"
 msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
 msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
 msgstr[0] "그때까지 변경되는 사항은 없습니다. %(feed_count)s개 사이트는 계속 정상적으로 작동합니다."
+
+msgid "Upbeat"
+msgstr "활기찬"
 
 msgid "Upgrade here:"
 msgstr "여기에서 업그레이드하세요:"
@@ -5807,6 +5919,9 @@ msgstr "MCP 기능을 더 원하시나요?"
 
 msgid "Want to unlock even more?"
 msgstr "더 많은 기능을 잠금 해제하시겠습니까?"
+
+msgid "Warm"
+msgstr "따뜻한"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett은 RAM 64바이트로 BASIC 인터프리터를 작성했습니다. 최대 9줄, 64개 기호, 정수 0&ndash;99."
@@ -6497,6 +6612,24 @@ msgid ""
 "NewsBlur."
 msgstr "NewsBlur를 널리 알려 주신 데 대한 감사로 %(tier_name)s을(를) <b>%(credit_text)s</b> 무료로 이용하실 수 있게 되었습니다."
 
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
+" for %(pro_limit)s a month."
+msgstr "이번 달에 스토리 %(limit)s개를 들었습니다. 듣기 횟수는 %(date)s에 초기화됩니다. 또는 월 %(pro_limit)s에 프리미엄 프로로 업그레이드하세요."
+
+#, python-format
+msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+msgstr "이번 달 스토리 %(limit)s개를 들었습니다. 듣기 횟수는 %(date)s에 초기화됩니다."
+
+msgid "You've played all your voice previews for today. They reset at midnight."
+msgstr "오늘 사용할 수 있는 음성 미리 듣기를 모두 사용했습니다. 자정에 초기화됩니다."
+
+#, python-format
+msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
+msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
+msgstr[0] "오늘 %(count)d개의 스토리를 미리 들었습니다. 전체 스토리를 들으려면 프리미엄 아카이브로 업그레이드하세요."
+
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
@@ -6504,6 +6637,9 @@ msgstr "최근에 NewsBlur를 이용하셨으니, 무료 계정으로 돌아가�
 
 msgid "YouTube search request failed."
 msgstr "YouTube 검색 요청에 실패했습니다."
+
+msgid "Young"
+msgstr "젊은 목소리"
 
 #, python-format
 msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"

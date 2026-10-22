@@ -91,6 +91,12 @@ msgstr[0] "%(count)d hari yang lalu"
 msgstr[1] "%(count)d hari yang lalu"
 
 #, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d jam"
+msgstr[1] "%(count)d jam"
+
+#, python-format
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d jam yang lalu"
@@ -690,6 +696,9 @@ msgstr "Tambahkan ke <code>%(path)s</code> di bawah <code>%(key)s</code>:"
 msgid "Add to <code>%(path)s</code>:"
 msgstr "Tambahkan ke <code>%(path)s</code>:"
 
+msgid "Advertising"
+msgstr "Iklan"
+
 msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
 "training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
@@ -1204,6 +1213,9 @@ msgstr "Akses CLI memerlukan langganan Premium Archive ($99/tahun) atau Premium 
 msgid "CTO, Parse.ly"
 msgstr "CTO, Parse.ly"
 
+msgid "Calm"
+msgstr "Tenang"
+
 msgid "Can I automatically mark duplicates as read?"
 msgstr "Bisakah duplikat ditandai otomatis sebagai telah dibaca?"
 
@@ -1261,11 +1273,17 @@ msgstr "Bisa menambahkan URL apa pun"
 msgid "Cancel"
 msgstr "Batal"
 
+msgid "Casual"
+msgstr "Santai"
+
 msgid "Category-based rules"
 msgstr "Aturan berbasis kategori"
 
 msgid "Changed your mind? Manage your email settings"
 msgstr "Berubah pikiran? Atur preferensi email Anda"
+
+msgid "Characters"
+msgstr "Karakter"
 
 msgid "Cheapest Paid Plan"
 msgstr "Paket Berbayar Termurah"
@@ -1382,6 +1400,9 @@ msgstr "Selesai!"
 msgid "Comprehensive"
 msgstr "Menyeluruh"
 
+msgid "Confident"
+msgstr "Percaya diri"
+
 msgid "Confirm your password"
 msgstr "Konfirmasi kata sandi Anda"
 
@@ -1461,6 +1482,9 @@ msgstr "Lanjutkan ke NewsBlur"
 msgid "Control the Original View"
 msgstr "Kontrol Tampilan Asli"
 
+msgid "Conversational"
+msgstr "Percakapan"
+
 msgid "Could not determine RSS feed URL."
 msgstr "Tidak dapat menentukan URL feed RSS."
 
@@ -1514,6 +1538,9 @@ msgstr "Buat akun"
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Kartu kredit/debit melalui Stripe dan PayPal."
 
+msgid "Crisp"
+msgstr "Jernih"
+
 msgid "Currently viewing"
 msgstr "Sedang melihat"
 
@@ -1529,6 +1556,9 @@ msgstr "Pertanyaan khusus wajib diisi"
 #, python-format
 msgid "Custom questions are limited to %(limit)d characters"
 msgstr "Pertanyaan khusus dibatasi hingga %(limit)d karakter"
+
+msgid "Custom voice"
+msgstr "Suara kustom"
 
 msgid "Customizable AI summaries"
 msgstr "Ringkasan AI yang dapat disesuaikan"
@@ -1604,6 +1634,9 @@ msgstr "Salad musim semi segar ala Deb, terinspirasi dari perjalanan ke Paris sa
 
 msgid "Decline"
 msgstr "Tolak"
+
+msgid "Deep"
+msgstr "Mendalam"
 
 msgid "Deep highlighting and annotation"
 msgstr "Sorotan dan anotasi mendalam"
@@ -1797,6 +1830,9 @@ msgstr "Menikmati fitur premium? Pertahankan selamanya!"
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk membuat kata sandi baru."
+
+msgid "Entertainment"
+msgstr "Hiburan"
 
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "Anda juga dapat mengikuti situs yang tidak menerbitkan feed RSS"
@@ -2091,6 +2127,9 @@ msgstr ""
 "Silakan ubah nama buletin agar lebih sesuai. Terkadang buletin menggunakan nama orang, padahal seharusnya "
 "memakai nama organisasinya. Mudah diubah!"
 
+msgid "Female"
+msgstr "Perempuan"
+
 msgid "Fetching your feeds"
 msgstr "Mengambil feed Anda"
 
@@ -2257,6 +2296,9 @@ msgstr "Lupa kata sandi Anda di NewsBlur?"
 msgid "Forgot your password? No problem."
 msgstr "Lupa kata sandi? Tidak masalah."
 
+msgid "Formal"
+msgstr "Formal"
+
 msgid "Forward or subscribe newsletters to that address"
 msgstr "Teruskan buletin atau berlangganan buletin di alamat tersebut"
 
@@ -2317,6 +2359,10 @@ msgstr ""
 " menangani pencadangan. NewsBlur memberi Anda pilihan. Anda bisa mendaftar di newsblur.com dan mulai "
 "membaca dalam hitungan detik, atau meng-host seluruh tumpukan aplikasi sendiri dengan Docker. Tidak ada "
 "pembaca RSS sumber terbuka lain yang menawarkan kedua opsi ini."
+
+#, python-format
+msgid "From %(feed_title)s."
+msgstr "Dari %(feed_title)s."
 
 msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
 msgstr ""
@@ -2628,6 +2674,9 @@ msgstr "Hai %(username)s, masa berlaku akun premium Anda akan segera berakhir...
 msgid "Hi %(username)s,"
 msgstr "Halo %(username)s,"
 
+msgid "Hi, I'm one of the voices that can read your stories to you on NewsBlur."
+msgstr "Hai, saya salah satu suara yang dapat membacakan artikel untuk Anda di NewsBlur."
+
 msgid "Hide"
 msgstr "Sembunyikan"
 
@@ -2825,6 +2874,9 @@ msgstr "Impor Situs"
 
 msgid "Import sites"
 msgstr "Impor situs"
+
+msgid "Informative"
+msgstr "Informatif"
 
 msgid "Infrequent Site Stories"
 msgstr "Artikel Situs yang Jarang Diperbarui"
@@ -3089,6 +3141,12 @@ msgctxt "story layout"
 msgid "List"
 msgstr "Daftar"
 
+msgid "Listening is busy. Try again in a moment."
+msgstr "Fitur Dengarkan sedang sibuk. Coba lagi sebentar lagi."
+
+msgid "Listening isn't available right now."
+msgstr "Fitur mendengarkan sedang tidak tersedia."
+
 msgid "Load stories from feeds, folders, or all"
 msgstr "Muat artikel dari feed, folder, atau semuanya"
 
@@ -3197,6 +3255,9 @@ msgstr ""
 msgid "Maker"
 msgstr "Pembuat"
 
+msgid "Male"
+msgstr "Pria"
+
 msgid "Manage NewsBlur"
 msgstr "Kelola NewsBlur"
 
@@ -3239,6 +3300,9 @@ msgid ""
 msgstr ""
 "Tandai artikel sebagai telah dibaca, simpan artikel dengan tag dan catatan, berlangganan feed baru, bagikan"
 " artikel ke blurblog Anda"
+
+msgid "Middle aged"
+msgstr "Paruh baya"
 
 msgid "Migrating is easy with OPML import"
 msgstr "Migrasi mudah dengan impor OPML"
@@ -3325,6 +3389,9 @@ msgstr ""
 "apa pun menggunakan Claude, GPT, Gemini, atau Grok untuk mendapatkan ringkasan, mengekstrak poin penting, "
 "atau mengajukan pertanyaan lanjutan."
 
+msgid "Most used"
+msgstr "Paling sering digunakan"
+
 msgid "Move and rename feeds"
 msgstr "Pindahkan dan ganti nama feed"
 
@@ -3339,6 +3406,9 @@ msgstr "Bisukan Situs"
 
 msgid "Muted!"
 msgstr "Dibisukan!"
+
+msgid "Narration"
+msgstr "Narasi"
 
 msgid "Native"
 msgstr "Native"
@@ -3391,6 +3461,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Jelajahi arsip Anda dengan filter tanggal. Temukan artikel dari periode waktu mana pun."
 
+msgid "Neutral"
+msgstr "Netral"
+
 msgid ""
 "Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
 "feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
@@ -3440,6 +3513,9 @@ msgstr "Langganan baru otomatis mengimpor seluruh riwayat feed sehingga semuanya
 
 msgid "New tag name is required."
 msgstr "Nama tag baru wajib diisi."
+
+msgid "Newest"
+msgstr "Terbaru"
 
 msgid "NewsBlur - Connecting..."
 msgstr "NewsBlur - Menghubungkan..."
@@ -4068,6 +4144,9 @@ msgstr "Dialog impor OPML untuk mengambil feed dari pembaca lain"
 msgid "Official Hosted Option"
 msgstr "Opsi Hosting Resmi"
 
+msgid "Old"
+msgstr "Lama"
+
 #, python-format
 msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
 msgstr "Pada %(deadline_date)s, saat langganan Anda diperpanjang, Anda perlu memilih salah satu opsi berikut:"
@@ -4323,6 +4402,10 @@ msgstr "Premium Archive menampilkan artikel belum dibaca dari beberapa bulan seb
 msgid "Premium Archive subscription"
 msgstr "Langganan Premium Archive"
 
+#, python-format
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive membuka akses ke artikel lengkap yang dibacakan, hingga %(limit)s per bulan."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4436,6 +4519,9 @@ msgstr "Pro: setiap feed, setiap 5 menit"
 
 msgid "Processing question"
 msgstr "Memproses pertanyaan"
+
+msgid "Professional"
+msgstr "Profesional"
 
 msgid "Professional-grade feed monitoring"
 msgstr "Pemantauan feed kelas profesional"
@@ -5251,6 +5337,12 @@ msgstr "Sosial / Berbagi"
 msgid "Social Features"
 msgstr "Fitur Sosial"
 
+msgid "Social media"
+msgstr "Media sosial"
+
+msgid "Soft"
+msgstr "Lembut"
+
 msgid "Software Engineer"
 msgstr "Insinyur Perangkat Lunak"
 
@@ -5589,6 +5681,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Terima kasih!"
 
+msgid "That part of the story doesn't exist."
+msgstr "Bagian artikel tersebut tidak ada."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Artikel tersebut telah dihapus dari feed, jadi tidak perlu ditandai sebagai belum dibaca."
 
@@ -5746,6 +5841,9 @@ msgstr "Kisahnya"
 msgid "The team"
 msgstr "Tim"
 
+msgid "The voice library couldn't be reached. Try again in a moment."
+msgstr "Pustaka suara tidak dapat diakses. Coba lagi sebentar lagi."
+
 msgid "Themes"
 msgstr "Tema"
 
@@ -5853,6 +5951,12 @@ msgstr "Ini sudah merupakan feed RSS. Berlangganan langsung."
 msgid "This payment has been refunded."
 msgstr "Pembayaran ini telah dikembalikan."
 
+msgid "This story has no text to read aloud."
+msgstr "Artikel ini tidak memiliki teks untuk dibacakan."
+
+msgid "This story needs to be reloaded."
+msgstr "Artikel ini perlu dimuat ulang."
+
 msgid "This user has limited their shared stories only to followers."
 msgstr "Pengguna ini membatasi artikel yang dibagikan hanya untuk pengikut."
 
@@ -5923,6 +6027,9 @@ msgstr "Token sudah disimpan."
 
 msgid "Token saved."
 msgstr "Token disimpan."
+
+msgid "Too many stories started at once. Try again in a few minutes."
+msgstr "Terlalu banyak artikel dimulai sekaligus. Coba lagi dalam beberapa menit."
 
 msgid "Top Level"
 msgstr "Tingkat Teratas"
@@ -5999,6 +6106,9 @@ msgstr "Dialog pelatihan dengan jempol ke atas dan jempol ke bawah pada penulis,
 
 msgid "Training dialog with thumbs up/down"
 msgstr "Dialog pelatihan dengan tombol jempol ke atas/bawah"
+
+msgid "Trending"
+msgstr "Sedang tren"
 
 msgid "Trial Premium Subscription"
 msgstr "Langganan Premium Uji Coba"
@@ -6096,6 +6206,9 @@ msgstr[0] ""
 msgstr[1] ""
 "Sampai saat itu, tidak ada yang berubah untuk Anda. Semua %(feed_count)s situs Anda akan tetap berfungsi "
 "seperti biasa."
+
+msgid "Upbeat"
+msgstr "Ceria"
 
 msgid "Upgrade here:"
 msgstr "Tingkatkan di sini:"
@@ -6231,6 +6344,9 @@ msgstr "Ingin lebih banyak fitur MCP?"
 
 msgid "Want to unlock even more?"
 msgstr "Ingin mendapatkan lebih banyak lagi?"
+
+msgid "Warm"
+msgstr "Hangat"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""
@@ -7017,6 +7133,31 @@ msgstr ""
 "Anda mendapatkan <b>%(credit_text)s</b> %(tier_name)s gratis sebagai ucapan terima kasih karena telah "
 "menyebarkan kabar tentang NewsBlur."
 
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
+" for %(pro_limit)s a month."
+msgstr ""
+"Anda telah mendengarkan %(limit)s artikel bulan ini. Jatah mendengarkan diatur ulang pada %(date)s, atau "
+"tingkatkan ke Premium Pro seharga %(pro_limit)s per bulan."
+
+#, python-format
+msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+msgstr "Anda telah mendengarkan %(limit)s artikel bulan ini. Penghitungan mendengarkan akan direset pada %(date)s."
+
+msgid "You've played all your voice previews for today. They reset at midnight."
+msgstr "Anda telah menggunakan semua pratinjau suara untuk hari ini. Pratinjau akan direset pada tengah malam."
+
+#, python-format
+msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
+msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
+msgstr[0] ""
+"Hari ini Anda telah mempratinjau %(count)d artikel. Tingkatkan ke Premium Archive untuk mendengarkan "
+"artikel lengkap."
+msgstr[1] ""
+"Hari ini Anda telah mempratinjau %(count)d artikel. Tingkatkan ke Premium Archive untuk mendengarkan "
+"artikel lengkap."
+
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
@@ -7026,6 +7167,9 @@ msgstr ""
 
 msgid "YouTube search request failed."
 msgstr "Permintaan penelusuran YouTube gagal."
+
+msgid "Young"
+msgstr "Muda"
 
 #, python-format
 msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"

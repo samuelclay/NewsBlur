@@ -124,6 +124,11 @@ msgstr " — שתי אותיות גדולות או יותר"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — המילה השלמה \"%(word)s\" בלבד"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "$29 לחודש"
 
@@ -238,6 +243,12 @@ msgstr[0] "%(count)s עוקב"
 msgstr[1] "%(count)s עוקבים"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "נותרה היום תצוגה מקדימה אחת בחינם של כתבה (%(count)s)"
+msgstr[1] "נותרו היום %(count)s תצוגות מקדימות בחינם של כתבות"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s שעה"
@@ -260,6 +271,12 @@ msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s סימון אהבתי"
 msgstr[1] "%(count)s סימוני אהבתי"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s התאמה"
+msgstr[1] "%(count)s התאמות"
 
 #, python-format
 msgid "%(count)s member"
@@ -446,6 +463,12 @@ msgstr[0] "%(count)s סרטון"
 msgstr[1] "%(count)s סרטונים"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "נותרה תצוגה מקדימה אחת של קול (%(count)s)"
+msgstr[1] "נותרו %(count)s תצוגות מקדימות של קולות"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s שבוע"
@@ -532,6 +555,12 @@ msgstr[1] "אינדקסנו %(indexed)s מתוך %(count)s אתרים. כדאי 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s שדרגו כדי לראות כתבות קשורות מכל הארכיון שלכם."
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "נותרה %(minutes)s דקת האזנה החודש"
+msgstr[1] "נותרו %(minutes)s דקות האזנה החודש"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -958,6 +987,12 @@ msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ול
 msgid "2x daily"
 msgstr "פעמיים ביום"
 
+msgid "30 second preview"
+msgstr "תצוגה מקדימה של 30 שניות"
+
+msgid "30s preview"
+msgstr "תצוגה מקדימה של 30 שניות"
+
 msgid "3x daily"
 msgstr "3 פעמים ביום"
 
@@ -998,6 +1033,9 @@ msgstr[1] "נותרו <strong>%(count)s ימים</strong> לתקופת הניס�
 
 msgid "A blurblog of shared stories"
 msgstr "בלוג שיתופים של כתבות"
+
+msgid "A clearer, closer sound"
+msgstr "צליל ברור וקרוב יותר"
 
 msgid "A folder of feeds read as one stream"
 msgstr "תיקיית פידים שנקראת כזרם אחד"
@@ -1046,6 +1084,10 @@ msgstr "כל הקטגוריות (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "בהחלט. פתחו את כלי האימון והסירו כל סימון של אגודל למעלה או למטה כדי לאפס אותו."
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "מבטא"
 
 msgid "Account"
 msgstr "חשבון"
@@ -1125,12 +1167,19 @@ msgstr "הוספה ל-Chrome"
 msgid "Add to Firefox"
 msgstr "הוספה ל-Firefox"
 
+msgid "Add to Up Next"
+msgstr "הוספה לתור הבא"
+
 msgid "Add to folder"
 msgstr "הוסף לתיקייה"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "נוסף %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "נוסף לתור הבא · %(position)s"
 
 msgid "Added!"
 msgstr "נוסף!"
@@ -1152,6 +1201,10 @@ msgstr "לאחר סימון הפיד/התיקייה כנקראו"
 
 msgid "Afternoon"
 msgstr "צהריים"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "גיל"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1440,6 +1493,9 @@ msgstr "סמן כנקרא אוטומטית"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "ערכת נושא אוטומטית מתאימה את עצמה ללוח הזמנים של מצב בהיר וכהה במערכת שלכם."
+
+msgid "Auto-continue"
+msgstr "המשך אוטומטי"
 
 msgid "Auto-follow<br>my friends"
 msgstr "לעקוב אוטומטית<br>אחר החברים שלי"
@@ -1841,6 +1897,9 @@ msgstr "ניקוי טווח התאריכים"
 msgid "Clear filter"
 msgstr "נקה מסנן"
 
+msgid "Clear filters"
+msgstr "ניקוי המסננים"
+
 msgid "Clear icon"
 msgstr "ניקוי הסמל"
 
@@ -1870,6 +1929,9 @@ msgstr "סיום האימון והתחלת הקריאה"
 
 msgid "Close player"
 msgstr "סגור נגן"
+
+msgid "Closeness to the original voice"
+msgstr "מידת הדמיון לקול המקורי"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "קבץ כתבות כפולות מכל הפידים שלך"
@@ -2009,6 +2071,9 @@ msgstr "לא נמצא פיד RSS עבור כתובת ה־URL הזו"
 msgid "Could not load FAQ. Please try again."
 msgstr "טעינת השאלות הנפוצות נכשלה. נסו שוב."
 
+msgid "Couldn't load audio for this story."
+msgstr "לא ניתן לטעון את השמע של הכתבה הזו."
+
 msgid "Counting is difficult"
 msgstr "קשה לספור"
 
@@ -2041,6 +2106,10 @@ msgstr "קרדיט"
 
 msgid "Cursors"
 msgstr "סמני עכבר"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "מותאם אישית"
 
 msgid "Custom Add Site URL"
 msgstr "כתובת URL מותאמת אישית להוספת אתר"
@@ -2205,6 +2274,9 @@ msgstr "נמחק!"
 
 msgid "Deleting..."
 msgstr "מוחק..."
+
+msgid "Delivery"
+msgstr "הקראה"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "תארו את הכתבה שאתם מחפשים, וננתח מחדש את הדף כדי למצוא אותה."
@@ -2607,6 +2679,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "ביטוי מדויק"
 
+msgid "Exaggerates the voice's style"
+msgstr "מגזים בסגנון הקול"
+
 msgid "Examples"
 msgstr "דוגמאות"
 
@@ -2642,6 +2717,10 @@ msgstr "תוקף לשנה"
 
 msgid "Export trained stories from folders"
 msgstr "ייצוא כתבות שאומנו מתיקיות"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "הבעתי"
 
 msgid "Extras"
 msgstr "תוספות"
@@ -2880,6 +2959,9 @@ msgstr "איתור חברים"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "מצאו את כתובת האימייל הייחודית שלכם ב-NewsBlur בחלונית הניוזלטרים באימייל"
 
+msgid "Fine-tune voice"
+msgstr "כוונון עדין של הקול"
+
 msgid "Finish recording..."
 msgstr "סיום ההקלטה..."
 
@@ -2947,6 +3029,9 @@ msgstr "עקוב"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "לעקוב אחרי %(value_1)s"
+
+msgid "Follow along"
+msgstr "לעקוב יחד"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "עקבו אחר כל אתר, גם כאלה שלא מפרסמים פיד RSS."
@@ -3157,6 +3242,10 @@ msgstr "משחקים"
 msgid "Gaming"
 msgstr "משחקים"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "מגדר"
+
 msgid "General"
 msgstr "כללי"
 
@@ -3323,6 +3412,9 @@ msgstr "כותרות"
 msgid "Health"
 msgstr "בריאות"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "האזינו ל־30 השניות הראשונות בהקראה. Premium Archive מקריא כתבות שלמות."
+
 msgid "Hearts"
 msgstr "לבבות"
 
@@ -3362,6 +3454,9 @@ msgstr "הסתרת השינויים בכתבה"
 msgid "Highlight"
 msgstr "הדגש"
 
+msgid "Highlight the paragraph being read"
+msgstr "הדגשת הפסקה שמוקראת"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "הדגש מילים בכותרת כדי לאמן על ביטויים מסוימים."
 
@@ -3394,6 +3489,9 @@ msgstr "איך זה עובד"
 
 msgid "How many stories can I save?"
 msgstr "כמה כתבות אפשר לשמור?"
+
+msgid "How much emotion"
+msgstr "מידת הרגש"
 
 msgid "How often"
 msgstr "באיזו תדירות"
@@ -3706,6 +3804,21 @@ msgstr "תצוגת רשימה"
 msgid "List view"
 msgstr "תצוגת רשימה"
 
+msgid "Listen"
+msgstr "האזנה"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "תם הזמן להאזנה. כדאי לנסות שוב בעוד רגע."
+
+msgid "Listen to stories read aloud"
+msgstr "האזנה לכתבות בהקראה"
+
+msgid "Listen to story"
+msgstr "האזנה לכתבה"
+
+msgid "Listen to this story"
+msgstr "האזנה לכתבה הזו"
+
 msgid "Loading PayPal..."
 msgstr "טוען את PayPal..."
 
@@ -3723,6 +3836,9 @@ msgstr "טוען פידים..."
 
 msgid "Loading more briefings..."
 msgstr "טוען תדריכים נוספים..."
+
+msgid "Loading voices..."
+msgstr "הקולות נטענים..."
 
 msgid "Loading your blocklist settings..."
 msgstr "הגדרות רשימת החסימה נטענות..."
@@ -3989,6 +4105,9 @@ msgstr "תכונות נוספות"
 msgid "More from Reddit"
 msgstr "עוד מ-Reddit"
 
+msgid "More voices"
+msgstr "קולות נוספים"
+
 msgid "Morning"
 msgstr "בוקר"
 
@@ -4077,6 +4196,10 @@ msgstr "שם"
 
 msgid "Native Apps"
 msgstr "אפליקציות מקוריות"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "טבעי"
 
 msgid "Natural Language Image Classifier"
 msgstr "מסווג תמונות בשפה טבעית"
@@ -4404,6 +4527,9 @@ msgstr "לא הוגדר חיוב לפי שימוש."
 
 msgid "No valid merge groups to apply"
 msgstr "אין קבוצות מיזוג תקינות להחלה"
+
+msgid "No voices match these filters"
+msgstr "אין קולות שתואמים למסננים האלה"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "אף אחד עדיין לא נרשם לכתבות המשותפות שלך."
@@ -4780,6 +4906,15 @@ msgstr "הדביקו כתובת URL של אתר כלשהו..."
 msgid "Pattern: %(value_1)s"
 msgstr "תבנית: %(value_1)s"
 
+msgid "Pause"
+msgstr "השהיה"
+
+msgid "Pause listening"
+msgstr "השהיית ההאזנה"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "השהיה או חידוש של הקראה בקול (y)"
+
 msgid "Payment history"
 msgstr "היסטוריית תשלומים"
 
@@ -4830,6 +4965,9 @@ msgstr "הפעל כבא בתור"
 
 msgid "Play in Mini Media Player"
 msgstr "הפעל בנגן מדיה מוקטן"
+
+msgid "Play the next unread story"
+msgstr "הפעלת הכתבה הבאה שלא נקראה"
 
 msgid "Play/Pause"
 msgstr "הפעלה/השהיה"
@@ -4913,6 +5051,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive מקריא כתבות שלמות בקול."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4950,6 +5091,9 @@ msgstr "סטטוס Premium"
 msgid "Premium users can make their blurblog private."
 msgstr "משתמשי Premium יכולים להפוך את ה־Blurblog שלהם לפרטי."
 
+msgid "Preparing audio..."
+msgstr "מכינים את השמע..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "לחצו על / בכל מקום כדי לעבור ישירות לשדה החיפוש."
 
@@ -4970,6 +5114,15 @@ msgstr "האתר הקודם"
 
 msgid "Preview"
 msgstr "תצוגה מקדימה"
+
+msgid "Preview this voice"
+msgstr "האזנה לתצוגה מקדימה של הקול הזה"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "תצוגה מקדימה של %(seconds)s שנייה. Premium Archive פותח גישה לכתבות המלאות"
+msgstr[1] "תצוגה מקדימה של %(seconds)s שניות. Premium Archive פותח גישה לכתבות המלאות"
 
 msgid "Previous story"
 msgstr "הכתבה הקודמת"
@@ -5063,6 +5216,9 @@ msgid_plural "Queued %(count)s stories for categorization. Categories will appea
 msgstr[0] "%(count)s כתבה נוספה לתור לסיווג. הקטגוריות יופיעו עם עיבוד הכתבות."
 msgstr[1] "הועלו לתור %(count)s כתבות לסיווג. הקטגוריות יופיעו עם עיבוד הכתבות."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "נוסף לתור. לחצו להסרה מהתור הבא"
+
 msgid "Quick search for a site"
 msgstr "חיפוש מהיר של אתר"
 
@@ -5120,6 +5276,13 @@ msgstr ""
 "קראו את כל הפידים שבתיקייה כרצף גלילה אחד, בסדר כרונולוגי. בשילוב עם אימון, הזרם מציג את הכתבות הטובות "
 "ביותר מכל המינויים שלכם."
 
+msgid "Read aloud"
+msgstr "הקראה"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "מוקרא על ידי %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "קראו עוד בבלוג של NewsBlur"
 
@@ -5134,6 +5297,9 @@ msgstr "קריאת כתבות לפי תיקייה"
 
 msgid "Read the whole story"
 msgstr "קריאת הכתבה כולה"
+
+msgid "Read this story aloud (y)"
+msgstr "הקראת הכתבה הזו בקול (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "קריאת כתבות שלא נקראו באמצעות: newsblur stories list"
@@ -5159,6 +5325,10 @@ msgstr "טוען כתבה שמורה..."
 
 msgid "Reading view"
 msgstr "תצוגת קריאה"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "מקריא את הכתבות שלך ב־%(language)s"
 
 msgid "Real-time"
 msgstr "בזמן אמת"
@@ -5192,6 +5362,10 @@ msgstr "המלצה על האתר הזה"
 
 msgid "Recommended"
 msgstr "מומלץ"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "מומלץ עבור %(language)s"
 
 msgid "Record voice question"
 msgstr "הקלטת שאלה קולית"
@@ -5261,6 +5435,9 @@ msgstr "זכור את מיקום ההשמעה בכל פרק"
 msgid "Remove"
 msgstr "הסר"
 
+msgid "Remove from Up Next"
+msgstr "הסרה מהתור הבא"
+
 msgid "Remove this list"
 msgstr "הסרת הרשימה הזו"
 
@@ -5269,6 +5446,9 @@ msgstr "הסרת קבוצת המיזוג הזו"
 
 msgid "Removed"
 msgstr "הוסר"
+
+msgid "Removed from Up Next"
+msgstr "הוסר מהתור הבא"
 
 msgid "Rename"
 msgstr "שנה שם"
@@ -5328,6 +5508,10 @@ msgstr "איפוס"
 
 msgid "Reset to original favicon"
 msgstr "איפוס לסמל האתר המקורי"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "מאפס את %(date)s"
 
 msgid "Resetting..."
 msgstr "מתאפס..."
@@ -5595,6 +5779,9 @@ msgstr "חיפוש ב-subreddits (למשל programming, news, gaming)..."
 
 msgid "Search the FAQ..."
 msgstr "חיפוש בשאלות הנפוצות..."
+
+msgid "Search voices"
+msgstr "חיפוש קולות"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "חיפוש בפיד יחיד, בתיקייה או בכל התוכן"
@@ -5935,6 +6122,9 @@ msgstr "הירשמו כדי לקרוא את הפידים שלכם."
 msgid "Signup"
 msgstr "הרשמה"
 
+msgid "Similarity"
+msgstr "דמיון"
+
 msgid "Single Story"
 msgstr "כתבה בודדת"
 
@@ -6054,8 +6244,14 @@ msgstr "ריווח בין הפידים לכותרות הכתבות"
 msgid "Spanish"
 msgstr "ספרדית"
 
+msgid "Speaker boost"
+msgstr "הגברת קול"
+
 msgid "Special Folders"
 msgstr "תיקיות מיוחדות"
+
+msgid "Speed"
+msgstr "מהירות"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "הגעת למגבלת ההוצאות. המסווגים הושהו עד למחזור הבא."
@@ -6100,6 +6296,12 @@ msgstr "ספורט"
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "שדרגו את סיסמת האתר. אם הוא ייבחר, האתר יופיע במשך שבוע בלוח הבקרה של NewsBlur."
 
+msgid "Stability"
+msgstr "יציבות"
+
+msgid "Stability, similarity and style"
+msgstr "יציבות, דמיון וסגנון"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "לא מעודכן מאז %(date)s"
@@ -6141,12 +6343,22 @@ msgstr "סטטוס"
 msgid "Stay on the same feed/folder"
 msgstr "להישאר באותו פיד/תיקייה"
 
+msgid "Steadier or more varied"
+msgstr "יציב יותר או מגוון יותר"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "יציב"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "שלב %(step)s מתוך %(count)s"
 
 msgid "Stop any time you like."
 msgstr "אפשר להפסיק בכל עת."
+
+msgid "Stop preview"
+msgstr "הפסקת התצוגה המקדימה"
 
 msgid "Stop recording"
 msgstr "הפסקת ההקלטה"
@@ -6263,6 +6475,9 @@ msgstr "תצוגה מקדימה של תוכן הכתבה"
 msgid "Story is always hidden"
 msgstr "הכתבה תמיד מוסתרת"
 
+msgid "Story language"
+msgstr "שפת הכתבה"
+
 msgid "Story layout"
 msgstr "פריסת הכתבה"
 
@@ -6289,6 +6504,13 @@ msgstr "הזרם נקטע. לא התקבלה תגובה במשך 10 שניות."
 
 msgid "Stripe Id:"
 msgstr "מזהה Stripe:"
+
+msgid "Style"
+msgstr "סגנון"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "סגנון"
 
 msgid "Submit Payment"
 msgstr "שליחת תשלום"
@@ -6552,6 +6774,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "הבלוג של NewsBlur"
 
+msgid "The audio stream was interrupted."
+msgstr "זרם השמע נקטע."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "%(icon)s תצוגת הטקסט המלאה היא %(link_start)sתכונת Premium%(link_end)s."
@@ -6596,6 +6821,10 @@ msgstr "התצוגה שתבחרו נשמרת לכל אתר, כך שפידים ש
 
 msgid "Themes & Customization"
 msgstr "ערכות נושא והתאמה אישית"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "ואז מ־%(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "יש יותר מדי אתרים וכתבות לעיבוד. "
@@ -6651,6 +6880,9 @@ msgstr "אירעה שגיאה בעת הניסיון להתנתק. אוי."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "אין הגבלה. שמרו כמה כתבות שתרצו והן יישמרו לנצח."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "אין בכתבה הזו תוכן שאפשר להקריא."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "האשכולות האלה נמצאו כי מנויים אחרים רשומים גם הם לפידים האלה."
@@ -7154,6 +7386,9 @@ msgstr[1] "האתרים מתעדכנים כל %(count)s שניות..."
 msgid "Updating sites in real-time..."
 msgstr "האתרים מתעדכנים בזמן אמת..."
 
+msgid "Upgrade"
+msgstr "שדרוג"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "שדרוג ל־%(value_1)s"
@@ -7296,8 +7531,14 @@ msgstr "הצגת הגדרות"
 msgid "Visual"
 msgstr "חזותי"
 
+msgid "Voice"
+msgstr "קול"
+
 msgid "Voice recording failed. Please try again."
 msgstr "הקלטת הקול נכשלה. נסו שוב."
+
+msgid "Voice settings"
+msgstr "הגדרות קול"
 
 msgid "Warning: This is actually permanent"
 msgstr "אזהרה: הפעולה הזו בלתי הפיכה"
@@ -7706,6 +7947,10 @@ msgstr "נתוני ההפניות שלך"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "הכתבות שבארכיון יישארו נגישות, אך על כתבות חדשות תחול מדיניות השמירה הרגילה."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "הקול שבחרת אינו זמין כרגע, ולכן %(voice)s מקריא את הכתבה הזו."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "תוקף קובץ ה-cookie שלך פג — יש להתחבר שוב"
 
@@ -7880,6 +8125,10 @@ msgstr "איגודי עובדים"
 msgid "like"
 msgstr "אהבת"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "הקראה"
+
 msgid "local elections"
 msgstr "בחירות מקומיות"
 
@@ -7961,6 +8210,9 @@ msgstr "נרשם כמנוי"
 
 msgid "supply chain"
 msgstr "שרשרת אספקה"
+
+msgid "this list"
+msgstr "הרשימה הזו"
 
 msgid "trade policy"
 msgstr "מדיניות סחר"

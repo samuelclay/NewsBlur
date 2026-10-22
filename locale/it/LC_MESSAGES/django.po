@@ -91,6 +91,12 @@ msgstr[0] "%(count)d giorno fa"
 msgstr[1] "%(count)d giorni fa"
 
 #, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d ora"
+msgstr[1] "%(count)d ore"
+
+#, python-format
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d ora fa"
@@ -696,6 +702,9 @@ msgstr "Aggiungi a <code>%(path)s</code> in <code>%(key)s</code>:"
 msgid "Add to <code>%(path)s</code>:"
 msgstr "Aggiungi a <code>%(path)s</code>:"
 
+msgid "Advertising"
+msgstr "Pubblicità"
+
 msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
 "training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
@@ -1210,6 +1219,9 @@ msgstr "L’accesso CLI richiede un abbonamento Premium Archive (99 $/anno) o Pr
 msgid "CTO, Parse.ly"
 msgstr "CTO, Parse.ly"
 
+msgid "Calm"
+msgstr "Calma"
+
 msgid "Can I automatically mark duplicates as read?"
 msgstr "Posso contrassegnare automaticamente i duplicati come letti?"
 
@@ -1267,11 +1279,17 @@ msgstr "Può aggiungere qualsiasi URL"
 msgid "Cancel"
 msgstr "Annulla"
 
+msgid "Casual"
+msgstr "Informale"
+
 msgid "Category-based rules"
 msgstr "Regole basate sulle categorie"
 
 msgid "Changed your mind? Manage your email settings"
 msgstr "Hai cambiato idea? Gestisci le impostazioni email"
+
+msgid "Characters"
+msgstr "Caratteri"
 
 msgid "Cheapest Paid Plan"
 msgstr "Piano a pagamento più economico"
@@ -1390,6 +1408,9 @@ msgstr "Completato!"
 msgid "Comprehensive"
 msgstr "Completo"
 
+msgid "Confident"
+msgstr "Sicuro"
+
 msgid "Confirm your password"
 msgstr "Conferma la password"
 
@@ -1470,6 +1491,9 @@ msgstr "Continua su NewsBlur"
 msgid "Control the Original View"
 msgstr "Controlla la visualizzazione originale"
 
+msgid "Conversational"
+msgstr "Colloquiale"
+
 msgid "Could not determine RSS feed URL."
 msgstr "Impossibile determinare l'URL del feed RSS."
 
@@ -1523,6 +1547,9 @@ msgstr "Crea un account"
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Carte di credito/debito tramite Stripe e PayPal."
 
+msgid "Crisp"
+msgstr "Nitida"
+
 msgid "Currently viewing"
 msgstr "Visualizzazione attuale"
 
@@ -1538,6 +1565,9 @@ msgstr "La domanda personalizzata è obbligatoria"
 #, python-format
 msgid "Custom questions are limited to %(limit)d characters"
 msgstr "Le domande personalizzate sono limitate a %(limit)d caratteri"
+
+msgid "Custom voice"
+msgstr "Voce personalizzata"
 
 msgid "Customizable AI summaries"
 msgstr "Riepiloghi IA personalizzabili"
@@ -1615,6 +1645,9 @@ msgstr ""
 
 msgid "Decline"
 msgstr "Rifiuta"
+
+msgid "Deep"
+msgstr "Profonda"
 
 msgid "Deep highlighting and annotation"
 msgstr "Evidenziazione e annotazione avanzate"
@@ -1806,6 +1839,9 @@ msgstr "Ti piacciono le funzionalità Premium? Conservale per sempre!"
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "Inserisci il tuo indirizzo email e ti invieremo un link per impostare una nuova password."
+
+msgid "Entertainment"
+msgstr "Intrattenimento"
 
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "È possibile seguire anche i siti che non pubblicano feed RSS"
@@ -2107,6 +2143,9 @@ msgstr ""
 "Puoi rinominare le newsletter per dare loro un nome più adatto. A volte arrivano con il nome di una "
 "persona, quando invece dovrebbero riportare quello dell'organizzazione. È facile cambiarlo!"
 
+msgid "Female"
+msgstr "Femminile"
+
 msgid "Fetching your feeds"
 msgstr "Recupero dei tuoi feed"
 
@@ -2273,6 +2312,9 @@ msgstr "Hai dimenticato la password di NewsBlur?"
 msgid "Forgot your password? No problem."
 msgstr "Hai dimenticato la password? Nessun problema."
 
+msgid "Formal"
+msgstr "Formale"
+
 msgid "Forward or subscribe newsletters to that address"
 msgstr "Inoltra le newsletter o iscriviti usando quell'indirizzo"
 
@@ -2333,6 +2375,10 @@ msgstr ""
 "occuparsi dei backup. NewsBlur ti offre una scelta. Puoi registrarti su newsblur.com e iniziare a leggere "
 "in pochi secondi, oppure ospitare autonomamente l’intero stack con Docker. Nessun altro lettore RSS open "
 "source offre entrambe le opzioni."
+
+#, python-format
+msgid "From %(feed_title)s."
+msgstr "Da %(feed_title)s."
 
 msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
 msgstr ""
@@ -2647,6 +2693,9 @@ msgstr "Ehi %(username)s, il tuo account Premium sta per scadere..."
 msgid "Hi %(username)s,"
 msgstr "Ciao %(username)s,"
 
+msgid "Hi, I'm one of the voices that can read your stories to you on NewsBlur."
+msgstr "Ciao, sono una delle voci che possono leggerti gli articoli su NewsBlur."
+
 msgid "Hide"
 msgstr "Nascondi"
 
@@ -2841,6 +2890,9 @@ msgstr "Importa siti"
 
 msgid "Import sites"
 msgstr "Importa siti"
+
+msgid "Informative"
+msgstr "Informativo"
 
 msgid "Infrequent Site Stories"
 msgstr "Articoli dei siti poco attivi"
@@ -3105,6 +3157,12 @@ msgctxt "story layout"
 msgid "List"
 msgstr "Elenco"
 
+msgid "Listening is busy. Try again in a moment."
+msgstr "La funzione Ascolta è occupata. Riprova tra poco."
+
+msgid "Listening isn't available right now."
+msgstr "L’ascolto non è disponibile al momento."
+
 msgid "Load stories from feeds, folders, or all"
 msgstr "Carica articoli da feed, cartelle o da tutti"
 
@@ -3215,6 +3273,9 @@ msgstr ""
 msgid "Maker"
 msgstr "Creatore"
 
+msgid "Male"
+msgstr "Maschile"
+
 msgid "Manage NewsBlur"
 msgstr "Gestisci NewsBlur"
 
@@ -3257,6 +3318,9 @@ msgid ""
 msgstr ""
 "Segna gli articoli come letti, salva gli articoli con tag e note, iscriviti a nuovi feed e condividi "
 "articoli sul tuo blurblog"
+
+msgid "Middle aged"
+msgstr "Mezza età"
 
 msgid "Migrating is easy with OPML import"
 msgstr "La migrazione è semplice con l'importazione OPML"
@@ -3343,6 +3407,9 @@ msgstr ""
 "qualsiasi articolo con Claude, GPT, Gemini o Grok per ottenere riepiloghi, estrarre i punti chiave o porre "
 "domande di approfondimento."
 
+msgid "Most used"
+msgstr "Più usati"
+
 msgid "Move and rename feeds"
 msgstr "Sposta e rinomina i feed"
 
@@ -3357,6 +3424,9 @@ msgstr "Silenzia i siti"
 
 msgid "Muted!"
 msgstr "Silenziato!"
+
+msgid "Narration"
+msgstr "Narrazione"
 
 msgid "Native"
 msgstr "Nativo"
@@ -3412,6 +3482,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Esplora l'archivio con i filtri per data. Trova articoli di qualsiasi periodo."
 
+msgid "Neutral"
+msgstr "Neutra"
+
 msgid ""
 "Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
 "feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
@@ -3465,6 +3538,9 @@ msgstr ""
 
 msgid "New tag name is required."
 msgstr "È necessario specificare il nome del nuovo tag."
+
+msgid "Newest"
+msgstr "Più recenti"
 
 msgid "NewsBlur - Connecting..."
 msgstr "NewsBlur - Connessione..."
@@ -4091,6 +4167,9 @@ msgstr "Finestra di importazione OPML per importare i feed da altri lettori"
 msgid "Official Hosted Option"
 msgstr "Opzione di hosting ufficiale"
 
+msgid "Old"
+msgstr "Vecchio"
+
 #, python-format
 msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
 msgstr "Il %(deadline_date)s, al rinnovo dell’abbonamento dovrai scegliere una di queste opzioni:"
@@ -4347,6 +4426,10 @@ msgstr "Premium Archive con articoli non letti risalenti a mesi fa"
 msgid "Premium Archive subscription"
 msgstr "Abbonamento Premium Archive"
 
+#, python-format
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive sblocca la lettura ad alta voce degli articoli completi, fino a %(limit)s al mese."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4460,6 +4543,9 @@ msgstr "Pro: ogni feed, ogni 5 minuti"
 
 msgid "Processing question"
 msgstr "Elaborazione della domanda"
+
+msgid "Professional"
+msgstr "Professionale"
 
 msgid "Professional-grade feed monitoring"
 msgstr "Monitoraggio dei feed di livello professionale"
@@ -5274,6 +5360,12 @@ msgstr "Social / Condivisione"
 msgid "Social Features"
 msgstr "Funzioni social"
 
+msgid "Social media"
+msgstr "Social media"
+
+msgid "Soft"
+msgstr "Morbida"
+
 msgid "Software Engineer"
 msgstr "Ingegnere del software"
 
@@ -5613,6 +5705,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Grazie!"
 
+msgid "That part of the story doesn't exist."
+msgstr "Quella parte dell’articolo non esiste."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Questo articolo è stato rimosso dal feed, non è necessario segnarlo come non letto."
 
@@ -5767,6 +5862,9 @@ msgstr "La storia"
 msgid "The team"
 msgstr "Il team"
 
+msgid "The voice library couldn't be reached. Try again in a moment."
+msgstr "Impossibile raggiungere la libreria delle voci. Riprova tra un momento."
+
 msgid "Themes"
 msgstr "Temi"
 
@@ -5875,6 +5973,12 @@ msgstr "Questo è già un feed RSS. Iscrizione diretta in corso."
 msgid "This payment has been refunded."
 msgstr "Questo pagamento è stato rimborsato."
 
+msgid "This story has no text to read aloud."
+msgstr "Questo articolo non contiene testo da leggere ad alta voce."
+
+msgid "This story needs to be reloaded."
+msgstr "Questo articolo deve essere ricaricato."
+
 msgid "This user has limited their shared stories only to followers."
 msgstr "Questo utente ha limitato la condivisione dei propri articoli ai soli follower."
 
@@ -5945,6 +6049,9 @@ msgstr "Token già salvato."
 
 msgid "Token saved."
 msgstr "Token salvato."
+
+msgid "Too many stories started at once. Try again in a few minutes."
+msgstr "Sono stati avviati troppi articoli contemporaneamente. Riprova tra qualche minuto."
 
 msgid "Top Level"
 msgstr "Livello superiore"
@@ -6021,6 +6128,9 @@ msgstr "Finestra di dialogo per l'addestramento con pollice in su e pollice in g
 
 msgid "Training dialog with thumbs up/down"
 msgstr "Finestra di dialogo di addestramento con pollice su/giù"
+
+msgid "Trending"
+msgstr "Di tendenza"
 
 msgid "Trial Premium Subscription"
 msgstr "Abbonamento Premium di prova"
@@ -6117,6 +6227,9 @@ msgstr[0] "Fino ad allora, per te non cambia nulla. Il tuo %(feed_count)s sito c
 msgstr[1] ""
 "Fino ad allora, per te non cambia nulla. Tutti i tuoi %(feed_count)s siti continueranno a funzionare "
 "normalmente."
+
+msgid "Upbeat"
+msgstr "Vivace"
 
 msgid "Upgrade here:"
 msgstr "Passa a un piano superiore qui:"
@@ -6251,6 +6364,9 @@ msgstr "Vuoi altre funzionalità MCP?"
 
 msgid "Want to unlock even more?"
 msgstr "Vuoi sbloccare ancora di più?"
+
+msgid "Warm"
+msgstr "Caldo"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""
@@ -7050,6 +7166,31 @@ msgstr ""
 "Hai guadagnato <b>%(credit_text)s</b> di %(tier_name)s gratis come ringraziamento per aver parlato di "
 "NewsBlur."
 
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
+" for %(pro_limit)s a month."
+msgstr ""
+"Questo mese hai ascoltato %(limit)s articoli. L'ascolto si azzera il %(date)s, oppure passa a Premium Pro "
+"per %(pro_limit)s al mese."
+
+#, python-format
+msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+msgstr "Questo mese hai ascoltato %(limit)s di articoli. Il conteggio si azzera il %(date)s."
+
+msgid "You've played all your voice previews for today. They reset at midnight."
+msgstr "Hai esaurito tutte le anteprime vocali di oggi. Si azzerano a mezzanotte."
+
+#, python-format
+msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
+msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
+msgstr[0] ""
+"Oggi hai ascoltato un'anteprima di %(count)d articolo. Passa a Premium Archive per ascoltare gli articoli "
+"completi."
+msgstr[1] ""
+"Oggi hai ascoltato un'anteprima di %(count)d articoli. Passa a Premium Archive per ascoltare gli articoli "
+"completi."
+
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
@@ -7059,6 +7200,9 @@ msgstr ""
 
 msgid "YouTube search request failed."
 msgstr "La richiesta di ricerca su YouTube non è riuscita."
+
+msgid "Young"
+msgstr "Giovane"
 
 #, python-format
 msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"

@@ -88,6 +88,11 @@ msgid_plural "%(count)d days ago"
 msgstr[0] "%(count)d gün önce"
 
 #, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d saat"
+
+#, python-format
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d saat önce"
@@ -674,6 +679,9 @@ msgstr "<code>%(path)s</code> dosyasında <code>%(key)s</code> altına ekleyin:"
 msgid "Add to <code>%(path)s</code>:"
 msgstr "<code>%(path)s</code> konumuna ekle:"
 
+msgid "Advertising"
+msgstr "Reklam"
+
 msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
 "training. Samuel and his dog Shiloh celebrated with champagne and biscuits."
@@ -1191,6 +1199,9 @@ msgstr "CLI erişimi için Premium Archive (yıllık 99 $) veya Premium Pro (ayl
 msgid "CTO, Parse.ly"
 msgstr "Parse.ly CTO'su"
 
+msgid "Calm"
+msgstr "Sakin"
+
 msgid "Can I automatically mark duplicates as read?"
 msgstr "Yinelenenleri otomatik olarak okundu işaretleyebilir miyim?"
 
@@ -1248,11 +1259,17 @@ msgstr "Herhangi bir URL ekleyebilir"
 msgid "Cancel"
 msgstr "İptal"
 
+msgid "Casual"
+msgstr "Rahat"
+
 msgid "Category-based rules"
 msgstr "Kategori tabanlı kurallar"
 
 msgid "Changed your mind? Manage your email settings"
 msgstr "Fikriniz mi değişti? E-posta ayarlarınızı yönetin"
+
+msgid "Characters"
+msgstr "Karakter"
 
 msgid "Cheapest Paid Plan"
 msgstr "En Ucuz Ücretli Plan"
@@ -1371,6 +1388,9 @@ msgstr "Tamamlandı!"
 msgid "Comprehensive"
 msgstr "Kapsamlı"
 
+msgid "Confident"
+msgstr "Kendinden emin"
+
 msgid "Confirm your password"
 msgstr "Şifrenizi onaylayın"
 
@@ -1451,6 +1471,9 @@ msgstr "NewsBlur'a devam et"
 msgid "Control the Original View"
 msgstr "Orijinal Görünümü Denetle"
 
+msgid "Conversational"
+msgstr "Sohbet havasında"
+
 msgid "Could not determine RSS feed URL."
 msgstr "RSS akışının URL'si belirlenemedi."
 
@@ -1504,6 +1527,9 @@ msgstr "Hesap oluştur"
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Stripe ve PayPal üzerinden kredi/banka kartları."
 
+msgid "Crisp"
+msgstr "Net"
+
 msgid "Currently viewing"
 msgstr "Şu anda görüntülenen"
 
@@ -1519,6 +1545,9 @@ msgstr "Özel soru gerekli"
 #, python-format
 msgid "Custom questions are limited to %(limit)d characters"
 msgstr "Özel sorular en fazla %(limit)d karakter olabilir"
+
+msgid "Custom voice"
+msgstr "Özel ses"
 
 msgid "Customizable AI summaries"
 msgstr "Özelleştirilebilir yapay zekâ özetleri"
@@ -1594,6 +1623,9 @@ msgstr "Paris gezisinde manolyaların çiçek açmasından ilham alan Deb'in taz
 
 msgid "Decline"
 msgstr "Reddet"
+
+msgid "Deep"
+msgstr "Derin"
 
 msgid "Deep highlighting and annotation"
 msgstr "Ayrıntılı vurgulama ve açıklama ekleme"
@@ -1789,6 +1821,9 @@ msgstr "Premium özelliklerden memnun musunuz? Onları sonsuza dek kullanmaya de
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "E-posta adresinizi girin; yeni bir şifre belirlemeniz için size bir bağlantı gönderelim."
+
+msgid "Entertainment"
+msgstr "Eğlence"
 
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "RSS akışı yayımlamayan siteleri bile takip edebilirsiniz"
@@ -2083,6 +2118,9 @@ msgstr ""
 "Bültenleri adlarına daha uygun olacak şekilde yeniden adlandırabilirsiniz. Bazen bültenler, kuruluşun adı "
 "olması gerekirken kişi adlarıyla gelir. Değiştirmesi kolay!"
 
+msgid "Female"
+msgstr "Kadın"
+
 msgid "Fetching your feeds"
 msgstr "Akışlarınız alınıyor"
 
@@ -2249,6 +2287,9 @@ msgstr "NewsBlur şifrenizi mi unuttunuz?"
 msgid "Forgot your password? No problem."
 msgstr "Şifrenizi mi unuttunuz? Sorun değil."
 
+msgid "Formal"
+msgstr "Resmî"
+
 msgid "Forward or subscribe newsletters to that address"
 msgstr "Bültenleri bu adrese iletin veya bu adresle abone olun"
 
@@ -2309,6 +2350,10 @@ msgstr ""
 " gerekir. NewsBlur size seçenek sunar. newsblur.com adresinden kaydolup saniyeler içinde okumaya "
 "başlayabilir veya tüm sistemi Docker ile kendi sunucunuzda barındırabilirsiniz. Her iki seçeneği de sunan "
 "başka bir açık kaynaklı RSS okuyucu yok."
+
+#, python-format
+msgid "From %(feed_title)s."
+msgstr "%(feed_title)s kaynağından."
 
 msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
 msgstr "Gündelik okumadan profesyonel haber analizine. Her plan, 30 günlük ücretsiz premium denemesiyle başlar."
@@ -2618,6 +2663,9 @@ msgstr "Merhaba %(username)s, Premium hesabınızın süresi dolmak üzere..."
 msgid "Hi %(username)s,"
 msgstr "Merhaba %(username)s,"
 
+msgid "Hi, I'm one of the voices that can read your stories to you on NewsBlur."
+msgstr "Merhaba, ben NewsBlur üzerinde haberlerinizi sizin için okuyabilen seslerden biriyim."
+
 msgid "Hide"
 msgstr "Gizle"
 
@@ -2805,6 +2853,9 @@ msgstr "Siteleri İçe Aktar"
 
 msgid "Import sites"
 msgstr "Siteleri içe aktar"
+
+msgid "Informative"
+msgstr "Bilgilendirici"
 
 msgid "Infrequent Site Stories"
 msgstr "Seyrek Güncellenen Sitelerin Haberleri"
@@ -3063,6 +3114,12 @@ msgctxt "story layout"
 msgid "List"
 msgstr "Liste"
 
+msgid "Listening is busy. Try again in a moment."
+msgstr "Dinleme şu anda meşgul. Birazdan tekrar deneyin."
+
+msgid "Listening isn't available right now."
+msgstr "Dinleme şu anda kullanılamıyor."
+
 msgid "Load stories from feeds, folders, or all"
 msgstr "Akışlardan, klasörlerden veya tümünden haberleri yükle"
 
@@ -3173,6 +3230,9 @@ msgstr ""
 msgid "Maker"
 msgstr "Üretici"
 
+msgid "Male"
+msgstr "Erkek"
+
 msgid "Manage NewsBlur"
 msgstr "NewsBlur'ı Yönet"
 
@@ -3215,6 +3275,9 @@ msgid ""
 msgstr ""
 "Haberleri okundu olarak işaretleyin, etiket ve notlarla kaydedin, yeni akışlara abone olun, haberleri "
 "blurblog'unuzda paylaşın"
+
+msgid "Middle aged"
+msgstr "Orta yaşlı"
 
 msgid "Migrating is easy with OPML import"
 msgstr "OPML içe aktarma ile geçiş yapmak kolay"
@@ -3300,6 +3363,9 @@ msgstr ""
 "kodlanır. Ayrıca Yapay Zekâya Sor özelliğiyle Claude, GPT, Gemini veya Grok’u kullanarak herhangi bir haber"
 " hakkında soru sorabilir; özet alabilir, önemli noktaları çıkarabilir veya takip soruları sorabilirsiniz."
 
+msgid "Most used"
+msgstr "En çok kullanılan"
+
 msgid "Move and rename feeds"
 msgstr "Akışları taşı ve yeniden adlandır"
 
@@ -3314,6 +3380,9 @@ msgstr "Siteleri sessize al"
 
 msgid "Muted!"
 msgstr "Sessize alındı!"
+
+msgid "Narration"
+msgstr "Seslendirme"
 
 msgid "Native"
 msgstr "Yerel"
@@ -3368,6 +3437,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "Tarih filtreleriyle arşivinizde gezinin. Herhangi bir zaman aralığındaki haberleri bulun."
 
+msgid "Neutral"
+msgstr "Nötr"
+
 msgid ""
 "Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
 "feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
@@ -3417,6 +3489,9 @@ msgstr "Yeni abonelikler, ilk günden her şeye erişebilmeniz için akışın t
 
 msgid "New tag name is required."
 msgstr "Yeni etiket adı gerekli."
+
+msgid "Newest"
+msgstr "En yeni"
 
 msgid "NewsBlur - Connecting..."
 msgstr "NewsBlur - Bağlanıyor..."
@@ -4041,6 +4116,9 @@ msgstr "Diğer okuyuculardaki akışları içe aktarmak için OPML içe aktarma 
 msgid "Official Hosted Option"
 msgstr "Resmî Barındırma Seçeneği"
 
+msgid "Old"
+msgstr "Eski"
+
 #, python-format
 msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
 msgstr "%(deadline_date)s tarihinde aboneliğiniz yenilendiğinde şu seçeneklerden birini seçmeniz gerekecek:"
@@ -4298,6 +4376,10 @@ msgstr "Aylar öncesine uzanan okunmamış haberleri gösteren Premium Archive"
 msgid "Premium Archive subscription"
 msgstr "Premium Archive aboneliği"
 
+#, python-format
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive, ayda %(limit)s'a kadar haberin tamamının sesli okunmasını sağlar."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4410,6 +4492,9 @@ msgstr "Pro: tüm akışlar, her 5 dakikada bir"
 
 msgid "Processing question"
 msgstr "Soru işleniyor"
+
+msgid "Professional"
+msgstr "Profesyonel"
 
 msgid "Professional-grade feed monitoring"
 msgstr "Profesyonel düzeyde akış izleme"
@@ -5220,6 +5305,12 @@ msgstr "Sosyal / Paylaşım"
 msgid "Social Features"
 msgstr "Sosyal Özellikler"
 
+msgid "Social media"
+msgstr "Sosyal medya"
+
+msgid "Soft"
+msgstr "Yumuşak"
+
 msgid "Software Engineer"
 msgstr "Yazılım mühendisi"
 
@@ -5563,6 +5654,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Teşekkürler!"
 
+msgid "That part of the story doesn't exist."
+msgstr "Haberin bu bölümü mevcut değil."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Bu haber akıştan kaldırılmış; okunmadı olarak işaretlemenize gerek yok."
 
@@ -5717,6 +5811,9 @@ msgstr "Hikâyemiz"
 msgid "The team"
 msgstr "Ekip"
 
+msgid "The voice library couldn't be reached. Try again in a moment."
+msgstr "Ses kitaplığına ulaşılamadı. Birazdan tekrar deneyin."
+
 msgid "Themes"
 msgstr "Temalar"
 
@@ -5818,6 +5915,12 @@ msgstr "Bu zaten bir RSS akışı. Doğrudan abone olunuyor."
 msgid "This payment has been refunded."
 msgstr "Bu ödeme iade edildi."
 
+msgid "This story has no text to read aloud."
+msgstr "Bu haberde sesli okunacak metin yok."
+
+msgid "This story needs to be reloaded."
+msgstr "Bu haberin yeniden yüklenmesi gerekiyor."
+
 msgid "This user has limited their shared stories only to followers."
 msgstr "Bu kullanıcı, paylaştığı haberleri yalnızca takipçileriyle sınırladı."
 
@@ -5889,6 +5992,9 @@ msgstr "Jeton zaten kaydedilmiş."
 
 msgid "Token saved."
 msgstr "Token kaydedildi."
+
+msgid "Too many stories started at once. Try again in a few minutes."
+msgstr "Aynı anda çok fazla haber başlatıldı. Birkaç dakika sonra tekrar deneyin."
 
 msgid "Top Level"
 msgstr "En Üst Düzey"
@@ -5965,6 +6071,9 @@ msgstr "Yazarlara, etiketlere ve başlıklara beğeni ve beğenmeme vererek eği
 
 msgid "Training dialog with thumbs up/down"
 msgstr "Beğeni/beğenmeme düğmeleriyle eğitim iletişim kutusu"
+
+msgid "Trending"
+msgstr "Trend olanlar"
 
 msgid "Trial Premium Subscription"
 msgstr "Premium Abonelik Denemesi"
@@ -6059,6 +6168,9 @@ msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your si
 msgstr[0] ""
 "O zamana kadar sizin için hiçbir şey değişmeyecek. %(feed_count)s siteniz normal şekilde çalışmaya devam "
 "edecek."
+
+msgid "Upbeat"
+msgstr "Canlı"
 
 msgid "Upgrade here:"
 msgstr "Buradan yükseltin:"
@@ -6199,6 +6311,9 @@ msgstr "Daha fazla MCP özelliği mi istiyorsunuz?"
 
 msgid "Want to unlock even more?"
 msgstr "Daha da fazlasının kilidini açmak ister misiniz?"
+
+msgid "Warm"
+msgstr "Sıcak"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""
@@ -6986,6 +7101,26 @@ msgstr ""
 "NewsBlur hakkında başkalarına bilgi verdiğiniz için teşekkür olarak <b>%(credit_text)s</b> ücretsiz "
 "%(tier_name)s kazandınız."
 
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
+" for %(pro_limit)s a month."
+msgstr ""
+"Bu ay %(limit)s haber dinlediniz. Dinleme hakkınız %(date)s tarihinde sıfırlanır veya ayda %(pro_limit)s "
+"karşılığında Premium Pro'ya yükseltin."
+
+#, python-format
+msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+msgstr "Bu ay haberlerin %(limit)s kadarını dinlediniz. Dinleme hakkınız %(date)s tarihinde yenilenir."
+
+msgid "You've played all your voice previews for today. They reset at midnight."
+msgstr "Bugün tüm ses önizlemelerinizi kullandınız. Önizleme hakkınız gece yarısı sıfırlanır."
+
+#, python-format
+msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
+msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
+msgstr[0] "Bugün %(count)d haberi önizlediniz. Haberlerin tamamını dinlemek için Premium Archive'a yükseltin."
+
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
@@ -6995,6 +7130,9 @@ msgstr ""
 
 msgid "YouTube search request failed."
 msgstr "YouTube arama isteği başarısız oldu."
+
+msgid "Young"
+msgstr "Genç"
 
 #, python-format
 msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"

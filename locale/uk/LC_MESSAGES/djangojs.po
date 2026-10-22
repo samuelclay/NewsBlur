@@ -128,6 +128,11 @@ msgstr " — Дві або більше великих літер"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — лише ціле слово «%(word)s»"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "29 $/місяць"
 
@@ -256,6 +261,13 @@ msgstr[1] "%(count)s підписники"
 msgstr[2] "%(count)s підписників"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "Сьогодні залишився %(count)s безкоштовний попередній перегляд статті"
+msgstr[1] "Сьогодні залишилося %(count)s безкоштовні попередні перегляди статей"
+msgstr[2] "Сьогодні залишилося %(count)s безкоштовних попередніх переглядів статей"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s година"
@@ -282,6 +294,13 @@ msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s вподобання"
 msgstr[1] "%(count)s вподобання"
 msgstr[2] "%(count)s вподобань"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s збіг"
+msgstr[1] "%(count)s збіги"
+msgstr[2] "%(count)s збігів"
 
 #, python-format
 msgid "%(count)s member"
@@ -496,6 +515,13 @@ msgstr[1] "%(count)s відео"
 msgstr[2] "%(count)s відео"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "Залишився %(count)s попередній перегляд голосу"
+msgstr[1] "Залишилося %(count)s попередні перегляди голосу"
+msgstr[2] "Залишилося %(count)s попередніх переглядів голосу"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s тиждень"
@@ -596,6 +622,13 @@ msgstr[2] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Перейдіть на платний план, щоб бачити пов’язані статті з усього архіву."
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "Залишилася %(minutes)s хвилина цього місяця"
+msgstr[1] "Залишилося %(minutes)s хвилини цього місяця"
+msgstr[2] "Залишилося %(minutes)s хвилин цього місяця"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -1026,6 +1059,12 @@ msgstr "Доступно 28 інструментів для читання, ді
 msgid "2x daily"
 msgstr "2 рази на день"
 
+msgid "30 second preview"
+msgstr "Попереднє прослуховування — 30 секунд"
+
+msgid "30s preview"
+msgstr "Попереднє прослуховування — 30 с"
+
 msgid "3x daily"
 msgstr "3 рази на день"
 
@@ -1069,6 +1108,9 @@ msgstr[2] "<strong>%(count)s днів</strong> до завершення про�
 
 msgid "A blurblog of shared stories"
 msgstr "Blurblog із поширеними статтями"
+
+msgid "A clearer, closer sound"
+msgstr "Чіткіше й ближче звучання"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Папка стрічок, які читаються як один потік"
@@ -1117,6 +1159,10 @@ msgstr "УСІ КАТЕГОРІЇ (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Авжеж. Відкрийте тренер і видаліть будь-які позитивні чи негативні оцінки, щоб скинути його."
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "Акцент"
 
 msgid "Account"
 msgstr "Обліковий запис"
@@ -1199,12 +1245,19 @@ msgstr "Додати в Chrome"
 msgid "Add to Firefox"
 msgstr "Додати до Firefox"
 
+msgid "Add to Up Next"
+msgstr "Додати до черги «Далі»"
+
 msgid "Add to folder"
 msgstr "Додати до папки"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "Додано %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "Додано до черги «Далі» · %(position)s"
 
 msgid "Added!"
 msgstr "Додано!"
@@ -1227,6 +1280,10 @@ msgstr "Після позначення стрічки/папки як проч�
 
 msgid "Afternoon"
 msgstr "День"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "Вік"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1523,6 +1580,9 @@ msgstr "Автоматично позначати як прочитане"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Автоматична тема відповідає розкладу світлої та темної теми вашої системи."
+
+msgid "Auto-continue"
+msgstr "Автопродовження"
 
 msgid "Auto-follow<br>my friends"
 msgstr "Автоматично стежити за<br>моїми друзями"
@@ -1930,6 +1990,9 @@ msgstr "Очистити діапазон дат"
 msgid "Clear filter"
 msgstr "Очистити фільтр"
 
+msgid "Clear filters"
+msgstr "Очистити фільтри"
+
 msgid "Clear icon"
 msgstr "Очистити піктограму"
 
@@ -1960,6 +2023,9 @@ msgstr "Завершити навчання й почати читати"
 
 msgid "Close player"
 msgstr "Закрити програвач"
+
+msgid "Closeness to the original voice"
+msgstr "Наскільки голос схожий на оригінальний"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "Групувати дублікати статей у всіх ваших стрічках"
@@ -2099,6 +2165,9 @@ msgstr "Не вдалося знайти RSS-стрічку за цією URL-а
 msgid "Could not load FAQ. Please try again."
 msgstr "Не вдалося завантажити розділ поширених запитань. Спробуйте ще раз."
 
+msgid "Couldn't load audio for this story."
+msgstr "Не вдалося завантажити аудіо для цієї статті."
+
 msgid "Counting is difficult"
 msgstr "Рахувати — складно"
 
@@ -2131,6 +2200,10 @@ msgstr "Бонус"
 
 msgid "Cursors"
 msgstr "Курсори"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "Власний"
 
 msgid "Custom Add Site URL"
 msgstr "Власна URL-адреса для додавання сайту"
@@ -2297,6 +2370,9 @@ msgstr "Видалено!"
 
 msgid "Deleting..."
 msgstr "Видалення..."
+
+msgid "Delivery"
+msgstr "Подача"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Опишіть статтю, яку шукаєте, і ми повторно проаналізуємо сторінку, щоб знайти її."
@@ -2714,6 +2790,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "Точна фраза"
 
+msgid "Exaggerates the voice's style"
+msgstr "Перебільшує особливості стилю голосу"
+
 msgid "Examples"
 msgstr "Приклади"
 
@@ -2749,6 +2828,10 @@ msgstr "Термін зберігання — 1 рік"
 
 msgid "Export trained stories from folders"
 msgstr "Експортувати навчені статті з папок"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "Виразний"
 
 msgid "Extras"
 msgstr "Додатково"
@@ -2987,6 +3070,9 @@ msgstr "Знайти друзів"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Знайдіть свою унікальну адресу NewsBlur у вікні «Поштові розсилки»."
 
+msgid "Fine-tune voice"
+msgstr "Налаштувати голос"
+
 msgid "Finish recording..."
 msgstr "Завершити запис..."
 
@@ -3054,6 +3140,9 @@ msgstr "Стежити"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "Стежити за %(value_1)s"
+
+msgid "Follow along"
+msgstr "Стежити за текстом"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "Стежте за будь-яким сайтом, навіть якщо він не публікує RSS-стрічку."
@@ -3268,6 +3357,10 @@ msgstr "Ігри"
 msgid "Gaming"
 msgstr "Ігри"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "Стать"
+
 msgid "General"
 msgstr "Загальні"
 
@@ -3434,6 +3527,9 @@ msgstr "Заголовки"
 msgid "Health"
 msgstr "Здоров’я"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "Послухайте, як читаються перші 30 секунд. Premium Archive читає статті повністю."
+
 msgid "Hearts"
 msgstr "Серця"
 
@@ -3473,6 +3569,9 @@ msgstr "Приховати зміни в статті"
 msgid "Highlight"
 msgstr "Виділити"
 
+msgid "Highlight the paragraph being read"
+msgstr "Підсвічувати абзац, який читається"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Виділяйте слова в заголовку, щоб навчити систему розпізнавати певні фрази."
 
@@ -3505,6 +3604,9 @@ msgstr "Як це працює"
 
 msgid "How many stories can I save?"
 msgstr "Скільки статей можна зберегти?"
+
+msgid "How much emotion"
+msgstr "Рівень емоційності"
 
 msgid "How often"
 msgstr "Як часто"
@@ -3820,6 +3922,21 @@ msgstr "Перегляд списком"
 msgid "List view"
 msgstr "Перегляд списком"
 
+msgid "Listen"
+msgstr "Прослухати"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "Час очікування прослуховування вичерпано. Спробуйте ще раз трохи пізніше."
+
+msgid "Listen to stories read aloud"
+msgstr "Слухати статті вголос"
+
+msgid "Listen to story"
+msgstr "Прослухати статтю"
+
+msgid "Listen to this story"
+msgstr "Слухати цю статтю"
+
 msgid "Loading PayPal..."
 msgstr "Завантаження PayPal..."
 
@@ -3837,6 +3954,9 @@ msgstr "Завантаження стрічок..."
 
 msgid "Loading more briefings..."
 msgstr "Завантаження інших оглядів..."
+
+msgid "Loading voices..."
+msgstr "Завантаження голосів..."
 
 msgid "Loading your blocklist settings..."
 msgstr "Завантаження налаштувань списку блокування…"
@@ -4111,6 +4231,9 @@ msgstr "Більше можливостей"
 msgid "More from Reddit"
 msgstr "Більше з Reddit"
 
+msgid "More voices"
+msgstr "Більше голосів"
+
 msgid "Morning"
 msgstr "Ранок"
 
@@ -4201,6 +4324,10 @@ msgstr "Назва"
 
 msgid "Native Apps"
 msgstr "Нативні застосунки"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "Природний"
 
 msgid "Natural Language Image Classifier"
 msgstr "Класифікатор зображень природною мовою"
@@ -4529,6 +4656,9 @@ msgstr "Оплату за використання не налаштовано."
 
 msgid "No valid merge groups to apply"
 msgstr "Немає коректних груп об’єднання для застосування"
+
+msgid "No voices match these filters"
+msgstr "Жоден голос не відповідає цим фільтрам"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "На ваші поширені статті ще ніхто не підписався."
@@ -4919,6 +5049,15 @@ msgstr "Вставте URL-адресу будь-якого сайту..."
 msgid "Pattern: %(value_1)s"
 msgstr "Шаблон: %(value_1)s"
 
+msgid "Pause"
+msgstr "Пауза"
+
+msgid "Pause listening"
+msgstr "Призупинити прослуховування"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "Призупинити або відновити читання вголос (y)"
+
 msgid "Payment history"
 msgstr "Історія платежів"
 
@@ -4969,6 +5108,9 @@ msgstr "Відтворити наступним"
 
 msgid "Play in Mini Media Player"
 msgstr "Відтворити в мініплеєрі"
+
+msgid "Play the next unread story"
+msgstr "Відтворити наступну непрочитану статтю"
 
 msgid "Play/Pause"
 msgstr "Відтворити/призупинити"
@@ -5052,6 +5194,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive читає статті повністю вголос."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -5090,6 +5235,9 @@ msgstr "Статус Premium"
 msgid "Premium users can make their blurblog private."
 msgstr "Користувачі Premium можуть зробити свій Blurblog приватним."
 
+msgid "Preparing audio..."
+msgstr "Підготовка аудіо..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "Натисніть / будь-де, щоб перейти до поля пошуку."
 
@@ -5110,6 +5258,16 @@ msgstr "Попередній сайт"
 
 msgid "Preview"
 msgstr "Попередній перегляд"
+
+msgid "Preview this voice"
+msgstr "Прослухати цей голос"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "Попереднє прослуховування — %(seconds)s секунду. Premium Archive дає змогу слухати повні версії статей"
+msgstr[1] "Попереднє прослуховування — %(seconds)s секунди. Premium Archive дає змогу слухати повні версії статей"
+msgstr[2] "Попереднє прослуховування — %(seconds)s секунд. Premium Archive дає змогу слухати повні версії статей"
 
 msgid "Previous story"
 msgstr "Попередня стаття"
@@ -5211,6 +5369,9 @@ msgstr[0] "Додано в чергу %(count)s статтю для катего
 msgstr[1] "Поставлено в чергу %(count)s статті для категоризації. Категорії з’являтимуться в міру обробки статей."
 msgstr[2] "Поставлено в чергу %(count)s статей для категоризації. Категорії з’являтимуться в міру обробки статей."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "У черзі. Натисніть, щоб видалити з черги «Далі»"
+
 msgid "Quick search for a site"
 msgstr "Швидкий пошук сайту"
 
@@ -5268,6 +5429,13 @@ msgstr ""
 "Читайте всі стрічки в папці як один прокручуваний потік у хронологічному порядку. У поєднанні з навчанням "
 "потік новин показує найкращі статті з усіх ваших підписок."
 
+msgid "Read aloud"
+msgstr "Озвучити"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "Прочитано голосом %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "Читайте більше в блозі NewsBlur"
 
@@ -5282,6 +5450,9 @@ msgstr "Читати статті за папками"
 
 msgid "Read the whole story"
 msgstr "Прочитати всю статтю"
+
+msgid "Read this story aloud (y)"
+msgstr "Прочитати цю статтю вголос (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "Читайте непрочитані статті за допомогою: newsblur stories list"
@@ -5307,6 +5478,10 @@ msgstr "Читаємо збережену статтю..."
 
 msgid "Reading view"
 msgstr "Режим читання"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "Читає ваші статті %(language)s"
 
 msgid "Real-time"
 msgstr "У реальному часі"
@@ -5340,6 +5515,10 @@ msgstr "Порекомендувати цей сайт"
 
 msgid "Recommended"
 msgstr "Рекомендовано"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "Рекомендовано для %(language)s"
 
 msgid "Record voice question"
 msgstr "Записати запитання голосом"
@@ -5409,6 +5588,9 @@ msgstr "Запам’ятовувати позицію відтворення д
 msgid "Remove"
 msgstr "Вилучити"
 
+msgid "Remove from Up Next"
+msgstr "Видалити з черги «Далі»"
+
 msgid "Remove this list"
 msgstr "Видалити цей список"
 
@@ -5417,6 +5599,9 @@ msgstr "Вилучити цю групу об’єднання"
 
 msgid "Removed"
 msgstr "Видалено"
+
+msgid "Removed from Up Next"
+msgstr "Видалено з черги «Далі»"
 
 msgid "Rename"
 msgstr "Перейменувати"
@@ -5477,6 +5662,10 @@ msgstr "Скинути"
 
 msgid "Reset to original favicon"
 msgstr "Відновити оригінальну іконку сайту"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "Скидається %(date)s"
 
 msgid "Resetting..."
 msgstr "Скидання..."
@@ -5746,6 +5935,9 @@ msgstr "Шукати сабреддіти (наприклад, programming, news
 
 msgid "Search the FAQ..."
 msgstr "Пошук у поширених запитаннях..."
+
+msgid "Search voices"
+msgstr "Пошук голосів"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Шукайте в одній стрічці, папці або всюди"
@@ -6093,6 +6285,9 @@ msgstr "Зареєструйтеся, щоб читати власні стрі�
 msgid "Signup"
 msgstr "Зареєструватися"
 
+msgid "Similarity"
+msgstr "Подібність"
+
 msgid "Single Story"
 msgstr "Одна стаття"
 
@@ -6212,8 +6407,14 @@ msgstr "Інтервал між стрічками та заголовками �
 msgid "Spanish"
 msgstr "Іспанська"
 
+msgid "Speaker boost"
+msgstr "Підсилення голосу"
+
 msgid "Special Folders"
 msgstr "Спеціальні папки"
+
+msgid "Speed"
+msgstr "Швидкість"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Ліміт витрат досягнуто. Класифікатори призупинено до наступного циклу."
@@ -6261,6 +6462,12 @@ msgstr "Спорт"
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "Оновіть слоган сайту. Якщо його виберуть, сайт з’явиться на тиждень на панелі NewsBlur."
 
+msgid "Stability"
+msgstr "Стабільність"
+
+msgid "Stability, similarity and style"
+msgstr "Стабільність, подібність і стиль"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "Без оновлень з %(date)s"
@@ -6302,12 +6509,22 @@ msgstr "Статус"
 msgid "Stay on the same feed/folder"
 msgstr "Залишатися в тій самій стрічці/папці"
 
+msgid "Steadier or more varied"
+msgstr "Стабільніший або різноманітніший"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "Рівний"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "Крок %(step)s із %(count)s"
 
 msgid "Stop any time you like."
 msgstr "Можете зупинитися будь-коли."
+
+msgid "Stop preview"
+msgstr "Зупинити попереднє прослуховування"
 
 msgid "Stop recording"
 msgstr "Зупинити запис"
@@ -6425,6 +6642,9 @@ msgstr "Попередній перегляд вмісту статті"
 msgid "Story is always hidden"
 msgstr "Стаття завжди прихована"
 
+msgid "Story language"
+msgstr "Мова статті"
+
 msgid "Story layout"
 msgstr "Макет статей"
 
@@ -6451,6 +6671,13 @@ msgstr "Потокове з’єднання перервано. Відпові�
 
 msgid "Stripe Id:"
 msgstr "Ідентифікатор Stripe:"
+
+msgid "Style"
+msgstr "Стиль"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "Стиль"
 
 msgid "Submit Payment"
 msgstr "Надіслати платіж"
@@ -6719,6 +6946,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "Блог NewsBlur"
 
+msgid "The audio stream was interrupted."
+msgstr "Відтворення аудіо перервано."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "Повний текстовий режим %(icon)s — це %(link_start)sпреміум-функція%(link_end)s."
@@ -6769,6 +6999,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "Теми й налаштування вигляду"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "Потім із %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "Забагато сайтів і статей для обробки. "
@@ -6826,6 +7060,9 @@ msgstr "Під час виходу сталася помилка. Ой."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Обмежень немає. Зберігайте скільки завгодно статей — вони залишаться у вас назавжди."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "У цій статті немає тексту для озвучення."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Ці групи сформовано, оскільки інші підписники читають ці стрічки."
@@ -7342,6 +7579,9 @@ msgstr[2] "Оновлення сайтів кожні %(count)s секунд..."
 msgid "Updating sites in real-time..."
 msgstr "Оновлення сайтів у реальному часі..."
 
+msgid "Upgrade"
+msgstr "Перейти на вищий план"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "Перейти на %(value_1)s"
@@ -7490,8 +7730,14 @@ msgstr "Налаштування перегляду"
 msgid "Visual"
 msgstr "Візуально"
 
+msgid "Voice"
+msgstr "Голос"
+
 msgid "Voice recording failed. Please try again."
 msgstr "Не вдалося записати голос. Спробуйте ще раз."
+
+msgid "Voice settings"
+msgstr "Налаштування голосу"
 
 msgid "Warning: This is actually permanent"
 msgstr "Увага: цю дію неможливо скасувати"
@@ -7915,6 +8161,10 @@ msgstr "Статистика ваших рекомендацій"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Заархівовані статті залишаються доступними, але для нових діє стандартний строк зберігання."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "Вибраний вами голос зараз недоступний, тому цю статтю читає %(voice)s."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Термін дії cookie минув — увійдіть знову"
 
@@ -8090,6 +8340,10 @@ msgstr "профспілки"
 msgid "like"
 msgstr "подобається"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "Слухати"
+
 msgid "local elections"
 msgstr "місцеві вибори"
 
@@ -8171,6 +8425,9 @@ msgstr "підписано"
 
 msgid "supply chain"
 msgstr "ланцюг постачання"
+
+msgid "this list"
+msgstr "цей список"
 
 msgid "trade policy"
 msgstr "торговельна політика"

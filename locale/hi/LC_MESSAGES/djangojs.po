@@ -124,6 +124,11 @@ msgstr " — दो या अधिक बड़े अक्षर"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — केवल पूरा शब्द \"%(word)s\""
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "$29/महीना"
 
@@ -238,6 +243,12 @@ msgstr[0] "%(count)s फ़ॉलोअर"
 msgstr[1] "%(count)s फ़ॉलोअर"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "आज %(count)s मुफ़्त लेख पूर्वावलोकन शेष"
+msgstr[1] "आज %(count)s मुफ़्त लेख पूर्वावलोकन शेष"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s घंटा"
@@ -260,6 +271,12 @@ msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s पसंद"
 msgstr[1] "%(count)s पसंद"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s मेल"
+msgstr[1] "%(count)s मेल"
 
 #, python-format
 msgid "%(count)s member"
@@ -446,6 +463,12 @@ msgstr[0] "%(count)s वीडियो"
 msgstr[1] "%(count)s वीडियो"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "%(count)s आवाज़ का पूर्वावलोकन शेष"
+msgstr[1] "%(count)s आवाज़ों के पूर्वावलोकन शेष"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s सप्ताह"
@@ -532,6 +555,12 @@ msgstr[1] "%(count)s में से %(indexed)s साइटें अनु�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s अपने पूरे संग्रह से संबंधित लेख देखने के लिए अपग्रेड करें।"
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "इस महीने %(minutes)s मिनट बाकी"
+msgstr[1] "इस महीने %(minutes)s मिनट बाकी"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -958,6 +987,12 @@ msgstr "पढ़ने, कार्रवाइयों, प्रशिक�
 msgid "2x daily"
 msgstr "दिन में 2 बार"
 
+msgid "30 second preview"
+msgstr "30 सेकंड का प्रीव्यू"
+
+msgid "30s preview"
+msgstr "30 सेकंड का प्रीव्यू"
+
 msgid "3x daily"
 msgstr "दिन में 3 बार"
 
@@ -998,6 +1033,9 @@ msgstr[1] "आपके Premium ट्रायल में <strong>%(count)s �
 
 msgid "A blurblog of shared stories"
 msgstr "साझा किए गए लेखों का blurblog"
+
+msgid "A clearer, closer sound"
+msgstr "और साफ़, और क़रीबी आवाज़"
 
 msgid "A folder of feeds read as one stream"
 msgstr "एक फ़ोल्डर की फ़ीडों को एक स्ट्रीम की तरह पढ़ें"
@@ -1046,6 +1084,10 @@ msgstr "सभी श्रेणियाँ (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "बिल्कुल। ट्रेनर खोलें और उसे रीसेट करने के लिए कोई भी थम्स अप या थम्स डाउन हटा दें।"
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "लहजा"
 
 msgid "Account"
 msgstr "खाता"
@@ -1125,12 +1167,19 @@ msgstr "Chrome में जोड़ें"
 msgid "Add to Firefox"
 msgstr "Firefox में जोड़ें"
 
+msgid "Add to Up Next"
+msgstr "अगला सुनें सूची में जोड़ें"
+
 msgid "Add to folder"
 msgstr "फ़ोल्डर में जोड़ें"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "जोड़ा गया %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "अगला सुनें सूची में जोड़ा गया · %(position)s"
 
 msgid "Added!"
 msgstr "जोड़ा गया!"
@@ -1152,6 +1201,10 @@ msgstr "फ़ीड/फ़ोल्डर को पढ़ा हुआ चि�
 
 msgid "Afternoon"
 msgstr "दोपहर"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "आयु"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1444,6 +1497,9 @@ msgstr "अपने-आप पढ़ा हुआ चिह्नित कर�
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "ऑटो थीम आपके सिस्टम के लाइट और डार्क शेड्यूल के अनुसार बदलती है।"
+
+msgid "Auto-continue"
+msgstr "अपने आप जारी रखें"
 
 msgid "Auto-follow<br>my friends"
 msgstr "मेरे दोस्तों को<br>अपने-आप फ़ॉलो करें"
@@ -1845,6 +1901,9 @@ msgstr "तिथि सीमा साफ़ करें"
 msgid "Clear filter"
 msgstr "फ़िल्टर हटाएँ"
 
+msgid "Clear filters"
+msgstr "फ़िल्टर साफ़ करें"
+
 msgid "Clear icon"
 msgstr "आइकन साफ़ करें"
 
@@ -1874,6 +1933,9 @@ msgstr "प्रशिक्षण बंद करें और पढ़न�
 
 msgid "Close player"
 msgstr "प्लेयर बंद करें"
+
+msgid "Closeness to the original voice"
+msgstr "मूल आवाज़ से समानता"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "अपने सभी फ़ीड में डुप्लिकेट लेखों को समूहित करें"
@@ -2013,6 +2075,9 @@ msgstr "इस URL के लिए RSS फ़ीड नहीं मिली"
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ लोड नहीं हो सका। कृपया फिर से कोशिश करें।"
 
+msgid "Couldn't load audio for this story."
+msgstr "इस लेख के लिए ऑडियो लोड नहीं हो सका।"
+
 msgid "Counting is difficult"
 msgstr "गिनना मुश्किल है"
 
@@ -2045,6 +2110,10 @@ msgstr "श्रेय"
 
 msgid "Cursors"
 msgstr "कर्सर"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "कस्टम"
 
 msgid "Custom Add Site URL"
 msgstr "साइट जोड़ने का कस्टम URL"
@@ -2209,6 +2278,9 @@ msgstr "हटा दिया गया!"
 
 msgid "Deleting..."
 msgstr "हटाया जा रहा है..."
+
+msgid "Delivery"
+msgstr "प्रस्तुति"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "आप जिस लेख को ढूँढ़ रहे हैं उसका वर्णन करें और हम उसे खोजने के लिए पेज का फिर से विश्लेषण करेंगे।"
@@ -2621,6 +2693,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "सटीक वाक्यांश"
 
+msgid "Exaggerates the voice's style"
+msgstr "आवाज़ की शैली को बढ़ा-चढ़ाकर प्रस्तुत करता है"
+
 msgid "Examples"
 msgstr "उदाहरण"
 
@@ -2656,6 +2731,10 @@ msgstr "1 वर्ष बाद समाप्त करें"
 
 msgid "Export trained stories from folders"
 msgstr "फ़ोल्डरों से प्रशिक्षित लेख निर्यात करें"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "अभिव्यंजक"
 
 msgid "Extras"
 msgstr "अतिरिक्त"
@@ -2894,6 +2973,9 @@ msgstr "दोस्त खोजें"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "ईमेल न्यूज़लेटर संवाद में अपना विशिष्ट NewsBlur ईमेल पता खोजें"
 
+msgid "Fine-tune voice"
+msgstr "आवाज़ को बारीकी से समायोजित करें"
+
 msgid "Finish recording..."
 msgstr "रिकॉर्डिंग पूरी करें..."
 
@@ -2961,6 +3043,9 @@ msgstr "फ़ॉलो करें"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "%(value_1)s को फ़ॉलो करें"
+
+msgid "Follow along"
+msgstr "साथ-साथ चलें"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "किसी भी वेबसाइट को फ़ॉलो करें—भले ही वह RSS फ़ीड प्रकाशित न करती हो।"
@@ -3171,6 +3256,10 @@ msgstr "गेम"
 msgid "Gaming"
 msgstr "गेमिंग"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "लिंग"
+
 msgid "General"
 msgstr "सामान्य"
 
@@ -3337,6 +3426,9 @@ msgstr "मुख्य समाचार"
 msgid "Health"
 msgstr "स्वास्थ्य"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "पहले 30 सेकंड सुनें। Premium Archive में पूरे लेख सुनाए जाते हैं।"
+
 msgid "Hearts"
 msgstr "दिल"
 
@@ -3376,6 +3468,9 @@ msgstr "लेख में हुए बदलाव छिपाएँ"
 msgid "Highlight"
 msgstr "हाइलाइट करें"
 
+msgid "Highlight the paragraph being read"
+msgstr "पढ़े जा रहे अनुच्छेद को हाइलाइट करें"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "खास वाक्यांशों पर प्रशिक्षण देने के लिए शीर्षक के शब्दों को हाइलाइट करें।"
 
@@ -3408,6 +3503,9 @@ msgstr "यह कैसे काम करता है"
 
 msgid "How many stories can I save?"
 msgstr "मैं कितने लेख सहेज सकता/सकती हूँ?"
+
+msgid "How much emotion"
+msgstr "भावनात्मकता का स्तर"
 
 msgid "How often"
 msgstr "कितनी बार"
@@ -3718,6 +3816,21 @@ msgstr "सूची दृश्य"
 msgid "List view"
 msgstr "सूची दृश्य"
 
+msgid "Listen"
+msgstr "सुनें"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "सुनने का समय समाप्त हो गया। थोड़ी देर में फिर से कोशिश करें।"
+
+msgid "Listen to stories read aloud"
+msgstr "लेखों को ज़ोर से पढ़कर सुनें"
+
+msgid "Listen to story"
+msgstr "लेख सुनें"
+
+msgid "Listen to this story"
+msgstr "इस लेख को सुनें"
+
 msgid "Loading PayPal..."
 msgstr "PayPal लोड हो रहा है..."
 
@@ -3735,6 +3848,9 @@ msgstr "फ़ीड लोड हो रही हैं..."
 
 msgid "Loading more briefings..."
 msgstr "और ब्रीफ़िंग लोड हो रही हैं..."
+
+msgid "Loading voices..."
+msgstr "आवाज़ें लोड हो रही हैं…"
 
 msgid "Loading your blocklist settings..."
 msgstr "आपकी ब्लॉकलिस्ट सेटिंग लोड हो रही हैं..."
@@ -4003,6 +4119,9 @@ msgstr "अधिक सुविधाएँ"
 msgid "More from Reddit"
 msgstr "Reddit से और"
 
+msgid "More voices"
+msgstr "और आवाज़ें"
+
 msgid "Morning"
 msgstr "सुबह"
 
@@ -4091,6 +4210,10 @@ msgstr "नाम"
 
 msgid "Native Apps"
 msgstr "नेटिव ऐप्स"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "स्वाभाविक"
 
 msgid "Natural Language Image Classifier"
 msgstr "प्राकृतिक भाषा छवि क्लासिफ़ायर"
@@ -4418,6 +4541,9 @@ msgstr "उपयोग बिलिंग सेट अप नहीं है�
 
 msgid "No valid merge groups to apply"
 msgstr "लागू करने के लिए कोई मान्य मर्ज समूह नहीं"
+
+msgid "No voices match these filters"
+msgstr "इन फ़िल्टरों से मेल खाने वाली कोई आवाज़ नहीं"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "अभी तक किसी ने भी आपके साझा किए गए लेखों की सदस्यता नहीं ली है।"
@@ -4800,6 +4926,15 @@ msgstr "किसी भी वेबसाइट का URL पेस्ट क
 msgid "Pattern: %(value_1)s"
 msgstr "पैटर्न: %(value_1)s"
 
+msgid "Pause"
+msgstr "रोकें"
+
+msgid "Pause listening"
+msgstr "सुनना रोकें"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "ज़ोर से पढ़ना रोकें या फिर से शुरू करें (y)"
+
 msgid "Payment history"
 msgstr "भुगतान इतिहास"
 
@@ -4850,6 +4985,9 @@ msgstr "इसके बाद चलाएँ"
 
 msgid "Play in Mini Media Player"
 msgstr "मिनी मीडिया प्लेयर में चलाएँ"
+
+msgid "Play the next unread story"
+msgstr "अगला अपठित लेख चलाएँ"
 
 msgid "Play/Pause"
 msgstr "चलाएँ/रोकें"
@@ -4933,6 +5071,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive पूरे लेख ज़ोर से पढ़कर सुनाता है।"
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4970,6 +5111,9 @@ msgstr "Premium स्थिति"
 msgid "Premium users can make their blurblog private."
 msgstr "Premium उपयोगकर्ता अपना blurblog निजी कर सकते हैं।"
 
+msgid "Preparing audio..."
+msgstr "ऑडियो तैयार हो रहा है..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "खोज फ़ील्ड पर सीधे जाने के लिए कहीं भी / दबाएँ।"
 
@@ -4990,6 +5134,15 @@ msgstr "पिछली साइट"
 
 msgid "Preview"
 msgstr "पूर्वावलोकन"
+
+msgid "Preview this voice"
+msgstr "इस आवाज़ का पूर्वावलोकन करें"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "%(seconds)s सेकंड का प्रीव्यू चल रहा है। Premium Archive से पूरे लेख सुनने की सुविधा मिलती है"
+msgstr[1] "%(seconds)s सेकंड का प्रीव्यू चल रहा है। Premium Archive से पूरे लेख सुनने की सुविधा मिलती है"
 
 msgid "Previous story"
 msgstr "पिछला लेख"
@@ -5087,6 +5240,9 @@ msgid_plural "Queued %(count)s stories for categorization. Categories will appea
 msgstr[0] "वर्गीकरण के लिए %(count)s लेख कतार में जोड़ा गया। लेखों के संसाधित होने पर श्रेणियाँ दिखाई देंगी।"
 msgstr[1] "वर्गीकरण के लिए %(count)s लेख कतार में जोड़े गए। लेखों के संसाधित होने पर श्रेणियाँ दिखाई देंगी।"
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "कतार में जोड़ा गया। अगला सुनें सूची से हटाने के लिए क्लिक करें"
+
 msgid "Quick search for a site"
 msgstr "साइट के लिए त्वरित खोज"
 
@@ -5144,6 +5300,13 @@ msgstr ""
 "किसी फ़ोल्डर की सभी फ़ीड को कालानुक्रमिक क्रम में एक ही स्क्रॉल होने वाली स्ट्रीम में पढ़ें। प्रशिक्षण के "
 "साथ, समाचार धारा आपकी सदस्यताओं में से सबसे अच्छे लेख सामने लाती है।"
 
+msgid "Read aloud"
+msgstr "ज़ोर से पढ़ें"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "%(voice)s द्वारा पढ़ा गया"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "NewsBlur ब्लॉग पर और पढ़ें"
 
@@ -5158,6 +5321,9 @@ msgstr "फ़ोल्डर के अनुसार लेख पढ़े�
 
 msgid "Read the whole story"
 msgstr "पूरा लेख पढ़ें"
+
+msgid "Read this story aloud (y)"
+msgstr "यह लेख ज़ोर से पढ़कर सुनाएँ (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "अपठित लेख इस तरह पढ़ें: newsblur stories list"
@@ -5183,6 +5349,10 @@ msgstr "सहेजा गया लेख पढ़ा जा रहा है
 
 msgid "Reading view"
 msgstr "पढ़ने का दृश्य"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "आपके %(language)s लेख पढ़ता है"
 
 msgid "Real-time"
 msgstr "रीयल-टाइम"
@@ -5216,6 +5386,10 @@ msgstr "इस साइट की अनुशंसा करें"
 
 msgid "Recommended"
 msgstr "अनुशंसित"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "%(language)s के लिए सुझाया गया"
 
 msgid "Record voice question"
 msgstr "आवाज़ में सवाल रिकॉर्ड करें"
@@ -5285,6 +5459,9 @@ msgstr "हर एपिसोड के लिए प्लेबैक की 
 msgid "Remove"
 msgstr "हटाएँ"
 
+msgid "Remove from Up Next"
+msgstr "अगला सुनें सूची से हटाएँ"
+
 msgid "Remove this list"
 msgstr "यह सूची हटाएँ"
 
@@ -5293,6 +5470,9 @@ msgstr "इस मर्ज समूह को हटाएँ"
 
 msgid "Removed"
 msgstr "हटाया गया"
+
+msgid "Removed from Up Next"
+msgstr "अगला सुनें सूची से हटाया गया"
 
 msgid "Rename"
 msgstr "नाम बदलें"
@@ -5352,6 +5532,10 @@ msgstr "रीसेट करें"
 
 msgid "Reset to original favicon"
 msgstr "मूल फ़ेविकॉन पर रीसेट करें"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)s रीसेट होता है"
 
 msgid "Resetting..."
 msgstr "रीसेट किया जा रहा है..."
@@ -5619,6 +5803,9 @@ msgstr "सबरेडिट खोजें (जैसे, programming, news, 
 
 msgid "Search the FAQ..."
 msgstr "अक्सर पूछे जाने वाले सवाल खोजें..."
+
+msgid "Search voices"
+msgstr "आवाज़ें खोजें"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "एक फ़ीड, फ़ोल्डर या सभी जगह खोजें"
@@ -5963,6 +6150,9 @@ msgstr "अपने फ़ीड पढ़ने के लिए साइन 
 msgid "Signup"
 msgstr "साइन अप करें"
 
+msgid "Similarity"
+msgstr "समानता"
+
 msgid "Single Story"
 msgstr "एकल लेख"
 
@@ -6082,8 +6272,14 @@ msgstr "फ़ीड और लेख शीर्षकों के बीच 
 msgid "Spanish"
 msgstr "स्पैनिश"
 
+msgid "Speaker boost"
+msgstr "स्पीकर बूस्ट"
+
 msgid "Special Folders"
 msgstr "विशेष फ़ोल्डर"
+
+msgid "Speed"
+msgstr "गति"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "खर्च की सीमा पूरी हो गई। अगले चक्र तक क्लासिफ़ायर रोक दिए गए हैं।"
@@ -6128,6 +6324,12 @@ msgstr "खेल"
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "साइट की टैगलाइन को बेहतर बनाएँ। चुने जाने पर, इस साइट को NewsBlur डैशबोर्ड पर एक हफ़्ते तक जगह मिलेगी।"
 
+msgid "Stability"
+msgstr "स्थिरता"
+
+msgid "Stability, similarity and style"
+msgstr "स्थिरता, समानता और शैली"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "%(date)s से निष्क्रिय"
@@ -6169,12 +6371,22 @@ msgstr "स्थिति"
 msgid "Stay on the same feed/folder"
 msgstr "उसी फ़ीड/फ़ोल्डर पर बने रहें"
 
+msgid "Steadier or more varied"
+msgstr "ज़्यादा स्थिर या ज़्यादा विविध"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "स्थिर"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "चरण %(step)s, कुल %(count)s"
 
 msgid "Stop any time you like."
 msgstr "आप जब चाहें, रुक सकते हैं।"
+
+msgid "Stop preview"
+msgstr "पूर्वावलोकन रोकें"
 
 msgid "Stop recording"
 msgstr "रिकॉर्डिंग रोकें"
@@ -6291,6 +6503,9 @@ msgstr "लेख सामग्री का पूर्वावलोकन
 msgid "Story is always hidden"
 msgstr "लेख हमेशा छिपा रहता है"
 
+msgid "Story language"
+msgstr "लेख की भाषा"
+
 msgid "Story layout"
 msgstr "लेख लेआउट"
 
@@ -6317,6 +6532,13 @@ msgstr "स्ट्रीम बाधित हुई। 10 सेकंड �
 
 msgid "Stripe Id:"
 msgstr "Stripe आईडी:"
+
+msgid "Style"
+msgstr "शैली"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "शैली"
 
 msgid "Submit Payment"
 msgstr "भुगतान सबमिट करें"
@@ -6584,6 +6806,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "NewsBlur ब्लॉग"
 
+msgid "The audio stream was interrupted."
+msgstr "ऑडियो स्ट्रीम बाधित हो गई।"
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "पूरा %(icon)s पाठ दृश्य एक %(link_start)sप्रीमियम सुविधा%(link_end)s है।"
@@ -6632,6 +6857,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "थीम और अनुकूलन"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "फिर %(source)s से"
 
 msgid "There are too many sites and stories to process. "
 msgstr "प्रोसेस करने के लिए बहुत ज़्यादा साइटें और लेख हैं। "
@@ -6687,6 +6916,9 @@ msgstr "लॉग आउट करने में त्रुटि हुई,
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "कोई सीमा नहीं है। जितने चाहें उतने लेख सहेजें—वे हमेशा के लिए रखे जाएँगे।"
+
+msgid "There's nothing to read aloud in this story."
+msgstr "इस लेख में ज़ोर से पढ़ने के लिए कुछ नहीं है।"
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "ये समूह इसलिए मिले क्योंकि अन्य सब्सक्राइबर इन फ़ीड की सदस्यता लेते हैं।"
@@ -7198,6 +7430,9 @@ msgstr[1] "हर %(count)s सेकंड में साइटें अप�
 msgid "Updating sites in real-time..."
 msgstr "साइटें रीयल टाइम में अपडेट हो रही हैं..."
 
+msgid "Upgrade"
+msgstr "अपग्रेड करें"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "%(value_1)s में अपग्रेड करें"
@@ -7340,8 +7575,14 @@ msgstr "सेटिंग देखें"
 msgid "Visual"
 msgstr "दृश्य"
 
+msgid "Voice"
+msgstr "आवाज़"
+
 msgid "Voice recording failed. Please try again."
 msgstr "आवाज़ रिकॉर्ड नहीं हो सकी। कृपया फिर से कोशिश करें।"
+
+msgid "Voice settings"
+msgstr "आवाज़ की सेटिंग्स"
 
 msgid "Warning: This is actually permanent"
 msgstr "चेतावनी: यह कार्रवाई वास्तव में स्थायी है"
@@ -7762,6 +8003,10 @@ msgstr "आपके रेफ़रल के आँकड़े"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "आपके आर्काइव किए गए लेख उपलब्ध रहेंगे, लेकिन नए लेख सामान्य संग्रहण नीति के अनुसार रखे जाएंगे।"
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "आपकी चुनी हुई आवाज़ अभी उपलब्ध नहीं है, इसलिए %(voice)s यह लेख पढ़ रहा है।"
+
 msgid "Your cookie has expired — Please login again"
 msgstr "आपकी कुकी की अवधि समाप्त हो गई है — कृपया फिर से लॉग इन करें"
 
@@ -7936,6 +8181,10 @@ msgstr "श्रमिक संघ"
 msgid "like"
 msgstr "पसंद"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "सुनें"
+
 msgid "local elections"
 msgstr "स्थानीय चुनाव"
 
@@ -8017,6 +8266,9 @@ msgstr "सदस्यता ली गई"
 
 msgid "supply chain"
 msgstr "आपूर्ति शृंखला"
+
+msgid "this list"
+msgstr "यह सूची"
 
 msgid "trade policy"
 msgstr "व्यापार नीति"
