@@ -194,6 +194,17 @@ nb-fast: pull bounce-fast migrate bootstrap collectstatic
 nbfast: nb-fast
 nb: nbfast
 
+# Store artwork and performance recordings live in S3, not git (utils/repo_assets.py).
+REPO_ASSETS := docker run --rm -v $(CURDIR):/srv/newsblur -w /srv/newsblur -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY $(if $(wildcard /srv/secrets-newsblur/keys/aws.s3.token),-v /srv/secrets-newsblur/keys:/srv/secrets-newsblur/keys:ro) newsblur/newsblur_python3 python utils/repo_assets.py
+assets-pull:
+	$(REPO_ASSETS) pull
+assets-push:
+	$(REPO_ASSETS) push
+assets-status:
+	$(REPO_ASSETS) status
+assets-verify:
+	$(REPO_ASSETS) verify
+
 metrics:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
 

@@ -97,3 +97,27 @@ plans
 
 # PyPI build artifacts
 newsblur_mcp/dist/
+
+# Store artwork and performance recordings live in S3, not git (utils/repo_assets.py). `make assets-pull`
+# downloads them and `make assets-push` uploads new ones and rewrites each folder's .manifest.json.
+clients/store/artwork/**/*.[pP][nN][gG]
+clients/store/artwork/**/*.[jJ][pP][gG]
+clients/store/artwork/**/*.[jJ][pP][eE][gG]
+clients/store/artwork/**/*.[mM][pP][44]
+clients/store/artwork/**/*.[mM][oO][vV]
+clients/store/artwork/**/*.[gG][iI][fF]
+clients/store/artwork/**/*.[wW][eE][bB][pP]
+clients/android/Performance/**/*.[pP][nN][gG]
+clients/android/Performance/**/*.[jJ][pP][gG]
+clients/android/Performance/**/*.[jJ][pP][eE][gG]
+clients/android/Performance/**/*.[mM][pP][44]
+clients/android/Performance/**/*.[mM][oO][vV]
+clients/android/Performance/**/*.[gG][iI][fF]
+clients/android/Performance/**/*.[wW][eE][bB][pP]
+clients/ios/Performance/**/*.[pP][nN][gG]
+clients/ios/Performance/**/*.[jJ][pP][gG]
+clients/ios/Performance/**/*.[jJ][pP][eE][gG]
+clients/ios/Performance/**/*.[mM][pP][44]
+clients/ios/Performance/**/*.[mM][oO][vV]
+clients/ios/Performance/**/*.[gG][iI][fF]
+clients/ios/Performance/**/*.[wW][eE][bB][pP]
