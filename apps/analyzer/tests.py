@@ -1462,6 +1462,48 @@ class Test_Classifiers(TransactionTestCase):
 
         self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk, title="old phrase").count(), 0)
 
+    def test_bulk_save_applies_and_removes_super_dislikes(self):
+        """
+        Manage Training saves site-level pill edits through /classifier/save_all, which
+        used to ignore super_dislike_ names, so a super-dislike showed "Saved" and was lost.
+        """
+        self.client.login(username="testuser", password="testpass")
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="iphone \\d+",
+            is_regex=True,
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        response = self.client.post(
+            "/classifier/save_all",
+            json.encode(
+                {
+                    "classifiers": {
+                        str(self.feed.pk): {
+                            "super_dislike_title_regex": ["iphone \\d+"],
+                            "super_dislike_tag": ["sponsored"],
+                        }
+                    }
+                }
+            ),
+            content_type="application/json",
+        )
+        self.assertEqual(json.decode(response.content)["code"], 0)
+        title = MClassifierTitle.objects.get(user_id=self.user.pk, title="iphone \\d+")
+        self.assertEqual((title.is_regex, title.score), (True, -2))
+        self.assertEqual(MClassifierTag.objects.get(user_id=self.user.pk, tag="sponsored").score, -2)
+
+        self.client.post(
+            "/classifier/save_all",
+            json.encode({"classifiers": {str(self.feed.pk): {"remove_super_dislike_tag": ["sponsored"]}}}),
+            content_type="application/json",
+        )
+        self.assertEqual(MClassifierTag.objects(user_id=self.user.pk, tag="sponsored").count(), 0)
+
     def test_typed_global_classifier_requires_archive(self):
         self.client.login(username="testuser", password="testpass")
 

@@ -670,11 +670,14 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
     # Types that support regex matching
     regex_types = ("title", "text", "url", "author")
 
+    # Same opinions as save_classifier, so super-dislikes from Manage Training's site pills save
     classifiers_config = {
         "like_": 1,
         "dislike_": -1,
+        "super_dislike_": -2,
         "remove_like_": 0,
         "remove_dislike_": 0,
+        "remove_super_dislike_": 0,
     }
 
     for content_type, ClassifierCls in classifier_types.items():
