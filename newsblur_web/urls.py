@@ -37,6 +37,7 @@ urlpatterns = [
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),
+    url(r"^listen/", include("apps.listen.urls")),
     url(r"^webfeed/", include("apps.webfeed.urls")),
     url(r"^welcome/?$", reader_views.welcome_req, name="welcome-page"),
     url(r"^add(?:/.*)?$", reader_views.index),

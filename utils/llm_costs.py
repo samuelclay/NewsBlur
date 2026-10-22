@@ -71,6 +71,11 @@ MODEL_PRICING = {
     "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4": {"input": 3.00, "output": 15.00},
     "grok-3-beta": {"input": 3.00, "output": 15.00},
+    # ElevenLabs text to speech, charged per 1K characters (https://elevenlabs.io/pricing/api)
+    "eleven_v4_turbo": {"per_1k_characters": 0.04},
+    "eleven_v4": {"per_1k_characters": 0.08},
+    "eleven_flash_v2_5": {"per_1k_characters": 0.04},
+    "eleven_multilingual_v2": {"per_1k_characters": 0.08},
 }
 
 # Provider mapping for models (full IDs and short aliases)
@@ -109,6 +114,10 @@ MODEL_PROVIDERS = {
     "grok-4-1-fast-reasoning": "xai",
     "grok-4": "xai",
     "grok-3-beta": "xai",
+    "eleven_v4_turbo": "elevenlabs",
+    "eleven_v4": "elevenlabs",
+    "eleven_flash_v2_5": "elevenlabs",
+    "eleven_multilingual_v2": "elevenlabs",
 }
 
 
@@ -120,7 +129,7 @@ class LLMCostTracker:
     """
 
     @classmethod
-    def calculate_cost(cls, model, input_tokens=0, output_tokens=0, duration_minutes=0):
+    def calculate_cost(cls, model, input_tokens=0, output_tokens=0, duration_minutes=0, characters=0):
         """
         Calculate the cost for a given model and token counts.
 
@@ -129,6 +138,7 @@ class LLMCostTracker:
             input_tokens: Number of input tokens
             output_tokens: Number of output tokens
             duration_minutes: For audio models like Whisper, the duration in minutes
+            characters: For text to speech models, the characters spoken
 
         Returns:
             Cost in USD (float)
@@ -141,6 +151,10 @@ class LLMCostTracker:
         # Handle audio models (charged per minute)
         if "per_minute" in pricing:
             return duration_minutes * pricing["per_minute"]
+
+        # Handle text to speech models (charged per character)
+        if "per_1k_characters" in pricing:
+            return (characters / 1000) * pricing["per_1k_characters"]
 
         # Handle text models (charged per token)
         input_cost = (input_tokens / 1_000_000) * pricing.get("input", 0)
@@ -173,6 +187,7 @@ class LLMCostTracker:
         user_id=None,
         request_id=None,
         metadata=None,
+        characters=0,
     ):
         """
         Record LLM usage to MongoDB and Redis.
@@ -187,6 +202,7 @@ class LLMCostTracker:
             user_id: User ID (optional)
             request_id: Request correlation ID (optional)
             metadata: Additional context dict (optional)
+            characters: For text to speech models, characters spoken
 
         Returns:
             MLLMCost document instance
@@ -194,7 +210,7 @@ class LLMCostTracker:
         from apps.monitor.models import MLLMCost
         from apps.statistics.rllm_costs import RLLMCosts
 
-        cost_usd = cls.calculate_cost(model, input_tokens, output_tokens, duration_minutes)
+        cost_usd = cls.calculate_cost(model, input_tokens, output_tokens, duration_minutes, characters)
         total_tokens = input_tokens + output_tokens
 
         # Check billing status for classifier features (reused for Redis and Stripe)
@@ -325,6 +341,32 @@ class LLMCostTracker:
             user_id=user_id,
             request_id=request_id,
             metadata=metadata,
+        )
+
+    @classmethod
+    def record_speech(cls, model, characters, feature="listen", user_id=None, request_id=None, metadata=None):
+        """
+        Convenience method for recording ElevenLabs text to speech costs (apps/listen).
+
+        Args:
+            model: ElevenLabs model ID (e.g., "eleven_v4_turbo")
+            characters: Characters sent to be spoken
+            feature: Feature name (default listen)
+            user_id: User ID (optional)
+            request_id: Request correlation ID (optional)
+            metadata: Additional context dict (optional)
+
+        Returns:
+            MLLMCost document instance
+        """
+        return cls.record_usage(
+            provider="elevenlabs",
+            model=model,
+            feature=feature,
+            characters=characters,
+            user_id=user_id,
+            request_id=request_id,
+            metadata={"characters": characters, **(metadata or {})},
         )
 
     @classmethod
