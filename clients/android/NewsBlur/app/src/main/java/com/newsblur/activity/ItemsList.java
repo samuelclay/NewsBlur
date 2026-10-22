@@ -1890,6 +1890,28 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         binding.itemlistStoryStatusSpinner.setIndicatorColor(textColor);
     }
 
+    @Override
+    protected boolean showsListenMiniPlayer() {
+        return true;
+    }
+
+    @Override
+    protected View listenMiniPlayerAnchor() {
+        // ItemsList.java's story toolbar floats at the bottom unless it was moved to the top in Settings.
+        return binding != null && storyToolbarAtBottom ? binding.itemlistStoryHeader : null;
+    }
+
+    @Override
+    protected boolean showsListenMiniPlayerInThisPane() {
+        return !(StorySplitView.isInSplit(this) && Reading.peekSplitReader(getTaskId()) != null);
+    }
+
+    @Override
+    protected void onListenMiniPlayerInsetChanged(int insetPx) {
+        // ItemsList.java pads the story list like Main.java pads the feed list, only while the mini player shows.
+        if (itemSetFragment != null) itemSetFragment.setListenMiniPlayerInset(insetPx);
+    }
+
     private static class StoryHeaderPalette {
         final int headerBackgroundColor;
         final int pillBackgroundColor;
