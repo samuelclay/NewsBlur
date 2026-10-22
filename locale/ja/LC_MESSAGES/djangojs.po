@@ -1061,6 +1061,9 @@ msgstr "Firefoxに追加"
 msgid "Add to folder"
 msgstr "フォルダーに追加"
 
+msgid "Added"
+msgstr "追加済み"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)sに追加"
@@ -1341,6 +1344,9 @@ msgstr "著者フィルターにより、%(context)sの記事は見つかりま�
 msgid "Author filters found no stories in this view."
 msgstr "著者フィルターにより、この表示に記事が見つかりませんでした。"
 
+msgid "Author name"
+msgstr "著者名"
+
 msgid "Author: "
 msgstr "著者："
 
@@ -1612,6 +1618,9 @@ msgstr "分類中..."
 msgid "Category"
 msgstr "カテゴリ"
 
+msgid "Category or tag"
+msgstr "カテゴリまたはタグ"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "カテゴリ: %(value_1)s"
@@ -1725,6 +1734,9 @@ msgstr "分類フィルターの適用範囲"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分類器の範囲には%(tier_link)sが必要です"
+
+msgid "Classifier type"
+msgstr "分類器の種類"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（xAI）に対応。いつでも切り替えられます。"
@@ -1906,6 +1918,9 @@ msgstr "テキストをコピー"
 
 msgid "Copy URL"
 msgstr "URLをコピー"
+
+msgid "Could not add this classifier. Try again."
+msgstr "この分類器を追加できませんでした。もう一度お試しください。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "このアカウントを切断できませんでした。もう一度お試しください。"
@@ -4626,6 +4641,9 @@ msgstr "このRSS/XMLフィードを解析"
 msgid "Parsing..."
 msgstr "解析中…"
 
+msgid "Part of a story URL"
+msgstr "記事URLの一部"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "任意のURLを貼り付けると、NewsBlurがRSSのないページからもフィードを作成します。"
 
@@ -4668,6 +4686,12 @@ msgstr "サイトごと"
 
 msgid "Per-feed notification settings"
 msgstr "フィードごとの通知設定"
+
+msgid "Phrase to match in story text"
+msgstr "記事本文で一致させるフレーズ"
+
+msgid "Phrase to match in story titles"
+msgstr "記事タイトルで一致させるフレーズ"
 
 msgid "Pick a tier & pay."
 msgstr "プランを選んでお支払いください。"
@@ -6336,6 +6360,10 @@ msgid "Text View"
 msgstr "テキスト表示"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "テキスト分類器には%(tier_link)sが必要です"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "テキストフィルターにより、%(context)s に記事が見つかりませんでした。"
 
@@ -6822,6 +6850,10 @@ msgid "URL Regex"
 msgstr "URL正規表現"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL分類器には%(tier_link)sが必要です"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "%(context)sにURLフィルターに一致する記事はありません。"
 
@@ -7228,6 +7260,9 @@ msgstr "フィードを購読すると、NewsBlurが利用可能な過去の記�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "新しいフィードを登録すると、過去の記事もさかのぼって取得されます"
+
+msgid "Where it applies"
+msgstr "適用する対象"
 
 msgid "Which AI models are available?"
 msgstr "どのAIモデルが利用できますか？"

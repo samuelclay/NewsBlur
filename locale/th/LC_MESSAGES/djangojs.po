@@ -1063,6 +1063,9 @@ msgstr "เพิ่มไปยัง Firefox"
 msgid "Add to folder"
 msgstr "เพิ่มลงในโฟลเดอร์"
 
+msgid "Added"
+msgstr "เพิ่มแล้ว"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "เพิ่มเมื่อ %(date)s"
@@ -1351,6 +1354,9 @@ msgstr "ตัวกรองผู้เขียนไม่พบบทคว
 msgid "Author filters found no stories in this view."
 msgstr "ตัวกรองผู้เขียนไม่พบบทความในมุมมองนี้"
 
+msgid "Author name"
+msgstr "ชื่อผู้เขียน"
+
 msgid "Author: "
 msgstr "ผู้เขียน: "
 
@@ -1624,6 +1630,9 @@ msgstr "กำลังจัดหมวดหมู่..."
 msgid "Category"
 msgstr "หมวดหมู่"
 
+msgid "Category or tag"
+msgstr "หมวดหมู่หรือแท็ก"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "หมวดหมู่: %(value_1)s"
@@ -1737,6 +1746,9 @@ msgstr "ขอบเขตตัวกรองตัวจำแนก"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "ขอบเขตตัวจำแนกต้องมี %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "ประเภทตัวจำแนก"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) และ Grok (xAI) สลับใช้ได้ทุกเมื่อ"
@@ -1922,6 +1934,9 @@ msgstr "คัดลอกข้อความ"
 
 msgid "Copy URL"
 msgstr "คัดลอก URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "เพิ่มตัวจำแนกนี้ไม่ได้ โปรดลองอีกครั้ง"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "ยกเลิกการเชื่อมต่อบัญชีนี้ไม่ได้ โปรดลองอีกครั้ง"
@@ -4666,6 +4681,9 @@ msgstr "แยกวิเคราะห์ฟีด RSS/XML นี้"
 msgid "Parsing..."
 msgstr "กำลังประมวลผล..."
 
+msgid "Part of a story URL"
+msgstr "ส่วนหนึ่งของ URL บทความ"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บ แม้ไม่มี RSS"
 
@@ -4708,6 +4726,12 @@ msgstr "แยกตามเว็บไซต์"
 
 msgid "Per-feed notification settings"
 msgstr "ตั้งค่าการแจ้งเตือนแยกตามฟีด"
+
+msgid "Phrase to match in story text"
+msgstr "วลีที่ตรงกับข้อความในบทความ"
+
+msgid "Phrase to match in story titles"
+msgstr "วลีที่ตรงกับชื่อบทความ"
 
 msgid "Pick a tier & pay."
 msgstr "เลือกระดับและชำระเงิน"
@@ -6386,6 +6410,10 @@ msgid "Text View"
 msgstr "มุมมองข้อความ"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "ตัวจำแนกข้อความต้องมี %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "ตัวกรองข้อความไม่พบบทความใน %(context)s"
 
@@ -6894,6 +6922,10 @@ msgid "URL Regex"
 msgstr "Regex ของ URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "ตัวจำแนก URL ต้องมี %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "ตัวกรอง URL ไม่พบบทความใน %(context)s"
 
@@ -7302,6 +7334,9 @@ msgstr "เมื่อคุณสมัครรับฟีด NewsBlur จ�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "เมื่อสมัครรับฟีดใหม่ ระบบจะเติมประวัติย้อนหลังให้"
+
+msgid "Where it applies"
+msgstr "มีผลกับส่วนใด"
 
 msgid "Which AI models are available?"
 msgstr "มีโมเดล AI ใดให้ใช้งานบ้าง"

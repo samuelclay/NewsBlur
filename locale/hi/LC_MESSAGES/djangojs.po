@@ -1128,6 +1128,9 @@ msgstr "Firefox में जोड़ें"
 msgid "Add to folder"
 msgstr "फ़ोल्डर में जोड़ें"
 
+msgid "Added"
+msgstr "जोड़ा गया"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "जोड़ा गया %(date)s"
@@ -1427,6 +1430,9 @@ msgstr "लेखक फ़िल्टर को %(context)s में को�
 msgid "Author filters found no stories in this view."
 msgstr "लेखक फ़िल्टर को इस दृश्य में कोई लेख नहीं मिला।"
 
+msgid "Author name"
+msgstr "लेखक का नाम"
+
 msgid "Author: "
 msgstr "लेखक: "
 
@@ -1702,6 +1708,9 @@ msgstr "श्रेणीबद्ध किया जा रहा है..."
 msgid "Category"
 msgstr "श्रेणी"
 
+msgid "Category or tag"
+msgstr "श्रेणी या टैग"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "श्रेणी: %(value_1)s"
@@ -1817,6 +1826,9 @@ msgstr "क्लासिफ़ायर फ़िल्टर का दाय
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "क्लासिफ़ायर के दायरे के लिए %(tier_link)s आवश्यक है"
+
+msgid "Classifier type"
+msgstr "क्लासिफ़ायर का प्रकार"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (xAI)। इनके बीच कभी भी स्विच करें।"
@@ -2003,6 +2015,9 @@ msgstr "टेक्स्ट कॉपी करें"
 
 msgid "Copy URL"
 msgstr "URL कॉपी करें"
+
+msgid "Could not add this classifier. Try again."
+msgstr "यह क्लासिफ़ायर जोड़ा नहीं जा सका। फिर से कोशिश करें।"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "इस खाते का कनेक्शन नहीं हटाया जा सका। कृपया फिर से कोशिश करें।"
@@ -4787,6 +4802,9 @@ msgstr "इस RSS/XML फ़ीड को पार्स करें"
 msgid "Parsing..."
 msgstr "पार्स हो रहा है..."
 
+msgid "Part of a story URL"
+msgstr "लेख के URL का एक हिस्सा"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "कोई भी URL पेस्ट करें और NewsBlur पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।"
 
@@ -4829,6 +4847,12 @@ msgstr "प्रति साइट"
 
 msgid "Per-feed notification settings"
 msgstr "हर फ़ीड के लिए अलग सूचना सेटिंग"
+
+msgid "Phrase to match in story text"
+msgstr "लेख के टेक्स्ट में मिलाने के लिए वाक्यांश"
+
+msgid "Phrase to match in story titles"
+msgstr "लेख के शीर्षकों में मिलाने के लिए वाक्यांश"
 
 msgid "Pick a tier & pay."
 msgstr "एक प्लान चुनें और भुगतान करें।"
@@ -6529,6 +6553,10 @@ msgid "Text View"
 msgstr "टेक्स्ट दृश्य"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "टेक्स्ट क्लासिफ़ायर के लिए %(tier_link)s आवश्यक है"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "टेक्स्ट फ़िल्टर को %(context)s में कोई लेख नहीं मिला।"
 
@@ -7047,6 +7075,10 @@ msgid "URL Regex"
 msgstr "URL रेगेक्स"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL क्लासिफ़ायर के लिए %(tier_link)s आवश्यक है"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL फ़िल्टर को %(context)s में कोई लेख नहीं मिला।"
 
@@ -7463,6 +7495,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "जब आप किसी नई फ़ीड की सदस्यता लेते हैं, तो उसका पुराना इतिहास भी जोड़ दिया जाता है"
+
+msgid "Where it applies"
+msgstr "यह कहाँ लागू होता है"
 
 msgid "Which AI models are available?"
 msgstr "कौन-से AI मॉडल उपलब्ध हैं?"

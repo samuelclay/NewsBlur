@@ -1130,6 +1130,9 @@ msgstr "Toevoegen aan Firefox"
 msgid "Add to folder"
 msgstr "Toevoegen aan map"
 
+msgid "Added"
+msgstr "Toegevoegd"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s toegevoegd"
@@ -1427,6 +1430,9 @@ msgstr "Auteurfilters hebben geen artikelen gevonden in %(context)s."
 msgid "Author filters found no stories in this view."
 msgstr "Auteursfilters hebben in deze weergave geen artikelen gevonden."
 
+msgid "Author name"
+msgstr "Naam van de auteur"
+
 msgid "Author: "
 msgstr "Auteur: "
 
@@ -1702,6 +1708,9 @@ msgstr "Categoriseren..."
 msgid "Category"
 msgstr "Categorie"
 
+msgid "Category or tag"
+msgstr "Categorie of tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Categorie: %(value_1)s"
@@ -1817,6 +1826,9 @@ msgstr "Filterbereik van de classifier"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Het bereik van de classifier vereist %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Type classifier"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -2007,6 +2019,9 @@ msgstr "Tekst kopiëren"
 
 msgid "Copy URL"
 msgstr "URL kopiëren"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Deze classifier kan niet worden toegevoegd. Probeer het opnieuw."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Kon dit account niet loskoppelen. Probeer het opnieuw."
@@ -4796,6 +4811,9 @@ msgstr "Deze RSS/XML-feed parseren"
 msgid "Parsing..."
 msgstr "Bezig met verwerken..."
 
+msgid "Part of a story URL"
+msgstr "Deel van een artikel-URL"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Plak een URL en NewsBlur maakt een feed van de pagina, ook zonder RSS."
 
@@ -4838,6 +4856,12 @@ msgstr "Per site"
 
 msgid "Per-feed notification settings"
 msgstr "Meldingsinstellingen per feed"
+
+msgid "Phrase to match in story text"
+msgstr "Zin waarop wordt gezocht in de artikeltekst"
+
+msgid "Phrase to match in story titles"
+msgstr "Zin waarop wordt gezocht in de artikeltitels"
 
 msgid "Pick a tier & pay."
 msgstr "Kies een abonnement en betaal."
@@ -6546,6 +6570,10 @@ msgid "Text View"
 msgstr "Tekstweergave"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Voor tekstclassifiers is %(tier_link)s vereist"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Tekstfilters hebben geen artikelen gevonden in %(context)s."
 
@@ -7071,6 +7099,10 @@ msgid "URL Regex"
 msgstr "URL-regex"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Voor URL-classifiers is %(tier_link)s vereist"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL-filters hebben geen artikelen gevonden in %(context)s."
 
@@ -7491,6 +7523,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Wanneer je je abonneert op een nieuwe feed, wordt de eerdere geschiedenis aangevuld"
+
+msgid "Where it applies"
+msgstr "Waarop van toepassing"
 
 msgid "Which AI models are available?"
 msgstr "Welke AI-modellen zijn beschikbaar?"

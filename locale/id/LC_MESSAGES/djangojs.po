@@ -1132,6 +1132,9 @@ msgstr "Tambahkan ke Firefox"
 msgid "Add to folder"
 msgstr "Tambahkan ke folder"
 
+msgid "Added"
+msgstr "Ditambahkan"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Ditambahkan %(date)s"
@@ -1429,6 +1432,9 @@ msgstr "Filter penulis tidak menemukan artikel di %(context)s."
 msgid "Author filters found no stories in this view."
 msgstr "Filter penulis tidak menemukan artikel dalam tampilan ini."
 
+msgid "Author name"
+msgstr "Nama penulis"
+
 msgid "Author: "
 msgstr "Penulis: "
 
@@ -1704,6 +1710,9 @@ msgstr "Mengategorikan..."
 msgid "Category"
 msgstr "Kategori"
 
+msgid "Category or tag"
+msgstr "Kategori atau tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Kategori: %(value_1)s"
@@ -1819,6 +1828,9 @@ msgstr "Cakupan filter pengklasifikasi"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Cakupan pengklasifikasi memerlukan %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Jenis pengklasifikasi"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), dan Grok (xAI). Beralih di antara mereka kapan saja."
@@ -2005,6 +2017,9 @@ msgstr "Salin Teks"
 
 msgid "Copy URL"
 msgstr "Salin URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Tidak dapat menambahkan pengklasifikasi ini. Coba lagi."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Tidak dapat memutuskan koneksi akun ini. Silakan coba lagi."
@@ -4802,6 +4817,9 @@ msgstr "Uraikan Feed RSS/XML ini"
 msgid "Parsing..."
 msgstr "Mengurai..."
 
+msgid "Part of a story URL"
+msgstr "Bagian dari URL artikel"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Tempel URL apa pun dan NewsBlur akan membuat feed dari halamannya, bahkan tanpa RSS."
 
@@ -4844,6 +4862,12 @@ msgstr "Per Situs"
 
 msgid "Per-feed notification settings"
 msgstr "Pengaturan notifikasi per feed"
+
+msgid "Phrase to match in story text"
+msgstr "Frasa yang cocok dalam teks artikel"
+
+msgid "Phrase to match in story titles"
+msgstr "Frasa yang cocok dalam judul artikel"
 
 msgid "Pick a tier & pay."
 msgstr "Pilih paket & bayar."
@@ -6550,6 +6574,10 @@ msgid "Text View"
 msgstr "Tampilan teks"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Pengklasifikasi teks memerlukan %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Filter teks tidak menemukan artikel di %(context)s."
 
@@ -7075,6 +7103,10 @@ msgid "URL Regex"
 msgstr "Regex URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Pengklasifikasi URL memerlukan %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Filter URL tidak menemukan artikel di %(context)s."
 
@@ -7497,6 +7529,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Saat Anda berlangganan feed baru, riwayatnya akan diisi secara surut"
+
+msgid "Where it applies"
+msgstr "Lokasi penerapan"
 
 msgid "Which AI models are available?"
 msgstr "Model AI apa saja yang tersedia?"

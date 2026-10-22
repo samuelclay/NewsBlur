@@ -1132,6 +1132,9 @@ msgstr "Adicionar ao Firefox"
 msgid "Add to folder"
 msgstr "Adicionar à pasta"
 
+msgid "Added"
+msgstr "Adicionado"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Adicionado %(date)s"
@@ -1431,6 +1434,9 @@ msgstr "Os filtros de autor não encontraram artigos em %(context)s."
 msgid "Author filters found no stories in this view."
 msgstr "Os filtros de autor não encontraram artigos nesta visualização."
 
+msgid "Author name"
+msgstr "Nome do autor"
+
 msgid "Author: "
 msgstr "Autor: "
 
@@ -1706,6 +1712,9 @@ msgstr "Categorizando..."
 msgid "Category"
 msgstr "Categoria"
 
+msgid "Category or tag"
+msgstr "Categoria ou tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Categoria: %(value_1)s"
@@ -1821,6 +1830,9 @@ msgstr "Escopo do filtro de classificação"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "O escopo do classificador requer %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Tipo de classificador"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) e Grok (xAI). Alterne entre eles a qualquer momento."
@@ -2007,6 +2019,9 @@ msgstr "Copiar texto"
 
 msgid "Copy URL"
 msgstr "Copiar URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Não foi possível adicionar este classificador. Tente novamente."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Não foi possível desconectar esta conta. Tente novamente."
@@ -4803,6 +4818,9 @@ msgstr "Analisar este feed RSS/XML"
 msgid "Parsing..."
 msgstr "Analisando..."
 
+msgid "Part of a story URL"
+msgstr "Parte da URL de um artigo"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Cole qualquer URL e NewsBlur cria um feed a partir da página, mesmo sem RSS."
 
@@ -4845,6 +4863,12 @@ msgstr "Por site"
 
 msgid "Per-feed notification settings"
 msgstr "Configurações de notificações por feed"
+
+msgid "Phrase to match in story text"
+msgstr "Frase a localizar no texto do artigo"
+
+msgid "Phrase to match in story titles"
+msgstr "Frase a localizar nos títulos dos artigos"
 
 msgid "Pick a tier & pay."
 msgstr "Escolha um plano e pague."
@@ -6553,6 +6577,10 @@ msgid "Text View"
 msgstr "Visualização de texto"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Classificadores de texto exigem %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Os filtros de texto não encontraram artigos em %(context)s."
 
@@ -7077,6 +7105,10 @@ msgid "URL Regex"
 msgstr "Expressão regular de URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Classificadores de URL exigem %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Os filtros de URL não encontraram artigos em %(context)s."
 
@@ -7497,6 +7529,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Ao assinar um novo feed, o histórico é preenchido retroativamente"
+
+msgid "Where it applies"
+msgstr "Onde se aplica"
 
 msgid "Which AI models are available?"
 msgstr "Quais modelos de IA estão disponíveis?"

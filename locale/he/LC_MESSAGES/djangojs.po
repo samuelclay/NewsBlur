@@ -1128,6 +1128,9 @@ msgstr "הוספה ל-Firefox"
 msgid "Add to folder"
 msgstr "הוסף לתיקייה"
 
+msgid "Added"
+msgstr "נוסף"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "נוסף %(date)s"
@@ -1423,6 +1426,9 @@ msgstr "מסנני המחברים לא מצאו כתבות ב-%(context)s."
 msgid "Author filters found no stories in this view."
 msgstr "מסנני מחברים לא מצאו כתבות בתצוגה הזו."
 
+msgid "Author name"
+msgstr "שם המחבר"
+
 msgid "Author: "
 msgstr "מחבר: "
 
@@ -1698,6 +1704,9 @@ msgstr "מסווג..."
 msgid "Category"
 msgstr "קטגוריה"
 
+msgid "Category or tag"
+msgstr "קטגוריה או תגית"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "קטגוריה: %(value_1)s"
@@ -1813,6 +1822,9 @@ msgstr "היקף מסנן המסווג"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "הגדרת תחום המסווג דורשת %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "סוג המסווג"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו-Grok (xAI). אפשר לעבור ביניהם בכל עת."
@@ -1999,6 +2011,9 @@ msgstr "העתקת טקסט"
 
 msgid "Copy URL"
 msgstr "העתקת כתובת URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "לא ניתן להוסיף את המסווג הזה. נסו שוב."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "ניתוק החשבון הזה נכשל. נסה שוב."
@@ -4767,6 +4782,9 @@ msgstr "ניתוח פיד ה-RSS/XML הזה"
 msgid "Parsing..."
 msgstr "מנתח..."
 
+msgid "Part of a story URL"
+msgstr "חלק מכתובת ה-URL של הכתבה"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "הדביקו כתובת URL כלשהי ו־NewsBlur ייצור מהעמוד פיד, גם ללא RSS."
 
@@ -4809,6 +4827,12 @@ msgstr "לפי אתר"
 
 msgid "Per-feed notification settings"
 msgstr "הגדרות התראות לכל פיד"
+
+msgid "Phrase to match in story text"
+msgstr "ביטוי להתאמה בטקסט הכתבה"
+
+msgid "Phrase to match in story titles"
+msgstr "ביטוי להתאמה בכותרות הכתבות"
 
 msgid "Pick a tier & pay."
 msgstr "בחרו מסלול ושלמו."
@@ -6499,6 +6523,10 @@ msgid "Text View"
 msgstr "תצוגת טקסט"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "מסווגי טקסט דורשים %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "מסנני טקסט לא מצאו כתבות ב־%(context)s."
 
@@ -7003,6 +7031,10 @@ msgid "URL Regex"
 msgstr "ביטוי רגולרי של כתובת URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "מסווגי כתובות URL דורשים %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "מסנני כתובות URL לא מצאו כתבות ב־%(context)s."
 
@@ -7415,6 +7447,9 @@ msgstr "כשנרשמים לפיד, NewsBlur משלים את כל ההיסטור�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "כשנרשמים לפיד חדש, ההיסטוריה שלו נטענת לאחור"
+
+msgid "Where it applies"
+msgstr "היכן הוא חל"
 
 msgid "Which AI models are available?"
 msgstr "אילו מודלים של בינה מלאכותית זמינים?"

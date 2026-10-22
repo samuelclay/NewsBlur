@@ -1335,6 +1335,53 @@ class Test_Classifiers(TransactionTestCase):
         global_tags = list(MClassifierTag.objects(user_id=self.user.pk, scope="global"))
         self.assertEqual(len(global_tags), 0)
 
+    def test_typed_scoped_classifiers_save_without_a_story_or_feed(self):
+        """
+        The Manage Training add row (reader_classifier.js, forum #13907) posts a
+        typed classifier with feed_id=0 because no story or site is involved. Global
+        and nested folder scopes must both land in scoped_classifiers.
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        UserSubscriptionFolders.objects.create(
+            user=self.user,
+            folders='[{"Tech": [{"Apple": [%s]}]}]' % self.feed.pk,
+        )
+        self.client.login(username="testuser", password="testpass")
+
+        global_response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "vision pro"},
+        )
+        folder_response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech - Apple", "dislike_tag": "sponsored"},
+        )
+        self.assertEqual(json.decode(global_response.content)["code"], 0)
+        self.assertEqual(json.decode(folder_response.content)["code"], 0)
+
+        scoped = json.decode(self.client.get("/reader/all_classifiers").content)["scoped_classifiers"]
+        self.assertEqual(
+            [(c["title"], c["score"], c["scope"], c["folder_name"]) for c in scoped["titles"]],
+            [("vision pro", 1, "global", "")],
+        )
+        self.assertEqual(
+            [(c["tag"], c["score"], c["scope"], c["folder_name"]) for c in scoped["tags"]],
+            [("sponsored", -1, "folder", "Tech - Apple")],
+        )
+        self.assertTrue(UserSubscription.objects.get(user=self.user, feed=self.feed).needs_unread_recalc)
+
+    def test_typed_global_classifier_requires_archive(self):
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "vision pro"},
+        )
+
+        self.assertEqual(json.decode(response.content)["code"], -1)
+        self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk).count(), 0)
+
     def test_all_classifiers_separates_scoped_from_feed(self):
         """
         The /reader/all_classifiers endpoint should put global classifiers in

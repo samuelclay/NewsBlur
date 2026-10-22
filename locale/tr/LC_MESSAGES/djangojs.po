@@ -1065,6 +1065,9 @@ msgstr "Firefox'a ekle"
 msgid "Add to folder"
 msgstr "Klasöre ekle"
 
+msgid "Added"
+msgstr "Eklendi"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s eklendi"
@@ -1355,6 +1358,9 @@ msgstr "Yazar filtreleri %(context)s içinde haber bulamadı."
 msgid "Author filters found no stories in this view."
 msgstr "Yazar filtreleri bu görünümde hiç haber bulamadı."
 
+msgid "Author name"
+msgstr "Yazar adı"
+
 msgid "Author: "
 msgstr "Yazar: "
 
@@ -1628,6 +1634,9 @@ msgstr "Kategorilere ayrılıyor..."
 msgid "Category"
 msgstr "Kategori"
 
+msgid "Category or tag"
+msgstr "Kategori veya etiket"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Kategori: %(value_1)s"
@@ -1741,6 +1750,9 @@ msgstr "Sınıflandırıcı filtresinin kapsamı"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Sınıflandırıcı kapsamı %(tier_link)s gerektirir"
+
+msgid "Classifier type"
+msgstr "Sınıflandırıcı türü"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (xAI). İstediğiniz zaman aralarında geçiş yapın."
@@ -1932,6 +1944,9 @@ msgstr "Metni kopyala"
 
 msgid "Copy URL"
 msgstr "URL'yi kopyala"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Bu sınıflandırıcı eklenemedi. Yeniden deneyin."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Bu hesabın bağlantısı kesilemedi. Lütfen tekrar deneyin."
@@ -4708,6 +4723,9 @@ msgstr "Bu RSS/XML akışını ayrıştır"
 msgid "Parsing..."
 msgstr "Ayrıştırılıyor..."
 
+msgid "Part of a story URL"
+msgstr "Haber URL'sinin bir bölümü"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Herhangi bir URL yapıştırın; RSS olmasa bile NewsBlur sayfadan bir akış oluşturur."
 
@@ -4750,6 +4768,12 @@ msgstr "Site başına"
 
 msgid "Per-feed notification settings"
 msgstr "Akış bazında bildirim ayarları"
+
+msgid "Phrase to match in story text"
+msgstr "Haber metninde eşleştirilecek ifade"
+
+msgid "Phrase to match in story titles"
+msgstr "Haber başlıklarında eşleştirilecek ifade"
 
 msgid "Pick a tier & pay."
 msgstr "Bir paket seçin ve ödeme yapın."
@@ -6442,6 +6466,10 @@ msgid "Text View"
 msgstr "Metin görünümü"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Metin sınıflandırıcıları %(tier_link)s gerektirir"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Metin filtreleri %(context)s içinde hiç haber bulamadı."
 
@@ -6959,6 +6987,10 @@ msgid "URL Regex"
 msgstr "URL düzenli ifadesi"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL sınıflandırıcıları %(tier_link)s gerektirir"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL filtreleri %(context)s içinde hiç haber bulamadı."
 
@@ -7373,6 +7405,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Yeni bir akışa abone olduğunuzda, geçmiş içerikleri de geriye dönük olarak yüklenir"
+
+msgid "Where it applies"
+msgstr "Uygulandığı yer"
 
 msgid "Which AI models are available?"
 msgstr "Hangi yapay zekâ modelleri kullanılabilir?"

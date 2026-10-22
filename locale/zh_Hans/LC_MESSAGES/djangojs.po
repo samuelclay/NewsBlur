@@ -1061,6 +1061,9 @@ msgstr "添加到 Firefox"
 msgid "Add to folder"
 msgstr "添加到文件夹"
 
+msgid "Added"
+msgstr "已添加"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "添加于 %(date)s"
@@ -1341,6 +1344,9 @@ msgstr "作者筛选器在 %(context)s 中没有找到文章。"
 msgid "Author filters found no stories in this view."
 msgstr "作者筛选器在此视图中未找到任何文章。"
 
+msgid "Author name"
+msgstr "作者姓名"
+
 msgid "Author: "
 msgstr "作者："
 
@@ -1612,6 +1618,9 @@ msgstr "正在分类…"
 msgid "Category"
 msgstr "分类"
 
+msgid "Category or tag"
+msgstr "分类或标签"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "分类：%(value_1)s"
@@ -1725,6 +1734,9 @@ msgstr "分类器筛选范围"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分类器范围需要 %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "分类器类型"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你可以随时切换。"
@@ -1906,6 +1918,9 @@ msgstr "复制文本"
 
 msgid "Copy URL"
 msgstr "复制网址"
+
+msgid "Could not add this classifier. Try again."
+msgstr "无法添加此分类器。请重试。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "无法断开此账户的连接。请重试。"
@@ -4626,6 +4641,9 @@ msgstr "解析此 RSS/XML 订阅源"
 msgid "Parsing..."
 msgstr "正在解析…"
 
+msgid "Part of a story URL"
+msgstr "文章网址的一部分"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "粘贴任意 URL，NewsBlur 就会从页面创建订阅源，即使没有 RSS 也可以。"
 
@@ -4668,6 +4686,12 @@ msgstr "按网站"
 
 msgid "Per-feed notification settings"
 msgstr "单个订阅源的通知设置"
+
+msgid "Phrase to match in story text"
+msgstr "要在文章文本中匹配的短语"
+
+msgid "Phrase to match in story titles"
+msgstr "要在文章标题中匹配的短语"
 
 msgid "Pick a tier & pay."
 msgstr "选择套餐并付款。"
@@ -6336,6 +6360,10 @@ msgid "Text View"
 msgstr "文本视图"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "文本分类器需要 %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "文本筛选器在 %(context)s 中未找到任何文章。"
 
@@ -6820,6 +6848,10 @@ msgid "URL Regex"
 msgstr "URL 正则表达式"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "网址分类器需要 %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "%(context)s 中没有符合 URL 筛选条件的文章。"
 
@@ -7226,6 +7258,9 @@ msgstr "订阅某个订阅源后，NewsBlur 会补齐其全部可用历史内容
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "订阅新订阅源时，系统会补齐其历史内容"
+
+msgid "Where it applies"
+msgstr "适用范围"
 
 msgid "Which AI models are available?"
 msgstr "有哪些可用的 AI 模型？"
