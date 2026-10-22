@@ -37,7 +37,8 @@ import ObjectiveC
     }
 
     func resetForAccountChange() {
-        for key in ["share:token", "share:host", "share:username", "subscription:pending-feed"] {
+        for key in ["share:token", "share:host", "share:username", "subscription:pending-feed",
+                    "widget:source_catalog", "widget:source_favicons", "widget:feeds_array", "widget:show_folder"] {
             defaults?.removeObject(forKey: key)
         }
         generation += 1

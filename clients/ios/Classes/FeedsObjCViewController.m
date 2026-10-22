@@ -37,6 +37,9 @@ static const CGFloat kTableViewRowHeight = 8.0f;
 static const CGFloat kBlurblogTableViewRowHeight = 9.0f;
 static const CGFloat kPhoneBlurblogTableViewRowHeight = 9.0f;
 static const CGFloat kFolderTitleHeight = 12.0f;
+#if TARGET_OS_MACCATALYST
+static const CGFloat kMacFeedHeaderHorizontalInset = 12.0f;
+#endif
 static UIFont *userLabelFont;
 
 static UIImage *NBImageFromColor(UIColor *color) {
@@ -263,16 +266,16 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     self.feedTitlesTable.refreshControl = self.refreshControl;
+#endif
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     // FeedsObjCViewController.m anchors directly to view edges so interactive navigation's
-    // changing layout margins cannot briefly narrow the toolbar before the next layout pass.
+    // changing layout margins cannot narrow the toolbar or duplicate its native inner margins.
     if (self.feedViewToolbar && self.toolbarLeadingConstraint && self.toolbarTrailingConstraint) {
         [NSLayoutConstraint deactivateConstraints:@[self.toolbarLeadingConstraint, self.toolbarTrailingConstraint]];
         self.toolbarLeadingConstraint = [self.feedViewToolbar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor];
         self.toolbarTrailingConstraint = [self.view.trailingAnchor constraintEqualToAnchor:self.feedViewToolbar.trailingAnchor];
         [NSLayoutConstraint activateConstraints:@[self.toolbarLeadingConstraint, self.toolbarTrailingConstraint]];
     }
-#endif
     if (!self.defaultFeedToolbarItems) {
         self.defaultFeedToolbarItems = self.feedViewToolbar.items;
         // Clear storyboard items to prevent constraint conflicts during initial layout.
@@ -285,7 +288,13 @@ static BOOL NBBoolPreferenceValue(id value) {
     searchContainerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
     searchContainerView.tag = 100; // Tag for theme updates
 
-    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(8, 2, CGRectGetWidth(self.feedTitlesTable.frame) - 16, 24.)];
+#if TARGET_OS_MACCATALYST
+    CGFloat searchHorizontalInset = kMacFeedHeaderHorizontalInset;
+#else
+    CGFloat searchHorizontalInset = 8;
+#endif
+    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(searchHorizontalInset, 2,
+                                                                    CGRectGetWidth(self.feedTitlesTable.frame) - 2 * searchHorizontalInset, 24.)];
     self.searchField.delegate = self;
     self.searchField.returnKeyType = UIReturnKeySearch;
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
@@ -442,6 +451,41 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
 }
 
+#if TARGET_OS_MACCATALYST
+- (UIImage *)macFeedToolbarImageNamed:(NSString *)name {
+    UIImage *image = [UIImage imageNamed:name];
+    // FeedsObjCViewController.m removes only the original toolbar assets' transparent border before sizing their artwork.
+    CGImageRef original = image.CGImage;
+    if (!original) return image;
+    size_t width = CGImageGetWidth(original), height = CGImageGetHeight(original);
+    unsigned char *pixels = calloc(width * height, 4);
+    if (!pixels) return image;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(pixels, width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedLast);
+    CGColorSpaceRelease(colorSpace);
+    if (!context) { free(pixels); return image; }
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), original);
+    size_t left = width, top = height, right = 0, bottom = 0;
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            if (pixels[(y * width + x) * 4 + 3]) {
+                left = MIN(left, x); right = MAX(right, x);
+                top = MIN(top, y); bottom = MAX(bottom, y);
+            }
+        }
+    }
+    CGContextRelease(context);
+    free(pixels);
+    if (left >= width || top >= height) return image;
+    CGImageRef cropped = CGImageCreateWithImageInRect(original, CGRectMake(left, top, right - left + 1, bottom - top + 1));
+    if (!cropped) return image;
+    UIImage *artwork = [UIImage imageWithCGImage:cropped scale:image.scale orientation:image.imageOrientation];
+    CGImageRelease(cropped);
+    CGFloat scale = 20 / MAX(artwork.size.width, artwork.size.height);
+    return [[Utilities imageWithImage:artwork convertToSize:CGSizeMake(artwork.size.width * scale, artwork.size.height * scale)] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+#endif
+
 - (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
     if (!self.feedViewToolbar || !self.intelligenceControl || !self.addBarButton || !self.settingsBarButton) {
         return;
@@ -475,7 +519,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.settingsBarButton.accessibilityIdentifier = @"feed-list-settings";
     self.intelligenceControl.accessibilityIdentifier = @"feed-list-intelligence";
 
-#if !TARGET_OS_MACCATALYST && __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 270000
     if (@available(iOS 27.0, *)) {
         // FeedsObjCViewController.m supplies spacing between these controls. UIKit's additional
         // item padding can push the filter and the large legacy button images into overflow.
@@ -494,23 +538,15 @@ static BOOL NBBoolPreferenceValue(id value) {
                                                              action:nil];
     };
 #if TARGET_OS_MACCATALYST
-    UIBarButtonItem * (^makeFixedSpace)(CGFloat) = ^(CGFloat width) {
-        UIBarButtonItem *space = [[UIBarButtonItem alloc]
-                                  initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                  target:nil
-                                  action:nil];
-        space.width = width;
-        return space;
-    };
-    self.feedViewToolbar.items = @[
-        makeFixedSpace(16),
-        self.addBarButton,
-        makeFlexSpace(),
-        intelligenceItem,
-        makeFlexSpace(),
-        self.settingsBarButton,
-        makeFixedSpace(16)
-    ];
+    self.addBarButton.image = [self macFeedToolbarImageNamed:@"nav_icn_add.png"];
+    self.settingsBarButton.image = [self macFeedToolbarImageNamed:@"nav_icn_settings.png"];
+    // FeedsObjCViewController.m separates the original action buttons without adding spacer items that can overflow.
+    if (@available(iOS 26.0, *)) {
+        self.addBarButton.sharesBackground = NO;
+        intelligenceItem.sharesBackground = NO;
+        self.settingsBarButton.sharesBackground = NO;
+    }
+    self.feedViewToolbar.items = @[self.addBarButton, intelligenceItem, self.settingsBarButton];
 #else
     if (@available(iOS 27.0, *)) {
         // FeedsObjCViewController.m keeps toolbar controls in one native group on both iPhone and iPad.
@@ -734,6 +770,17 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+#if TARGET_OS_MACCATALYST
+    if (self.feedSearchContainerView) {
+        // FeedsObjCViewController.m extends the table 10 points past each sidebar edge for Catalyst rows.
+        // Measure search against the visible sidebar so that workaround does not consume its margins.
+        CGRect sidebarBounds = [self.feedSearchContainerView convertRect:self.innerView.bounds fromView:self.innerView];
+        CGRect searchFrame = self.searchField.frame;
+        searchFrame.origin.x = CGRectGetMinX(sidebarBounds) + kMacFeedHeaderHorizontalInset;
+        searchFrame.size.width = MAX(0, CGRectGetWidth(sidebarBounds) - 2 * kMacFeedHeaderHorizontalInset);
+        self.searchField.frame = searchFrame;
+    }
+#endif
     [self.syncNotifier updateFrameInSuperview];
 
     BOOL usesVerticalToolbar = [self usesVerticalFeedToolbar];
@@ -769,9 +816,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     CGFloat toolbarBottomGap = (safeAreaBottom > 0) ? 12.0 : 8.0;
 #if TARGET_OS_MACCATALYST
-    CGFloat compactToolbarSideInset = self.appDelegate.detailViewController.isPhoneOrCompact ? 8.0 : 0.0;
-    self.toolbarLeadingConstraint.constant = compactToolbarSideInset;
-    self.toolbarTrailingConstraint.constant = compactToolbarSideInset;
+    // FeedsObjCViewController.m keeps only the toolbar's native inner margins at every Mac width.
+    self.toolbarLeadingConstraint.constant = 0;
+    self.toolbarTrailingConstraint.constant = 0;
 #else
     CGFloat toolbarSideInset = 8.0;
     if (@available(iOS 27.0, *)) {
@@ -1000,6 +1047,75 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self refreshHeaderCounts];
 }
 
+#if TARGET_OS_MACCATALYST
+- (void)updateMacIntelligenceControlForWidth:(CGFloat)toolbarWidth {
+    NSArray<NSString *> *titles = @[[NBLocalization text:@"All"], [NBLocalization text:@"Unread"],
+                                    [NBLocalization text:@"Focus"], [NBLocalization text:@"Saved"]];
+    NSArray<UIImage *> *icons = @[[UIImage imageNamed:@"unread_yellow_icn.png"],
+                                  [Utilities imageNamed:@"indicator-focus" sized:14],
+                                  [Utilities imageNamed:@"unread_blue_icn.png" sized:14]];
+    NSInteger selected = self.intelligenceControl.selectedSegmentIndex;
+    if (selected < 0 || selected >= titles.count) selected = 1;
+    UIFont *font = [UIFont systemFontOfSize:13];
+    UIColor *textColor = UIColorFromLightSepiaMediumDarkRGB(0x555555, 0x6A5A4A, 0xAAAAAA, 0xAAAAAA);
+    CGFloat allTextWidth = ceil([titles[0] sizeWithAttributes:@{NSFontAttributeName: font}].width);
+    CGFloat selectedContentWidth = selected == 0 ? 0 : ceil([titles[selected] sizeWithAttributes:@{NSFontAttributeName: font}].width) + 18;
+    NSInteger iconOnlyCount = selected == 0 ? 3 : 2;
+    // FeedsObjCViewController.m budgets the measured 32pt inner margins, two 36pt buttons and two 12pt group gaps.
+    CGFloat availableWidth = MAX(0, toolbarWidth - 128);
+    CGFloat contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
+    // FeedsObjCViewController.m reduces text only after all segment padding is exhausted for a longer translation.
+    while (contentWidth > availableWidth && font.pointSize > 6) {
+        font = [UIFont systemFontOfSize:font.pointSize - 0.5];
+        allTextWidth = ceil([titles[0] sizeWithAttributes:@{NSFontAttributeName: font}].width);
+        selectedContentWidth = selected == 0 ? 0 : ceil([titles[selected] sizeWithAttributes:@{NSFontAttributeName: font}].width) + 18;
+        contentWidth = allTextWidth + selectedContentWidth + iconOnlyCount * 14;
+    }
+    CGFloat controlWidth = MIN(availableWidth, contentWidth + 4 * 12);
+    CGFloat segmentPadding = MAX(0, (controlWidth - contentWidth) / 4);
+    CGFloat allWidth = allTextWidth + segmentPadding;
+    CGFloat selectedWidth = selectedContentWidth + segmentPadding;
+    CGFloat iconSegmentWidth = 14 + segmentPadding;
+    self.intelligenceControlWidthConstraint.constant = controlWidth;
+    self.intelligenceControl.apportionsSegmentWidthsByContent = NO;
+    for (NSNumber *state in @[@(UIControlStateNormal), @(UIControlStateSelected)]) {
+        NSMutableDictionary *attributes = [[self.intelligenceControl titleTextAttributesForState:state.unsignedIntegerValue] mutableCopy] ?: [NSMutableDictionary dictionary];
+        attributes[NSFontAttributeName] = font;
+        [self.intelligenceControl setTitleTextAttributes:attributes forState:state.unsignedIntegerValue];
+    }
+    // FeedsObjCViewController.m renders All as text-only artwork to avoid UISegmentedControl's hidden title insets.
+    [self.intelligenceControl setTitle:nil forSegmentAtIndex:0];
+    BOOL rightToLeft = NBLocalization.isRightToLeft;
+    for (NSInteger index = 0; index < titles.count; index++) {
+        BOOL active = index == selected;
+        CGFloat imageWidth = index == 0 ? allTextWidth : (active ? selectedContentWidth : 14);
+        CGFloat iconAndGap = index == 0 ? 0 : 18;
+        UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(imageWidth, 18)];
+        UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+            if (index > 0) {
+                CGRect iconRect = CGRectMake(active && rightToLeft ? imageWidth - 14 : 0, 2, 14, 14);
+                [icons[index - 1] drawInRect:iconRect];
+            }
+            if (index == 0 || active) {
+                NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+                paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
+                paragraph.alignment = rightToLeft ? NSTextAlignmentRight : NSTextAlignmentLeft;
+                paragraph.baseWritingDirection = rightToLeft ? NSWritingDirectionRightToLeft : NSWritingDirectionLeftToRight;
+                CGRect textRect = CGRectMake(rightToLeft ? 0 : iconAndGap, (18 - font.lineHeight) / 2, MAX(0, imageWidth - iconAndGap), font.lineHeight);
+                [titles[index] drawInRect:textRect withAttributes:@{NSFontAttributeName:font,
+                                                                   NSForegroundColorAttributeName:textColor,
+                                                                   NSParagraphStyleAttributeName:paragraph}];
+            }
+        }];
+        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        image.accessibilityLabel = titles[index];
+        [self.intelligenceControl setImage:image forSegmentAtIndex:index];
+        [self.intelligenceControl setWidth:index == 0 ? allWidth : (active ? selectedWidth : iconSegmentWidth) forSegmentAtIndex:index];
+    }
+    [self.intelligenceControl sizeToFit];
+}
+#endif
+
 - (void)updateIntelligenceControlForOrientation:(UIInterfaceOrientation)orientation {
     if (orientation == UIInterfaceOrientationUnknown) {
         orientation = self.view.window.windowScene.interfaceOrientation;
@@ -1010,6 +1126,10 @@ static BOOL NBBoolPreferenceValue(id value) {
         toolbarWidth = CGRectGetWidth(self.view.bounds);
         if (self.appDelegate.detailViewController.isPhoneOrCompact) toolbarWidth -= 16;
     }
+#if TARGET_OS_MACCATALYST
+    [self updateMacIntelligenceControlForWidth:toolbarWidth];
+    return;
+#endif
     // FeedsObjCViewController.m reserves two buttons plus toolbar margins before choosing labels.
     BOOL useCompactIcons = toolbarWidth > 0 ? toolbarWidth < 352 :
         (!self.appDelegate.detailViewController.isPhoneOrCompact && !UIInterfaceOrientationIsLandscape(orientation));
@@ -1329,6 +1449,13 @@ static BOOL NBBoolPreferenceValue(id value) {
     [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [defaults setObject:preview forKey:@"widget:preview_images_size"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
+    // FeedsObjCViewController.m publishes the complete catalog for per-widget folder/site selection.
+    NSDictionary *widgetCatalog = @{@"feeds": results[@"feeds"] ?: @{},
+                                    @"flat_folders": results[@"flat_folders"] ?: @{},
+                                    @"username": appDelegate.activeUsername ?: @"",
+                                    @"host": self.appDelegate.url ?: @""};
+    NSData *widgetCatalogData = [NSJSONSerialization dataWithJSONObject:widgetCatalog options:0 error:nil];
+    if (widgetCatalogData) [defaults setObject:widgetCatalogData forKey:@"widget:source_catalog"];
     [defaults synchronize];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,
@@ -1866,7 +1993,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate showOrganizeSites];
     }];
     
-    [viewController addFeedListTitle:[NBLocalization text:@"Widget Sites"] iconName:@"feed-menu-widget" selectionShouldDismiss:YES handler:^{
+    [viewController addFeedListTitle:[NBLocalization text:@"Widgets"] iconName:@"feed-menu-widget" selectionShouldDismiss:YES handler:^{
         [self.appDelegate showWidgetSites];
     }];
     
@@ -2198,7 +2325,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     [self updateIntelligenceControlAppearance];
     
+#if TARGET_OS_MACCATALYST
+    UIImage *addImage = [self macFeedToolbarImageNamed:@"nav_icn_add.png"];
+#else
     UIImage *addImage = [[UIImage imageNamed:@"nav_icn_add.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+#endif
     if ([self.addBarButton.customView isKindOfClass:[UIButton class]]) {
         UIButton *addButton = (UIButton *)self.addBarButton.customView;
         [addButton setImage:addImage forState:UIControlStateNormal];
@@ -2207,7 +2338,11 @@ static BOOL NBBoolPreferenceValue(id value) {
         self.addBarButton.image = addImage;
     }
     
+#if TARGET_OS_MACCATALYST
+    UIImage *settingsImage = [self macFeedToolbarImageNamed:@"nav_icn_settings.png"];
+#else
     UIImage *settingsImage = [[UIImage imageNamed:@"nav_icn_settings.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+#endif
     if ([self.settingsBarButton.customView isKindOfClass:[UIButton class]]) {
         UIButton *settingsButton = (UIButton *)self.settingsBarButton.customView;
         [settingsButton setImage:settingsImage forState:UIControlStateNormal];
@@ -3054,8 +3189,8 @@ heightForHeaderInSection:(NSInteger)section {
         return 0;
     }
 
-    // Hide Dashboard on iPhone, only show on iPad
-    if (section == NewsBlurTopSectionDashboard && self.isPhone) {
+    // FeedsObjCViewController.m keeps the Dashboard entry on iPad while its Mac implementation is unfinished.
+    if (section == NewsBlurTopSectionDashboard && (self.isPhone || self.isMac)) {
         return 0;
     }
 
@@ -4013,6 +4148,9 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (IBAction)selectIntelligence {
     [self updateVerticalFeedToolbarSelection];
+#if TARGET_OS_MACCATALYST
+    [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
+#endif
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
@@ -4511,6 +4649,9 @@ heightForHeaderInSection:(NSInteger)section {
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0, self.innerView.bounds.size.width, 50)];
+    // FeedsObjCViewController.m shares these margins with SyncNotifierView.swift and the search field.
+    self.userInfoView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(0, kMacFeedHeaderHorizontalInset,
+                                                                             0, kMacFeedHeaderHorizontalInset);
     self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xE8DED0, 0x4F4F4F, 0x292B2C);
 #else
     if (!orientation) {
@@ -4552,8 +4693,9 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.accessibilityLabel = [NBLocalization text:@"User info"];
 #if TARGET_OS_MACCATALYST
     userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-click for information about your account."];
-    userAvatarButton.frame = CGRectMake(0, yOffset, 38, 38);
-    int avatarXOffset = 48; // avatar width (38) + padding (10)
+    userAvatarButton.frame = CGRectMake(kMacFeedHeaderHorizontalInset,
+                                       (CGRectGetHeight(self.userInfoView.bounds) - 38) / 2, 38, 38);
+    CGFloat avatarXOffset = kMacFeedHeaderHorizontalInset + 48; // FeedsObjCViewController.m keeps 10 points after the 38-point avatar.
 #else
     userAvatarButton.accessibilityHint = [NBLocalization text:@"Double-tap for information about your account."];
     userAvatarButton.frame = CGRectMake(scrollingHeader ? 16 : -10, yOffset, 38, 38);

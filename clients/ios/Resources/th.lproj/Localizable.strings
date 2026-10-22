@@ -181,6 +181,7 @@
 "Choose Language…" = "เลือกภาษา…";
 "Choose Story List" = "เลือกรายการบทความ";
 "Choose a Topic" = "เลือกหัวข้อ";
+"Choose a folder or site for this widget." = "เลือกโฟลเดอร์หรือเว็บไซต์สำหรับวิดเจ็ตนี้";
 "Choose another category to discover more." = "เลือกหมวดหมู่อื่นเพื่อค้นพบเพิ่มเติม";
 "Choose another language" = "เลือกภาษาอื่น";
 "Choose feeds for your folder" = "เลือกฟีดสำหรับโฟลเดอร์ของคุณ";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "ลากเพื่อปรับความกว้างของรายการฟีดและบทความ";
 "Edit" = "แก้ไข";
 "Edit NewsBlur share…" = "แก้ไขการแชร์ NewsBlur…";
+"Edit this widget to choose a folder or site" = "แก้ไขวิดเจ็ตนี้เพื่อเลือกโฟลเดอร์หรือเว็บไซต์";
 "Edit your comment" = "แก้ไขความคิดเห็นของคุณ";
 "Edit your reply" = "แก้ไขคำตอบของคุณ";
 "Edited Comment" = "ความคิดเห็นที่แก้ไขแล้ว";
@@ -348,6 +350,7 @@
 "Focus Stories" = "บทความโฟกัส";
 "Focus only" = "โฟกัสเท่านั้น";
 "Folder name" = "ชื่อโฟลเดอร์";
+"Folder or site" = "โฟลเดอร์หรือเว็บไซต์";
 "Folders" = "โฟลเดอร์";
 "Follow" = "ติดตาม";
 "Follow %@" = "ติดตาม %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
 "Play videos" = "เล่นวิดีโอ";
+"Please log in to NewsBlur" = "โปรดเข้าสู่ระบบ NewsBlur";
 "Plum Berry" = "พลัมเบอร์รี";
 "Positive?" = "แน่ใจหรือไม่?";
 "Preferences" = "การตั้งค่า";
@@ -978,6 +982,7 @@
 "Top" = "ด้านบน";
 "Top Level" = "ระดับบนสุด";
 "Top stories" = "เรื่องเด่น";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "แตะค้างที่วิดเจ็ต NewsBlur หรือคลิกขวาที่วิดเจ็ตบน Mac แล้วเลือกแก้ไขวิดเจ็ต จากนั้นเลือกโฟลเดอร์หรือเว็บไซต์สำหรับแต่ละวิดเจ็ต";
 "Train" = "ฝึก";
 "Train This Story" = "ฝึกระบบด้วยบทความนี้";
 "Train This Story…" = "ฝึกระบบด้วยบทความนี้…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "โหลดสรุปข่าวประจำวันไม่ได้";
 "Unable to load Daily Briefing settings." = "โหลดการตั้งค่าสรุปข่าวประจำวันไม่ได้";
 "Unable to load Daily Briefing." = "โหลดสรุปข่าวประจำวันไม่ได้";
+"Unable to refresh stories" = "รีเฟรชบทความไม่ได้";
 "Unable to save Daily Briefing settings." = "บันทึกการตั้งค่าสรุปข่าวประจำวันไม่สำเร็จ";
 "Unable to save notification settings." = "บันทึกการตั้งค่าการแจ้งเตือนไม่ได้";
 "Understand" = "ทำความเข้าใจ";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "บทความที่มีผู้อ่านมาก";
 "Widely covered" = "มีการกล่าวถึงอย่างกว้างขวาง";
 "Widget Site Stories" = "บทความจากเว็บไซต์ในวิดเจ็ต";
-"Widget Sites" = "เว็บไซต์ในวิดเจ็ต";
 "Widget Stories" = "บทความในวิดเจ็ต";
+"Widgets" = "วิดเจ็ต";
 "Working…" = "กำลังดำเนินการ…";
 "Works on any website" = "ใช้ได้กับทุกเว็บไซต์";
 "Writing style" = "สไตล์การเขียน";

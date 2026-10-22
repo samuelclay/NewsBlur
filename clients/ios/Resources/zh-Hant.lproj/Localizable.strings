@@ -181,6 +181,7 @@
 "Choose Language…" = "選擇語言…";
 "Choose Story List" = "選擇文章列表";
 "Choose a Topic" = "選擇主題";
+"Choose a folder or site for this widget." = "請為此小工具選擇資料夾或網站。";
 "Choose another category to discover more." = "選擇其他類別以探索更多內容。";
 "Choose another language" = "選擇其他語言";
 "Choose feeds for your folder" = "為資料夾選擇訂閱來源";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "拖曳以調整訂閱來源與文章清單的寬度。";
 "Edit" = "編輯";
 "Edit NewsBlur share…" = "編輯 NewsBlur 分享…";
+"Edit this widget to choose a folder or site" = "編輯此小工具以選擇資料夾或網站";
 "Edit your comment" = "編輯你的留言";
 "Edit your reply" = "編輯你的回覆";
 "Edited Comment" = "已編輯的留言";
@@ -348,6 +350,7 @@
 "Focus Stories" = "焦點文章";
 "Focus only" = "僅焦點";
 "Folder name" = "資料夾名稱";
+"Folder or site" = "資料夾或網站";
 "Folders" = "資料夾";
 "Follow" = "追蹤";
 "Follow %@" = "追蹤 %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
 "Place the story list controls above or below the stories" = "將文章清單控制項放在文章上方或下方";
 "Play videos" = "播放影片";
+"Please log in to NewsBlur" = "請登入 NewsBlur";
 "Plum Berry" = "李子莓";
 "Positive?" = "確定嗎？";
 "Preferences" = "偏好設定";
@@ -978,6 +982,7 @@
 "Top" = "頂端";
 "Top Level" = "頂層";
 "Top stories" = "熱門文章";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "按住 NewsBlur 小工具，或在 Mac 上按右鍵，然後選擇「編輯小工具」。為每個小工具選擇資料夾或網站。";
 "Train" = "訓練";
 "Train This Story" = "訓練此文章";
 "Train This Story…" = "訓練這篇文章…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "無法載入每日簡報";
 "Unable to load Daily Briefing settings." = "無法載入每日簡報設定。";
 "Unable to load Daily Briefing." = "無法載入每日簡報。";
+"Unable to refresh stories" = "無法重新整理文章";
 "Unable to save Daily Briefing settings." = "無法儲存每日簡報設定。";
 "Unable to save notification settings." = "無法儲存通知設定。";
 "Understand" = "了解";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "廣受閱讀的文章";
 "Widely covered" = "廣泛報導";
 "Widget Site Stories" = "小工具網站文章";
-"Widget Sites" = "小工具網站";
 "Widget Stories" = "小工具文章";
+"Widgets" = "小工具";
 "Working…" = "處理中…";
 "Works on any website" = "適用於任何網站";
 "Writing style" = "寫作風格";

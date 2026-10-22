@@ -181,6 +181,7 @@
 "Choose Language…" = "Dil seç…";
 "Choose Story List" = "Haber Listesini Seç";
 "Choose a Topic" = "Bir Konu Seçin";
+"Choose a folder or site for this widget." = "Bu bileşen için bir klasör veya site seçin.";
 "Choose another category to discover more." = "Daha fazlasını keşfetmek için başka bir kategori seçin.";
 "Choose another language" = "Başka bir dil seçin";
 "Choose feeds for your folder" = "Klasörünüz için akışları seçin";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Akış ve haber listesi genişliğini değiştirmek için sürükleyin.";
 "Edit" = "Düzenle";
 "Edit NewsBlur share…" = "NewsBlur paylaşımını düzenle…";
+"Edit this widget to choose a folder or site" = "Klasör veya site seçmek için bu bileşeni düzenleyin";
 "Edit your comment" = "Yorumunuzu düzenleyin";
 "Edit your reply" = "Yanıtınızı düzenleyin";
 "Edited Comment" = "Düzenlenmiş Yorum";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Odak Haberleri";
 "Focus only" = "Yalnızca Odak";
 "Folder name" = "Klasör adı";
+"Folder or site" = "Klasör veya site";
 "Folders" = "Klasörler";
 "Follow" = "Takip et";
 "Follow %@" = "%@ kişisini takip et";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Günlük Özetinizi hangi modelin yazacağını seçin";
 "Place the story list controls above or below the stories" = "Haber listesi denetimlerini haberlerin üstüne veya altına yerleştir";
 "Play videos" = "Videoları oynat";
+"Please log in to NewsBlur" = "NewsBlur için lütfen giriş yapın";
 "Plum Berry" = "Erik Böğürtleni";
 "Positive?" = "Emin misiniz?";
 "Preferences" = "Tercihler";
@@ -978,6 +982,7 @@
 "Top" = "Üst";
 "Top Level" = "En Üst Düzey";
 "Top stories" = "Öne çıkan haberler";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Bir NewsBlur bileşenine dokunup basılı tutun veya Mac'te sağ tıklayın, ardından Bileşeni Düzenle'yi seçin. Her bileşen için bir klasör veya site seçin.";
 "Train" = "Eğit";
 "Train This Story" = "Bu Haberi Eğit";
 "Train This Story…" = "Bu Haberi Eğit…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Günlük Özet yüklenemedi";
 "Unable to load Daily Briefing settings." = "Günlük Özet ayarları yüklenemedi.";
 "Unable to load Daily Briefing." = "Günlük Özet yüklenemedi.";
+"Unable to refresh stories" = "Haberler yenilenemedi";
 "Unable to save Daily Briefing settings." = "Günlük Özet ayarları kaydedilemedi.";
 "Unable to save notification settings." = "Bildirim ayarları kaydedilemedi.";
 "Understand" = "Anladım";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Çok Okunan Haberler";
 "Widely covered" = "Geniş yer bulan haberler";
 "Widget Site Stories" = "Widget Site Haberleri";
-"Widget Sites" = "Widget Siteleri";
 "Widget Stories" = "Widget Haberleri";
+"Widgets" = "Bileşenler";
 "Working…" = "İşleniyor…";
 "Works on any website" = "Her web sitesinde çalışır";
 "Writing style" = "Yazım tarzı";

@@ -181,6 +181,7 @@
 "Choose Language…" = "Choose Language…";
 "Choose Story List" = "Choose Story List";
 "Choose a Topic" = "Choose a Topic";
+"Choose a folder or site for this widget." = "Choose a folder or site for this widget.";
 "Choose another category to discover more." = "Choose another category to discover more.";
 "Choose another language" = "Choose another language";
 "Choose feeds for your folder" = "Choose feeds for your folder";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Drag to change the feed and story list width.";
 "Edit" = "Edit";
 "Edit NewsBlur share…" = "Edit NewsBlur share…";
+"Edit this widget to choose a folder or site" = "Edit this widget to choose a folder or site";
 "Edit your comment" = "Edit your comment";
 "Edit your reply" = "Edit your reply";
 "Edited Comment" = "Edited Comment";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Focus Stories";
 "Focus only" = "Focus only";
 "Folder name" = "Folder name";
+"Folder or site" = "Folder or site";
 "Folders" = "Folders";
 "Follow" = "Follow";
 "Follow %@" = "Follow %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
 "Play videos" = "Play videos";
+"Please log in to NewsBlur" = "Please log in to NewsBlur";
 "Plum Berry" = "Plum Berry";
 "Positive?" = "Positive?";
 "Preferences" = "Preferences";
@@ -978,6 +982,7 @@
 "Top" = "Top";
 "Top Level" = "Top Level";
 "Top stories" = "Top stories";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget.";
 "Train" = "Train";
 "Train This Story" = "Train This Story";
 "Train This Story…" = "Train This Story…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Unable to load Daily Briefing";
 "Unable to load Daily Briefing settings." = "Unable to load Daily Briefing settings.";
 "Unable to load Daily Briefing." = "Unable to load Daily Briefing.";
+"Unable to refresh stories" = "Unable to refresh stories";
 "Unable to save Daily Briefing settings." = "Unable to save Daily Briefing settings.";
 "Unable to save notification settings." = "Unable to save notification settings.";
 "Understand" = "Understand";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Widely Read Stories";
 "Widely covered" = "Widely covered";
 "Widget Site Stories" = "Widget Site Stories";
-"Widget Sites" = "Widget Sites";
 "Widget Stories" = "Widget Stories";
+"Widgets" = "Widgets";
 "Working…" = "Working…";
 "Works on any website" = "Works on any website";
 "Writing style" = "Writing style";

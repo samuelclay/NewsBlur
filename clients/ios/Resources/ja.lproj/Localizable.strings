@@ -181,6 +181,7 @@
 "Choose Language…" = "言語を選択…";
 "Choose Story List" = "記事リストを選択";
 "Choose a Topic" = "トピックを選択";
+"Choose a folder or site for this widget." = "このウィジェットのフォルダーまたはサイトを選択してください。";
 "Choose another category to discover more." = "別のカテゴリを選んで、さらに見つけましょう。";
 "Choose another language" = "別の言語を選択";
 "Choose feeds for your folder" = "フォルダーに追加するフィードを選択";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "ドラッグしてフィードと記事リストの幅を変更します。";
 "Edit" = "編集";
 "Edit NewsBlur share…" = "NewsBlurの共有を編集…";
+"Edit this widget to choose a folder or site" = "このウィジェットを編集して、フォルダーまたはサイトを選択";
 "Edit your comment" = "コメントを編集";
 "Edit your reply" = "返信を編集";
 "Edited Comment" = "編集済みコメント";
@@ -348,6 +350,7 @@
 "Focus Stories" = "フォーカス記事";
 "Focus only" = "フォーカスのみ";
 "Folder name" = "フォルダー名";
+"Folder or site" = "フォルダーまたはサイト";
 "Folders" = "フォルダー";
 "Follow" = "フォロー";
 "Follow %@" = "%@をフォロー";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "デイリーブリーフィングの生成に使用するモデルを選択";
 "Place the story list controls above or below the stories" = "記事リストの操作ボタンを記事の上または下に配置";
 "Play videos" = "動画の再生";
+"Please log in to NewsBlur" = "NewsBlurにログインしてください";
 "Plum Berry" = "プラムベリー";
 "Positive?" = "よろしいですか？";
 "Preferences" = "設定";
@@ -978,6 +982,7 @@
 "Top" = "上";
 "Top Level" = "最上位";
 "Top stories" = "トップ記事";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlurのウィジェットを長押しするか、Macでは右クリックして「ウィジェットを編集」を選択してください。各ウィジェットのフォルダーまたはサイトを選択してください。";
 "Train" = "学習";
 "Train This Story" = "この記事を学習させる";
 "Train This Story…" = "この記事を学習…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "デイリーブリーフィングを読み込めません";
 "Unable to load Daily Briefing settings." = "デイリーブリーフィングの設定を読み込めません。";
 "Unable to load Daily Briefing." = "デイリーブリーフィングを読み込めません。";
+"Unable to refresh stories" = "記事を更新できませんでした";
 "Unable to save Daily Briefing settings." = "デイリーブリーフィングの設定を保存できませんでした。";
 "Unable to save notification settings." = "通知設定を保存できません。";
 "Understand" = "理解する";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "よく読まれている記事";
 "Widely covered" = "広く取り上げられている";
 "Widget Site Stories" = "ウィジェットのサイト記事";
-"Widget Sites" = "ウィジェットのサイト";
 "Widget Stories" = "ウィジェットの記事";
+"Widgets" = "ウィジェット";
 "Working…" = "処理中…";
 "Works on any website" = "あらゆるウェブサイトで利用可能";
 "Writing style" = "文体";

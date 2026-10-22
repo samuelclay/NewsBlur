@@ -9,70 +9,39 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-    let cache = WidgetCache()
-    
+struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), cache: cache, isPlaceholder: true)
+        SimpleEntry(date: Date(), cache: WidgetExtension_Previews.cache, isPlaceholder: true)
     }
-    
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
-        
-        completion(entry)
-    }
-    
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        let operation = WidgetDebugTimer.start("🚧 getTimeline")
-        
+
+    func snapshot(for configuration: NewsBlurWidgetConfiguration, in context: Context) async -> SimpleEntry {
+        let cache = WidgetCache(source: configuration.source?.id ?? "all")
         cache.loadCachedStories()
-        
-        WidgetDebugTimer.print(operation, step: "loadCachedStories")
-        
-        if context.isPreview && !cache.stories.isEmpty {
-            return
+        if context.isPreview && cache.stories.isEmpty {
+            return placeholder(in: context)
         }
-        
-        cache.load {
-            WidgetDebugTimer.print(operation, step: "cache.load()")
-            
-            var entries: [SimpleEntry] = []
-            
-            // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-            let currentDate = Date()
-            for hourOffset in 0 ..< 5 {
-                #if DEBUG
-                let units = Calendar.Component.minute
-                #else
-                let units = Calendar.Component.hour
-                #endif
-                let entryDate = Calendar.current.date(byAdding: units, value: hourOffset, to: currentDate)!
-                let entry = SimpleEntry(date: entryDate, cache: cache, isPlaceholder: false)
-                entries.append(entry)
-            }
-            
-            let timeline = Timeline(entries: entries, policy: .atEnd)
-            
-            WidgetDebugTimer.print(operation, step: "making timeline")
-            
-            let imageRequestGroup = DispatchGroup()
-            let storyFeeds = cache.stories.map { $0.feed }
-            let feeds = cache.feeds.filter { storyFeeds.contains($0.id) }
-            
-            for feed in feeds {
-                imageRequestGroup.enter()
-                
-                cache.feedImage(for: feed.id) { image, feed in
-                    imageRequestGroup.leave()
+        return SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
+    }
+
+    func timeline(for configuration: NewsBlurWidgetConfiguration, in context: Context) async -> Timeline<SimpleEntry> {
+        await WidgetSourceCatalog.refresh()
+        // WidgetExtension.swift creates a cache per request, never shared across widget configurations.
+        let cache = WidgetCache(source: configuration.source?.id ?? "all")
+        cache.loadCachedStories()
+        await withCheckedContinuation { continuation in
+            cache.load { continuation.resume() }
+        }
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                let requests = DispatchGroup()
+                for feed in Set(cache.stories.map { $0.feed }) {
+                    requests.enter()
+                    cache.feedImage(for: feed) { _, _ in requests.leave() }
                 }
-            }
-            
-            imageRequestGroup.notify(queue: .main) {
-                WidgetDebugTimer.print(operation, step: "requesting favicons")
-                
-                completion(timeline)
+                requests.notify(queue: .main) { continuation.resume() }
             }
         }
+        return WidgetTimeline.make { SimpleEntry(date: $0, cache: cache, isPlaceholder: false) }
     }
 }
 
@@ -141,23 +110,23 @@ struct WidgetEntryView : View {
     func message(for error: WidgetCacheError) -> String {
         switch error {
         case .notLoggedIn:
-            return "Please log in to NewsBlur"
+            return NSLocalizedString("Please log in to NewsBlur", comment: "Widget status")
         case .loading:
-            return "Tap to set up in NewsBlur"
+            return NSLocalizedString("Unable to refresh stories", comment: "Widget status")
         case .noFeeds:
-            return "Please choose sites to show"
+            return NSLocalizedString("Edit this widget to choose a folder or site", comment: "Widget status")
         case .noStories:
-            return "No stories for selected sites"
+            return NSLocalizedString("No unread stories", comment: "Widget status")
         }
     }
 }
 
 @main
 struct WidgetExtension: Widget {
-    let kind: String = "Latest"
+    let kind: String = "SourceStories"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        AppIntentConfiguration(kind: kind, intent: NewsBlurWidgetConfiguration.self, provider: Provider()) { entry in
             WidgetEntryView(entry: entry)
         }
         .configurationDisplayName("NewsBlur")

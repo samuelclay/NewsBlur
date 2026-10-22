@@ -181,6 +181,7 @@
 "Choose Language…" = "언어 선택…";
 "Choose Story List" = "스토리 목록 선택";
 "Choose a Topic" = "주제 선택";
+"Choose a folder or site for this widget." = "이 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
 "Choose another category to discover more." = "더 알아보려면 다른 카테고리를 선택하세요.";
 "Choose another language" = "다른 언어 선택";
 "Choose feeds for your folder" = "폴더에 피드를 선택하세요";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "드래그하여 피드 및 스토리 목록 너비를 조정하세요.";
 "Edit" = "편집";
 "Edit NewsBlur share…" = "NewsBlur 공유 편집…";
+"Edit this widget to choose a folder or site" = "이 위젯을 수정해 폴더 또는 사이트를 선택하세요";
 "Edit your comment" = "댓글 수정";
 "Edit your reply" = "답글 수정";
 "Edited Comment" = "수정된 댓글";
@@ -348,6 +350,7 @@
 "Focus Stories" = "집중 스토리";
 "Focus only" = "집중만";
 "Folder name" = "폴더 이름";
+"Folder or site" = "폴더 또는 사이트";
 "Folders" = "폴더";
 "Follow" = "팔로우";
 "Follow %@" = "%@ 팔로우";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
 "Play videos" = "동영상 재생";
+"Please log in to NewsBlur" = "NewsBlur에 로그인하세요";
 "Plum Berry" = "자두 베리";
 "Positive?" = "확실한가요?";
 "Preferences" = "환경 설정";
@@ -978,6 +982,7 @@
 "Top" = "상단";
 "Top Level" = "최상위";
 "Top stories" = "주요 스토리";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlur 위젯을 길게 누르거나 Mac에서 마우스 오른쪽 버튼을 클릭한 다음 ‘위젯 수정’을 선택하세요. 각 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
 "Train" = "학습";
 "Train This Story" = "이 스토리 학습시키기";
 "Train This Story…" = "이 스토리 학습시키기…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "데일리 브리핑을 불러올 수 없습니다";
 "Unable to load Daily Briefing settings." = "데일리 브리핑 설정을 불러올 수 없습니다.";
 "Unable to load Daily Briefing." = "데일리 브리핑을 불러올 수 없습니다.";
+"Unable to refresh stories" = "스토리를 새로 고칠 수 없습니다";
 "Unable to save Daily Briefing settings." = "데일리 브리핑 설정을 저장할 수 없습니다.";
 "Unable to save notification settings." = "알림 설정을 저장할 수 없습니다.";
 "Understand" = "이해하기";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "많이 읽힌 스토리";
 "Widely covered" = "여러 곳에서 다룸";
 "Widget Site Stories" = "위젯 사이트 스토리";
-"Widget Sites" = "위젯 사이트";
 "Widget Stories" = "위젯 스토리";
+"Widgets" = "위젯";
 "Working…" = "작업 중…";
 "Works on any website" = "모든 웹사이트에서 작동";
 "Writing style" = "글쓰기 스타일";

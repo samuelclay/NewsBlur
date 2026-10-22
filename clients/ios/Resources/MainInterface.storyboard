@@ -297,7 +297,7 @@
                                                 <action selector="showOrganizeSites:" destination="J28-e1-gcC" id="9cl-DR-gBb"/>
                                             </connections>
                                         </command>
-                                        <command title="Widget Sites" input="W" id="4CD-Pc-fDT">
+                                        <command title="Widgets" input="W" id="4CD-Pc-fDT">
                                             <keyModifierFlags key="modifierFlags" command="YES"/>
                                             <connections>
                                                 <action selector="showWidgetSites:" destination="J28-e1-gcC" id="V7w-If-8Cv"/>

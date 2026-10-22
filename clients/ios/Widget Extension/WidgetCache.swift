@@ -8,6 +8,7 @@
 
 import WidgetKit
 import UIKit
+import OSLog
 
 enum WidgetCacheError: String, Error {
     case notLoggedIn
@@ -17,6 +18,12 @@ enum WidgetCacheError: String, Error {
 }
 
 class WidgetCache {
+    private static let logger = Logger(subsystem: "com.newsblur.widget", category: "stories")
+    let source: String
+    private var cacheFilename = "Stories.json"
+
+    init(source: String = "all") { self.source = source }
+
     /// The base URL of the NewsBlur server.
     var host: String?
     
@@ -47,6 +54,8 @@ class WidgetCache {
     typealias CacheCompletion = () -> Void
     
     private var cacheCompletion: CacheCompletion?
+    private var storyPages = WidgetStoryPagination<Story>(limit: Constant.limit)
+    private var storyLoadDeadline = Date.distantPast
     
     private typealias AnyDictionary = [String : Any]
     
@@ -80,18 +89,34 @@ class WidgetCache {
     }
     
     func load(completionHandler: @escaping CacheCompletion) {
-        let feedIds = feeds.map { $0.id }
-        let combinedFeeds = feedIds.joined(separator: "&f=")
-        
-        guard let url = hostURL(with: "/reader/river_stories_widget/?include_hidden=false&replace_hidden_stories=true&thumbnail_size=192&page=1&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
-            error = .loading
+        guard token?.isEmpty == false else {
+            stories = []
+            error = .notLoggedIn
             completionHandler()
             return
         }
-        
+        guard !feeds.isEmpty else {
+            stories = []
+            error = .noFeeds
+            completionHandler()
+            return
+        }
         error = nil
         cacheCompletion = completionHandler
-        loaders[Constant.storiesFilename] = Loader(url: url, completion: storyLoaderCompletion(result:))
+        storyPages = WidgetStoryPagination(limit: Constant.limit)
+        storyLoadDeadline = Date().addingTimeInterval(20)
+        loadStoryPage()
+    }
+
+    private func loadStoryPage() {
+        let remainingTime = storyLoadDeadline.timeIntervalSinceNow
+        let combinedFeeds = feeds.map { $0.id }.joined(separator: "&f=")
+        guard remainingTime > 0,
+              let url = hostURL(with: "/reader/river_stories_widget/?include_hidden=false&thumbnail_size=192&page=\(storyPages.page)&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
+            finishStoryLoading(reachedEnd: false)
+            return
+        }
+        loaders[Constant.storiesFilename] = Loader(url: url, timeout: remainingTime, completion: storyLoaderCompletion(result:))
     }
     
     func cleaned(_ string: String) -> String {
@@ -103,63 +128,48 @@ class WidgetCache {
     }
     
     func hostURL(with path: String) -> URL? {
-        guard let host else {
-            return nil
-        }
-        
+        guard let host, var components = URLComponents(string: host + path) else { return nil }
         if let token {
-            return URL(string: host + path + "&secret_token=\(token)")
-        } else {
-            return URL(string: host + path)
+            components.queryItems = (components.queryItems ?? []) + [URLQueryItem(name: "secret_token", value: token)]
+        }
+        return components.url
+    }
+
+    func storyLoaderCompletion(result: Result<Data, Error>) {
+        guard case .success(let data) = result,
+              let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDictionary,
+              (dictionary["code"] as? Int ?? 1) >= 0,
+              let storyArray = dictionary["stories"] as? [AnyDictionary] else {
+            finishStoryLoading(reachedEnd: false)
+            return
+        }
+        let pageStories = storyArray.map { Story(from: $0) }
+        let hiddenCount = dictionary["hidden_stories_removed"] as? Int ?? 0
+        let page = storyPages.page
+        let result = storyPages.append(pageStories, hiddenCount: hiddenCount)
+        Self.logger.notice("Story page \(page, privacy: .public): visible=\(pageStories.count, privacy: .public), hidden=\(hiddenCount, privacy: .public), accumulated=\(self.storyPages.stories.count, privacy: .public)")
+        switch result {
+        case .nextPage:
+            loadStoryPage()
+        case .complete:
+            finishStoryLoading(reachedEnd: storyPages.stories.count < Constant.limit)
+        case .pageLimit:
+            finishStoryLoading(reachedEnd: false)
         }
     }
-    
-    func storyLoaderCompletion(result: Result<Data, Error>) {
-        defer {
-            cacheCompletion = nil
-            loaders[Constant.storiesFilename] = nil
+
+    private func finishStoryLoading(reachedEnd: Bool) {
+        let usesCache = storyPages.stories.isEmpty && !reachedEnd && !stories.isEmpty
+        stories = storyPages.resolvedStories(cached: stories, reachedEnd: reachedEnd)
+        error = stories.isEmpty ? (reachedEnd ? .noStories : .loading) : nil
+        Self.logger.notice("Story load complete: visible=\(self.stories.count, privacy: .public), reachedEnd=\(reachedEnd, privacy: .public), usedCache=\(usesCache, privacy: .public)")
+        if !storyPages.stories.isEmpty || reachedEnd {
+            saveStories()
         }
-        
-        if case .failure = result {
-            error = .loading
-            cacheCompletion?()
-            
-            return
-        }
-        
-        guard case .success(let data) = result else {
-            return
-        }
-        
-        guard let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDictionary else {
-            error = .loading
-            cacheCompletion?()
-            
-            return
-        }
-        
-        guard let storyArray = dictionary["stories"] as? [AnyDictionary] else {
-            error = .loading
-            cacheCompletion?()
-            
-            return
-        }
-        
-        stories.removeAll()
-        
-        for storyDict in storyArray {
-            stories.append(Story(from: storyDict))
-        }
-        
-        saveStories()
-        
-        if stories.isEmpty, error == nil {
-            error = .noStories
-        }
-        
-        // Keep a local copy, since the property will be cleared before the async closure is called.
+        // WidgetCache.swift releases the completion only after all pages, never between requests.
         let localCompletion = cacheCompletion
-        
+        cacheCompletion = nil
+        loaders[Constant.storiesFilename] = nil
         DispatchQueue.main.async {
             localCompletion?()
         }
@@ -174,7 +184,7 @@ class WidgetCache {
     }
     
     var storiesURL: URL? {
-        return widgetFolderURL?.appendingPathComponent(Constant.storiesFilename)
+        return widgetFolderURL?.appendingPathComponent(cacheFilename)
     }
     
     var feedImagesURL: URL? {
@@ -223,10 +233,17 @@ class WidgetCache {
             }
         }
         
-        if let array = defaults.array(forKey: Constant.feeds) as? [Feed.Dictionary] {
-            feeds = array.map { Feed(from: $0) }
+        let catalog = WidgetSourceCatalog.load(defaults: defaults)
+        let ids = catalog.feedIDs(for: source)
+        feeds = ids.compactMap { id in
+            guard var dictionary = catalog.feeds[id] else { return nil }
+            dictionary["id"] = id
+            return Feed(from: dictionary)
         }
-        
+        cacheFilename = WidgetSourceCatalog.cacheFilename(host: host ?? "", username: defaults.string(forKey: "share:username") ?? "", source: source, feedIDs: ids)
+        guard token?.isEmpty == false else { error = .notLoggedIn; return }
+        guard !feeds.isEmpty else { error = .noFeeds; return }
+
         guard let url = storiesURL else {
             return
         }
@@ -260,7 +277,7 @@ class WidgetCache {
         do {
             let json = try encoder.encode(stories)
             
-            try json.write(to: url)
+            try json.write(to: url, options: .atomic)
         } catch {
             NSLog("Error \(error)")
         }
@@ -327,6 +344,12 @@ class WidgetCache {
     
     func cachedFeedImage(for feed: String) -> UIImage? {
         if let image = feedImageCache[feed] {
+            return image
+        }
+
+        // WidgetCache.swift reuses the account-bound bulk icons also displayed by WidgetConfiguration.swift.
+        if let data = WidgetSourceCatalog.load().favicon(for: feed), let image = UIImage(data: data) {
+            feedImageCache[feed] = image
             return image
         }
         

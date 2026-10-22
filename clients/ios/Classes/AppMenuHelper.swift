@@ -56,6 +56,70 @@ class AppMenuHelper: NSObject {
         ]
     }
 
+    // AppMenuHelper.swift builds reader commands alongside the system window actions.
+    @MainActor static func fileMenuChildren(_ originalChildren: [UIMenuElement]) -> [UIMenuElement] {
+        let closeMenus = originalChildren.compactMap { $0 as? UIMenu }.filter { $0.identifier == .close }
+        return [
+            UIMenu(title: "", options: .displayInline, children: [
+                UIKeyCommand(title: NBLocalization.text("New Site"),
+                             image: UIImage(systemName: "plus"),
+                             action: #selector(BaseViewController.newSite(_:)),
+                             input: "n",
+                             modifierFlags: [.command, .alternate]),
+                UIKeyCommand(title: NBLocalization.text("Reload Sites"),
+                             image: UIImage(systemName: "arrow.clockwise"),
+                             action: #selector(BaseViewController.reloadFeeds(_:)),
+                             input: "r",
+                             modifierFlags: [.command])
+            ]),
+            
+            UIMenu(title: "", options: .displayInline, children: [
+                UIKeyCommand(title: NBLocalization.text("Mute Sites"),
+                             image: UIImage(systemName: "square.grid.3x3.middleleft.filled"),
+                             action: #selector(BaseViewController.showMuteSites(_:)),
+                             input: "m",
+                             modifierFlags: [.command, .shift]),
+                UIKeyCommand(title: NBLocalization.text("Organize Sites"),
+                             image: UIImage(systemName: "folder"),
+                             action: #selector(BaseViewController.showOrganizeSites(_:)),
+                             input: "o",
+                             modifierFlags: [.command, .shift]),
+                UIKeyCommand(title: NBLocalization.text("Widgets"),
+                             image: UIImage(systemName: "square.grid.2x2"),
+                             action: #selector(BaseViewController.showWidgetSites(_:)),
+                             input: "w",
+                             modifierFlags: [.command, .shift])
+            ]),
+            
+            UIMenu(title: "", options: .displayInline, children: [
+                UIKeyCommand(title: NBLocalization.text("Notifications"),
+                             image: UIImage(systemName: "bell"),
+                             action: #selector(BaseViewController.showNotifications(_:)),
+                             input: "n",
+                             modifierFlags: [.command, .shift]),
+                UIKeyCommand(title: NBLocalization.text("Find Friends"),
+                             image: UIImage(systemName: "person.2"),
+                             action: #selector(BaseViewController.showFindFriends(_:)),
+                             input: "f",
+                             modifierFlags: [.command, .shift])
+            ]),
+            
+            UIMenu(title: "", options: .displayInline, children: [
+                UICommand(title: NBLocalization.text("Premium"),
+                          image: UIImage(systemName: "crown"),
+                          action: #selector(BaseViewController.showPremium(_:))),
+            ]),
+            
+            UIMenu(title: "", options: .displayInline, children: [
+                UIKeyCommand(title: NBLocalization.text("Log Out"),
+                             image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
+                             action: #selector(BaseViewController.showLogout(_:)),
+                             input: "l",
+                             modifierFlags: [.command, .shift])
+            ])
+        ] + closeMenus
+    }
+
     @MainActor @objc(buildMenuWithBuilder:)
     func buildMenu(with builder: UIMenuBuilder) {
         guard builder.system == .main else { return }
@@ -90,66 +154,8 @@ class AppMenuHelper: NSObject {
         }
         
         // ===== FILE =====
-        builder.replaceChildren(ofMenu: .file) { _ in [
-            UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("New Site"),
-                             image: UIImage(systemName: "plus"),
-                             action: #selector(BaseViewController.newSite(_:)),
-                             input: "n",
-                             modifierFlags: [.command, .alternate]),
-                UIKeyCommand(title: NBLocalization.text("Reload Sites"),
-                             image: UIImage(systemName: "arrow.clockwise"),
-                             action: #selector(BaseViewController.reloadFeeds(_:)),
-                             input: "r",
-                             modifierFlags: [.command])
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("Mute Sites"),
-                             image: UIImage(systemName: "square.grid.3x3.middleleft.filled"),
-                             action: #selector(BaseViewController.showMuteSites(_:)),
-                             input: "m",
-                             modifierFlags: [.command, .shift]),
-                UIKeyCommand(title: NBLocalization.text("Organize Sites"),
-                             image: UIImage(systemName: "folder"),
-                             action: #selector(BaseViewController.showOrganizeSites(_:)),
-                             input: "o",
-                             modifierFlags: [.command, .shift]),
-                UIKeyCommand(title: NBLocalization.text("Widget Sites"),
-                             image: UIImage(systemName: "square.grid.2x2"),
-                             action: #selector(BaseViewController.showWidgetSites(_:)),
-                             input: "w",
-                             modifierFlags: [.command, .shift])
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("Notifications"),
-                             image: UIImage(systemName: "bell"),
-                             action: #selector(BaseViewController.showNotifications(_:)),
-                             input: "n",
-                             modifierFlags: [.command, .shift]),
-                UIKeyCommand(title: NBLocalization.text("Find Friends"),
-                             image: UIImage(systemName: "person.2"),
-                             action: #selector(BaseViewController.showFindFriends(_:)),
-                             input: "f",
-                             modifierFlags: [.command, .shift])
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
-                UICommand(title: NBLocalization.text("Premium"),
-                          image: UIImage(systemName: "crown"),
-                          action: #selector(BaseViewController.showPremium(_:))),
-            ]),
-            
-            UIMenu(title: "", options: .displayInline, children: [
-                UIKeyCommand(title: NBLocalization.text("Log Out"),
-                             image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
-                             action: #selector(BaseViewController.showLogout(_:)),
-                             input: "l",
-                             modifierFlags: [.command, .shift])
-            ])
-        ]}
-        
+        builder.replaceChildren(ofMenu: .file, from: Self.fileMenuChildren)
+
         // ===== EDIT =====
         builder.insertChild(
             UIMenu(title: "", options: .displayInline, children: [

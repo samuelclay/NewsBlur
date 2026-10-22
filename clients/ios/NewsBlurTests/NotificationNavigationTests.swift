@@ -449,3 +449,171 @@ import XCTest
         implementation(self, selector, content as NSDictionary, action as NSString, completion as AnyObject)
     }
 }
+
+@MainActor final class Test_MacWindowMenu: XCTestCase {
+    func test_fileMenuKeepsSystemCloseCommandsThroughRebuilds() throws {
+        // NotificationNavigationTests.swift checks the real menu transformation preserves native responder routing.
+        let closeCommand = UIKeyCommand(title: "Close Window", action: NSSelectorFromString("performClose:"),
+                                        input: "w", modifierFlags: .command)
+        let closeMenu = UIMenu(title: "", identifier: .close, options: .displayInline, children: [closeCommand])
+        let oldAppMenu = UIMenu(title: "Old App Commands", children: [])
+        var children: [UIMenuElement] = [oldAppMenu, closeMenu]
+        for _ in 0..<2 {
+            children = AppMenuHelper.fileMenuChildren(children)
+            let retainedClose = try XCTUnwrap(children.compactMap { $0 as? UIMenu }.first { $0.identifier == .close })
+            XCTAssertTrue(retainedClose === closeMenu)
+            XCTAssertTrue(retainedClose.children.first === closeCommand)
+            XCTAssertEqual(children.compactMap { $0 as? UIMenu }.filter { $0.identifier == .close }.count, 1)
+            XCTAssertFalse(children.contains { $0 === oldAppMenu })
+        }
+    }
+}
+
+@MainActor final class Test_StoryTraversalCompletion: XCTestCase {
+    func test_doneTapDoesNotStartPagingWhenUnreadCountChangesBeforeChromeRefreshes() {
+        let (app, pages, bar, feed) = makeTraversal(unreadCount: 0, filter: "all", loadedUnread: false)
+        pages.setNextPreviousButtons()
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        app.dictUnreadCounts = ["42": ["nt": 0, "ps": 1, "ng": 0]]
+
+        pages.doNextUnreadStory(bar.nextButton)
+
+        XCTAssertEqual(app.finishedReading, 1)
+        XCTAssertEqual(feed.requestedPages, 0)
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer)
+        XCTAssertFalse(bar.loadingIndicator.isAnimating)
+    }
+
+    func test_reachingDoneStopsPendingUnreadTraversal() {
+        let (_, pages, bar, feed) = makeTraversal(unreadCount: 1, filter: "all", loadedUnread: false)
+        pages.setNextPreviousButtons()
+        pages.doNextUnreadStory(nil)
+        XCTAssertTrue(pages.waitingForNextUnreadFromServer)
+        XCTAssertTrue(bar.loadingIndicator.isAnimating)
+
+        feed.pageFinished = true
+        pages.setNextPreviousButtons()
+
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        XCTAssertFalse(pages.waitingForNextUnreadFromServer)
+        XCTAssertFalse(bar.loadingIndicator.isAnimating)
+        XCTAssertFalse(bar.circularProgressView.isHidden)
+        XCTAssertTrue(bar.nextButton.isEnabled)
+    }
+
+    #if targetEnvironment(macCatalyst)
+    func test_macDoneButtonHasNoNativeTitleToReappearWhenDisabled() {
+        let (_, pages, bar, _) = makeTraversal(unreadCount: 0, filter: "all")
+        pages.setNextPreviousButtons()
+        bar.nextButton.isEnabled = false
+        bar.nextButton.updateConfiguration()
+        XCTAssertNil(bar.nextButton.configuration?.title)
+        XCTAssertNil(bar.nextButton.title(for: .disabled))
+        XCTAssertEqual(bar.rightGroupView.subviews.compactMap { ($0 as? UILabel)?.text }, [NBLocalization.text("Done")])
+    }
+    #endif
+
+    func test_markingLastUnreadStoryReadImmediatelyUpdatesDoneButton() {
+        let (app, pages, bar, _) = makeTraversal(unreadCount: 1, filter: "all")
+        let stories = app.storiesCollection!
+        app.activeStory = stories.activeFeedStories.last as? [AnyHashable: Any]
+        pages.setNextPreviousButtons()
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Next story"))
+
+        stories.markStoryRead(app.activeStory, feed: stories.activeFeed)
+
+        XCTAssertEqual(app.unreadCount(), 0)
+        XCTAssertEqual(stories.locationOfNextUnreadStory(), -1)
+        XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+        pages.doNextUnreadStory(nil)
+        XCTAssertEqual(app.finishedReading, 1)
+    }
+
+    func test_zeroUnreadCountFinishesAllStoriesEvenWhenALoadedStoryHasStaleUnreadState() {
+        for filter in ["all", "unread"] {
+            let (app, pages, bar, feed) = makeTraversal(unreadCount: 0, filter: filter)
+            XCTAssertEqual(app.storiesCollection.locationOfNextUnreadStory(), 1,
+                           "NotificationNavigationTests.swift reproduces a loaded unread flag that outlives the feed count.")
+            pages.setNextPreviousButtons()
+            XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Done with stories"))
+            pages.doNextUnreadStory(nil)
+            XCTAssertEqual(app.finishedReading, 1)
+            XCTAssertTrue(pages.changedPages.isEmpty)
+            XCTAssertEqual(feed.requestedPages, 0)
+        }
+    }
+
+    func test_remainingUnreadStillAdvancesToLoadedStoryOrFetchesItsPage() {
+        for loadedUnread in [true, false] {
+            let (app, pages, bar, feed) = makeTraversal(unreadCount: 1, filter: "all", loadedUnread: loadedUnread)
+            pages.setNextPreviousButtons()
+            XCTAssertEqual(bar.nextButton.accessibilityLabel, NBLocalization.text("Next story"))
+            pages.doNextUnreadStory(nil)
+            XCTAssertEqual(app.finishedReading, 0)
+            XCTAssertEqual(pages.changedPages, loadedUnread ? [1] : [])
+            XCTAssertEqual(feed.requestedPages, loadedUnread ? 0 : 1)
+        }
+    }
+
+    private func makeTraversal(unreadCount: Int, filter: String, loadedUnread: Bool = true)
+        -> (TraversalCompletionApp, TraversalCompletionPages, StoryTraverseBar, TraversalCompletionFeed) {
+        let app = TraversalCompletionApp()
+        app.selectedIntelligence = 0
+        app.dictUnreadCounts = ["42": ["nt": unreadCount, "ps": 0, "ng": 0]]
+        app.originalStoryCount = 1
+        app.readStories = NSMutableArray(array: ["42:selected"])
+        app.recentlyReadStories = NSMutableDictionary()
+        app.unreadStoryHashes = NSMutableDictionary()
+        let stories = StoriesCollection()
+        stories.appDelegate = app
+        stories.activeFeed = ["id": 42]
+        stories.readFilterOverride = filter
+        stories.feedPage = 1
+        stories.setStories([
+            ["story_hash": "42:selected", "story_feed_id": 42, "read_status": 1],
+            ["story_hash": "42:older", "story_feed_id": 42, "read_status": loadedUnread ? 0 : 1]
+        ])
+        stories.activeFeedStoryLocations = [0, 1]
+        stories.activeFeedStoryLocationIds = ["42:selected", "42:older"]
+        stories.storyLocationsCount = 2
+        app.storiesCollection = stories
+        app.activeStory = stories.activeFeedStories.first as? [AnyHashable: Any]
+        let feed = TraversalCompletionFeed()
+        feed.appDelegate = app
+        feed.pageFinished = false
+        app.testFeed = feed
+        let pages = TraversalCompletionPages()
+        pages.appDelegate = app
+        app.testPages = pages
+        let bar = StoryTraverseBar()
+        bar.setup(in: pages.view)
+        pages.setValue(bar, forKey: "traverseBar")
+        pages.buttonNext = bar.nextButton
+        pages.loadingIndicator = bar.loadingIndicator
+        pages.circularProgressView = bar.circularProgressView
+        return (app, pages, bar, feed)
+    }
+}
+
+@MainActor private final class TraversalCompletionApp: NewsBlurAppDelegate {
+    var finishedReading = 0
+    var testFeed: FeedDetailViewController!
+    var testPages: StoryPagesViewController!
+    override var feedDetailViewController: FeedDetailViewController! { testFeed }
+    override var storyPagesViewController: StoryPagesViewController! { testPages }
+    override func hideStoryDetailView() { finishedReading += 1 }
+}
+
+@MainActor private final class TraversalCompletionPages: StoryPagesViewController {
+    var changedPages: [Int] = []
+    override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
+    override func viewDidLoad() {}
+    override func changePage(_ pageIndex: Int, animated: Bool) { changedPages.append(pageIndex) }
+    override func reloadWidget() {}
+}
+
+@MainActor private final class TraversalCompletionFeed: FeedDetailViewController {
+    var requestedPages = 0
+    override func hasRetainedFirstPageStory() -> Bool { false }
+    override func fetchNextPage(_ callback: (() -> Void)!) { requestedPages += 1 }
+}

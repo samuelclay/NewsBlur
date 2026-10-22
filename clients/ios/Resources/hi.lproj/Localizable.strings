@@ -181,6 +181,7 @@
 "Choose Language…" = "भाषा चुनें…";
 "Choose Story List" = "लेख सूची चुनें";
 "Choose a Topic" = "कोई विषय चुनें";
+"Choose a folder or site for this widget." = "इस विजेट के लिए कोई फ़ोल्डर या साइट चुनें।";
 "Choose another category to discover more." = "और खोजने के लिए कोई दूसरी श्रेणी चुनें।";
 "Choose another language" = "कोई दूसरी भाषा चुनें";
 "Choose feeds for your folder" = "अपने फ़ोल्डर के लिए फ़ीड चुनें";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "फ़ीड और लेख सूची की चौड़ाई बदलने के लिए खींचें।";
 "Edit" = "संपादित करें";
 "Edit NewsBlur share…" = "NewsBlur शेयर संपादित करें…";
+"Edit this widget to choose a folder or site" = "यह विजेट संपादित करके कोई फ़ोल्डर या साइट चुनें";
 "Edit your comment" = "अपनी टिप्पणी संपादित करें";
 "Edit your reply" = "अपना जवाब संपादित करें";
 "Edited Comment" = "संपादित टिप्पणी";
@@ -348,6 +350,7 @@
 "Focus Stories" = "फ़ोकस लेख";
 "Focus only" = "केवल फ़ोकस";
 "Folder name" = "फ़ोल्डर का नाम";
+"Folder or site" = "फ़ोल्डर या साइट";
 "Folders" = "फ़ोल्डर";
 "Follow" = "फ़ॉलो करें";
 "Follow %@" = "%@ को फ़ॉलो करें";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "चुनें कि आपकी दैनिक ब्रीफ़िंग कौन-सा मॉडल लिखे";
 "Place the story list controls above or below the stories" = "लेख सूची के नियंत्रण लेखों के ऊपर या नीचे रखें";
 "Play videos" = "वीडियो चलाएँ";
+"Please log in to NewsBlur" = "कृपया NewsBlur में लॉग इन करें";
 "Plum Berry" = "प्लम बेरी";
 "Positive?" = "क्या आप सुनिश्चित हैं?";
 "Preferences" = "प्राथमिकताएँ";
@@ -978,6 +982,7 @@
 "Top" = "शीर्ष";
 "Top Level" = "शीर्ष स्तर";
 "Top stories" = "प्रमुख लेख";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlur विजेट को दबाकर रखें, या Mac पर उस पर राइट-क्लिक करें, फिर “विजेट संपादित करें” चुनें। हर विजेट के लिए कोई फ़ोल्डर या साइट चुनें।";
 "Train" = "प्रशिक्षित करें";
 "Train This Story" = "इस लेख को प्रशिक्षित करें";
 "Train This Story…" = "इस लेख को ट्रेन करें…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "दैनिक ब्रीफ़िंग लोड नहीं हो सकी";
 "Unable to load Daily Briefing settings." = "दैनिक ब्रीफ़िंग की सेटिंग लोड नहीं हो सकीं।";
 "Unable to load Daily Briefing." = "दैनिक ब्रीफ़िंग लोड नहीं हो सकी।";
+"Unable to refresh stories" = "लेख रीफ़्रेश नहीं हो सके";
 "Unable to save Daily Briefing settings." = "दैनिक ब्रीफ़िंग की सेटिंग सहेजी नहीं जा सकीं।";
 "Unable to save notification settings." = "सूचना सेटिंग सहेजी नहीं जा सकीं।";
 "Understand" = "समझें";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "व्यापक रूप से पढ़े गए लेख";
 "Widely covered" = "व्यापक रूप से कवर किया गया";
 "Widget Site Stories" = "विजेट साइटों के लेख";
-"Widget Sites" = "विजेट साइटें";
 "Widget Stories" = "विजेट लेख";
+"Widgets" = "विजेट";
 "Working…" = "काम हो रहा है…";
 "Works on any website" = "किसी भी वेबसाइट पर काम करता है";
 "Writing style" = "लेखन शैली";

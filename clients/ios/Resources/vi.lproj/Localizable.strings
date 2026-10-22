@@ -181,6 +181,7 @@
 "Choose Language…" = "Chọn ngôn ngữ…";
 "Choose Story List" = "Chọn danh sách bài viết";
 "Choose a Topic" = "Chọn chủ đề";
+"Choose a folder or site for this widget." = "Chọn thư mục hoặc trang web cho tiện ích này.";
 "Choose another category to discover more." = "Chọn danh mục khác để khám phá thêm.";
 "Choose another language" = "Chọn ngôn ngữ khác";
 "Choose feeds for your folder" = "Chọn các nguồn cấp cho thư mục";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Kéo để thay đổi độ rộng danh sách nguồn cấp và bài viết.";
 "Edit" = "Chỉnh sửa";
 "Edit NewsBlur share…" = "Chỉnh sửa chia sẻ NewsBlur…";
+"Edit this widget to choose a folder or site" = "Chỉnh sửa tiện ích này để chọn thư mục hoặc trang web";
 "Edit your comment" = "Chỉnh sửa bình luận của bạn";
 "Edit your reply" = "Chỉnh sửa câu trả lời của bạn";
 "Edited Comment" = "Bình luận đã chỉnh sửa";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Bài viết Tập trung";
 "Focus only" = "Chỉ Tập trung";
 "Folder name" = "Tên thư mục";
+"Folder or site" = "Thư mục hoặc trang web";
 "Folders" = "Thư mục";
 "Follow" = "Theo dõi";
 "Follow %@" = "Theo dõi %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Chọn mô hình viết Bản tin hằng ngày của bạn";
 "Place the story list controls above or below the stories" = "Đặt các nút điều khiển danh sách bài viết ở phía trên hoặc phía dưới các bài viết";
 "Play videos" = "Phát video";
+"Please log in to NewsBlur" = "Vui lòng đăng nhập vào NewsBlur";
 "Plum Berry" = "Mận mọng";
 "Positive?" = "Bạn chắc chứ?";
 "Preferences" = "Tùy chọn";
@@ -978,6 +982,7 @@
 "Top" = "Trên cùng";
 "Top Level" = "Cấp cao nhất";
 "Top stories" = "Bài viết hàng đầu";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Chạm và giữ tiện ích NewsBlur, hoặc nhấp chuột phải vào tiện ích trên máy Mac, rồi chọn Chỉnh sửa tiện ích. Chọn thư mục hoặc trang web cho từng tiện ích.";
 "Train" = "Huấn luyện";
 "Train This Story" = "Huấn luyện bằng bài viết này";
 "Train This Story…" = "Huấn luyện bài viết này…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Không thể tải Bản tin hằng ngày";
 "Unable to load Daily Briefing settings." = "Không thể tải cài đặt Bản tin hằng ngày.";
 "Unable to load Daily Briefing." = "Không thể tải Bản tin hằng ngày.";
+"Unable to refresh stories" = "Không thể làm mới bài viết";
 "Unable to save Daily Briefing settings." = "Không thể lưu cài đặt Bản tin hằng ngày.";
 "Unable to save notification settings." = "Không thể lưu cài đặt thông báo.";
 "Understand" = "Tìm hiểu";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Bài viết được đọc nhiều";
 "Widely covered" = "Được đưa tin rộng rãi";
 "Widget Site Stories" = "Bài viết từ trang web trong tiện ích";
-"Widget Sites" = "Trang web cho tiện ích";
 "Widget Stories" = "Bài viết trong tiện ích";
+"Widgets" = "Tiện ích";
 "Working…" = "Đang xử lý…";
 "Works on any website" = "Hoạt động trên mọi trang web";
 "Writing style" = "Văn phong";
