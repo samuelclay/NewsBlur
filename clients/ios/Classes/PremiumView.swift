@@ -138,6 +138,7 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Export trained stories from folders as RSS feeds"), icon: "square.and.arrow.up.fill", iconColor: .orange),
         PremiumFeature(title: NBLocalization.text("Stories can stay unread forever"), icon: "calendar.badge.clock", iconColor: .red),
         PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
+        PremiumFeature(title: NBLocalization.text("Listen to stories"), icon: "headphones", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Filter stories by date range"), icon: "calendar", iconColor: .pink),
         PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
         PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),

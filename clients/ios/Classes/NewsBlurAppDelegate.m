@@ -1151,6 +1151,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                 appDelegate.cachedURL = nil;
                 if (![appDelegate.url isEqualToString:previousURL]) {
                     // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+                    [ListenStoryBridge stopForAccountChange];
                     [appDelegate clearNetworkManager];
                 }
             }];
@@ -1522,6 +1523,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)showLogin {
     [self resetFeedSubscriptionForAccountChange];
+    // NewsBlurAppDelegate.m stops a story being read aloud so it can't carry over to the next account.
+    [ListenStoryBridge stopForAccountChange];
     [self.detailViewController resetDiscoveryForAccountChange];
     if (self.loginViewController.view.window != nil) {
         return;
