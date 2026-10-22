@@ -1,0 +1,246 @@
+{
+  "reviewer": "mac_close_window",
+  "source": "en.json",
+  "source_sha256": "ec8bd45caf5508c70e5003c53fe6e8657043053601dc6f393f6d55be0cb34d67",
+  "scope": [
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "result": "passed_after_corrections",
+  "languages": {
+    "vi": {
+      "corrections": [
+        {
+          "before": "Phím tắt hoạt động khi danh sách bài viết đang được chọn",
+          "after": "Phím tắt hoạt động khi tiêu điểm nằm trong danh sách bài viết",
+          "reason": "Distinguish keyboard focus from selection of the story list.",
+          "field": "whats_new"
+        }
+      ],
+      "limits_actual_and_max": {
+        "name": [
+          27,
+          30
+        ],
+        "subtitle": [
+          30,
+          30
+        ],
+        "description": [
+          2377,
+          4000
+        ],
+        "promotional_text": [
+          149,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          82,
+          100
+        ],
+        "whats_new": [
+          1116,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "Xem nhanh bài viết\nThêm tiện ích vào màn hình nền hoặc Trung tâm thông báo. Mỗi tiện ích có thể hiển thị Bài viết từ mọi trang web, một thư mục hoặc một trang web. Chọn nguồn bằng Sửa tiện ích.",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    },
+    "th": {
+      "corrections": [
+        {
+          "before": "การรีเฟรชทำงานได้เชื่อถือได้มากขึ้น",
+          "after": "การรีเฟรชเชื่อถือได้มากขึ้น",
+          "reason": "Remove duplicated ability construction for natural Thai.",
+          "field": "whats_new"
+        }
+      ],
+      "limits_actual_and_max": {
+        "name": [
+          22,
+          30
+        ],
+        "subtitle": [
+          30,
+          30
+        ],
+        "description": [
+          2001,
+          4000
+        ],
+        "promotional_text": [
+          125,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          95,
+          100
+        ],
+        "whats_new": [
+          960,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "ดูบทความได้อย่างรวดเร็ว\nเพิ่มวิดเจ็ตบนเดสก์ท็อปหรือศูนย์การแจ้งเตือน แต่ละวิดเจ็ตสามารถแสดงบทความจากทุกเว็บไซต์ โฟลเดอร์หนึ่ง หรือเว็บไซต์เดียว เลือกแหล่งบทความได้จาก แก้ไขวิดเจ็ต",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    },
+    "ja": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          20,
+          30
+        ],
+        "subtitle": [
+          16,
+          30
+        ],
+        "description": [
+          1183,
+          4000
+        ],
+        "promotional_text": [
+          79,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          95,
+          100
+        ],
+        "whats_new": [
+          594,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "記事をひと目で\nデスクトップや通知センターにウィジェットを追加できます。ウィジェットごとに「すべてのサイトの記事」、フォルダー、または1つのサイトの記事を表示できます。「ウィジェットを編集」で表示元を選んでください。",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    },
+    "ko": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          19,
+          30
+        ],
+        "subtitle": [
+          23,
+          30
+        ],
+        "description": [
+          1295,
+          4000
+        ],
+        "promotional_text": [
+          76,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          84,
+          100
+        ],
+        "whats_new": [
+          651,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "스토리를 한눈에 보기\n데스크탑이나 알림 센터에 위젯을 추가하세요. 각 위젯에 모든 사이트 스토리, 폴더 또는 개별 사이트를 표시할 수 있습니다. 위젯 편집에서 표시할 소스를 선택하세요.",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    },
+    "zh-Hans": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          18,
+          30
+        ],
+        "subtitle": [
+          13,
+          30
+        ],
+        "description": [
+          874,
+          4000
+        ],
+        "promotional_text": [
+          52,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          91,
+          100
+        ],
+        "whats_new": [
+          429,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "文章一目了然\n将小组件添加到桌面或通知中心。每个小组件都可以显示所有网站的文章、某个文件夹或单个网站的文章。通过“编辑小组件”选择内容来源。",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    },
+    "zh-Hant": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          18,
+          30
+        ],
+        "subtitle": [
+          13,
+          30
+        ],
+        "description": [
+          885,
+          4000
+        ],
+        "promotional_text": [
+          52,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          87,
+          100
+        ],
+        "whats_new": [
+          434,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert translated widget section after the READ YOUR WAY paragraph; no other description changes.",
+      "widget_section": "文章一目了然\n將小工具加入桌面或通知中心。每個小工具都可以顯示所有網站文章、某個資料夾或單一網站的文章。透過「編輯小工具」選擇內容來源。",
+      "meaning_and_claims": "Complete and accurate; per-widget source selection, default signed-in account, removal/re-addition migration, reliable refresh without instant-refresh promise, keyboard and window behavior preserved.",
+      "terminology": "Checked glossary and current iOS Done, Add Site, Settings, All Site Stories labels.",
+      "urls_and_brand": "Preserved",
+      "unresolved_issues": []
+    }
+  }
+}
