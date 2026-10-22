@@ -697,7 +697,10 @@ grafana-dashboards:
 # Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
 # Python venv at /config/scripts/venv (boto3 for S3 downloads); setup_cron.sh rebuilds it
 #   whenever an add-on update ships a new Python (3.12 -> 3.14 orphaned it in 2026)
-# Cron job in SSH add-on: nightly 6am, mounts drive, runs backup, unmounts+deauthorizes USB
+# Cron job in SSH add-on: nightly 6am, run_offsite_backup.sh mounts the drive, runs
+#   offsite_pull.sh, then unmounts and deauthorizes USB. Nothing may keep a file open on
+#   the drive at unmount time: until Oct 2026 the cron line logged onto the drive, every
+#   umount failed, and the lazy-unmount fallback cut power under the live filesystem.
 # Installed by /config/scripts/setup_cron.sh, which MUST run on add-on startup via the
 #   add-on's init_commands option: the crontab and crond live inside the add-on container
 #   and vanish on every add-on auto-update or reboot. init_commands was never set and
@@ -716,6 +719,10 @@ grafana-dashboards:
 #   ssh root@192.168.1.27 "du -sh /media/newsblur-backup/*"
 #   ssh root@192.168.1.27 "df -h /media/newsblur-backup"
 #   ssh root@192.168.1.27 "crontab -l; pgrep -x crond"   (empty crontab = init_commands not run)
+#   ssh root@192.168.1.27 "tail -20 /config/scripts/offsite_backup_runs.log"   (mount/unmount per run, off the drive)
+#   The backup.log/backup_run.log paths above only exist with the drive mounted; without it
+#   /media/newsblur-backup is an empty directory on HA's eMMC. Mount it first with
+#   ssh root@192.168.1.27 /config/scripts/mount_backup_drive.sh (or use make offsite-backup-status).
 HA_HOST := root@192.168.1.27
 HA_SCRIPTS := /config/scripts
 
@@ -724,6 +731,8 @@ offsite-backup-install:
 	ssh $(HA_HOST) "mkdir -p $(HA_SCRIPTS)"
 	cat utils/backups/offsite_pull.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_pull.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
+	cat utils/backups/run_offsite_backup.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/run_offsite_backup.sh"
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/run_offsite_backup.sh"
 	cat utils/backups/offsite_status.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_status.py"
 	cat utils/backups/offsite_verify.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_verify.py"
 	cat utils/backups/mount_backup_drive.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/mount_backup_drive.sh"
@@ -751,16 +760,18 @@ offsite-backup-install:
 #   make offsite-backup MONGO=1
 offsite-backup:
 	@$(call log,~FB---> Running off-site backup pull~ST)
-	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh $(if $(MONGO),--force-mongo)"
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/run_offsite_backup.sh $(if $(MONGO),--force-mongo)"
 
-# The pgrep pattern is bracketed ('[o]ffsite_pull.sh') so it doesn't match the
-# remote shell running this very command, which also contains the script name.
+# The pgrep patterns are bracketed ('[o]ffsite_pull.sh') so they don't match the
+# remote shell running this very command, which also contains the script names.
 # Without the bracket, pgrep -f always matched itself, the status always said
 # "backup in progress", and the drive was never unmounted after a status check.
+# A failed mount stops here: reading the bare mount point on HA's eMMC reported
+# "last backup March 31" in Oct 2026 while the nightly backups were fine.
 offsite-backup-status:
-	@ssh $(HA_HOST) "$(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null && (echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py); if pgrep -f '[o]ffsite_pull.sh' > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
+	@ssh $(HA_HOST) "if ! $(HA_SCRIPTS)/mount_backup_drive.sh > /dev/null; then echo 'Backup drive did not mount, so there is no status to show'; $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; exit 1; fi; echo '=== Backup runs ==='; tail -6 $(HA_SCRIPTS)/offsite_backup_runs.log 2>/dev/null; echo; echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py; if pgrep -f '[r]un_offsite_backup.sh|[o]ffsite_pull.sh' > /dev/null 2>&1; then echo '  (drive left mounted — backup in progress)'; else $(HA_SCRIPTS)/unmount_backup_drive.sh > /dev/null; fi"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)
-	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/docker.key"
+	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/run_offsite_backup.sh $(HA_SCRIPTS)/docker.key"
 	@$(call log,~FG---> Removed. Don't forget to remove shell_command + automation from HA config.~ST)

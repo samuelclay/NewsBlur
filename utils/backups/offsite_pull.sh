@@ -11,6 +11,9 @@
 # Usage: ./offsite_pull.sh [--force-mongo]
 #   --force-mongo  Dump MongoDB today even if it isn't MONGO_BACKUP_DAY
 #                  (used by `make offsite-backup MONGO=1` to catch up after missed weeks)
+#
+# Run it through run_offsite_backup.sh, which mounts the drive first and
+# unmounts it after this script exits.
 
 set -uo pipefail  # No -e: sections handle errors independently
 
@@ -177,10 +180,12 @@ print('Heartbeat uploaded: s3://${S3_BUCKET}/%s' % key)
     return 1
 }
 
-# Check that backup drive is mounted
-if [[ ! -d "${BACKUP_DRIVE}" ]]; then
+# Check that backup drive is mounted. The mount point is also a plain directory
+# on HA's eMMC, so a -d test passes without the drive and the pull would fill
+# the HA data partition instead.
+if ! mountpoint -q "${BACKUP_DRIVE}"; then
     echo "ERROR: Backup drive not mounted at ${BACKUP_DRIVE}"
-    echo "Run: shell_command.mount_backup_drive from HA"
+    echo "Run /config/scripts/run_offsite_backup.sh, which mounts it first"
     exit 1
 fi
 
@@ -336,7 +341,7 @@ else
     fi
     log "Streaming full mongodump from ${MONGO_SECONDARY} (timeout: ${MONGO_DUMP_TIMEOUT})..."
     # Write to .partial first, rename on success to avoid keeping truncated dumps
-    # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via nohup)
+    # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via run_offsite_backup.sh)
     #
     # timeout returns 124 on timeout, or the command's exit code on other failures.
     if timeout "${MONGO_DUMP_TIMEOUT}" \
@@ -444,9 +449,7 @@ fi
 # Completed heartbeat goes last so it carries the final FAILURES summary.
 s3_put_heartbeat completed
 
-# --- 6. Unmount backup drive ---
-# Unmount so the drive can spin down and rest between backups.
-# Without this, HA's filesystem monitoring keeps the drive spinning 24/7.
-log "Unmounting backup drive..."
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-"${SCRIPT_DIR}/unmount_backup_drive.sh" 2>&1 | while read line; do log "  $line"; done
+# run_offsite_backup.sh unmounts the drive once this script exits. Unmounting
+# from in here never worked cleanly: the retention cleanup leaves this script's
+# working directory on the drive, and under cron its output was redirected onto
+# the drive, so the umount always found the drive busy.
