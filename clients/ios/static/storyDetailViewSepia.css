@@ -193,6 +193,10 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
     background: rgba(80, 60, 30, 0.1);
     text-shadow: none;
 }
+/* storyDetailViewSepia.css: a story queued in Listen's Up Next shades its + like an active button. */
+.NB-button.NB-share-button a.NB-listen-queue.NB-listen-queued div {
+    background: rgba(80, 60, 30, 0.1);
+}
 
 .NB-newsletter p,
 .NB-newsletter div,
@@ -316,4 +320,13 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
 
 .NB-cluster-locked-upsell {
     background-color: rgba(212, 200, 184, .35);
+}
+
+/* Listen (Classes/Listen/ListenStoryBridge.swift) */
+.NB-listen-highlight {
+    background-color: rgba(214, 150, 40, 0.15);
+    box-shadow: 0 0 0 5px rgba(214, 150, 40, 0.15);
+}
+span.NB-listen-run.NB-listen-highlight {
+    box-shadow: none;
 }

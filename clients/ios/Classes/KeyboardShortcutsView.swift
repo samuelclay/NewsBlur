@@ -134,6 +134,7 @@ private func shortcutSections() -> [ShortcutSection] {
             KeyboardShortcut(keys: ["\u{21E7}", "S"], description: NBLocalization.text("Share story")),
             KeyboardShortcut(keys: ["C"], description: NBLocalization.text("Scroll to comments")),
             KeyboardShortcut(keys: ["T"], description: NBLocalization.text("Open story trainer")),
+            KeyboardShortcut(keys: ["Y"], description: NBLocalization.text("Listen to story")),
         ]),
     ]
 }

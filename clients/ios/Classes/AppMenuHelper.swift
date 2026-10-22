@@ -564,7 +564,16 @@ class AppMenuHelper: NSObject {
                           action: #selector(BaseViewController.showTrain(_:))),
                 UICommand(title: NBLocalization.text("Share This Story…"),
                           image: UIImage(systemName: "square.and.arrow.up"),
-                          action: #selector(BaseViewController.showShare(_:)))
+                          action: #selector(BaseViewController.showShare(_:))),
+                // AppMenuHelper.swift: Y reads the story aloud, like the web's shortcut (Listen/ListenPlayer.swift).
+                UIKeyCommand(title: NBLocalization.text("Listen"),
+                             image: UIImage(systemName: "headphones"),
+                             action: #selector(BaseViewController.toggleListen(_:)),
+                             input: "y", modifierFlags: []),
+                // AppMenuHelper.swift: queues the story on screen in Listen's Up Next (Listen/ListenQueue.swift).
+                UICommand(title: NBLocalization.text("Add to Up Next"),
+                          image: UIImage(systemName: "text.badge.plus"),
+                          action: #selector(BaseViewController.toggleListenQueue(_:)))
             ]),
             UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: NBLocalization.text("Next Unread Story"),
