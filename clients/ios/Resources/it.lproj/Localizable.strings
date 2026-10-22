@@ -181,6 +181,7 @@
 "Choose Language…" = "Scegli lingua…";
 "Choose Story List" = "Scegli l’elenco degli articoli";
 "Choose a Topic" = "Scegli un argomento";
+"Choose a folder or site for this widget." = "Scegli una cartella o un sito per questo widget.";
 "Choose another category to discover more." = "Scegli un’altra categoria per scoprire altro.";
 "Choose another language" = "Scegli un'altra lingua";
 "Choose feeds for your folder" = "Scegli i feed per la tua cartella";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Trascina per modificare la larghezza dell’elenco dei feed e degli articoli.";
 "Edit" = "Modifica";
 "Edit NewsBlur share…" = "Modifica la condivisione di NewsBlur…";
+"Edit this widget to choose a folder or site" = "Modifica questo widget per scegliere una cartella o un sito";
 "Edit your comment" = "Modifica il tuo commento";
 "Edit your reply" = "Modifica la tua risposta";
 "Edited Comment" = "Commento modificato";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Articoli in evidenza";
 "Focus only" = "Solo in evidenza";
 "Folder name" = "Nome della cartella";
+"Folder or site" = "Cartella o sito";
 "Folders" = "Cartelle";
 "Follow" = "Segui";
 "Follow %@" = "Segui %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Scegli quale modello scrive il tuo briefing quotidiano";
 "Place the story list controls above or below the stories" = "Posiziona i controlli dell’elenco degli articoli sopra o sotto gli articoli";
 "Play videos" = "Riproduci video";
+"Please log in to NewsBlur" = "Accedi a NewsBlur";
 "Plum Berry" = "Prugna e frutti di bosco";
 "Positive?" = "Sei sicuro?";
 "Preferences" = "Preferenze";
@@ -978,6 +982,7 @@
 "Top" = "In alto";
 "Top Level" = "Livello superiore";
 "Top stories" = "Articoli principali";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Tieni premuto un widget di NewsBlur oppure fai clic destro su Mac, quindi scegli Modifica widget. Scegli una cartella o un sito per ogni widget.";
 "Train" = "Addestra";
 "Train This Story" = "Addestra questo articolo";
 "Train This Story…" = "Addestra questo articolo…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Impossibile caricare il briefing quotidiano";
 "Unable to load Daily Briefing settings." = "Impossibile caricare le impostazioni del briefing quotidiano.";
 "Unable to load Daily Briefing." = "Impossibile caricare il briefing quotidiano.";
+"Unable to refresh stories" = "Impossibile aggiornare gli articoli";
 "Unable to save Daily Briefing settings." = "Impossibile salvare le impostazioni del briefing quotidiano.";
 "Unable to save notification settings." = "Impossibile salvare le impostazioni delle notifiche.";
 "Understand" = "Capire";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Articoli più letti";
 "Widely covered" = "Ampia copertura";
 "Widget Site Stories" = "Articoli dei siti del widget";
-"Widget Sites" = "Siti del widget";
 "Widget Stories" = "Articoli del widget";
+"Widgets" = "Widget";
 "Working…" = "Elaborazione…";
 "Works on any website" = "Funziona su qualsiasi sito web";
 "Writing style" = "Stile di scrittura";

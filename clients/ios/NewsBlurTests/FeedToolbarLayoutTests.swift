@@ -5,6 +5,78 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_FeedToolbarLayout: XCTestCase {
+    #if targetEnvironment(macCatalyst)
+    func test_macSidebarKeepsAllTextAndOriginalButtonsSeparateFromSelectedFilter() throws {
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let feeds = storyboard.instantiateViewController(identifier: "FeedsViewController") { HorizontalToolbarFeeds(coder: $0) }
+        feeds.loadViewIfNeeded()
+        for width: CGFloat in [250, 280, 320, 400] {
+            for selected in 0..<4 {
+                feeds.intelligenceControl.selectedSegmentIndex = selected
+                feeds.feedViewToolbar.frame.size.width = width
+                feeds.layout(for: .landscapeLeft)
+                XCTAssertEqual(feeds.feedViewToolbar.items?.count, 3,
+                               "FeedToolbarLayoutTests.swift rejects the spacer groups that push filters into overflow.")
+                XCTAssertFalse(try XCTUnwrap(feeds.addBarButton.image).isSymbolImage)
+                XCTAssertFalse(try XCTUnwrap(feeds.settingsBarButton.image).isSymbolImage)
+                if #available(iOS 26.0, *) {
+                    for item in try XCTUnwrap(feeds.feedViewToolbar.items) { XCTAssertFalse(item.sharesBackground) }
+                }
+                let widths = (0..<4).map { feeds.intelligenceControl.widthForSegment(at: $0) }
+                XCTAssertLessThanOrEqual(widths.reduce(0, +), width - 128 + 0.5)
+                XCTAssertNil(feeds.intelligenceControl.titleForSegment(at: 0),
+                             "FeedToolbarLayoutTests.swift avoids UIKit's extra title insets that truncated All into an ellipsis.")
+                let allImage = try XCTUnwrap(feeds.intelligenceControl.imageForSegment(at: 0))
+                XCTAssertEqual(allImage.accessibilityLabel, NBLocalization.text("All"))
+                let allFont = try XCTUnwrap(feeds.intelligenceControl.titleTextAttributes(for: .normal)?[.font] as? UIFont)
+                let allTextWidth = ceil((NBLocalization.text("All") as NSString).size(withAttributes: [.font: allFont]).width)
+                XCTAssertEqual(allImage.size.width, allTextWidth, "All contains text only, with no leading icon space")
+                XCTAssertGreaterThanOrEqual(widths[0], allImage.size.width)
+                for index in 1..<4 {
+                    let image = try XCTUnwrap(feeds.intelligenceControl.imageForSegment(at: index))
+                    XCTAssertNotNil(image.accessibilityLabel)
+                    if index != selected { XCTAssertLessThanOrEqual(image.size.width, 14) }
+                    else {
+                        let title = try XCTUnwrap(image.accessibilityLabel)
+                        let font = try XCTUnwrap(feeds.intelligenceControl.titleTextAttributes(for: .normal)?[.font] as? UIFont)
+                        let titleWidth = (title as NSString).size(withAttributes: [.font: font]).width
+                        XCTAssertGreaterThanOrEqual(image.size.width - 18, ceil(titleWidth),
+                                                    "FeedToolbarLayoutTests.swift keeps the selected filter name visible at the minimum Mac sidebar width.")
+                    }
+                }
+            }
+        }
+    }
+
+    func test_macMinimumSidebarFitsLocalizedFilterNames() throws {
+        let preference = UserDefaults.standard.object(forKey: NBLocalization.preferenceKey)
+        defer { UserDefaults.standard.set(preference, forKey: NBLocalization.preferenceKey) }
+        let storyboard = UIStoryboard(name: "MainInterface", bundle: Bundle(for: FeedsViewController.self))
+        let feeds = storyboard.instantiateViewController(identifier: "FeedsViewController") { HorizontalToolbarFeeds(coder: $0) }
+        feeds.loadViewIfNeeded()
+        for (language, _) in NBLocalization.languages {
+            UserDefaults.standard.set(language, forKey: NBLocalization.preferenceKey)
+            for selected in 0..<4 {
+                feeds.intelligenceControl.selectedSegmentIndex = selected
+                feeds.feedViewToolbar.frame.size.width = 250
+                feeds.layout(for: .landscapeLeft)
+                let widths = (0..<4).map { feeds.intelligenceControl.widthForSegment(at: $0) }
+                XCTAssertLessThanOrEqual(widths.reduce(0, +), 122.5, language)
+                let font = try XCTUnwrap(feeds.intelligenceControl.titleTextAttributes(for: .normal)?[.font] as? UIFont)
+                let allImage = try XCTUnwrap(feeds.intelligenceControl.imageForSegment(at: 0))
+                let all = try XCTUnwrap(allImage.accessibilityLabel)
+                XCTAssertEqual(allImage.size.width, ceil((all as NSString).size(withAttributes: [.font: font]).width), language)
+                XCTAssertGreaterThanOrEqual(widths[0], allImage.size.width, language)
+                if selected > 0 {
+                    let image = try XCTUnwrap(feeds.intelligenceControl.imageForSegment(at: selected))
+                    let title = try XCTUnwrap(image.accessibilityLabel)
+                    XCTAssertGreaterThanOrEqual(image.size.width - 18, ceil((title as NSString).size(withAttributes: [.font: font]).width), language)
+                }
+            }
+        }
+    }
+    #endif
+
     private var liveDuoLayout: (app: NewsBlurAppDelegate, username: String, fullscreen: Bool,
                                 preferenceKey: String, preference: Any?)?
 

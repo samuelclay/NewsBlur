@@ -181,6 +181,7 @@
 "Choose Language…" = "Wybierz język…";
 "Choose Story List" = "Wybierz listę artykułów";
 "Choose a Topic" = "Wybierz temat";
+"Choose a folder or site for this widget." = "Wybierz folder lub witrynę dla tego widżetu.";
 "Choose another category to discover more." = "Wybierz inną kategorię, aby odkryć więcej.";
 "Choose another language" = "Wybierz inny język";
 "Choose feeds for your folder" = "Wybierz kanały do folderu";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Przeciągnij, aby zmienić szerokość listy kanałów i artykułów.";
 "Edit" = "Edytuj";
 "Edit NewsBlur share…" = "Edytuj udostępnienie NewsBlur…";
+"Edit this widget to choose a folder or site" = "Edytuj ten widżet, aby wybrać folder lub witrynę";
 "Edit your comment" = "Edytuj swój komentarz";
 "Edit your reply" = "Edytuj swoją odpowiedź";
 "Edited Comment" = "Edytowany komentarz";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Wyróżnione artykuły";
 "Focus only" = "Tylko wyróżnione";
 "Folder name" = "Nazwa folderu";
+"Folder or site" = "Folder lub witryna";
 "Folders" = "Foldery";
 "Follow" = "Obserwuj";
 "Follow %@" = "Obserwuj %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Wybierz model, który będzie tworzyć codzienny przegląd";
 "Place the story list controls above or below the stories" = "Umieść elementy sterujące listą artykułów nad artykułami lub pod nimi";
 "Play videos" = "Odtwarzaj filmy";
+"Please log in to NewsBlur" = "Zaloguj się do NewsBlur";
 "Plum Berry" = "Śliwkowa jagoda";
 "Positive?" = "Na pewno?";
 "Preferences" = "Preferencje";
@@ -978,6 +982,7 @@
 "Top" = "Góra";
 "Top Level" = "Poziom główny";
 "Top stories" = "Najważniejsze artykuły";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Dotknij i przytrzymaj widżet NewsBlur lub kliknij go prawym przyciskiem myszy na Macu, a następnie wybierz „Edytuj widżet”. Wybierz folder lub witrynę dla każdego widżetu.";
 "Train" = "Trenuj";
 "Train This Story" = "Trenuj dla tego artykułu";
 "Train This Story…" = "Trenuj na podstawie tego artykułu…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Nie można wczytać codziennego przeglądu";
 "Unable to load Daily Briefing settings." = "Nie można wczytać ustawień codziennego przeglądu.";
 "Unable to load Daily Briefing." = "Nie można wczytać codziennego przeglądu.";
+"Unable to refresh stories" = "Nie udało się odświeżyć artykułów";
 "Unable to save Daily Briefing settings." = "Nie można zapisać ustawień codziennego przeglądu.";
 "Unable to save notification settings." = "Nie można zapisać ustawień powiadomień.";
 "Understand" = "Zrozum";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Najczęściej czytane artykuły";
 "Widely covered" = "Szeroko omawiane";
 "Widget Site Stories" = "Artykuły z witryn w widżecie";
-"Widget Sites" = "Witryny w widżecie";
 "Widget Stories" = "Artykuły widżetu";
+"Widgets" = "Widżety";
 "Working…" = "Przetwarzanie…";
 "Works on any website" = "Działa na każdej stronie internetowej";
 "Writing style" = "Styl pisania";

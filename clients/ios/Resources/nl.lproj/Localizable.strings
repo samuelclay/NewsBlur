@@ -181,6 +181,7 @@
 "Choose Language…" = "Taal kiezen…";
 "Choose Story List" = "Artikellijst kiezen";
 "Choose a Topic" = "Kies een onderwerp";
+"Choose a folder or site for this widget." = "Kies een map of site voor deze widget.";
 "Choose another category to discover more." = "Kies een andere categorie om meer te ontdekken.";
 "Choose another language" = "Kies een andere taal";
 "Choose feeds for your folder" = "Kies feeds voor je map";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Versleep om de breedte van de feed- en artikellijst aan te passen.";
 "Edit" = "Bewerken";
 "Edit NewsBlur share…" = "NewsBlur delen bewerken…";
+"Edit this widget to choose a folder or site" = "Bewerk deze widget om een map of site te kiezen";
 "Edit your comment" = "Je reactie bewerken";
 "Edit your reply" = "Je reactie bewerken";
 "Edited Comment" = "Bewerkte reactie";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Focusartikelen";
 "Focus only" = "Alleen focus";
 "Folder name" = "Mapnaam";
+"Folder or site" = "Map of site";
 "Folders" = "Mappen";
 "Follow" = "Volgen";
 "Follow %@" = "Volg %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Kies welk model je dagelijkse briefing schrijft";
 "Place the story list controls above or below the stories" = "Plaats de bedieningselementen voor de artikellijst boven of onder de artikelen";
 "Play videos" = "Video’s afspelen";
+"Please log in to NewsBlur" = "Log in bij NewsBlur";
 "Plum Berry" = "Pruimenbes";
 "Positive?" = "Weet je het zeker?";
 "Preferences" = "Voorkeuren";
@@ -978,6 +982,7 @@
 "Top" = "Boven";
 "Top Level" = "Hoofdniveau";
 "Top stories" = "Topartikelen";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Houd een NewsBlur-widget ingedrukt of klik er met de rechtermuisknop op op een Mac en kies Widget bewerken. Kies voor elke widget een map of site.";
 "Train" = "Trainen";
 "Train This Story" = "Dit artikel trainen";
 "Train This Story…" = "Dit artikel trainen…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Dagelijkse briefing kan niet worden geladen";
 "Unable to load Daily Briefing settings." = "De instellingen voor de dagelijkse briefing kunnen niet worden geladen.";
 "Unable to load Daily Briefing." = "Dagelijkse briefing kan niet worden geladen.";
+"Unable to refresh stories" = "Artikelen vernieuwen lukt niet";
 "Unable to save Daily Briefing settings." = "Kan de instellingen voor dagelijkse briefing niet opslaan.";
 "Unable to save notification settings." = "Meldingsinstellingen kunnen niet worden opgeslagen.";
 "Understand" = "Begrijpen";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Veelgelezen artikelen";
 "Widely covered" = "Veelbesproken";
 "Widget Site Stories" = "Artikelen van widgetsites";
-"Widget Sites" = "Widgetsites";
 "Widget Stories" = "Widgetartikelen";
+"Widgets" = "Widgets";
 "Working…" = "Bezig…";
 "Works on any website" = "Werkt op elke website";
 "Writing style" = "Schrijfstijl";

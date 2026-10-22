@@ -181,6 +181,7 @@
 "Choose Language…" = "选择语言…";
 "Choose Story List" = "选择文章列表";
 "Choose a Topic" = "选择主题";
+"Choose a folder or site for this widget." = "为此小组件选择一个文件夹或网站。";
 "Choose another category to discover more." = "选择其他类别，发现更多内容。";
 "Choose another language" = "选择其他语言";
 "Choose feeds for your folder" = "为文件夹选择订阅源";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "拖动以调整订阅源列表和文章列表的宽度。";
 "Edit" = "编辑";
 "Edit NewsBlur share…" = "编辑 NewsBlur 分享…";
+"Edit this widget to choose a folder or site" = "编辑此小组件以选择文件夹或网站";
 "Edit your comment" = "编辑你的评论";
 "Edit your reply" = "编辑你的回复";
 "Edited Comment" = "已编辑评论";
@@ -348,6 +350,7 @@
 "Focus Stories" = "聚焦文章";
 "Focus only" = "仅聚焦";
 "Folder name" = "文件夹名称";
+"Folder or site" = "文件夹或网站";
 "Folders" = "文件夹";
 "Follow" = "关注";
 "Follow %@" = "关注 %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "选择用于撰写每日简报的模型";
 "Place the story list controls above or below the stories" = "将文章列表控件放在文章上方或下方";
 "Play videos" = "播放视频";
+"Please log in to NewsBlur" = "请登录 NewsBlur";
 "Plum Berry" = "李子莓果";
 "Positive?" = "确定吗？";
 "Preferences" = "偏好设置";
@@ -978,6 +982,7 @@
 "Top" = "顶部";
 "Top Level" = "顶层";
 "Top stories" = "热门文章";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "按住 NewsBlur 小组件，或在 Mac 上右键点击，然后选择“编辑小组件”。为每个小组件选择一个文件夹或网站。";
 "Train" = "训练";
 "Train This Story" = "训练此文章";
 "Train This Story…" = "训练此文章…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "无法加载每日简报";
 "Unable to load Daily Briefing settings." = "无法加载每日简报设置。";
 "Unable to load Daily Briefing." = "无法加载每日简报。";
+"Unable to refresh stories" = "无法刷新文章";
 "Unable to save Daily Briefing settings." = "无法保存每日简报设置。";
 "Unable to save notification settings." = "无法保存通知设置。";
 "Understand" = "了解";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "广受阅读的文章";
 "Widely covered" = "广泛报道";
 "Widget Site Stories" = "小组件网站文章";
-"Widget Sites" = "小组件网站";
 "Widget Stories" = "小组件文章";
+"Widgets" = "小组件";
 "Working…" = "正在处理…";
 "Works on any website" = "适用于任何网站";
 "Writing style" = "写作风格";

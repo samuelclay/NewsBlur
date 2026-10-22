@@ -181,6 +181,7 @@
 "Choose Language…" = "Pilih Bahasa…";
 "Choose Story List" = "Pilih Daftar Artikel";
 "Choose a Topic" = "Pilih Topik";
+"Choose a folder or site for this widget." = "Pilih folder atau situs untuk widget ini.";
 "Choose another category to discover more." = "Pilih kategori lain untuk menemukan lebih banyak.";
 "Choose another language" = "Pilih bahasa lain";
 "Choose feeds for your folder" = "Pilih feed untuk folder Anda";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Seret untuk mengubah lebar daftar feed dan artikel.";
 "Edit" = "Edit";
 "Edit NewsBlur share…" = "Edit berbagi NewsBlur…";
+"Edit this widget to choose a folder or site" = "Edit widget ini untuk memilih folder atau situs";
 "Edit your comment" = "Edit komentar Anda";
 "Edit your reply" = "Edit balasan Anda";
 "Edited Comment" = "Komentar Diedit";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Artikel Fokus";
 "Focus only" = "Fokus saja";
 "Folder name" = "Nama folder";
+"Folder or site" = "Folder atau situs";
 "Folders" = "Folder";
 "Follow" = "Ikuti";
 "Follow %@" = "Ikuti %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Pilih model yang menulis Ringkasan Harian Anda";
 "Place the story list controls above or below the stories" = "Letakkan kontrol daftar artikel di atas atau di bawah artikel";
 "Play videos" = "Putar video";
+"Please log in to NewsBlur" = "Silakan masuk ke NewsBlur";
 "Plum Berry" = "Plum Berry";
 "Positive?" = "Yakin?";
 "Preferences" = "Preferensi";
@@ -978,6 +982,7 @@
 "Top" = "Teratas";
 "Top Level" = "Level Teratas";
 "Top stories" = "Artikel teratas";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Sentuh dan tahan widget NewsBlur, atau klik kanan di Mac, lalu pilih Edit Widget. Pilih folder atau situs untuk setiap widget.";
 "Train" = "Latih";
 "Train This Story" = "Latih Artikel Ini";
 "Train This Story…" = "Latih Artikel Ini…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Tidak dapat memuat Ringkasan Harian";
 "Unable to load Daily Briefing settings." = "Tidak dapat memuat pengaturan Ringkasan Harian.";
 "Unable to load Daily Briefing." = "Tidak dapat memuat Ringkasan Harian.";
+"Unable to refresh stories" = "Tidak dapat memperbarui artikel";
 "Unable to save Daily Briefing settings." = "Tidak dapat menyimpan pengaturan Ringkasan Harian.";
 "Unable to save notification settings." = "Tidak dapat menyimpan pengaturan notifikasi.";
 "Understand" = "Paham";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Artikel yang Banyak Dibaca";
 "Widely covered" = "Banyak diliput";
 "Widget Site Stories" = "Artikel Situs Widget";
-"Widget Sites" = "Situs Widget";
 "Widget Stories" = "Artikel Widget";
+"Widgets" = "Widget";
 "Working…" = "Memproses…";
 "Works on any website" = "Berfungsi di situs web apa pun";
 "Writing style" = "Gaya penulisan";

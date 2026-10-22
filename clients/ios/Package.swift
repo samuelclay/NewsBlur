@@ -65,5 +65,16 @@ let package = Package(
             dependencies: ["FeedSubscriptionURLs", "FeedSubscriptionRequest"],
             path: "Tests/FeedSubscriptionTests"
         ),
+        .target(
+            name: "WidgetTimeline",
+            path: "Widget Extension",
+            exclude: ["Assets.xcassets", "Info.plist", "WidgetExtension.entitlements"],
+            sources: ["WidgetTimeline.swift", "WidgetSource.swift", "WidgetStoryPagination.swift"]
+        ),
+        .testTarget(
+            name: "WidgetTimelineTests",
+            dependencies: ["WidgetTimeline"],
+            path: "Tests/WidgetTimelineTests"
+        ),
     ]
 )

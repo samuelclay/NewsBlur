@@ -298,6 +298,10 @@ class SyncNotifierView: UIView {
         let container = horizontalLayoutView ?? superview
         let safeBounds = superview.convert(container.bounds.inset(by: container.safeAreaInsets), from: container)
 
+        #if targetEnvironment(macCatalyst)
+        // SyncNotifierView.swift uses the sidebar margins supplied by FeedsObjCViewController.m, not the window edge.
+        return safeBounds.insetBy(dx: superview.directionalLayoutMargins.trailing, dy: 0)
+        #else
         guard let window = window else {
             return safeBounds.insetBy(dx: screenEdgePadding, dy: 0)
         }
@@ -313,6 +317,7 @@ class SyncNotifierView: UIView {
         }
 
         return visibleFrame
+        #endif
     }
 
     // SyncNotifierView.swift slides the overlay in from the trailing screen edge.

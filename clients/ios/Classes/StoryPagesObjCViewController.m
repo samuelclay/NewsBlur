@@ -772,14 +772,17 @@
         self.storySelectionRedrawCover.frame = [self.scrollView.superview convertRect:self.scrollView.bounds fromView:self.scrollView];
         self.storySelectionRedrawCover.subviews.firstObject.frame = self.storySelectionRedrawCover.bounds;
     }
-    if (self.storySelectionTransitionHost &&
-        !CGSizeEqualToSize(self.storySelectionTransitionHost.bounds.size, self.scrollView.bounds.size)) {
-        [self finishStorySelectionAnimation];
-    }
+    // StoryPagesObjCViewController.m normalizes Catalyst's fractional Auto Layout frame before checking for a real resize.
     CGRect frame = self.scrollView.frame;
     
     if (frame.size.width != floor(frame.size.width)) {
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
+    }
+
+    if (self.storySelectionTransitionHost &&
+        !CGSizeEqualToSize(self.storySelectionTransitionHost.bounds.size, self.scrollView.bounds.size)) {
+        if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] resizeFinishesSelection host=%.17gx%.17g viewport=%.17gx%.17g", self.storySelectionTransitionHost.bounds.size.width, self.storySelectionTransitionHost.bounds.size.height, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
+        [self finishStorySelectionAnimation];
     }
 
     if (!CGSizeEqualToSize(self.lastScrollViewBoundsSize, self.scrollView.bounds.size)) {
@@ -2761,7 +2764,9 @@
         self.view.window && currentPage.hasStory && !currentPage.webView.hidden &&
         !self.isDraggingScrollview && !self.scrollView.dragging && !self.scrollView.decelerating &&
         currentPage.pageIndex >= 0 && ![currentPage.activeStoryId isEqualToString:hash];
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] selectionAnimation eligible=%d requested=%d openImmediately=%d retained=%d redraw=%d compact=%d reduceMotion=%d window=%d hasStory=%d hidden=%d dragging=%d/%d/%d from=%ld to=%ld", animateSelection, animated, openImmediately, self.retainsDuoSourceArticle, redrawCover != nil, self.isPhoneOrCompact, UIAccessibilityIsReduceMotionEnabled(), self.view.window != nil, currentPage.hasStory, currentPage.webView.hidden, self.isDraggingScrollview, self.scrollView.dragging, self.scrollView.decelerating, (long)currentPage.pageIndex, (long)pageIndex);
     BOOL distantSelection = animateSelection && labs(pageIndex - currentPage.pageIndex) > 1;
+
     BOOL forward = pageIndex > currentPage.pageIndex;
 
     StoryDetailViewController *page = nil;
@@ -2970,6 +2975,7 @@
     UIViewPropertyAnimator *animator = [[UIViewPropertyAnimator alloc] initWithDuration:duration curve:UIViewAnimationCurveEaseInOut animations:^{
         track.transform = CGAffineTransformMakeTranslation(self.isHorizontal ? end : 0, self.isHorizontal ? 0 : end);
     }];
+    if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] animationStarted from=%ld to=%ld duration=%.2f viewport=%.17gx%.17g host=%.17gx%.17g", (long)sourceLocation, (long)location, duration, viewport.width, viewport.height, host.bounds.size.width, host.bounds.size.height);
     self.storySelectionAnimator = animator;
     __weak typeof(self) weakSelf = self;
     __weak UIViewPropertyAnimator *weakAnimator = animator;
@@ -3408,8 +3414,13 @@
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
-    BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
+    BOOL hasMoreUnread = unreadCount > 0 && (nextIndex != -1 || !pageFinished);
     [self.traverseBar updateNextShowDone:!hasMoreUnread];
+    if (!hasMoreUnread) {
+        self.waitingForNextUnreadFromServer = NO;
+        [self.loadingIndicator stopAnimating];
+        self.circularProgressView.hidden = NO;
+    }
     self.verticalNextButton.title = hasMoreUnread ? [NBLocalization text:@"Next unread story"] : [NBLocalization text:@"Done"];
     self.verticalNextButton.accessibilityLabel = self.verticalNextButton.title;
     self.verticalNextButton.image = [UIImage systemImageNamed:hasMoreUnread ? (horizontal ? @"chevron.forward" : @"chevron.down") : @"checkmark"];
@@ -3968,10 +3979,19 @@
 
 - (IBAction)doNextUnreadStory:(id)sender {
     [self cancelPendingStoryPresentationForNavigation];
+    NSInteger unreadCount = [appDelegate unreadCount];
+    // StoryPagesObjCViewController.m honors the displayed Done action even if refreshed counts arrive before its chrome updates.
+    if (self.traverseBar.showsDone || unreadCount <= 0) {
+        self.waitingForNextUnreadFromServer = NO;
+        [self.loadingIndicator stopAnimating];
+        self.circularProgressView.hidden = NO;
+        [self endTouchDown:sender];
+        [appDelegate hideStoryDetailView];
+        return;
+    }
     if ([appDelegate.feedDetailViewController hasRetainedFirstPageStory]) { [self changeToNextPage:sender]; return; }
     FeedDetailViewController *fdvc = appDelegate.feedDetailViewController;
     NSInteger nextLocation = [appDelegate.storiesCollection locationOfNextUnreadStory];
-    NSInteger unreadCount = [appDelegate unreadCount];
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
 
     [self.loadingIndicator stopAnimating];

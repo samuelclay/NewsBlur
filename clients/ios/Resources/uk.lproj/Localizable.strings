@@ -181,6 +181,7 @@
 "Choose Language…" = "Вибрати мову…";
 "Choose Story List" = "Вибрати список статей";
 "Choose a Topic" = "Виберіть тему";
+"Choose a folder or site for this widget." = "Виберіть папку або сайт для цього віджета.";
 "Choose another category to discover more." = "Виберіть іншу категорію, щоб знайти більше.";
 "Choose another language" = "Вибрати іншу мову";
 "Choose feeds for your folder" = "Виберіть стрічки для папки";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Перетягніть, щоб змінити ширину списку стрічок і статей.";
 "Edit" = "Редагувати";
 "Edit NewsBlur share…" = "Редагувати поширення NewsBlur…";
+"Edit this widget to choose a folder or site" = "Відредагуйте цей віджет, щоб вибрати папку або сайт";
 "Edit your comment" = "Редагувати коментар";
 "Edit your reply" = "Редагувати свою відповідь";
 "Edited Comment" = "Відредагований коментар";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Статті у фокусі";
 "Focus only" = "Лише у фокусі";
 "Folder name" = "Назва папки";
+"Folder or site" = "Папка або сайт";
 "Folders" = "Папки";
 "Follow" = "Стежити";
 "Follow %@" = "Стежити за %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Виберіть модель для створення щоденного огляду";
 "Place the story list controls above or below the stories" = "Розмістити елементи керування списком статей над статтями або під ними";
 "Play videos" = "Відтворення відео";
+"Please log in to NewsBlur" = "Увійдіть у NewsBlur";
 "Plum Berry" = "Сливово-ягідний";
 "Positive?" = "Ви впевнені?";
 "Preferences" = "Налаштування";
@@ -978,6 +982,7 @@
 "Top" = "Угорі";
 "Top Level" = "Верхній рівень";
 "Top stories" = "Головні статті";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Натисніть і утримуйте віджет NewsBlur або клацніть його правою кнопкою миші на Mac, а потім виберіть «Редагувати віджет». Виберіть папку або сайт для кожного віджета.";
 "Train" = "Навчити";
 "Train This Story" = "Навчити на цій статті";
 "Train This Story…" = "Навчити на цій статті…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Не вдалося завантажити щоденний огляд";
 "Unable to load Daily Briefing settings." = "Не вдалося завантажити налаштування щоденного огляду.";
 "Unable to load Daily Briefing." = "Не вдалося завантажити щоденний огляд.";
+"Unable to refresh stories" = "Не вдалося оновити статті";
 "Unable to save Daily Briefing settings." = "Не вдалося зберегти налаштування щоденного огляду.";
 "Unable to save notification settings." = "Не вдалося зберегти налаштування сповіщень.";
 "Understand" = "Зрозуміло";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Популярні статті";
 "Widely covered" = "Широко висвітлюється";
 "Widget Site Stories" = "Статті із сайтів віджета";
-"Widget Sites" = "Сайти віджетів";
 "Widget Stories" = "Статті віджета";
+"Widgets" = "Віджети";
 "Working…" = "Виконується…";
 "Works on any website" = "Працює на будь-якому сайті";
 "Writing style" = "Стиль письма";

@@ -181,6 +181,7 @@
 "Choose Language…" = "اختيار اللغة…";
 "Choose Story List" = "اختر قائمة القصص";
 "Choose a Topic" = "اختر موضوعًا";
+"Choose a folder or site for this widget." = "اختر مجلدًا أو موقعًا لهذه الأداة.";
 "Choose another category to discover more." = "اختر فئة أخرى لاكتشاف المزيد.";
 "Choose another language" = "اختر لغة أخرى";
 "Choose feeds for your folder" = "اختر الخلاصات لمجلدك";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "اسحب لتغيير عرض قائمة الخلاصات والقصص.";
 "Edit" = "تعديل";
 "Edit NewsBlur share…" = "تعديل مشاركة NewsBlur…";
+"Edit this widget to choose a folder or site" = "عدّل هذه الأداة لاختيار مجلد أو موقع";
 "Edit your comment" = "تعديل تعليقك";
 "Edit your reply" = "تعديل ردك";
 "Edited Comment" = "تعليق مُعدّل";
@@ -348,6 +350,7 @@
 "Focus Stories" = "قصص التركيز";
 "Focus only" = "التركيز فقط";
 "Folder name" = "اسم المجلد";
+"Folder or site" = "مجلد أو موقع";
 "Folders" = "المجلدات";
 "Follow" = "متابعة";
 "Follow %@" = "تابع %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
 "Play videos" = "تشغيل الفيديوهات";
+"Please log in to NewsBlur" = "يُرجى تسجيل الدخول إلى NewsBlur";
 "Plum Berry" = "توت برقوقي";
 "Positive?" = "هل أنت متأكد؟";
 "Preferences" = "التفضيلات";
@@ -978,6 +982,7 @@
 "Top" = "الأعلى";
 "Top Level" = "المستوى الأعلى";
 "Top stories" = "أهم القصص";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "المس أداة NewsBlur مع الاستمرار، أو انقر عليها بزر الفأرة الأيمن على Mac، ثم اختر «تعديل الأداة». اختر مجلدًا أو موقعًا لكل أداة.";
 "Train" = "تدريب";
 "Train This Story" = "درّب على هذه القصة";
 "Train This Story…" = "درّب على هذه القصة…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "تعذّر تحميل الموجز اليومي";
 "Unable to load Daily Briefing settings." = "تعذّر تحميل إعدادات الموجز اليومي.";
 "Unable to load Daily Briefing." = "تعذّر تحميل الموجز اليومي.";
+"Unable to refresh stories" = "تعذّر تحديث القصص";
 "Unable to save Daily Briefing settings." = "تعذّر حفظ إعدادات الموجز اليومي.";
 "Unable to save notification settings." = "تعذّر حفظ إعدادات الإشعارات.";
 "Understand" = "فهم";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "القصص الأكثر قراءة";
 "Widely covered" = "تغطية واسعة";
 "Widget Site Stories" = "قصص مواقع الأداة";
-"Widget Sites" = "مواقع الأدوات";
 "Widget Stories" = "قصص الأداة المصغّرة";
+"Widgets" = "الأدوات";
 "Working…" = "جارٍ العمل…";
 "Works on any website" = "يعمل على أي موقع";
 "Writing style" = "أسلوب الكتابة";

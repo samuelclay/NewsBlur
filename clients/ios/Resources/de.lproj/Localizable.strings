@@ -181,6 +181,7 @@
 "Choose Language…" = "Sprache auswählen…";
 "Choose Story List" = "Artikelliste auswählen";
 "Choose a Topic" = "Thema auswählen";
+"Choose a folder or site for this widget." = "Wähle einen Ordner oder eine Website für dieses Widget aus.";
 "Choose another category to discover more." = "Wähle eine andere Kategorie aus, um mehr zu entdecken.";
 "Choose another language" = "Andere Sprache auswählen";
 "Choose feeds for your folder" = "Feeds für deinen Ordner auswählen";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Ziehe, um die Breite der Feed- und Artikelliste zu ändern.";
 "Edit" = "Bearbeiten";
 "Edit NewsBlur share…" = "NewsBlur-Freigabe bearbeiten …";
+"Edit this widget to choose a folder or site" = "Bearbeite dieses Widget, um einen Ordner oder eine Website auszuwählen";
 "Edit your comment" = "Deinen Kommentar bearbeiten";
 "Edit your reply" = "Antwort bearbeiten";
 "Edited Comment" = "Kommentar bearbeitet";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Fokus-Artikel";
 "Focus only" = "Nur Fokus";
 "Folder name" = "Ordnername";
+"Folder or site" = "Ordner oder Website";
 "Folders" = "Ordner";
 "Follow" = "Folgen";
 "Follow %@" = "%@ folgen";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Wähle aus, welches Modell dein Tagesbriefing erstellt";
 "Place the story list controls above or below the stories" = "Steuerelemente der Artikelliste oberhalb oder unterhalb der Artikel platzieren";
 "Play videos" = "Videos abspielen";
+"Please log in to NewsBlur" = "Bitte melde dich bei NewsBlur an";
 "Plum Berry" = "Pflaumenbeere";
 "Positive?" = "Bist du sicher?";
 "Preferences" = "Einstellungen";
@@ -978,6 +982,7 @@
 "Top" = "Oben";
 "Top Level" = "Oberste Ebene";
 "Top stories" = "Top-Artikel";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Berühre und halte ein NewsBlur-Widget gedrückt oder klicke auf dem Mac mit der rechten Maustaste darauf und wähle „Widget bearbeiten“. Wähle für jedes Widget einen Ordner oder eine Website aus.";
 "Train" = "Trainieren";
 "Train This Story" = "Diesen Artikel trainieren";
 "Train This Story…" = "Diesen Artikel trainieren …";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Tagesbriefing kann nicht geladen werden";
 "Unable to load Daily Briefing settings." = "Die Einstellungen für das Tagesbriefing konnten nicht geladen werden.";
 "Unable to load Daily Briefing." = "Das Tagesbriefing konnte nicht geladen werden.";
+"Unable to refresh stories" = "Artikel konnten nicht aktualisiert werden";
 "Unable to save Daily Briefing settings." = "Die Einstellungen des Tagesbriefings konnten nicht gespeichert werden.";
 "Unable to save notification settings." = "Benachrichtigungseinstellungen konnten nicht gespeichert werden.";
 "Understand" = "Verstehen";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Viel gelesene Artikel";
 "Widely covered" = "Weit verbreitet";
 "Widget Site Stories" = "Artikel der Widget-Websites";
-"Widget Sites" = "Widget-Websites";
 "Widget Stories" = "Widget-Artikel";
+"Widgets" = "Widgets";
 "Working…" = "Wird bearbeitet …";
 "Works on any website" = "Funktioniert auf jeder Website";
 "Writing style" = "Schreibstil";

@@ -5,11 +5,11 @@ import ObjectiveC.runtime
 
 @objcMembers
 final class ReaderPerformance: NSObject {
-    // ReaderPerformance.swift records presentation gates only for the isolated UI fixture process.
+    // ReaderPerformance.swift records presentation gates for UI fixtures or an explicitly traced reader session.
     static let recordsUITestPresentation = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-testing") || recordsStorySelection
 
     private static var recordsStorySelection: Bool {
-#if targetEnvironment(simulator)
+#if targetEnvironment(simulator) || targetEnvironment(macCatalyst)
         ProcessInfo.processInfo.arguments.contains("-newsblur-story-selection-trace")
 #else
         false
@@ -42,7 +42,7 @@ final class ReaderPerformance: NSObject {
     }
 
     private static func installStorySelectionTraceIfRequested() {
-#if targetEnvironment(simulator)
+#if targetEnvironment(simulator) || targetEnvironment(macCatalyst)
         guard recordsStorySelection, storySelectionObservation == nil,
               let app = NewsBlurAppDelegate.shared else { return }
         // ReaderPerformance.swift observes the real setter without replacing it or installing account fixtures.

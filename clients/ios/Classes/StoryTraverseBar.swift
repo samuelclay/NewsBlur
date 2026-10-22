@@ -22,6 +22,7 @@ class StoryTraverseBar: NSObject {
     let sendButton = UIButton(type: .system)
     let previousButton = UIButton(type: .system)
     let nextButton = UIButton(type: .system)
+    private(set) var showsDone = false
 
     private(set) var circularProgressView: THCircularProgressView!
     let loadingIndicator: UIActivityIndicatorView = {
@@ -254,12 +255,9 @@ class StoryTraverseBar: NSObject {
         nextConfig.title = NBLocalization.text("Next")
         nextConfig.titleTextAttributesTransformer = fontTransformer()
         #if targetEnvironment(macCatalyst)
-        // UIButton.Configuration ignores layout on Catalyst (contentInsets,
-        // contentHorizontalAlignment, imagePlacement all broken). Keep a Configuration
-        // with invisible text so the button sizes properly; manual label/chevron provide
-        // the visible content positioned via constraints.
-        nextConfig.title = NBLocalization.text("Next")
-        nextConfig.baseForegroundColor = .clear
+        // StoryTraverseBar.swift uses the constrained manual label on Catalyst. A transparent native title
+        // becomes visible again when UIKit applies its disabled appearance, so omit it entirely.
+        nextConfig.title = nil
         nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6 + macPadding, bottom: 0, trailing: 14 + macPadding)
         nextButton.configuration = nextConfig
         nextButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -442,6 +440,7 @@ class StoryTraverseBar: NSObject {
     }
 
     func updateNextShowDone(_ showDone: Bool) {
+        showsDone = showDone
         let tint = ThemeManager.shared?.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
         nextButton.accessibilityLabel = showDone ? NBLocalization.text("Done with stories") : NBLocalization.text("Next story")
 

@@ -181,6 +181,7 @@
 "Choose Language…" = "Choisir la langue…";
 "Choose Story List" = "Choisir la liste des articles";
 "Choose a Topic" = "Choisir un sujet";
+"Choose a folder or site for this widget." = "Choisissez un dossier ou un site pour ce widget.";
 "Choose another category to discover more." = "Choisissez une autre catégorie pour en découvrir davantage.";
 "Choose another language" = "Choisir une autre langue";
 "Choose feeds for your folder" = "Choisissez des flux pour votre dossier";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Faites glisser pour modifier la largeur de la liste des flux et des articles.";
 "Edit" = "Modifier";
 "Edit NewsBlur share…" = "Modifier le partage NewsBlur…";
+"Edit this widget to choose a folder or site" = "Modifier ce widget pour choisir un dossier ou un site";
 "Edit your comment" = "Modifier votre commentaire";
 "Edit your reply" = "Modifier votre réponse";
 "Edited Comment" = "Commentaire modifié";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Articles prioritaires";
 "Focus only" = "Prioritaires uniquement";
 "Folder name" = "Nom du dossier";
+"Folder or site" = "Dossier ou site";
 "Folders" = "Dossiers";
 "Follow" = "Suivre";
 "Follow %@" = "Suivre %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Choisissez le modèle qui rédige votre briefing quotidien";
 "Place the story list controls above or below the stories" = "Placer les commandes de la liste des articles au-dessus ou en dessous des articles";
 "Play videos" = "Lire les vidéos";
+"Please log in to NewsBlur" = "Veuillez vous connecter à NewsBlur";
 "Plum Berry" = "Baie de prunier";
 "Positive?" = "Vous êtes sûr ?";
 "Preferences" = "Préférences";
@@ -978,6 +982,7 @@
 "Top" = "En haut";
 "Top Level" = "Niveau supérieur";
 "Top stories" = "Articles à la une";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touchez longuement un widget NewsBlur, ou faites un clic droit dessus sur Mac, puis choisissez « Modifier le widget ». Choisissez un dossier ou un site pour chaque widget.";
 "Train" = "Entraîner";
 "Train This Story" = "Entraîner sur cet article";
 "Train This Story…" = "Entraîner sur cet article…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Impossible de charger le briefing quotidien";
 "Unable to load Daily Briefing settings." = "Impossible de charger les paramètres du briefing quotidien.";
 "Unable to load Daily Briefing." = "Impossible de charger le briefing quotidien.";
+"Unable to refresh stories" = "Impossible d’actualiser les articles";
 "Unable to save Daily Briefing settings." = "Impossible d’enregistrer les paramètres du briefing quotidien.";
 "Unable to save notification settings." = "Impossible d’enregistrer les paramètres de notification.";
 "Understand" = "Comprendre";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Articles les plus lus";
 "Widely covered" = "Largement relayés";
 "Widget Site Stories" = "Articles des sites du widget";
-"Widget Sites" = "Sites du widget";
 "Widget Stories" = "Articles du widget";
+"Widgets" = "Widgets";
 "Working…" = "En cours…";
 "Works on any website" = "Fonctionne sur n’importe quel site web";
 "Writing style" = "Style d’écriture";

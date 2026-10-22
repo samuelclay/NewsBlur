@@ -181,6 +181,7 @@
 "Choose Language…" = "Выбрать язык…";
 "Choose Story List" = "Выбрать список статей";
 "Choose a Topic" = "Выберите тему";
+"Choose a folder or site for this widget." = "Выберите папку или сайт для этого виджета.";
 "Choose another category to discover more." = "Выберите другую категорию, чтобы найти больше.";
 "Choose another language" = "Выбрать другой язык";
 "Choose feeds for your folder" = "Выберите ленты для папки";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Перетащите, чтобы изменить ширину списка лент и статей.";
 "Edit" = "Изменить";
 "Edit NewsBlur share…" = "Изменить публикацию в NewsBlur…";
+"Edit this widget to choose a folder or site" = "Измените этот виджет, чтобы выбрать папку или сайт";
 "Edit your comment" = "Изменить комментарий";
 "Edit your reply" = "Изменить свой ответ";
 "Edited Comment" = "Комментарий отредактирован";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Статьи в фокусе";
 "Focus only" = "Только фокус";
 "Folder name" = "Название папки";
+"Folder or site" = "Папка или сайт";
 "Folders" = "Папки";
 "Follow" = "Подписаться";
 "Follow %@" = "Подписаться на %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "Выберите модель для создания ежедневной сводки";
 "Place the story list controls above or below the stories" = "Разместить панель управления списком статей над статьями или под ними";
 "Play videos" = "Воспроизведение видео";
+"Please log in to NewsBlur" = "Войдите в NewsBlur";
 "Plum Berry" = "Сливово-ягодный";
 "Positive?" = "Вы уверены?";
 "Preferences" = "Настройки";
@@ -978,6 +982,7 @@
 "Top" = "Верх";
 "Top Level" = "Верхний уровень";
 "Top stories" = "Главные новости";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Нажмите и удерживайте виджет NewsBlur или щёлкните по нему правой кнопкой мыши на Mac, затем выберите «Изменить виджет». Выберите папку или сайт для каждого виджета.";
 "Train" = "Обучить";
 "Train This Story" = "Обучить на этой статье";
 "Train This Story…" = "Обучить на этой статье…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "Не удалось загрузить ежедневную сводку";
 "Unable to load Daily Briefing settings." = "Не удалось загрузить настройки ежедневной сводки.";
 "Unable to load Daily Briefing." = "Не удалось загрузить ежедневную сводку.";
+"Unable to refresh stories" = "Не удалось обновить статьи";
 "Unable to save Daily Briefing settings." = "Не удалось сохранить настройки ежедневной сводки.";
 "Unable to save notification settings." = "Не удалось сохранить настройки уведомлений.";
 "Understand" = "Понятно";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "Популярные статьи";
 "Widely covered" = "Широко освещается";
 "Widget Site Stories" = "Статьи сайтов из виджета";
-"Widget Sites" = "Сайты для виджета";
 "Widget Stories" = "Статьи виджета";
+"Widgets" = "Виджеты";
 "Working…" = "Выполняется…";
 "Works on any website" = "Работает на любом сайте";
 "Writing style" = "Стиль письма";

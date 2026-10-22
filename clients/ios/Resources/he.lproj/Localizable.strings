@@ -181,6 +181,7 @@
 "Choose Language…" = "בחירת שפה…";
 "Choose Story List" = "בחירת רשימת כתבות";
 "Choose a Topic" = "בחירת נושא";
+"Choose a folder or site for this widget." = "בחרו תיקייה או אתר לווידג׳ט הזה.";
 "Choose another category to discover more." = "בחר קטגוריה אחרת כדי לגלות עוד.";
 "Choose another language" = "בחרו שפה אחרת";
 "Choose feeds for your folder" = "בחירת פידים לתיקייה";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "גררו כדי לשנות את רוחב רשימת הפידים והכתבות.";
 "Edit" = "עריכה";
 "Edit NewsBlur share…" = "עריכת שיתוף NewsBlur…";
+"Edit this widget to choose a folder or site" = "עריכת הווידג׳ט הזה כדי לבחור תיקייה או אתר";
 "Edit your comment" = "עריכת התגובה שלך";
 "Edit your reply" = "עריכת התשובה שלך";
 "Edited Comment" = "תגובה שנערכה";
@@ -348,6 +350,7 @@
 "Focus Stories" = "כתבות במיקוד";
 "Focus only" = "מיקוד בלבד";
 "Folder name" = "שם התיקייה";
+"Folder or site" = "תיקייה או אתר";
 "Folders" = "תיקיות";
 "Follow" = "עקוב";
 "Follow %@" = "לעקוב אחרי %@";
@@ -670,6 +673,7 @@
 "Pick which model writes your Daily Briefing" = "בחרו איזה מודל יכתוב את התדריך היומי שלכם";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
 "Play videos" = "הפעלת סרטונים";
+"Please log in to NewsBlur" = "יש להתחבר אל NewsBlur";
 "Plum Berry" = "שזיף ופירות יער";
 "Positive?" = "להמשיך?";
 "Preferences" = "העדפות";
@@ -978,6 +982,7 @@
 "Top" = "למעלה";
 "Top Level" = "רמה עליונה";
 "Top stories" = "כתבות מובילות";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "לחצו לחיצה ממושכת על ווידג׳ט של NewsBlur, או לחצו עליו בקליק ימני ב-Mac, ואז בחרו ״עריכת ווידג׳ט״. בחרו תיקייה או אתר לכל ווידג׳ט.";
 "Train" = "אימון";
 "Train This Story" = "אימון על הכתבה הזו";
 "Train This Story…" = "אימון על הכתבה הזו…";
@@ -1014,6 +1019,7 @@
 "Unable to load Daily Briefing" = "לא ניתן לטעון את התדריך היומי";
 "Unable to load Daily Briefing settings." = "לא ניתן לטעון את הגדרות התדריך היומי.";
 "Unable to load Daily Briefing." = "לא ניתן לטעון את התדריך היומי.";
+"Unable to refresh stories" = "לא ניתן לרענן את הכתבות";
 "Unable to save Daily Briefing settings." = "לא ניתן לשמור את הגדרות התדריך היומי.";
 "Unable to save notification settings." = "לא ניתן לשמור את הגדרות ההתראות.";
 "Understand" = "הבנתי";
@@ -1073,8 +1079,8 @@
 "Widely Read Stories" = "כתבות שנקראו רבות";
 "Widely covered" = "סיקור נרחב";
 "Widget Site Stories" = "כתבות מאתרי הווידג׳ט";
-"Widget Sites" = "אתרי ווידג'טים";
 "Widget Stories" = "כתבות בווידג'ט";
+"Widgets" = "ווידג׳טים";
 "Working…" = "בעבודה…";
 "Works on any website" = "פועל בכל אתר";
 "Writing style" = "סגנון כתיבה";
