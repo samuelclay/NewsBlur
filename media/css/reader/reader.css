@@ -17337,6 +17337,17 @@ h5.NB-classifier-section-header {
     background-size: 36px;
 }
 
+.NB-module-premium-archive-icon.NB-10 {
+    background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
+    background-size: 36px;
+}
+
+.NB-module-premium-archive-icon.NB-11 {
+    background: transparent url('/media/embed/icons/nouns/listen.svg') no-repeat 0 0;
+    background-size: 36px;
+    filter: brightness(0.5);
+}
+
 .NB-module-premium-reason {
     padding: 0 24px;
 }

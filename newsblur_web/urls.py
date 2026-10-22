@@ -97,6 +97,7 @@ urlpatterns = [
         name="feature-intelligence-training",
     ),
     url(r"^features/ask-ai/?$", static_views.feature_ask_ai, name="feature-ask-ai"),
+    url(r"^features/listen/?$", static_views.feature_listen, name="feature-listen"),
     url(r"^features/web-feeds/?$", static_views.feature_web_feeds, name="feature-web-feeds"),
     url(r"^features/newsletters/?$", static_views.feature_newsletters, name="feature-newsletters"),
     url(r"^features/search/?$", static_views.feature_search, name="feature-search"),
