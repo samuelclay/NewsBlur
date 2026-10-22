@@ -4,6 +4,8 @@
 
 For each release, rewrite the English listing, release notes, and product copy first. Translate all supported languages in parallel using `localization/glossaries/`, then have different agents review the translations against English. Preserve NewsBlur, actual feature availability, account qualifications, subscription disclosures, and the terms/privacy URLs. Adapt short fields naturally; never truncate text to pass a limit. Inventory live subscriptions and groups before changing the English product IDs. Storefront screenshots are separate assets and are not translated by these scripts.
 
+Screenshots and preview videos under `artwork/` live in S3, not git, so a fresh checkout has only their metadata. Run `make assets-pull` before working with them, and `make assets-push` after adding or changing any, then commit the updated `artwork.manifest.json` (utils/repo_assets.py).
+
 Validate and export with Ruby's standard library:
 
 ```sh
