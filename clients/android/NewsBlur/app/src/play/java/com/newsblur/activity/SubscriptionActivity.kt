@@ -149,6 +149,7 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.archive_export_trained_stories, R.drawable.ic_cloud_upload, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.archive_stories_unread_forever, R.drawable.ic_calendar, R.color.premium_feature_red),
                     SubscriptionFeature(R.string.archive_ask_ai, android.R.drawable.ic_menu_help, R.color.premium_feature_ai),
+                    SubscriptionFeature(R.string.archive_listen, R.drawable.ic_listen, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.archive_filter_by_date_range, R.drawable.ic_calendar, R.color.premium_feature_pink),
                     SubscriptionFeature(R.string.archive_train_folder, R.drawable.ic_folder, R.color.premium_feature_mint),
                     SubscriptionFeature(R.string.archive_train_globally, R.drawable.ic_world, R.color.premium_feature_indigo),

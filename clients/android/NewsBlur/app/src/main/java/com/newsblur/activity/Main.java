@@ -79,6 +79,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private FeedSelectorFragment feedSelectorFragment;
     private boolean wasSwipeEnabled = false;
     private ActivityMainBinding binding;
+    private int listenMiniPlayerInset = 0;
     private MainContextMenuDelegate contextMenuDelegate;
     private KeyboardManager keyboardManager;
     private final NumberFormat unreadCountFormatter = NumberFormat.getIntegerInstance();
@@ -149,14 +150,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         binding.bottomToolbar.setBackground(com.newsblur.view.FloatingToolbarSurface.background(this, prefsRepo.getResolvedTheme(this)));
         fitBottomToolbarToContentOnTablets();
         binding.bottomToolbar.bringToFront();
-        binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            View list = findViewById(R.id.folderfeed_list);
-            if (list != null) {
-                int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8);
-                if (list.getPaddingBottom() != inset) list.setPaddingRelative(list.getPaddingStart(), list.getPaddingTop(), list.getPaddingEnd(), inset);
-                if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
-            }
-        });
+        binding.bottomToolbar.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> applyFeedListBottomInset());
 
         // Check whether it's a shortcut intent
         String shortcutExtra = getIntent().getStringExtra(ShortcutUtils.SHORTCUT_EXTRA);
@@ -236,6 +230,37 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     // Main.java's floating toolbar spans a phone's width, but on a tablet that stretches the add
     // button, filter, and settings button across the screen, so there it hugs its contents, centered.
+    // Main.java keeps the last feeds scrollable above the floating toolbar and Listen's mini player.
+    private void applyFeedListBottomInset() {
+        View list = findViewById(R.id.folderfeed_list);
+        if (list == null || binding == null) return;
+        int inset = binding.getRoot().getHeight() - binding.bottomToolbar.getTop() + UIUtils.dp2px(this, 8) + listenMiniPlayerInset;
+        if (list.getPaddingBottom() != inset) list.setPaddingRelative(list.getPaddingStart(), list.getPaddingTop(), list.getPaddingEnd(), inset);
+        if (list instanceof android.view.ViewGroup) ((android.view.ViewGroup) list).setClipToPadding(false);
+    }
+
+    @Override
+    protected boolean showsListenMiniPlayer() {
+        return true;
+    }
+
+    @Override
+    protected View listenMiniPlayerAnchor() {
+        return binding != null ? binding.bottomToolbar : null;
+    }
+
+    @Override
+    protected boolean showsListenMiniPlayerInThisPane() {
+        // Main.java leaves the mini player to the story titles or reader beside it in a tablet split.
+        return !StorySplitView.isInSplit(this);
+    }
+
+    @Override
+    protected void onListenMiniPlayerInsetChanged(int insetPx) {
+        listenMiniPlayerInset = insetPx;
+        applyFeedListBottomInset();
+    }
+
     private void fitBottomToolbarToContentOnTablets() {
         if (getResources().getConfiguration().smallestScreenWidthDp < COMPACT_TOOLBAR_MIN_WIDTH_DP) return;
         android.view.ViewGroup.LayoutParams toolbarParams = binding.bottomToolbar.getLayoutParams();

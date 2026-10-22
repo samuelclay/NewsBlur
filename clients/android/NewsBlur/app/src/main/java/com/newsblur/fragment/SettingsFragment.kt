@@ -30,8 +30,13 @@ import com.newsblur.compose.buildSettingsUiState
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenVoiceSettingsFragment
+import com.newsblur.listen.ListenVoiceSettingsViewModel
 import com.newsblur.network.UserApi
 import com.newsblur.preference.ClusterMarkReadPreference
+import com.newsblur.preference.ListenPrefKeys
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
@@ -42,6 +47,7 @@ import com.newsblur.util.LanguageSettings
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryClusterDisplayDecision
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,6 +72,12 @@ class SettingsFragment : Fragment() {
 
     @Inject
     lateinit var userApi: UserApi
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
+
+    @Inject
+    lateinit var listenManager: ListenManager
 
     private var uiState by mutableStateOf(SettingsUiState())
     private var clusterMarkReadSaving = false
@@ -123,6 +135,7 @@ class SettingsFragment : Fragment() {
                         onAppIconSelected = ::updateAppIcon,
                         onAppIconUpgrade = ::showSubscription,
                         onDeleteOfflineStories = ::deleteOfflineStories,
+                        onListenVoices = ::openListenVoices,
                     )
                 }
             }
@@ -160,6 +173,12 @@ class SettingsFragment : Fragment() {
             handleNotificationsPreferenceChange(value)
             return
         }
+        // SettingsFragment.kt syncs story buttons and Listen choices with the web and iOS.
+        if (key in StoryButton.prefKeys || key in ListenPrefKeys.booleans) {
+            listenPreferences.saveInBackground(mapOf(key to value))
+            refreshUiState()
+            return
+        }
         prefsRepo.putBoolean(key, value)
         refreshUiState()
     }
@@ -170,6 +189,10 @@ class SettingsFragment : Fragment() {
     ) {
         if (key == PrefConstants.STORY_MARK_READ_BEHAVIOR) {
             prefsRepo.setMarkStoryReadBehavior(MarkStoryReadBehavior.valueOf(value))
+        } else if (key == ListenPrefKeys.SPEED) {
+            value.toDoubleOrNull()?.let(listenManager::setSpeed)
+        } else if (key == ListenPrefKeys.DELIVERY) {
+            listenPreferences.saveInBackground(mapOf(key to value))
         } else {
             sharedPreferences.edit { putString(key, value) }
         }
@@ -219,6 +242,14 @@ class SettingsFragment : Fragment() {
                 .makeText(requireContext(), R.string.settings_app_icon_save_failed, Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+
+    private fun openListenVoices() {
+        ListenVoiceSettingsFragment.show(
+            parentFragmentManager,
+            storyHash = null,
+            language = ListenVoiceSettingsViewModel.languageFor(java.util.Locale.getDefault()),
+        )
     }
 
     private fun showSubscription() {

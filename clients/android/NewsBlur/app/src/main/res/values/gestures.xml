@@ -12,6 +12,7 @@
     <string name="gesture_share">Share</string>
     <string name="gesture_toggle_save">Save / unsave</string>
     <string name="gesture_ask_ai">Ask AI</string>
+    <string name="gesture_listen">Listen</string>
     <string name="gesture_train">Train intelligence</string>
     <string name="gesture_notifications">Notifications</string>
     <string name="gesture_read_range">Choose how far back to mark read</string>
