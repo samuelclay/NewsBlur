@@ -1,0 +1,100 @@
+{
+  "version": "16.0",
+  "build": "348",
+  "platform": "iOS",
+  "source_commit": "208c20af09fb858e958f1d5e9e2d01a357f13c10",
+  "source_tag": "iOS_16.0_348",
+  "toolchain": "Xcode 27.0 (27A266a)",
+  "archive": "/tmp/NewsBlur-iOS-16.0-348.xcarchive",
+  "upload": "Succeeded",
+  "processing": "Complete; selected build 348",
+  "build_id": "7ef65bc6-264b-41af-9855-bf7fea264122",
+  "automatic_release": true,
+  "app_executable_sha256": "e13c4ef428b3db5c0e7eeb20e4816a2aeb05befb82e0a8576a47c439d3bedcc6",
+  "previous_submission": "7d9b11c7-4321-47a3-a56c-57c0c21edb67",
+  "state": "WAITING_FOR_REVIEW",
+  "publicly_available": false,
+  "localization": {
+    "languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "pt-BR",
+      "it",
+      "nl",
+      "pl",
+      "tr",
+      "ru",
+      "uk",
+      "ar",
+      "he",
+      "hi",
+      "id",
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "zh-Hans",
+      "zh-Hant"
+    ],
+    "independent_reviews": [
+      "review-western.json",
+      "review-central.json",
+      "review-asian.json"
+    ],
+    "version_fields_verified": [
+      "promotionalText",
+      "description",
+      "whatsNew",
+      "keywords",
+      "supportUrl",
+      "marketingUrl"
+    ],
+    "app_info_verified": [
+      "name",
+      "subtitle"
+    ],
+    "products_verified": [
+      "newsblur_premium_auto_renew_36",
+      "newsblur_premium_archive",
+      "newsblur_premium_pro",
+      "20421002"
+    ],
+    "unsupported": []
+  },
+  "artifacts": {
+    "clients/store/releases/16.0/reviews/ios-348/review-asian.json": "5d891f68b46cedb508c8d5742537cf3da5dffcee1895ed3f13ddb628e1937dd6",
+    "clients/store/releases/16.0/reviews/ios-348/review-central.json": "4229dbfd1ca1c8ea9fb42a460c216ba579dc2b24e4955d192dee96c551b46973",
+    "clients/store/releases/16.0/reviews/ios-348/review-western.json": "6e5f855f17049609eab80353942cfa2de055442644c37d7eb21062f3f9833ad3",
+    "clients/store/releases/16.0/reviews/ios-348/translate-asian.json": "d8203890f1621cae9db4f2ec6980045557a1f4f53f2a2e9bf50779324977fc8b",
+    "clients/store/releases/16.0/reviews/ios-348/translate-central.json": "bbcbd52beac712d2d204f63f5d3e01095f0374bbf07394480be3326913b4974f",
+    "clients/store/releases/16.0/reviews/ios-348/translate-western.json": "55ebd1b34e16e924b5b8f4bb398c68f13ae1d0d4f785f6437d9dbc68fd24c9b2"
+  },
+  "submitted_at": "2026-10-21T21:50:00-07:00",
+  "submission_id": "81935f12-aa91-4120-9ab6-c9ea6c34ef8f",
+  "submission_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/81935f12-aa91-4120-9ab6-c9ea6c34ef8f",
+  "items": [
+    {
+      "name": "iOS 16.0 (348)",
+      "state": "WAITING_FOR_REVIEW"
+    },
+    {
+      "name": "NewsBlur Premium Subscription 36",
+      "state": "WAITING_FOR_REVIEW"
+    },
+    {
+      "name": "NewsBlur Premium Archive Subscription",
+      "state": "WAITING_FOR_REVIEW"
+    },
+    {
+      "name": "NewsBlur Premium Pro Subscription",
+      "state": "WAITING_FOR_REVIEW"
+    },
+    {
+      "name": "newsblur_premium_subscription",
+      "state": "WAITING_FOR_REVIEW"
+    }
+  ],
+  "macos_submission": "Existing macOS 16.0 build 348 submission unchanged, Waiting for Review"
+}
