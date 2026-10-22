@@ -6215,3 +6215,253 @@ a.mention, a.mention-group {
 .NB-dark .NB-modal-email .NB-modal-emailclient {
     color: #8DAAC6;
 }
+
+/* Listen (apps/listen): story button, media player, follow-along highlight and voice settings */
+.NB-dark .NB-sideoption.NB-feed-story-listen.NB-listen-current {
+    background-color: #303739;
+}
+
+.NB-dark .NB-sideoption.NB-feed-story-listen.NB-listen-current .NB-sideoption-title {
+    color: #8fc46b;
+}
+
+.NB-dark .NB-sideoption-listen-preview-pill {
+    background-color: #7462d8;
+}
+
+.NB-dark .NB-media-player-icon.NB-media-player-icon-listen {
+    background: linear-gradient(135deg, #6656c4, #4b3ba8);
+}
+
+.NB-dark .NB-media-player-listen-voice {
+    color: #8a8a8a;
+}
+
+.NB-dark .NB-media-player-listen-voice:hover {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-media-player-listen-voice-settings svg {
+    fill: #b0b0b0;
+}
+
+.NB-dark .NB-media-player-listen-voice-settings:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-media-player-listen-banner {
+    color: #b0b0b0;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-media-player-listen-banner.NB-listen-banner-preview,
+.NB-dark .NB-media-player-listen-banner.NB-listen-banner-upgrade {
+    color: #c4baf5;
+    background-color: rgba(124, 107, 224, 0.18);
+}
+
+.NB-dark .NB-media-player-listen-banner.NB-listen-banner-error {
+    color: #f0a090;
+    background-color: rgba(200, 70, 50, 0.16);
+}
+
+.NB-dark .NB-listen-highlight {
+    background-color: rgba(150, 135, 245, 0.16);
+    box-shadow: 0 0 0 4px rgba(150, 135, 245, 0.16);
+}
+
+.NB-dark .NB-listen-playing-story .NB-feed-story-content .NB-listen-paragraph:not(.NB-listen-highlight):hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+}
+
+.NB-dark .NB-listen-select select {
+    color: #9A9B9C;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-listen-select select:hover {
+    background-color: #494d54;
+}
+
+.NB-dark .NB-listen-select select option {
+    color: #c0c0c0;
+    background-color: #303739;
+}
+
+.NB-dark .NB-listen-select:after {
+    border-top-color: #808080;
+}
+
+.NB-dark .NB-listen-filter.NB-active select {
+    color: #FCFDFE;
+    background-color: #6c6c74;
+}
+
+.NB-dark .NB-listen-filter-clear svg {
+    fill: #e0e0e0;
+}
+
+.NB-dark .NB-listen-filter-clear:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-listen-voice-browser {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* darkmode.css: input.NB-listen-search outranks the generic .NB-dark input[type="text"] fill. */
+.NB-dark input.NB-listen-search {
+    color: #d0d0d0;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark input.NB-listen-search:focus {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.NB-dark .NB-listen-voice-list {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* darkmode.css: Sticky section headers need an opaque background over the scrolling rows. */
+.NB-dark .NB-listen-voice-header {
+    color: #777;
+    background-color: #2a3032;
+}
+
+.NB-dark .NB-listen-voice + .NB-listen-voice {
+    border-top-color: rgba(255, 255, 255, 0.04);
+}
+
+.NB-dark .NB-listen-voice:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-listen-voice.NB-selected {
+    background-color: rgba(150, 135, 245, 0.12);
+}
+
+.NB-dark .NB-listen-voice-check svg {
+    fill: #a99cf5;
+}
+
+.NB-dark .NB-listen-voice-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-listen-voice-description {
+    color: #808080;
+}
+
+.NB-dark .NB-listen-voice-traits,
+.NB-dark .NB-listen-voice-loading,
+.NB-dark .NB-listen-voice-empty,
+.NB-dark .NB-listen-status,
+.NB-dark .NB-listen-usage,
+.NB-dark .NB-listen-slider-value {
+    color: #707070;
+}
+
+.NB-dark .NB-listen-voice-preview {
+    color: #a0a0a0;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.NB-dark .NB-listen-voice-preview:hover,
+.NB-dark .NB-listen-voice-preview.NB-playing {
+    color: #e0e0e0;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-listen-spinner {
+    border-color: rgba(255, 255, 255, 0.12);
+    border-top-color: #b0b0b0;
+}
+
+.NB-dark .NB-listen-filters-reset,
+.NB-dark .NB-listen-usage-upgrade {
+    color: #9A9B9C;
+    text-decoration-color: rgba(255, 255, 255, 0.2);
+}
+
+.NB-dark .NB-listen-filters-reset:hover,
+.NB-dark .NB-listen-usage-upgrade:hover {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-listen-finetune-chevron {
+    border-color: #707070;
+}
+
+.NB-dark .NB-listen-finetune-toggle:hover .NB-popover-section-title {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-listen-slider input {
+    accent-color: #8a8c90;
+}
+
+.NB-dark .NB-listen-speed-field {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-listen-speed-field:hover {
+    background-color: #494d54;
+}
+
+.NB-dark .NB-listen-speed-field:focus-within {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* darkmode.css: Beats the generic .NB-dark input[type="text"] fill so the field's own box shows. */
+.NB-dark input[type="text"].NB-listen-speed-input {
+    color: #d0d0d0;
+    background-color: transparent;
+    border: 0;
+}
+
+.NB-dark .NB-listen-speed-unit,
+.NB-dark .NB-listen-speed-one {
+    color: #707070;
+}
+
+.NB-dark .NB-listen-speed-one:before {
+    background-color: #555;
+}
+
+.NB-dark .NB-listen-speed-slider {
+    accent-color: #8a8c90;
+}
+
+.NB-dark .NB-sideoption-listen-queue {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-sideoption-listen-queue:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.NB-dark .NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue {
+    background-color: rgba(150, 135, 245, 0.25);
+}
+
+.NB-dark .NB-media-player-upcoming-header {
+    color: #707070;
+}
+
+.NB-dark .NB-media-player-upcoming-list li {
+    color: #808080;
+}
+
+.NB-dark .NB-media-player-upcoming-list li:hover {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-media-player-toast {
+    color: #303030;
+    background-color: rgba(230, 230, 230, 0.95);
+}

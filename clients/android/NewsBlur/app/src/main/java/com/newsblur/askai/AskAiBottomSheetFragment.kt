@@ -22,6 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.newsblur.R
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
+import com.newsblur.listen.ListenManager
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.NewsBlurBottomSheet
 import com.newsblur.util.UIUtils
@@ -33,6 +34,9 @@ import javax.inject.Inject
 class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var listenManager: ListenManager
 
     private val viewModel: AskAiViewModel by viewModels()
     private var voiceRecorder: AskAiVoiceRecorder? = null
@@ -125,6 +129,8 @@ class AskAiBottomSheetFragment : BottomSheetDialogFragment() {
     private fun startVoiceRecording() {
         stopVoiceRecording(cancel = true)
 
+        // MediaRecorder takes no audio focus, so a Listen story would keep talking over the question.
+        listenManager.setPlayWhenReady(false)
         val recorder = AskAiVoiceRecorder(requireContext())
         if (recorder.startRecording()) {
             voiceRecorder = recorder

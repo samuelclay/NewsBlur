@@ -5,8 +5,10 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.icu.text.MessageFormat
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import android.text.TextUtils
 import android.util.Log
 import android.view.ContextMenu
@@ -20,8 +22,11 @@ import android.view.ViewGroup
 import android.webkit.WebView.HitTestResult
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
@@ -34,6 +39,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.webkit.WebViewAssetLoader
 import com.google.android.material.chip.Chip
+import com.google.android.material.snackbar.Snackbar
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.Reading
@@ -42,6 +48,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.FragmentReadingitemBinding
 import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.delegate.ReadingStoryMenuPopup
+import com.newsblur.design.ListenPalette
 import com.newsblur.di.IconLoader
 import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
@@ -49,8 +56,13 @@ import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.image.StoryImageViewerHost
 import com.newsblur.keyboard.KeyboardManager
+import com.newsblur.listen.ListenManager
+import com.newsblur.listen.ListenPhase
+import com.newsblur.listen.ListenStoryFollower
+import com.newsblur.listen.ListenUiState
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.repository.StoryRepository
 import com.newsblur.service.NbSyncManager.UPDATE_INTEL
@@ -71,6 +83,8 @@ import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadingTextSize
+import com.newsblur.util.StoryButton
+import com.newsblur.util.StoryButtonLayout
 import com.newsblur.util.StoryChangesState
 import com.newsblur.util.StoryClusterBadgeViewBinder
 import com.newsblur.util.StoryClusterDisplayDecision
@@ -89,9 +103,13 @@ import com.newsblur.web.NewsblurWebview
 import com.newsblur.web.WebviewActionType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -141,6 +159,20 @@ class ReadingItemFragment :
 
     @Inject
     lateinit var assetLoader: WebViewAssetLoader
+
+    @Inject
+    lateinit var listenManager: ListenManager
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
+
+    // ReadingItemFragment.kt follows Listen through this story: highlights, gentle scrolling, paragraph taps.
+    private var listenFollower: ListenStoryFollower? = null
+    private var lastStoryButtonRows: List<List<Int>>? = null
+    private var listenRowSize = 0
+    private var scrollTouching = false
+    private var listenShowedText = false
+    private var lastScrollTouchAt = 0L
 
     @JvmField
     var story: Story? = null
@@ -400,7 +432,7 @@ class ReadingItemFragment :
             reloadStoryContent()
         }
         syncStoryLoadingUi()
-        updateAskAiButton()
+        updateStoryButtons()
         ensureReadingWebview().resumeTimers()
         ensureReadingWebview().onResume()
         articleReveal.resume()
@@ -432,10 +464,9 @@ class ReadingItemFragment :
         configureReadingWebview(binding.readingWebview, readingActivity)
 
         setupItemMetadata()
-        updateTrainButton()
         updateShareButton()
         updateSaveButton()
-        updateAskAiButton()
+        updateStoryButtons()
         updateMarkStoryReadState()
         setupItemCommentsAndShares()
         syncStoryLoadingUi()
@@ -446,8 +477,22 @@ class ReadingItemFragment :
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                 cancelPendingConfigurationChangeRestore()
             }
+            // Listen's follow-along doesn't scroll the story while the reader is moving it.
+            scrollTouching = event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL
+            lastScrollTouchAt = SystemClock.uptimeMillis()
             false
         }
+        listenFollower =
+            ListenStoryFollower(
+                storyHash = { story?.storyHash },
+                webView = { readingWebview },
+                scrollView = binding.readingScrollview,
+                titleView = binding.readingItemTitle,
+                theme = prefsRepo.getResolvedTheme(requireContext()),
+                isUserScrolling = { scrollTouching || SystemClock.uptimeMillis() - lastScrollTouchAt < LISTEN_SCROLL_QUIET_MS },
+                onParagraphTapped = { hash, paragraph -> listenManager.seekToParagraph(hash, paragraph) },
+            )
+        styleListenPreviewPill()
 
         return binding.root
     }
@@ -466,6 +511,26 @@ class ReadingItemFragment :
         readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
         readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
         readingItemActionsBinding.askAiStoryButton.setOnClickListener { openAskAiDialog() }
+        readingItemActionsBinding.listenStoryButton.setOnClickListener { listenToStory() }
+        readingItemActionsBinding.listenQueueButton.setOnClickListener { toggleUpNext() }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            // STARTED, not RESUMED, so the pages beside the current one keep their Listen buttons current too.
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    // ListenUiState changes on every 200ms tick; the button only changes on these three values.
+                    listenManager.state
+                        .map(::listenButtonLook)
+                        .distinctUntilChanged()
+                        .collect(::applyListenButtonLook)
+                }
+                combine(listenManager.state, listenPreferences.settings) { state, settings -> state to settings.highlight }
+                    .collect { (state, highlight) ->
+                        showListenTextIfNeeded(state)
+                        listenFollower?.onStateChanged(state, highlight)
+                    }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -571,6 +636,15 @@ class ReadingItemFragment :
         popupMenu.menuInflater.inflate(R.menu.story_context, menu)
 
         menu.findItem(R.id.menu_reading_save).setTitle(if (story!!.starred) R.string.menu_unsave_story else R.string.menu_save_story)
+        val listenState = listenManager.state.value
+        menu.findItem(R.id.menu_reading_listen).setTitle(
+            if (listenState.isStory(story!!.storyHash) && listenState.showsPause) R.string.listen_pause else R.string.menu_listen,
+        )
+        menu.findItem(R.id.menu_reading_up_next).apply {
+            // The story playing can't also wait in Up Next.
+            isVisible = !listenState.isStory(story!!.storyHash)
+            setTitle(if (listenState.isQueued(story!!.storyHash)) R.string.listen_remove_from_up_next else R.string.listen_add_to_up_next)
+        }
         if (fs!!.isFilterSaved ||
             fs!!.isAllSaved ||
             fs!!.singleSavedTag != null
@@ -617,6 +691,16 @@ class ReadingItemFragment :
         when (item.itemId) {
             R.id.menu_reading_original -> {
                 openBrowser()
+                true
+            }
+
+            R.id.menu_reading_listen -> {
+                listenToStory()
+                true
+            }
+
+            R.id.menu_reading_up_next -> {
+                toggleUpNext()
                 true
             }
 
@@ -812,12 +896,172 @@ class ReadingItemFragment :
         intelFrag.show(requireActivity().supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
     }
 
-    private fun updateTrainButton() {
-        readingItemActionsBinding.trainStoryButton.visibility = if (story!!.feedId == "0") View.GONE else View.VISIBLE
+    /**
+     * Shows the story buttons left on in Settings (synced as show_sideoption prefs): one row, or three over two
+     * when all five are visible (StoryButtons.kt). Training needs a feed, so feedless stories never show Train.
+     */
+    private fun updateStoryButtons() {
+        val currentStory = story ?: return
+        val actions = readingItemActionsBinding
+        val buttons =
+            listOf(
+                StoryButton.TRAIN to actions.trainStoryButton,
+                StoryButton.SAVE to actions.saveStoryButton,
+                StoryButton.SHARE to actions.shareStoryButton,
+                StoryButton.ASK_AI to actions.askAiStoryButton,
+                StoryButton.LISTEN to actions.listenStoryButtonContainer,
+            )
+        val visible =
+            buttons
+                .filter { (button, _) ->
+                    listenPreferences.isStoryButtonVisible(button) && (button != StoryButton.TRAIN || currentStory.feedId != "0")
+                }.map { it.second }
+        val rows = StoryButtonLayout.rows(visible)
+        listenRowSize = rows.firstOrNull { actions.listenStoryButtonContainer in it }?.size ?: 0
+        val signature = rows.map { row -> row.map { it.id } }
+        if (signature == lastStoryButtonRows) return
+        lastStoryButtonRows = signature
+
+        buttons.forEach { (_, view) -> (view.parent as? ViewGroup)?.removeView(view) }
+        val gap = UIUtils.dp2px(requireContext(), 6)
+        val height = UIUtils.dp2px(requireContext(), 38)
+        listOf(actions.storyActionButtonsRow, actions.storyActionButtonsRow2).forEachIndexed { rowIndex, row ->
+            val views = rows.getOrNull(rowIndex).orEmpty()
+            views.forEachIndexed { index, view ->
+                val params =
+                    LinearLayout.LayoutParams(0, height, 1f).apply {
+                        marginStart = if (index == 0) 0 else gap
+                        marginEnd = if (index == views.lastIndex) 0 else gap
+                    }
+                row.addView(view, params)
+            }
+            row.visibility = if (views.isEmpty()) View.GONE else View.VISIBLE
+        }
+        // The Listen cell's width changed, so its label may now fit beside the Up Next button or not.
+        applyListenButtonLook(listenButtonLook(listenManager.state.value))
     }
 
-    private fun updateAskAiButton() {
-        readingItemActionsBinding.askAiStoryButton.visibility = if (prefsRepo.isShowAskAi()) View.VISIBLE else View.GONE
+    private fun styleListenPreviewPill() {
+        val theme = prefsRepo.getResolvedTheme(requireContext())
+        readingItemActionsBinding.listenStoryPreviewPill.background =
+            GradientDrawable().apply {
+                cornerRadius = UIUtils.dp2px(requireContext(), 999).toFloat()
+                setColor(ListenPalette.previewBackgroundArgb(theme))
+            }
+        readingItemActionsBinding.listenStoryPreviewPill.setTextColor(ListenPalette.previewTextArgb(theme))
+    }
+
+    /** Up Next's small button beside Listen: hidden unless another story is playing. */
+    private enum class UpNextButton { HIDDEN, ADD, QUEUED }
+
+    /**
+     * What this page's Listen button shows, so it's only touched when that changes: Pause or Resume for the story
+     * playing, the 30s preview pill without Archive, and the Up Next button.
+     */
+    private data class ListenButtonLook(
+        @param:StringRes val text: Int,
+        @param:DrawableRes val icon: Int,
+        val showsPreviewPill: Boolean,
+        val upNext: UpNextButton,
+    )
+
+    private fun listenButtonLook(state: ListenUiState): ListenButtonLook {
+        val hash = story?.storyHash
+        val isThisStory = state.isStory(hash)
+        val loaded = isThisStory && (state.phase == ListenPhase.READY || state.isLoading)
+        // The synced profile goes first: Listen's last usage report can predate a change of plan.
+        val archiveTier = isArchiveUser()
+        val upNext =
+            when {
+                !state.isActive || isThisStory -> UpNextButton.HIDDEN
+                state.isQueued(hash) -> UpNextButton.QUEUED
+                else -> UpNextButton.ADD
+            }
+        return when {
+            isThisStory && state.showsPause -> ListenButtonLook(R.string.listen_pause, R.drawable.ic_listen_pause, !archiveTier, upNext)
+            loaded -> ListenButtonLook(R.string.listen_resume, R.drawable.ic_listen, !archiveTier, upNext)
+            else -> ListenButtonLook(R.string.listen_story_button, R.drawable.ic_listen, !archiveTier, upNext)
+        }
+    }
+
+    private fun applyListenButtonLook(look: ListenButtonLook) {
+        val actions = readingItemActionsBinding
+        val showsUpNext = look.upNext != UpNextButton.HIDDEN
+        // A Listen cell sharing a four-button row is too narrow for its label beside the Up Next button.
+        val iconOnly = showsUpNext && listenRowSize >= COMPACT_LISTEN_ROW_SIZE
+        actions.listenStoryButton.text = if (iconOnly) "" else getString(look.text)
+        actions.listenStoryButton.contentDescription = getString(look.text)
+        actions.listenStoryButton.iconPadding = if (iconOnly) 0 else UIUtils.dp2px(requireContext(), 6)
+        actions.listenStoryButton.setIconResource(look.icon)
+        actions.listenStoryPreviewPill.visibility = if (look.showsPreviewPill && !iconOnly) View.VISIBLE else View.GONE
+        actions.listenQueueButton.visibility = if (showsUpNext) View.VISIBLE else View.GONE
+        if (showsUpNext) {
+            val queued = look.upNext == UpNextButton.QUEUED
+            actions.listenQueueButton.setIconResource(if (queued) R.drawable.ic_checkmark else R.drawable.ic_add)
+            actions.listenQueueButton.iconSize = UIUtils.dp2px(requireContext(), if (queued) 16 else 12)
+            actions.listenQueueButton.contentDescription =
+                getString(if (queued) R.string.listen_queued_remove else R.string.listen_add_to_up_next)
+        }
+    }
+
+    /** The + beside Listen, and the story menu's Up Next item: adds this story to Up Next, or takes it back out. */
+    private fun toggleUpNext() {
+        val currentStory = story ?: return
+        if (listenManager.state.value.isQueued(currentStory.storyHash)) {
+            listenManager.removeFromUpNext(currentStory.storyHash)
+            showUpNextMessage(getString(R.string.listen_removed_from_up_next))
+        } else {
+            val position = listenManager.addToUpNext(currentStory)
+            // ICU's ordinal keeps "2nd" right in every language.
+            val message =
+                MessageFormat(getString(R.string.listen_added_to_up_next), Locale.getDefault())
+                    .format(arrayOf<Any>(position))
+            showUpNextMessage(message)
+        }
+    }
+
+    /** The confirmation sits above Listen's mini player, which would otherwise cover it. */
+    private fun showUpNextMessage(message: String) {
+        val activity = activity ?: return
+        val root = activity.findViewById<View>(android.R.id.content) ?: return
+        val snackbar = Snackbar.make(root, message, Snackbar.LENGTH_SHORT)
+        activity.findViewById<View>(R.id.listen_mini_player)?.takeIf { it.isShown && it.height > 0 }?.let {
+            snackbar.anchorView = it
+        }
+        snackbar.show()
+    }
+
+    /**
+     * When Listen reads the extracted article because the feed only carries a summary, the story on screen switches
+     * to Text view once, at playback start, so follow-along can highlight what's being read. The feed's default view
+     * stays as it was.
+     */
+    private fun showListenTextIfNeeded(state: ListenUiState) {
+        if (!state.isStory(story?.storyHash) || state.phase == ListenPhase.IDLE) {
+            listenShowedText = false
+            return
+        }
+        if (listenShowedText || state.textSource != LISTEN_TEXT_SOURCE_ORIGINAL) return
+        listenShowedText = true
+        if (selectedViewMode != DefaultFeedView.STORY) return
+        selectedViewMode = DefaultFeedView.TEXT
+        reloadStoryContent()
+        (activity as? Reading)?.refreshViewModeControls()
+    }
+
+    fun listenToStory() {
+        val currentStory = story ?: return
+        val reading = activity as? Reading
+        listenManager.listen(currentStory, reading?.listenQueue().orEmpty(), reading?.listenQueueName())
+    }
+
+    /** A paragraph tap from listenFollowAlong.js, through NewsblurWebview.java. */
+    fun onListenMessage(
+        webview: NewsblurWebview,
+        json: String,
+    ) {
+        if (webview !== readingWebview) return
+        listenFollower?.onMessage(json)
     }
 
     fun switchStorySavedState(notifyUser: Boolean = false) {
@@ -1635,6 +1879,7 @@ class ReadingItemFragment :
         if (isWebViewReleasedForBackground) return
         if (!isWebLoadFinished.getAndSet(true)) {
             ensureReadingWebview().evaluateJavascript("loadImages();", null)
+            listenFollower?.onDocumentLoaded()
         }
         maybeFinishInitialStoryRender()
         checkLoadStatus()
@@ -2078,6 +2323,7 @@ class ReadingItemFragment :
                         "text" -> switchSelectedViewMode()
                         "unread" -> story?.let { feedUtils.markStoryUnread(it, requireContext()) }
                         "save" -> story?.let { feedUtils.setStorySaved(it, true, requireContext(), emptyList(), emptyList()) }
+                        "listen" -> listenToStory()
                     }
                     action != "none"
                 }
@@ -2227,6 +2473,7 @@ class ReadingItemFragment :
         cancelPendingConfigurationChangeRestore()
         invalidateReaderAnchorCapture()
         readerAnchorCapturedScrollY = null
+        listenFollower?.onDocumentReleased()
         val webview = readingWebview ?: return
         webview.stopLoading()
         // ReadingItemFragment.kt must not pauseTimers(): it freezes layout and JavaScript in every pager WebView.
@@ -2257,6 +2504,12 @@ class ReadingItemFragment :
     companion object {
         // How long ReadingItemFragment.kt ignores photo taps while StoryImageViewerHost.kt starts.
         private const val STORY_IMAGE_HOST_LAUNCH_GUARD_MS = 2_000L
+
+        private const val LISTEN_TEXT_SOURCE_ORIGINAL = "original"
+        private const val COMPACT_LISTEN_ROW_SIZE = 4
+
+        // How long after the reader last touched the story Listen waits before scrolling it.
+        private const val LISTEN_SCROLL_QUIET_MS = 2_500L
 
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"
         private const val BUNDLE_SCROLL_POS_PX = "scrollStatePx"

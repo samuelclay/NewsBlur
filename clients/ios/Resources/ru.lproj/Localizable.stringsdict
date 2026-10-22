@@ -242,6 +242,66 @@
 			<string>%@ статей в фокусе</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Сегодня осталось бесплатных предпрослушиваний статей: %@</string>
+			<key>many</key>
+			<string>Сегодня осталось бесплатных предпросмотров статей: %@</string>
+			<key>one</key>
+			<string>Сегодня осталось %@ бесплатное предварительное прослушивание статьи</string>
+			<key>other</key>
+			<string>Сегодня осталось бесплатных предпросмотров статей: %@</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ совпадения</string>
+			<key>many</key>
+			<string>%@ совпадений</string>
+			<key>one</key>
+			<string>%@ совпадение</string>
+			<key>other</key>
+			<string>%@ совпадения</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>В этом месяце осталось %@ минуты</string>
+			<key>many</key>
+			<string>Осталось %@ минут в этом месяце</string>
+			<key>one</key>
+			<string>В этом месяце осталась %@ минута</string>
+			<key>other</key>
+			<string>В этом месяце осталось минут: %@</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -440,6 +500,26 @@
 			<string>%@ непрочитанная статья</string>
 			<key>other</key>
 			<string>%@ непрочитанных статей</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Осталось %@ прослушиваний голоса</string>
+			<key>many</key>
+			<string>Осталось предпросмотров голоса: %@</string>
+			<key>one</key>
+			<string>Остался предпросмотр голоса: %@</string>
+			<key>other</key>
+			<string>Осталось предпросмотров голоса: %@</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>

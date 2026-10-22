@@ -7203,6 +7203,81 @@ body {
     background-size: 16px;
 }
 
+/* Listen (apps/listen): reads the story aloud in the sidebar media player */
+.NB-sideoption.NB-feed-story-listen .NB-sideoption-icon-listen {
+    background-image: url("/media/embed/icons/nouns/listen.svg");
+    background-size: 15px;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-current {
+    background-color: #dcdfd8;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-current .NB-sideoption-title,
+.NB-sideoption.NB-feed-story-listen.NB-listen-current .NB-sideoption-icon {
+    color: #4a8530;
+    opacity: 1;
+}
+
+.NB-sideoption.NB-feed-story-listen.NB-listen-playing .NB-sideoption-icon-listen {
+    animation: NB-listen-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes NB-listen-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+/* The + beside Listen: shown while something else is loaded in the player */
+.NB-sideoption-listen-queue {
+    display: none;
+    order: 3;
+    width: 18px;
+    height: 18px;
+    margin: 0 6px 0 -2px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7.25 3h1.5v4.25H13v1.5H8.75V13h-1.5V8.75H3v-1.5h4.25z' fill='%23808080'/%3E%3C/svg%3E") no-repeat center center;
+    background-size: 11px;
+    transition: background-color 0.14s;
+}
+
+.NB-sideoption.NB-listen-can-queue .NB-sideoption-listen-queue,
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue {
+    display: block;
+}
+
+.NB-sideoption-listen-queue:hover {
+    background-color: rgba(0, 0, 0, 0.14);
+}
+
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue {
+    background-color: rgba(107, 90, 214, 0.16);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M6.2 11.6L2.6 8l1.1-1.1 2.5 2.5 6.1-6.1 1.1 1.1z' fill='%236b5ad6'/%3E%3C/svg%3E");
+}
+
+.NB-sideoption.NB-listen-queued .NB-sideoption-listen-queue:hover {
+    background-color: rgba(107, 90, 214, 0.28);
+}
+
+.NB-sideoption-listen-preview-pill {
+    position: absolute;
+    top: -7px;
+    right: -4px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    font-size: 8px;
+    line-height: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    color: #fff;
+    text-shadow: none;
+    background-color: #8b5cf6;
+    pointer-events: none;
+}
+
+
 .NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
     background-image: url('/media/embed/icons/nouns/share.svg');
     background-size: 16px;
@@ -11437,6 +11512,7 @@ form.opml_import_form input {
 /* ================ */
 
 .NB-media-player {
+    position: relative;
     border-bottom: 1px solid #dbdbda;
     background-color: #f6f7f5;
     background-image: linear-gradient(180deg, #f8f9f6, #f0f1ee);
@@ -12267,6 +12343,735 @@ form.opml_import_form input {
 .NB-media-settings-popover .segmented-control li {
     padding: 3px 8px;
     font-size: 11px;
+}
+
+/* ========== */
+/* = Listen = */
+/* ========== */
+
+/* Media player: stories read aloud (media_player_view.js) */
+.NB-media-player-icon.NB-media-player-icon-listen {
+    background: linear-gradient(135deg, #7c6be0, #5a48c4);
+}
+
+.NB-media-player-listen-voice {
+    font-size: 10px;
+    color: #8a8a8a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.NB-media-player-listen-voice:hover {
+    color: #505050;
+    text-decoration: underline;
+}
+
+.NB-media-player-listen-voice-settings {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.4;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.NB-media-player-listen-voice-settings + .NB-media-player-settings {
+    margin-left: 0;
+}
+
+.NB-media-player-listen-voice-settings:hover {
+    opacity: 0.75;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.NB-media-player-listen-voice-settings svg {
+    width: 15px;
+    height: 15px;
+    fill: #505050;
+}
+
+.NB-media-player-listen-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    line-height: 13px;
+    color: #5a5a5a;
+    background-color: rgba(0, 0, 0, 0.04);
+    animation: NB-listen-banner-in 0.25s ease-out;
+}
+
+.NB-media-player-listen-banner.NB-empty {
+    display: none;
+}
+
+@keyframes NB-listen-banner-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.NB-media-player-listen-banner.NB-listen-banner-preview,
+.NB-media-player-listen-banner.NB-listen-banner-upgrade {
+    color: #4b3ba8;
+    background-color: rgba(124, 107, 224, 0.11);
+}
+
+.NB-media-player-listen-banner.NB-listen-banner-error {
+    color: #a33a2a;
+    background-color: rgba(200, 70, 50, 0.09);
+}
+
+.NB-media-player-listen-message {
+    flex: 1 1 140px;
+    min-width: 0;
+}
+
+.NB-media-player-listen-countdown {
+    flex-shrink: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-media-player-listen-upgrade,
+.NB-media-player-listen-retry {
+    flex-shrink: 0;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background-color: #6b5ad6;
+    transition: background-color 0.15s;
+}
+
+.NB-media-player-listen-upgrade:hover {
+    background-color: #5a48c4;
+}
+
+.NB-media-player-listen-retry {
+    background-color: #b5523f;
+}
+
+.NB-media-player-listen-retry:hover {
+    background-color: #9c4433;
+}
+
+/* Up Next: what Listen auto-continues to, under your own queue */
+.NB-media-player-upcoming-header {
+    padding: 6px 10px 2px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #a8a8a8;
+}
+
+.NB-media-player-upcoming-list li {
+    padding-left: 8px;
+    color: #909090;
+}
+
+.NB-media-player-upcoming-list li .NB-queue-favicon {
+    opacity: 0.7;
+}
+
+.NB-media-player-upcoming-list li:hover {
+    color: #505050;
+}
+
+.NB-media-player-upcoming-list li:hover .NB-queue-favicon {
+    opacity: 1;
+}
+
+/* A short confirmation over the player, like "Added to Up Next · 2nd" */
+.NB-media-player-toast {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 5;
+    padding: 5px 11px;
+    border-radius: 12px;
+    font-size: 11px;
+    line-height: 14px;
+    white-space: nowrap;
+    color: #fff;
+    background-color: rgba(48, 48, 48, 0.92);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    transform: translate(-50%, -4px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+}
+
+.NB-media-player-toast.NB-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* Follow along: the paragraph being read (listen_follow_along.js) */
+.NB-listen-highlight {
+    background-color: rgba(124, 107, 224, 0.12);
+    box-shadow: 0 0 0 4px rgba(124, 107, 224, 0.12);
+    border-radius: 3px;
+    transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+a.NB-feed-story-title.NB-listen-highlight {
+    box-shadow: 0 0 0 3px rgba(124, 107, 224, 0.12);
+}
+
+.NB-listen-playing-story .NB-feed-story-content .NB-listen-paragraph {
+    cursor: pointer;
+}
+
+.NB-listen-playing-story .NB-feed-story-content .NB-listen-paragraph:not(.NB-listen-highlight):hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
+    border-radius: 3px;
+}
+
+/* Voice settings popover (listen_settings_popover.js). It also carries the
+   .NB-media-settings-popover class, so sections, titles, descriptions and segmented
+   controls match the player settings popover. */
+.NB-listen-settings {
+    padding: 2px 0 8px;
+}
+
+/* reader.css: A wider label column than the player settings keeps titles like Auto-continue on
+   one line next to the wider Listen controls. */
+.NB-listen-settings-popover .NB-popover-section-label {
+    width: 124px;
+}
+
+/* reader.css: Delivery gains a fourth segment, Custom, after fine-tuning. */
+.NB-listen-settings-popover .NB-listen-control[data-setting="delivery"] li {
+    padding: 3px 6px;
+}
+
+.NB-listen-settings-popover .NB-popover-section.NB-listen-voice-section {
+    align-items: center;
+    border-bottom: none;
+    padding-bottom: 8px;
+}
+
+.NB-listen-voice-section .NB-popover-section-label {
+    width: auto;
+    flex: 1;
+}
+
+.NB-listen-voice-section .NB-popover-section-controls {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Dropdowns styled like the segmented controls: the language and the filters */
+.NB-listen-select {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.NB-listen-select select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 3px 20px 3px 8px;
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    color: #61635e;
+    background-color: rgba(0, 0, 0, 0.04);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color 0.14s ease-in-out, color 0.14s ease-in-out;
+}
+
+.NB-listen-select select:hover {
+    background-color: #e5e6e2;
+}
+
+.NB-listen-select select:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.NB-listen-select:after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    margin-top: -2px;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 4px solid #909090;
+    pointer-events: none;
+}
+
+.NB-listen-language select {
+    max-width: 170px;
+}
+
+.NB-listen-filter.NB-active select {
+    color: #131313;
+    background-color: #d5d6d2;
+    padding-right: 22px;
+}
+
+.NB-listen-filter.NB-active:after {
+    display: none;
+}
+
+.NB-listen-filter-clear {
+    position: absolute;
+    right: 3px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    margin-top: -8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.NB-listen-filter-clear svg {
+    width: 12px;
+    height: 12px;
+    fill: #606060;
+}
+
+.NB-listen-filter-clear:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Voice picker: search, one row of filters and a fixed-height list */
+.NB-listen-voice-browser {
+    margin: 0 16px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-listen-search {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 6px;
+    padding: 5px 9px;
+    font-family: inherit;
+    font-size: 12px;
+    color: #303030;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    outline: none;
+}
+
+.NB-listen-search:focus {
+    border-color: rgba(0, 0, 0, 0.22);
+}
+
+
+.NB-listen-filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.NB-listen-filter {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.NB-listen-filter select {
+    padding-left: 6px;
+    padding-right: 14px;
+}
+
+.NB-listen-filter:after {
+    right: 6px;
+}
+
+.NB-listen-voice-list {
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.NB-listen-voice-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #a0a0a0;
+    background-color: #f7f7f5;
+}
+
+.NB-listen-voice-header-count {
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.NB-listen-voice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    cursor: pointer;
+    transition: background-color 0.12s;
+}
+
+.NB-listen-voice + .NB-listen-voice {
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.NB-listen-voice:hover {
+    background-color: rgba(0, 0, 0, 0.025);
+}
+
+.NB-listen-voice.NB-selected {
+    background-color: rgba(107, 90, 214, 0.07);
+}
+
+.NB-listen-voice-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-listen-voice-check svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+    fill: #6b5ad6;
+}
+
+.NB-listen-voice-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-listen-voice-title {
+    font-size: 12px;
+    line-height: 16px;
+    color: #303030;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-listen-voice-name {
+    font-weight: 600;
+}
+
+.NB-listen-voice-description {
+    margin-left: 6px;
+    color: #8a8a8a;
+}
+
+.NB-listen-voice-traits {
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-listen-voice-preview {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #808080;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.NB-listen-voice-preview svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+
+.NB-listen-voice:hover .NB-listen-voice-preview,
+.NB-listen-voice-preview.NB-loading,
+.NB-listen-voice-preview.NB-playing {
+    opacity: 1;
+}
+
+.NB-listen-voice-preview:hover,
+.NB-listen-voice-preview.NB-playing {
+    color: #404040;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.NB-listen-spinner {
+    width: 11px;
+    height: 11px;
+    box-sizing: border-box;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-top-color: #707070;
+    border-radius: 50%;
+    animation: NB-listen-spin 0.7s linear infinite;
+}
+
+@keyframes NB-listen-spin {
+    to { transform: rotate(360deg); }
+}
+
+.NB-listen-voice-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    font-size: 11px;
+    color: #a0a0a0;
+}
+
+.NB-listen-voice-empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #909090;
+    text-align: center;
+}
+
+.NB-listen-filters-reset,
+.NB-listen-usage-upgrade {
+    color: #707070;
+    text-decoration: underline;
+    text-decoration-color: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.NB-listen-filters-reset {
+    font-size: 11px;
+}
+
+.NB-listen-filters-reset:hover,
+.NB-listen-usage-upgrade:hover {
+    color: #303030;
+    text-decoration-color: currentColor;
+}
+
+.NB-listen-status {
+    display: none;
+    margin-top: 6px;
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+}
+
+/* Speed: exact value, a slider over the speed stops, and presets */
+.NB-listen-settings-popover .NB-popover-section.NB-listen-speed-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+
+.NB-listen-speed-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.NB-listen-speed-field {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 2px 7px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.04);
+    cursor: text;
+    transition: background-color 0.14s, border-color 0.14s;
+}
+
+.NB-listen-speed-field:hover {
+    background-color: #e5e6e2;
+}
+
+.NB-listen-speed-field:focus-within {
+    background-color: #fff;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.NB-listen-speed-input {
+    width: 34px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: right;
+    color: #303030;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-speed-unit {
+    margin-left: 1px;
+    font-size: 12px;
+    color: #909090;
+}
+
+/* reader.css: The 1x mark sits under the thumb's center at that stop. The 16px assumes the
+   browser's range thumb width. */
+.NB-listen-speed-track {
+    position: relative;
+    padding-bottom: 13px;
+}
+
+.NB-listen-speed-slider {
+    display: block;
+    width: 100%;
+    margin: 0;
+    accent-color: #8a8c86;
+}
+
+.NB-listen-speed-one {
+    position: absolute;
+    top: 17px;
+    left: calc(8px + (100% - 16px) * var(--NB-listen-speed-one));
+    transform: translateX(-50%);
+    font-size: 9px;
+    line-height: 10px;
+    color: #a0a0a0;
+    pointer-events: none;
+}
+
+.NB-listen-speed-one:before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 4px;
+    margin: 0 auto 1px;
+    background-color: #c0c0c0;
+}
+
+.NB-listen-settings-popover .NB-listen-control[data-setting="speed"] {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.NB-listen-settings-popover .NB-listen-control[data-setting="speed"] li {
+    flex: 1 1 0;
+    padding: 3px 0;
+}
+
+/* Rows below the voice picker */
+.NB-listen-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.NB-listen-slider input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    accent-color: #8a8c86;
+}
+
+.NB-listen-slider-value {
+    width: 32px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 11px;
+    color: #909090;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-finetune-toggle {
+    cursor: pointer;
+}
+
+.NB-listen-finetune-toggle .NB-popover-section-controls {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.NB-listen-finetune-chevron {
+    width: 6px;
+    height: 6px;
+    margin: 6px 6px 0 0;
+    border-right: 1.5px solid #a0a0a0;
+    border-bottom: 1.5px solid #a0a0a0;
+    transform: rotate(-45deg);
+    transition: transform 0.15s;
+}
+
+.NB-listen-finetune-toggle.NB-open .NB-listen-finetune-chevron {
+    transform: rotate(45deg);
+}
+
+.NB-listen-finetune-toggle:hover .NB-popover-section-title {
+    color: #606060;
+}
+
+.NB-listen-finetune {
+    display: none;
+}
+
+/* reader.css: The usage line keeps its height while it loads, so the popover measured at open
+   (listen_settings_popover.js fit_list_height) doesn't grow afterward. */
+.NB-listen-usage {
+    min-height: 14px;
+    margin: 10px 16px 0;
+    font-size: 10px;
+    line-height: 14px;
+    color: #a0a0a0;
+}
+
+.NB-listen-usage-upgrade {
+    margin-left: 6px;
 }
 
 /* ===================== */
@@ -18359,6 +19164,16 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(168deg) saturate(18);
 }
 
+.NB-menu-manage .NB-menu-manage-story-listen-queue .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/nouns/listen-queue.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-menu-manage .NB-menu-manage-story-listen .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/nouns/listen.svg') no-repeat 0 0;
+    background-size: 16px;
+}
+
 .NB-menu-manage.NB-story-starred .NB-menu-manage-story-star .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/nouns/saved-stories.svg') no-repeat 0 0;
     background-size: 16px;
@@ -24318,6 +25133,12 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
     filter: invert(25%) sepia(70%) saturate(2500%) hue-rotate(230deg) brightness(90%) contrast(105%);
     /* indigo */
+}
+
+.NB-premium-tier-features-archive li.NB-19 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/listen.svg');
+    filter: invert(40%) sepia(80%) saturate(1800%) hue-rotate(80deg) brightness(90%) contrast(100%);
+    /* green */
 }
 
 /* Pro tier icons with individual vivid colors */

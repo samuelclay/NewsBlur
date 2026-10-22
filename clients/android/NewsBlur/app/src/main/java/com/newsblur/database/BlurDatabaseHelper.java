@@ -1760,6 +1760,41 @@ public class BlurDatabaseHelper {
         return result;
     }
 
+    /** BlurDatabaseHelper.java finds a story Listen's Up Next queued, if this device has it, so it can be marked read. */
+    @Nullable
+    public Story getStoryByHash(@NonNull String storyHash) {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE,
+                null,
+                DatabaseConstants.STORY_HASH + " = ?",
+                new String[]{storyHash},
+                null, null, null, "1");
+        try {
+            if (!c.moveToFirst()) return null;
+            return Story.fromCursor(c);
+        } finally {
+            closeQuietly(c);
+        }
+    }
+
+    /**
+     * BlurDatabaseHelper.java reports whether a story is read right now, or null when it isn't stored.
+     * ListenManager.kt checks this so auto-continue skips stories read since the queue was captured.
+     */
+    @Nullable
+    public Boolean isStoryRead(@NonNull String storyHash) {
+        Cursor c = dbRO.query(DatabaseConstants.STORY_TABLE,
+                new String[]{DatabaseConstants.STORY_READ},
+                DatabaseConstants.STORY_HASH + " = ?",
+                new String[]{storyHash},
+                null, null, null, "1");
+        try {
+            if (!c.moveToFirst()) return null;
+            return c.getInt(0) != 0;
+        } finally {
+            closeQuietly(c);
+        }
+    }
+
     public void cleanupDismissals() {
         Calendar cutoffDate = Calendar.getInstance();
         cutoffDate.add(Calendar.MONTH, -1);

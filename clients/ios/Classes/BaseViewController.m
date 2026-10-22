@@ -405,6 +405,13 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
     } else if (action == @selector(instaFetchFeed:) ||
                action == @selector(doMarkAllRead:)) {
         return self.isFeedShown && !self.isDashboard;
+    } else if (action == @selector(toggleListen:)) {
+        // BaseViewController.m offers Listen (Y) for the story on screen, but not while typing or in a dialog.
+        return self.isStoryShown && [self readerKeyboardContextAvailable];
+    } else if (action == @selector(toggleListenPlayback:)) {
+        return ListenStoryBridge.isPlayerActive || self.isStoryShown;
+    } else if (action == @selector(toggleListenQueue:)) {
+        return self.isStoryShown && [ListenStoryBridge offersQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
                action == @selector(showShare:) ||
@@ -485,6 +492,12 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
         } else {
             command.title = [NBLocalization text:@"Delete Site…"];
         }
+    } else if (command.action == @selector(toggleListen:)) {
+        command.title = [ListenStoryBridge menuTitleForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+    } else if (command.action == @selector(toggleListenQueue:)) {
+        NSDictionary *story = self.appDelegate.storyPagesViewController.currentPage.activeStory;
+        command.title = [ListenStoryBridge queueMenuTitleForStory:story];
+        command.image = [UIImage systemImageNamed:[ListenStoryBridge isQueued:story] ? @"text.badge.minus" : @"text.badge.plus"];
     } else if (command.action == @selector(toggleStorySaved:)) {
         BOOL isRead = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isRead) {
@@ -850,6 +863,25 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 
 - (IBAction)showShare:(id)sender {
     [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
+}
+
+- (IBAction)toggleListen:(id)sender {
+    // BaseViewController.m starts or pauses reading the story on screen aloud (Listen/ListenPlayer.swift).
+    [ListenStoryBridge toggleListenForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+}
+
+- (IBAction)toggleListenQueue:(id)sender {
+    // BaseViewController.m: the Story menu's Add to Up Next for the story on screen (Listen/ListenQueue.swift).
+    [ListenStoryBridge toggleQueueForStory:self.appDelegate.storyPagesViewController.currentPage.activeStory];
+}
+
+- (IBAction)toggleListenPlayback:(id)sender {
+    // BaseViewController.m: the Mac toolbar's play/pause controls whatever is playing, else starts the story on screen.
+    if (ListenStoryBridge.isPlayerActive) {
+        [ListenStoryBridge togglePlayback];
+    } else {
+        [self toggleListen:sender];
+    }
 }
 
 - (IBAction)nextUnreadStory:(id)sender {

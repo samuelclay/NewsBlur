@@ -143,6 +143,9 @@ public class ItemSetFragment extends NbFragment {
     private int bottomNextFeedBaseBottomMarginPx;
     @Nullable
     private View floatingStoryHeader;
+    // ItemSetFragment.java keeps the last stories scrollable above Listen's mini player (ListenMiniPlayerHost.kt).
+    private int listenMiniPlayerInsetPx = 0;
+    private int gridBaseBottomPaddingPx = -1;
     private final View.OnLayoutChangeListener floatingStoryHeaderLayoutListener =
             (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> updateBottomNextFeedBottomInset();
     private int storyListScrollState = RecyclerView.SCROLL_STATE_IDLE;
@@ -574,25 +577,40 @@ public class ItemSetFragment extends NbFragment {
         ViewGroup.LayoutParams params = binding.bottomNextFeedControl.getLayoutParams();
         if (!(params instanceof ViewGroup.MarginLayoutParams)) return;
         ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-        int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom;
+        int targetBottomMargin = bottomNextFeedBaseBottomMarginPx + navBarInsets.bottom + listenMiniPlayerInsetPx;
+        RecyclerView grid = binding.itemgridfragmentGrid;
+        if (gridBaseBottomPaddingPx < 0) gridBaseBottomPaddingPx = grid.getPaddingBottom();
         if (floatingStoryHeader != null && floatingStoryHeader.isLaidOut()) {
             // ItemSetFragment.java draws stories beneath the footer while allowing the final row to scroll above it.
             int[] listLocation = new int[2];
             int[] headerLocation = new int[2];
-            RecyclerView grid = binding.itemgridfragmentGrid;
             grid.getLocationOnScreen(listLocation);
             floatingStoryHeader.getLocationOnScreen(headerLocation);
             int overlap = Math.max(0, listLocation[1] + grid.getHeight() - headerLocation[1]);
-            int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8);
+            int bottomPadding = overlap + UIUtils.dp2px(requireContext(), 8) + listenMiniPlayerInsetPx;
             if (grid.getPaddingBottom() != bottomPadding) {
                 grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
             }
             // ItemSetFragment.java keeps the next-feed control above both search and the floating action capsules.
-            targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap;
+            targetBottomMargin = bottomNextFeedBaseBottomMarginPx + overlap + listenMiniPlayerInsetPx;
+        } else {
+            // With the story toolbar at the top, only the mini player covers the list's last rows.
+            int bottomPadding = gridBaseBottomPaddingPx + listenMiniPlayerInsetPx;
+            if (grid.getPaddingBottom() != bottomPadding) {
+                grid.setClipToPadding(false);
+                grid.setPaddingRelative(grid.getPaddingStart(), grid.getPaddingTop(), grid.getPaddingEnd(), bottomPadding);
+            }
         }
         if (marginParams.bottomMargin == targetBottomMargin) return;
         marginParams.bottomMargin = targetBottomMargin;
         binding.bottomNextFeedControl.setLayoutParams(marginParams);
+    }
+
+    /** ItemsList.java reports how much of the list Listen's mini player covers, or 0 while it is hidden. */
+    public void setListenMiniPlayerInset(int insetPx) {
+        if (listenMiniPlayerInsetPx == insetPx) return;
+        listenMiniPlayerInsetPx = insetPx;
+        updateBottomNextFeedBottomInset();
     }
 
     private void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {

@@ -386,6 +386,12 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
             $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
               'i'
             ])
+          ]),
+          $.make('div', { className: 'NB-keyboard-shortcut' }, [
+            $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, gettext('Listen to story')),
+            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+              'y'
+            ])
           ])
         ])
       ])

@@ -18,6 +18,8 @@ import com.newsblur.network.FeedApi
 import com.newsblur.network.FeedApiImpl
 import com.newsblur.network.FolderApi
 import com.newsblur.network.FolderApiImpl
+import com.newsblur.network.ListenApi
+import com.newsblur.network.ListenApiImpl
 import com.newsblur.network.NetworkClient
 import com.newsblur.network.NetworkClientImpl
 import com.newsblur.network.StoryApi
@@ -127,6 +129,16 @@ object NetworkModule {
         gson: Gson,
         networkClient: NetworkClient,
     ): AskAiApi = AskAiApiImpl(gson, networkClient)
+
+    @Singleton
+    @Provides
+    fun provideListenApi(
+        @ApplicationContext context: Context,
+        gson: Gson,
+        networkClient: NetworkClient,
+        @ApiOkHttpClient apiOkHttpClient: OkHttpClient,
+        customUserAgent: CustomUserAgent,
+    ): ListenApi = ListenApiImpl(context, gson, networkClient, apiOkHttpClient, customUserAgent)
 
     @Singleton
     @Provides

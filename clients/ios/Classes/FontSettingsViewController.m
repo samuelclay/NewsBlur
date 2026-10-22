@@ -48,7 +48,10 @@
     NSInteger last = UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone ? 13 : 12;
     NSMutableArray *appearance = [NSMutableArray array];
     for (NSInteger row = 7; row <= last; row++) [appearance addObject:@(row)];
-    return @[@[@1, @0], @[@2, @4], training, appearance];
+    // FontSettingsViewController.m: action 14 adds the story to Listen's Up Next (Listen/ListenQueue.swift).
+    NSMutableArray *reading = [NSMutableArray arrayWithArray:@[@1, @0]];
+    if ([ListenStoryBridge offersQueueForStory:self.appDelegate.activeStory]) [reading addObject:@14];
+    return @[reading, @[@2, @4], training, appearance];
 }
 
 - (NSInteger)actionAtIndexPath:(NSIndexPath *)indexPath {
@@ -429,6 +432,11 @@
             cell.imageView.image = [[UIImage systemImageNamed:@"sparkles"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
         cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
+    } else if (adjustedRow == 14) {
+        BOOL isQueued = [ListenStoryBridge isQueued:self.appDelegate.activeStory];
+        cell.textLabel.text = [ListenStoryBridge queueMenuTitleForStory:self.appDelegate.activeStory];
+        cell.imageView.image = [[UIImage systemImageNamed:isQueued ? @"text.badge.minus" : @"text.badge.plus"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        cell.imageView.tintColor = UIColorFromRGB(0x8C59D9);
     } else if (adjustedRow == 6) {
         cell.textLabel.text = [NBLocalization text:@"Go to feed"];
         cell.imageView.image = [[UIImage systemImageNamed:@"newspaper"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -461,6 +469,10 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger action = [self actionAtIndexPath:indexPath];
+    if (action == 14) {
+        NSString *queueTitle = [ListenStoryBridge queueMenuTitleForStory:self.appDelegate.activeStory];
+        return MAX(kMenuOptionHeight, [MenuTableViewCell heightForTitle:queueTitle width:tableView.bounds.size.width]);
+    }
     if (action >= 8) return kMenuOptionHeight;
     NSArray *titles = @[[NBLocalization text:@"Unsave this story"], [NBLocalization text:@"Mark as unread"], [NBLocalization text:@"Send to…"], [NBLocalization text:@"Train this story"],
                         [NBLocalization text:@"Share on NewsBlur…"], [NBLocalization text:@"Ask AI"], [NBLocalization text:@"Go to feed"], [NBLocalization text:@"Font…"]];
@@ -469,7 +481,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger adjustedRow = [self actionAtIndexPath:indexPath];
-    if (adjustedRow >= 8) {
+    if (adjustedRow >= 8 && adjustedRow != 14) {
         return nil;
     }
     return indexPath;
@@ -501,6 +513,8 @@
         [self goToFeed];
     } else if (adjustedRow == 7) {
         [self showFontList];
+    } else if (adjustedRow == 14) {
+        [ListenStoryBridge toggleQueueForStory:self.appDelegate.activeStory];
     }
 }
 

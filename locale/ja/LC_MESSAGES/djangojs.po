@@ -121,6 +121,11 @@ msgstr " — 大文字が2文字以上"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — 単語「%(word)s」全体のみ"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "月額29ドル"
 
@@ -221,6 +226,11 @@ msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s人のフォロワー"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "本日あと%(count)s件、無料で記事をプレビューできます"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s時間"
@@ -239,6 +249,11 @@ msgstr[0] "%(count)s個の画像フィルター"
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s件の「いいね」"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s件一致"
 
 #, python-format
 msgid "%(count)s member"
@@ -397,6 +412,11 @@ msgid_plural "%(count)s videos"
 msgstr[0] "%(count)s本の動画"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "残りの音声プレビュー：%(count)s回"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s週間"
@@ -473,6 +493,11 @@ msgstr[0] "%(count)s件中%(indexed)s件のサイトをインデックスしま�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s アップグレードすると、アーカイブ全体から関連記事を表示できます。"
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "今月の残り時間：%(minutes)s分"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -895,6 +920,12 @@ msgstr "記事の閲覧、操作、学習、検索などに使える28個のツ�
 msgid "2x daily"
 msgstr "1日2回"
 
+msgid "30 second preview"
+msgstr "30秒間プレビュー"
+
+msgid "30s preview"
+msgstr "30秒プレビュー"
+
 msgid "3x daily"
 msgstr "1日3回"
 
@@ -932,6 +963,9 @@ msgstr[0] "プレミアムトライアルの残り<strong>%(count)s日</strong>"
 
 msgid "A blurblog of shared stories"
 msgstr "共有した記事のBlurblog"
+
+msgid "A clearer, closer sound"
+msgstr "より明瞭で近くに感じる音声"
 
 msgid "A folder of feeds read as one stream"
 msgstr "複数のフィードを1つのストリームとして読むフォルダー"
@@ -980,6 +1014,10 @@ msgstr "すべてのカテゴリ（%(value_1)s）"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "もちろんです。トレーナーを開いて、付けた高評価や低評価を外せばリセットできます。"
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "アクセント"
 
 msgid "Account"
 msgstr "アカウント"
@@ -1058,12 +1096,19 @@ msgstr "Chromeに追加"
 msgid "Add to Firefox"
 msgstr "Firefoxに追加"
 
+msgid "Add to Up Next"
+msgstr "次に再生に追加"
+
 msgid "Add to folder"
 msgstr "フォルダーに追加"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)sに追加"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "次に再生に追加 · %(position)s"
 
 msgid "Added!"
 msgstr "追加しました！"
@@ -1084,6 +1129,10 @@ msgstr "フィード／フォルダーを既読にした後"
 
 msgid "Afternoon"
 msgstr "午後"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "年齢"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1358,6 +1407,9 @@ msgstr "自動で既読にする"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "自動テーマは、システムのライト／ダーク切り替えスケジュールに合わせます。"
+
+msgid "Auto-continue"
+msgstr "自動で続ける"
 
 msgid "Auto-follow<br>my friends"
 msgstr "友達を<br>自動フォロー"
@@ -1753,6 +1805,9 @@ msgstr "日付範囲をクリア"
 msgid "Clear filter"
 msgstr "フィルターをクリア"
 
+msgid "Clear filters"
+msgstr "フィルターをクリア"
+
 msgid "Clear icon"
 msgstr "アイコンを消去"
 
@@ -1781,6 +1836,9 @@ msgstr "学習を終了して読み始める"
 
 msgid "Close player"
 msgstr "プレーヤーを閉じる"
+
+msgid "Closeness to the original voice"
+msgstr "元の音声への近さ"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "すべてのフィードで重複する記事をまとめる"
@@ -1916,6 +1974,9 @@ msgstr "このURLのRSSフィードが見つかりませんでした"
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQを読み込めませんでした。もう一度お試しください。"
 
+msgid "Couldn't load audio for this story."
+msgstr "この記事の音声を読み込めませんでした。"
+
 msgid "Counting is difficult"
 msgstr "数えるのは難しい"
 
@@ -1948,6 +2009,10 @@ msgstr "クレジット"
 
 msgid "Cursors"
 msgstr "カーソル"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "カスタム"
 
 msgid "Custom Add Site URL"
 msgstr "カスタムのサイト追加URL"
@@ -2109,6 +2174,9 @@ msgstr "削除しました！"
 
 msgid "Deleting..."
 msgstr "削除中..."
+
+msgid "Delivery"
+msgstr "話し方"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "探している記事の内容を説明してください。ページを再解析して見つけます。"
@@ -2508,6 +2576,9 @@ msgstr "ターミナルからMCPサーバーの全機能を使えます。フィ
 msgid "Exact phrase"
 msgstr "完全一致フレーズ"
 
+msgid "Exaggerates the voice's style"
+msgstr "音声のスタイルを強調"
+
 msgid "Examples"
 msgstr "例"
 
@@ -2543,6 +2614,10 @@ msgstr "1年で期限切れ"
 
 msgid "Export trained stories from folders"
 msgstr "フォルダーから学習済みの記事をエクスポート"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "表現豊か"
 
 msgid "Extras"
 msgstr "その他"
@@ -2781,6 +2856,9 @@ msgstr "友達を探す"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "「メールニュースレター」ダイアログで、あなた専用のNewsBlurメールアドレスを確認できます"
 
+msgid "Fine-tune voice"
+msgstr "音声を微調整"
+
 msgid "Finish recording..."
 msgstr "録音を終了..."
 
@@ -2846,6 +2924,9 @@ msgstr "フォロー"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "%(value_1)sをフォロー"
+
+msgid "Follow along"
+msgstr "読み進める"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "RSSフィードを公開していないサイトも含め、あらゆるウェブサイトをフォローできます。"
@@ -3054,6 +3135,10 @@ msgstr "ゲーム"
 msgid "Gaming"
 msgstr "ゲーム"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "性別"
+
 msgid "General"
 msgstr "一般"
 
@@ -3216,6 +3301,9 @@ msgstr "見出し"
 msgid "Health"
 msgstr "健康"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "最初の30秒を音声で試聴できます。プレミアムアーカイブでは記事全体を読み上げます。"
+
 msgid "Hearts"
 msgstr "ハート"
 
@@ -3255,6 +3343,9 @@ msgstr "記事の変更を非表示"
 msgid "Highlight"
 msgstr "ハイライト"
 
+msgid "Highlight the paragraph being read"
+msgstr "読み上げ中の段落をハイライト"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "タイトル内の単語をハイライトして、特定のフレーズを学習させましょう。"
 
@@ -3287,6 +3378,9 @@ msgstr "仕組み"
 
 msgid "How many stories can I save?"
 msgstr "記事はいくつ保存できますか？"
+
+msgid "How much emotion"
+msgstr "感情の強さ"
 
 msgid "How often"
 msgstr "頻度"
@@ -3588,6 +3682,21 @@ msgstr "リスト表示"
 msgid "List view"
 msgstr "リスト表示"
 
+msgid "Listen"
+msgstr "読み上げ"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "読み上げがタイムアウトしました。少し待ってからもう一度お試しください。"
+
+msgid "Listen to stories read aloud"
+msgstr "記事を音声で読み上げる"
+
+msgid "Listen to story"
+msgstr "記事を読み上げる"
+
+msgid "Listen to this story"
+msgstr "この記事を読み上げる"
+
 msgid "Loading PayPal..."
 msgstr "PayPalを読み込み中..."
 
@@ -3605,6 +3714,9 @@ msgstr "フィードを読み込み中..."
 
 msgid "Loading more briefings..."
 msgstr "ブリーフィングをさらに読み込み中…"
+
+msgid "Loading voices..."
+msgstr "音声を読み込み中..."
 
 msgid "Loading your blocklist settings..."
 msgstr "ブロックリストの設定を読み込んでいます..."
@@ -3863,6 +3975,9 @@ msgstr "その他の機能"
 msgid "More from Reddit"
 msgstr "Redditのその他の結果"
 
+msgid "More voices"
+msgstr "他の音声"
+
 msgid "Morning"
 msgstr "朝"
 
@@ -3949,6 +4064,10 @@ msgstr "名前"
 
 msgid "Native Apps"
 msgstr "ネイティブアプリ"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "自然"
 
 msgid "Natural Language Image Classifier"
 msgstr "自然言語画像分類器"
@@ -4273,6 +4392,9 @@ msgstr "従量課金が設定されていません。"
 
 msgid "No valid merge groups to apply"
 msgstr "適用できる有効な統合グループがありません"
+
+msgid "No voices match these filters"
+msgstr "このフィルターに一致する音声はありません"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "共有した記事を購読している人はまだいません。"
@@ -4639,6 +4761,15 @@ msgstr "ウェブサイトのURLを貼り付け..."
 msgid "Pattern: %(value_1)s"
 msgstr "パターン: %(value_1)s"
 
+msgid "Pause"
+msgstr "一時停止"
+
+msgid "Pause listening"
+msgstr "読み上げを一時停止"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "読み上げを一時停止／再開（y）"
+
 msgid "Payment history"
 msgstr "支払い履歴"
 
@@ -4689,6 +4820,9 @@ msgstr "次を再生"
 
 msgid "Play in Mini Media Player"
 msgstr "ミニメディアプレーヤーで再生"
+
+msgid "Play the next unread story"
+msgstr "次の未読記事を再生"
 
 msgid "Play/Pause"
 msgstr "再生／一時停止"
@@ -4772,6 +4906,9 @@ msgstr "プレミアム"
 msgid "Premium Archive"
 msgstr "プレミアムアーカイブ"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "プレミアムアーカイブでは、記事全体を読み上げます。"
+
 msgid "Premium Pro"
 msgstr "プレミアム Pro"
 
@@ -4808,6 +4945,9 @@ msgstr "プレミアムステータス"
 msgid "Premium users can make their blurblog private."
 msgstr "プレミアムユーザーは自分のBlurblogを非公開にできます。"
 
+msgid "Preparing audio..."
+msgstr "音声を準備しています…"
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "/ キーを押すと、どこからでも検索欄に移動できます。"
 
@@ -4828,6 +4968,14 @@ msgstr "前のサイト"
 
 msgid "Preview"
 msgstr "プレビュー"
+
+msgid "Preview this voice"
+msgstr "この音声を試聴"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "%(seconds)s秒のプレビュー中です。プレミアムアーカイブでは記事全文を利用できます"
 
 msgid "Previous story"
 msgstr "前の記事"
@@ -4919,6 +5067,9 @@ msgid "Queued %(count)s story for categorization. Categories will appear as stor
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] "分類待ちの記事：%(count)s件。処理が進むとカテゴリが表示されます。"
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "キューに追加しました。クリックして次に再生から削除"
+
 msgid "Quick search for a site"
 msgstr "サイトをすばやく検索"
 
@@ -4974,6 +5125,13 @@ msgid ""
 "river surfaces the best stories across your subscriptions."
 msgstr "フォルダー内のすべてのフィードを、時系列順のスクロール可能なストリームとして読みます。学習機能と組み合わせると、購読中のフィード全体からおすすめの記事が表示されます。"
 
+msgid "Read aloud"
+msgstr "読み上げ"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "%(voice)s の朗読"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "NewsBlurブログでもっと読む"
 
@@ -4988,6 +5146,9 @@ msgstr "フォルダー別に記事を読む"
 
 msgid "Read the whole story"
 msgstr "記事全体を読む"
+
+msgid "Read this story aloud (y)"
+msgstr "この記事を読み上げる（y）"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "未読記事を読む：newsblur stories list"
@@ -5013,6 +5174,10 @@ msgstr "保存した記事を読み込み中…"
 
 msgid "Reading view"
 msgstr "閲覧画面"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "%(language)sの記事を読み上げます"
 
 msgid "Real-time"
 msgstr "リアルタイム"
@@ -5046,6 +5211,10 @@ msgstr "このサイトをおすすめする"
 
 msgid "Recommended"
 msgstr "おすすめ"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "%(language)sにおすすめ"
 
 msgid "Record voice question"
 msgstr "音声で質問を録音"
@@ -5115,6 +5284,9 @@ msgstr "エピソードごとに再生位置を記憶"
 msgid "Remove"
 msgstr "削除"
 
+msgid "Remove from Up Next"
+msgstr "次に再生から削除"
+
 msgid "Remove this list"
 msgstr "このリストを削除"
 
@@ -5123,6 +5295,9 @@ msgstr "この統合グループを削除"
 
 msgid "Removed"
 msgstr "削除済み"
+
+msgid "Removed from Up Next"
+msgstr "次に再生から削除しました"
 
 msgid "Rename"
 msgstr "名前を変更"
@@ -5181,6 +5356,10 @@ msgstr "リセット"
 
 msgid "Reset to original favicon"
 msgstr "元のファビコンに戻す"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)sにリセット"
 
 msgid "Resetting..."
 msgstr "リセット中…"
@@ -5440,6 +5619,9 @@ msgstr "サブレディットを検索（例：programming、news、gaming）...
 
 msgid "Search the FAQ..."
 msgstr "FAQを検索..."
+
+msgid "Search voices"
+msgstr "音声を検索"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "1つのフィード、フォルダー、または全体を対象に検索"
@@ -5777,6 +5959,9 @@ msgstr "自分のフィードを読むには、登録してください。"
 msgid "Signup"
 msgstr "新規登録"
 
+msgid "Similarity"
+msgstr "類似度"
+
 msgid "Single Story"
 msgstr "単一の記事"
 
@@ -5896,8 +6081,14 @@ msgstr "フィードと記事タイトルの間隔"
 msgid "Spanish"
 msgstr "スペイン語"
 
+msgid "Speaker boost"
+msgstr "音量ブースト"
+
 msgid "Special Folders"
 msgstr "特別フォルダー"
+
+msgid "Speed"
+msgstr "速度"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "利用上限に達しました。次のサイクルまで分類器は一時停止されます。"
@@ -5938,6 +6129,12 @@ msgstr "スポーツ"
 
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "サイトのキャッチコピーをもっと魅力的にしましょう。選ばれると、このサイトは1週間NewsBlurダッシュボードに掲載されます。"
+
+msgid "Stability"
+msgstr "安定性"
+
+msgid "Stability, similarity and style"
+msgstr "安定性、類似度、スタイル"
 
 #, python-format
 msgid "Stale %(date)s"
@@ -5980,12 +6177,22 @@ msgstr "ステータス"
 msgid "Stay on the same feed/folder"
 msgstr "同じフィード／フォルダーにとどまる"
 
+msgid "Steadier or more varied"
+msgstr "より安定／より変化に富む"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "安定"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "%(step)s / %(count)s"
 
 msgid "Stop any time you like."
 msgstr "いつでも停止できます。"
+
+msgid "Stop preview"
+msgstr "プレビューを停止"
 
 msgid "Stop recording"
 msgstr "録音を停止"
@@ -6101,6 +6308,9 @@ msgstr "記事本文のプレビュー"
 msgid "Story is always hidden"
 msgstr "記事は常に非表示"
 
+msgid "Story language"
+msgstr "記事の言語"
+
 msgid "Story layout"
 msgstr "記事のレイアウト"
 
@@ -6127,6 +6337,13 @@ msgstr "ストリームが中断されました。10秒間応答がありませ�
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Style"
+msgstr "スタイル"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "スタイル"
 
 msgid "Submit Payment"
 msgstr "支払いを送信"
@@ -6385,6 +6602,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "NewsBlurブログ"
 
+msgid "The audio stream was interrupted."
+msgstr "音声ストリームが中断されました。"
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "%(icon)sテキスト表示の全機能は%(link_start)sプレミアム機能%(link_end)sです。"
@@ -6429,6 +6649,10 @@ msgstr "選択した表示形式はサイトごとに記憶されるため、要
 
 msgid "Themes & Customization"
 msgstr "テーマとカスタマイズ"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "%(source)sから次に"
 
 msgid "There are too many sites and stories to process. "
 msgstr "処理するサイトと記事が多すぎます。"
@@ -6480,6 +6704,9 @@ msgstr "ログアウト中にエラーが発生しました。困りました。
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "上限はありません。好きなだけ記事を保存でき、永久に保管されます。"
+
+msgid "There's nothing to read aloud in this story."
+msgstr "この記事には読み上げる内容がありません。"
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "他の購読者がこれらのフィードを共有しているため、これらのクラスターが見つかりました。"
@@ -6969,6 +7196,9 @@ msgstr[0] "サイトを%(count)s秒ごとに更新中..."
 msgid "Updating sites in real-time..."
 msgstr "サイトをリアルタイムで更新中…"
 
+msgid "Upgrade"
+msgstr "アップグレード"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "%(value_1)sにアップグレード"
@@ -7109,8 +7339,14 @@ msgstr "設定を表示"
 msgid "Visual"
 msgstr "ビジュアル"
 
+msgid "Voice"
+msgstr "音声"
+
 msgid "Voice recording failed. Please try again."
 msgstr "音声の録音に失敗しました。もう一度お試しください。"
+
+msgid "Voice settings"
+msgstr "音声設定"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：この操作は本当に取り消せません"
@@ -7508,6 +7744,10 @@ msgstr "紹介実績"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "アーカイブした記事には引き続きアクセスできますが、新しい記事には通常の保存期間ポリシーが適用されます。"
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "選択した音声は現在利用できないため、%(voice)sがこの記事を読み上げています。"
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookieの有効期限が切れました — もう一度ログインしてください"
 
@@ -7681,6 +7921,10 @@ msgstr "労働組合"
 msgid "like"
 msgstr "いいね"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "聴く"
+
 msgid "local elections"
 msgstr "地方選挙"
 
@@ -7762,6 +8006,9 @@ msgstr "購読中"
 
 msgid "supply chain"
 msgstr "サプライチェーン"
+
+msgid "this list"
+msgstr "このリスト"
 
 msgid "trade policy"
 msgstr "貿易政策"

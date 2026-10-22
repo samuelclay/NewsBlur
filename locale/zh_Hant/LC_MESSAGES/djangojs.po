@@ -121,6 +121,11 @@ msgstr " — 兩個或更多大寫字母"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — 僅限完整單字「%(word)s」"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "第 %(position)s 項"
+
 msgid "$29/month"
 msgstr "每月 $29"
 
@@ -221,6 +226,11 @@ msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s 位追蹤者"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "今天還可免費預覽 %(count)s 篇文章"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s 小時"
@@ -239,6 +249,11 @@ msgstr[0] "%(count)s 個圖片篩選器"
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s 個讚"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s 個符合項目"
 
 #, python-format
 msgid "%(count)s member"
@@ -397,6 +412,11 @@ msgid_plural "%(count)s videos"
 msgstr[0] "%(count)s 部影片"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "剩餘 %(count)s 次語音預覽"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s 週"
@@ -473,6 +493,11 @@ msgstr[0] "已索引 %(indexed)s / %(count)s 個網站。索引剩餘的訂閱�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s 升級即可查看整個封存中的相關文章。"
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "本月還剩 %(minutes)s 分鐘"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -895,6 +920,12 @@ msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
 msgid "2x daily"
 msgstr "每日 2 次"
 
+msgid "30 second preview"
+msgstr "30 秒預覽"
+
+msgid "30s preview"
+msgstr "30 秒預覽"
+
 msgid "3x daily"
 msgstr "每日 3 次"
 
@@ -932,6 +963,9 @@ msgstr[0] "試用 Premium 還剩 <strong>%(count)s 天</strong>"
 
 msgid "A blurblog of shared stories"
 msgstr "分享文章的 Blurblog"
+
+msgid "A clearer, closer sound"
+msgstr "更清晰、更貼近的音質"
 
 msgid "A folder of feeds read as one stream"
 msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
@@ -980,6 +1014,10 @@ msgstr "所有分類（%(value_1)s）"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "當然可以。開啟訓練器，移除任何讚或倒讚即可重設。"
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "口音"
 
 msgid "Account"
 msgstr "帳戶"
@@ -1058,12 +1096,19 @@ msgstr "新增至 Chrome"
 msgid "Add to Firefox"
 msgstr "新增至 Firefox"
 
+msgid "Add to Up Next"
+msgstr "加入接下來播放"
+
 msgid "Add to folder"
 msgstr "加入資料夾"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "新增於 %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "已加入接下來播放 · %(position)s"
 
 msgid "Added!"
 msgstr "已新增！"
@@ -1084,6 +1129,10 @@ msgstr "將訂閱來源／資料夾標記為已讀後"
 
 msgid "Afternoon"
 msgstr "下午"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "年齡"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1358,6 +1407,9 @@ msgstr "自動標記為已讀"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "自動佈景主題會依照你系統的淺色與深色排程切換。"
+
+msgid "Auto-continue"
+msgstr "自動接續"
 
 msgid "Auto-follow<br>my friends"
 msgstr "自動追蹤<br>我的朋友"
@@ -1753,6 +1805,9 @@ msgstr "清除日期範圍"
 msgid "Clear filter"
 msgstr "清除篩選條件"
 
+msgid "Clear filters"
+msgstr "清除篩選條件"
+
 msgid "Clear icon"
 msgstr "清除圖示"
 
@@ -1781,6 +1836,9 @@ msgstr "關閉訓練並開始閱讀"
 
 msgid "Close player"
 msgstr "關閉播放器"
+
+msgid "Closeness to the original voice"
+msgstr "與原始語音的相似程度"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "將所有訂閱來源中的重複文章分群"
@@ -1916,6 +1974,9 @@ msgstr "找不到此網址的 RSS 訂閱來源"
 msgid "Could not load FAQ. Please try again."
 msgstr "無法載入常見問題。請再試一次。"
 
+msgid "Couldn't load audio for this story."
+msgstr "無法載入這篇文章的音訊。"
+
 msgid "Counting is difficult"
 msgstr "計數很難"
 
@@ -1948,6 +2009,10 @@ msgstr "獲得的回饋"
 
 msgid "Cursors"
 msgstr "游標"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "自訂"
 
 msgid "Custom Add Site URL"
 msgstr "自訂新增網站網址"
@@ -2109,6 +2174,9 @@ msgstr "已刪除！"
 
 msgid "Deleting..."
 msgstr "正在刪除…"
+
+msgid "Delivery"
+msgstr "語音表現"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "描述你要找的文章，我們會重新分析頁面來尋找。"
@@ -2508,6 +2576,9 @@ msgstr "在終端機中使用 MCP 伺服器的所有功能。閱讀訂閱來源�
 msgid "Exact phrase"
 msgstr "完全符合的詞組"
 
+msgid "Exaggerates the voice's style"
+msgstr "加強語音風格"
+
 msgid "Examples"
 msgstr "範例"
 
@@ -2543,6 +2614,10 @@ msgstr "1 年後過期"
 
 msgid "Export trained stories from folders"
 msgstr "匯出資料夾中的已訓練文章"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "富有表情"
 
 msgid "Extras"
 msgstr "其他"
@@ -2781,6 +2856,9 @@ msgstr "尋找朋友"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "在電子報對話框中尋找你的專屬 NewsBlur 電子郵件地址"
 
+msgid "Fine-tune voice"
+msgstr "微調語音"
+
 msgid "Finish recording..."
 msgstr "完成錄製…"
 
@@ -2846,6 +2924,9 @@ msgstr "追蹤"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "追蹤 %(value_1)s"
+
+msgid "Follow along"
+msgstr "跟著聆聽"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "追蹤任何網站，即使它們沒有發布 RSS 訂閱來源。"
@@ -3054,6 +3135,10 @@ msgstr "遊戲"
 msgid "Gaming"
 msgstr "遊戲"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "性別"
+
 msgid "General"
 msgstr "一般"
 
@@ -3216,6 +3301,9 @@ msgstr "標題"
 msgid "Health"
 msgstr "健康"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "聆聽前 30 秒的朗讀。Premium Archive 可朗讀完整文章。"
+
 msgid "Hearts"
 msgstr "愛心"
 
@@ -3255,6 +3343,9 @@ msgstr "隱藏文章變更"
 msgid "Highlight"
 msgstr "醒目標示"
 
+msgid "Highlight the paragraph being read"
+msgstr "反白標示正在朗讀的段落"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "醒目標示標題中的詞語，以便針對特定詞組進行訓練。"
 
@@ -3287,6 +3378,9 @@ msgstr "運作方式"
 
 msgid "How many stories can I save?"
 msgstr "我可以儲存多少篇文章？"
+
+msgid "How much emotion"
+msgstr "情感表現程度"
 
 msgid "How often"
 msgstr "頻率"
@@ -3588,6 +3682,21 @@ msgstr "清單檢視"
 msgid "List view"
 msgstr "清單檢視"
 
+msgid "Listen"
+msgstr "聆聽"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "聆聽逾時。請稍後再試。"
+
+msgid "Listen to stories read aloud"
+msgstr "聆聽朗讀文章"
+
+msgid "Listen to story"
+msgstr "聆聽文章"
+
+msgid "Listen to this story"
+msgstr "聆聽這篇文章"
+
 msgid "Loading PayPal..."
 msgstr "正在載入 PayPal…"
 
@@ -3605,6 +3714,9 @@ msgstr "正在載入訂閱來源…"
 
 msgid "Loading more briefings..."
 msgstr "正在載入更多簡報…"
+
+msgid "Loading voices..."
+msgstr "正在載入語音…"
 
 msgid "Loading your blocklist settings..."
 msgstr "正在載入封鎖清單設定…"
@@ -3863,6 +3975,9 @@ msgstr "更多功能"
 msgid "More from Reddit"
 msgstr "更多 Reddit 內容"
 
+msgid "More voices"
+msgstr "更多語音"
+
 msgid "Morning"
 msgstr "早上"
 
@@ -3949,6 +4064,10 @@ msgstr "名稱"
 
 msgid "Native Apps"
 msgstr "原生應用程式"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "自然"
 
 msgid "Natural Language Image Classifier"
 msgstr "自然語言圖片分類器"
@@ -4273,6 +4392,9 @@ msgstr "尚未設定用量計費。"
 
 msgid "No valid merge groups to apply"
 msgstr "沒有可套用的有效合併群組"
+
+msgid "No voices match these filters"
+msgstr "沒有符合這些篩選條件的語音"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "目前還沒有人訂閱你分享的文章。"
@@ -4639,6 +4761,15 @@ msgstr "貼上任何網站網址…"
 msgid "Pattern: %(value_1)s"
 msgstr "模式：%(value_1)s"
 
+msgid "Pause"
+msgstr "暫停"
+
+msgid "Pause listening"
+msgstr "暫停聆聽"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "暫停或繼續朗讀（y）"
+
 msgid "Payment history"
 msgstr "付款紀錄"
 
@@ -4689,6 +4820,9 @@ msgstr "接著播放"
 
 msgid "Play in Mini Media Player"
 msgstr "在迷你媒體播放器中播放"
+
+msgid "Play the next unread story"
+msgstr "播放下一篇未讀文章"
 
 msgid "Play/Pause"
 msgstr "播放／暫停"
@@ -4772,6 +4906,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive 可朗讀完整文章。"
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4808,6 +4945,9 @@ msgstr "Premium 狀態"
 msgid "Premium users can make their blurblog private."
 msgstr "Premium 使用者可以將自己的 Blurblog 設為私人。"
 
+msgid "Preparing audio..."
+msgstr "正在準備音訊…"
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "在任何地方按下 /，即可直接跳至搜尋欄位。"
 
@@ -4828,6 +4968,14 @@ msgstr "上一個網站"
 
 msgid "Preview"
 msgstr "預覽"
+
+msgid "Preview this voice"
+msgstr "預覽此語音"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "正在預覽 %(seconds)s 秒。Premium Archive 可解鎖完整文章"
 
 msgid "Previous story"
 msgstr "上一篇文章"
@@ -4919,6 +5067,9 @@ msgid "Queued %(count)s story for categorization. Categories will appear as stor
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] "已將 %(count)s 篇文章排入分類佇列。文章處理後，分類就會顯示。"
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "已排入佇列。點選即可從接下來播放中移除"
+
 msgid "Quick search for a site"
 msgstr "快速搜尋網站"
 
@@ -4974,6 +5125,13 @@ msgid ""
 "river surfaces the best stories across your subscriptions."
 msgstr "將資料夾中的所有訂閱來源合併成按時間順序排列的可捲動資訊流來閱讀。搭配訓練功能，新聞流會從你的訂閱內容中挑選出最佳文章。"
 
+msgid "Read aloud"
+msgstr "朗讀"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "由 %(voice)s 朗讀"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "在 NewsBlur 部落格閱讀更多"
 
@@ -4988,6 +5146,9 @@ msgstr "依資料夾閱讀文章"
 
 msgid "Read the whole story"
 msgstr "閱讀完整文章"
+
+msgid "Read this story aloud (y)"
+msgstr "朗讀這篇文章（y）"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "使用以下方式閱讀未讀文章：newsblur stories list"
@@ -5013,6 +5174,10 @@ msgstr "正在讀取已儲存的文章…"
 
 msgid "Reading view"
 msgstr "閱讀檢視"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "朗讀你的 %(language)s 文章"
 
 msgid "Real-time"
 msgstr "即時"
@@ -5046,6 +5211,10 @@ msgstr "推薦此網站"
 
 msgid "Recommended"
 msgstr "推薦"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "為 %(language)s 推薦"
 
 msgid "Record voice question"
 msgstr "錄製語音問題"
@@ -5115,6 +5284,9 @@ msgstr "記住每集的播放位置"
 msgid "Remove"
 msgstr "移除"
 
+msgid "Remove from Up Next"
+msgstr "從接下來播放中移除"
+
 msgid "Remove this list"
 msgstr "移除此清單"
 
@@ -5123,6 +5295,9 @@ msgstr "移除此合併群組"
 
 msgid "Removed"
 msgstr "已移除"
+
+msgid "Removed from Up Next"
+msgstr "已從接下來播放中移除"
 
 msgid "Rename"
 msgstr "重新命名"
@@ -5181,6 +5356,10 @@ msgstr "重設"
 
 msgid "Reset to original favicon"
 msgstr "還原為原始網站圖示"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "重設時間：%(date)s"
 
 msgid "Resetting..."
 msgstr "正在重設…"
@@ -5440,6 +5619,9 @@ msgstr "搜尋 subreddit（例如 programming、news、gaming）…"
 
 msgid "Search the FAQ..."
 msgstr "搜尋常見問題…"
+
+msgid "Search voices"
+msgstr "搜尋語音"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "搜尋單一訂閱來源、資料夾，或所有內容"
@@ -5777,6 +5959,9 @@ msgstr "註冊即可閱讀自己的訂閱來源。"
 msgid "Signup"
 msgstr "註冊"
 
+msgid "Similarity"
+msgstr "相似度"
+
 msgid "Single Story"
 msgstr "單篇文章"
 
@@ -5896,8 +6081,14 @@ msgstr "訂閱來源與文章標題之間的間距"
 msgid "Spanish"
 msgstr "西班牙文"
 
+msgid "Speaker boost"
+msgstr "增強人聲"
+
 msgid "Special Folders"
 msgstr "特殊資料夾"
+
+msgid "Speed"
+msgstr "速度"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "已達支出上限。分類器已暫停，直到下一個週期。"
@@ -5938,6 +6129,12 @@ msgstr "體育"
 
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "美化網站標語。若獲選，該網站將在 NewsBlur 儀表板上展示一週。"
+
+msgid "Stability"
+msgstr "穩定度"
+
+msgid "Stability, similarity and style"
+msgstr "穩定度、相似度與風格"
 
 #, python-format
 msgid "Stale %(date)s"
@@ -5980,12 +6177,22 @@ msgstr "狀態"
 msgid "Stay on the same feed/folder"
 msgstr "停留在同一個訂閱來源／資料夾"
 
+msgid "Steadier or more varied"
+msgstr "較穩定或更多變"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "平穩"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "第 %(step)s 步，共 %(count)s 步"
 
 msgid "Stop any time you like."
 msgstr "隨時都可以停止。"
+
+msgid "Stop preview"
+msgstr "停止預覽"
 
 msgid "Stop recording"
 msgstr "停止錄音"
@@ -6101,6 +6308,9 @@ msgstr "文章內容預覽"
 msgid "Story is always hidden"
 msgstr "文章永遠隱藏"
 
+msgid "Story language"
+msgstr "文章語言"
+
 msgid "Story layout"
 msgstr "文章版面"
 
@@ -6127,6 +6337,13 @@ msgstr "串流中斷。10 秒內未收到回應。"
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Style"
+msgstr "風格"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "風格"
 
 msgid "Submit Payment"
 msgstr "提交付款"
@@ -6383,6 +6600,9 @@ msgstr "模型上下文協定（MCP）是一種開放標準，可將 AI 代理�
 msgid "The NewsBlur Blog"
 msgstr "NewsBlur 部落格"
 
+msgid "The audio stream was interrupted."
+msgstr "音訊串流已中斷。"
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "完整的 %(icon)s 文字檢視是%(link_start)s進階功能%(link_end)s。"
@@ -6427,6 +6647,10 @@ msgstr "你選擇的檢視方式會按網站記憶，因此僅提供摘要的訂
 
 msgid "Themes & Customization"
 msgstr "佈景主題與自訂"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "接著從 %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "要處理的網站和文章太多了。"
@@ -6478,6 +6702,9 @@ msgstr "登出時發生錯誤，哎呀。"
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "沒有數量限制。想儲存多少篇文章都可以，而且會永久保留。"
+
+msgid "There's nothing to read aloud in this story."
+msgstr "這篇文章沒有可朗讀的內容。"
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "這些群組是因為其他訂閱者也訂閱了這些來源而找到的。"
@@ -6967,6 +7194,9 @@ msgstr[0] "每 %(count)s 秒更新網站…"
 msgid "Updating sites in real-time..."
 msgstr "正在即時更新網站…"
 
+msgid "Upgrade"
+msgstr "升級"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "升級至 %(value_1)s"
@@ -7107,8 +7337,14 @@ msgstr "檢視設定"
 msgid "Visual"
 msgstr "視覺"
 
+msgid "Voice"
+msgstr "語音"
+
 msgid "Voice recording failed. Please try again."
 msgstr "語音錄製失敗。請再試一次。"
+
+msgid "Voice settings"
+msgstr "語音設定"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作確實無法復原"
@@ -7506,6 +7742,10 @@ msgstr "你的推薦統計"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "你封存的文章仍可存取，但新文章將依照標準保留政策處理。"
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "你選擇的語音目前無法使用，因此由 %(voice)s 朗讀這篇文章。"
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie 已過期 — 請重新登入"
 
@@ -7679,6 +7919,10 @@ msgstr "工會"
 msgid "like"
 msgstr "喜歡"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "聆聽"
+
 msgid "local elections"
 msgstr "地方選舉"
 
@@ -7760,6 +8004,9 @@ msgstr "已訂閱"
 
 msgid "supply chain"
 msgstr "供應鏈"
+
+msgid "this list"
+msgstr "這份清單"
 
 msgid "trade policy"
 msgstr "貿易政策"

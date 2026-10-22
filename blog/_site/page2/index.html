@@ -82,6 +82,50 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Apr 5, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/04/05/widely-read-stories-and-long-reads/">
+              Widely Read Stories and Long Reads: surfacing stories worth your time
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>There are two questions I keep coming back to when I open my reader: what are other people reading right now, and what’s worth setting aside time for? Not what’s trending on social media or what an algorithm thinks will get clicks. What are actual readers spending their time on?</p>
+
+<p>Two new feeds in the sidebar answer those questions: <strong>Widely Read Stories</strong> and <strong>Long Reads</strong>. Both are ranked by actual reading time rather than clicks or social shares.</p>
+
+<h3 id="widely-read-stories">Widely Read Stories</h3>
+
+<p>This feed collects stories that three or more NewsBlur readers have spent meaningful time with over the past week. “Meaningful time” means at least 3 seconds of actual reading, so quick scrolls and accidental opens don’t count. The list is refreshed every hour and stories are sorted by publish date, so you see the latest widely read articles first.</p>
+
+<p><img src="/assets/widely-read-stories.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Think of it as a window into what the NewsBlur community is reading right now. It’s not an algorithm trying to maximize engagement. It’s just the stories that real people are spending their time on.</p>
+
+<h3 id="long-reads">Long Reads</h3>
+
+<p>The Long Reads feed takes a different angle. Instead of counting readers, it ranks stories by average time spent per reader. A story that five people each read for four minutes ranks higher than a story that fifty people glanced at for thirty seconds. This naturally surfaces longer, deeper articles that reward sustained attention.</p>
+
+<p><img src="/assets/long-reads.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="your-classifiers-apply-here-too">Your classifiers apply here too</h3>
+
+<p>These aren’t just raw lists of stories. When you open Widely Read Stories or Long Reads, your trained classifiers run against every story. Tags, authors, titles, and text classifiers all apply, so stories from feeds you’ve trained show up with the same green and red intelligence scoring you see everywhere else in NewsBlur. If you’ve trained a tag as interesting or an author as disliked, those scores carry through into the trending feeds.</p>
+
+<p><img src="/assets/widely-read-classifiers.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="dashboard-support">Dashboard support</h3>
+
+<p>Both feeds are available as dashboard river options. Open your dashboard settings, pick “Widely Read Stories” or “Long Reads” from the river dropdown, and the feed appears as a panel alongside your other dashboard rivers.</p>
+
+<p><img src="/assets/widely-read-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Widely Read Stories and Long Reads are available now on the web. Look for them in the sidebar below Global Shared Stories. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Apr 3, 2026</span>
           <h3>
             <a class="post-link" href="/2026/04/03/quote-and-share/">
@@ -797,67 +841,6 @@ newsblur auth login
 <p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
 
 <p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 13, 2026</span>
-          <h3>
-            <a class="post-link" href="/2026/03/13/web-feeds/">
-              Web Feeds: Turn any website into an RSS feed
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a site didn’t offer RSS, you were out of luck.</p>
-
-<p><strong>Web Feeds</strong> is a new feature that creates RSS feeds from any website. Point it at a URL, and NewsBlur analyzes the page structure, identifies the repeating content patterns, and generates extraction rules that turn the page into a live feed. It works on news sites, blogs, job boards, product pages, or really anything with a list of items that changes over time.</p>
-
-<p>This is a huge feature and has been requested for years. I’m so thrilled to finally be able to offer it in a way that I feel comfortable with. Other solutions including having you select story titles on a re-hosted version of the page, but it was clumsy and error-prone. This way, we use LLMs to figure out what the story titles are likely to be, present the variations to you, and then let you decide what’s right. So much better!</p>
-
-<!-- SCREENSHOT: Web Feed tab showing URL input, story hint field, and Analyze button -->
-<p><img src="/assets/web-feed-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Open the Add + Discover Sites page and click the <strong>Web Feed</strong> tab. Paste a URL and click Analyze. NewsBlur fetches the page, strips out navigation and boilerplate, and analyzes the HTML structure. Within a few seconds, you’ll see multiple extraction variants, each representing a different content pattern found on the page.</p>
-
-<p>Progress updates stream in real-time while the analysis runs. NewsBlur typically finds 3-5 different extraction patterns on a page. The first variant is usually the main content (article list, blog posts, product grid), but sometimes the page has multiple distinct sections worth subscribing to. Each variant shows a label, a description of what it captures, and a preview of 3 extracted stories so you can see exactly what you’d get.</p>
-
-<!-- SCREENSHOT: Real-time progress updates showing "Fetching page...", "Finding story patterns...", etc. -->
-<p><img src="/assets/web-feed-progress.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Select the variant that matches what you want to follow, pick a folder, and subscribe. NewsBlur will re-fetch and re-extract the page on a regular schedule, just like any other feed.</p>
-
-<h3 id="story-hints">Story hints</h3>
-
-<p>Sometimes the initial best guess isn’t what you’re looking for. Maybe the page has a blog section and a job listings section, and you want the jobs. Click the Refine button and type a hint like “I’m looking for the job postings.” NewsBlur re-analyzes the page with your hint in mind and reorders the variants to prioritize what you described.</p>
-
-<h3 id="what-gets-extracted">What gets extracted</h3>
-
-<p>For each story, NewsBlur extracts whatever it can find: title, link, content snippet, image, author, and date. Not every field will be available on every site, and that’s fine. At minimum you’ll get titles and links. The extraction uses XPath expressions, which means it’s precise and consistent across page refreshes as long as the site’s HTML structure stays the same.</p>
-
-<h3 id="when-things-change">When things change</h3>
-
-<p>Websites redesign. HTML structures shift. When NewsBlur detects that the extraction rules have stopped working (after 3 consecutive failures), the feed is flagged as needing re-analysis. You’ll see a feed exception indicator, and you can re-analyze the page with one click to generate updated extraction rules.</p>
-
-<h3 id="use-cases">Use cases</h3>
-
-<p>Some examples of sites that work well with Web Feeds:</p>
-
-<ul>
-  <li><strong>Company blogs without RSS</strong> — Many corporate blogs dropped their RSS feeds years ago. Web Feeds brings them back.</li>
-  <li><strong>Job boards</strong> — Track new postings on a company’s careers page.</li>
-  <li><strong>Government sites</strong> — Follow press releases, meeting agendas, or public notices.</li>
-  <li><strong>Changelog pages</strong> — Monitor when a tool or service ships updates.</li>
-  <li><strong>Event listings</strong> — Keep tabs on upcoming concerts, conferences, or local events.</li>
-  <li><strong>Product pages</strong> — Watch for new arrivals or restocks on stores that don’t offer feeds.</li>
-</ul>
-
-<h3 id="availability">Availability</h3>
-
-<p>Web Feeds are available to <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. The ongoing feed fetching and extraction runs on NewsBlur’s servers like any other feed.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 
         </div>
       </li></ul>

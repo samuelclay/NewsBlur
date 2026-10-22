@@ -6,19 +6,25 @@
         android:id="@+id/actions_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
+        android:paddingTop="8dp"
         android:layout_marginBottom="12dp"
         android:gravity="center_horizontal"
         android:layout_gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:visibility="gone">
 
+        <!-- reading_item_actions.xml: ReadingItemFragment.kt lays the visible buttons out in one row, or three
+             over two when all five show. The rows don't clip so Listen's preview pill can overlap its top edge. -->
         <LinearLayout
             android:id="@+id/story_action_buttons_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -68,7 +74,79 @@
                 android:text="@string/ask_ai"
                 app:icon="@drawable/ic_ask_ai" />
 
+            <!-- reading_item_actions.xml: Listen's cell also holds the small Up Next button, so the + never takes a
+                 sixth cell. ReadingItemFragment.kt shows it only while another story is playing. -->
+            <LinearLayout
+                android:id="@+id/listen_story_button_container"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:clipChildren="false"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clipChildren="false">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/listen_story_button"
+                        style="?storyButtons"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:maxLines="1"
+                        android:text="@string/listen_story_button"
+                        app:icon="@drawable/ic_listen" />
+
+                    <TextView
+                        android:id="@+id/listen_story_preview_pill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top|end"
+                        android:layout_marginEnd="4dp"
+                        android:elevation="2dp"
+                        android:maxLines="1"
+                        android:paddingStart="6dp"
+                        android:paddingTop="1dp"
+                        android:paddingEnd="6dp"
+                        android:paddingBottom="1dp"
+                        android:text="@string/listen_preview_pill"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:translationY="-8dp"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/listen_queue_button"
+                    style="?storyButtons"
+                    android:layout_width="38dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="6dp"
+                    android:contentDescription="@string/listen_add_to_up_next"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_add"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/story_action_buttons_row_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clipChildren="false"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone" />
 
     </LinearLayout>
 
