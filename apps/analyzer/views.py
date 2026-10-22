@@ -156,7 +156,9 @@ def save_classifier(request):
 
     # Tag and author collections have unique indexes on (user_id, feed_id, social_user_id,
     # value), and every global and folder classifier has feed_id 0, so one tag or author
-    # can only be trained in one of those scopes. Report it instead of dropping the save.
+    # can only be trained in one of those scopes. MClassifierTag declares its index;
+    # the author index predates the current MClassifierAuthor model but still exists in
+    # production Mongo. Report the conflict instead of dropping the save.
     scope_conflicts = []
 
     def _save_classifier(ClassifierCls, content_type):

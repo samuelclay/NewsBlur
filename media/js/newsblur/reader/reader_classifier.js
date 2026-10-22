@@ -4767,7 +4767,8 @@ var classifier_prototype = {
             value: entry.value,
             scope: scope.scope,
             folder_name: scope.folder_name,
-            feed_id: scope.feed_id
+            feed_id: scope.feed_id,
+            is_regex: entry.is_regex && utils.supports_regex(entry.type)
         };
 
         this.manage_add_saving = true;
@@ -4775,6 +4776,11 @@ var classifier_prototype = {
 
         this.model.save_classifier(data, function () {
             self.manage_add_saving = false;
+            if (!self.flags.open) {
+                // The trainer closed while this saved, after handle_modal_closed already ran
+                NEWSBLUR.reader.force_feeds_refresh();
+                return;
+            }
             $button.text(gettext('Add'));
             $input.val('').focus();
             self.update_manage_add_row($row);
@@ -4854,7 +4860,8 @@ var classifier_prototype = {
             type: $item.attr('data-type'),
             value: $item.attr('data-value'),
             scope: $item.attr('data-scope'),
-            folder_name: $item.attr('data-folder-name')
+            folder_name: $item.attr('data-folder-name'),
+            is_regex: $item.attr('data-is-regex')
         });
     },
 
@@ -4902,13 +4909,10 @@ var classifier_prototype = {
     },
 
     highlight_manage_added_item: function (added) {
+        var self = this;
+        var added_key = NEWSBLUR.classifier_add_utils.classifier_key(added);
         var $item = $('.NB-manage-classifier-item', this.$modal).filter(function () {
-            var $this = $(this);
-            return $this.attr('data-type') === added.type &&
-                $this.attr('data-value') === added.value &&
-                $this.attr('data-scope') === added.scope &&
-                $this.attr('data-folder-name') === added.folder_name &&
-                (added.scope !== 'feed' || $this.attr('data-feed-id') === String(added.feed_id));
+            return self.manage_item_key($(this)) === added_key;
         }).first();
 
         if (!$item.length || !$item.is(':visible')) return;
@@ -5632,7 +5636,8 @@ var classifier_prototype = {
             'data-value': value,
             'data-score': score,
             'data-scope': effective_scope,
-            'data-folder-name': folder_name || ''
+            'data-folder-name': folder_name || '',
+            'data-is-regex': is_regex ? 'true' : 'false'
         }, [
             $.make('div', { className: 'NB-classifier NB-classifier-' + type + (is_regex ? ' NB-classifier-regex' : '') + (score > 0 ? ' NB-classifier-like' : (score <= -2 ? ' NB-classifier-super-dislike' : ' NB-classifier-dislike')) }, [
                 $.make('input', { type: 'checkbox', className: 'NB-classifier-input-like', name: 'like_' + (is_regex ? type + '_regex' : type), value: value }),

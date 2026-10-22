@@ -140,6 +140,17 @@ test('classifier keys read DOM attribute strings and model values the same way',
     assert.equal(classifier_add_utils.classifier_key(from_model), classifier_add_utils.classifier_key(from_dom));
 });
 
+test('a regex classifier and a plain one with the same text are separate classifiers', function () {
+    const plain = { feed_id: 0, type: 'title', value: 'apple', scope: 'global', folder_name: '', is_regex: false };
+    const regex = Object.assign({}, plain, { is_regex: true });
+    const plain_from_dom = Object.assign({}, plain, { is_regex: 'false' });
+    const regex_from_dom = Object.assign({}, plain, { is_regex: 'true' });
+
+    assert.notEqual(classifier_add_utils.classifier_key(plain), classifier_add_utils.classifier_key(regex));
+    assert.equal(classifier_add_utils.classifier_key(plain), classifier_add_utils.classifier_key(plain_from_dom));
+    assert.equal(classifier_add_utils.classifier_key(regex), classifier_add_utils.classifier_key(regex_from_dom));
+});
+
 test('classifier keys cannot be confused by separators inside folder names or values', function () {
     const a = { feed_id: 0, type: 'title', value: 'b:c', scope: 'folder', folder_name: 'a' };
     const b = { feed_id: 0, type: 'title', value: 'c', scope: 'folder', folder_name: 'a:b' };

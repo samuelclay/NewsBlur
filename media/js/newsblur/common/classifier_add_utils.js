@@ -71,15 +71,17 @@
     }
 
     // One classifier's identity in Manage Training. Global and folder pills all carry
-    // feed id 0, so scope and folder are part of it. Accepts model values or the
-    // string data attributes on .NB-manage-classifier-item; JSON keeps a ':' inside a
-    // folder name or value from colliding with another classifier.
+    // feed id 0, so scope and folder are part of it, and a regex is a separate classifier
+    // from plain text with the same pattern. Accepts model values or the string data
+    // attributes on .NB-manage-classifier-item; JSON keeps a ':' inside a folder name or
+    // value from colliding with another classifier.
     function classifier_key(classifier) {
         return JSON.stringify([
             String(classifier.feed_id || 0),
             classifier.type,
             classifier.scope || 'feed',
             classifier.folder_name || '',
+            String(classifier.is_regex) === 'true',
             String(classifier.value)
         ]);
     }
