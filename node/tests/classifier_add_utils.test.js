@@ -120,6 +120,33 @@ test('text needs Archive, URL needs Premium, and regex needs Pro', function () {
     );
 });
 
+test('the same phrase in two folders is two classifiers, not one pending edit', function () {
+    const tech_news = { feed_id: 0, type: 'tag', value: 'news', scope: 'folder', folder_name: 'Tech' };
+    const sports_news = { feed_id: 0, type: 'tag', value: 'news', scope: 'folder', folder_name: 'Sports' };
+    const global_news = { feed_id: 0, type: 'tag', value: 'news', scope: 'global', folder_name: '' };
+
+    assert.notEqual(classifier_add_utils.classifier_key(tech_news), classifier_add_utils.classifier_key(sports_news));
+    assert.notEqual(classifier_add_utils.classifier_key(tech_news), classifier_add_utils.classifier_key(global_news));
+    assert.equal(
+        classifier_add_utils.classifier_key(tech_news),
+        classifier_add_utils.classifier_key(Object.assign({}, tech_news))
+    );
+});
+
+test('classifier keys read DOM attribute strings and model values the same way', function () {
+    const from_model = { feed_id: 42, type: 'author', value: 'Jane Doe', scope: 'feed', folder_name: '' };
+    const from_dom = { feed_id: '42', type: 'author', value: 'Jane Doe', scope: undefined, folder_name: undefined };
+
+    assert.equal(classifier_add_utils.classifier_key(from_model), classifier_add_utils.classifier_key(from_dom));
+});
+
+test('classifier keys cannot be confused by separators inside folder names or values', function () {
+    const a = { feed_id: 0, type: 'title', value: 'b:c', scope: 'folder', folder_name: 'a' };
+    const b = { feed_id: 0, type: 'title', value: 'c', scope: 'folder', folder_name: 'a:b' };
+
+    assert.notEqual(classifier_add_utils.classifier_key(a), classifier_add_utils.classifier_key(b));
+});
+
 function _extend(base, overrides) {
     return Object.assign({}, base, overrides);
 }

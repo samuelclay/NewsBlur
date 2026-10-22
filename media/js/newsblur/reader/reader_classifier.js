@@ -4559,8 +4559,16 @@ var classifier_prototype = {
         if (feed && !feed.is_social() && feed.get('active')) {
             return 'feed:' + feed.id;
         }
-        var $first_site = $('option[value^="feed:"]', this.make_manage_add_scope_chooser()).first();
-        return $first_site.length ? $first_site.val() : 'global';
+        var first_site = NEWSBLUR.assets.feeds.chain()
+            .filter(function (site) {
+                return site.get('active') && site.get('feed_title') && !site.is_social();
+            })
+            .sortBy(function (site) {
+                return site.get('feed_title').toLowerCase();
+            })
+            .first()
+            .value();
+        return first_site ? 'feed:' + first_site.id : 'global';
     },
 
     make_manage_add_scope_chooser: function () {
@@ -4771,7 +4779,8 @@ var classifier_prototype = {
             $input.val('').focus();
             self.update_manage_add_row($row);
             self.show_manage_add_status();
-            self.refresh_feeds_after_manage_add();
+            self.forget_manage_dirty_item(added);
+            self.manage_add_needs_feeds_refresh = true;
             self.refresh_manage_after_add(added);
         }, function (response) {
             self.manage_add_saving = false;
@@ -4784,15 +4793,15 @@ var classifier_prototype = {
         });
     },
 
-    // One feed refresh once the reader stops adding, instead of one per classifier,
-    // since a global classifier marks every subscription for an unread recount.
-    refresh_feeds_after_manage_add: function () {
-        if (!this.debounced_manage_add_feeds_refresh) {
-            this.debounced_manage_add_feeds_refresh = _.debounce(function () {
-                NEWSBLUR.reader.force_feeds_refresh();
-            }, 2500);
+    // Called from NEWSBLUR.Modal's onClose in common/modal.js. Added classifiers refresh
+    // the feeds once, when the trainer closes: a global classifier marks every subscription
+    // for an unread recount, and that refresh shares the serial request queue with
+    // /classifier/save, so refreshing between adds would stall the next one.
+    handle_modal_closed: function () {
+        if (this.manage_add_needs_feeds_refresh) {
+            this.manage_add_needs_feeds_refresh = false;
+            NEWSBLUR.reader.force_feeds_refresh();
         }
-        this.debounced_manage_add_feeds_refresh();
     },
 
     // Reload the list so the new pill lands in its section. Only the filter bar and the
@@ -4805,10 +4814,21 @@ var classifier_prototype = {
             var $content = $('.NB-manage-training-content', self.$modal);
 
             if (!$content.length) {
-                // The empty state had no list yet, so build the whole tab
+                // The empty state had no list yet, so build the whole tab, then swap the
+                // live add row back in so anything typed while this request ran survives.
+                var $row = $('.NB-manage-add', self.$modal);
+                var input = $('.NB-manage-add-input', $row)[0];
+                var had_focus = input && document.activeElement === input;
+                var selection = input && [input.selectionStart, input.selectionEnd];
+
+                $row.detach();
                 self.render_manage_tab_content();
-                self.show_manage_add_status();
-                $('.NB-manage-add-input', self.$modal).focus();
+                $('.NB-manage-add', self.$modal).replaceWith($row);
+
+                if (had_focus) {
+                    input.focus();
+                    input.setSelectionRange(selection[0], selection[1]);
+                }
             } else {
                 var $folders = $('.NB-manage-training-folders', $content);
                 var scroll_top = $folders.scrollTop();
@@ -4826,37 +4846,59 @@ var classifier_prototype = {
         });
     },
 
+    // Key for this.manage_dirty_feeds, built from the pill's full identity so the same
+    // phrase in two folders, or global and in a folder, stays two separate edits.
+    manage_item_key: function ($item) {
+        return NEWSBLUR.classifier_add_utils.classifier_key({
+            feed_id: $item.attr('data-feed-id'),
+            type: $item.attr('data-type'),
+            value: $item.attr('data-value'),
+            scope: $item.attr('data-scope'),
+            folder_name: $item.attr('data-folder-name')
+        });
+    },
+
     // Rebuilt pills start from their saved scores, so re-check the ones the reader
     // changed but hasn't saved yet (tracked in this.manage_dirty_feeds).
     restore_manage_dirty_items: function () {
         var self = this;
 
-        _.each(this.manage_dirty_feeds, function (changes, feed_id) {
-            _.each(changes, function (change) {
-                var $item = $('.NB-manage-classifier-item', self.$modal).filter(function () {
-                    return $(this).attr('data-feed-id') === String(feed_id) &&
-                        $(this).attr('data-type') === change.type &&
-                        $(this).attr('data-value') === String(change.value);
-                });
-                var $classifier = $('.NB-classifier', $item);
-                var score = change.current_score;
+        $('.NB-manage-classifier-item', this.$modal).each(function () {
+            var $item = $(this);
+            var changes = self.manage_dirty_feeds[$item.attr('data-feed-id')];
+            var change = changes && changes[self.manage_item_key($item)];
+            if (!change) return;
 
-                $classifier.removeClass('NB-classifier-like NB-classifier-dislike NB-classifier-super-dislike')
-                    .addClass('NB-classifier-changed');
-                $('.NB-classifier-input-like', $item).prop('checked', score > 0);
-                $('.NB-classifier-input-dislike', $item).prop('checked', score === -1);
-                $('.NB-classifier-input-super-dislike', $item).prop('checked', score <= -2);
-                if (score > 0) {
-                    $classifier.addClass('NB-classifier-like');
-                } else if (score <= -2) {
-                    $classifier.addClass('NB-classifier-super-dislike');
-                } else if (score < 0) {
-                    $classifier.addClass('NB-classifier-dislike');
-                }
-            });
+            var $classifier = $('.NB-classifier', $item);
+            var score = change.current_score;
+
+            $classifier.removeClass('NB-classifier-like NB-classifier-dislike NB-classifier-super-dislike')
+                .addClass('NB-classifier-changed');
+            $('.NB-classifier-input-like', $item).prop('checked', score > 0);
+            $('.NB-classifier-input-dislike', $item).prop('checked', score === -1);
+            $('.NB-classifier-input-super-dislike', $item).prop('checked', score <= -2);
+            if (score > 0) {
+                $classifier.addClass('NB-classifier-like');
+            } else if (score <= -2) {
+                $classifier.addClass('NB-classifier-super-dislike');
+            } else if (score < 0) {
+                $classifier.addClass('NB-classifier-dislike');
+            }
         });
 
         this.update_manage_save_button();
+    },
+
+    // The add just saved this classifier's new score, so an older unsaved edit to the
+    // same classifier must not come back on top of it and overwrite it on Save.
+    forget_manage_dirty_item: function (added) {
+        var changes = this.manage_dirty_feeds[added.feed_id];
+        if (!changes) return;
+
+        delete changes[NEWSBLUR.classifier_add_utils.classifier_key(added)];
+        if (_.isEmpty(changes)) {
+            delete this.manage_dirty_feeds[added.feed_id];
+        }
     },
 
     highlight_manage_added_item: function (added) {
@@ -5710,7 +5752,7 @@ var classifier_prototype = {
         var orig_score = $item.data('score');
         var scope = $item.data('scope') || 'feed';
         var folder_name = $item.data('folder-name') || '';
-        var key = feed_id + ':' + type + ':' + value;
+        var key = this.manage_item_key($item);
 
         this.change_classifier($classifier, opinion);
 

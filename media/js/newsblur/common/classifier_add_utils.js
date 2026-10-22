@@ -70,12 +70,27 @@
         return null;
     }
 
+    // One classifier's identity in Manage Training. Global and folder pills all carry
+    // feed id 0, so scope and folder are part of it. Accepts model values or the
+    // string data attributes on .NB-manage-classifier-item; JSON keeps a ':' inside a
+    // folder name or value from colliding with another classifier.
+    function classifier_key(classifier) {
+        return JSON.stringify([
+            String(classifier.feed_id || 0),
+            classifier.type,
+            classifier.scope || 'feed',
+            classifier.folder_name || '',
+            String(classifier.value)
+        ]);
+    }
+
     return {
         TYPES: TYPES,
         supports_regex: supports_regex,
         parse_scope: parse_scope,
         folder_path: folder_path,
         build_save_data: build_save_data,
-        required_tier: required_tier
+        required_tier: required_tier,
+        classifier_key: classifier_key
     };
 });
