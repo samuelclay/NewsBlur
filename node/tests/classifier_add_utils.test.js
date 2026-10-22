@@ -158,6 +158,19 @@ test('classifier keys cannot be confused by separators inside folder names or va
     assert.notEqual(classifier_add_utils.classifier_key(a), classifier_add_utils.classifier_key(b));
 });
 
+test('saved opinion names keep the regex suffix so a regex edit updates the regex classifier', function () {
+    assert.equal(classifier_add_utils.opinion_name('title', 1, -1, true), 'like_title_regex');
+    assert.equal(classifier_add_utils.opinion_name('title', -1, 1, false), 'dislike_title');
+    assert.equal(classifier_add_utils.opinion_name('author', -2, 1, true), 'super_dislike_author_regex');
+    assert.equal(classifier_add_utils.opinion_name('url', 0, 1, true), 'remove_like_url_regex');
+    assert.equal(classifier_add_utils.opinion_name('text', 0, -1, false), 'remove_dislike_text');
+});
+
+test('opinion names ignore a regex flag on types without regex classifiers', function () {
+    assert.equal(classifier_add_utils.opinion_name('tag', 1, 0, true), 'like_tag');
+    assert.equal(classifier_add_utils.opinion_name('feed', -1, 0, true), 'dislike_feed');
+});
+
 function _extend(base, overrides) {
     return Object.assign({}, base, overrides);
 }

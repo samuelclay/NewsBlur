@@ -5784,7 +5784,8 @@ var classifier_prototype = {
                 orig_score: orig_score,
                 current_score: current_score,
                 scope: scope,
-                folder_name: folder_name
+                folder_name: folder_name,
+                is_regex: $item.attr('data-is-regex') === 'true'
             };
         } else {
             // Reverted to original - remove from dirty
@@ -5845,18 +5846,8 @@ var classifier_prototype = {
             _.each(changes, function (change, key) {
                 if (change.scope && change.scope !== 'feed') {
                     // Scoped classifier — build individual save data
-                    var name;
-                    if (change.current_score === 1) {
-                        name = 'like_' + change.type;
-                    } else if (change.current_score === -2) {
-                        name = 'super_dislike_' + change.type;
-                    } else if (change.current_score === -1) {
-                        name = 'dislike_' + change.type;
-                    } else if (change.orig_score > 0) {
-                        name = 'remove_like_' + change.type;
-                    } else {
-                        name = 'remove_dislike_' + change.type;
-                    }
+                    var name = NEWSBLUR.classifier_add_utils.opinion_name(
+                        change.type, change.current_score, change.orig_score, change.is_regex);
                     var save_data = {
                         'feed_id': 0,
                         'scope': change.scope,
@@ -5882,11 +5873,15 @@ var classifier_prototype = {
             if (pending > 0) return;
 
             // Update original scores to current scores for saved items
-            _.each(self.manage_dirty_feeds, function (changes, feed_id) {
-                _.each(changes, function (change) {
-                    var $item = $('.NB-manage-classifier-item[data-feed-id="' + feed_id + '"][data-type="' + change.type + '"][data-value="' + change.value + '"]', self.$modal);
-                    $item.data('score', change.current_score);
-                });
+            var saved_changes = {};
+            _.each(self.manage_dirty_feeds, function (changes) {
+                _.extend(saved_changes, changes);
+            });
+            $('.NB-manage-classifier-item', self.$modal).each(function () {
+                var change = saved_changes[self.manage_item_key($(this))];
+                if (change) {
+                    $(this).data('score', change.current_score);
+                }
             });
 
             self.manage_dirty_feeds = {};
@@ -5929,26 +5924,12 @@ var classifier_prototype = {
         _.each(changed_items, function (change) {
             var value = change.value;
             var type = change.type;
-            var name;
+            var name = NEWSBLUR.classifier_add_utils.opinion_name(
+                type, change.current_score, change.orig_score, change.is_regex);
 
             // For feed-level classifiers, use feed_id as the value
             if (type === 'feed') {
                 value = feed_id;
-            }
-
-            if (change.current_score === 1) {
-                name = 'like_' + type;
-            } else if (change.current_score === -2) {
-                name = 'super_dislike_' + type;
-            } else if (change.current_score === -1) {
-                name = 'dislike_' + type;
-            } else {
-                // Removed - neutral
-                if (change.orig_score > 0) {
-                    name = 'remove_like_' + type;
-                } else {
-                    name = 'remove_dislike_' + type;
-                }
             }
 
             if (!data[name]) data[name] = [];

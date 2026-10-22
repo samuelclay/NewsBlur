@@ -86,6 +86,25 @@
         ]);
     }
 
+    // Form field name for saving one Manage Training pill edit, such as "like_title" or
+    // "remove_dislike_author_regex". Without the regex suffix the server would write a
+    // regex pill's edit onto the plain classifier with the same text.
+    function opinion_name(type, score, original_score, is_regex) {
+        var opinion;
+        if (score === 1) {
+            opinion = 'like_';
+        } else if (score === -2) {
+            opinion = 'super_dislike_';
+        } else if (score === -1) {
+            opinion = 'dislike_';
+        } else if (original_score > 0) {
+            opinion = 'remove_like_';
+        } else {
+            opinion = 'remove_dislike_';
+        }
+        return opinion + type + (is_regex && supports_regex(type) ? '_regex' : '');
+    }
+
     return {
         TYPES: TYPES,
         supports_regex: supports_regex,
@@ -93,6 +112,7 @@
         folder_path: folder_path,
         build_save_data: build_save_data,
         required_tier: required_tier,
-        classifier_key: classifier_key
+        classifier_key: classifier_key,
+        opinion_name: opinion_name
     };
 });
