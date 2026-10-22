@@ -123,6 +123,11 @@ msgstr " — İki veya daha fazla büyük harf"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — Yalnızca \"%(word)s\" tam sözcüğü"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "Ayda 29 $"
 
@@ -223,6 +228,11 @@ msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s takipçi"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "Bugün %(count)s ücretsiz haber önizlemesi kaldı"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s saat"
@@ -241,6 +251,11 @@ msgstr[0] "%(count)s görsel filtresi"
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s beğeni"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s eşleşme"
 
 #, python-format
 msgid "%(count)s member"
@@ -399,6 +414,11 @@ msgid_plural "%(count)s videos"
 msgstr[0] "%(count)s video"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "%(count)s ses önizlemesi kaldı"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s hafta"
@@ -477,6 +497,11 @@ msgstr[0] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Arşivinizdeki ilgili haberleri görmek için yükseltin."
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "Bu ay %(minutes)s dakika kaldı"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -899,6 +924,12 @@ msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
 msgid "2x daily"
 msgstr "Günde 2 kez"
 
+msgid "30 second preview"
+msgstr "30 saniyelik önizleme"
+
+msgid "30s preview"
+msgstr "30 sn önizleme"
+
 msgid "3x daily"
 msgstr "Günde 3 kez"
 
@@ -936,6 +967,9 @@ msgstr[0] "Deneme sürümünüzün bitmesine <strong>%(count)s gün</strong> kal
 
 msgid "A blurblog of shared stories"
 msgstr "Paylaşılan haberlerden oluşan bir blurblog"
+
+msgid "A clearer, closer sound"
+msgstr "Daha net ve yakın bir ses"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Tek bir haber akışı olarak okunan bir klasör"
@@ -984,6 +1018,10 @@ msgstr "TÜM KATEGORİLER (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Elbette. Eğiticiyi açın ve sıfırlamak için beğeni ya da beğenmeme işaretlerini kaldırın."
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "Aksan"
 
 msgid "Account"
 msgstr "Hesap"
@@ -1062,12 +1100,19 @@ msgstr "Chrome'a ekle"
 msgid "Add to Firefox"
 msgstr "Firefox'a ekle"
 
+msgid "Add to Up Next"
+msgstr "Sıraya ekle"
+
 msgid "Add to folder"
 msgstr "Klasöre ekle"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s eklendi"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "Sıraya eklendi · %(position)s"
 
 msgid "Added!"
 msgstr "Eklendi!"
@@ -1088,6 +1133,10 @@ msgstr "Akışı/klasörü okundu olarak işaretledikten sonra"
 
 msgid "Afternoon"
 msgstr "Öğleden sonra"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "Yaş"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1372,6 +1421,9 @@ msgstr "Otomatik olarak okundu işaretle"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Otomatik tema, sisteminizin aydınlık ve karanlık mod zamanlamasını izler."
+
+msgid "Auto-continue"
+msgstr "Otomatik devam"
 
 msgid "Auto-follow<br>my friends"
 msgstr "Arkadaşlarımı<br>otomatik takip et"
@@ -1769,6 +1821,9 @@ msgstr "Tarih aralığını temizle"
 msgid "Clear filter"
 msgstr "Filtreyi temizle"
 
+msgid "Clear filters"
+msgstr "Filtreleri temizle"
+
 msgid "Clear icon"
 msgstr "Simgeyi temizle"
 
@@ -1799,6 +1854,9 @@ msgstr "Eğitimi kapat ve okumaya başla"
 
 msgid "Close player"
 msgstr "Oynatıcıyı kapat"
+
+msgid "Closeness to the original voice"
+msgstr "Orijinal sese yakınlık"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "Tüm akışlarınızdaki yinelenen haberleri gruplandırın"
@@ -1942,6 +2000,9 @@ msgstr "Bu URL için RSS akışı bulunamadı"
 msgid "Could not load FAQ. Please try again."
 msgstr "SSS yüklenemedi. Lütfen tekrar deneyin."
 
+msgid "Couldn't load audio for this story."
+msgstr "Bu haberin sesi yüklenemedi."
+
 msgid "Counting is difficult"
 msgstr "Saymak zor"
 
@@ -1974,6 +2035,10 @@ msgstr "Kredi"
 
 msgid "Cursors"
 msgstr "İmleçler"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "Özel"
 
 msgid "Custom Add Site URL"
 msgstr "Özel Site Ekleme URL'si"
@@ -2137,6 +2202,9 @@ msgstr "Silindi!"
 
 msgid "Deleting..."
 msgstr "Siliniyor..."
+
+msgid "Delivery"
+msgstr "Sunum"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Aradığınız haberi açıklayın; bulmak için sayfayı yeniden analiz edelim."
@@ -2550,6 +2618,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "Tam ifade"
 
+msgid "Exaggerates the voice's style"
+msgstr "Sesin tarzını abartır"
+
 msgid "Examples"
 msgstr "Örnekler"
 
@@ -2585,6 +2656,10 @@ msgstr "1 YIL Sonra Süresi Dolacak"
 
 msgid "Export trained stories from folders"
 msgstr "Klasörlerdeki eğitilmiş haberleri dışa aktar"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "Duygulu"
 
 msgid "Extras"
 msgstr "Ekstralar"
@@ -2825,6 +2900,9 @@ msgstr "Arkadaş Bul"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Benzersiz NewsBlur e-posta adresinizi E-posta Bültenleri iletişim kutusunda bulun"
 
+msgid "Fine-tune voice"
+msgstr "Sesi ince ayarlayın"
+
 msgid "Finish recording..."
 msgstr "Kaydı tamamla..."
 
@@ -2892,6 +2970,9 @@ msgstr "Takip et"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "%(value_1)s kullanıcısını takip et"
+
+msgid "Follow along"
+msgstr "Eşlik et"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "RSS akışı yayımlamayanlar da dahil, istediğiniz web sitesini takip edin."
@@ -3102,6 +3183,10 @@ msgstr "Oyunlar"
 msgid "Gaming"
 msgstr "Oyun"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "Cinsiyet"
+
 msgid "General"
 msgstr "Genel"
 
@@ -3268,6 +3353,9 @@ msgstr "Başlıklar"
 msgid "Health"
 msgstr "Sağlık"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "İlk 30 saniyeyi sesli dinleyin. Premium Archive haberlerin tamamını okur."
+
 msgid "Hearts"
 msgstr "Kalpler"
 
@@ -3307,6 +3395,9 @@ msgstr "Haber değişikliklerini gizle"
 msgid "Highlight"
 msgstr "Vurgula"
 
+msgid "Highlight the paragraph being read"
+msgstr "Okunan paragrafı vurgula"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Belirli ifadeleri öğrenmesi için başlıktaki sözcükleri vurgulayın."
 
@@ -3339,6 +3430,9 @@ msgstr "Nasıl çalışır"
 
 msgid "How many stories can I save?"
 msgstr "Kaç haber kaydedebilirim?"
+
+msgid "How much emotion"
+msgstr "Duygu yoğunluğu"
 
 msgid "How often"
 msgstr "Ne sıklıkla"
@@ -3650,6 +3744,21 @@ msgstr "Liste görünümü"
 msgid "List view"
 msgstr "Liste görünümü"
 
+msgid "Listen"
+msgstr "Dinle"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "Dinleme zaman aşımına uğradı. Birazdan yeniden deneyin."
+
+msgid "Listen to stories read aloud"
+msgstr "Haberleri sesli dinleyin"
+
+msgid "Listen to story"
+msgstr "Haberi dinle"
+
+msgid "Listen to this story"
+msgstr "Bu haberi dinle"
+
 msgid "Loading PayPal..."
 msgstr "PayPal yükleniyor..."
 
@@ -3667,6 +3776,9 @@ msgstr "Akışlar yükleniyor..."
 
 msgid "Loading more briefings..."
 msgstr "Daha fazla özet yükleniyor..."
+
+msgid "Loading voices..."
+msgstr "Sesler yükleniyor..."
 
 msgid "Loading your blocklist settings..."
 msgstr "Engelleme listesi ayarlarınız yükleniyor..."
@@ -3929,6 +4041,9 @@ msgstr "Daha Fazla Özellik"
 msgid "More from Reddit"
 msgstr "Reddit'ten daha fazlası"
 
+msgid "More voices"
+msgstr "Daha fazla ses"
+
 msgid "Morning"
 msgstr "Sabah"
 
@@ -4015,6 +4130,10 @@ msgstr "Ad"
 
 msgid "Native Apps"
 msgstr "Yerel Uygulamalar"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "Doğal"
 
 msgid "Natural Language Image Classifier"
 msgstr "Doğal Dil Görsel Sınıflandırıcısı"
@@ -4341,6 +4460,9 @@ msgstr "Kullanım ücretlendirmesi ayarlanmamış."
 
 msgid "No valid merge groups to apply"
 msgstr "Uygulanacak geçerli birleştirme grubu yok"
+
+msgid "No voices match these filters"
+msgstr "Bu filtrelerle eşleşen ses yok"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "Paylaştığınız haberlere henüz kimse abone olmadı."
@@ -4721,6 +4843,15 @@ msgstr "Herhangi bir web sitesi URL'si yapıştırın..."
 msgid "Pattern: %(value_1)s"
 msgstr "Desen: %(value_1)s"
 
+msgid "Pause"
+msgstr "Duraklat"
+
+msgid "Pause listening"
+msgstr "Dinlemeyi duraklat"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "Sesli okumayı duraklatın veya sürdürün (y)"
+
 msgid "Payment history"
 msgstr "Ödeme geçmişi"
 
@@ -4771,6 +4902,9 @@ msgstr "Sıradaki olarak oynat"
 
 msgid "Play in Mini Media Player"
 msgstr "Mini Medya Oynatıcı'da oynat"
+
+msgid "Play the next unread story"
+msgstr "Sıradaki okunmamış haberi oynat"
 
 msgid "Play/Pause"
 msgstr "Oynat/Duraklat"
@@ -4856,6 +4990,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive, haberlerin tamamını sesli okur."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4892,6 +5029,9 @@ msgstr "Premium durumu"
 msgid "Premium users can make their blurblog private."
 msgstr "Premium kullanıcılar blurblog'larını gizli yapabilir."
 
+msgid "Preparing audio..."
+msgstr "Ses hazırlanıyor..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "Arama alanına doğrudan gitmek için herhangi bir yerde / tuşuna basın."
 
@@ -4912,6 +5052,14 @@ msgstr "Önceki site"
 
 msgid "Preview"
 msgstr "Önizleme"
+
+msgid "Preview this voice"
+msgstr "Bu sesi önizle"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "%(seconds)s saniyelik önizleme. Premium Archive haberlerin tamamının sesli okunmasını sağlar"
 
 msgid "Previous story"
 msgstr "Önceki haber"
@@ -5005,6 +5153,9 @@ msgid "Queued %(count)s story for categorization. Categories will appear as stor
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] "%(count)s haber kategorilere ayrılmak üzere kuyruğa alındı. Haberler işlendikçe kategoriler görünür."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "Sıraya alındı. Sıradan çıkarmak için tıklayın"
+
 msgid "Quick search for a site"
 msgstr "Bir siteyi hızlıca ara"
 
@@ -5062,6 +5213,13 @@ msgstr ""
 "Bir klasördeki tüm akışları kronolojik sırayla, kaydırılabilir tek bir akışta okuyun. Eğitimle birlikte "
 "Haber Akışı, aboneliklerinizdeki en iyi haberleri öne çıkarır."
 
+msgid "Read aloud"
+msgstr "Sesli oku"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "%(voice)s tarafından okundu"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "NewsBlur Blog'unda daha fazlasını okuyun"
 
@@ -5076,6 +5234,9 @@ msgstr "Haberleri klasöre göre okuyun"
 
 msgid "Read the whole story"
 msgstr "Haberin tamamını oku"
+
+msgid "Read this story aloud (y)"
+msgstr "Bu haberi sesli oku (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "Okunmamış haberleri şu komutla okuyun: newsblur stories list"
@@ -5101,6 +5262,10 @@ msgstr "Kaydedilen haber okunuyor..."
 
 msgid "Reading view"
 msgstr "Okuma görünümü"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "%(language)s haberlerinizi okur"
 
 msgid "Real-time"
 msgstr "Gerçek zamanlı"
@@ -5134,6 +5299,10 @@ msgstr "Bu siteyi öner"
 
 msgid "Recommended"
 msgstr "Önerilen"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "%(language)s için önerilen"
 
 msgid "Record voice question"
 msgstr "Sesli soru kaydet"
@@ -5203,6 +5372,9 @@ msgstr "Her bölüm için oynatma konumunu hatırla"
 msgid "Remove"
 msgstr "Kaldır"
 
+msgid "Remove from Up Next"
+msgstr "Sıradan çıkar"
+
 msgid "Remove this list"
 msgstr "Bu listeyi kaldır"
 
@@ -5211,6 +5383,9 @@ msgstr "Bu birleştirme grubunu kaldır"
 
 msgid "Removed"
 msgstr "Kaldırıldı"
+
+msgid "Removed from Up Next"
+msgstr "Sıradan çıkarıldı"
 
 msgid "Rename"
 msgstr "Yeniden adlandır"
@@ -5269,6 +5444,10 @@ msgstr "Sıfırla"
 
 msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "%(date)s sıfırlanıyor"
 
 msgid "Resetting..."
 msgstr "Sıfırlanıyor..."
@@ -5536,6 +5715,9 @@ msgstr "Subreddit'lerde ara (ör. programming, news, gaming)..."
 
 msgid "Search the FAQ..."
 msgstr "SSS'de ara..."
+
+msgid "Search voices"
+msgstr "Ses ara"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Tek bir akışta, klasörde veya tüm içeriklerinizde arama yapın"
@@ -5879,6 +6061,9 @@ msgstr "Kendi akışlarınızı okumak için kaydolun."
 msgid "Signup"
 msgstr "Kaydol"
 
+msgid "Similarity"
+msgstr "Benzerlik"
+
 msgid "Single Story"
 msgstr "Tek Haber"
 
@@ -5998,8 +6183,14 @@ msgstr "Akışlar ve haber başlıkları arasındaki boşluk"
 msgid "Spanish"
 msgstr "İspanyolca"
 
+msgid "Speaker boost"
+msgstr "Konuşmacı sesini yükselt"
+
 msgid "Special Folders"
 msgstr "Özel Klasörler"
+
+msgid "Speed"
+msgstr "Hız"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Harcama sınırına ulaşıldı. Sınıflandırıcılar bir sonraki döneme kadar duraklatıldı."
@@ -6043,6 +6234,12 @@ msgstr ""
 "Sitenin sloganını güzelleştirin. Seçilirse bu site, NewsBlur kontrol panelinde bir hafta boyunca öne "
 "çıkarılır."
 
+msgid "Stability"
+msgstr "Kararlılık"
+
+msgid "Stability, similarity and style"
+msgstr "Kararlılık, benzerlik ve stil"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "Güncel değil · %(date)s"
@@ -6084,12 +6281,22 @@ msgstr "Durum"
 msgid "Stay on the same feed/folder"
 msgstr "Aynı akışta/klasörde kal"
 
+msgid "Steadier or more varied"
+msgstr "Daha dengeli veya daha çeşitli"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "Dengeli"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "Adım %(step)s / %(count)s"
 
 msgid "Stop any time you like."
 msgstr "İstediğiniz zaman durdurabilirsiniz."
+
+msgid "Stop preview"
+msgstr "Önizlemeyi durdur"
 
 msgid "Stop recording"
 msgstr "Kaydı durdur"
@@ -6205,6 +6412,9 @@ msgstr "Haber içeriği önizlemesi"
 msgid "Story is always hidden"
 msgstr "Haber her zaman gizli"
 
+msgid "Story language"
+msgstr "Haber dili"
+
 msgid "Story layout"
 msgstr "Haber düzeni"
 
@@ -6231,6 +6441,13 @@ msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
 
 msgid "Stripe Id:"
 msgstr "Stripe Kimliği:"
+
+msgid "Style"
+msgstr "Tarz"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "Stil"
 
 msgid "Submit Payment"
 msgstr "Ödemeyi Gönder"
@@ -6498,6 +6715,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "NewsBlur Blogu"
 
+msgid "The audio stream was interrupted."
+msgstr "Ses akışı kesintiye uğradı."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "Tam %(icon)s Metin görünümü %(link_start)spremium özelliktir%(link_end)s."
@@ -6548,6 +6768,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "Temalar ve Özelleştirme"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "Ardından %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "İşlenecek site ve haber sayısı çok fazla. "
@@ -6601,6 +6825,9 @@ msgstr "Çıkış yapmaya çalışırken bir hata oluştu, tüh."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Sınır yok. İstediğiniz kadar haber kaydedin; sonsuza kadar saklanırlar."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "Bu haberde sesli okunacak bir şey yok."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Bu kümeler, diğer abonelerin bu akışları paylaşması nedeniyle bulundu."
@@ -7106,6 +7333,9 @@ msgstr[0] "Siteler %(count)s saniyede bir güncelleniyor..."
 msgid "Updating sites in real-time..."
 msgstr "Siteler gerçek zamanlı güncelleniyor..."
 
+msgid "Upgrade"
+msgstr "Yükselt"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "%(value_1)s paketine yükseltin"
@@ -7248,8 +7478,14 @@ msgstr "Ayarları görüntüle"
 msgid "Visual"
 msgstr "Görsel"
 
+msgid "Voice"
+msgstr "Ses"
+
 msgid "Voice recording failed. Please try again."
 msgstr "Ses kaydı başarısız oldu. Lütfen tekrar deneyin."
+
+msgid "Voice settings"
+msgstr "Ses ayarları"
 
 msgid "Warning: This is actually permanent"
 msgstr "Uyarı: Bu işlem gerçekten kalıcıdır"
@@ -7669,6 +7905,10 @@ msgstr "Davet İstatistikleriniz"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Arşivlediğiniz haberlere erişmeye devam edebilirsiniz; yeni haberler standart saklama politikasına tabidir."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "Seçtiğiniz ses şu anda kullanılamıyor; bu nedenle bu haberi %(voice)s okuyor."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Çerezinizin süresi doldu — Lütfen yeniden giriş yapın"
 
@@ -7842,6 +8082,10 @@ msgstr "işçi sendikaları"
 msgid "like"
 msgstr "beğeniyorsunuz"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "dinle"
+
 msgid "local elections"
 msgstr "yerel seçimler"
 
@@ -7923,6 +8167,9 @@ msgstr "abone oldu"
 
 msgid "supply chain"
 msgstr "tedarik zinciri"
+
+msgid "this list"
+msgstr "bu liste"
 
 msgid "trade policy"
 msgstr "ticaret politikası"

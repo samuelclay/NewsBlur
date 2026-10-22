@@ -121,6 +121,11 @@ msgstr " — ตัวพิมพ์ใหญ่สองตัวขึ้น�
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — เฉพาะคำเต็ม \"%(word)s\" เท่านั้น"
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "$29/เดือน"
 
@@ -221,6 +226,11 @@ msgid_plural "%(count)s followers"
 msgstr[0] "ผู้ติดตาม %(count)s คน"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "วันนี้เหลือ %(count)s ครั้งสำหรับดูตัวอย่างบทความฟรี"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s ชั่วโมง"
@@ -239,6 +249,11 @@ msgstr[0] "ตัวกรองรูปภาพ %(count)s รายการ"
 msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "ชอบ %(count)s ครั้ง"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s รายการที่ตรงกัน"
 
 #, python-format
 msgid "%(count)s member"
@@ -397,6 +412,11 @@ msgid_plural "%(count)s videos"
 msgstr[0] "วิดีโอ %(count)s รายการ"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "เหลือตัวอย่างเสียงพูดอีก %(count)s รายการ"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s สัปดาห์"
@@ -473,6 +493,11 @@ msgstr[0] "จัดทำดัชนีแล้ว %(indexed)s จาก %(co
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s อัปเกรดเพื่อดูบทความที่เกี่ยวข้องจากคลังทั้งหมดของคุณ"
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "เหลือ %(minutes)s นาทีในเดือนนี้"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -895,6 +920,12 @@ msgstr "มีเครื่องมือ 28 รายการ ครอบ�
 msgid "2x daily"
 msgstr "วันละ 2 ครั้ง"
 
+msgid "30 second preview"
+msgstr "ตัวอย่าง 30 วินาที"
+
+msgid "30s preview"
+msgstr "ตัวอย่าง 30 วินาที"
+
 msgid "3x daily"
 msgstr "วันละ 3 ครั้ง"
 
@@ -934,6 +965,9 @@ msgstr[0] "เหลือเวลา <strong>%(count)s วัน</strong> ใ�
 
 msgid "A blurblog of shared stories"
 msgstr "Blurblog ของบทความที่แชร์"
+
+msgid "A clearer, closer sound"
+msgstr "เสียงชัดและใกล้ยิ่งขึ้น"
 
 msgid "A folder of feeds read as one stream"
 msgstr "โฟลเดอร์ฟีดที่อ่านรวมเป็นสตรีมเดียว"
@@ -982,6 +1016,10 @@ msgstr "หมวดหมู่ทั้งหมด (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "ได้แน่นอน เปิดเครื่องมือฝึก แล้วลบเครื่องหมายชอบหรือไม่ชอบเพื่อรีเซ็ต"
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "สำเนียง"
 
 msgid "Account"
 msgstr "บัญชี"
@@ -1060,12 +1098,19 @@ msgstr "เพิ่มใน Chrome"
 msgid "Add to Firefox"
 msgstr "เพิ่มไปยัง Firefox"
 
+msgid "Add to Up Next"
+msgstr "เพิ่มไปยังคิวถัดไป"
+
 msgid "Add to folder"
 msgstr "เพิ่มลงในโฟลเดอร์"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "เพิ่มเมื่อ %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "เพิ่มไปยังคิวถัดไป · %(position)s"
 
 msgid "Added!"
 msgstr "เพิ่มแล้ว!"
@@ -1086,6 +1131,10 @@ msgstr "หลังจากทำเครื่องหมายว่าฟ
 
 msgid "Afternoon"
 msgstr "ช่วงเที่ยง"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "อายุ"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1368,6 +1417,9 @@ msgstr "ทำเครื่องหมายว่าอ่านแล้ว
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "ธีมอัตโนมัติจะปรับตามกำหนดเวลาโหมดสว่างและมืดของระบบ"
+
+msgid "Auto-continue"
+msgstr "เล่นต่ออัตโนมัติ"
 
 msgid "Auto-follow<br>my friends"
 msgstr "ติดตามเพื่อน<br>โดยอัตโนมัติ"
@@ -1765,6 +1817,9 @@ msgstr "ล้างช่วงวันที่"
 msgid "Clear filter"
 msgstr "ล้างตัวกรอง"
 
+msgid "Clear filters"
+msgstr "ล้างตัวกรอง"
+
 msgid "Clear icon"
 msgstr "ล้างไอคอน"
 
@@ -1793,6 +1848,9 @@ msgstr "ปิดการฝึกและเริ่มอ่าน"
 
 msgid "Close player"
 msgstr "ปิดเครื่องเล่น"
+
+msgid "Closeness to the original voice"
+msgstr "ความใกล้เคียงกับเสียงต้นฉบับ"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "จัดกลุ่มเรื่องซ้ำจากทุกฟีดของคุณ"
@@ -1932,6 +1990,9 @@ msgstr "ไม่พบฟีด RSS สำหรับ URL นี้"
 msgid "Could not load FAQ. Please try again."
 msgstr "โหลดคำถามที่พบบ่อยไม่ได้ โปรดลองอีกครั้ง"
 
+msgid "Couldn't load audio for this story."
+msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
+
 msgid "Counting is difficult"
 msgstr "การนับเป็นเรื่องยาก"
 
@@ -1964,6 +2025,10 @@ msgstr "เครดิต"
 
 msgid "Cursors"
 msgstr "เคอร์เซอร์"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "กำหนดเอง"
 
 msgid "Custom Add Site URL"
 msgstr "URL สำหรับเพิ่มเว็บไซต์แบบกำหนดเอง"
@@ -2127,6 +2192,9 @@ msgstr "ลบแล้ว!"
 
 msgid "Deleting..."
 msgstr "กำลังลบ..."
+
+msgid "Delivery"
+msgstr "การนำเสนอ"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "อธิบายบทความที่คุณกำลังหา แล้วเราจะวิเคราะห์หน้าเว็บอีกครั้งเพื่อค้นหา"
@@ -2530,6 +2598,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "วลีที่ตรงกันทุกประการ"
 
+msgid "Exaggerates the voice's style"
+msgstr "เน้นสไตล์ของเสียงให้ชัดเจนขึ้น"
+
 msgid "Examples"
 msgstr "ตัวอย่าง"
 
@@ -2565,6 +2636,10 @@ msgstr "หมดอายุใน 1 ปี"
 
 msgid "Export trained stories from folders"
 msgstr "ส่งออกบทความที่ฝึกแล้วจากโฟลเดอร์"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "สื่ออารมณ์"
 
 msgid "Extras"
 msgstr "เพิ่มเติม"
@@ -2803,6 +2878,9 @@ msgstr "ค้นหาเพื่อน"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "ค้นหาที่อยู่อีเมล NewsBlur เฉพาะของคุณได้ในหน้าต่างจดหมายข่าวทางอีเมล"
 
+msgid "Fine-tune voice"
+msgstr "ปรับแต่งเสียง"
+
 msgid "Finish recording..."
 msgstr "บันทึกเสียงให้เสร็จ..."
 
@@ -2870,6 +2948,9 @@ msgstr "ติดตาม"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "ติดตาม %(value_1)s"
+
+msgid "Follow along"
+msgstr "ติดตามไปด้วยกัน"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "ติดตามเว็บไซต์ใดก็ได้ แม้แต่เว็บไซต์ที่ไม่มีฟีด RSS"
@@ -3078,6 +3159,10 @@ msgstr "เกม"
 msgid "Gaming"
 msgstr "เกม"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "เพศ"
+
 msgid "General"
 msgstr "ทั่วไป"
 
@@ -3244,6 +3329,9 @@ msgstr "พาดหัวข่าว"
 msgid "Health"
 msgstr "สุขภาพ"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "ฟังตัวอย่างการอ่าน 30 วินาทีแรก Premium Archive อ่านบทความได้ทั้งหมด"
+
 msgid "Hearts"
 msgstr "หัวใจ"
 
@@ -3283,6 +3371,9 @@ msgstr "ซ่อนการเปลี่ยนแปลงของบทค
 msgid "Highlight"
 msgstr "ไฮไลต์"
 
+msgid "Highlight the paragraph being read"
+msgstr "ไฮไลต์ย่อหน้าที่กำลังอ่าน"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "ไฮไลต์คำในชื่อเรื่องเพื่อฝึกให้รู้จักวลีที่ต้องการ"
 
@@ -3315,6 +3406,9 @@ msgstr "วิธีการทำงาน"
 
 msgid "How many stories can I save?"
 msgstr "ฉันบันทึกบทความได้กี่รายการ"
+
+msgid "How much emotion"
+msgstr "ระดับอารมณ์"
 
 msgid "How often"
 msgstr "ความถี่"
@@ -3622,6 +3716,21 @@ msgstr "มุมมองรายการ"
 msgid "List view"
 msgstr "มุมมองรายการ"
 
+msgid "Listen"
+msgstr "ฟัง"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "หมดเวลาในการฟัง โปรดลองอีกครั้งในอีกสักครู่"
+
+msgid "Listen to stories read aloud"
+msgstr "ฟังบทความที่อ่านออกเสียง"
+
+msgid "Listen to story"
+msgstr "ฟังบทความ"
+
+msgid "Listen to this story"
+msgstr "ฟังบทความนี้"
+
 msgid "Loading PayPal..."
 msgstr "กำลังโหลด PayPal..."
 
@@ -3639,6 +3748,9 @@ msgstr "กำลังโหลดฟีด..."
 
 msgid "Loading more briefings..."
 msgstr "กำลังโหลดสรุปข่าวเพิ่มเติม..."
+
+msgid "Loading voices..."
+msgstr "กำลังโหลดเสียงพูด..."
 
 msgid "Loading your blocklist settings..."
 msgstr "กำลังโหลดการตั้งค่ารายการบล็อกของคุณ..."
@@ -3899,6 +4011,9 @@ msgstr "ฟีเจอร์เพิ่มเติม"
 msgid "More from Reddit"
 msgstr "เพิ่มเติมจาก Reddit"
 
+msgid "More voices"
+msgstr "เสียงเพิ่มเติม"
+
 msgid "Morning"
 msgstr "ช่วงเช้า"
 
@@ -3985,6 +4100,10 @@ msgstr "ชื่อ"
 
 msgid "Native Apps"
 msgstr "แอปเนทีฟ"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "เป็นธรรมชาติ"
 
 msgid "Natural Language Image Classifier"
 msgstr "ตัวจำแนกรูปภาพด้วยภาษาธรรมชาติ"
@@ -4311,6 +4430,9 @@ msgstr "ยังไม่ได้ตั้งค่าการเรียก
 
 msgid "No valid merge groups to apply"
 msgstr "ไม่มีกลุ่มผสานที่ถูกต้องให้ใช้"
+
+msgid "No voices match these filters"
+msgstr "ไม่มีเสียงที่ตรงกับตัวกรองเหล่านี้"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "ยังไม่มีใครสมัครรับบทความที่คุณแชร์"
@@ -4679,6 +4801,15 @@ msgstr "วาง URL ของเว็บไซต์ที่นี่..."
 msgid "Pattern: %(value_1)s"
 msgstr "รูปแบบ: %(value_1)s"
 
+msgid "Pause"
+msgstr "หยุดชั่วคราว"
+
+msgid "Pause listening"
+msgstr "หยุดฟังชั่วคราว"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "หยุดชั่วคราวหรืออ่านออกเสียงต่อ (y)"
+
 msgid "Payment history"
 msgstr "ประวัติการชำระเงิน"
 
@@ -4729,6 +4860,9 @@ msgstr "เล่นถัดไป"
 
 msgid "Play in Mini Media Player"
 msgstr "เล่นในมินิเพลเยอร์"
+
+msgid "Play the next unread story"
+msgstr "เล่นบทความถัดไปที่ยังไม่อ่าน"
 
 msgid "Play/Pause"
 msgstr "เล่น/หยุดชั่วคราว"
@@ -4812,6 +4946,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive อ่านบทความเต็มทั้งหมดออกเสียง"
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4848,6 +4985,9 @@ msgstr "สถานะ Premium"
 msgid "Premium users can make their blurblog private."
 msgstr "ผู้ใช้ Premium สามารถตั้งค่า blurblog ให้เป็นส่วนตัวได้"
 
+msgid "Preparing audio..."
+msgstr "กำลังเตรียมเสียง..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "กด / ที่ใดก็ได้เพื่อไปยังช่องค้นหาทันที"
 
@@ -4868,6 +5008,14 @@ msgstr "เว็บไซต์ก่อนหน้า"
 
 msgid "Preview"
 msgstr "ดูตัวอย่าง"
+
+msgid "Preview this voice"
+msgstr "ลองฟังเสียงนี้"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "กำลังดูตัวอย่าง %(seconds)s วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม"
 
 msgid "Previous story"
 msgstr "บทความก่อนหน้า"
@@ -4961,6 +5109,9 @@ msgid "Queued %(count)s story for categorization. Categories will appear as stor
 msgid_plural "Queued %(count)s stories for categorization. Categories will appear as stories are processed."
 msgstr[0] "เพิ่มบทความ %(count)s รายการเข้าคิวเพื่อจัดหมวดหมู่ หมวดหมู่จะแสดงเมื่อประมวลผลบทความแล้ว"
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "เข้าคิวแล้ว คลิกเพื่อนำออกจากคิวถัดไป"
+
 msgid "Quick search for a site"
 msgstr "ค้นหาเว็บไซต์อย่างรวดเร็ว"
 
@@ -5018,6 +5169,13 @@ msgstr ""
 "อ่านฟีดทั้งหมดในโฟลเดอร์เป็นสตรีมเดียวที่เลื่อนดูได้ตามลำดับเวลา เมื่อใช้ร่วมกับการฝึกคัดกรอง "
 "ฟีดข่าวรวมจะแสดงบทความที่ดีที่สุดจากฟีดที่คุณสมัครรับ"
 
+msgid "Read aloud"
+msgstr "อ่านออกเสียง"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "อ่านโดย %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "อ่านเพิ่มเติมในบล็อก NewsBlur"
 
@@ -5032,6 +5190,9 @@ msgstr "อ่านบทความตามโฟลเดอร์"
 
 msgid "Read the whole story"
 msgstr "อ่านบทความฉบับเต็ม"
+
+msgid "Read this story aloud (y)"
+msgstr "อ่านบทความนี้ออกเสียง (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "อ่านเรื่องที่ยังไม่ได้อ่านด้วย: newsblur stories list"
@@ -5057,6 +5218,10 @@ msgstr "กำลังอ่านบทความที่บันทึก
 
 msgid "Reading view"
 msgstr "มุมมองการอ่าน"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "อ่านบทความ %(language)s ของคุณ"
 
 msgid "Real-time"
 msgstr "เรียลไทม์"
@@ -5090,6 +5255,10 @@ msgstr "แนะนำเว็บไซต์นี้"
 
 msgid "Recommended"
 msgstr "แนะนำ"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "แนะนำสำหรับ %(language)s"
 
 msgid "Record voice question"
 msgstr "บันทึกคำถามด้วยเสียง"
@@ -5159,6 +5328,9 @@ msgstr "จำตำแหน่งการเล่นของแต่ละ
 msgid "Remove"
 msgstr "นำออก"
 
+msgid "Remove from Up Next"
+msgstr "นำออกจากคิวถัดไป"
+
 msgid "Remove this list"
 msgstr "นำรายการนี้ออก"
 
@@ -5167,6 +5339,9 @@ msgstr "นำกลุ่มที่ผสานนี้ออก"
 
 msgid "Removed"
 msgstr "นำออกแล้ว"
+
+msgid "Removed from Up Next"
+msgstr "นำออกจากคิวถัดไปแล้ว"
 
 msgid "Rename"
 msgstr "เปลี่ยนชื่อ"
@@ -5225,6 +5400,10 @@ msgstr "รีเซ็ต"
 
 msgid "Reset to original favicon"
 msgstr "รีเซ็ตเป็นไอคอนเว็บไซต์เดิม"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "รีเซ็ต %(date)s"
 
 msgid "Resetting..."
 msgstr "กำลังรีเซ็ต..."
@@ -5488,6 +5667,9 @@ msgstr "ค้นหา subreddit (เช่น programming, news, gaming)..."
 
 msgid "Search the FAQ..."
 msgstr "ค้นหาในคำถามที่พบบ่อย..."
+
+msgid "Search voices"
+msgstr "ค้นหาเสียงพูด"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "ค้นหาภายในฟีดเดียว โฟลเดอร์เดียว หรือทั้งหมด"
@@ -5827,6 +6009,9 @@ msgstr "สมัครเพื่ออ่านฟีดของคุณเ
 msgid "Signup"
 msgstr "สมัครสมาชิก"
 
+msgid "Similarity"
+msgstr "ความคล้ายคลึง"
+
 msgid "Single Story"
 msgstr "บทความเดียว"
 
@@ -5946,8 +6131,14 @@ msgstr "ระยะห่างระหว่างฟีดกับชื่
 msgid "Spanish"
 msgstr "ภาษาสเปน"
 
+msgid "Speaker boost"
+msgstr "เพิ่มระดับเสียงผู้บรรยาย"
+
 msgid "Special Folders"
 msgstr "โฟลเดอร์พิเศษ"
+
+msgid "Speed"
+msgstr "ความเร็ว"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "ถึงขีดจำกัดการใช้งานแล้ว ระบบหยุดตัวจำแนกชั่วคราวจนกว่าจะถึงรอบถัดไป"
@@ -5988,6 +6179,12 @@ msgstr "กีฬา"
 
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "ปรับสโลแกนของเว็บไซต์ให้โดดเด่น หากได้รับเลือก เว็บไซต์นี้จะได้แสดงบนแดชบอร์ด NewsBlur เป็นเวลาหนึ่งสัปดาห์"
+
+msgid "Stability"
+msgstr "ความเสถียร"
+
+msgid "Stability, similarity and style"
+msgstr "ความเสถียร ความคล้ายคลึง และสไตล์"
 
 #, python-format
 msgid "Stale %(date)s"
@@ -6030,12 +6227,22 @@ msgstr "สถานะ"
 msgid "Stay on the same feed/folder"
 msgstr "อยู่ที่ฟีด/โฟลเดอร์เดิม"
 
+msgid "Steadier or more varied"
+msgstr "สม่ำเสมอมากขึ้นหรือหลากหลายมากขึ้น"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "สม่ำเสมอ"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "ขั้นตอนที่ %(step)s จาก %(count)s"
 
 msgid "Stop any time you like."
 msgstr "ยกเลิกเมื่อไรก็ได้"
+
+msgid "Stop preview"
+msgstr "หยุดตัวอย่าง"
 
 msgid "Stop recording"
 msgstr "หยุดบันทึก"
@@ -6151,6 +6358,9 @@ msgstr "ตัวอย่างเนื้อหาบทความ"
 msgid "Story is always hidden"
 msgstr "บทความจะถูกซ่อนเสมอ"
 
+msgid "Story language"
+msgstr "ภาษาของบทความ"
+
 msgid "Story layout"
 msgstr "รูปแบบการแสดงบทความ"
 
@@ -6177,6 +6387,13 @@ msgstr "การเชื่อมต่อสตรีมถูกขัดจ
 
 msgid "Stripe Id:"
 msgstr "รหัส Stripe:"
+
+msgid "Style"
+msgstr "สไตล์"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "สไตล์"
 
 msgid "Submit Payment"
 msgstr "ส่งการชำระเงิน"
@@ -6439,6 +6656,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "บล็อก NewsBlur"
 
+msgid "The audio stream was interrupted."
+msgstr "สตรีมเสียงถูกขัดจังหวะ"
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "มุมมองข้อความฉบับเต็ม %(icon)s เป็นฟีเจอร์%(link_start)sพรีเมียม%(link_end)s"
@@ -6487,6 +6707,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "ธีมและการปรับแต่ง"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "จากนั้นจาก %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "มีเว็บไซต์และบทความมากเกินไปที่จะประมวลผล "
@@ -6540,6 +6764,9 @@ msgstr "เกิดข้อผิดพลาดขณะพยายามอ
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "ไม่มีขีดจำกัด บันทึกบทความได้มากเท่าที่ต้องการ และเก็บไว้ได้ตลอดไป"
+
+msgid "There's nothing to read aloud in this story."
+msgstr "ไม่มีข้อความให้อ่านออกเสียงในบทความนี้"
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "พบกลุ่มเหล่านี้เนื่องจากผู้ใช้คนอื่นติดตามฟีดเหล่านี้ด้วย"
@@ -7041,6 +7268,9 @@ msgstr[0] "กำลังอัปเดตเว็บไซต์ทุก �
 msgid "Updating sites in real-time..."
 msgstr "กำลังอัปเดตเว็บไซต์แบบเรียลไทม์..."
 
+msgid "Upgrade"
+msgstr "อัปเกรด"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "อัปเกรดเป็น %(value_1)s"
@@ -7181,8 +7411,14 @@ msgstr "ดูการตั้งค่า"
 msgid "Visual"
 msgstr "ภาพ"
 
+msgid "Voice"
+msgstr "เสียงพูด"
+
 msgid "Voice recording failed. Please try again."
 msgstr "บันทึกเสียงไม่สำเร็จ โปรดลองอีกครั้ง"
+
+msgid "Voice settings"
+msgstr "การตั้งค่าเสียง"
 
 msgid "Warning: This is actually permanent"
 msgstr "คำเตือน: การดำเนินการนี้ย้อนกลับไม่ได้"
@@ -7588,6 +7824,10 @@ msgstr "สถิติการแนะนำของคุณ"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "คุณยังเข้าถึงบทความที่เก็บถาวรไว้ได้ แต่บทความใหม่จะเป็นไปตามนโยบายการเก็บรักษามาตรฐาน"
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "เสียงที่เลือกใช้ไม่ได้ในขณะนี้ %(voice)s จึงกำลังอ่านบทความนี้แทน"
+
 msgid "Your cookie has expired — Please login again"
 msgstr "คุกกี้ของคุณหมดอายุแล้ว — โปรดเข้าสู่ระบบอีกครั้ง"
 
@@ -7761,6 +8001,10 @@ msgstr "สหภาพแรงงาน"
 msgid "like"
 msgstr "ชอบ"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "ฟัง"
+
 msgid "local elections"
 msgstr "การเลือกตั้งท้องถิ่น"
 
@@ -7842,6 +8086,9 @@ msgstr "สมัครสมาชิกแล้ว"
 
 msgid "supply chain"
 msgstr "ห่วงโซ่อุปทาน"
+
+msgid "this list"
+msgstr "รายการนี้"
 
 msgid "trade policy"
 msgstr "นโยบายการค้า"

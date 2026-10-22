@@ -124,6 +124,11 @@ msgstr " — Dua huruf kapital atau lebih"
 msgid " — Whole word \"%(word)s\" only"
 msgstr " — Hanya kata utuh \"%(word)s\""
 
+#, python-format
+msgctxt "position in the Up Next queue"
+msgid "#%(position)s"
+msgstr "#%(position)s"
+
 msgid "$29/month"
 msgstr "$29/bulan"
 
@@ -238,6 +243,12 @@ msgstr[0] "%(count)s pengikut"
 msgstr[1] "%(count)s pengikut"
 
 #, python-format
+msgid "%(count)s free story preview left today"
+msgid_plural "%(count)s free story previews left today"
+msgstr[0] "Sisa %(count)s pratinjau artikel gratis hari ini"
+msgstr[1] "Sisa %(count)s pratinjau artikel gratis hari ini"
+
+#, python-format
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s jam"
@@ -260,6 +271,12 @@ msgid "%(count)s like"
 msgid_plural "%(count)s likes"
 msgstr[0] "%(count)s suka"
 msgstr[1] "%(count)s suka"
+
+#, python-format
+msgid "%(count)s match"
+msgid_plural "%(count)s matches"
+msgstr[0] "%(count)s kecocokan"
+msgstr[1] "%(count)s kecocokan"
 
 #, python-format
 msgid "%(count)s member"
@@ -446,6 +463,12 @@ msgstr[0] "%(count)s video"
 msgstr[1] "%(count)s video"
 
 #, python-format
+msgid "%(count)s voice preview left"
+msgid_plural "%(count)s voice previews left"
+msgstr[0] "Sisa %(count)s pratinjau suara"
+msgstr[1] "Sisa %(count)s pratinjau suara"
+
+#, python-format
 msgid "%(count)s week"
 msgid_plural "%(count)s weeks"
 msgstr[0] "%(count)s minggu"
@@ -536,6 +559,12 @@ msgstr[1] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Tingkatkan untuk melihat artikel terkait dari seluruh arsip Anda."
+
+#, python-format
+msgid "%(minutes)s minute left this month"
+msgid_plural "%(minutes)s minutes left this month"
+msgstr[0] "Sisa %(minutes)s menit bulan ini"
+msgstr[1] "Sisa %(minutes)s menit bulan ini"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -962,6 +991,12 @@ msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemuk
 msgid "2x daily"
 msgstr "2 kali sehari"
 
+msgid "30 second preview"
+msgstr "Pratinjau 30 detik"
+
+msgid "30s preview"
+msgstr "Pratinjau 30 dtk"
+
 msgid "3x daily"
 msgstr "3 kali sehari"
 
@@ -1002,6 +1037,9 @@ msgstr[1] "<strong>%(count)s hari</strong> tersisa dalam uji coba premium Anda"
 
 msgid "A blurblog of shared stories"
 msgstr "Blurblog berisi artikel yang dibagikan"
+
+msgid "A clearer, closer sound"
+msgstr "Suara yang lebih jernih dan dekat"
 
 msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
@@ -1050,6 +1088,10 @@ msgstr "SEMUA KATEGORI (%(value_1)s)"
 
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Tentu. Buka pelatih, lalu hapus tanda suka atau tidak suka untuk mengatur ulang."
+
+msgctxt "voice filter"
+msgid "Accent"
+msgstr "Aksen"
 
 msgid "Account"
 msgstr "Akun"
@@ -1129,12 +1171,19 @@ msgstr "Tambahkan ke Chrome"
 msgid "Add to Firefox"
 msgstr "Tambahkan ke Firefox"
 
+msgid "Add to Up Next"
+msgstr "Tambahkan ke Berikutnya"
+
 msgid "Add to folder"
 msgstr "Tambahkan ke folder"
 
 #, python-format
 msgid "Added %(date)s"
 msgstr "Ditambahkan %(date)s"
+
+#, python-format
+msgid "Added to Up Next · %(position)s"
+msgstr "Ditambahkan ke Berikutnya · %(position)s"
 
 msgid "Added!"
 msgstr "Ditambahkan!"
@@ -1156,6 +1205,10 @@ msgstr "Setelah menandai feed/folder sebagai telah dibaca"
 
 msgid "Afternoon"
 msgstr "Siang"
+
+msgctxt "voice filter"
+msgid "Age"
+msgstr "Usia"
 
 #, python-format
 msgid "Alert after %(value_1)s day without new stories"
@@ -1446,6 +1499,9 @@ msgstr "Tandai otomatis sebagai telah dibaca"
 
 msgid "Auto theme follows your system's light and dark schedule."
 msgstr "Tema otomatis mengikuti jadwal mode terang dan gelap sistem Anda."
+
+msgid "Auto-continue"
+msgstr "Lanjut otomatis"
 
 msgid "Auto-follow<br>my friends"
 msgstr "Ikuti otomatis<br>teman saya"
@@ -1847,6 +1903,9 @@ msgstr "Hapus rentang tanggal"
 msgid "Clear filter"
 msgstr "Hapus filter"
 
+msgid "Clear filters"
+msgstr "Hapus filter"
+
 msgid "Clear icon"
 msgstr "Hapus ikon"
 
@@ -1876,6 +1935,9 @@ msgstr "Tutup Pelatihan dan Mulai Membaca"
 
 msgid "Close player"
 msgstr "Tutup pemutar"
+
+msgid "Closeness to the original voice"
+msgstr "Kemiripan dengan suara asli"
 
 msgid "Cluster duplicate stories across all your feeds"
 msgstr "Kelompokkan artikel duplikat di semua feed Anda"
@@ -2015,6 +2077,9 @@ msgstr "Feed RSS untuk URL ini tidak dapat ditemukan"
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ tidak dapat dimuat. Silakan coba lagi."
 
+msgid "Couldn't load audio for this story."
+msgstr "Audio untuk artikel ini tidak dapat dimuat."
+
 msgid "Counting is difficult"
 msgstr "Menghitung itu sulit"
 
@@ -2047,6 +2112,10 @@ msgstr "Kredit"
 
 msgid "Cursors"
 msgstr "Kursor"
+
+msgctxt "listen delivery"
+msgid "Custom"
+msgstr "Kustom"
 
 msgid "Custom Add Site URL"
 msgstr "URL Tambah Situs Khusus"
@@ -2212,6 +2281,9 @@ msgstr "Dihapus!"
 
 msgid "Deleting..."
 msgstr "Menghapus..."
+
+msgid "Delivery"
+msgstr "Penyampaian"
 
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Jelaskan artikel yang Anda cari, dan kami akan menganalisis ulang halaman untuk menemukannya."
@@ -2628,6 +2700,9 @@ msgstr ""
 msgid "Exact phrase"
 msgstr "Frasa persis"
 
+msgid "Exaggerates the voice's style"
+msgstr "Melebih-lebihkan gaya suara"
+
 msgid "Examples"
 msgstr "Contoh"
 
@@ -2663,6 +2738,10 @@ msgstr "Kedaluwarsa dalam 1 THN"
 
 msgid "Export trained stories from folders"
 msgstr "Ekspor artikel terlatih dari folder"
+
+msgctxt "listen delivery"
+msgid "Expressive"
+msgstr "Ekspresif"
 
 msgid "Extras"
 msgstr "Ekstra"
@@ -2903,6 +2982,9 @@ msgstr "Cari Teman"
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Temukan alamat email NewsBlur unik Anda di dialog Buletin Email"
 
+msgid "Fine-tune voice"
+msgstr "Sesuaikan suara"
+
 msgid "Finish recording..."
 msgstr "Selesaikan perekaman..."
 
@@ -2970,6 +3052,9 @@ msgstr "Ikuti"
 #, python-format
 msgid "Follow %(value_1)s"
 msgstr "Ikuti %(value_1)s"
+
+msgid "Follow along"
+msgstr "Ikuti bersama"
 
 msgid "Follow any website, even ones that don't publish an RSS feed."
 msgstr "Ikuti situs web apa pun, termasuk yang tidak menerbitkan feed RSS."
@@ -3182,6 +3267,10 @@ msgstr "Permainan"
 msgid "Gaming"
 msgstr "Game"
 
+msgctxt "voice filter"
+msgid "Gender"
+msgstr "Jenis kelamin"
+
 msgid "General"
 msgstr "Umum"
 
@@ -3348,6 +3437,9 @@ msgstr "Judul berita"
 msgid "Health"
 msgstr "Kesehatan"
 
+msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
+msgstr "Dengarkan 30 detik pertama dibacakan. Premium Archive membacakan seluruh artikel."
+
 msgid "Hearts"
 msgstr "Hati"
 
@@ -3387,6 +3479,9 @@ msgstr "Sembunyikan perubahan artikel"
 msgid "Highlight"
 msgstr "Sorot"
 
+msgid "Highlight the paragraph being read"
+msgstr "Sorot paragraf yang sedang dibacakan"
+
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Sorot kata dalam judul untuk melatih frasa tertentu."
 
@@ -3419,6 +3514,9 @@ msgstr "Cara kerjanya"
 
 msgid "How many stories can I save?"
 msgstr "Berapa banyak artikel yang bisa saya simpan?"
+
+msgid "How much emotion"
+msgstr "Seberapa banyak emosi"
 
 msgid "How often"
 msgstr "Seberapa sering"
@@ -3731,6 +3829,21 @@ msgstr "Tampilan Daftar"
 msgid "List view"
 msgstr "Tampilan daftar"
 
+msgid "Listen"
+msgstr "Dengarkan"
+
+msgid "Listen timed out. Try again in a moment."
+msgstr "Waktu untuk mendengarkan habis. Coba lagi sebentar lagi."
+
+msgid "Listen to stories read aloud"
+msgstr "Dengarkan artikel dibacakan"
+
+msgid "Listen to story"
+msgstr "Dengarkan artikel"
+
+msgid "Listen to this story"
+msgstr "Dengarkan artikel ini"
+
 msgid "Loading PayPal..."
 msgstr "Memuat PayPal..."
 
@@ -3748,6 +3861,9 @@ msgstr "Memuat feed..."
 
 msgid "Loading more briefings..."
 msgstr "Memuat ringkasan lainnya..."
+
+msgid "Loading voices..."
+msgstr "Memuat suara..."
 
 msgid "Loading your blocklist settings..."
 msgstr "Memuat pengaturan daftar blokir Anda..."
@@ -4016,6 +4132,9 @@ msgstr "Fitur Lainnya"
 msgid "More from Reddit"
 msgstr "Lainnya dari Reddit"
 
+msgid "More voices"
+msgstr "Suara lainnya"
+
 msgid "Morning"
 msgstr "Pagi"
 
@@ -4104,6 +4223,10 @@ msgstr "Nama"
 
 msgid "Native Apps"
 msgstr "Aplikasi Native"
+
+msgctxt "listen delivery"
+msgid "Natural"
+msgstr "Alami"
 
 msgid "Natural Language Image Classifier"
 msgstr "Pengklasifikasi Gambar Bahasa Alami"
@@ -4431,6 +4554,9 @@ msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
 
 msgid "No valid merge groups to apply"
 msgstr "Tidak ada grup penggabungan valid untuk diterapkan"
+
+msgid "No voices match these filters"
+msgstr "Tidak ada suara yang cocok dengan filter ini"
 
 msgid "Nobody has yet subscribed to your shared stories."
 msgstr "Belum ada yang berlangganan artikel yang Anda bagikan."
@@ -4815,6 +4941,15 @@ msgstr "Tempel URL situs web apa pun..."
 msgid "Pattern: %(value_1)s"
 msgstr "Pola: %(value_1)s"
 
+msgid "Pause"
+msgstr "Jeda"
+
+msgid "Pause listening"
+msgstr "Jeda mendengarkan"
+
+msgid "Pause or resume reading aloud (y)"
+msgstr "Jeda atau lanjutkan pembacaan suara (y)"
+
 msgid "Payment history"
 msgstr "Riwayat pembayaran"
 
@@ -4865,6 +5000,9 @@ msgstr "Putar Berikutnya"
 
 msgid "Play in Mini Media Player"
 msgstr "Putar di Pemutar Media Mini"
+
+msgid "Play the next unread story"
+msgstr "Putar artikel belum dibaca berikutnya"
 
 msgid "Play/Pause"
 msgstr "Putar/Jeda"
@@ -4950,6 +5088,9 @@ msgstr "Premium"
 msgid "Premium Archive"
 msgstr "Premium Archive"
 
+msgid "Premium Archive reads whole stories aloud."
+msgstr "Premium Archive membacakan artikel secara utuh."
+
 msgid "Premium Pro"
 msgstr "Premium Pro"
 
@@ -4987,6 +5128,9 @@ msgstr "Status Premium"
 msgid "Premium users can make their blurblog private."
 msgstr "Pengguna Premium dapat menjadikan blurblog mereka privat."
 
+msgid "Preparing audio..."
+msgstr "Menyiapkan audio..."
+
 msgid "Press / anywhere to jump straight to the search field."
 msgstr "Tekan / di mana saja untuk langsung membuka kolom pencarian."
 
@@ -5007,6 +5151,15 @@ msgstr "Situs sebelumnya"
 
 msgid "Preview"
 msgstr "Pratinjau"
+
+msgid "Preview this voice"
+msgstr "Pratinjau suara ini"
+
+#, python-format
+msgid "Previewing %(seconds)s second. Premium Archive unlocks full stories"
+msgid_plural "Previewing %(seconds)s seconds. Premium Archive unlocks full stories"
+msgstr[0] "Mempratinjau selama %(seconds)s detik. Premium Archive membuka akses ke artikel lengkap"
+msgstr[1] "Mempratinjau selama %(seconds)s detik. Premium Archive membuka akses ke artikel lengkap"
 
 msgid "Previous story"
 msgstr "Artikel sebelumnya"
@@ -5104,6 +5257,9 @@ msgid_plural "Queued %(count)s stories for categorization. Categories will appea
 msgstr[0] "%(count)s artikel telah diantrekan untuk dikategorikan. Kategori akan muncul saat artikel diproses."
 msgstr[1] "%(count)s artikel telah diantrekan untuk dikategorikan. Kategori akan muncul saat artikel diproses."
 
+msgid "Queued. Click to remove from Up Next"
+msgstr "Masuk antrean. Klik untuk menghapus dari Berikutnya"
+
 msgid "Quick search for a site"
 msgstr "Cari situs dengan cepat"
 
@@ -5161,6 +5317,13 @@ msgstr ""
 "Baca semua feed dalam folder sebagai satu aliran yang dapat digulir, menurut urutan kronologis. Dipadukan "
 "dengan pelatihan, aliran ini menampilkan artikel terbaik dari semua langganan Anda."
 
+msgid "Read aloud"
+msgstr "Bacakan"
+
+#, python-format
+msgid "Read by %(voice)s"
+msgstr "Dibacakan oleh %(voice)s"
+
 msgid "Read more on the NewsBlur Blog"
 msgstr "Baca selengkapnya di Blog NewsBlur"
 
@@ -5175,6 +5338,9 @@ msgstr "Baca artikel berdasarkan folder"
 
 msgid "Read the whole story"
 msgstr "Baca seluruh artikel"
+
+msgid "Read this story aloud (y)"
+msgstr "Bacakan artikel ini (y)"
 
 msgid "Read unread stories with: newsblur stories list"
 msgstr "Baca artikel yang belum dibaca dengan: newsblur stories list"
@@ -5200,6 +5366,10 @@ msgstr "Membaca artikel tersimpan..."
 
 msgid "Reading view"
 msgstr "Tampilan membaca"
+
+#, python-format
+msgid "Reads your %(language)s stories"
+msgstr "Membacakan artikel %(language)s Anda"
 
 msgid "Real-time"
 msgstr "Waktu nyata"
@@ -5233,6 +5403,10 @@ msgstr "Rekomendasikan situs ini"
 
 msgid "Recommended"
 msgstr "Direkomendasikan"
+
+#, python-format
+msgid "Recommended for %(language)s"
+msgstr "Direkomendasikan untuk %(language)s"
 
 msgid "Record voice question"
 msgstr "Rekam pertanyaan suara"
@@ -5302,6 +5476,9 @@ msgstr "Ingat posisi pemutaran untuk setiap episode"
 msgid "Remove"
 msgstr "Hapus"
 
+msgid "Remove from Up Next"
+msgstr "Hapus dari Berikutnya"
+
 msgid "Remove this list"
 msgstr "Hapus daftar ini"
 
@@ -5310,6 +5487,9 @@ msgstr "Hapus grup penggabungan ini"
 
 msgid "Removed"
 msgstr "Dihapus"
+
+msgid "Removed from Up Next"
+msgstr "Dihapus dari Berikutnya"
 
 msgid "Rename"
 msgstr "Ganti nama"
@@ -5369,6 +5549,10 @@ msgstr "Atur ulang"
 
 msgid "Reset to original favicon"
 msgstr "Kembalikan favicon asli"
+
+#, python-format
+msgid "Resets %(date)s"
+msgstr "Direset %(date)s"
 
 msgid "Resetting..."
 msgstr "Mengatur ulang..."
@@ -5636,6 +5820,9 @@ msgstr "Cari subreddit (misalnya, programming, berita, game)..."
 
 msgid "Search the FAQ..."
 msgstr "Cari di FAQ..."
+
+msgid "Search voices"
+msgstr "Cari suara"
 
 msgid "Search within a single feed, a folder, or across everything"
 msgstr "Cari dalam satu feed, folder, atau semua konten"
@@ -5982,6 +6169,9 @@ msgstr "Daftar untuk membaca feed Anda sendiri."
 msgid "Signup"
 msgstr "Daftar"
 
+msgid "Similarity"
+msgstr "Kemiripan"
+
 msgid "Single Story"
 msgstr "Satu Artikel"
 
@@ -6101,8 +6291,14 @@ msgstr "Jarak antara feed dan judul artikel"
 msgid "Spanish"
 msgstr "Bahasa Spanyol"
 
+msgid "Speaker boost"
+msgstr "Penguat suara"
+
 msgid "Special Folders"
 msgstr "Folder Khusus"
+
+msgid "Speed"
+msgstr "Kecepatan"
 
 msgid "Spending limit reached. Classifiers paused until next cycle."
 msgstr "Batas pengeluaran tercapai. Pengklasifikasi dijeda hingga siklus berikutnya."
@@ -6147,6 +6343,12 @@ msgstr "Olahraga"
 msgid "Spruce up the site's tagline. If chosen, this site will enjoy a week on the NewsBlur dashboard."
 msgstr "Percantik slogan situs. Jika terpilih, situs ini akan tampil selama seminggu di dasbor NewsBlur."
 
+msgid "Stability"
+msgstr "Stabilitas"
+
+msgid "Stability, similarity and style"
+msgstr "Stabilitas, kemiripan, dan gaya"
+
 #, python-format
 msgid "Stale %(date)s"
 msgstr "Usang sejak %(date)s"
@@ -6188,12 +6390,22 @@ msgstr "Status"
 msgid "Stay on the same feed/folder"
 msgstr "Tetap di feed/folder yang sama"
 
+msgid "Steadier or more varied"
+msgstr "Lebih stabil atau lebih bervariasi"
+
+msgctxt "listen delivery"
+msgid "Steady"
+msgstr "Stabil"
+
 #, python-format
 msgid "Step %(step)s of %(count)s"
 msgstr "Langkah %(step)s dari %(count)s"
 
 msgid "Stop any time you like."
 msgstr "Berhenti kapan saja."
+
+msgid "Stop preview"
+msgstr "Hentikan pratinjau"
 
 msgid "Stop recording"
 msgstr "Hentikan perekaman"
@@ -6310,6 +6522,9 @@ msgstr "Pratinjau konten artikel"
 msgid "Story is always hidden"
 msgstr "Artikel selalu disembunyikan"
 
+msgid "Story language"
+msgstr "Bahasa artikel"
+
 msgid "Story layout"
 msgstr "Tata letak artikel"
 
@@ -6336,6 +6551,13 @@ msgstr "Aliran terputus. Tidak ada respons selama 10 detik."
 
 msgid "Stripe Id:"
 msgstr "ID Stripe:"
+
+msgid "Style"
+msgstr "Gaya"
+
+msgctxt "voice filter"
+msgid "Style"
+msgstr "Gaya"
 
 msgid "Submit Payment"
 msgstr "Kirim Pembayaran"
@@ -6606,6 +6828,9 @@ msgstr ""
 msgid "The NewsBlur Blog"
 msgstr "Blog NewsBlur"
 
+msgid "The audio stream was interrupted."
+msgstr "Aliran audio terputus."
+
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
 msgstr "Tampilan Teks lengkap %(icon)s adalah fitur %(link_start)spremium%(link_end)s."
@@ -6656,6 +6881,10 @@ msgstr ""
 
 msgid "Themes & Customization"
 msgstr "Tema & Kustomisasi"
+
+#, python-format
+msgid "Then from %(source)s"
+msgstr "Lalu dari %(source)s"
 
 msgid "There are too many sites and stories to process. "
 msgstr "Terlalu banyak situs dan artikel untuk diproses. "
@@ -6711,6 +6940,9 @@ msgstr "Terjadi kesalahan saat mencoba keluar. Aduh."
 
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Tidak ada batas. Simpan artikel sebanyak yang Anda mau, dan semuanya akan disimpan selamanya."
+
+msgid "There's nothing to read aloud in this story."
+msgstr "Tidak ada yang dapat dibacakan dalam artikel ini."
 
 msgid "These clusters were found because other subscribers share these feeds."
 msgstr "Klaster ini ditemukan karena pelanggan lain berlangganan feed ini."
@@ -7226,6 +7458,9 @@ msgstr[1] "Memperbarui situs setiap %(count)s detik..."
 msgid "Updating sites in real-time..."
 msgstr "Memperbarui situs secara langsung..."
 
+msgid "Upgrade"
+msgstr "Tingkatkan"
+
 #, python-format
 msgid "Upgrade to %(value_1)s"
 msgstr "Tingkatkan ke %(value_1)s"
@@ -7372,8 +7607,14 @@ msgstr "Pengaturan tampilan"
 msgid "Visual"
 msgstr "Visual"
 
+msgid "Voice"
+msgstr "Suara"
+
 msgid "Voice recording failed. Please try again."
 msgstr "Rekaman suara gagal. Silakan coba lagi."
+
+msgid "Voice settings"
+msgstr "Pengaturan suara"
 
 msgid "Warning: This is actually permanent"
 msgstr "Peringatan: Tindakan ini benar-benar permanen"
@@ -7794,6 +8035,10 @@ msgstr "Statistik Referral Anda"
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Artikel yang Anda arsipkan tetap dapat diakses, tetapi artikel baru mengikuti kebijakan retensi standar."
 
+#, python-format
+msgid "Your chosen voice isn't available right now, so %(voice)s is reading this story."
+msgstr "Suara yang Anda pilih tidak tersedia saat ini, jadi %(voice)s sedang membacakan artikel ini."
+
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie Anda telah kedaluwarsa — Silakan masuk lagi"
 
@@ -7968,6 +8213,10 @@ msgstr "serikat pekerja"
 msgid "like"
 msgstr "suka"
 
+msgctxt "media player item read aloud"
+msgid "listen"
+msgstr "dengarkan"
+
 msgid "local elections"
 msgstr "pemilihan lokal"
 
@@ -8049,6 +8298,9 @@ msgstr "berlangganan"
 
 msgid "supply chain"
 msgstr "rantai pasokan"
+
+msgid "this list"
+msgstr "daftar ini"
 
 msgid "trade policy"
 msgstr "kebijakan perdagangan"
