@@ -242,6 +242,66 @@
 			<string>%@ статті у фокусі</string>
 		</dict>
 	</dict>
+	<key>%@ free story previews left today</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_story_previews_left@</string>
+		<key>listen_story_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Сьогодні залишилося безкоштовних попередніх переглядів статей: %@</string>
+			<key>many</key>
+			<string>Сьогодні залишилося безкоштовних попередніх прослуховувань статей: %@</string>
+			<key>one</key>
+			<string>Сьогодні залишилося %@ безкоштовне попереднє прослуховування статті</string>
+			<key>other</key>
+			<string>Сьогодні залишилося %@ безкоштовних попередніх переглядів статей</string>
+		</dict>
+	</dict>
+	<key>%@ match</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_matches@</string>
+		<key>listen_voice_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ збіги</string>
+			<key>many</key>
+			<string>%@ збігів</string>
+			<key>one</key>
+			<string>%@ збіг</string>
+			<key>other</key>
+			<string>%@ збігів</string>
+		</dict>
+	</dict>
+	<key>%@ minutes left this month</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_minutes_left@</string>
+		<key>listen_minutes_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Цього місяця залишилося %@ хвилини</string>
+			<key>many</key>
+			<string>Цього місяця залишилося %@ хвилин</string>
+			<key>one</key>
+			<string>Залишилася %@ хвилина цього місяця</string>
+			<key>other</key>
+			<string>Залишилося хвилин цього місяця: %@</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -440,6 +500,26 @@
 			<string>%@ непрочитана стаття</string>
 			<key>other</key>
 			<string>%@ непрочитаної статті</string>
+		</dict>
+	</dict>
+	<key>%@ voice previews left</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@listen_voice_previews_left@</string>
+		<key>listen_voice_previews_left</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>Залишилося %@ попередні голосів</string>
+			<key>many</key>
+			<string>Залишилося голосових прослуховувань: %@</string>
+			<key>one</key>
+			<string>Залишилося голосове прослуховування: %@</string>
+			<key>other</key>
+			<string>Залишилося голосових прослуховувань: %@</string>
 		</dict>
 	</dict>
 	<key>+ %@ more sites</key>
