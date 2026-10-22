@@ -19,7 +19,7 @@ class MMediaPlaybackState(mongo.Document):
     # Current playing item
     current_story_hash = mongo.StringField(default="")
     current_media_url = mongo.StringField(default="")
-    current_media_type = mongo.StringField(default="")  # "audio", "video", "youtube"
+    current_media_type = mongo.StringField(default="")  # "audio", "video", "youtube", "listen"
     current_media_title = mongo.StringField(default="")
     current_feed_id = mongo.IntField(default=0)
     current_image_url = mongo.StringField(default="")

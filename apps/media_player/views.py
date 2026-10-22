@@ -12,6 +12,16 @@ from utils.user_functions import ajax_login_required
 
 @ajax_login_required
 @json.json_view
+def playback_state(request):
+    """The player state, queue and history, so the mobile Listen players and a refocused web tab share one queue.
+
+    The web otherwise gets this inside /reader/feeds (apps/reader/views.py).
+    """
+    return {"playback_state": MMediaPlaybackState.get_state_with_redis_position(request.user.pk)}
+
+
+@ajax_login_required
+@json.json_view
 def save_playback_state(request):
     """Save media playback state (play/pause/seek/new item/close). Also updates Redis for fast reads."""
     user = request.user
