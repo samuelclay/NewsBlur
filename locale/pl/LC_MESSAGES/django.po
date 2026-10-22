@@ -24,6 +24,14 @@ msgstr " - Folder: Wszystkie artykuły z witryn"
 msgid " - Folder: Top Level"
 msgstr " - Folder: poziom główny"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr ""
+"„%(value)s” jest już wytrenowany dla wszystkich witryn lub znajduje się w innym folderze. Zmień zakres tego"
+" klasyfikatora."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 USD/rok (Pro: nieograniczona liczba źródeł)"
 

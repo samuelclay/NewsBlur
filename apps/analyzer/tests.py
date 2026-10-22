@@ -1371,6 +1371,97 @@ class Test_Classifiers(TransactionTestCase):
         )
         self.assertTrue(UserSubscription.objects.get(user=self.user, feed=self.feed).needs_unread_recalc)
 
+    def test_folder_classifier_does_not_overwrite_global_classifier_with_same_phrase(self):
+        """
+        A folder dislike for a phrase that is already a global like is a second classifier.
+        The legacy fallback in save_classifier used to drop scope and folder_name, find the
+        global one, and flip it to a dislike instead (forum #13907 add row review).
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post(
+            "/classifier/save/", {"feed_id": 0, "scope": "global", "folder_name": "", "like_title": "apple"}
+        )
+        self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech", "dislike_title": "apple"},
+        )
+        self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Sports", "like_title": "apple"},
+        )
+
+        titles = sorted(
+            (c.scope, c.folder_name, c.score)
+            for c in MClassifierTitle.objects(user_id=self.user.pk, title="apple")
+        )
+        self.assertEqual(titles, [("folder", "Sports", 1), ("folder", "Tech", -1), ("global", "", 1)])
+
+    def test_tag_in_a_second_scope_is_refused_without_touching_the_first(self):
+        """
+        Tag and author unique indexes ignore scope, so a tag trained globally can't also be
+        trained for a folder. The save says so instead of reporting success.
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post(
+            "/classifier/save/", {"feed_id": 0, "scope": "global", "folder_name": "", "like_tag": "apple"}
+        )
+        response = self.client.post(
+            "/classifier/save/",
+            {"feed_id": 0, "scope": "folder", "folder_name": "Tech", "dislike_tag": "apple"},
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertIn('"apple" is already trained', content["message"])
+        tags = [
+            (c.scope, c.folder_name, c.score)
+            for c in MClassifierTag.objects(user_id=self.user.pk, tag="apple")
+        ]
+        self.assertEqual(tags, [("global", "", 1)])
+
+    def test_plain_title_does_not_overwrite_regex_title_with_same_text(self):
+        self.client.login(username="testuser", password="testpass")
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="iphone",
+            is_regex=True,
+            score=-1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "like_title": "iphone"})
+
+        titles = sorted(
+            (c.is_regex, c.score) for c in MClassifierTitle.objects(user_id=self.user.pk, title="iphone")
+        )
+        self.assertEqual(titles, [(False, 1), (True, -1)])
+
+    def test_removing_legacy_classifier_without_scope_fields_still_works(self):
+        """Classifiers saved before scope, folder_name and is_regex existed lack those fields."""
+        MClassifierTitle._get_collection().insert_one(
+            {
+                "user_id": self.user.pk,
+                "feed_id": self.feed.pk,
+                "social_user_id": 0,
+                "title": "old phrase",
+                "score": 1,
+                "creation_date": datetime.datetime.now(),
+            }
+        )
+        self.client.login(username="testuser", password="testpass")
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "remove_like_title": "old phrase"})
+
+        self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk, title="old phrase").count(), 0)
+
     def test_typed_global_classifier_requires_archive(self):
         self.client.login(username="testuser", password="testpass")
 
