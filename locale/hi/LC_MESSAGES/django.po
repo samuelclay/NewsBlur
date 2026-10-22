@@ -590,6 +590,9 @@ msgstr "एक व्यक्तिगत न्यूज़ रीडर, ज�
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "आपके प्रमुख लेखों का सारांश, जिसे आप अपनी पसंद के अनुसार बना सकते हैं और जो हर दिन भेजा जाता है"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "NewsBlur की 21 भाषाओं में से हर एक के लिए एक आवाज़"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "AI सहायक (Feedly AI)"
 
@@ -1294,6 +1297,9 @@ msgstr "मुख्य मनोबल अधिकारी"
 msgid "Choose Your 64"
 msgstr "अपनी 64 साइटें चुनें"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "चुनें कि लेखों को अपने-आप पढ़ा हुआ कब चिह्नित किया जाए"
+
 msgid "Choose when stories are marked as read"
 msgstr "चुनें कि लेखों को कब पढ़ा हुआ चिह्नित किया जाए"
 
@@ -1566,6 +1572,9 @@ msgstr ""
 msgid "Customize auto-read by site or folder"
 msgstr "साइट या फ़ोल्डर के अनुसार ऑटो-रीड को अनुकूलित करें"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "साइट या फ़ोल्डर के अनुसार अपने-आप पढ़ा हुआ चिह्नित करने की सेटिंग्स अनुकूलित करें।"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "ब्रीफ़िंग के अनुभाग और डिलीवरी शेड्यूल अनुकूलित करें"
 
@@ -1754,6 +1763,9 @@ msgstr "आपकी समाचार धारा में डुप्ल�
 msgid "Each newsletter sender becomes its own feed"
 msgstr "हर न्यूज़लेटर भेजने वाला अपनी अलग फ़ीड बन जाता है"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "पढ़े जाते समय हर अनुच्छेद हाइलाइट होता है।"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "हर रिवर में river_id, river_side और river_order होना चाहिए"
 
@@ -1909,6 +1921,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "हर लेख हमेशा के लिए संग्रहित और खोजने योग्य। आपका निजी ज्ञान-भंडार।"
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "हर साइट का हर लेख हमेशा के लिए संग्रहित और खोजने योग्य रहता है।"
+
 msgid "Every story kept and searchable forever"
 msgstr "हर लेख हमेशा के लिए सुरक्षित और खोजने योग्य"
 
@@ -1990,6 +2005,9 @@ msgstr ""
 
 msgid "Export trained stories from folders"
 msgstr "फ़ोल्डरों से प्रशिक्षित लेख निर्यात करें"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "फ़ोल्डरों से प्रशिक्षित लेखों को RSS फ़ीड के रूप में निर्यात करें"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2115,6 +2133,9 @@ msgstr "पूरा आर्काइव उपलब्ध कराने �
 msgid "Feeds fetched"
 msgstr "फ़ीड प्राप्त किए गए"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "पेजिंग का समर्थन करने वाली फ़ीड को पूरा संग्रह बनाने के लिए पहले की सामग्री से भर दिया जाता है।"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2130,6 +2151,9 @@ msgstr "आपकी फ़ीड लाई जा रही हैं"
 
 msgid "Filter stories by date range"
 msgstr "तिथि सीमा के अनुसार लेख फ़िल्टर करें"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "अपनी ज़रूरत का लेख ढूँढ़ने के लिए तारीख़ की सीमा के अनुसार लेख फ़िल्टर करें।"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "सुविधाओं, मूल्य निर्धारण, प्रशिक्षण, AI और अन्य विषयों के सामान्य प्रश्नों के उत्तर पाएँ।"
@@ -2194,6 +2218,9 @@ msgstr "GitHub पर %(handle)s को फ़ॉलो करें"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "X पर %(handle)s को फ़ॉलो करें"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "हर अनुच्छेद के हाइलाइट होने के साथ पढ़ते रहें; किसी अनुच्छेद पर टैप करके सीधे उस पर जाएँ।"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2613,6 +2640,29 @@ msgid ""
 msgstr ""
 "किसी नए टूल या कार्यप्रवाह का विचार है? इसे <a href=\"https://forum.newsblur.com\">NewsBlur सहायता "
 "फ़ोरम</a> पर पोस्ट करें और हम भविष्य के रिलीज़ के लिए इस पर विचार करेंगे।"
+
+msgid "Have any story read aloud"
+msgstr "किसी भी लेख को ज़ोर से पढ़वाएँ"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "वेब, iPhone, iPad, Mac और Android पर किसी भी लेख को ज़ोर से सुनें।"
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"वेब, iPhone, iPad, Mac और Android पर किसी भी लेख को ज़ोर से सुनें। पढ़े जाते समय हर अनुच्छेद हाइलाइट होता "
+"है, लेख अगला सुनें में कतारबद्ध होते हैं, और एक लेख समाप्त होने पर अगला अपठित लेख शुरू हो जाता है। Listen "
+"हर लेख की भाषा पहचानता है और NewsBlur की 21 भाषाओं में से किसी भी भाषा के लिए आपकी चुनी हुई आवाज़ में उसे "
+"पढ़ता है।"
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"वेब, iPhone, iPad, Mac और Android पर किसी भी लेख को ज़ोर से सुनें। हर अनुच्छेद के हाइलाइट होने के साथ पढ़ते"
+" रहें, लेखों को अगला सुनें में कतारबद्ध करें और 21 भाषाओं में से हर एक के लिए आवाज़ चुनें।"
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3054,6 +3104,9 @@ msgstr ""
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "बस “NewsBlur प्रबंधित करें > साइटें आयात करें या अपलोड करें” पर जाएँ।"
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "स्क्रीन बंद होने पर, लॉक स्क्रीन से या अपने फ़ोन के मीडिया कंट्रोल से सुनना जारी रखें"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "ज़्यादा मुफ़्त सदस्यता समय पाने के लिए अपना रेफ़रल लिंक साझा करते रहें। हर रेफ़रल से लाभ बढ़ता है!"
 
@@ -3118,6 +3171,42 @@ msgstr "सीमित (केवल अपने ऐप्स)"
 msgctxt "story layout"
 msgid "List"
 msgstr "सूची"
+
+msgid "Listen"
+msgstr "सुनें"
+
+msgid "Listen - NewsBlur"
+msgstr "सुनें - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr "Listen साइट से पूरा लेख लाता है और उसी को पढ़ता है। तस्वीरें, कैप्शन, कोड और तालिकाएँ छोड़ दी जाती हैं।"
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"Listen, Premium Archive ($99/year) और Premium Pro के साथ शामिल है। अन्य प्लान पर आप रोज़ कुछ लेखों का 30 "
+"सेकंड का पूर्वावलोकन सुन सकते हैं।"
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "वेब, iPad, iPhone और Android पर Listen करें"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "MacBook, iPad, iPhone और Android फ़ोन पर Listen चल रहा है"
+
+msgid "Listen to stories read aloud"
+msgstr "ज़ोर से पढ़े जा रहे लेख सुनें"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"Listen हर लेख की भाषा पहचानता है और उस भाषा के लिए आपकी चुनी हुई आवाज़ में उसे पढ़ता है। NewsBlur की 21 "
+"भाषाओं में से हर एक के लिए ElevenLabs की दस सुझाई गई आवाज़ें हैं, और आप ElevenLabs की बाकी आवाज़ों की "
+"लाइब्रेरी में भी खोज सकते हैं।"
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "सुनने की सुविधा व्यस्त है। थोड़ी देर बाद फिर कोशिश करें।"
@@ -4142,6 +4231,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "पहली बार इस्तेमाल करने पर, लॉग इन करने और पहुँच की अनुमति देने के लिए एक ब्राउज़र विंडो खुलेगी।"
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"वेब पर और iPhone, iPad, Mac व Android ऐप्स में। अगला सुनें आपके खाते में सहेजा जाता है, इसलिए एक डिवाइस पर "
+"कतार में लगाए गए लेख दूसरे डिवाइस पर भी उपलब्ध रहते हैं।"
+
 msgid "One-Command Install"
 msgstr "एक कमांड से इंस्टॉल करें"
 
@@ -4164,6 +4260,9 @@ msgstr "ओपन सोर्स RSS"
 
 msgid "Open Source RSS Readers"
 msgstr "ओपन सोर्स RSS रीडर"
+
+msgid "Open any story and press Listen"
+msgstr "कोई भी लेख खोलें और Listen दबाएँ"
 
 msgid "Open source (MIT)"
 msgstr "ओपन सोर्स (MIT)"
@@ -4236,6 +4335,9 @@ msgstr "POST आवश्यक है"
 msgid "Paid Plan"
 msgstr "सशुल्क योजना"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "iPad, iPhone और Android फ़ोन पर पढ़े जाने के साथ अनुच्छेद हाइलाइट होते हुए"
+
 msgid "Parameter"
 msgstr "पैरामीटर"
 
@@ -4265,6 +4367,9 @@ msgstr "हर फ़ीड के लिए अलर्ट"
 
 msgid "Permanent with Archive plan"
 msgstr "Archive प्लान के साथ स्थायी"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "हर भाषा के लिए आवाज़ चुनें और बोलने का अंदाज़ तथा गति तय करें।"
 
 msgid "Plan"
 msgstr "प्लान"
@@ -4412,6 +4517,9 @@ msgstr "Premium सदस्यता"
 
 msgid "Premium upgrade"
 msgstr "Premium में अपग्रेड करें"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr "+ दबाकर लेखों को अगला सुनें में जोड़ें, फिर अपने अगले अपठित लेखों के साथ सुनना जारी रखें।"
 
 msgid "Press Information and Resources"
 msgstr "प्रेस संबंधी जानकारी और संसाधन"
@@ -5057,6 +5165,9 @@ msgstr "पूर्ण-पाठ खोज देखें"
 msgid "See Intelligence Training"
 msgstr "इंटेलिजेंस प्रशिक्षण देखें"
 
+msgid "See Listen"
+msgstr "Listen देखें"
+
 msgid "See Native Apps"
 msgstr "नेटिव ऐप देखें"
 
@@ -5390,6 +5501,9 @@ msgstr ""
 "अपडेट मिलते हैं। प्रीमियम उपयोगकर्ताओं की फ़ीड की जाँच 5 गुना तक अधिक बार होती है। Pro उपयोगकर्ताओं के खाते"
 " की हर फ़ीड हर 5–15 मिनट में प्राप्त की जाती है, जिससे NewsBlur उन पेशेवरों के लिए निगरानी-स्तर का टूल बन "
 "जाता है जिन्हें सबसे पहले जानकारी चाहिए।"
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "लेख आपकी चुनी हुई अवधि तक अपठित रह सकते हैं।"
 
 msgid "Stories can stay unread forever"
 msgstr "लेख हमेशा अपठित रह सकते हैं"
@@ -5750,6 +5864,9 @@ msgstr ""
 "रुचियों के अनुसार ढल जाता है। The Old Reader में कोई फ़िल्टरिंग या प्रशिक्षण प्रणाली नहीं है, इसलिए बड़ी "
 "संख्या में फ़ीड प्रबंधित करने के लिए अधिक मैन्युअल काम करना पड़ता है।"
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "NewsBlur की 21 भाषाओं में से हर भाषा के लिए Listen की डिफ़ॉल्ट आवाज़"
+
 msgid "The email will be sent to:"
 msgstr "ईमेल इस पते पर भेजा जाएगा:"
 
@@ -6042,6 +6159,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "पूरे लेख के पाठ के आधार पर लेखों को प्रशिक्षित करें"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "लेखों को केवल शीर्षक और टैग पर नहीं, बल्कि पूरे पाठ पर प्रशिक्षित करें।"
 
 msgid "Train stories with regular expressions"
 msgstr "रेगुलर एक्सप्रेशन से लेखों को प्रशिक्षित करें"
@@ -6429,6 +6549,9 @@ msgstr "अगर मैं डाउनग्रेड करूँ, तो क
 msgid "What happens to my data if I downgrade?"
 msgstr "अगर मैं डाउनग्रेड करूँ, तो मेरे डेटा का क्या होगा?"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "अगर कोई फ़ीड केवल सारांश प्रकाशित करती है, तो क्या होगा?"
+
 msgid "What is MCP?"
 msgstr "MCP क्या है?"
 
@@ -6520,6 +6643,9 @@ msgstr ""
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "जब आप किसी नई फ़ीड की सदस्यता लेते हैं, तो उसका पिछला इतिहास भी भर दिया जाता है"
 
+msgid "Where does Listen work?"
+msgstr "Listen कहाँ काम करता है?"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6532,6 +6658,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "कौन-से AI मॉडल उपलब्ध हैं?"
+
+msgid "Which languages and voices are available?"
+msgstr "कौन-सी भाषाएँ और आवाज़ें उपलब्ध हैं?"
 
 msgid "Whitney"
 msgstr "Whitney"

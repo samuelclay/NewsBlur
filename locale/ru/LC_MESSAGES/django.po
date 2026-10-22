@@ -624,6 +624,9 @@ msgstr "Персональная программа для чтения ново
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "Подборка ваших главных новостей, которую можно настроить и получать каждый день"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "Голос для каждого из 21 языка NewsBlur"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "ИИ-ассистент (Feedly AI)"
 
@@ -1326,6 +1329,9 @@ msgstr "Главный специалист по моральному духу"
 msgid "Choose Your 64"
 msgstr "Выберите свои 64"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "Выберите, когда статьи будут автоматически отмечаться как прочитанные"
+
 msgid "Choose when stories are marked as read"
 msgstr "Выберите, когда статьи помечаются как прочитанные"
 
@@ -1601,6 +1607,9 @@ msgstr ""
 msgid "Customize auto-read by site or folder"
 msgstr "Настроить автоматическую отметку прочитанного для сайтов или папок"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "Настройте автоматическую отметку о прочтении для отдельных сайтов или папок"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "Настройте разделы сводки и расписание доставки"
 
@@ -1791,6 +1800,9 @@ msgstr "Дубликаты сворачиваются под версией с �
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Каждый отправитель рассылки становится отдельной лентой"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "Каждый абзац подсвечивается во время чтения"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "У каждого потока должны быть river_id, river_side и river_order"
 
@@ -1951,6 +1963,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Все статьи хранятся в архиве и доступны для поиска навсегда. Ваша личная база знаний."
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "Все статьи со всех сайтов архивируются и навсегда остаются доступными для поиска"
+
 msgid "Every story kept and searchable forever"
 msgstr "Все статьи хранятся и доступны для поиска вечно"
 
@@ -2032,6 +2047,9 @@ msgstr ""
 
 msgid "Export trained stories from folders"
 msgstr "Экспортировать обученные статьи из папок"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "Экспортируйте обученные статьи из папок в виде RSS-лент"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2159,6 +2177,9 @@ msgstr "Ленты дополняются прошлыми статьями дл
 msgid "Feeds fetched"
 msgstr "Загружено лент"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "Ленты с поддержкой постраничной загрузки заполняются предыдущими статьями, чтобы архив был полным"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2174,6 +2195,9 @@ msgstr "Загрузка ваших лент"
 
 msgid "Filter stories by date range"
 msgstr "Фильтровать статьи по диапазону дат"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "Фильтруйте статьи по диапазону дат, чтобы найти именно то, что вам нужно"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "Найдите ответы на частые вопросы о функциях, ценах, обучении, ИИ и многом другом."
@@ -2241,6 +2265,9 @@ msgstr "Подпишитесь на %(handle)s на GitHub"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "Подпишитесь на %(handle)s в X"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "Следите за чтением: каждый абзац подсвечивается. Нажмите на любой абзац, чтобы перейти к нему"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2668,6 +2695,29 @@ msgid ""
 msgstr ""
 "Есть идея для нового инструмента или рабочего процесса? Опубликуйте её на <a "
 "href=\"https://forum.newsblur.com\">форуме поддержки NewsBlur</a>, и мы рассмотрим её для будущего выпуска."
+
+msgid "Have any story read aloud"
+msgstr "Прослушать любую статью"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "Прослушивайте любые статьи вслух в веб-версии, на iPhone, iPad, Mac и Android."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"Прослушивайте любые статьи вслух в веб-версии, на iPhone, iPad, Mac и Android. Каждый абзац подсвечивается "
+"во время чтения, статьи добавляются в очередь «Далее», а после окончания одной начинается следующая "
+"непрочитанная. Функция «Слушать» определяет язык каждой статьи и читает её подходящим голосом на любом из "
+"21 языка NewsBlur."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"Прослушивайте любые статьи вслух в веб-версии, на iPhone, iPad, Mac и Android. Следите за чтением: каждый "
+"абзац подсвечивается. Добавляйте статьи в очередь «Далее» и выбирайте голос для каждого из 21 языка."
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3127,6 +3177,9 @@ msgstr ""
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "Просто перейдите в раздел «Управление NewsBlur» > «Импортировать или загрузить сайты»."
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "Продолжайте слушать с выключенным экраном, с экрана блокировки или через медиаконтролы телефона"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
 "Продолжайте делиться реферальной ссылкой, чтобы получать больше бесплатного времени подписки. Каждое "
@@ -3193,6 +3246,44 @@ msgstr "Ограниченный доступ (только собственны
 msgctxt "story layout"
 msgid "List"
 msgstr "Список"
+
+msgid "Listen"
+msgstr "Слушать"
+
+msgid "Listen - NewsBlur"
+msgstr "Слушать — NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr ""
+"Функция «Слушать» загружает полную статью с сайта и читает её. Изображения, подписи, код и таблицы "
+"пропускаются."
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"Функция «Слушать» входит в подписки Premium Archive ($99 в год) и Premium Pro. На других планах можно "
+"прослушать 30-секундный отрывок из нескольких статей в день."
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "Слушать в веб-версии, на iPad, iPhone и Android"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "Функция «Слушать» работает на MacBook, iPad, iPhone и телефоне Android"
+
+msgid "Listen to stories read aloud"
+msgstr "Слушать статьи вслух"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"Функция «Слушать» определяет язык каждой статьи и читает её голосом для этого языка. Для каждого из 21 "
+"языка NewsBlur есть десять рекомендуемых голосов от ElevenLabs, также можно искать в библиотеке голосов "
+"ElevenLabs."
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "Сейчас функция прослушивания занята. Повторите попытку через мгновение."
@@ -4241,6 +4332,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "При первом использовании откроется окно браузера, где вы сможете войти и разрешить доступ."
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"В веб-версии и приложениях для iPhone, iPad, Mac и Android. Очередь «Далее» сохраняется в вашем аккаунте, "
+"поэтому статьи, добавленные в очередь на одном устройстве, будут ждать вас на других."
+
 msgid "One-Command Install"
 msgstr "Установка одной командой"
 
@@ -4263,6 +4361,9 @@ msgstr "RSS с открытым исходным кодом"
 
 msgid "Open Source RSS Readers"
 msgstr "RSS-ридеры с открытым исходным кодом"
+
+msgid "Open any story and press Listen"
+msgstr "Откройте любую статью и нажмите «Слушать»"
 
 msgid "Open source (MIT)"
 msgstr "Открытый исходный код (MIT)"
@@ -4333,6 +4434,9 @@ msgstr "Требуется POST-запрос"
 msgid "Paid Plan"
 msgstr "Платный тариф"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "Абзацы подсвечиваются во время чтения на iPad, iPhone и телефоне Android"
+
 msgid "Parameter"
 msgstr "Параметр"
 
@@ -4362,6 +4466,9 @@ msgstr "Уведомления для каждой ленты"
 
 msgid "Permanent with Archive plan"
 msgstr "Постоянный доступ с планом Archive"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "Выберите голос для каждого языка и настройте манеру и скорость чтения"
 
 msgid "Plan"
 msgstr "Тариф"
@@ -4512,6 +4619,11 @@ msgstr "Подписка Premium"
 
 msgid "Premium upgrade"
 msgstr "Переход на Premium"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr ""
+"Нажмите «+», чтобы добавить статьи в очередь «Далее», а затем продолжайте слушать следующие непрочитанные "
+"статьи"
 
 msgid "Press Information and Resources"
 msgstr "Информация для прессы и ресурсы"
@@ -5163,6 +5275,9 @@ msgstr "Оцените полнотекстовый поиск"
 msgid "See Intelligence Training"
 msgstr "Подробнее об обучении интеллектуальной фильтрации"
 
+msgid "See Listen"
+msgstr "Посмотреть функцию «Слушать»"
+
 msgid "See Native Apps"
 msgstr "Посмотреть нативные приложения"
 
@@ -5499,6 +5614,9 @@ msgstr ""
 "времени через PubSubHubbub. Для пользователей Premium ленты проверяются до 5 раз чаще. Для пользователей "
 "Pro каждая лента в аккаунте проверяется каждые 5–15 минут. NewsBlur становится инструментом "
 "профессионального уровня для мониторинга, позволяющим всегда быть в курсе событий первым."
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "Статьи могут оставаться непрочитанными столько, сколько вы захотите"
 
 msgid "Stories can stay unread forever"
 msgstr "Статьи могут оставаться непрочитанными сколько угодно"
@@ -5857,6 +5975,9 @@ msgstr ""
 "адаптируется к вашим интересам. В The Old Reader нет системы фильтрации и обучения, поэтому управление "
 "большим количеством лент требует больше ручной работы."
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "Голос функции «Слушать» по умолчанию для каждого из 21 языка NewsBlur"
+
 msgid "The email will be sent to:"
 msgstr "Письмо будет отправлено на адрес:"
 
@@ -6150,6 +6271,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "Обучать фильтры на полном тексте статей"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "Обучайте фильтр на полном тексте статей, а не только на заголовках и тегах"
 
 msgid "Train stories with regular expressions"
 msgstr "Обучать фильтры на статьях с помощью регулярных выражений"
@@ -6552,6 +6676,9 @@ msgstr "Что произойдёт, если я перейду на более 
 msgid "What happens to my data if I downgrade?"
 msgstr "Что станет с моими данными, если я перейду на тариф ниже?"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "Что делать, если лента публикует только краткое содержание?"
+
 msgid "What is MCP?"
 msgstr "Что такое MCP?"
 
@@ -6643,6 +6770,9 @@ msgstr ""
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "При подписке на новую ленту история заполняется задним числом"
 
+msgid "Where does Listen work?"
+msgstr "Где работает функция «Слушать»?"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6654,6 +6784,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "Какие модели ИИ доступны?"
+
+msgid "Which languages and voices are available?"
+msgstr "Какие языки и голоса доступны?"
 
 msgid "Whitney"
 msgstr "Whitney"

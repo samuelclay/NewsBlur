@@ -687,6 +687,9 @@ msgstr "قارئ أخبار شخصي يجمع الناس للنقاش حول ا�
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "ملخص لأهم قصصك، قابل للتخصيص ويُرسل يوميًا"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "صوت لكل واحدة من لغات NewsBlur الـ21"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "المساعد الذكي (Feedly AI)"
 
@@ -1374,6 +1377,9 @@ msgstr "مسؤول المعنويات الأول"
 msgid "Choose Your 64"
 msgstr "اختر الـ64"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "اختر متى توضع تلقائيًا علامة «مقروءة» على القصص"
+
 msgid "Choose when stories are marked as read"
 msgstr "اختر متى يتم وضع علامة «مقروء» على القصص"
 
@@ -1643,6 +1649,9 @@ msgstr "خصّص سلوك القراءة التلقائية حسب الموقع 
 msgid "Customize auto-read by site or folder"
 msgstr "تخصيص القراءة التلقائية حسب الموقع أو المجلد"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "خصّص إعدادات القراءة التلقائية حسب الموقع أو المجلد"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "تخصيص أقسام الموجز وجدول التسليم"
 
@@ -1831,6 +1840,9 @@ msgstr "تُطوى القصص المكررة أسفل النسخة الأعلى 
 msgid "Each newsletter sender becomes its own feed"
 msgstr "يصبح كل مرسل للنشرة الإخبارية خلاصة مستقلة"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "تُميّز كل فقرة أثناء قراءتها"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "يجب أن يحتوي كل نهر على river_id وriver_side وriver_order"
 
@@ -1981,6 +1993,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "أرشفة كل قصة وإمكانية البحث فيها إلى الأبد. قاعدة معارفك الشخصية."
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "تُؤرشف كل قصة من كل موقع وتظل قابلة للبحث إلى الأبد"
+
 msgid "Every story kept and searchable forever"
 msgstr "الاحتفاظ بكل القصص وإمكانية البحث فيها إلى الأبد"
 
@@ -2055,6 +2070,9 @@ msgstr "صدّر القصص التي تطابق إعدادات التدريب م
 
 msgid "Export trained stories from folders"
 msgstr "تصدير القصص المدرّبة من المجلدات"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "صدّر القصص المدرّبة من المجلدات كخلاصات RSS"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2179,6 +2197,9 @@ msgstr "تُستكمل الخلاصات بأثر رجعي لأرشيف كامل"
 msgid "Feeds fetched"
 msgstr "الخلاصات المجلوبة"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "تُستكمل الخلاصات التي تدعم التصفح إلى الخلف لتكوين أرشيف كامل"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2194,6 +2215,9 @@ msgstr "جارٍ جلب خلاصاتك"
 
 msgid "Filter stories by date range"
 msgstr "تصفية القصص حسب النطاق الزمني"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "صفِّ القصص حسب نطاق زمني للعثور على ما تحتاج إليه بدقة"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "اعثر على إجابات للأسئلة الشائعة حول الميزات والأسعار والتدريب والذكاء الاصطناعي والمزيد."
@@ -2254,6 +2278,9 @@ msgstr "تابع %(handle)s على GitHub"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "تابع %(handle)s على X"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "تابع القراءة مع تمييز كل فقرة، واضغط على أي فقرة للانتقال إليها"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2675,6 +2702,28 @@ msgid ""
 msgstr ""
 "هل لديك فكرة لأداة أو سير عمل جديد؟ انشرها في <a href=\"https://forum.newsblur.com\">منتدى دعم NewsBlur</a>"
 " وسننظر في إضافتها إلى إصدار مستقبلي."
+
+msgid "Have any story read aloud"
+msgstr "استمع إلى أي قصة بصوت مسموع"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "استمع إلى أي قصة بصوت مسموع على الويب وiPhone وiPad وMac وAndroid."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"استمع إلى أي قصة بصوت مسموع على الويب وiPhone وiPad وMac وAndroid. تُميّز كل فقرة أثناء قراءتها، وتُضاف "
+"القصص إلى قائمة «التالي»، وعند انتهاء إحداها تبدأ القصة التالية غير المقروءة. تحدّد ميزة الاستماع لغة كل "
+"قصة وتقرأها بالصوت المخصص لتلك اللغة، بأي واحدة من لغات NewsBlur الـ21."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"استمع إلى أي قصة بصوت مسموع على الويب وiPhone وiPad وMac وAndroid. تابع القراءة مع تمييز كل فقرة، وأضف "
+"القصص إلى قائمة «التالي»، واختر صوتًا لكل واحدة من اللغات الـ21."
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3132,6 +3181,9 @@ msgstr ""
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "ما عليك سوى الانتقال إلى إدارة NewsBlur > استيراد المواقع أو رفعها."
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "واصل الاستماع والشاشة مغلقة، من شاشة القفل أو عناصر التحكم بالوسائط في هاتفك"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "واصل مشاركة رابط الإحالة الخاص بك لكسب مزيد من وقت الاشتراك المجاني. فكل إحالة تُحتسب!"
 
@@ -3196,6 +3248,43 @@ msgstr "محدود (تطبيقاته الخاصة فقط)"
 msgctxt "story layout"
 msgid "List"
 msgstr "قائمة"
+
+msgid "Listen"
+msgstr "استمع"
+
+msgid "Listen - NewsBlur"
+msgstr "استمع - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr ""
+"تجلب ميزة الاستماع المقالة كاملةً من الموقع وتقرأها بدلًا من ذلك. ويتم تخطي الصور والتعليقات التوضيحية "
+"والرموز البرمجية والجداول."
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"ميزة الاستماع مشمولة في Premium Archive (99 دولارًا سنويًا) وPremium Pro. في الخطط الأخرى، يمكنك سماع "
+"معاينة مدتها 30 ثانية لبضع قصص يوميًا."
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "استمع على الويب وiPad وiPhone وAndroid"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "ميزة الاستماع تعمل على MacBook وiPad وiPhone وهاتف Android"
+
+msgid "Listen to stories read aloud"
+msgstr "استمع إلى القصص بصوت مسموع"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"تحدّد ميزة الاستماع لغة كل قصة وتقرأها بالصوت المخصص لتلك اللغة. لكل واحدة من لغات NewsBlur الـ21 عشرة "
+"أصوات موصى بها من ElevenLabs، ويمكنك البحث في بقية مكتبة أصوات ElevenLabs."
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "خدمة الاستماع مشغولة. حاول مرة أخرى بعد لحظة."
@@ -4201,6 +4290,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "عند الاستخدام لأول مرة، ستُفتح نافذة متصفح لتسجيل الدخول والسماح بالوصول."
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"على الويب وفي تطبيقات iPhone وiPad وMac وAndroid. تُحفظ قائمة «التالي» في حسابك، لذا تكون القصص التي تضيفها"
+" إلى القائمة على أحد أجهزتك بانتظارك على الأجهزة الأخرى."
+
 msgid "One-Command Install"
 msgstr "التثبيت بأمر واحد"
 
@@ -4223,6 +4319,9 @@ msgstr "RSS مفتوح المصدر"
 
 msgid "Open Source RSS Readers"
 msgstr "قارئات RSS مفتوحة المصدر"
+
+msgid "Open any story and press Listen"
+msgstr "افتح أي قصة واضغط على «استمع»"
 
 msgid "Open source (MIT)"
 msgstr "مفتوح المصدر (MIT)"
@@ -4293,6 +4392,9 @@ msgstr "طلب POST مطلوب"
 msgid "Paid Plan"
 msgstr "خطة مدفوعة"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "تُميّز الفقرات أثناء قراءتها على iPad وiPhone وهاتف Android"
+
 msgid "Parameter"
 msgstr "مُعامل"
 
@@ -4322,6 +4424,9 @@ msgstr "تنبيهات لكل خلاصة"
 
 msgid "Permanent with Archive plan"
 msgstr "دائم مع باقة Archive"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "اختر صوتًا لكل لغة واضبط أسلوب الإلقاء والسرعة"
 
 msgid "Plan"
 msgstr "الخطة"
@@ -4471,6 +4576,9 @@ msgstr "اشتراك Premium"
 
 msgid "Premium upgrade"
 msgstr "الترقية إلى Premium"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr "اضغط على + لإضافة قصص إلى «التالي»، ثم واصل الاستماع إلى قصصك التالية غير المقروءة"
 
 msgid "Press Information and Resources"
 msgstr "معلومات وموارد الصحافة"
@@ -5111,6 +5219,9 @@ msgstr "تعرّف على البحث في النص الكامل"
 msgid "See Intelligence Training"
 msgstr "عرض تدريب الذكاء"
 
+msgid "See Listen"
+msgstr "تعرّف على ميزة الاستماع"
+
 msgid "See Native Apps"
 msgstr "استعرض التطبيقات الأصلية"
 
@@ -5448,6 +5559,9 @@ msgstr ""
 "تُرسل إليك القصص فور نشرها. يحصل المستخدمون المجانيون على تحديثات فورية عبر PubSubHubbub. وتُفحَص خلاصات "
 "مستخدمي Premium بمعدل يصل إلى 5 أضعاف. أما مستخدمو Pro، فتُجلب كل خلاصة في حسابهم كل 5 إلى 15 دقيقة، ما "
 "يجعل NewsBlur أداة مراقبة بمستوى احترافي لمن يحتاجون إلى معرفة الأخبار أولًا."
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "يمكن أن تظل القصص غير مقروءة للمدة التي تختارها"
 
 msgid "Stories can stay unread forever"
 msgstr "يمكن أن تظل القصص غير مقروءة إلى الأبد"
@@ -5802,6 +5916,9 @@ msgstr ""
 "سريعة. ومع مرور الوقت، يتكيف القارئ مع اهتماماتك. لا يحتوي The Old Reader على نظام للتصفية أو التدريب، لذا "
 "فإن إدارة عدد كبير من الخلاصات تتطلب عملًا يدويًا أكثر."
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "الصوت الافتراضي لميزة الاستماع لكل واحدة من لغات NewsBlur الـ21"
+
 msgid "The email will be sent to:"
 msgstr "سيُرسل البريد الإلكتروني إلى:"
 
@@ -6099,6 +6216,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "تدريب القصص اعتمادًا على النص الكامل"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "درّب القصص باستخدام النص الكامل، لا العناوين والوسوم فقط"
 
 msgid "Train stories with regular expressions"
 msgstr "درّب القصص باستخدام التعابير النمطية"
@@ -6488,6 +6608,9 @@ msgstr "ماذا يحدث إذا خفّضت اشتراكي؟"
 msgid "What happens to my data if I downgrade?"
 msgstr "ماذا يحدث لبياناتي إذا خفّضت اشتراكي؟"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "ماذا لو كانت الخلاصة لا تنشر سوى ملخص؟"
+
 msgid "What is MCP?"
 msgstr "ما هو MCP؟"
 
@@ -6569,6 +6692,9 @@ msgstr "عند الاشتراك في خلاصة، يسترجع NewsBlur كامل
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "عند الاشتراك في خلاصة جديدة، يُستكمل سجلها السابق"
 
+msgid "Where does Listen work?"
+msgstr "أين تعمل ميزة الاستماع؟"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6580,6 +6706,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "ما نماذج الذكاء الاصطناعي المتاحة؟"
+
+msgid "Which languages and voices are available?"
+msgstr "ما اللغات والأصوات المتاحة؟"
 
 msgid "Whitney"
 msgstr "Whitney"

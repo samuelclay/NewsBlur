@@ -574,6 +574,9 @@ msgstr "İnsanları dünya hakkında konuşmak için bir araya getiren kişisel 
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "En iyi haberlerinizin özelleştirilebilir ve her gün gönderilen özeti"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "NewsBlur'ın 21 dilinin her biri için bir ses"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "Yapay Zekâ Asistanı (Feedly AI)"
 
@@ -1283,6 +1286,9 @@ msgstr "Baş Moral Sorumlusu"
 msgid "Choose Your 64"
 msgstr "64'ünüzü seçin"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "Haberlerin ne zaman otomatik olarak okundu işaretleneceğini seçin"
+
 msgid "Choose when stories are marked as read"
 msgstr "Haberlerin ne zaman okundu olarak işaretleneceğini seçin"
 
@@ -1560,6 +1566,9 @@ msgstr ""
 msgid "Customize auto-read by site or folder"
 msgstr "Otomatik okunmayı siteye veya klasöre göre özelleştirin"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "Otomatik okuma ayarlarını siteye veya klasöre göre özelleştirin"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "Özet bölümlerini ve gönderim zamanlamasını özelleştirin"
 
@@ -1752,6 +1761,9 @@ msgstr "Yinelenenler, akış görünümünüzde en yüksek puanlı sürümün al
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Her bülten göndericisi kendi akışı olur"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "Okunurken her paragraf vurgulanır"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "Her akışta river_id, river_side ve river_order bulunmalıdır"
 
@@ -1908,6 +1920,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Her haber arşivlenir ve sonsuza dek aranabilir. Kişisel bilgi bankanız."
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "Her sitedeki tüm haberler arşivlenir ve sonsuza dek aranabilir"
+
 msgid "Every story kept and searchable forever"
 msgstr "Her haber sonsuza dek saklanır ve aranabilir"
 
@@ -1985,6 +2000,9 @@ msgstr "Eğitiminizle eşleşen haberleri herhangi bir klasörden RSS akışı o
 
 msgid "Export trained stories from folders"
 msgstr "Klasörlerdeki eğitilmiş haberleri dışa aktar"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "Eğitilmiş haberleri klasörlerden RSS akışları olarak dışa aktarın"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2111,6 +2129,9 @@ msgstr "Eksiksiz arşiv için akışların geçmiş içerikleri de getirilir"
 msgid "Feeds fetched"
 msgstr "Alınan akışlar"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "Sayfalama desteği olan akışlar, eksiksiz bir arşiv oluşturmak için geriye dönük olarak doldurulur"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2126,6 +2147,9 @@ msgstr "Akışlarınız alınıyor"
 
 msgid "Filter stories by date range"
 msgstr "Haberleri tarih aralığına göre filtrele"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "Aradığınızı bulmak için haberleri tarih aralığına göre filtreleyin"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr ""
@@ -2193,6 +2217,9 @@ msgstr "GitHub'da %(handle)s hesabını takip edin"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "X'te %(handle)s hesabını takip edin"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "Her paragraf vurgulanırken metni takip edin; ilgili paragrafa atlamak için herhangi bir paragrafa dokunun"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2619,6 +2646,28 @@ msgid ""
 msgstr ""
 "Yeni bir araç veya iş akışı fikriniz mi var? Bunu <a href=\"https://forum.newsblur.com\">NewsBlur destek "
 "forumunda</a> paylaşın; gelecek sürümlerden birine eklemeyi değerlendirelim."
+
+msgid "Have any story read aloud"
+msgstr "İstediğiniz haberi sesli okutun"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "Web'de, iPhone, iPad, Mac ve Android'de istediğiniz haberi sesli dinleyin."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"Web'de, iPhone, iPad, Mac ve Android'de istediğiniz haberi sesli dinleyin. Okunurken her paragraf "
+"vurgulanır, haberler Sıradakiler'e eklenir ve biri bittiğinde sıradaki okunmamış haber başlar. Dinle, her "
+"haberin dilini belirler ve NewsBlur'ın 21 dilinden herhangi birinde, o dil için seçtiğiniz sesle okur."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"Web'de, iPhone, iPad, Mac ve Android'de istediğiniz haberi sesli dinleyin. Her paragraf vurgulanırken metni"
+" takip edin, haberleri Sıradakiler'e ekleyin ve 21 dilin her biri için bir ses seçin."
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3047,6 +3096,9 @@ msgstr ""
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "NewsBlur'ı Yönet > Siteleri içe aktar veya yükle bölümüne gidin."
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "Ekran kapalıyken, kilit ekranından veya telefonunuzun medya kontrollerinden dinlemeye devam edin"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
 "Daha fazla ücretsiz abonelik süresi kazanmak için davet bağlantınızı paylaşmaya devam edin. Her davet katkı"
@@ -3113,6 +3165,42 @@ msgstr "Sınırlı (yalnızca kendi uygulamaları)"
 msgctxt "story layout"
 msgid "List"
 msgstr "Liste"
+
+msgid "Listen"
+msgstr "Dinle"
+
+msgid "Listen - NewsBlur"
+msgstr "Dinle - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr "Dinle, sitenin tam makalesini alıp onun yerine onu okur. Görseller, açıklamalar, kod ve tablolar atlanır."
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"Dinle, Premium Archive'a (yıllık 99 $) ve Premium Pro'ya dahildir. Diğer planlarda günde birkaç haberin 30 "
+"saniyelik önizlemesini dinleyebilirsiniz."
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "Web'de, iPad, iPhone ve Android'de dinleyin"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "Dinle, MacBook, iPad, iPhone ve Android telefonda çalışırken"
+
+msgid "Listen to stories read aloud"
+msgstr "Haberleri sesli dinleyin"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"Dinle, her haberin dilini belirler ve o dil için seçtiğiniz sesle okur. NewsBlur'ın 21 dilinin her biri "
+"için ElevenLabs tarafından önerilen on ses bulunur; ElevenLabs ses kütüphanesinin geri kalanında da arama "
+"yapabilirsiniz."
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "Dinleme şu anda meşgul. Birazdan tekrar deneyin."
@@ -4147,6 +4235,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "İlk kullanımda giriş yapıp erişim izni vermeniz için bir tarayıcı penceresi açılır."
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"Web'de ve iPhone, iPad, Mac ve Android uygulamalarında. Sıradakiler hesabınıza kaydedilir; böylece bir "
+"cihazda sıraya aldığınız haberler diğer cihazlarda sizi bekler."
+
 msgid "One-Command Install"
 msgstr "Tek Komutla Kurulum"
 
@@ -4169,6 +4264,9 @@ msgstr "Açık Kaynak RSS"
 
 msgid "Open Source RSS Readers"
 msgstr "Açık kaynaklı RSS okuyucuları"
+
+msgid "Open any story and press Listen"
+msgstr "Herhangi bir haberi açıp Dinle'ye basın"
 
 msgid "Open source (MIT)"
 msgstr "Açık kaynak (MIT)"
@@ -4241,6 +4339,9 @@ msgstr "POST gerekli"
 msgid "Paid Plan"
 msgstr "Ücretli Plan"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "iPad, iPhone ve Android telefonda okunurken vurgulanan paragraflar"
+
 msgid "Parameter"
 msgstr "Parametre"
 
@@ -4270,6 +4371,9 @@ msgstr "Akış başına uyarılar"
 
 msgid "Permanent with Archive plan"
 msgstr "Archive planıyla kalıcı"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "Her dil için bir ses seçin, okuma tarzını ve hızını ayarlayın"
 
 msgid "Plan"
 msgstr "Plan"
@@ -4420,6 +4524,11 @@ msgstr "Premium abonelik"
 
 msgid "Premium upgrade"
 msgstr "Premium'a yükselt"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr ""
+"Haberleri Sıradakiler'e eklemek için + düğmesine basın; ardından sıradaki okunmamış haberleri dinlemeye "
+"devam edin"
 
 msgid "Press Information and Resources"
 msgstr "Basın Bilgileri ve Kaynaklar"
@@ -5071,6 +5180,9 @@ msgstr "Tam Metin Aramasını Gör"
 msgid "See Intelligence Training"
 msgstr "Zekâ Eğitimini Görüntüle"
 
+msgid "See Listen"
+msgstr "Dinle'yi görün"
+
 msgid "See Native Apps"
 msgstr "Yerel uygulamaları görün"
 
@@ -5404,6 +5516,9 @@ msgstr ""
 "güncellemeler alır. Premium kullanıcıların akışları 5 kata kadar daha sık kontrol edilir. Pro "
 "kullanıcıların hesaplarındaki tüm akışlar 5-15 dakikada bir alınır. Böylece NewsBlur, ilk haberdar olması "
 "gereken profesyoneller için izleme düzeyinde bir araca dönüşür."
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "Haberler, istediğiniz süre boyunca okunmamış kalabilir"
 
 msgid "Stories can stay unread forever"
 msgstr "Haberler sonsuza dek okunmamış kalabilir"
@@ -5766,6 +5881,9 @@ msgstr ""
 "alanlarınıza uyum sağlar. The Old Reader'da filtreleme veya eğitim sistemi bulunmadığından çok sayıda akışı"
 " yönetmek daha fazla elle çalışma gerektirir."
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "NewsBlur’ın 21 dilinin her biri için varsayılan Dinle sesi"
+
 msgid "The email will be sent to:"
 msgstr "E-posta şu adrese gönderilecek:"
 
@@ -6050,6 +6168,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "Haberleri tam metin içeriğine göre eğit"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "Haberleri yalnızca başlık ve etiketlere göre değil, tam metin içeriğine göre eğitin"
 
 msgid "Train stories with regular expressions"
 msgstr "Haberleri düzenli ifadelerle eğit"
@@ -6449,6 +6570,9 @@ msgstr "Daha alt bir pakete geçersem ne olur?"
 msgid "What happens to my data if I downgrade?"
 msgstr "Daha düşük bir pakete geçersem verilerime ne olur?"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "Bir akış yalnızca özet yayımlıyorsa ne olur?"
+
 msgid "What is MCP?"
 msgstr "MCP nedir?"
 
@@ -6540,6 +6664,9 @@ msgstr ""
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Yeni bir akışa abone olduğunuzda geçmiş içerikleri de yüklenir"
 
+msgid "Where does Listen work?"
+msgstr "Dinle nerelerde çalışır?"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6552,6 +6679,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "Hangi yapay zekâ modelleri kullanılabilir?"
+
+msgid "Which languages and voices are available?"
+msgstr "Hangi diller ve sesler kullanılabilir?"
 
 msgid "Whitney"
 msgstr "Whitney"

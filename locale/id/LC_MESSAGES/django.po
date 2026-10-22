@@ -591,6 +591,9 @@ msgstr "Pembaca berita pribadi yang menyatukan orang-orang untuk membicarakan du
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "Ringkasan artikel teratas Anda, dapat disesuaikan dan dikirim setiap hari"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "Satu suara untuk masing-masing dari 21 bahasa NewsBlur"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "Asisten AI (Feedly AI)"
 
@@ -1297,6 +1300,9 @@ msgstr "Kepala Petugas Semangat Kerja"
 msgid "Choose Your 64"
 msgstr "Pilih 64 Situs Anda"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "Pilih kapan artikel otomatis ditandai sudah dibaca"
+
 msgid "Choose when stories are marked as read"
 msgstr "Pilih kapan artikel ditandai telah dibaca"
 
@@ -1571,6 +1577,9 @@ msgstr ""
 msgid "Customize auto-read by site or folder"
 msgstr "Sesuaikan penandaan otomatis sebagai telah dibaca per situs atau folder"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "Sesuaikan pengaturan baca otomatis per situs atau folder"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "Sesuaikan bagian ringkasan dan jadwal pengiriman"
 
@@ -1759,6 +1768,9 @@ msgstr "Duplikat dikelompokkan di bawah versi dengan skor tertinggi dalam tampil
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Setiap pengirim buletin menjadi feed tersendiri"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "Setiap paragraf disorot saat dibacakan"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "Setiap aliran harus memiliki river_id, river_side, dan river_order"
 
@@ -1917,6 +1929,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Setiap artikel diarsipkan dan dapat dicari selamanya. Basis pengetahuan pribadi Anda."
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "Setiap artikel dari setiap situs diarsipkan dan dapat dicari selamanya"
+
 msgid "Every story kept and searchable forever"
 msgstr "Setiap artikel disimpan dan dapat dicari selamanya"
 
@@ -1995,6 +2010,9 @@ msgstr "Ekspor artikel yang sesuai dengan pelatihan Anda dari folder mana pun se
 
 msgid "Export trained stories from folders"
 msgstr "Ekspor artikel terlatih dari folder"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "Ekspor artikel yang telah dilatih dari folder sebagai feed RSS"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2120,6 +2138,9 @@ msgstr "Feed diisi mundur untuk arsip lengkap"
 msgid "Feeds fetched"
 msgstr "Feed yang diambil"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "Feed yang mendukung paginasi diisi ulang dengan artikel sebelumnya untuk membuat arsip lengkap"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2135,6 +2156,9 @@ msgstr "Mengambil feed Anda"
 
 msgid "Filter stories by date range"
 msgstr "Filter artikel berdasarkan rentang tanggal"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "Filter artikel berdasarkan rentang tanggal untuk menemukan yang Anda perlukan"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "Temukan jawaban atas pertanyaan umum tentang fitur, harga, pelatihan, AI, dan lainnya."
@@ -2202,6 +2226,9 @@ msgstr "Ikuti %(handle)s di GitHub"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "Ikuti %(handle)s di X"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "Ikuti setiap paragraf yang disorot, lalu ketuk paragraf mana pun untuk langsung membukanya"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2630,6 +2657,29 @@ msgid ""
 msgstr ""
 "Punya ide untuk alat atau alur kerja baru? Posting di <a href=\"https://forum.newsblur.com\">forum dukungan"
 " NewsBlur</a> dan kami akan mempertimbangkannya untuk rilis mendatang."
+
+msgid "Have any story read aloud"
+msgstr "Dengarkan artikel apa pun yang dibacakan"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "Dengarkan artikel apa pun yang dibacakan di web, iPhone, iPad, Mac, dan Android."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"Dengarkan artikel apa pun yang dibacakan di web, iPhone, iPad, Mac, dan Android. Setiap paragraf disorot "
+"saat dibacakan, artikel masuk ke antrean Berikutnya, dan setelah satu artikel selesai, artikel belum dibaca"
+" berikutnya akan dimulai. Fitur Dengarkan mengenali bahasa setiap artikel dan membacakannya dengan suara "
+"yang sesuai dalam salah satu dari 21 bahasa NewsBlur."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"Dengarkan artikel apa pun yang dibacakan di web, iPhone, iPad, Mac, dan Android. Ikuti setiap paragraf yang"
+" disorot, masukkan artikel ke antrean Berikutnya, dan pilih suara untuk masing-masing dari 21 bahasa."
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3074,6 +3124,9 @@ msgstr "Cukup buka <a href=\"https://%(domain)s/?next=opml\">Kelola NewsBlur > I
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "Cukup buka Kelola NewsBlur > Impor atau unggah situs."
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "Lanjutkan mendengarkan saat layar mati, dari layar kunci, atau melalui kontrol media ponsel Anda"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
 "Terus bagikan tautan referral Anda untuk mendapatkan tambahan waktu langganan gratis. Setiap referral ikut "
@@ -3140,6 +3193,44 @@ msgstr "Terbatas (hanya aplikasi sendiri)"
 msgctxt "story layout"
 msgid "List"
 msgstr "Daftar"
+
+msgid "Listen"
+msgstr "Dengarkan"
+
+msgid "Listen - NewsBlur"
+msgstr "Dengarkan - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr ""
+"Fitur Dengarkan mengambil artikel lengkap dari situs dan membacakannya. Gambar, keterangan, kode, dan tabel"
+" akan dilewati."
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"Fitur Dengarkan termasuk dalam Premium Archive ($99/tahun) dan Premium Pro. Dengan paket lain, Anda dapat "
+"mendengarkan pratinjau 30 detik dari beberapa artikel per hari."
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "Dengarkan di web, iPad, iPhone, dan Android"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "Fitur Dengarkan diputar di MacBook, iPad, iPhone, dan ponsel Android"
+
+msgid "Listen to stories read aloud"
+msgstr "Dengarkan artikel yang dibacakan"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"Fitur Dengarkan mengenali bahasa setiap artikel dan membacakannya dengan suara yang sesuai untuk bahasa "
+"tersebut. Setiap dari 21 bahasa NewsBlur memiliki sepuluh suara rekomendasi dari ElevenLabs, dan Anda dapat"
+" mencari suara lainnya di pustaka suara ElevenLabs."
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "Fitur Dengarkan sedang sibuk. Coba lagi sebentar lagi."
@@ -4175,6 +4266,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "Saat pertama kali digunakan, jendela browser akan terbuka agar Anda dapat masuk dan memberikan izin akses."
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"Di web dan aplikasi iPhone, iPad, Mac, serta Android. Antrean Berikutnya disimpan ke akun Anda, sehingga "
+"artikel yang Anda antrekan di satu perangkat akan tersedia di perangkat lain."
+
 msgid "One-Command Install"
 msgstr "Instalasi dengan Satu Perintah"
 
@@ -4197,6 +4295,9 @@ msgstr "RSS Sumber Terbuka"
 
 msgid "Open Source RSS Readers"
 msgstr "Pembaca RSS Sumber Terbuka"
+
+msgid "Open any story and press Listen"
+msgstr "Buka artikel apa pun, lalu tekan Dengarkan"
 
 msgid "Open source (MIT)"
 msgstr "Sumber terbuka (MIT)"
@@ -4267,6 +4368,9 @@ msgstr "POST diperlukan"
 msgid "Paid Plan"
 msgstr "Paket Berbayar"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "Paragraf disorot saat dibacakan di iPad, iPhone, dan ponsel Android"
+
 msgid "Parameter"
 msgstr "Parameter"
 
@@ -4296,6 +4400,9 @@ msgstr "Notifikasi per feed"
 
 msgid "Permanent with Archive plan"
 msgstr "Permanen dengan paket Archive"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "Pilih suara untuk setiap bahasa, lalu atur gaya penyampaian dan kecepatannya"
 
 msgid "Plan"
 msgstr "Paket"
@@ -4446,6 +4553,9 @@ msgstr "Langganan Premium"
 
 msgid "Premium upgrade"
 msgstr "Upgrade Premium"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr "Tekan + untuk menambahkan artikel ke Berikutnya, lalu lanjutkan dengan artikel belum dibaca berikutnya"
 
 msgid "Press Information and Resources"
 msgstr "Informasi dan Sumber Daya Pers"
@@ -5098,6 +5208,9 @@ msgstr "Lihat Pencarian Teks Lengkap"
 msgid "See Intelligence Training"
 msgstr "Lihat Pelatihan Kecerdasan"
 
+msgid "See Listen"
+msgstr "Lihat fitur Dengarkan"
+
 msgid "See Native Apps"
 msgstr "Lihat Aplikasi Native"
 
@@ -5434,6 +5547,9 @@ msgstr ""
 "PubSubHubbub. Feed pengguna Premium diperiksa hingga 5 kali lebih sering. Semua feed di akun pengguna Pro "
 "diambil setiap 5–15 menit, menjadikan NewsBlur alat pemantauan tingkat profesional bagi mereka yang perlu "
 "menjadi yang pertama tahu."
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "Artikel dapat tetap belum dibaca selama yang Anda inginkan"
 
 msgid "Stories can stay unread forever"
 msgstr "Artikel dapat tetap belum dibaca selamanya"
@@ -5794,6 +5910,9 @@ msgstr ""
 "akan menyesuaikan diri dengan minat Anda. The Old Reader tidak memiliki sistem penyaringan atau pelatihan, "
 "sehingga mengelola banyak feed memerlukan lebih banyak pekerjaan manual."
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "Suara Dengarkan default untuk masing-masing dari 21 bahasa NewsBlur"
+
 msgid "The email will be sent to:"
 msgstr "Email akan dikirim ke:"
 
@@ -6085,6 +6204,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "Latih artikel berdasarkan konten teks lengkap"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "Latih artikel berdasarkan konten lengkap, bukan hanya judul dan tag"
 
 msgid "Train stories with regular expressions"
 msgstr "Latih artikel dengan ekspresi reguler"
@@ -6480,6 +6602,9 @@ msgstr "Apa yang terjadi jika saya menurunkan paket?"
 msgid "What happens to my data if I downgrade?"
 msgstr "Apa yang terjadi pada data saya jika saya menurunkan paket?"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "Bagaimana jika feed hanya menerbitkan ringkasan?"
+
 msgid "What is MCP?"
 msgstr "Apa itu MCP?"
 
@@ -6569,6 +6694,9 @@ msgstr ""
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Saat Anda berlangganan feed baru, riwayat feed tersebut akan diisi mundur"
 
+msgid "Where does Listen work?"
+msgstr "Di mana fitur Dengarkan dapat digunakan?"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6580,6 +6708,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "Model AI apa saja yang tersedia?"
+
+msgid "Which languages and voices are available?"
+msgstr "Bahasa dan suara apa saja yang tersedia?"
 
 msgid "Whitney"
 msgstr "Whitney"

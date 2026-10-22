@@ -494,7 +494,7 @@
 "List style" = "リストのスタイル";
 "Listen" = "聴く";
 "Listen Settings" = "読み上げ設定";
-"Listen to stories" = "記事を読み上げる";
+"Listen to stories read aloud" = "記事の読み上げを聴く";
 "Listen to story" = "記事を聴く";
 "Listening isn't available right now." = "現在、読み上げは利用できません。";
 "Loading Google News topics..." = "Google ニュースのトピックを読み込み中...";

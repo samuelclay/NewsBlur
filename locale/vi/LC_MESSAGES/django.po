@@ -568,6 +568,9 @@ msgstr "Trình đọc tin cá nhân giúp mọi người cùng trò chuyện v�
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "Tóm tắt những bài viết nổi bật nhất của bạn, có thể tùy chỉnh và được gửi hằng ngày"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "Một giọng nói cho từng ngôn ngữ trong số 21 ngôn ngữ của NewsBlur"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "Trợ lý AI (Feedly AI)"
 
@@ -1273,6 +1276,9 @@ msgstr "Giám đốc phụ trách tinh thần"
 msgid "Choose Your 64"
 msgstr "Chọn 64 trang web của bạn"
 
+msgid "Choose when stories are automatically marked as read"
+msgstr "Chọn thời điểm tự động đánh dấu bài viết là đã đọc"
+
 msgid "Choose when stories are marked as read"
 msgstr "Chọn thời điểm đánh dấu bài viết là đã đọc"
 
@@ -1545,6 +1551,9 @@ msgstr "Tùy chỉnh cách tự động đánh dấu đã đọc theo trang web 
 msgid "Customize auto-read by site or folder"
 msgstr "Tùy chỉnh chế độ tự động đánh dấu đã đọc theo trang web hoặc thư mục"
 
+msgid "Customize auto-read settings by site or folder"
+msgstr "Tùy chỉnh cài đặt tự động đánh dấu đã đọc theo trang web hoặc thư mục"
+
 msgid "Customize briefing sections and delivery schedule"
 msgstr "Tùy chỉnh các mục bản tin và lịch gửi"
 
@@ -1733,6 +1742,9 @@ msgstr "Các bài trùng lặp được thu gọn bên dưới phiên bản có 
 msgid "Each newsletter sender becomes its own feed"
 msgstr "Mỗi người gửi bản tin sẽ trở thành một nguồn cấp dữ liệu riêng"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "Từng đoạn được tô sáng khi đọc"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "Mỗi luồng phải có river_id, river_side và river_order"
 
@@ -1891,6 +1903,9 @@ msgstr ""
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Mọi bài viết đều được lưu trữ và có thể tìm kiếm mãi mãi. Kho kiến thức cá nhân của bạn."
 
+msgid "Every story from every site is archived and searchable forever"
+msgstr "Mọi bài viết từ mọi trang web đều được lưu trữ và có thể tìm kiếm mãi mãi"
+
 msgid "Every story kept and searchable forever"
 msgstr "Lưu giữ và tìm kiếm mọi bài viết mãi mãi"
 
@@ -1970,6 +1985,9 @@ msgstr ""
 
 msgid "Export trained stories from folders"
 msgstr "Xuất các bài viết đã huấn luyện từ thư mục"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "Xuất bài viết đã huấn luyện từ các thư mục dưới dạng nguồn cấp RSS"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -2095,6 +2113,9 @@ msgstr "Các nguồn cấp đã được tải bù để lưu trữ đầy đủ
 msgid "Feeds fetched"
 msgstr "Nguồn cấp đã tải"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "Các nguồn cấp hỗ trợ phân trang được bổ sung dữ liệu cũ để tạo kho lưu trữ đầy đủ"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
@@ -2110,6 +2131,9 @@ msgstr "Đang tải các nguồn cấp dữ liệu của bạn"
 
 msgid "Filter stories by date range"
 msgstr "Lọc bài viết theo khoảng thời gian"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "Lọc bài viết theo khoảng thời gian để tìm chính xác nội dung bạn cần"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "Tìm câu trả lời cho các câu hỏi thường gặp về tính năng, giá cả, huấn luyện, AI và nhiều nội dung khác."
@@ -2177,6 +2201,9 @@ msgstr "Theo dõi %(handle)s trên GitHub"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "Theo dõi %(handle)s trên X"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "Theo dõi khi từng đoạn được tô sáng, hoặc chạm vào đoạn bất kỳ để chuyển đến đó"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2602,6 +2629,29 @@ msgstr ""
 "Bạn có ý tưởng về công cụ hoặc quy trình làm việc mới? Hãy đăng lên <a "
 "href=\"https://forum.newsblur.com\">diễn đàn hỗ trợ NewsBlur</a> và chúng tôi sẽ cân nhắc đưa vào bản phát "
 "hành trong tương lai."
+
+msgid "Have any story read aloud"
+msgstr "Đọc thành tiếng bất kỳ bài viết nào"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "Đọc thành tiếng bất kỳ bài viết nào trên web, iPhone, iPad, Mac và Android."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"Đọc thành tiếng bất kỳ bài viết nào trên web, iPhone, iPad, Mac và Android. Từng đoạn được tô sáng khi đọc,"
+" các bài viết được xếp hàng trong danh sách Tiếp theo và khi bài này kết thúc, bài viết chưa đọc tiếp theo "
+"sẽ bắt đầu. Tính năng Nghe xác định ngôn ngữ của từng bài viết và đọc bằng giọng nói dành cho ngôn ngữ đó, "
+"trong số 21 ngôn ngữ của NewsBlur."
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr ""
+"Đọc thành tiếng bất kỳ bài viết nào trên web, iPhone, iPad, Mac và Android. Theo dõi khi từng đoạn được tô "
+"sáng, xếp bài viết vào danh sách Tiếp theo và chọn giọng nói cho từng ngôn ngữ trong số 21 ngôn ngữ."
 
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
@@ -3032,6 +3082,9 @@ msgstr ""
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "Chỉ cần vào Quản lý NewsBlur > Nhập hoặc tải lên các trang web."
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "Tiếp tục nghe khi tắt màn hình, từ màn hình khóa hoặc các nút điều khiển đa phương tiện trên điện thoại"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr ""
 "Hãy tiếp tục chia sẻ liên kết giới thiệu để nhận thêm thời gian đăng ký miễn phí. Mỗi lượt giới thiệu đều "
@@ -3098,6 +3151,44 @@ msgstr "Hạn chế (chỉ ứng dụng riêng của hãng)"
 msgctxt "story layout"
 msgid "List"
 msgstr "Danh sách"
+
+msgid "Listen"
+msgstr "Nghe"
+
+msgid "Listen - NewsBlur"
+msgstr "Nghe - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr ""
+"Tính năng Nghe lấy toàn bộ bài viết từ trang web rồi đọc nội dung đó. Hình ảnh, chú thích, mã và bảng sẽ "
+"được bỏ qua."
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr ""
+"Tính năng Nghe được bao gồm trong gói Premium Archive ($99/năm) và Premium Pro. Với các gói khác, bạn có "
+"thể nghe bản xem trước 30 giây của một vài bài viết mỗi ngày."
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "Nghe trên web, iPad, iPhone và Android"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "Tính năng Nghe đang phát trên MacBook, iPad, iPhone và điện thoại Android"
+
+msgid "Listen to stories read aloud"
+msgstr "Nghe đọc bài viết thành tiếng"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr ""
+"Tính năng Nghe xác định ngôn ngữ của từng bài viết và đọc bằng giọng nói dành cho ngôn ngữ đó. Mỗi ngôn ngữ"
+" trong số 21 ngôn ngữ của NewsBlur có mười giọng nói được ElevenLabs đề xuất; bạn cũng có thể tìm kiếm "
+"trong thư viện giọng nói còn lại của ElevenLabs."
 
 msgid "Listening is busy. Try again in a moment."
 msgstr "Tính năng nghe đang bận. Hãy thử lại sau một lát."
@@ -4126,6 +4217,13 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "Trong lần sử dụng đầu tiên, một cửa sổ trình duyệt sẽ mở để bạn đăng nhập và cấp quyền truy cập."
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr ""
+"Trên web và trong ứng dụng dành cho iPhone, iPad, Mac và Android. Danh sách Tiếp theo được lưu vào tài "
+"khoản của bạn, vì vậy các bài viết bạn xếp hàng trên thiết bị này sẽ chờ sẵn trên các thiết bị khác."
+
 msgid "One-Command Install"
 msgstr "Cài đặt bằng một lệnh"
 
@@ -4148,6 +4246,9 @@ msgstr "RSS mã nguồn mở"
 
 msgid "Open Source RSS Readers"
 msgstr "Trình đọc RSS mã nguồn mở"
+
+msgid "Open any story and press Listen"
+msgstr "Mở bài viết bất kỳ rồi nhấn Nghe"
 
 msgid "Open source (MIT)"
 msgstr "Mã nguồn mở (MIT)"
@@ -4218,6 +4319,9 @@ msgstr "Yêu cầu phương thức POST"
 msgid "Paid Plan"
 msgstr "Gói trả phí"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "Các đoạn được tô sáng khi đọc trên iPad, iPhone và điện thoại Android"
+
 msgid "Parameter"
 msgstr "Tham số"
 
@@ -4247,6 +4351,9 @@ msgstr "Thông báo theo từng nguồn cấp dữ liệu"
 
 msgid "Permanent with Archive plan"
 msgstr "Lưu trữ vĩnh viễn với gói Archive"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "Chọn giọng nói cho từng ngôn ngữ và thiết lập cách đọc cùng tốc độ"
 
 msgid "Plan"
 msgstr "Gói"
@@ -4396,6 +4503,9 @@ msgstr "Gói đăng ký Premium"
 
 msgid "Premium upgrade"
 msgstr "Nâng cấp Premium"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr "Nhấn + để thêm bài viết vào danh sách Tiếp theo, rồi tiếp tục nghe các bài viết chưa đọc tiếp theo"
 
 msgid "Press Information and Resources"
 msgstr "Thông tin và tài nguyên báo chí"
@@ -5043,6 +5153,9 @@ msgstr "Xem tính năng tìm kiếm toàn văn"
 msgid "See Intelligence Training"
 msgstr "Xem tính năng huấn luyện trí tuệ"
 
+msgid "See Listen"
+msgstr "Xem tính năng Nghe"
+
 msgid "See Native Apps"
 msgstr "Xem ứng dụng gốc"
 
@@ -5374,6 +5487,9 @@ msgstr ""
 "PubSubHubbub. Người dùng Premium được kiểm tra nguồn cấp dữ liệu thường xuyên hơn tới 5 lần. Người dùng Pro"
 " được tải mọi nguồn cấp dữ liệu trong tài khoản cứ mỗi 5–15 phút, biến NewsBlur thành công cụ giám sát "
 "chuyên nghiệp dành cho những người cần biết tin đầu tiên."
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "Bài viết có thể giữ trạng thái chưa đọc trong thời gian tùy bạn chọn"
 
 msgid "Stories can stay unread forever"
 msgstr "Bài viết có thể luôn ở trạng thái chưa đọc"
@@ -5735,6 +5851,9 @@ msgstr ""
 "thời gian, trình đọc sẽ thích ứng với sở thích của bạn. The Old Reader không có hệ thống lọc hay huấn "
 "luyện, vì vậy việc quản lý nhiều nguồn cấp đồng nghĩa với nhiều thao tác thủ công hơn."
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "Giọng đọc mặc định của tính năng Nghe cho từng ngôn ngữ trong số 21 ngôn ngữ của NewsBlur"
+
 msgid "The email will be sent to:"
 msgstr "Email sẽ được gửi đến:"
 
@@ -6020,6 +6139,9 @@ msgstr ""
 
 msgid "Train stories on full text content"
 msgstr "Huấn luyện bài viết dựa trên toàn văn nội dung"
+
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "Huấn luyện bộ lọc bài viết dựa trên toàn bộ nội dung, không chỉ tiêu đề và thẻ"
 
 msgid "Train stories with regular expressions"
 msgstr "Huấn luyện bài viết bằng biểu thức chính quy"
@@ -6413,6 +6535,9 @@ msgstr "Điều gì xảy ra nếu tôi hạ cấp?"
 msgid "What happens to my data if I downgrade?"
 msgstr "Dữ liệu của tôi sẽ ra sao nếu tôi hạ cấp gói?"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "Nếu nguồn cấp chỉ đăng bản tóm tắt thì sao?"
+
 msgid "What is MCP?"
 msgstr "MCP là gì?"
 
@@ -6505,6 +6630,9 @@ msgstr ""
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Khi đăng ký nguồn cấp mới, lịch sử của nguồn đó sẽ được bổ sung ngược"
 
+msgid "Where does Listen work?"
+msgstr "Tính năng Nghe hoạt động ở đâu?"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -6517,6 +6645,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "Có những mô hình AI nào?"
+
+msgid "Which languages and voices are available?"
+msgstr "Có những ngôn ngữ và giọng nói nào?"
 
 msgid "Whitney"
 msgstr "Whitney"
