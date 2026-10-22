@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-10-14T20:15:49-04:00</updated>
+  <updated>2026-10-22T01:37:30-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,116 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title>
+    <link href="https://blog.newsblur.com/2026/10/21/listen-to-your-stories/" rel="alternate" type="text/html" title="Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android" />
+    <published>2026-10-21T00:00:00-04:00</published>
+    <updated>2026-10-21T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/10/21/listen-to-your-stories</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/10/21/listen-to-your-stories/">
+      <![CDATA[<p>Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.</p>
+
+<p>Here’s Jon, the default English voice, reading that paragraph:</p>
+
+<audio controls="" preload="none" src="/assets/listen-sample-jon.mp3" style="width: 100%;margin: 8px auto 16px;display: block;"></audio>
+
+<p>And if you’re reading this in NewsBlur, you can press Listen right now and have the rest of this post read to you.</p>
+
+<p><img src="/assets/listen-hero.jpg" alt="Listen playing on a MacBook, an iPad, an iPhone, and an Android phone, each showing the Now Playing controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>This one launched everywhere on the same day. The web, the iOS and Mac apps, and the Android app all got Listen together, with its interface translated into the same 21 languages from <a href="/2026/10/14/newsblur-in-your-language/">last week’s language launch</a>. If you already play podcasts in NewsBlur’s <a href="/2026/03/02/mini-media-player/">media player</a>, Listen turns any story into one more thing to queue up.</p>
+
+<h3 id="press-listen">Press Listen</h3>
+
+<p>On the web, Listen sits with the other story buttons, and the <strong>y</strong> key does the same thing. On iPhone, iPad, and Android it’s in the row of buttons at the end of each story. On the Mac it’s in the <strong>Story</strong> menu, also on <strong>Y</strong>, with a play and pause button in the toolbar.</p>
+
+<p><img src="/assets/listen-start.webp" alt="The Listen button on iPhone and Android story buttons, the web's Listen side option with its tooltip, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>On the web, stories play in the sidebar, in the same mini player that handles podcasts and YouTube. On iPhone, iPad, and Android, a mini player sits above the bottom bar. Tap it to open Now Playing, with a scrubber, 15 seconds back, 30 seconds forward, speed, and a button to skip to the next story.</p>
+
+<h3 id="follow-along">Follow along</h3>
+
+<p>While a story plays, the paragraph being read is highlighted and the story scrolls gently to keep it in view. If you scroll away to look at something, it waits a few seconds before following again. Click or tap any paragraph to jump straight to it, which is also the quickest way past a long intro.</p>
+
+<p><img src="/assets/listen-follow-along.webp" alt="Paragraphs highlighted as they're read on an iPad, an iPhone, and an Android phone" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>Listen reads the headline, then the article’s paragraphs, headings, lists, and quotes. It skips what doesn’t work out loud: images, captions, code blocks, tables, and embeds. And if a feed only publishes a summary, Listen fetches the full article from the site and reads that, so you hear the whole story and not just the first two sentences.</p>
+
+<h3 id="up-next">Up Next</h3>
+
+<p>Next to Listen is a small <strong>+</strong> that adds the story to <strong>Up Next</strong>. Queue a few stories while you read, press play, and walk away. Drag to reorder, and swipe or tap × to remove one.</p>
+
+<p><img src="/assets/listen-up-next.webp" alt="Adding stories to Up Next on iPhone and the web, and the Up Next list in Now Playing on Android" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>When Up Next runs out, Listen keeps going with the next unread stories in whatever feed or folder you’re in. Each story is marked read when it finishes, and the reader follows along to the next one. If you’d rather it stop after each story, turn off <strong>Auto-continue</strong>.</p>
+
+<p>Up Next is the same queue your podcasts use, and it’s saved to your account. Queue a story on your phone and it’s waiting in Up Next on the web.</p>
+
+<h3 id="pick-a-voice">Pick a voice</h3>
+
+<p>The voices come from <a href="https://elevenlabs.io">ElevenLabs</a>. Each language has ten recommended voices, and you can search the rest of the ElevenLabs library by gender, age, accent, and style. Every voice has a play button so you can hear it before you choose.</p>
+
+<p><img src="/assets/listen-voices.webp" alt="The voice picker on iPhone and the web, and the speed control on Android" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p><strong>Delivery</strong> sets how much emotion goes into the reading: Steady, Natural, or Expressive. <strong>Fine-tune voice</strong> opens up the stability, similarity, and style settings behind those three if you want to tinker.</p>
+
+<p>Speed goes from 0.75× to 3×, with presets and a slider for anything in between. The pitch stays put at any speed, so 1.5× sounds like a fast talker and not a chipmunk.</p>
+
+<h3 id="every-language-gets-its-own-voice">Every language gets its own voice</h3>
+
+<p>Listen works out what language each story is written in and reads it with your voice for that language. Jon reads my English stories, and when a French story comes through, Victoria picks it up. Choose a different voice for any language from the menu at the top of the voice list. These are the defaults:</p>
+
+<p><img src="/assets/listen-languages.webp" alt="NewsBlur's 21 languages with the default Listen voice for each: English, Jon; Español, Lydia; Français, Victoria; Deutsch, Lea; Português (Brasil), Keren; Italiano, Violetta; Nederlands, Ruth; Polski, Magdalena; Türkçe, Derya; Русский, Marina; Українська, Yaroslava; العربية, Sara; עברית, Noa; हिन्दी, Monika Sogam; Bahasa Indonesia, Arunika; Tiếng Việt, Ngân Nguyễn; ไทย, Mali; 日本語, Yui; 한국어, Anna Kim; 简体中文, Stacy; 繁體中文, Anna Su" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="keeps-playing-with-the-screen-off">Keeps playing with the screen off</h3>
+
+<p>On iPhone, iPad, and Android, Listen keeps going when you lock your phone or switch apps. It shows up on the lock screen, in Control Center, and in Android’s media controls, with the same 15 and 30 second skips, and headphone buttons play and pause.</p>
+
+<p><img src="/assets/listen-lock-screen.webp" alt="Listen on the iPhone lock screen and in Android's media controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="on-the-mac">On the Mac</h3>
+
+<p>The Mac app has <strong>Listen</strong> and <strong>Add to Up Next</strong> in the Story menu, and a play and pause button in the toolbar so you can stop a story without hunting for the player. Now Playing opens as a sheet over the reader, with the same Up Next list as everywhere else.</p>
+
+<p><img src="/assets/listen-mac.webp" alt="Now Playing in the NewsBlur Mac app, with Listen and Add to Up Next in the Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="try-it-for-30-seconds">Try it for 30 seconds</h3>
+
+<p>Listen is part of <a href="https://newsblur.com/?next=premium">Premium Archive and Premium Pro</a>. On a free or Premium account you can still try it: Listen plays a 30 second preview of a few stories a day, with a countdown in the player and an upgrade button when it’s done. Voice previews in the picker work too, so you can find a voice you like first.</p>
+
+<p><img src="/assets/listen-preview.webp" alt="The 30 second preview banner on iPhone, Android, and the web" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Reading every story in everyone’s feeds ahead of time would be a huge waste, so Listen makes the audio on demand. When you press play, NewsBlur splits the story into short segments, usually a paragraph each, and asks ElevenLabs for the first one. The audio streams to you while it’s still being generated, so it starts quickly, and the next segment is fetched while the current one plays. Each segment is sent along with the text around it so the voice keeps its rhythm across paragraph breaks.</p>
+
+<p><img src="/assets/listen-how-it-works.webp" alt="A story split into paragraphs: the ones already played are saved, the current one is highlighted, the next one is streaming from ElevenLabs, and the rest aren't made until you get there" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>Once a segment has been read in a voice, it’s saved. The next person who listens to that story with the same voice gets it right away, and if you stop halfway through a story, the rest of it never gets made at all.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Listen is available today on the web, in NewsBlur for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and in NewsBlur for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. If you don’t want the button, you can hide it, along with any other story button, in Preferences on the web and in the apps, and that choice syncs between them.</p>
+
+<p>I’d love to hear which voice you picked and how Listen handles your feeds. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur in your language: native language support on the web, iOS, and Android</title>
@@ -2196,66 +2306,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Premium Archive: Per-feed and per-folder auto-mark-as-read settings</title>
-    <link href="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/" rel="alternate" type="text/html" title="Premium Archive: Per-feed and per-folder auto-mark-as-read settings" />
-    <published>2026-01-23T00:00:00-05:00</published>
-    <updated>2026-01-23T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/">
-      <![CDATA[<p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide “days of unread” setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
-
-<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
-<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
-
-<h3 id="folder-inheritance">Folder inheritance</h3>
-
-<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
-
-<ul>
-  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
-  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
-  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
-  <li>Individual feeds can still override their folder’s setting</li>
-</ul>
-
-<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
-<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
-
-<h3 id="site-settings-dialog">Site settings dialog</h3>
-
-<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
-
-<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
-<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. Premium Archive subscribers get the site-wide “days of unread” setting, but...]]>
     </summary>
     
   </entry>
