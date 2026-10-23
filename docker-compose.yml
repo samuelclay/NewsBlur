@@ -194,11 +194,7 @@ services:
     command: mongod --port 29019 --wiredTigerEngineConfigString="checkpoint=(wait=60),file_manager=(close_idle_time=0)"
     volumes:
       - ./data/db_mongo:/data/db:delegated
-    # Ensure the MongoDB data directory has proper permissions
-    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    labels:
-      - glance.parent=newsblur
-      - glance.name=newsblur_mongo
+
 
 
   task_celery:
