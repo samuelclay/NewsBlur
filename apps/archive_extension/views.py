@@ -1128,11 +1128,16 @@ Return ONLY valid JSON with the exact IDs from above:
   {{"name": "Category Name", "ids": ["id1", "id2", ...]}}
 ]"""
 
+            # Haiku 5.5 thinks by default (counted in max_tokens) and can lead with a
+            # thinking block, so keep effort low and read text blocks by type.
             response = client.messages.create(
-                model=ANTHROPIC_MODEL, max_tokens=2000, messages=[{"role": "user", "content": prompt}]
+                model=ANTHROPIC_MODEL,
+                max_tokens=4096,
+                messages=[{"role": "user", "content": prompt}],
+                extra_body={"output_config": {"effort": "low"}},
             )
 
-            result_text = response.content[0].text.strip()
+            result_text = "".join(block.text for block in response.content if block.type == "text").strip()
             # Remove markdown code block if present
             if result_text.startswith("```"):
                 result_text = result_text.split("\n", 1)[1]
