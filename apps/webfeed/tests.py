@@ -534,7 +534,7 @@ class Test_AnalyzeWebFeedPageModel(TestCase):
             )
         ]
         mock_provider.get_last_usage.return_value = (100, 25)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         request_id = "shared-request-id"
         result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/", request_id=request_id)
@@ -548,7 +548,7 @@ class Test_AnalyzeWebFeedPageModel(TestCase):
         )
         mock_cost.record_usage.assert_called_once()
         self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
-        self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+        self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-6-luna")
         self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "webfeed")
         mock_record_result.assert_called_once_with(success=True)
         stored_keys = {call.args[0] for call in mock_redis.return_value.set.call_args_list}
