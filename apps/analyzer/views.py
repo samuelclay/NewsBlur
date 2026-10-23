@@ -9,7 +9,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext
 from django.views.decorators.http import require_POST
-from mongoengine.queryset import NotUniqueError
+from mongoengine.queryset import NotUniqueError, Q
 
 from apps.analyzer.forms import PopularityQueryForm
 from apps.analyzer.models import (
@@ -37,6 +37,38 @@ from utils.user_functions import ajax_login_required, get_user
 def index(request):
     # /classifier/ has no page of its own, the trainer lives inside the reader.
     return redirect("index")
+
+
+# Fields added to classifiers after the first ones were saved, with the value a
+# document that lacks the field stands for.
+LEGACY_CLASSIFIER_FIELD_DEFAULTS = {"scope": "feed", "folder_name": "", "is_regex": False}
+
+
+def find_legacy_classifier(ClassifierCls, classifier_dict):
+    """
+    Find the classifier an exact lookup missed because it was saved before scope,
+    folder_name or is_regex existed, so it can still be updated or removed.
+
+    A missing field may only stand in for its default value. Matching it against
+    anything else would let a folder save update the global classifier with the same
+    phrase, or a plain title update the regex title with the same text.
+    """
+    legacy_fields = [field for field in LEGACY_CLASSIFIER_FIELD_DEFAULTS if field in classifier_dict]
+    if not any(classifier_dict[field] == LEGACY_CLASSIFIER_FIELD_DEFAULTS[field] for field in legacy_fields):
+        return None
+
+    query = Q(**{key: value for key, value in classifier_dict.items() if key not in legacy_fields})
+    for field in legacy_fields:
+        value = classifier_dict[field]
+        if value == LEGACY_CLASSIFIER_FIELD_DEFAULTS[field]:
+            query &= Q(**{field: value}) | Q(**{field + "__exists": False})
+        else:
+            query &= Q(**{field: value})
+
+    try:
+        return ClassifierCls.objects.get(query)
+    except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
+        return None
 
 
 @require_POST
@@ -122,6 +154,13 @@ def save_classifier(request):
         except UserSubscriptionFolders.DoesNotExist:
             pass
 
+    # Tag and author collections have unique indexes on (user_id, feed_id, social_user_id,
+    # value), and every global and folder classifier has feed_id 0, so one tag or author
+    # can only be trained in one of those scopes. MClassifierTag declares its index;
+    # the author index predates the current MClassifierAuthor model but still exists in
+    # production Mongo. Report the conflict instead of dropping the save.
+    scope_conflicts = []
+
     def _save_classifier(ClassifierCls, content_type):
         # Standard classifiers (non-regex)
         classifiers = {
@@ -184,19 +223,7 @@ def save_classifier(request):
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
-                        fallback_dict = {
-                            k: v
-                            for k, v in classifier_dict.items()
-                            if k not in ("scope", "folder_name", "is_regex")
-                        }
-                        if fallback_dict != classifier_dict:
-                            try:
-                                classifier = ClassifierCls.objects.get(**fallback_dict)
-                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
-                                classifier = None
-                        else:
-                            classifier = None
+                        classifier = find_legacy_classifier(ClassifierCls, classifier_dict)
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:
@@ -215,6 +242,8 @@ def save_classifier(request):
                                 classifier_dict.update(dict(score=score))
                                 classifier = ClassifierCls.objects.create(**classifier_dict)
                             except NotUniqueError:
+                                if use_scope:
+                                    scope_conflicts.append(post_content)
                                 continue
                     elif score == 0:
                         classifier.delete()
@@ -306,6 +335,13 @@ def save_classifier(request):
         story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
         if story:
             RTrendingStory.record_quality_action(story.story_hash, request.user.pk)
+
+    if scope_conflicts:
+        code = -1
+        message = gettext(
+            '"%(value)s" is already trained for all sites or in another folder. '
+            "Change the scope on that classifier instead."
+        ) % {"value": scope_conflicts[0]}
 
     response = dict(code=code, message=message, payload=payload)
     return response
@@ -404,7 +440,10 @@ def test_prompt_classifier(request):
     import zlib
 
     from apps.rss_feeds.models import MStory
-    from utils.ai_functions import classify_stories_with_ai, classify_stories_with_vision
+    from utils.ai_functions import (
+        classify_stories_with_ai,
+        classify_stories_with_vision,
+    )
 
     if not request.user.profile.can_use_ai_classifiers:
         return {"code": -1, "message": gettext("Usage billing required for AI classifiers")}
@@ -631,11 +670,14 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
     # Types that support regex matching
     regex_types = ("title", "text", "url", "author")
 
+    # Same opinions as save_classifier, so super-dislikes from Manage Training's site pills save
     classifiers_config = {
         "like_": 1,
         "dislike_": -1,
+        "super_dislike_": -2,
         "remove_like_": 0,
         "remove_dislike_": 0,
+        "remove_super_dislike_": 0,
     }
 
     for content_type, ClassifierCls in classifier_types.items():
@@ -687,19 +729,7 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                     try:
                         classifier = ClassifierCls.objects.get(**classifier_dict)
                     except ClassifierCls.DoesNotExist:
-                        # Fallback for old classifiers missing scope/is_regex/folder_name fields
-                        fallback_dict = {
-                            k: v
-                            for k, v in classifier_dict.items()
-                            if k not in ("scope", "folder_name", "is_regex")
-                        }
-                        if fallback_dict != classifier_dict:
-                            try:
-                                classifier = ClassifierCls.objects.get(**fallback_dict)
-                            except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
-                                classifier = None
-                        else:
-                            classifier = None
+                        classifier = find_legacy_classifier(ClassifierCls, classifier_dict)
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers = ClassifierCls.objects.filter(**classifier_dict)
                         if score == 0:

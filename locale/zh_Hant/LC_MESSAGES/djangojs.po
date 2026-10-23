@@ -1061,6 +1061,9 @@ msgstr "新增至 Firefox"
 msgid "Add to folder"
 msgstr "加入資料夾"
 
+msgid "Added"
+msgstr "已新增"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "新增於 %(date)s"
@@ -1341,6 +1344,9 @@ msgstr "作者篩選器在 %(context)s 中找不到文章。"
 msgid "Author filters found no stories in this view."
 msgstr "作者篩選器在此檢視中找不到文章。"
 
+msgid "Author name"
+msgstr "作者名稱"
+
 msgid "Author: "
 msgstr "作者："
 
@@ -1612,6 +1618,9 @@ msgstr "正在分類…"
 msgid "Category"
 msgstr "分類"
 
+msgid "Category or tag"
+msgstr "分類或標籤"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "分類：%(value_1)s"
@@ -1725,6 +1734,9 @@ msgstr "分類器篩選範圍"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分類器範圍需要 %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "分類器類型"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你可以隨時切換。"
@@ -1906,6 +1918,9 @@ msgstr "複製文字"
 
 msgid "Copy URL"
 msgstr "複製網址"
+
+msgid "Could not add this classifier. Try again."
+msgstr "無法新增此分類器。請再試一次。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "無法解除連結此帳戶。請再試一次。"
@@ -4626,6 +4641,9 @@ msgstr "解析此 RSS/XML 訂閱來源"
 msgid "Parsing..."
 msgstr "解析中…"
 
+msgid "Part of a story URL"
+msgstr "文章網址的一部分"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。"
 
@@ -4668,6 +4686,12 @@ msgstr "依網站"
 
 msgid "Per-feed notification settings"
 msgstr "個別訂閱來源通知設定"
+
+msgid "Phrase to match in story text"
+msgstr "要在文章內文中比對的詞組"
+
+msgid "Phrase to match in story titles"
+msgstr "要在文章標題中比對的詞組"
 
 msgid "Pick a tier & pay."
 msgstr "選擇方案並付款。"
@@ -6336,6 +6360,10 @@ msgid "Text View"
 msgstr "文字檢視"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "文字分類器需要 %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "文字篩選器在 %(context)s 中找不到文章。"
 
@@ -6820,6 +6848,10 @@ msgid "URL Regex"
 msgstr "URL 正規表示式"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "網址分類器需要 %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL 篩選器在 %(context)s 中找不到文章。"
 
@@ -7226,6 +7258,9 @@ msgstr "新增訂閱來源時，NewsBlur 會補齊其所有可取得的歷史內
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "新增訂閱來源時，系統會回填其歷史內容"
+
+msgid "Where it applies"
+msgstr "套用範圍"
 
 msgid "Which AI models are available?"
 msgstr "有哪些 AI 模型可用？"

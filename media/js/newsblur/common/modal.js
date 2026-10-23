@@ -49,6 +49,11 @@ NEWSBLUR.Modal.prototype = {
             },
             'onClose': function (dialog, callback) {
                 self.flags.open = false;
+                // modal.js: Optional per-modal cleanup, such as the trainer's deferred
+                // feed refresh in reader_classifier.js.
+                if (self.handle_modal_closed) {
+                    self.handle_modal_closed();
+                }
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function () {

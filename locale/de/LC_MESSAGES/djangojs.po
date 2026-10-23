@@ -1140,6 +1140,9 @@ msgstr "Zu Firefox hinzufügen"
 msgid "Add to folder"
 msgstr "Zu Ordner hinzufügen"
 
+msgid "Added"
+msgstr "Hinzugefügt"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s hinzugefügt"
@@ -1439,6 +1442,9 @@ msgstr "Autorenfilter haben in %(context)s keine Artikel gefunden."
 msgid "Author filters found no stories in this view."
 msgstr "Autorenfilter haben in dieser Ansicht keine Artikel gefunden."
 
+msgid "Author name"
+msgstr "Autorenname"
+
 msgid "Author: "
 msgstr "Autor: "
 
@@ -1716,6 +1722,9 @@ msgstr "Wird kategorisiert …"
 msgid "Category"
 msgstr "Kategorie"
 
+msgid "Category or tag"
+msgstr "Kategorie oder Tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Kategorie: %(value_1)s"
@@ -1831,6 +1840,9 @@ msgstr "Geltungsbereich des Klassifikator-Filters"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Der Geltungsbereich von Klassifikatoren erfordert %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Klassifikatortyp"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) und Grok (xAI). Wechsle jederzeit zwischen ihnen."
@@ -2021,6 +2033,9 @@ msgstr "Text kopieren"
 
 msgid "Copy URL"
 msgstr "URL kopieren"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Dieser Klassifikator konnte nicht hinzugefügt werden. Versuch es noch einmal."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Dieses Konto konnte nicht getrennt werden. Bitte versuche es erneut."
@@ -4824,6 +4839,9 @@ msgstr "Diesen RSS-/XML-Feed parsen"
 msgid "Parsing..."
 msgstr "Wird verarbeitet …"
 
+msgid "Part of a story URL"
+msgstr "Teil einer Artikel-URL"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Füge eine beliebige URL ein und NewsBlur erstellt aus der Seite einen Feed, auch ohne RSS."
 
@@ -4866,6 +4884,12 @@ msgstr "Pro Website"
 
 msgid "Per-feed notification settings"
 msgstr "Benachrichtigungseinstellungen pro Feed"
+
+msgid "Phrase to match in story text"
+msgstr "Phrase, nach der im Artikeltext gesucht wird"
+
+msgid "Phrase to match in story titles"
+msgstr "Phrase, nach der in Artikeltiteln gesucht wird"
 
 msgid "Pick a tier & pay."
 msgstr "Tarif auswählen und bezahlen."
@@ -6576,6 +6600,10 @@ msgid "Text View"
 msgstr "Textansicht"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Textklassifikatoren erfordern %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Textfilter haben keine Artikel in %(context)s gefunden."
 
@@ -7108,6 +7136,10 @@ msgid "URL Regex"
 msgstr "URL-Regex"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL-Klassifikatoren erfordern %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL-Filter haben in %(context)s keine Artikel gefunden."
 
@@ -7526,6 +7558,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Wenn du einen neuen Feed abonnierst, wird dessen Verlauf rückwirkend ergänzt"
+
+msgid "Where it applies"
+msgstr "Geltungsbereich"
 
 msgid "Which AI models are available?"
 msgstr "Welche KI-Modelle sind verfügbar?"

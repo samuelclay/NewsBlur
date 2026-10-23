@@ -24,6 +24,12 @@ msgstr " - โฟลเดอร์: บทความจากทุกเว�
 msgid " - Folder: Top Level"
 msgstr " - โฟลเดอร์: ระดับบนสุด"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "\"%(value)s\" ได้รับการฝึกสำหรับทุกเว็บไซต์หรืออยู่ในโฟลเดอร์อื่นแล้ว ให้เปลี่ยนขอบเขตของตัวจำแนกนั้นแทน"
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "$100/ปี (Pro: ไม่จำกัดแหล่งข่าว)"
 

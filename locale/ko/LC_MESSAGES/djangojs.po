@@ -1061,6 +1061,9 @@ msgstr "Firefox에 추가"
 msgid "Add to folder"
 msgstr "폴더에 추가"
 
+msgid "Added"
+msgstr "추가됨"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s 추가됨"
@@ -1341,6 +1344,9 @@ msgstr "작성자 필터에 해당하는 스토리가 %(context)s에 없습니�
 msgid "Author filters found no stories in this view."
 msgstr "작성자 필터에 해당하는 스토리가 이 보기에서 발견되지 않았습니다."
 
+msgid "Author name"
+msgstr "작성자 이름"
+
 msgid "Author: "
 msgstr "작성자: "
 
@@ -1612,6 +1618,9 @@ msgstr "분류 중..."
 msgid "Category"
 msgstr "카테고리"
 
+msgid "Category or tag"
+msgstr "카테고리 또는 태그"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "카테고리: %(value_1)s"
@@ -1725,6 +1734,9 @@ msgstr "분류 필터 적용 범위"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "분류기 범위에는 %(tier_link)s이(가) 필요합니다"
+
+msgid "Classifier type"
+msgstr "분류기 유형"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude(Anthropic), GPT(OpenAI), Gemini(Google), Grok(xAI)을 지원합니다. 언제든지 모델을 전환할 수 있습니다."
@@ -1910,6 +1922,9 @@ msgstr "텍스트 복사"
 
 msgid "Copy URL"
 msgstr "URL 복사"
+
+msgid "Could not add this classifier. Try again."
+msgstr "이 분류기를 추가할 수 없습니다. 다시 시도하세요."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "계정 연결을 해제할 수 없습니다. 다시 시도해 주세요."
@@ -4634,6 +4649,9 @@ msgstr "이 RSS/XML 피드 파싱"
 msgid "Parsing..."
 msgstr "분석 중..."
 
+msgid "Part of a story URL"
+msgstr "스토리 URL의 일부"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다."
 
@@ -4676,6 +4694,12 @@ msgstr "사이트별"
 
 msgid "Per-feed notification settings"
 msgstr "피드별 알림 설정"
+
+msgid "Phrase to match in story text"
+msgstr "스토리 본문에서 일치시킬 구문"
+
+msgid "Phrase to match in story titles"
+msgstr "스토리 제목에서 일치시킬 구문"
 
 msgid "Pick a tier & pay."
 msgstr "요금제를 선택하고 결제하세요."
@@ -6344,6 +6368,10 @@ msgid "Text View"
 msgstr "텍스트 보기"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "텍스트 분류기에는 %(tier_link)s이(가) 필요합니다."
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "텍스트 필터에서 %(context)s에 해당하는 스토리를 찾지 못했습니다."
 
@@ -6832,6 +6860,10 @@ msgid "URL Regex"
 msgstr "URL 정규식"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL 분류기에는 %(tier_link)s이(가) 필요합니다."
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL 필터에 해당하는 스토리가 %(context)s에 없습니다."
 
@@ -7238,6 +7270,9 @@ msgstr "피드를 구독하면 NewsBlur가 제공되는 전체 과거 스토리�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "새 피드를 구독하면 이전 항목도 기록에 채워집니다"
+
+msgid "Where it applies"
+msgstr "적용 위치"
 
 msgid "Which AI models are available?"
 msgstr "어떤 AI 모델을 사용할 수 있나요?"

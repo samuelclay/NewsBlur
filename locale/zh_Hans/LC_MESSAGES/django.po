@@ -24,6 +24,12 @@ msgstr " - 文件夹：所有网站的文章"
 msgid " - Folder: Top Level"
 msgstr " - 文件夹：顶层"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "“%(value)s” 已针对所有网站进行训练，或已在其他文件夹中训练。请改为更改该分类器的作用范围。"
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 美元/年（Pro：无限订阅源）"
 

@@ -1065,6 +1065,9 @@ msgstr "Thêm vào Firefox"
 msgid "Add to folder"
 msgstr "Thêm vào thư mục"
 
+msgid "Added"
+msgstr "Đã thêm"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Đã thêm %(date)s"
@@ -1353,6 +1356,9 @@ msgstr "Bộ lọc tác giả không tìm thấy bài viết nào trong %(contex
 msgid "Author filters found no stories in this view."
 msgstr "Bộ lọc tác giả không tìm thấy bài viết nào trong chế độ xem này."
 
+msgid "Author name"
+msgstr "Tên tác giả"
+
 msgid "Author: "
 msgstr "Tác giả: "
 
@@ -1626,6 +1632,9 @@ msgstr "Đang phân loại..."
 msgid "Category"
 msgstr "Danh mục"
 
+msgid "Category or tag"
+msgstr "Danh mục hoặc thẻ"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Danh mục: %(value_1)s"
@@ -1739,6 +1748,9 @@ msgstr "Phạm vi bộ lọc phân loại"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Phạm vi bộ phân loại yêu cầu %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Loại bộ phân loại"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr ""
@@ -1928,6 +1940,9 @@ msgstr "Sao chép văn bản"
 
 msgid "Copy URL"
 msgstr "Sao chép URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Không thể thêm bộ phân loại này. Hãy thử lại."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Không thể ngắt kết nối tài khoản này. Vui lòng thử lại."
@@ -4699,6 +4714,9 @@ msgstr "Phân tích nguồn cấp RSS/XML này"
 msgid "Parsing..."
 msgstr "Đang phân tích..."
 
+msgid "Part of a story URL"
+msgstr "Một phần URL của bài viết"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Dán bất kỳ URL nào và NewsBlur sẽ tạo nguồn cấp dữ liệu từ trang đó, ngay cả khi không có RSS."
 
@@ -4741,6 +4759,12 @@ msgstr "Theo trang web"
 
 msgid "Per-feed notification settings"
 msgstr "Cài đặt thông báo cho từng nguồn cấp"
+
+msgid "Phrase to match in story text"
+msgstr "Cụm từ cần khớp trong nội dung bài viết"
+
+msgid "Phrase to match in story titles"
+msgstr "Cụm từ cần khớp trong tiêu đề bài viết"
 
 msgid "Pick a tier & pay."
 msgstr "Chọn gói và thanh toán."
@@ -6429,6 +6453,10 @@ msgid "Text View"
 msgstr "Chế độ xem văn bản"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Bộ phân loại văn bản yêu cầu %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Bộ lọc văn bản không tìm thấy bài viết nào trong %(context)s."
 
@@ -6943,6 +6971,10 @@ msgid "URL Regex"
 msgstr "Biểu thức chính quy URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Bộ phân loại URL yêu cầu %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Bộ lọc URL không tìm thấy bài viết nào trong %(context)s."
 
@@ -7361,6 +7393,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Khi bạn đăng ký một nguồn cấp dữ liệu mới, lịch sử của nguồn đó sẽ được bổ sung ngược."
+
+msgid "Where it applies"
+msgstr "Phạm vi áp dụng"
 
 msgid "Which AI models are available?"
 msgstr "Có những mô hình AI nào?"

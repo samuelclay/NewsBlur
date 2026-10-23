@@ -24,6 +24,12 @@ msgstr " - 資料夾：所有網站文章"
 msgid " - Folder: Top Level"
 msgstr " - 資料夾：最上層"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "「%(value)s」已針對所有網站或其他資料夾完成訓練。請改為變更該分類器的範圍。"
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "每年 $100（Pro：不限來源）"
 

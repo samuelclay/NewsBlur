@@ -10860,6 +10860,160 @@ form.opml_import_form input {
     flex-shrink: 0;
 }
 
+.NB-manage-training-empty-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Manage tab add row: type a classifier without finding it in a story (reader_classifier.js) */
+.NB-manage-add {
+    padding: 0 12px 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #E0E0E0;
+    flex-shrink: 0;
+}
+
+.NB-manage-add-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-manage-add-type,
+.NB-manage-add-scope,
+.NB-manage-add-input {
+    height: 28px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #D0D0D0;
+    border-radius: 4px;
+    background: white;
+    color: #303030;
+    box-sizing: border-box;
+}
+
+.NB-manage-add-type {
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.NB-manage-add-input {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+.NB-manage-add-scope {
+    flex: 0 1 200px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.NB-manage-add-type:focus,
+.NB-manage-add-scope:focus,
+.NB-manage-add-input:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-manage-add-input::placeholder {
+    color: #A0A0A0;
+}
+
+.NB-manage-add-regex {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #606060;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.NB-manage-add-regex input {
+    margin: 0;
+}
+
+.NB-manage-add .segmented-control {
+    margin: 0;
+}
+
+.NB-manage-add .segmented-control li {
+    padding: 4px 10px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.NB-manage-add-button {
+    height: 28px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #4a8f29;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.NB-manage-add-button:hover:not(:disabled) {
+    background-color: #3d7a21;
+}
+
+.NB-manage-add-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.NB-manage-add-notice {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.NB-manage-add-notice:empty {
+    display: none;
+}
+
+.NB-manage-add-notice .NB-classifier-scope-notice,
+.NB-manage-add-notice .NB-classifier-archive-notice,
+.NB-manage-add-notice .NB-classifier-url-notice,
+.NB-manage-add-notice .NB-classifier-pro-notice {
+    display: inline;
+    opacity: 1;
+    transform: none;
+    animation: none;
+    color: #807060;
+    white-space: normal;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a:hover {
+    text-decoration: underline;
+}
+
+.NB-manage-add-error {
+    color: #B91C1C;
+}
+
+.NB-manage-add-status {
+    color: #4a8f29;
+    font-weight: bold;
+}
+
+.NB-manage-classifier-item.NB-manage-classifier-item-added .NB-classifier {
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.45);
+    transition: box-shadow 0.3s ease-out;
+}
+
 /* Manage tab filter bar */
 .NB-manage-filter-bar {
     display: flex;

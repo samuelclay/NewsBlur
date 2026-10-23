@@ -5820,6 +5820,48 @@ a.mention, a.mention-group {
     color: #707070;
 }
 
+/* darkmode.css: Manage tab add row (reader_classifier.js) */
+.NB-dark .NB-manage-add {
+    border-bottom-color: #404040;
+}
+
+.NB-dark .NB-manage-add-type,
+.NB-dark .NB-manage-add-scope,
+.NB-dark .NB-manage-add-input {
+    background: #303030;
+    border-color: #505050;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-manage-add-type:focus,
+.NB-dark .NB-manage-add-scope:focus,
+.NB-dark .NB-manage-add-input:focus {
+    border-color: #50A050;
+}
+
+.NB-dark .NB-manage-add-input::placeholder {
+    color: #707070;
+}
+
+.NB-dark .NB-manage-add-regex {
+    color: #A0A0A0;
+}
+
+.NB-dark .NB-manage-add-notice .NB-classifier-scope-notice,
+.NB-dark .NB-manage-add-notice .NB-classifier-archive-notice,
+.NB-dark .NB-manage-add-notice .NB-classifier-url-notice,
+.NB-dark .NB-manage-add-notice .NB-classifier-pro-notice {
+    color: #B0A090;
+}
+
+.NB-dark .NB-manage-add-error {
+    color: #F87171;
+}
+
+.NB-dark .NB-manage-add-status {
+    color: #7BC86C;
+}
+
 /* ====================================== */
 /* = Daily Briefing - Group View (Dark) = */
 /* ====================================== */

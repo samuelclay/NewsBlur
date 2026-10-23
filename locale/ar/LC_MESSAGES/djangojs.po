@@ -1397,6 +1397,9 @@ msgstr "أضف إلى Firefox"
 msgid "Add to folder"
 msgstr "أضف إلى مجلد"
 
+msgid "Added"
+msgstr "تمت الإضافة"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "تمت الإضافة %(date)s"
@@ -1718,6 +1721,9 @@ msgstr "لم تعثر فلاتر المؤلفين على أي قصص في %(cont
 msgid "Author filters found no stories in this view."
 msgstr "لم تعثر فلاتر المؤلفين على قصص في هذا العرض."
 
+msgid "Author name"
+msgstr "اسم الكاتب"
+
 msgid "Author: "
 msgstr "المؤلف: "
 
@@ -2001,6 +2007,9 @@ msgstr "جارٍ التصنيف..."
 msgid "Category"
 msgstr "الفئة"
 
+msgid "Category or tag"
+msgstr "فئة أو وسم"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "الفئة: %(value_1)s"
@@ -2124,6 +2133,9 @@ msgstr "نطاق تصفية المصنّف"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "يتطلب نطاق المصنّف %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "نوع المصنّف"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic) وGPT (OpenAI) وGemini (Google) وGrok (xAI). يمكنك التبديل بينها في أي وقت."
@@ -2314,6 +2326,9 @@ msgstr "نسخ النص"
 
 msgid "Copy URL"
 msgstr "نسخ الرابط"
+
+msgid "Could not add this classifier. Try again."
+msgstr "تعذّر إضافة هذا المصنّف. حاول مرة أخرى."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "تعذّر فصل هذا الحساب. يُرجى المحاولة مرة أخرى."
@@ -5160,6 +5175,9 @@ msgstr "تحليل خلاصة RSS/XML هذه"
 msgid "Parsing..."
 msgstr "جارٍ التحليل..."
 
+msgid "Part of a story URL"
+msgstr "جزء من رابط القصة"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة حتى دون RSS."
 
@@ -5202,6 +5220,12 @@ msgstr "حسب الموقع"
 
 msgid "Per-feed notification settings"
 msgstr "إعدادات الإشعارات لكل خلاصة"
+
+msgid "Phrase to match in story text"
+msgstr "عبارة لمطابقتها في نص القصة"
+
+msgid "Phrase to match in story titles"
+msgstr "عبارة لمطابقتها في عناوين القصص"
 
 msgid "Pick a tier & pay."
 msgstr "اختر الباقة وادفع."
@@ -6938,6 +6962,10 @@ msgid "Text View"
 msgstr "عرض النص"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "تتطلب مصنّفات النص %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "لم تعثر فلاتر النص على قصص في %(context)s."
 
@@ -7464,6 +7492,10 @@ msgid "URL Regex"
 msgstr "تعبير URL النمطي"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "تتطلب مصنّفات URL %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "لم تعثر مرشحات URL على أي قصص في %(context)s."
 
@@ -7902,6 +7934,9 @@ msgstr "عند الاشتراك في خلاصة، يسترجع NewsBlur كامل
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "عند الاشتراك في خلاصة جديدة، يُستكمل سجلها السابق تلقائيًا"
+
+msgid "Where it applies"
+msgstr "موضع التطبيق"
 
 msgid "Which AI models are available?"
 msgstr "ما نماذج الذكاء الاصطناعي المتاحة؟"

@@ -25,6 +25,12 @@ msgstr " - المجلد: كل قصص المواقع"
 msgid " - Folder: Top Level"
 msgstr " - المجلد: المستوى الأعلى"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "تم تدريب \"%(value)s\" بالفعل لجميع المواقع أو في مجلد آخر. غيّر النطاق في ذلك المصنّف بدلًا من ذلك."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 دولار سنويًا (Pro: مصادر غير محدودة)"
 

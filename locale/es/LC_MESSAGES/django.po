@@ -24,6 +24,12 @@ msgstr " - Carpeta: Artículos de todos los sitios"
 msgid " - Folder: Top Level"
 msgstr " - Carpeta: nivel superior"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "«%(value)s» ya está entrenado para todos los sitios o en otra carpeta. Cambia el ámbito de ese clasificador."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "$100/año (Pro: fuentes ilimitadas)"
 

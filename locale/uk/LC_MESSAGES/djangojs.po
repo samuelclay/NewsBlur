@@ -1202,6 +1202,9 @@ msgstr "Додати до Firefox"
 msgid "Add to folder"
 msgstr "Додати до папки"
 
+msgid "Added"
+msgstr "Додано"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Додано %(date)s"
@@ -1506,6 +1509,9 @@ msgstr "Фільтри авторів не знайшли статей у %(cont
 msgid "Author filters found no stories in this view."
 msgstr "Фільтри авторів не знайшли статей у цьому поданні."
 
+msgid "Author name"
+msgstr "Ім’я автора"
+
 msgid "Author: "
 msgstr "Автор: "
 
@@ -1785,6 +1791,9 @@ msgstr "Категоризація..."
 msgid "Category"
 msgstr "Категорія"
 
+msgid "Category or tag"
+msgstr "Категорія або тег"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Категорія: %(value_1)s"
@@ -1902,6 +1911,9 @@ msgstr "Область дії фільтра класифікатора"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Для області класифікатора потрібен %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Тип класифікатора"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) і Grok (xAI). Перемикайтеся між ними будь-коли."
@@ -2089,6 +2101,9 @@ msgstr "Копіювати текст"
 
 msgid "Copy URL"
 msgstr "Копіювати URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Не вдалося додати цей класифікатор. Спробуйте ще раз."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Не вдалося від’єднати цей обліковий запис. Спробуйте ще раз."
@@ -4906,6 +4921,9 @@ msgstr "Обробити цю RSS/XML-стрічку"
 msgid "Parsing..."
 msgstr "Обробка..."
 
+msgid "Part of a story URL"
+msgstr "Частина URL статті"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS."
 
@@ -4948,6 +4966,12 @@ msgstr "Для кожного сайту"
 
 msgid "Per-feed notification settings"
 msgstr "Налаштування сповіщень для кожної стрічки"
+
+msgid "Phrase to match in story text"
+msgstr "Фраза для пошуку в тексті статті"
+
+msgid "Phrase to match in story titles"
+msgstr "Фраза для пошуку в заголовках статей"
 
 msgid "Pick a tier & pay."
 msgstr "Виберіть тариф і сплатіть."
@@ -6664,6 +6688,10 @@ msgid "Text View"
 msgstr "Текстовий перегляд"
 
 #, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Для текстових класифікаторів потрібен %(tier_link)s"
+
+#, python-format
 msgid "Text filters found no stories in %(context)s."
 msgstr "Текстові фільтри не знайшли жодної статті в %(context)s."
 
@@ -7187,6 +7215,10 @@ msgid "URL Regex"
 msgstr "Регулярний вираз URL-адреси"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Для класифікаторів URL потрібен %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Фільтри URL не знайшли статей у %(context)s."
 
@@ -7613,6 +7645,9 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Коли ви підписуєтеся на нову стрічку, її історія доповнюється попередніми матеріалами"
+
+msgid "Where it applies"
+msgstr "Де застосовується"
 
 msgid "Which AI models are available?"
 msgstr "Які моделі ШІ доступні?"
