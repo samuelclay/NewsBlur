@@ -2120,3 +2120,304 @@ class Test_RiverStories(TransactionTestCase):
             all(hash_.startswith(f"{dirty_feed}:") for hash_ in unread_story_hashes),
             f"Unread hashes should come from dirty feed {dirty_feed}, got {unread_story_hashes}",
         )
+
+    def _disable_story_clustering(self):
+        preferences = json.decode(self.user.profile.preferences or "{}")
+        preferences["story_clustering"] = False
+        self.user.profile.preferences = json.encode(preferences)
+        self.user.profile.save()
+
+    def _seed_paging_feed(self, count, tagged=()):
+        """Replace feed 1's stories with `count` stories one minute apart, newest first."""
+        from django.utils import timezone as django_tz
+
+        feed_id = self.test_feeds[0]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        MStory.objects(story_feed_id=feed_id).delete()
+        # setUp only clears the db=10 copies, so these story-pool keys would leak into later tests.
+        keys = [
+            f"F:{feed_id}",
+            f"zF:{feed_id}",
+            f"zU:{self.user.pk}:{feed_id}",
+            f"zUP:{self.user.pk}:{feed_id}",
+            f"RS:{self.user.pk}:{feed_id}",
+        ]
+        for feed_ids in ([feed_id], self.test_feeds):
+            keys.extend(UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, ""))
+        r.delete(*keys)
+        self.addCleanup(lambda: r.delete(*keys))
+
+        self._paging_base_date = django_tz.now()
+        return [self._add_paging_story(i, tagged=i in tagged) for i in range(count)]
+
+    def _add_paging_story(self, i, tagged=False):
+        """Save story `i` of the paging feed, `i` minutes older than the newest."""
+        feed_id = self.test_feeds[0]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        base_date = self._paging_base_date
+        story_guid = f"has-more-{feed_id}-{base_date.timestamp()}-{i}"
+        story_date = base_date - datetime.timedelta(minutes=i)
+        story = MStory(
+            story_feed_id=feed_id,
+            story_date=story_date,
+            story_title=f"Paging story {i}",
+            story_content=f"Content {i}",
+            story_guid=story_guid,
+            story_permalink=f"http://example.com/{story_guid}",
+            story_author_name=f"Author {i}",
+            story_tags=["rare-tag"] if tagged else [],
+        )
+        story.save()
+        r.sadd(f"F:{feed_id}", story.story_hash)
+        r.zadd(f"zF:{feed_id}", {story.story_hash: int(story_date.timestamp())})
+        return story.story_hash
+
+    def _load_single_feed_pages(self, params, pages):
+        url = reverse("load-single-feed", kwargs={"feed_id": self.test_feeds[0]})
+        results = []
+        for page in range(1, pages + 1):
+            response = self.client.get(url, {**params, "page": page, "include_hidden": "true"})
+            self.assertEqual(response.status_code, 200)
+            results.append(json.decode(response.content))
+        return results
+
+    def _load_river_pages(self, params, pages, first_page=1):
+        results = []
+        for page in range(first_page, first_page + pages):
+            response = self.client.post(
+                reverse("load-river-stories"),
+                {
+                    "feeds": [self.test_feeds[0]],
+                    "read_filter": "all",
+                    "include_hidden": "true",
+                    **params,
+                    "page": page,
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+            results.append(json.decode(response.content))
+        return results
+
+    def _story_hashes(self, content):
+        return [story["story_hash"] for story in content["stories"]]
+
+    def test_single_feed__custom_limit_pages_without_gaps_or_duplicates(self):
+        self.client.login(username="conesus", password="test")
+        self._disable_story_clustering()
+        story_hashes = self._seed_paging_feed(8)
+
+        pages = self._load_single_feed_pages({"limit": 3}, pages=3)
+
+        self.assertEqual([len(page["stories"]) for page in pages], [3, 3, 2])
+        self.assertEqual([page["has_more"] for page in pages], [True, True, False])
+        returned = [story_hash for page in pages for story_hash in self._story_hashes(page)]
+        self.assertEqual(returned, story_hashes)
+
+    def test_single_feed__limit_is_capped_at_100(self):
+        self.client.login(username="conesus", password="test")
+        self._disable_story_clustering()
+        self._seed_paging_feed(105)
+
+        (page1,) = self._load_single_feed_pages({"limit": 500}, pages=1)
+
+        self.assertEqual(len(page1["stories"]), 100)
+        self.assertTrue(page1["has_more"])
+
+    def test_single_feed__limit_is_clamped_to_at_least_1_and_garbage_falls_back_to_default(self):
+        self.client.login(username="conesus", password="test")
+        self._disable_story_clustering()
+        story_hashes = self._seed_paging_feed(8)
+
+        for limit, expected in ((0, 1), (-1, 1), ("abc", 6)):
+            (page1,) = self._load_single_feed_pages({"limit": limit}, pages=1)
+            self.assertEqual(self._story_hashes(page1), story_hashes[:expected], f"limit={limit}")
+            self.assertTrue(page1["has_more"], f"limit={limit}")
+
+    def test_river_stories__has_more_pages_without_gaps_or_duplicates(self):
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self._disable_story_clustering()
+        story_hashes = self._seed_paging_feed(8)
+
+        pages = self._load_river_pages({"limit": 3}, pages=3)
+
+        self.assertEqual([len(page["stories"]) for page in pages], [3, 3, 2])
+        self.assertEqual([page["has_more"] for page in pages], [True, True, False])
+        returned = [story_hash for page in pages for story_hash in self._story_hashes(page)]
+        self.assertEqual(returned, story_hashes)
+
+    def test_river_stories__free_user_has_more_is_false(self):
+        """Free users cannot open page 2, so page 1 must not advertise it."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = False
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+        self._disable_story_clustering()
+        self._seed_paging_feed(8)
+
+        page1, page2 = self._load_river_pages({}, pages=2)
+
+        self.assertEqual(len(page1["stories"]), 3)
+        self.assertFalse(page1["has_more"])
+        self.assertEqual(page2["stories"], [])
+        self.assertFalse(page2["has_more"])
+
+    def _seed_read_stories(self, story_hashes):
+        """Push read story hashes newest first, the way lRS lists are read back."""
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        key = f"lRS:{self.user.pk}"
+        r.delete(key)
+        r.rpush(key, *story_hashes)
+        # setUp clears lRS on db=10 only; a leftover list here inflates later read-story loads.
+        self.addCleanup(lambda: r.delete(key))
+
+    def _load_read_pages(self, params, pages):
+        results = []
+        for page in range(1, pages + 1):
+            response = self.client.get(reverse("load-read-stories"), {**params, "page": page})
+            self.assertEqual(response.status_code, 200)
+            results.append(json.decode(response.content))
+        return results
+
+    def test_read_stories__has_more_pages_without_gaps_or_duplicates(self):
+        self.client.login(username="conesus", password="test")
+        read_hashes = self.test_story_hashes[:7]
+        self._seed_read_stories(read_hashes)
+
+        pages = self._load_read_pages({"limit": 3}, pages=3)
+
+        self.assertEqual([len(page["stories"]) for page in pages], [3, 3, 1])
+        self.assertEqual([page["has_more"] for page in pages], [True, True, False])
+        returned = [story_hash for page in pages for story_hash in self._story_hashes(page)]
+        self.assertEqual(returned, read_hashes)
+
+    def test_read_stories__uneven_filtered_page_still_has_more(self):
+        """A feed_id filter thins a page out after the fetch, so has_more follows the read list."""
+        self.client.login(username="conesus", password="test")
+        self._seed_read_stories(self.test_story_hashes)
+        feed_id = self.test_feeds[1]
+
+        pages = self._load_read_pages({"limit": 4, "feed_id": feed_id}, pages=4)
+
+        self.assertEqual([len(page["stories"]) for page in pages], [1, 2, 0, 0])
+        self.assertEqual([page["has_more"] for page in pages], [True, True, True, False])
+
+    def _mark_read_in_redis(self, story_hashes):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        feed_id = self.test_feeds[0]
+        for story_hash in story_hashes:
+            r.sadd(f"RS:{self.user.pk}", story_hash)
+            r.sadd(f"RS:{self.user.pk}:{feed_id}", story_hash)
+        self.addCleanup(lambda: r.srem(f"RS:{self.user.pk}", *story_hashes))
+        UserSubscription.objects.filter(user=self.user, feed_id=feed_id).update(needs_unread_recalc=True)
+        r.delete(f"zU:{self.user.pk}:{feed_id}")
+
+    def test_river_stories__classifier_filter_has_more_survives_read_marks(self):
+        """Reading page 1's match must not end the list before a later page's match."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self._disable_story_clustering()
+        story_hashes = self._seed_paging_feed(41, tagged=(0, 40))
+        params = {
+            "limit": 1,
+            "read_filter": "unread",
+            "classifier_filter_type": "tag",
+            "classifier_filter_value": "rare-tag",
+        }
+
+        (page1,) = self._load_river_pages(params, pages=1)
+        self._mark_read_in_redis([story_hashes[0]])
+        pages = [page1] + self._load_river_pages(params, pages=2, first_page=2)
+
+        self.assertEqual(
+            [self._story_hashes(page) for page in pages],
+            [[story_hashes[0]], [], [story_hashes[40]]],
+        )
+        self.assertTrue(pages[0]["has_more"])
+        self.assertTrue(pages[1]["has_more"])
+
+    def test_read_stories__oldest_has_more_until_the_list_ends(self):
+        """Oldest-first pages say "maybe more" when full, so the list ends on an empty page."""
+        self.client.login(username="conesus", password="test")
+        self._seed_read_stories(self.test_story_hashes[:7])
+
+        pages = self._load_read_pages({"limit": 3, "order": "oldest"}, pages=4)
+
+        self.assertTrue(pages[0]["has_more"])
+        self.assertTrue(pages[1]["has_more"])
+        self.assertEqual(pages[3]["stories"], [])
+        self.assertFalse(pages[3]["has_more"])
+
+    def test_river_stories__reloaded_final_page_sees_a_story_added_later(self):
+        """A full final page says "maybe more", so a story added later is still reached."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self._disable_story_clustering()
+        self._seed_paging_feed(6)
+
+        page1, page2 = self._load_river_pages({"limit": 3}, pages=2)
+        late_hash = self._add_paging_story(6)
+        reloaded2, page3 = self._load_river_pages({"limit": 3}, pages=2, first_page=2)
+
+        self.assertTrue(page2["has_more"])
+        self.assertTrue(reloaded2["has_more"])
+        self.assertEqual(self._story_hashes(page3), [late_hash])
+        self.assertFalse(page3["has_more"])
+
+    def _patch_search_hits(self, hits):
+        def query(feed_ids, query, order, offset, limit, **kwargs):
+            return hits[offset : offset + limit]
+
+        patcher = patch.object(SearchStory, "query", side_effect=query)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _search_first_page(self, hit_count, load_pages, params):
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self._disable_story_clustering()
+        self._patch_search_hits(self._seed_paging_feed(hit_count))
+        (page1,) = load_pages({**params, "query": "paging"}, pages=1)
+        return page1
+
+    def test_single_feed__search_has_more_when_the_index_has_more_than_a_page(self):
+        page1 = self._search_first_page(7, self._load_single_feed_pages, {})
+        self.assertEqual(len(page1["stories"]), 6)
+        self.assertTrue(page1["has_more"])
+
+    def test_single_feed__search_has_no_more_on_an_exact_page(self):
+        page1 = self._search_first_page(6, self._load_single_feed_pages, {})
+        self.assertEqual(len(page1["stories"]), 6)
+        self.assertFalse(page1["has_more"])
+
+    def test_river_stories__search_has_more_when_the_index_has_more_than_a_page(self):
+        page1 = self._search_first_page(7, self._load_river_pages, {"limit": 6})
+        self.assertEqual(len(page1["stories"]), 6)
+        self.assertTrue(page1["has_more"])
+
+    def test_river_stories__search_has_no_more_on_an_exact_page(self):
+        page1 = self._search_first_page(6, self._load_river_pages, {"limit": 6})
+        self.assertEqual(len(page1["stories"]), 6)
+        self.assertFalse(page1["has_more"])
+
+    def test_has_more_is_false_on_the_last_reachable_page(self):
+        """Page 401 is a 404, so page 400 must not advertise it."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self._disable_story_clustering()
+        self._seed_paging_feed(402)
+        url = reverse("load-single-feed", kwargs={"feed_id": self.test_feeds[0]})
+
+        for page, expected in ((399, True), (400, False)):
+            feed_page = json.decode(
+                self.client.get(url, {"limit": 1, "page": page, "include_hidden": "true"}).content
+            )
+            (river_page,) = self._load_river_pages({"limit": 1}, pages=1, first_page=page)
+            self.assertEqual(feed_page["has_more"], expected, f"single feed page {page}")
+            self.assertEqual(river_page["has_more"], expected, f"river page {page}")
