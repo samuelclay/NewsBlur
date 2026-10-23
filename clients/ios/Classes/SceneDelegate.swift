@@ -16,6 +16,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 #if targetEnvironment(macCatalyst)
     var toolbar = NSToolbar(identifier: "main")
     var toolbarDelegate = ToolbarDelegate()
+    private var didRestoreWindowFrame = false
+    private var frameBeforeRestoration: CGRect?
+    private weak var connectedWindowScene: UIWindowScene?
 #endif
     
     @objc(closeAuxWindows) class func closeAuxWindows() {
@@ -43,6 +46,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         appDelegate.window = window
+
+#if targetEnvironment(macCatalyst)
+        if let windowScene = scene as? UIWindowScene {
+            connectedWindowScene = windowScene
+            restoreWindowFrame(in: windowScene)
+        }
+#endif
 
         if #available(iOS 16.0, *) {
             NewsBlurUITestHarness.prepareLaunchEnvironmentIfNeeded(appDelegate: self.appDelegate)
@@ -89,11 +99,75 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
 #if targetEnvironment(macCatalyst)
+    private func isMainWindowScene(_ scene: UIScene) -> Bool {
+        guard let window else { return false }
+        return appDelegate.window === window && (window.windowScene === scene || connectedWindowScene === scene)
+    }
+
+    // SceneDelegate.swift uses the system frame so both position and size survive new scene sessions.
+    func macWindowFrame(in scene: UIWindowScene) -> CGRect {
+        scene.effectiveGeometry.systemFrame
+    }
+
+    func macWindowIsFullScreen(in scene: UIWindowScene) -> Bool {
+        scene.isFullScreen
+    }
+
+    func requestMacWindowFrame(_ frame: CGRect, in scene: UIWindowScene, errorHandler: @escaping (Error) -> Void) {
+        scene.requestGeometryUpdate(UIWindowScene.GeometryPreferences.Mac(systemFrame: frame), errorHandler: errorHandler)
+    }
+
+    private func isUsableWindowFrame(_ frame: CGRect) -> Bool {
+        frame.origin.x.isFinite && frame.origin.y.isFinite && frame.size.width.isFinite && frame.size.height.isFinite &&
+            frame.size.width > 0 && frame.size.height > 0
+    }
+
+    private func restoreWindowFrame(in scene: UIWindowScene) {
+        guard isMainWindowScene(scene), !didRestoreWindowFrame else { return }
+        didRestoreWindowFrame = true
+        guard let saved = UserDefaults.standard.string(forKey: "mac_main_window_frame") else { return }
+        let frame = NSCoder.cgRect(for: saved)
+        guard isUsableWindowFrame(frame) else { return }
+        let initialFrame = macWindowFrame(in: scene)
+        frameBeforeRestoration = initialFrame == frame ? nil : initialFrame
+        requestMacWindowFrame(frame, in: scene) { [weak self] error in
+            self?.frameBeforeRestoration = nil
+            NSLog("Unable to restore NewsBlur window frame: %@", error.localizedDescription)
+        }
+    }
+
+    private func saveWindowFrame(for scene: UIScene) {
+        guard isMainWindowScene(scene), let windowScene = scene as? UIWindowScene,
+              !macWindowIsFullScreen(in: windowScene) else { return }
+        let frame = macWindowFrame(in: windowScene)
+        guard isUsableWindowFrame(frame) else { return }
+        // SceneDelegate.swift must not replace the saved frame with the startup frame while restoration is pending.
+        if frameBeforeRestoration == frame { return }
+        frameBeforeRestoration = nil
+        UserDefaults.standard.set(NSCoder.string(for: frame), forKey: "mac_main_window_frame")
+    }
+
+    func windowScene(_ windowScene: UIWindowScene, didUpdateEffectiveGeometry previousEffectiveGeometry: UIWindowScene.Geometry) {
+        saveWindowFrame(for: windowScene)
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        saveWindowFrame(for: scene)
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        saveWindowFrame(for: scene)
+    }
+
     func sceneDidDisconnect(_ scene: UIScene) {
         // SceneDelegate.swift releases only this scene's reader, allowing Dock activation to reconnect it.
         // Closing a window keeps the process running; the system Quit command owns app termination.
-        if appDelegate.window === window {
+        if isMainWindowScene(scene) {
+            saveWindowFrame(for: scene)
             appDelegate.window = nil
+            didRestoreWindowFrame = false
+            frameBeforeRestoration = nil
+            connectedWindowScene = nil
         }
     }
 
