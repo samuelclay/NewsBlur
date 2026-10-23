@@ -123,7 +123,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             'anthropic': 'Anthropic',
             'openai': 'OpenAI',
             'google': 'Google',
-            'xai': 'xAI'
+            'xai': 'SpaceXSI'
         };
         return names[provider] || provider;
     },

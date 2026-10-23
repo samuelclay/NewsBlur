@@ -1822,10 +1822,10 @@ msgstr "Ambito del filtro del classificatore"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "L'ambito del classificatore richiede %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) e Grok (xAI). Puoi passare da uno all'altro in qualsiasi "
-"momento."
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) e Grok (SpaceXSI). Puoi passare da uno all’altro in "
+"qualsiasi momento."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Riordina e organizza i feed"

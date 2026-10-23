@@ -1307,9 +1307,11 @@ msgstr "Civic Tech"
 msgid "Classification failed, please try again"
 msgstr "Klassifizierung fehlgeschlagen. Bitte versuche es erneut."
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) und Grok (xAI). Du kannst jederzeit zwischen ihnen "
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) und Grok (SpaceXSI). Du kannst jederzeit zwischen ihnen "
 "wechseln."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"

@@ -33,8 +33,8 @@ enum class AskAiProvider(
     ),
     XAI(
         rawValue = "xai",
-        displayName = "xAI Grok 4.6",
-        shortName = "Grok 4.6",
+        displayName = "SpaceXSI Grok 4.7",
+        shortName = "Grok 4.7",
         providerName = "xai",
         colorHex = 0xFF171717,
     ),

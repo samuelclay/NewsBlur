@@ -1740,10 +1740,10 @@ msgstr "Phạm vi bộ lọc phân loại"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Phạm vi bộ phân loại yêu cầu %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) và Grok (xAI). Bạn có thể chuyển đổi giữa các mô hình bất"
-" cứ lúc nào."
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) và Grok (SpaceXSI). Bạn có thể chuyển đổi giữa các công "
+"cụ này bất cứ lúc nào."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Dọn dẹp và sắp xếp lại nguồn cấp dữ liệu"

@@ -1742,8 +1742,10 @@ msgstr "Sınıflandırıcı filtresinin kapsamı"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Sınıflandırıcı kapsamı %(tier_link)s gerektirir"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (xAI). İstediğiniz zaman aralarında geçiş yapın."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (SpaceXSI). İstediğiniz zaman aralarında geçiş "
+"yapın."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Akışları düzenleyin ve yeniden sıralayın"

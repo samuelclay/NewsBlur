@@ -1180,8 +1180,10 @@ msgstr "シビックテック"
 msgid "Classification failed, please try again"
 msgstr "分類に失敗しました。もう一度お試しください"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（xAI）。いつでも切り替えられます。"
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（SpaceXSI）をいつでも切り替えられます。"
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "ソースを選ぶとそのバージョンを読めます。または、重複記事をすべてまとめて既読にできます"
