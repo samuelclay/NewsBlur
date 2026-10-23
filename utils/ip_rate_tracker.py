@@ -70,16 +70,28 @@ class IPRateTracker:
             self._redis = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         return self._redis
 
-    def get_current_window(self):
+    def get_current_window(self, now=None):
         """
-        Return current 5-minute window as string (e.g., '202512161430').
-        Windows align to 5-minute boundaries (00, 05, 10, 15, ...).
+        Return the 5-minute window for `now` (default: current UTC time) as a string
+        (e.g., '202512161430'). Windows align to 5-minute boundaries (00, 05, 10, 15, ...).
+        Callers that also need seconds_until_next_window() pass the same `now` to both.
         """
-        now = datetime.datetime.utcnow()
+        if now is None:
+            now = datetime.datetime.utcnow()
         # Round down to nearest 5 minutes
         minute = (now.minute // self.WINDOW_MINUTES) * self.WINDOW_MINUTES
         window_time = now.replace(minute=minute, second=0, microsecond=0)
         return window_time.strftime("%Y%m%d%H%M")
+
+    def seconds_until_next_window(self, now=None):
+        """
+        Seconds until the current 5-minute window ends and per-IP counts reset.
+        Used as the Retry-After value on 429s from apps/profile/middleware.py.
+        """
+        if now is None:
+            now = datetime.datetime.utcnow()
+        elapsed = (now.minute % self.WINDOW_MINUTES) * 60 + now.second
+        return self.WINDOW_MINUTES * 60 - elapsed
 
     def get_ip(self, request):
         """
@@ -113,19 +125,21 @@ class IPRateTracker:
             return str(request.user.pk), request.user.username
         return "0", "anonymous"
 
-    def track_request(self, request, endpoint):
+    def track_request(self, request, endpoint, now=None):
         """
         Record a request for rate tracking.
 
         Args:
             request: Django HttpRequest
             endpoint: Endpoint shortcode (feeds, feed, river, starred, read)
+            now: The clock read the caller is using for this request, so the window the
+                 request is counted in matches the one it is checked against
         """
         ip = self.get_ip(request)
         ua_type = self.get_user_agent_type(request)
         user_id, username = self.get_user_info(request)
         method = request.method
-        window = self.get_current_window()
+        window = self.get_current_window(now)
         now_ts = str(int(time.time()))
 
         # Increment Prometheus counter (low cardinality)
@@ -255,7 +269,7 @@ class IPRateTracker:
         threshold = getattr(settings, "IP_RATE_LIMIT_THRESHOLD", self.ABUSE_THRESHOLD)
         return int(count) > threshold
 
-    def track_would_be_denied(self, request, endpoint):
+    def track_would_be_denied(self, request, endpoint, now=None):
         """
         Record that a request WOULD have been denied if rate limiting was enforced.
 
@@ -267,7 +281,7 @@ class IPRateTracker:
         ip = self.get_ip(request)
         ua_type = self.get_user_agent_type(request)
         user_id, username = self.get_user_info(request)
-        window = self.get_current_window()
+        window = self.get_current_window(now)
         now_ts = str(int(time.time()))
 
         # Increment Prometheus counter
