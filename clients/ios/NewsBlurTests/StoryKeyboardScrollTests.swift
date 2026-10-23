@@ -1,9 +1,156 @@
 import XCTest
 import UIKit
+import WebKit
 
 @testable import NewsBlur
 
 @MainActor final class Test_StoryKeyboardScroll: XCTestCase {
+    func test_spaceUsesWebDefaultAndConfiguredPercentageInBothDirections() {
+        let defaults = UserDefaults.standard
+        let saved = defaults.object(forKey: "space_scroll_spacing")
+        defer { defaults.set(saved, forKey: "space_scroll_spacing") }
+        defaults.removeObject(forKey: "space_scroll_spacing")
+        let page = KeyboardGeometryPage()
+        page.trackedScroll.contentOffset.y = 600
+        page.scrollPageDown(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 1000, accuracy: 0.1)
+        defaults.set(20, forKey: "space_scroll_spacing")
+        page.scrollPageUp(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 800, accuracy: 0.1)
+    }
+
+    func test_spaceAtBottomUsesNextUnreadInsteadOfNextReadStory() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentOffset.y = 4000
+        page.scrollPageDown(nil)
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+        XCTAssertEqual(pages.nextCount, 0)
+    }
+
+    func test_shiftSpaceAtTopOpensPreviousStoryLikeWeb() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentInset.top = 80
+        page.trackedScroll.contentOffset.y = -80
+        page.scrollPageUp(nil)
+        XCTAssertEqual(pages.previousCount, 1)
+        XCTAssertEqual(pages.previousHistoryCount, 0)
+    }
+
+    func test_spaceUsesVisibleHeightAndIncludesBottomInsetInItsLimit() {
+        let defaults = UserDefaults.standard
+        let saved = defaults.object(forKey: "space_scroll_spacing")
+        defer { defaults.set(saved, forKey: "space_scroll_spacing") }
+        defaults.set(40, forKey: "space_scroll_spacing")
+        let page = KeyboardGeometryPage()
+        page.trackedScroll.contentInset = UIEdgeInsets(top: 80, left: 0, bottom: 20, right: 0)
+        page.trackedScroll.contentOffset.y = 600
+        page.scrollPageDown(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 960, accuracy: 0.1)
+        page.trackedScroll.contentOffset.y = 3950
+        page.scrollPageDown(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 4020, accuracy: 0.1)
+    }
+
+    func test_arrivingAtEitherBoundaryDoesNotSkipTheFinalScreen() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentInset.top = 80
+        page.trackedScroll.contentOffset.y = 3990
+        page.scrollPageDown(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 4000, accuracy: 0.1)
+        XCTAssertEqual(pages.nextUnreadCount, 0)
+        page.scrollPageDown(nil)
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+
+        page.trackedScroll.contentOffset.y = -70
+        page.scrollPageUp(nil)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, -80, accuracy: 0.1)
+        XCTAssertEqual(pages.previousCount, 0)
+        page.scrollPageUp(nil)
+        XCTAssertEqual(pages.previousCount, 1)
+    }
+
+    func test_spaceOnShortStoryAdvancesWithoutScrollingToANegativeBottom() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentSize.height = 200
+        page.scrollPageDown(nil)
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 0)
+    }
+
+    func test_fractionalBottomGeometryStillAdvancesToUnread() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentInset.bottom = 40
+        page.trackedScroll.contentSize.height = 5000.2
+        page.trackedScroll.contentOffset.y = 4040
+        page.scrollPageDown(nil)
+        XCTAssertEqual(pages.nextUnreadCount, 1)
+    }
+
+    func test_emptyUnloadedPlaceholderAndAdjacentPagesCannotNavigate() {
+        let page = KeyboardGeometryPage()
+        let app = KeyboardRoutingApp()
+        let pages = KeyboardRoutingPages()
+        app.reader = pages
+        page.appDelegate = app
+        pages.currentPage = page
+        page.trackedScroll.contentSize.height = 0
+        page.scrollPageDown(nil)
+        page.scrollPageUp(nil)
+        page.trackedScroll.contentSize.height = 200
+        page.hasStory = false
+        page.scrollPageDown(nil)
+        page.scrollPageUp(nil)
+        page.hasStory = true
+        page.pageIndex = -1
+        page.scrollPageDown(nil)
+        page.scrollPageUp(nil)
+        page.pageIndex = 0
+        pages.currentPage = KeyboardGeometryPage()
+        page.scrollPageDown(nil)
+        page.scrollPageUp(nil)
+        XCTAssertEqual(pages.nextUnreadCount, 0)
+        XCTAssertEqual(pages.previousCount, 0)
+        XCTAssertEqual(page.trackedScroll.contentOffset.y, 0)
+    }
+
+    func test_invalidPagingPreferencesFallBackToWebDefault() {
+        let defaults = UserDefaults.standard
+        let saved = defaults.object(forKey: "space_scroll_spacing")
+        defer { defaults.set(saved, forKey: "space_scroll_spacing") }
+        let page = KeyboardGeometryPage()
+        for invalid in [0, -10, 101, "invalid"] as [Any] {
+            defaults.set(invalid, forKey: "space_scroll_spacing")
+            page.trackedScroll.contentOffset.y = 600
+            page.scrollPageDown(nil)
+            XCTAssertEqual(page.trackedScroll.contentOffset.y, 1000, accuracy: 0.1)
+        }
+    }
+
     func test_readerShortcutsResolveWhenAnotherSplitPaneOwnsKeyboardFocus() throws {
         let pane = KeyboardPaneProbe()
         let app = KeyboardRoutingApp()
@@ -336,6 +483,7 @@ import UIKit
 @MainActor private final class KeyboardRoutingPages: StoryPagesViewController {
     var nextCount = 0
     var previousCount = 0
+    var previousHistoryCount = 0
     var savedCount = 0
     var nextUnreadCount = 0
     var unreadToggleCount = 0
@@ -350,12 +498,45 @@ import UIKit
     override func viewDidLayoutSubviews() {}
     override func changeToNextPage(_ sender: Any!) { nextCount += 1 }
     override func changeToPreviousPage(_ sender: Any!) { previousCount += 1 }
+    override func doPreviousStory(_ sender: Any!) { previousCount += 1; previousHistoryCount += 1 }
     override func toggleStorySaved(_ sender: Any!) { savedCount += 1 }
     override func doNextUnreadStory(_ sender: Any!) { nextUnreadCount += 1 }
     override func toggleStoryUnread(_ sender: Any!) { unreadToggleCount += 1 }
     override func showOriginalSubview(_ sender: Any!) { originalCount += 1 }
     override func openStoryTrainerFromKeyboard(_ sender: Any!) { trainerCount += 1 }
     override func toggleTextView(_ sender: Any!) { textViewCount += 1 }
+}
+
+@MainActor private final class KeyboardGeometryPage: StoryDetailViewController {
+    let trackedScroll = KeyboardGeometryScroll()
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        appDelegate = nil
+        let web = KeyboardGeometryWeb(frame: .zero, configuration: WKWebViewConfiguration())
+        web.trackedScroll = trackedScroll
+        webView = web
+        pageIndex = 0
+        hasStory = true
+        trackedScroll.frame = CGRect(x: 0, y: 0, width: 600, height: 1000)
+        trackedScroll.contentSize = CGSize(width: 600, height: 5000)
+    }
+    required init?(coder: NSCoder) { super.init(coder: coder) }
+    deinit {
+        // StoryKeyboardScrollTests.swift does not install the production web view KVO observer.
+        webView = nil
+    }
+}
+
+@MainActor private final class KeyboardGeometryWeb: WKWebView {
+    var trackedScroll = KeyboardGeometryScroll()
+    override var scrollView: UIScrollView { trackedScroll }
+}
+
+@MainActor private final class KeyboardGeometryScroll: UIScrollView {
+    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+        // StoryKeyboardScrollTests.swift captures the requested destination without a display animation.
+        super.setContentOffset(contentOffset, animated: false)
+    }
 }
 
 @MainActor private final class KeyboardScrollPageProbe: StoryDetailViewController {

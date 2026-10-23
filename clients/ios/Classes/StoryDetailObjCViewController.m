@@ -3882,26 +3882,41 @@
 }
 
 - (void)tryScrollingDown:(BOOL)down {
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    if (!self.hasStory || self.pageIndex < 0 || !webView || webView.loading ||
+        (pages.currentPage && pages.currentPage != self)) return;
+
     UIScrollView *scrollView = webView.scrollView;
     CGPoint contentOffset = scrollView.contentOffset;
-    CGFloat frameHeight = scrollView.frame.size.height;
-    CGFloat scrollHeight = frameHeight - 45; // ~height of source bar and buttons
-    if (down) {
-        CGSize contentSize = scrollView.contentSize;
-        if (contentOffset.y + frameHeight == contentSize.height)
-            return;
-        contentOffset.y = MIN(contentOffset.y + scrollHeight, contentSize.height - frameHeight);
-    } else {
-        if (contentOffset.y <= 0)
-            return;
-        contentOffset.y = MAX(contentOffset.y - scrollHeight, 0);
+    UIEdgeInsets insets = scrollView.adjustedContentInset;
+    CGFloat viewportHeight = scrollView.bounds.size.height - insets.top - insets.bottom;
+    CGFloat contentHeight = scrollView.contentSize.height;
+    if (!isfinite(viewportHeight) || viewportHeight <= 0 ||
+        !isfinite(contentHeight) || contentHeight <= 0 || !isfinite(contentOffset.y)) return;
+
+    CGFloat top = -insets.top;
+    CGFloat bottom = MAX(top, contentHeight - scrollView.bounds.size.height + insets.bottom);
+    // StoryDetailObjCViewController.m checks the starting position so the final screen remains readable before advancing.
+    CGFloat boundaryTolerance = 0.5;
+    if (down && contentOffset.y >= bottom - boundaryTolerance) {
+        [pages doNextUnreadStory:nil];
+        return;
+    } else if (!down && contentOffset.y <= top + boundaryTolerance) {
+        [pages changeToPreviousPage:nil];
+        return;
     }
+
+    id preference = [[NSUserDefaults standardUserDefaults] objectForKey:@"space_scroll_spacing"];
+    double percentage = [preference respondsToSelector:@selector(doubleValue)] ? [preference doubleValue] : 40;
+    if (!isfinite(percentage) || percentage < 10 || percentage > 100) percentage = 40;
+    CGFloat scrollHeight = viewportHeight * percentage / 100.0;
+    contentOffset.y = MIN(bottom, MAX(top, contentOffset.y + (down ? scrollHeight : -scrollHeight)));
     if (CGPointEqualToPoint(contentOffset, scrollView.contentOffset)) return;
     // StoryDetailObjCViewController.m treats keyboard paging as user activity, including while a saved-position query is pending.
     self.storyScrollActivityGeneration++;
     self.awaitingStoryScrollRestoration = NO;
     hasScrolled = YES;
-    if (contentOffset.y > 0) self.hasScrolledAwayFromTop = YES;
+    if (contentOffset.y > top) self.hasScrolledAwayFromTop = YES;
     [scrollView setContentOffset:contentOffset animated:YES];
 }
 
