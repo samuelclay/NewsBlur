@@ -181,6 +181,7 @@
 "Choose Language…" = "בחירת שפה…";
 "Choose Story List" = "בחירת רשימת כתבות";
 "Choose a Topic" = "בחירת נושא";
+"Choose a folder or site for this widget." = "בחרו תיקייה או אתר לווידג׳ט הזה.";
 "Choose another category to discover more." = "בחר קטגוריה אחרת כדי לגלות עוד.";
 "Choose another language" = "בחרו שפה אחרת";
 "Choose feeds for your folder" = "בחירת פידים לתיקייה";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "גררו כדי לשנות את רוחב רשימת הפידים והכתבות.";
 "Edit" = "עריכה";
 "Edit NewsBlur share…" = "עריכת שיתוף NewsBlur…";
+"Edit this widget to choose a folder or site" = "עריכת הווידג׳ט הזה כדי לבחור תיקייה או אתר";
 "Edit your comment" = "עריכת התגובה שלך";
 "Edit your reply" = "עריכת התשובה שלך";
 "Edited Comment" = "תגובה שנערכה";
@@ -348,6 +350,7 @@
 "Focus Stories" = "כתבות במיקוד";
 "Focus only" = "מיקוד בלבד";
 "Folder name" = "שם התיקייה";
+"Folder or site" = "תיקייה או אתר";
 "Folders" = "תיקיות";
 "Follow" = "עקוב";
 "Follow %@" = "לעקוב אחרי %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "עקיפת הגדרות המערכת באמצעות הבהירות";
 "Page Down" = "עמוד למטה";
 "Page Up" = "עמוד למעלה";
-"Page down" = "עמוד למטה";
-"Page up" = "עמוד למעלה";
+"Page down; next unread story at the bottom" = "עמוד למטה; הכתבה הבאה שלא נקראה בתחתית";
+"Page up; previous story at the top" = "עמוד למעלה; הכתבה הקודמת בראש";
 "Password" = "סיסמה";
 "Paste a story title from the page" = "הדביקו כותרת של כתבה מהעמוד";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "הדביקו כתובת URL כלשהי ו-NewsBlur ייצור פיד מהדף, גם ללא RSS.";
 "Pause" = "השהה";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "אחוז מהכתבה המוצגת שנגלל באמצעות רווח או Shift-Rווח";
 "Permanently delete account" = "מחיקת החשבון לצמיתות";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בהעדפות.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בתפריט NewsBlur.";
 "Pick which model writes your Daily Briefing" = "בחרו איזה מודל יכתוב את התדריך היומי שלכם";
 "Place the story list controls above or below the stories" = "הצג את הפקדים של רשימת הכתבות מעל הכתבות או מתחתיהן";
 "Play videos" = "הפעלת סרטונים";
+"Please log in to NewsBlur" = "יש להתחבר אל NewsBlur";
 "Plum Berry" = "שזיף ופירות יער";
 "Positive?" = "להמשיך?";
 "Preferences" = "העדפות";
@@ -864,6 +869,8 @@
 "Small [text size]" = "קטן";
 "Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
 "Sources" = "מקורות";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "רווח ו-Shift-Rווח גוללים באחוז הזה של הכתבה המוצגת. בתחתית, רווח פותח את הכתבה הבאה שלא נקראה. בראש, Shift-Rווח פותח את הכתבה הקודמת.";
+"Space scroll amount" = "כמות הגלילה באמצעות רווח";
 "Spacing" = "מרווחים";
 "Stale — last story %@" = "לא מעודכן — הכתבה האחרונה %@";
 "Standard" = "רגיל";
@@ -978,6 +985,7 @@
 "Top" = "למעלה";
 "Top Level" = "רמה עליונה";
 "Top stories" = "כתבות מובילות";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "לחצו לחיצה ממושכת על ווידג׳ט של NewsBlur, או לחצו עליו בקליק ימני ב-Mac, ואז בחרו ״עריכת ווידג׳ט״. בחרו תיקייה או אתר לכל ווידג׳ט.";
 "Train" = "אימון";
 "Train This Story" = "אימון על הכתבה הזו";
 "Train This Story…" = "אימון על הכתבה הזו…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "לא ניתן לטעון את התדריך היומי";
 "Unable to load Daily Briefing settings." = "לא ניתן לטעון את הגדרות התדריך היומי.";
 "Unable to load Daily Briefing." = "לא ניתן לטעון את התדריך היומי.";
+"Unable to refresh stories" = "לא ניתן לרענן את הכתבות";
 "Unable to save Daily Briefing settings." = "לא ניתן לשמור את הגדרות התדריך היומי.";
 "Unable to save notification settings." = "לא ניתן לשמור את הגדרות ההתראות.";
 "Understand" = "הבנתי";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "כתבות שנקראו רבות";
 "Widely covered" = "סיקור נרחב";
 "Widget Site Stories" = "כתבות מאתרי הווידג׳ט";
-"Widget Sites" = "אתרי ווידג'טים";
 "Widget Stories" = "כתבות בווידג'ט";
+"Widgets" = "ווידג׳טים";
 "Working…" = "בעבודה…";
 "Works on any website" = "פועל בכל אתר";
 "Writing style" = "סגנון כתיבה";

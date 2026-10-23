@@ -127,6 +127,10 @@ adb -s emulator-5554 exec-out screencap -p > /tmp/newsblur-launch-02.png
 - **Find worktree containers**: `docker ps --format '{{.Names}}' | grep <worktree-name>`
 - The worktree name is the directory name (e.g., `search-by-phrase` → `newsblur_web_search-by-phrase`)
 
+## Repository Assets
+- Images and video (png, jpg, mp4, mov, gif, webp) under `clients/store/artwork`, `clients/android/Performance` and `clients/ios/Performance` live in the private bucket `s3://newsblur-repo-assets`, not git. They are gitignored; each folder has a committed `<folder>.manifest.json`.
+- `make assets-pull` downloads them, `make assets-push` uploads new or changed files and rewrites the manifests (commit those), `make assets-status` shows what differs. Never commit those media files to git.
+
 ## Build & Test Commands
 - `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
 - `make rebuild` - Full rebuild with all images (for Docker config changes)

@@ -490,7 +490,7 @@ MODEL_ALIASES = {
     # providers.py: "haiku" users picked the cheap Anthropic tier back when the
     # briefing's Claude option was Haiku. The "anthropic" registry entry is now
     # Sonnet-class (chat tier), so route them to the cheap default (Luna)
-    # instead of silently upgrading them to a ~40x more expensive model.
+    # instead of silently upgrading them to a ~20x more expensive model.
     "haiku": "openai",
     "gpt-5-mini": "openai",
     "gemini-flash-lite": "google",

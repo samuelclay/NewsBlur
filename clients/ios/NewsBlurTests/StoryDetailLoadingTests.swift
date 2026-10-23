@@ -707,6 +707,48 @@ import XCTest
         }
     }
 
+    func test_fractionalLayoutKeepsSelectionMovingButRealResizeRestoresItsPages() throws {
+        let defaults = UserDefaults.standard
+        let originalDirection = defaults.object(forKey: "scroll_stories_horizontally")
+        defer {
+            if let originalDirection { defaults.set(originalDirection, forKey: "scroll_stories_horizontally") }
+            else { defaults.removeObject(forKey: "scroll_stories_horizontally") }
+        }
+        for horizontal in [true, false] {
+            defaults.set(horizontal, forKey: "scroll_stories_horizontally")
+            let fixture = makePresentationFixture(width: 451)
+            fixture.pages.regularPane = true
+            fixture.pages.simulatedPhone = false
+            fixture.app.compactWidthOverride = false
+            fixture.pages.setValue(NSValue(cgSize: fixture.pages.scrollView.bounds.size), forKey: "lastScrollViewBoundsSize")
+            let incoming = try XCTUnwrap(fixture.pages.nextPage)
+            incoming.activeStory = fixture.stories[3]
+            incoming.activeStoryId = "item-3"
+            incoming.hasStory = true
+            incoming.webView.isHidden = false
+            fixture.pages.observeSelectionTransition(incoming, location: 1)
+            let host = try XCTUnwrap(fixture.pages.value(forKey: "storySelectionTransitionHost") as? UIView)
+            defer { fixture.pages.cancelPendingStoryPresentation() }
+
+            // StoryDetailLoadingTests.swift reproduces Catalyst restoring a fractional Auto Layout width after the pager floors it.
+            fixture.pages.scrollView.frame.size.width = 451.5
+            fixture.pages.viewDidLayoutSubviews()
+            XCTAssertEqual(fixture.pages.scrollView.bounds.width, 451)
+            XCTAssertTrue(fixture.pages.value(forKey: "storySelectionTransitionHost") as? UIView === host,
+                          "Rounding the same viewport must not finish a 280ms animation on its first layout callback")
+            XCTAssertFalse(incoming.view.isDescendant(of: fixture.pages.scrollView))
+
+            fixture.pages.scrollView.frame.size.width = 500.5
+            fixture.pages.viewDidLayoutSubviews()
+            XCTAssertNil(fixture.pages.value(forKey: "storySelectionTransitionHost"),
+                         "An actual window resize must still settle the moving pages")
+            for page in [fixture.original, incoming] {
+                XCTAssertTrue(page.view.isDescendant(of: fixture.pages.scrollView))
+                XCTAssertTrue(page.webView.superview === page.view)
+            }
+        }
+    }
+
     func test_expandedPhoneSelectionHidesArticleEdgeEffectsUntilLiveViewsAreRestored() throws {
         #if targetEnvironment(macCatalyst)
         throw XCTSkip("Expanded-phone scroll edge ownership does not apply to Mac Catalyst")

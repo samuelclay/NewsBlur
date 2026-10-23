@@ -181,6 +181,7 @@
 "Choose Language…" = "Choisir la langue…";
 "Choose Story List" = "Choisir la liste des articles";
 "Choose a Topic" = "Choisir un sujet";
+"Choose a folder or site for this widget." = "Choisissez un dossier ou un site pour ce widget.";
 "Choose another category to discover more." = "Choisissez une autre catégorie pour en découvrir davantage.";
 "Choose another language" = "Choisir une autre langue";
 "Choose feeds for your folder" = "Choisissez des flux pour votre dossier";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Faites glisser pour modifier la largeur de la liste des flux et des articles.";
 "Edit" = "Modifier";
 "Edit NewsBlur share…" = "Modifier le partage NewsBlur…";
+"Edit this widget to choose a folder or site" = "Modifier ce widget pour choisir un dossier ou un site";
 "Edit your comment" = "Modifier votre commentaire";
 "Edit your reply" = "Modifier votre réponse";
 "Edited Comment" = "Commentaire modifié";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Articles prioritaires";
 "Focus only" = "Prioritaires uniquement";
 "Folder name" = "Nom du dossier";
+"Folder or site" = "Dossier ou site";
 "Folders" = "Dossiers";
 "Follow" = "Suivre";
 "Follow %@" = "Suivre %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "Remplacer les paramètres système avec la luminosité";
 "Page Down" = "Page suivante";
 "Page Up" = "Page précédente";
-"Page down" = "Page suivante";
-"Page up" = "Page précédente";
+"Page down; next unread story at the bottom" = "Page suivante ; article non lu suivant en bas";
+"Page up; previous story at the top" = "Page précédente ; article précédent en haut";
 "Password" = "Mot de passe";
 "Paste a story title from the page" = "Collez le titre d’un article de la page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Collez n’importe quelle URL et NewsBlur créera un flux à partir de la page, même sans RSS.";
 "Pause" = "Mettre en pause";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Pourcentage de l’article visible parcouru avec la barre d’espace ou Maj + barre d’espace";
 "Permanently delete account" = "Supprimer définitivement le compte";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Choisissez la langue que NewsBlur utilisera. Vous pouvez la modifier à tout moment dans les Préférences.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Choisissez la langue que vous souhaitez utiliser dans NewsBlur. Vous pouvez la changer à tout moment dans le menu NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Choisissez le modèle qui rédige votre briefing quotidien";
 "Place the story list controls above or below the stories" = "Placer les commandes de la liste des articles au-dessus ou en dessous des articles";
 "Play videos" = "Lire les vidéos";
+"Please log in to NewsBlur" = "Veuillez vous connecter à NewsBlur";
 "Plum Berry" = "Baie de prunier";
 "Positive?" = "Vous êtes sûr ?";
 "Preferences" = "Préférences";
@@ -864,6 +869,8 @@
 "Small [text size]" = "Petit";
 "Some feed icons couldn’t load." = "Certaines icônes de flux n’ont pas pu être chargées.";
 "Sources" = "Sources";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barre d’espace et Maj + barre d’espace font défiler l’article visible de ce pourcentage. En bas, la barre d’espace ouvre l’article non lu suivant. En haut, Maj + barre d’espace ouvre l’article précédent.";
+"Space scroll amount" = "Distance de défilement de la barre d’espace";
 "Spacing" = "Espacement";
 "Stale — last story %@" = "Inactif — dernier article %@";
 "Standard" = "Standard";
@@ -978,6 +985,7 @@
 "Top" = "En haut";
 "Top Level" = "Niveau supérieur";
 "Top stories" = "Articles à la une";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touchez longuement un widget NewsBlur, ou faites un clic droit dessus sur Mac, puis choisissez « Modifier le widget ». Choisissez un dossier ou un site pour chaque widget.";
 "Train" = "Entraîner";
 "Train This Story" = "Entraîner sur cet article";
 "Train This Story…" = "Entraîner sur cet article…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "Impossible de charger le briefing quotidien";
 "Unable to load Daily Briefing settings." = "Impossible de charger les paramètres du briefing quotidien.";
 "Unable to load Daily Briefing." = "Impossible de charger le briefing quotidien.";
+"Unable to refresh stories" = "Impossible d’actualiser les articles";
 "Unable to save Daily Briefing settings." = "Impossible d’enregistrer les paramètres du briefing quotidien.";
 "Unable to save notification settings." = "Impossible d’enregistrer les paramètres de notification.";
 "Understand" = "Comprendre";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "Articles les plus lus";
 "Widely covered" = "Largement relayés";
 "Widget Site Stories" = "Articles des sites du widget";
-"Widget Sites" = "Sites du widget";
 "Widget Stories" = "Articles du widget";
+"Widgets" = "Widgets";
 "Working…" = "En cours…";
 "Works on any website" = "Fonctionne sur n’importe quel site web";
 "Writing style" = "Style d’écriture";

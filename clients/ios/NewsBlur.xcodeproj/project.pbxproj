@@ -1614,6 +1614,16 @@
 		C4ED3C79B1AF41489100A269 /* OnboardingAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */; };
 		746302FCDF2BC718B82DFE5F /* OnboardingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */; };
 		B459B3DA08BDADE1895F24D6 /* OnboardingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */; };
+		01E7867146DF9C2F8D5A37CE /* WidgetSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AB1CB9D4F31DFF050A26D3 /* WidgetSource.swift */; };
+		1D26B489A5314AFDA62E3C11 /* WidgetStoryPagination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26B489A5314AFDA62E3C10 /* WidgetStoryPagination.swift */; };
+		1D26B489A5314AFDA62E3C12 /* WidgetStoryPagination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26B489A5314AFDA62E3C10 /* WidgetStoryPagination.swift */; };
+		1D26B489A5314AFDA62E3C01 /* WidgetTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26B489A5314AFDA62E3C00 /* WidgetTimeline.swift */; };
+		1D26B489A5314AFDA62E3C02 /* WidgetTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D26B489A5314AFDA62E3C00 /* WidgetTimeline.swift */; };
+		24AFE185EAE658E74754EFD0 /* WidgetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */; };
+		4BA4534C865A14564FC5E9EF /* WidgetSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AB1CB9D4F31DFF050A26D3 /* WidgetSource.swift */; };
+		B75287EFFEE6CB59594EB693 /* WidgetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */; };
+		F04D4420E59FD0EDDF247B39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9E67E6FC41E4FD3453A359BC /* Localizable.strings */; };
+		F69E0E3ECAB22178CDF6F9A8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9E67E6FC41E4FD3453A359BC /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2758,6 +2768,10 @@
 		12856BDD296A53EE4BFE66EF /* OnboardingAccountViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingAccountViewController.swift; sourceTree = "<group>"; };
 		D345AFC7DBB635AE55C0D6AF /* OnboardingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTests.swift; sourceTree = "<group>"; };
 		370AD1F91446CD54CA1DE59F /* OnboardingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingUITests.swift; sourceTree = "<group>"; };
+		1D26B489A5314AFDA62E3C10 /* WidgetStoryPagination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStoryPagination.swift; sourceTree = "<group>"; };
+		1D26B489A5314AFDA62E3C00 /* WidgetTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTimeline.swift; sourceTree = "<group>"; };
+		F7AB1CB9D4F31DFF050A26D3 /* WidgetSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSource.swift; sourceTree = "<group>"; };
+		BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -2982,6 +2996,10 @@
 				1791C21426C4C7BC00D815AA /* WidgetStoryView.swift */,
 				1723389326C3775A00610784 /* WidgetBarView.swift */,
 				1723389026BF7CFE00610784 /* WidgetCache.swift */,
+				1D26B489A5314AFDA62E3C00 /* WidgetTimeline.swift */,
+				1D26B489A5314AFDA62E3C10 /* WidgetStoryPagination.swift */,
+				F7AB1CB9D4F31DFF050A26D3 /* WidgetSource.swift */,
+				BBAB34AB62A4F139470BA6E5 /* WidgetConfiguration.swift */,
 				1723388D26BE440400610784 /* WidgetFeed.swift */,
 				1723388C26BE440400610784 /* WidgetStory.swift */,
 				1723388A26BE43EB00610784 /* WidgetLoader.swift */,
@@ -4742,6 +4760,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F69E0E3ECAB22178CDF6F9A8 /* Localizable.strings */,
 				17BE1A5527A243CF003F528E /* WhitneySSm-Medium-Bas.otf in Resources */,
 				173CB31626BCE94A00BA872A /* Assets.xcassets in Resources */,
 				17BE1A5627A243CF003F528E /* WhitneySSm-Book-Bas.otf in Resources */,
@@ -5236,6 +5255,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F04D4420E59FD0EDDF247B39 /* Localizable.strings */,
 				17654E3F2B02C08700F61B2B /* WhitneySSm-Medium-Bas.otf in Resources */,
 				17654E402B02C08700F61B2B /* Assets.xcassets in Resources */,
 				17654E412B02C08700F61B2B /* WhitneySSm-Book-Bas.otf in Resources */,
@@ -5779,6 +5799,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D26B489A5314AFDA62E3C01 /* WidgetTimeline.swift */,
+				1D26B489A5314AFDA62E3C11 /* WidgetStoryPagination.swift in Sources */,
+				01E7867146DF9C2F8D5A37CE /* WidgetSource.swift */,
+				24AFE185EAE658E74754EFD0 /* WidgetConfiguration.swift */,
 				1723388B26BE43EB00610784 /* WidgetLoader.swift in Sources */,
 				1723389126BF7CFE00610784 /* WidgetCache.swift in Sources */,
 				173CB31426BCE94700BA872A /* WidgetExtension.swift in Sources */,
@@ -6049,6 +6073,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D26B489A5314AFDA62E3C02 /* WidgetTimeline.swift */,
+				1D26B489A5314AFDA62E3C12 /* WidgetStoryPagination.swift in Sources */,
+				4BA4534C865A14564FC5E9EF /* WidgetSource.swift */,
+				B75287EFFEE6CB59594EB693 /* WidgetConfiguration.swift */,
 				17654E332B02C08700F61B2B /* WidgetLoader.swift in Sources */,
 				17654E342B02C08700F61B2B /* WidgetCache.swift in Sources */,
 				17654E352B02C08700F61B2B /* WidgetExtension.swift in Sources */,
@@ -6613,7 +6641,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6666,7 +6694,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6715,7 +6743,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6771,7 +6799,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6812,7 +6840,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6876,7 +6904,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6947,9 +6975,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6999,9 +7028,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -7047,7 +7077,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7100,7 +7130,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7136,7 +7166,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7189,7 +7219,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -7251,7 +7281,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_APP_SANDBOX = YES;
@@ -7311,7 +7341,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -7370,7 +7400,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -7427,7 +7457,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = HR7P97SD72;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -7624,7 +7654,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -7671,7 +7701,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 344;
+				CURRENT_PROJECT_VERSION = 348;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;

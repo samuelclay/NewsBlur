@@ -472,4 +472,12 @@ def print_table():
 
 
 if __name__ == "__main__":
+    # Without the drive the mount point is an empty directory on HA's eMMC, and
+    # reading it reports no backups (October 2026 that looked like backups had
+    # stopped in March while they were running fine).
+    if not os.path.ismount(BACKUP_DRIVE):
+        print()
+        print("  \033[1;31mBackup drive is not mounted at %s\033[0m" % BACKUP_DRIVE)
+        print()
+        sys.exit(1)
     print_table()

@@ -139,6 +139,8 @@ import UIKit
         XCTAssertEqual(fixture.app.activeStory["story_title"] as? String, "Current title")
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
         XCTAssertEqual(stories.visibleUnreadCount, 0)
+        // FeedUnreadCountRefreshTests.swift expects NewsBlurAppDelegate.m to refresh Next/Done after a read, so Done appears at zero unread.
+        XCTAssertEqual(fixture.pages.navigationRefreshes, 1)
 
         stories.markStoryUnread(fixture.app.activeStory)
 
@@ -146,7 +148,7 @@ import UIKit
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 10)
         XCTAssertEqual(stories.visibleUnreadCount, 1)
         XCTAssertEqual(fixture.app.originalStoryCount, 8)
-        XCTAssertEqual(fixture.pages.navigationRefreshes, 1)
+        XCTAssertEqual(fixture.pages.navigationRefreshes, 2)
         XCTAssertEqual(stories.activeFeedStories as NSArray, [listed] as NSArray)
     }
 
@@ -254,7 +256,8 @@ import UIKit
         stories.markStoryRead(story)
 
         XCTAssertEqual((fixture.app.dictUnreadCounts["1"] as? [String: Int])?["nt"], 9)
-        await fulfillment(of: [refreshed], timeout: 2)
+        // FeedUnreadCountRefreshTests.swift waits on FeedsViewController.swift's throttled main-queue refresh, which a stalled simulator can delay for seconds.
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
         XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 9)
         XCTAssertFalse(fixture.pages.isViewLoaded)
         XCTAssertEqual(fixture.table.reloads, 0)
@@ -275,7 +278,7 @@ import UIKit
             fixture.app.dictUnreadCounts["1"] = ["nt": count, "ps": 0, "ng": 0]
             fixture.app.finishMark(asRead: ["story_hash": "count-\(count)"])
         }
-        await fulfillment(of: [refreshed], timeout: 2)
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertEqual(cell.value(forKey: "neutralCount") as? Int, 0)
         XCTAssertEqual(fixture.controller.refreshes, 1)
@@ -303,7 +306,7 @@ import UIKit
         fixture.controller.onRefresh = { refreshed.fulfill() }
 
         fixture.app.finishMark(asRead: ["story_hash": "count-1"])
-        await fulfillment(of: [refreshed], timeout: 2)
+        await fulfillment(of: [refreshed], timeout: SimulatorTestTiming.realWorkTimeout)
 
         XCTAssertFalse(page.isRecentlyUnread)
         XCTAssertEqual(fixture.pages.headerRefreshes, 1)

@@ -25,14 +25,31 @@ Usage:
 from utils import log as logging
 
 # Model pricing per 1M tokens (USD)
-# Sources (updated Aug 2026):
+# Sources (updated Oct 2026):
 # - Anthropic: https://platform.claude.com/docs/en/about-claude/pricing
-# - OpenAI: https://openai.com/api/pricing/
+# - OpenAI: https://developers.openai.com/api/docs/models/gpt-6-luna
 # - Google: https://ai.google.dev/gemini-api/docs/pricing
 # - xAI: https://docs.x.ai/docs/models
+#
+# A model whose price rises for long prompts sets long_context_threshold: a
+# request whose input_tokens exceed it is billed entirely at long_context_input
+# and long_context_output (see LLMCostTracker.calculate_cost below).
+#
+# Gemini Flash models are recorded at Google's list price ($1.50/$7.50). Google
+# charges an introductory $0.75/$3.75 through Dec 31, 2026, so Gemini costs read
+# about 2x high until then.
 MODEL_PRICING = {
     # Anthropic Claude models (full IDs and short aliases)
-    "claude-sonnet-5": {"input": 3.00, "output": 15.00},
+    "claude-sonnet-5-5": {"input": 2.00, "output": 10.00},
+    "claude-haiku-5-5": {
+        "input": 0.10,
+        "output": 0.50,
+        "long_context_threshold": 100_000,
+        "long_context_input": 0.50,
+        "long_context_output": 2.50,
+    },
+    # Sonnet 5's $2/$10 launch price became its standard price (no Sept 2026 increase).
+    "claude-sonnet-5": {"input": 2.00, "output": 10.00},
     "claude-opus-4-6": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5-20251101": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5": {"input": 5.00, "output": 25.00},
@@ -43,6 +60,7 @@ MODEL_PRICING = {
     "claude-haiku-4-5-20251022": {"input": 1.00, "output": 5.00},
     "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
     # OpenAI GPT models
+    "gpt-6-luna": {"input": 0.10, "output": 0.50},
     "gpt-5.6-luna": {"input": 0.10, "output": 0.60},
     "gpt-5.2": {"input": 2.00, "output": 8.00},
     "gpt-5-mini": {"input": 0.30, "output": 1.20},
@@ -60,6 +78,7 @@ MODEL_PRICING = {
     "text-embedding-3-large": {"input": 0.13, "output": 0.0},
     "text-embedding-ada-002": {"input": 0.10, "output": 0.0},
     # Google Gemini models
+    "gemini-3.8-flash": {"input": 1.50, "output": 7.50},
     "gemini-3.6-flash": {"input": 1.50, "output": 7.50},
     "gemini-3-pro-preview": {"input": 2.00, "output": 12.00},
     "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
@@ -75,6 +94,8 @@ MODEL_PRICING = {
 
 # Provider mapping for models (full IDs and short aliases)
 MODEL_PROVIDERS = {
+    "claude-sonnet-5-5": "anthropic",
+    "claude-haiku-5-5": "anthropic",
     "claude-sonnet-5": "anthropic",
     "claude-opus-4-6": "anthropic",
     "claude-opus-4-5-20251101": "anthropic",
@@ -85,6 +106,7 @@ MODEL_PROVIDERS = {
     "claude-sonnet-4-5": "anthropic",
     "claude-haiku-4-5-20251022": "anthropic",
     "claude-haiku-4-5": "anthropic",
+    "gpt-6-luna": "openai",
     "gpt-5.6-luna": "openai",
     "gpt-5.2": "openai",
     "gpt-5-mini": "openai",
@@ -99,6 +121,7 @@ MODEL_PROVIDERS = {
     "text-embedding-3-small": "openai",
     "text-embedding-3-large": "openai",
     "text-embedding-ada-002": "openai",
+    "gemini-3.8-flash": "google",
     "gemini-3.6-flash": "google",
     "gemini-3-pro-preview": "google",
     "gemini-2.5-pro": "google",
@@ -142,9 +165,17 @@ class LLMCostTracker:
         if "per_minute" in pricing:
             return duration_minutes * pricing["per_minute"]
 
-        # Handle text models (charged per token)
-        input_cost = (input_tokens / 1_000_000) * pricing.get("input", 0)
-        output_cost = (output_tokens / 1_000_000) * pricing.get("output", 0)
+        # Handle text models (charged per token). Past a model's long-context
+        # threshold, the whole request is billed at the higher rates.
+        input_rate = pricing.get("input", 0)
+        output_rate = pricing.get("output", 0)
+        threshold = pricing.get("long_context_threshold")
+        if threshold and input_tokens > threshold:
+            input_rate = pricing["long_context_input"]
+            output_rate = pricing["long_context_output"]
+
+        input_cost = (input_tokens / 1_000_000) * input_rate
+        output_cost = (output_tokens / 1_000_000) * output_rate
 
         return input_cost + output_cost
 

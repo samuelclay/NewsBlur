@@ -488,7 +488,7 @@ class Test_Summary(TestCase):
         model_name, model_config = get_briefing_model_config(None)
         self.assertEqual(DEFAULT_BRIEFING_MODEL, "openai")
         self.assertEqual(model_name, "openai")
-        self.assertEqual(model_config["model_id"], "gpt-5.6-luna")
+        self.assertEqual(model_config["model_id"], "gpt-6-luna")
         self.assertEqual(model_config["thinking_config"], {"reasoning_effort": "medium"})
 
     @patch("apps.briefing.summary.LLMCostTracker")
@@ -500,7 +500,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = '<div class="NB-briefing-summary"><h3 data-section="top_stories">Trending</h3><p>Content</p></div>'
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://summary-test.com/rss",
@@ -524,7 +524,7 @@ class Test_Summary(TestCase):
             )
             mock_cost.record_usage.assert_called_once()
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
-            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-5.6-luna")
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-6-luna")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "daily_briefing")
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
@@ -541,7 +541,7 @@ class Test_Summary(TestCase):
             '```html\n<div class="NB-briefing-summary"><p>Content</p></div>\n```'
         )
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://fence-test.com/rss",
@@ -729,7 +729,7 @@ class Test_Summary(TestCase):
         mock_provider = MagicMock()
         mock_provider.is_configured.return_value = True
         mock_provider.generate.side_effect = anthropic.APIConnectionError(request=MagicMock())
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://err-test.com/rss",
@@ -758,7 +758,7 @@ class Test_Summary(TestCase):
         mock_provider.is_configured.return_value = True
         mock_provider.generate.return_value = "<div>Result</div>"
         mock_provider.get_last_usage.return_value = (100, 50)
-        mock_get_provider.return_value = (mock_provider, "gpt-5.6-luna")
+        mock_get_provider.return_value = (mock_provider, "gpt-6-luna")
 
         feed = Feed.objects.create(
             feed_address="http://remap-test.com/rss",

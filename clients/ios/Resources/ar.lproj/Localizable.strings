@@ -181,6 +181,7 @@
 "Choose Language…" = "اختيار اللغة…";
 "Choose Story List" = "اختر قائمة القصص";
 "Choose a Topic" = "اختر موضوعًا";
+"Choose a folder or site for this widget." = "اختر مجلدًا أو موقعًا لهذه الأداة.";
 "Choose another category to discover more." = "اختر فئة أخرى لاكتشاف المزيد.";
 "Choose another language" = "اختر لغة أخرى";
 "Choose feeds for your folder" = "اختر الخلاصات لمجلدك";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "اسحب لتغيير عرض قائمة الخلاصات والقصص.";
 "Edit" = "تعديل";
 "Edit NewsBlur share…" = "تعديل مشاركة NewsBlur…";
+"Edit this widget to choose a folder or site" = "عدّل هذه الأداة لاختيار مجلد أو موقع";
 "Edit your comment" = "تعديل تعليقك";
 "Edit your reply" = "تعديل ردك";
 "Edited Comment" = "تعليق مُعدّل";
@@ -348,6 +350,7 @@
 "Focus Stories" = "قصص التركيز";
 "Focus only" = "التركيز فقط";
 "Folder name" = "اسم المجلد";
+"Folder or site" = "مجلد أو موقع";
 "Folders" = "المجلدات";
 "Follow" = "متابعة";
 "Follow %@" = "تابع %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "تجاوز إعداد النظام باستخدام السطوع";
 "Page Down" = "صفحة لأسفل";
 "Page Up" = "صفحة لأعلى";
-"Page down" = "صفحة لأسفل";
-"Page up" = "صفحة لأعلى";
+"Page down; next unread story at the bottom" = "صفحة لأسفل؛ القصة التالية غير المقروءة عند الأسفل";
+"Page up; previous story at the top" = "صفحة لأعلى؛ القصة السابقة عند الأعلى";
 "Password" = "كلمة المرور";
 "Paste a story title from the page" = "الصق عنوان قصة من الصفحة";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة، حتى إن لم تتضمن RSS.";
 "Pause" = "إيقاف مؤقت";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "النسبة المئوية من القصة الظاهرة التي يمرّرها مفتاح المسافة أو مفتاح المسافة مع Shift";
 "Permanently delete account" = "حذف الحساب نهائيًا";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
 "Pick which model writes your Daily Briefing" = "اختر النموذج الذي يكتب موجزك اليومي";
 "Place the story list controls above or below the stories" = "ضع عناصر التحكم بقائمة القصص أعلى القصص أو أسفلها";
 "Play videos" = "تشغيل الفيديوهات";
+"Please log in to NewsBlur" = "يُرجى تسجيل الدخول إلى NewsBlur";
 "Plum Berry" = "توت برقوقي";
 "Positive?" = "هل أنت متأكد؟";
 "Preferences" = "التفضيلات";
@@ -864,6 +869,8 @@
 "Small [text size]" = "صغير";
 "Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
 "Sources" = "المصادر";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "يمرّر مفتاح المسافة ومفتاح المسافة مع Shift هذه النسبة من القصة الظاهرة. عند الأسفل، يفتح مفتاح المسافة القصة التالية غير المقروءة. عند الأعلى، يفتح مفتاح المسافة مع Shift القصة السابقة.";
+"Space scroll amount" = "مقدار التمرير بمفتاح المسافة";
 "Spacing" = "التباعد";
 "Stale — last story %@" = "قديم — آخر قصة %@";
 "Standard" = "قياسي";
@@ -978,6 +985,7 @@
 "Top" = "الأعلى";
 "Top Level" = "المستوى الأعلى";
 "Top stories" = "أهم القصص";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "المس أداة NewsBlur مع الاستمرار، أو انقر عليها بزر الفأرة الأيمن على Mac، ثم اختر «تعديل الأداة». اختر مجلدًا أو موقعًا لكل أداة.";
 "Train" = "تدريب";
 "Train This Story" = "درّب على هذه القصة";
 "Train This Story…" = "درّب على هذه القصة…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "تعذّر تحميل الموجز اليومي";
 "Unable to load Daily Briefing settings." = "تعذّر تحميل إعدادات الموجز اليومي.";
 "Unable to load Daily Briefing." = "تعذّر تحميل الموجز اليومي.";
+"Unable to refresh stories" = "تعذّر تحديث القصص";
 "Unable to save Daily Briefing settings." = "تعذّر حفظ إعدادات الموجز اليومي.";
 "Unable to save notification settings." = "تعذّر حفظ إعدادات الإشعارات.";
 "Understand" = "فهم";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "القصص الأكثر قراءة";
 "Widely covered" = "تغطية واسعة";
 "Widget Site Stories" = "قصص مواقع الأداة";
-"Widget Sites" = "مواقع الأدوات";
 "Widget Stories" = "قصص الأداة المصغّرة";
+"Widgets" = "الأدوات";
 "Working…" = "جارٍ العمل…";
 "Works on any website" = "يعمل على أي موقع";
 "Writing style" = "أسلوب الكتابة";

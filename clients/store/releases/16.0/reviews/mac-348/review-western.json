@@ -1,0 +1,288 @@
+{
+  "reviewer": "mac_close_window",
+  "source": "en.json",
+  "source_sha256": "ec8bd45caf5508c70e5003c53fe6e8657043053601dc6f393f6d55be0cb34d67",
+  "scope": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "result": "passed_after_corrections",
+  "languages": {
+    "es": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          20,
+          30
+        ],
+        "subtitle": [
+          30,
+          30
+        ],
+        "description": [
+          2491,
+          4000
+        ],
+        "promotional_text": [
+          137,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          86,
+          100
+        ],
+        "whats_new": [
+          1270,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "fr": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          22,
+          30
+        ],
+        "subtitle": [
+          25,
+          30
+        ],
+        "description": [
+          2708,
+          4000
+        ],
+        "promotional_text": [
+          137,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          83,
+          100
+        ],
+        "whats_new": [
+          1349,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "de": {
+      "corrections": [
+        {
+          "field": "macos.promotional_text",
+          "before": "Wähle Ordner oder Websites pro Widget",
+          "after": "Wähle pro Widget einen Ordner oder eine Website",
+          "reason": "Make the single folder/site selection per widget explicit."
+        },
+        {
+          "field": "macos.description",
+          "before": "kann Alle Website-Artikel, einen Ordner",
+          "after": "kann „Alle Website-Artikel“, einen Ordner",
+          "reason": "Mark the exact source label as a quoted UI label."
+        },
+        {
+          "field": "whats_new",
+          "before": "starten mit Alle Website-Artikel aus dem Konto",
+          "after": "starten mit „Alle Website-Artikel“ aus dem Konto",
+          "reason": "Avoid an ungrammatical unquoted label after mit."
+        }
+      ],
+      "limits_actual_and_max": {
+        "name": [
+          20,
+          30
+        ],
+        "subtitle": [
+          27,
+          30
+        ],
+        "description": [
+          2608,
+          4000
+        ],
+        "promotional_text": [
+          160,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          80,
+          100
+        ],
+        "whats_new": [
+          1298,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "pt-BR": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          20,
+          30
+        ],
+        "subtitle": [
+          21,
+          30
+        ],
+        "description": [
+          2367,
+          4000
+        ],
+        "promotional_text": [
+          146,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          81,
+          100
+        ],
+        "whats_new": [
+          1239,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "it": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          21,
+          30
+        ],
+        "subtitle": [
+          27,
+          30
+        ],
+        "description": [
+          2520,
+          4000
+        ],
+        "promotional_text": [
+          151,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          80,
+          100
+        ],
+        "whats_new": [
+          1278,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "nl": {
+      "corrections": [],
+      "limits_actual_and_max": {
+        "name": [
+          19,
+          30
+        ],
+        "subtitle": [
+          23,
+          30
+        ],
+        "description": [
+          2369,
+          4000
+        ],
+        "promotional_text": [
+          135,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          78,
+          100
+        ],
+        "whats_new": [
+          1223,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    },
+    "pl": {
+      "corrections": [
+        {
+          "field": "whats_new",
+          "before": "Każdy widżet ma osobny wybór.",
+          "after": "Źródło możesz wybrać osobno dla każdego widżetu.",
+          "reason": "Use natural Polish for independent source selection."
+        }
+      ],
+      "limits_actual_and_max": {
+        "name": [
+          21,
+          30
+        ],
+        "subtitle": [
+          28,
+          30
+        ],
+        "description": [
+          2445,
+          4000
+        ],
+        "promotional_text": [
+          151,
+          170
+        ],
+        "keywords_utf8_bytes": [
+          82,
+          100
+        ],
+        "whats_new": [
+          1228,
+          4000
+        ]
+      },
+      "existing_description_paragraphs_unchanged": true,
+      "description_update": "Insert widget section at paragraph index2; all other existing description paragraphs unchanged.",
+      "meaning_and_claims": "Matches English, including separate widget configuration, migration, reliability without instant refresh, keyboard and window lifecycle.",
+      "terminology": "Glossary and existing iOS UI labels checked.",
+      "products_review": "Compared existing iOS and Android products with English. Product identities, benefits and 5-to-15-minute Pro fetch interval preserved. No material inaccuracies. iOS subscription/group limits pass; files unchanged.",
+      "unresolved_issues": []
+    }
+  }
+}

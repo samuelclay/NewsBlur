@@ -181,6 +181,7 @@
 "Choose Language…" = "เลือกภาษา…";
 "Choose Story List" = "เลือกรายการบทความ";
 "Choose a Topic" = "เลือกหัวข้อ";
+"Choose a folder or site for this widget." = "เลือกโฟลเดอร์หรือเว็บไซต์สำหรับวิดเจ็ตนี้";
 "Choose another category to discover more." = "เลือกหมวดหมู่อื่นเพื่อค้นพบเพิ่มเติม";
 "Choose another language" = "เลือกภาษาอื่น";
 "Choose feeds for your folder" = "เลือกฟีดสำหรับโฟลเดอร์ของคุณ";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "ลากเพื่อปรับความกว้างของรายการฟีดและบทความ";
 "Edit" = "แก้ไข";
 "Edit NewsBlur share…" = "แก้ไขการแชร์ NewsBlur…";
+"Edit this widget to choose a folder or site" = "แก้ไขวิดเจ็ตนี้เพื่อเลือกโฟลเดอร์หรือเว็บไซต์";
 "Edit your comment" = "แก้ไขความคิดเห็นของคุณ";
 "Edit your reply" = "แก้ไขคำตอบของคุณ";
 "Edited Comment" = "ความคิดเห็นที่แก้ไขแล้ว";
@@ -348,6 +350,7 @@
 "Focus Stories" = "บทความโฟกัส";
 "Focus only" = "โฟกัสเท่านั้น";
 "Folder name" = "ชื่อโฟลเดอร์";
+"Folder or site" = "โฟลเดอร์หรือเว็บไซต์";
 "Folders" = "โฟลเดอร์";
 "Follow" = "ติดตาม";
 "Follow %@" = "ติดตาม %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "ใช้ความสว่างหน้าจอแทนการตั้งค่าระบบ";
 "Page Down" = "เลื่อนหน้าลง";
 "Page Up" = "เลื่อนหน้าขึ้น";
-"Page down" = "เลื่อนหน้าลง";
-"Page up" = "เลื่อนหน้าขึ้น";
+"Page down; next unread story at the bottom" = "เลื่อนหน้าลง; เปิดบทความถัดไปที่ยังไม่อ่านเมื่อถึงด้านล่าง";
+"Page up; previous story at the top" = "เลื่อนหน้าขึ้น; เปิดบทความก่อนหน้าเมื่อถึงด้านบน";
 "Password" = "รหัสผ่าน";
 "Paste a story title from the page" = "วางชื่อเรื่องจากหน้าเว็บ";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บนั้น แม้ไม่มี RSS";
 "Pause" = "หยุดชั่วคราว";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "เปอร์เซ็นต์ของบทความที่แสดงซึ่งเลื่อนด้วย Space หรือ Shift-Space";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
 "Pick which model writes your Daily Briefing" = "เลือกโมเดลที่จะเขียนสรุปข่าวประจำวันของคุณ";
 "Place the story list controls above or below the stories" = "วางตัวควบคุมรายการบทความไว้เหนือหรือใต้บทความ";
 "Play videos" = "เล่นวิดีโอ";
+"Please log in to NewsBlur" = "โปรดเข้าสู่ระบบ NewsBlur";
 "Plum Berry" = "พลัมเบอร์รี";
 "Positive?" = "แน่ใจหรือไม่?";
 "Preferences" = "การตั้งค่า";
@@ -864,6 +869,8 @@
 "Small [text size]" = "เล็ก";
 "Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
 "Sources" = "แหล่งที่มา";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space และ Shift-Space เลื่อนบทความที่แสดงตามเปอร์เซ็นต์นี้ เมื่อเลื่อนถึงด้านล่าง Space จะเปิดบทความถัดไปที่ยังไม่อ่าน เมื่อเลื่อนถึงด้านบน Shift-Space จะเปิดบทความก่อนหน้า";
+"Space scroll amount" = "ระยะเลื่อนด้วย Space";
 "Spacing" = "ระยะห่าง";
 "Stale — last story %@" = "ไม่มีการอัปเดต — บทความล่าสุดเมื่อ %@";
 "Standard" = "มาตรฐาน";
@@ -978,6 +985,7 @@
 "Top" = "ด้านบน";
 "Top Level" = "ระดับบนสุด";
 "Top stories" = "เรื่องเด่น";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "แตะค้างที่วิดเจ็ต NewsBlur หรือคลิกขวาที่วิดเจ็ตบน Mac แล้วเลือกแก้ไขวิดเจ็ต จากนั้นเลือกโฟลเดอร์หรือเว็บไซต์สำหรับแต่ละวิดเจ็ต";
 "Train" = "ฝึก";
 "Train This Story" = "ฝึกระบบด้วยบทความนี้";
 "Train This Story…" = "ฝึกระบบด้วยบทความนี้…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "โหลดสรุปข่าวประจำวันไม่ได้";
 "Unable to load Daily Briefing settings." = "โหลดการตั้งค่าสรุปข่าวประจำวันไม่ได้";
 "Unable to load Daily Briefing." = "โหลดสรุปข่าวประจำวันไม่ได้";
+"Unable to refresh stories" = "รีเฟรชบทความไม่ได้";
 "Unable to save Daily Briefing settings." = "บันทึกการตั้งค่าสรุปข่าวประจำวันไม่สำเร็จ";
 "Unable to save notification settings." = "บันทึกการตั้งค่าการแจ้งเตือนไม่ได้";
 "Understand" = "ทำความเข้าใจ";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "บทความที่มีผู้อ่านมาก";
 "Widely covered" = "มีการกล่าวถึงอย่างกว้างขวาง";
 "Widget Site Stories" = "บทความจากเว็บไซต์ในวิดเจ็ต";
-"Widget Sites" = "เว็บไซต์ในวิดเจ็ต";
 "Widget Stories" = "บทความในวิดเจ็ต";
+"Widgets" = "วิดเจ็ต";
 "Working…" = "กำลังดำเนินการ…";
 "Works on any website" = "ใช้ได้กับทุกเว็บไซต์";
 "Writing style" = "สไตล์การเขียน";

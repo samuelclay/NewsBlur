@@ -181,6 +181,7 @@
 "Choose Language…" = "選擇語言…";
 "Choose Story List" = "選擇文章列表";
 "Choose a Topic" = "選擇主題";
+"Choose a folder or site for this widget." = "請為此小工具選擇資料夾或網站。";
 "Choose another category to discover more." = "選擇其他類別以探索更多內容。";
 "Choose another language" = "選擇其他語言";
 "Choose feeds for your folder" = "為資料夾選擇訂閱來源";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "拖曳以調整訂閱來源與文章清單的寬度。";
 "Edit" = "編輯";
 "Edit NewsBlur share…" = "編輯 NewsBlur 分享…";
+"Edit this widget to choose a folder or site" = "編輯此小工具以選擇資料夾或網站";
 "Edit your comment" = "編輯你的留言";
 "Edit your reply" = "編輯你的回覆";
 "Edited Comment" = "已編輯的留言";
@@ -348,6 +350,7 @@
 "Focus Stories" = "焦點文章";
 "Focus only" = "僅焦點";
 "Folder name" = "資料夾名稱";
+"Folder or site" = "資料夾或網站";
 "Folders" = "資料夾";
 "Follow" = "追蹤";
 "Follow %@" = "追蹤 %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "依亮度覆寫系統外觀";
 "Page Down" = "下一頁";
 "Page Up" = "上一頁";
-"Page down" = "向下翻頁";
-"Page up" = "向上翻頁";
+"Page down; next unread story at the bottom" = "Page Down；在底部開啟下一篇未讀文章";
+"Page up; previous story at the top" = "Page Up；在頂部開啟上一篇文章";
 "Password" = "密碼";
 "Paste a story title from the page" = "貼上頁面中的文章標題";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。";
 "Pause" = "暫停";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "按空白鍵或 Shift-空白鍵時，捲動目前顯示文章的百分比";
 "Permanently delete account" = "永久刪除帳戶";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
 "Pick which model writes your Daily Briefing" = "選擇用來撰寫每日簡報的模型";
 "Place the story list controls above or below the stories" = "將文章清單控制項放在文章上方或下方";
 "Play videos" = "播放影片";
+"Please log in to NewsBlur" = "請登入 NewsBlur";
 "Plum Berry" = "李子莓";
 "Positive?" = "確定嗎？";
 "Preferences" = "偏好設定";
@@ -864,6 +869,8 @@
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分訂閱來源圖示無法載入。";
 "Sources" = "來源";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "空白鍵和 Shift-空白鍵會依此百分比捲動目前顯示的文章。在底部按空白鍵會開啟下一篇未讀文章。在頂部按 Shift-空白鍵會開啟上一篇文章。";
+"Space scroll amount" = "空白鍵捲動幅度";
 "Spacing" = "間距";
 "Stale — last story %@" = "已停更 — 最後一篇文章發布於 %@";
 "Standard" = "標準";
@@ -978,6 +985,7 @@
 "Top" = "頂端";
 "Top Level" = "頂層";
 "Top stories" = "熱門文章";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "按住 NewsBlur 小工具，或在 Mac 上按右鍵，然後選擇「編輯小工具」。為每個小工具選擇資料夾或網站。";
 "Train" = "訓練";
 "Train This Story" = "訓練此文章";
 "Train This Story…" = "訓練這篇文章…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "無法載入每日簡報";
 "Unable to load Daily Briefing settings." = "無法載入每日簡報設定。";
 "Unable to load Daily Briefing." = "無法載入每日簡報。";
+"Unable to refresh stories" = "無法重新整理文章";
 "Unable to save Daily Briefing settings." = "無法儲存每日簡報設定。";
 "Unable to save notification settings." = "無法儲存通知設定。";
 "Understand" = "了解";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "廣受閱讀的文章";
 "Widely covered" = "廣泛報導";
 "Widget Site Stories" = "小工具網站文章";
-"Widget Sites" = "小工具網站";
 "Widget Stories" = "小工具文章";
+"Widgets" = "小工具";
 "Working…" = "處理中…";
 "Works on any website" = "適用於任何網站";
 "Writing style" = "寫作風格";

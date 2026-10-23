@@ -181,6 +181,7 @@
 "Choose Language…" = "언어 선택…";
 "Choose Story List" = "스토리 목록 선택";
 "Choose a Topic" = "주제 선택";
+"Choose a folder or site for this widget." = "이 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
 "Choose another category to discover more." = "더 알아보려면 다른 카테고리를 선택하세요.";
 "Choose another language" = "다른 언어 선택";
 "Choose feeds for your folder" = "폴더에 피드를 선택하세요";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "드래그하여 피드 및 스토리 목록 너비를 조정하세요.";
 "Edit" = "편집";
 "Edit NewsBlur share…" = "NewsBlur 공유 편집…";
+"Edit this widget to choose a folder or site" = "이 위젯을 수정해 폴더 또는 사이트를 선택하세요";
 "Edit your comment" = "댓글 수정";
 "Edit your reply" = "답글 수정";
 "Edited Comment" = "수정된 댓글";
@@ -348,6 +350,7 @@
 "Focus Stories" = "집중 스토리";
 "Focus only" = "집중만";
 "Folder name" = "폴더 이름";
+"Folder or site" = "폴더 또는 사이트";
 "Folders" = "폴더";
 "Follow" = "팔로우";
 "Follow %@" = "%@ 팔로우";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "시스템 대신 화면 밝기 사용";
 "Page Down" = "페이지 아래로";
 "Page Up" = "페이지 위로";
-"Page down" = "페이지 아래로";
-"Page up" = "페이지 위로";
+"Page down; next unread story at the bottom" = "페이지 아래로 이동; 아래쪽에서 다음 읽지 않은 스토리";
+"Page up; previous story at the top" = "페이지 위로 이동; 위쪽에서 이전 스토리";
 "Password" = "비밀번호";
 "Paste a story title from the page" = "페이지에서 스토리 제목을 붙여넣으세요";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다.";
 "Pause" = "일시 중지";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "스페이스 또는 Shift-스페이스로 스크롤할 표시된 스토리의 비율";
 "Permanently delete account" = "계정 영구 삭제";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 NewsBlur 메뉴에서 변경할 수 있습니다.";
 "Pick which model writes your Daily Briefing" = "데일리 브리핑을 작성할 모델을 선택하세요";
 "Place the story list controls above or below the stories" = "스토리 목록 컨트롤을 스토리 위나 아래에 배치";
 "Play videos" = "동영상 재생";
+"Please log in to NewsBlur" = "NewsBlur에 로그인하세요";
 "Plum Berry" = "자두 베리";
 "Positive?" = "확실한가요?";
 "Preferences" = "환경 설정";
@@ -864,6 +869,8 @@
 "Small [text size]" = "작게";
 "Some feed icons couldn’t load." = "일부 피드 아이콘을 불러오지 못했습니다.";
 "Sources" = "출처";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "스페이스와 Shift-스페이스를 누르면 표시된 스토리에서 이 비율만큼 스크롤합니다. 아래쪽에서 스페이스를 누르면 다음 읽지 않은 스토리가 열립니다. 위쪽에서 Shift-스페이스를 누르면 이전 스토리가 열립니다.";
+"Space scroll amount" = "스페이스 스크롤 양";
 "Spacing" = "간격";
 "Stale — last story %@" = "오래됨 — 마지막 스토리 %@";
 "Standard" = "표준";
@@ -978,6 +985,7 @@
 "Top" = "상단";
 "Top Level" = "최상위";
 "Top stories" = "주요 스토리";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "NewsBlur 위젯을 길게 누르거나 Mac에서 마우스 오른쪽 버튼을 클릭한 다음 ‘위젯 수정’을 선택하세요. 각 위젯에 사용할 폴더 또는 사이트를 선택하세요.";
 "Train" = "학습";
 "Train This Story" = "이 스토리 학습시키기";
 "Train This Story…" = "이 스토리 학습시키기…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "데일리 브리핑을 불러올 수 없습니다";
 "Unable to load Daily Briefing settings." = "데일리 브리핑 설정을 불러올 수 없습니다.";
 "Unable to load Daily Briefing." = "데일리 브리핑을 불러올 수 없습니다.";
+"Unable to refresh stories" = "스토리를 새로 고칠 수 없습니다";
 "Unable to save Daily Briefing settings." = "데일리 브리핑 설정을 저장할 수 없습니다.";
 "Unable to save notification settings." = "알림 설정을 저장할 수 없습니다.";
 "Understand" = "이해하기";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "많이 읽힌 스토리";
 "Widely covered" = "여러 곳에서 다룸";
 "Widget Site Stories" = "위젯 사이트 스토리";
-"Widget Sites" = "위젯 사이트";
 "Widget Stories" = "위젯 스토리";
+"Widgets" = "위젯";
 "Working…" = "작업 중…";
 "Works on any website" = "모든 웹사이트에서 작동";
 "Writing style" = "글쓰기 스타일";

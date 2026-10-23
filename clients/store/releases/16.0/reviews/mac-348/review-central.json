@@ -1,0 +1,158 @@
+{
+  "reviewer": "independent agent /root/fix_widget_refresh",
+  "source": "/tmp/newsblur-mac-348-copy/en.json",
+  "status": "passed_after_corrections",
+  "scope": "All macOS metadata fields and complete release notes reviewed against English for meaning, naturalness, terminology, billing facts and field limits.",
+  "rtl_review": "Arabic and Hebrew reviewed as logical-order Unicode text, including brand names, URLs and keyboard shortcuts. No rendered App Store UI review performed.",
+  "description_update": "For every reviewed locale, insert only description paragraph index 2 (zero-based) after the existing READ YOUR WAY paragraph. Every old description paragraph remains byte-for-byte unchanged.",
+  "sources": [
+    "localization/README.md",
+    "localization/glossaries/",
+    "clients/ios/Resources/*/Localizable.strings",
+    "https://support.apple.com/ru-ru/guide/mac-help/mchl52be5da5/mac",
+    "https://support.apple.com/uk-ua/guide/mac-help/mchl52be5da5/mac"
+  ],
+  "locales": {
+    "tr": {
+      "status": "passed",
+      "corrections": [],
+      "counts": {
+        "name": 27,
+        "subtitle": 28,
+        "promotional_text": 134,
+        "description": 2446,
+        "keywords": 78,
+        "whats_new": 1149
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "BİR BAKIŞTA HABERLER\nMasaüstünüze veya Bildirim Merkezi’ne araç takımları ekleyin. Her araç takımı Tüm Sitelerin Haberleri’ni, bir klasörü veya tek bir siteyi gösterebilir. Kaynağını Araç Takımını Düzenle ile seçin.",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "ru": {
+      "status": "passed",
+      "corrections": [
+        "Made widget heading idiomatic. Matched All Site Stories to the app UI label in description and notes."
+      ],
+      "counts": {
+        "name": 23,
+        "subtitle": 26,
+        "promotional_text": 146,
+        "description": 2401,
+        "keywords": 90,
+        "whats_new": 1212
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "БЫСТРЫЙ ОБЗОР СТАТЕЙ\nДобавляйте виджеты на рабочий стол или в Центр уведомлений. Каждый виджет может показывать «Статьи со всех сайтов», статьи из папки или с одного сайта. Выберите источник через «Изменить виджет».",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "uk": {
+      "status": "passed",
+      "corrections": [
+        "Made widget heading idiomatic. Matched All Site Stories to the app UI label in description and notes."
+      ],
+      "counts": {
+        "name": 22,
+        "subtitle": 26,
+        "promotional_text": 143,
+        "description": 2424,
+        "keywords": 94,
+        "whats_new": 1208
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "ШВИДКИЙ ОГЛЯД СТАТЕЙ\nДодавайте віджети на робочий стіл або в Центр сповіщень. Кожен віджет може показувати «Статті з усіх сайтів», статті з папки або з одного сайту. Виберіть джерело через «Змінити віджет».",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "ar": {
+      "status": "passed",
+      "corrections": [],
+      "counts": {
+        "name": 24,
+        "subtitle": 30,
+        "promotional_text": 115,
+        "description": 1874,
+        "keywords": 82,
+        "whats_new": 994
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "القصص في لمحة\nأضف أدوات إلى سطح المكتب أو مركز الإشعارات. يمكن لكل أداة عرض قصص كل المواقع أو مجلد أو موقع واحد. اختر مصدرها من «تحرير الأداة».",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "he": {
+      "status": "passed",
+      "corrections": [
+        "Matched All Site Stories to the app UI label in description and notes."
+      ],
+      "counts": {
+        "name": 24,
+        "subtitle": 28,
+        "promotional_text": 110,
+        "description": 1836,
+        "keywords": 86,
+        "whats_new": 923
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "כתבות במבט חטוף\nהוסיפו וידג׳טים לשולחן העבודה או למרכז העדכונים. כל וידג׳ט יכול להציג את ״כל כתבות האתרים״, כתבות מתיקייה או מאתר אחד. בחרו את המקור דרך ״עריכת הווידג׳ט״.",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "hi": {
+      "status": "passed",
+      "corrections": [
+        "Corrected widget sentence grammar and quoted the Edit Widget menu command."
+      ],
+      "counts": {
+        "name": 25,
+        "subtitle": 23,
+        "promotional_text": 130,
+        "description": 2308,
+        "keywords": 87,
+        "whats_new": 1079
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "एक नज़र में लेख\nअपने डेस्कटॉप या सूचना केंद्र में विजेट जोड़ें। हर विजेट ‘सभी साइटों के लेख’, किसी फ़ोल्डर के लेख या एक साइट के लेख दिखा सकता है। ‘विजेट संपादित करें’ से उसका स्रोत चुनें।",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    },
+    "id": {
+      "status": "passed",
+      "corrections": [],
+      "counts": {
+        "name": 28,
+        "subtitle": 27,
+        "promotional_text": 147,
+        "description": 2366,
+        "keywords": 86,
+        "whats_new": 1199
+      },
+      "keywords_count_unit": "UTF-8 bytes",
+      "other_counts_unit": "Unicode code points",
+      "old_description_paragraph_changes": [],
+      "insert_widget_paragraph_index": 2,
+      "widget_paragraph": "ARTIKEL SEKILAS\nTambahkan widget ke desktop atau Pusat Notifikasi. Setiap widget dapat menampilkan Artikel Semua Situs, sebuah folder, atau satu situs. Pilih sumbernya melalui Edit Widget.",
+      "billing_and_feature_meaning_preserved": true,
+      "no_instant_refresh_claim": true
+    }
+  }
+}

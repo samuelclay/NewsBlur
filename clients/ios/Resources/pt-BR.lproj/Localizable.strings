@@ -181,6 +181,7 @@
 "Choose Language…" = "Escolher idioma…";
 "Choose Story List" = "Escolher lista de artigos";
 "Choose a Topic" = "Escolha um tópico";
+"Choose a folder or site for this widget." = "Escolha uma pasta ou um site para este widget.";
 "Choose another category to discover more." = "Escolha outra categoria para descobrir mais.";
 "Choose another language" = "Escolha outro idioma";
 "Choose feeds for your folder" = "Escolha feeds para sua pasta";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Arraste para alterar a largura da lista de feeds e artigos.";
 "Edit" = "Editar";
 "Edit NewsBlur share…" = "Editar compartilhamento no NewsBlur…";
+"Edit this widget to choose a folder or site" = "Edite este widget para escolher uma pasta ou um site";
 "Edit your comment" = "Editar seu comentário";
 "Edit your reply" = "Editar sua resposta";
 "Edited Comment" = "Comentário editado";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Artigos em foco";
 "Focus only" = "Somente foco";
 "Folder name" = "Nome da pasta";
+"Folder or site" = "Pasta ou site";
 "Folders" = "Pastas";
 "Follow" = "Seguir";
 "Follow %@" = "Seguir %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "Substituir a configuração do sistema pelo brilho";
 "Page Down" = "Página abaixo";
 "Page Up" = "Página acima";
-"Page down" = "Página para baixo";
-"Page up" = "Página acima";
+"Page down; next unread story at the bottom" = "Page Down; próximo artigo não lido no final";
+"Page up; previous story at the top" = "Page Up; artigo anterior no início";
 "Password" = "Senha";
 "Paste a story title from the page" = "Cole o título de um artigo da página";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Cole qualquer URL e o NewsBlur criará um feed a partir da página, mesmo sem RSS.";
 "Pause" = "Pausar";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Porcentagem do artigo visível rolada pela barra de espaço ou por Shift+barra de espaço";
 "Permanently delete account" = "Excluir conta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Escolha o idioma que você quer que NewsBlur use. Você pode mudar isso a qualquer momento em Preferências.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Escolha o idioma que você quer usar no NewsBlur. Você pode alterá-lo a qualquer momento no menu do NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Escolha qual modelo escreve seu resumo diário";
 "Place the story list controls above or below the stories" = "Posicione os controles da lista de artigos acima ou abaixo dos artigos";
 "Play videos" = "Reproduzir vídeos";
+"Please log in to NewsBlur" = "Faça login em NewsBlur";
 "Plum Berry" = "Amora";
 "Positive?" = "Tem certeza?";
 "Preferences" = "Preferências";
@@ -864,6 +869,8 @@
 "Small [text size]" = "Pequeno";
 "Some feed icons couldn’t load." = "Não foi possível carregar alguns ícones de feeds.";
 "Sources" = "Fontes";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "A barra de espaço e Shift+barra de espaço rolam esta porcentagem do artigo visível. No final, a barra de espaço abre o próximo artigo não lido. No início, Shift+barra de espaço abre o artigo anterior.";
+"Space scroll amount" = "Distância de rolagem da barra de espaço";
 "Spacing" = "Espaçamento";
 "Stale — last story %@" = "Inativo — último artigo %@";
 "Standard" = "Padrão";
@@ -978,6 +985,7 @@
 "Top" = "Superior";
 "Top Level" = "Nível superior";
 "Top stories" = "Principais artigos";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Mantenha pressionado um widget do NewsBlur ou clique nele com o botão direito no Mac e escolha Editar widget. Escolha uma pasta ou um site para cada widget.";
 "Train" = "Treinar";
 "Train This Story" = "Treinar este artigo";
 "Train This Story…" = "Treinar este artigo…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "Não foi possível carregar o resumo diário";
 "Unable to load Daily Briefing settings." = "Não foi possível carregar as configurações do Resumo diário.";
 "Unable to load Daily Briefing." = "Não foi possível carregar o Resumo diário.";
+"Unable to refresh stories" = "Não foi possível atualizar os artigos";
 "Unable to save Daily Briefing settings." = "Não foi possível salvar as configurações do Resumo diário.";
 "Unable to save notification settings." = "Não foi possível salvar as configurações de notificação.";
 "Understand" = "Entendi";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "Artigos mais lidos";
 "Widely covered" = "Com ampla cobertura";
 "Widget Site Stories" = "Artigos dos sites do widget";
-"Widget Sites" = "Sites do widget";
 "Widget Stories" = "Artigos do widget";
+"Widgets" = "Widgets";
 "Working…" = "Processando…";
 "Works on any website" = "Funciona em qualquer site";
 "Writing style" = "Estilo de escrita";

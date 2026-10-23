@@ -165,7 +165,7 @@ def common_entries():
     entries = []
     ios_strings = set()
     pattern = re.compile(
-        r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?|discoverabilityTitle:@)("(?:\\.|[^"\\])*")'
+        r'(?:NBLocalization\.(?:text|plural)\(\s*|\[NBLocalization (?:text|plural):@|NSLocalizedString\(@?|LocalizedStringResource\(|discoverabilityTitle:@)("(?:\\.|[^"\\])*")'
     )
     # manage.py stores NBLocalization.text("Medium", context: "theme") under the key "Medium [theme]".
     contextual = re.compile(
@@ -173,7 +173,10 @@ def common_entries():
         r'|\[NBLocalization text:@("(?:\\.|[^"\\])*")\s+context:@("(?:\\.|[^"\\])*")\]'
     )
     ios_contextual = set()
-    for path in sorted((ROOT / "clients/ios/Classes").rglob("*")):
+    # manage.py includes native AppIntent resources and widget status messages.
+    ios_sources = list((ROOT / "clients/ios/Classes").rglob("*"))
+    ios_sources += list((ROOT / "clients/ios/Widget Extension").rglob("*"))
+    for path in sorted(ios_sources):
         if path.suffix not in (".swift", ".m") or "TestHarness" in path.name:
             continue
         content = path.read_text()

@@ -181,6 +181,7 @@
 "Choose Language…" = "Elegir idioma…";
 "Choose Story List" = "Elegir lista de artículos";
 "Choose a Topic" = "Elige un tema";
+"Choose a folder or site for this widget." = "Elige una carpeta o un sitio para este widget.";
 "Choose another category to discover more." = "Elige otra categoría para descubrir más.";
 "Choose another language" = "Elige otro idioma";
 "Choose feeds for your folder" = "Elige los feeds para tu carpeta";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Arrastra para cambiar el ancho de la lista de feeds y artículos.";
 "Edit" = "Editar";
 "Edit NewsBlur share…" = "Editar lo compartido en NewsBlur…";
+"Edit this widget to choose a folder or site" = "Edita este widget para elegir una carpeta o un sitio";
 "Edit your comment" = "Editar tu comentario";
 "Edit your reply" = "Edita tu respuesta";
 "Edited Comment" = "Comentario editado";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Artículos de Enfoque";
 "Focus only" = "Solo enfoque";
 "Folder name" = "Nombre de la carpeta";
+"Folder or site" = "Carpeta o sitio";
 "Folders" = "Carpetas";
 "Follow" = "Seguir";
 "Follow %@" = "Seguir a %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "Anular el sistema con el brillo";
 "Page Down" = "Av Pág";
 "Page Up" = "RePág";
-"Page down" = "Avanzar página";
-"Page up" = "Retroceder página";
+"Page down; next unread story at the bottom" = "Avanzar página; siguiente artículo sin leer al final";
+"Page up; previous story at the top" = "Retroceder página; artículo anterior al principio";
 "Password" = "Contraseña";
 "Paste a story title from the page" = "Pega el título de un artículo de la página";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Pega cualquier URL y NewsBlur creará un feed a partir de la página, incluso si no tiene RSS.";
 "Pause" = "Pausar";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Porcentaje del artículo visible que se desplaza con la barra espaciadora o Mayús + barra espaciadora";
 "Permanently delete account" = "Eliminar cuenta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Elige el idioma que quieres que use NewsBlur. Puedes cambiarlo cuando quieras en Preferencias.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Elige el idioma que quieres usar en NewsBlur. Puedes cambiarlo en cualquier momento desde el menú de NewsBlur.";
 "Pick which model writes your Daily Briefing" = "Elige qué modelo redacta tu resumen diario";
 "Place the story list controls above or below the stories" = "Colocar los controles de la lista de artículos encima o debajo de los artículos";
 "Play videos" = "Reproducir videos";
+"Please log in to NewsBlur" = "Inicia sesión en NewsBlur";
 "Plum Berry" = "Baya ciruela";
 "Positive?" = "¿Seguro?";
 "Preferences" = "Preferencias";
@@ -864,6 +869,8 @@
 "Small [text size]" = "Pequeño";
 "Some feed icons couldn’t load." = "No se pudieron cargar algunos iconos de feeds.";
 "Sources" = "Fuentes";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barra espaciadora y Mayús + barra espaciadora desplazan este porcentaje del artículo visible. Al llegar al final, la barra espaciadora abre el siguiente artículo sin leer. Al llegar al principio, Mayús + barra espaciadora abre el artículo anterior.";
+"Space scroll amount" = "Cantidad de desplazamiento con la barra espaciadora";
 "Spacing" = "Espaciado";
 "Stale — last story %@" = "Inactivo — último artículo %@";
 "Standard" = "Estándar";
@@ -978,6 +985,7 @@
 "Top" = "Arriba";
 "Top Level" = "Nivel superior";
 "Top stories" = "Artículos destacados";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Mantén pulsado un widget de NewsBlur o haz clic derecho en él en Mac y, después, selecciona «Editar widget». Elige una carpeta o un sitio para cada widget.";
 "Train" = "Entrenar";
 "Train This Story" = "Entrenar este artículo";
 "Train This Story…" = "Entrenar este artículo…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "No se ha podido cargar el resumen diario";
 "Unable to load Daily Briefing settings." = "No se han podido cargar los ajustes del resumen diario.";
 "Unable to load Daily Briefing." = "No se pudo cargar el resumen diario.";
+"Unable to refresh stories" = "No se han podido actualizar los artículos";
 "Unable to save Daily Briefing settings." = "No se pudo guardar la configuración del resumen diario.";
 "Unable to save notification settings." = "No se pudo guardar la configuración de notificaciones.";
 "Understand" = "Entendido";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "Artículos muy leídos";
 "Widely covered" = "Con amplia cobertura";
 "Widget Site Stories" = "Artículos de los sitios del widget";
-"Widget Sites" = "Sitios del widget";
 "Widget Stories" = "Artículos del widget";
+"Widgets" = "Widgets";
 "Working…" = "Procesando…";
 "Works on any website" = "Funciona en cualquier sitio web";
 "Writing style" = "Estilo de escritura";

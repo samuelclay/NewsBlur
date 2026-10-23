@@ -181,6 +181,7 @@
 "Choose Language…" = "Choose Language…";
 "Choose Story List" = "Choose Story List";
 "Choose a Topic" = "Choose a Topic";
+"Choose a folder or site for this widget." = "Choose a folder or site for this widget.";
 "Choose another category to discover more." = "Choose another category to discover more.";
 "Choose another language" = "Choose another language";
 "Choose feeds for your folder" = "Choose feeds for your folder";
@@ -284,6 +285,7 @@
 "Drag to change the feed and story list width." = "Drag to change the feed and story list width.";
 "Edit" = "Edit";
 "Edit NewsBlur share…" = "Edit NewsBlur share…";
+"Edit this widget to choose a folder or site" = "Edit this widget to choose a folder or site";
 "Edit your comment" = "Edit your comment";
 "Edit your reply" = "Edit your reply";
 "Edited Comment" = "Edited Comment";
@@ -348,6 +350,7 @@
 "Focus Stories" = "Focus Stories";
 "Focus only" = "Focus only";
 "Folder name" = "Folder name";
+"Folder or site" = "Folder or site";
 "Folders" = "Folders";
 "Follow" = "Follow";
 "Follow %@" = "Follow %@";
@@ -658,18 +661,20 @@
 "Override system with brightness" = "Override system with brightness";
 "Page Down" = "Page Down";
 "Page Up" = "Page Up";
-"Page down" = "Page down";
-"Page up" = "Page up";
+"Page down; next unread story at the bottom" = "Page down; next unread story at the bottom";
+"Page up; previous story at the top" = "Page up; previous story at the top";
 "Password" = "Password";
 "Paste a story title from the page" = "Paste a story title from the page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Paste any URL and NewsBlur creates a feed from the page, even without RSS.";
 "Pause" = "Pause";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage of the visible story scrolled by Space or Shift-Space";
 "Permanently delete account" = "Permanently delete account";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
 "Pick which model writes your Daily Briefing" = "Pick which model writes your Daily Briefing";
 "Place the story list controls above or below the stories" = "Place the story list controls above or below the stories";
 "Play videos" = "Play videos";
+"Please log in to NewsBlur" = "Please log in to NewsBlur";
 "Plum Berry" = "Plum Berry";
 "Positive?" = "Positive?";
 "Preferences" = "Preferences";
@@ -864,6 +869,8 @@
 "Small [text size]" = "Small";
 "Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
 "Sources" = "Sources";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story.";
+"Space scroll amount" = "Space scroll amount";
 "Spacing" = "Spacing";
 "Stale — last story %@" = "Stale — last story %@";
 "Standard" = "Standard";
@@ -978,6 +985,7 @@
 "Top" = "Top";
 "Top Level" = "Top Level";
 "Top stories" = "Top stories";
+"Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget." = "Touch and hold a NewsBlur widget, or right-click it on Mac, then choose Edit Widget. Choose a folder or site for each widget.";
 "Train" = "Train";
 "Train This Story" = "Train This Story";
 "Train This Story…" = "Train This Story…";
@@ -1014,6 +1022,7 @@
 "Unable to load Daily Briefing" = "Unable to load Daily Briefing";
 "Unable to load Daily Briefing settings." = "Unable to load Daily Briefing settings.";
 "Unable to load Daily Briefing." = "Unable to load Daily Briefing.";
+"Unable to refresh stories" = "Unable to refresh stories";
 "Unable to save Daily Briefing settings." = "Unable to save Daily Briefing settings.";
 "Unable to save notification settings." = "Unable to save notification settings.";
 "Understand" = "Understand";
@@ -1073,8 +1082,8 @@
 "Widely Read Stories" = "Widely Read Stories";
 "Widely covered" = "Widely covered";
 "Widget Site Stories" = "Widget Site Stories";
-"Widget Sites" = "Widget Sites";
 "Widget Stories" = "Widget Stories";
+"Widgets" = "Widgets";
 "Working…" = "Working…";
 "Works on any website" = "Works on any website";
 "Writing style" = "Writing style";
