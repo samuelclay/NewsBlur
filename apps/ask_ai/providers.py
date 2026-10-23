@@ -416,6 +416,20 @@ LLM_EXCEPTIONS = (
     genai_errors.APIError,
 )
 
+
+def is_refused_llm_error(error):
+    """
+    Did the provider refuse to serve the account: a bad key, no credits left, a spending
+    limit, or a rate limit? Retrying the same provider won't help, but another one can.
+    SpaceXSI (formerly xAI) answers 403 once its credits run out. apps/ask_ai/providers.py
+    """
+    status_code = getattr(error, "status_code", None)
+    if status_code is None:
+        # providers.py: google-genai reports the HTTP status as `code` instead
+        status_code = getattr(error, "code", None)
+    return status_code in (401, 402, 403, 429)
+
+
 # Provider classes by vendor slug, used for settings override resolution
 PROVIDER_CLASSES = {
     "anthropic": AnthropicProvider,
