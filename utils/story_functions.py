@@ -259,6 +259,8 @@ EMBEDDABLE_IFRAME_DOMAINS = [
     "open.spotify.com",
     "bandcamp.com",
 ]
+FACEBOOK_EMBED_HOSTS = {"facebook.com", "www.facebook.com", "m.facebook.com"}
+FACEBOOK_EMBED_PATHS = {"/plugins/post.php", "/plugins/video.php"}
 
 
 def strip_non_embeddable_iframes(content):
@@ -278,10 +280,13 @@ def strip_non_embeddable_iframes(content):
             return ""
         src = src_match.group(1)
         try:
-            domain = urllib.parse.urlparse(src).hostname or ""
+            parsed = urllib.parse.urlparse(src)
         except Exception:
             return ""
+        domain = parsed.hostname or ""
         if any(domain == d or domain.endswith("." + d) for d in EMBEDDABLE_IFRAME_DOMAINS):
+            return iframe_html
+        if domain in FACEBOOK_EMBED_HOSTS and parsed.path in FACEBOOK_EMBED_PATHS:
             return iframe_html
         return ""
 
