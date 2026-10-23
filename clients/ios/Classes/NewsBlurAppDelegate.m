@@ -851,6 +851,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     return self.cachedURL;
 }
 
+- (void)setCustomDomainPreference:(NSString *)urlString {
+    NSString *trimmedURLString = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if (trimmedURLString.length) {
+        [defaults setObject:trimmedURLString forKey:@"custom_domain"];
+    } else {
+        [defaults removeObjectForKey:@"custom_domain"];
+    }
+
+    self.cachedURL = nil;
+}
+
 - (NSString *)host {
     NSURL *url = [NSURL URLWithString:self.url];
     if (url.host.length) {
