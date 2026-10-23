@@ -661,12 +661,13 @@
 "Override system with brightness" = "Parlaklıkla sistem ayarını geçersiz kıl";
 "Page Down" = "Sayfa Aşağı";
 "Page Up" = "Sayfa Yukarı";
-"Page down" = "Sayfa aşağı";
-"Page up" = "Sayfa yukarı";
+"Page down; next unread story at the bottom" = "Sayfa aşağı; en altta sonraki okunmamış haber";
+"Page up; previous story at the top" = "Sayfa yukarı; en üstte önceki haber";
 "Password" = "Şifre";
 "Paste a story title from the page" = "Sayfadaki bir haberin başlığını yapıştırın";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Herhangi bir URL yapıştırın; NewsBlur, RSS olmasa bile sayfadan bir akış oluşturur.";
 "Pause" = "Duraklat";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Boşluk veya Shift-Boşluk ile görüntülenen haberin kaydırılacağı yüzde";
 "Permanently delete account" = "Hesabı kalıcı olarak sil";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur’da kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman NewsBlur menüsünden değiştirebilirsiniz.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Küçük";
 "Some feed icons couldn’t load." = "Bazı akış simgeleri yüklenemedi.";
 "Sources" = "Kaynaklar";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Boşluk ve Shift-Boşluk, görüntülenen haberin bu yüzdesi kadar kaydırır. En altta Boşluk, sonraki okunmamış haberi açar. En üstte Shift-Boşluk, önceki haberi açar.";
+"Space scroll amount" = "Boşluk tuşuyla kaydırma miktarı";
 "Spacing" = "Boşluk";
 "Stale — last story %@" = "Eski — son haber %@";
 "Standard" = "Standart";

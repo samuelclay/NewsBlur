@@ -661,12 +661,13 @@
 "Override system with brightness" = "Anular el sistema con el brillo";
 "Page Down" = "Av Pág";
 "Page Up" = "RePág";
-"Page down" = "Avanzar página";
-"Page up" = "Retroceder página";
+"Page down; next unread story at the bottom" = "Avanzar página; siguiente artículo sin leer al final";
+"Page up; previous story at the top" = "Retroceder página; artículo anterior al principio";
 "Password" = "Contraseña";
 "Paste a story title from the page" = "Pega el título de un artículo de la página";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Pega cualquier URL y NewsBlur creará un feed a partir de la página, incluso si no tiene RSS.";
 "Pause" = "Pausar";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Porcentaje del artículo visible que se desplaza con la barra espaciadora o Mayús + barra espaciadora";
 "Permanently delete account" = "Eliminar cuenta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Elige el idioma que quieres que use NewsBlur. Puedes cambiarlo cuando quieras en Preferencias.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Elige el idioma que quieres usar en NewsBlur. Puedes cambiarlo en cualquier momento desde el menú de NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Pequeño";
 "Some feed icons couldn’t load." = "No se pudieron cargar algunos iconos de feeds.";
 "Sources" = "Fuentes";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barra espaciadora y Mayús + barra espaciadora desplazan este porcentaje del artículo visible. Al llegar al final, la barra espaciadora abre el siguiente artículo sin leer. Al llegar al principio, Mayús + barra espaciadora abre el artículo anterior.";
+"Space scroll amount" = "Cantidad de desplazamiento con la barra espaciadora";
 "Spacing" = "Espaciado";
 "Stale — last story %@" = "Inactivo — último artículo %@";
 "Standard" = "Estándar";

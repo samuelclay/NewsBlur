@@ -661,12 +661,13 @@
 "Override system with brightness" = "تجاوز إعداد النظام باستخدام السطوع";
 "Page Down" = "صفحة لأسفل";
 "Page Up" = "صفحة لأعلى";
-"Page down" = "صفحة لأسفل";
-"Page up" = "صفحة لأعلى";
+"Page down; next unread story at the bottom" = "صفحة لأسفل؛ القصة التالية غير المقروءة عند الأسفل";
+"Page up; previous story at the top" = "صفحة لأعلى؛ القصة السابقة عند الأعلى";
 "Password" = "كلمة المرور";
 "Paste a story title from the page" = "الصق عنوان قصة من الصفحة";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة، حتى إن لم تتضمن RSS.";
 "Pause" = "إيقاف مؤقت";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "النسبة المئوية من القصة الظاهرة التي يمرّرها مفتاح المسافة أو مفتاح المسافة مع Shift";
 "Permanently delete account" = "حذف الحساب نهائيًا";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من التفضيلات.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير ذلك في أي وقت من قائمة NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "صغير";
 "Some feed icons couldn’t load." = "تعذّر تحميل بعض أيقونات الخلاصات.";
 "Sources" = "المصادر";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "يمرّر مفتاح المسافة ومفتاح المسافة مع Shift هذه النسبة من القصة الظاهرة. عند الأسفل، يفتح مفتاح المسافة القصة التالية غير المقروءة. عند الأعلى، يفتح مفتاح المسافة مع Shift القصة السابقة.";
+"Space scroll amount" = "مقدار التمرير بمفتاح المسافة";
 "Spacing" = "التباعد";
 "Stale — last story %@" = "قديم — آخر قصة %@";
 "Standard" = "قياسي";

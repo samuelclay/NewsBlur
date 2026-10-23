@@ -661,12 +661,13 @@
 "Override system with brightness" = "用屏幕亮度覆盖系统主题";
 "Page Down" = "向下翻页";
 "Page Up" = "向上翻页";
-"Page down" = "向下翻页";
-"Page up" = "向上翻页";
+"Page down; next unread story at the bottom" = "向下翻页；到底部时打开下一篇未读文章";
+"Page up; previous story at the top" = "向上翻页；到顶部时打开上一篇文章";
 "Password" = "密码";
 "Paste a story title from the page" = "粘贴页面上的文章标题";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "粘贴任意 URL，NewsBlur 就会从该页面创建订阅源，即使没有 RSS 也可以。";
 "Pause" = "暂停";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "按空格键或 Shift-Space 滚动可见文章的百分比";
 "Permanently delete account" = "永久删除账户";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "选择你希望 NewsBlur 使用的语言。你可以随时在 NewsBlur 菜单中更改。";
@@ -868,6 +869,8 @@
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分订阅源图标无法加载。";
 "Sources" = "来源";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "空格键和 Shift-Space 按可见文章的此百分比滚动。滚动到底部时，按空格键打开下一篇未读文章。滚动到顶部时，按 Shift-Space 打开上一篇文章。";
+"Space scroll amount" = "空格键滚动幅度";
 "Spacing" = "间距";
 "Stale — last story %@" = "已过时 — 最后一篇文章发布于 %@";
 "Standard" = "标准";

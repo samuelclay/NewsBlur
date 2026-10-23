@@ -661,12 +661,13 @@
 "Override system with brightness" = "依亮度覆寫系統外觀";
 "Page Down" = "下一頁";
 "Page Up" = "上一頁";
-"Page down" = "向下翻頁";
-"Page up" = "向上翻頁";
+"Page down; next unread story at the bottom" = "Page Down；在底部開啟下一篇未讀文章";
+"Page up; previous story at the top" = "Page Up；在頂部開啟上一篇文章";
 "Password" = "密碼";
 "Paste a story title from the page" = "貼上頁面中的文章標題";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。";
 "Pause" = "暫停";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "按空白鍵或 Shift-空白鍵時，捲動目前顯示文章的百分比";
 "Permanently delete account" = "永久刪除帳戶";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在「偏好設定」中變更。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "選擇你希望 NewsBlur 使用的語言。你隨時可以在 NewsBlur 選單中變更。";
@@ -868,6 +869,8 @@
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "部分訂閱來源圖示無法載入。";
 "Sources" = "來源";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "空白鍵和 Shift-空白鍵會依此百分比捲動目前顯示的文章。在底部按空白鍵會開啟下一篇未讀文章。在頂部按 Shift-空白鍵會開啟上一篇文章。";
+"Space scroll amount" = "空白鍵捲動幅度";
 "Spacing" = "間距";
 "Stale — last story %@" = "已停更 — 最後一篇文章發布於 %@";
 "Standard" = "標準";

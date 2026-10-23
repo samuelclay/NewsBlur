@@ -661,12 +661,13 @@
 "Override system with brightness" = "सिस्टम की चमक सेटिंग को ओवरराइड करें";
 "Page Down" = "पेज नीचे";
 "Page Up" = "पेज ऊपर";
-"Page down" = "पेज नीचे";
-"Page up" = "पेज ऊपर";
+"Page down; next unread story at the bottom" = "Page down; नीचे पहुँचने पर अगला अपठित लेख";
+"Page up; previous story at the top" = "Page up; ऊपर पहुँचने पर पिछला लेख";
 "Password" = "पासवर्ड";
 "Paste a story title from the page" = "पेज से किसी लेख का शीर्षक पेस्ट करें";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "कोई भी URL पेस्ट करें और NewsBlur उस पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।";
 "Pause" = "रोकें";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Space या Shift-Space से दिखाई दे रहे लेख का स्क्रॉल किया जाने वाला प्रतिशत";
 "Permanently delete account" = "खाता हमेशा के लिए हटाएँ";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "वह भाषा चुनें जिसका उपयोग आप NewsBlur से करवाना चाहते हैं। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlur में इस्तेमाल करने के लिए अपनी पसंद की भाषा चुनें। आप इसे कभी भी NewsBlur मेनू में बदल सकते हैं।";
@@ -868,6 +869,8 @@
 "Small [text size]" = "छोटा";
 "Some feed icons couldn’t load." = "कुछ फ़ीड आइकन लोड नहीं हो सके।";
 "Sources" = "स्रोत";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space और Shift-Space से दिखाई दे रहे लेख को इस प्रतिशत तक स्क्रॉल करें। नीचे पहुँचने पर Space अगला अपठित लेख खोलता है। ऊपर पहुँचने पर Shift-Space पिछला लेख खोलता है।";
+"Space scroll amount" = "Space से स्क्रॉल करने की मात्रा";
 "Spacing" = "अंतराल";
 "Stale — last story %@" = "पुराना — आख़िरी लेख %@";
 "Standard" = "मानक";

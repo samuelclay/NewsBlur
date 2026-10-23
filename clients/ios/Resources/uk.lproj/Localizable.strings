@@ -661,12 +661,13 @@
 "Override system with brightness" = "Вибирати тему за яскравістю замість системної";
 "Page Down" = "Сторінка вниз";
 "Page Up" = "Сторінка вгору";
-"Page down" = "Сторінка вниз";
-"Page up" = "Сторінка вгору";
+"Page down; next unread story at the bottom" = "Page Down; наступна непрочитана стаття внизу";
+"Page up; previous story at the top" = "Page Up; попередня стаття вгорі";
 "Password" = "Пароль";
 "Paste a story title from the page" = "Вставте заголовок статті зі сторінки";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS.";
 "Pause" = "Призупинити";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Відсоток видимої статті, на який прокручує пробіл або Shift+Пробіл";
 "Permanently delete account" = "Назавжди видалити обліковий запис";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Виберіть мову, якою має користуватися NewsBlur. Ви можете будь-коли змінити її в налаштуваннях.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Виберіть мову, яку хочете використовувати в NewsBlur. Її можна змінити будь-коли в меню NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Малий";
 "Some feed icons couldn’t load." = "Не вдалося завантажити деякі значки стрічок.";
 "Sources" = "Джерела";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Пробіл і Shift+Пробіл прокручують видиму статтю на цей відсоток. Унизу пробіл відкриває наступну непрочитану статтю. Угорі Shift+Пробіл відкриває попередню статтю.";
+"Space scroll amount" = "Величина прокручування пробілом";
 "Spacing" = "Інтервали";
 "Stale — last story %@" = "Неактивний — остання стаття %@";
 "Standard" = "Стандартний";

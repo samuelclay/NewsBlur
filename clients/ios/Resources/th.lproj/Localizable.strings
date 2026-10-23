@@ -661,12 +661,13 @@
 "Override system with brightness" = "ใช้ความสว่างหน้าจอแทนการตั้งค่าระบบ";
 "Page Down" = "เลื่อนหน้าลง";
 "Page Up" = "เลื่อนหน้าขึ้น";
-"Page down" = "เลื่อนหน้าลง";
-"Page up" = "เลื่อนหน้าขึ้น";
+"Page down; next unread story at the bottom" = "เลื่อนหน้าลง; เปิดบทความถัดไปที่ยังไม่อ่านเมื่อถึงด้านล่าง";
+"Page up; previous story at the top" = "เลื่อนหน้าขึ้น; เปิดบทความก่อนหน้าเมื่อถึงด้านบน";
 "Password" = "รหัสผ่าน";
 "Paste a story title from the page" = "วางชื่อเรื่องจากหน้าเว็บ";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บนั้น แม้ไม่มี RSS";
 "Pause" = "หยุดชั่วคราว";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "เปอร์เซ็นต์ของบทความที่แสดงซึ่งเลื่อนด้วย Space หรือ Shift-Space";
 "Permanently delete account" = "ลบบัญชีอย่างถาวร";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในการตั้งค่า";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "เลือกภาษาที่คุณต้องการให้ NewsBlur ใช้ คุณเปลี่ยนภาษาได้ทุกเมื่อในเมนู NewsBlur";
@@ -868,6 +869,8 @@
 "Small [text size]" = "เล็ก";
 "Some feed icons couldn’t load." = "โหลดไอคอนฟีดบางรายการไม่สำเร็จ";
 "Sources" = "แหล่งที่มา";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space และ Shift-Space เลื่อนบทความที่แสดงตามเปอร์เซ็นต์นี้ เมื่อเลื่อนถึงด้านล่าง Space จะเปิดบทความถัดไปที่ยังไม่อ่าน เมื่อเลื่อนถึงด้านบน Shift-Space จะเปิดบทความก่อนหน้า";
+"Space scroll amount" = "ระยะเลื่อนด้วย Space";
 "Spacing" = "ระยะห่าง";
 "Stale — last story %@" = "ไม่มีการอัปเดต — บทความล่าสุดเมื่อ %@";
 "Standard" = "มาตรฐาน";

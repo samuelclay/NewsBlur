@@ -661,12 +661,13 @@
 "Override system with brightness" = "Gunakan kecerahan, bukan tema sistem";
 "Page Down" = "Halaman ke Bawah";
 "Page Up" = "Halaman ke Atas";
-"Page down" = "Halaman ke bawah";
-"Page up" = "Halaman ke atas";
+"Page down; next unread story at the bottom" = "Page down; artikel belum dibaca berikutnya di bagian bawah";
+"Page up; previous story at the top" = "Page up; artikel sebelumnya di bagian atas";
 "Password" = "Kata sandi";
 "Paste a story title from the page" = "Tempel judul artikel dari halaman";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Tempel URL apa pun dan NewsBlur akan membuat feed dari halaman tersebut, bahkan tanpa RSS.";
 "Pause" = "Jeda";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Persentase artikel yang terlihat yang digulir dengan Space atau Shift-Space";
 "Permanently delete account" = "Hapus akun secara permanen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pilih bahasa yang ingin digunakan oleh NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pilih bahasa yang ingin Anda gunakan di NewsBlur. Anda dapat mengubahnya kapan saja di menu NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Kecil";
 "Some feed icons couldn’t load." = "Beberapa ikon feed tidak dapat dimuat.";
 "Sources" = "Sumber";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space dan Shift-Space menggulir artikel yang terlihat sebesar persentase ini. Di bagian bawah, Space membuka artikel belum dibaca berikutnya. Di bagian atas, Shift-Space membuka artikel sebelumnya.";
+"Space scroll amount" = "Jumlah guliran Space";
 "Spacing" = "Jarak";
 "Stale — last story %@" = "Usang — artikel terakhir %@";
 "Standard" = "Standar";

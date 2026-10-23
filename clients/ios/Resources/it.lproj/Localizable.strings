@@ -661,12 +661,13 @@
 "Override system with brightness" = "Usa la luminosità al posto del tema di sistema";
 "Page Down" = "Pagina giù";
 "Page Up" = "Pagina su";
-"Page down" = "Pagina giù";
-"Page up" = "Pagina su";
+"Page down; next unread story at the bottom" = "Pagina giù; articolo non letto successivo in fondo";
+"Page up; previous story at the top" = "Pagina su; articolo precedente in cima";
 "Password" = "Password";
 "Paste a story title from the page" = "Incolla il titolo di un articolo dalla pagina";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Incolla un URL qualsiasi e NewsBlur crea un feed dalla pagina, anche senza RSS.";
 "Pause" = "Metti in pausa";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Percentuale dell’articolo visibile scorsa con la barra spaziatrice o Maiusc+barra spaziatrice";
 "Permanently delete account" = "Elimina definitivamente l’account";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Scegli la lingua che vuoi che NewsBlur utilizzi. Puoi modificarla in qualsiasi momento nelle Preferenze.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Scegli la lingua che vuoi usare in NewsBlur. Puoi cambiarla in qualsiasi momento dal menu NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Piccolo";
 "Some feed icons couldn’t load." = "Non è stato possibile caricare alcune icone dei feed.";
 "Sources" = "Fonti";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barra spaziatrice e Maiusc+barra spaziatrice scorrono questa percentuale dell’articolo visibile. In fondo, la barra spaziatrice apre l’articolo non letto successivo. In cima, Maiusc+barra spaziatrice apre l’articolo precedente.";
+"Space scroll amount" = "Quantità di scorrimento con la barra spaziatrice";
 "Spacing" = "Spaziatura";
 "Stale — last story %@" = "Inattivo — ultimo articolo %@";
 "Standard" = "Standard";

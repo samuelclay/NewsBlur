@@ -661,12 +661,13 @@
 "Override system with brightness" = "Đổi giao diện theo độ sáng màn hình";
 "Page Down" = "Cuộn xuống một trang";
 "Page Up" = "Cuộn lên một trang";
-"Page down" = "Cuộn xuống một trang";
-"Page up" = "Lên một trang";
+"Page down; next unread story at the bottom" = "Page down; bài viết chưa đọc tiếp theo ở cuối bài";
+"Page up; previous story at the top" = "Page up; bài viết trước đó ở đầu bài";
 "Password" = "Mật khẩu";
 "Paste a story title from the page" = "Dán tiêu đề bài viết trên trang";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Dán bất kỳ URL nào, NewsBlur sẽ tạo nguồn cấp dữ liệu từ trang đó, ngay cả khi không có RSS.";
 "Pause" = "Tạm dừng";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Tỷ lệ phần trăm bài viết đang hiển thị được cuộn bằng phím cách hoặc Shift-Phím cách";
 "Permanently delete account" = "Xóa tài khoản vĩnh viễn";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong phần Tùy chọn.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong menu NewsBlur.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Nhỏ";
 "Some feed icons couldn’t load." = "Không thể tải một số biểu tượng nguồn cấp.";
 "Sources" = "Nguồn";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Phím cách và Shift-Phím cách cuộn theo tỷ lệ phần trăm này của bài viết đang hiển thị. Ở cuối bài viết, phím cách mở bài viết chưa đọc tiếp theo. Ở đầu bài viết, Shift-Phím cách mở bài viết trước đó.";
+"Space scroll amount" = "Lượng cuộn bằng phím cách";
 "Spacing" = "Khoảng cách";
 "Stale — last story %@" = "Đã cũ — bài viết cuối cùng %@";
 "Standard" = "Tiêu chuẩn";

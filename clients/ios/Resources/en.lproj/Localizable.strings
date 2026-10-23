@@ -661,12 +661,13 @@
 "Override system with brightness" = "Override system with brightness";
 "Page Down" = "Page Down";
 "Page Up" = "Page Up";
-"Page down" = "Page down";
-"Page up" = "Page up";
+"Page down; next unread story at the bottom" = "Page down; next unread story at the bottom";
+"Page up; previous story at the top" = "Page up; previous story at the top";
 "Password" = "Password";
 "Paste a story title from the page" = "Paste a story title from the page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Paste any URL and NewsBlur creates a feed from the page, even without RSS.";
 "Pause" = "Pause";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage of the visible story scrolled by Space or Shift-Space";
 "Permanently delete account" = "Permanently delete account";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu.";
@@ -868,6 +869,8 @@
 "Small [text size]" = "Small";
 "Some feed icons couldn’t load." = "Some feed icons couldn’t load.";
 "Sources" = "Sources";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story.";
+"Space scroll amount" = "Space scroll amount";
 "Spacing" = "Spacing";
 "Stale — last story %@" = "Stale — last story %@";
 "Standard" = "Standard";
