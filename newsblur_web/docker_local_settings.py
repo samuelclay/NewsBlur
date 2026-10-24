@@ -155,6 +155,14 @@ ASK_AI_MODEL = "anthropic"  # Options: anthropic, openai, google, xai
 BRIEFING_MODEL = "openai"  # Options: anthropic, openai, google, xai
 WEBFEED_MODEL = "openai"  # Options: anthropic, openai, google, xai
 
+# Furthermore, you can connect to any OpenAI-compatible provider (OpenRouter,
+# local inference etc.) with `"provider": "openai_compatible"` entries in
+# BRIEFING_MODELS and/or ASK_AI_MODELS.
+#
+# See the documentation of `OpenAICompatibleProvider` in
+# apps/ask_ai/providers.py for the parameter reference, and look for
+# "local-model" in apps/*/*test*.py for examples.
+
 # ===========
 # = Logging =
 # ===========

@@ -1,5 +1,6 @@
 import datetime
 import hashlib
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from django.test import SimpleTestCase, TestCase, override_settings
 from django.test.client import Client, RequestFactory
 from django.urls import reverse
 
+from apps.ask_ai import providers
 from apps.webfeed.models import MWebFeedConfig, is_degenerate_container_xpath
 from apps.webfeed.prompts import get_analysis_messages
 from apps.webfeed.tasks import (
@@ -559,6 +561,61 @@ class Test_AnalyzeWebFeedPageModel(TestCase):
                 f"webfeed:results:{self.user.pk}:{request_id}",
             },
         )
+
+    @override_settings(
+        BRIEFING_MODELS={
+            "local": {
+                "provider": "openai_compatible",
+                "model_id": "local-model",
+                "vendor": "local",
+                "api_key": "unused-local-key",
+                "base_url": "http://inference:8080/v1",
+                "stream_options": False,
+                "thinking_config": {"reasoning_effort": "medium"},
+            }
+        }
+    )
+    @patch("apps.statistics.rtrending_webfeeds.RTrendingWebFeed.record_analysis_result")
+    @patch("apps.webfeed.tasks.LLMCostTracker")
+    @patch("apps.ask_ai.providers.openai.OpenAI")
+    @patch("apps.webfeed.tasks.fetch_page_html")
+    @patch("apps.webfeed.tasks.redis.Redis")
+    def test_analysis_uses_custom_provider_and_vendor(
+        self, mock_redis, mock_fetch, mock_client, mock_cost, mock_record_result
+    ):
+        from apps.webfeed.tasks import AnalyzeWebFeedPage
+
+        mock_fetch.return_value = '<html><body><article><h2><a href="/one">Story</a></h2></article></body></html>'
+        variants = json.encode(
+            [{"story_container": "//article", "title": ".//h2/a/text()", "link": ".//h2/a/@href"}]
+        )
+        mock_client.return_value.chat.completions.create.return_value = iter(
+            [
+                SimpleNamespace(usage=None, choices=[SimpleNamespace(delta=SimpleNamespace(content=variants))]),
+                SimpleNamespace(usage=SimpleNamespace(prompt_tokens=31, completion_tokens=11), choices=[]),
+            ]
+        )
+        with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()), patch.object(
+            providers, "DEFAULT_WEBFEED_MODEL", "local"
+        ):
+            result = AnalyzeWebFeedPage(self.user.pk, "https://example.com/", request_id="local-request")
+
+        self.assertEqual(result["code"], 1)
+        mock_client.assert_called_once_with(
+            api_key="unused-local-key", base_url="http://inference:8080/v1"
+        )
+        mock_client.return_value.chat.completions.create.assert_called_once()
+        kwargs = mock_client.return_value.chat.completions.create.call_args.kwargs
+        self.assertEqual(kwargs["model"], "local-model")
+        self.assertTrue(kwargs["stream"])
+        self.assertNotIn("stream_options", kwargs)
+        self.assertEqual(kwargs["extra_body"], {"reasoning_effort": "medium"})
+        mock_cost.record_usage.assert_called_once()
+        usage = mock_cost.record_usage.call_args.kwargs
+        self.assertEqual(usage["provider"], "local")
+        self.assertEqual(usage["model"], "local-model")
+        self.assertEqual((usage["input_tokens"], usage["output_tokens"]), (31, 11))
+        mock_record_result.assert_called_once_with(success=True)
 
 
 class Test_DegenerateContainerXPaths(TestCase):

@@ -1,10 +1,11 @@
 import datetime
 import json as stdlib_json
+from types import SimpleNamespace
 from unittest.mock import MagicMock, call, patch
 
 import pytz
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
 
@@ -15,6 +16,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     ScopedClassifiers,
 )
+from apps.ask_ai import providers
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
     DEFAULT_SECTIONS,
@@ -526,6 +528,57 @@ class Test_Summary(TestCase):
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "openai")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "gpt-6-luna")
             self.assertEqual(mock_cost.record_usage.call_args.kwargs["feature"], "daily_briefing")
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
+    @override_settings(
+        BRIEFING_MODELS={
+            "local": {
+                "provider": "openai_compatible",
+                "model_id": "local-model",
+                "vendor": "local",
+                "api_key": "unused-local-key",
+                "base_url": "http://inference:8080/v1",
+                "thinking_config": {"reasoning_effort": "medium"},
+            }
+        }
+    )
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.openai.OpenAI")
+    def test_summary_uses_custom_provider_with_thinking(self, mock_client, mock_cost):
+        from apps.briefing.summary import generate_briefing_summary
+
+        mock_client.return_value.chat.completions.create.return_value = SimpleNamespace(
+            usage=SimpleNamespace(prompt_tokens=31, completion_tokens=11),
+            choices=[
+                SimpleNamespace(message=SimpleNamespace(content='<div class="NB-briefing-summary">Local</div>'))
+            ],
+        )
+        feed = Feed.objects.create(
+            feed_address="https://local-summary.example/rss", feed_title="Local summary"
+        )
+        story = self._make_summary_story(feed, "Test Story", "Some content", "local-summary-guid")
+        try:
+            with patch.object(providers, "BRIEFING_MODELS", providers._load_briefing_models()):
+                html, metadata = generate_briefing_summary(
+                    self.id(), [self._scored_from_story(story)], datetime.datetime.utcnow(), model="local"
+                )
+            self.assertIn("Local", html)
+            self.assertEqual(metadata["model_name"], "local")
+            self.assertEqual(metadata["input_tokens"], 31)
+            self.assertEqual(metadata["output_tokens"], 11)
+            mock_client.assert_called_once_with(
+                api_key="unused-local-key", base_url="http://inference:8080/v1"
+            )
+            mock_client.return_value.chat.completions.create.assert_called_once()
+            kwargs = mock_client.return_value.chat.completions.create.call_args.kwargs
+            self.assertEqual(kwargs["model"], "local-model")
+            self.assertEqual(kwargs["extra_body"], {"reasoning_effort": "medium"})
+            self.assertGreater(kwargs["max_tokens"], 0)
+            self.assertNotIn("max_completion_tokens", kwargs)
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["provider"], "local")
+            self.assertEqual(mock_cost.record_usage.call_args.kwargs["model"], "local-model")
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
