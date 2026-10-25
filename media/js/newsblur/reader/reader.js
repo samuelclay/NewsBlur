@@ -6102,6 +6102,8 @@
                     $feed_item.on('mouseleave.feed_submenu', function () {
                         clearTimeout(show_timer);
                         hide_timer = setTimeout(function () {
+                            // Typing in an open folder picker shouldn't depend on where the mouse is.
+                            if (self.flags['showing_confirm_input_on_manage_menu']) return;
                             self.hide_story_feed_submenu($feed_submenu);
                         }, 300);
                     });
@@ -6111,6 +6113,7 @@
                     });
                     $feed_submenu.on('mouseleave.feed_submenu', function () {
                         hide_timer = setTimeout(function () {
+                            if (self.flags['showing_confirm_input_on_manage_menu']) return;
                             self.hide_story_feed_submenu($feed_submenu);
                         }, 300);
                     });
@@ -6502,7 +6505,10 @@
         expand_folder_picker: function ($confirm) {
             var self = this;
             var utils = NEWSBLUR.folder_picker_utils;
-            var $container = $('.NB-menu-manage-container');
+            // reader.js: a story's menu puts Change folders in its fixed-position feed flyout
+            // (show_story_feed_submenu), so that flyout is the menu to size and slide.
+            var $container = $confirm.closest('.NB-menu-manage-story-feed-submenu');
+            if (!$container.length) $container = $('.NB-menu-manage-container');
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
             var $list = $('.NB-folder-picker-list', $confirm);
             var margin = 12;
@@ -6510,8 +6516,8 @@
 
             $container.css({ 'max-height': '', 'overflow-y': '', 'overflow-x': '' });
             var menu_height = $container.outerHeight();
-            var offset_top = $container.offset().top - $(window).scrollTop();
-            var css_top = parseInt($container.css('top'), 10);
+            var offset_top = $container[0].getBoundingClientRect().top;
+            var css_top = parseFloat($container.css('top'));
 
             $position.css('position', 'relative');
             $confirm.css({ 'height': 'auto', 'display': 'block' });
@@ -6536,7 +6542,8 @@
             if (menu_height + height > window_height - 2 * margin) {
                 $container.css({ 'max-height': window_height - 2 * margin, 'overflow-y': 'auto', 'overflow-x': 'hidden' });
             }
-            $container.data('folder_picker_top', css_top);
+            this.folder_picker.$container = $container;
+            this.folder_picker.container_top = css_top;
             $container.animate({ 'top': css_top + new_offset_top - offset_top }, {
                 'duration': 380,
                 'easing': 'easeOutQuart',
@@ -6721,8 +6728,7 @@
             var $confirm_folder = $('.NB-menu-manage-folder-move-confirm');
             var $confirm_feed = $('.NB-menu-manage-feed-move-confirm');
             var $save = $(".NB-menu-manage-move-save");
-            var $container = $('.NB-menu-manage-container');
-            var picker_top = $container.data('folder_picker_top');
+            var picker = this.folder_picker;
 
             $move_folder.removeClass('NB-menu-manage-feed-move-cancel');
             $move_feed.removeClass('NB-menu-manage-feed-move-cancel');
@@ -6743,10 +6749,10 @@
             $confirm_folder.slideUp(500);
             $save.hide();
             // reader.js: expand_folder_picker slid the menu to fit the picker, so slide it back.
-            if (!_.isUndefined(picker_top)) {
-                $container.removeData('folder_picker_top')
-                    .css({ 'max-height': '', 'overflow-y': '', 'overflow-x': '' })
-                    .animate({ 'top': picker_top }, { 'duration': 500, 'queue': false });
+            if (picker && picker.$container) {
+                picker.$container.css({ 'max-height': '', 'overflow-y': '', 'overflow-x': '' })
+                    .animate({ 'top': picker.container_top }, { 'duration': 500, 'queue': false });
+                picker.$container = null;
             }
             this.flags['showing_confirm_input_on_manage_menu'] = false;
         },
