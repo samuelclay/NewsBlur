@@ -2850,6 +2850,9 @@ msgstr "Filteren op site of classifier..."
 msgid "Filter channels..."
 msgstr "Kanalen filteren..."
 
+msgid "Filter folders"
+msgstr "Mappen filteren"
+
 msgid "Filter icons..."
 msgstr "Pictogrammen filteren..."
 
@@ -4032,6 +4035,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s site verplaatsen"
 msgstr[1] "%(count)s sites verplaatsen"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Verplaatsen naar %(folder)s"
+
 msgid "Move to folder"
 msgstr "Verplaatsen naar map"
 
@@ -4290,6 +4297,9 @@ msgstr "Geen feeds gevonden"
 
 msgid "No feeds found in this category."
 msgstr "Geen feeds gevonden in deze categorie."
+
+msgid "No folders match"
+msgstr "Geen mappen gevonden"
 
 msgid "No gifts sent yet."
 msgstr "Er zijn nog geen cadeaus verstuurd."

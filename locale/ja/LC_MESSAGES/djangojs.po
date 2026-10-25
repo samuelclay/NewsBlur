@@ -2734,6 +2734,9 @@ msgstr "サイトまたは分類器で絞り込む..."
 msgid "Filter channels..."
 msgstr "チャンネルを絞り込む..."
 
+msgid "Filter folders"
+msgstr "フォルダーを絞り込む"
+
 msgid "Filter icons..."
 msgstr "アイコンを絞り込む..."
 
@@ -3886,6 +3889,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s 件のサイトを移動"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "%(folder)sに移動"
+
 msgid "Move to folder"
 msgstr "フォルダーに移動"
 
@@ -4139,6 +4146,9 @@ msgstr "フィードが見つかりません"
 
 msgid "No feeds found in this category."
 msgstr "このカテゴリーにフィードはありません。"
+
+msgid "No folders match"
+msgstr "一致するフォルダーはありません"
 
 msgid "No gifts sent yet."
 msgstr "まだギフトは送信されていません。"

@@ -2833,6 +2833,9 @@ msgstr "סנן לפי אתר או מסווג..."
 msgid "Filter channels..."
 msgstr "סינון ערוצים..."
 
+msgid "Filter folders"
+msgstr "סינון תיקיות"
+
 msgid "Filter icons..."
 msgstr "סינון סמלים..."
 
@@ -4013,6 +4016,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "העברת %(count)s אתר"
 msgstr[1] "העברת %(count)s אתרים"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "העברה אל %(folder)s"
+
 msgid "Move to folder"
 msgstr "העברה לתיקייה"
 
@@ -4269,6 +4276,9 @@ msgstr "לא נמצאו פידים"
 
 msgid "No feeds found in this category."
 msgstr "לא נמצאו פידים בקטגוריה הזו."
+
+msgid "No folders match"
+msgstr "אין תיקיות תואמות"
 
 msgid "No gifts sent yet."
 msgstr "עדיין לא נשלחו מתנות."

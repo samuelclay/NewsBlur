@@ -2740,6 +2740,9 @@ msgstr "사이트 또는 분류기로 필터링..."
 msgid "Filter channels..."
 msgstr "채널 필터링..."
 
+msgid "Filter folders"
+msgstr "폴더 필터"
+
 msgid "Filter icons..."
 msgstr "아이콘 필터링..."
 
@@ -3894,6 +3897,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "사이트 %(count)s개 이동"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "%(folder)s로 이동"
+
 msgid "Move to folder"
 msgstr "폴더로 이동"
 
@@ -4147,6 +4154,9 @@ msgstr "피드를 찾을 수 없음"
 
 msgid "No feeds found in this category."
 msgstr "이 카테고리에서 피드를 찾을 수 없습니다."
+
+msgid "No folders match"
+msgstr "일치하는 폴더가 없습니다"
 
 msgid "No gifts sent yet."
 msgstr "아직 보낸 선물이 없습니다."

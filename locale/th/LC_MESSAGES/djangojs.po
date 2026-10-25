@@ -2756,6 +2756,9 @@ msgstr "กรองตามเว็บไซต์หรือตัวจั
 msgid "Filter channels..."
 msgstr "กรองช่อง..."
 
+msgid "Filter folders"
+msgstr "กรองโฟลเดอร์"
+
 msgid "Filter icons..."
 msgstr "กรองไอคอน..."
 
@@ -3922,6 +3925,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "ย้าย %(count)s เว็บไซต์"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "ย้ายไปที่ %(folder)s"
+
 msgid "Move to folder"
 msgstr "ย้ายไปยังโฟลเดอร์"
 
@@ -4177,6 +4184,9 @@ msgstr "ไม่พบฟีด"
 
 msgid "No feeds found in this category."
 msgstr "ไม่พบฟีดในหมวดหมู่นี้"
+
+msgid "No folders match"
+msgstr "ไม่มีโฟลเดอร์ที่ตรงกัน"
 
 msgid "No gifts sent yet."
 msgstr "ยังไม่มีการส่งของขวัญ"
