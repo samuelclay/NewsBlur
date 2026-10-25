@@ -11295,19 +11295,31 @@ form.opml_import_form input {
     color: #505050;
 }
 
-/* Scope picker (classifier_scope_picker_view.js): a searchable list with folder icons and favicons */
-.NB-scope-picker {
-    position: relative;
-    display: flex;
-    min-width: 0;
+/* Folder and site picker (views/feed_folder_picker_view.js): a searchable list with folder
+   icons and favicons, used for every folder and site chooser. The select it wraps stays in
+   the page as the form field, hidden. */
+select.NB-feed-folder-picker-select {
+    display: none !important;
 }
 
-.NB-scope-picker-trigger {
+.NB-feed-folder-picker {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.NB-manage-add .NB-feed-folder-picker {
+    width: 260px;
+}
+
+.NB-feed-folder-picker-trigger {
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 260px;
-    max-width: 100%;
+    width: 100%;
+    min-width: 160px;
     height: 30px;
     padding: 0 28px 0 10px;
     font-family: inherit;
@@ -11316,18 +11328,19 @@ form.opml_import_form input {
     background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
     border: 1px solid #D3D1C7;
     border-radius: 6px;
+    box-sizing: border-box;
     cursor: pointer;
     text-align: left;
 }
 
-.NB-scope-picker-trigger:focus-visible,
-.NB-scope-picker.NB-open .NB-scope-picker-trigger {
+.NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
     outline: none;
     border-color: #50A050;
     box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
 }
 
-.NB-scope-picker-trigger-label {
+.NB-feed-folder-picker-trigger-label {
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -11335,7 +11348,7 @@ form.opml_import_form input {
     white-space: nowrap;
 }
 
-.NB-scope-picker-icon {
+.NB-feed-folder-picker-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -11346,16 +11359,21 @@ form.opml_import_form input {
     line-height: 1;
 }
 
-.NB-scope-picker-icon svg,
-.NB-scope-picker-icon img {
+.NB-feed-folder-picker-icon:empty {
+    display: none;
+}
+
+.NB-feed-folder-picker-icon svg,
+.NB-feed-folder-picker-icon img {
     display: block;
     width: 16px;
     height: 16px;
+    margin: 0;
     border-radius: 2px;
 }
 
-.NB-scope-picker-icon .NB-folder-icon-colored,
-.NB-scope-picker-icon .NB-feed-icon-colored {
+.NB-feed-folder-picker-icon .NB-folder-icon-colored,
+.NB-feed-folder-picker-icon .NB-feed-icon-colored {
     display: block;
     width: 16px;
     height: 16px;
@@ -11367,21 +11385,14 @@ form.opml_import_form input {
     mask-position: center;
 }
 
-.NB-scope-picker-icon.NB-scope-folder {
-    color: #3B82F6;
-}
-
-.NB-scope-picker-icon.NB-scope-global {
+.NB-feed-folder-picker-icon-global svg {
     color: #8B5CF6;
 }
 
-.NB-scope-picker-popover {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    z-index: 20;
-    width: 340px;
+.NB-feed-folder-picker-popover {
+    z-index: 100002;
     padding: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: white;
     border: 1px solid #D3D1C7;
     border-radius: 8px;
@@ -11389,7 +11400,7 @@ form.opml_import_form input {
     box-sizing: border-box;
 }
 
-.NB-scope-picker-search {
+.NB-feed-folder-picker-search {
     display: block;
     width: 100%;
     height: 30px;
@@ -11404,21 +11415,22 @@ form.opml_import_form input {
     box-sizing: border-box;
 }
 
-.NB-scope-picker-search:focus {
+.NB-feed-folder-picker-search:focus {
     outline: none;
     border-color: #50A050;
 }
 
-.NB-scope-picker-search::placeholder {
+.NB-feed-folder-picker-search::placeholder {
     color: #A8A69C;
 }
 
-.NB-scope-picker-list {
+.NB-feed-folder-picker-list {
     max-height: 300px;
     overflow-y: auto;
+    outline: none;
 }
 
-.NB-scope-picker-group {
+.NB-feed-folder-picker-group {
     padding: 8px 10px 4px;
     font-size: 10px;
     font-weight: 600;
@@ -11427,7 +11439,7 @@ form.opml_import_form input {
     color: #8C8A80;
 }
 
-.NB-scope-picker-option {
+.NB-feed-folder-picker-option {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -11439,16 +11451,22 @@ form.opml_import_form input {
     white-space: nowrap;
 }
 
-.NB-scope-picker-option.NB-hidden {
+.NB-feed-folder-picker-option.NB-hidden,
+.NB-feed-folder-picker-group.NB-hidden {
     display: none;
 }
 
-.NB-scope-picker-option.NB-active {
+.NB-feed-folder-picker-option.NB-active {
     background-color: #EEF0E8;
 }
 
+.NB-feed-folder-picker-option[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
 /* The title keeps its room; the parent path shown while searching gives way first */
-.NB-scope-picker-option-title {
+.NB-feed-folder-picker-option-title {
     flex: 0 1 auto;
     max-width: 75%;
     overflow: hidden;
@@ -11456,7 +11474,7 @@ form.opml_import_form input {
 }
 
 /* Parent folder, shown only while searching so same-named folders can be told apart */
-.NB-scope-picker-option-path {
+.NB-feed-folder-picker-option-path {
     display: none;
     flex: 1 1 0;
     min-width: 0;
@@ -11466,19 +11484,19 @@ form.opml_import_form input {
     color: #A8A69C;
 }
 
-.NB-scope-picker.NB-searching .NB-scope-picker-option-path {
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option-path {
     display: inline;
 }
 
-.NB-scope-picker.NB-searching .NB-scope-picker-option {
-    padding-left: 10px !important;
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option {
+    padding-inline-start: 10px !important;
 }
 
-.NB-scope-picker-option[aria-selected="true"] {
+.NB-feed-folder-picker-option[aria-selected="true"] {
     font-weight: 600;
 }
 
-.NB-scope-picker-option[aria-selected="true"]::after {
+.NB-feed-folder-picker-option[aria-selected="true"]::after {
     content: "\2713";
     margin-left: auto;
     padding-left: 8px;
@@ -11486,7 +11504,7 @@ form.opml_import_form input {
     color: #34912E;
 }
 
-.NB-scope-picker-empty {
+.NB-feed-folder-picker-empty {
     padding: 10px;
     font-size: 12px;
     color: #8C8A80;

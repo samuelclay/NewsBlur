@@ -4737,13 +4737,60 @@ var classifier_prototype = {
         return first_site ? 'feed:' + first_site.id : 'global';
     },
 
+    // Where a typed classifier applies, for the add panel's FeedFolderPicker
+    // (views/feed_folder_picker_view.js): All sites, the reader's folders by their full path
+    // (the name folder-scoped classifiers store, see folder_path), then active sites by title.
+    make_manage_add_scope_items: function () {
+        var utils = NEWSBLUR.classifier_add_utils;
+        var items = [{ value: 'global', kind: 'global', title: gettext('All sites'), icon_svg: 'global' }];
+
+        var add_folders = function (folders, parent_path, depth) {
+            folders.each(function (folder) {
+                if (!folder.is_folder()) return;
+                var folder_title = folder.get('folder_title');
+                var path = utils.folder_path(parent_path, folder_title);
+                items.push({
+                    value: 'folder:' + path,
+                    kind: 'folder',
+                    title: folder_title,
+                    group: gettext('Folders'),
+                    depth: depth,
+                    parent_path: parent_path,
+                    icon_value: 'river:' + folder_title
+                });
+                add_folders(folder.folders, path, depth + 1);
+            });
+        };
+        add_folders(NEWSBLUR.assets.get_folders(), '', 0);
+
+        NEWSBLUR.assets.feeds.chain()
+            .filter(function (feed) {
+                return feed.get('active') && feed.get('feed_title') && !feed.is_social();
+            })
+            .sortBy(function (feed) {
+                return feed.get('feed_title').toLowerCase();
+            })
+            .each(function (feed) {
+                items.push({
+                    value: 'feed:' + feed.id,
+                    kind: 'feed',
+                    title: feed.get('feed_title'),
+                    group: gettext('Sites'),
+                    icon_value: feed
+                });
+            });
+
+        return items;
+    },
+
     make_manage_add_row: function () {
         var self = this;
         var state = this.get_manage_add_state();
         var $row;
 
         var scope_label_id = _.uniqueId('NB-manage-add-scope-label-');
-        var picker = new NEWSBLUR.Views.ClassifierScopePicker({
+        var picker = new NEWSBLUR.Views.FeedFolderPicker({
+            items: this.make_manage_add_scope_items(),
             value: state.scope_value,
             label_id: scope_label_id,
             on_change: function (value) {

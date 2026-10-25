@@ -115,7 +115,7 @@
         return lowered.normalize ? lowered.normalize('NFD').replace(/[̀-ͯ]/g, '') : lowered;
     }
 
-    // Scope picker options for a search (classifier_scope_picker_view.js). Every word must
+    // Picker options for a search (views/feed_folder_picker_view.js). Every word must
     // appear in the option's title or, for a nested folder, its full path.
     function filter_scope_options(options, query) {
         var words = normalize_search_text(query).split(/\s+/).filter(Boolean);

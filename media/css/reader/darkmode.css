@@ -5831,15 +5831,12 @@ a.mention, a.mention-group {
     color: #98A0A8;
 }
 
-.NB-dark .NB-manage-add-match,
-.NB-dark .NB-scope-picker-trigger {
+.NB-dark .NB-manage-add-match {
     background-color: #262d34;
     border-color: #4b5561;
 }
 
-.NB-dark .NB-manage-add-match:focus-within,
-.NB-dark .NB-scope-picker-trigger:focus-visible,
-.NB-dark .NB-scope-picker.NB-open .NB-scope-picker-trigger {
+.NB-dark .NB-manage-add-match:focus-within {
     border-color: #50A050;
     box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.2);
 }
@@ -5972,55 +5969,59 @@ a.mention, a.mention-group {
     background-color: #7A1A1A;
 }
 
-/* Scope picker (classifier_scope_picker_view.js) */
-.NB-dark .NB-scope-picker-trigger {
+/* Folder and site picker (views/feed_folder_picker_view.js) */
+.NB-dark .NB-feed-folder-picker-trigger {
     color: #E0E0E0;
+    background-color: #262d34;
+    border-color: #4b5561;
 }
 
-.NB-dark .NB-scope-picker-icon.NB-scope-folder {
-    color: #60A5FA;
+.NB-dark .NB-feed-folder-picker-trigger:focus-visible,
+.NB-dark .NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.2);
 }
 
-.NB-dark .NB-scope-picker-icon.NB-scope-global {
+.NB-dark .NB-feed-folder-picker-icon-global svg {
     color: #A78BFA;
 }
 
-.NB-dark .NB-scope-picker-popover {
+.NB-dark .NB-feed-folder-picker-popover {
     background-color: #2b333b;
     border-color: #4b5561;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.NB-dark input.NB-scope-picker-search,
-.NB-dark input.NB-scope-picker-search:focus {
+.NB-dark input.NB-feed-folder-picker-search,
+.NB-dark input.NB-feed-folder-picker-search:focus {
     color: #E0E0E0;
     background-color: #222930;
     border: 1px solid #434d57;
 }
 
-.NB-dark input.NB-scope-picker-search:focus {
+.NB-dark input.NB-feed-folder-picker-search:focus {
     border-color: #50A050;
 }
 
-.NB-dark .NB-scope-picker-search::placeholder {
+.NB-dark .NB-feed-folder-picker-search::placeholder {
     color: #76808a;
 }
 
-.NB-dark .NB-scope-picker-group,
-.NB-dark .NB-scope-picker-empty,
-.NB-dark .NB-scope-picker-option-path {
+.NB-dark .NB-feed-folder-picker-group,
+.NB-dark .NB-feed-folder-picker-empty,
+.NB-dark .NB-feed-folder-picker-option-path {
     color: #8a939c;
 }
 
-.NB-dark .NB-scope-picker-option {
+.NB-dark .NB-feed-folder-picker-option {
     color: #E0E0E0;
 }
 
-.NB-dark .NB-scope-picker-option.NB-active {
+.NB-dark .NB-feed-folder-picker-option.NB-active {
     background-color: #38424c;
 }
 
-.NB-dark .NB-scope-picker-option[aria-selected="true"]::after {
+.NB-dark .NB-feed-folder-picker-option[aria-selected="true"]::after {
     color: #7BC86C;
 }
 
