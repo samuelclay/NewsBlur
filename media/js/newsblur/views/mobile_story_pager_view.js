@@ -301,6 +301,8 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.$('.NB-mobile-story-view-option').each(function () {
             $(this).toggleClass('NB-active', $(this).data('view') === mode);
         });
+        this.$('.NB-mobile-story-view-option[data-view="story"]')
+            .toggleClass('NB-disabled', this.story_page_disabled(this.story));
         this.$('.NB-mobile-story-unread')
             .toggleClass('NB-active', !this.story.get('read_status'))
             .attr('aria-label', this.story.get('read_status') ? gettext('Mark as unread') : gettext('Mark as read'));
@@ -487,6 +489,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
 
     select_view: function (e) {
         var view = $(e.currentTarget).data('view');
+        if ($(e.currentTarget).hasClass('NB-disabled')) return;
         if (!this.story || view === this.story_view_mode()) return;
         NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, { view: view });
         // The reader itself only knows Feed and Text in a grid, keep it off the desktop story iframe.

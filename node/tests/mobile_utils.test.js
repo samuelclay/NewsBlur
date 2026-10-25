@@ -39,22 +39,50 @@ test('history entries keep their tag and fall back to the URL when untagged', fu
     const tagged = mobile_utils.read_history_state({
         nb_mobile: { screen: 'story', depth: 2, story_hash: '476:abc' }
     }, '/site/476/df');
-    assert.deepEqual(tagged, { screen: 'story', depth: 2, story_hash: '476:abc', tagged: true });
+    assert.deepEqual(tagged, {
+        screen: 'story', depth: 2, parent_depth: null, parent_screen: null, story_hash: '476:abc', tagged: true
+    });
 
     const untagged = mobile_utils.read_history_state({}, '/site/476/df');
-    assert.deepEqual(untagged, { screen: 'titles', depth: null, story_hash: null, tagged: false });
+    assert.deepEqual(untagged, {
+        screen: 'titles', depth: null, parent_depth: null, parent_screen: null, story_hash: null, tagged: false
+    });
 
     const empty = mobile_utils.read_history_state(null, '/');
     assert.equal(empty.screen, 'feeds');
 });
 
 test('tagging an entry preserves state other code stored on it', function () {
-    const state = mobile_utils.make_history_state({ classifier: 'tag' }, 'titles', 1);
+    const state = mobile_utils.make_history_state({ classifier: 'tag' }, { screen: 'titles', depth: 1 });
     assert.equal(state.classifier, 'tag');
     assert.deepEqual(state.nb_mobile, { screen: 'titles', depth: 1 });
 
-    const story_state = mobile_utils.make_history_state(null, 'story', 2, '476:abc');
+    const story_state = mobile_utils.make_history_state(null, { screen: 'story', depth: 2, story_hash: '476:abc' });
     assert.deepEqual(story_state.nb_mobile, { screen: 'story', depth: 2, story_hash: '476:abc' });
+});
+
+test('history entries remember the screen beneath them', function () {
+    const state = mobile_utils.make_history_state({}, {
+        screen: 'titles', depth: 3, parent_depth: 1, parent_screen: 'dashboard'
+    });
+    const entry = mobile_utils.read_history_state(state, '/site/476/df?search=apple');
+    assert.equal(entry.parent_depth, 1);
+    assert.equal(entry.parent_screen, 'dashboard');
+    // Older entries without a parent still read cleanly.
+    const legacy = mobile_utils.read_history_state({ nb_mobile: { screen: 'titles', depth: 1 } }, '/');
+    assert.equal(legacy.parent_depth, null);
+});
+
+test('the back button skips same-screen entries to reach the screen beneath', function () {
+    // feeds(0) -> titles(1) -> search on the same list(2): back returns to feeds.
+    assert.equal(mobile_utils.back_steps({ tagged: true, depth: 2, parent_depth: 0 }), 2);
+    // A story pushed from that list goes back one entry.
+    assert.equal(mobile_utils.back_steps({ tagged: true, depth: 3, parent_depth: 2 }), 1);
+    // Without a recorded parent, back walks a single entry.
+    assert.equal(mobile_utils.back_steps({ tagged: true, depth: 2, parent_depth: null }), 1);
+    // A deep link has nothing in-app behind it.
+    assert.equal(mobile_utils.back_steps({ tagged: true, depth: 0, parent_depth: null }), 0);
+    assert.equal(mobile_utils.back_steps({ tagged: false, depth: null, parent_depth: null }), 0);
 });
 
 test('deeper history entries push and shallower ones pop', function () {

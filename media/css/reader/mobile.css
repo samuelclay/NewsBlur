@@ -815,6 +815,10 @@ body.NB-mobile .NB-mobile-segmented-option {
     transition: background-color 160ms ease, color 160ms ease;
 }
 
+body.NB-mobile .NB-mobile-segmented-option.NB-disabled {
+    opacity: 0.35;
+}
+
 body.NB-mobile .NB-mobile-segmented-option.NB-active {
     background: var(--nb-mobile-card-bg);
     color: var(--nb-mobile-bar-text);

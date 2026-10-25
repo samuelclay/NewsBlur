@@ -926,6 +926,9 @@
                 this.flags['select_story_title_in_feed'] = null;
                 _.delay(_.bind(function () {
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
+                    // reader.js: a story opened from the dashboard or a link shows full screen in
+                    // a phone grid (views/mobile_layout_view.js).
+                    if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.story_requested(story);
                 }, this), 100);
             } else if ((loaded_page_count >= this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
                 story_title &&
@@ -4433,6 +4436,7 @@
 
         make_feed_title_in_stories: function (options) {
             NEWSBLUR.app.search_header.render();
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_bar();
 
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header.search_has_focus()) {
@@ -4448,7 +4452,6 @@
                 feed_id: this.active_feed,
                 layout: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')
             });
-            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_bar();
         },
 
         feed_title: function (feed_id) {

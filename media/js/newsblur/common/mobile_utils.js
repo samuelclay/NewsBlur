@@ -58,15 +58,19 @@
         return 'feeds';
     }
 
-    // Each history entry the phone layout touches carries {screen, depth}. Depth counts how
-    // many in-app entries sit below it, so a back button knows whether history.back() stays
-    // inside NewsBlur.
+    // Each history entry the phone layout touches carries {screen, depth, parent_depth,
+    // parent_screen}. Depth counts how many in-app entries sit below it, so a back button knows
+    // whether going back stays inside NewsBlur. The parent is the entry of the screen beneath
+    // this one: a search or the next feed adds entries on the same screen, and the nav bar's
+    // back button skips past them to the screen below.
     function read_history_state(state, pathname) {
         var mobile = state && state.nb_mobile;
         if (mobile && mobile.screen) {
             return {
                 screen: mobile.screen,
                 depth: mobile.depth || 0,
+                parent_depth: typeof mobile.parent_depth === 'number' ? mobile.parent_depth : null,
+                parent_screen: mobile.parent_screen || null,
                 story_hash: mobile.story_hash || null,
                 tagged: true
             };
@@ -74,21 +78,37 @@
         return {
             screen: screen_for_path(pathname),
             depth: null,
+            parent_depth: null,
+            parent_screen: null,
             story_hash: null,
             tagged: false
         };
     }
 
-    function make_history_state(state, screen, depth, story_hash) {
+    // entry is {screen, depth, story_hash, parent_depth, parent_screen}; only screen and depth
+    // are required.
+    function make_history_state(state, entry) {
         var next = {};
         if (state && typeof state === 'object') {
             for (var key in state) {
                 if (Object.prototype.hasOwnProperty.call(state, key)) next[key] = state[key];
             }
         }
-        next.nb_mobile = { screen: screen, depth: depth };
-        if (story_hash) next.nb_mobile.story_hash = story_hash;
+        next.nb_mobile = { screen: entry.screen, depth: entry.depth };
+        if (entry.story_hash) next.nb_mobile.story_hash = entry.story_hash;
+        if (typeof entry.parent_depth === 'number') next.nb_mobile.parent_depth = entry.parent_depth;
+        if (entry.parent_screen) next.nb_mobile.parent_screen = entry.parent_screen;
         return next;
+    }
+
+    // How many history entries the nav bar's back button walks to reach the screen beneath.
+    // 0 means there is no in-app entry to return to (a deep link or reload).
+    function back_steps(entry) {
+        if (!entry || !entry.tagged || !entry.depth) return 0;
+        if (typeof entry.parent_depth === 'number' && entry.parent_depth < entry.depth) {
+            return entry.depth - entry.parent_depth;
+        }
+        return 1;
     }
 
     // Moving to a deeper history entry slides the new screen in from the trailing edge; moving
@@ -161,6 +181,7 @@
         read_history_state: read_history_state,
         make_history_state: make_history_state,
         transition_direction: transition_direction,
+        back_steps: back_steps,
         parent_screen: parent_screen,
         swipe_completes: swipe_completes,
         pager_step: pager_step,

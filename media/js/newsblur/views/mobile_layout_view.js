@@ -22,7 +22,12 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.active = false;
         this.screen = null;
         this.depth = 0;
+        // The screen and history depth beneath each pushed screen (common/mobile_utils.js
+        // back_steps), so back skips same-screen entries like a search or the next feed.
         this.titles_parent = 'feeds';
+        this.titles_parent_depth = 0;
+        this.dashboard_parent_depth = 0;
+        this.story_parent_depth = 0;
         this.pending_entry = null;
         this.transition = null;
         this.following_unread = null;
@@ -43,7 +48,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.build_dashboard_bar();
         // mobile.css dims the page behind bottom-sheet menus with this.
         this.$body.append($.make('div', { className: 'NB-mobile-sheet-shade' }));
-        this.wrap_router_navigate();
+        this.wrap_history();
 
         this.media_query = window.matchMedia(this.utils.MEDIA_QUERY);
         if (this.media_query.addEventListener) {
@@ -98,8 +103,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             screen = 'feeds';
         }
         this.depth = entry.tagged ? entry.depth : 0;
+        this.restore_parent(entry);
         this.set_screen(screen);
-        this.tag_entry(screen, this.depth);
+        this.tag_entry(screen);
         this.update_titles_bar();
         this.refresh_story_layout();
     },
@@ -233,34 +239,76 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // = History  =
     // ============
 
-    tag_entry: function (screen, depth, story_hash) {
-        var state = this.utils.make_history_state(window.history.state, screen, depth, story_hash);
-        window.history.replaceState(state, document.title, window.location.href);
+    make_entry: function (screen, story_hash) {
+        var entry = { screen: screen, depth: this.depth, story_hash: story_hash };
+        if (screen === 'titles') {
+            entry.parent_depth = this.titles_parent_depth;
+            entry.parent_screen = this.titles_parent;
+        } else if (screen === 'story') {
+            entry.parent_depth = this.story_parent_depth;
+            entry.parent_screen = 'titles';
+        } else if (screen === 'dashboard') {
+            entry.parent_depth = this.dashboard_parent_depth;
+            entry.parent_screen = 'feeds';
+        }
+        return entry;
     },
 
+    // Popstate and reloads land on entries written earlier; take their parents back.
+    restore_parent: function (entry) {
+        if (!entry.tagged || entry.parent_depth === null) return;
+        if (entry.screen === 'titles') {
+            this.titles_parent_depth = entry.parent_depth;
+            this.titles_parent = entry.parent_screen || 'feeds';
+        } else if (entry.screen === 'story') {
+            this.story_parent_depth = entry.parent_depth;
+        } else if (entry.screen === 'dashboard') {
+            this.dashboard_parent_depth = entry.parent_depth;
+        }
+    },
+
+    tag_entry: function (screen, story_hash) {
+        var state = this.utils.make_history_state(window.history.state, this.make_entry(screen, story_hash));
+        this.replace_state.call(window.history, state, document.title, window.location.href);
+    },
+
+    // Pushes a deeper screen, which sits on top of the entry we are leaving.
     push_entry: function (screen, story_hash) {
+        if (screen === 'story') this.story_parent_depth = this.depth;
+        if (screen === 'dashboard') this.dashboard_parent_depth = this.depth;
         this.depth += 1;
-        var state = this.utils.make_history_state({}, screen, this.depth, story_hash);
-        window.history.pushState(state, document.title, window.location.href);
+        var state = this.utils.make_history_state({}, this.make_entry(screen, story_hash));
+        this.push_state.call(window.history, state, document.title, window.location.href);
     },
 
-    // Backbone writes new entries whenever the reader opens a story list. Tag each one with the
-    // screen it shows so popstate knows where to slide back to.
-    wrap_router_navigate: function () {
+    // The router, search and classifier filters all write history entries of their own. Tag
+    // each one with the screen it belongs to so popstate knows where to slide back to and the
+    // back button knows how far the screen beneath is.
+    wrap_history: function () {
         var self = this;
-        var original_navigate = Backbone.history.navigate;
-        Backbone.history.navigate = function (fragment, options) {
-            var url_before = window.location.href;
-            var result = original_navigate.apply(this, arguments);
-            options = options || {};
-            if (self.active && (options.replace || window.location.href !== url_before)) {
-                var screen = self.pending_entry ||
-                    self.utils.screen_for_path(window.location.pathname);
+        this.push_state = window.history.pushState;
+        this.replace_state = window.history.replaceState;
+        var path_of = function (url) {
+            return url ? new URL(url, window.location.href).pathname : window.location.pathname;
+        };
+        window.history.pushState = function (state, title, url) {
+            if (self.active) {
+                var screen = self.pending_entry || self.utils.screen_for_path(path_of(url));
                 self.pending_entry = null;
-                if (!options.replace) self.depth += 1;
-                self.tag_entry(screen, self.depth);
+                self.depth += 1;
+                state = self.utils.make_history_state(state, self.make_entry(screen));
             }
-            return result;
+            return self.push_state.call(window.history, state, title, url);
+        };
+        window.history.replaceState = function (state, title, url) {
+            if (self.active) {
+                var current = self.utils.read_history_state(window.history.state, window.location.pathname);
+                var screen = self.pending_entry ||
+                    (current.tagged ? current.screen : self.utils.screen_for_path(path_of(url)));
+                self.pending_entry = null;
+                state = self.utils.make_history_state(state, self.make_entry(screen, current.story_hash));
+            }
+            return self.replace_state.call(window.history, state, title, url);
         };
     },
 
@@ -271,9 +319,12 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var direction = this.utils.transition_direction(from, target);
         if (!target.tagged) {
             target.depth = direction === 'pop' ? Math.max(0, this.depth - 1) : this.depth + 1;
-            this.tag_entry(target.screen, target.depth);
+            this.depth = target.depth;
+            this.tag_entry(target.screen);
         }
         this.depth = target.depth;
+        this.restore_parent(target);
+        this.update_titles_bar();
 
         var screen = target.screen;
         if (screen === 'story') {
@@ -313,15 +364,16 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // = Actions   =
     // =============
 
-    // Header back button and edge swipe. Walk back through history when the entry beneath is
-    // ours, otherwise (a deep link or reload) move up a level and rewrite this entry.
+    // Header back button and edge swipe. Walk back through history to the screen beneath when
+    // its entry is ours, otherwise (a deep link or reload) move up a level and rewrite this entry.
     go_back: function (options) {
         options = options || {};
         if (!this.active || this.screen === 'feeds') return;
         var entry = this.utils.read_history_state(window.history.state, window.location.pathname);
-        if (entry.tagged && entry.depth > 0) {
+        var steps = this.utils.back_steps(entry);
+        if (steps > 0) {
             this.pending_back = options;
-            window.history.back();
+            window.history.go(-steps);
             // A history.back() the browser ignores never fires popstate, so recover from that.
             this.pending_back_timer = setTimeout(_.bind(function () {
                 if (!this.pending_back) return;
@@ -340,7 +392,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             NEWSBLUR.router.navigate('', { replace: true });
             this.pending_entry = null;
         }
-        this.tag_entry(parent, this.depth);
+        this.tag_entry(parent);
         this.show_screen(parent, {
             direction: 'pop',
             from_drag: !!options.from_drag,
@@ -369,6 +421,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return;
         }
         this.titles_parent = this.screen === 'dashboard' ? 'dashboard' : 'feeds';
+        this.titles_parent_depth = this.depth;
         this.expect_entry('titles');
         this.show_screen('titles', { direction: 'push' });
     },
@@ -401,7 +454,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         this.story_pager.close();
         this.set_screen('titles');
-        this.tag_entry('titles', this.depth);
+        this.tag_entry('titles');
     },
 
     open_dashboard: function () {
@@ -417,11 +470,18 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!this.active || !story) return;
         this.story_pager.open(story);
         if (this.screen === 'story') {
-            this.tag_entry('story', this.depth, story.get('story_hash'));
+            this.tag_entry('story', story.get('story_hash'));
             return;
         }
         this.push_entry('story', story.get('story_hash'));
         this.show_screen('story', { direction: 'push' });
+    },
+
+    // reader.js select_story_in_feed: a specific story was asked for, from the dashboard or a
+    // link. A grid shows it on the story screen; a list has already expanded it in place.
+    story_requested: function (story) {
+        if (!this.active || !this.is_grid() || this.screen === 'story') return;
+        this.open_story(story);
     },
 
     // views/mobile_story_pager_view.js: Next unread ran out of unread stories in this list, so
@@ -444,7 +504,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var entry = this.utils.read_history_state(window.history.state, window.location.pathname);
         this.story_pager.open(story);
         if (entry.screen === 'story') {
-            this.tag_entry('story', this.depth, story.get('story_hash'));
+            this.tag_entry('story', story.get('story_hash'));
         } else {
             this.push_entry('story', story.get('story_hash'));
         }
@@ -454,7 +514,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // forward/back return to the story you were on.
     story_paged: function (story) {
         if (!this.active || this.screen !== 'story') return;
-        this.tag_entry('story', this.depth, story.get('story_hash'));
+        this.tag_entry('story', story.get('story_hash'));
     },
 
     // ===============

@@ -358,6 +358,9 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         var $modal = this.$modal;
         var $modal_container = $modal.closest('.simplemodal-container');
 
+        // reader_profile_editor.js: callers pass no count, and a tab that can't shrink (the phone
+        // layout sizes tabs with CSS) would otherwise recurse forever.
+        count = count || 0;
         if (count > 50) return;
 
         if ($modal.height() > $modal_container.height() - 24) {
