@@ -6395,13 +6395,20 @@
             this.flags['showing_confirm_input_on_manage_menu'] = true;
 
             if (!_.isNumber(feed_id)) {
-                $('select', $confirm).focus().select();
-                $('option', $select).each(function () {
-                    if ($(this).attr('value') == in_folder) {
-                        $(this).prop('selected', 'selected');
-                        return false;
-                    }
-                });
+                // Start on the folder's current parent. Folder values are "river:<folder title>"
+                // (make_folders in reader_utils.js), and the folder and site picker drawn over the
+                // select (views/feed_folder_picker_view.js) follows .val() and takes the focus.
+                var parent_folders = folder_view.model.collection;
+                var parent_value = 'river:' + (parent_folders && parent_folders.options.title || '');
+                if (_.contains(_.pluck($select.find('option'), 'value'), parent_value)) {
+                    $select.val(parent_value);
+                }
+                var picker = $select.data('nb_feed_folder_picker');
+                if (picker) {
+                    picker.focus();
+                } else {
+                    $select.focus();
+                }
             }
         },
 
@@ -6552,7 +6559,8 @@
 
         manage_menu_move_folder: function (folder, $folder) {
             var self = this;
-            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val();
+            // The select's folder values are "river:<folder title>" (make_folders in reader_utils.js)
+            var to_folder = $('.NB-menu-manage-folder-move-confirm select').val().replace(/^river:/, '');
             var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
                 this.active_folder.folder_view;
             var in_folder = folder_view.collection.options.title;
