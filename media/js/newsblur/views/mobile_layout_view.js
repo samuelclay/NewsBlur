@@ -25,6 +25,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.titles_parent = 'feeds';
         this.pending_entry = null;
         this.transition = null;
+        this.following_unread = null;
 
         this.$body = $('body');
         this.$screens = {
@@ -36,13 +37,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$screens.story = this.story_pager.$el;
         this.$body.append(this.story_pager.$el);
 
+        NEWSBLUR.assets.stories.bind('change:selected', this.story_selected, this);
+
         this.build_titles_bar();
         this.build_dashboard_bar();
         // mobile.css dims the page behind bottom-sheet menus with this.
         this.$body.append($.make('div', { className: 'NB-mobile-sheet-shade' }));
         this.wrap_router_navigate();
 
-        this.media_query = window.matchMedia('(max-width: ' + this.utils.MAX_WIDTH + 'px)');
+        this.media_query = window.matchMedia(this.utils.MEDIA_QUERY);
         if (this.media_query.addEventListener) {
             this.media_query.addEventListener('change', this.check_mode);
         } else {
@@ -275,7 +278,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var screen = target.screen;
         if (screen === 'story') {
             var story = target.story_hash && NEWSBLUR.assets.stories.get_by_story_hash(target.story_hash);
-            if (story && this.is_grid()) {
+            if (story) {
                 this.story_pager.open(story);
             } else {
                 screen = 'titles';
@@ -357,6 +360,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.update_titles_bar();
         if (this.screen === 'titles') return;
         if (this.screen === 'story') {
+            if (this.is_following_unread()) {
+                this.story_pager.show_loading();
+                return;
+            }
             this.story_pager.close();
             this.set_screen('titles');
             return;
@@ -388,6 +395,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // reader.js reset_feed: the stories under an open story screen are gone.
     feed_reset: function () {
         if (!this.active || this.screen !== 'story') return;
+        if (this.is_following_unread()) {
+            this.story_pager.show_loading();
+            return;
+        }
         this.story_pager.close();
         this.set_screen('titles');
         this.tag_entry('titles', this.depth);
@@ -411,6 +422,32 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         this.push_entry('story', story.get('story_hash'));
         this.show_screen('story', { direction: 'push' });
+    },
+
+    // views/mobile_story_pager_view.js: Next unread ran out of unread stories in this list, so
+    // reader.js show_next_unread_story is loading more or moving on to the next feed. Keep the
+    // story screen up until that next unread story is selected.
+    follow_next_unread: function () {
+        this.following_unread = Date.now();
+    },
+
+    is_following_unread: function () {
+        return !!this.following_unread && Date.now() - this.following_unread < 20000;
+    },
+
+    story_selected: function (story, selected) {
+        if (!this.active || !selected || !this.is_following_unread()) return;
+        this.following_unread = null;
+        if (this.screen !== 'story') return;
+        // Reading continues on the story screen even when the next feed is a list, whose own
+        // list expands the same story underneath for when you go back.
+        var entry = this.utils.read_history_state(window.history.state, window.location.pathname);
+        this.story_pager.open(story);
+        if (entry.screen === 'story') {
+            this.tag_entry('story', this.depth, story.get('story_hash'));
+        } else {
+            this.push_entry('story', story.get('story_hash'));
+        }
     },
 
     // views/mobile_story_pager_view.js: paging to another story rewrites the story entry so

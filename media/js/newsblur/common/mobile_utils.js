@@ -15,6 +15,11 @@
     // and split and full have no second pane to put the story in, so they read as a list.
     var MOBILE_LAYOUTS = ['list', 'grid'];
     var MAX_WIDTH = 768;
+    // A phone turned sideways is wider than MAX_WIDTH but still short, so short touch screens
+    // count as phones too. Tablets in landscape keep the desktop layout.
+    var MAX_LANDSCAPE_HEIGHT = 500;
+    var MEDIA_QUERY = '(max-width: ' + MAX_WIDTH + 'px), ' +
+        '(pointer: coarse) and (max-height: ' + MAX_LANDSCAPE_HEIGHT + 'px)';
 
     // Fraction of the screen the swiped screen must cross before a release completes the move.
     var COMPLETE_FRACTION = 0.35;
@@ -33,8 +38,9 @@
         return mobile_story_layout(stored_layout) !== mobile_story_layout(new_layout);
     }
 
-    function is_mobile_width(width) {
-        return width > 0 && width <= MAX_WIDTH;
+    function is_phone_viewport(width, height, coarse_pointer) {
+        if (width > 0 && width <= MAX_WIDTH) return true;
+        return !!coarse_pointer && height > 0 && height <= MAX_LANDSCAPE_HEIGHT;
     }
 
     // Backbone routes that open a story list (media/js/newsblur/common/router.js). Everything
@@ -147,9 +153,10 @@
     return {
         MOBILE_LAYOUTS: MOBILE_LAYOUTS,
         MAX_WIDTH: MAX_WIDTH,
+        MEDIA_QUERY: MEDIA_QUERY,
         mobile_story_layout: mobile_story_layout,
         should_save_mobile_layout: should_save_mobile_layout,
-        is_mobile_width: is_mobile_width,
+        is_phone_viewport: is_phone_viewport,
         screen_for_path: screen_for_path,
         read_history_state: read_history_state,
         make_history_state: make_history_state,

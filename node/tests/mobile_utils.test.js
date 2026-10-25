@@ -128,9 +128,15 @@ test('a touch commits to an axis once it has moved far enough', function () {
     assert.equal(mobile_utils.gesture_axis(15, 14), 'vertical');
 });
 
-test('the phone layout covers phones and small tablets in portrait', function () {
-    assert.equal(mobile_utils.is_mobile_width(390), true);
-    assert.equal(mobile_utils.is_mobile_width(768), true);
-    assert.equal(mobile_utils.is_mobile_width(769), false);
-    assert.equal(mobile_utils.is_mobile_width(0), false);
+test('the phone layout covers phones in either orientation and small tablets in portrait', function () {
+    assert.equal(mobile_utils.is_phone_viewport(390, 844, true), true);
+    assert.equal(mobile_utils.is_phone_viewport(768, 1024, true), true);
+    // An iPhone turned sideways stays a phone.
+    assert.equal(mobile_utils.is_phone_viewport(844, 390, true), true);
+    // An iPad in landscape and a short desktop window keep the desktop layout.
+    assert.equal(mobile_utils.is_phone_viewport(1024, 768, true), false);
+    assert.equal(mobile_utils.is_phone_viewport(1200, 450, false), false);
+    assert.equal(mobile_utils.is_phone_viewport(0, 0, false), false);
+    assert.match(mobile_utils.MEDIA_QUERY, /max-width: 768px/);
+    assert.match(mobile_utils.MEDIA_QUERY, /pointer: coarse/);
 });

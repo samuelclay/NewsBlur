@@ -135,6 +135,22 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.$track.removeClass('NB-mobile-animating').css('transform', '');
     },
 
+    // Shown while Next unread opens another feed.
+    show_loading: function () {
+        if (this.story) {
+            NEWSBLUR.assets.stories.unbind('add', this.stories_added, this);
+            this.story.unbind('change:read_status change:starred', this.story_changed, this);
+            this.story = null;
+        }
+        _.each(this.pages, function (page) {
+            this.destroy_page(page);
+            page.story = null;
+        }, this);
+        this.pages.current.$el.removeClass('NB-mobile-story-page-empty').html($.make('div', {
+            className: 'NB-mobile-story-loading'
+        }, gettext('Loading the next unread story...')));
+    },
+
     neighbors: function (story) {
         var visible = NEWSBLUR.assets.stories.visible();
         var index = _.indexOf(visible, story);
@@ -493,7 +509,11 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         if (!this.story) return;
         var next = NEWSBLUR.assets.stories.get_next_unread_story();
         if (!next || next === this.story) {
-            NEWSBLUR.reader.show_next_unread_story();
+            // reader.js loads more of this list or opens the next feed with unreads, the same as
+            // the desktop Next unread button. The story screen waits for that story
+            // (mobile_layout_view.js story_selected).
+            this.mobile.follow_next_unread();
+            NEWSBLUR.reader.open_next_unread_story_across_feeds();
             return;
         }
         var around = this.neighbors(this.story);

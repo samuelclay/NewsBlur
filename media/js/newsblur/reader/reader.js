@@ -4724,6 +4724,9 @@
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
                 _.contains(['page', 'story'], view)) {
                 view = 'feed';
+                // reader.js: a phone (views/mobile_layout_view.js) reads split feeds as lists, so
+                // this fallback must not overwrite the Original or Story view saved on desktop.
+                if (this.flags.mobile) options.skip_save_view = true;
             }
 
             var $taskbar_buttons = $('.NB-taskbar-view .NB-taskbar-button');
@@ -4732,7 +4735,7 @@
             var $to_story_arrow = $('.NB-taskbar .NB-task-view-to-story-arrow');
             var $to_text_arrow = $('.NB-taskbar .NB-task-view-to-text-arrow');
 
-            if (!options.skip_save_type && this.story_view != view) {
+            if (!options.skip_save_type && !options.skip_save_view && this.story_view != view) {
                 this.model.view_setting(feed_id, { 'view': view });
             }
 
