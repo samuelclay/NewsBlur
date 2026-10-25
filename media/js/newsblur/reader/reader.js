@@ -6096,6 +6096,8 @@
                     $feed_item.on('mouseenter.feed_submenu', function () {
                         clearTimeout(hide_timer);
                         show_timer = setTimeout(function () {
+                            // Repositioning would undo expand_folder_picker's slide of an open picker.
+                            if (self.flags['showing_confirm_input_on_manage_menu'] && $feed_submenu.is(':visible')) return;
                             self.show_story_feed_submenu($feed_item, $feed_submenu, $manage_menu_container);
                         }, 100);
                     });
