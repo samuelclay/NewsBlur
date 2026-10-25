@@ -357,6 +357,7 @@ public class BlurDatabaseHelper {
 
     @Nullable
     public Feed getFeed(@Nullable String feedId) {
+        if (feedId == null) return null;
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId}, null, null, null, "1");
         Feed result = null;
         while (c.moveToNext()) {
