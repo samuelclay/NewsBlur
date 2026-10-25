@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Les commandes pour tablette sont de retour : affichez la liste des flux, les titres des articles ou l’article en plein écran, indépendamment. Faites glisser les séparateurs pour redimensionner les volets ; NewsBlur mémorise leurs largeurs.\n\nInclut l’interface en 21 langues et les commandes fixes de l’article suivant de la version 16.0."
+  },
+  "macos": {
+    "whats_new": "Cette mise à jour rend la lecture sur Mac plus agréable.\n\nEspace fait défiler l’article vers le bas, puis ouvre l’article non lu suivant une fois la fin atteinte. Maj-Espace fait défiler vers le haut et revient à l’article précédent lorsque vous atteignez le début. Choisissez la distance de défilement à chaque appui dans Préférences ou Raccourcis clavier.\n\nOuvrez Raccourcis clavier directement depuis le menu des paramètres de l’article.\n\nNewsBlur mémorise désormais la taille et la position de votre fenêtre lorsque vous quittez puis rouvrez l’application.\n\nLes noms des modèles de Demander à l’IA ont également été mis à jour."
   }
 }
