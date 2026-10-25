@@ -45,3 +45,24 @@ detection, the F-Droid build, and APK inspection. The build log confirms
 Submission and CI validation are complete. Upstream acceptance, the official
 signed F-Droid build, and public availability of 16.0.4 remain pending. At
 submission, the public package API reported 15.0.5 (290) as the suggested version.
+
+
+## Live follow-up: October 24, 2026 (Pacific time)
+
+The earlier submission state above is historical. MR !52997 was merged on
+October 19 at 15:43 UTC after the maintainer pinned the full source commit.
+Its final upstream pipeline passed. The official F-Droid build completed
+successfully on October 24 at 14:07 UTC for version 16.0.4 (296), from
+`1b32c5b65bdf577402c055d34246691d53e534d9`.
+
+Google Play production currently serves 16.0.4 (296) at 100% in 175 countries.
+F-Droid still publicly offers 15.0.5 (290), and the 296 APK URL returns 404.
+The last published signing run completed October 22 at 16:24 UTC and the
+last index update completed October 22 at 19:58 UTC, before this build.
+The build compatibility fix is accepted and working; official signing and
+publication remain pending with F-Droid. This account has no project/group
+access to trigger their publication. No new app or metadata change is needed
+based on the successful official build.
+
+Live source URLs, timestamps, and readbacks are in
+`fdroid-publication-status.json`. This follow-up does not claim publication.
