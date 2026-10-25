@@ -1963,8 +1963,8 @@ msgstr "Область дії фільтра класифікатора"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Для області класифікатора потрібен %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) і Grok (xAI). Перемикайтеся між ними будь-коли."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) і Grok (SpaceXSI). Перемикайтеся між ними будь-коли."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Упорядкувати й перемістити стрічки"

@@ -2197,8 +2197,8 @@ msgstr "نطاق تصفية المصنّف"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "يتطلب نطاق المصنّف %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic) وGPT (OpenAI) وGemini (Google) وGrok (xAI). يمكنك التبديل بينها في أي وقت."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic)، وGPT (OpenAI)، وGemini (Google)، وGrok (SpaceXSI). بدّل بينها في أي وقت."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "تنظيم الخلاصات وإعادة ترتيبها"

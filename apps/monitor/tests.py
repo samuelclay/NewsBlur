@@ -81,3 +81,49 @@ class Test_ScrapingBeeMonitor(TestCase):
         body = response.content.decode("utf-8")
         self.assertIn('scrapingbee_usage{metric="calls_today_total"} 0', body)
         self.assertNotIn('metric="credits_used"', body)
+
+
+class Test_LLMCostPricing(TestCase):
+    """Model prices in utils/llm_costs.py for the models named in utils/llm_models.py."""
+
+    def test_every_current_model_has_a_price_and_provider(self):
+        from utils import llm_models
+        from utils.llm_costs import MODEL_PRICING, MODEL_PROVIDERS
+
+        current_models = {
+            llm_models.ANTHROPIC_MODEL: "anthropic",
+            llm_models.ANTHROPIC_CHAT_MODEL: "anthropic",
+            llm_models.ANTHROPIC_ARCHIVE_MODEL: "anthropic",
+            llm_models.OPENAI_MODEL: "openai",
+            llm_models.GOOGLE_MODEL: "google",
+            llm_models.XAI_MODEL: "xai",
+        }
+        for model, provider in current_models.items():
+            self.assertIn(model, MODEL_PRICING, f"{model} has no price, so its usage records $0")
+            self.assertEqual(MODEL_PROVIDERS.get(model), provider)
+
+    def test_flat_priced_model(self):
+        from utils.llm_costs import LLMCostTracker
+
+        cost = LLMCostTracker.calculate_cost("claude-sonnet-5-5", 1_000_000, 1_000_000)
+        self.assertAlmostEqual(cost, 2.00 + 10.00)
+
+    def test_haiku_5_5_short_prompt_uses_base_rates(self):
+        from utils.llm_costs import LLMCostTracker
+
+        cost = LLMCostTracker.calculate_cost("claude-haiku-5-5", 100_000, 1_000)
+        self.assertAlmostEqual(cost, 100_000 / 1_000_000 * 0.10 + 1_000 / 1_000_000 * 0.50)
+
+    def test_haiku_5_5_long_prompt_bills_whole_request_at_long_context_rates(self):
+        from utils.llm_costs import LLMCostTracker
+
+        cost = LLMCostTracker.calculate_cost("claude-haiku-5-5", 100_001, 1_000)
+        self.assertAlmostEqual(cost, 100_001 / 1_000_000 * 0.50 + 1_000 / 1_000_000 * 2.50)
+
+    def test_grok_4_7_doubles_at_200k_prompt_tokens(self):
+        from utils.llm_costs import LLMCostTracker
+
+        below = LLMCostTracker.calculate_cost("grok-4.7", 199_999, 1_000)
+        at_threshold = LLMCostTracker.calculate_cost("grok-4.7", 200_000, 1_000)
+        self.assertAlmostEqual(below, 199_999 / 1_000_000 * 2.00 + 1_000 / 1_000_000 * 6.00)
+        self.assertAlmostEqual(at_threshold, 200_000 / 1_000_000 * 4.00 + 1_000 / 1_000_000 * 12.00)

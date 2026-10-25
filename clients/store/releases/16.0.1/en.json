@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Tablet controls are back: expand the feed list, story titles, or article independently to full screen. Drag the dividers to resize your panes; NewsBlur remembers your widths.\n\nIncludes support for 21 interface languages and fixed-position Next story controls from 16.0."
+  },
+  "macos": {
+    "whats_new": "This update makes reading on Mac more comfortable.\n\nSpace scrolls down an article, then moves to the next unread story when you reach the end. Shift-Space scrolls up and returns to the previous story at the top. Choose how far each press scrolls in Preferences or Keyboard Shortcuts.\n\nOpen Keyboard Shortcuts directly from the story settings menu.\n\nNewsBlur now remembers your window size and position when you quit and reopen it.\n\nThe Ask AI model names have also been updated."
   }
 }

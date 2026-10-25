@@ -712,13 +712,14 @@
 "Override system with brightness" = "明るさでシステム設定を上書き";
 "Page Down" = "ページダウン";
 "Page Up" = "ページアップ";
-"Page down" = "ページを下へ";
-"Page up" = "ページを上へ";
+"Page down; next unread story at the bottom" = "Page Downキーでスクロール。下端では次の未読記事を表示";
+"Page up; previous story at the top" = "Page Upキーでスクロール。上端では前の記事を表示";
 "Password" = "パスワード";
 "Paste a story title from the page" = "ページから記事のタイトルを貼り付け";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "URLを貼り付けると、RSSがなくてもNewsBlurがページからフィードを作成します。";
 "Pause" = "一時停止";
 "Pause Listening" = "読み上げを一時停止";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "SpaceキーまたはShift-Spaceキーでスクロールする、表示中の記事に対する割合";
 "Permanently delete account" = "アカウントを完全に削除";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "NewsBlurで使用する言語を選択してください。この設定はいつでもNewsBlurメニューで変更できます。";
@@ -948,6 +949,8 @@
 "Small [text size]" = "小";
 "Some feed icons couldn’t load." = "一部のフィードアイコンを読み込めませんでした。";
 "Sources" = "ソース";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "SpaceキーとShift-Spaceキーで、表示中の記事のこの割合分だけスクロールします。下端では、Spaceキーで次の未読記事を開きます。上端では、Shift-Spaceキーで前の記事を開きます。";
+"Space scroll amount" = "Spaceキーでスクロールする量";
 "Spacing" = "間隔";
 "Speaker boost" = "スピーカー音量を増幅";
 "Speed" = "速度";

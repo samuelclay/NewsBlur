@@ -1878,8 +1878,8 @@ msgstr "Escopo do filtro de classificação"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "O escopo do classificador requer %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) e Grok (xAI). Alterne entre eles a qualquer momento."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) e Grok (SpaceXSI). Alterne entre eles a qualquer momento."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Limpar e reorganizar feeds"

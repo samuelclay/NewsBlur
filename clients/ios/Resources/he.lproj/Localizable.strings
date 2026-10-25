@@ -712,13 +712,14 @@
 "Override system with brightness" = "עקיפת הגדרות המערכת באמצעות הבהירות";
 "Page Down" = "עמוד למטה";
 "Page Up" = "עמוד למעלה";
-"Page down" = "עמוד למטה";
-"Page up" = "עמוד למעלה";
+"Page down; next unread story at the bottom" = "עמוד למטה; הכתבה הבאה שלא נקראה בתחתית";
+"Page up; previous story at the top" = "עמוד למעלה; הכתבה הקודמת בראש";
 "Password" = "סיסמה";
 "Paste a story title from the page" = "הדביקו כותרת של כתבה מהעמוד";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "הדביקו כתובת URL כלשהי ו-NewsBlur ייצור פיד מהדף, גם ללא RSS.";
 "Pause" = "השהה";
 "Pause Listening" = "השהיית ההאזנה";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "אחוז מהכתבה המוצגת שנגלל באמצעות רווח או Shift-Rווח";
 "Permanently delete account" = "מחיקת החשבון לצמיתות";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בהעדפות.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "בחרו את השפה שבה תרצו ש־NewsBlur ישתמש. אפשר לשנות זאת בכל עת בתפריט NewsBlur.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "קטן";
 "Some feed icons couldn’t load." = "חלק מסמלי הפידים לא נטענו.";
 "Sources" = "מקורות";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "רווח ו-Shift-Rווח גוללים באחוז הזה של הכתבה המוצגת. בתחתית, רווח פותח את הכתבה הבאה שלא נקראה. בראש, Shift-Rווח פותח את הכתבה הקודמת.";
+"Space scroll amount" = "כמות הגלילה באמצעות רווח";
 "Spacing" = "מרווחים";
 "Speaker boost" = "הגברת קול הדובר";
 "Speed" = "מהירות";

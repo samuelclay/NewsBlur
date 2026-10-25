@@ -1291,8 +1291,10 @@ msgstr "טכנולוגיה אזרחית"
 msgid "Classification failed, please try again"
 msgstr "הסיווג נכשל, נסו שוב"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו־Grok (xAI). אפשר לעבור ביניהם בכל עת."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו־Grok (SpaceXSI). אפשר לעבור ביניהם בכל עת."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "לחצו על מקור כלשהו כדי לקרוא את הגרסה הזו במקום, או סמנו את כל הכפילויות כנקראו בבת אחת"

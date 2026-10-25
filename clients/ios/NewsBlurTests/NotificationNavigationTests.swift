@@ -451,6 +451,186 @@ import XCTest
 }
 
 @MainActor final class Test_MacWindowMenu: XCTestCase {
+#if targetEnvironment(macCatalyst)
+    func test_closingMainWindowSavesSizeAndPositionBeforeReleasingIt() throws {
+        let defaults = UserDefaults.standard
+        let key = "mac_main_window_frame"
+        let previous = defaults.object(forKey: key)
+        defaults.removeObject(forKey: key)
+        defer { defaults.set(previous, forKey: key) }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let frame = scene.effectiveGeometry.systemFrame
+        XCTAssertGreaterThan(frame.width, 0)
+        let delegate = SceneDelegate()
+        let app = NewsBlurAppDelegate()
+        let window = UIWindow(windowScene: scene)
+        delegate.appDelegate = app
+        delegate.window = window
+        app.window = window
+
+        // NotificationNavigationTests.swift exercises the actual close callback without closing the test host window.
+        delegate.sceneDidDisconnect(scene)
+
+        let saved = try XCTUnwrap(defaults.string(forKey: key), "Closing must persist the frame for the next scene and app launch")
+        XCTAssertEqual(NSCoder.cgRect(for: saved), frame)
+        XCTAssertNil(app.window)
+    }
+
+    func test_freshSceneRestoresSavedFrameBeforeStartupGeometryCanOverwriteIt() throws {
+        let saved = CGRect(x: -240, y: 90, width: 1180, height: 780)
+        try withSavedWindowFrame(NSCoder.string(for: saved)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+
+            connectWindowScene(delegate, scene: scene)
+
+            XCTAssertEqual(delegate.requestedFrames, [saved])
+            XCTAssertEqual(app.preparationCount, 1)
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), saved, "The launch frame must not overwrite the pending restoration")
+
+            // NotificationNavigationTests.swift simulates the native geometry result, including display constraints.
+            let constrained = CGRect(x: 30, y: 90, width: 1180, height: 780)
+            delegate.currentFrame = constrained
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            XCTAssertEqual(savedWindowFrame(), constrained)
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertNil(app.window)
+
+            // NotificationNavigationTests.swift also covers UIKit reconnecting the existing scene delegate.
+            delegate.currentFrame = CGRect(x: 0, y: 0, width: 800, height: 600)
+            connectWindowScene(delegate, scene: scene)
+            XCTAssertEqual(delegate.requestedFrames, [saved, constrained])
+            delegate.sceneDidDisconnect(scene)
+
+            // NotificationNavigationTests.swift creates a fresh delegate, as both Dock reopening and relaunch do.
+            let (reopened, _, reopenedApp) = try makeWindowSceneProbe()
+            reopenedApp.window = nil
+            connectWindowScene(reopened, scene: scene)
+            XCTAssertEqual(reopened.requestedFrames, [constrained])
+        }
+    }
+
+    func test_windowMovesAndResizesPersistWithoutClosing() throws {
+        try withSavedWindowFrame(nil) {
+            let (delegate, scene, _) = try makeWindowSceneProbe()
+            for frame in [CGRect(x: 75, y: 130, width: 900, height: 700),
+                          CGRect(x: 200, y: 50, width: 1350, height: 850)] {
+                delegate.currentFrame = frame
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                XCTAssertEqual(savedWindowFrame(), frame)
+            }
+            delegate.currentFrame = CGRect(x: 20, y: 40, width: 1000, height: 800)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), delegate.currentFrame)
+            delegate.currentFrame = CGRect(x: 25, y: 45, width: 1100, height: 900)
+            delegate.sceneDidEnterBackground(scene)
+            XCTAssertEqual(savedWindowFrame(), delegate.currentFrame)
+        }
+    }
+
+    func test_disconnectAfterWindowDetachesStillAllowsDockReopening() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            app.window = nil
+            let oldToolbar = scene.titlebar?.toolbar
+            defer { scene.titlebar?.toolbar = oldToolbar }
+            connectWindowScene(delegate, scene: scene)
+            delegate.currentFrame = normal
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.window?.windowScene = nil
+            delegate.currentFrame = .zero
+
+            delegate.sceneDidDisconnect(scene)
+
+            XCTAssertNil(app.window)
+            XCTAssertEqual(savedWindowFrame(), normal)
+        }
+    }
+
+    func test_fullScreenAndInvalidGeometryPreserveNormalWindowFrame() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            delegate.fullScreen = true
+            delegate.currentFrame = CGRect(x: 0, y: 0, width: 2560, height: 1440)
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneWillResignActive(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            delegate.fullScreen = false
+            for invalid in [CGRect.zero, CGRect(x: 0, y: 0, width: -1, height: 600),
+                            CGRect(x: CGFloat.infinity, y: 0, width: 900, height: 600)] {
+                delegate.currentFrame = invalid
+                delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+                XCTAssertEqual(savedWindowFrame(), normal)
+            }
+            delegate.fullScreen = true
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            XCTAssertNil(app.window)
+        }
+    }
+
+    func test_unownedSceneDoesNotOverwriteMainWindowFrameOrReleaseItsWindow() throws {
+        let normal = CGRect(x: 100, y: 80, width: 1100, height: 750)
+        try withSavedWindowFrame(NSCoder.string(for: normal)) {
+            let (delegate, scene, app) = try makeWindowSceneProbe()
+            let otherWindow = UIWindow(windowScene: scene)
+            app.window = otherWindow
+            delegate.windowScene(scene, didUpdateEffectiveGeometry: scene.effectiveGeometry)
+            delegate.sceneDidDisconnect(scene)
+            XCTAssertEqual(savedWindowFrame(), normal)
+            XCTAssertTrue(app.window === otherWindow)
+        }
+    }
+
+    func test_corruptSavedFrameDoesNotRequestInvalidGeometry() throws {
+        for saved in ["not a rectangle", NSCoder.string(for: CGRect.zero), "{{0, 0}, {nan, 800}}"] {
+            try withSavedWindowFrame(saved) {
+                let (delegate, scene, app) = try makeWindowSceneProbe()
+                app.window = nil
+                let oldToolbar = scene.titlebar?.toolbar
+                defer { scene.titlebar?.toolbar = oldToolbar }
+                connectWindowScene(delegate, scene: scene)
+                XCTAssertTrue(delegate.requestedFrames.isEmpty)
+            }
+        }
+    }
+
+    private func withSavedWindowFrame(_ value: String?, body: () throws -> Void) rethrows {
+        let defaults = UserDefaults.standard
+        let key = "mac_main_window_frame"
+        let previous = defaults.object(forKey: key)
+        defaults.set(value, forKey: key)
+        defer { defaults.set(previous, forKey: key) }
+        try body()
+    }
+
+    private func savedWindowFrame() -> CGRect? {
+        UserDefaults.standard.string(forKey: "mac_main_window_frame").map { NSCoder.cgRect(for: $0) }
+    }
+
+    private func makeWindowSceneProbe() throws -> (MacWindowSceneProbe, UIWindowScene, NotificationNavigationApp) {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let delegate = MacWindowSceneProbe()
+        let app = NotificationNavigationApp()
+        delegate.appDelegate = app
+        delegate.window = UIWindow(windowScene: scene)
+        app.window = delegate.window
+        return (delegate, scene, app)
+    }
+
+    private func connectWindowScene(_ delegate: SceneDelegate, scene: UIWindowScene) {
+        let selector = NSSelectorFromString("scene:willConnectToSession:options:")
+        typealias Connect = @convention(c) (AnyObject, Selector, UIScene, UISceneSession, AnyObject) -> Void
+        let connect = unsafeBitCast(delegate.method(for: selector), to: Connect.self)
+        connect(delegate, selector, scene, scene.session, NotificationSceneConnectionOptions())
+    }
+#endif
     func test_fileMenuKeepsSystemCloseCommandsThroughRebuilds() throws {
         // NotificationNavigationTests.swift checks the real menu transformation preserves native responder routing.
         let closeCommand = UIKeyCommand(title: "Close Window", action: NSSelectorFromString("performClose:"),
@@ -468,6 +648,20 @@ import XCTest
         }
     }
 }
+
+#if targetEnvironment(macCatalyst)
+@MainActor private final class MacWindowSceneProbe: SceneDelegate {
+    var currentFrame = CGRect(x: 0, y: 0, width: 800, height: 600)
+    var fullScreen = false
+    var requestedFrames: [CGRect] = []
+
+    override func macWindowFrame(in scene: UIWindowScene) -> CGRect { currentFrame }
+    override func macWindowIsFullScreen(in scene: UIWindowScene) -> Bool { fullScreen }
+    override func requestMacWindowFrame(_ frame: CGRect, in scene: UIWindowScene, errorHandler: @escaping (Error) -> Void) {
+        requestedFrames.append(frame)
+    }
+}
+#endif
 
 @MainActor final class Test_StoryTraversalCompletion: XCTestCase {
     func test_doneTapDoesNotStartPagingWhenUnreadCountChangesBeforeChromeRefreshes() {

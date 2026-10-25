@@ -1874,10 +1874,10 @@ msgstr "Filterbereik van de classifier"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Het bereik van de classifier vereist %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) en Grok (xAI). Je kunt op elk moment tussen deze modellen"
-" wisselen."
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) en Grok (SpaceXSI). Je kunt er op elk moment tussen "
+"wisselen."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Feeds opschonen en herschikken"

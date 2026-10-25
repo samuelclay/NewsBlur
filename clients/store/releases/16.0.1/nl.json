@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "De tabletbediening is terug: open de feedlijst, artikeltitels of het artikel afzonderlijk op volledig scherm. Versleep de scheidingslijnen om de panelen te vergroten of verkleinen; NewsBlur onthoudt hun breedtes.\n\nInclusief de interface in 21 talen en de vaste knoppen voor het volgende artikel uit versie 16.0."
+  },
+  "macos": {
+    "whats_new": "Deze update maakt lezen op de Mac prettiger.\n\nSpatie scrolt omlaag door een artikel en opent aan het einde het volgende ongelezen artikel. Shift-Spatie scrolt omhoog en gaat aan het begin terug naar het vorige artikel. Kies in Voorkeuren of Sneltoetsen hoe ver elke druk op de toets scrolt.\n\nOpen Sneltoetsen rechtstreeks vanuit het menu met artikelinstellingen.\n\nNewsBlur onthoudt nu de grootte en positie van je venster wanneer je de app afsluit en opnieuw opent.\n\nOok de modelnamen in Vraag AI zijn bijgewerkt."
   }
 }

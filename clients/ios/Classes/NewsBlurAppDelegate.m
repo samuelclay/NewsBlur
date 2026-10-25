@@ -1177,8 +1177,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showKeyboardShortcuts {
-    [self hidePopover];
-
     if (@available(iOS 15.0, *)) {
         KeyboardShortcutsHostingController *shortcutsVC = [[KeyboardShortcutsHostingController alloc] init];
 
@@ -1189,8 +1187,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             shortcutsVC.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
-        [feedsNavigationController presentViewController:shortcutsVC animated:YES completion:^{
-            [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
+        // NewsBlurAppDelegate.m waits for the story settings popover before presenting its shortcuts dialog.
+        [self hidePopoverAnimated:YES completion:^{
+            [self.navigationControllerForPopover presentViewController:shortcutsVC animated:YES completion:^{
+                [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
+            }];
         }];
     }
 }

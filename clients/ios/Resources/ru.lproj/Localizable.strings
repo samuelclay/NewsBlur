@@ -712,13 +712,14 @@
 "Override system with brightness" = "Выбирать тему по яркости экрана";
 "Page Down" = "Страница вниз";
 "Page Up" = "Страница вверх";
-"Page down" = "Следующая страница";
-"Page up" = "Предыдущая страница";
+"Page down; next unread story at the bottom" = "Прокрутка вниз; внизу — следующая непрочитанная статья";
+"Page up; previous story at the top" = "Прокрутка вверх; вверху — предыдущая статья";
 "Password" = "Пароль";
 "Paste a story title from the page" = "Вставьте заголовок статьи со страницы";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Вставьте любой URL, и NewsBlur создаст ленту из этой страницы, даже если на ней нет RSS.";
 "Pause" = "Пауза";
 "Pause Listening" = "Приостановить прослушивание";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Процент видимой части статьи, прокручиваемый клавишами «Пробел» или Shift+Пробел";
 "Permanently delete account" = "Удалить аккаунт навсегда";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Выберите язык, который будет использовать NewsBlur. Вы можете изменить его в любое время в настройках.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Выберите язык, который хотите использовать в NewsBlur. Его можно изменить в любой момент в меню NewsBlur.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Мелкий";
 "Some feed icons couldn’t load." = "Не удалось загрузить некоторые значки лент.";
 "Sources" = "Источники";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Пробел и Shift+Пробел прокручивают видимую часть статьи на указанный процент. Внизу Пробел открывает следующую непрочитанную статью. Вверху Shift+Пробел открывает предыдущую статью.";
+"Space scroll amount" = "Шаг прокрутки клавишей «Пробел»";
 "Spacing" = "Интервалы";
 "Speaker boost" = "Усиление голоса";
 "Speed" = "Скорость";

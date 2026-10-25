@@ -1359,9 +1359,11 @@ msgstr "Technologie obywatelskie"
 msgid "Classification failed, please try again"
 msgstr "Klasyfikacja nie powiodła się. Spróbuj ponownie."
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) i Grok (xAI). Możesz przełączać się między nimi w "
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) i Grok (SpaceXSI). Możesz przełączać się między nimi w "
 "dowolnym momencie."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"

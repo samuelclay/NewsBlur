@@ -712,13 +712,14 @@
 "Override system with brightness" = "Systeeminstelling vervangen door helderheid";
 "Page Down" = "Pagina omlaag";
 "Page Up" = "Pagina omhoog";
-"Page down" = "Pagina omlaag";
-"Page up" = "Pagina omhoog";
+"Page down; next unread story at the bottom" = "Pagina omlaag; onderaan het volgende ongelezen artikel";
+"Page up; previous story at the top" = "Pagina omhoog; bovenaan het vorige artikel";
 "Password" = "Wachtwoord";
 "Paste a story title from the page" = "Plak een artikeltitel van de pagina";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Plak een URL en NewsBlur maakt een feed van de pagina, zelfs zonder RSS.";
 "Pause" = "Pauzeren";
 "Pause Listening" = "Luisteren pauzeren";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Percentage van het zichtbare artikel waarover je scrolt met Spatie of Shift-Spatie";
 "Permanently delete account" = "Account definitief verwijderen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Kies de taal die NewsBlur moet gebruiken. Je kunt dit altijd wijzigen in Voorkeuren.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Kies de taal die je in NewsBlur wilt gebruiken. Je kunt deze op elk moment wijzigen via het NewsBlur-menu.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Sommige feedpictogrammen konden niet worden geladen.";
 "Sources" = "Bronnen";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Met Spatie en Shift-Spatie scrol je met dit percentage van het zichtbare artikel. Onderaan opent Spatie het volgende ongelezen artikel. Bovenaan opent Shift-Spatie het vorige artikel.";
+"Space scroll amount" = "Scrollafstand met Spatie";
 "Spacing" = "Tussenruimte";
 "Speaker boost" = "Stemversterking";
 "Speed" = "Snelheid";

@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-10-22T01:37:30-04:00</updated>
+  <updated>2026-10-25T13:17:47-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,75 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications</title>
+    <link href="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/" rel="alternate" type="text/html" title="NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications" />
+    <published>2026-10-22T00:00:00-04:00</published>
+    <updated>2026-10-22T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/">
+      <![CDATA[<p>On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.</p>
+
+<p>Put together, they give you a way to follow the news while you work. Headlines from the folders you care about sit one swipe away, and new stories from the handful of sites you never want to miss show up in the corner of your screen. You don’t have to pick up your phone to check, and you don’t have to open a reader and lose twenty minutes in it.</p>
+
+<h3 id="a-dashboard-made-of-widgets">A dashboard made of widgets</h3>
+
+<p>Every NewsBlur widget now has its own source. Add one for All Site Stories, another for your Tech folder, and another for a single site you follow closely. Each one shows its own newest unread stories. Stack them in Notification Center or put them on your desktop, and you’ve got the NewsBlur dashboard living right in macOS.</p>
+
+<p><img src="/assets/macos-16-widgets.jpg" alt="Mac Notification Center with a Weather widget above three NewsBlur widgets showing tech news, San Francisco news, and newsletters" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Widgets come in two sizes. Medium shows three stories and large shows six. They follow your training, so stories you’ve trained away stay out of them. Click a story and it opens right in the Mac app.</p>
+
+<h3 id="setting-up-a-widget">Setting up a widget</h3>
+
+<p>Click the date and time in the menu bar to open Notification Center, then click <strong>Edit Widgets</strong> at the bottom. Search for NewsBlur, pick a size, and add it. If you’d rather have it on your desktop, right click the desktop and choose <strong>Edit Widgets</strong> instead.</p>
+
+<p>New widgets start with All Site Stories. To change that, right click the widget, choose <strong>Edit Widget</strong>, and pick a folder or site. Folders are listed first, then every site you subscribe to, and there’s a search field if your list is long. Each widget keeps its own choice, so you can add as many as you want.</p>
+
+<p>If you already had a NewsBlur widget, remove it and add it again to get the new version.</p>
+
+<h3 id="notifications-from-the-sites-you-pick">Notifications from the sites you pick</h3>
+
+<p>Widgets are for glancing. Notifications are for the stories you don’t want to wait on. NewsBlur can send a native Mac notification for new stories on any site, and clicking one takes you straight to that story in the app.</p>
+
+<p><img src="/assets/macos-16-notifications.jpg" alt="A stack of NewsBlur story notifications in Mac Notification Center from the Daily Briefing, MacRumors, Axios, and The New York Times" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>To turn them on, open a site and choose <strong>Site &gt; Notifications…</strong> from the menu bar. Pick whether you want every unread story or only Focus stories, and turn on <strong>iOS</strong>, which covers both your iPhone and the Mac app. <strong>File &gt; Notifications</strong> (Command Shift N) lists every site you’ve set up, so you can adjust them all in one place.</p>
+
+<p>Focus is what keeps this from getting noisy. If you’ve trained a site, only the stories you like will reach you. And if a busy site only matters when it mentions a certain topic or author, <a href="/2026/03/27/super-dislikes-and-classifier-notifications/">per-classifier notifications</a> let you get pinged for just those stories. Those are available on Premium Archive and Premium Pro.</p>
+
+<h3 id="the-workflow">The workflow</h3>
+
+<p>Here’s a setup that works well. Put a large widget at the top of Notification Center for the folder you read most, and a couple of medium widgets below it for folders you check less often. Turn on notifications for only the few sites where timing matters, set to Focus. Then get back to work.</p>
+
+<p>When you want a break, swipe in from the right edge of your trackpad with two fingers and the whole dashboard is there. When something you care about is published, it comes to you. Either way your phone stays face down on the desk.</p>
+
+<h3 id="everything-else-in-newsblur-16-for-mac">Everything else in NewsBlur 16 for Mac</h3>
+
+<ul>
+  <li>NewsBlur for Mac now speaks 21 languages. Choose one from the NewsBlur menu, or follow your Mac’s language settings. Arabic and Hebrew read right to left, and your stories stay exactly as published. More about that in <a href="/2026/10/14/newsblur-in-your-language/">NewsBlur in your language</a>.</li>
+  <li>Clicking a story slides to it in the right direction.</li>
+  <li>The sidebar has more balanced spacing and compact filters, with Add Site and Settings kept separate.</li>
+  <li>Command W closes the window while NewsBlur keeps running. Click the Dock icon to bring it back, or press Command Q to quit.</li>
+  <li>Keyboard shortcuts work while the story list has focus, and <strong>N</strong> opens the first unread story.</li>
+  <li><strong>Space</strong> pages down through a story, and when you reach the bottom it opens the next unread story, just like on the web. <strong>Shift Space</strong> pages back up and opens the previous story at the top. You can set how far each press scrolls in Preferences or in the Keyboard Shortcuts dialog.</li>
+</ul>
+
+<p>NewsBlur 16 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">Mac App Store</a>. If you’ve found a widget setup you like, or something isn’t working the way you’d expect, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title>
@@ -2217,95 +2286,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Global and folder-scoped intelligence training: Train once, apply everywhere</title>
-    <link href="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/" rel="alternate" type="text/html" title="Global and folder-scoped intelligence training: Train once, apply everywhere" />
-    <published>2026-02-02T00:00:00-05:00</published>
-    <updated>2026-02-02T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/">
-      <![CDATA[<p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
-
-<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
-
-<h3 id="three-scope-levels">Three scope levels</h3>
-
-<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
-
-<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
-<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<ul>
-  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
-  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
-  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
-</ul>
-
-<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
-
-<h3 id="real-world-examples">Real-world examples</h3>
-
-<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
-
-<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
-
-<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
-
-<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
-
-<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
-
-<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
-<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
-
-<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
-
-<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
-
-<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
-
-<h3 id="subscription-tiers">Subscription tiers</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Tier Required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Per-site classifiers (default)</td>
-      <td>Free</td>
-    </tr>
-    <tr>
-      <td>Global and folder-scoped classifiers</td>
-      <td>Premium Archive</td>
-    </tr>
-    <tr>
-      <td>Manage Training scope filter</td>
-      <td>Premium Archive</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s...]]>
     </summary>
     
   </entry>

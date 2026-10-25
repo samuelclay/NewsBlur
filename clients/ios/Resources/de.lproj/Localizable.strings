@@ -712,13 +712,14 @@
 "Override system with brightness" = "Systemeinstellung mit Helligkeit überschreiben";
 "Page Down" = "Bild ab";
 "Page Up" = "Bild auf";
-"Page down" = "Seite nach unten";
-"Page up" = "Seite nach oben";
+"Page down; next unread story at the bottom" = "Bild-ab; am unteren Rand nächster ungelesener Artikel";
+"Page up; previous story at the top" = "Bild-auf; am oberen Rand vorheriger Artikel";
 "Password" = "Passwort";
 "Paste a story title from the page" = "Füge einen Artikeltitel von der Seite ein";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Füge eine beliebige URL ein und NewsBlur erstellt einen Feed von der Seite, auch ohne RSS.";
 "Pause" = "Pause";
 "Pause Listening" = "Wiedergabe pausieren";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Prozentsatz des sichtbaren Artikels, um den die Leertaste oder Umschalt+Leertaste scrollt";
 "Permanently delete account" = "Konto dauerhaft löschen";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Wähle die Sprache aus, die NewsBlur verwenden soll. Du kannst dies jederzeit in den Einstellungen ändern.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Wähle die Sprache, die NewsBlur verwenden soll. Du kannst sie jederzeit im NewsBlur-Menü ändern.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Klein";
 "Some feed icons couldn’t load." = "Einige Feed-Symbole konnten nicht geladen werden.";
 "Sources" = "Quellen";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Leertaste und Umschalt+Leertaste scrollen um diesen Prozentsatz des sichtbaren Artikels. Am unteren Rand öffnet die Leertaste den nächsten ungelesenen Artikel. Am oberen Rand öffnet Umschalt+Leertaste den vorherigen Artikel.";
+"Space scroll amount" = "Scrollweite der Leertaste";
 "Spacing" = "Abstand";
 "Speaker boost" = "Stimmverstärkung";
 "Speed" = "Geschwindigkeit";

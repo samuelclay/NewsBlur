@@ -712,13 +712,14 @@
 "Override system with brightness" = "Remplacer les paramètres système avec la luminosité";
 "Page Down" = "Page suivante";
 "Page Up" = "Page précédente";
-"Page down" = "Page suivante";
-"Page up" = "Page précédente";
+"Page down; next unread story at the bottom" = "Page suivante ; article non lu suivant en bas";
+"Page up; previous story at the top" = "Page précédente ; article précédent en haut";
 "Password" = "Mot de passe";
 "Paste a story title from the page" = "Collez le titre d’un article de la page";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Collez n’importe quelle URL et NewsBlur créera un flux à partir de la page, même sans RSS.";
 "Pause" = "Mettre en pause";
 "Pause Listening" = "Mettre l’écoute en pause";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Pourcentage de l’article visible parcouru avec la barre d’espace ou Maj + barre d’espace";
 "Permanently delete account" = "Supprimer définitivement le compte";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Choisissez la langue que NewsBlur utilisera. Vous pouvez la modifier à tout moment dans les Préférences.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Choisissez la langue que vous souhaitez utiliser dans NewsBlur. Vous pouvez la changer à tout moment dans le menu NewsBlur.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Petit";
 "Some feed icons couldn’t load." = "Certaines icônes de flux n’ont pas pu être chargées.";
 "Sources" = "Sources";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barre d’espace et Maj + barre d’espace font défiler l’article visible de ce pourcentage. En bas, la barre d’espace ouvre l’article non lu suivant. En haut, Maj + barre d’espace ouvre l’article précédent.";
+"Space scroll amount" = "Distance de défilement de la barre d’espace";
 "Spacing" = "Espacement";
 "Speaker boost" = "Amplification de la voix";
 "Speed" = "Vitesse";

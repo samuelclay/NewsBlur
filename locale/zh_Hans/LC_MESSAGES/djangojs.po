@@ -1778,8 +1778,8 @@ msgstr "分类器筛选范围"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分类器范围需要 %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你可以随时切换。"
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（SpaceXSI）。随时在它们之间切换。"
 
 msgid "Cleanup and rearrange feeds"
 msgstr "整理并重新排列订阅源"

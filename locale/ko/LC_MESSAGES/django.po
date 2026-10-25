@@ -1231,8 +1231,10 @@ msgstr "시빅 테크"
 msgid "Classification failed, please try again"
 msgstr "분류에 실패했습니다. 다시 시도해 주세요."
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude(Anthropic), GPT(OpenAI), Gemini(Google), Grok(xAI). 언제든지 서로 전환할 수 있습니다."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), Grok (SpaceXSI) 중에서 언제든지 전환할 수 있습니다."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "원하는 출처를 클릭해 해당 버전을 읽거나, 중복 항목을 한 번에 모두 읽음으로 표시하세요"

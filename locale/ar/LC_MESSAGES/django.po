@@ -1402,8 +1402,10 @@ msgstr "التقنية المدنية"
 msgid "Classification failed, please try again"
 msgstr "فشل التصنيف، يُرجى المحاولة مرة أخرى"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude (Anthropic) وGPT (OpenAI) وGemini (Google) وGrok (xAI). يمكنك التبديل بينها في أي وقت."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude (Anthropic)، وGPT (OpenAI)، وGemini (Google)، وGrok (SpaceXSI). يمكنك التبديل بينها في أي وقت."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "انقر على أي مصدر لقراءة تلك النسخة بدلًا من ذلك، أو حدّد جميع النسخ المكررة كمقروءة دفعة واحدة"

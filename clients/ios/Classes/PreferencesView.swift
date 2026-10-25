@@ -957,6 +957,18 @@ class PreferencesViewModel: ObservableObject {
                 iconColor: .green,
                 items: [
                     PreferenceItem(
+                        title: NBLocalization.text("Space scroll amount"),
+                        icon: "keyboard",
+                        iconColor: .green,
+                        type: .multiValue(
+                            key: KeyboardPagingPreferences.key,
+                            titles: KeyboardPagingPreferences.percentages.map { KeyboardPagingPreferences.title(for: $0) },
+                            values: KeyboardPagingPreferences.percentages,
+                            defaultValue: KeyboardPagingPreferences.defaultPercentage
+                        ),
+                        subtitle: NBLocalization.text("Percentage of the visible story scrolled by Space or Shift-Space")
+                    ),
+                    PreferenceItem(
                         title: NBLocalization.text("Scroll horizontally"),
                         icon: "arrow.left.arrow.right.square",
                         iconColor: .green,

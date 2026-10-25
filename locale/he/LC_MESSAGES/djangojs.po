@@ -1870,8 +1870,8 @@ msgstr "היקף מסנן המסווג"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "הגדרת תחום המסווג דורשת %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו-Grok (xAI). אפשר לעבור ביניהם בכל עת."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic),‏ GPT (OpenAI),‏ Gemini (Google) ו־Grok (SpaceXSI). אפשר לעבור ביניהם בכל עת."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "ניקוי וסידור מחדש של הפידים"

@@ -712,13 +712,14 @@
 "Override system with brightness" = "Substituir a configuração do sistema pelo brilho";
 "Page Down" = "Página abaixo";
 "Page Up" = "Página acima";
-"Page down" = "Página para baixo";
-"Page up" = "Página acima";
+"Page down; next unread story at the bottom" = "Page Down; próximo artigo não lido no final";
+"Page up; previous story at the top" = "Page Up; artigo anterior no início";
 "Password" = "Senha";
 "Paste a story title from the page" = "Cole o título de um artigo da página";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Cole qualquer URL e o NewsBlur criará um feed a partir da página, mesmo sem RSS.";
 "Pause" = "Pausar";
 "Pause Listening" = "Pausar leitura";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Porcentagem do artigo visível rolada pela barra de espaço ou por Shift+barra de espaço";
 "Permanently delete account" = "Excluir conta permanentemente";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Escolha o idioma que você quer que NewsBlur use. Você pode mudar isso a qualquer momento em Preferências.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Escolha o idioma que você quer usar no NewsBlur. Você pode alterá-lo a qualquer momento no menu do NewsBlur.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Pequeno";
 "Some feed icons couldn’t load." = "Não foi possível carregar alguns ícones de feeds.";
 "Sources" = "Fontes";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "A barra de espaço e Shift+barra de espaço rolam esta porcentagem do artigo visível. No final, a barra de espaço abre o próximo artigo não lido. No início, Shift+barra de espaço abre o artigo anterior.";
+"Space scroll amount" = "Distância de rolagem da barra de espaço";
 "Spacing" = "Espaçamento";
 "Speaker boost" = "Reforço de voz";
 "Speed" = "Velocidade";

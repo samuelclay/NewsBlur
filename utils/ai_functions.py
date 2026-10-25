@@ -132,11 +132,12 @@ You MUST use the classify_stories tool to return your classifications."""
 
     try:
         # Call the Anthropic API with tool use
-        # Each classification costs ~25 output tokens. A fixed 1024 cap silently
-        # truncated the tool call on large batches, which parsed as a failure.
+        # Each classification costs ~25 output tokens on Haiku 4.5 and ~30% more on
+        # Haiku 5.5's tokenizer. A fixed 1024 cap silently truncated the tool call on
+        # large batches, which parsed as a failure.
         response = client.messages.create(
             model=model,
-            max_tokens=min(8192, 512 + 32 * len(story_items)),
+            max_tokens=min(8192, 512 + 40 * len(story_items)),
             system=system_message,
             tools=[tool_definition],
             tool_choice={"type": "tool", "name": "classify_stories"},
@@ -257,7 +258,7 @@ def classify_stories_with_vision(prompt_classifier, stories, model=ANTHROPIC_MOD
     Args:
         prompt_classifier: MClassifierPrompt with the user's criteria (e.g., "show me food photos")
         stories: List of story dicts with story_id, story_title, story_content, image_urls
-        model: Claude model ID (must support vision — Haiku 4.5, Sonnet 4, Opus 4 all do)
+        model: Claude model ID (must support vision — every current Claude model does)
         user_id: User ID for usage tracking and billing
 
     Returns:
@@ -389,7 +390,7 @@ You MUST use the classify_stories tool to return your classifications."""
         # is a list of blocks (text + images) instead of a plain string.
         response = client.messages.create(
             model=model,
-            max_tokens=min(8192, 512 + 32 * len(stories_with_ids)),
+            max_tokens=min(8192, 512 + 40 * len(stories_with_ids)),
             system=system_message,
             tools=[tool_definition],
             tool_choice={"type": "tool", "name": "classify_stories"},

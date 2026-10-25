@@ -24,7 +24,7 @@ class MLLMCost(mongo.Document):
 
     # Provider/Model identification
     provider = mongo.StringField(required=True)  # anthropic, openai, google, xai
-    model = mongo.StringField(required=True)  # claude-haiku-4-5, gpt-5.6-luna, etc.
+    model = mongo.StringField(required=True)  # claude-haiku-5-5, gpt-6-luna, etc.
 
     # Feature identification
     feature = mongo.StringField(

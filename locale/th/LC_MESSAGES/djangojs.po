@@ -1790,8 +1790,8 @@ msgstr "ขอบเขตตัวกรองตัวจำแนก"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "ขอบเขตตัวจำแนกต้องมี %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) และ Grok (xAI) สลับใช้ได้ทุกเมื่อ"
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) และ Grok (SpaceXSI) สลับใช้งานได้ทุกเมื่อ"
 
 msgid "Cleanup and rearrange feeds"
 msgstr "จัดระเบียบและเรียงฟีดใหม่"

@@ -4880,6 +4880,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         self.pendingNotificationAnchorHash = nil;
     }
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
+    [self prepareStorySelectionAtLocation:row];
     [self setTitleForBackButton];
     BOOL shouldAnimateSelection = [StorySelectionAnimationDecision shouldAnimateSelectionWithIsPhoneOrCompact:self.isPhoneOrCompact
                                                                                    usesNativeFullscreenSidebar:appDelegate.detailViewController.isUsingNativeFullscreenSidebar
@@ -5877,6 +5878,18 @@ finish_height_measurement:
         
         return YES;
     }
+}
+
+- (void)prepareStorySelectionAtLocation:(NSInteger)location {
+    if (location < 0 || location >= storiesCollection.storyLocationsCount) return;
+    NSDictionary *story = [self getStoryAtLocation:location];
+    if (!story) return;
+
+    // FeedDetailObjCViewController.m updates the selected title before article preparation or paging can delay its read artwork.
+    if (self.isLegacyTable) [self changeFeedDetailRowAtLocation:location];
+    if (self.markReadAfterInterval > 0 || self.isMarkReadManually) return;
+    [self markStoryReadIfNeeded:story isScrolling:NO];
+    [self refreshVisibleReadStateForStoryLocations:[NSIndexSet indexSetWithIndex:(NSUInteger)location]];
 }
 
 - (BOOL)isMarkReadOnScroll {
@@ -7363,7 +7376,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
     
-    NSInteger rowIndex = [storiesCollection locationOfActiveStory];
+    [self changeFeedDetailRowAtLocation:[storiesCollection locationOfActiveStory]];
+}
+
+- (void)changeFeedDetailRowAtLocation:(NSInteger)rowIndex {
     NSInteger offset = 1;
     NSIndexPath *indexPath = [self indexPathForStoryLocation:rowIndex];
     if (!indexPath) {

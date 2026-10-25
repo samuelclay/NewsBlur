@@ -712,13 +712,14 @@
 "Override system with brightness" = "Zastąp ustawienia systemowe jasnością";
 "Page Down" = "Page Down";
 "Page Up" = "Page Up";
-"Page down" = "Strona w dół";
-"Page up" = "Strona w górę";
+"Page down; next unread story at the bottom" = "Page Down; następny nieprzeczytany artykuł na dole";
+"Page up; previous story at the top" = "Page Up; poprzedni artykuł u góry";
 "Password" = "Hasło";
 "Paste a story title from the page" = "Wklej tytuł artykułu ze strony";
 "Paste any URL and NewsBlur creates a feed from the page, even without RSS." = "Wklej dowolny adres URL, a NewsBlur utworzy kanał z tej strony, nawet jeśli nie ma RSS.";
 "Pause" = "Wstrzymaj";
 "Pause Listening" = "Wstrzymaj odtwarzanie";
+"Percentage of the visible story scrolled by Space or Shift-Space" = "Procent widocznej części artykułu przewijany spacją lub Shift+Spacją";
 "Permanently delete account" = "Trwale usuń konto";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences." = "Wybierz język, którego ma używać NewsBlur. Możesz zmienić go w dowolnym momencie w Preferencjach.";
 "Pick the language you'd like NewsBlur to use. You can change this anytime in the NewsBlur menu." = "Wybierz język, którego ma używać NewsBlur. Możesz go zmienić w dowolnym momencie w menu NewsBlur.";
@@ -948,6 +949,8 @@
 "Small [text size]" = "Mały";
 "Some feed icons couldn’t load." = "Nie udało się wczytać niektórych ikon kanałów.";
 "Sources" = "Źródła";
+"Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Spacja i Shift+Spacja przewijają artykuł o ten procent jego widocznej części. Na dole Spacja otwiera następny nieprzeczytany artykuł. U góry Shift+Spacja otwiera poprzedni artykuł.";
+"Space scroll amount" = "Wielkość przewijania spacją";
 "Spacing" = "Odstępy";
 "Speaker boost" = "Wzmocnienie głosu";
 "Speed" = "Szybkość";
