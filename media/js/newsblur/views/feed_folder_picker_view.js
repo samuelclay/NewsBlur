@@ -374,6 +374,33 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
             e.preventDefault();
             this.closing_key = e.which;
             this.close(true);
+        } else if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey &&
+            !this.$popover.find('.NB-feed-folder-picker-search').length) {
+            e.preventDefault();
+            this.type_ahead(e.key);
+        }
+    },
+
+    // Short lists have no search field, so typing moves to the next title starting with what
+    // was typed, like a native select.
+    type_ahead: function (character) {
+        clearTimeout(this.type_ahead_timer);
+        this.type_ahead_timer = setTimeout(_.bind(function () {
+            this.typed = '';
+        }, this), 800);
+        this.typed = (this.typed || '') + character.toLowerCase();
+        // "nnn" steps through the titles starting with n
+        var prefix = /^(.)\1+$/.test(this.typed) ? this.typed.charAt(0) : this.typed;
+
+        var $options = this.visible_options();
+        var active = $options.index(this.$popover.find('.NB-feed-folder-picker-option.NB-active'));
+        var first = active < 0 ? 0 : active + (prefix.length === 1 ? 1 : 0);
+        for (var i = 0; i < $options.length; i++) {
+            var $option = $options.eq((first + i) % $options.length);
+            if (this.items[$option.data('index')].title.toLowerCase().indexOf(prefix) === 0) {
+                this.set_active($option);
+                return;
+            }
         }
     },
 
