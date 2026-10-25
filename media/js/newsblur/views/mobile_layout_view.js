@@ -749,12 +749,19 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     setup_long_press: function () {
         var selector = '.NB-feedlist .feed, .NB-feedlist .folder_title, .NB-story-title, ' +
             '.NB-feed-story-header';
+        this.long_press_selector = selector;
         this.$body.on('touchstart.mobile_long_press', selector, this.handle_long_press_start);
         this.$body.on('touchmove.mobile_long_press touchend.mobile_long_press ' +
             'touchcancel.mobile_long_press', this.handle_long_press_cancel);
         document.addEventListener('click', this.handle_long_press_click, true);
+        // Android Chrome fires its own contextmenu on a long press. The long press above already
+        // opened the menu, and letting this through would toggle it shut again.
         document.addEventListener('contextmenu', _.bind(function (e) {
-            if (this.active && this.long_press_fired) e.preventDefault();
+            if (!this.active || !e.isTrusted) return;
+            if ($(e.target).closest(this.long_press_selector).length || this.long_press_recent()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
         }, this), true);
     },
 
@@ -766,7 +773,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.long_press_origin = { x: touch.clientX, y: touch.clientY };
         clearTimeout(this.long_press_timer);
         this.long_press_timer = setTimeout(_.bind(function () {
-            this.long_press_fired = true;
+            this.long_press_fired = Date.now();
             if (navigator.vibrate) navigator.vibrate(10);
             this.open_manage_menu_for($target);
         }, this), this.LONG_PRESS_MS);
@@ -785,10 +792,18 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.long_press_timer = null;
     },
 
-    // The click that follows a long press would open the feed or story underneath the menu.
+    // A browser may follow the long press with a click, which would open the feed or story
+    // underneath the menu. Only a click arriving right after the press counts, since some
+    // browsers send none and a later tap must still go through.
+    long_press_recent: function () {
+        return !!this.long_press_fired && Date.now() - this.long_press_fired < 800;
+    },
+
     handle_long_press_click: function (e) {
         if (!this.long_press_fired) return;
+        var recent = this.long_press_recent();
         this.long_press_fired = false;
+        if (!recent) return;
         e.preventDefault();
         e.stopPropagation();
     },

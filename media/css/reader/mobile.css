@@ -1177,6 +1177,18 @@ body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage li.NB-m
     box-sizing: border-box;
 }
 
+/* mobile.css: a held finger on a row opens its manage menu (mobile_layout_view.js), not the
+   browser's link preview or text selection. */
+body.NB-mobile .NB-feedlist .feed,
+body.NB-mobile .NB-feedlist .folder_title,
+body.NB-mobile .NB-story-title,
+body.NB-mobile .NB-story-title a,
+body.NB-mobile .NB-feed-story-header {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 body.NB-mobile .NB-mobile-sheet-shade {
     display: none;
 }
