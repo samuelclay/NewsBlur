@@ -338,9 +338,30 @@
     <string name="need_to_register">
         <u>أحتاج إلى التسجيل</u>
     </string>
-    <string name="public_comment_count">%d تعليقًا عامًا</string>
-    <string name="friends_comments_count">%d تعليق</string>
-    <string name="friends_shares_count">%d مشاركة</string>
+    <plurals name="public_comment_count">
+        <item quantity="few">%d تعليقات عامة</item>
+        <item quantity="many">%d تعليقًا عامًا</item>
+        <item quantity="one">%d تعليق عام</item>
+        <item quantity="other">%d تعليقات عامة</item>
+        <item quantity="two">%d تعليقان عامان</item>
+        <item quantity="zero">%d تعليق عام</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="few">%d تعليقات</item>
+        <item quantity="many">%d تعليقًا</item>
+        <item quantity="one">%d تعليق</item>
+        <item quantity="other">%d تعليق</item>
+        <item quantity="two">%d تعليقان</item>
+        <item quantity="zero">%d تعليق</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="few">%d مشاركة</item>
+        <item quantity="many">%d مشاركة</item>
+        <item quantity="one">%d مشاركة</item>
+        <item quantity="other">%d مشاركة</item>
+        <item quantity="two">%d مشاركتان</item>
+        <item quantity="zero">%d مشاركة</item>
+    </plurals>
     <string name="unknown_user">مستخدم غير معروف</string>
     <string name="delete_feed_message">هل تريد حذف الخلاصة \"%s\"؟</string>
     <string name="delete_saved_search_message">هل تريد حذف البحث المحفوظ %s؟</string>

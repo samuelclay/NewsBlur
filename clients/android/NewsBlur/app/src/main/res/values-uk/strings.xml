@@ -338,9 +338,24 @@
     <string name="need_to_register">
         <u>Мені потрібно зареєструватися</u>
     </string>
-    <string name="public_comment_count">Публічних коментарів: %d</string>
-    <string name="friends_comments_count">Коментарів: %d</string>
-    <string name="friends_shares_count">Поширень: %d</string>
+    <plurals name="public_comment_count">
+        <item quantity="few">%d публічні коментарі</item>
+        <item quantity="many">%d публічних коментарів</item>
+        <item quantity="one">%d публічний коментар</item>
+        <item quantity="other">%d публічних коментарів</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="few">%d коментарі</item>
+        <item quantity="many">%d коментарів</item>
+        <item quantity="one">%d коментар</item>
+        <item quantity="other">%d коментарів</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="few">%d поширення</item>
+        <item quantity="many">%d поширень</item>
+        <item quantity="one">%d поширення</item>
+        <item quantity="other">%d поширень</item>
+    </plurals>
     <string name="unknown_user">Невідомий користувач</string>
     <string name="delete_feed_message">Видалити стрічку «%s»?</string>
     <string name="delete_saved_search_message">Видалити збережений пошук %s?</string>

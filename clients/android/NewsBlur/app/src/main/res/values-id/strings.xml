@@ -338,9 +338,15 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="need_to_register">
         <u>Saya perlu mendaftar</u>
     </string>
-    <string name="public_comment_count">%d komentar publik</string>
-    <string name="friends_comments_count">%d komentar</string>
-    <string name="friends_shares_count">%d kali dibagikan</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">%d komentar publik</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">%d komentar</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">%d kali dibagikan</item>
+    </plurals>
     <string name="unknown_user">Pengguna Tidak Dikenal</string>
     <string name="delete_feed_message">Hapus feed \"%s\"?</string>
     <string name="delete_saved_search_message">Hapus penelusuran tersimpan %s?</string>

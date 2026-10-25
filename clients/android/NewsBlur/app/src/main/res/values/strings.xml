@@ -327,9 +327,18 @@ people together to talk about the world.</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
-    <string name="public_comment_count">%d public comments</string>
-    <string name="friends_comments_count">%d comments</string>
-    <string name="friends_shares_count">%d shares</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d public comment</item>
+        <item quantity="other">%d public comments</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d comment</item>
+        <item quantity="other">%d comments</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d share</item>
+        <item quantity="other">%d shares</item>
+    </plurals>
     <string name="unknown_user">Unknown User</string>
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="delete_saved_search_message">Delete saved search %s?</string>

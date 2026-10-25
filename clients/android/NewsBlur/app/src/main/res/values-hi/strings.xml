@@ -338,9 +338,18 @@
     <string name="need_to_register">
         <u>मुझे पंजीकरण करना है</u>
     </string>
-    <string name="public_comment_count">%d सार्वजनिक टिप्पणियाँ</string>
-    <string name="friends_comments_count">%d टिप्पणियाँ</string>
-    <string name="friends_shares_count">%d शेयर</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d सार्वजनिक टिप्पणी</item>
+        <item quantity="other">%d सार्वजनिक टिप्पणियाँ</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d टिप्पणी</item>
+        <item quantity="other">%d टिप्पणियाँ</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d साझा</item>
+        <item quantity="other">%d साझा</item>
+    </plurals>
     <string name="unknown_user">अज्ञात उपयोगकर्ता</string>
     <string name="delete_feed_message">फ़ीड \"%s\" मिटाएँ?</string>
     <string name="delete_saved_search_message">सहेजी गई खोज %s हटाएँ?</string>
