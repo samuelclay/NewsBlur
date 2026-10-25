@@ -1712,7 +1712,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             storyStatusBannerAnimator.cancel();
             storyStatusBannerAnimator = null;
         }
-        binding.itemlistStoryStatusBanner.animate().cancel();
+        // NbActivity.kt can finish for missing login credentials before ItemsList.java inflates its layout.
+        if (binding != null) {
+            binding.itemlistStoryStatusBanner.animate().cancel();
+        }
     }
 
     private void setupOnBackPressed() {
