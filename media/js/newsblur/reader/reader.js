@@ -6403,7 +6403,7 @@
                 if (_.contains(_.pluck($select.find('option'), 'value'), parent_value)) {
                     $select.val(parent_value);
                 }
-                var picker = $select.data('nb_feed_folder_picker');
+                var picker = $select.length && NEWSBLUR.Views.FeedFolderPicker.for_select($select[0]);
                 if (picker) {
                     picker.focus();
                 } else {

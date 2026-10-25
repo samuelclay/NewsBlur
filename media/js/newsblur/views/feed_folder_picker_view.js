@@ -464,9 +464,18 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         return layout;
     },
 
+    // Each wrapped select's picker. Not jQuery data: replaceWith and remove clear that before
+    // the select leaves the page, and then its picker couldn't be found to go with it.
+    pickers: new WeakMap(),
+
+    for_select: function (select) {
+        return NEWSBLUR.Views.FeedFolderPicker.pickers.get(select);
+    },
+
     enhance: function (select) {
         var $select = $(select);
-        if ($select.data('nb_feed_folder_picker')) return $select.data('nb_feed_folder_picker');
+        var existing = NEWSBLUR.Views.FeedFolderPicker.for_select(select);
+        if (existing) return existing;
 
         var picker = new NEWSBLUR.Views.FeedFolderPicker({
             items: NEWSBLUR.Views.FeedFolderPicker.items_from_select(select),
@@ -485,7 +494,8 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         picker.$el.addClass(_.map(($select.attr('class') || '').split(/\s+/), function (class_name) {
             return class_name && class_name !== 'NB-feed-folder-picker-select' ? 'NB-feed-folder-picker-for-' + class_name : '';
         }).join(' '));
-        $select.after(picker.el).data('nb_feed_folder_picker', picker);
+        $select.after(picker.el);
+        NEWSBLUR.Views.FeedFolderPicker.pickers.set(select, picker);
 
         $select.on('change.nb_feed_folder_picker', function () {
             picker.set_value($select.val());
@@ -516,8 +526,11 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         };
         var remove_orphan = function (node) {
             if (node.nodeType !== 1 || !node.matches('select[data-nb-picker]')) return;
-            var picker = $.data(node, 'nb_feed_folder_picker');
-            if (picker && !node.isConnected) picker.remove();
+            var picker = NEWSBLUR.Views.FeedFolderPicker.for_select(node);
+            if (picker && !node.isConnected) {
+                picker.remove();
+                NEWSBLUR.Views.FeedFolderPicker.pickers.delete(node);
+            }
         };
 
         new MutationObserver(function (mutations) {
@@ -537,7 +550,7 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
     if (!original_set) return;
     $.valHooks.select.set = function (elem, value) {
         var result = original_set.apply(this, arguments);
-        var picker = $.data(elem, 'nb_feed_folder_picker');
+        var picker = NEWSBLUR.Views.FeedFolderPicker.for_select(elem);
         if (picker) picker.set_value(elem.value);
         return result;
     };
