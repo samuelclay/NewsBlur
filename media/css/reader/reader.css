@@ -10867,115 +10867,335 @@ form.opml_import_form input {
     min-height: 0;
 }
 
-/* Manage tab add row: type a classifier without finding it in a story (reader_classifier.js) */
+/* Manage tab add panel: type a classifier without finding it in a story (reader_classifier.js).
+   Row one is what to match (type, phrase, regex) fused into one field; row two is where it
+   applies and the Like / Dislike buttons that save it. */
 .NB-manage-add {
-    padding: 0 12px 12px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid #E0E0E0;
+    margin: 0 12px 14px;
+    padding: 10px 12px 12px;
+    background-color: #F7F6F1;
+    border: 1px solid #E4E2D8;
+    border-radius: 8px;
     flex-shrink: 0;
 }
 
-.NB-manage-add-row {
+.NB-manage-add-heading {
+    margin: 0 0 8px 2px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-manage-add-match {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
+    align-items: stretch;
+    height: 34px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.NB-manage-add-match:focus-within {
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
 }
 
 .NB-manage-add-type,
-.NB-manage-add-scope,
-.NB-manage-add-input {
-    height: 28px;
-    padding: 4px 8px;
-    font-size: 12px;
-    border: 1px solid #D0D0D0;
-    border-radius: 4px;
-    background: white;
-    color: #303030;
-    box-sizing: border-box;
+.NB-manage-add-scope {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
 }
 
 .NB-manage-add-type {
     flex: 0 0 auto;
-    cursor: pointer;
+    padding: 0 28px 0 12px;
+    font-weight: 600;
+    color: #505050;
+    background-color: #FAFAF7;
+    border: none;
+    border-right: 1px solid #E4E2D8;
 }
 
 .NB-manage-add-input {
-    flex: 1 1 180px;
+    flex: 1 1 auto;
     min-width: 0;
-}
-
-.NB-manage-add-scope {
-    flex: 0 1 200px;
-    min-width: 0;
-    cursor: pointer;
+    padding: 0 12px;
+    font-size: 13px;
+    color: #303030;
+    background: transparent;
+    border: none;
 }
 
 .NB-manage-add-type:focus,
-.NB-manage-add-scope:focus,
 .NB-manage-add-input:focus {
     outline: none;
-    border-color: #50A050;
+}
+
+.NB-manage-add-type:focus-visible {
+    background-color: #F0EFE8;
 }
 
 .NB-manage-add-input::placeholder {
-    color: #A0A0A0;
+    color: #A8A69C;
 }
 
 .NB-manage-add-regex {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: #606060;
+    flex: 0 0 auto;
+    width: 40px;
+    padding: 0;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
     cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.NB-manage-add-regex:hover {
+    color: #5C6BC0;
+    background-color: #F3F4FB;
+}
+
+.NB-manage-add-regex.NB-active {
+    color: #3F51B5;
+    background-color: #E8EAF6;
+}
+
+.NB-manage-add-regex:focus-visible {
+    outline: 2px solid #7986CB;
+    outline-offset: -2px;
+}
+
+.NB-manage-add-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 10px;
+}
+
+.NB-manage-add-scope-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+}
+
+.NB-manage-add-scope-label {
+    font-size: 12px;
+    color: #8C8A80;
     white-space: nowrap;
 }
 
-.NB-manage-add-regex input {
-    margin: 0;
-}
-
-.NB-manage-add .segmented-control {
-    margin: 0;
-}
-
-.NB-manage-add .segmented-control li {
-    padding: 4px 10px;
-    font-size: 12px;
+.NB-manage-add-scope-picker {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: 4px;
+    min-width: 0;
 }
 
-.NB-manage-add-button {
-    height: 28px;
-    padding: 0 16px;
+.NB-manage-add-scope-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    width: 14px;
+    height: 14px;
+    margin-top: -7px;
+    pointer-events: none;
+}
+
+.NB-manage-add-scope-icon svg,
+.NB-manage-add-scope-icon img {
+    display: block;
+    width: 14px;
+    height: 14px;
+}
+
+.NB-manage-add-scope-icon.NB-scope-folder {
+    color: #3B82F6;
+}
+
+.NB-manage-add-scope-icon.NB-scope-global {
+    color: #8B5CF6;
+}
+
+.NB-manage-add-scope {
+    width: 260px;
+    max-width: 100%;
+    height: 30px;
+    padding: 0 28px 0 32px;
+    color: #303030;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    text-overflow: ellipsis;
+}
+
+.NB-manage-add-scope:focus {
+    outline: none;
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+.NB-manage-add-notice {
+    flex: 1 1 120px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.NB-manage-add-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* Pill-shaped like the classifiers they make. The default (last used) is filled. */
+.NB-manage-add-sentiment {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 14px 0 11px;
+    font-family: inherit;
     font-size: 12px;
     font-weight: bold;
-    color: white;
-    background-color: #4a8f29;
-    border: none;
-    border-radius: 4px;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 15px;
     cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
 }
 
-.NB-manage-add-button:hover:not(:disabled) {
-    background-color: #3d7a21;
+/* Thumbs are masks filled with the button's text color, so they follow every state and theme */
+.NB-manage-add-like .NB-manage-add-sentiment-icon,
+.NB-manage-add-dislike .NB-manage-add-sentiment-icon,
+.NB-manage-add-hide-icon > span {
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    -webkit-mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
 }
 
-.NB-manage-add-button:disabled {
+.NB-manage-add-like .NB-manage-add-sentiment-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+    mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+}
+
+/* The pill colors: like green, dislike red, and the super dislike's deeper crimson */
+.NB-manage-add-like {
+    color: #2E8229;
+    border-color: rgba(52, 145, 46, 0.55);
+}
+
+.NB-manage-add-dislike {
+    color: #A90103;
+    border-color: rgba(169, 1, 3, 0.45);
+}
+
+.NB-manage-add-super-dislike {
+    color: #6B0001;
+    border-color: rgba(107, 0, 1, 0.45);
+}
+
+/* Hide is the super dislike: two stacked thumbs down, like the filter banner's Hide button */
+.NB-manage-add-hide-icon {
+    position: relative;
+    width: 17px;
+    height: 15px;
+}
+
+.NB-manage-add-hide-icon > span {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+}
+
+.NB-manage-add-hide-icon-back {
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+.NB-manage-add-hide-icon-front {
+    right: 0;
+    bottom: 0;
+}
+
+.NB-manage-add-like:hover:not(:disabled) {
+    background-color: #EEF6EC;
+}
+
+.NB-manage-add-dislike:hover:not(:disabled) {
+    background-color: #FBEDED;
+}
+
+.NB-manage-add-super-dislike:hover:not(:disabled) {
+    background-color: #F6EAEA;
+}
+
+.NB-manage-add-like.NB-default {
+    color: white;
+    background-color: #34912E;
+    border-color: #2A7A25;
+}
+
+.NB-manage-add-dislike.NB-default {
+    color: white;
+    background-color: #A90103;
+    border-color: #8A0002;
+}
+
+.NB-manage-add-like.NB-default:hover:not(:disabled) {
+    background-color: #2E8228;
+}
+
+.NB-manage-add-super-dislike.NB-default {
+    color: white;
+    background-color: #6B0001;
+    border-color: #4A0001;
+}
+
+.NB-manage-add-dislike.NB-default:hover:not(:disabled) {
+    background-color: #960102;
+}
+
+.NB-manage-add-super-dislike.NB-default:hover:not(:disabled) {
+    background-color: #5A0001;
+}
+
+.NB-manage-add-sentiment:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 2px;
+}
+
+.NB-manage-add-sentiment:disabled {
     opacity: 0.4;
     cursor: default;
 }
 
-.NB-manage-add-notice {
-    margin-top: 6px;
-    font-size: 12px;
+/* Shows which button Enter presses while the phrase field has focus */
+.NB-manage-add-enter-hint {
+    display: none;
+    font-weight: normal;
+    opacity: 0.75;
 }
 
-.NB-manage-add-notice:empty {
-    display: none;
+.NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-sentiment.NB-default:not(:disabled) .NB-manage-add-enter-hint {
+    display: inline;
 }
 
 .NB-manage-add-notice .NB-classifier-scope-notice,

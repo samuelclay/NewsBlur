@@ -42,6 +42,19 @@ test('a typed folder dislike keeps the full folder path the backend flattens to'
     });
 });
 
+test('a typed Hide saves as a super dislike, regex included', function () {
+    const hide_tag = classifier_add_utils.build_save_data({
+        type: 'tag', value: 'sponsored', scope_value: 'global', sentiment: 'super_dislike', is_regex: false
+    });
+    const hide_title_regex = classifier_add_utils.build_save_data({
+        type: 'title', value: 'deal(s)? of the day', scope_value: 'feed:42', sentiment: 'super_dislike', is_regex: true
+    });
+
+    assert.deepEqual(hide_tag, { feed_id: 0, scope: 'global', folder_name: '', super_dislike_tag: 'sponsored' });
+    assert.equal(hide_title_regex.super_dislike_title_regex, 'deal(s)? of the day');
+    assert.equal(hide_title_regex.like_title_regex, undefined);
+});
+
 test('a typed site classifier posts that site and the feed scope', function () {
     const data = classifier_add_utils.build_save_data({
         type: 'author',

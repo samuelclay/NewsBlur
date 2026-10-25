@@ -4621,42 +4621,76 @@ var classifier_prototype = {
             }));
         $type.val(state.type);
 
-        var make_sentiment = function (sentiment, label) {
-            return $.make('li', {
-                className: 'NB-manage-add-sentiment-' + sentiment + (state.sentiment === sentiment ? ' NB-active' : ''),
-                'data-sentiment': sentiment,
-                role: 'button',
-                tabindex: 0
+        // Like, Dislike and Hide each save the classifier. The one used last is drawn
+        // filled, and Enter in the phrase field repeats it.
+        var make_sentiment_button = function (sentiment, label) {
+            // Hide is the super dislike, drawn as the pills' double thumbs down
+            var $icon = sentiment === 'super_dislike' ?
+                $.make('span', { className: 'NB-manage-add-sentiment-icon NB-manage-add-hide-icon' }, [
+                    $.make('span', { className: 'NB-manage-add-hide-icon-back' }),
+                    $.make('span', { className: 'NB-manage-add-hide-icon-front' })
+                ]) :
+                $.make('span', { className: 'NB-manage-add-sentiment-icon' });
+            return $.make('button', {
+                type: 'button',
+                className: 'NB-manage-add-sentiment NB-manage-add-' + sentiment.replace('_', '-'),
+                'data-sentiment': sentiment
             }, [
-                $.make('span', { className: 'NB-manage-filter-icon NB-icon-' + sentiment }),
-                $.make('span', { className: 'NB-type-label' }, label)
+                $icon,
+                $.make('span', { className: 'NB-manage-add-sentiment-label' }, label),
+                $.make('span', { className: 'NB-manage-add-enter-hint', 'aria-hidden': 'true' }, '↵')
             ]);
         };
 
-        var $regex_checkbox = $.make('input', { type: 'checkbox', className: 'NB-manage-add-regex-input' });
-        $regex_checkbox.prop('checked', state.is_regex);
-
         var $row = $.make('div', { className: 'NB-manage-add' }, [
-            $.make('div', { className: 'NB-manage-add-row' }, [
+            $.make('div', { className: 'NB-manage-add-heading' }, gettext('Add a classifier')),
+            $.make('div', { className: 'NB-manage-add-match' }, [
                 $type,
                 $.make('input', { type: 'text', className: 'NB-manage-add-input' }),
-                $.make('label', { className: 'NB-manage-add-regex' }, [
-                    $regex_checkbox,
-                    $.make('span', gettext('Regex'))
-                ]),
-                $scope,
-                $.make('ul', { className: 'segmented-control NB-manage-add-sentiment' }, [
-                    make_sentiment('like', gettext('Like')),
-                    make_sentiment('dislike', gettext('Dislike'))
-                ]),
-                $.make('button', { type: 'button', className: 'NB-manage-add-button' }, gettext('Add'))
+                $.make('button', {
+                    type: 'button',
+                    className: 'NB-manage-add-regex',
+                    title: gettext('Regex'),
+                    'aria-label': gettext('Regex')
+                }, '.*')
             ]),
-            $.make('div', { className: 'NB-manage-add-notice' })
+            $.make('div', { className: 'NB-manage-add-actions' }, [
+                $.make('label', { className: 'NB-manage-add-scope-field' }, [
+                    $.make('span', { className: 'NB-manage-add-scope-label' }, gettext('Applies to')),
+                    $.make('span', { className: 'NB-manage-add-scope-picker' }, [
+                        $.make('span', { className: 'NB-manage-add-scope-icon', 'aria-hidden': 'true' }),
+                        $scope
+                    ])
+                ]),
+                $.make('div', { className: 'NB-manage-add-notice', 'aria-live': 'polite' }),
+                $.make('div', { className: 'NB-manage-add-buttons' }, [
+                    make_sentiment_button('like', gettext('Like')),
+                    make_sentiment_button('dislike', gettext('Dislike')),
+                    make_sentiment_button('super_dislike', gettext('Hide'))
+                ])
+            ])
         ]);
 
+        this.update_manage_add_scope_icon($row);
         this.update_manage_add_row($row);
 
         return $row;
+    },
+
+    // The scope glyph the pills use: the site's favicon, a folder, or a globe for all sites.
+    update_manage_add_scope_icon: function ($row) {
+        var scope = NEWSBLUR.classifier_add_utils.parse_scope(this.get_manage_add_state().scope_value);
+        var $icon = $('.NB-manage-add-scope-icon', $row).empty()
+            .removeClass('NB-scope-feed NB-scope-folder NB-scope-global')
+            .addClass('NB-scope-' + scope.scope);
+
+        if (scope.scope === 'feed') {
+            $icon.append($.favicon_el(scope.feed_id));
+        } else {
+            $icon.html(_.find(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
+                return icon.key === scope.scope;
+            }).svg);
+        }
     },
 
     bind_manage_add_row: function () {
@@ -4670,10 +4704,12 @@ var classifier_prototype = {
         });
         $('.NB-manage-add-scope', $row).on('change', function () {
             state.scope_value = $(this).val();
+            self.update_manage_add_scope_icon($row);
             self.update_manage_add_row($row);
         });
-        $('.NB-manage-add-regex-input', $row).on('change', function () {
-            state.is_regex = $(this).is(':checked');
+        $('.NB-manage-add-regex', $row).on('click', function (e) {
+            e.preventDefault();
+            state.is_regex = !state.is_regex;
             self.update_manage_add_row($row);
         });
         $('.NB-manage-add-input', $row).on('input', function () {
@@ -4684,15 +4720,10 @@ var classifier_prototype = {
             e.preventDefault();
             self.add_manage_classifier();
         });
-        $('.NB-manage-add-sentiment li', $row).on('click keydown', function (e) {
-            if (e.type === 'keydown' && e.which !== 13 && e.which !== 32) return;
+        $('.NB-manage-add-sentiment', $row).on('click', function (e) {
             e.preventDefault();
             state.sentiment = $(this).data('sentiment');
-            $('.NB-manage-add-sentiment li', $row).removeClass('NB-active');
-            $(this).addClass('NB-active');
-        });
-        $('.NB-manage-add-button', $row).on('click', function (e) {
-            e.preventDefault();
+            self.update_manage_add_row($row);
             self.add_manage_classifier();
         });
     },
@@ -4703,6 +4734,7 @@ var classifier_prototype = {
         var utils = NEWSBLUR.classifier_add_utils;
         var value = $.trim($('.NB-manage-add-input', $row).val());
         var entry = _.extend({ value: value }, state);
+        var regex_supported = utils.supports_regex(state.type);
         var placeholders = {
             title: gettext('Phrase to match in story titles'),
             author: gettext('Author name'),
@@ -4711,8 +4743,17 @@ var classifier_prototype = {
             url: gettext('Part of a story URL')
         };
 
-        $('.NB-manage-add-input', $row).attr('placeholder', placeholders[state.type]);
-        $('.NB-manage-add-regex', $row).toggleClass('NB-hidden', !utils.supports_regex(state.type));
+        $('.NB-manage-add-input', $row).attr({
+            placeholder: placeholders[state.type],
+            'aria-label': placeholders[state.type]
+        });
+        $('.NB-manage-add-regex', $row)
+            .toggleClass('NB-hidden', !regex_supported)
+            .toggleClass('NB-active', regex_supported && state.is_regex)
+            .attr('aria-pressed', regex_supported && state.is_regex ? 'true' : 'false');
+        $('.NB-manage-add-sentiment', $row).each(function () {
+            $(this).toggleClass('NB-default', $(this).data('sentiment') === state.sentiment);
+        });
 
         var $notice = $('.NB-manage-add-notice', $row).empty();
         var missing_tier = utils.required_tier(entry, NEWSBLUR.Globals);
@@ -4727,7 +4768,7 @@ var classifier_prototype = {
             }
         }
 
-        $('.NB-manage-add-button', $row).prop('disabled',
+        $('.NB-manage-add-sentiment', $row).prop('disabled',
             !value || !!missing_tier || !!regex_error || !!this.manage_add_saving);
     },
 
@@ -4754,8 +4795,10 @@ var classifier_prototype = {
         var utils = NEWSBLUR.classifier_add_utils;
         var $row = $('.NB-manage-add', this.$modal);
         var $input = $('.NB-manage-add-input', $row);
-        var $button = $('.NB-manage-add-button', $row);
         var state = this.get_manage_add_state();
+        var $button = $('.NB-manage-add-sentiment[data-sentiment="' + state.sentiment + '"]', $row);
+        var $button_label = $('.NB-manage-add-sentiment-label', $button);
+        var button_label = $button_label.text();
         var entry = _.extend({ value: $.trim($input.val()) }, state);
 
         if ($button.prop('disabled')) return;
@@ -4772,7 +4815,8 @@ var classifier_prototype = {
         };
 
         this.manage_add_saving = true;
-        $button.prop('disabled', true).text(gettext('Adding...'));
+        $('.NB-manage-add-sentiment', $row).prop('disabled', true);
+        $button_label.text(gettext('Adding...'));
 
         this.model.save_classifier(data, function () {
             self.manage_add_saving = false;
@@ -4781,7 +4825,7 @@ var classifier_prototype = {
                 NEWSBLUR.reader.force_feeds_refresh();
                 return;
             }
-            $button.text(gettext('Add'));
+            $button_label.text(button_label);
             $input.val('').focus();
             self.update_manage_add_row($row);
             self.show_manage_add_status();
@@ -4790,7 +4834,7 @@ var classifier_prototype = {
             self.refresh_manage_after_add(added);
         }, function (response) {
             self.manage_add_saving = false;
-            $button.text(gettext('Add'));
+            $button_label.text(button_label);
             self.update_manage_add_row($row);
             var message = (response && response.code < 0 && response.message) ||
                 gettext('Could not add this classifier. Try again.');

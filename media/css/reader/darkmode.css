@@ -5820,31 +5820,129 @@ a.mention, a.mention-group {
     color: #707070;
 }
 
-/* darkmode.css: Manage tab add row (reader_classifier.js) */
+/* darkmode.css: Manage tab add panel (reader_classifier.js) */
 .NB-dark .NB-manage-add {
-    border-bottom-color: #404040;
+    background-color: #353e47;
+    border-color: #434d57;
 }
 
-.NB-dark .NB-manage-add-type,
-.NB-dark .NB-manage-add-scope,
-.NB-dark .NB-manage-add-input {
-    background: #303030;
-    border-color: #505050;
+.NB-dark .NB-manage-add-heading,
+.NB-dark .NB-manage-add-scope-label {
+    color: #98A0A8;
+}
+
+.NB-dark .NB-manage-add-match,
+.NB-dark .NB-manage-add-scope {
+    background-color: #262d34;
+    border-color: #4b5561;
+}
+
+.NB-dark .NB-manage-add-match:focus-within,
+.NB-dark .NB-manage-add-scope:focus {
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.2);
+}
+
+.NB-dark .NB-manage-add-type {
+    color: #D0D4D8;
+    background-color: #2c343c;
+    border-right-color: #434d57;
+}
+
+.NB-dark .NB-manage-add-type:focus-visible {
+    background-color: #333c45;
+}
+
+.NB-dark .NB-manage-add-type option,
+.NB-dark .NB-manage-add-scope option,
+.NB-dark .NB-manage-add-scope optgroup {
+    color: #E0E0E0;
+    background-color: #262d34;
+}
+
+.NB-dark .NB-manage-add-input,
+.NB-dark .NB-manage-add-scope {
     color: #E0E0E0;
 }
 
-.NB-dark .NB-manage-add-type:focus,
-.NB-dark .NB-manage-add-scope:focus,
+.NB-dark .NB-manage-add-input,
 .NB-dark .NB-manage-add-input:focus {
-    border-color: #50A050;
+    background: transparent;
+    border: none;
 }
 
 .NB-dark .NB-manage-add-input::placeholder {
-    color: #707070;
+    color: #76808a;
 }
 
 .NB-dark .NB-manage-add-regex {
-    color: #A0A0A0;
+    color: #76808a;
+    border-left-color: #434d57;
+}
+
+.NB-dark .NB-manage-add-regex:hover {
+    color: #9FA8DA;
+    background-color: #2e3542;
+}
+
+.NB-dark .NB-manage-add-regex.NB-active {
+    color: #C5CAE9;
+    background-color: #3a4060;
+}
+
+.NB-dark .NB-manage-add-scope-icon.NB-scope-folder {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-manage-add-scope-icon.NB-scope-global {
+    color: #A78BFA;
+}
+
+/* Outlined buttons sit on the panel; the filled default keeps the pill colors */
+.NB-dark .NB-manage-add-sentiment {
+    background-color: transparent;
+}
+
+.NB-dark .NB-manage-add-like {
+    color: #7BC86C;
+    border-color: rgba(123, 200, 108, 0.5);
+}
+
+.NB-dark .NB-manage-add-dislike {
+    color: #F38B8B;
+    border-color: rgba(243, 139, 139, 0.45);
+}
+
+.NB-dark .NB-manage-add-super-dislike {
+    color: #E07070;
+    border-color: rgba(224, 112, 112, 0.4);
+}
+
+.NB-dark .NB-manage-add-like:hover:not(:disabled) {
+    background-color: rgba(123, 200, 108, 0.1);
+}
+
+.NB-dark .NB-manage-add-dislike:hover:not(:disabled),
+.NB-dark .NB-manage-add-super-dislike:hover:not(:disabled) {
+    background-color: rgba(243, 139, 139, 0.1);
+}
+
+.NB-dark .NB-manage-add-like.NB-default {
+    color: white;
+    background-color: #34912E;
+    border-color: #34912E;
+}
+
+.NB-dark .NB-manage-add-dislike.NB-default {
+    color: white;
+    background-color: #A90103;
+    border-color: #A90103;
+}
+
+.NB-dark .NB-manage-add-super-dislike.NB-default {
+    color: white;
+    background-color: #6B0001;
+    border-color: #8A2A2A;
 }
 
 .NB-dark .NB-manage-add-notice .NB-classifier-scope-notice,

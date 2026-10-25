@@ -38,10 +38,14 @@
         return parent_path ? parent_path + ' - ' + folder_title : folder_title;
     }
 
+    // Opinion prefixes for the add row's Like, Dislike and Hide buttons. Hide is the
+    // super dislike, score -2, which overrides every like.
+    var SENTIMENT_OPINIONS = { like: 'like_', dislike: 'dislike_', super_dislike: 'super_dislike_' };
+
     // POST body for /classifier/save (apps/analyzer/views.py:save_classifier).
     function build_save_data(entry) {
         var scope = parse_scope(entry.scope_value);
-        var opinion = entry.sentiment === 'dislike' ? 'dislike_' : 'like_';
+        var opinion = SENTIMENT_OPINIONS[entry.sentiment] || 'like_';
         var is_regex = entry.is_regex && supports_regex(entry.type);
         var data = {
             feed_id: scope.feed_id,
