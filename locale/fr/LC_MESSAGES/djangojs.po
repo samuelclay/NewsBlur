@@ -3989,6 +3989,15 @@ msgstr "Correspondance via des sujets connexes"
 msgid "Matches story titles containing all keywords"
 msgstr "Correspond aux titres d’articles contenant tous les mots-clés"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Les articles correspondants sont toujours masqués, même si J’aime correspond"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Les articles correspondants sont masqués, sauf si J’aime correspond aussi"
+
+msgid "Matching stories show in Focus"
+msgstr "Les articles correspondants apparaissent parmi les articles prioritaires"
+
 msgid "May"
 msgstr "mai"
 
@@ -4379,6 +4388,9 @@ msgstr "Aucun résultat dans le titre"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Aucun résultat pour « %(value_1)s »"
+
+msgid "No matching folders or sites"
+msgstr "Aucun dossier ni site correspondant"
 
 msgid "No merge suggestions"
 msgstr "Aucune suggestion de fusion"
@@ -5678,6 +5690,9 @@ msgstr "Rechercher dans le flux"
 
 msgid "Search folder"
 msgstr "Rechercher dans le dossier"
+
+msgid "Search folders and sites"
+msgstr "Rechercher dans les dossiers et les sites"
 
 msgid "Search for friends"
 msgstr "Rechercher des amis"
@@ -7528,6 +7543,9 @@ msgstr "Hebdomadaire"
 msgid "Welcome to NewsBlur"
 msgstr "Bienvenue sur NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Rôle de J’aime, Je n’aime pas et Masquer"
+
 msgid "What are the main arguments?"
 msgstr "Quels sont les principaux arguments ?"
 
@@ -7593,9 +7611,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Lorsque vous vous abonnez à un nouveau flux, son historique est récupéré rétroactivement."
-
-msgid "Where it applies"
-msgstr "Où s’applique-t-il ?"
 
 msgid "Which AI models are available?"
 msgstr "Quels modèles d’IA sont disponibles ?"

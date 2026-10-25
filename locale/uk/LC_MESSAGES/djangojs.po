@@ -4062,6 +4062,15 @@ msgstr "Збіг за пов’язаними темами"
 msgid "Matches story titles containing all keywords"
 msgstr "Знаходить статті, у заголовках яких є всі ключові слова"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Статті, що відповідають умовам, завжди приховуються, навіть якщо їм відповідає «Подобається»"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Статті, що відповідають умовам, приховуються, якщо їм також не відповідає «Подобається»"
+
+msgid "Matching stories show in Focus"
+msgstr "Статті, що відповідають умовам, відображаються у фокусі"
+
 msgid "May"
 msgstr "Травень"
 
@@ -4452,6 +4461,9 @@ msgstr "Немає збігів у заголовку"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Немає збігів для «%(value_1)s»"
+
+msgid "No matching folders or sites"
+msgstr "Немає папок або сайтів, що відповідають умовам"
 
 msgid "No merge suggestions"
 msgstr "Немає пропозицій об’єднання"
@@ -5748,6 +5760,9 @@ msgstr "Пошук у стрічці"
 
 msgid "Search folder"
 msgstr "Шукати в папці"
+
+msgid "Search folders and sites"
+msgstr "Пошук папок і сайтів"
 
 msgid "Search for friends"
 msgstr "Знайти друзів"
@@ -7586,6 +7601,9 @@ msgstr "Щотижня"
 msgid "Welcome to NewsBlur"
 msgstr "Ласкаво просимо до NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Що роблять «Подобається», «Не подобається» та «Приховати»"
+
 msgid "What are the main arguments?"
 msgstr "Які основні аргументи?"
 
@@ -7651,9 +7669,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Коли ви підписуєтеся на нову стрічку, її історія доповнюється попередніми матеріалами"
-
-msgid "Where it applies"
-msgstr "Де застосовується"
 
 msgid "Which AI models are available?"
 msgstr "Які моделі ШІ доступні?"

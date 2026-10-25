@@ -3961,6 +3961,15 @@ msgstr "Gevonden via verwante onderwerpen"
 msgid "Matches story titles containing all keywords"
 msgstr "Komt overeen met artikeltitels die alle trefwoorden bevatten"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Overeenkomende artikelen worden altijd verborgen, ook als er een Vind ik leuk overeenkomt"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Overeenkomende artikelen worden verborgen, tenzij er ook een Vind ik leuk overeenkomt"
+
+msgid "Matching stories show in Focus"
+msgstr "Overeenkomende artikelen verschijnen in Focus"
+
 msgid "May"
 msgstr "mei"
 
@@ -4349,6 +4358,9 @@ msgstr "Geen overeenkomst in de titel"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Geen resultaten voor “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Geen overeenkomende mappen of sites"
 
 msgid "No merge suggestions"
 msgstr "Geen samenvoegsuggesties"
@@ -5638,6 +5650,9 @@ msgstr "Feed doorzoeken"
 
 msgid "Search folder"
 msgstr "Map doorzoeken"
+
+msgid "Search folders and sites"
+msgstr "Mappen en sites doorzoeken"
 
 msgid "Search for friends"
 msgstr "Vrienden zoeken"
@@ -7464,6 +7479,9 @@ msgstr "Wekelijks"
 msgid "Welcome to NewsBlur"
 msgstr "Welkom bij NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Wat Vind ik leuk, Vind ik niet leuk en Verbergen doen"
+
 msgid "What are the main arguments?"
 msgstr "Wat zijn de belangrijkste argumenten?"
 
@@ -7529,9 +7547,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Wanneer je je abonneert op een nieuwe feed, wordt de eerdere geschiedenis aangevuld"
-
-msgid "Where it applies"
-msgstr "Waarop van toepassing"
 
 msgid "Which AI models are available?"
 msgstr "Welke AI-modellen zijn beschikbaar?"

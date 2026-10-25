@@ -3818,6 +3818,15 @@ msgstr "通过相关主题匹配"
 msgid "Matches story titles containing all keywords"
 msgstr "匹配标题包含所有关键词的文章"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "匹配的文章始终会被隐藏，即使匹配喜欢规则也一样"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "匹配的文章会被隐藏，除非也匹配喜欢规则"
+
+msgid "Matching stories show in Focus"
+msgstr "匹配的文章会显示在聚焦中"
+
 msgid "May"
 msgstr "五月"
 
@@ -4198,6 +4207,9 @@ msgstr "标题中没有匹配项"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "没有与“%(value_1)s”匹配的结果"
+
+msgid "No matching folders or sites"
+msgstr "没有匹配的文件夹或网站"
 
 msgid "No merge suggestions"
 msgstr "没有合并建议"
@@ -5442,6 +5454,9 @@ msgstr "搜索订阅源"
 
 msgid "Search folder"
 msgstr "搜索文件夹"
+
+msgid "Search folders and sites"
+msgstr "搜索文件夹和网站"
 
 msgid "Search for friends"
 msgstr "搜索好友"
@@ -7201,6 +7216,9 @@ msgstr "每周"
 msgid "Welcome to NewsBlur"
 msgstr "欢迎使用 NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "喜欢、不喜欢和隐藏的作用"
+
 msgid "What are the main arguments?"
 msgstr "主要论点是什么？"
 
@@ -7264,9 +7282,6 @@ msgstr "订阅某个订阅源后，NewsBlur 会补齐其全部可用历史内容
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "订阅新订阅源时，系统会补齐其历史内容"
-
-msgid "Where it applies"
-msgstr "适用范围"
 
 msgid "Which AI models are available?"
 msgstr "有哪些可用的 AI 模型？"

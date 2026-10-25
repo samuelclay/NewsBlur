@@ -3969,6 +3969,15 @@ msgstr "Cocok melalui topik terkait"
 msgid "Matches story titles containing all keywords"
 msgstr "Mencocokkan judul artikel yang memuat semua kata kunci"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Artikel yang cocok selalu disembunyikan, bahkan jika ada Suka"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Artikel yang cocok disembunyikan kecuali ada Suka yang juga cocok"
+
+msgid "Matching stories show in Focus"
+msgstr "Artikel yang cocok muncul di Fokus"
+
 msgid "May"
 msgstr "Mei"
 
@@ -4355,6 +4364,9 @@ msgstr "Tidak ada kecocokan pada judul"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Tidak ada hasil untuk “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Tidak ada folder atau situs yang cocok"
 
 msgid "No merge suggestions"
 msgstr "Tidak ada saran penggabungan"
@@ -5638,6 +5650,9 @@ msgstr "Cari feed"
 
 msgid "Search folder"
 msgstr "Cari folder"
+
+msgid "Search folders and sites"
+msgstr "Cari folder dan situs"
 
 msgid "Search for friends"
 msgstr "Cari teman"
@@ -7470,6 +7485,9 @@ msgstr "Mingguan"
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Fungsi Suka, Tidak suka, dan Sembunyikan"
+
 msgid "What are the main arguments?"
 msgstr "Apa argumen utamanya?"
 
@@ -7535,9 +7553,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Saat Anda berlangganan feed baru, riwayatnya akan diisi secara surut"
-
-msgid "Where it applies"
-msgstr "Lokasi penerapan"
 
 msgid "Which AI models are available?"
 msgstr "Model AI apa saja yang tersedia?"

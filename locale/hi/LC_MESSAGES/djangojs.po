@@ -3956,6 +3956,15 @@ msgstr "संबंधित विषयों के ज़रिए मे�
 msgid "Matches story titles containing all keywords"
 msgstr "उन लेखों से मेल खाता है जिनके शीर्षक में सभी कीवर्ड हों"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "मेल खाते लेख हमेशा छिपे रहते हैं, पसंद मेल खाने पर भी"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "मेल खाते लेख छिपे रहते हैं, जब तक पसंद भी मेल न खाए"
+
+msgid "Matching stories show in Focus"
+msgstr "मेल खाते लेख फ़ोकस में दिखते हैं"
+
 msgid "May"
 msgstr "मई"
 
@@ -4342,6 +4351,9 @@ msgstr "शीर्षक में कोई मेल नहीं"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s” से कोई मेल नहीं मिला"
+
+msgid "No matching folders or sites"
+msgstr "कोई मेल खाते फ़ोल्डर या साइटें नहीं"
 
 msgid "No merge suggestions"
 msgstr "मर्ज करने के लिए कोई सुझाव नहीं"
@@ -5621,6 +5633,9 @@ msgstr "फ़ीड खोजें"
 
 msgid "Search folder"
 msgstr "फ़ोल्डर खोजें"
+
+msgid "Search folders and sites"
+msgstr "फ़ोल्डर और साइटें खोजें"
 
 msgid "Search for friends"
 msgstr "दोस्तों को खोजें"
@@ -7436,6 +7451,9 @@ msgstr "साप्ताहिक"
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur में आपका स्वागत है"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "पसंद, नापसंद और छिपाएँ क्या करते हैं"
+
 msgid "What are the main arguments?"
 msgstr "मुख्य तर्क क्या हैं?"
 
@@ -7501,9 +7519,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "जब आप किसी नई फ़ीड की सदस्यता लेते हैं, तो उसका पुराना इतिहास भी जोड़ दिया जाता है"
-
-msgid "Where it applies"
-msgstr "यह कहाँ लागू होता है"
 
 msgid "Which AI models are available?"
 msgstr "कौन-से AI मॉडल उपलब्ध हैं?"

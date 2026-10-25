@@ -3942,6 +3942,15 @@ msgstr "זוהה באמצעות נושאים קשורים"
 msgid "Matches story titles containing all keywords"
 msgstr "התאמה לכותרות כתבות שמכילות את כל מילות המפתח"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "כתבות תואמות מוסתרות תמיד, גם כשאהבתי תואם"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "כתבות תואמות מוסתרות, אלא אם גם אהבתי תואם"
+
+msgid "Matching stories show in Focus"
+msgstr "כתבות תואמות מופיעות במיקוד"
+
 msgid "May"
 msgstr "מאי"
 
@@ -4328,6 +4337,9 @@ msgstr "אין התאמה בכותרת"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "אין תוצאות עבור „%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "אין תיקיות או אתרים תואמים"
 
 msgid "No merge suggestions"
 msgstr "אין הצעות למיזוג"
@@ -5597,6 +5609,9 @@ msgstr "חיפוש בפיד"
 
 msgid "Search folder"
 msgstr "חיפוש בתיקייה"
+
+msgid "Search folders and sites"
+msgstr "חיפוש בתיקיות ובאתרים"
 
 msgid "Search for friends"
 msgstr "חיפוש חברים"
@@ -7390,6 +7405,9 @@ msgstr "שבועי"
 msgid "Welcome to NewsBlur"
 msgstr "ברוכים הבאים ל-NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "מה עושים אהבתי, לא אהבתי והסתרה"
+
 msgid "What are the main arguments?"
 msgstr "מהם הטיעונים העיקריים?"
 
@@ -7453,9 +7471,6 @@ msgstr "כשנרשמים לפיד, NewsBlur משלים את כל ההיסטור�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "כשנרשמים לפיד חדש, ההיסטוריה שלו נטענת לאחור"
-
-msgid "Where it applies"
-msgstr "היכן הוא חל"
 
 msgid "Which AI models are available?"
 msgstr "אילו מודלים של בינה מלאכותית זמינים?"

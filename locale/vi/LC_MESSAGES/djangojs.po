@@ -3877,6 +3877,15 @@ msgstr "Được khớp qua các chủ đề liên quan"
 msgid "Matches story titles containing all keywords"
 msgstr "Khớp với tiêu đề bài viết chứa tất cả từ khóa"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Bài viết khớp luôn bị ẩn, kể cả khi khớp với Thích"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Bài viết khớp sẽ bị ẩn, trừ khi cũng khớp với Thích"
+
+msgid "Matching stories show in Focus"
+msgstr "Bài viết khớp sẽ hiển thị trong mục Tập trung"
+
 msgid "May"
 msgstr "Tháng Năm"
 
@@ -4261,6 +4270,9 @@ msgstr "Không khớp trong tiêu đề"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Không tìm thấy kết quả nào cho “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Không có thư mục hoặc trang web nào khớp"
 
 msgid "No merge suggestions"
 msgstr "Không có gợi ý hợp nhất"
@@ -5525,6 +5537,9 @@ msgstr "Tìm kiếm nguồn cấp dữ liệu"
 
 msgid "Search folder"
 msgstr "Tìm kiếm thư mục"
+
+msgid "Search folders and sites"
+msgstr "Tìm kiếm thư mục và trang web"
 
 msgid "Search for friends"
 msgstr "Tìm kiếm bạn bè"
@@ -7332,6 +7347,9 @@ msgstr "Hàng tuần"
 msgid "Welcome to NewsBlur"
 msgstr "Chào mừng bạn đến với NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Chức năng của Thích, Không thích và Ẩn"
+
 msgid "What are the main arguments?"
 msgstr "Các luận điểm chính là gì?"
 
@@ -7399,9 +7417,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Khi bạn đăng ký một nguồn cấp dữ liệu mới, lịch sử của nguồn đó sẽ được bổ sung ngược."
-
-msgid "Where it applies"
-msgstr "Phạm vi áp dụng"
 
 msgid "Which AI models are available?"
 msgstr "Có những mô hình AI nào?"

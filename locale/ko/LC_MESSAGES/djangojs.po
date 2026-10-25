@@ -3826,6 +3826,15 @@ msgstr "관련 주제를 통해 일치"
 msgid "Matches story titles containing all keywords"
 msgstr "모든 키워드가 포함된 스토리 제목과 일치"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "좋아요와 일치하더라도 일치하는 스토리는 항상 숨겨집니다"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "좋아요에도 일치하는 경우를 제외하면 일치하는 스토리는 숨겨집니다"
+
+msgid "Matching stories show in Focus"
+msgstr "일치하는 스토리는 집중에 표시됩니다"
+
 msgid "May"
 msgstr "5월"
 
@@ -4206,6 +4215,9 @@ msgstr "제목에 일치 항목 없음"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s”에 해당하는 항목이 없습니다"
+
+msgid "No matching folders or sites"
+msgstr "일치하는 폴더나 사이트가 없습니다"
 
 msgid "No merge suggestions"
 msgstr "병합 제안 없음"
@@ -5450,6 +5462,9 @@ msgstr "피드 검색"
 
 msgid "Search folder"
 msgstr "폴더 검색"
+
+msgid "Search folders and sites"
+msgstr "폴더 및 사이트 검색"
 
 msgid "Search for friends"
 msgstr "친구 검색"
@@ -7213,6 +7228,9 @@ msgstr "매주"
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur에 오신 것을 환영합니다"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "좋아요, 싫어요, 숨기기의 기능"
+
 msgid "What are the main arguments?"
 msgstr "주요 논거는 무엇인가요?"
 
@@ -7276,9 +7294,6 @@ msgstr "피드를 구독하면 NewsBlur가 제공되는 전체 과거 스토리�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "새 피드를 구독하면 이전 항목도 기록에 채워집니다"
-
-msgid "Where it applies"
-msgstr "적용 위치"
 
 msgid "Which AI models are available?"
 msgstr "어떤 AI 모델을 사용할 수 있나요?"

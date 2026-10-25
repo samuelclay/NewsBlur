@@ -3854,6 +3854,15 @@ msgstr "ตรงกันจากหัวข้อที่เกี่ยว
 msgid "Matches story titles containing all keywords"
 msgstr "ตรงกับชื่อเรื่องที่มีคำสำคัญทั้งหมด"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "บทความที่ตรงกันจะถูกซ่อนเสมอ แม้จะตรงกับการชอบ"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "บทความที่ตรงกันจะถูกซ่อน เว้นแต่จะตรงกับการชอบด้วย"
+
+msgid "Matching stories show in Focus"
+msgstr "บทความที่ตรงกันจะแสดงในโฟกัส"
+
 msgid "May"
 msgstr "พฤษภาคม"
 
@@ -4236,6 +4245,9 @@ msgstr "ไม่พบคำที่ตรงกันในชื่อเร
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "ไม่พบรายการที่ตรงกับ “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "ไม่พบโฟลเดอร์หรือเว็บไซต์ที่ตรงกัน"
 
 msgid "No merge suggestions"
 msgstr "ไม่มีคำแนะนำในการรวม"
@@ -5490,6 +5502,9 @@ msgstr "ค้นหาฟีด"
 
 msgid "Search folder"
 msgstr "ค้นหาโฟลเดอร์"
+
+msgid "Search folders and sites"
+msgstr "ค้นหาโฟลเดอร์และเว็บไซต์"
 
 msgid "Search for friends"
 msgstr "ค้นหาเพื่อน"
@@ -7275,6 +7290,9 @@ msgstr "รายสัปดาห์"
 msgid "Welcome to NewsBlur"
 msgstr "ยินดีต้อนรับสู่ NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "การทำงานของชอบ ไม่ชอบ และซ่อน"
+
 msgid "What are the main arguments?"
 msgstr "ข้อโต้แย้งหลักมีอะไรบ้าง?"
 
@@ -7340,9 +7358,6 @@ msgstr "เมื่อคุณสมัครรับฟีด NewsBlur จ�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "เมื่อสมัครรับฟีดใหม่ ระบบจะเติมประวัติย้อนหลังให้"
-
-msgid "Where it applies"
-msgstr "มีผลกับส่วนใด"
 
 msgid "Which AI models are available?"
 msgstr "มีโมเดล AI ใดให้ใช้งานบ้าง"

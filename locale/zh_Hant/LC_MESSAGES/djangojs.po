@@ -3818,6 +3818,15 @@ msgstr "依相關主題比對"
 msgid "Matches story titles containing all keywords"
 msgstr "比對標題包含所有關鍵字的文章"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "符合條件的文章一律隱藏，即使符合喜歡條件也一樣"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "符合條件的文章會隱藏，除非也符合喜歡條件"
+
+msgid "Matching stories show in Focus"
+msgstr "符合條件的文章會顯示在焦點中"
+
 msgid "May"
 msgstr "五月"
 
@@ -4198,6 +4207,9 @@ msgstr "標題中沒有符合項目"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "找不到符合「%(value_1)s」的項目"
+
+msgid "No matching folders or sites"
+msgstr "找不到符合條件的資料夾或網站"
 
 msgid "No merge suggestions"
 msgstr "沒有合併建議"
@@ -5442,6 +5454,9 @@ msgstr "搜尋訂閱來源"
 
 msgid "Search folder"
 msgstr "搜尋資料夾"
+
+msgid "Search folders and sites"
+msgstr "搜尋資料夾和網站"
 
 msgid "Search for friends"
 msgstr "搜尋朋友"
@@ -7201,6 +7216,9 @@ msgstr "每週"
 msgid "Welcome to NewsBlur"
 msgstr "歡迎使用 NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "喜歡、不喜歡和隱藏的作用"
+
 msgid "What are the main arguments?"
 msgstr "主要論點是什麼？"
 
@@ -7264,9 +7282,6 @@ msgstr "新增訂閱來源時，NewsBlur 會補齊其所有可取得的歷史內
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "新增訂閱來源時，系統會回填其歷史內容"
-
-msgid "Where it applies"
-msgstr "套用範圍"
 
 msgid "Which AI models are available?"
 msgstr "有哪些 AI 模型可用？"

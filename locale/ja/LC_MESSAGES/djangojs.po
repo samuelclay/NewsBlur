@@ -3818,6 +3818,15 @@ msgstr "関連トピックから一致"
 msgid "Matches story titles containing all keywords"
 msgstr "すべてのキーワードを含む記事タイトルに一致"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "いいねに一致しても、一致する記事は常に非表示になります"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "いいねにも一致しない限り、一致する記事は非表示になります"
+
+msgid "Matching stories show in Focus"
+msgstr "一致する記事はフォーカスに表示されます"
+
 msgid "May"
 msgstr "5月"
 
@@ -4198,6 +4207,9 @@ msgstr "タイトルに一致するものがありません"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "「%(value_1)s」に一致するものはありません"
+
+msgid "No matching folders or sites"
+msgstr "一致するフォルダーまたはサイトはありません"
 
 msgid "No merge suggestions"
 msgstr "統合候補はありません"
@@ -5442,6 +5454,9 @@ msgstr "フィードを検索"
 
 msgid "Search folder"
 msgstr "フォルダーを検索"
+
+msgid "Search folders and sites"
+msgstr "フォルダーとサイトを検索"
 
 msgid "Search for friends"
 msgstr "友達を検索"
@@ -7203,6 +7218,9 @@ msgstr "毎週"
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlurへようこそ"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "いいね、低評価、非表示の仕組み"
+
 msgid "What are the main arguments?"
 msgstr "主な論点は何ですか？"
 
@@ -7266,9 +7284,6 @@ msgstr "フィードを購読すると、NewsBlurが利用可能な過去の記�
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "新しいフィードを登録すると、過去の記事もさかのぼって取得されます"
-
-msgid "Where it applies"
-msgstr "適用する対象"
 
 msgid "Which AI models are available?"
 msgstr "どのAIモデルが利用できますか？"

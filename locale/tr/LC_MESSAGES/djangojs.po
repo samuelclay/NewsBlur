@@ -3884,6 +3884,15 @@ msgstr "İlgili konular üzerinden eşleşti"
 msgid "Matches story titles containing all keywords"
 msgstr "Başlıkta tüm anahtar kelimeleri içeren haberlerle eşleşir"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Beğeni eşleşse bile eşleşen haberler her zaman gizlenir"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Beğeni de eşleşmediği sürece eşleşen haberler gizlenir"
+
+msgid "Matching stories show in Focus"
+msgstr "Eşleşen haberler Odak'ta gösterilir"
+
 msgid "May"
 msgstr "Mayıs"
 
@@ -4266,6 +4275,9 @@ msgstr "Başlıkta eşleşme yok"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s” için eşleşme yok"
+
+msgid "No matching folders or sites"
+msgstr "Eşleşen klasör veya site yok"
 
 msgid "No merge suggestions"
 msgstr "Birleştirme önerisi yok"
@@ -5538,6 +5550,9 @@ msgstr "Akışta ara"
 
 msgid "Search folder"
 msgstr "Klasörde ara"
+
+msgid "Search folders and sites"
+msgstr "Klasörlerde ve sitelerde ara"
 
 msgid "Search for friends"
 msgstr "Arkadaş ara"
@@ -7344,6 +7359,9 @@ msgstr "Haftalık"
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Beğen, Beğenme ve Gizle ne işe yarar?"
+
 msgid "What are the main arguments?"
 msgstr "Başlıca savlar nelerdir?"
 
@@ -7411,9 +7429,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Yeni bir akışa abone olduğunuzda, geçmiş içerikleri de geriye dönük olarak yüklenir"
-
-msgid "Where it applies"
-msgstr "Uygulandığı yer"
 
 msgid "Which AI models are available?"
 msgstr "Hangi yapay zekâ modelleri kullanılabilir?"

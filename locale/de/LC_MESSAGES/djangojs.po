@@ -3985,6 +3985,15 @@ msgstr "Über verwandte Themen gefunden"
 msgid "Matches story titles containing all keywords"
 msgstr "Findet Artikeltitel, die alle Stichwörter enthalten"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Passende Artikel werden immer ausgeblendet, auch wenn „Gefällt mir“ zutrifft"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Passende Artikel werden ausgeblendet, sofern nicht auch „Gefällt mir“ zutrifft"
+
+msgid "Matching stories show in Focus"
+msgstr "Passende Artikel werden im Fokus angezeigt"
+
 msgid "May"
 msgstr "Mai"
 
@@ -4373,6 +4382,9 @@ msgstr "Kein Treffer im Titel"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Keine Treffer für „%(value_1)s“"
+
+msgid "No matching folders or sites"
+msgstr "Keine passenden Ordner oder Websites"
 
 msgid "No merge suggestions"
 msgstr "Keine Vorschläge zum Zusammenführen"
@@ -5666,6 +5678,9 @@ msgstr "Feed durchsuchen"
 
 msgid "Search folder"
 msgstr "Ordner durchsuchen"
+
+msgid "Search folders and sites"
+msgstr "Ordner und Websites durchsuchen"
 
 msgid "Search for friends"
 msgstr "Nach Freunden suchen"
@@ -7497,6 +7512,9 @@ msgstr "Wöchentlich"
 msgid "Welcome to NewsBlur"
 msgstr "Willkommen bei NewsBlur"
 
+msgid "What Like, Dislike and Hide do"
+msgstr "Was „Gefällt mir“, „Gefällt mir nicht“ und „Ausblenden“ bewirken"
+
 msgid "What are the main arguments?"
 msgstr "Was sind die wichtigsten Argumente?"
 
@@ -7564,9 +7582,6 @@ msgstr ""
 
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "Wenn du einen neuen Feed abonnierst, wird dessen Verlauf rückwirkend ergänzt"
-
-msgid "Where it applies"
-msgstr "Geltungsbereich"
 
 msgid "Which AI models are available?"
 msgstr "Welche KI-Modelle sind verfügbar?"
