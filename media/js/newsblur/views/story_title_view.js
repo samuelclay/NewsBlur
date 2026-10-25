@@ -48,8 +48,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (this.options.is_grid) template_name = "grid_template";
         if (this.options.is_magazine) template_name = "magazine_template";
         if (this.options.is_list || this.options.is_grid || this.options.is_magazine) {
-            if (this.model.get('selected')) template_name = "list_template";
+            if (this.model.get('selected') && !this.is_mobile_grid()) template_name = "list_template";
         }
+        // story_title_view.js: a phone list uses the compact rows of the desktop titles pane,
+        // and still expands each story inline below its row.
+        if (this.options.is_list && this.is_mobile_layout()) template_name = "template";
 
         // console.log(['render story title', template_name, this.$el[0], this.options.is_grid, this.show_image_preview(), this.options.override_layout, NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'))]);
         this.$el.html(this[template_name]({
@@ -293,6 +296,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         </div>\
         <div class="NB-story-detail"></div>\
     '),
+
+    // story_title_view.js: a grid card in the phone layout (views/mobile_layout_view.js). Embedded
+    // story lists like the dashboard pass override_layout and keep their own behavior.
+    is_mobile_layout: function () {
+        return !!(!this.options.override_layout && NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.is_active());
+    },
+
+    is_mobile_grid: function () {
+        return !!(this.options.is_grid && this.is_mobile_layout());
+    },
 
     render_inline_story_detail: function (temporary_text) {
         // console.log(['render_inline_story_detail', this.model.get('story_title')]);
@@ -587,7 +600,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
 
         if (!!this.model.get('selected')) {
-            if (_.contains(['list', 'grid'], story_layout)) {
+            if (this.is_mobile_grid()) {
+                // story_title_view.js: phone grids show the story on its own screen
+                // (views/mobile_story_pager_view.js), so the card stays a card.
+                this.destroy_inline_story_detail();
+            } else if (_.contains(['list', 'grid'], story_layout)) {
                 this.render_inline_story_detail();
             } else if (_.contains(['magazine'], story_layout)) {
                 this.render_magazine_story_detail();
@@ -775,6 +792,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     });
                 }
             }
+            return;
+        }
+
+        if (this.is_mobile_grid()) {
+            NEWSBLUR.app.mobile.open_story(this.model);
             return;
         }
 
@@ -991,7 +1013,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
 
     show_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
 
         return this.show_manage_menu(e);
     },

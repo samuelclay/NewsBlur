@@ -152,6 +152,8 @@
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
+            // reader.js: phones get stacked full-screen screens (views/mobile_layout_view.js).
+            NEWSBLUR.app.mobile = new NEWSBLUR.Views.MobileLayout();
 
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
@@ -344,7 +346,9 @@
             }
 
             if (center) {
-                var center_width = center.width();
+                // reader.js: the phone layout (views/mobile_layout_view.js) sizes panes with CSS,
+                // so jquery.layout's pane widths are stale there. The screen is the pane.
+                var center_width = this.flags.mobile ? window.innerWidth : center.width();
                 var narrow = center_width < 980;
                 if (NEWSBLUR.assets.preference('story_button_placement') == "bottom") {
                     narrow = true;
@@ -357,7 +361,7 @@
                 var extrawide = center_width > 1180;
                 $windows.toggleClass('NB-extra-wide-content', extrawide);
                 this.flags.narrow_content = !!narrow;
-                content_width = center_width + (west ? west.width() : 0);
+                content_width = center_width + (west && !this.flags.mobile ? west.width() : 0);
 
                 // Reposition discover view if it's open
                 if (this.active_story && this.active_story.story_discover_view) {
@@ -366,7 +370,7 @@
             }
 
             if ((north && north.width() < 640) ||
-                (content_width && content_width < 780)) {
+                (content_width && content_width < 780) || this.flags.mobile) {
                 $windows.addClass('NB-narrow');
             } else {
                 $windows.removeClass('NB-narrow');
@@ -408,6 +412,12 @@
                 .removeClass('NB-story-pane-hidden')
                 .toggleClass('NB-story-pane-' + story_anchor,
                     NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
+            // reader.js: a phone list (views/mobile_layout_view.js) borrows the compact rows of the
+            // side-by-side titles pane, which are styled under NB-story-pane-west.
+            if (this.flags.mobile &&
+                NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'list') {
+                $('.right-pane').addClass('NB-story-pane-west');
+            }
             if (!options.right_side) {
                 var outerLayoutOptions = {
                     zIndex: 2,
@@ -708,6 +718,7 @@
             this.$s.$body.addClass('NB-show-reader');
             this.flags['splash_page_frontmost'] = false;
             this.$s.$header_dashboard.removeClass('NB-selected');
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.reader_opened();
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -726,6 +737,7 @@
             this.$s.$body.removeClass('NB-show-reader');
             this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.splash_shown();
 
             if (!skip_router) {
                 NEWSBLUR.log(["Navigating to splash"]);
@@ -1521,6 +1533,7 @@
 
         reset_feed: function (options) {
             options = options || {};
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.feed_reset();
 
             // Clean up any active voice recordings from Ask AI menu
             var $menu = $('.NB-menu-ask-ai-container');
@@ -4435,6 +4448,7 @@
                 feed_id: this.active_feed,
                 layout: NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')
             });
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_bar();
         },
 
         feed_title: function (feed_id) {

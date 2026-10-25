@@ -1,0 +1,871 @@
+/* ================================================================ */
+/* = mobile.css: the phone layout                                 = */
+/* = body.NB-mobile is set by views/mobile_layout_view.js at or   = */
+/* = below 768px. The reader becomes stacked full-screen screens  = */
+/* = (feed list, dashboard, story titles, story) that slide over  = */
+/* = each other. jquery.layout keeps writing inline geometry onto = */
+/* = the panes, so pane overrides here need !important.           = */
+/* ================================================================ */
+
+body.NB-mobile {
+    --nb-mobile-bar-height: 48px;
+    --nb-mobile-toolbar-height: 52px;
+    --nb-mobile-bar-bg: #F3F3EE;
+    --nb-mobile-bar-border: #dbdbda;
+    --nb-mobile-bar-text: #303030;
+    --nb-mobile-bar-subtext: #8b8b85;
+    --nb-mobile-tint: #4a6fa5;
+    --nb-mobile-tint-active: rgba(74, 111, 165, 0.12);
+    --nb-mobile-screen-bg: #F7F8F5;
+    --nb-mobile-story-bg: #FFFFFF;
+    --nb-mobile-shade: rgba(0, 0, 0, 0.18);
+    --nb-mobile-sheet-bg: #FFFFFF;
+    --nb-mobile-sheet-handle: rgba(0, 0, 0, 0.18);
+    --nb-mobile-card-bg: #FFFFFF;
+    --nb-mobile-card-border: rgba(0, 0, 0, 0.08);
+    --nb-mobile-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
+    --nb-mobile-duration: 380ms;
+    --nb-mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --nb-mobile-direction: 1;
+
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+}
+
+body.NB-mobile.NB-dark {
+    --nb-mobile-bar-bg: #393b3c;
+    --nb-mobile-bar-border: #262728;
+    --nb-mobile-bar-text: #e0e0e0;
+    --nb-mobile-bar-subtext: #9a9a9a;
+    --nb-mobile-tint: #8fb4e6;
+    --nb-mobile-tint-active: rgba(143, 180, 230, 0.16);
+    --nb-mobile-screen-bg: #2a2b2d;
+    --nb-mobile-story-bg: #303030;
+    --nb-mobile-shade: rgba(0, 0, 0, 0.45);
+    --nb-mobile-sheet-bg: #2f3032;
+    --nb-mobile-sheet-handle: rgba(255, 255, 255, 0.25);
+    --nb-mobile-card-bg: #36383a;
+    --nb-mobile-card-border: rgba(255, 255, 255, 0.06);
+}
+
+/* mobile.css: right-to-left pages slide screens in from the left. */
+html[dir="rtl"] body.NB-mobile {
+    --nb-mobile-direction: -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.NB-mobile {
+        --nb-mobile-duration: 1ms;
+    }
+}
+
+body.NB-mobile .NB-layout {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto !important;
+    height: auto !important;
+    overflow: hidden;
+}
+
+/* ============= */
+/* = Screens   = */
+/* ============= */
+
+body.NB-mobile .NB-mobile-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    overflow: hidden !important;
+    background-color: var(--nb-mobile-screen-bg);
+    visibility: hidden;
+    z-index: 5 !important;
+    transform: translate3d(calc(100% * var(--nb-mobile-direction)), 0, 0);
+    box-shadow: none;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-center {
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    z-index: 20 !important;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-left {
+    visibility: visible;
+    transform: translate3d(calc(-28% * var(--nb-mobile-direction)), 0, 0);
+    z-index: 10 !important;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-right {
+    visibility: visible;
+    transform: translate3d(calc(100% * var(--nb-mobile-direction)), 0, 0);
+    z-index: 30 !important;
+}
+
+/* mobile.css: the screen a pushed screen slides over dims, like a native navigation stack. */
+body.NB-mobile .NB-mobile-screen::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--nb-mobile-shade);
+    opacity: var(--nb-mobile-shade-opacity, 0);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* mobile.css: an edge swipe overrides the shade inline as the finger drags. */
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-left {
+    --nb-mobile-shade-opacity: 1;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-right,
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-center.NB-mobile-elevated {
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.18);
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-animating {
+    transition: transform var(--nb-mobile-duration) var(--nb-mobile-ease),
+                box-shadow var(--nb-mobile-duration) var(--nb-mobile-ease);
+    will-change: transform;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-animating::after {
+    transition: opacity var(--nb-mobile-duration) var(--nb-mobile-ease);
+}
+
+/* mobile.css: while a finger drags a screen, views/mobile_layout_view.js writes the transform
+   inline, so transitions must be off. */
+body.NB-mobile .NB-mobile-screen.NB-mobile-dragging,
+body.NB-mobile .NB-mobile-screen.NB-mobile-dragging::after {
+    transition: none !important;
+    will-change: transform;
+}
+
+body.NB-mobile.NB-mobile-transitioning .NB-mobile-screen {
+    pointer-events: none;
+}
+
+/* ===================== */
+/* = Navigation bars   = */
+/* ===================== */
+
+.NB-mobile-bar {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    position: relative;
+    height: var(--nb-mobile-bar-height);
+    padding: 0 4px;
+    box-sizing: border-box;
+    background: var(--nb-mobile-bar-bg);
+    border-bottom: 1px solid var(--nb-mobile-bar-border);
+    color: var(--nb-mobile-bar-text);
+    z-index: 50;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', 'Lucida Grande', Verdana, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body.NB-mobile .NB-mobile-bar-back {
+    display: flex;
+    align-items: center;
+    flex: none;
+    max-width: 32%;
+    height: 40px;
+    padding: 0 10px 0 4px;
+    border-radius: 10px;
+    color: var(--nb-mobile-tint);
+    font-size: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+body.NB-mobile .NB-mobile-bar-back:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-bar-back-icon {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    background-color: var(--nb-mobile-tint);
+    -webkit-mask: url('/media/img/icons/nouns/nav-left.svg') no-repeat center / 20px;
+    mask: url('/media/img/icons/nouns/nav-left.svg') no-repeat center / 20px;
+}
+
+html[dir="rtl"] body.NB-mobile .NB-mobile-bar-back-icon {
+    transform: scaleX(-1);
+}
+
+body.NB-mobile .NB-mobile-bar-back-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-inline-start: 2px;
+}
+
+body.NB-mobile .NB-mobile-bar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+body.NB-mobile .NB-mobile-bar-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.NB-mobile .NB-mobile-bar-title img {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+}
+
+body.NB-mobile .NB-mobile-bar-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 44px;
+}
+
+body.NB-mobile .NB-mobile-bar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+body.NB-mobile .NB-mobile-bar-button:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-bar-button .NB-mobile-icon {
+    width: 22px;
+    height: 22px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-icon {
+    display: block;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+body.NB-mobile .NB-mobile-icon-options {
+    -webkit-mask-image: url('/media/img/icons/nouns/settings.svg');
+    mask-image: url('/media/img/icons/nouns/settings.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-markread {
+    -webkit-mask-image: url('/media/img/icons/nouns/mark-read.svg');
+    mask-image: url('/media/img/icons/nouns/mark-read.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-search {
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-list {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-list.svg');
+    mask-image: url('/media/img/icons/nouns/layout-list.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-grid {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-grid.svg');
+    mask-image: url('/media/img/icons/nouns/layout-grid.svg');
+}
+
+/* ================= */
+/* = Feed list     = */
+/* ================= */
+
+body.NB-mobile .NB-layout .left-pane {
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+body.NB-mobile .left-pane > .left-north,
+body.NB-mobile .left-pane > .left-south {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: none;
+    display: block !important;
+    z-index: 2 !important;
+}
+
+body.NB-mobile .left-pane > .left-center {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: block !important;
+    z-index: 1 !important;
+}
+
+body.NB-mobile .left-center > .left-center-content {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.NB-mobile .left-center > .left-center-footer {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: auto !important;
+}
+
+body.NB-mobile .left-south {
+    padding-bottom: var(--nb-mobile-safe-bottom);
+}
+
+body.NB-mobile .NB-feeds-header-collapse-sidebar,
+body.NB-mobile .NB-taskbar-sidebar-toggle-open,
+body.NB-mobile .NB-story-titles-expand-sidebar,
+body.NB-mobile .ui-layout-resizer,
+body.NB-mobile .ui-layout-toggler,
+body.NB-mobile .NB-drag-handle,
+body.NB-mobile .tipsy {
+    display: none !important;
+}
+
+/* mobile.css: the selected-row highlight follows you back from a feed but means nothing once
+   the list is the only thing on screen, so it fades to a hint. */
+body.NB-mobile.NB-mobile-screen-is-feeds .NB-feedlist .feed.NB-selected,
+body.NB-mobile.NB-mobile-screen-is-feeds .NB-feeds-header.NB-selected {
+    transition: background-color 600ms ease;
+}
+
+/* ================= */
+/* = Dashboard     = */
+/* ================= */
+
+body.NB-mobile #NB-splash {
+    display: flex !important;
+    left: 0 !important;
+    right: 0 !important;
+    overflow: hidden !important;
+}
+
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--nb-mobile-safe-bottom);
+}
+
+body.NB-mobile #NB-splash .NB-modules-center,
+body.NB-mobile #NB-splash .NB-modules-right,
+body.NB-mobile #NB-splash .NB-modules-left {
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+}
+
+body.NB-mobile #NB-splash-overlay,
+body.NB-mobile .NB-splash-info,
+body.NB-mobile .NB-splash-heading {
+    display: none !important;
+}
+
+/* ================= */
+/* = Story titles  = */
+/* ================= */
+
+body.NB-mobile .NB-layout .right-pane {
+    display: flex !important;
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+body.NB-mobile .right-pane > .content-north {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: none;
+    display: block !important;
+    z-index: 2 !important;
+    overflow: visible !important;
+}
+
+body.NB-mobile .right-pane > .content-south,
+body.NB-mobile .right-pane .NB-feedbar > .NB-taskbar-nav {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane > .content-pane {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: block !important;
+    z-index: 1 !important;
+}
+
+body.NB-mobile .content-pane > #story_titles {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--nb-mobile-safe-bottom);
+    box-sizing: border-box;
+}
+
+/* mobile.css: phones never show the side-by-side story pane. List layout expands stories inside
+   #story_titles and grid pushes .NB-mobile-story-screen instead. */
+body.NB-mobile .content-pane > #story_pane,
+body.NB-mobile .content-pane > #ask_ai_pane {
+    display: none !important;
+}
+
+/* ================= */
+/* = Story screen  = */
+/* ================= */
+
+.NB-mobile-story-screen {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-story-screen {
+    background-color: var(--nb-mobile-story-bg);
+}
+
+body.NB-mobile .NB-mobile-story-pager {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+body.NB-mobile .NB-mobile-story-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, 0, 0);
+}
+
+body.NB-mobile .NB-mobile-story-track.NB-mobile-animating {
+    transition: transform 320ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-mobile-story-page {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    background-color: var(--nb-mobile-story-bg);
+    box-sizing: border-box;
+    padding-bottom: 24px;
+}
+
+/* mobile.css: physical offsets are mirrored for right-to-left pages by utils/rtl_css.py, so the
+   neighbors need no direction variable here (transforms do, the mirror leaves those alone). */
+body.NB-mobile .NB-mobile-story-page-previous {
+    left: -100%;
+}
+
+body.NB-mobile .NB-mobile-story-page-current {
+    left: 0;
+}
+
+body.NB-mobile .NB-mobile-story-page-next {
+    left: 100%;
+}
+
+body.NB-mobile .NB-mobile-story-page-empty {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-story-page .NB-mobile-story-iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+}
+
+body.NB-mobile .NB-mobile-story-page.NB-mobile-story-page-iframe {
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+body.NB-mobile .NB-mobile-story-loading {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--nb-mobile-bar-subtext);
+    font-size: 14px;
+}
+
+body.NB-mobile .NB-mobile-story-position {
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--nb-mobile-bar-subtext);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ================= */
+/* = Toolbars      = */
+/* ================= */
+
+body.NB-mobile .NB-mobile-toolbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    height: var(--nb-mobile-toolbar-height);
+    padding: 0 8px var(--nb-mobile-safe-bottom);
+    box-sizing: content-box;
+    background: var(--nb-mobile-bar-bg);
+    border-top: 1px solid var(--nb-mobile-bar-border);
+    color: var(--nb-mobile-bar-text);
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 50;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 44px;
+    height: 40px;
+    padding: 0 8px;
+    border-radius: 10px;
+    color: var(--nb-mobile-tint);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-toolbar-button.NB-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button .NB-mobile-icon {
+    width: 22px;
+    height: 22px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-segmented {
+    display: flex;
+    flex: none;
+    padding: 2px;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+body.NB-mobile.NB-dark .NB-mobile-segmented {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+body.NB-mobile .NB-mobile-segmented-option {
+    min-width: 48px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nb-mobile-bar-subtext);
+    cursor: pointer;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+body.NB-mobile .NB-mobile-segmented-option.NB-active {
+    background: var(--nb-mobile-card-bg);
+    color: var(--nb-mobile-bar-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+body.NB-mobile .NB-mobile-icon-previous {
+    -webkit-mask-image: url('/media/img/icons/nouns/up.svg');
+    mask-image: url('/media/img/icons/nouns/up.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-next {
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-next-unread {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-unread {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-read {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-read.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-read.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-share {
+    -webkit-mask-image: url('/media/img/icons/nouns/share.svg');
+    mask-image: url('/media/img/icons/nouns/share.svg');
+}
+
+/* ===================================== */
+/* = Modals become full-screen sheets  = */
+/* ===================================== */
+
+body.NB-mobile #simplemodal-container {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    animation: NB-mobile-sheet-up 340ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile #simplemodal-container .simplemodal-wrap {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal {
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    padding: 56px 16px calc(24px + var(--nb-mobile-safe-bottom)) !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-title {
+    padding-inline-end: 40px;
+}
+
+body.NB-mobile #simplemodal-container a.modalCloseImg {
+    display: block !important;
+    position: fixed !important;
+    top: 8px !important;
+    right: 8px !important;
+    left: auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.06) url('/media/img/icons/nouns/close.svg') no-repeat center / 16px !important;
+    z-index: 10;
+}
+
+body.NB-mobile.NB-dark #simplemodal-container a.modalCloseImg {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+@keyframes NB-mobile-sheet-up {
+    from { transform: translate3d(0, 100%, 0); }
+    to { transform: translate3d(0, 0, 0); }
+}
+
+/* ============================================== */
+/* = Popovers and menus become bottom sheets    = */
+/* ============================================== */
+
+body.NB-mobile .NB-popover.popover {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+    background: var(--nb-mobile-sheet-bg);
+    padding: 18px 0 var(--nb-mobile-safe-bottom) !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transform: translate3d(0, 100%, 0);
+    opacity: 1 !important;
+    transition: transform 320ms var(--nb-mobile-ease) !important;
+    z-index: 2000 !important;
+}
+
+body.NB-mobile .NB-popover.popover.in {
+    transform: translate3d(0, 0, 0);
+}
+
+body.NB-mobile .NB-popover.popover::before,
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    margin-left: -18px;
+    border-radius: 3px;
+    background: var(--nb-mobile-sheet-handle);
+}
+
+body.NB-mobile .NB-popover.popover .arrow {
+    display: none !important;
+}
+
+body.NB-mobile .NB-popover .popover-inner {
+    width: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.NB-mobile .NB-popover .popover-content {
+    max-height: none !important;
+}
+
+body.NB-mobile .NB-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1999 !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-height: 80vh !important;
+    margin: 0 !important;
+    padding: 18px 0 var(--nb-mobile-safe-bottom) !important;
+    border-radius: 16px 16px 0 0 !important;
+    background: var(--nb-mobile-sheet-bg);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    z-index: 2001 !important;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage-arrow {
+    display: none !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage {
+    max-height: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage li.NB-menu-item {
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+body.NB-mobile .NB-mobile-sheet-shade {
+    display: none;
+}
+
+body.NB-mobile.NB-mobile-sheet-open .NB-mobile-sheet-shade {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2000;
+}

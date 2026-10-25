@@ -1848,12 +1848,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             var view_setting = feed && feed[s] || default_setting;
             // if (view_setting == "magazine") view_setting = "list";
+            // assetmodel.js: phones only have list and grid layouts (common/mobile_utils.js).
+            if (setting == 'layout' && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+                view_setting = NEWSBLUR.mobile_utils.mobile_story_layout(view_setting);
+            }
             return view_setting;
         }
 
         var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
         if (_.isString(view_settings)) {
             view_settings = { 'view': view_settings };
+        }
+        // assetmodel.js: a phone writes back the list or grid layout it shows whenever a feed
+        // opens. Skip that write when the stored desktop layout already reads as that layout,
+        // so a split feed stays split on desktop.
+        if (setting.hasOwnProperty('layout') && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+            var stored_layout = view_settings['l'] || NEWSBLUR.Preferences['story_layout'];
+            if (!NEWSBLUR.mobile_utils.should_save_mobile_layout(stored_layout, setting['layout'])) {
+                setting = _.omit(setting, 'layout');
+            }
         }
         var params = { 'feed_id': feed_id + '' };
         _.each([

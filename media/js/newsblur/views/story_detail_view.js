@@ -1918,7 +1918,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     show_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
 
         return this.show_manage_menu(e);
     },
@@ -1935,7 +1935,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     show_feed_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
         return this.show_feed_manage_menu(e);
     },
 
