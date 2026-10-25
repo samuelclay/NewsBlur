@@ -78,6 +78,7 @@ android {
     // StoreCaptureActivity.kt shares the licensed cooking fixture with the iOS capture harness.
     sourceSets.getByName("storecapture").assets.srcDir("../../../ios/MarketingCooking")
     sourceSets.getByName("main").java.srcDir(if (fdroid) "src/fdroid/java" else "src/play/java")
+    if (!fdroid) sourceSets.getByName("test").java.srcDir("src/playTest/java")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
