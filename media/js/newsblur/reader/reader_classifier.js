@@ -4571,48 +4571,24 @@ var classifier_prototype = {
         return first_site ? 'feed:' + first_site.id : 'global';
     },
 
-    make_manage_add_scope_chooser: function () {
-        var $chooser = NEWSBLUR.utils.make_feed_chooser({
-            skip_social: true,
-            skip_searches: true,
-            skip_starred: true
-        });
-        $chooser.removeAttr('name').attr({
-            'class': 'NB-manage-add-scope',
-            'aria-label': gettext('Where it applies')
-        });
-
-        // Folder values are full paths ("Tech - Apple") because folder-scoped
-        // classifiers store the path flatten_folders() builds in apps/reader/models.py.
-        var $folders_optgroup = $.make('optgroup', { label: gettext('Folders') });
-        var add_folder_options = function (items, parent_path, depth) {
-            items.each(function (item) {
-                if (!item.is_folder()) return;
-                var folder_title = item.get('folder_title');
-                var path = NEWSBLUR.classifier_add_utils.folder_path(parent_path, folder_title);
-                var indent = new Array(depth + 1).join('   ');
-                $folders_optgroup.append($.make('option', { value: 'folder:' + path }).text(indent + folder_title));
-                add_folder_options(item.folders, path, depth + 1);
-            });
-        };
-        add_folder_options(NEWSBLUR.assets.get_folders(), '', 0);
-
-        if ($folders_optgroup.children().length) {
-            $chooser.prepend($folders_optgroup);
-        }
-        $chooser.prepend($.make('option', { value: 'global' }, gettext('All sites')));
-
-        return $chooser;
-    },
-
     make_manage_add_row: function () {
+        var self = this;
         var state = this.get_manage_add_state();
-        var $scope = this.make_manage_add_scope_chooser();
-        $scope.val(state.scope_value);
-        if ($scope.val() !== state.scope_value) {
+        var $row;
+
+        var scope_label_id = _.uniqueId('NB-manage-add-scope-label-');
+        var picker = new NEWSBLUR.Views.ClassifierScopePicker({
+            value: state.scope_value,
+            label_id: scope_label_id,
+            on_change: function (value) {
+                state.scope_value = value;
+                self.update_manage_add_row($row);
+            }
+        });
+        if (!picker.has_value(state.scope_value)) {
             // The remembered site or folder is gone, so fall back to a scope that exists
             state.scope_value = NEWSBLUR.Globals.is_archive ? 'global' : this.default_manage_add_site();
-            $scope.val(state.scope_value);
+            picker.value = state.scope_value;
         }
 
         var $type = $.make('select', { className: 'NB-manage-add-type', 'aria-label': gettext('Classifier type') },
@@ -4621,9 +4597,8 @@ var classifier_prototype = {
             }));
         $type.val(state.type);
 
-        // Like, Dislike and Hide each save the classifier. The one used last is drawn
-        // filled, and Enter in the phrase field repeats it.
-        var make_sentiment_button = function (sentiment, label) {
+        // Like, Dislike or Hide picks the opinion; Add (or Enter in the phrase field) saves it.
+        var make_sentiment_option = function (sentiment, label) {
             // Hide is the super dislike, drawn as the pills' double thumbs down
             var $icon = sentiment === 'super_dislike' ?
                 $.make('span', { className: 'NB-manage-add-sentiment-icon NB-manage-add-hide-icon' }, [
@@ -4637,12 +4612,11 @@ var classifier_prototype = {
                 'data-sentiment': sentiment
             }, [
                 $icon,
-                $.make('span', { className: 'NB-manage-add-sentiment-label' }, label),
-                $.make('span', { className: 'NB-manage-add-enter-hint', 'aria-hidden': 'true' }, '↵')
+                $.make('span', { className: 'NB-manage-add-sentiment-label' }, label)
             ]);
         };
 
-        var $row = $.make('div', { className: 'NB-manage-add' }, [
+        $row = $.make('div', { className: 'NB-manage-add' }, [
             $.make('div', { className: 'NB-manage-add-heading' }, gettext('Add a classifier')),
             $.make('div', { className: 'NB-manage-add-match' }, [
                 $type,
@@ -4650,47 +4624,35 @@ var classifier_prototype = {
                 $.make('button', {
                     type: 'button',
                     className: 'NB-manage-add-regex',
-                    title: gettext('Regex'),
                     'aria-label': gettext('Regex')
                 }, '.*')
             ]),
             $.make('div', { className: 'NB-manage-add-actions' }, [
-                $.make('label', { className: 'NB-manage-add-scope-field' }, [
-                    $.make('span', { className: 'NB-manage-add-scope-label' }, gettext('Applies to')),
-                    $.make('span', { className: 'NB-manage-add-scope-picker' }, [
-                        $.make('span', { className: 'NB-manage-add-scope-icon', 'aria-hidden': 'true' }),
-                        $scope
-                    ])
+                $.make('div', { className: 'NB-manage-add-scope-field' }, [
+                    $.make('span', { className: 'NB-manage-add-scope-label', id: scope_label_id }, gettext('Applies to')),
+                    picker.render().el
                 ]),
                 $.make('div', { className: 'NB-manage-add-notice', 'aria-live': 'polite' }),
-                $.make('div', { className: 'NB-manage-add-buttons' }, [
-                    make_sentiment_button('like', gettext('Like')),
-                    make_sentiment_button('dislike', gettext('Dislike')),
-                    make_sentiment_button('super_dislike', gettext('Hide'))
+                $.make('div', {
+                    className: 'NB-manage-add-sentiments',
+                    role: 'group',
+                    'aria-label': gettext('Train this classifier')
+                }, [
+                    make_sentiment_option('like', gettext('Like')),
+                    make_sentiment_option('dislike', gettext('Dislike')),
+                    make_sentiment_option('super_dislike', gettext('Hide'))
+                ]),
+                $.make('button', { type: 'button', className: 'NB-manage-add-button' }, [
+                    $.make('span', { className: 'NB-manage-add-button-label' }, gettext('Add')),
+                    $.make('span', { className: 'NB-manage-add-enter-hint', 'aria-hidden': 'true' }, '↵')
                 ])
             ])
         ]);
 
-        this.update_manage_add_scope_icon($row);
+        this.manage_add_scope_picker = picker;
         this.update_manage_add_row($row);
 
         return $row;
-    },
-
-    // The scope glyph the pills use: the site's favicon, a folder, or a globe for all sites.
-    update_manage_add_scope_icon: function ($row) {
-        var scope = NEWSBLUR.classifier_add_utils.parse_scope(this.get_manage_add_state().scope_value);
-        var $icon = $('.NB-manage-add-scope-icon', $row).empty()
-            .removeClass('NB-scope-feed NB-scope-folder NB-scope-global')
-            .addClass('NB-scope-' + scope.scope);
-
-        if (scope.scope === 'feed') {
-            $icon.append($.favicon_el(scope.feed_id));
-        } else {
-            $icon.html(_.find(NEWSBLUR.ClassifierConstants.SCOPE_ICON_DATA, function (icon) {
-                return icon.key === scope.scope;
-            }).svg);
-        }
     },
 
     bind_manage_add_row: function () {
@@ -4702,15 +4664,18 @@ var classifier_prototype = {
             state.type = $(this).val();
             self.update_manage_add_row($row);
         });
-        $('.NB-manage-add-scope', $row).on('change', function () {
-            state.scope_value = $(this).val();
-            self.update_manage_add_scope_icon($row);
-            self.update_manage_add_row($row);
-        });
         $('.NB-manage-add-regex', $row).on('click', function (e) {
             e.preventDefault();
             state.is_regex = !state.is_regex;
             self.update_manage_add_row($row);
+        }).on('mouseenter focus', function () {
+            self.show_manage_add_regex_sheet(this);
+        }).on('mouseleave blur', function () {
+            self.hide_manage_add_regex_sheet_soon();
+        });
+        // The sheet is fixed to the toggle's spot on screen, so it can't follow a scroll
+        $('.NB-tab-manage', this.$modal).off('scroll.manage_add').on('scroll.manage_add', function () {
+            self.hide_manage_add_regex_sheet();
         });
         $('.NB-manage-add-input', $row).on('input', function () {
             self.update_manage_add_row($row);
@@ -4724,8 +4689,51 @@ var classifier_prototype = {
             e.preventDefault();
             state.sentiment = $(this).data('sentiment');
             self.update_manage_add_row($row);
+        });
+        $('.NB-manage-add-button', $row).on('click', function (e) {
+            e.preventDefault();
             self.add_manage_classifier();
         });
+    },
+
+    // The story trainer's regex quicksheet (make_regex_popover), shown while the pointer
+    // or keyboard focus is on the .* toggle. It lives on body so the tab can't clip it.
+    show_manage_add_regex_sheet: function (toggle) {
+        var self = this;
+        if (!this.$manage_add_regex_sheet) {
+            this.$manage_add_regex_sheet = this.make_regex_popover().addClass('NB-manage-add-regex-sheet');
+            this.$manage_add_regex_sheet.on('mouseleave', function () {
+                self.hide_manage_add_regex_sheet_soon();
+            });
+        }
+        clearTimeout(this.manage_add_regex_sheet_timer);
+
+        var rect = toggle.getBoundingClientRect();
+        // reader_classifier.js: inline_end_alignment_css opens it toward the screen's middle in LTR and RTL
+        this.$manage_add_regex_sheet.appendTo('body').css(_.extend({
+            position: 'fixed',
+            top: rect.bottom + 8,
+            bottom: 'auto'
+        }, NEWSBLUR.utils.inline_end_alignment_css(rect))).addClass('NB-visible');
+    },
+
+    // A short delay lets the pointer travel from the toggle into the sheet.
+    hide_manage_add_regex_sheet_soon: function () {
+        var self = this;
+        clearTimeout(this.manage_add_regex_sheet_timer);
+        this.manage_add_regex_sheet_timer = setTimeout(function () {
+            var $toggle = $('.NB-manage-add-regex', self.$modal);
+            var $sheet = self.$manage_add_regex_sheet;
+            if (!$sheet || $sheet.is(':hover') || $toggle.is(':hover')) return;
+            self.hide_manage_add_regex_sheet();
+        }, 150);
+    },
+
+    hide_manage_add_regex_sheet: function () {
+        clearTimeout(this.manage_add_regex_sheet_timer);
+        if (this.$manage_add_regex_sheet) {
+            this.$manage_add_regex_sheet.removeClass('NB-visible');
+        }
     },
 
     // Placeholder, regex toggle, tier notice and button state for the current choices.
@@ -4751,9 +4759,15 @@ var classifier_prototype = {
             .toggleClass('NB-hidden', !regex_supported)
             .toggleClass('NB-active', regex_supported && state.is_regex)
             .attr('aria-pressed', regex_supported && state.is_regex ? 'true' : 'false');
+        if (!regex_supported) this.hide_manage_add_regex_sheet();
         $('.NB-manage-add-sentiment', $row).each(function () {
-            $(this).toggleClass('NB-default', $(this).data('sentiment') === state.sentiment);
+            var is_selected = $(this).data('sentiment') === state.sentiment;
+            $(this).toggleClass('NB-active', is_selected).attr('aria-pressed', is_selected ? 'true' : 'false');
         });
+        // Add takes the selected opinion's pill color
+        $('.NB-manage-add-button', $row)
+            .removeClass('NB-manage-add-button-like NB-manage-add-button-dislike NB-manage-add-button-super-dislike')
+            .addClass('NB-manage-add-button-' + state.sentiment.replace('_', '-'));
 
         var $notice = $('.NB-manage-add-notice', $row).empty();
         var missing_tier = utils.required_tier(entry, NEWSBLUR.Globals);
@@ -4768,7 +4782,7 @@ var classifier_prototype = {
             }
         }
 
-        $('.NB-manage-add-sentiment', $row).prop('disabled',
+        $('.NB-manage-add-button', $row).prop('disabled',
             !value || !!missing_tier || !!regex_error || !!this.manage_add_saving);
     },
 
@@ -4796,8 +4810,8 @@ var classifier_prototype = {
         var $row = $('.NB-manage-add', this.$modal);
         var $input = $('.NB-manage-add-input', $row);
         var state = this.get_manage_add_state();
-        var $button = $('.NB-manage-add-sentiment[data-sentiment="' + state.sentiment + '"]', $row);
-        var $button_label = $('.NB-manage-add-sentiment-label', $button);
+        var $button = $('.NB-manage-add-button', $row);
+        var $button_label = $('.NB-manage-add-button-label', $button);
         var button_label = $button_label.text();
         var entry = _.extend({ value: $.trim($input.val()) }, state);
 
@@ -4815,7 +4829,7 @@ var classifier_prototype = {
         };
 
         this.manage_add_saving = true;
-        $('.NB-manage-add-sentiment', $row).prop('disabled', true);
+        $button.prop('disabled', true);
         $button_label.text(gettext('Adding...'));
 
         this.model.save_classifier(data, function () {
@@ -4848,6 +4862,14 @@ var classifier_prototype = {
     // for an unread recount, and that refresh shares the serial request queue with
     // /classifier/save, so refreshing between adds would stall the next one.
     handle_modal_closed: function () {
+        // The add panel's regex quicksheet lives on body, so it would outlive the trainer
+        if (this.$manage_add_regex_sheet) {
+            this.$manage_add_regex_sheet.remove();
+            this.$manage_add_regex_sheet = null;
+        }
+        if (this.manage_add_scope_picker) {
+            this.manage_add_scope_picker.close(false);
+        }
         if (this.manage_add_needs_feeds_refresh) {
             this.manage_add_needs_feeds_refresh = false;
             NEWSBLUR.reader.force_feeds_refresh();

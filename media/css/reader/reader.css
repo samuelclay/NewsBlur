@@ -10904,8 +10904,7 @@ form.opml_import_form input {
     box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
 }
 
-.NB-manage-add-type,
-.NB-manage-add-scope {
+.NB-manage-add-type {
     -webkit-appearance: none;
     appearance: none;
     background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
@@ -10990,62 +10989,12 @@ form.opml_import_form input {
     align-items: center;
     gap: 8px;
     min-width: 0;
-    margin: 0;
 }
 
 .NB-manage-add-scope-label {
     font-size: 12px;
     color: #8C8A80;
     white-space: nowrap;
-}
-
-.NB-manage-add-scope-picker {
-    position: relative;
-    display: flex;
-    min-width: 0;
-}
-
-.NB-manage-add-scope-icon {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    width: 14px;
-    height: 14px;
-    margin-top: -7px;
-    pointer-events: none;
-}
-
-.NB-manage-add-scope-icon svg,
-.NB-manage-add-scope-icon img {
-    display: block;
-    width: 14px;
-    height: 14px;
-}
-
-.NB-manage-add-scope-icon.NB-scope-folder {
-    color: #3B82F6;
-}
-
-.NB-manage-add-scope-icon.NB-scope-global {
-    color: #8B5CF6;
-}
-
-.NB-manage-add-scope {
-    width: 260px;
-    max-width: 100%;
-    height: 30px;
-    padding: 0 28px 0 32px;
-    color: #303030;
-    background-color: white;
-    border: 1px solid #D3D1C7;
-    border-radius: 6px;
-    text-overflow: ellipsis;
-}
-
-.NB-manage-add-scope:focus {
-    outline: none;
-    border-color: #50A050;
-    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
 }
 
 .NB-manage-add-notice {
@@ -11055,31 +11004,47 @@ form.opml_import_form input {
     line-height: 1.35;
 }
 
-.NB-manage-add-buttons {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
+/* Like / Dislike / Hide toggle, in the pill colors of the classifier it makes */
+.NB-manage-add-sentiments {
+    display: inline-flex;
+    height: 30px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 15px;
+    overflow: hidden;
 }
 
-/* Pill-shaped like the classifiers they make. The default (last used) is filled. */
 .NB-manage-add-sentiment {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    height: 30px;
-    padding: 0 14px 0 11px;
+    gap: 5px;
+    padding: 0 12px;
     font-family: inherit;
     font-size: 12px;
     font-weight: bold;
-    background-color: white;
-    border: 1px solid;
-    border-radius: 15px;
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
     cursor: pointer;
     white-space: nowrap;
-    transition: background-color 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
-/* Thumbs are masks filled with the button's text color, so they follow every state and theme */
+.NB-manage-add-sentiment:first-child {
+    border-left: none;
+    padding-left: 13px;
+}
+
+.NB-manage-add-sentiment:last-child {
+    padding-right: 13px;
+}
+
+.NB-manage-add-sentiment:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: -2px;
+}
+
+/* Thumbs are masks filled with the text color, so they follow every state and theme */
 .NB-manage-add-like .NB-manage-add-sentiment-icon,
 .NB-manage-add-dislike .NB-manage-add-sentiment-icon,
 .NB-manage-add-hide-icon > span {
@@ -11093,22 +11058,6 @@ form.opml_import_form input {
 .NB-manage-add-like .NB-manage-add-sentiment-icon {
     -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
     mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
-}
-
-/* The pill colors: like green, dislike red, and the super dislike's deeper crimson */
-.NB-manage-add-like {
-    color: #2E8229;
-    border-color: rgba(52, 145, 46, 0.55);
-}
-
-.NB-manage-add-dislike {
-    color: #A90103;
-    border-color: rgba(169, 1, 3, 0.45);
-}
-
-.NB-manage-add-super-dislike {
-    color: #6B0001;
-    border-color: rgba(107, 0, 1, 0.45);
 }
 
 /* Hide is the super dislike: two stacked thumbs down, like the filter banner's Hide button */
@@ -11135,67 +11084,301 @@ form.opml_import_form input {
     bottom: 0;
 }
 
-.NB-manage-add-like:hover:not(:disabled) {
+/* The pill colors: like green, dislike red, and the super dislike's deeper crimson */
+.NB-manage-add-like {
+    color: #2E8229;
+}
+
+.NB-manage-add-dislike {
+    color: #A90103;
+}
+
+.NB-manage-add-super-dislike {
+    color: #6B0001;
+}
+
+.NB-manage-add-like:hover {
     background-color: #EEF6EC;
 }
 
-.NB-manage-add-dislike:hover:not(:disabled) {
+.NB-manage-add-dislike:hover {
     background-color: #FBEDED;
 }
 
-.NB-manage-add-super-dislike:hover:not(:disabled) {
+.NB-manage-add-super-dislike:hover {
     background-color: #F6EAEA;
 }
 
-.NB-manage-add-like.NB-default {
+.NB-manage-add-sentiment.NB-active {
+    color: white;
+}
+
+.NB-manage-add-like.NB-active {
+    background-color: #34912E;
+}
+
+.NB-manage-add-dislike.NB-active {
+    background-color: #A90103;
+}
+
+.NB-manage-add-super-dislike.NB-active {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
     color: white;
     background-color: #34912E;
-    border-color: #2A7A25;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, opacity 0.15s;
 }
 
-.NB-manage-add-dislike.NB-default {
-    color: white;
+.NB-manage-add-button-dislike {
     background-color: #A90103;
-    border-color: #8A0002;
 }
 
-.NB-manage-add-like.NB-default:hover:not(:disabled) {
+.NB-manage-add-button-super-dislike {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button-like:hover:not(:disabled) {
     background-color: #2E8228;
 }
 
-.NB-manage-add-super-dislike.NB-default {
-    color: white;
-    background-color: #6B0001;
-    border-color: #4A0001;
-}
-
-.NB-manage-add-dislike.NB-default:hover:not(:disabled) {
+.NB-manage-add-button-dislike:hover:not(:disabled) {
     background-color: #960102;
 }
 
-.NB-manage-add-super-dislike.NB-default:hover:not(:disabled) {
+.NB-manage-add-button-super-dislike:hover:not(:disabled) {
     background-color: #5A0001;
 }
 
-.NB-manage-add-sentiment:focus-visible {
+.NB-manage-add-button:focus-visible {
     outline: 2px solid #50A050;
     outline-offset: 2px;
 }
 
-.NB-manage-add-sentiment:disabled {
+.NB-manage-add-button:disabled {
     opacity: 0.4;
     cursor: default;
 }
 
-/* Shows which button Enter presses while the phrase field has focus */
+/* Shows that Enter presses Add while the phrase field has focus */
 .NB-manage-add-enter-hint {
     display: none;
     font-weight: normal;
     opacity: 0.75;
 }
 
-.NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-sentiment.NB-default:not(:disabled) .NB-manage-add-enter-hint {
+.NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-button:not(:disabled) .NB-manage-add-enter-hint {
     display: inline;
+}
+
+/* Scope picker (classifier_scope_picker_view.js): a searchable list with folder icons and favicons */
+.NB-scope-picker {
+    position: relative;
+    display: flex;
+    min-width: 0;
+}
+
+.NB-scope-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 260px;
+    max-width: 100%;
+    height: 30px;
+    padding: 0 28px 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.NB-scope-picker-trigger:focus-visible,
+.NB-scope-picker.NB-open .NB-scope-picker-trigger {
+    outline: none;
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+.NB-scope-picker-trigger-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-scope-picker-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.NB-scope-picker-icon svg,
+.NB-scope-picker-icon img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+.NB-scope-picker-icon .NB-folder-icon-colored,
+.NB-scope-picker-icon .NB-feed-icon-colored {
+    display: block;
+    width: 16px;
+    height: 16px;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.NB-scope-picker-icon.NB-scope-folder {
+    color: #3B82F6;
+}
+
+.NB-scope-picker-icon.NB-scope-global {
+    color: #8B5CF6;
+}
+
+.NB-scope-picker-popover {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 20;
+    width: 340px;
+    padding: 6px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.NB-scope-picker-search {
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin: 0 0 6px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background-color: #FAFAF7;
+    border: 1px solid #E4E2D8;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.NB-scope-picker-search:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-scope-picker-search::placeholder {
+    color: #A8A69C;
+}
+
+.NB-scope-picker-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.NB-scope-picker-group {
+    padding: 8px 10px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-scope-picker-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #303030;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.NB-scope-picker-option.NB-hidden {
+    display: none;
+}
+
+.NB-scope-picker-option.NB-active {
+    background-color: #EEF0E8;
+}
+
+/* The title keeps its room; the parent path shown while searching gives way first */
+.NB-scope-picker-option-title {
+    flex: 0 1 auto;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Parent folder, shown only while searching so same-named folders can be told apart */
+.NB-scope-picker-option-path {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    color: #A8A69C;
+}
+
+.NB-scope-picker.NB-searching .NB-scope-picker-option-path {
+    display: inline;
+}
+
+.NB-scope-picker.NB-searching .NB-scope-picker-option {
+    padding-left: 10px !important;
+}
+
+.NB-scope-picker-option[aria-selected="true"] {
+    font-weight: 600;
+}
+
+.NB-scope-picker-option[aria-selected="true"]::after {
+    content: "\2713";
+    margin-left: auto;
+    padding-left: 8px;
+    font-weight: bold;
+    color: #34912E;
+}
+
+.NB-scope-picker-empty {
+    padding: 10px;
+    font-size: 12px;
+    color: #8C8A80;
 }
 
 .NB-manage-add-notice .NB-classifier-scope-notice,

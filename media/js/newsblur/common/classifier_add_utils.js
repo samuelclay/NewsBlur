@@ -109,8 +109,29 @@
         return opinion + type + (is_regex && supports_regex(type) ? '_regex' : '');
     }
 
+    // Lowercased and accent-free, so a search for "cafe" finds "Café".
+    function normalize_search_text(text) {
+        var lowered = String(text || '').toLowerCase();
+        return lowered.normalize ? lowered.normalize('NFD').replace(/[̀-ͯ]/g, '') : lowered;
+    }
+
+    // Scope picker options for a search (classifier_scope_picker_view.js). Every word must
+    // appear in the option's title or, for a nested folder, its full path.
+    function filter_scope_options(options, query) {
+        var words = normalize_search_text(query).split(/\s+/).filter(Boolean);
+        if (!words.length) return options;
+
+        return options.filter(function (option) {
+            var haystack = normalize_search_text(option.title + ' ' + (option.path || ''));
+            return words.every(function (word) {
+                return haystack.indexOf(word) !== -1;
+            });
+        });
+    }
+
     return {
         TYPES: TYPES,
+        filter_scope_options: filter_scope_options,
         supports_regex: supports_regex,
         parse_scope: parse_scope,
         folder_path: folder_path,

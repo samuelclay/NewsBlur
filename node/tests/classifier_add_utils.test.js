@@ -184,6 +184,33 @@ test('opinion names ignore a regex flag on types without regex classifiers', fun
     assert.equal(classifier_add_utils.opinion_name('feed', -1, 0, true), 'dislike_feed');
 });
 
+const scope_options = [
+    { value: 'global', title: 'All sites' },
+    { value: 'folder:Tech', title: 'Tech', path: 'Tech' },
+    { value: 'folder:Tech - Apple', title: 'Apple', path: 'Tech - Apple' },
+    { value: 'feed:1', title: 'Café Society' },
+    { value: 'feed:2', title: 'Apple Insider' }
+];
+
+function matching_values(query) {
+    return classifier_add_utils.filter_scope_options(scope_options, query).map(function (option) {
+        return option.value;
+    });
+}
+
+test('scope search ignores case and accents', function () {
+    assert.deepEqual(matching_values('CAFE'), ['feed:1']);
+});
+
+test('scope search finds a nested folder by its parent folder and needs every word', function () {
+    assert.deepEqual(matching_values('tech apple'), ['folder:Tech - Apple']);
+    assert.deepEqual(matching_values('apple'), ['folder:Tech - Apple', 'feed:2']);
+});
+
+test('an empty scope search keeps every option', function () {
+    assert.equal(classifier_add_utils.filter_scope_options(scope_options, '   ').length, scope_options.length);
+});
+
 function _extend(base, overrides) {
     return Object.assign({}, base, overrides);
 }
