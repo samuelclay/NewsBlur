@@ -868,9 +868,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ 另外 %(value_1)s 个网站"
 
-msgid "+ New Folder..."
-msgstr "+ 新建文件夹…"
-
 msgid "/day"
 msgstr "/天"
 

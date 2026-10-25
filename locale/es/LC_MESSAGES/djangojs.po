@@ -933,9 +933,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s sitio más"
 msgstr[1] "+ %(value_1)s sitios más"
 
-msgid "+ New Folder..."
-msgstr "+ Nueva carpeta..."
-
 msgid "/day"
 msgstr "/día"
 

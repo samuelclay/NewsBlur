@@ -999,9 +999,6 @@ msgstr[0] "+ ще %(value_1)s сайт"
 msgstr[1] "+ ще %(value_1)s сайти"
 msgstr[2] "+ ще %(value_1)s сайтів"
 
-msgid "+ New Folder..."
-msgstr "+ Нова папка..."
-
 msgid "/day"
 msgstr "/день"
 

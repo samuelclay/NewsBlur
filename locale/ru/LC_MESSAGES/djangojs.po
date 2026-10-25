@@ -1001,9 +1001,6 @@ msgstr[0] "+ ещё %(value_1)s сайт"
 msgstr[1] "+ ещё %(value_1)s сайта"
 msgstr[2] "+ ещё %(value_1)s сайтов"
 
-msgid "+ New Folder..."
-msgstr "+ Новая папка..."
-
 msgid "/day"
 msgstr "/день"
 

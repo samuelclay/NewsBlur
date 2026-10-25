@@ -996,9 +996,6 @@ msgstr[0] "+ jeszcze %(value_1)s witryna"
 msgstr[1] "+ jeszcze %(value_1)s witryny"
 msgstr[2] "+ jeszcze %(value_1)s witryn"
 
-msgid "+ New Folder..."
-msgstr "+ Nowy folder..."
-
 msgid "/day"
 msgstr "/dzień"
 

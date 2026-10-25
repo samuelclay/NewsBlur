@@ -1184,9 +1184,6 @@ msgstr[3] "+ %(value_1)s مواقع إضافية"
 msgstr[4] "+ %(value_1)s موقعًا إضافيًا"
 msgstr[5] "+ %(value_1)s موقع إضافي"
 
-msgid "+ New Folder..."
-msgstr "+ مجلد جديد..."
-
 msgid "/day"
 msgstr "/يوم"
 

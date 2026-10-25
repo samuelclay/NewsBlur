@@ -868,9 +868,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s개 사이트 더 보기"
 
-msgid "+ New Folder..."
-msgstr "+ 새 폴더..."
-
 msgid "/day"
 msgstr "/일"
 

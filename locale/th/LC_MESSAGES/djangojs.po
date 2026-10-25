@@ -868,9 +868,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ อีก %(value_1)s เว็บไซต์"
 
-msgid "+ New Folder..."
-msgstr "+ โฟลเดอร์ใหม่..."
-
 msgid "/day"
 msgstr "/วัน"
 
