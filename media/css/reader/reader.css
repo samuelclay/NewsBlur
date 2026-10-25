@@ -10904,6 +10904,45 @@ form.opml_import_form input {
     box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
 }
 
+/* Regex on: the story trainer's regex input look (.NB-classifier-input-regex-mode) */
+.NB-manage-add-match.NB-regex-mode {
+    background-color: #fdfcff;
+    border-color: #b8b0ff;
+}
+
+.NB-manage-add-match.NB-regex-mode:focus-within {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+}
+
+.NB-manage-add-regex-badge {
+    display: none;
+    align-self: center;
+    margin-left: 10px;
+    padding: 3px 6px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: white;
+    background-color: #7B68EE;
+    border-radius: 3px;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-regex-badge {
+    display: inline-block;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    padding-left: 8px;
+}
+
 .NB-manage-add-type {
     -webkit-appearance: none;
     appearance: none;
@@ -10967,8 +11006,9 @@ form.opml_import_form input {
 }
 
 .NB-manage-add-regex.NB-active {
-    color: #3F51B5;
-    background-color: #E8EAF6;
+    color: white;
+    background-color: #7B68EE;
+    border-left-color: #7B68EE;
 }
 
 .NB-manage-add-regex:focus-visible {
@@ -11182,6 +11222,57 @@ form.opml_import_form input {
 
 .NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-button:not(:disabled) .NB-manage-add-enter-hint {
     display: inline;
+}
+
+/* The ⓘ beside Like / Dislike / Hide opens what each one does (make_manage_add_opinions_sheet) */
+.NB-manage-add-opinions-info {
+    margin-left: -6px;
+    padding: 0 2px;
+    font-size: 15px;
+    line-height: 30px;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    cursor: help;
+}
+
+.NB-manage-add-opinions-info:hover {
+    color: #606060;
+}
+
+.NB-manage-add-opinions-info:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 1px;
+    border-radius: 50%;
+}
+
+.NB-manage-add-opinion {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.NB-manage-add-opinion-name {
+    flex: 0 0 64px;
+    font-weight: bold;
+}
+
+.NB-manage-add-opinion-like .NB-manage-add-opinion-name {
+    color: #2E8229;
+}
+
+.NB-manage-add-opinion-dislike .NB-manage-add-opinion-name {
+    color: #A90103;
+}
+
+.NB-manage-add-opinion-super-dislike .NB-manage-add-opinion-name {
+    color: #6B0001;
+}
+
+.NB-manage-add-opinion-description {
+    color: #505050;
 }
 
 /* Scope picker (classifier_scope_picker_view.js): a searchable list with folder icons and favicons */

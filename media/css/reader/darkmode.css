@@ -5882,8 +5882,43 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-manage-add-regex.NB-active {
-    color: #C5CAE9;
-    background-color: #3a4060;
+    color: white;
+    background-color: #6a58d8;
+    border-left-color: #6a58d8;
+}
+
+.NB-dark .NB-manage-add-match.NB-regex-mode {
+    background-color: #2a2a3a;
+    border-color: #5a5a8a;
+}
+
+.NB-dark .NB-manage-add-match.NB-regex-mode:focus-within {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.3);
+}
+
+.NB-dark .NB-manage-add-opinions-info {
+    color: #76808a;
+}
+
+.NB-dark .NB-manage-add-opinions-info:hover {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-add-opinion-like .NB-manage-add-opinion-name {
+    color: #7BC86C;
+}
+
+.NB-dark .NB-manage-add-opinion-dislike .NB-manage-add-opinion-name {
+    color: #F38B8B;
+}
+
+.NB-dark .NB-manage-add-opinion-super-dislike .NB-manage-add-opinion-name {
+    color: #E07070;
+}
+
+.NB-dark .NB-manage-add-opinion-description {
+    color: #c0c0c0;
 }
 
 /* Like / Dislike / Hide toggle: lighter pill colors read on the dark panel */

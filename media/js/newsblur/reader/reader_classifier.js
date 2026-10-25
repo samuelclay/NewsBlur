@@ -4620,6 +4620,7 @@ var classifier_prototype = {
             $.make('div', { className: 'NB-manage-add-heading' }, gettext('Add a classifier')),
             $.make('div', { className: 'NB-manage-add-match' }, [
                 $type,
+                $.make('span', { className: 'NB-manage-add-regex-badge', 'aria-hidden': 'true' }, gettext('Regex')),
                 $.make('input', { type: 'text', className: 'NB-manage-add-input' }),
                 $.make('button', {
                     type: 'button',
@@ -4642,6 +4643,11 @@ var classifier_prototype = {
                     make_sentiment_option('dislike', gettext('Dislike')),
                     make_sentiment_option('super_dislike', gettext('Hide'))
                 ]),
+                $.make('button', {
+                    type: 'button',
+                    className: 'NB-manage-add-opinions-info',
+                    'aria-label': gettext('What Like, Dislike and Hide do')
+                }, '\u24D8'),
                 $.make('button', { type: 'button', className: 'NB-manage-add-button' }, [
                     $.make('span', { className: 'NB-manage-add-button-label' }, gettext('Add')),
                     $.make('span', { className: 'NB-manage-add-enter-hint', 'aria-hidden': 'true' }, '↵')
@@ -4668,14 +4674,22 @@ var classifier_prototype = {
             e.preventDefault();
             state.is_regex = !state.is_regex;
             self.update_manage_add_row($row);
-        }).on('mouseenter focus', function () {
-            self.show_manage_add_regex_sheet(this);
-        }).on('mouseleave blur', function () {
-            self.hide_manage_add_regex_sheet_soon();
         });
-        // The sheet is fixed to the toggle's spot on screen, so it can't follow a scroll
+        _.each({ regex: '.NB-manage-add-regex', opinions: '.NB-manage-add-opinions-info' }, function (selector, name) {
+            $(selector, $row).on('mouseenter focus', function () {
+                self.show_manage_add_sheet(name, this);
+            }).on('mouseleave blur', function () {
+                self.hide_manage_add_sheet_soon(name, this);
+            });
+        });
+        // The ⓘ also opens on click, for touch screens that have no hover
+        $('.NB-manage-add-opinions-info', $row).on('click', function (e) {
+            e.preventDefault();
+            self.show_manage_add_sheet('opinions', this);
+        });
+        // The sheets are fixed to their spot on screen, so they can't follow a scroll
         $('.NB-tab-manage', this.$modal).off('scroll.manage_add').on('scroll.manage_add', function () {
-            self.hide_manage_add_regex_sheet();
+            self.hide_manage_add_sheets();
         });
         $('.NB-manage-add-input', $row).on('input', function () {
             self.update_manage_add_row($row);
@@ -4696,44 +4710,69 @@ var classifier_prototype = {
         });
     },
 
-    // The story trainer's regex quicksheet (make_regex_popover), shown while the pointer
-    // or keyboard focus is on the .* toggle. It lives on body so the tab can't clip it.
-    show_manage_add_regex_sheet: function (toggle) {
+    // Hover sheets on the add panel: the story trainer's regex quicksheet (make_regex_popover)
+    // on the .* toggle, and what each opinion does on the ⓘ beside Like / Dislike / Hide.
+    // They show while the pointer or keyboard focus is on their control, and live on body
+    // so the scrolling tab can't clip them.
+    show_manage_add_sheet: function (name, anchor) {
         var self = this;
-        if (!this.$manage_add_regex_sheet) {
-            this.$manage_add_regex_sheet = this.make_regex_popover().addClass('NB-manage-add-regex-sheet');
-            this.$manage_add_regex_sheet.on('mouseleave', function () {
-                self.hide_manage_add_regex_sheet_soon();
+        this.manage_add_sheets = this.manage_add_sheets || {};
+        var $sheet = this.manage_add_sheets[name];
+        if (!$sheet) {
+            $sheet = name === 'regex' ?
+                this.make_regex_popover().addClass('NB-manage-add-regex-sheet') :
+                this.make_manage_add_opinions_sheet();
+            $sheet.on('mouseleave', function () {
+                self.hide_manage_add_sheet_soon(name, anchor);
             });
+            this.manage_add_sheets[name] = $sheet;
         }
-        clearTimeout(this.manage_add_regex_sheet_timer);
+        this.hide_manage_add_sheets();
 
-        var rect = toggle.getBoundingClientRect();
+        var rect = anchor.getBoundingClientRect();
         // reader_classifier.js: inline_end_alignment_css opens it toward the screen's middle in LTR and RTL
-        this.$manage_add_regex_sheet.appendTo('body').css(_.extend({
+        $sheet.appendTo('body').css(_.extend({
             position: 'fixed',
             top: rect.bottom + 8,
             bottom: 'auto'
         }, NEWSBLUR.utils.inline_end_alignment_css(rect))).addClass('NB-visible');
     },
 
-    // A short delay lets the pointer travel from the toggle into the sheet.
-    hide_manage_add_regex_sheet_soon: function () {
+    // A short delay lets the pointer travel from the control into its sheet.
+    hide_manage_add_sheet_soon: function (name, anchor) {
         var self = this;
-        clearTimeout(this.manage_add_regex_sheet_timer);
-        this.manage_add_regex_sheet_timer = setTimeout(function () {
-            var $toggle = $('.NB-manage-add-regex', self.$modal);
-            var $sheet = self.$manage_add_regex_sheet;
-            if (!$sheet || $sheet.is(':hover') || $toggle.is(':hover')) return;
-            self.hide_manage_add_regex_sheet();
+        clearTimeout(this.manage_add_sheet_timer);
+        this.manage_add_sheet_timer = setTimeout(function () {
+            var $sheet = self.manage_add_sheets && self.manage_add_sheets[name];
+            if (!$sheet || $sheet.is(':hover') || $(anchor).is(':hover')) return;
+            $sheet.removeClass('NB-visible');
         }, 150);
     },
 
-    hide_manage_add_regex_sheet: function () {
-        clearTimeout(this.manage_add_regex_sheet_timer);
-        if (this.$manage_add_regex_sheet) {
-            this.$manage_add_regex_sheet.removeClass('NB-visible');
-        }
+    hide_manage_add_sheets: function () {
+        clearTimeout(this.manage_add_sheet_timer);
+        _.each(this.manage_add_sheets, function ($sheet) {
+            $sheet.removeClass('NB-visible');
+        });
+    },
+
+    // The scoring explainer (make_scoring_popover) with a line on what each opinion does first.
+    make_manage_add_opinions_sheet: function () {
+        var $sheet = this.make_scoring_popover().addClass('NB-manage-add-opinions-sheet');
+        var make_row = function (sentiment, label, description) {
+            return $.make('div', { className: 'NB-manage-add-opinion NB-manage-add-opinion-' + sentiment.replace('_', '-') }, [
+                $.make('span', { className: 'NB-manage-add-opinion-name' }, label),
+                $.make('span', { className: 'NB-manage-add-opinion-description' }, description)
+            ]);
+        };
+
+        $('.NB-scoring-popover-content', $sheet).prepend([
+            make_row('like', gettext('Like'), gettext('Matching stories show in Focus')),
+            make_row('dislike', gettext('Dislike'), gettext('Matching stories are hidden unless a like also matches')),
+            make_row('super_dislike', gettext('Hide'), gettext('Matching stories are always hidden, even with a like')),
+            $.make('hr', { className: 'NB-scoring-divider' })
+        ]);
+        return $sheet;
     },
 
     // Placeholder, regex toggle, tier notice and button state for the current choices.
@@ -4743,6 +4782,7 @@ var classifier_prototype = {
         var value = $.trim($('.NB-manage-add-input', $row).val());
         var entry = _.extend({ value: value }, state);
         var regex_supported = utils.supports_regex(state.type);
+        var regex_on = regex_supported && state.is_regex;
         var placeholders = {
             title: gettext('Phrase to match in story titles'),
             author: gettext('Author name'),
@@ -4750,16 +4790,29 @@ var classifier_prototype = {
             text: gettext('Phrase to match in story text'),
             url: gettext('Part of a story URL')
         };
+        // The story trainer's regex examples for each type (handle_match_type_control)
+        var regex_examples = {
+            title: { first: '\\bbreaking\\b', second: 'urgent|alert' },
+            author: { first: '^Sam', second: 'smith|jones' },
+            text: { first: '\\bcat\\b', second: 'dog|bird' },
+            url: { first: '/news/\\d+', second: '/category/' }
+        };
+        var placeholder = regex_on ?
+            interpolate(gettext('e.g., %(first)s or %(second)s'), regex_examples[state.type], true) :
+            placeholders[state.type];
 
+        $('.NB-manage-add-match', $row).toggleClass('NB-regex-mode', regex_on);
         $('.NB-manage-add-input', $row).attr({
-            placeholder: placeholders[state.type],
-            'aria-label': placeholders[state.type]
+            placeholder: placeholder,
+            'aria-label': regex_on ? gettext('Regex') + ': ' + placeholders[state.type] : placeholders[state.type]
         });
         $('.NB-manage-add-regex', $row)
             .toggleClass('NB-hidden', !regex_supported)
-            .toggleClass('NB-active', regex_supported && state.is_regex)
-            .attr('aria-pressed', regex_supported && state.is_regex ? 'true' : 'false');
-        if (!regex_supported) this.hide_manage_add_regex_sheet();
+            .toggleClass('NB-active', regex_on)
+            .attr('aria-pressed', regex_on ? 'true' : 'false');
+        if (!regex_supported && this.manage_add_sheets && this.manage_add_sheets.regex) {
+            this.manage_add_sheets.regex.removeClass('NB-visible');
+        }
         $('.NB-manage-add-sentiment', $row).each(function () {
             var is_selected = $(this).data('sentiment') === state.sentiment;
             $(this).toggleClass('NB-active', is_selected).attr('aria-pressed', is_selected ? 'true' : 'false');
@@ -4862,11 +4915,11 @@ var classifier_prototype = {
     // for an unread recount, and that refresh shares the serial request queue with
     // /classifier/save, so refreshing between adds would stall the next one.
     handle_modal_closed: function () {
-        // The add panel's regex quicksheet lives on body, so it would outlive the trainer
-        if (this.$manage_add_regex_sheet) {
-            this.$manage_add_regex_sheet.remove();
-            this.$manage_add_regex_sheet = null;
-        }
+        // The add panel's hover sheets live on body, so they would outlive the trainer
+        _.each(this.manage_add_sheets, function ($sheet) {
+            $sheet.remove();
+        });
+        this.manage_add_sheets = {};
         if (this.manage_add_scope_picker) {
             this.manage_add_scope_picker.close(false);
         }
