@@ -946,8 +946,8 @@ body.NB-mobile .content-pane > #story_titles {
 }
 
 body.NB-mobile .NB-mobile-icon-share {
-    -webkit-mask-image: url('/media/img/icons/nouns/share.svg');
-    mask-image: url('/media/img/icons/nouns/share.svg');
+    -webkit-mask-image: url('/media/img/icons/nouns/share-export.svg');
+    mask-image: url('/media/img/icons/nouns/share-export.svg');
 }
 
 /* ===================================== */
