@@ -949,9 +949,6 @@ msgstr "第二轮会根据你的提示，在页面上找到正确的模式。"
 msgid "A single like overrides any number of dislikes"
 msgstr "一次“喜欢”胜过任意数量的“不喜欢”"
 
-msgid "A single super dislike overrides everything"
-msgstr "一次“强烈不喜欢”胜过其他所有训练"
-
 msgid "A story diff with additions and deletions"
 msgstr "显示新增和删除内容的文章差异"
 
@@ -1009,6 +1006,9 @@ msgstr "添加文件夹"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "添加网站 &amp; 分享文章书签工具"
+
+msgid "Add a classifier"
+msgstr "添加分类器"
 
 msgid "Add a forwarding address"
 msgstr "添加转发地址"
@@ -1235,6 +1235,9 @@ msgstr[0] "已应用 %(count)s 次合并（%(stories)s）"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "已应用 %(succeeded)s/%(count)s 项合并（%(stories)s）"
+
+msgid "Applies to"
+msgstr "适用于"
 
 msgid "Apply"
 msgstr "应用"
@@ -3246,6 +3249,9 @@ msgstr "隐藏的宝藏"
 msgid "Hide"
 msgstr "隐藏"
 
+msgid "Hide "
+msgstr "隐藏 "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "隐藏所有分享、评论和 Blurblog 功能"
 
@@ -3257,6 +3263,9 @@ msgstr "隐藏历史记录"
 
 msgid "Hide matching stories"
 msgstr "隐藏匹配的文章"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“隐藏”优先于一切，即使是“喜欢”也不例外"
 
 msgid "Hide sites"
 msgstr "隐藏网站"
@@ -6249,9 +6258,6 @@ msgstr "周日"
 
 msgid "Sunday"
 msgstr "星期日"
-
-msgid "Super Dislike "
-msgstr "强烈不喜欢 "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

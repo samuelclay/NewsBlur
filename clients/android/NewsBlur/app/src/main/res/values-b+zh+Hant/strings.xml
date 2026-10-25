@@ -697,14 +697,14 @@
     <string name="intel_author_header">文章作者</string>
     <string name="feed_intel_author_header">作者</string>
     <string name="intel_feed_header">此發布者的所有文章</string>
-    <string name="intel_super_dislike">超級不喜歡</string>
-    <string name="explainer_super_dislike">超級不喜歡</string>
+    <string name="intel_super_dislike">隱藏符合條件的文章</string>
+    <string name="explainer_super_dislike">隱藏</string>
     <string name="explainer_like">喜歡</string>
     <string name="explainer_dislike">不喜歡</string>
     <string name="explainer_beats">勝過</string>
     <string name="explainer_example1_header">一個「喜歡」就能勝過任意數量的「不喜歡」</string>
     <string name="explainer_example1_result">文章會顯示在焦點檢視中</string>
-    <string name="explainer_example2_header">一個「超級不喜歡」就會凌駕所有設定</string>
+    <string name="explainer_example2_header">「隱藏」優先於所有設定，即使是「喜歡」也一樣</string>
     <string name="explainer_example2_result">文章一律隱藏</string>
     <string name="auto">自動</string>
     <string name="light">淺色</string>

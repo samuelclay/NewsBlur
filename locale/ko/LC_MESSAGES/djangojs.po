@@ -949,9 +949,6 @@ msgstr "두 번째 단계에서는 힌트를 사용해 페이지에서 올바른
 msgid "A single like overrides any number of dislikes"
 msgstr "좋아요 하나는 싫어요 개수와 관계없이 우선 적용됩니다"
 
-msgid "A single super dislike overrides everything"
-msgstr "매우 싫어요 하나는 다른 모든 것보다 우선합니다"
-
 msgid "A story diff with additions and deletions"
 msgstr "추가 및 삭제 내용이 표시되는 스토리 변경 비교"
 
@@ -1009,6 +1006,9 @@ msgstr "폴더 추가"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "사이트 추가 &amp; 스토리 공유 북마클릿"
+
+msgid "Add a classifier"
+msgstr "분류기 추가"
 
 msgid "Add a forwarding address"
 msgstr "전달 주소 추가"
@@ -1235,6 +1235,9 @@ msgstr[0] "%(count)s개 병합 적용됨 (%(stories)s)"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "병합 %(count)s개 중 %(succeeded)s개 적용됨 (%(stories)s)"
+
+msgid "Applies to"
+msgstr "적용 대상"
 
 msgid "Apply"
 msgstr "적용"
@@ -3252,6 +3255,9 @@ msgstr "숨은 보석"
 msgid "Hide"
 msgstr "숨기기"
 
+msgid "Hide "
+msgstr "숨기기 "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "공유, 댓글, Blurblog 기능 모두 숨기기"
 
@@ -3263,6 +3269,9 @@ msgstr "기록 숨기기"
 
 msgid "Hide matching stories"
 msgstr "일치하는 스토리 숨기기"
+
+msgid "Hide overrides everything, even likes"
+msgstr "숨기기는 좋아요를 포함한 모든 항목보다 우선합니다"
 
 msgid "Hide sites"
 msgstr "사이트 숨기기"
@@ -6257,9 +6266,6 @@ msgstr "일"
 
 msgid "Sunday"
 msgstr "일요일"
-
-msgid "Super Dislike "
-msgstr "매우 싫어요 "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

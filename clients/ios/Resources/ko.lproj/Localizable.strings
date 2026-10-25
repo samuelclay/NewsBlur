@@ -401,6 +401,8 @@
 "Hide Changes" = "변경 사항 숨기기";
 "Hide Sidebar" = "사이드바 숨기기";
 "Hide Story Titles" = "스토리 제목 숨기기";
+"Hide [training level]" = "숨기기";
+"Hide beats any number of likes:" = "숨기기는 좋아요가 아무리 많아도 우선합니다:";
 "Hide hidden stories" = "숨긴 스토리 숨기기";
 "Hide status bar" = "상태 표시줄 숨기기";
 "Hide toolbars when reading" = "읽는 동안 도구 모음 숨기기";
@@ -899,7 +901,7 @@
 "Story count" = "스토리 수";
 "Story detail" = "스토리 세부 정보";
 "Story image" = "스토리 이미지";
-"Story is hidden (super dislike wins)" = "스토리가 숨겨짐(매우 싫어요가 우선)";
+"Story is always hidden" = "스토리는 항상 숨김 처리됩니다";
 "Story is shown (like wins)" = "스토리가 표시됨(좋아요가 우선)";
 "Story list toolbar position" = "스토리 목록 도구 모음 위치";
 "Story options" = "스토리 옵션";
@@ -919,8 +921,6 @@
 "Summarize" = "요약";
 "Sunday" = "일요일";
 "Sunrise Gold" = "선라이즈 골드";
-"Super dislike" = "매우 싫어요";
-"Super dislike beats any number of likes:" = "매우 싫어요는 좋아요 수와 관계없이 우선합니다:";
 "Support Forum" = "지원 포럼";
 "Swipe from left edge" = "왼쪽 가장자리에서 스와이프";
 "Swipe from the left edge while reading" = "읽는 동안 왼쪽 가장자리에서 스와이프";

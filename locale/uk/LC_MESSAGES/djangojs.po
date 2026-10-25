@@ -1086,9 +1086,6 @@ msgstr "На другому проході підказка допоможе з�
 msgid "A single like overrides any number of dislikes"
 msgstr "Одна вподобайка переважає будь-яку кількість дизлайків"
 
-msgid "A single super dislike overrides everything"
-msgstr "Одне «Дуже не подобається» переважає все"
-
 msgid "A story diff with additions and deletions"
 msgstr "Порівняння версій статті з додаваннями й вилученнями"
 
@@ -1148,6 +1145,9 @@ msgstr "Додати папку"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Букмарклет для додавання сайтів &amp; поширення статей"
+
+msgid "Add a classifier"
+msgstr "Додати класифікатор"
 
 msgid "Add a forwarding address"
 msgstr "Додати адресу для пересилання"
@@ -1398,6 +1398,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Застосовано %(succeeded)s із %(count)s об’єднання (%(stories)s)"
 msgstr[1] "Застосовано %(succeeded)s із %(count)s об’єднань (%(stories)s)"
 msgstr[2] "Застосовано %(succeeded)s із %(count)s об’єднань (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Застосовується до"
 
 msgid "Apply"
 msgstr "Застосувати"
@@ -3464,6 +3467,9 @@ msgstr "Приховані перлини"
 msgid "Hide"
 msgstr "Приховати"
 
+msgid "Hide "
+msgstr "Приховати "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Приховати всі функції поширення, коментарів і Blurblog"
 
@@ -3475,6 +3481,9 @@ msgstr "Приховати історію"
 
 msgid "Hide matching stories"
 msgstr "Приховати відповідні статті"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«Приховати» переважає все, навіть «Подобається»"
 
 msgid "Hide sites"
 msgstr "Приховати сайти"
@@ -6577,9 +6586,6 @@ msgstr "Нд"
 
 msgid "Sunday"
 msgstr "Неділя"
-
-msgid "Super Dislike "
-msgstr "Дуже не подобається "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

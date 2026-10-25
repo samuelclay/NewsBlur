@@ -1015,9 +1015,6 @@ msgstr "दूसरे चरण में, पृष्ठ पर सही �
 msgid "A single like overrides any number of dislikes"
 msgstr "एक पसंद कितनी भी नापसंद पर भारी पड़ती है"
 
-msgid "A single super dislike overrides everything"
-msgstr "एक सुपर नापसंद बाकी सब पर भारी पड़ता है"
-
 msgid "A story diff with additions and deletions"
 msgstr "जोड़ और हटाव दिखाने वाला लेख अंतर"
 
@@ -1076,6 +1073,9 @@ msgstr "फ़ोल्डर जोड़ें"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "साइट जोड़ने &amp; लेख साझा करने का बुकमार्कलेट"
+
+msgid "Add a classifier"
+msgstr "एक क्लासिफ़ायर जोड़ें"
 
 msgid "Add a forwarding address"
 msgstr "एक फ़ॉरवर्डिंग पता जोड़ें"
@@ -1317,6 +1317,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s में से %(succeeded)s मर्ज लागू किया गया (%(stories)s)"
 msgstr[1] "%(count)s में से %(succeeded)s मर्ज लागू किए (%(stories)s)"
+
+msgid "Applies to"
+msgstr "इन पर लागू होता है"
 
 msgid "Apply"
 msgstr "लागू करें"
@@ -3367,6 +3370,9 @@ msgstr "छुपे हुए रत्न"
 msgid "Hide"
 msgstr "छिपाएँ"
 
+msgid "Hide "
+msgstr "छिपाएँ "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "सभी शेयरिंग, टिप्पणियाँ और Blurblog सुविधाएँ छिपाएँ"
 
@@ -3378,6 +3384,9 @@ msgstr "इतिहास छिपाएँ"
 
 msgid "Hide matching stories"
 msgstr "मेल खाते लेख छिपाएँ"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“छिपाएँ” सब पर भारी पड़ता है, पसंद पर भी"
 
 msgid "Hide sites"
 msgstr "साइटें छिपाएँ"
@@ -6442,9 +6451,6 @@ msgstr "रवि"
 
 msgid "Sunday"
 msgstr "रविवार"
-
-msgid "Super Dislike "
-msgstr "बहुत नापसंद "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

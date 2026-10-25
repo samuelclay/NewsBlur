@@ -953,9 +953,6 @@ msgstr "İkinci geçişte, sayfadaki doğru deseni bulmak için verdiğiniz ipuc
 msgid "A single like overrides any number of dislikes"
 msgstr "Tek bir beğeni, istenen sayıda beğenmemeyi geçersiz kılar"
 
-msgid "A single super dislike overrides everything"
-msgstr "Tek bir “Hiç beğenme” her şeyi geçersiz kılar"
-
 msgid "A story diff with additions and deletions"
 msgstr "Eklemeleri ve silmeleri gösteren bir haber farkı"
 
@@ -1013,6 +1010,9 @@ msgstr "Klasör Ekle"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Site Ekle &amp; Haber Paylaş Yer İmi Uygulaması"
+
+msgid "Add a classifier"
+msgstr "Sınıflandırıcı ekle"
 
 msgid "Add a forwarding address"
 msgstr "Yönlendirme adresi ekle"
@@ -1247,6 +1247,9 @@ msgstr[0] "%(count)s birleştirme uygulandı (%(stories)s)"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s / %(count)s birleştirme uygulandı (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Şunlar için geçerli"
 
 msgid "Apply"
 msgstr "Uygula"
@@ -3298,6 +3301,9 @@ msgstr "Gizli Cevherler"
 msgid "Hide"
 msgstr "Gizle"
 
+msgid "Hide "
+msgstr "Gizle "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Tüm paylaşım, yorum ve blurblog özelliklerini gizle"
 
@@ -3309,6 +3315,9 @@ msgstr "Geçmişi gizle"
 
 msgid "Hide matching stories"
 msgstr "Eşleşen haberleri gizle"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“Gizle” her şeyi, beğenileri bile geçersiz kılar"
 
 msgid "Hide sites"
 msgstr "Siteleri gizle"
@@ -6355,9 +6364,6 @@ msgstr "Paz"
 
 msgid "Sunday"
 msgstr "Pazar"
-
-msgid "Super Dislike "
-msgstr "Hiç Beğenme "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

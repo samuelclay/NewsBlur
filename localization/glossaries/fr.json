@@ -109,9 +109,9 @@
       "note": "The catalog had seven different words for the Focus level. Slider: Tous / Non lus / Prioritaires. Focus stories → articles prioritaires; Unread + Focus → Non lus + prioritaires; 'in Focus mode/view' → parmi les articles prioritaires (or: en mode Prioritaires where a mode name is needed). Verbs in prose: focus or hide → mettre en avant ou masquer."
     },
     {
-      "concept": "like / dislike / super dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "J’aime / Je n’aime pas / Je déteste",
+      "concept": "like / dislike / hide (training)",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "J’aime / Je n’aime pas; Hide → Masquer",
       "avoid": [
         "Super déplaisir",
         "Très peu apprécié",
@@ -120,7 +120,16 @@
         "Très forte désapprobation",
         "aimer (as a button label)"
       ],
-      "note": "Super dislike → Je déteste (one level above Je n’aime pas). The trainer's 'beats' means Like outranks Dislike: l’emporte sur (or a > sign); '(like wins)' → (J’aime l’emporte). 'Positive?' is an 'Are you sure?' title → Vous êtes sûr ?"
+      "note": "Hide is the level above J’aime (formerly Super dislike, then Je déteste): Masquer, quoted in sentences (« Masquer » l’emporte sur tout). The trainer's 'beats' means Like outranks Dislike: l’emporte sur (or a > sign); '(like wins)' → (J’aime l’emporte). 'Positive?' is an 'Are you sure?' title → Vous êtes sûr ?"
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Masquer",
+      "avoid": [
+        "Je déteste"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names (« Masquer » l’emporte sur tout). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

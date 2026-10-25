@@ -1083,9 +1083,6 @@ msgstr "Drugi etap wykorzystuje Twoją wskazówkę, by znaleźć na stronie odpo
 msgid "A single like overrides any number of dislikes"
 msgstr "Jedno polubienie ma większą wagę niż dowolna liczba negatywnych ocen"
 
-msgid "A single super dislike overrides everything"
-msgstr "Jedno „Zdecydowanie nie lubię” ma pierwszeństwo przed wszystkim"
-
 msgid "A story diff with additions and deletions"
 msgstr "Porównanie wersji artykułu z dodanymi i usuniętymi fragmentami"
 
@@ -1147,6 +1144,9 @@ msgstr "Dodaj folder"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet do dodawania witryn &amp; udostępniania artykułów"
+
+msgid "Add a classifier"
+msgstr "Dodaj klasyfikator"
 
 msgid "Add a forwarding address"
 msgstr "Dodaj adres przekazywania"
@@ -1395,6 +1395,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Zastosowano %(succeeded)s z %(count)s scalenia (%(stories)s)"
 msgstr[1] "Zastosowano %(succeeded)s z %(count)s scaleń (%(stories)s)"
 msgstr[2] "Zastosowano %(succeeded)s z %(count)s scaleń (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Dotyczy"
 
 msgid "Apply"
 msgstr "Zastosuj"
@@ -3466,6 +3469,9 @@ msgstr "Ukryte perełki"
 msgid "Hide"
 msgstr "Ukryj"
 
+msgid "Hide "
+msgstr "Ukryj "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Ukryj wszystkie funkcje udostępniania, komentarzy i Blurblog"
 
@@ -3477,6 +3483,9 @@ msgstr "Ukryj historię"
 
 msgid "Hide matching stories"
 msgstr "Ukryj pasujące artykuły"
+
+msgid "Hide overrides everything, even likes"
+msgstr "„Ukryj” ma pierwszeństwo przed wszystkim, nawet przed „Lubię”"
 
 msgid "Hide sites"
 msgstr "Ukryj witryny"
@@ -6589,9 +6598,6 @@ msgstr "ndz."
 
 msgid "Sunday"
 msgstr "Niedziela"
-
-msgid "Super Dislike "
-msgstr "Zdecydowanie nie lubię "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

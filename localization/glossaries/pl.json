@@ -118,14 +118,23 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Like → Lubię; Dislike → Nie lubię; Super dislike → Zdecydowanie nie lubię; inserted trainer words like → lubisz, dislike → nie lubisz",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Like → Lubię; Dislike → Nie lubię; Hide (the level above Like, formerly Super dislike) → Ukryj; inserted trainer words like → lubisz, dislike → nie lubisz",
       "avoid": [
         "Polub / Lubię to (for the trainer Like button, low)",
-        "Nie podoba mi się (for the trainer Dislike button, low)",
-        "Bardzo nie lubię / Superniepolubienie / silna niechęć (for Super dislike)"
+        "Nie podoba mi się (for the trainer Dislike button, low)"
       ],
       "note": "Trainer question templates must read with the inserted words: web 'Co %(like)s, a czego %(dislike)s w tym artykule?' → 'Co lubisz, a czego nie lubisz w tym artykule?'. Social likes on comments keep polubienie (%(count)s polubienie/polubienia/polubień). beats → wygrywa z / ma pierwszeństwo przed; (like wins) → (wygrywa Lubię)."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Ukryj",
+      "avoid": [
+        "Zdecydowanie nie lubię",
+        "zdecydowanie nie lubię"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names („Ukryj” ma pierwszeństwo przed wszystkim). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

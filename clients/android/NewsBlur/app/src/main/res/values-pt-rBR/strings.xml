@@ -707,14 +707,14 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="intel_author_header">Autores do artigo</string>
     <string name="feed_intel_author_header">Autores</string>
     <string name="intel_feed_header">Tudo deste site</string>
-    <string name="intel_super_dislike">Detestei</string>
-    <string name="explainer_super_dislike">Detestei</string>
+    <string name="intel_super_dislike">Ocultar artigos correspondentes</string>
+    <string name="explainer_super_dislike">Ocultar</string>
     <string name="explainer_like">Gostei</string>
     <string name="explainer_dislike">Não gostei</string>
     <string name="explainer_beats">vence</string>
     <string name="explainer_example1_header">Uma única curtida supera qualquer quantidade de votos negativos</string>
     <string name="explainer_example1_result">O artigo aparece na visualização Foco</string>
-    <string name="explainer_example2_header">Um único “Detestei” se sobrepõe a tudo</string>
+    <string name="explainer_example2_header">“Ocultar” se sobrepõe a tudo, até a “Gostei”</string>
     <string name="explainer_example2_result">O artigo fica sempre oculto</string>
     <string name="auto">Automático</string>
     <string name="light">Claro</string>

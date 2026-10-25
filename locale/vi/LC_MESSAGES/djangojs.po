@@ -953,9 +953,6 @@ msgstr "Lượt thứ hai sẽ dùng gợi ý của bạn để tìm mẫu phù 
 msgid "A single like overrides any number of dislikes"
 msgstr "Một lượt thích sẽ ghi đè mọi số lượt không thích"
 
-msgid "A single super dislike overrides everything"
-msgstr "Chỉ một lượt rất không thích cũng có thể ghi đè mọi thứ"
-
 msgid "A story diff with additions and deletions"
 msgstr "Bản so sánh bài viết hiển thị phần thêm và phần xóa"
 
@@ -1013,6 +1010,9 @@ msgstr "Thêm thư mục"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet Thêm trang web &amp; Chia sẻ bài viết"
+
+msgid "Add a classifier"
+msgstr "Thêm bộ phân loại"
 
 msgid "Add a forwarding address"
 msgstr "Thêm địa chỉ chuyển tiếp"
@@ -1247,6 +1247,9 @@ msgstr[0] "Đã áp dụng %(count)s lần gộp (%(stories)s)"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Đã áp dụng %(succeeded)s trong số %(count)s lần gộp (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Áp dụng cho"
 
 msgid "Apply"
 msgstr "Áp dụng"
@@ -3291,6 +3294,9 @@ msgstr "Những viên ngọc ẩn"
 msgid "Hide"
 msgstr "Ẩn"
 
+msgid "Hide "
+msgstr "Ẩn "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Ẩn tất cả tính năng chia sẻ, bình luận và Blurblog"
 
@@ -3302,6 +3308,9 @@ msgstr "Ẩn lịch sử"
 
 msgid "Hide matching stories"
 msgstr "Ẩn các bài viết khớp"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“Ẩn” được ưu tiên hơn mọi thứ, kể cả lượt thích"
 
 msgid "Hide sites"
 msgstr "Ẩn trang web"
@@ -6342,9 +6351,6 @@ msgstr "CN"
 
 msgid "Sunday"
 msgstr "Chủ Nhật"
-
-msgid "Super Dislike "
-msgstr "Rất không thích "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

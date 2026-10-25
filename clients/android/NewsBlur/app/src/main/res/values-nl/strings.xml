@@ -702,14 +702,14 @@ om over de wereld te praten.</string>
     <string name="intel_author_header">Auteurs van artikelen</string>
     <string name="feed_intel_author_header">Auteurs</string>
     <string name="intel_feed_header">Alles van deze uitgever</string>
-    <string name="intel_super_dislike">Vind ik helemaal niet leuk</string>
-    <string name="explainer_super_dislike">Vind ik helemaal niet leuk</string>
+    <string name="intel_super_dislike">Overeenkomende artikelen verbergen</string>
+    <string name="explainer_super_dislike">Verbergen</string>
     <string name="explainer_like">Vind ik leuk</string>
     <string name="explainer_dislike">Vind ik niet leuk</string>
     <string name="explainer_beats">wint van</string>
     <string name="explainer_example1_header">Eén like weegt zwaarder dan elk aantal dislikes</string>
     <string name="explainer_example1_result">Artikel wordt weergegeven in de focusweergave</string>
-    <string name="explainer_example2_header">Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles</string>
+    <string name="explainer_example2_header">‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’</string>
     <string name="explainer_example2_result">Artikel is altijd verborgen</string>
     <string name="auto">Automatisch</string>
     <string name="light">Licht</string>

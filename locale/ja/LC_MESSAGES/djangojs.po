@@ -949,9 +949,6 @@ msgstr "2回目の処理では、ヒントを使ってページ上の適切な�
 msgid "A single like overrides any number of dislikes"
 msgstr "「いいね」が1つあれば、「低評価」がいくつあっても優先されます"
 
-msgid "A single super dislike overrides everything"
-msgstr "「強い低評価」が1つあれば、ほかのすべてに優先します"
-
 msgid "A story diff with additions and deletions"
 msgstr "追加・削除箇所を表示する記事の差分"
 
@@ -1009,6 +1006,9 @@ msgstr "フォルダーを追加"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "サイト追加 &amp; 記事共有ブックマークレット"
+
+msgid "Add a classifier"
+msgstr "分類器を追加"
 
 msgid "Add a forwarding address"
 msgstr "転送先アドレスを追加"
@@ -1235,6 +1235,9 @@ msgstr[0] "%(count)s件の統合を適用しました（%(stories)s）"
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s件中%(succeeded)s件の統合を適用しました（%(stories)s）"
+
+msgid "Applies to"
+msgstr "適用対象"
 
 msgid "Apply"
 msgstr "適用"
@@ -3246,6 +3249,9 @@ msgstr "穴場"
 msgid "Hide"
 msgstr "非表示"
 
+msgid "Hide "
+msgstr "非表示 "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "共有、コメント、Blurblog機能をすべて非表示にする"
 
@@ -3257,6 +3263,9 @@ msgstr "履歴を隠す"
 
 msgid "Hide matching stories"
 msgstr "一致する記事を非表示"
+
+msgid "Hide overrides everything, even likes"
+msgstr "「非表示」は、「いいね」も含めてすべてに優先されます"
 
 msgid "Hide sites"
 msgstr "サイトを非表示"
@@ -6249,9 +6258,6 @@ msgstr "日"
 
 msgid "Sunday"
 msgstr "日曜日"
-
-msgid "Super Dislike "
-msgstr "強い低評価 "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

@@ -1280,9 +1280,6 @@ msgstr "تستخدم المحاولة الثانية تلميحك للعثور �
 msgid "A single like overrides any number of dislikes"
 msgstr "إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب"
 
-msgid "A single super dislike overrides everything"
-msgstr "عدم إعجاب شديد واحد يتغلب على كل شيء"
-
 msgid "A story diff with additions and deletions"
 msgstr "مقارنة تغييرات القصة مع الإضافات والحذف"
 
@@ -1345,6 +1342,9 @@ msgstr "إضافة مجلد"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "أداة الإشارات المرجعية لإضافة موقع &amp; مشاركة قصة"
+
+msgid "Add a classifier"
+msgstr "إضافة مصنّف"
 
 msgid "Add a forwarding address"
 msgstr "إضافة عنوان لإعادة التوجيه"
@@ -1612,6 +1612,9 @@ msgstr[2] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج
 msgstr[3] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج (%(stories)s)"
 msgstr[4] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج (%(stories)s)"
 msgstr[5] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج (%(stories)s)"
+
+msgid "Applies to"
+msgstr "ينطبق على"
 
 msgid "Apply"
 msgstr "تطبيق"
@@ -3688,6 +3691,9 @@ msgstr "جواهر خفية"
 msgid "Hide"
 msgstr "إخفاء"
 
+msgid "Hide "
+msgstr "إخفاء "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "إخفاء جميع ميزات المشاركة والتعليقات وBlurblog"
 
@@ -3699,6 +3705,9 @@ msgstr "إخفاء السجل"
 
 msgid "Hide matching stories"
 msgstr "إخفاء القصص المطابقة"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«إخفاء» يتفوّق على كل شيء، حتى الإعجابات"
 
 msgid "Hide sites"
 msgstr "إخفاء المواقع"
@@ -6851,9 +6860,6 @@ msgstr "الأحد"
 
 msgid "Sunday"
 msgstr "الأحد"
-
-msgid "Super Dislike "
-msgstr "عدم إعجاب شديد "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

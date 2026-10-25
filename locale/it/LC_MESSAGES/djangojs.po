@@ -1019,9 +1019,6 @@ msgstr "Un secondo passaggio usa il tuo suggerimento per trovare nella pagina lo
 msgid "A single like overrides any number of dislikes"
 msgstr "Un solo Mi piace prevale su un numero qualsiasi di Non mi piace"
 
-msgid "A single super dislike overrides everything"
-msgstr "Un solo Non mi piace per niente prevale su tutto"
-
 msgid "A story diff with additions and deletions"
 msgstr "Confronto di un articolo con aggiunte e rimozioni"
 
@@ -1080,6 +1077,9 @@ msgstr "Aggiungi cartella"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet Aggiungi sito &amp; Condividi articolo"
+
+msgid "Add a classifier"
+msgstr "Aggiungi un classificatore"
 
 msgid "Add a forwarding address"
 msgstr "Aggiungi un indirizzo di inoltro"
@@ -1323,6 +1323,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Applicata %(succeeded)s di %(count)s unione (%(stories)s)"
 msgstr[1] "Applicate %(succeeded)s di %(count)s unioni (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Si applica a"
 
 msgid "Apply"
 msgstr "Applica"
@@ -3378,6 +3381,9 @@ msgstr "Gemme nascoste"
 msgid "Hide"
 msgstr "Nascondi"
 
+msgid "Hide "
+msgstr "Nascondi "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Nascondi tutte le funzioni di condivisione, commenti e Blurblog"
 
@@ -3389,6 +3395,9 @@ msgstr "Nascondi cronologia"
 
 msgid "Hide matching stories"
 msgstr "Nascondi gli articoli corrispondenti"
+
+msgid "Hide overrides everything, even likes"
+msgstr "Nascondi prevale su tutto, anche su Mi piace"
 
 msgid "Hide sites"
 msgstr "Nascondi siti"
@@ -6483,9 +6492,6 @@ msgstr "Dom"
 
 msgid "Sunday"
 msgstr "Domenica"
-
-msgid "Super Dislike "
-msgstr "Non mi piace per niente "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

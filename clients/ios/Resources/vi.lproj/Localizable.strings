@@ -401,6 +401,8 @@
 "Hide Changes" = "Ẩn thay đổi";
 "Hide Sidebar" = "Ẩn thanh bên";
 "Hide Story Titles" = "Ẩn tiêu đề bài viết";
+"Hide [training level]" = "Ẩn";
+"Hide beats any number of likes:" = "“Ẩn” có giá trị hơn bất kỳ số lượt thích nào:";
 "Hide hidden stories" = "Ẩn các bài viết đã bị ẩn";
 "Hide status bar" = "Ẩn thanh trạng thái";
 "Hide toolbars when reading" = "Ẩn thanh công cụ khi đọc";
@@ -899,7 +901,7 @@
 "Story count" = "Số lượng bài viết";
 "Story detail" = "Chi tiết bài viết";
 "Story image" = "Ảnh bài viết";
-"Story is hidden (super dislike wins)" = "Bài viết bị ẩn (rất không thích được ưu tiên)";
+"Story is always hidden" = "Bài viết luôn bị ẩn";
 "Story is shown (like wins)" = "Bài viết được hiển thị (thích được ưu tiên)";
 "Story list toolbar position" = "Vị trí thanh công cụ danh sách bài viết";
 "Story options" = "Tùy chọn bài viết";
@@ -919,8 +921,6 @@
 "Summarize" = "Tóm tắt";
 "Sunday" = "Chủ Nhật";
 "Sunrise Gold" = "Vàng bình minh";
-"Super dislike" = "Rất không thích";
-"Super dislike beats any number of likes:" = "Một lượt rất không thích thắng mọi số lượt thích:";
 "Support Forum" = "Diễn đàn hỗ trợ";
 "Swipe from left edge" = "Vuốt từ cạnh trái";
 "Swipe from the left edge while reading" = "Vuốt từ mép trái khi đang đọc";

@@ -1019,9 +1019,6 @@ msgstr "Tahap kedua menggunakan petunjuk Anda untuk menemukan pola yang tepat di
 msgid "A single like overrides any number of dislikes"
 msgstr "Satu suka mengalahkan jumlah tidak suka berapa pun"
 
-msgid "A single super dislike overrides everything"
-msgstr "Satu Sangat Tidak Suka mengalahkan semuanya"
-
 msgid "A story diff with additions and deletions"
 msgstr "Perbandingan artikel yang menampilkan penambahan dan penghapusan"
 
@@ -1080,6 +1077,9 @@ msgstr "Tambah Folder"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet Tambahkan Situs &amp; Bagikan Artikel"
+
+msgid "Add a classifier"
+msgstr "Tambahkan pengklasifikasi"
 
 msgid "Add a forwarding address"
 msgstr "Tambahkan alamat penerusan"
@@ -1321,6 +1321,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
 msgstr[1] "Berhasil menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Berlaku untuk"
 
 msgid "Apply"
 msgstr "Terapkan"
@@ -3378,6 +3381,9 @@ msgstr "Permata Tersembunyi"
 msgid "Hide"
 msgstr "Sembunyikan"
 
+msgid "Hide "
+msgstr "Sembunyikan "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Sembunyikan semua fitur berbagi, komentar, dan blurblog"
 
@@ -3389,6 +3395,9 @@ msgstr "Sembunyikan riwayat"
 
 msgid "Hide matching stories"
 msgstr "Sembunyikan artikel yang cocok"
+
+msgid "Hide overrides everything, even likes"
+msgstr "Sembunyikan mengesampingkan semuanya, bahkan Suka"
 
 msgid "Hide sites"
 msgstr "Sembunyikan situs"
@@ -6463,9 +6472,6 @@ msgstr "Min"
 
 msgid "Sunday"
 msgstr "Minggu"
-
-msgid "Super Dislike "
-msgstr "Sangat Tidak Suka "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

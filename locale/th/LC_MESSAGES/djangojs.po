@@ -951,9 +951,6 @@ msgstr "การตรวจสอบรอบที่สองจะใช้
 msgid "A single like overrides any number of dislikes"
 msgstr "การกดชอบเพียงครั้งเดียวมีผลเหนือกว่าการกดไม่ชอบไม่ว่าจะกี่ครั้ง"
 
-msgid "A single super dislike overrides everything"
-msgstr "การไม่ชอบอย่างยิ่งเพียงครั้งเดียวจะมีผลเหนือสิ่งอื่นใด"
-
 msgid "A story diff with additions and deletions"
 msgstr "เปรียบเทียบบทความโดยแสดงส่วนที่เพิ่มและลบ"
 
@@ -1011,6 +1008,9 @@ msgstr "เพิ่มโฟลเดอร์"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "บุ๊กมาร์กเล็ตเพิ่มเว็บไซต์ &amp; แชร์บทความ"
+
+msgid "Add a classifier"
+msgstr "เพิ่มตัวจำแนก"
 
 msgid "Add a forwarding address"
 msgstr "เพิ่มที่อยู่สำหรับส่งต่อ"
@@ -1245,6 +1245,9 @@ msgstr[0] "ใช้การรวม %(count)s รายการแล้ว 
 msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "นำการรวมไปใช้แล้ว %(succeeded)s จาก %(count)s รายการ (%(stories)s)"
+
+msgid "Applies to"
+msgstr "ใช้กับ"
 
 msgid "Apply"
 msgstr "นำไปใช้"
@@ -3274,6 +3277,9 @@ msgstr "ของดีที่ซ่อนอยู่"
 msgid "Hide"
 msgstr "ซ่อน"
 
+msgid "Hide "
+msgstr "ซ่อน "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "ซ่อนฟีเจอร์การแชร์ ความคิดเห็น และ Blurblog ทั้งหมด"
 
@@ -3285,6 +3291,9 @@ msgstr "ซ่อนประวัติ"
 
 msgid "Hide matching stories"
 msgstr "ซ่อนบทความที่ตรงกัน"
+
+msgid "Hide overrides everything, even likes"
+msgstr "“ซ่อน” มีผลเหนือทุกอย่าง แม้แต่ “ชอบ”"
 
 msgid "Hide sites"
 msgstr "ซ่อนเว็บไซต์"
@@ -6299,9 +6308,6 @@ msgstr "อา."
 
 msgid "Sunday"
 msgstr "วันอาทิตย์"
-
-msgid "Super Dislike "
-msgstr "ไม่ชอบอย่างยิ่ง "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

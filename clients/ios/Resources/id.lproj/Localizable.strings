@@ -401,6 +401,8 @@
 "Hide Changes" = "Sembunyikan Perubahan";
 "Hide Sidebar" = "Sembunyikan Sidebar";
 "Hide Story Titles" = "Sembunyikan Judul Artikel";
+"Hide [training level]" = "Sembunyikan";
+"Hide beats any number of likes:" = "Sembunyikan mengalahkan berapa pun jumlah Suka:";
 "Hide hidden stories" = "Sembunyikan artikel tersembunyi";
 "Hide status bar" = "Sembunyikan bilah status";
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
@@ -899,7 +901,7 @@
 "Story count" = "Jumlah artikel";
 "Story detail" = "Detail artikel";
 "Story image" = "Gambar artikel";
-"Story is hidden (super dislike wins)" = "Artikel disembunyikan (sangat tidak suka menang)";
+"Story is always hidden" = "Artikel selalu disembunyikan";
 "Story is shown (like wins)" = "Artikel ditampilkan (suka menang)";
 "Story list toolbar position" = "Posisi bilah alat daftar artikel";
 "Story options" = "Opsi artikel";
@@ -919,8 +921,6 @@
 "Summarize" = "Buat ringkasan";
 "Sunday" = "Minggu";
 "Sunrise Gold" = "Sunrise Gold";
-"Super dislike" = "Sangat tidak suka";
-"Super dislike beats any number of likes:" = "Sangat tidak suka mengalahkan berapa pun jumlah suka:";
 "Support Forum" = "Forum Bantuan";
 "Swipe from left edge" = "Usap dari tepi kiri";
 "Swipe from the left edge while reading" = "Geser dari tepi kiri saat membaca";

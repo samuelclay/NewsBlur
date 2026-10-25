@@ -1021,9 +1021,6 @@ msgstr "Bei einem zweiten Durchlauf wird anhand deines Hinweises das richtige Mu
 msgid "A single like overrides any number of dislikes"
 msgstr "Ein einziges „Gefällt mir“ setzt beliebig viele „Gefällt mir nicht“ außer Kraft"
 
-msgid "A single super dislike overrides everything"
-msgstr "Ein einziges „Gefällt mir gar nicht“ setzt alles andere außer Kraft"
-
 msgid "A story diff with additions and deletions"
 msgstr "Ein Artikel-Diff mit Ergänzungen und Löschungen"
 
@@ -1084,6 +1081,9 @@ msgstr "Ordner hinzufügen"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet zum Hinzufügen von Websites &amp; Teilen von Artikeln"
+
+msgid "Add a classifier"
+msgstr "Klassifikator hinzufügen"
 
 msgid "Add a forwarding address"
 msgstr "Weiterleitungsadresse hinzufügen"
@@ -1329,6 +1329,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s von %(count)s Zusammenführung(en) angewendet (%(stories)s)"
 msgstr[1] "%(succeeded)s von %(count)s Zusammenführungen angewendet (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Gilt für"
 
 msgid "Apply"
 msgstr "Anwenden"
@@ -3389,6 +3392,9 @@ msgstr "Verborgene Schätze"
 msgid "Hide"
 msgstr "Ausblenden"
 
+msgid "Hide "
+msgstr "Ausblenden "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Alle Teilen-, Kommentar- und Blurblog-Funktionen ausblenden"
 
@@ -3400,6 +3406,9 @@ msgstr "Verlauf ausblenden"
 
 msgid "Hide matching stories"
 msgstr "Passende Artikel ausblenden"
+
+msgid "Hide overrides everything, even likes"
+msgstr "„Ausblenden“ hat Vorrang vor allem, sogar vor „Gefällt mir“"
 
 msgid "Hide sites"
 msgstr "Websites ausblenden"
@@ -6489,9 +6498,6 @@ msgstr "So"
 
 msgid "Sunday"
 msgstr "Sonntag"
-
-msgid "Super Dislike "
-msgstr "Gefällt mir gar nicht "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

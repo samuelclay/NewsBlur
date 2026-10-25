@@ -1017,9 +1017,6 @@ msgstr "Bij een tweede poging wordt je aanwijzing gebruikt om het juiste patroon
 msgid "A single like overrides any number of dislikes"
 msgstr "Eén like weegt zwaarder dan een willekeurig aantal dislikes"
 
-msgid "A single super dislike overrides everything"
-msgstr "Eén ‘Vind ik helemaal niet leuk’ weegt zwaarder dan alles"
-
 msgid "A story diff with additions and deletions"
 msgstr "Een vergelijking van een artikel met toevoegingen en verwijderingen"
 
@@ -1078,6 +1075,9 @@ msgstr "Map toevoegen"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet voor site toevoegen &amp; artikel delen"
+
+msgid "Add a classifier"
+msgstr "Een classifier toevoegen"
 
 msgid "Add a forwarding address"
 msgstr "Een doorstuuradres toevoegen"
@@ -1319,6 +1319,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s van %(count)s samenvoeging toegepast (%(stories)s)"
 msgstr[1] "%(succeeded)s van de %(count)s samenvoegingen toegepast (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Van toepassing op"
 
 msgid "Apply"
 msgstr "Toepassen"
@@ -3370,6 +3373,9 @@ msgstr "Verborgen pareltjes"
 msgid "Hide"
 msgstr "Verbergen"
 
+msgid "Hide "
+msgstr "Verbergen "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Alle functies voor delen, reacties en Blurblog verbergen"
 
@@ -3381,6 +3387,9 @@ msgstr "Geschiedenis verbergen"
 
 msgid "Hide matching stories"
 msgstr "Overeenkomende artikelen verbergen"
+
+msgid "Hide overrides everything, even likes"
+msgstr "‘Verbergen’ wint van alles, zelfs van ‘Vind ik leuk’"
 
 msgid "Hide sites"
 msgstr "Sites verbergen"
@@ -6459,9 +6468,6 @@ msgstr "zo"
 
 msgid "Sunday"
 msgstr "zondag"
-
-msgid "Super Dislike "
-msgstr "Vind ik helemaal niet leuk "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

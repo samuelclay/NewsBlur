@@ -712,14 +712,14 @@
     <string name="intel_author_header">Autorzy artykułów</string>
     <string name="feed_intel_author_header">Autorzy</string>
     <string name="intel_feed_header">Wszystko od wydawcy</string>
-    <string name="intel_super_dislike">Zdecydowanie nie lubię</string>
-    <string name="explainer_super_dislike">Zdecydowanie nie lubię</string>
+    <string name="intel_super_dislike">Ukryj pasujące artykuły</string>
+    <string name="explainer_super_dislike">Ukryj</string>
     <string name="explainer_like">Lubię</string>
     <string name="explainer_dislike">Nie lubię</string>
     <string name="explainer_beats">wygrywa z</string>
     <string name="explainer_example1_header">Jedno polubienie przeważa nad dowolną liczbą negatywnych ocen</string>
     <string name="explainer_example1_result">Artykuł wyświetla się w widoku Wyróżnione</string>
-    <string name="explainer_example2_header">Pojedyncza ocena „zdecydowanie nie lubię” ma pierwszeństwo przed wszystkim</string>
+    <string name="explainer_example2_header">„Ukryj” ma pierwszeństwo przed wszystkim, nawet przed „Lubię”</string>
     <string name="explainer_example2_result">Artykuł jest zawsze ukryty</string>
     <string name="auto">Automatycznie</string>
     <string name="light">Jasny</string>

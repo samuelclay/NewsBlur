@@ -1020,7 +1020,7 @@ var classifier_prototype = {
                 $.make('hr', { className: 'NB-scoring-divider' }),
                 // Section 2: Super dislike beats everything
                 $.make('div', { className: 'NB-scoring-example' }, [
-                    $.make('div', { className: 'NB-scoring-example-header' }, gettext('A single super dislike overrides everything')),
+                    $.make('div', { className: 'NB-scoring-example-header' }, gettext('Hide overrides everything, even likes')),
                     $.make('div', { className: 'NB-scoring-example-pills' }, [
                         make_mini_pill('John Gruber', 'author', 'like'),
                         make_mini_pill('Apple', 'tag', 'like'),
@@ -1979,7 +1979,7 @@ var classifier_prototype = {
         var $explainer = $.make('div', { className: 'NB-classifier-explainer' }, [
             $.make('div', { className: 'NB-explainer-hierarchy' }, [
                 $.make('span', { className: 'NB-explainer-level NB-explainer-level-super' }, [
-                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, gettext('Super Dislike ')),
+                    $.make('span', { className: 'NB-classifier-title-super-dislike' }, gettext('Hide ')),
                     $.make('span', { className: 'NB-explainer-icon-double-dislike' }, [
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })

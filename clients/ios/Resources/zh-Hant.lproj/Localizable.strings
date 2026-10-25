@@ -401,6 +401,8 @@
 "Hide Changes" = "隱藏變更";
 "Hide Sidebar" = "隱藏側邊欄";
 "Hide Story Titles" = "隱藏文章標題";
+"Hide [training level]" = "隱藏";
+"Hide beats any number of likes:" = "「隱藏」勝過任意數量的「喜歡」：";
 "Hide hidden stories" = "隱藏已隱藏的文章";
 "Hide status bar" = "隱藏狀態列";
 "Hide toolbars when reading" = "閱讀時隱藏工具列";
@@ -899,7 +901,7 @@
 "Story count" = "文章數量";
 "Story detail" = "文章詳細資料";
 "Story image" = "文章圖片";
-"Story is hidden (super dislike wins)" = "文章已隱藏（超級不喜歡優先）";
+"Story is always hidden" = "文章一律隱藏";
 "Story is shown (like wins)" = "顯示文章（喜歡優先）";
 "Story list toolbar position" = "文章清單工具列位置";
 "Story options" = "文章選項";
@@ -919,8 +921,6 @@
 "Summarize" = "摘要";
 "Sunday" = "星期日";
 "Sunrise Gold" = "日出金";
-"Super dislike" = "超級不喜歡";
-"Super dislike beats any number of likes:" = "超級不喜歡的權重勝過任何數量的喜歡：";
 "Support Forum" = "支援論壇";
 "Swipe from left edge" = "從左側邊緣滑動";
 "Swipe from the left edge while reading" = "閱讀時從左側邊緣滑動";

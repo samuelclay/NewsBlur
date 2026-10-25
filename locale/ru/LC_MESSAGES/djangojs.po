@@ -1088,9 +1088,6 @@ msgstr "На втором этапе подсказка помогает най�
 msgid "A single like overrides any number of dislikes"
 msgstr "Одного лайка достаточно, чтобы перевесить любое количество дизлайков"
 
-msgid "A single super dislike overrides everything"
-msgstr "Одна отметка «Очень не нравится» перевешивает всё"
-
 msgid "A story diff with additions and deletions"
 msgstr "Сравнение версий статьи с добавлениями и удалениями"
 
@@ -1152,6 +1149,9 @@ msgstr "Добавить папку"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Букмарклет для добавления сайтов &amp; публикации статей"
+
+msgid "Add a classifier"
+msgstr "Добавить классификатор"
 
 msgid "Add a forwarding address"
 msgstr "Добавить адрес для пересылки"
@@ -1402,6 +1402,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Применено объединений: %(succeeded)s из %(count)s (%(stories)s)"
 msgstr[1] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
 msgstr[2] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Применяется к"
 
 msgid "Apply"
 msgstr "Применить"
@@ -3466,6 +3469,9 @@ msgstr "Скрытые жемчужины"
 msgid "Hide"
 msgstr "Скрыть"
 
+msgid "Hide "
+msgstr "Скрыть "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Скрыть все функции публикации, комментариев и Blurblog"
 
@@ -3477,6 +3483,9 @@ msgstr "Скрыть историю"
 
 msgid "Hide matching stories"
 msgstr "Скрывать подходящие статьи"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«Скрыть» важнее всего, даже отметок «Нравится»"
 
 msgid "Hide sites"
 msgstr "Скрыть сайты"
@@ -6587,9 +6596,6 @@ msgstr "Вс"
 
 msgid "Sunday"
 msgstr "Воскресенье"
-
-msgid "Super Dislike "
-msgstr "Очень не нравится "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

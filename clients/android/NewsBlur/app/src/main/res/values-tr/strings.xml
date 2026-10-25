@@ -702,14 +702,14 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="intel_author_header">Haber yazarları</string>
     <string name="feed_intel_author_header">Yazarlar</string>
     <string name="intel_feed_header">Yayıncının tüm haberleri</string>
-    <string name="intel_super_dislike">Hiç beğenmeme</string>
-    <string name="explainer_super_dislike">Hiç Beğenme</string>
+    <string name="intel_super_dislike">Eşleşen haberleri gizle</string>
+    <string name="explainer_super_dislike">Gizle</string>
     <string name="explainer_like">Beğen</string>
     <string name="explainer_dislike">Beğenme</string>
     <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">Tek bir beğeni, istediğiniz sayıda beğenmeme oyunu geçersiz kılar</string>
     <string name="explainer_example1_result">Haber, Odak görünümünde gösterilir</string>
-    <string name="explainer_example2_header">Tek bir “Hiç beğenme” her şeyi geçersiz kılar</string>
+    <string name="explainer_example2_header">“Gizle” her şeyi, beğenileri bile geçersiz kılar</string>
     <string name="explainer_example2_result">Haber her zaman gizli</string>
     <string name="auto">Otomatik</string>
     <string name="light">Açık</string>

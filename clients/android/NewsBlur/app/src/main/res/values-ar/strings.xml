@@ -722,14 +722,14 @@
     <string name="intel_author_header">كتّاب القصص</string>
     <string name="feed_intel_author_header">الكتّاب</string>
     <string name="intel_feed_header">كل ما ينشره الناشر</string>
-    <string name="intel_super_dislike">لا يعجبني إطلاقًا</string>
-    <string name="explainer_super_dislike">عدم إعجاب شديد</string>
+    <string name="intel_super_dislike">إخفاء القصص المطابقة</string>
+    <string name="explainer_super_dislike">إخفاء</string>
     <string name="explainer_like">أعجبني</string>
     <string name="explainer_dislike">لا يعجبني</string>
     <string name="explainer_beats">يتغلّب على</string>
     <string name="explainer_example1_header">إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب</string>
     <string name="explainer_example1_result">تظهر القصة في عرض التركيز</string>
-    <string name="explainer_example2_header">عدم إعجاب شديد واحد يتغلّب على كل شيء</string>
+    <string name="explainer_example2_header">«إخفاء» يتفوّق على كل شيء، حتى الإعجابات</string>
     <string name="explainer_example2_result">تُخفى القصة دائمًا</string>
     <string name="auto">تلقائي</string>
     <string name="light">فاتح</string>

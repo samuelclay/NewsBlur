@@ -697,14 +697,14 @@
     <string name="intel_author_header">文章作者</string>
     <string name="feed_intel_author_header">作者</string>
     <string name="intel_feed_header">发布者的所有内容</string>
-    <string name="intel_super_dislike">强烈不喜欢</string>
-    <string name="explainer_super_dislike">强烈不喜欢</string>
+    <string name="intel_super_dislike">隐藏匹配的文章</string>
+    <string name="explainer_super_dislike">隐藏</string>
     <string name="explainer_like">喜欢</string>
     <string name="explainer_dislike">不喜欢</string>
     <string name="explainer_beats">胜过</string>
     <string name="explainer_example1_header">一次“喜欢”胜过任意数量的“不喜欢”</string>
     <string name="explainer_example1_result">文章会显示在聚焦视图中</string>
-    <string name="explainer_example2_header">一次“强烈不喜欢”胜过其他所有训练</string>
+    <string name="explainer_example2_header">“隐藏”优先于一切，即使是“喜欢”也不例外</string>
     <string name="explainer_example2_result">文章始终隐藏</string>
     <string name="auto">自动</string>
     <string name="light">浅色</string>

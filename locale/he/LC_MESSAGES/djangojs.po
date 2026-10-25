@@ -1015,9 +1015,6 @@ msgstr "במעבר נוסף נעשה שימוש ברמז שלך כדי למצו�
 msgid "A single like overrides any number of dislikes"
 msgstr "לייק אחד גובר על כל מספר של סימוני לא אהבתי"
 
-msgid "A single super dislike overrides everything"
-msgstr "סלידה חזקה אחת גוברת על הכול"
-
 msgid "A story diff with additions and deletions"
 msgstr "השוואת כתבה עם תוספות ומחיקות"
 
@@ -1076,6 +1073,9 @@ msgstr "הוסף תיקייה"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "סימניית הוספת אתר &amp; שיתוף כתבה"
+
+msgid "Add a classifier"
+msgstr "הוספת מסווג"
 
 msgid "Add a forwarding address"
 msgstr "הוספת כתובת להעברה"
@@ -1317,6 +1317,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "בוצעו %(succeeded)s מתוך %(count)s מיזוג (%(stories)s)"
 msgstr[1] "הוחלו %(succeeded)s מתוך %(count)s מיזוגים (%(stories)s)"
+
+msgid "Applies to"
+msgstr "חל על"
 
 msgid "Apply"
 msgstr "החל"
@@ -3353,6 +3356,9 @@ msgstr "פנינים נסתרות"
 msgid "Hide"
 msgstr "הסתרה"
 
+msgid "Hide "
+msgstr "הסתרה "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "הסתרת כל תכונות השיתוף, התגובות והבלוג האישי"
 
@@ -3364,6 +3370,9 @@ msgstr "הסתרת ההיסטוריה"
 
 msgid "Hide matching stories"
 msgstr "הסתרת כתבות תואמות"
+
+msgid "Hide overrides everything, even likes"
+msgstr "״הסתרה״ גוברת על הכול, אפילו על ״אהבתי״"
 
 msgid "Hide sites"
 msgstr "הסתרת אתרים"
@@ -6412,9 +6421,6 @@ msgstr "א׳"
 
 msgid "Sunday"
 msgstr "יום ראשון"
-
-msgid "Super Dislike "
-msgstr "סלידה חזקה במיוחד "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

@@ -1017,9 +1017,6 @@ msgstr "Una segunda pasada usa tu pista para encontrar el patrón adecuado en la
 msgid "A single like overrides any number of dislikes"
 msgstr "Un solo «Me gusta» anula cualquier cantidad de «No me gusta»"
 
-msgid "A single super dislike overrides everything"
-msgstr "Un solo «No me gusta nada» lo anula todo"
-
 msgid "A story diff with additions and deletions"
 msgstr "Comparación de un artículo con añadidos y eliminaciones"
 
@@ -1078,6 +1075,9 @@ msgstr "Añadir carpeta"
 
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet para añadir sitios &amp; compartir artículos"
+
+msgid "Add a classifier"
+msgstr "Añadir un clasificador"
 
 msgid "Add a forwarding address"
 msgstr "Añadir una dirección de reenvío"
@@ -1321,6 +1321,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Se aplicaron %(succeeded)s de %(count)s fusión (%(stories)s)"
 msgstr[1] "Se aplicaron %(succeeded)s de %(count)s fusiones (%(stories)s)"
+
+msgid "Applies to"
+msgstr "Se aplica a"
 
 msgid "Apply"
 msgstr "Aplicar"
@@ -3383,6 +3386,9 @@ msgstr "Joyas ocultas"
 msgid "Hide"
 msgstr "Ocultar"
 
+msgid "Hide "
+msgstr "Ocultar "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Ocultar todas las funciones de compartir, comentarios y blurblog"
 
@@ -3394,6 +3400,9 @@ msgstr "Ocultar historial"
 
 msgid "Hide matching stories"
 msgstr "Ocultar artículos coincidentes"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«Ocultar» gana a todo, incluso a «Me gusta»"
 
 msgid "Hide sites"
 msgstr "Ocultar sitios"
@@ -6482,9 +6491,6 @@ msgstr "Dom"
 
 msgid "Sunday"
 msgstr "domingo"
-
-msgid "Super Dislike "
-msgstr "No me gusta nada "
 
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"

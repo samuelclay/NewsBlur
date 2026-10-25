@@ -401,6 +401,8 @@
 "Hide Changes" = "Скрыть изменения";
 "Hide Sidebar" = "Скрыть боковую панель";
 "Hide Story Titles" = "Скрыть заголовки статей";
+"Hide [training level]" = "Скрыть";
+"Hide beats any number of likes:" = "«Скрыть» важнее любого количества отметок «Нравится»:";
 "Hide hidden stories" = "Скрыть скрытые статьи";
 "Hide status bar" = "Скрыть строку состояния";
 "Hide toolbars when reading" = "Скрывать панели инструментов при чтении";
@@ -899,7 +901,7 @@
 "Story count" = "Количество статей";
 "Story detail" = "Подробности статьи";
 "Story image" = "Изображение статьи";
-"Story is hidden (super dislike wins)" = "Статья скрыта («Очень не нравится» важнее)";
+"Story is always hidden" = "Статья всегда скрыта";
 "Story is shown (like wins)" = "Статья показана («Нравится» важнее)";
 "Story list toolbar position" = "Расположение панели инструментов списка статей";
 "Story options" = "Параметры статьи";
@@ -919,8 +921,6 @@
 "Summarize" = "Кратко изложить";
 "Sunday" = "Воскресенье";
 "Sunrise Gold" = "Золото рассвета";
-"Super dislike" = "Очень не нравится";
-"Super dislike beats any number of likes:" = "Одна отметка «очень не нравится» перевешивает любое количество отметок «нравится»:";
 "Support Forum" = "Форум поддержки";
 "Swipe from left edge" = "Проведите пальцем от левого края";
 "Swipe from the left edge while reading" = "Во время чтения проведите пальцем от левого края экрана";
