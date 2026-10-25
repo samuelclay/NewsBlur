@@ -128,7 +128,7 @@ Full API metadata and dispositions are in [play-crash-audit-2026-10-25.json](pla
 
 ## Publication boundary
 
-Source fixes are committed locally on the existing `main` branch. No push, version bump, release tag, store upload, submission, or deployment was performed.
+At the end of the investigation, source fixes were committed locally on the existing `main` branch. The user subsequently authorized pushing and a patch release. All fixes were pushed and included in [Android 16.0.5 (297)](../releases/16.0.5/README.md), submitted October 25 for full production rollout. Play Console shows Changes in review, with automated quick checks still running at the recorded observation. Public availability is not yet verified.
 
 ## Platform references
 

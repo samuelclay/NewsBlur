@@ -1,0 +1,16 @@
+{
+  "status": "verified",
+  "releaseNotes": 21,
+  "listings": 21,
+  "subscriptionLocalesPerProduct": 21,
+  "subscriptionProducts": 2,
+  "unrelatedTracksUnchanged": true,
+  "globalDetailsUnchanged": true,
+  "oneTimeProductsUnchanged": true,
+  "bundle": {
+    "versionCode": 297,
+    "sha1": "71b9f3c44ad062bef920ba64ee8cf8a5e8402529",
+    "sha256": "220da212044ceb1c1eec14f111d89e9a7ba3ab77e5477ecf6014c40f309e2814"
+  },
+  "lifecycle": "Saved in Console; review submission verified separately"
+}

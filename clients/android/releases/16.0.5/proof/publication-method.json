@@ -1,0 +1,8 @@
+{
+  "apiEdit": "05843785464572801959",
+  "apiStaging": "Bundle, listing text and track staged; final validation rejected HTTP 403",
+  "alternateAccount": "Publisher API disabled; no permission changes made",
+  "fallback": "Signed-in Play Console uploaded same AAB, saved release at 100 percent and all 21 listings",
+  "warning": "Native debug symbols missing for bundled third-party native libraries; ReTrace mapping is attached",
+  "lostSupportedDevices": 0
+}
