@@ -24,7 +24,8 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
 
     events: {
         "click .NB-feed-folder-picker-trigger": "toggle",
-        "keydown .NB-feed-folder-picker-trigger": "handle_trigger_keydown"
+        "keydown .NB-feed-folder-picker-trigger": "handle_trigger_keydown",
+        "keyup .NB-feed-folder-picker-trigger": "handle_trigger_keyup"
     },
 
     initialize: function (options) {
@@ -92,6 +93,10 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         return this;
     },
 
+    focus: function () {
+        this.$('.NB-feed-folder-picker-trigger').focus();
+    },
+
     render_trigger: function () {
         var item = this.find_item(this.value) || this.items[0];
         var $trigger = this.$('.NB-feed-folder-picker-trigger').empty();
@@ -157,8 +162,14 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
 
         this.$popover.on('input', '.NB-feed-folder-picker-search', _.bind(this.filter, this))
             .on('keydown', _.bind(this.handle_popover_keydown, this))
-            .on('mousedown', '.NB-feed-folder-picker-option', _.bind(this.choose_option, this))
-            .on('mousemove', '.NB-feed-folder-picker-option', _.bind(this.hover_option, this));
+            // Keeps focus in the search field while clicking
+            .on('mousedown', '.NB-feed-folder-picker-option', function (e) { e.preventDefault(); })
+            .on('click', '.NB-feed-folder-picker-option', _.bind(this.choose_option, this))
+            .on('mousemove', '.NB-feed-folder-picker-option', _.bind(this.hover_option, this))
+            // The list sits on body, outside the popover or menu that holds the picker, and those
+            // close on any click or key that reaches the document (reader_popover.js autohide,
+            // the manage menu in reader.js), so nothing in the list goes past it.
+            .on('mousedown click keydown keypress keyup', function (e) { e.stopPropagation(); });
         this.list_rendered = true;
     },
 
@@ -317,7 +328,6 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
     },
 
     choose_option: function (e) {
-        // mousedown so the search field's blur doesn't close the list first
         e.preventDefault();
         this.select($(e.currentTarget));
     },
@@ -334,6 +344,13 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         }
     },
 
+    // The key that closed the list comes back up on the trigger, where a popover around the
+    // picker would take an Esc for its own (reader_popover.js autohide closes on Esc keyup).
+    handle_trigger_keyup: function (e) {
+        if (e.which === this.closing_key) e.stopPropagation();
+        this.closing_key = null;
+    },
+
     handle_popover_keydown: function (e) {
         if (e.which === 40 || e.which === 38) {
             e.preventDefault();
@@ -343,14 +360,19 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
             if (e.originalEvent && e.originalEvent.isComposing) return;
             e.preventDefault();
             var $active = this.$popover.find('.NB-feed-folder-picker-option.NB-active');
-            if ($active.length) this.select($active);
+            if ($active.length) {
+                this.closing_key = e.which;
+                this.select($active);
+            }
         } else if (e.which === 27) {
             // Esc closes the list, not the dialog around it
             e.preventDefault();
             e.stopPropagation();
+            this.closing_key = e.which;
             this.close(true);
         } else if (e.which === 9) {
             e.preventDefault();
+            this.closing_key = e.which;
             this.close(true);
         }
     },
@@ -396,11 +418,50 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
                 depth: depth,
                 parent_path: is_folder && depth ? parents.slice(0, depth).join(' › ') : '',
                 disabled: this.disabled,
-                // An empty value is "everything", drawn with the All Site Stories icon
-                icon_value: value === '' ? 'river:' : (/^\d+$/.test(value) ? parseInt(value, 10) : value)
+                icon_value: NEWSBLUR.Views.FeedFolderPicker.icon_value_for(value)
             });
         });
         return items;
+    },
+
+    // What to hand $.favicon_el (jquery.newsblur.js) for an option's value, or null for a value
+    // it doesn't know, which gets no icon.
+    icon_value_for: function (value) {
+        // An empty value is "everything", drawn with the All Site Stories icon
+        if (value === '') return 'river:';
+        if (/^\d+$/.test(value)) return parseInt(value, 10);
+        if (/^(river|feed|social|starred|search|trending|briefing):/.test(value)) return value;
+        if (_.contains(['read', 'starred', 'searches', 'archive'], value)) return value;
+        return null;
+    },
+
+    // The picker takes the select's place in its layout: the size, spacing, float and flex
+    // settings the select gets from CSS. Read once the select is hidden, so these are the values
+    // CSS gave it (250px, 100%, auto) rather than its drawn size. A select sized to its options
+    // but capped by a max-width is as wide as that cap once any folder name is long, so the
+    // picker takes the cap instead of growing and shrinking with the chosen title.
+    layout_from_select: function (select) {
+        var style = window.getComputedStyle(select);
+        var layout = {};
+        _.each({
+            'width': 'auto',
+            'min-width': 'auto',
+            'max-width': 'none',
+            'float': 'none',
+            'align-self': 'auto',
+            'flex-grow': '0',
+            'flex-shrink': '1',
+            'flex-basis': 'auto',
+            'margin-top': '0px',
+            'margin-right': '0px',
+            'margin-bottom': '0px',
+            'margin-left': '0px'
+        }, function (initial, property) {
+            var value = style.getPropertyValue(property);
+            if (value && value !== initial) layout[property] = value;
+        });
+        if (!layout.width && layout['max-width']) layout.width = layout['max-width'];
+        return layout;
     },
 
     enhance: function (select) {
@@ -418,12 +479,9 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         });
         picker.render();
 
-        // Keep the select's own sizing: a width set in CSS carries over to the picker
         $select.addClass('NB-feed-folder-picker-select');
-        var width = window.getComputedStyle(select).width;
-        if (width && width !== 'auto' && width !== '0px') {
-            picker.$el.css('width', width);
-        }
+        picker.$el.css(NEWSBLUR.Views.FeedFolderPicker.layout_from_select(select));
+        if (!picker.el.style.width) picker.$el.addClass('NB-feed-folder-picker-fit');
         picker.$el.addClass(_.map(($select.attr('class') || '').split(/\s+/), function (class_name) {
             return class_name && class_name !== 'NB-feed-folder-picker-select' ? 'NB-feed-folder-picker-for-' + class_name : '';
         }).join(' '));

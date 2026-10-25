@@ -11310,6 +11310,11 @@ select.NB-feed-folder-picker-select {
     vertical-align: middle;
 }
 
+/* A select with no width from CSS: wide enough for a folder name */
+.NB-feed-folder-picker-fit {
+    min-width: 160px;
+}
+
 .NB-manage-add .NB-feed-folder-picker {
     width: 260px;
 }
@@ -11319,7 +11324,7 @@ select.NB-feed-folder-picker-select {
     align-items: center;
     gap: 8px;
     width: 100%;
-    min-width: 160px;
+    min-width: 0;
     height: 30px;
     padding: 0 28px 0 10px;
     font-family: inherit;
