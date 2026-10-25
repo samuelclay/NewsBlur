@@ -9,6 +9,10 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     events: {
         'click .NB-mobile-bar-back': 'go_back',
         'click .NB-mobile-story-view-option': 'select_view',
+        'click .NB-mobile-story-previous': 'open_previous',
+        'click .NB-mobile-story-next': 'open_next',
+        'click .NB-mobile-story-save': 'toggle_saved',
+        'click .NB-mobile-story-share': 'share_story',
         'click .NB-mobile-story-unread': 'toggle_unread',
         'click .NB-mobile-story-next-unread': 'open_next_unread',
         'click .NB-mobile-story-options': 'open_story_options'
@@ -42,7 +46,11 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
                     $.make('div', { className: 'NB-mobile-bar-back-label' }, gettext('Stories'))
                 ]),
                 $.make('div', { className: 'NB-mobile-bar-title' }, [
-                    $.make('span', { className: 'NB-mobile-story-position' })
+                    $.make('div', { className: 'NB-mobile-segmented NB-mobile-story-views' }, [
+                        $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'feed', role: 'button' }, gettext('Feed')),
+                        $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'text', role: 'button' }, gettext('Text')),
+                        $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'story', role: 'button' }, gettext('Story'))
+                    ])
                 ]),
                 $.make('div', { className: 'NB-mobile-bar-actions' }, [
                     $.make('div', { className: 'NB-mobile-bar-button NB-mobile-story-options', role: 'button' }, [
@@ -58,13 +66,24 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
                 ])
             ]),
             $.make('div', { className: 'NB-mobile-toolbar NB-mobile-story-toolbar' }, [
-                $.make('div', { className: 'NB-mobile-segmented NB-mobile-story-views' }, [
-                    $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'feed', role: 'button' }, gettext('Feed')),
-                    $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'text', role: 'button' }, gettext('Text')),
-                    $.make('div', { className: 'NB-mobile-segmented-option NB-mobile-story-view-option', 'data-view': 'story', role: 'button' }, gettext('Story'))
+                $.make('div', { className: 'NB-mobile-toolbar-group' }, [
+                    $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-previous', role: 'button', 'aria-label': gettext('Previous story') }, [
+                        $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-chevron-previous' })
+                    ]),
+                    $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-next', role: 'button', 'aria-label': gettext('Next story') }, [
+                        $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-chevron-next' })
+                    ])
                 ]),
-                $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-unread', role: 'button' }, [
-                    $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-unread' })
+                $.make('div', { className: 'NB-mobile-toolbar-group' }, [
+                    $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-save', role: 'button', 'aria-label': gettext('Save') }, [
+                        $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-star' })
+                    ]),
+                    $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-share', role: 'button', 'aria-label': gettext('Share') }, [
+                        $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-share' })
+                    ]),
+                    $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-unread', role: 'button' }, [
+                        $.make('div', { className: 'NB-mobile-icon NB-mobile-icon-unread' })
+                    ])
                 ]),
                 $.make('div', { className: 'NB-mobile-toolbar-button NB-mobile-story-next-unread', role: 'button' }, [
                     $.make('span', gettext('Next unread')),
@@ -93,9 +112,9 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         if (!this.story) {
             NEWSBLUR.assets.stories.bind('add', this.stories_added, this);
         }
-        if (this.story) this.story.unbind('change:read_status', this.story_changed, this);
+        if (this.story) this.story.unbind('change:read_status change:starred', this.story_changed, this);
         this.story = story;
-        this.story.bind('change:read_status', this.story_changed, this);
+        this.story.bind('change:read_status change:starred', this.story_changed, this);
         if (!story.get('selected')) {
             story.set('selected', true, { click_on_story_title: true });
         }
@@ -107,7 +126,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     close: function () {
         if (!this.story) return;
         NEWSBLUR.assets.stories.unbind('add', this.stories_added, this);
-        this.story.unbind('change:read_status', this.story_changed, this);
+        this.story.unbind('change:read_status change:starred', this.story_changed, this);
         this.story = null;
         _.each(this.pages, function (page) {
             this.destroy_page(page);
@@ -256,12 +275,11 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     update_chrome: function () {
         if (!this.story) return;
         var around = this.neighbors(this.story);
-        var position = around.index >= 0 ?
-            interpolate(gettext('%(position)s of %(count)s'), {
-                position: around.index + 1,
-                count: around.count + (NEWSBLUR.assets.stories.no_more_stories ? '' : '+')
-            }, true) : '';
-        this.$('.NB-mobile-story-position').text(position);
+        this.$('.NB-mobile-story-previous').toggleClass('NB-disabled', !around.previous);
+        this.$('.NB-mobile-story-next').toggleClass('NB-disabled', !around.next);
+        var starred = !!this.story.get('starred');
+        this.$('.NB-mobile-story-save').toggleClass('NB-active', starred)
+            .attr('aria-label', starred ? gettext('Saved') : gettext('Save'));
 
         var mode = this.story_view_mode();
         this.$('.NB-mobile-story-view-option').each(function () {
@@ -336,9 +354,9 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.$track.removeClass('NB-mobile-animating').css('transform', '');
         this.animating = false;
 
-        if (this.story) this.story.unbind('change:read_status', this.story_changed, this);
+        if (this.story) this.story.unbind('change:read_status change:starred', this.story_changed, this);
         this.story = target;
-        this.story.bind('change:read_status', this.story_changed, this);
+        this.story.bind('change:read_status change:starred', this.story_changed, this);
         this.promote_page(this.pages.current);
         target.set('selected', true, { click_on_story_title: true });
 
@@ -486,6 +504,39 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         } else {
             this.open(next);
             this.mobile.story_paged(next);
+        }
+    },
+
+    open_previous: function () {
+        this.page_to(-1);
+    },
+
+    open_next: function () {
+        this.page_to(1);
+    },
+
+    toggle_saved: function () {
+        if (!this.story) return;
+        this.story.toggle_starred();
+        this.update_chrome();
+    },
+
+    // The native share sheet when the browser has one, otherwise NewsBlur's own share dialog
+    // at the end of the story.
+    share_story: function () {
+        if (!this.story) return;
+        var title = $('<div>').html(this.story.get('story_title')).text();
+        var url = this.story.get('story_permalink');
+        if (navigator.share) {
+            navigator.share({ title: title, url: url }).catch(function () {
+                // mobile_story_pager_view.js: dismissing the share sheet rejects; nothing to do.
+            });
+            return;
+        }
+        var view = this.pages.current.view;
+        var detail = view && (view.story_detail || view);
+        if (detail && detail.share_view) {
+            detail.share_view.toggle_feed_story_share_dialog();
         }
     },
 

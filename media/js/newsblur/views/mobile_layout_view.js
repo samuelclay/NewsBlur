@@ -54,6 +54,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         document.addEventListener('touchend', this.handle_touchend, { passive: true });
         document.addEventListener('touchcancel', this.handle_touchend, { passive: true });
         this.setup_long_press();
+        this.setup_pull_to_refresh();
 
         this.check_mode();
     },
@@ -610,6 +611,36 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             }
             self.$body.removeClass('NB-mobile-transitioning');
         }, this.transition_duration() + 40);
+    },
+
+    // ======================
+    // = Pull to refresh    =
+    // ======================
+
+    setup_pull_to_refresh: function () {
+        var self = this;
+        this.feeds_refresher = new NEWSBLUR.Views.MobilePullToRefresh({
+            scroller: this.$screens.feeds.find('.left-center-content')[0],
+            is_enabled: function () {
+                return self.active && self.screen === 'feeds';
+            },
+            refresh: function (done) {
+                NEWSBLUR.reader.force_feeds_refresh(function () {
+                    done();
+                }, false, null, done);
+            }
+        });
+        this.titles_refresher = new NEWSBLUR.Views.MobilePullToRefresh({
+            scroller: NEWSBLUR.reader.$s.$story_titles[0],
+            is_enabled: function () {
+                return self.active && self.screen === 'titles' && !!NEWSBLUR.reader.active_feed;
+            },
+            refresh: function (done) {
+                NEWSBLUR.reader.reload_feed({});
+                // reload_feed empties the list right away; the next reset brings the new stories.
+                NEWSBLUR.assets.stories.once('reset', done);
+            }
+        });
     },
 
     // ===================
