@@ -1241,6 +1241,25 @@ body.NB-mobile .NB-feed-story-header {
     user-select: none;
 }
 
+/* mobile.css: the Ask AI question menu (story_detail_view.js show_ask_ai_menu) opens over
+   the story screen as a bottom sheet. */
+body.NB-mobile .NB-menu-ask-ai-container {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding-bottom: var(--nb-mobile-safe-bottom) !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
+    z-index: 2001 !important;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
 body.NB-mobile .NB-mobile-sheet-shade {
     display: none;
 }
