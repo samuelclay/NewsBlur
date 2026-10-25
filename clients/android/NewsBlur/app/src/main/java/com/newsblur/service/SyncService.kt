@@ -84,7 +84,11 @@ open class SyncService :
     lateinit var networkClient: NetworkClient
 
     @Inject
-    lateinit var dbHelper: BlurDatabaseHelper
+    lateinit var dbHelperLazy: dagger.Lazy<BlurDatabaseHelper>
+
+    // NbApplication.kt warms this singleton on IO; eager injection would block service startup
+    // on that same database lock. SyncService.kt first accesses it from its IO coroutine work.
+    val dbHelper: BlurDatabaseHelper get() = dbHelperLazy.get()
 
     @IconFileCache
     @Inject
