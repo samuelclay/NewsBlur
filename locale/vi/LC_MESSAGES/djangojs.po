@@ -3661,6 +3661,9 @@ msgstr "Đang tải nguồn cấp dữ liệu..."
 msgid "Loading more briefings..."
 msgstr "Đang tải thêm bản tin tóm tắt..."
 
+msgid "Loading the next unread story..."
+msgstr "Đang tải bài viết chưa đọc tiếp theo..."
+
 msgid "Loading your blocklist settings..."
 msgstr "Đang tải cài đặt danh sách chặn của bạn..."
 
@@ -4155,6 +4158,9 @@ msgstr "Bước tiếp theo "
 
 msgid "Next story"
 msgstr "Bài viết tiếp theo"
+
+msgid "Next unread"
+msgstr "Bài viết chưa đọc tiếp theo"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""

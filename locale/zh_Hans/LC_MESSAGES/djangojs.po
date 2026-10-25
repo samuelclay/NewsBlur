@@ -3606,6 +3606,9 @@ msgstr "正在加载订阅源…"
 msgid "Loading more briefings..."
 msgstr "正在加载更多简报…"
 
+msgid "Loading the next unread story..."
+msgstr "正在加载下一篇未读文章…"
+
 msgid "Loading your blocklist settings..."
 msgstr "正在加载你的屏蔽列表设置…"
 
@@ -4094,6 +4097,9 @@ msgstr "下一步 "
 
 msgid "Next story"
 msgstr "下一篇文章"
+
+msgid "Next unread"
+msgstr "下一篇未读文章"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接下来，创建一个包含所有新闻简报的筛选器，将它们转发到 NewsBlur 上的自定义地址。"

@@ -3838,6 +3838,9 @@ msgstr "Wczytywanie kanałów..."
 msgid "Loading more briefings..."
 msgstr "Wczytywanie kolejnych przeglądów..."
 
+msgid "Loading the next unread story..."
+msgstr "Wczytywanie następnego nieprzeczytanego artykułu..."
+
 msgid "Loading your blocklist settings..."
 msgstr "Wczytywanie ustawień listy blokowanych…"
 
@@ -4348,6 +4351,9 @@ msgstr "Następny krok "
 
 msgid "Next story"
 msgstr "Następny artykuł"
+
+msgid "Next unread"
+msgstr "Następny nieprzeczytany"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""

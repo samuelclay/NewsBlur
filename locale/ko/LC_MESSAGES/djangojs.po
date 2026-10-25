@@ -3614,6 +3614,9 @@ msgstr "피드를 불러오는 중..."
 msgid "Loading more briefings..."
 msgstr "브리핑을 더 불러오는 중..."
 
+msgid "Loading the next unread story..."
+msgstr "다음 읽지 않은 스토리를 불러오는 중..."
+
 msgid "Loading your blocklist settings..."
 msgstr "차단 목록 설정을 불러오는 중..."
 
@@ -4102,6 +4105,9 @@ msgstr "다음 단계 "
 
 msgid "Next story"
 msgstr "다음 스토리"
+
+msgid "Next unread"
+msgstr "다음 읽지 않은 스토리"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "다음으로 모든 뉴스레터를 포함하는 필터를 만들어 NewsBlur의 맞춤 주소로 전달되도록 설정하세요."

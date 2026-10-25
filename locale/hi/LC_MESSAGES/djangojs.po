@@ -3736,6 +3736,9 @@ msgstr "फ़ीड लोड हो रही हैं..."
 msgid "Loading more briefings..."
 msgstr "और ब्रीफ़िंग लोड हो रही हैं..."
 
+msgid "Loading the next unread story..."
+msgstr "अगला अपठित लेख लोड हो रहा है…"
+
 msgid "Loading your blocklist settings..."
 msgstr "आपकी ब्लॉकलिस्ट सेटिंग लोड हो रही हैं..."
 
@@ -4238,6 +4241,9 @@ msgstr "अगला चरण "
 
 msgid "Next story"
 msgstr "अगला लेख"
+
+msgid "Next unread"
+msgstr "अगला अपठित"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "इसके बाद, अपने सभी न्यूज़लेटर के लिए एक फ़िल्टर बनाएँ, ताकि वे NewsBlur के कस्टम पते पर फ़ॉरवर्ड हों।"

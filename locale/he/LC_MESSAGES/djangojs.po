@@ -3724,6 +3724,9 @@ msgstr "טוען פידים..."
 msgid "Loading more briefings..."
 msgstr "טוען תדריכים נוספים..."
 
+msgid "Loading the next unread story..."
+msgstr "טעינת הכתבה הבאה שלא נקראה..."
+
 msgid "Loading your blocklist settings..."
 msgstr "הגדרות רשימת החסימה נטענות..."
 
@@ -4224,6 +4227,9 @@ msgstr "השלב הבא "
 
 msgid "Next story"
 msgstr "הכתבה הבאה"
+
+msgid "Next unread"
+msgstr "הכתבה הבאה שלא נקראה"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "כעת צרו מסנן שיכלול את כל הניוזלטרים שלכם, כך שהם יועברו לכתובת המותאמת אישית ב-NewsBlur."

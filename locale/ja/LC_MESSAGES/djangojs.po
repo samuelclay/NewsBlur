@@ -3606,6 +3606,9 @@ msgstr "フィードを読み込み中..."
 msgid "Loading more briefings..."
 msgstr "ブリーフィングをさらに読み込み中…"
 
+msgid "Loading the next unread story..."
+msgstr "次の未読記事を読み込んでいます…"
+
 msgid "Loading your blocklist settings..."
 msgstr "ブロックリストの設定を読み込んでいます..."
 
@@ -4094,6 +4097,9 @@ msgstr "次のステップ "
 
 msgid "Next story"
 msgstr "次の記事"
+
+msgid "Next unread"
+msgstr "次の未読記事"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "次に、すべてのニュースレターをカスタムNewsBlurアドレスに転送するフィルタを作成します。"

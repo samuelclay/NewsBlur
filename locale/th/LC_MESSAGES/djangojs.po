@@ -3640,6 +3640,9 @@ msgstr "กำลังโหลดฟีด..."
 msgid "Loading more briefings..."
 msgstr "กำลังโหลดสรุปข่าวเพิ่มเติม..."
 
+msgid "Loading the next unread story..."
+msgstr "กำลังโหลดบทความที่ยังไม่อ่านถัดไป..."
+
 msgid "Loading your blocklist settings..."
 msgstr "กำลังโหลดการตั้งค่ารายการบล็อกของคุณ..."
 
@@ -4132,6 +4135,9 @@ msgstr "ขั้นตอนถัดไป "
 
 msgid "Next story"
 msgstr "บทความถัดไป"
+
+msgid "Next unread"
+msgstr "บทความที่ยังไม่อ่านถัดไป"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "จากนั้นสร้างตัวกรองที่รวมจดหมายข่าวทั้งหมดของคุณ เพื่อส่งต่อไปยังที่อยู่เฉพาะบน NewsBlur"

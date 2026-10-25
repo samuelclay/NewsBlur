@@ -3741,6 +3741,9 @@ msgstr "Feeds laden..."
 msgid "Loading more briefings..."
 msgstr "Meer briefings laden..."
 
+msgid "Loading the next unread story..."
+msgstr "Het volgende ongelezen artikel laden..."
+
 msgid "Loading your blocklist settings..."
 msgstr "Je instellingen voor de blokkeerlijst laden..."
 
@@ -4243,6 +4246,9 @@ msgstr "Volgende stap "
 
 msgid "Next story"
 msgstr "Volgend artikel"
+
+msgid "Next unread"
+msgstr "Volgende ongelezen"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""

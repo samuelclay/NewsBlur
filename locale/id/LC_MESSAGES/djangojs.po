@@ -3751,6 +3751,9 @@ msgstr "Memuat feed..."
 msgid "Loading more briefings..."
 msgstr "Memuat ringkasan lainnya..."
 
+msgid "Loading the next unread story..."
+msgstr "Memuat artikel belum dibaca berikutnya..."
+
 msgid "Loading your blocklist settings..."
 msgstr "Memuat pengaturan daftar blokir Anda..."
 
@@ -4253,6 +4256,9 @@ msgstr "Langkah berikutnya "
 
 msgid "Next story"
 msgstr "Artikel berikutnya"
+
+msgid "Next unread"
+msgstr "Berikutnya yang belum dibaca"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Selanjutnya, buat filter untuk semua buletin Anda agar diteruskan ke alamat khusus di NewsBlur."

@@ -3670,6 +3670,9 @@ msgstr "Akışlar yükleniyor..."
 msgid "Loading more briefings..."
 msgstr "Daha fazla özet yükleniyor..."
 
+msgid "Loading the next unread story..."
+msgstr "Sonraki okunmamış haber yükleniyor..."
+
 msgid "Loading your blocklist settings..."
 msgstr "Engelleme listesi ayarlarınız yükleniyor..."
 
@@ -4164,6 +4167,9 @@ msgstr "Sonraki adım "
 
 msgid "Next story"
 msgstr "Sonraki haber"
+
+msgid "Next unread"
+msgstr "Sonraki okunmamış"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Sonra, tüm bültenlerinizin NewsBlur'daki özel adrese yönlendirilmesini sağlayacak bir filtre oluşturun."

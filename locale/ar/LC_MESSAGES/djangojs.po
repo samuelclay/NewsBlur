@@ -4059,6 +4059,9 @@ msgstr "جارٍ تحميل الخلاصات..."
 msgid "Loading more briefings..."
 msgstr "جارٍ تحميل المزيد من الموجزات..."
 
+msgid "Loading the next unread story..."
+msgstr "جارٍ تحميل القصة التالية غير المقروءة..."
+
 msgid "Loading your blocklist settings..."
 msgstr "جارٍ تحميل إعدادات قائمة الحظر..."
 
@@ -4591,6 +4594,9 @@ msgstr "الخطوة التالية "
 
 msgid "Next story"
 msgstr "القصة التالية"
+
+msgid "Next unread"
+msgstr "غير المقروءة التالية"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "بعد ذلك، أنشئ فلترًا يضم جميع نشراتك الإخبارية لإعادة توجيهها إلى العنوان المخصص على NewsBlur."

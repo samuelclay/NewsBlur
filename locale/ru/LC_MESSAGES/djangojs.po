@@ -3842,6 +3842,9 @@ msgstr "Загрузка лент..."
 msgid "Loading more briefings..."
 msgstr "Загружаем другие сводки..."
 
+msgid "Loading the next unread story..."
+msgstr "Загружается следующая непрочитанная статья…"
+
 msgid "Loading your blocklist settings..."
 msgstr "Загрузка настроек списка блокировки..."
 
@@ -4352,6 +4355,9 @@ msgstr "Следующий шаг "
 
 msgid "Next story"
 msgstr "Следующая статья"
+
+msgid "Next unread"
+msgstr "Следующая непрочитанная"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Затем создайте фильтр для всех своих рассылок, чтобы они пересылались на ваш адрес NewsBlur."
