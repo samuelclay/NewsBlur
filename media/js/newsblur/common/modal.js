@@ -54,6 +54,9 @@ NEWSBLUR.Modal.prototype = {
                 if (self.handle_modal_closed) {
                     self.handle_modal_closed();
                 }
+                // modal.js: Hover tooltips live on body (bind_tooltip in reader_classifier.js),
+                // so one over a control that closes the dialog would outlive it.
+                $('.NB-scope-tooltip').remove();
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function () {

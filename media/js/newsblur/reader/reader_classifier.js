@@ -93,6 +93,34 @@ NEWSBLUR.ClassifierConstants = {
     // matching stories button. Tooltip text is set as text, never parsed as HTML.
     make_tooltip: function (text, extra_class) {
         return $.make('div', { className: 'NB-scope-tooltip' + (extra_class ? ' ' + extra_class : '') }).text(text);
+    },
+
+    // reader_classifier.js: Shows each element's data-tooltip on hover, appended to body
+    // so the modal's overflow can't clip it. A click can close the trainer under the
+    // pointer, and then mouseleave never fires, so pressing hides the tooltip too.
+    // NEWSBLUR.Modal's onClose in common/modal.js clears any that are still up.
+    bind_tooltip: function ($elements) {
+        $elements.each(function () {
+            var $tip = null;
+            var hide_tip = function () {
+                if ($tip) {
+                    $tip.remove();
+                    $tip = null;
+                }
+            };
+            $(this).on('mouseenter', function () {
+                var text = $(this).attr('data-tooltip');
+                if (!text) return;
+                hide_tip();
+                $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
+                $('body').append($tip);
+                var rect = this.getBoundingClientRect();
+                $tip.css({
+                    top: rect.top - $tip.outerHeight() - 6,
+                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+                });
+            }).on('mouseleave mousedown', hide_tip);
+        });
     }
 };
 
@@ -114,6 +142,8 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
     this.trainer_iterator = -1;
     this.feed_id = null;
     this.options = $.extend({}, defaults, options);
+    // As passed in, so make_matching_view_snapshot can reopen this trainer the same way
+    this.open_options = _.extend({}, options);
     this.model = NEWSBLUR.assets;
     this.current_tab = 'sitebyside';
     this.all_classifiers_data = null;
@@ -145,6 +175,7 @@ NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
     this.feed_id = feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
+    this.open_options = _.extend({}, options);
     this.model = NEWSBLUR.assets;
     this.current_tab = 'feed';
     this.all_classifiers_data = null;
@@ -178,6 +209,7 @@ NEWSBLUR.ReaderClassifierStory = function (story_id, feed_id, options) {
     // if (options.social_feed_id) this.feed_id = options.social_feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
+    this.open_options = _.extend({}, options);
     this.model = NEWSBLUR.assets;
     this.current_tab = 'story';
     this.all_classifiers_data = null;
@@ -201,11 +233,17 @@ var classifier_prototype = {
         this.load_classifier_notifications();
 
         this.make_trainer_intro();
-        this.get_feeds_trainer();
+        if (this.options.restore && this.options.restore.trainer_data) {
+            this.restore_matching_view_site();
+        } else {
+            this.get_feeds_trainer();
+        }
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.resize_modal();
+            this.matching_view_modal_ready();
         }, this));
+        this.restore_matching_view_tab();
 
         this.model.preference('has_trained_intelligence', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -236,7 +274,9 @@ var classifier_prototype = {
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
             this.resize_modal();
+            this.matching_view_modal_ready();
         }, this));
+        this.restore_matching_view_tab();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
@@ -279,7 +319,9 @@ var classifier_prototype = {
                 delayIn: 50,
                 opacity: 1
             });
+            this.matching_view_modal_ready();
         }, this));
+        this.restore_matching_view_tab();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
         if (!this.options.feed_loaded) {
@@ -351,6 +393,9 @@ var classifier_prototype = {
 
         this.reload_modal(_.bind(function () {
             this.load_prompt_classifiers();
+            this.restore_matching_view_tab();
+            // After reload_modal finishes sizing the modal around the new content
+            _.defer(_.bind(this.restore_matching_view_scroll, this));
         }, this));
     },
 
@@ -438,6 +483,10 @@ var classifier_prototype = {
     find_story_and_feed: function () {
         if (this.story_id) {
             this.story = this.model.get_story(this.story_id);
+            if (!this.story && this.options.restore) {
+                // Back from the matching stories view, the story list may not hold it anymore
+                this.story = this.options.restore.story;
+            }
         }
 
         this.feed = this.model.get_feed(this.feed_id);
@@ -1913,23 +1962,7 @@ var classifier_prototype = {
             self.select_scope($(this), $classifier);
         });
 
-        // Scope toggle tooltips
-        $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
-            var $this = $(this);
-            var text = $this.attr('data-tooltip');
-            if (!text) return;
-            var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
-            $('body').append($tip);
-            var rect = this.getBoundingClientRect();
-            $tip.css({
-                top: rect.top - $tip.outerHeight() - 6,
-                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-            });
-            $this.data('$tooltip', $tip);
-        }).on('mouseleave', function () {
-            var $tip = $(this).data('$tooltip');
-            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-        });
+        NEWSBLUR.ClassifierConstants.bind_tooltip($('.NB-scope-toggle', $classifier));
 
         return $classifier;
     },
@@ -2800,13 +2833,18 @@ var classifier_prototype = {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-super-dislike');
         });
 
+        var self = this;
         if ($filter_view_button) {
+            // Finds this pill again when "Back to trainer" reopens the trainer
+            $classifier.data('matching-view-key', classifier_type + ':' + classifier_value);
+
             $filter_view_button.on('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 var $row_classifier = $('.NB-classifier', $classifier);
                 var row_scope = $row_classifier.data('scope') || 'feed';
                 var row_folder = $row_classifier.data('folder-name') || '';
+                var trainer_snapshot = self.make_matching_view_snapshot($classifier);
                 if ($.modal && $.modal.close) {
                     $.modal.close();
                 }
@@ -2818,6 +2856,7 @@ var classifier_prototype = {
                     filter_options.classifier_scope = row_scope;
                     filter_options.classifier_folder_name = row_folder;
                     filter_options.origin = 'trainer';
+                    filter_options.trainer_snapshot = trainer_snapshot;
                     NEWSBLUR.reader.open_classifier_filter(
                         classifier_type,
                         classifier_value,
@@ -2826,50 +2865,18 @@ var classifier_prototype = {
                 });
             });
 
-            $filter_view_button.on('mouseenter', function () {
-                var $this = $(this);
-                var text = $this.attr('data-tooltip');
-                if (!text) return;
-                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
-                $('body').append($tip);
-                var rect = this.getBoundingClientRect();
-                $tip.css({
-                    top: rect.top - $tip.outerHeight() - 6,
-                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-                });
-                $this.data('$tooltip', $tip);
-            }).on('mouseleave', function () {
-                var $tip = $(this).data('$tooltip');
-                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-            });
+            NEWSBLUR.ClassifierConstants.bind_tooltip($filter_view_button);
         }
 
         // Click individual scope toggle icons to switch scope
         if (classifier_type !== 'feed') {
-            var self = this;
             $('.NB-scope-toggle', $classifier).on('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 self.select_scope($(this), $classifier);
             });
 
-            // Instant tooltip on hover (appended to body to avoid overflow clipping)
-            $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
-                var $this = $(this);
-                var text = $this.attr('data-tooltip');
-                if (!text) return;
-                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
-                $('body').append($tip);
-                var rect = this.getBoundingClientRect();
-                $tip.css({
-                    top: rect.top - $tip.outerHeight() - 6,
-                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-                });
-                $this.data('$tooltip', $tip);
-            }).on('mouseleave', function () {
-                var $tip = $(this).data('$tooltip');
-                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-            });
+            NEWSBLUR.ClassifierConstants.bind_tooltip($('.NB-scope-toggle', $classifier));
         }
 
         return $classifier;
@@ -4315,11 +4322,164 @@ var classifier_prototype = {
         });
     },
 
+    // ==================================================
+    // = Back to Trainer from the Matching Stories View =
+    // ==================================================
+
+    // reader_classifier.js: Where the reader is in this trainer, taken as "View matching
+    // stories" closes it. The classifier filter banner's "Back to trainer" hands it to
+    // NEWSBLUR.reader.reopen_trainer in reader.js, which opens a new trainer of the same
+    // kind with the snapshot as options.restore.
+    make_matching_view_snapshot: function ($anchor) {
+        var key = $anchor.data('matching-view-key');
+        var snapshot = {
+            kind: this.flags.story ? 'story' : (this.options.training ? 'trainer' : 'feed'),
+            options: _.omit(this.open_options, 'restore'),
+            feed_id: this.flags.story ? this.original_feed_id : this.feed_id,
+            story_id: this.story_id,
+            story: this.story,
+            tab: this.current_tab,
+            anchor: {
+                key: key,
+                index: this.matching_view_anchors(key).index($anchor),
+                top: $anchor[0].getBoundingClientRect().top
+            }
+        };
+
+        if (this.current_tab === 'sitebyside') {
+            snapshot.trainer_data = this.trainer_data;
+            snapshot.trainer_iterator = this.trainer_iterator;
+        } else if (this.current_tab === 'manage') {
+            snapshot.manage = {
+                sentiment: this.manage_filter_sentiment,
+                types: this.manage_filter_types,
+                scope: this.manage_filter_scope,
+                feed: this.manage_filter_feed,
+                search: this.manage_filter_search,
+                search_text: $('.NB-manage-search-input', this.$modal).val() || '',
+                dirty_feeds: $.extend(true, {}, this.manage_dirty_feeds),
+                add: this.manage_add ? $.extend(true, {}, this.manage_add) : null,
+                add_text: $('.NB-manage-add-input', this.$modal).val() || ''
+            };
+        }
+
+        return snapshot;
+    },
+
+    // Pills in the active tab with the same matching-view-key, in page order.
+    matching_view_anchors: function (key) {
+        return $('.NB-tab.NB-active', this.$modal)
+            .find('.NB-classifier-container, .NB-manage-classifier-item')
+            .filter(function () {
+                return $(this).data('matching-view-key') === key;
+            });
+    },
+
+    // Reopened by "Back to trainer": switch to the tab the reader left. A feed or story
+    // trainer still fetching its site waits for load_feed, which rebuilds the whole modal
+    // and would throw away a Manage Training list rendered before it.
+    restore_matching_view_tab: function () {
+        var restore = this.options.restore;
+        if (!restore || this.matching_view_tab_restored) return;
+        if (!this.options.training && !this.options.feed_loaded) return;
+
+        this.matching_view_tab_restored = true;
+        if (restore.tab === 'manage') {
+            this.switch_trainer_tab('manage', restore);
+        }
+    },
+
+    // Reopened on a Site by Site page: walk the same list from the same site. That site's
+    // classifiers are fetched again, since the reader may have trained it from the banner
+    // and Save & Next sends every pill on the page.
+    restore_matching_view_site: function () {
+        var self = this;
+        var restore = this.options.restore;
+
+        this.trainer_data = restore.trainer_data.slice();
+        this.model.get_feeds_trainer(restore.feed_id, function (data) {
+            if (data && data.length) {
+                self.trainer_data[restore.trainer_iterator] = data[0];
+            }
+            self.trainer_iterator = restore.trainer_iterator - 1;
+            self.load_next_feed_in_trainer();
+        });
+    },
+
+    // From each runner's open_modal callback, once the modal has faded in at its final
+    // size, so a pill's place on screen means what it did when the snapshot was taken.
+    matching_view_modal_ready: function () {
+        this.matching_view_ready = true;
+        this.restore_matching_view_scroll();
+    },
+
+    // Scroll the reopened tab so the pill whose "View matching stories" was clicked sits
+    // where it was on screen. Runs once, when both the modal and that pill are in place.
+    restore_matching_view_scroll: function () {
+        var restore = this.options.restore;
+        if (!restore || !this.matching_view_ready || this.matching_view_scrolled) return;
+        if (this.current_tab !== restore.tab) return;
+
+        var $anchors = this.matching_view_anchors(restore.anchor.key);
+        var $anchor = $anchors.eq(Math.min(restore.anchor.index, $anchors.length - 1));
+        if (!$anchor.length || !$anchor.is(':visible')) return;
+
+        this.matching_view_scrolled = true;
+        var scroller = this.scroll_parent($anchor[0]);
+        if (scroller) {
+            scroller.scrollTop += $anchor[0].getBoundingClientRect().top - restore.anchor.top;
+        }
+    },
+
+    scroll_parent: function (element) {
+        for (var node = element.parentElement; node; node = node.parentElement) {
+            var overflow_y = window.getComputedStyle(node).overflowY;
+            if ((overflow_y === 'auto' || overflow_y === 'scroll') && node.scrollHeight > node.clientHeight) {
+                return node;
+            }
+        }
+        return null;
+    },
+
+    apply_manage_snapshot: function (manage) {
+        this.manage_filter_sentiment = manage.sentiment;
+        this.manage_filter_types = manage.types;
+        this.manage_filter_scope = manage.scope;
+        this.manage_filter_feed = manage.feed;
+        this.manage_filter_search = manage.search;
+        this.manage_dirty_feeds = $.extend(true, {}, manage.dirty_feeds);
+        if (manage.add) {
+            this.manage_add = $.extend(true, {}, manage.add);
+        }
+    },
+
+    // The freshly rendered tab already shows the snapshot's filters. Put back what the
+    // reader had typed and their unsaved pill edits, then the scroll position.
+    restore_manage_snapshot_inputs: function (manage) {
+        var $chooser = $('.NB-manage-feed-chooser', this.$modal);
+        $chooser.val(this.manage_filter_feed || '');
+        if ($chooser.length && ($chooser.val() || null) !== this.manage_filter_feed) {
+            // That site or folder has no classifiers left to filter by
+            this.manage_filter_feed = null;
+            $chooser.val('');
+            this.apply_manage_filters();
+        }
+        $('.NB-manage-search-input', this.$modal).val(manage.search_text);
+        if (manage.add_text) {
+            // The add row's own input handler refreshes its placeholder, notice and button
+            $('.NB-manage-add-input', this.$modal).val(manage.add_text).trigger('input');
+        }
+        this.restore_manage_dirty_items();
+        this.restore_matching_view_scroll();
+    },
+
     // =====================
     // = Manage Training Tab =
     // =====================
 
-    switch_trainer_tab: function (tab) {
+    // restore: a make_matching_view_snapshot snapshot whose Manage Training filters, edits
+    // and add row replace the defaults once the classifiers load.
+    switch_trainer_tab: function (tab, restore) {
         var self = this;
         this.current_tab = tab;
 
@@ -4353,7 +4513,13 @@ var classifier_prototype = {
 
             this.model.get_all_classifiers(function (data) {
                 self.all_classifiers_data = data;
+                if (restore && restore.manage) {
+                    self.apply_manage_snapshot(restore.manage);
+                }
                 self.render_manage_tab_content();
+                if (restore && restore.manage) {
+                    self.restore_manage_snapshot_inputs(restore.manage);
+                }
             }, function (error) {
                 self.render_manage_tab_error(error);
             });
@@ -5799,32 +5965,21 @@ var classifier_prototype = {
         }
         $('.NB-classifier', $item).data('original-state', original_state);
 
+        var self = this;
         // Bind scope toggle clicks (same behavior as story tab)
         if (type !== 'feed') {
-            var self = this;
             $('.NB-scope-toggle', $item).on('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 self.select_scope($(this), $item);
             });
 
-            // Scope toggle tooltips
-            $('.NB-scope-toggle', $item).on('mouseenter', function () {
-                var $this = $(this);
-                var text = $this.attr('data-tooltip');
-                if (!text) return;
-                var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
-                $('body').append($tip);
-                var rect = this.getBoundingClientRect();
-                $tip.css({
-                    top: rect.top - $tip.outerHeight() - 6,
-                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-                });
-                $this.data('$tooltip', $tip);
-            }).on('mouseleave', function () {
-                var $tip = $(this).data('$tooltip');
-                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-            });
+            NEWSBLUR.ClassifierConstants.bind_tooltip($('.NB-scope-toggle', $item));
+        }
+
+        if ($filter_view_button) {
+            // Finds this pill again when "Back to trainer" reopens the trainer
+            $item.data('matching-view-key', this.manage_item_key($item));
         }
 
         // Closes the trainer modal so the banner view can replace it.
@@ -5834,6 +5989,7 @@ var classifier_prototype = {
             var $row_classifier = $('.NB-classifier', $item);
             var row_scope = $row_classifier.data('scope') || 'feed';
             var row_folder = $row_classifier.data('folder-name') || '';
+            var trainer_snapshot = self.make_matching_view_snapshot($item);
             if ($.modal && $.modal.close) {
                 $.modal.close();
             }
@@ -5844,26 +6000,12 @@ var classifier_prototype = {
                 filter_options.classifier_scope = row_scope;
                 filter_options.classifier_folder_name = row_folder;
                 filter_options.origin = 'trainer';
+                filter_options.trainer_snapshot = trainer_snapshot;
                 NEWSBLUR.reader.open_classifier_filter(type, value, filter_options);
             });
         });
 
-        $('.NB-classifier-filter-view-btn', $item).on('mouseenter', function () {
-            var $this = $(this);
-            var text = $this.attr('data-tooltip');
-            if (!text) return;
-            var $tip = NEWSBLUR.ClassifierConstants.make_tooltip(text);
-            $('body').append($tip);
-            var rect = this.getBoundingClientRect();
-            $tip.css({
-                top: rect.top - $tip.outerHeight() - 6,
-                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
-            });
-            $this.data('$tooltip', $tip);
-        }).on('mouseleave', function () {
-            var $tip = $(this).data('$tooltip');
-            if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
-        });
+        NEWSBLUR.ClassifierConstants.bind_tooltip($('.NB-classifier-filter-view-btn', $item));
 
         return $item;
     },

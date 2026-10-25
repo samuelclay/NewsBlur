@@ -8671,12 +8671,17 @@ body {
 /* media/css/reader/reader.css — compact filter toolbar shown above story
    titles by media/js/newsblur/views/classifier_filter_banner_view.js. */
 
+/* The tools row spans under the actions as well, so "Back to trainer" only
+   shares the heading's row and never narrows the train and notify box. */
 .NB-classifier-filter-banner {
     --classifier-accent: #75628E;
     --classifier-tint: #F4F1F7;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "icon content actions"
+        "icon tools tools";
+    align-items: start;
     padding: 12px;
     border-bottom: 1px solid rgba(57, 51, 65, 0.16);
     box-shadow: inset 3px 0 0 var(--classifier-accent);
@@ -8716,11 +8721,13 @@ body {
 }
 
 .NB-classifier-filter-banner-icon {
+    grid-area: icon;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 30px;
     height: 30px;
+    margin-right: 10px;
     flex-shrink: 0;
     color: var(--classifier-accent);
     background: rgba(255, 255, 255, 0.58);
@@ -8734,7 +8741,7 @@ body {
 }
 
 .NB-classifier-filter-banner-content {
-    flex: 1;
+    grid-area: content;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -8780,11 +8787,13 @@ body {
 }
 
 .NB-classifier-filter-banner-tools {
+    grid-area: tools;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 7px;
-    margin-top: 4px;
+    margin-top: 7px;
     opacity: 1;
 }
 .NB-classifier-filter-view-section,
@@ -8823,8 +8832,12 @@ body {
     letter-spacing: 0.055em;
     text-transform: uppercase;
 }
+/* Wraps only as a last resort, when a pane or a translation is too narrow for
+   the container queries below, so no button ever hangs outside its box. */
 .NB-classifier-filter-segmented {
     display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
     overflow: hidden;
     padding: 1px;
     border: 0;
@@ -9000,10 +9013,14 @@ body {
     outline: 0;
 }
 
+/* The negative margins center the 32px buttons on the heading's first line
+   without making the heading row any taller. */
 .NB-classifier-filter-banner-actions {
+    grid-area: actions;
     display: flex;
     align-items: center;
     gap: 4px;
+    margin: -7px 0 -7px 10px;
     flex-shrink: 0;
 }
 
@@ -9237,10 +9254,13 @@ body {
     .NB-classifier-filter-narrow-hint {
         display: block;
     }
+    /* No grid area, so the banner's padding box places it rather than the area */
     .NB-classifier-filter-banner-actions {
+        grid-area: auto;
         position: absolute;
         top: 6px;
         right: 4px;
+        margin: 0;
     }
     .NB-classifier-filter-banner-clear {
         width: 26px;
@@ -10631,7 +10651,7 @@ form.opml_import_form input {
 
 .NB-modal-classifiers .NB-classifier-container .NB-classifier-filter-view-btn {
     position: static;
-    margin: 0 0 0 2px;
+    margin: 0 4px 0 2px;
 }
 
 .NB-classifier-container .NB-classifier-count {
@@ -11857,14 +11877,18 @@ form.opml_import_form input {
     gap: 4px;
 }
 
+/* The pill's usual margins move to the item, so the matching-stories button
+   sits right beside its own pill and centered on it, with the row's spacing
+   after the button instead of between the pill and the button. */
 .NB-manage-classifier-item {
     display: inline-flex;
     align-items: center;
+    margin: 2px 6px 6px 0;
 }
 
-.NB-manage-classifier-item .NB-classifier {
+.NB-classifiers .NB-manage-classifier-item .NB-classifier {
     font-size: 12px;
-    margin-right: 0;
+    margin: 0;
 }
 
 /* Manage tab submit area */
