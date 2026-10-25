@@ -1,0 +1,46 @@
+{
+  "version": "16.0.1",
+  "build": "349",
+  "platform": "macOS",
+  "source_commit": "9acc4d493992dab22649beed2bfbc47fc5c9ab66",
+  "source_tag": "macOS_16.0.1",
+  "previous_live_version": "16.0",
+  "previous_live_build": "348",
+  "toolchain": "Xcode 27.0 (27A266a)",
+  "archive": "/tmp/NewsBlur-Mac-16.0.1-349.xcarchive",
+  "architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "upload": "Succeeded",
+  "processing": "Complete",
+  "build_id": "300f5ccd-16ce-4739-ac27-94187ef0f399",
+  "automatic_release": true,
+  "phased_release": false,
+  "submission_id": "444ea2ba-5077-44fe-af3d-4c614f03f7dd",
+  "submission_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/444ea2ba-5077-44fe-af3d-4c614f03f7dd",
+  "submitted_at": "2026-10-24T21:53:00-07:00",
+  "state": "WAITING_FOR_REVIEW",
+  "items": [
+    {
+      "platform": "macOS",
+      "version": "16.0.1",
+      "build": "349",
+      "state": "WAITING_FOR_REVIEW"
+    }
+  ],
+  "publicly_available": false,
+  "app_executable_sha256": "10a84348307e32933736dfd00dd0d351ddc2b361d0183c88f66ff64dadba3ac7",
+  "validation": {
+    "mac_focused_tests": 61,
+    "mac_focused_failures": 0,
+    "swift_package_tests": "Passed",
+    "store_validation": "21 languages, 294 fields",
+    "store_regression_tests": "12 tests, 85 assertions, no failures",
+    "localization_readback": "All 21 locales matched after reload; shared app names/subtitles, 63 subscription translations and 21 group translations matched canonical files",
+    "unsupported_locales": []
+  },
+  "shared_products": "Already approved translations retained; no product IDs, prices, offers, billing periods or entitlements changed",
+  "artwork": "Existing five Mac screenshots retained",
+  "screenshot": "/tmp/newsblur-mac-349-waiting-for-review.png"
+}

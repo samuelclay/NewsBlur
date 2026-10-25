@@ -1,0 +1,812 @@
+{
+  "before": [
+    {
+      "language": "en",
+      "values": {
+        "description": "Follow the sites you care about with NewsBlur, a personal RSS news reader that brings your reading together. Keep up with news, blogs, newsletters, and more, with your subscriptions and reading progress synced across iPhone, iPad, Mac, and the web.\n\nREAD YOUR WAY\nBrowse stories from individual sites or bring a folder together in one reading list. Read with your feeds, story titles, and articles side by side. Choose a comfortable theme, adjust the text, and use keyboard shortcuts to move through your stories. Download stories for offline reading and pick up where you left off.\n\nSTORIES AT A GLANCE\nAdd widgets to your desktop or Notification Center. Each widget can show All Site Stories, a folder, or one site. Choose its source with Edit Widget.\n\nFIND YOUR FOCUS\nTrain NewsBlur on authors, tags, and words in headlines to highlight stories you want and hide ones you don't. You decide what matters.\n\nDISCOVER AND KEEP\nFind new sites, preview their latest stories, and try reading before subscribing. Save stories for later, organize them with tags, and search your reading. Share stories with comments on your NewsBlur blurblog and follow what friends are reading.\n\nGO DEEPER\nUse Text view to read an extracted article. Ask AI for a summary, background, or answers to questions about a story. Availability and usage limits depend on your account plan.\n\nIN YOUR LANGUAGE\nUse NewsBlur's interface in 21 languages, including right-to-left layouts for Arabic and Hebrew. Choose your language from the NewsBlur menu or follow your Mac’s language settings. Stories stay in the language they were published in.\n\nA NewsBlur account is required. Free accounts and optional paid subscriptions are available. Some features require a paid plan.\n\nSUBSCRIPTIONS\nIf you purchase a subscription through the App Store, payment is charged to your Apple Account at confirmation. Subscriptions renew automatically unless canceled at least 24 hours before the current period ends. Your account is charged for renewal within 24 hours before the period ends. Manage or cancel your subscription in your Apple Account settings.\n\nTerms of use: https://www.newsblur.com/tos\nPrivacy policy: https://www.newsblur.com/privacy",
+        "keywords": "rss,news,reader,feeds,blogs,articles,offline,newsletter,read later,search,filter,reading",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "es",
+      "values": {
+        "description": "Sigue los sitios que te interesan con NewsBlur, un lector personal de noticias RSS que reúne tus lecturas. Mantente al día con noticias, blogs, boletines y más, con tus suscripciones y tu progreso de lectura sincronizados entre iPhone, iPad, Mac y la web.\n\nLEE A TU MANERA\nExplora artículos de sitios individuales o reúne los de una carpeta en una sola lista de lectura. Lee con tus feeds, los títulos de los artículos y los artículos completos uno al lado del otro. Elige un tema cómodo, ajusta el texto y usa atajos de teclado para moverte por los artículos. Descarga artículos para leer sin conexión y continúa donde lo dejaste.\n\nARTÍCULOS DE UN VISTAZO\nAñade widgets al escritorio o al Centro de notificaciones. Cada widget puede mostrar Artículos de todos los sitios, una carpeta o un sitio. Elige su contenido con Editar widget.\n\nCÉNTRATE EN LO QUE TE IMPORTA\nEntrena NewsBlur con autores, etiquetas y palabras de los títulos para destacar los artículos que te interesan y ocultar los demás. Tú decides qué importa.\n\nDESCUBRE Y GUARDA\nEncuentra nuevos sitios, consulta sus últimos artículos y prueba a leerlos antes de suscribirte. Guarda artículos para más tarde, organízalos con etiquetas y busca entre tus lecturas. Comparte artículos con comentarios en tu blurblog de NewsBlur y sigue lo que leen tus amigos.\n\nPROFUNDIZA\nUsa la Vista de texto para leer el contenido extraído de un artículo. Con Preguntar a la IA, obtén un resumen, contexto o respuestas a tus preguntas sobre un artículo. La disponibilidad y los límites de uso dependen del plan de tu cuenta.\n\nEN TU IDIOMA\nUsa la interfaz de NewsBlur en 21 idiomas, con diseños de derecha a izquierda para árabe y hebreo. Elige tu idioma desde el menú de NewsBlur o usa los ajustes de idioma de tu Mac. Los artículos permanecen en el idioma en el que se publicaron.\n\nSe necesita una cuenta de NewsBlur. Hay cuentas gratuitas y suscripciones de pago opcionales. Algunas funciones requieren un plan de pago.\n\nSUSCRIPCIONES\nSi compras una suscripción a través del App Store, el pago se carga a tu cuenta de Apple al confirmar la compra. Las suscripciones se renuevan automáticamente salvo que las canceles al menos 24 horas antes de que termine el período actual. El cobro de la renovación se realiza durante las 24 horas anteriores al final del período. Gestiona o cancela tu suscripción en los ajustes de tu cuenta de Apple.\n\nCondiciones de uso: https://www.newsblur.com/tos\nPolítica de privacidad: https://www.newsblur.com/privacy",
+        "keywords": "rss,noticias,lector,feeds,blogs,artículos,boletines,leer,buscar,filtros,sin conexión",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "fr",
+      "values": {
+        "description": "Suivez les sites qui vous intéressent avec NewsBlur, un lecteur RSS personnel qui rassemble vos lectures. Retrouvez actualités, blogs, newsletters et bien plus, avec vos abonnements et votre progression de lecture synchronisés sur iPhone, iPad, Mac et le web.\n\nLISEZ À VOTRE FAÇON\nParcourez les articles de chaque site ou regroupez ceux d’un dossier dans une seule liste de lecture. Lisez avec vos flux, les titres des articles et leur contenu côte à côte. Choisissez un thème agréable, ajustez le texte et utilisez les raccourcis clavier pour passer d’un article à l’autre. Téléchargez des articles pour les lire hors ligne et reprenez là où vous en étiez.\n\nLES ARTICLES EN UN COUP D’ŒIL\nAjoutez des widgets au bureau ou au Centre de notifications. Chaque widget peut afficher Articles de tous les sites, un dossier ou un site. Choisissez sa source avec Modifier le widget.\n\nCONCENTREZ-VOUS SUR L’ESSENTIEL\nEntraînez NewsBlur à partir des auteurs, des tags et des mots des titres pour mettre en avant les articles qui vous intéressent et masquer les autres. C’est vous qui décidez de ce qui compte.\n\nDÉCOUVREZ ET CONSERVEZ\nTrouvez de nouveaux sites, consultez leurs derniers articles et découvrez-les avant de vous abonner. Enregistrez des articles pour plus tard, organisez-les avec des tags et effectuez des recherches dans vos lectures. Partagez des articles avec vos commentaires sur votre blurblog NewsBlur et suivez les lectures de vos amis.\n\nALLEZ PLUS LOIN\nUtilisez la vue Texte pour lire le contenu extrait d’un article. Avec Demander à l’IA, obtenez un résumé, du contexte ou des réponses à vos questions sur un article. La disponibilité et les limites d’utilisation dépendent de l’offre associée à votre compte.\n\nDANS VOTRE LANGUE\nUtilisez l’interface de NewsBlur dans 21 langues, avec une disposition de droite à gauche pour l’arabe et l’hébreu. Choisissez votre langue dans le menu NewsBlur ou suivez les réglages de langue de votre Mac. Les articles restent dans leur langue de publication.\n\nUn compte NewsBlur est nécessaire. Des comptes gratuits et des abonnements payants facultatifs sont disponibles. Certaines fonctionnalités nécessitent une offre payante.\n\nABONNEMENTS\nSi vous souscrivez un abonnement via l’App Store, le paiement est débité de votre compte Apple lors de la confirmation. Les abonnements se renouvellent automatiquement, sauf annulation au moins 24 heures avant la fin de la période en cours. Le renouvellement est facturé dans les 24 heures précédant la fin de la période. Gérez ou résiliez votre abonnement dans les réglages de votre compte Apple.\n\nConditions d’utilisation : https://www.newsblur.com/tos\nPolitique de confidentialité : https://www.newsblur.com/privacy",
+        "keywords": "rss,actualités,lecteur,flux,blogs,articles,hors ligne,newsletter,lecture,recherche",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "de",
+      "values": {
+        "description": "Folge den Websites, die dir wichtig sind, mit NewsBlur, deinem persönlichen RSS-Reader, der deine Lektüre zusammenbringt. Bleib bei Nachrichten, Blogs, Newslettern und mehr auf dem Laufenden. Deine Abonnements und dein Lesefortschritt werden zwischen iPhone, iPad, Mac und dem Web synchronisiert.\n\nLIES AUF DEINE ART\nLies Artikel einzelner Websites oder fasse einen Ordner in einer Leseliste zusammen. Behalte beim Lesen deine Feeds, Artikeltitel und Artikel nebeneinander im Blick. Wähle ein angenehmes Design, passe den Text an und navigiere mit Tastenkürzeln durch deine Artikel. Lade Artikel zum Offline-Lesen herunter und lies dort weiter, wo du aufgehört hast.\n\nARTIKEL AUF EINEN BLICK\nFüge Widgets zum Schreibtisch oder zur Mitteilungszentrale hinzu. Jedes Widget kann „Alle Website-Artikel“, einen Ordner oder eine Website anzeigen. Wähle die Quelle über Widget bearbeiten.\n\nFINDE DEINEN FOKUS\nTrainiere NewsBlur mit Autoren, Tags und Wörtern in Überschriften, um interessante Artikel hervorzuheben und andere auszublenden. Du entscheidest, was zählt.\n\nENTDECKEN UND AUFBEWAHREN\nFinde neue Websites, sieh dir ihre neuesten Artikel an und lies sie zur Probe, bevor du sie abonnierst. Speichere Artikel für später, ordne sie mit Tags und durchsuche deine Lektüre. Teile Artikel mit Kommentaren auf deinem NewsBlur-Blurblog und verfolge, was deine Freunde lesen.\n\nMEHR ERFAHREN\nLies den extrahierten Artikel in der Textansicht. Mit KI fragen erhältst du eine Zusammenfassung, Hintergrundinformationen oder Antworten auf Fragen zu einem Artikel. Verfügbarkeit und Nutzungslimits hängen von deinem Kontotarif ab.\n\nIN DEINER SPRACHE\nNutze die NewsBlur-Oberfläche in 21 Sprachen, mit rechts-nach-links angeordneten Ansichten für Arabisch und Hebräisch. Wähle deine Sprache im NewsBlur-Menü oder übernimm die Spracheinstellungen deines Mac. Artikel bleiben in ihrer ursprünglichen Veröffentlichungssprache.\n\nEin NewsBlur-Konto ist erforderlich. Kostenlose Konten und optionale kostenpflichtige Abonnements sind verfügbar. Einige Funktionen erfordern einen kostenpflichtigen Tarif.\n\nABONNEMENTS\nWenn du ein Abonnement über den App Store abschließt, wird dein Apple Account bei der Bestätigung belastet. Abonnements verlängern sich automatisch, sofern du sie nicht mindestens 24 Stunden vor Ablauf des aktuellen Zeitraums kündigst. Die Verlängerung wird innerhalb der letzten 24 Stunden des laufenden Zeitraums berechnet. Verwalte oder kündige dein Abonnement in den Einstellungen deines Apple Accounts.\n\nNutzungsbedingungen: https://www.newsblur.com/tos\nDatenschutzrichtlinie: https://www.newsblur.com/privacy",
+        "keywords": "rss,nachrichten,reader,feeds,blogs,artikel,offline,newsletter,lesen,suche,filter",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "pt-BR",
+      "values": {
+        "description": "Acompanhe os sites que importam para você com o NewsBlur, um leitor pessoal de notícias RSS que reúne suas leituras. Fique por dentro de notícias, blogs, newsletters e muito mais, com suas assinaturas e seu progresso de leitura sincronizados entre iPhone, iPad, Mac e a web.\n\nLEIA DO SEU JEITO\nLeia artigos de sites individuais ou reúna os de uma pasta em uma única lista de leitura. Leia com seus feeds, os títulos dos artigos e os artigos lado a lado. Escolha um tema confortável, ajuste o texto e use atalhos de teclado para navegar pelos artigos. Baixe artigos para ler offline e continue de onde parou.\n\nARTIGOS À PRIMEIRA VISTA\nAdicione widgets à mesa ou à Central de Notificações. Cada widget pode mostrar Artigos de todos os sites, uma pasta ou um site. Escolha a origem com Editar Widget.\n\nENCONTRE SEU FOCO\nTreine o NewsBlur com autores, tags e palavras dos títulos para destacar os artigos que você quer e ocultar os demais. Você decide o que importa.\n\nDESCUBRA E SALVE\nEncontre novos sites, veja seus artigos mais recentes e experimente ler antes de assinar. Salve artigos para depois, organize-os com tags e pesquise nas suas leituras. Compartilhe artigos com comentários no seu blurblog do NewsBlur e acompanhe o que seus amigos estão lendo.\n\nVÁ ALÉM\nUse a Visualização de texto para ler o conteúdo extraído de um artigo. Com Perguntar à IA, obtenha um resumo, contexto ou respostas a perguntas sobre um artigo. A disponibilidade e os limites de uso dependem do plano da sua conta.\n\nNO SEU IDIOMA\nUse a interface do NewsBlur em 21 idiomas, com layouts da direita para a esquerda em árabe e hebraico. Escolha seu idioma no menu do NewsBlur ou siga as configurações de idioma do seu Mac. Os artigos permanecem no idioma em que foram publicados.\n\nÉ necessário ter uma conta do NewsBlur. Há contas gratuitas e assinaturas pagas opcionais. Alguns recursos exigem um plano pago.\n\nASSINATURAS\nSe você comprar uma assinatura pela App Store, o pagamento será cobrado da sua Conta Apple na confirmação. As assinaturas são renovadas automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período atual. A renovação é cobrada nas 24 horas anteriores ao fim do período. Gerencie ou cancele sua assinatura nos ajustes da sua Conta Apple.\n\nTermos de uso: https://www.newsblur.com/tos\nPolítica de privacidade: https://www.newsblur.com/privacy",
+        "keywords": "rss,notícias,leitor,feeds,blogs,artigos,offline,newsletter,leitura,busca,filtros",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "it",
+      "values": {
+        "description": "Segui i siti che ti interessano con NewsBlur, un lettore personale di notizie RSS che riunisce le tue letture. Tieniti al passo con notizie, blog, newsletter e molto altro, con iscrizioni e progressi di lettura sincronizzati tra iPhone, iPad, Mac e il web.\n\nLEGGI A MODO TUO\nSfoglia gli articoli dei singoli siti o riunisci quelli di una cartella in un unico elenco di lettura. Leggi con i feed, i titoli degli articoli e gli articoli affiancati. Scegli un tema confortevole, regola il testo e usa le scorciatoie da tastiera per passare da un articolo all’altro. Scarica gli articoli per leggerli offline e riprendi dal punto in cui avevi interrotto.\n\nARTICOLI A COLPO D’OCCHIO\nAggiungi widget alla Scrivania o al Centro Notifiche. Ogni widget può mostrare Articoli di tutti i siti, una cartella o un sito. Scegli la fonte con Modifica widget.\n\nCONCENTRATI SU CIÒ CHE CONTA\nAddestra NewsBlur in base ad autori, tag e parole nei titoli per mettere in evidenza gli articoli che ti interessano e nascondere gli altri. Decidi tu cosa conta.\n\nSCOPRI E CONSERVA\nTrova nuovi siti, guarda i loro ultimi articoli e prova a leggerli prima di iscriverti. Salva gli articoli per dopo, organizzali con i tag e cerca tra le tue letture. Condividi articoli con commenti sul tuo blurblog di NewsBlur e segui ciò che leggono i tuoi amici.\n\nAPPROFONDISCI\nUsa la Vista testo per leggere il contenuto estratto di un articolo. Con Chiedi all’IA puoi ottenere un riepilogo, informazioni di contesto o risposte alle tue domande su un articolo. La disponibilità e i limiti di utilizzo dipendono dal piano del tuo account.\n\nNELLA TUA LINGUA\nUsa l’interfaccia di NewsBlur in 21 lingue, con layout da destra a sinistra per arabo ed ebraico. Scegli la lingua dal menu NewsBlur o segui le impostazioni della lingua del Mac. Gli articoli restano nella lingua in cui sono stati pubblicati.\n\nÈ necessario un account NewsBlur. Sono disponibili account gratuiti e abbonamenti a pagamento facoltativi. Alcune funzioni richiedono un piano a pagamento.\n\nABBONAMENTI\nSe acquisti un abbonamento tramite l’App Store, il pagamento viene addebitato sul tuo Apple Account alla conferma. Gli abbonamenti si rinnovano automaticamente, salvo annullamento almeno 24 ore prima della fine del periodo in corso. Il rinnovo viene addebitato nelle 24 ore precedenti la fine del periodo. Gestisci o annulla l’abbonamento nelle impostazioni del tuo Apple Account.\n\nTermini di utilizzo: https://www.newsblur.com/tos\nInformativa sulla privacy: https://www.newsblur.com/privacy",
+        "keywords": "rss,notizie,lettore,feed,blog,articoli,offline,newsletter,lettura,ricerca,filtri",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "nl",
+      "values": {
+        "description": "Volg de sites die je belangrijk vindt met NewsBlur, een persoonlijke RSS-nieuwslezer die je leesvoer samenbrengt. Blijf bij met nieuws, blogs, nieuwsbrieven en meer. Je abonnementen en leesvoortgang worden gesynchroniseerd tussen iPhone, iPad, Mac en het web.\n\nLEES OP JOUW MANIER\nBlader door artikelen van afzonderlijke sites of voeg een map samen tot één leeslijst. Lees met je feeds, artikeltitels en artikelen naast elkaar. Kies een prettig thema, pas de tekst aan en gebruik sneltoetsen om door je artikelen te gaan. Download artikelen om offline te lezen en ga verder waar je was gebleven.\n\nARTIKELEN IN ÉÉN OOGOPSLAG\nVoeg widgets toe aan je bureaublad of het Berichtencentrum. Elke widget kan Artikelen van alle sites, een map of één site tonen. Kies de bron via Wijzig widget.\n\nVIND JE FOCUS\nTrain NewsBlur op auteurs, tags en woorden in koppen om interessante artikelen uit te lichten en andere te verbergen. Jij bepaalt wat telt.\n\nONTDEK EN SLA OP\nVind nieuwe sites, bekijk hun nieuwste artikelen en probeer ze uit voordat je je abonneert. Sla artikelen op voor later, orden ze met tags en doorzoek je leesvoer. Deel artikelen met opmerkingen op je NewsBlur-blurblog en volg wat je vrienden lezen.\n\nGA DIEPER\nGebruik de Tekstweergave om de tekst die uit een artikel is gehaald te lezen. Met Vraag AI krijg je een samenvatting, achtergrondinformatie of antwoorden op vragen over een artikel. De beschikbaarheid en gebruikslimieten hangen af van je accountabonnement.\n\nIN JOUW TAAL\nGebruik de interface van NewsBlur in 21 talen, met een indeling van rechts naar links voor Arabisch en Hebreeuws. Kies je taal via het NewsBlur-menu of volg de taalinstellingen van je Mac. Artikelen blijven in de taal waarin ze zijn gepubliceerd.\n\nEen NewsBlur-account is vereist. Er zijn gratis accounts en optionele betaalde abonnementen. Voor sommige functies is een betaald abonnement nodig.\n\nABONNEMENTEN\nAls je via de App Store een abonnement afsluit, wordt je Apple Account bij bevestiging belast. Abonnementen worden automatisch verlengd, tenzij je minstens 24 uur voor het einde van de huidige periode opzegt. De verlenging wordt binnen 24 uur voor het einde van de periode in rekening gebracht. Beheer je abonnement of zeg het op in de instellingen van je Apple Account.\n\nGebruiksvoorwaarden: https://www.newsblur.com/tos\nPrivacybeleid: https://www.newsblur.com/privacy",
+        "keywords": "rss,nieuws,lezer,feeds,blogs,artikelen,offline,nieuwsbrief,lezen,zoeken,filter",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "pl",
+      "values": {
+        "description": "Obserwuj ważne dla Ciebie witryny w NewsBlur, osobistym czytniku wiadomości RSS, który zbiera Twoje lektury. Bądź na bieżąco z wiadomościami, blogami, newsletterami i nie tylko. Twoje subskrypcje i postęp czytania synchronizują się między iPhonem, iPadem, Makiem i przeglądarką.\n\nCZYTAJ PO SWOJEMU\nPrzeglądaj artykuły z poszczególnych witryn lub zbierz zawartość folderu na jednej liście do czytania. Podczas czytania wyświetlaj kanały, tytuły artykułów i ich treść obok siebie. Wybierz wygodny motyw, dostosuj tekst i poruszaj się po artykułach za pomocą skrótów klawiszowych. Pobierz artykuły do czytania offline i wróć do miejsca, w którym skończyło się czytanie.\n\nARTYKUŁY NA PIERWSZY RZUT OKA\nDodaj widżety do biurka lub Centrum powiadomień. Każdy widżet może wyświetlać Wszystkie artykuły z witryn, folder albo jedną witrynę. Wybierz źródło za pomocą opcji Edytuj widżet.\n\nWYBIERZ TO, CO WAŻNE\nTrenuj NewsBlur na podstawie autorów, tagów i słów w tytułach, aby wyróżniać interesujące Cię artykuły i ukrywać pozostałe. Ty decydujesz, co się liczy.\n\nODKRYWAJ I ZAPISUJ\nZnajduj nowe witryny, przeglądaj ich najnowsze artykuły i wypróbuj czytanie przed subskrypcją. Zapisuj artykuły na później, porządkuj je za pomocą tagów i przeszukuj swoje lektury. Udostępniaj artykuły z komentarzami na swoim blurblogu NewsBlur i obserwuj, co czytają znajomi.\n\nDOWIEDZ SIĘ WIĘCEJ\nUżyj Widoku tekstowego, aby przeczytać wyodrębnioną treść artykułu. Funkcja Zapytaj AI pozwala uzyskać podsumowanie, kontekst lub odpowiedzi na pytania o artykuł. Dostępność i limity użycia zależą od planu Twojego konta.\n\nW TWOIM JĘZYKU\nKorzystaj z interfejsu NewsBlur w 21 językach, z układem od prawej do lewej dla arabskiego i hebrajskiego. Wybierz język w menu NewsBlur lub użyj ustawień języka Maca. Artykuły pozostają w języku, w którym je opublikowano.\n\nWymagane jest konto NewsBlur. Dostępne są konta bezpłatne i opcjonalne płatne subskrypcje. Niektóre funkcje wymagają płatnego planu.\n\nSUBSKRYPCJE\nJeśli kupisz subskrypcję w App Store, opłata zostanie pobrana z Twojego konta Apple po potwierdzeniu. Subskrypcje odnawiają się automatycznie, chyba że zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Opłata za odnowienie jest pobierana w ciągu 24 godzin przed końcem okresu. Zarządzaj subskrypcją lub anuluj ją w ustawieniach konta Apple.\n\nWarunki korzystania: https://www.newsblur.com/tos\nPolityka prywatności: https://www.newsblur.com/privacy",
+        "keywords": "rss,wiadomości,czytnik,kanały,blogi,artykuły,offline,newsletter,czytanie,szukaj",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "tr",
+      "values": {
+        "description": "İlginizi çeken siteleri, okumak istediklerinizi bir araya getiren kişisel RSS haber okuyucusu NewsBlur ile takip edin. Haberleri, blogları, e-posta bültenlerini ve daha fazlasını okuyun. Abonelikleriniz ve okuma ilerlemeniz iPhone, iPad, Mac ve web arasında eşitlenir.\n\nKENDİ TARZINIZDA OKUYUN\nTek tek sitelerin haberlerine göz atın veya bir klasördeki haberleri tek okuma listesinde birleştirin. Akışlarınızı, haber başlıklarını ve makaleleri yan yana görüntüleyerek okuyun. Rahat bir tema seçin, metni ayarlayın ve klavye kısayollarıyla haberler arasında gezinin. Çevrimdışı okumak için haberleri indirin ve kaldığınız yerden devam edin.\n\nBİR BAKIŞTA HABERLER\nMasaüstünüze veya Bildirim Merkezi’ne araç takımları ekleyin. Her araç takımı Tüm Sitelerin Haberleri’ni, bir klasörü veya tek bir siteyi gösterebilir. Kaynağını Araç Takımını Düzenle ile seçin.\n\nODAĞINIZI BULUN\nİstediğiniz haberleri öne çıkarmak, istemediklerinizi gizlemek için NewsBlur’u yazarlara, etiketlere ve başlıklardaki kelimelere göre eğitin. Nelerin önemli olduğuna siz karar verin.\n\nKEŞFEDİN VE SAKLAYIN\nYeni siteler bulun, son haberlerini önizleyin ve abone olmadan önce okumayı deneyin. Haberleri daha sonra okumak için kaydedin, etiketlerle düzenleyin ve okuduklarınız arasında arama yapın. Haberleri yorumlarınızla NewsBlur’daki Blurblog’unuzda paylaşın ve arkadaşlarınızın neler okuduğunu takip edin.\n\nDAHA FAZLASINI ÖĞRENİN\nBir makalenin çıkarılmış metnini Metin görünümünde okuyun. Yapay Zekâya Sor ile bir haberin özetini, arka planını veya haberle ilgili sorularınızın yanıtlarını alın. Kullanılabilirlik ve kullanım sınırları hesap planınıza bağlıdır.\n\nKENDİ DİLİNİZDE\nNewsBlur arayüzünü, Arapça ve İbranice için sağdan sola düzenler dahil 21 dilde kullanın. Dilinizi NewsBlur menüsünden seçin veya Mac’inizin dil ayarlarını izleyin. Haberler yayımlandıkları dilde kalır.\n\nNewsBlur hesabı gereklidir. Ücretsiz hesaplar ve isteğe bağlı ücretli abonelikler sunulur. Bazı özellikler ücretli plan gerektirir.\n\nABONELİKLER\nApp Store üzerinden abonelik satın alırsanız ödeme, onay sırasında Apple Hesabınızdan alınır. Geçerli dönem bitmeden en az 24 saat önce iptal edilmezse abonelik otomatik olarak yenilenir. Yenileme ücreti, dönem bitmeden önceki 24 saat içinde hesabınızdan alınır. Aboneliğinizi Apple Hesabı ayarlarında yönetebilir veya iptal edebilirsiniz.\n\nKullanım koşulları: https://www.newsblur.com/tos\nGizlilik politikası: https://www.newsblur.com/privacy",
+        "keywords": "rss,haber,okuyucu,akış,blog,makale,çevrimdışı,bülten,arama,filtre,okuma",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "ru",
+      "values": {
+        "description": "Следите за интересными вам сайтами с NewsBlur — персональным RSS-ридером, который собирает всё для чтения в одном месте. Читайте новости, блоги, рассылки и многое другое. Подписки и прогресс чтения синхронизируются между iPhone, iPad, Mac и веб-версией.\n\nЧИТАЙТЕ ПО-СВОЕМУ\nПросматривайте статьи отдельных сайтов или объединяйте содержимое папки в один список для чтения. Читайте, расположив ленты, заголовки статей и сами статьи рядом друг с другом. Выберите удобную тему, настройте текст и переходите между статьями с помощью сочетаний клавиш. Загружайте статьи для чтения без интернета и продолжайте с того места, где остановились.\n\nБЫСТРЫЙ ОБЗОР СТАТЕЙ\nДобавляйте виджеты на рабочий стол или в Центр уведомлений. Каждый виджет может показывать «Статьи со всех сайтов», статьи из папки или с одного сайта. Выберите источник через «Изменить виджет».\n\nСОСРЕДОТОЧЬТЕСЬ НА ВАЖНОМ\nОбучайте NewsBlur по авторам, тегам и словам в заголовках, чтобы выделять интересные статьи и скрывать ненужные. Вы сами решаете, что важно.\n\nНАХОДИТЕ И СОХРАНЯЙТЕ\nОткрывайте новые сайты, просматривайте их свежие статьи и пробуйте читать до подписки. Сохраняйте статьи на потом, упорядочивайте их с помощью тегов и находите нужное поиском. Делитесь статьями с комментариями в своём Blurblog на NewsBlur и следите за тем, что читают друзья.\n\nУЗНАВАЙТЕ БОЛЬШЕ\nЧитайте извлечённый текст статьи в текстовом режиме. Функция «Спросить ИИ» поможет получить краткое содержание, контекст или ответы на вопросы о статье. Доступность и ограничения использования зависят от тарифа вашего аккаунта.\n\nНА ВАШЕМ ЯЗЫКЕ\nИнтерфейс NewsBlur доступен на 21 языке, включая отображение справа налево для арабского и иврита. Выберите язык в меню NewsBlur или используйте языковые настройки Mac. Статьи остаются на языке публикации.\n\nТребуется аккаунт NewsBlur. Доступны бесплатные аккаунты и необязательные платные подписки. Для некоторых функций нужен платный тариф.\n\nПОДПИСКИ\nПри покупке подписки через App Store оплата списывается с вашего Аккаунта Apple после подтверждения. Подписка продлевается автоматически, если не отменить её как минимум за 24 часа до окончания текущего периода. Плата за продление списывается в течение 24 часов до окончания периода. Управлять подпиской или отменить её можно в настройках Аккаунта Apple.\n\nУсловия использования: https://www.newsblur.com/tos\nПолитика конфиденциальности: https://www.newsblur.com/privacy",
+        "keywords": "rss,новости,чтение,ленты,блоги,статьи,поиск,офлайн",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "uk",
+      "values": {
+        "description": "Стежте за цікавими вам сайтами з NewsBlur — персональним RSS-читачем, який збирає все для читання в одному місці. Читайте новини, блоги, розсилки та багато іншого. Підписки й поступ читання синхронізуються між iPhone, iPad, Mac і вебверсією.\n\nЧИТАЙТЕ ПО-СВОЄМУ\nПереглядайте статті окремих сайтів або об’єднуйте вміст папки в один список для читання. Читайте зі стрічками, заголовками статей і самими статтями, розташованими поруч. Виберіть зручну тему, налаштуйте текст і переходьте між статтями за допомогою сполучень клавіш. Завантажуйте статті для читання без інтернету й продовжуйте з того місця, де зупинилися.\n\nШВИДКИЙ ОГЛЯД СТАТЕЙ\nДодавайте віджети на робочий стіл або в Центр сповіщень. Кожен віджет може показувати «Статті з усіх сайтів», статті з папки або з одного сайту. Виберіть джерело через «Змінити віджет».\n\nЗОСЕРЕДЬТЕСЯ НА ВАЖЛИВОМУ\nНавчайте NewsBlur за авторами, тегами й словами в заголовках, щоб виділяти цікаві статті та приховувати непотрібні. Ви самі вирішуєте, що важливо.\n\nЗНАХОДЬТЕ Й ЗБЕРІГАЙТЕ\nВідкривайте нові сайти, переглядайте їхні свіжі статті й спробуйте читати перед підпискою. Зберігайте статті на потім, упорядковуйте їх за тегами й знаходьте потрібне пошуком. Діліться статтями з коментарями у своєму Blurblog на NewsBlur і стежте за тим, що читають друзі.\n\nДІЗНАВАЙТЕСЯ БІЛЬШЕ\nЧитайте видобутий текст статті в текстовому режимі. Функція «Запитати ШІ» допоможе отримати стислий виклад, контекст або відповіді на запитання про статтю. Доступність і обмеження використання залежать від тарифу вашого облікового запису.\n\nВАШОЮ МОВОЮ\nІнтерфейс NewsBlur доступний 21 мовою, зокрема з відображенням справа наліво для арабської та івриту. Виберіть мову в меню NewsBlur або використовуйте мовні налаштування Mac. Статті залишаються мовою публікації.\n\nПотрібен обліковий запис NewsBlur. Доступні безплатні облікові записи й необов’язкові платні підписки. Для деяких функцій потрібен платний тариф.\n\nПІДПИСКИ\nЯкщо ви купуєте підписку через App Store, оплату буде списано з вашого облікового запису Apple після підтвердження. Підписка поновлюється автоматично, якщо не скасувати її щонайменше за 24 години до завершення поточного періоду. Плату за поновлення буде списано протягом 24 годин до завершення періоду. Керуйте підпискою або скасуйте її в налаштуваннях облікового запису Apple.\n\nУмови використання: https://www.newsblur.com/tos\nПолітика конфіденційності: https://www.newsblur.com/privacy",
+        "keywords": "rss,новини,читання,стрічки,блоги,статті,пошук,офлайн",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "ar",
+      "values": {
+        "description": "تابع المواقع التي تهمك مع NewsBlur، قارئ أخبار RSS الشخصي الذي يجمع قراءاتك في مكان واحد. واكب الأخبار والمدونات والنشرات البريدية وغيرها، مع مزامنة اشتراكاتك وتقدم القراءة بين iPhone وiPad وMac والويب.\n\nاقرأ بطريقتك\nتصفح قصص كل موقع على حدة أو اجمع محتويات مجلد في قائمة قراءة واحدة. اقرأ مع عرض خلاصاتك وعناوين القصص والمقالات جنبًا إلى جنب. اختر مظهرًا مريحًا، واضبط النص، واستخدم اختصارات لوحة المفاتيح للتنقل بين القصص. نزّل القصص لقراءتها دون اتصال، وأكمل من حيث توقفت.\n\nالقصص في لمحة\nأضف أدوات إلى سطح المكتب أو مركز الإشعارات. يمكن لكل أداة عرض قصص كل المواقع أو مجلد أو موقع واحد. اختر مصدرها من «تحرير الأداة».\n\nركّز على ما يهمك\nدرّب NewsBlur على الكتّاب والوسوم والكلمات في العناوين لإبراز القصص التي تريدها وإخفاء ما لا تريده. أنت من يقرر ما يستحق الاهتمام.\n\nاكتشف واحتفظ\nاعثر على مواقع جديدة، وعاين أحدث قصصها، وجرّب القراءة قبل الاشتراك. احفظ القصص لوقت لاحق، ونظّمها بالوسوم، وابحث في قراءاتك. شارك القصص مع تعليقاتك في مدونتك على Blurblog في NewsBlur، وتابع ما يقرؤه أصدقاؤك.\n\nتعمّق أكثر\nاستخدم عرض النص لقراءة النص المستخرج من المقال. اطلب ملخصًا أو معلومات عن السياق أو إجابات عن أسئلتك حول القصة من خلال «اسأل الذكاء الاصطناعي». يعتمد توفر الميزة وحدود استخدامها على خطة حسابك.\n\nبلغتك\nاستخدم واجهة NewsBlur بإحدى اللغات الـ21، مع تخطيط من اليمين إلى اليسار للعربية والعبرية. اختر لغتك من قائمة NewsBlur أو اتبع إعدادات اللغة في جهاز Mac. تبقى القصص باللغة التي نُشرت بها.\n\nيلزم حساب NewsBlur. تتوفر حسابات مجانية واشتراكات مدفوعة اختيارية. تتطلب بعض الميزات خطة مدفوعة.\n\nالاشتراكات\nعند شراء اشتراك عبر App Store، تُخصم الدفعة من حساب Apple عند التأكيد. تتجدد الاشتراكات تلقائيًا ما لم تُلغَ قبل نهاية الفترة الحالية بـ24 ساعة على الأقل. تُخصم رسوم التجديد من حسابك خلال الساعات الـ24 التي تسبق نهاية الفترة. يمكنك إدارة اشتراكك أو إلغاؤه من إعدادات حساب Apple.\n\nشروط الاستخدام: https://www.newsblur.com/tos\nسياسة الخصوصية: https://www.newsblur.com/privacy",
+        "keywords": "rss,أخبار,قراءة,خلاصات,مدونات,مقالات,بحث,نشرات",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "he",
+      "values": {
+        "description": "עקבו אחר האתרים שמעניינים אתכם עם NewsBlur, קורא חדשות RSS אישי שמרכז את כל הקריאה במקום אחד. התעדכנו בחדשות, בבלוגים, בניוזלטרים ועוד, עם סנכרון המינויים וההתקדמות בקריאה בין iPhone, iPad, Mac והאינטרנט.\n\nקוראים בדרך שלך\nעיינו בכתבות מאתרים בודדים או רכזו את תוכן התיקייה ברשימת קריאה אחת. קראו כשהפידים, כותרות הכתבות ותוכן הכתבות מוצגים זה לצד זה. בחרו ערכת נושא נוחה, התאימו את הטקסט והשתמשו בקיצורי מקלדת למעבר בין כתבות. הורידו כתבות לקריאה ללא חיבור והמשיכו מהמקום שבו עצרתם.\n\nכתבות במבט חטוף\nהוסיפו וידג׳טים לשולחן העבודה או למרכז העדכונים. כל וידג׳ט יכול להציג את ״כל כתבות האתרים״, כתבות מתיקייה או מאתר אחד. בחרו את המקור דרך ״עריכת הווידג׳ט״.\n\nמתמקדים במה שחשוב\nאמנו את NewsBlur לפי כותבים, תגיות ומילים בכותרות כדי להבליט כתבות רצויות ולהסתיר כתבות שאינן רצויות. הבחירה במה שחשוב נשארת שלך.\n\nמגלים ושומרים\nגלו אתרים חדשים, צפו בתצוגה מקדימה של הכתבות האחרונות ונסו לקרוא לפני ההרשמה. שמרו כתבות להמשך, ארגנו אותן בעזרת תגיות וחפשו בחומרי הקריאה שלכם. שתפו כתבות עם תגובות ב־Blurblog שלכם ב־NewsBlur ועקבו אחר מה שחברים קוראים.\n\nמעמיקים בקריאה\nהשתמשו בתצוגת טקסט לקריאת הטקסט שחולץ מהכתבה. עם ״שאלו את ה-AI״ אפשר לקבל סיכום, רקע או תשובות לשאלות על כתבה. הזמינות ומגבלות השימוש תלויות במסלול החשבון שלכם.\n\nבשפה שלך\nממשק NewsBlur זמין ב־21 שפות, כולל פריסה מימין לשמאל לערבית ולעברית. בחרו שפה בתפריט NewsBlur או השתמשו בהגדרות השפה של ה־Mac. הכתבות נשארות בשפה שבה פורסמו.\n\nנדרש חשבון NewsBlur. יש חשבונות בחינם ומינויים בתשלום לבחירתך. חלק מהתכונות דורשות מסלול בתשלום.\n\nמינויים\nברכישת מינוי דרך App Store, התשלום מחויב בחשבון Apple שלך בעת האישור. המינוי מתחדש אוטומטית אלא אם בוטל לפחות 24 שעות לפני תום התקופה הנוכחית. החשבון יחויב עבור החידוש במהלך 24 השעות שלפני תום התקופה. אפשר לנהל או לבטל את המינוי בהגדרות חשבון Apple שלך.\n\nתנאי שימוש: https://www.newsblur.com/tos\nמדיניות פרטיות: https://www.newsblur.com/privacy",
+        "keywords": "rss,חדשות,קריאה,פידים,בלוגים,כתבות,חיפוש,ניוזלטר",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "hi",
+      "values": {
+        "description": "NewsBlur के साथ अपनी पसंद की साइटों से जुड़े रहें। यह निजी RSS समाचार रीडर आपकी सारी पढ़ने की सामग्री एक जगह लाता है। समाचार, ब्लॉग, न्यूज़लेटर और बहुत कुछ पढ़ें। आपकी सदस्यताएँ और पढ़ने की प्रगति iPhone, iPad, Mac और वेब के बीच सिंक रहती हैं।\n\nअपने तरीके से पढ़ें\nअलग-अलग साइटों के लेख देखें या किसी फ़ोल्डर के लेखों को एक ही पठन सूची में लाएँ। अपनी फ़ीड, लेखों के शीर्षक और लेखों को साथ-साथ देखते हुए पढ़ें। आरामदायक थीम चुनें, टेक्स्ट को अपने अनुसार ढालें और कीबोर्ड शॉर्टकट से लेखों के बीच जाएँ। ऑफ़लाइन पढ़ने के लिए लेख डाउनलोड करें और जहाँ छोड़ा था, वहीं से आगे पढ़ें।\n\nएक नज़र में लेख\nअपने डेस्कटॉप या सूचना केंद्र में विजेट जोड़ें। हर विजेट ‘सभी साइटों के लेख’, किसी फ़ोल्डर के लेख या एक साइट के लेख दिखा सकता है। ‘विजेट संपादित करें’ से उसका स्रोत चुनें।\n\nज़रूरी चीज़ों पर ध्यान दें\nलेखकों, टैग और शीर्षकों के शब्दों के आधार पर NewsBlur को प्रशिक्षित करें, ताकि आपकी पसंद के लेख उभरकर दिखें और अनचाहे लेख छिप जाएँ। क्या ज़रूरी है, यह आप तय करते हैं।\n\nखोजें और सहेजें\nनई साइटें खोजें, उनके ताज़ा लेखों की झलक देखें और सदस्यता लेने से पहले पढ़कर आज़माएँ। लेख बाद में पढ़ने के लिए सहेजें, टैग से व्यवस्थित करें और अपनी पढ़ने की सामग्री में खोजें। अपने NewsBlur के Blurblog पर टिप्पणियों के साथ लेख साझा करें और देखें कि आपके मित्र क्या पढ़ रहे हैं।\n\nऔर गहराई से जानें\nलेख से निकाला गया टेक्स्ट पढ़ने के लिए टेक्स्ट दृश्य इस्तेमाल करें। ‘AI से पूछें’ सुविधा से लेख का सारांश, पृष्ठभूमि या उसके बारे में अपने सवालों के जवाब पाएँ। उपलब्धता और उपयोग की सीमाएँ आपके खाते की योजना पर निर्भर करती हैं।\n\nआपकी भाषा में\nNewsBlur का इंटरफ़ेस 21 भाषाओं में इस्तेमाल करें। अरबी और हिब्रू के लिए दाएँ से बाएँ लेआउट भी उपलब्ध है। NewsBlur मेनू से अपनी भाषा चुनें या अपने Mac की भाषा सेटिंग्स अपनाएँ। लेख उसी भाषा में रहते हैं जिसमें वे प्रकाशित हुए थे।\n\nNewsBlur खाता ज़रूरी है। मुफ़्त खाते और वैकल्पिक सशुल्क सदस्यताएँ उपलब्ध हैं। कुछ सुविधाओं के लिए सशुल्क योजना चाहिए।\n\nसदस्यताएँ\nApp Store से सदस्यता खरीदने पर पुष्टि के समय आपके Apple खाते से भुगतान लिया जाता है। वर्तमान अवधि समाप्त होने से कम से कम 24 घंटे पहले रद्द न करने पर सदस्यता अपने आप नवीनीकृत हो जाती है। अवधि समाप्त होने से पहले के 24 घंटों के भीतर आपके खाते से नवीनीकरण का शुल्क लिया जाता है। अपने Apple खाते की सेटिंग्स में सदस्यता प्रबंधित या रद्द करें।\n\nउपयोग की शर्तें: https://www.newsblur.com/tos\nगोपनीयता नीति: https://www.newsblur.com/privacy",
+        "keywords": "rss,समाचार,लेख,फ़ीड,ब्लॉग,खोज,पढ़ना",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "id",
+      "values": {
+        "description": "Ikuti situs yang Anda sukai dengan NewsBlur, pembaca berita RSS pribadi yang menyatukan bacaan Anda. Ikuti berita, blog, buletin email, dan lainnya, dengan langganan serta progres membaca yang tersinkron di iPhone, iPad, Mac, dan web.\n\nBACA SESUAI SELERA\nJelajahi artikel dari setiap situs atau satukan isi folder dalam satu daftar bacaan. Baca dengan feed, judul artikel, dan isi artikel ditampilkan berdampingan. Pilih tema yang nyaman, sesuaikan teks, dan gunakan pintasan keyboard untuk berpindah antarartikel. Unduh artikel untuk dibaca tanpa internet dan lanjutkan dari tempat terakhir Anda membaca.\n\nARTIKEL SEKILAS\nTambahkan widget ke desktop atau Pusat Notifikasi. Setiap widget dapat menampilkan Artikel Semua Situs, sebuah folder, atau satu situs. Pilih sumbernya melalui Edit Widget.\n\nTEMUKAN FOKUS ANDA\nLatih NewsBlur berdasarkan penulis, tag, dan kata dalam judul untuk menyorot artikel yang Anda inginkan dan menyembunyikan yang tidak Anda inginkan. Anda yang menentukan apa yang penting.\n\nTEMUKAN DAN SIMPAN\nTemukan situs baru, lihat pratinjau artikel terbarunya, dan coba baca sebelum berlangganan. Simpan artikel untuk nanti, atur dengan tag, dan cari di bacaan Anda. Bagikan artikel beserta komentar di Blurblog Anda di NewsBlur dan ikuti apa yang dibaca teman.\n\nGALI LEBIH DALAM\nGunakan Tampilan Teks untuk membaca teks artikel yang diekstrak. Dengan Tanya AI, dapatkan ringkasan, latar belakang, atau jawaban atas pertanyaan tentang artikel. Ketersediaan dan batas penggunaan bergantung pada paket akun Anda.\n\nDALAM BAHASA ANDA\nGunakan antarmuka NewsBlur dalam 21 bahasa, termasuk tata letak kanan ke kiri untuk bahasa Arab dan Ibrani. Pilih bahasa dari menu NewsBlur atau ikuti pengaturan bahasa Mac Anda. Artikel tetap dalam bahasa aslinya saat diterbitkan.\n\nDiperlukan akun NewsBlur. Tersedia akun gratis dan langganan berbayar opsional. Beberapa fitur memerlukan paket berbayar.\n\nLANGGANAN\nJika Anda membeli langganan melalui App Store, pembayaran dibebankan ke Akun Apple saat konfirmasi. Langganan diperpanjang otomatis kecuali dibatalkan setidaknya 24 jam sebelum periode berjalan berakhir. Biaya perpanjangan dibebankan ke akun Anda dalam 24 jam sebelum periode berakhir. Kelola atau batalkan langganan di pengaturan Akun Apple Anda.\n\nKetentuan penggunaan: https://www.newsblur.com/tos\nKebijakan privasi: https://www.newsblur.com/privacy",
+        "keywords": "rss,berita,pembaca,feed,blog,artikel,luring,buletin,baca nanti,pencarian,filter,bacaan",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "vi",
+      "values": {
+        "description": "Theo dõi các trang web bạn quan tâm với NewsBlur, trình đọc tin RSS cá nhân giúp tập hợp nội dung đọc vào một nơi. Cập nhật tin tức, blog, bản tin email và nhiều nội dung khác, với danh sách đăng ký và tiến độ đọc được đồng bộ trên iPhone, iPad, Mac và web.\n\nĐọc theo cách của bạn\nDuyệt bài viết từ từng trang web hoặc gom các trang trong một thư mục thành một danh sách đọc. Đọc với nguồn cấp, tiêu đề và nội dung bài viết được hiển thị cạnh nhau. Chọn giao diện dễ nhìn, điều chỉnh văn bản và dùng phím tắt để chuyển qua các bài viết. Tải bài viết để đọc ngoại tuyến và đọc tiếp từ chỗ bạn đã dừng.\n\nXem nhanh bài viết\nThêm tiện ích vào màn hình nền hoặc Trung tâm thông báo. Mỗi tiện ích có thể hiển thị Bài viết từ mọi trang web, một thư mục hoặc một trang web. Chọn nguồn bằng Sửa tiện ích.\n\nTập trung vào điều bạn cần\nHuấn luyện NewsBlur theo tác giả, thẻ và từ trong tiêu đề để làm nổi bật những bài viết bạn muốn đọc và ẩn những bài bạn không muốn. Bạn quyết định điều gì quan trọng.\n\nKhám phá và lưu giữ\nTìm trang web mới, xem trước các bài viết gần đây và đọc thử trước khi đăng ký theo dõi. Lưu bài viết để đọc sau, sắp xếp bằng thẻ và tìm kiếm nội dung đọc. Chia sẻ bài viết kèm bình luận trên Blurblog của bạn ở NewsBlur và theo dõi những gì bạn bè đang đọc.\n\nTìm hiểu sâu hơn\nDùng chế độ xem văn bản để đọc nội dung bài viết được trích xuất. Dùng Hỏi AI để nhận bản tóm tắt, thông tin nền hoặc câu trả lời cho các câu hỏi về bài viết. Tính khả dụng và giới hạn sử dụng tùy thuộc vào gói tài khoản của bạn.\n\nBằng ngôn ngữ của bạn\nSử dụng giao diện NewsBlur bằng 21 ngôn ngữ, bao gồm bố cục từ phải sang trái cho tiếng Ả Rập và tiếng Do Thái. Chọn ngôn ngữ từ menu NewsBlur hoặc dùng theo cài đặt ngôn ngữ trên máy Mac của bạn. Bài viết giữ nguyên ngôn ngữ khi xuất bản.\n\nBạn cần có tài khoản NewsBlur. Có tài khoản miễn phí và các gói đăng ký trả phí tùy chọn. Một số tính năng yêu cầu gói trả phí.\n\nGói đăng ký\nNếu bạn mua gói đăng ký qua App Store, Tài khoản Apple của bạn sẽ bị tính phí khi xác nhận mua. Gói đăng ký tự động gia hạn trừ khi bạn hủy ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Tài khoản của bạn sẽ bị tính phí gia hạn trong vòng 24 giờ trước khi kỳ đăng ký kết thúc. Quản lý hoặc hủy gói đăng ký trong phần cài đặt Tài khoản Apple.\n\nĐiều khoản sử dụng: https://www.newsblur.com/tos\n\nChính sách quyền riêng tư: https://www.newsblur.com/privacy",
+        "keywords": "rss,tin tức,đọc tin,nguồn cấp,blog,bài viết,ngoại tuyến,đọc sau",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "th",
+      "values": {
+        "description": "ติดตามเว็บไซต์ที่คุณสนใจด้วย NewsBlur แอปอ่านข่าว RSS ส่วนตัวที่รวมสิ่งที่คุณอ่านไว้ในที่เดียว ไม่พลาดข่าว บล็อก จดหมายข่าว และอีกมากมาย พร้อมซิงค์รายการที่สมัครรับและความคืบหน้าในการอ่านระหว่าง iPhone, iPad, Mac และเว็บ\n\nอ่านในแบบของคุณ\nเลือกอ่านบทความจากแต่ละเว็บไซต์ หรือรวมทั้งโฟลเดอร์ไว้ในรายการอ่านเดียว อ่านโดยแสดงฟีด ชื่อบทความ และเนื้อหาบทความเคียงข้างกัน เลือกธีมที่สบายตา ปรับข้อความ และใช้แป้นพิมพ์ลัดเพื่อเลื่อนดูบทความ ดาวน์โหลดบทความไว้อ่านออฟไลน์ แล้วกลับมาอ่านต่อจากจุดเดิมได้\n\nดูบทความได้อย่างรวดเร็ว\nเพิ่มวิดเจ็ตบนเดสก์ท็อปหรือศูนย์การแจ้งเตือน แต่ละวิดเจ็ตสามารถแสดงบทความจากทุกเว็บไซต์ โฟลเดอร์หนึ่ง หรือเว็บไซต์เดียว เลือกแหล่งบทความได้จาก แก้ไขวิดเจ็ต\n\nโฟกัสสิ่งที่สนใจ\nฝึก NewsBlur ตามผู้เขียน แท็ก และคำในพาดหัว เพื่อเน้นบทความที่คุณต้องการและซ่อนบทความที่ไม่ต้องการ คุณเป็นคนตัดสินว่าอะไรสำคัญ\n\nค้นพบและเก็บไว้อ่าน\nค้นหาเว็บไซต์ใหม่ ดูตัวอย่างบทความล่าสุด และลองอ่านก่อนสมัครรับ บันทึกบทความไว้อ่านทีหลัง จัดระเบียบด้วยแท็ก และค้นหาเนื้อหาที่อ่าน แชร์บทความพร้อมความคิดเห็นบน Blurblog ของคุณใน NewsBlur และติดตามว่าเพื่อนกำลังอ่านอะไร\n\nทำความเข้าใจให้มากขึ้น\nใช้มุมมองข้อความเพื่ออ่านเนื้อหาบทความที่ดึงออกมา ใช้ ถาม AI เพื่อขอสรุป ข้อมูลเบื้องหลัง หรือคำตอบเกี่ยวกับบทความ ความพร้อมใช้งานและขีดจำกัดการใช้ขึ้นอยู่กับแพ็กเกจบัญชีของคุณ\n\nในภาษาของคุณ\nใช้อินเทอร์เฟซ NewsBlur ได้ใน 21 ภาษา รวมถึงการจัดวางจากขวาไปซ้ายสำหรับภาษาอาหรับและฮีบรู เลือกภาษาจากเมนู NewsBlur หรือใช้ตามการตั้งค่าภาษาของ Mac บทความยังคงเป็นภาษาที่เผยแพร่\n\nต้องมีบัญชี NewsBlur มีทั้งบัญชีฟรีและแพ็กเกจแบบชำระเงินให้เลือก ฟีเจอร์บางอย่างต้องใช้แพ็กเกจแบบชำระเงิน\n\nการสมัครสมาชิก\nหากซื้อการสมัครสมาชิกผ่าน App Store ระบบจะเรียกเก็บเงินจากบัญชี Apple ของคุณเมื่อยืนยันการซื้อ การสมัครสมาชิกจะต่ออายุโดยอัตโนมัติ เว้นแต่จะยกเลิกอย่างน้อย 24 ชั่วโมงก่อนสิ้นสุดรอบปัจจุบัน ระบบจะเรียกเก็บค่าต่ออายุจากบัญชีภายใน 24 ชั่วโมงก่อนสิ้นสุดรอบ คุณสามารถจัดการหรือยกเลิกการสมัครสมาชิกได้ในการตั้งค่าบัญชี Apple\n\nข้อกำหนดการใช้งาน: https://www.newsblur.com/tos\n\nนโยบายความเป็นส่วนตัว: https://www.newsblur.com/privacy",
+        "keywords": "rss,ข่าว,ฟีด,บล็อก,ออฟไลน์,อ่านทีหลัง",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "ja",
+      "values": {
+        "description": "NewsBlurは、気になるサイトをまとめて読めるパーソナルRSSニュースリーダーです。ニュース、ブログ、ニュースレターなどをチェックでき、購読リストや読書の進み具合はiPhone、iPad、Mac、ウェブ間で同期されます。\n\n自分に合った読み方で\nサイトごとに記事を読むことも、フォルダー内の記事を1つの一覧にまとめることもできます。フィード、記事のタイトル、記事本文を並べて表示しながら読めます。見やすいテーマを選び、文字を調整して、キーボードショートカットで記事を切り替えられます。記事をダウンロードしてオフラインで読み、中断したところから再開できます。\n\n記事をひと目で\nデスクトップや通知センターにウィジェットを追加できます。ウィジェットごとに「すべてのサイトの記事」、フォルダー、または1つのサイトの記事を表示できます。「ウィジェットを編集」で表示元を選んでください。\n\n読みたい記事にフォーカス\n著者、タグ、見出しの単語をもとにNewsBlurをトレーニングすると、読みたい記事を目立たせ、不要な記事を非表示にできます。何が大切かを決めるのは、あなたです。\n\n見つけて、残す\n新しいサイトを探し、最新記事をプレビューして、購読する前に試し読みできます。記事を後で読むために保存し、タグで整理したり、読みたい内容を検索したりできます。NewsBlurの自分のBlurblogにコメント付きで記事を共有し、友達が読んでいる記事もチェックできます。\n\nもっと深く知る\nテキスト表示では、抽出した記事本文を読めます。「AIに質問」で記事の要約や背景情報を求めたり、記事について質問したりできます。利用できる機能や利用上限は、アカウントのプランによって異なります。\n\nあなたの言語で\nNewsBlurのインターフェースは21言語に対応し、アラビア語とヘブライ語では右から左へのレイアウトを使えます。NewsBlurメニューで言語を選ぶか、Macの言語設定に合わせられます。記事は公開時の言語のまま表示されます。\n\nNewsBlurアカウントが必要です。無料アカウントと、任意で利用できる有料サブスクリプションがあります。一部の機能には有料プランが必要です。\n\nサブスクリプション\nApp Storeでサブスクリプションを購入すると、購入確認時にApple Accountに請求されます。現在の期間が終了する24時間前までに解約しない限り、自動的に更新されます。更新料金は、期間終了前の24時間以内にアカウントに請求されます。サブスクリプションの管理や解約はApple Accountの設定から行えます。\n\n利用規約：https://www.newsblur.com/tos\n\nプライバシーポリシー：https://www.newsblur.com/privacy",
+        "keywords": "rss,ニュース,リーダー,フィード,ブログ,記事,オフライン,後で読む,検索",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "ko",
+      "values": {
+        "description": "NewsBlur는 관심 있는 사이트를 모아 읽을 수 있는 개인용 RSS 뉴스 리더입니다. 뉴스, 블로그, 뉴스레터 등을 확인하고, 구독 목록과 읽기 진행 상황을 iPhone, iPad, Mac, 웹에서 동기화할 수 있습니다.\n\n나에게 맞는 방식으로 읽기\n사이트별로 스토리를 읽거나 폴더에 담긴 스토리를 하나의 목록으로 모아 보세요. 피드, 스토리 제목, 기사 본문을 나란히 보면서 읽을 수 있습니다. 편안한 테마를 선택하고 글자를 조절하며 키보드 단축키로 스토리를 넘길 수 있습니다. 스토리를 다운로드해 오프라인으로 읽고, 멈췄던 곳에서 이어 읽으세요.\n\n스토리를 한눈에 보기\n데스크탑이나 알림 센터에 위젯을 추가하세요. 각 위젯에 모든 사이트 스토리, 폴더 또는 개별 사이트를 표시할 수 있습니다. 위젯 편집에서 표시할 소스를 선택하세요.\n\n관심 있는 스토리에 집중하기\n작성자, 태그, 제목의 단어를 기준으로 NewsBlur를 학습시키면 원하는 스토리를 강조하고 원하지 않는 스토리를 숨길 수 있습니다. 무엇이 중요한지는 직접 결정하세요.\n\n발견하고 보관하기\n새로운 사이트를 찾고 최신 스토리를 미리 본 다음, 구독하기 전에 읽어 보세요. 스토리를 나중에 읽도록 저장하고 태그로 정리하며 읽을 내용을 검색할 수 있습니다. NewsBlur의 내 Blurblog에 댓글과 함께 스토리를 공유하고 친구들이 무엇을 읽는지도 살펴보세요.\n\n더 깊이 알아보기\n텍스트 보기에서 추출된 본문을 읽으세요. ‘AI에게 질문’으로 스토리 요약이나 배경 정보를 요청하고 스토리에 관해 질문할 수 있습니다. 기능 이용 가능 여부와 사용 한도는 계정 요금제에 따라 다릅니다.\n\n내 언어로 사용하기\nNewsBlur 인터페이스는 21개 언어를 지원하며, 아랍어와 히브리어에서는 오른쪽에서 왼쪽으로 표시되는 레이아웃을 사용할 수 있습니다. NewsBlur 메뉴에서 언어를 선택하거나 Mac의 언어 설정을 따르세요. 스토리는 발행된 원래 언어로 유지됩니다.\n\nNewsBlur 계정이 필요합니다. 무료 계정과 선택 가능한 유료 구독이 제공됩니다. 일부 기능에는 유료 요금제가 필요합니다.\n\n구독 안내\nApp Store에서 구독을 구매하면 구매 확인 시 Apple 계정으로 요금이 청구됩니다. 현재 기간이 끝나기 최소 24시간 전에 취소하지 않으면 구독이 자동 갱신됩니다. 갱신 요금은 기간 종료 전 24시간 이내에 계정으로 청구됩니다. Apple 계정 설정에서 구독을 관리하거나 취소할 수 있습니다.\n\n이용 약관: https://www.newsblur.com/tos\n\n개인정보 처리방침: https://www.newsblur.com/privacy",
+        "keywords": "rss,뉴스,리더,피드,블로그,스토리,오프라인,뉴스레터,검색,필터",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "zh-Hans",
+      "values": {
+        "description": "用 NewsBlur 关注你在意的网站。这款个人 RSS 新闻阅读器将你想读的内容汇集在一起。随时阅读新闻、博客、邮件简报等内容，订阅列表和阅读进度会在 iPhone、iPad、Mac 和网页端之间同步。\n\n按你的方式阅读\n逐个网站浏览文章，或将文件夹内的文章汇集到一个阅读列表中。阅读时，订阅源、文章标题和正文并排显示。选择舒适的主题、调整文字，并用键盘快捷键切换文章。下载文章以供离线阅读，随时从上次停下的地方继续。\n\n文章一目了然\n将小组件添加到桌面或通知中心。每个小组件都可以显示所有网站的文章、某个文件夹或单个网站的文章。通过“编辑小组件”选择内容来源。\n\n聚焦你在意的内容\n根据作者、标签和标题中的词语训练 NewsBlur，突出你想读的文章，隐藏你不感兴趣的文章。什么重要，由你决定。\n\n发现并保存\n寻找新网站，预览最新文章，订阅前先试读。保存文章以便稍后阅读，用标签整理，并搜索阅读内容。在你的 NewsBlur Blurblog 上分享文章和评论，也可以关注好友正在读什么。\n\n了解更多\n使用文本视图阅读提取出的文章正文。通过“询问 AI”获取摘要、背景信息，或询问有关文章的问题。功能是否可用以及使用限额取决于你的账户套餐。\n\n使用你的语言\nNewsBlur 界面支持 21 种语言，阿拉伯语和希伯来语还提供从右到左的布局。你可以从 NewsBlur 菜单中选择语言，也可以跟随 Mac 的语言设置。文章仍保留发布时的语言。\n\n需要 NewsBlur 账户。提供免费账户和可选的付费订阅，部分功能需要付费套餐。\n\n订阅说明\n如果通过 App Store 购买订阅，确认购买时将向你的 Apple 账户收取费用。除非在当前订阅期结束前至少 24 小时取消，否则订阅将自动续订。续订费用将在订阅期结束前的 24 小时内从你的账户中扣除。你可以在 Apple 账户设置中管理或取消订阅。\n\n使用条款：https://www.newsblur.com/tos\n\n隐私政策：https://www.newsblur.com/privacy",
+        "keywords": "rss,新闻,阅读器,订阅源,博客,文章,离线,邮件简报,稍后阅读,搜索,筛选",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    },
+    {
+      "language": "zh-Hant",
+      "values": {
+        "description": "用 NewsBlur 追蹤你在意的網站。這款個人 RSS 新聞閱讀器將你想讀的內容集中在一起。隨時閱讀新聞、部落格、電子報等內容，訂閱清單和閱讀進度會在 iPhone、iPad、Mac 和網頁版之間同步。\n\n照你的方式閱讀\n逐一瀏覽各網站的文章，或將資料夾內的文章整合成一份閱讀清單。閱讀時，訂閱來源、文章標題和內文會並排顯示。選擇舒適的佈景主題、調整文字，並用鍵盤快速鍵切換文章。下載文章以供離線閱讀，隨時從上次停下的地方繼續。\n\n文章一目了然\n將小工具加入桌面或通知中心。每個小工具都可以顯示所有網站文章、某個資料夾或單一網站的文章。透過「編輯小工具」選擇內容來源。\n\n把焦點放在你在意的內容\n根據作者、標籤和標題中的字詞訓練 NewsBlur，凸顯你想讀的文章，隱藏你不感興趣的文章。什麼重要，由你決定。\n\n探索並儲存\n尋找新網站，預覽最新文章，訂閱前先試讀。儲存文章以便稍後閱讀，用標籤整理，並搜尋閱讀內容。在你的 NewsBlur Blurblog 上分享文章並附上留言，也可以追蹤朋友正在讀什麼。\n\n深入了解\n使用文字檢視閱讀擷取出的文章內文。透過「詢問 AI」取得摘要、背景資訊，或詢問與文章有關的問題。功能是否可用及使用限制取決於你的帳戶方案。\n\n使用你的語言\nNewsBlur 介面支援 21 種語言，阿拉伯文和希伯來文也提供從右至左的版面配置。你可以從 NewsBlur 選單中選擇語言，或依照 Mac 的語言設定。文章仍保留發佈時的語言。\n\n需要 NewsBlur 帳戶。提供免費帳戶和可自行選用的付費訂閱，部分功能需要付費方案。\n\n訂閱說明\n如果透過 App Store 購買訂閱，確認購買時將向你的 Apple 帳號收費。除非在目前訂閱期間結束前至少 24 小時取消，否則訂閱會自動續訂。續訂費用會在訂閱期間結束前的 24 小時內向你的帳號收取。你可以在 Apple 帳號設定中管理或取消訂閱。\n\n使用條款：https://www.newsblur.com/tos\n\n隱私權政策：https://www.newsblur.com/privacy",
+        "keywords": "rss,新聞,閱讀器,訂閱來源,部落格,文章,離線,電子報,稍後閱讀,搜尋",
+        "marketingUrl": "https://www.newsblur.com",
+        "promotionalText": "",
+        "supportUrl": "https://forum.newsblur.com",
+        "whatsNew": ""
+      }
+    }
+  ],
+  "listing_verified": [
+    {
+      "language": "en",
+      "errors": []
+    },
+    {
+      "language": "es",
+      "errors": []
+    },
+    {
+      "language": "fr",
+      "errors": []
+    },
+    {
+      "language": "de",
+      "errors": []
+    },
+    {
+      "language": "pt-BR",
+      "errors": []
+    },
+    {
+      "language": "it",
+      "errors": []
+    },
+    {
+      "language": "nl",
+      "errors": []
+    },
+    {
+      "language": "pl",
+      "errors": []
+    },
+    {
+      "language": "tr",
+      "errors": []
+    },
+    {
+      "language": "ru",
+      "errors": []
+    },
+    {
+      "language": "uk",
+      "errors": []
+    },
+    {
+      "language": "ar",
+      "errors": []
+    },
+    {
+      "language": "he",
+      "errors": []
+    },
+    {
+      "language": "hi",
+      "errors": []
+    },
+    {
+      "language": "id",
+      "errors": []
+    },
+    {
+      "language": "vi",
+      "errors": []
+    },
+    {
+      "language": "th",
+      "errors": []
+    },
+    {
+      "language": "ja",
+      "errors": []
+    },
+    {
+      "language": "ko",
+      "errors": []
+    },
+    {
+      "language": "zh-Hans",
+      "errors": []
+    },
+    {
+      "language": "zh-Hant",
+      "errors": []
+    }
+  ],
+  "arabic_correction": "Description re-saved and verified after reselecting Arabic",
+  "shared_app_info": [
+    {
+      "language": "en",
+      "match": true
+    },
+    {
+      "language": "es",
+      "match": true
+    },
+    {
+      "language": "fr",
+      "match": true
+    },
+    {
+      "language": "de",
+      "match": true
+    },
+    {
+      "language": "pt-BR",
+      "match": true
+    },
+    {
+      "language": "it",
+      "match": true
+    },
+    {
+      "language": "nl",
+      "match": true
+    },
+    {
+      "language": "pl",
+      "match": true
+    },
+    {
+      "language": "tr",
+      "match": true
+    },
+    {
+      "language": "ru",
+      "match": true
+    },
+    {
+      "language": "uk",
+      "match": true
+    },
+    {
+      "language": "ar",
+      "match": true
+    },
+    {
+      "language": "he",
+      "match": true
+    },
+    {
+      "language": "hi",
+      "match": true
+    },
+    {
+      "language": "id",
+      "match": true
+    },
+    {
+      "language": "vi",
+      "match": true
+    },
+    {
+      "language": "th",
+      "match": true
+    },
+    {
+      "language": "ja",
+      "match": true
+    },
+    {
+      "language": "ko",
+      "match": true
+    },
+    {
+      "language": "zh-Hans",
+      "match": true
+    },
+    {
+      "language": "zh-Hant",
+      "match": true
+    }
+  ],
+  "subscriptions": [
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "en",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "es",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "fr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "de",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "pt-BR",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "it",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "nl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "pl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "tr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "ru",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "uk",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "ar",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "he",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "hi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "id",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "vi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "th",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "ja",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "ko",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "zh-Hans",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_auto_renew_36",
+      "language": "zh-Hant",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "en",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "es",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "fr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "de",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "pt-BR",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "it",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "nl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "pl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "tr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "ru",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "uk",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "ar",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "he",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "hi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "id",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "vi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "th",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "ja",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "ko",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "zh-Hans",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_archive",
+      "language": "zh-Hant",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "en",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "es",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "fr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "de",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "pt-BR",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "it",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "nl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "pl",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "tr",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "ru",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "uk",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "ar",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "he",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "hi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "id",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "vi",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "th",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "ja",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "ko",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "zh-Hans",
+      "match": true
+    },
+    {
+      "product": "newsblur_premium_pro",
+      "language": "zh-Hant",
+      "match": true
+    }
+  ],
+  "subscription_group": [
+    {
+      "language": "en",
+      "match": true
+    },
+    {
+      "language": "es",
+      "match": true
+    },
+    {
+      "language": "fr",
+      "match": true
+    },
+    {
+      "language": "de",
+      "match": true
+    },
+    {
+      "language": "pt-BR",
+      "match": true
+    },
+    {
+      "language": "it",
+      "match": true
+    },
+    {
+      "language": "nl",
+      "match": true
+    },
+    {
+      "language": "pl",
+      "match": true
+    },
+    {
+      "language": "tr",
+      "match": true
+    },
+    {
+      "language": "ru",
+      "match": true
+    },
+    {
+      "language": "uk",
+      "match": true
+    },
+    {
+      "language": "ar",
+      "match": true
+    },
+    {
+      "language": "he",
+      "match": true
+    },
+    {
+      "language": "hi",
+      "match": true
+    },
+    {
+      "language": "id",
+      "match": true
+    },
+    {
+      "language": "vi",
+      "match": true
+    },
+    {
+      "language": "th",
+      "match": true
+    },
+    {
+      "language": "ja",
+      "match": true
+    },
+    {
+      "language": "ko",
+      "match": true
+    },
+    {
+      "language": "zh-Hans",
+      "match": true
+    },
+    {
+      "language": "zh-Hant",
+      "match": true
+    }
+  ],
+  "verified_at": "2026-10-25T04:53:56.691Z"
+}
