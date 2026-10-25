@@ -1203,6 +1203,97 @@ import XCTest
         }
     }
 
+    #if targetEnvironment(macCatalyst)
+    func test_macExplicitSelectionsUpdateVisibleReadStateBeforeArticleReadiness() throws {
+        let defaults = UserDefaults.standard
+        let savedPreference = defaults.object(forKey: "default_mark_read_filter")
+        defer { defaults.set(savedPreference, forKey: "default_mark_read_filter") }
+        for preference in ["selection", "manually", "after5"] {
+            for action in ["click", "next", "previous"] {
+                defaults.set(preference, forKey: "default_mark_read_filter")
+                let fixture = makePresentationFixture(width: 600)
+                fixture.pages.regularPane = true
+                fixture.pages.runsActualPageChanges = true
+                fixture.pages.setValue(true, forKey: "doneInitialRefresh")
+                fixture.app.compactWidthOverride = false
+                fixture.app.selectedIntelligence = 0
+                fixture.app.recentlyReadStories = NSMutableDictionary()
+                fixture.app.unreadStoryHashes = NSMutableDictionary()
+                fixture.app.recentlyReadFeeds = NSMutableSet()
+                fixture.app.readStories = NSMutableArray()
+                fixture.app.dictFeeds = ["1": ["id": 1, "feed_title": "Selection fixture", "active": 1]]
+                fixture.app.dictUnreadCounts = ["1": ["nt": 2, "ps": 0, "ng": 0]]
+                let stories = [fixture.stories[0], fixture.stories[3], fixture.stories[9]]
+                let start = action == "previous" ? 2 : 0
+                for (index, story) in stories.enumerated() {
+                    story["read_status"] = index == start ? 1 : 0
+                    story["intelligence"] = ["feed": 0, "author": 0, "tags": 0, "title": 0]
+                }
+                let collection = NextButtonReadingStories()
+                collection.appDelegate = fixture.app
+                collection.activeFeed = fixture.app.dictFeeds["1"] as? [AnyHashable: Any]
+                collection.activeFeedStories = stories
+                collection.storyCount = 3
+                collection.calculateStoryLocations()
+                fixture.app.storiesCollection = collection
+                fixture.app.activeStory = stories[start] as? [AnyHashable: Any]
+                fixture.pages.currentPage.pageIndex = start
+                fixture.pages.currentPage.activeStory = stories[start]
+                fixture.pages.currentPage.activeStoryId = stories[start]["story_hash"] as? String
+                fixture.pages.nextPage.pageIndex = 1
+                fixture.pages.previousPage.pageIndex = 1
+                fixture.pages.scrollView.contentOffset.x = CGFloat(start) * 600
+                let feed = NextButtonReadingFeed()
+                fixture.app.testFeed = feed
+                feed.appDelegate = fixture.app
+                feed.storiesCollection = collection
+                feed.dashboardIndex = -1
+                feed.pageFinished = true
+                feed.view = UIView(frame: CGRect(x: 0, y: 0, width: 440, height: 700))
+                let table = NextButtonReadingTable(frame: feed.view.bounds, style: .plain)
+                feed.storyTitlesTable = table
+                feed.messageView = UIView()
+                feed.messageView.isHidden = true
+                table.dataSource = feed
+                table.delegate = feed
+                feed.view.addSubview(table)
+                let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+                let window = trackFixtureWindow(UIWindow(windowScene: scene))
+                window.rootViewController = feed
+                window.isHidden = false
+                defer {
+                    fixture.pages.cancelPendingStoryPresentation()
+                    feed.cancelMarkStoryReadTimer()
+                    NSObject.cancelPreviousPerformRequests(withTarget: feed)
+                    table.delegate = nil
+                    window.isHidden = true
+                    window.rootViewController = nil
+                }
+                table.reloadData()
+                table.layoutIfNeeded()
+                let target = IndexPath(row: 1, section: 0)
+                let cell = try XCTUnwrap(table.cellForRow(at: target) as? FeedDetailTableCell)
+                XCTAssertFalse(cell.isRead)
+                // StoryDetailLoadingTests.swift leaves the recorded WebKit document unready while real selection code runs.
+                switch action {
+                case "click": feed.loadStory(atRow: 1)
+                case "next": fixture.pages.changeToNextPage(nil)
+                default: fixture.pages.changeToPreviousPage(nil)
+                }
+                let shouldRead = preference == "selection"
+                XCTAssertEqual(cell.isRead, shouldRead, "\(action), \(preference): visible title must match selection immediately")
+                XCTAssertEqual(collection.isStoryUnread(stories[1] as? [AnyHashable: Any]), !shouldRead)
+                XCTAssertTrue(collection.isStoryUnread(stories[action == "previous" ? 0 : 2] as? [AnyHashable: Any]))
+                XCTAssertEqual(collection.syncedHashes, shouldRead ? ["item-3"] : [])
+                XCTAssertEqual(table.rowReloads, 0)
+                if action == "click" {
+                    XCTAssertNotNil(fixture.pages.value(forKey: "pendingPresentationPage"), "The click must be checked before its article is ready")
+                }
+            }
+        }
+    }
+    #endif
+
     func test_actualNextButtonRevealsThePartlyVisibleFourthTitleWithoutInterruptingEitherPane() async throws {
         let defaults = UserDefaults.standard
         let keys = ["scroll_stories_horizontally", "default_mark_read_filter"]
@@ -1383,6 +1474,11 @@ import XCTest
         let nextTappedAt = CACurrentMediaTime()
         // StoryDetailLoadingTests.swift drives the same UIButton action and real pager/list/read callbacks as the landscape app.
         next.sendActions(for: .touchUpInside)
+        // StoryDetailLoadingTests.swift requires the selected title to become read before either animation completes.
+        XCTAssertFalse(collection.isStoryUnread(stories[3] as? [AnyHashable: Any]),
+                       "Selecting Next must update read state immediately")
+        let selectedTitle = try XCTUnwrap(table.cellForRow(at: target) as? FeedDetailTableCell)
+        XCTAssertTrue(selectedTitle.isRead, "The selected row must not wait for the article transition to look read")
         // StoryDetailLoadingTests.swift leaves both animations untouched while sampling; drawHierarchy(afterScreenUpdates:true) can complete UIKit animations.
         await fulfillment(of: [titlesFinished, articleFinished], timeout: 15)
         await waitForState("The completed title and article positions reach their displayed frames") {
@@ -1393,7 +1489,9 @@ import XCTest
         }
         titles.stop()
         motion.stop()
-        XCTAssertEqual(Array(feed.events.prefix(3)), ["select", "read:next-button-3", "redraw"])
+        XCTAssertEqual(feed.events.first, "read:next-button-3", "The explicit selection must be read before the pager's later callbacks")
+        XCTAssertTrue(feed.events.contains("select"))
+        XCTAssertTrue(feed.events.contains("redraw"))
         XCTAssertEqual(pages.currentPage.activeStoryId, "next-button-3")
         XCTAssertEqual(table.indexPathForSelectedRow, target)
         XCTAssertTrue(table.bounds.contains(table.rectForRow(at: target)), "The completed reveal must show the entire fourth title")

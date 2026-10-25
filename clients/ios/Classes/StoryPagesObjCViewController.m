@@ -3073,6 +3073,8 @@
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
     [self finishRetainingDuoSourceArticle];
+    // StoryPagesObjCViewController.m commits the explicit destination's title state before the native scroll animation begins.
+    [appDelegate.feedDetailViewController prepareStorySelectionAtLocation:pageIndex];
 //    NSLog(@"changePage to %@ (%@animated)", @(pageIndex), animated ? @"" : @"not ");
     
 	// update the scroll view to the appropriate page
