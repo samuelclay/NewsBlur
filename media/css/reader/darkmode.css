@@ -5976,6 +5976,29 @@ a.mention, a.mention-group {
     border-color: #4b5561;
 }
 
+.NB-dark .NB-add-folder-row .NB-feed-folder-picker-trigger {
+    color: #B0B0B0;
+    background-color: #282C30;
+    border-color: #505458;
+}
+
+.NB-dark .NB-feed-folder-picker-for-NB-add-site-folder-select .NB-feed-folder-picker-trigger {
+    color: #CCC;
+    background-color: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-dark .NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    color: #DDD;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.NB-dark .NB-menu-manage-confirm .NB-feed-folder-picker-trigger {
+    border-color: #505458;
+}
+
 .NB-dark .NB-feed-folder-picker-trigger:focus-visible,
 .NB-dark .NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
     border-color: #50A050;

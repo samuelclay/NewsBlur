@@ -11515,6 +11515,91 @@ select.NB-feed-folder-picker-select {
     color: #8C8A80;
 }
 
+/* The picker in each place a folder or site select used to be, sized to its row.
+   Small: the add site popover, Organize Sites, Preferences and the briefing popover. */
+.NB-add-folder-row .NB-feed-folder-picker-trigger,
+.NB-modal-organizer .NB-feed-folder-picker-trigger,
+.NB-modal-preferences .NB-feed-folder-picker-trigger,
+.NB-briefing-popover .NB-feed-folder-picker-trigger,
+.NB-briefing-onboarding .NB-feed-folder-picker-trigger,
+.NB-badge-folders .NB-feed-folder-picker-trigger {
+    height: 26px;
+    gap: 6px;
+    padding: 0 24px 0 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    background-position: right 8px center;
+}
+
+.NB-add-folder-row .NB-feed-folder-picker-trigger {
+    height: 24px;
+    color: #555;
+    background-color: #FAFAFA;
+    border-color: #D8D8D8;
+}
+
+/* Add + Discover's own folder selects (views/add_site_view.js) */
+.NB-feed-folder-picker-for-NB-add-site-folder-select .NB-feed-folder-picker-trigger {
+    color: #333;
+    border-color: #D0D0D0;
+}
+
+.NB-add-site-webfeed-folder-row .NB-feed-folder-picker-trigger,
+.NB-feed-badge-actions-add-site > .NB-feed-folder-picker .NB-feed-folder-picker-trigger,
+.NB-trending-feed-card .NB-feed-badge-actions > .NB-feed-folder-picker .NB-feed-folder-picker-trigger {
+    height: 34px;
+    padding: 0 28px 0 12px;
+}
+
+.NB-add-site-google-news-input-row .NB-feed-folder-picker-trigger {
+    height: 40px;
+    padding: 0 28px 0 12px;
+    font-size: 14px;
+    border: 2px solid #D0D4D8;
+    border-radius: 8px;
+}
+
+/* Tiny: the manage menu's Move to folder row, and the folder half of Add + Discover's
+   folder-and-Add pills, which have no border of their own */
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger,
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 20px;
+    gap: 5px;
+    padding: 0 18px 0 5px;
+    font-size: 11px;
+    border-radius: 3px;
+    background-position: right 6px center;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon,
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon > *,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon > *,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon > * {
+    flex-basis: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger {
+    border-color: #A0A0A0;
+}
+
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 22px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* Focused and open keep their green border in every one of those places */
+.NB-feed-folder-picker .NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    border-color: #50A050;
+}
+
 .NB-manage-add-notice .NB-classifier-scope-notice,
 .NB-manage-add-notice .NB-classifier-archive-notice,
 .NB-manage-add-notice .NB-classifier-url-notice,
