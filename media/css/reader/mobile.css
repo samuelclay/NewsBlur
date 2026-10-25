@@ -1058,6 +1058,58 @@ body.NB-mobile #simplemodal-container .NB-modal table {
     box-sizing: border-box;
 }
 
+/* mobile.css: modal pieces sized for a desktop dialog. */
+body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-goodies-apps {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-spinning-logo {
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    margin-left: -100px;
+    background-size: contain;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal fieldset {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+body.NB-mobile .NB-add-discover-sources {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.NB-mobile .NB-popover .popover-content {
+    overflow-x: hidden;
+}
+
+/* mobile.css: wide segmented controls inside modals scroll sideways instead of clipping. */
+body.NB-mobile #simplemodal-container .NB-modal ul.segmented-control {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal ul.segmented-control > li {
+    flex: none;
+    float: none;
+}
+
+/* mobile.css: the intro's step counter sits in the corner the close button now takes, and its
+   pages grow with their content instead of scrolling inside a fixed height. */
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-modal-page {
+    right: 60px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-page {
+    height: auto;
+    min-height: 460px;
+}
+
 /* mobile.css: phones only have list and grid layouts, so the split-pane and grid-column
    choices in views/story_options_popover.js don't apply. */
 body.NB-mobile .NB-story-options-desktop-layout {
