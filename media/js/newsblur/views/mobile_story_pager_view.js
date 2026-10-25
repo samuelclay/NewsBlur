@@ -109,6 +109,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     // ============
 
     open: function (story) {
+        this.cancel_page_turn();
         if (!this.story) {
             NEWSBLUR.assets.stories.bind('add', this.stories_added, this);
         }
@@ -124,6 +125,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     },
 
     close: function () {
+        this.cancel_page_turn();
         if (!this.story) return;
         NEWSBLUR.assets.stories.unbind('add', this.stories_added, this);
         this.story.unbind('change:read_status change:starred', this.story_changed, this);
@@ -137,6 +139,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
 
     // Shown while Next unread opens another feed.
     show_loading: function () {
+        this.cancel_page_turn();
         if (this.story) {
             NEWSBLUR.assets.stories.unbind('add', this.stories_added, this);
             this.story.unbind('change:read_status change:starred', this.story_changed, this);
@@ -236,8 +239,20 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     },
 
     destroy_page: function (page) {
-        if (page.view && page.view.destroy) {
-            page.view.destroy();
+        var view = page.view;
+        if (view) {
+            // TextTabView only removes itself, so its StoryDetailView (and that view's bindings
+            // on the story) is destroyed here.
+            var detail = view.story_detail || view;
+            if (view.story_detail && view.story_detail.destroy) view.story_detail.destroy();
+            if (view.destroy) view.destroy();
+            // The story keeps pointing at the views that rendered it; forget the ones that are gone.
+            var story = page.story;
+            if (story) {
+                _.each(['story_view', 'latest_story_detail_view', 'inline_story_detail_view'], function (key) {
+                    if (story[key] === detail) delete story[key];
+                });
+            }
         }
         page.view = null;
         page.mode = null;
@@ -330,17 +345,29 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
             .css('transform', 'translate3d(' + (-step * 100 * direction) + '%, 0, 0)');
 
         var self = this;
-        var finished = false;
+        var turn = {};
         var finish = function () {
-            if (finished) return;
-            finished = true;
+            if (self.page_turn !== turn) return;
+            self.page_turn = null;
+            clearTimeout(turn.timer);
             self.$track.off('transitionend.pager');
             self.finish_page(step, target);
         };
+        this.page_turn = turn;
         this.$track.on('transitionend.pager', function (e) {
             if (e.target === self.$track[0]) finish();
         });
-        setTimeout(finish, 420);
+        turn.timer = setTimeout(finish, 420);
+    },
+
+    // Closing the screen mid page turn abandons it: the story it was turning to must not be
+    // selected (and marked read) on a screen that is already gone.
+    cancel_page_turn: function () {
+        if (!this.page_turn) return;
+        clearTimeout(this.page_turn.timer);
+        this.page_turn = null;
+        this.animating = false;
+        this.$track.off('transitionend.pager').removeClass('NB-mobile-animating').css('transform', '');
     },
 
     finish_page: function (step, target) {

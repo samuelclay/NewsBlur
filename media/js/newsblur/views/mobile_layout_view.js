@@ -16,7 +16,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
-            'handle_touchend', 'handle_long_press_start', 'handle_long_press_cancel',
+            'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
             'handle_long_press_click');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
@@ -60,7 +60,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         document.addEventListener('touchstart', this.handle_touchstart, { passive: true });
         document.addEventListener('touchmove', this.handle_touchmove, { passive: false });
         document.addEventListener('touchend', this.handle_touchend, { passive: true });
-        document.addEventListener('touchcancel', this.handle_touchend, { passive: true });
+        document.addEventListener('touchcancel', this.handle_touchcancel, { passive: true });
         this.setup_long_press();
         this.setup_pull_to_refresh();
 
@@ -162,6 +162,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // Jumps straight to a screen with no animation.
     set_screen: function (screen) {
         this.finish_transition();
+        this.clear_drag();
         this.screen = screen;
         this.$body.removeClass(this.screen_body_classes()).addClass('NB-mobile-screen-is-' + screen);
         _.each(this.$screens, function ($screen, name) {
@@ -176,6 +177,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         options = options || {};
         var from = this.screen;
         if (!this.active || from === screen) {
+            this.clear_drag();
             if (options.complete) options.complete();
             return;
         }
@@ -228,6 +230,17 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     finish_transition: function () {
         if (this.transition) this.transition.done();
+    },
+
+    // A screen change that lands mid edge-swipe drops the swipe. Its inline transforms and the
+    // NB-mobile-transitioning class, which blocks taps in mobile.css, would otherwise stay.
+    clear_drag: function () {
+        this.swipe = null;
+        var $dragged = $('.NB-mobile-screen.NB-mobile-dragging');
+        if (!$dragged.length) return;
+        $dragged.removeClass('NB-mobile-dragging');
+        this.clear_drag_styles($dragged);
+        if (!this.transition) this.$body.removeClass('NB-mobile-transitioning');
     },
 
     transition_duration: function () {
@@ -339,14 +352,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             screen = 'feeds';
         }
 
-        var drag = this.pending_back;
+        // Only an edge swipe leaves the screens mid-slide; the header button starts from rest.
+        var from_drag = !!(this.pending_back && this.pending_back.from_drag);
         this.pending_back = null;
         clearTimeout(this.pending_back_timer);
         this.show_screen(screen, {
             direction: direction === 'none' ? 'pop' : direction,
             // The browser already animated its own swipe-back, don't slide a second time.
             animate: !e.hasUAVisualTransition,
-            from_drag: !!drag,
+            from_drag: from_drag,
             complete: _.bind(this.after_screen_change, this)
         });
     },
@@ -666,6 +680,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         } else {
             this.cancel_drag();
         }
+    },
+
+    // iOS Safari cancels the page's touches when its own edge swipe-back takes over. That
+    // gesture goes back by itself (popstate then switches screens), so only snap back here.
+    handle_touchcancel: function () {
+        var swipe = this.swipe;
+        this.swipe = null;
+        if (swipe && swipe.dragging) this.cancel_drag();
     },
 
     begin_drag: function () {

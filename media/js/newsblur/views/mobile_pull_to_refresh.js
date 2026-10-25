@@ -10,7 +10,7 @@ NEWSBLUR.Views.MobilePullToRefresh = Backbone.View.extend({
     MAX_SPIN_MS: 15000,
 
     initialize: function (options) {
-        _.bindAll(this, 'handle_touchstart', 'handle_touchmove', 'handle_touchend');
+        _.bindAll(this, 'handle_touchstart', 'handle_touchmove', 'handle_touchend', 'handle_touchcancel');
         this.scroller = options.scroller;
         this.refresh = options.refresh;
         this.is_enabled = options.is_enabled || function () { return true; };
@@ -24,7 +24,7 @@ NEWSBLUR.Views.MobilePullToRefresh = Backbone.View.extend({
         this.scroller.addEventListener('touchstart', this.handle_touchstart, { passive: true });
         this.scroller.addEventListener('touchmove', this.handle_touchmove, { passive: false });
         this.scroller.addEventListener('touchend', this.handle_touchend, { passive: true });
-        this.scroller.addEventListener('touchcancel', this.handle_touchend, { passive: true });
+        this.scroller.addEventListener('touchcancel', this.handle_touchcancel, { passive: true });
     },
 
     handle_touchstart: function (e) {
@@ -71,6 +71,15 @@ NEWSBLUR.Views.MobilePullToRefresh = Backbone.View.extend({
         } else {
             this.settle(0);
         }
+    },
+
+    // The browser took the touch away, so let go without refreshing.
+    handle_touchcancel: function () {
+        var pull = this.pull;
+        this.pull = null;
+        if (!pull || !pull.active) return;
+        $(this.scroller).removeClass('NB-mobile-ptr-dragging');
+        this.settle(0);
     },
 
     render: function (distance) {
