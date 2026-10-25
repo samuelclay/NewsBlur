@@ -480,6 +480,170 @@ body.NB-mobile .content-pane > #ask_ai_pane {
     display: none !important;
 }
 
+/* mobile.css: the feed bar under the nav bar keeps its controls (story order, search, mark
+   read, hidden stories, related sites) in one scrolling row. The nav bar above already shows
+   the title and icon, so those go. */
+body.NB-mobile .right-pane .NB-story-titles-header {
+    padding: 0;
+    margin: 0 !important;
+    overflow: visible;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header > .feed,
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    height: auto;
+    min-height: 40px;
+    padding: 4px 12px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header > .feed::-webkit-scrollbar,
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder::-webkit-scrollbar {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header > .feed > *,
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > * {
+    float: none !important;
+    flex: none;
+    margin: 0 !important;
+    position: relative;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .feed_counts,
+body.NB-mobile .right-pane .NB-story-titles-header .feed_favicon,
+body.NB-mobile .right-pane .NB-story-titles-header .feed_title,
+body.NB-mobile .right-pane .NB-story-titles-header .folder_title_text,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-highlight,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-manage-icon {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container { order: 1; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container { order: 2; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator { order: 3; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container { order: 4; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+    order: 5;
+    margin-inline-start: auto !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon {
+    float: none;
+    order: 2;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+    margin: 0 !important;
+    float: none !important;
+    font-size: 11px;
+    line-height: 20px;
+}
+
+/* ================= */
+/* = Grid cards    = */
+/* ================= */
+
+body.NB-mobile #story_titles.NB-layout-grid {
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid > .NB-story-titles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-gap: 14px;
+    padding: 14px 12px 24px;
+}
+
+@media (min-width: 600px) {
+    body.NB-mobile #story_titles.NB-layout-grid > .NB-story-titles {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-end-line {
+    margin: 0 -12px -24px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-container,
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
+    margin: 0;
+    grid-column: auto;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid {
+    height: auto !important;
+    min-height: 0;
+    padding: 0 !important;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: var(--nb-mobile-card-bg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 160ms ease;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid:active {
+    transform: scale(0.985);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid.NB-selected {
+    box-shadow: 0 0 0 2px var(--nb-mobile-tint), 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-story-image-container {
+    margin: 0;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-story-image {
+    width: 100%;
+    height: 200px !important;
+    background-size: cover !important;
+    background-position: 50% 35% !important;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-content {
+    height: auto;
+    margin: 14px 16px 6px 34px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-title {
+    font-size: 18px;
+    line-height: 1.3;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-content-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-grid-bottom {
+    position: static;
+    width: auto;
+    padding: 4px 16px 12px 34px;
+    border-top: 0;
+    background: transparent;
+}
+
 /* ================= */
 /* = Story screen  = */
 /* ================= */
@@ -525,6 +689,9 @@ body.NB-mobile .NB-mobile-story-page {
     background-color: var(--nb-mobile-story-bg);
     box-sizing: border-box;
     padding-bottom: 24px;
+    /* mobile.css: each page scrolls itself, so it has to opt out of horizontal panning too or
+       the browser claims the swipe that pages between stories. */
+    touch-action: pan-y pinch-zoom;
 }
 
 /* mobile.css: physical offsets are mirrored for right-to-left pages by utils/rtl_css.py, so the
@@ -594,6 +761,7 @@ body.NB-mobile .NB-mobile-toolbar {
 }
 
 body.NB-mobile .NB-mobile-toolbar-button {
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -740,6 +908,61 @@ body.NB-mobile #simplemodal-container a.modalCloseImg {
 
 body.NB-mobile.NB-dark #simplemodal-container a.modalCloseImg {
     background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* mobile.css: modal bodies scroll as one page inside the sheet instead of in fixed-height
+   inner panes, and two-column form rows stack. */
+body.NB-mobile #simplemodal-container .NB-modal .NB-tab,
+body.NB-mobile #simplemodal-container .NB-modal .NB-preferences-scroll {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    float: none !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs .NB-modal-tab {
+    flex: none;
+    float: none !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-label,
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-options {
+    float: none !important;
+    width: auto !important;
+    margin-left: 0 !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-label {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal input[type="text"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="email"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="password"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="url"],
+body.NB-mobile #simplemodal-container .NB-modal select,
+body.NB-mobile #simplemodal-container .NB-modal textarea,
+body.NB-mobile #simplemodal-container .NB-modal img,
+body.NB-mobile #simplemodal-container .NB-modal table {
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* mobile.css: phones only have list and grid layouts, so the split-pane and grid-column
+   choices in views/story_options_popover.js don't apply. */
+body.NB-mobile .NB-story-options-desktop-layout {
+    display: none !important;
 }
 
 @keyframes NB-mobile-sheet-up {

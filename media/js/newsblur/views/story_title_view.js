@@ -431,6 +431,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var story_layout = this.options.override_layout ||
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
         var pane_anchor = this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor');
+        // story_title_view.js: phone list rows only make room for a thumbnail when there is one.
+        if (this.options.is_list && this.is_mobile_layout()) return !!this.model.image_url();
         if (_.contains(['list', 'grid', 'magazine'], story_layout)) return true;
         if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) return true;
 

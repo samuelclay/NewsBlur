@@ -5862,6 +5862,12 @@
             }
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                 $item.children('.folder_title').hasClass("NB-toplevel");
+            // reader.js: on a phone (views/mobile_layout_view.js) the menu is a bottom sheet, so it
+            // always reads top to bottom instead of flipping upward near the bottom of the screen.
+            var mobile_sheet = !!this.flags.mobile;
+            if (mobile_sheet) inverse = false;
+            $manage_menu_container.toggleClass('NB-mobile-sheet', mobile_sheet);
+            this.$s.$body.toggleClass('NB-mobile-sheet-open', mobile_sheet);
             // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
             var $menu_anchor = $item;
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
@@ -6151,6 +6157,7 @@
             }
 
             if ($item) $item.removeClass('NB-showing-menu');
+            this.$s.$body.removeClass('NB-mobile-sheet-open');
 
             if (animate) {
                 $manage_menu_container.stop().animate({

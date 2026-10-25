@@ -38,6 +38,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
         this.build_titles_bar();
         this.build_dashboard_bar();
+        // mobile.css dims the page behind bottom-sheet menus with this.
+        this.$body.append($.make('div', { className: 'NB-mobile-sheet-shade' }));
         this.wrap_router_navigate();
 
         this.media_query = window.matchMedia('(max-width: ' + this.utils.MAX_WIDTH + 'px)');
