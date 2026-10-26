@@ -10899,6 +10899,11 @@ form.opml_import_form input {
     flex-shrink: 0;
 }
 
+/* Site by Site pages put the panel right under the site's title bar */
+.NB-tab-sitebyside .NB-manage-add {
+    margin-top: 12px;
+}
+
 .NB-manage-add-heading {
     margin: 0 0 8px 2px;
     font-size: 11px;
@@ -11633,7 +11638,8 @@ select.NB-feed-folder-picker-select {
     font-weight: bold;
 }
 
-.NB-manage-classifier-item.NB-manage-classifier-item-added .NB-classifier {
+.NB-manage-classifier-item.NB-manage-classifier-item-added .NB-classifier,
+.NB-classifier-container.NB-classifier-container-added .NB-classifier {
     box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.45);
     transition: box-shadow 0.3s ease-out;
 }

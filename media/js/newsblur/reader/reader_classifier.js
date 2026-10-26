@@ -654,6 +654,7 @@ var classifier_prototype = {
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, interpolate(ngettext("%(count)s subscriber", "%(count)s subscribers", this.feed.get('num_subscribers')), {count: Inflector.commas(this.feed.get('num_subscribers'))}, true))
                 ])
             ]),
+            (this.options['feed_loaded'] && this.make_manage_add_row({ scope_values: this.trainer_add_scope_values() })),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post', className: 'NB-publisher' }, [
                     ((!_.isEmpty(this.user_classifiers.titles) || !_.isEmpty(this.user_classifiers.title_regex)) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
@@ -781,6 +782,7 @@ var classifier_prototype = {
                 ])
             ]),
             $.make('div', { className: 'NB-tab NB-tab-story NB-active' }, [
+                (this.options['feed_loaded'] && this.make_manage_add_row({ scope_values: this.trainer_add_scope_values() })),
                 (this.options['feed_loaded'] &&
                     $.make('form', { method: 'post' }, [
                         // Section 1: Story Text
@@ -4359,7 +4361,7 @@ var classifier_prototype = {
                 search_text: $('.NB-manage-search-input', this.$modal).val() || '',
                 dirty_feeds: $.extend(true, {}, this.manage_dirty_feeds),
                 add: this.manage_add ? $.extend(true, {}, this.manage_add) : null,
-                add_text: $('.NB-manage-add-input', this.$modal).val() || ''
+                add_text: $('.NB-tab-manage .NB-manage-add-input', this.$modal).val() || ''
             };
         }
 
@@ -4467,7 +4469,7 @@ var classifier_prototype = {
         $('.NB-manage-search-input', this.$modal).val(manage.search_text);
         if (manage.add_text) {
             // The add row's own input handler refreshes its placeholder, notice and button
-            $('.NB-manage-add-input', this.$modal).val(manage.add_text).trigger('input');
+            $('.NB-tab-manage .NB-manage-add-input', this.$modal).val(manage.add_text).trigger('input');
         }
         this.restore_manage_dirty_items();
         this.restore_matching_view_scroll();
@@ -4545,7 +4547,6 @@ var classifier_prototype = {
         var $content = this.make_manage_tab_content();
         $('.NB-tab-manage', this.$modal).empty().append($content);
 
-        this.bind_manage_add_row();
         this.bind_manage_filter_events();
 
         // Apply initial filters and update counts
@@ -4737,6 +4738,142 @@ var classifier_prototype = {
         return first_site ? 'feed:' + first_site.id : 'global';
     },
 
+    // The site a site, story or Site by Site trainer trains. A blurblog story trains its
+    // original site.
+    trainer_feed_id: function () {
+        return this.options.social_feed && this.original_feed_id ? this.original_feed_id : this.feed_id;
+    },
+
+    // Where a site, story or Site by Site trainer's add panel starts, best first: the folder
+    // being read when the trainer opened from that folder's river, All sites from All Site
+    // Stories, then the trainer's site. Folders and All sites need Premium Archive.
+    trainer_add_scope_values: function () {
+        var site_value = 'feed:' + this.trainer_feed_id();
+        var reader = NEWSBLUR.reader;
+        var active_feed = reader && reader.active_feed;
+        var folder = reader && reader.active_folder;
+        if (this.options.training || !NEWSBLUR.Globals.is_archive || !_.isString(active_feed)) {
+            return [site_value];
+        }
+        if (active_feed === 'river:') {
+            return ['global', site_value];
+        }
+        if (active_feed.indexOf('river:') === 0 && folder && folder.folders && !folder.get('fake')) {
+            // The full path folder-scoped classifiers store, built like feed.flat_folder_paths()
+            var parts = [];
+            var current = folder.folders;
+            while (current && current.options && current.options.title) {
+                parts.unshift(current.options.title);
+                current = current.parent_folder;
+            }
+            return ['folder:' + parts.join(' - '), site_value];
+        }
+        return [site_value];
+    },
+
+    // After a site, story or Site by Site trainer's add panel saves, show the classifier,
+    // trained, in its section when it applies to the trainer's site, and score the open
+    // stories with it right away, as save() does after the trainer's own Save.
+    show_trainer_added_classifier: function ($row, added, sentiment) {
+        var feed_id = this.trainer_feed_id();
+        var feed = this.model.get_feed(feed_id);
+        var applies = added.scope === 'global' ||
+            (added.scope === 'feed' && added.feed_id == feed_id) ||
+            (added.scope === 'folder' && feed && _.contains(feed.flat_folder_paths(), added.folder_name));
+        if (!applies) return;
+
+        var score = { like: 1, dislike: -1, super_dislike: -2 }[sentiment];
+        var bucket = added.type + (added.is_regex ? '_regex' : 's');
+        var scope_key = added.type + (added.is_regex ? '_regex_scope' : 's_scope');
+        _.each(_.uniq(_.compact([this.model.classifiers[feed_id], this.user_classifiers])), function (classifiers) {
+            classifiers[bucket] = classifiers[bucket] || {};
+            classifiers[bucket][added.value] = score;
+            if (added.scope === 'feed') {
+                if (classifiers[scope_key]) delete classifiers[scope_key][added.value];
+            } else {
+                classifiers[scope_key] = classifiers[scope_key] || {};
+                classifiers[scope_key][added.value] = { scope: added.scope, folder_name: added.folder_name };
+            }
+        });
+        this.model.recalculate_story_scores(feed_id);
+        this.model.stories.trigger('render:intelligence');
+
+        var $tab = $row.closest('.NB-tab');
+        var input_name = 'like_' + added.type + (added.is_regex ? '_regex' : '');
+        var $existing = $tab.find('.NB-classifier-input-like').filter(function () {
+            return this.name === input_name && this.value === added.value;
+        }).closest('.NB-classifier-container');
+        var $pill = this.make_classifier(added.value, added.value, added.type, null, null, added.is_regex);
+        this.show_classifier_scope($pill, added.scope, added.folder_name);
+
+        if ($existing.length) {
+            $existing.first().replaceWith($pill);
+        } else {
+            this.trainer_section_for(added, $tab).prepend($pill);
+        }
+        $pill.addClass('NB-classifier-container-added');
+        setTimeout(function () {
+            $pill.removeClass('NB-classifier-container-added');
+        }, 2000);
+    },
+
+    // make_classifier reads a regex classifier's scope from the plain classifier's metadata, so
+    // a new pill's scope icons and data are set from what was saved.
+    show_classifier_scope: function ($pill, scope, folder_name) {
+        var $classifier = $('.NB-classifier', $pill);
+        $classifier.data('scope', scope).data('folder-name', folder_name || '')
+            .data('original-scope', scope).data('original-folder-name', folder_name || '');
+        $('.NB-scope-toggle', $pill).each(function () {
+            $(this).toggleClass('NB-active', $(this).data('scope') === scope);
+        });
+    },
+
+    // The pill list a new classifier goes in. The story trainer groups each section's pills
+    // by scope after the story's own (make_scoped_groups), in site, folder, all sites order,
+    // which its "More from this site" labels rely on. The site trainer lists them flat, and
+    // a type it has no section for yet gets one at the top.
+    trainer_section_for: function (added, $tab) {
+        var type = added.type;
+        if ($tab.hasClass('NB-tab-story')) {
+            var $list = type === 'tag' ? $tab.find('.NB-classifier-tags') :
+                $tab.find('.NB-classifier-content-section[data-section="' + type + '"] .NB-classifier-content-classifiers');
+            if ($list.length) {
+                var groups = ['NB-classifier-feed-items', 'NB-classifier-folder-items', 'NB-classifier-global-items'];
+                var group = groups[['feed', 'folder', 'global'].indexOf(added.scope)];
+                var $group = $list.children('.' + group);
+                if (!$group.length) {
+                    $group = $.make('div', { className: group });
+                    var $before = _.find(groups.slice(groups.indexOf(group) + 1), function (later) {
+                        return $list.children('.' + later).length;
+                    });
+                    if ($before) {
+                        $list.children('.' + $before).before($group);
+                    } else {
+                        $list.append($group);
+                    }
+                }
+                return $group;
+            }
+        }
+
+        var $section = $tab.find('.NB-classifier-' + type + 's');
+        if ($section.length) return $section.first();
+
+        var headers = {
+            title: gettext('Title Phrases'),
+            text: gettext('Text Phrases'),
+            author: gettext('Authors'),
+            tag: gettext('Categories &amp; Tags'),
+            url: gettext('URL')
+        };
+        $section = $.make('div', { className: 'NB-classifier-' + type + 's NB-fieldset-fields NB-classifiers' });
+        $tab.find('form').first().prepend($.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+            $.make('h5', headers[type]),
+            $section
+        ]));
+        return $section;
+    },
+
     // Where a typed classifier applies, for the add panel's FeedFolderPicker
     // (views/feed_folder_picker_view.js): All sites, the reader's folders by their full path
     // (the name folder-scoped classifiers store, see folder_path), then active sites by title.
@@ -4783,10 +4920,13 @@ var classifier_prototype = {
         return items;
     },
 
-    make_manage_add_row: function () {
+    // options.scope_values starts the panel on the first of these scopes the picker has, like
+    // the folder or site a site or story trainer opened on (trainer_add_scope_values).
+    make_manage_add_row: function (options) {
         var self = this;
         var state = this.get_manage_add_state();
         var $row;
+        options = options || {};
 
         var scope_label_id = _.uniqueId('NB-manage-add-scope-label-');
         var picker = new NEWSBLUR.Views.FeedFolderPicker({
@@ -4798,7 +4938,13 @@ var classifier_prototype = {
                 self.update_manage_add_row($row);
             }
         });
-        if (!picker.has_value(state.scope_value)) {
+        var start_value = _.find(options.scope_values || [], function (value) {
+            return picker.has_value(value);
+        });
+        if (start_value) {
+            state.scope_value = start_value;
+            picker.value = start_value;
+        } else if (!picker.has_value(state.scope_value)) {
             // The remembered site or folder is gone, so fall back to a scope that exists
             state.scope_value = NEWSBLUR.Globals.is_archive ? 'global' : this.default_manage_add_site();
             picker.value = state.scope_value;
@@ -4868,15 +5014,17 @@ var classifier_prototype = {
             ])
         ]);
 
-        this.manage_add_scope_picker = picker;
+        $row.data('scope_picker', picker);
         this.update_manage_add_row($row);
+        this.bind_manage_add_row($row);
 
         return $row;
     },
 
-    bind_manage_add_row: function () {
+    // A trainer can hold more than one panel (a site or story tab and Manage Training),
+    // so every handler works on its own $row.
+    bind_manage_add_row: function ($row) {
         var self = this;
-        var $row = $('.NB-manage-add', this.$modal);
         var state = this.get_manage_add_state();
 
         $('.NB-manage-add-type', $row).on('change', function () {
@@ -4900,17 +5048,13 @@ var classifier_prototype = {
             e.preventDefault();
             self.show_manage_add_sheet('opinions', this);
         });
-        // The sheets are fixed to their spot on screen, so they can't follow a scroll
-        $('.NB-tab-manage', this.$modal).off('scroll.manage_add').on('scroll.manage_add', function () {
-            self.hide_manage_add_sheets();
-        });
         $('.NB-manage-add-input', $row).on('input', function () {
             self.update_manage_add_row($row);
         }).on('keydown', function (e) {
             // Enter that confirms an IME composition (Japanese, Chinese, Korean) isn't a submit
             if (e.which !== 13 || (e.originalEvent && e.originalEvent.isComposing)) return;
             e.preventDefault();
-            self.add_manage_classifier();
+            self.add_manage_classifier($row);
         });
         $('.NB-manage-add-sentiment', $row).on('click', function (e) {
             e.preventDefault();
@@ -4919,7 +5063,7 @@ var classifier_prototype = {
         });
         $('.NB-manage-add-button', $row).on('click', function (e) {
             e.preventDefault();
-            self.add_manage_classifier();
+            self.add_manage_classifier($row);
         });
     },
 
@@ -4949,6 +5093,15 @@ var classifier_prototype = {
             top: rect.bottom + 8,
             bottom: 'auto'
         }, NEWSBLUR.utils.inline_end_alignment_css(rect))).addClass('NB-visible');
+
+        // Fixed to the control's spot on screen, so a scroll anywhere would leave it behind
+        if (!this.hide_manage_add_sheets_on_scroll) {
+            this.hide_manage_add_sheets_on_scroll = function (e) {
+                if (e.target && $(e.target).closest('.NB-classifier-regex-popover, .NB-scoring-popover').length) return;
+                self.hide_manage_add_sheets();
+            };
+        }
+        window.addEventListener('scroll', this.hide_manage_add_sheets_on_scroll, true);
     },
 
     // A short delay lets the pointer travel from the control into its sheet.
@@ -4964,6 +5117,9 @@ var classifier_prototype = {
 
     hide_manage_add_sheets: function () {
         clearTimeout(this.manage_add_sheet_timer);
+        if (this.hide_manage_add_sheets_on_scroll) {
+            window.removeEventListener('scroll', this.hide_manage_add_sheets_on_scroll, true);
+        }
         _.each(this.manage_add_sheets, function ($sheet) {
             $sheet.removeClass('NB-visible');
         });
@@ -5065,15 +5221,14 @@ var classifier_prototype = {
         return NEWSBLUR.ClassifierConstants.make_premium_notice(notice[0] + ' NB-visible', notice[1], notice[2]);
     },
 
-    show_manage_add_status: function () {
-        var $notice = $('.NB-manage-add-notice', this.$modal);
+    show_manage_add_status: function ($row) {
+        var $notice = $('.NB-manage-add-notice', $row);
         $notice.empty().append($.make('span', { className: 'NB-manage-add-status' }, gettext('Added')));
     },
 
-    add_manage_classifier: function () {
+    add_manage_classifier: function ($row) {
         var self = this;
         var utils = NEWSBLUR.classifier_add_utils;
-        var $row = $('.NB-manage-add', this.$modal);
         var $input = $('.NB-manage-add-input', $row);
         var state = this.get_manage_add_state();
         var $button = $('.NB-manage-add-button', $row);
@@ -5108,10 +5263,14 @@ var classifier_prototype = {
             $button_label.text(button_label);
             $input.val('').focus();
             self.update_manage_add_row($row);
-            self.show_manage_add_status();
-            self.forget_manage_dirty_item(added);
+            self.show_manage_add_status($row);
             self.manage_add_needs_feeds_refresh = true;
-            self.refresh_manage_after_add(added);
+            if ($row.closest('.NB-tab-manage').length) {
+                self.forget_manage_dirty_item(added);
+                self.refresh_manage_after_add(added);
+            } else {
+                self.show_trainer_added_classifier($row, added, entry.sentiment);
+            }
         }, function (response) {
             self.manage_add_saving = false;
             $button_label.text(button_label);
@@ -5133,9 +5292,11 @@ var classifier_prototype = {
             $sheet.remove();
         });
         this.manage_add_sheets = {};
-        if (this.manage_add_scope_picker) {
-            this.manage_add_scope_picker.close(false);
-        }
+        this.hide_manage_add_sheets();
+        $('.NB-manage-add', this.$modal).each(function () {
+            var picker = $(this).data('scope_picker');
+            if (picker) picker.close(false);
+        });
         if (this.manage_add_needs_feeds_refresh) {
             this.manage_add_needs_feeds_refresh = false;
             NEWSBLUR.reader.force_feeds_refresh();
@@ -5154,14 +5315,14 @@ var classifier_prototype = {
             if (!$content.length) {
                 // The empty state had no list yet, so build the whole tab, then swap the
                 // live add row back in so anything typed while this request ran survives.
-                var $row = $('.NB-manage-add', self.$modal);
+                var $row = $('.NB-tab-manage .NB-manage-add', self.$modal);
                 var input = $('.NB-manage-add-input', $row)[0];
                 var had_focus = input && document.activeElement === input;
                 var selection = input && [input.selectionStart, input.selectionEnd];
 
                 $row.detach();
                 self.render_manage_tab_content();
-                $('.NB-manage-add', self.$modal).replaceWith($row);
+                $('.NB-tab-manage .NB-manage-add', self.$modal).replaceWith($row);
 
                 if (had_focus) {
                     input.focus();
