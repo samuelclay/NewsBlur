@@ -11429,7 +11429,9 @@ select.NB-feed-folder-picker-select {
     color: #A8A69C;
 }
 
+/* Positioned so option offsetTop, used to keep the active option in view, is measured from the list */
 .NB-feed-folder-picker-list {
+    position: relative;
     max-height: 300px;
     overflow-y: auto;
     outline: none;
