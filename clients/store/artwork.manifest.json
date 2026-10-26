@@ -3694,6 +3694,770 @@
    "sha256": "99242b0ef6d0b664e0a28af175a226b05508dd97fa4ea16722063e3d90d539a2",
    "size": 79610
   },
+  "ios/16.0.1/duo/app-store-draft-proof.jpg": {
+   "sha256": "c9cf9a8f2999c8ec1ef2efcb504aaf5646eadc9f1b4380088cc86a8f17f7440d",
+   "size": 192324
+  },
+  "ios/16.0.1/duo/assets/iphone-duo-inner-landscape.png": {
+   "sha256": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1",
+   "size": 795922
+  },
+  "ios/16.0.1/duo/captures/ar/duo-feeds.png": {
+   "sha256": "b4188fe9f5411003795faf1234b2e43063ac47d71cfb7578c74ed355f3356142",
+   "size": 1581484
+  },
+  "ios/16.0.1/duo/captures/ar/duo-reader.png": {
+   "sha256": "2fe1b3166370a1a6932a45bb40f90ac7f15dbc8e4b718930bbf2bea43bd87c54",
+   "size": 3758495
+  },
+  "ios/16.0.1/duo/captures/ar/duo-saved.png": {
+   "sha256": "3fb013a7c89428ea4192b9056410615e3b750c14b63c664a2c2d64720f475f1d",
+   "size": 1541759
+  },
+  "ios/16.0.1/duo/captures/ar/duo-stories.png": {
+   "sha256": "ec513628e06c68821e46915126013f5fd416c0e01b6188c60409d2c9d0509717",
+   "size": 1540170
+  },
+  "ios/16.0.1/duo/captures/de/duo-feeds.png": {
+   "sha256": "cfc704cdc1df68ab310ee5ec136550946511c41d81c1123604cb4bab27fe08a1",
+   "size": 1605524
+  },
+  "ios/16.0.1/duo/captures/de/duo-reader.png": {
+   "sha256": "bbdc04587cb8c41f29a4eb5aa445b0766a2234e8f34ab4b48e59001db415624b",
+   "size": 3772041
+  },
+  "ios/16.0.1/duo/captures/de/duo-saved.png": {
+   "sha256": "99078821c5195c63b0a877ce641a29f4cc0ed43fa6e8c20867fd22979fb9a32a",
+   "size": 1564861
+  },
+  "ios/16.0.1/duo/captures/de/duo-stories.png": {
+   "sha256": "3fac98741280bd6d316883b9b43ea1db22fa106b6dcd21253feb3562af438324",
+   "size": 1564774
+  },
+  "ios/16.0.1/duo/captures/en/duo-feeds.png": {
+   "sha256": "15b6af8121cfc5a186a6f9086427996e809a3ee96fefd64795421753c77753e2",
+   "size": 1606638
+  },
+  "ios/16.0.1/duo/captures/en/duo-reader.png": {
+   "sha256": "f1c0bbd4aa3b2eb47209c210b503ac3b9e163fcab181088414ced7c24482064a",
+   "size": 3774114
+  },
+  "ios/16.0.1/duo/captures/en/duo-saved.png": {
+   "sha256": "691f0fd05aac5d5b24442e20897bce1448d516e928b800307c759e8b2ecdedc4",
+   "size": 1561830
+  },
+  "ios/16.0.1/duo/captures/en/duo-stories.png": {
+   "sha256": "659464ae4e9f40ddd5a7602a0de602506f41816959e5c144b34bd977eb3bf4bd",
+   "size": 1566294
+  },
+  "ios/16.0.1/duo/captures/es/duo-feeds.png": {
+   "sha256": "8f5542b0bbb64894a4c5fbb81456ae4607fba4bc49a8041c89585c56384bb3d2",
+   "size": 1606972
+  },
+  "ios/16.0.1/duo/captures/es/duo-reader.png": {
+   "sha256": "87254cf13b983a3c55a065b5ce960521d33b4e6e65e1127cffe7816b0314f01f",
+   "size": 3774269
+  },
+  "ios/16.0.1/duo/captures/es/duo-saved.png": {
+   "sha256": "f404fbe297a684975b0fca786e4f5d30fdc0f7a67bc160a858d24e46903e6307",
+   "size": 1567384
+  },
+  "ios/16.0.1/duo/captures/es/duo-stories.png": {
+   "sha256": "9bda2d1c105217c10881536c680047e65b2c198e1312e95fda10bcd7a424f6c6",
+   "size": 1563728
+  },
+  "ios/16.0.1/duo/captures/fr/duo-feeds.png": {
+   "sha256": "f9df481424756287a1d05681c2fdf745010cc63083b62f683c8a96d46d0db3ee",
+   "size": 1601746
+  },
+  "ios/16.0.1/duo/captures/fr/duo-reader.png": {
+   "sha256": "123623b461b06b3459739c0aae0dbaacf5c4fb8014525f091cdd51076984974d",
+   "size": 3773371
+  },
+  "ios/16.0.1/duo/captures/fr/duo-saved.png": {
+   "sha256": "d308f678892752b95dcb7c40e6071b4b4b51e491bb8fe7921411c5d9f6c3db27",
+   "size": 1557363
+  },
+  "ios/16.0.1/duo/captures/fr/duo-stories.png": {
+   "sha256": "3482cee8a8692dd5e0249ecac5bf855c9e6ef5ea17d4ea72b7b63f37d3ef8197",
+   "size": 1559864
+  },
+  "ios/16.0.1/duo/captures/he/duo-feeds.png": {
+   "sha256": "8247c060aed1c699b2f019ae9ad85c161d9596d1ab8771092e6e960dc0485212",
+   "size": 1571541
+  },
+  "ios/16.0.1/duo/captures/he/duo-reader.png": {
+   "sha256": "2fe6e40fca4d8a20809e1082d976bb65011ffc40f1a9f135bf289e4f65d475b5",
+   "size": 3758333
+  },
+  "ios/16.0.1/duo/captures/he/duo-saved.png": {
+   "sha256": "2b43bb4027d6403d2260199882bc52e8691be5d5e9e560bf7a32ee8ced0fdd8f",
+   "size": 1530110
+  },
+  "ios/16.0.1/duo/captures/he/duo-stories.png": {
+   "sha256": "3bb4118ac842333179fc671b4d777c20bfb1a53311787067c4d9c47c6acc1148",
+   "size": 1531262
+  },
+  "ios/16.0.1/duo/captures/hi/duo-feeds.png": {
+   "sha256": "e43cd4ba046f21765830b39cafb8f683476a4500f36d321a6ab4645b42ea8c31",
+   "size": 1592832
+  },
+  "ios/16.0.1/duo/captures/hi/duo-reader.png": {
+   "sha256": "103482cbc6469f66735f31359cc13584b8e6071c756d71b17d73966993fe2ecb",
+   "size": 3772953
+  },
+  "ios/16.0.1/duo/captures/hi/duo-saved.png": {
+   "sha256": "bd72af121fd973fadc5b38ef164796cbc1336236ee0d70e3d87da306a32bc011",
+   "size": 1541798
+  },
+  "ios/16.0.1/duo/captures/hi/duo-stories.png": {
+   "sha256": "73766948df3f31e72829e0ca2ebd7dabc3f3fe73c78085dabcf2a2e59fec69c4",
+   "size": 1549311
+  },
+  "ios/16.0.1/duo/captures/id/duo-feeds.png": {
+   "sha256": "534f98af90262e0ff14569bfedd4037e4b0d0b43f80bfdebe3230a870b4beb07",
+   "size": 1606508
+  },
+  "ios/16.0.1/duo/captures/id/duo-reader.png": {
+   "sha256": "b440d00d659979c7fb6b7afbd0cc6a77acf81c81ba1dbf13a50492a0e95d9ec8",
+   "size": 3775446
+  },
+  "ios/16.0.1/duo/captures/id/duo-saved.png": {
+   "sha256": "da5c9ef781e6ed2477415e4a262e8257c6adfff42e821755514f59b56355b260",
+   "size": 1563109
+  },
+  "ios/16.0.1/duo/captures/id/duo-stories.png": {
+   "sha256": "17938871cd8415641f6473ddaa0ba39cc42610e947f24ecbac6e5a9b816a0748",
+   "size": 1563360
+  },
+  "ios/16.0.1/duo/captures/it/duo-feeds.png": {
+   "sha256": "08cac4d3151ab530790d1d6506b995aa0d94ac8519aca93e12aa7a070d20f947",
+   "size": 1593662
+  },
+  "ios/16.0.1/duo/captures/it/duo-reader.png": {
+   "sha256": "2a2fd39633fb8b01bcfc2b25c2e5bff988a4c79d367e6cf6c645b8e503bff178",
+   "size": 3774851
+  },
+  "ios/16.0.1/duo/captures/it/duo-saved.png": {
+   "sha256": "006fb375027ebe2aa5332b676b079c576648c5ab0101b031a827cf0bb1c2d639",
+   "size": 1552085
+  },
+  "ios/16.0.1/duo/captures/it/duo-stories.png": {
+   "sha256": "9c0e6be5df26750491edfa082c873118811debb3f8ee138ed5a433a61360bc7b",
+   "size": 1552758
+  },
+  "ios/16.0.1/duo/captures/ja/duo-feeds.png": {
+   "sha256": "fa98f2f4bab19f6dcb3f10217e92c40a8222135d27a4e43d27a5a44787f63711",
+   "size": 1608499
+  },
+  "ios/16.0.1/duo/captures/ja/duo-reader.png": {
+   "sha256": "007ecc2d854b56075d0115a7c749f502d9d67ef4a785c71ef6e09e13d055702e",
+   "size": 3769682
+  },
+  "ios/16.0.1/duo/captures/ja/duo-saved.png": {
+   "sha256": "5d26c896ff6030c3765630ef0a5855fb235269426727512b8fc3bf4e524f7236",
+   "size": 1558754
+  },
+  "ios/16.0.1/duo/captures/ja/duo-stories.png": {
+   "sha256": "67d0c01124bba7d35bd47860a03d201065cd25933865a69e9dba442d794d1f18",
+   "size": 1561382
+  },
+  "ios/16.0.1/duo/captures/ko/duo-feeds.png": {
+   "sha256": "79140259a22f190149aea518453ab2cf98c56fbbbd19a90bd663cb2fe9a2602e",
+   "size": 1582426
+  },
+  "ios/16.0.1/duo/captures/ko/duo-reader.png": {
+   "sha256": "6d7dffb3895d75c22136b9da34159f231cf8fde9e3e78ba0a150cb076c254a62",
+   "size": 3770426
+  },
+  "ios/16.0.1/duo/captures/ko/duo-saved.png": {
+   "sha256": "50120cc81c130c21b62cba2f3ba346ba690119a906c64b8c9ac1b17befe01fb7",
+   "size": 1533218
+  },
+  "ios/16.0.1/duo/captures/ko/duo-stories.png": {
+   "sha256": "3820ea33a193f463e9f1f2dc6500495e5c48951d9e69e37be59f47efe70a1e1d",
+   "size": 1543478
+  },
+  "ios/16.0.1/duo/captures/nl/duo-feeds.png": {
+   "sha256": "eedaa558d8fcb826074253a65ff43b132c860d43ae665ebabdd141b45bd18d39",
+   "size": 1606846
+  },
+  "ios/16.0.1/duo/captures/nl/duo-reader.png": {
+   "sha256": "f08ac5114c5d910ccb5ae6b101ec3af699e5cd4cce40d137f8129ecfbff91ea5",
+   "size": 3777740
+  },
+  "ios/16.0.1/duo/captures/nl/duo-saved.png": {
+   "sha256": "1edbad554caf2acd06c03977c73302f7fe138f352129ead47c7a37c6485372f5",
+   "size": 1565993
+  },
+  "ios/16.0.1/duo/captures/nl/duo-stories.png": {
+   "sha256": "c194a2f6df63de905e41acdcf9e026d31f543812bcf12856b015d9b678b0afcc",
+   "size": 1564536
+  },
+  "ios/16.0.1/duo/captures/pl/duo-feeds.png": {
+   "sha256": "bdbde7eb64b45488097aa179a973dba275d34e275270bb06dc6d5c781ecdb89e",
+   "size": 1613265
+  },
+  "ios/16.0.1/duo/captures/pl/duo-reader.png": {
+   "sha256": "8afe9df7b92c55be3771aa68b3c4b268f09605f7e3aa294a5cf4a3d76ae110d2",
+   "size": 3777598
+  },
+  "ios/16.0.1/duo/captures/pl/duo-saved.png": {
+   "sha256": "be165864cda3cb21d4b8e679264bd1f0f293fe3b81868adba771f180d334e4fc",
+   "size": 1573339
+  },
+  "ios/16.0.1/duo/captures/pl/duo-stories.png": {
+   "sha256": "de57e61322a373535b93376532c8533cf205ab6d50ade22a8b49f1d54e216d50",
+   "size": 1571971
+  },
+  "ios/16.0.1/duo/captures/pt-BR/duo-feeds.png": {
+   "sha256": "a4dfd4a658e81589d1b96246eedf2ac0501edd82e793b12aec58bdfbdc8553bb",
+   "size": 1601779
+  },
+  "ios/16.0.1/duo/captures/pt-BR/duo-reader.png": {
+   "sha256": "9b6352251d133b1b65ada2e6620c870c80bbfcc266e2a2a77924e0b84d7f01fc",
+   "size": 3775590
+  },
+  "ios/16.0.1/duo/captures/pt-BR/duo-saved.png": {
+   "sha256": "76beaab5a0bb2243da3fd57e770f0d45e2543a1e4451eac789db4cca84533b3a",
+   "size": 1562036
+  },
+  "ios/16.0.1/duo/captures/pt-BR/duo-stories.png": {
+   "sha256": "22543accffeaa29d282d344c1f3e477047ba039b4b8390b4f938d5723afd0bf2",
+   "size": 1557940
+  },
+  "ios/16.0.1/duo/captures/ru/duo-feeds.png": {
+   "sha256": "e5811f5c5d0000da52e4401d43ee1059a654861f9b5c052a61f6a81cc3563587",
+   "size": 1600868
+  },
+  "ios/16.0.1/duo/captures/ru/duo-reader.png": {
+   "sha256": "a5b1458ca9e16d7dcd673a0aa085b64a57db33db9d71bc0fb2ee31d4ea43ce2b",
+   "size": 3772377
+  },
+  "ios/16.0.1/duo/captures/ru/duo-saved.png": {
+   "sha256": "cdaa4895994b7f94eec8d983fd11a60e122b34aa8939407cf5f4cbc751eccdff",
+   "size": 1560221
+  },
+  "ios/16.0.1/duo/captures/ru/duo-stories.png": {
+   "sha256": "973f5c30b7eebb775ee58ba5c9c423dec89c9b248e5a6abb5d96c64b2da39fb6",
+   "size": 1558484
+  },
+  "ios/16.0.1/duo/captures/th/duo-feeds.png": {
+   "sha256": "07f756cfe1de718c3723748549be304780273fbe4e0354b65d987841b3dbe4e1",
+   "size": 1609636
+  },
+  "ios/16.0.1/duo/captures/th/duo-reader.png": {
+   "sha256": "23132e266e961053f2b3b6feef644eaaa34544dceca2f6637d3eb042a8baf47a",
+   "size": 3774021
+  },
+  "ios/16.0.1/duo/captures/th/duo-saved.png": {
+   "sha256": "8000ccede5dce768eab667f523964846aea48cc918f96ec5832aafdba67cc501",
+   "size": 1563516
+  },
+  "ios/16.0.1/duo/captures/th/duo-stories.png": {
+   "sha256": "46af5157fadcca823bf40d42829fd980f15162cc015354de98e45bfa09e54c65",
+   "size": 1563832
+  },
+  "ios/16.0.1/duo/captures/tr/duo-feeds.png": {
+   "sha256": "5adb6e9a2a651520da9fe0b9399277e3f76fbfe868bf009a2d50977ed45a5d5a",
+   "size": 1604639
+  },
+  "ios/16.0.1/duo/captures/tr/duo-reader.png": {
+   "sha256": "104b99843cc68821c9eec2e61e332895a032fa5eb6bc99c58c6669d472b968a5",
+   "size": 3846138
+  },
+  "ios/16.0.1/duo/captures/tr/duo-saved.png": {
+   "sha256": "782bbc19a94a658775b8c22df8c8e755fa5d1ba70b4b79669b1251dfcb015d07",
+   "size": 1559773
+  },
+  "ios/16.0.1/duo/captures/tr/duo-stories.png": {
+   "sha256": "80e64f09f3efb58daf053527aafdb11683abc855df3cdcdb6d7150fb2e481c45",
+   "size": 1560988
+  },
+  "ios/16.0.1/duo/captures/uk/duo-feeds.png": {
+   "sha256": "debc77f90c761ad0e5ed40f86c30c61e24f7ff4f3e9be84f691feb0a0287ef7d",
+   "size": 1597564
+  },
+  "ios/16.0.1/duo/captures/uk/duo-reader.png": {
+   "sha256": "b03b66ebca0e9a8cc7b7b7b20a8055dd0b860559d75853ec84d6f6837152d849",
+   "size": 3773049
+  },
+  "ios/16.0.1/duo/captures/uk/duo-saved.png": {
+   "sha256": "07ccbab901d3e66edeafc95cf683ceafa4ee80b10b5dad53c4466c186d8f120c",
+   "size": 1556022
+  },
+  "ios/16.0.1/duo/captures/uk/duo-stories.png": {
+   "sha256": "730df788d2c4c76ca193c108221806cc25f1a29e1f3d25facb27bea58f36e30a",
+   "size": 1553642
+  },
+  "ios/16.0.1/duo/captures/vi/duo-feeds.png": {
+   "sha256": "b7bf0333d58538d9ed105f99900a5ab799e9e7290af5a35195d3fc7ba8a29854",
+   "size": 1611611
+  },
+  "ios/16.0.1/duo/captures/vi/duo-reader.png": {
+   "sha256": "fc41e737a2dd99b860ff7010fc798653d51d477aca085288da26bf750614185e",
+   "size": 3777407
+  },
+  "ios/16.0.1/duo/captures/vi/duo-saved.png": {
+   "sha256": "2ca4a412bf033953a9741bdb6fcaffe01e4d103b852a7da0031da5e8c8c810e7",
+   "size": 1572701
+  },
+  "ios/16.0.1/duo/captures/vi/duo-stories.png": {
+   "sha256": "acd0cbefbd914dcab56a90d3e49c04fd4e20be4bf1041e4aa0f21552652f956a",
+   "size": 1569147
+  },
+  "ios/16.0.1/duo/captures/zh-Hans/duo-feeds.png": {
+   "sha256": "d47d27e661f956291efb2f0073c6fb0d754eb74c16110c6c6f82fcb692efdd23",
+   "size": 1606248
+  },
+  "ios/16.0.1/duo/captures/zh-Hans/duo-reader.png": {
+   "sha256": "213b366f0efc496f5baf3904a032c57e4d39603192908a0b2f13961e6b165a48",
+   "size": 3775148
+  },
+  "ios/16.0.1/duo/captures/zh-Hans/duo-saved.png": {
+   "sha256": "8d37845c71b57806c963c92a5019430be3c73f5107f059230599f26ee2bfb9b8",
+   "size": 1554386
+  },
+  "ios/16.0.1/duo/captures/zh-Hans/duo-stories.png": {
+   "sha256": "d6eeac624ccdb98dd84baf83a84fd0d0dc973fb6c3dff8d6290ed0573bb7af7b",
+   "size": 1558748
+  },
+  "ios/16.0.1/duo/captures/zh-Hant/duo-feeds.png": {
+   "sha256": "0e54d1c5740e72230751f499a8e79dd7fa430be0e256b3a7a7e20f835c0dfab9",
+   "size": 1608386
+  },
+  "ios/16.0.1/duo/captures/zh-Hant/duo-reader.png": {
+   "sha256": "e86c20dc8833c2217fdd5e9606cd104759f7ce9f7a12d161e9ab6def11d1637c",
+   "size": 3776974
+  },
+  "ios/16.0.1/duo/captures/zh-Hant/duo-saved.png": {
+   "sha256": "b19a9f0eb0f5415686b220e63af8eedb0ef276533c3e6a83e3e5dd70049f44c2",
+   "size": 1555729
+  },
+  "ios/16.0.1/duo/captures/zh-Hant/duo-stories.png": {
+   "sha256": "a7f5e9df326a17665e6b58d3ddf929a30da179d0acb83896eb04cbf3bb02eb38",
+   "size": 1565672
+  },
+  "ios/16.0.1/duo/exports/ar/contact.png": {
+   "sha256": "bb683c02b45a942b445b38148b9ae2763b2e2eb73d6ff87ee98f3d78b048662c",
+   "size": 627089
+  },
+  "ios/16.0.1/duo/exports/ar/newsblur-16.0.1-ar-duo-inner-2853x2007-01.png": {
+   "sha256": "310bc405be3bb59718592c8005bf5e97acb112e622a1d0da0dc082bb5221bc3f",
+   "size": 1153058
+  },
+  "ios/16.0.1/duo/exports/ar/newsblur-16.0.1-ar-duo-inner-2853x2007-02.png": {
+   "sha256": "569403818ef930e09cabaab2fd04eb26ae89257a14d03ae9b2b15bc7327a7fe3",
+   "size": 1156535
+  },
+  "ios/16.0.1/duo/exports/ar/newsblur-16.0.1-ar-duo-inner-2853x2007-03.png": {
+   "sha256": "dde072d6807dd6c8c91ba2aa9eb72872b5440cc653cf7a17d26098c15d75298d",
+   "size": 1881876
+  },
+  "ios/16.0.1/duo/exports/ar/newsblur-16.0.1-ar-duo-inner-2853x2007-04.png": {
+   "sha256": "51d9c6fb59a22870ba16fa1598a0aeb18e33839286316c5c17bb4bffb473fb9a",
+   "size": 1133606
+  },
+  "ios/16.0.1/duo/exports/de/contact.png": {
+   "sha256": "dfe6cd71b050adb0f788c23248f1737c30aad4b393ca758e9e8af6a3e391827a",
+   "size": 654646
+  },
+  "ios/16.0.1/duo/exports/de/newsblur-16.0.1-de-duo-inner-2853x2007-01.png": {
+   "sha256": "55e07f75a3cea80fb4e71a862ddec0ea5aec530066abc226f6bf0c49252d4b7a",
+   "size": 1193057
+  },
+  "ios/16.0.1/duo/exports/de/newsblur-16.0.1-de-duo-inner-2853x2007-02.png": {
+   "sha256": "7b0dffe4107ac293a2f97e9db0adda686c22ec6833b940e37411507888609412",
+   "size": 1186774
+  },
+  "ios/16.0.1/duo/exports/de/newsblur-16.0.1-de-duo-inner-2853x2007-03.png": {
+   "sha256": "22826c94112cd2250d2a632a2a14ef072c70f75051b9655924601c3346efc8ca",
+   "size": 1908280
+  },
+  "ios/16.0.1/duo/exports/de/newsblur-16.0.1-de-duo-inner-2853x2007-04.png": {
+   "sha256": "87fec7c61d9a4cb96912035acc61b57b179ece57daa7c9e4a1c310ef4fd815ac",
+   "size": 1179492
+  },
+  "ios/16.0.1/duo/exports/en/contact.png": {
+   "sha256": "18664312bd20b0efd42c12b6d8ef94b1c7eb0c57c61bb6ac6b8ede0589f6bb74",
+   "size": 644177
+  },
+  "ios/16.0.1/duo/exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-01.png": {
+   "sha256": "ceebceeb67808cf8cbe017f13d3c889ba669bebb39797318b7803645860e5563",
+   "size": 1185895
+  },
+  "ios/16.0.1/duo/exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-02.png": {
+   "sha256": "5e028e44f6671177442b50e8f364d00e153694d005e5c3e5f6938860412f3682",
+   "size": 1194672
+  },
+  "ios/16.0.1/duo/exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-03.png": {
+   "sha256": "a94aad3e3f1149a0973ce8a123df67ac2a36bd67fd0bcff0625046868f83d56e",
+   "size": 1895156
+  },
+  "ios/16.0.1/duo/exports/en/newsblur-16.0.1-en-duo-inner-2853x2007-04.png": {
+   "sha256": "8bd5fde55dae1928aa91109c8d08d4c133f931b8390b3104dcb8acec9c2fa087",
+   "size": 1160612
+  },
+  "ios/16.0.1/duo/exports/es/contact.png": {
+   "sha256": "9a49c551dd8b4fdc930e45ef41026f961c8b69f9c1eca3732e13c280708fd799",
+   "size": 659945
+  },
+  "ios/16.0.1/duo/exports/es/newsblur-16.0.1-es-duo-inner-2853x2007-01.png": {
+   "sha256": "b69bfee31ccb80a6e74b380fc97be974df2a431007ebbd92effdd97f2a3e07f3",
+   "size": 1189130
+  },
+  "ios/16.0.1/duo/exports/es/newsblur-16.0.1-es-duo-inner-2853x2007-02.png": {
+   "sha256": "01bacab798413dc07bdeb6695590cd2734d90a047e00bda3317d6d96c2e4d1f5",
+   "size": 1203382
+  },
+  "ios/16.0.1/duo/exports/es/newsblur-16.0.1-es-duo-inner-2853x2007-03.png": {
+   "sha256": "b2a6b24ffc68b0b5af3195961f2850a19622f349aee0a20e207384157f9ad4d8",
+   "size": 1902338
+  },
+  "ios/16.0.1/duo/exports/es/newsblur-16.0.1-es-duo-inner-2853x2007-04.png": {
+   "sha256": "86b01d3bc906a9ccffa0d455483f905393b3d8c3e0a6226bf2ddab68043512d2",
+   "size": 1183136
+  },
+  "ios/16.0.1/duo/exports/fr/contact.png": {
+   "sha256": "359a12e10a96c9a2ab0dffa72bec44524771ec332699dfaa6adfdab968c3116e",
+   "size": 664377
+  },
+  "ios/16.0.1/duo/exports/fr/newsblur-16.0.1-fr-duo-inner-2853x2007-01.png": {
+   "sha256": "a80736db40af6b7b910b4ebfdb996fb72a9d43ade573c860b525c48dd382335a",
+   "size": 1196158
+  },
+  "ios/16.0.1/duo/exports/fr/newsblur-16.0.1-fr-duo-inner-2853x2007-02.png": {
+   "sha256": "16e6957bf245f67b8bb5d659c51b77e9e6355bb8dd67a2b486c2052bd5128142",
+   "size": 1195394
+  },
+  "ios/16.0.1/duo/exports/fr/newsblur-16.0.1-fr-duo-inner-2853x2007-03.png": {
+   "sha256": "2d5ce45b99f6a5cc64031aed6655ecfacedb08459d7d7a8f94fef62c2261b326",
+   "size": 1904378
+  },
+  "ios/16.0.1/duo/exports/fr/newsblur-16.0.1-fr-duo-inner-2853x2007-04.png": {
+   "sha256": "0a7441833d27d16dfc25f11eb44f3ea1b3417b7f6a6041964a7a6d9a070c2bd0",
+   "size": 1178983
+  },
+  "ios/16.0.1/duo/exports/he/contact.png": {
+   "sha256": "373f67d0a843be3e934890d36e94c963cea8a753fc38c6749014f3a231844ad2",
+   "size": 616184
+  },
+  "ios/16.0.1/duo/exports/he/newsblur-16.0.1-he-duo-inner-2853x2007-01.png": {
+   "sha256": "459f371db90798bdda40a3c33b09406a7d31c480f2f693efb35eabe2b8b1369f",
+   "size": 1137765
+  },
+  "ios/16.0.1/duo/exports/he/newsblur-16.0.1-he-duo-inner-2853x2007-02.png": {
+   "sha256": "15647dff7e63d1cc57bcdb3d6f07443566c57004a0303ec3bcbff29aab897e7c",
+   "size": 1132187
+  },
+  "ios/16.0.1/duo/exports/he/newsblur-16.0.1-he-duo-inner-2853x2007-03.png": {
+   "sha256": "8bc427d6f1748b41f0223d0ace0c931ea216e5ccc48de148dfe505e3eecdf332",
+   "size": 1874955
+  },
+  "ios/16.0.1/duo/exports/he/newsblur-16.0.1-he-duo-inner-2853x2007-04.png": {
+   "sha256": "4ad660e8356128eae848612ec0251503d53d25c647a867380bc895efc56da91f",
+   "size": 1118279
+  },
+  "ios/16.0.1/duo/exports/hi/contact.png": {
+   "sha256": "8eb74faed08b3f28365f19970c94899b14ad93349bf02a3d46ea2cb4a6d97e86",
+   "size": 632246
+  },
+  "ios/16.0.1/duo/exports/hi/newsblur-16.0.1-hi-duo-inner-2853x2007-01.png": {
+   "sha256": "83a1432447ca2be0435f91e82edbd9b033d124d0e6237256e9d37b0ca636eb2e",
+   "size": 1167535
+  },
+  "ios/16.0.1/duo/exports/hi/newsblur-16.0.1-hi-duo-inner-2853x2007-02.png": {
+   "sha256": "11ec07fce378a4ca95c74e8d9496b0594dde9d85aff10cc378c8bbbc823eb890",
+   "size": 1176898
+  },
+  "ios/16.0.1/duo/exports/hi/newsblur-16.0.1-hi-duo-inner-2853x2007-03.png": {
+   "sha256": "7e40de8bb3e5abc096afa820ccdf7b9804945c4629f8d4aaaaea3283bcf587a3",
+   "size": 1889552
+  },
+  "ios/16.0.1/duo/exports/hi/newsblur-16.0.1-hi-duo-inner-2853x2007-04.png": {
+   "sha256": "b64a4838ebc28570a922eea4b963af1829329ecab36d22d95fe03abfbdbf9092",
+   "size": 1152692
+  },
+  "ios/16.0.1/duo/exports/id/contact.png": {
+   "sha256": "480ba44fa6a42bc744e23e5b90e4766ace00a2904eb68e6cd4de28dac86dbf86",
+   "size": 647732
+  },
+  "ios/16.0.1/duo/exports/id/newsblur-16.0.1-id-duo-inner-2853x2007-01.png": {
+   "sha256": "bb462557be64577d4966384b878a1e21a2c01423ca92c829645145d77eeb6152",
+   "size": 1187376
+  },
+  "ios/16.0.1/duo/exports/id/newsblur-16.0.1-id-duo-inner-2853x2007-02.png": {
+   "sha256": "de265260faaca66294b3ecf9afd6a570f514d6d7c7ac19bf2810e7b76a446971",
+   "size": 1200572
+  },
+  "ios/16.0.1/duo/exports/id/newsblur-16.0.1-id-duo-inner-2853x2007-03.png": {
+   "sha256": "edd2e16c7a10ab6cc8918ad0f564a56d409d939e57a15a2ac83377716b069a37",
+   "size": 1904372
+  },
+  "ios/16.0.1/duo/exports/id/newsblur-16.0.1-id-duo-inner-2853x2007-04.png": {
+   "sha256": "c62366e6bb6b93f6a5d8248e51ebe2080a9caf8d3681fd4c4d12d2b7f582d0ca",
+   "size": 1171036
+  },
+  "ios/16.0.1/duo/exports/it/contact.png": {
+   "sha256": "bdb863db4e52e0d01f34b7ea5cc1c70d0384be9e1c8552d73774b59ddd78b92f",
+   "size": 656117
+  },
+  "ios/16.0.1/duo/exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-01.png": {
+   "sha256": "179531a2dc40c59a11e2ecd86c1f4f80e9f5b07aa72a32d33c3a53c5c2e0c040",
+   "size": 1185049
+  },
+  "ios/16.0.1/duo/exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-02.png": {
+   "sha256": "4fe3b4ad707df102ec23fbb59d3337f4d99379ef0c3a2b0246dbc6b20318a829",
+   "size": 1178119
+  },
+  "ios/16.0.1/duo/exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-03.png": {
+   "sha256": "3a1b37b4e79c49e8b74bd7cdce4e4cddcdacb1099c59eb869feebf9d06d53b57",
+   "size": 1904118
+  },
+  "ios/16.0.1/duo/exports/it/newsblur-16.0.1-it-duo-inner-2853x2007-04.png": {
+   "sha256": "d1b1c85d363012fe13521b96de6c0911e3919ac4694264b3499f3075691afa71",
+   "size": 1160596
+  },
+  "ios/16.0.1/duo/exports/ja/contact.png": {
+   "sha256": "4c063929099bcac7321ab26f5ae279751a7c8b257f537a0026069f490c1a6489",
+   "size": 675849
+  },
+  "ios/16.0.1/duo/exports/ja/newsblur-16.0.1-ja-duo-inner-2853x2007-01.png": {
+   "sha256": "881886a6a6890e7bc98c2fed9d255b2396b668ac4fd61b5a995362b4564c3c6a",
+   "size": 1206119
+  },
+  "ios/16.0.1/duo/exports/ja/newsblur-16.0.1-ja-duo-inner-2853x2007-02.png": {
+   "sha256": "5e250a415bd362648aa70228d6d2fd93e61b4deb66d420ad38dc89042ce13c82",
+   "size": 1230403
+  },
+  "ios/16.0.1/duo/exports/ja/newsblur-16.0.1-ja-duo-inner-2853x2007-03.png": {
+   "sha256": "b3d6ea5d2fe55a1d8a63b87ab23a9df167022c8b839458c5137cb57dde072732",
+   "size": 1917529
+  },
+  "ios/16.0.1/duo/exports/ja/newsblur-16.0.1-ja-duo-inner-2853x2007-04.png": {
+   "sha256": "43424bf59b61d6bf96f89540748bd9f6af9bf9233d42a045aa5346f54f1d1470",
+   "size": 1197870
+  },
+  "ios/16.0.1/duo/exports/ko/contact.png": {
+   "sha256": "3c3a580f5e92c7650314d34268613277276ea952e42ddd885fe81a3d3e59660e",
+   "size": 628972
+  },
+  "ios/16.0.1/duo/exports/ko/newsblur-16.0.1-ko-duo-inner-2853x2007-01.png": {
+   "sha256": "c3f0f6c2659cde2d1540501a7cf66291c5e3e8b0c2cadc94d61b0791ae9ddde0",
+   "size": 1150227
+  },
+  "ios/16.0.1/duo/exports/ko/newsblur-16.0.1-ko-duo-inner-2853x2007-02.png": {
+   "sha256": "12245301abad30ab50375d5bda3265247a0478a7b641e820597b8df5a1ad5256",
+   "size": 1162797
+  },
+  "ios/16.0.1/duo/exports/ko/newsblur-16.0.1-ko-duo-inner-2853x2007-03.png": {
+   "sha256": "d7d2afe2795f01eb6f96066c518a0023bb5dec14f075987a6034268a922372e1",
+   "size": 1889887
+  },
+  "ios/16.0.1/duo/exports/ko/newsblur-16.0.1-ko-duo-inner-2853x2007-04.png": {
+   "sha256": "915f33761a89765b3edf122a8c57941cce312d67e23ee863163984d206dd0912",
+   "size": 1147858
+  },
+  "ios/16.0.1/duo/exports/nl/contact.png": {
+   "sha256": "656a4d0013bd7a55e85b7b0eaafb4d17ed726c5a9399092dd9c67a105178b9d8",
+   "size": 659411
+  },
+  "ios/16.0.1/duo/exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-01.png": {
+   "sha256": "e7c715f9acd487d119b00ceeadc58c46b65fd6afe3315322ec4475e3fa42b9cf",
+   "size": 1197917
+  },
+  "ios/16.0.1/duo/exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-02.png": {
+   "sha256": "be1737031da13a840dcdab33be9a3daedafef1ab826853f76be08ef1ede20f69",
+   "size": 1200209
+  },
+  "ios/16.0.1/duo/exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-03.png": {
+   "sha256": "532a5ce2117d7075546c4b213e2e6141dd612e6b652023c938b6a9bacf5e7738",
+   "size": 1900406
+  },
+  "ios/16.0.1/duo/exports/nl/newsblur-16.0.1-nl-duo-inner-2853x2007-04.png": {
+   "sha256": "c31794332b375e1c232d18949f28c5389080db8bd612a648c6cc94eb72d50c84",
+   "size": 1182631
+  },
+  "ios/16.0.1/duo/exports/pl/contact.png": {
+   "sha256": "5a1c7f9173de117e97e2609edfc9964a4bf9a865870975cbfabb96d459a8389d",
+   "size": 672360
+  },
+  "ios/16.0.1/duo/exports/pl/newsblur-16.0.1-pl-duo-inner-2853x2007-01.png": {
+   "sha256": "505c50a718134eebf9228d6fe9eb998ff0682e684f3c557174abea8e8c26143a",
+   "size": 1216627
+  },
+  "ios/16.0.1/duo/exports/pl/newsblur-16.0.1-pl-duo-inner-2853x2007-02.png": {
+   "sha256": "f7a98291f85311cd329104b0824b75914a2b8b997b335453d4638dec51cc88bc",
+   "size": 1215909
+  },
+  "ios/16.0.1/duo/exports/pl/newsblur-16.0.1-pl-duo-inner-2853x2007-03.png": {
+   "sha256": "fc088e0728e46d1edc6977c69f75f5046180eb7ed923f8d8ce5263970f1bd796",
+   "size": 1929690
+  },
+  "ios/16.0.1/duo/exports/pl/newsblur-16.0.1-pl-duo-inner-2853x2007-04.png": {
+   "sha256": "8f72edd1ef1e6af59d2c3277d8210b27a13c7842b82b2d912aa22e735a1cc1a1",
+   "size": 1185324
+  },
+  "ios/16.0.1/duo/exports/pt-BR/contact.png": {
+   "sha256": "ef313f2c60c42f772c966a0a6aa96aece0c40b2b8ffc3695879e0c58b702d617",
+   "size": 658179
+  },
+  "ios/16.0.1/duo/exports/pt-BR/newsblur-16.0.1-pt-BR-duo-inner-2853x2007-01.png": {
+   "sha256": "a3bc610cd1ec83e196cb14749c4a3da111d82202b3d9d38a05f3f4e6c298ccf7",
+   "size": 1196284
+  },
+  "ios/16.0.1/duo/exports/pt-BR/newsblur-16.0.1-pt-BR-duo-inner-2853x2007-02.png": {
+   "sha256": "d37748565d8dd186ebe3c15e2bc5597eb1920b7bc35e30d31266b527a01d01aa",
+   "size": 1190980
+  },
+  "ios/16.0.1/duo/exports/pt-BR/newsblur-16.0.1-pt-BR-duo-inner-2853x2007-03.png": {
+   "sha256": "a888ee162402a4849209788ca456bec7dd63f266b2c531a51c3a4ec2f963e9cc",
+   "size": 1905945
+  },
+  "ios/16.0.1/duo/exports/pt-BR/newsblur-16.0.1-pt-BR-duo-inner-2853x2007-04.png": {
+   "sha256": "5fc55d6e77b100ebf447733908fb46b3af514d3c0c380637c550a748de4b8b45",
+   "size": 1178444
+  },
+  "ios/16.0.1/duo/exports/ru/contact.png": {
+   "sha256": "98afeb754b4e76a8d5b2591146ededd48a57f5e11612039908c2efa3e4941527",
+   "size": 659839
+  },
+  "ios/16.0.1/duo/exports/ru/newsblur-16.0.1-ru-duo-inner-2853x2007-01.png": {
+   "sha256": "14e7adab14bf31970c493df3efcba3f23e33977ef64de31da800573721a99200",
+   "size": 1183538
+  },
+  "ios/16.0.1/duo/exports/ru/newsblur-16.0.1-ru-duo-inner-2853x2007-02.png": {
+   "sha256": "7ed2b4bcbc655a2452b29ac093ee7ae64f84bb071849cc6af6ee8464919da689",
+   "size": 1195042
+  },
+  "ios/16.0.1/duo/exports/ru/newsblur-16.0.1-ru-duo-inner-2853x2007-03.png": {
+   "sha256": "5da2c9e139b06f4d2ef26a6a1eb8d81df014213e1aa1c690b73e567eb2a420cf",
+   "size": 1904120
+  },
+  "ios/16.0.1/duo/exports/ru/newsblur-16.0.1-ru-duo-inner-2853x2007-04.png": {
+   "sha256": "25ef1e0c7f86ca17f5fa56429d8c2cf3807116995f9f499b0b788d828a628915",
+   "size": 1175192
+  },
+  "ios/16.0.1/duo/exports/th/contact.png": {
+   "sha256": "337c437be0cc0b9719894e963bfe1514f0ccb117fe0e943589e06eda45790311",
+   "size": 662095
+  },
+  "ios/16.0.1/duo/exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-01.png": {
+   "sha256": "d5fa77ef1ddcd131513dfda31a23577db3a2f503e121bc8afcd5ca6f0f4dce8c",
+   "size": 1199645
+  },
+  "ios/16.0.1/duo/exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-02.png": {
+   "sha256": "554a8dfe8d2359db1220af90767ee0c56079cbb405d1d7b69af3e00e325e44a2",
+   "size": 1224324
+  },
+  "ios/16.0.1/duo/exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-03.png": {
+   "sha256": "09647dc8db45fa66edf52e395c96b9f07b366f3196de1c582cc1969f5ae06d55",
+   "size": 1907305
+  },
+  "ios/16.0.1/duo/exports/th/newsblur-16.0.1-th-duo-inner-2853x2007-04.png": {
+   "sha256": "578228689cdb0275aaaed9b5b8c4ae4e2f1bc959eb99a171b17646296e373199",
+   "size": 1182217
+  },
+  "ios/16.0.1/duo/exports/tr/contact.png": {
+   "sha256": "4c0fdc5bff6635f4150504dcf197620f261a2b67ef54b489559f02fc8864ef4a",
+   "size": 664785
+  },
+  "ios/16.0.1/duo/exports/tr/newsblur-16.0.1-tr-duo-inner-2853x2007-01.png": {
+   "sha256": "435513417961631fb379a22085b2d2ce01c2180eab7e12a52f28fc4176ef346a",
+   "size": 1179611
+  },
+  "ios/16.0.1/duo/exports/tr/newsblur-16.0.1-tr-duo-inner-2853x2007-02.png": {
+   "sha256": "97854632413993f77cd120b50d3d54d2159b99ce19d51603a6f9435cbb45ef46",
+   "size": 1198097
+  },
+  "ios/16.0.1/duo/exports/tr/newsblur-16.0.1-tr-duo-inner-2853x2007-03.png": {
+   "sha256": "af9e7edbc36932f222c71e743755c288185a429bb25b674f1d60fb5b9097bd7b",
+   "size": 1912760
+  },
+  "ios/16.0.1/duo/exports/tr/newsblur-16.0.1-tr-duo-inner-2853x2007-04.png": {
+   "sha256": "fe1c6a31125a4059c9ec6d0858a4ea47563ed51b782e1b82b8ed6c68f73af645",
+   "size": 1189806
+  },
+  "ios/16.0.1/duo/exports/uk/contact.png": {
+   "sha256": "6b1b7cc607be1965ec4f9865e70a2041383d11c93d9cb5a02cc467b7034372aa",
+   "size": 652661
+  },
+  "ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-01.png": {
+   "sha256": "ae70769704ec42f6665c89d8c5cfad6ce0f0b8b039627878093a70e855383ec7",
+   "size": 1179487
+  },
+  "ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-02.png": {
+   "sha256": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1",
+   "size": 1192615
+  },
+  "ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-03.png": {
+   "sha256": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684",
+   "size": 1899171
+  },
+  "ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-04.png": {
+   "sha256": "74d5a8a5b629b1197aab848aacbf6909c247a82e57d33d69be2379727b1106a3",
+   "size": 1169427
+  },
+  "ios/16.0.1/duo/exports/vi/contact.png": {
+   "sha256": "3ff24587c5895c1829a522c7e7e8b40e0fc24e2845eedda24a9b2d83f1dc4d2e",
+   "size": 654738
+  },
+  "ios/16.0.1/duo/exports/vi/newsblur-16.0.1-vi-duo-inner-2853x2007-01.png": {
+   "sha256": "7cb90e8a85f71d8627c1d15eddd8f8fd35d93ade39406b97e04488720473137a",
+   "size": 1220469
+  },
+  "ios/16.0.1/duo/exports/vi/newsblur-16.0.1-vi-duo-inner-2853x2007-02.png": {
+   "sha256": "76500b0d6bb2b908aeed91ded8a493196bf7fd353cb5ba44d9fd0ce73e5630b4",
+   "size": 1211460
+  },
+  "ios/16.0.1/duo/exports/vi/newsblur-16.0.1-vi-duo-inner-2853x2007-03.png": {
+   "sha256": "f0138ecacf6020172b0af9e835e545eb8cea6ae4c249e66c6a3d2f8338667afe",
+   "size": 1899466
+  },
+  "ios/16.0.1/duo/exports/vi/newsblur-16.0.1-vi-duo-inner-2853x2007-04.png": {
+   "sha256": "a6aac32011112a3b55d07f4802d399f9a9358a8819b4f0fdfdfe7a22f9af396c",
+   "size": 1168003
+  },
+  "ios/16.0.1/duo/exports/zh-Hans/contact.png": {
+   "sha256": "d074b0c40c00d136ebeb21a2f7cbb2eb4aa458c88935cc109e9eb521d2b87143",
+   "size": 639867
+  },
+  "ios/16.0.1/duo/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-01.png": {
+   "sha256": "5266e8c5dae2ccd96c05988932c82439d3cce34e36ac795289095eac4a4a1a36",
+   "size": 1175355
+  },
+  "ios/16.0.1/duo/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png": {
+   "sha256": "4c23f46eb65512ea4b96429c1176416fe9046deb1d5a7d1dba0520d971dcd25b",
+   "size": 1192123
+  },
+  "ios/16.0.1/duo/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png": {
+   "sha256": "2680548a5cb129ba0595642837074ecd43821685eb38aa64cea0213f281633ca",
+   "size": 1902025
+  },
+  "ios/16.0.1/duo/exports/zh-Hans/newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04.png": {
+   "sha256": "b6d75a0b316848fa60ff5265fc167596352f0c1575768121c100624c1b1a89a9",
+   "size": 1165265
+  },
+  "ios/16.0.1/duo/exports/zh-Hant/contact.png": {
+   "sha256": "8bf9c45b0660acbf42988b0ccba5ebb8c9b10ddf7f4a367c5bbef5993f1d825b",
+   "size": 645532
+  },
+  "ios/16.0.1/duo/exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-01.png": {
+   "sha256": "5d772415f29364378cf2b715a0056a66756fef8356ab5438d85932a187409aa1",
+   "size": 1177920
+  },
+  "ios/16.0.1/duo/exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-02.png": {
+   "sha256": "2f0ebc898a592fdbe53a2671185f19992ee893454795f411f818c9e0d310f2a0",
+   "size": 1201437
+  },
+  "ios/16.0.1/duo/exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-03.png": {
+   "sha256": "aded44258e6f7175fe687b773ce8994d7aba513de8abdd98e97fb291f71ce340",
+   "size": 1905851
+  },
+  "ios/16.0.1/duo/exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-04.png": {
+   "sha256": "bcbeabde051be42a4fc47e4235a1bb0d43b86e09009dfcc7c9566ec88cb526da",
+   "size": 1173236
+  },
   "ios/16.0/concepts/01-the-daily-edition.png": {
    "sha256": "7a9e114841a44f708eff45ba5485e18f3ddfb3173a96e7e1fd36bfdbf21ab75d",
    "size": 2904937

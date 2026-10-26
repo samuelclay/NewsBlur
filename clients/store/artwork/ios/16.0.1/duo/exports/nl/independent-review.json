@@ -1,0 +1,30 @@
+{
+  "language": "nl",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:06:43Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Dutch captions fit without broken words; headlines and labels legible.",
+    "Dutch search/source/filter/date controls visible with complete cooking photos and article."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-01.png",
+      "sha256": "e7c715f9acd487d119b00ceeadc58c46b65fd6afe3315322ec4475e3fa42b9cf"
+    },
+    {
+      "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-02.png",
+      "sha256": "be1737031da13a840dcdab33be9a3daedafef1ab826853f76be08ef1ede20f69"
+    },
+    {
+      "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-03.png",
+      "sha256": "532a5ce2117d7075546c4b213e2e6141dd612e6b652023c938b6a9bacf5e7738"
+    },
+    {
+      "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-04.png",
+      "sha256": "c31794332b375e1c232d18949f28c5389080db8bd612a648c6cc94eb72d50c84"
+    }
+  ],
+  "contact_sha256": "656a4d0013bd7a55e85b7b0eaafb4d17ed726c5a9399092dd9c67a105178b9d8"
+}

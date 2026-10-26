@@ -1,0 +1,30 @@
+{
+  "language": "en",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:03:56Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "All headlines and labels fit; real English UI and loaded cooking photographs.",
+    "Saved source row is partially covered by the app toolbar in the native capture, not introduced by artwork."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-01.png",
+      "sha256": "ceebceeb67808cf8cbe017f13d3c889ba669bebb39797318b7803645860e5563"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-02.png",
+      "sha256": "5e028e44f6671177442b50e8f364d00e153694d005e5c3e5f6938860412f3682"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-03.png",
+      "sha256": "a94aad3e3f1149a0973ce8a123df67ac2a36bd67fd0bcff0625046868f83d56e"
+    },
+    {
+      "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-04.png",
+      "sha256": "8bd5fde55dae1928aa91109c8d08d4c133f931b8390b3104dcb8acec9c2fa087"
+    }
+  ],
+  "contact_sha256": "18664312bd20b0efd42c12b6d8ef94b1c7eb0c57c61bb6ac6b8ede0589f6bb74"
+}
