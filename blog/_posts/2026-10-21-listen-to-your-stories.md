@@ -13,7 +13,7 @@ Here's Jon, the default English voice, reading that paragraph:
 
 And if you're reading this in NewsBlur, you can press Listen right now and have the rest of this post read to you.
 
-<img src="/assets/listen-hero.jpg" alt="Listen playing on a MacBook, an iPad, an iPhone, and an Android phone, each showing the Now Playing controls" style="width: 100%;margin: 24px auto;display: block;">
+<img src="/assets/listen-hero.jpg" alt="Listen playing on the web, Android, iOS, and Mac, each showing the story's title, its voice, the scrubber, and the play controls" style="width: 100%;margin: 24px auto;display: block;">
 
 This one launched everywhere on the same day. The web, the iOS and Mac apps, and the Android app all got Listen together, with its interface translated into the same 21 languages from <a href="{% post_url 2026-10-14-newsblur-in-your-language %}">last week's language launch</a>. If you already play podcasts in NewsBlur's <a href="{% post_url 2026-03-02-mini-media-player %}">media player</a>, Listen turns any story into one more thing to queue up.
 
@@ -21,7 +21,7 @@ This one launched everywhere on the same day. The web, the iOS and Mac apps, and
 
 On the web, Listen sits with the other story buttons, and the **y** key does the same thing. On iPhone, iPad, and Android it's in the row of buttons at the end of each story. On the Mac it's in the **Story** menu, also on **Y**, with a play and pause button in the toolbar.
 
-<img src="/assets/listen-start.webp" alt="The Listen button on iPhone and Android story buttons, the web's Listen side option with its tooltip, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;">
+<img src="/assets/listen-start.webp" alt="Where Listen lives on each platform: the web's story side options with the Read this story aloud (y) tooltip, the story buttons at the end of a story on iOS and Android, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;">
 
 On the web, stories play in the sidebar, in the same mini player that handles podcasts and YouTube. On iPhone, iPad, and Android, a mini player sits above the bottom bar. Tap it to open Now Playing, with a scrubber, 15 seconds back, 30 seconds forward, speed, and a button to skip to the next story.
 

@@ -8,7 +8,7 @@ Every device screen is an unmodified capture from the Listen branch, taken Octob
 
 Some Android and web captures show the "minutes left this month" line from a test account.
 
-The story button image (`buttons.html`) was added October 25 from three more unmodified captures in the same folders: `Web/08-story-buttons.png` (2880 × 1800), `iPhone/08-story-buttons.png` (iPhone 17e simulator, 1170 × 2532) and `Android/10-story-buttons.png` (1080 × 2400). It needs no device frames, only `shots/`.
+The story button image (`buttons.html`) was added October 25 from three more unmodified captures in the same folders: `Web/08-story-buttons.png` (2880 × 1800), `iPhone/08-story-buttons.png` (iPhone 17e simulator, 1170 × 2532) and `Android/10-story-buttons.png` (1080 × 2400). It needs no device frames, only `shots/`. The same day the hero (`hero.html`) and the Press Listen image (`start.html`) were redone the same way, as labeled crops of the October 21 captures with no device frames, because four whole screens at once were too small to read.
 
 ## Device frames
 
@@ -22,7 +22,7 @@ All four come from Mobile FIRST, whose pages permit personal and commercial use 
 
 `languages.html` reads nothing at render time: its 21 tiles were generated from `localization/languages.json` and the default voice of each language in `apps/listen/voice_catalog.json`. `how.html` is a diagram, not a screenshot.
 
-Hero is a 1600 × 1000 JPEG (it's also the social image). The rest are 1400 px wide WebP at quality 88.
+Hero is a 1600 × 1087 JPEG (it's also the social image). The rest are 1400 px wide WebP at quality 88.
 
 ## Audio
 

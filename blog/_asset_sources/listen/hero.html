@@ -1,22 +1,17 @@
-<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"></head><body>
-<div class="stage" style="width:1600px;height:1000px">
-  <div class="wave" data-bars="80" data-bar="9" data-gap="11" data-height="520" data-seed="1.3" style="left:0;right:0;top:120px;height:600px;justify-content:center;color:rgba(110,156,85,0.13)"></div>
-  <div class="device macbook shadow" style="left:250px;top:90px;width:1080px">
-    <div class="screen"><img src="shots/Web/02-player-playing.png"></div>
-    <img class="frame" src="frames/macbook-air.png">
-  </div>
-  <div class="device ipad shadow" style="left:1160px;top:330px;width:400px">
-    <div class="screen"><img src="shots/iPad/02-now-playing.png"></div>
-    <img class="frame" src="frames/apple-ipad-air-4.png">
-  </div>
-  <div class="device iphone shadow" style="left:70px;top:420px;width:262px">
-    <div class="screen"><img src="shots/iPhone/02-now-playing.png"></div>
-    <img class="frame" src="frames/apple-iphone-17-2025.png">
-  </div>
-  <div class="device galaxy shadow" style="left:960px;top:455px;width:250px">
-    <div class="screen"><img src="shots/Android/02-now-playing.png"></div>
-    <img class="frame" src="frames/samsung-galaxy-s22-2022.png">
-  </div>
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+/* hero.html: one labeled card per platform, cropped to what's playing so the controls read at blog size. */
+.platform { width: 600px; font-size: 26px; letter-spacing: 0.04em; text-transform: none; text-align: left; color: rgba(54, 62, 44, 0.62); }
+</style>
+</head><body>
+<div class="stage" style="width:1600px;height:1087px">
+<div class="label platform" style="left:160px;top:56px">Web</div>
+<div class="card" style="left:160px;top:100px;width:600px;height:381px;"><img src="shots/Web/02-player-playing.png" style="width:2579.1px;left:0px;top:-1166.8px"></div>
+<div class="label platform" style="left:840px;top:56px">Android</div>
+<div class="card" style="left:840px;top:100px;width:600px;height:381px;"><img src="shots/Android/02-now-playing.png" style="width:600px;left:0px;top:-311.1px"></div>
+<div class="label platform" style="left:160px;top:529px">iOS</div>
+<div class="card" style="left:160px;top:573px;width:600px;height:458px;"><img src="shots/iPhone/02-now-playing.png" style="width:600px;left:0px;top:-313.8px"></div>
+<div class="label platform" style="left:840px;top:529px">Mac</div>
+<div class="card" style="left:840px;top:573px;width:600px;height:458px;"><img src="shots/Mac/02-now-playing.png" style="width:1554.2px;left:-471.1px;top:-334.1px"></div>
 </div>
-<script src="wave.js"></script>
 </body></html>

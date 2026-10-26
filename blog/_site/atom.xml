@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-25T23:32:22-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-26T00:14:48-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications</title><link href="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/" rel="alternate" type="text/html" title="NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications" /><published>2026-10-22T00:00:00-04:00</published><updated>2026-10-22T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/"><![CDATA[<p>On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.</p>
 
@@ -55,7 +55,7 @@ A new sound of an old instrument.
 
 <p>And if you’re reading this in NewsBlur, you can press Listen right now and have the rest of this post read to you.</p>
 
-<p><img src="/assets/listen-hero.jpg" alt="Listen playing on a MacBook, an iPad, an iPhone, and an Android phone, each showing the Now Playing controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
+<p><img src="/assets/listen-hero.jpg" alt="Listen playing on the web, Android, iOS, and Mac, each showing the story's title, its voice, the scrubber, and the play controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
 
 <p>This one launched everywhere on the same day. The web, the iOS and Mac apps, and the Android app all got Listen together, with its interface translated into the same 21 languages from <a href="/2026/10/14/newsblur-in-your-language/">last week’s language launch</a>. If you already play podcasts in NewsBlur’s <a href="/2026/03/02/mini-media-player/">media player</a>, Listen turns any story into one more thing to queue up.</p>
 
@@ -63,7 +63,7 @@ A new sound of an old instrument.
 
 <p>On the web, Listen sits with the other story buttons, and the <strong>y</strong> key does the same thing. On iPhone, iPad, and Android it’s in the row of buttons at the end of each story. On the Mac it’s in the <strong>Story</strong> menu, also on <strong>Y</strong>, with a play and pause button in the toolbar.</p>
 
-<p><img src="/assets/listen-start.webp" alt="The Listen button on iPhone and Android story buttons, the web's Listen side option with its tooltip, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
+<p><img src="/assets/listen-start.webp" alt="Where Listen lives on each platform: the web's story side options with the Read this story aloud (y) tooltip, the story buttons at the end of a story on iOS and Android, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
 
 <p>On the web, stories play in the sidebar, in the same mini player that handles podcasts and YouTube. On iPhone, iPad, and Android, a mini player sits above the bottom bar. Tap it to open Now Playing, with a scrubber, 15 seconds back, 30 seconds forward, speed, and a button to skip to the next story.</p>
 
