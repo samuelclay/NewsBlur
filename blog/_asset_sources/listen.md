@@ -8,6 +8,8 @@ Every device screen is an unmodified capture from the Listen branch, taken Octob
 
 Some Android and web captures show the "minutes left this month" line from a test account.
 
+The story button image (`buttons.html`) was added October 25 from three more unmodified captures in the same folders: `Web/08-story-buttons.png` (2880 × 1800), `iPhone/08-story-buttons.png` (iPhone 17e simulator, 1170 × 2532) and `Android/10-story-buttons.png` (1080 × 2400). It needs no device frames, only `shots/`.
+
 ## Device frames
 
 The composites are rendered in headless Chrome from the HTML in `listen/` and baked into the images, so they show the same in browsers and feed readers.

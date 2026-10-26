@@ -89,4 +89,6 @@ Once a segment has been read in a voice, it's saved. The next person who listens
 
 Listen is available today on the web, in NewsBlur for iPhone, iPad, and Mac on the [App Store](https://apps.apple.com/app/newsblur/id463981119), and in NewsBlur for Android on [Google Play](https://play.google.com/store/apps/details?id=com.newsblur). If you don't want the button, you can hide it, along with any other story button, in Preferences on the web and in the apps, and that choice syncs between them.
 
+<img src="/assets/listen-story-buttons.webp" alt="The story button choices in Preferences on the web, iOS, and Android, with Listen turned on beside Train, Save, Share, and Ask AI" style="width: 100%;margin: 24px auto;display: block;">
+
 I'd love to hear which voice you picked and how Listen handles your feeds. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
