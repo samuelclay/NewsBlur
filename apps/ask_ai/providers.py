@@ -241,7 +241,7 @@ class OpenAIProvider(LLMProvider):
 
 
 class XAIProvider(LLMProvider):
-    """xAI/Grok provider implementation (OpenAI-compatible API)."""
+    """SpaceXSI (formerly xAI) Grok provider implementation (OpenAI-compatible API)."""
 
     def is_configured(self) -> bool:
         key = getattr(settings, "XAI_GROK_API_KEY", None)
@@ -300,15 +300,15 @@ class XAIProvider(LLMProvider):
 
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
-            return "xAI API timeout"
+            return "SpaceXSI API timeout"
         if isinstance(error, openai.APIStatusError):
             if error.status_code == 401:
-                return "xAI API key is invalid. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API key is invalid. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 403:
-                return "xAI API access denied. Your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
+                return "SpaceXSI API access denied. The account may be out of credits, or your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
             if error.status_code == 429:
-                return "xAI API rate limit exceeded. Please try again later."
-        return f"xAI API error: {str(error)}"
+                return "SpaceXSI API rate limit exceeded. Please try again later."
+        return f"SpaceXSI API error: {str(error)}"
 
 
 class GeminiProvider(LLMProvider):
@@ -417,6 +417,11 @@ LLM_EXCEPTIONS = (
 )
 
 
+
+
+
+
+
 # Provider classes by vendor slug, used for settings override resolution
 PROVIDER_CLASSES = {
     "anthropic": AnthropicProvider,
@@ -472,7 +477,7 @@ _DEFAULT_MODELS = {
         "model_id": XAI_MODEL,
         "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
     },
 }
@@ -650,7 +655,7 @@ _DEFAULT_BRIEFING_MODELS = {
         "model_id": XAI_MODEL,
         "display_name": XAI_MODEL_DISPLAY,
         "vendor": "xai",
-        "vendor_display": "xAI",
+        "vendor_display": "SpaceXSI",
         "order": 4,
     },
 }

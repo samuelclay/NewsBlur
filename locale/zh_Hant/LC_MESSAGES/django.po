@@ -1185,8 +1185,10 @@ msgstr "公民科技"
 msgid "Classification failed, please try again"
 msgstr "分類失敗，請再試一次"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（xAI）。你隨時可以切換。"
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）和 Grok（SpaceXSI）。你可以隨時切換。"
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "點選任何來源即可改讀該版本，或一次將所有重複項目標記為已讀"

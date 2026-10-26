@@ -338,9 +338,15 @@
     <string name="need_to_register">
         <u>등록해야 합니다</u>
     </string>
-    <string name="public_comment_count">공개 댓글 %d개</string>
-    <string name="friends_comments_count">댓글 %d개</string>
-    <string name="friends_shares_count">공유 %d회</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">공개 댓글 %d개</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">댓글 %d개</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">공유 %d회</item>
+    </plurals>
     <string name="unknown_user">알 수 없는 사용자</string>
     <string name="delete_feed_message">피드 \"%s\"을(를) 삭제할까요?</string>
     <string name="delete_saved_search_message">저장된 검색 %s을(를) 삭제할까요?</string>

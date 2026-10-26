@@ -1832,8 +1832,8 @@ msgstr "Geltungsbereich des Klassifikator-Filters"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Der Geltungsbereich von Klassifikatoren erfordert %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) und Grok (xAI). Wechsle jederzeit zwischen ihnen."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) und Grok (SpaceXSI). Wechsle jederzeit zwischen ihnen."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Feeds aufräumen und neu anordnen"

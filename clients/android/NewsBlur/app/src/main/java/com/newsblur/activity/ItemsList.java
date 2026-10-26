@@ -1094,7 +1094,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
 
-        if (fs.isSingleNormal()) {
+        if (fs.isFolder()) {
+            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
+        } else if (fs.isSingleNormal()) {
             String feedId = fs.getSingleFeed();
             com.newsblur.domain.Feed sourceFeed = dbHelper.getFeed(feedId);
             if (sourceFeed != null) {
@@ -1102,8 +1104,6 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             } else {
                 DiscoverFeedsActivity.startForFeed(this, feedId);
             }
-        } else if (fs.isFolder()) {
-            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
         }
     }
 
@@ -1712,7 +1712,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             storyStatusBannerAnimator.cancel();
             storyStatusBannerAnimator = null;
         }
-        binding.itemlistStoryStatusBanner.animate().cancel();
+        // NbActivity.kt can finish for missing login credentials before ItemsList.java inflates its layout.
+        if (binding != null) {
+            binding.itemlistStoryStatusBanner.animate().cancel();
+        }
     }
 
     private void setupOnBackPressed() {

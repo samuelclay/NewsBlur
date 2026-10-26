@@ -1,0 +1,68 @@
+{
+  "version": "16.0.5",
+  "platform": "android",
+  "reviewedAt": "2026-10-25T19:23:06Z",
+  "reviewer": "translate_east (independent of west batch author)",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "status": "passed",
+  "scope": "All Android listing, subscription title/description/benefits, and release-note fields, including retained translations.",
+  "checks": [
+    "Meaning and complete release-fix coverage against finalized English",
+    "Register and terminology against per-language glossaries",
+    "Unchanged product identifiers and entitlement facts",
+    "Exact canonical URLs and NewsBlur branding",
+    "Field character limits and benefit counts",
+    "Unchanged iOS and macOS objects"
+  ],
+  "corrections": [
+    {
+      "language": "nl",
+      "change": "Used glossary reaction terminology for comments and clarified feed previews."
+    },
+    {
+      "language": "it",
+      "change": "Made release-note opening grammatical and clarified large articles and crashes."
+    },
+    {
+      "language": "fr",
+      "change": "Made searchable-archive subscription wording natural."
+    }
+  ],
+  "unresolvedFindings": [],
+  "sourceSha256": {
+    "clients/store/metadata/en.json": "2e0a3d9ff15dcfb7f79afdc51c1ff09200687bb3c708fc29b31bbc1ff1b37362",
+    "clients/store/products/en.json": "f5de547dd5a9f1b0b693ce8631055d2adc3111fa6ea39667cee474d6870ef598",
+    "clients/store/releases/16.0.5/en.json": "a3536e9f69b283963c2300ea9aad8dcadb6d54658d3145f0cb5063b5ff15cbf6"
+  },
+  "reviewedFiles": {
+    "clients/store/metadata/es.json": "c172b94daed449618f462ce06afee1783fef5347a6b4c51239aabf870f5b5b9d",
+    "clients/store/products/es.json": "8fce9e777bbeb35a9fa219e8414f5e09a43e12be0b04184b6b1d6b6b55e5d5a9",
+    "clients/store/releases/16.0.5/es.json": "c82ef2c0e8b1b2fed517e9bef6958cefc645206490ccfb3b8d5072fa84d1302a",
+    "clients/store/metadata/fr.json": "7ccf562d165e84fd15edd344ad8263ae6ea68e7136e3ef0b0f4f365894a5d919",
+    "clients/store/products/fr.json": "0fa9543b09603308a6e0010d3c2d936f9904b5dffa3d65ab3f8410e6cfa7170d",
+    "clients/store/releases/16.0.5/fr.json": "1721ae4aeb8f410d0b6db9cfec2162e2df425c8c3838ccf6ec01749f44c44f17",
+    "clients/store/metadata/de.json": "ff8c023c8548a03a0cd2ddd2f17cbd9f055a9392edb1fe24559d3a15e30a3367",
+    "clients/store/products/de.json": "8fb91fc4eeb1b891f57474ea51a398cf90e633de8f71b42cec37292a0d739b61",
+    "clients/store/releases/16.0.5/de.json": "69a6dd911aa8bc25c3e0a787747046b0e946136ebeb0dce678912e3f18378077",
+    "clients/store/metadata/pt-BR.json": "67736ffb1bac7feb48d0fd964ef1b383b2217940dbf05f8cb2569924bbf3df92",
+    "clients/store/products/pt-BR.json": "00a9c02eb6aacfc2aac9d27de54c35bfc0760e110a4e3f5d8ec97609d1ecaff8",
+    "clients/store/releases/16.0.5/pt-BR.json": "cbe9c65894ae7b3e82aba463ad137fd29b0e15329f37959125cf874d188a18c0",
+    "clients/store/metadata/it.json": "aa3eba32d0e9bd387c288a74823eccc86781058cfcef7d9b6a58e0c949065cbe",
+    "clients/store/products/it.json": "3d2d7e5d33815518725edf6c883e8fb7ca839d6acb028716ffa9507eb45b9377",
+    "clients/store/releases/16.0.5/it.json": "e1af4de122f637881ad3f80dab6da30424ba73f7d83814e6fe39982975f61b0d",
+    "clients/store/metadata/nl.json": "38754c8d596a0939a72632db07c0383587035a641a6e690d9f23c58736b594b3",
+    "clients/store/products/nl.json": "624397a277e3c114538b3cbd6599e38ef06f292c26a41127341476df4c398aea",
+    "clients/store/releases/16.0.5/nl.json": "c244cfba770c08f2f7dc3fd4906747558053e755748c7c3587a182a73b6c75da",
+    "clients/store/metadata/pl.json": "44ddff03d1f8dd8ed884ca4a25090aa1e3ded4da0b3814e9c35244fa8feeb4ba",
+    "clients/store/products/pl.json": "901ef28b58717cb29f3e5a4b54410a341e2ab8f150877ee6e736f1e61228691c",
+    "clients/store/releases/16.0.5/pl.json": "707b0e47f8729a803b42799f69de8e9f31d69bb77697f19491469fd62488b062"
+  }
+}

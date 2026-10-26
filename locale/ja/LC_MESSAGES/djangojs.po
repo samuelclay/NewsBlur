@@ -1726,8 +1726,8 @@ msgstr "分類フィルターの適用範囲"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "分類器の範囲には%(tier_link)sが必要です"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（xAI）に対応。いつでも切り替えられます。"
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude（Anthropic）、GPT（OpenAI）、Gemini（Google）、Grok（SpaceXSI）をいつでも切り替えられます。"
 
 msgid "Cleanup and rearrange feeds"
 msgstr "フィードを整理・並べ替え"

@@ -338,9 +338,15 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="need_to_register">
         <u>Tôi cần đăng ký</u>
     </string>
-    <string name="public_comment_count">%d bình luận công khai</string>
-    <string name="friends_comments_count">%d bình luận</string>
-    <string name="friends_shares_count">%d lượt chia sẻ</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">%d bình luận công khai</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">%d bình luận</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">%d lượt chia sẻ</item>
+    </plurals>
     <string name="unknown_user">Người dùng không xác định</string>
     <string name="delete_feed_message">Xóa nguồn cấp \"%s\"?</string>
     <string name="delete_saved_search_message">Xóa tìm kiếm đã lưu %s?</string>

@@ -1298,8 +1298,10 @@ msgstr "नागरिक तकनीक"
 msgid "Classification failed, please try again"
 msgstr "वर्गीकरण विफल हुआ, कृपया फिर से कोशिश करें"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (xAI)। आप इनके बीच कभी भी स्विच कर सकते हैं।"
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (SpaceXSI) के बीच आप कभी भी स्विच कर सकते हैं।"
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"
 msgstr "उस संस्करण को पढ़ने के लिए किसी भी स्रोत पर क्लिक करें, या सभी डुप्लिकेट को एक साथ पढ़ा हुआ चिह्नित करें"

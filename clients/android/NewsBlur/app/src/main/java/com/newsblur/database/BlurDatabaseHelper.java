@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteStatement;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.util.Log;
@@ -357,6 +359,7 @@ public class BlurDatabaseHelper {
 
     @Nullable
     public Feed getFeed(@Nullable String feedId) {
+        if (feedId == null) return null;
         Cursor c = dbRO.query(DatabaseConstants.FEED_TABLE, null, DatabaseConstants.FEED_ID + " = ?", new String[]{feedId}, null, null, null, "1");
         Feed result = null;
         while (c.moveToNext()) {
@@ -1209,29 +1212,25 @@ public class BlurDatabaseHelper {
                 " FROM " + DatabaseConstants.STORY_TEXT_TABLE +
                 " WHERE " + DatabaseConstants.STORY_TEXT_STORY_HASH + " = ?" +
                 " LIMIT 1";
-        Cursor c = dbRO.rawQuery(q, new String[]{hash});
-        if (c.moveToFirst()) {
-            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_TEXT_STORY_TEXT));
-            c.close();
-            return result;
-        } else {
-            c.close();
-            return null;
-        }
+        return readStoryString(q, hash);
     }
 
     @Nullable
     public String getStoryContent(@Nullable String hash) {
         String q = "SELECT " + DatabaseConstants.STORY_CONTENT +
                 " FROM " + DatabaseConstants.STORY_TABLE +
-                " WHERE " + DatabaseConstants.STORY_HASH + " = ?";
-        Cursor c = dbRO.rawQuery(q, new String[]{hash});
-        if (c.moveToFirst()) {
-            String result = c.getString(c.getColumnIndexOrThrow(DatabaseConstants.STORY_CONTENT));
-            c.close();
-            return result;
-        } else {
-            c.close();
+                " WHERE " + DatabaseConstants.STORY_HASH + " = ? LIMIT 1";
+        return readStoryString(q, hash);
+    }
+
+    @Nullable
+    private String readStoryString(String query, @Nullable String hash) {
+        if (hash == null) return null;
+        // BlurDatabaseHelper.java reads full articles without the per-row CursorWindow size limit.
+        try (SQLiteStatement statement = dbRO.compileStatement(query)) {
+            statement.bindString(1, hash);
+            return statement.simpleQueryForString();
+        } catch (SQLiteDoneException missingStory) {
             return null;
         }
     }

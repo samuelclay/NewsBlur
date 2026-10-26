@@ -27,7 +27,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
         case .anthropic: return "Anthropic Claude Sonnet 5.5"
         case .openai: return "OpenAI GPT-6 Luna"
         case .google: return "Google Gemini 3.8 Flash"
-        case .xai: return "xAI Grok 4.6"
+        case .xai: return "SpaceXSI Grok 4.7"
         }
     }
 
@@ -36,7 +36,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
         case .anthropic: return "Sonnet 5.5"
         case .openai: return "GPT-6 Luna"
         case .google: return "Gemini 3.8"
-        case .xai: return "Grok 4.6"
+        case .xai: return "Grok 4.7"
         }
     }
 

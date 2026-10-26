@@ -1726,8 +1726,8 @@ msgstr "분류 필터 적용 범위"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "분류기 범위에는 %(tier_link)s이(가) 필요합니다"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude(Anthropic), GPT(OpenAI), Gemini(Google), Grok(xAI)을 지원합니다. 언제든지 모델을 전환할 수 있습니다."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), Grok (SpaceXSI) 중에서 언제든지 전환할 수 있습니다."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "피드 정리 및 재배치"

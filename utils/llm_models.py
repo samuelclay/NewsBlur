@@ -28,8 +28,8 @@ OPENAI_MODEL_DISPLAY = "GPT-6 Luna"
 GOOGLE_MODEL = "gemini-3.8-flash"
 GOOGLE_MODEL_DISPLAY = "Gemini 3.8 Flash"
 
-XAI_MODEL = "grok-4.6"
-XAI_MODEL_DISPLAY = "Grok 4.6"
+XAI_MODEL = "grok-4.7"
+XAI_MODEL_DISPLAY = "Grok 4.7"
 
 # Heavier tier: Archive Assistant runs long multi-tool searches over years of
 # stories, so it keeps a Sonnet-class model instead of the cheap tier.

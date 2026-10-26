@@ -119,3 +119,11 @@ class Test_LLMCostPricing(TestCase):
 
         cost = LLMCostTracker.calculate_cost("claude-haiku-5-5", 100_001, 1_000)
         self.assertAlmostEqual(cost, 100_001 / 1_000_000 * 0.50 + 1_000 / 1_000_000 * 2.50)
+
+    def test_grok_4_7_doubles_at_200k_prompt_tokens(self):
+        from utils.llm_costs import LLMCostTracker
+
+        below = LLMCostTracker.calculate_cost("grok-4.7", 199_999, 1_000)
+        at_threshold = LLMCostTracker.calculate_cost("grok-4.7", 200_000, 1_000)
+        self.assertAlmostEqual(below, 199_999 / 1_000_000 * 2.00 + 1_000 / 1_000_000 * 6.00)
+        self.assertAlmostEqual(at_threshold, 200_000 / 1_000_000 * 4.00 + 1_000 / 1_000_000 * 12.00)

@@ -1288,9 +1288,11 @@ msgstr "Sivil Teknoloji"
 msgid "Classification failed, please try again"
 msgstr "Sınıflandırma başarısız oldu, lütfen tekrar deneyin"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). You can switch between them at any time."
+msgid ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). You can switch between them at any "
+"time."
 msgstr ""
-"Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (xAI). Aralarında istediğiniz zaman geçiş "
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google) ve Grok (SpaceXSI). İstediğiniz zaman aralarında geçiş "
 "yapabilirsiniz."
 
 msgid "Click any source to read that version instead, or mark all duplicates as read at once"

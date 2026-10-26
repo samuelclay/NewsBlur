@@ -1818,8 +1818,8 @@ msgstr "क्लासिफ़ायर फ़िल्टर का दाय
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "क्लासिफ़ायर के दायरे के लिए %(tier_link)s आवश्यक है"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (xAI)। इनके बीच कभी भी स्विच करें।"
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google) और Grok (SpaceXSI) के बीच कभी भी स्विच करें।"
 
 msgid "Cleanup and rearrange feeds"
 msgstr "फ़ीड व्यवस्थित करें और क्रम बदलें"

@@ -1820,8 +1820,10 @@ msgstr "Cakupan filter pengklasifikasi"
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Cakupan pengklasifikasi memerlukan %(tier_link)s"
 
-msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time."
-msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), dan Grok (xAI). Beralih di antara mereka kapan saja."
+msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
+msgstr ""
+"Claude (Anthropic), GPT (OpenAI), Gemini (Google), dan Grok (SpaceXSI). Beralih di antara semuanya kapan "
+"saja."
 
 msgid "Cleanup and rearrange feeds"
 msgstr "Bersihkan dan susun ulang feed"

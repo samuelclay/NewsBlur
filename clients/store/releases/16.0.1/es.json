@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Vuelven los controles para tablets: amplía la lista de feeds, los títulos de artículos o el artículo a pantalla completa de forma independiente. Arrastra los separadores para ajustar los paneles; NewsBlur recuerda sus anchuras.\n\nIncluye la interfaz en 21 idiomas y los controles fijos del siguiente artículo de la versión 16.0."
+  },
+  "macos": {
+    "whats_new": "Esta actualización hace más cómoda la lectura en Mac.\n\nEspacio desplaza el artículo hacia abajo y, al llegar al final, abre el siguiente artículo sin leer. Mayús-Espacio desplaza hacia arriba y, al llegar al principio, vuelve al artículo anterior. Elige cuánto avanza cada pulsación en Preferencias o Atajos de teclado.\n\nAbre Atajos de teclado directamente desde el menú de ajustes del artículo.\n\nNewsBlur ahora recuerda el tamaño y la posición de la ventana al cerrar y volver a abrir la aplicación.\n\nTambién se han actualizado los nombres de los modelos de Preguntar a la IA."
   }
 }

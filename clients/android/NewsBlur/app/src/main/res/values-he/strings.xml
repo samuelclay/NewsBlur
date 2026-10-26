@@ -338,9 +338,21 @@
     <string name="need_to_register">
         <u>אני צריך להירשם</u>
     </string>
-    <string name="public_comment_count">%d תגובות ציבוריות</string>
-    <string name="friends_comments_count">%d תגובות</string>
-    <string name="friends_shares_count">%d שיתופים</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d תגובה ציבורית</item>
+        <item quantity="other">%d תגובות ציבוריות</item>
+        <item quantity="two">%d תגובות ציבוריות</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d תגובה</item>
+        <item quantity="other">%d תגובות</item>
+        <item quantity="two">%d תגובות</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d שיתוף</item>
+        <item quantity="other">%d שיתופים</item>
+        <item quantity="two">%d שיתופים</item>
+    </plurals>
     <string name="unknown_user">משתמש לא ידוע</string>
     <string name="delete_feed_message">למחוק את הפיד \"%s\"?</string>
     <string name="delete_saved_search_message">למחוק את החיפוש השמור %s?</string>

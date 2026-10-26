@@ -29,7 +29,7 @@ from utils import log as logging
 # - Anthropic: https://platform.claude.com/docs/en/about-claude/pricing
 # - OpenAI: https://developers.openai.com/api/docs/models/gpt-6-luna
 # - Google: https://ai.google.dev/gemini-api/docs/pricing
-# - xAI: https://docs.x.ai/docs/models
+# - SpaceXSI (formerly xAI): https://docs.x.ai/docs/models
 #
 # A model whose price rises for long prompts sets long_context_threshold: a
 # request whose input_tokens exceed it is billed entirely at long_context_input
@@ -84,8 +84,21 @@ MODEL_PRICING = {
     "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
     "gemini-2.5-flash": {"input": 0.10, "output": 0.40},
     "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40},
-    # xAI Grok models
-    "grok-4.6": {"input": 2.00, "output": 6.00},
+    # SpaceXSI (formerly xAI) Grok models. Prompts of 200K tokens or more pay double.
+    "grok-4.7": {
+        "input": 2.00,
+        "output": 6.00,
+        "long_context_threshold": 199_999,
+        "long_context_input": 4.00,
+        "long_context_output": 12.00,
+    },
+    "grok-4.6": {
+        "input": 2.00,
+        "output": 6.00,
+        "long_context_threshold": 199_999,
+        "long_context_input": 4.00,
+        "long_context_output": 12.00,
+    },
     "grok-4-1-fast-non-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
     "grok-4": {"input": 3.00, "output": 15.00},
@@ -127,6 +140,7 @@ MODEL_PROVIDERS = {
     "gemini-2.5-pro": "google",
     "gemini-2.5-flash": "google",
     "gemini-2.5-flash-lite": "google",
+    "grok-4.7": "xai",
     "grok-4.6": "xai",
     "grok-4-1-fast-non-reasoning": "xai",
     "grok-4-1-fast-reasoning": "xai",
