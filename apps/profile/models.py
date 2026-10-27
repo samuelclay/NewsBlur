@@ -232,6 +232,27 @@ class Profile(models.Model):
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
         return price
 
+    @staticmethod
+    def is_usage_billing_subscription(subscription):
+        """True for the AI classifier metered sub that setup_usage_billing creates (apps/profile/views.py).
+
+        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
+        reactivating the tier sub must all skip it (apps/profile/models.py).
+        """
+        usage_price_ids = set(
+            filter(
+                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
+            )
+        )
+        if not usage_price_ids:
+            return False
+        items = subscription.get("items")
+        for item in items["data"] if items else []:
+            price = item.get("price")
+            if price and price.get("id") in usage_price_ids:
+                return True
+        return False
+
     @classmethod
     def plan_to_paypal_plan_id(cls, plan):
         price = None
@@ -527,7 +548,8 @@ class Profile(models.Model):
         cancellation_succeeded = False
         try:
             if not fast:
-                self.cancel_premium(force=True)
+                # A deleted account has nothing left to classify, so usage billing stops too.
+                self.cancel_premium(force=True, include_usage_billing=True)
                 cancellation_succeeded = True
         except Exception as e:
             logging.user(
@@ -1116,6 +1138,11 @@ class Profile(models.Model):
         existing_subscription = None
         existing_plan = None
         for subscription in stripe_subscriptions:
+            # Skip the AI classifier usage billing sub. Its monthly metered items can't take a
+            # yearly tier price, and with no tier sub left the view falls back to a new checkout
+            # (apps/profile/views.py).
+            if Profile.is_usage_billing_subscription(subscription):
+                continue
             plan_obj = subscription.plan
             if not plan_obj:
                 # Newer subscriptions may not have a top-level plan; fall back to the
@@ -2381,9 +2408,9 @@ class Profile(models.Model):
         )
         return refund_dollars
 
-    def cancel_premium(self, force=False):
+    def cancel_premium(self, force=False, include_usage_billing=False):
         paypal_cancel = self.cancel_premium_paypal(force=force)
-        stripe_cancel = self.cancel_premium_stripe(force=force)
+        stripe_cancel = self.cancel_premium_stripe(force=force, include_usage_billing=include_usage_billing)
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
@@ -2471,7 +2498,7 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
-    def cancel_premium_stripe(self, force=False):
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
@@ -2485,6 +2512,15 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
+                    # The AI classifier usage billing sub keeps running unless the account is
+                    # being deleted (apps/profile/models.py delete_user).
+                    if not include_usage_billing and Profile.is_usage_billing_subscription(subscription):
+                        logging.user(
+                            self.user,
+                            "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
+                        )
+                        continue
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -2547,14 +2583,16 @@ class Profile(models.Model):
         if not stripe_customer:
             return None
 
-        # Check if there's already an active subscription
+        # Check if there's already an active subscription. The AI classifier usage billing sub
+        # can be active alongside it but isn't a tier sub, so it doesn't count (apps/profile/models.py).
         existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
-        if existing_subs.data:
+        tier_subs = [sub for sub in existing_subs.data if not Profile.is_usage_billing_subscription(sub)]
+        if tier_subs:
             logging.user(
                 self.user,
-                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+                "~FBStripe subscription already active: ~SB%s" % tier_subs[0].id,
             )
-            return existing_subs.data[0].id
+            return tier_subs[0].id
 
         # Ensure default payment method is set
         payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
