@@ -2523,6 +2523,12 @@ class Feed(models.Model):
         feed = cls.objects.filter(pk=feed_id).first()
         if not feed:
             return 0
+        # A feed trimmed on an earlier day sits at its cutoff, often above the floor when its last
+        # reader read it recently. trim_feed would delete nothing, so skip the recount and the
+        # reader lookup. A recount can only find more subscribers and so a higher cutoff.
+        cutoff = feed.story_cutoff
+        if stored <= cutoff:
+            return 0
 
         if not dryrun:
             # Stored counts go stale, and an Archive subscriber they missed still needs every story.
@@ -2543,7 +2549,7 @@ class Feed(models.Model):
             return 0
 
         if dryrun:
-            return max(0, stored - feed.story_cutoff)
+            return stored - cutoff
         return feed.trim_feed()
 
     def count_fs_size_bytes(self):

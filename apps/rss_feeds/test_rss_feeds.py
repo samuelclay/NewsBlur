@@ -8864,6 +8864,19 @@ class Test_TrimAbandonedFeeds(TestCase):
         kept = sorted(int(s.story_guid.split("-")[-1]) for s in MStory.objects(story_feed_id=feed.pk))
         self.assertEqual(kept, list(range(self.STORIES - 10, self.STORIES)))
 
+    def test_a_feed_already_trimmed_to_its_cutoff_is_not_recounted_every_day(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Its last reader read it within story_retention's read window, so it keeps more than 10.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        feed = self._feed("trimmed-yesterday")
+        Feed.trim_if_abandoned(feed.pk)
+        self.assertEqual(self._stored(feed), feed.story_cutoff)
+        self.assertGreater(self._stored(feed), 10)
+
+        with patch.object(Feed, "count_subscribers") as recount:
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        recount.assert_not_called()
+
     def test_a_reader_away_for_less_than_the_unread_window_keeps_their_stories(self, mock_redis, *mocks):
         """A Premium reader on an 8 day vacation no longer counts as active (SUBSCRIBER_EXPIRE),
         but still has 30 days of unread stories waiting."""
