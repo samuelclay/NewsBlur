@@ -2474,6 +2474,12 @@ class Feed(models.Model):
         return int(cutoff), unread_capped
 
     def trim_feed(self, verbose=False, cutoff=None, fetched_story_hashes=None):
+        if not cutoff and self.active_subscribers <= 0 and self.has_reader_within_unread_window():
+            # The fetch that finds every reader away SUBSCRIBER_EXPIRE days is the feed's last until
+            # one comes back, but they keep DAYS_OF_UNREAD days of unread stories, which story_retention's
+            # no-readers cutoff of 25 would delete. Feed.trim_if_abandoned trims it once that has passed.
+            return 0
+
         fetched_story_hashes = fetched_story_hashes or []
         keep_story_hashes = None
         if not cutoff:
@@ -2491,6 +2497,21 @@ class Feed(models.Model):
             self.count_fs_size_bytes()
 
         return stories_removed
+
+    def has_reader_within_unread_window(self):
+        """Whether anyone subscribed has been seen in the last DAYS_OF_UNREAD days and so may still
+        have unread stories here, counting the original feed and its branches as count_subscribers
+        does. apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        feed_ids = list(
+            Feed.objects.filter(branch_from_feed=self.original_feed_id).values_list("pk", flat=True)
+        )
+        feed_ids.append(self.original_feed_id)
+        unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        return UserSubscription.objects.filter(
+            feed__in=feed_ids, active=True, user__profile__last_seen_on__gte=unread_window_start
+        ).exists()
 
     @classmethod
     def abandoned_feed_candidates(cls):
@@ -2515,8 +2536,6 @@ class Feed(models.Model):
         stories and Archive subscribers keep everything, so a feed is abandoned only once it has no
         Archive subscriber and no subscriber has been seen in that long.
         apps/rss_feeds/models.py"""
-        from apps.reader.models import UserSubscription
-
         stored = MStory.objects(story_feed_id=feed_id).count()
         if stored <= FEWEST_STORIES_KEPT:
             return 0
@@ -2535,17 +2554,7 @@ class Feed(models.Model):
             feed.count_subscribers()
         if (feed.archive_subscribers or 0) > 0:
             return 0
-
-        # Readers are counted across the original feed and its branches, as count_subscribers does.
-        feed_ids = list(
-            cls.objects.filter(branch_from_feed=feed.original_feed_id).values_list("pk", flat=True)
-        )
-        feed_ids.append(feed.original_feed_id)
-        unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        seen_within_unread_window = UserSubscription.objects.filter(
-            feed__in=feed_ids, active=True, user__profile__last_seen_on__gte=unread_window_start
-        )
-        if seen_within_unread_window.exists():
+        if feed.has_reader_within_unread_window():
             return 0
 
         if dryrun:

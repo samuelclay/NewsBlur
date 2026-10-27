@@ -8864,6 +8864,26 @@ class Test_TrimAbandonedFeeds(TestCase):
         kept = sorted(int(s.story_guid.split("-")[-1]) for s in MStory.objects(story_feed_id=feed.pk))
         self.assertEqual(kept, list(range(self.STORIES - 10, self.STORIES)))
 
+    def test_the_last_fetch_before_a_reader_returns_keeps_their_unread_stories(self, mock_redis, *mocks):
+        """The fetch that finds the only reader away SUBSCRIBER_EXPIRE days is the feed's last, and
+        it used to cut the feed to 25 stories, or 10 without recent reads, while a Premium reader
+        still had 30 days of unread stories in it."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("last-fetch", last_fetch_days_ago=0, active_subscribers=1, num_subscribers=1)
+        self._subscribe(feed, "awayontrip", last_seen_days_ago=10)
+        # The fetch recounts (Feed.update_all_statistics) before it trims (utils/feed_fetcher.py).
+        feed.count_subscribers()
+        self.assertEqual(feed.active_subscribers, 0)
+
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+
+        # Once the unread window has passed, the same trim cuts it down.
+        Profile.objects.filter(user__username="awayontrip").update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=40)
+        )
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), self.STORIES - 10)
+
     def test_a_feed_already_trimmed_to_its_cutoff_is_not_recounted_every_day(self, mock_redis, *mocks):
         self._no_reads_and_postgres_counts(mock_redis)
         # Its last reader read it within story_retention's read window, so it keeps more than 10.
