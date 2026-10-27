@@ -402,14 +402,14 @@
     "13910": {
       "title": "Change Folders picker on web: too small, no folder icons, and “add” instead of “move”",
       "url": "https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910",
-      "status": "pr-open",
+      "status": "merged",
       "tier": 2,
       "handled_at": "2026-10-25T19:35:27Z",
       "last_posted_at": "2026-10-23T13:39:09.510Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2188",
       "branch": "forum-13910-folder-picker",
       "worktree": ".worktree/forum-13910-folder-picker",
-      "note": "Sam chose the design in two interview rounds: click name moves, check circle adds, fit all folders capped at window, check plus tinted row, sidebar font size, type to filter with arrows/Enter, open at current folder, and the same picker for a folder's Move to folder menu. Reply assumes make deploy plus make deploy_static.",
+      "note": "Sam chose the design in two interview rounds: click name moves, check circle adds, fit all folders capped at window, check plus tinted row, sidebar font size, type to filter with arrows/Enter, open at current folder, and the same picker for a folder's Move to folder menu. Reply assumes make deploy plus make deploy_static. Merged as 0709f9282a on 2026-10-27 with the blog post (dated 2026-10-27 09:00 -0700); deployed with make deploy, deploy_static and blog.",
       "reply": "Thanks for the detailed writeup, this was overdue. The Change Folders list now grows to show all your folders, as many as your window has room for, and it uses your custom folder icons. It also opens scrolled to the folder the site is in now, and the text follows your sidebar font size.\n\nThe bigger change is that clicking a folder's name now moves the site there, so there's no more going back to uncheck Newsletters. If you do want a site in two folders, click the circle next to the second folder to add it. There's also a filter box at the top, so you can type a few letters, press Enter to pick the folder and Enter again to move.",
       "question": null
     }
