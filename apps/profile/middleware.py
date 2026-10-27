@@ -159,6 +159,13 @@ class SQLLogToConsoleMiddleware:
             hasattr(request, "activated_segments") and "db_profiler" in request.activated_segments
         )
 
+    def process_request(self, request):
+        # Turns on recording of this request's Mongo and Redis commands onto connection.queriesx
+        # (utils/mongo_command_monitor.py recording_queries); process_response reads them and turns
+        # recording off again, so unprofiled requests don't keep a list that only grows.
+        if self.activated(request):
+            connection.queriesx = []
+
     def process_response(self, request, response):
         if not self.activated(request):
             return response
@@ -166,7 +173,8 @@ class SQLLogToConsoleMiddleware:
             queries = connection.queries
             if getattr(connection, "queriesx", False):
                 queries.extend(connection.queriesx)
-                connection.queriesx = []
+            # Read, so turn recording off until the next profiled request or task turns it on.
+            connection.queriesx = None
             time_elapsed = sum([float(q["time"]) for q in connection.queries])
             for query in queries:
                 sql_time = float(query["time"])

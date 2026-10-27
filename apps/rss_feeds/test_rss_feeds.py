@@ -8979,17 +8979,25 @@ class Test_TrimAbandonedFeeds(TestCase):
         for number in range(4):
             self._feed("quiet-%s" % number)
         monitor = settings.MONGO_COMMAND_LOGGER
+        # Nothing is profiling this process, as in a management command or most Celery tasks.
+        connection.queriesx = None
+        self.addCleanup(setattr, connection, "queriesx", None)
         commands_before = len(monitor.seen_request_ids)
 
         management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
         self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
-        self.assertFalse(getattr(connection, "queriesx", []))
+        self.assertIsNone(connection.queriesx)
 
         for number in range(4, 8):
             self._feed("quiet-%s" % number)
         TrimAbandonedFeeds()
         self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
-        self.assertFalse(getattr(connection, "queriesx", []))
+        self.assertIsNone(connection.queriesx)
+
+        # A profiled request or task turns recording on, and then its commands are kept for it.
+        connection.queriesx = []
+        MStory.objects(story_feed_id=0).count()
+        self.assertEqual({q["mongo"]["collection"] for q in connection.queriesx}, {"stories"})
 
     def test_trim_feeds_catches_up_on_the_backlog(self, mock_redis, *mocks):
         import io
