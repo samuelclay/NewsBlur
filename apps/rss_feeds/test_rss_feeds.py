@@ -8965,6 +8965,40 @@ class Test_TrimAbandonedFeeds(TestCase):
         # Left to manage.py trim_feeds, so the daily task doesn't re-check millions of old feeds.
         self.assertEqual(self._stored(long_quiet), self.STORIES)
 
+    def test_trimming_keeps_no_record_of_every_mongo_command_it_ran(self, mock_redis, *mocks):
+        """The global Mongo command monitor (utils/mongo_command_monitor.py) kept every command it
+        saw, and nothing resets it outside a request or a Celery task, so a trim_feeds pass over
+        millions of feeds ran a 3 GB task server out of memory near feed 800,000."""
+        import io
+
+        from django.db import connection
+
+        from apps.rss_feeds.tasks import TrimAbandonedFeeds
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        for number in range(4):
+            self._feed("quiet-%s" % number)
+        monitor = settings.MONGO_COMMAND_LOGGER
+        # Nothing is profiling this process, as in a management command or most Celery tasks.
+        connection.queriesx = None
+        self.addCleanup(setattr, connection, "queriesx", None)
+        commands_before = len(monitor.seen_request_ids)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        for number in range(4, 8):
+            self._feed("quiet-%s" % number)
+        TrimAbandonedFeeds()
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        # A profiled request or task turns recording on, and then its commands are kept for it.
+        connection.queriesx = []
+        MStory.objects(story_feed_id=0).count()
+        self.assertEqual({q["mongo"]["collection"] for q in connection.queriesx}, {"stories"})
+
     def test_trim_feeds_catches_up_on_the_backlog(self, mock_redis, *mocks):
         import io
 

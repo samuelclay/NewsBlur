@@ -1,6 +1,6 @@
 # iPhone Duo screenshots for the iOS 16.0.1 draft
 
-The four-panel landscape set adapts the approved 16.0 Sage artwork to the unfolded iPhone Duo. It retains the original NewsBlur icon, palette, CoreText typography, headlines and labels. The text occupies the left column; the real native screen occupies the official device frame at right. Arabic and Hebrew headlines and labels are right aligned within the text column. Source titles and cooking articles remain in English.
+The original four-panel landscape set adapted the approved 16.0 Sage artwork to the unfolded iPhone Duo. The current App Store Connect draft uses the four-state v2 revision documented below, with closed-mode panel 1 and full-screen panel 4; original panels 2 and 3 are preserved. It retains the original NewsBlur icon, palette, CoreText typography, headlines and labels. The text occupies the left column; the real native screen occupies the official device frame at right. Arabic and Hebrew headlines and labels are right aligned within the text column. Source titles and cooking articles remain in English.
 
 ## Inputs and rendering
 
@@ -49,3 +49,21 @@ The capture binary is Debug 16.0.1 (350), built from `bf81b82315d2d35384e79fcfeb
 `independent-review.json` records visual review tied to exact export hashes. `store-readback.txt` records the locale, filenames and four-image count after reloading App Store Connect and reselecting that locale. Run `verify-draft.rb` only after all 21 sets have passed review and persisted placement verification.
 
 `renderer-revisions/` also retains the exact export-script revisions referenced by those first sets' source hashes. They differ only in command-line option validation or an unused copy-root variable; the original files' hashes and all eight uploaded PNG hashes were rechecked after preservation.
+
+## Requested four-state revision (v2)
+
+The requested replacement sequence is: closed Duo showing only story titles; the original sources screenshot; the original titles-and-article screenshot; and an open Duo showing the article full screen. Panels 2 and 3 are reused byte for byte. Original captures, exports, reviews and store readbacks remain preserved.
+
+`capture-revision.rb closed` captures the actual outer display in its Closed pose at 1398 × 2034. `capture-revision.rb fullscreen` captures the actual Open landscape inner display at 2853 × 2007 with the account's full-screen reader preference enabled. The Debug-only `-newsblur-marketing-fullscreen` fixture flag waits for the real article paint gate and invokes the normal story-selection sidebar dismissal once. Device Hub must supply the real pose before each serial batch. Each scene has its own native PNG and hash metadata under `revisions/v2/captures/<language>/`.
+
+The closed frame is Apple's unchanged `PNG/iPhone Duo - Night Sky - Outer Closed Portrait.png`, from the same official download cited above. The user approved the license acceptance on October 26, 2026. Its measured screen opening is `(88, 80, 1398, 2034)` in a 1574 × 2194 PNG. The renderer follows the frame's connected transparent interior, preserving its asymmetric corners and camera cutout; `assets/iphone-duo-outer-closed-portrait.json` records those measurements.
+
+After both capture batches are complete, render the revision:
+
+```sh
+ruby clients/store/artwork/ios/16.0.1/duo/export-native.rb --all --revision v2 --revision-inputs clients/store/artwork/ios/16.0.1/duo/revisions/v2/inputs.json
+```
+
+Revision exports use unique `-v2` filenames for panels 1 and 4. Their manifests reference the unchanged original panel 2 and 3 files. Independent visual review and App Store Connect readback are required separately. `verify-revision.rb` writes `revisions/v2/draft-verification.json` only after all 21 localized sets pass capture, pixel, review, original-preservation and ordered-placement checks. The existence of capture or render files alone does not establish upload completion.
+
+Revision v2 was saved and verified in all 21 App Store Connect localizations on October 26, 2026. `revisions/v2/draft-verification.json` records all 84 ordered placements, including 42 new exports and 42 unchanged originals. All sets passed independent visual review and native-pixel comparison. The 106 new media files are stored in the repository asset bucket and referenced by `clients/store/artwork.manifest.json`. The original simulator app, standard/shared data, and shutdown state were restored and hash-verified; see `revisions/v2/simulator-restoration.json`. This screenshot-only update does not submit the iOS draft for review.

@@ -1,0 +1,663 @@
+{
+  "verified_at": "2026-10-27T02:11:31Z",
+  "version": "16.0.1",
+  "revision": "v2",
+  "screenshot_count": 84,
+  "replaced_screenshot_count": 42,
+  "locale_count": 21,
+  "store_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/ios/version/inflight",
+  "scope": "Screenshot revision only; this report does not verify release submission, approval or public availability.",
+  "locales": [
+    {
+      "locale": "en",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-en-duo-closed-2853x2007-01-v2.png",
+          "sha256": "53e475005c059c8e50c1c086cebb9002f5e5bc237258d372431f0e3ca01ad4b0",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-02.png",
+          "sha256": "5e028e44f6671177442b50e8f364d00e153694d005e5c3e5f6938860412f3682",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-03.png",
+          "sha256": "a94aad3e3f1149a0973ce8a123df67ac2a36bd67fd0bcff0625046868f83d56e",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-en-duo-inner-2853x2007-04-v2.png",
+          "sha256": "677427a3c805d873eaef7f5d99857c1f12ec22827dc7da810e71fa142a5183b3",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "4c3e6914f4cd275058e40a8d66337d27678f650e2360fd4d0f9e4565bdac301b",
+        "fullscreen": "9e6859c5a0c13b89fb61b3dbb4856ae1decab50274898877df89cb532b360814"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "es",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-es-duo-closed-2853x2007-01-v2.png",
+          "sha256": "0b67cef99f95770c444d1927f0a26630679ceb48b2596b2534e680286ab75ea8",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-es-duo-inner-2853x2007-02.png",
+          "sha256": "01bacab798413dc07bdeb6695590cd2734d90a047e00bda3317d6d96c2e4d1f5",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-es-duo-inner-2853x2007-03.png",
+          "sha256": "b2a6b24ffc68b0b5af3195961f2850a19622f349aee0a20e207384157f9ad4d8",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-es-duo-inner-2853x2007-04-v2.png",
+          "sha256": "679c5a3b07e3cc6aab4a50fc6b3822853e1a457700bad763e00e89a091480915",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "4c3e6914f4cd275058e40a8d66337d27678f650e2360fd4d0f9e4565bdac301b",
+        "fullscreen": "f43b187587c27572a1ca8b72de87bff8205f7f6fbad3a07ef9b4f4457f8f7f76"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "fr",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-fr-duo-closed-2853x2007-01-v2.png",
+          "sha256": "8100105c0b0f4f5747ad12f1dc3fe15e277aa58b3b40f87b70e114b5b7d9fc31",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-02.png",
+          "sha256": "16e6957bf245f67b8bb5d659c51b77e9e6355bb8dd67a2b486c2052bd5128142",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-03.png",
+          "sha256": "2d5ce45b99f6a5cc64031aed6655ecfacedb08459d7d7a8f94fef62c2261b326",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-fr-duo-inner-2853x2007-04-v2.png",
+          "sha256": "4131e2365e6a6b43c7adf60cfd7b5b3228fc2fffff08a2695eec03ebef178ca6",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "4c3e6914f4cd275058e40a8d66337d27678f650e2360fd4d0f9e4565bdac301b",
+        "fullscreen": "d5a308223dfa190c657e83ac979ccc7bfc59fb7fa4c3bad82712d71c41afef0f"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "de",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-de-duo-closed-2853x2007-01-v2.png",
+          "sha256": "0c6428f80bc5ffd5cdf98d6aa6a6d5ff7e8dcd2cbfaeed0df8d2b399c9f78336",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-de-duo-inner-2853x2007-02.png",
+          "sha256": "7b0dffe4107ac293a2f97e9db0adda686c22ec6833b940e37411507888609412",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-de-duo-inner-2853x2007-03.png",
+          "sha256": "22826c94112cd2250d2a632a2a14ef072c70f75051b9655924601c3346efc8ca",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-de-duo-inner-2853x2007-04-v2.png",
+          "sha256": "9426d7f573b1c01963420f70d2c02c60c90a5a4e1617f1d31df61ca1196feb7e",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "4c3e6914f4cd275058e40a8d66337d27678f650e2360fd4d0f9e4565bdac301b",
+        "fullscreen": "dda5a69bccdb677109fc7041cc1524e263e47b3351d10d909396157f1c826770"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "pt-BR",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-pt-BR-duo-closed-2853x2007-01-v2.png",
+          "sha256": "fd93a330e47a407de0f5f91159afcb9b1aea3ebc48bcc3db93e4b5c40f45f24b",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-02.png",
+          "sha256": "d37748565d8dd186ebe3c15e2bc5597eb1920b7bc35e30d31266b527a01d01aa",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-03.png",
+          "sha256": "a888ee162402a4849209788ca456bec7dd63f266b2c531a51c3a4ec2f963e9cc",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-pt-BR-duo-inner-2853x2007-04-v2.png",
+          "sha256": "d5129536f6e03cfa1bf4657b0ec870b66181335ecd80be2a91b2eefb9b74127e",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ae8f1fdcaeb7f93d16618a4944e81ff5dee01111f9c882a677bb8e2278ada7b5",
+        "fullscreen": "562ccaf0cfcad76f75be1b7a7435bed15974588380ea7133caea574057703f11"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "it",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-it-duo-closed-2853x2007-01-v2.png",
+          "sha256": "8cac6152230b70a5712f646f51b7a4bbd29aec4c2edf3da65eacc974e05d3e83",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-02.png",
+          "sha256": "4fe3b4ad707df102ec23fbb59d3337f4d99379ef0c3a2b0246dbc6b20318a829",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-03.png",
+          "sha256": "3a1b37b4e79c49e8b74bd7cdce4e4cddcdacb1099c59eb869feebf9d06d53b57",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-it-duo-inner-2853x2007-04-v2.png",
+          "sha256": "10d50910b9d0cf30fe1f618c07c58718e4404f42cb28fc6b0cc293fc3f656dde",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ae8f1fdcaeb7f93d16618a4944e81ff5dee01111f9c882a677bb8e2278ada7b5",
+        "fullscreen": "039b2bc55c79a74a6ca1faab5b2759a95d4e250861f1ffde971884ccef13417b"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "nl",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-nl-duo-closed-2853x2007-01-v2.png",
+          "sha256": "d87d3117616a090b34a4a7c2a66cf3b01fbbb7d6c0882418c52148e4c2c0e2be",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-02.png",
+          "sha256": "be1737031da13a840dcdab33be9a3daedafef1ab826853f76be08ef1ede20f69",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-03.png",
+          "sha256": "532a5ce2117d7075546c4b213e2e6141dd612e6b652023c938b6a9bacf5e7738",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-nl-duo-inner-2853x2007-04-v2.png",
+          "sha256": "05b19d24d29e5273b755dcce25edcf2ab3fcb0f2c459720ff3123ad717fecd40",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ae8f1fdcaeb7f93d16618a4944e81ff5dee01111f9c882a677bb8e2278ada7b5",
+        "fullscreen": "daceb983a32825ee4b424152a41feb73fbaf919e2963eead32fd00161e2e43c0"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "pl",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-pl-duo-closed-2853x2007-01-v2.png",
+          "sha256": "247cad958bccb49e97bb0cfac7f75937123236a6151bd4f646a1dbda1b00ecde",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-pl-duo-inner-2853x2007-02.png",
+          "sha256": "f7a98291f85311cd329104b0824b75914a2b8b997b335453d4638dec51cc88bc",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-pl-duo-inner-2853x2007-03.png",
+          "sha256": "fc088e0728e46d1edc6977c69f75f5046180eb7ed923f8d8ce5263970f1bd796",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-pl-duo-inner-2853x2007-04-v2.png",
+          "sha256": "566f3289d1994709e26d21524952a5925aded540450599e221442d259514aec7",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+        "fullscreen": "a59bf0e332570e9a89f8fe5aaa96585645b99f977b9048ecbcf6413203cf234d"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "tr",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-tr-duo-closed-2853x2007-01-v2.png",
+          "sha256": "57d1eaf099fc81665e40c49983f914cfeef3dc0f4c453e27d01d60312e15d6e9",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-02.png",
+          "sha256": "97854632413993f77cd120b50d3d54d2159b99ce19d51603a6f9435cbb45ef46",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-03.png",
+          "sha256": "af9e7edbc36932f222c71e743755c288185a429bb25b674f1d60fb5b9097bd7b",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-tr-duo-inner-2853x2007-04-v2.png",
+          "sha256": "184e58fc4709d306613a186c4b63bb4c1c0a7bc4b74a5faf796c6239f9e0964d",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+        "fullscreen": "326fa92ded567bcb7b64132f420a606cef1445ed96ef0680234acb91b0bcf8b3"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "ru",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-ru-duo-closed-2853x2007-01-v2.png",
+          "sha256": "7fc3c76498bc9ef09b96059055c3ea715f9c8643a235926cc8b9b2ec5f1a772b",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-02.png",
+          "sha256": "7ed2b4bcbc655a2452b29ac093ee7ae64f84bb071849cc6af6ee8464919da689",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-03.png",
+          "sha256": "5da2c9e139b06f4d2ef26a6a1eb8d81df014213e1aa1c690b73e567eb2a420cf",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-ru-duo-inner-2853x2007-04-v2.png",
+          "sha256": "bce9018a61cb8a53c0d1fe593cffe3fedc18cf5eead2e214387f1caf1d83295e",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+        "fullscreen": "347c3e988c74e41f1a307a9f6bad4173f139660c41a7fb365bfc525e21ebb442"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "uk",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-uk-duo-closed-2853x2007-01-v2.png",
+          "sha256": "ac7115fa5567e4fa33e8f2dba156e7f1cbf9bc7a20e20506368f9fce92d40f98",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-02.png",
+          "sha256": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-03.png",
+          "sha256": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-uk-duo-inner-2853x2007-04-v2.png",
+          "sha256": "753c42f06adfbd128022bc8f4aba0ff00b267c30430e81ecdb123781cf222305",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+        "fullscreen": "c89c1e7359e0b4eb18a0f730b422e8cce9f6f019b5eaa55f155c85b4e0bacf06"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "ar",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-ar-duo-closed-2853x2007-01-v2.png",
+          "sha256": "5ba0ff7280ec287fd2ae9e9752b74ddf8492d5f78caaca0ca13087b06ec4b4e0",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-02.png",
+          "sha256": "569403818ef930e09cabaab2fd04eb26ae89257a14d03ae9b2b15bc7327a7fe3",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-03.png",
+          "sha256": "dde072d6807dd6c8c91ba2aa9eb72872b5440cc653cf7a17d26098c15d75298d",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-ar-duo-inner-2853x2007-04-v2.png",
+          "sha256": "cb25303d4f4d387435ac9e4151a99ccf29d79291afcd0e7ca01afc5cd02942ac",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "162f5d5403177b7cbb75162934292c51dc282852ad9c94f395ac88f79ad1b92d",
+        "fullscreen": "a88820bddb5dce86c28d07d749a4376ee7aebde2d8ae24e09364095353693f40"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "he",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-he-duo-closed-2853x2007-01-v2.png",
+          "sha256": "4be240e0419c6e4e0336d46ba6eb555a408d8dea76c2c4e9d8611a01353dd099",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-02.png",
+          "sha256": "15647dff7e63d1cc57bcdb3d6f07443566c57004a0303ec3bcbff29aab897e7c",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-03.png",
+          "sha256": "8bc427d6f1748b41f0223d0ace0c931ea216e5ccc48de148dfe505e3eecdf332",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-he-duo-inner-2853x2007-04-v2.png",
+          "sha256": "b9ebd298b6c91ecea4a4036621ff0eb47147dfd7f3d0d5f6aaa3dbdb09802a9b",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "162f5d5403177b7cbb75162934292c51dc282852ad9c94f395ac88f79ad1b92d",
+        "fullscreen": "f6a081e10ab645ac034482c3ae3f25b31b8ed880aa7495e6f66b4438d1acc1eb"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "hi",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-hi-duo-closed-2853x2007-01-v2.png",
+          "sha256": "97e5595bbc291ab02ca29b3f56e420e9449826300dc4373b1762c417822216cb",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-hi-duo-inner-2853x2007-02.png",
+          "sha256": "11ec07fce378a4ca95c74e8d9496b0594dde9d85aff10cc378c8bbbc823eb890",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-hi-duo-inner-2853x2007-03.png",
+          "sha256": "7e40de8bb3e5abc096afa820ccdf7b9804945c4629f8d4aaaaea3283bcf587a3",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-hi-duo-inner-2853x2007-04-v2.png",
+          "sha256": "1d5005137f650d03cea1625c75dff020b6febec5fa241cf583b24025f674e8e8",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "c542a73f3aff75506fb33cd973f8cb340b95110b065a5a145204fc089bc24e1d",
+        "fullscreen": "b48bbc44fd2906c2eda40fe281ac268ef60d42e05f8cf3899db65cbb3eb3a69e"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "id",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-id-duo-closed-2853x2007-01-v2.png",
+          "sha256": "9423008a20ab5fe4055dcaefd313a415bab0251435cb00859d7e052ef4bd110e",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-02.png",
+          "sha256": "de265260faaca66294b3ecf9afd6a570f514d6d7c7ac19bf2810e7b76a446971",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-03.png",
+          "sha256": "edd2e16c7a10ab6cc8918ad0f564a56d409d939e57a15a2ac83377716b069a37",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-id-duo-inner-2853x2007-04-v2.png",
+          "sha256": "f9b5454b316bff5800bdb204b4821ca3943712c7f1ee9b3a26eae76f5f818df4",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "c542a73f3aff75506fb33cd973f8cb340b95110b065a5a145204fc089bc24e1d",
+        "fullscreen": "f8932c8d2a7b08269852df3d2da825b55a6408ade0313f3c4beffc8fc415922f"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "vi",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-vi-duo-closed-2853x2007-01-v2.png",
+          "sha256": "0ffeaee6570a5ce4c97d872249ff13376f6868d2d833429d4c79523ef5c0eb79",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-vi-duo-inner-2853x2007-02.png",
+          "sha256": "76500b0d6bb2b908aeed91ded8a493196bf7fd353cb5ba44d9fd0ce73e5630b4",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-vi-duo-inner-2853x2007-03.png",
+          "sha256": "f0138ecacf6020172b0af9e835e545eb8cea6ae4c249e66c6a3d2f8338667afe",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-vi-duo-inner-2853x2007-04-v2.png",
+          "sha256": "3315643cbbf87ceba0224b703f8bdf17d9dd595ec03911bccbcb261b0dd7554e",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "5587b4f7ae4dc3de5788f00db47117cba7517698a302c5d7b269b10abea7dc73",
+        "fullscreen": "3d9a64a2c10ee5f670d0e85cccbb41a6c99811e9f32eeca122641f28edde0c3c"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "th",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-th-duo-closed-2853x2007-01-v2.png",
+          "sha256": "f7bbc352ed157ba384dbe1659aca5a0e226545aff102f9ddda2789838258b13a",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-02.png",
+          "sha256": "554a8dfe8d2359db1220af90767ee0c56079cbb405d1d7b69af3e00e325e44a2",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-03.png",
+          "sha256": "09647dc8db45fa66edf52e395c96b9f07b366f3196de1c582cc1969f5ae06d55",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-04-v2.png",
+          "sha256": "bd37ed133ce6666086953eb1bb4c118e09845f2d23c83cd58abe983c0ba4b284",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "5587b4f7ae4dc3de5788f00db47117cba7517698a302c5d7b269b10abea7dc73",
+        "fullscreen": "ff783454c1c97a4a8a06acf9d9307f0a9d0aaff7141b632aca00789f63c199c0"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "ja",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-ja-duo-closed-2853x2007-01-v2.png",
+          "sha256": "15474933e9d3f771dca8a16a759886854b50bb12a65395db233da500b64cf094",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-02.png",
+          "sha256": "5e250a415bd362648aa70228d6d2fd93e61b4deb66d420ad38dc89042ce13c82",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-03.png",
+          "sha256": "b3d6ea5d2fe55a1d8a63b87ab23a9df167022c8b839458c5137cb57dde072732",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-04-v2.png",
+          "sha256": "b71fa7b0f5dd6f618fabcb2712861d5796656a3e2d5a6f9874911c904f44fad8",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "5587b4f7ae4dc3de5788f00db47117cba7517698a302c5d7b269b10abea7dc73",
+        "fullscreen": "d2886275b37e529136ebe101d88a9bf89763ada1753a872add99dd1f669ac7d4"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "ko",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-ko-duo-closed-2853x2007-01-v2.png",
+          "sha256": "f82bd91f150f1d4b07f51a413a5c61e2999b438291778731bd14501578b7de54",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-02.png",
+          "sha256": "12245301abad30ab50375d5bda3265247a0478a7b641e820597b8df5a1ad5256",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-03.png",
+          "sha256": "d7d2afe2795f01eb6f96066c518a0023bb5dec14f075987a6034268a922372e1",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-ko-duo-inner-2853x2007-04-v2.png",
+          "sha256": "ab37a2e4a611f60e6f29470ddd26b87174ba49ef58fd2772322fb51e8e9fc783",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ba65c84cc71174f2e9de0c9078c5693b9deff34cd2ba597b60716d4edf7c0b28",
+        "fullscreen": "c1af593b998688473b04f44483c31f0f858798c06b0e38e9af1d18dab24ea13c"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "zh-Hans",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-zh-Hans-duo-closed-2853x2007-01-v2.png",
+          "sha256": "3d75e0cf15b0bddebf655dcb592b655ced38251e38425cf908e3bac45669d47b",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png",
+          "sha256": "4c23f46eb65512ea4b96429c1176416fe9046deb1d5a7d1dba0520d971dcd25b",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png",
+          "sha256": "2680548a5cb129ba0595642837074ecd43821685eb38aa64cea0213f281633ca",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04-v2.png",
+          "sha256": "53f30803b3000390bf65b7682cef6b2cd5c57be36ba4d61ec5550246690bc6b2",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ba65c84cc71174f2e9de0c9078c5693b9deff34cd2ba597b60716d4edf7c0b28",
+        "fullscreen": "c4d2b73f4ef1da77dad66f53ce8b0a6e76456fddfc016d6ddf014861ef057552"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    },
+    {
+      "locale": "zh-Hant",
+      "files": [
+        {
+          "filename": "newsblur-16.0.1-zh-Hant-duo-closed-2853x2007-01-v2.png",
+          "sha256": "0186d9518cfc61ef7e028246e18f1d9142d9515ae10db901a5a4eae30763cdf0",
+          "panel": 1
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-02.png",
+          "sha256": "2f0ebc898a592fdbe53a2671185f19992ee893454795f411f818c9e0d310f2a0",
+          "panel": 2
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-03.png",
+          "sha256": "aded44258e6f7175fe687b773ce8994d7aba513de8abdd98e97fb291f71ce340",
+          "panel": 3
+        },
+        {
+          "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-04-v2.png",
+          "sha256": "f759b45bfea6f16b65ac7733006b34f00ccc74f4ab23ac3932ee8a94c7fd3604",
+          "panel": 4
+        }
+      ],
+      "capture_sha256": {
+        "closed": "ba65c84cc71174f2e9de0c9078c5693b9deff34cd2ba597b60716d4edf7c0b28",
+        "fullscreen": "338905fa32200f933991ef6adea27925844112557876272605601a9a2f2fb748"
+      },
+      "independent_visual_review": "passed",
+      "store_placement": "verified_after_reload"
+    }
+  ]
+}
