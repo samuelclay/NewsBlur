@@ -46,9 +46,12 @@ Use the arguments to determine:
    ---
    layout: post
    title: <compelling title that describes the feature>
+   date: YYYY-MM-DD 09:00:00 -0700  # 9am Pacific on the publish date
    tags: ["web"]  # or ["ios"], ["android"], or multiple
    ---
    ```
+
+   Always set `date` to 9am Pacific on the publish date, the same date as the filename. Use `-0700` during daylight time (second Sunday of March to first Sunday of November) and `-0800` otherwise. `blog/_config.yml` sets `timezone: America/New_York`, so a post dated only by its filename publishes at midnight Eastern, and feed readers in Pacific time show it on the previous evening.
 
    **Voice and style:**
    - First-person conversational tone ("I wanted...", "You can now...")
@@ -78,16 +81,16 @@ Use the arguments to determine:
    ```
    blog/_posts/YYYY-MM-DD-slug-title.md
    ```
-   Use today's date and a URL-friendly slug.
+   Use the publish date (today unless the user names another day) and a URL-friendly slug. It must match the `date` in the front matter.
 
 4. **Create the blog post file** using the Write tool with the full content.
 
 5. **Start the Jekyll server** to preview:
    ```bash
-   cd blog && bundle install && bundle exec jekyll serve
+   cd blog && bundle install && bundle exec jekyll serve --port 4000 --destination /tmp/newsblur-blog-preview
    ```
 
-   Run `bundle install` first to ensure gems are up to date. Report that Jekyll is running and the user can preview at http://localhost:4000
+   Run `bundle install` first to ensure gems are up to date. Keep `--destination` outside the repo: a plain `jekyll serve` writes a development build into the committed `blog/_site`, without the fonts, analytics and comments. Other worktrees often hold port 4000, so check with `lsof -nP -iTCP:4000 -sTCP:LISTEN` and pick the next free port. Report that Jekyll is running and the URL to preview it.
 
 6. **Report what was created:**
    - The filename and path
@@ -96,4 +99,11 @@ Use the arguments to determine:
    - Remind user to:
      - Take screenshots and save to `blog/assets/`
      - Update the placeholder image paths
-     - Preview at http://localhost:4000
+     - Preview at the URL from step 5
+
+7. **When the post is final**, regenerate the committed site and commit the post, its assets and `blog/_site` together:
+   ```bash
+   make blog-build
+   ```
+
+   `make blog-build` builds with `JEKYLL_ENV=production`, which the fonts in `blog/_includes/head.html`, Google Analytics and Disqus comments need. Never commit the output of a plain `jekyll build`. The diff should touch only the new post, its assets, the feeds and the index pages; if older post pages change, the build was not a production build. Deploy with `make blog` once the commits are on `main`.
