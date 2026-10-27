@@ -2944,6 +2944,9 @@ msgstr "Фильтр по сайту или классификатору..."
 msgid "Filter channels..."
 msgstr "Фильтровать каналы..."
 
+msgid "Filter folders"
+msgstr "Фильтровать папки"
+
 msgid "Filter icons..."
 msgstr "Фильтровать значки..."
 
@@ -4140,6 +4143,10 @@ msgstr[0] "Переместить %(count)s сайт"
 msgstr[1] "Переместить %(count)s сайта"
 msgstr[2] "Переместить %(count)s сайтов"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Переместить в %(folder)s"
+
 msgid "Move to folder"
 msgstr "Переместить в папку"
 
@@ -4397,6 +4404,9 @@ msgstr "Ленты не найдены"
 
 msgid "No feeds found in this category."
 msgstr "В этой категории нет лент."
+
+msgid "No folders match"
+msgstr "Подходящих папок нет"
 
 msgid "No gifts sent yet."
 msgstr "Подарков пока нет."

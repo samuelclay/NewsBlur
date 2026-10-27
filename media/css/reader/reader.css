@@ -17675,7 +17675,8 @@ h5.NB-classifier-section-header {
     padding-bottom: 2px;
 }
 
-.NB-menu-manage .NB-menu-manage-feed-move-confirm {
+.NB-menu-manage .NB-menu-manage-feed-move-confirm,
+.NB-menu-manage .NB-menu-manage-folder-move-confirm {
     padding: 0;
 }
 
@@ -17761,63 +17762,200 @@ h5.NB-classifier-section-header {
     height: 28px;
 }
 
-.NB-menu-manage .NB-menu-manage-confirm .NB-add-folders {
-    float: left;
-    max-height: 84px;
-    overflow-y: auto;
-}
-
-.NB-menu-manage .NB-menu-manage-feed-move-save {
-    display: none;
-}
-
-.NB-menu-manage .NB-menu-manage-feed-move-save {
+.NB-menu-manage .NB-menu-manage-move-save {
     float: right;
     display: none;
+    max-width: 60%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
+/* Folder picker for Change folders and Move to folder (reader.js: make_folder_picker) */
 .NB-menu-manage .NB-menu-manage-confirm .NB-change-folders {
     width: 100%;
-    height: 84px;
-    overflow-y: auto;
 }
 
-.NB-menu-manage .NB-change-folders .NB-folders {
-    padding: 4px 0;
+.NB-menu-manage .NB-folder-picker-filter {
+    padding: 6px 8px 4px;
+}
+
+.NB-menu-manage .NB-folder-picker-filter-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 4px 8px;
+    font-size: 13px;
+    color: #303030;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 4px;
+}
+
+.NB-menu-manage .NB-folder-picker-filter-input:focus {
+    outline: none;
+    border-color: #6EA74E;
+}
+
+/* reader.js: expand_folder_picker sets the height, so it never exceeds the folders */
+.NB-menu-manage .NB-folder-picker-list {
+    position: relative;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 2px 0 4px;
+    font-size: 12px;
+    --nb-folder-row-height: 24px;
+}
+
+/* Rows follow the sidebar's feed size setting */
+.NB-theme-feed-size-xs .NB-menu-manage .NB-folder-picker-list {
+    font-size: 11px;
+    --nb-folder-row-height: 22px;
+}
+
+.NB-theme-feed-size-l .NB-menu-manage .NB-folder-picker-list {
+    font-size: 13px;
+    --nb-folder-row-height: 28px;
+}
+
+.NB-theme-feed-size-xl .NB-menu-manage .NB-folder-picker-list {
+    font-size: 14px;
+    --nb-folder-row-height: 30px;
 }
 
 .NB-menu-manage .NB-change-folders .NB-folder-option {
-    overflow: hidden;
-    clear: both;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--nb-folder-row-height);
+    padding-left: calc(8px + var(--nb-folder-depth, 0) * 16px);
+    padding-right: 8px;
     cursor: pointer;
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option:hover {
-    background-color: rgba(0, 4, 0, .1);
+.NB-menu-manage .NB-change-folders .NB-folder-option:hover,
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-highlighted {
+    background-color: rgba(0, 4, 0, .07);
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option .NB-icon,
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active {
+    background-color: rgba(110, 167, 78, .16);
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active:hover,
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active.NB-folder-option-highlighted {
+    background-color: rgba(110, 167, 78, .26);
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-highlighted {
+    box-shadow: inset 3px 0 0 #6EA74E;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-disabled {
+    cursor: default;
+    opacity: .4;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-disabled:hover {
+    background-color: transparent;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-check {
+    flex: none;
+    position: relative;
+    width: 15px;
+    height: 15px;
+    box-sizing: border-box;
+    border: 1.5px solid rgba(0, 0, 0, .28);
+    border-radius: 50%;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-check:hover {
+    border-color: #6EA74E;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-active .NB-folder-option-check {
+    border-color: #6EA74E;
+    background-color: #6EA74E;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-active .NB-folder-option-check::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background-color: white;
+    -webkit-mask: url('/media/embed/icons/nouns/check-fat.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/check-fat.svg') no-repeat center / contain;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon,
 .NB-menu-manage .NB-change-folders .NB-add-folder-form .NB-icon {
-    background: transparent url('/media/embed/icons/nouns/folder-open.svg') no-repeat 0 0;
+    flex: none;
+    position: relative;
     width: 16px;
     height: 16px;
+    background: transparent url('/media/embed/icons/nouns/folder-open.svg') no-repeat 0 0;
     background-size: 16px;
-    float: left;
-    clear: left;
-    margin: 1px 4px;
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-icon {
-    background: transparent url('/media/embed/icons/nouns/folder-closed.svg') no-repeat 0 0;
-    background-size: 16px;
+/* Custom folder icons from $.favicon_el replace the plain folder */
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon:has(.feed_favicon),
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon:has(.NB-folder-emoji),
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon:has(.NB-folder-icon-colored) {
+    background: none;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon .feed_favicon,
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon .NB-folder-icon-colored {
+    display: block;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon .NB-folder-icon-colored {
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-icon .NB-folder-emoji {
+    display: block;
+    width: 16px;
+    height: 16px;
+    font-size: 13px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option-title {
+    flex: 1;
+    min-width: 0;
+    padding: 3px 0;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-folder-option-title {
+    font-weight: bold;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-context .NB-folder-option-title {
+    opacity: .55;
+}
+
+.NB-menu-manage .NB-change-folders .NB-folder-option .NB-icon-add {
+    flex: none;
+    width: 16px;
+    height: 16px;
 }
 
 .NB-menu-manage .NB-change-folders .NB-folder-option:hover .NB-icon-add {
     background: transparent url('/media/embed/icons/circular/g_icn_folder_add.png') no-repeat 0 0;
-    float: right;
-    width: 16px;
-    height: 16px;
-    margin: 1px 4px 0;
     background-size: 16px;
 }
 
@@ -17826,22 +17964,27 @@ h5.NB-classifier-section-header {
     background-size: 16px;
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option-title {
-    padding: 3px 0 2px;
+.NB-menu-manage .NB-change-folders .NB-folder-picker-empty {
+    padding: 8px 12px;
+    color: rgba(0, 0, 0, .45);
 }
 
-.NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active .NB-folder-option-title {
-    font-weight: bold;
+.NB-menu-manage .NB-change-folders .NB-add-folder-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px 2px calc(29px + var(--nb-folder-depth, 0) * 16px);
 }
 
 .NB-menu-manage .NB-change-folders .NB-input {
+    flex: 1;
+    min-width: 0;
     font-size: 11px;
-    float: left;
     margin: 0;
 }
 
 .NB-menu-manage .NB-change-folders .NB-menu-manage-add-folder-save {
-    margin: 0 4px 0 0;
+    margin: 0;
 }
 
 .NB-menu-manage .NB-menu-manage-story-share-confirm .NB-sideoption-share {

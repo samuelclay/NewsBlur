@@ -2734,6 +2734,9 @@ msgstr "依網站或分類器篩選…"
 msgid "Filter channels..."
 msgstr "篩選頻道…"
 
+msgid "Filter folders"
+msgstr "篩選資料夾"
+
 msgid "Filter icons..."
 msgstr "篩選圖示…"
 
@@ -3886,6 +3889,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "移動 %(count)s 個網站"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "移至 %(folder)s"
+
 msgid "Move to folder"
 msgstr "移至資料夾"
 
@@ -4139,6 +4146,9 @@ msgstr "找不到訂閱來源"
 
 msgid "No feeds found in this category."
 msgstr "此類別中找不到訂閱來源。"
+
+msgid "No folders match"
+msgstr "沒有符合的資料夾"
 
 msgid "No gifts sent yet."
 msgstr "尚未送出任何贈品。"

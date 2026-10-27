@@ -3160,6 +3160,9 @@ msgstr "التصفية حسب الموقع أو المصنّف..."
 msgid "Filter channels..."
 msgstr "تصفية القنوات..."
 
+msgid "Filter folders"
+msgstr "تصفية المجلدات"
+
 msgid "Filter icons..."
 msgstr "تصفية الأيقونات..."
 
@@ -4376,6 +4379,10 @@ msgstr[3] "نقل %(count)s مواقع"
 msgstr[4] "نقل %(count)s موقعًا"
 msgstr[5] "نقل %(count)s موقع"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "نقل إلى %(folder)s"
+
 msgid "Move to folder"
 msgstr "نقل إلى مجلد"
 
@@ -4636,6 +4643,9 @@ msgstr "لم يتم العثور على خلاصات"
 
 msgid "No feeds found in this category."
 msgstr "لم يتم العثور على خلاصات في هذه الفئة."
+
+msgid "No folders match"
+msgstr "لا توجد مجلدات مطابقة"
 
 msgid "No gifts sent yet."
 msgstr "لم تُرسل أي هدايا بعد."

@@ -2778,6 +2778,9 @@ msgstr "Siteye veya sınıflandırıcıya göre filtrele..."
 msgid "Filter channels..."
 msgstr "Kanalları filtrele..."
 
+msgid "Filter folders"
+msgstr "Klasörleri filtrele"
+
 msgid "Filter icons..."
 msgstr "Simgeleri filtrele..."
 
@@ -3954,6 +3957,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s siteyi taşı"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "%(folder)s konumuna taşı"
+
 msgid "Move to folder"
 msgstr "Klasöre taşı"
 
@@ -4209,6 +4216,9 @@ msgstr "Akış bulunamadı"
 
 msgid "No feeds found in this category."
 msgstr "Bu kategoride akış bulunamadı."
+
+msgid "No folders match"
+msgstr "Eşleşen klasör yok"
 
 msgid "No gifts sent yet."
 msgstr "Henüz hediye gönderilmedi."
