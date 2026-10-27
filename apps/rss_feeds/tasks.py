@@ -187,8 +187,11 @@ def UpdateFeeds(feed_pks):
                 profiler.process_celery_finished()
     finally:
         # A feed that raised skipped process_celery_finished, which would leave recording on for every
-        # later task on this worker thread. utils/mongo_command_monitor.py
+        # later task on this worker thread (utils/mongo_command_monitor.py), and leave the DEBUG that
+        # DBProfilerMiddleware.process_celery turned on, which makes the fetcher skip PuSH and Sentry.
         connection.queriesx = None
+        if profiler_activated and not getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG):
+            settings.DEBUG = False
 
 
 @app.task(name="new-feeds", time_limit=10 * 60, soft_time_limit=9 * 60, ignore_result=True)

@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.conf import settings
 from django.db import connection, reset_queries
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
@@ -70,7 +71,8 @@ class Test_QueryRecordingOnlyWhileProfiling(TestCase):
         self.assertIsNone(connection.queriesx)
 
 
-@override_settings(DEBUG_QUERIES=False)
+# DEBUG is restored with the settings when each test ends, along with the ORIGINAL_DEBUG the profiler sets.
+@override_settings(DEBUG_QUERIES=False, DEBUG=False)
 @patch("apps.rss_feeds.tasks.RedisDumpMiddleware")
 class Test_UpdateFeedsQueryRecording(TestCase):
     """A profiled UpdateFeeds task reads and turns off recording after each feed, so each feed
@@ -90,9 +92,12 @@ class Test_UpdateFeedsQueryRecording(TestCase):
         ]
 
     def _profiled(self):
-        # Stands in for the 1% of tasks DBProfilerMiddleware.process_celery samples.
+        # Stands in for the 1% of tasks DBProfilerMiddleware.process_celery samples, which also turns
+        # DEBUG on so the task's SQL is logged.
         def process_celery(profiler):
             profiler.activated_segments = ["db_profiler"]
+            setattr(settings, "ORIGINAL_DEBUG", settings.DEBUG)
+            settings.DEBUG = True
             return profiler
 
         return patch.object(DBProfilerMiddleware, "process_celery", process_celery)
@@ -117,6 +122,7 @@ class Test_UpdateFeedsQueryRecording(TestCase):
 
         self.assertEqual(recorded, [{"stories"}, {"stories"}])
         self.assertIsNone(connection.queriesx)
+        self.assertFalse(settings.DEBUG)
 
     def test_a_feed_that_raises_still_turns_recording_off(self, mock_redis_middleware):
         from apps.rss_feeds.tasks import UpdateFeeds
@@ -130,3 +136,4 @@ class Test_UpdateFeedsQueryRecording(TestCase):
                 UpdateFeeds([self.feeds[0].pk])
 
         self.assertIsNone(connection.queriesx)
+        self.assertFalse(settings.DEBUG)
