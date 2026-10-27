@@ -1,9 +1,11 @@
-from django.db import connection
+from unittest.mock import patch
+
+from django.db import connection, reset_queries
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase, override_settings
 
-from apps.profile.middleware import SQLLogToConsoleMiddleware
-from apps.rss_feeds.models import MStory
+from apps.profile.middleware import DBProfilerMiddleware, SQLLogToConsoleMiddleware
+from apps.rss_feeds.models import Feed, MStory
 
 
 @override_settings(DEBUG_QUERIES=False)
@@ -16,6 +18,7 @@ class Test_QueryRecordingOnlyWhileProfiling(TestCase):
     def setUp(self):
         connection.queriesx = None
         self.addCleanup(setattr, connection, "queriesx", None)
+        reset_queries()
 
     def _request(self, profiled):
         request = RequestFactory().get("/reader/feed/1")
@@ -55,4 +58,75 @@ class Test_QueryRecordingOnlyWhileProfiling(TestCase):
         # Read by process_response and turned off, so the next unprofiled request keeps nothing.
         self.assertIsNone(connection.queriesx)
         MStory.objects(story_feed_id=0).count()
+        self.assertIsNone(connection.queriesx)
+
+    def test_a_profiled_request_that_ran_no_sql_still_turns_recording_off(self):
+        middleware = SQLLogToConsoleMiddleware(self._view_runs_a_mongo_query)
+
+        middleware(self._request(profiled=True))
+
+        self.assertIsNone(connection.queriesx)
+        MStory.objects(story_feed_id=0).count()
+        self.assertIsNone(connection.queriesx)
+
+
+@override_settings(DEBUG_QUERIES=False)
+@patch("apps.rss_feeds.tasks.RedisDumpMiddleware")
+class Test_UpdateFeedsQueryRecording(TestCase):
+    """A profiled UpdateFeeds task reads and turns off recording after each feed, so each feed
+    has to turn it on for its own queries, and a feed that raises must not leave it on for every
+    later task on the worker. apps/profile/test_query_recording.py"""
+
+    def setUp(self):
+        connection.queriesx = None
+        self.addCleanup(setattr, connection, "queriesx", None)
+        self.feeds = [
+            Feed.objects.create(
+                feed_address="https://rss.example.com/profiled-%s.xml" % number,
+                feed_link="https://www.example.com/profiled-%s" % number,
+                feed_title="Profiled %s" % number,
+            )
+            for number in range(2)
+        ]
+
+    def _profiled(self):
+        # Stands in for the 1% of tasks DBProfilerMiddleware.process_celery samples.
+        def process_celery(profiler):
+            profiler.activated_segments = ["db_profiler"]
+            return profiler
+
+        return patch.object(DBProfilerMiddleware, "process_celery", process_celery)
+
+    def test_each_feed_of_a_profiled_task_records_its_own_queries(self, mock_redis_middleware):
+        from apps.rss_feeds.tasks import UpdateFeeds
+
+        recorded = []
+        process_response = SQLLogToConsoleMiddleware.process_response
+
+        def reading_each_feed(middleware, request, response):
+            recorded.append({q["mongo"]["collection"] for q in connection.queriesx or []})
+            return process_response(middleware, request, response)
+
+        def update(feed, **options):
+            MStory.objects(story_feed_id=feed.pk).count()
+
+        with self._profiled(), patch.object(Feed, "update", update), patch.object(
+            SQLLogToConsoleMiddleware, "process_response", reading_each_feed
+        ):
+            UpdateFeeds([feed.pk for feed in self.feeds])
+
+        self.assertEqual(recorded, [{"stories"}, {"stories"}])
+        self.assertIsNone(connection.queriesx)
+
+    def test_a_feed_that_raises_still_turns_recording_off(self, mock_redis_middleware):
+        from apps.rss_feeds.tasks import UpdateFeeds
+
+        def update(feed, **options):
+            MStory.objects(story_feed_id=feed.pk).count()
+            raise ValueError("The fetch blew up")
+
+        with self._profiled(), patch.object(Feed, "update", update):
+            with self.assertRaises(ValueError):
+                UpdateFeeds([self.feeds[0].pk])
+
         self.assertIsNone(connection.queriesx)

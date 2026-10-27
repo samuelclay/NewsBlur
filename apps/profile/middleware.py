@@ -169,12 +169,13 @@ class SQLLogToConsoleMiddleware:
     def process_response(self, request, response):
         if not self.activated(request):
             return response
+        # Take what was recorded and turn recording off whatever happens below, so a profiled request
+        # or task that ran no SQL doesn't leave it on for every later one on this thread.
+        recorded = getattr(connection, "queriesx", None) or []
+        connection.queriesx = None
         if connection.queries:
             queries = connection.queries
-            if getattr(connection, "queriesx", False):
-                queries.extend(connection.queriesx)
-            # Read, so turn recording off until the next profiled request or task turns it on.
-            connection.queriesx = None
+            queries.extend(recorded)
             time_elapsed = sum([float(q["time"]) for q in connection.queries])
             for query in queries:
                 sql_time = float(query["time"])

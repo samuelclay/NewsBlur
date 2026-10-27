@@ -8,6 +8,7 @@ import time
 import redis
 from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
+from django.db import connection
 
 from apps.profile.middleware import DBProfilerMiddleware
 from newsblur_web.celeryapp import app
@@ -149,7 +150,6 @@ def UpdateFeeds(feed_pks):
     profiler = DBProfilerMiddleware()
     profiler_activated = profiler.process_celery()
     if profiler_activated:
-        settings.MONGO_COMMAND_LOGGER.process_celery(profiler)
         redis_middleware = RedisDumpMiddleware()
         redis_middleware.process_celery(profiler)
 
@@ -163,23 +163,32 @@ def UpdateFeeds(feed_pks):
     if not isinstance(feed_pks, list):
         feed_pks = [feed_pks]
 
-    for feed_pk in feed_pks:
-        feed = Feed.get_by_id(feed_pk)
-        if not feed or feed.pk != int(feed_pk):
-            logging.info(
-                " ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..."
-                % (feed_pk, feed and feed.pk)
-            )
-            r.zrem("tasked_feeds", feed_pk)
-        if not feed:
-            continue
-        try:
-            feed.update(**options)
-        except SoftTimeLimitExceeded as e:
-            feed.save_feed_history(505, "Timeout", e)
-            logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
-        if profiler_activated:
-            profiler.process_celery_finished()
+    try:
+        for feed_pk in feed_pks:
+            feed = Feed.get_by_id(feed_pk)
+            if not feed or feed.pk != int(feed_pk):
+                logging.info(
+                    " ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..."
+                    % (feed_pk, feed and feed.pk)
+                )
+                r.zrem("tasked_feeds", feed_pk)
+            if not feed:
+                continue
+            if profiler_activated:
+                # process_celery_finished reads each feed's queries and turns recording off
+                # (apps/profile/middleware.py SQLLogToConsoleMiddleware), so every feed turns it on.
+                settings.MONGO_COMMAND_LOGGER.process_celery(profiler)
+            try:
+                feed.update(**options)
+            except SoftTimeLimitExceeded as e:
+                feed.save_feed_history(505, "Timeout", e)
+                logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+            if profiler_activated:
+                profiler.process_celery_finished()
+    finally:
+        # A feed that raised skipped process_celery_finished, which would leave recording on for every
+        # later task on this worker thread. utils/mongo_command_monitor.py
+        connection.queriesx = None
 
 
 @app.task(name="new-feeds", time_limit=10 * 60, soft_time_limit=9 * 60, ignore_result=True)
@@ -270,12 +279,7 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
     """
     from redis.exceptions import LockError
 
-    from apps.rss_feeds.models import (
-        Feed,
-        clear_merge_feeds_queued,
-        merge_feeds,
-        settle_address_check_merge,
-    )
+    from apps.rss_feeds.models import Feed, clear_merge_feeds_queued, merge_feeds, settle_address_check_merge
 
     try:
         survivor = Feed.get_by_id(merge_feeds(original_feed_id, duplicate_feed_id))
