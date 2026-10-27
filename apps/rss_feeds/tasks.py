@@ -8,6 +8,7 @@ import time
 import redis
 from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
+from django.db import connection
 
 from apps.profile.middleware import DBProfilerMiddleware
 from newsblur_web.celeryapp import app
@@ -247,6 +248,10 @@ def TrimAbandonedFeeds(time_budget_seconds=50 * 60):
             # One bad feed shouldn't hold up the rest; it stays a candidate for tomorrow.
             logging.debug(" ***> ~FRCouldn't trim abandoned feed %s: %s" % (feed_id, e))
             continue
+        finally:
+            # The Mongo command monitor (utils/mongo_command_monitor.py) logs every command onto the
+            # connection for request profiling, and nothing resets it inside one long task.
+            connection.queriesx = []
         if removed:
             trimmed_feeds += 1
             trimmed_stories += removed

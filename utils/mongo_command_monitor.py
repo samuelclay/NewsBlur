@@ -16,7 +16,9 @@ class MongoCommandLogger(monitoring.CommandListener):
         #              "{0.connection_id}".format(event))
 
     def succeeded(self, event):
-        command = self.seen_request_ids.get(event.request_id, None)
+        # Popped, not read: a long-running process such as manage.py trim_feeds sees millions of
+        # commands, and keeping each one ran a task server out of memory. utils/mongo_command_monitor.py
+        command = self.seen_request_ids.pop(event.request_id, None)
         if not command:
             logging.info(f" ---> Couldn't find mongodb command: {event}")
             return
@@ -74,6 +76,7 @@ class MongoCommandLogger(monitoring.CommandListener):
         #              "microseconds".format(event))
 
     def failed(self, event):
+        self.seen_request_ids.pop(event.request_id, None)
         logging.info(
             "Command {0.command_name} with request id "
             "{0.request_id} on server {0.connection_id} "

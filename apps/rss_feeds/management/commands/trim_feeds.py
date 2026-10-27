@@ -3,7 +3,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 from django.core.management.base import BaseCommand
-from django.db import close_old_connections
+from django.db import close_old_connections, connection
 
 from apps.rss_feeds.models import Feed
 
@@ -91,3 +91,8 @@ class Command(BaseCommand):
             sys.stderr.write(" ***> Feed %s failed to trim: %s\n" % (feed_id, e))
             close_old_connections()
             return None
+        finally:
+            # The Mongo command monitor (utils/mongo_command_monitor.py) logs every command onto this
+            # thread's connection for request profiling, and nothing resets it in a command, so a pass
+            # over millions of feeds ran out of memory.
+            connection.queriesx = []
