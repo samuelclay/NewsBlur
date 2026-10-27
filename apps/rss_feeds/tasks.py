@@ -215,17 +215,46 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
-@app.task(name="trim-feed", time_limit=10 * 60, soft_time_limit=9 * 60, ignore_result=True)
-def TrimFeed(feed_id):
-    """Trims a feed whose recount just took away its last active reader or Archive subscriber
-    (Feed.count_subscribers in apps/rss_feeds/models.py). Nothing fetches a feed without
-    active subscribers, so the trim after each fetch (utils/feed_fetcher.py) never would.
+@app.task(name="trim-abandoned-feeds", time_limit=60 * 60, soft_time_limit=55 * 60, ignore_result=True)
+def TrimAbandonedFeeds(time_budget_seconds=50 * 60):
+    """Daily: trims feeds nobody has been seen reading in DAYS_OF_UNREAD days
+    (Feed.trim_if_abandoned in apps/rss_feeds/models.py), oldest last fetch first. A feed stays
+    a candidate until its last fetch is twice DAYS_OF_UNREAD old, so a day that runs out of time
+    is picked up the next day. Older feeds are left to manage.py trim_feeds.
     apps/rss_feeds/tasks.py"""
     from apps.rss_feeds.models import Feed
 
-    feed = Feed.get_by_id(feed_id)
-    if feed:
-        feed.trim_feed()
+    oldest_fetch = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD * 2)
+    feed_ids = list(
+        Feed.abandoned_feed_candidates()
+        .filter(last_update__gte=oldest_fetch)
+        .order_by("last_update")
+        .values_list("pk", flat=True)
+    )
+    started = time.time()
+    checked = 0
+    trimmed_feeds = 0
+    trimmed_stories = 0
+    for feed_id in feed_ids:
+        if time.time() - started > time_budget_seconds:
+            break
+        checked += 1
+        try:
+            removed = Feed.trim_if_abandoned(feed_id)
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception as e:
+            # One bad feed shouldn't hold up the rest; it stays a candidate for tomorrow.
+            logging.debug(" ***> ~FRCouldn't trim abandoned feed %s: %s" % (feed_id, e))
+            continue
+        if removed:
+            trimmed_feeds += 1
+            trimmed_stories += removed
+
+    logging.debug(
+        " ---> ~FBTrimmed ~SB%s~SN stories from ~SB%s~SN abandoned feeds (%s of %s candidates checked)"
+        % (trimmed_stories, trimmed_feeds, checked, len(feed_ids))
+    )
 
 
 @app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)

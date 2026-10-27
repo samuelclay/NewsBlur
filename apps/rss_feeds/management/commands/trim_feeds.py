@@ -4,20 +4,16 @@ from concurrent.futures import ThreadPoolExecutor
 
 from django.core.management.base import BaseCommand
 from django.db import close_old_connections
-from django.db.models import Q
 
-from apps.rss_feeds.models import Feed, MStory
-
-# Feed.story_retention never keeps fewer than 10 stories (its no-reads cap in
-# apps/rss_feeds/models.py), so a feed holding 10 or fewer has nothing to trim.
-FEWEST_STORIES_KEPT = 10
+from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
     help = (
-        "Trim stories from feeds with no active or Archive subscribers. Nothing fetches those feeds, "
-        "so the trim after each fetch (utils/feed_fetcher.py) never runs on them. Feed.count_subscribers "
-        "trims a feed as it loses its last reader; this catches up on the feeds that went quiet before that."
+        "Trim stories from feeds nobody has been seen reading in DAYS_OF_UNREAD days and no Archive "
+        "subscriber keeps (Feed.trim_if_abandoned). Nothing fetches those feeds, so the trim after each "
+        "fetch never runs on them. The daily TrimAbandonedFeeds task keeps up with feeds that just went "
+        "quiet; this catches up on the ones before that."
     )
 
     def add_arguments(self, parser):
@@ -37,22 +33,20 @@ class Command(BaseCommand):
         self.dryrun = options["dryrun"]
 
         if options["feed"]:
-            removed = self.trim_quiet_feed(options["feed"])
+            removed = self.trim_abandoned_feed(options["feed"])
             self.stdout.write(" ---> Feed %s: %s stories trimmed" % (options["feed"], removed or 0))
             return
 
         if options["threads"] > 1:
             with ThreadPoolExecutor(max_workers=options["threads"]) as pool:
-                self.trim_all_quiet_feeds(pool.map, options["start"], options["chunk"])
+                self.trim_all_abandoned_feeds(pool.map, options["start"], options["chunk"])
         else:
             # A single thread runs in the caller's thread, which also lets tests see their own
             # uncommitted rows.
-            self.trim_all_quiet_feeds(map, options["start"], options["chunk"])
+            self.trim_all_abandoned_feeds(map, options["start"], options["chunk"])
 
-    def trim_all_quiet_feeds(self, map_feeds, start, chunk):
-        quiet_feeds = Feed.objects.filter(active_subscribers__lte=0).filter(
-            Q(archive_subscribers__isnull=True) | Q(archive_subscribers__lte=0)
-        )
+    def trim_all_abandoned_feeds(self, map_feeds, start, chunk):
+        candidates = Feed.abandoned_feed_candidates()
         last_feed_id = Feed.objects.latest("pk").pk
         trimmed_feeds = 0
         trimmed_stories = 0
@@ -62,12 +56,12 @@ class Command(BaseCommand):
         for window_start in range(start, last_feed_id + 1, chunk):
             window_end = window_start + chunk
             feed_ids = list(
-                quiet_feeds.filter(pk__gte=window_start, pk__lt=window_end)
+                candidates.filter(pk__gte=window_start, pk__lt=window_end)
                 .order_by("pk")
                 .values_list("pk", flat=True)
             )
             # Counted here on the calling thread, since the feeds are trimmed on several.
-            for removed in map_feeds(self.trim_quiet_feed, feed_ids):
+            for removed in map_feeds(self.trim_abandoned_feed, feed_ids):
                 if removed is None:
                     failures += 1
                 elif removed:
@@ -86,25 +80,11 @@ class Command(BaseCommand):
                 )
             )
 
-    def trim_quiet_feed(self, feed_id):
+    def trim_abandoned_feed(self, feed_id):
         """Returns how many stories were trimmed from the feed, or in a dry run, would be.
         Returns None when the feed failed to trim."""
         try:
-            stored = MStory.objects(story_feed_id=feed_id).count()
-            if stored <= FEWEST_STORIES_KEPT:
-                return 0
-            feed = Feed.objects.get(pk=feed_id)
-            if self.dryrun:
-                return max(0, stored - feed.story_cutoff)
-
-            # Stored counts go stale, and an Archive subscriber they missed still needs these
-            # stories, so count again before deleting anything.
-            feed.count_subscribers()
-            if feed.active_subscribers > 0 or (feed.archive_subscribers or 0) > 0:
-                return 0
-            return feed.trim_feed()
-        except Feed.DoesNotExist:
-            return 0
+            return Feed.trim_if_abandoned(feed_id, dryrun=self.dryrun)
         except Exception as e:
             # One bad feed shouldn't stop a pass over millions. Drop a connection the error left
             # unusable so this thread's next feed reconnects.

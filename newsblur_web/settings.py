@@ -510,8 +510,6 @@ CELERY_TASK_ROUTES = {
     "new-feeds": {"queue": "new_feeds", "binding_key": "new_feeds"},
     "push-feeds": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "update-feeds": {"queue": "update_feeds", "binding_key": "update_feeds"},
-    # Trimming a feed nobody reads is the same upkeep a fetch does (apps/rss_feeds/tasks.py TrimFeed).
-    "trim-feed": {"queue": "update_feeds", "binding_key": "update_feeds"},
     "beat-tasks": {"queue": "cron_queue", "binding_key": "cron_queue"},
     "search-indexer": {"queue": "search_indexer", "binding_key": "search_indexer"},
     "discover-indexer": {
@@ -702,6 +700,12 @@ CELERY_BEAT_SCHEDULE = {
     },
     "premium-expire": {
         "task": "premium-expire",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },

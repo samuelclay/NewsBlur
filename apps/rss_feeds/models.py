@@ -51,7 +51,6 @@ from apps.rss_feeds.tasks import (
     MergeFeeds,
     PushFeeds,
     ScheduleCountTagsForUser,
-    TrimFeed,
     UpdateFeeds,
 )
 from apps.rss_feeds.text_importer import (
@@ -97,6 +96,9 @@ MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
 # Feed.task_feeds marks and publishes feeds this many at a time, which caps how many feeds a
 # failed publish can leave counted as tasked without a fetch. apps/rss_feeds/models.py
 TASK_FEEDS_CHUNK_SIZE = 100
+# Feed.story_retention never keeps fewer stories than this (its no-reads cap), so a feed holding
+# no more than this has nothing to trim. apps/rss_feeds/models.py
+FEWEST_STORIES_KEPT = 10
 
 
 def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
@@ -1476,14 +1478,6 @@ class Feed(models.Model):
                     ]
                 )
 
-        # Nothing fetches a feed without active subscribers, so the trim after each fetch
-        # (utils/feed_fetcher.py) stops for good once the last reader leaves, and a feed an
-        # Archive subscriber left kept up to 10,000 stories forever. Trim it on the way out.
-        lost_last_reader = (original_active_subs or 0) > 0 and not self.active_subscribers
-        lost_last_archive = (original_archive_subscribers or 0) > 0 and not self.archive_subscribers
-        if self.active_subscribers <= 0 and (lost_last_reader or lost_last_archive):
-            TrimFeed.delay(self.pk)
-
         if verbose:
             if self.num_subscribers <= 1:
                 print(".", end=" ")
@@ -2455,7 +2449,7 @@ class Feed(models.Model):
             # apps/rss_feeds/models.py still keeps every story in the feed's current response, so a feed that
             # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives, and
             # stories it trimmed aren't re-added as new on every fetch.
-            cutoff = min(cutoff, max(10, published_count))
+            cutoff = min(cutoff, max(FEWEST_STORIES_KEPT, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2497,6 +2491,60 @@ class Feed(models.Model):
             self.count_fs_size_bytes()
 
         return stories_removed
+
+    @classmethod
+    def abandoned_feed_candidates(cls):
+        """Feeds that may be abandoned: no active or Archive subscribers, and no fetch in
+        DAYS_OF_UNREAD - SUBSCRIBER_EXPIRE days. A feed stops being fetched once its last reader
+        has been away SUBSCRIBER_EXPIRE days, so a last fetch that old means nobody has been seen
+        in DAYS_OF_UNREAD days. Feed.trim_if_abandoned confirms that before deleting anything.
+        apps/rss_feeds/models.py"""
+        unfetched_since = datetime.datetime.now() - datetime.timedelta(
+            days=settings.DAYS_OF_UNREAD - settings.SUBSCRIBER_EXPIRE
+        )
+        return cls.objects.filter(active_subscribers__lte=0, last_update__lte=unfetched_since).exclude(
+            archive_subscribers__gt=0
+        )
+
+    @classmethod
+    def trim_if_abandoned(cls, feed_id, dryrun=False):
+        """Trims a feed nobody can still read and returns how many stories went, or in a dry run,
+        about how many would. Nothing fetches a feed without active subscribers, so the trim after
+        each fetch (utils/feed_fetcher.py) stops once its last reader leaves, and a feed an Archive
+        subscriber left kept up to 10,000 stories. Readers keep DAYS_OF_UNREAD days of unread
+        stories and Archive subscribers keep everything, so a feed is abandoned only once it has no
+        Archive subscriber and no subscriber has been seen in that long.
+        apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        stored = MStory.objects(story_feed_id=feed_id).count()
+        if stored <= FEWEST_STORIES_KEPT:
+            return 0
+        feed = cls.objects.filter(pk=feed_id).first()
+        if not feed:
+            return 0
+
+        if not dryrun:
+            # Stored counts go stale, and an Archive subscriber they missed still needs every story.
+            feed.count_subscribers()
+        if (feed.archive_subscribers or 0) > 0:
+            return 0
+
+        # Readers are counted across the original feed and its branches, as count_subscribers does.
+        feed_ids = list(
+            cls.objects.filter(branch_from_feed=feed.original_feed_id).values_list("pk", flat=True)
+        )
+        feed_ids.append(feed.original_feed_id)
+        unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        seen_within_unread_window = UserSubscription.objects.filter(
+            feed__in=feed_ids, active=True, user__profile__last_seen_on__gte=unread_window_start
+        )
+        if seen_within_unread_window.exists():
+            return 0
+
+        if dryrun:
+            return max(0, stored - feed.story_cutoff)
+        return feed.trim_feed()
 
     def count_fs_size_bytes(self):
         stories = MStory.objects.filter(story_feed_id=self.pk)
