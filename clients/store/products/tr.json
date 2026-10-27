@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium Aboneliği",
-        "description": "Klasörleri tek okuma listesinde birleştirin, akışlarınızda arayın, kaydedilen haberleri etiketleyin ve akış güncellemelerini daha hızlı alın.",
+        "description": "Klasörleri tek listede okuyun, akışlarınızda arayın, kaydedilen haberleri etiketlerle düzenleyin ve daha hızlı akış güncellemelerinden yararlanın.",
         "benefits": [
           "Klasörleri tek haber listesinde okuyun",
           "Akışlar arasında arama yapın",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive Aboneliği",
-        "description": "Premium’daki her şeye ek olarak her haberin kalıcı, aranabilir arşivi. Haberleri istediğiniz süre boyunca okunmamış tutun.",
+        "description": "Tüm Premium özelliklerine ve her haberin kalıcı, aranabilir arşivine sahip olun. Haberleri istediğiniz süre boyunca okunmamış tutun.",
         "benefits": [
           "Premium’daki her şey",
           "Haberleri süresiz okunmamış tutun",

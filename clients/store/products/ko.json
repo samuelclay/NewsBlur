@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium 구독",
-        "description": "폴더를 하나의 읽기 목록으로 모으고, 피드를 검색하고, 저장한 스토리에 태그를 지정하세요. 피드도 더 빠르게 업데이트됩니다.",
+        "description": "폴더를 하나의 목록에서 읽고, 피드를 검색하고, 저장한 스토리를 태그로 정리하세요. 더 빠른 피드 업데이트도 이용할 수 있습니다.",
         "benefits": [
           "폴더를 하나의 스토리 목록으로 읽기",
           "여러 피드에서 검색",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive 구독",
-        "description": "Premium의 모든 기능에 더해 모든 스토리를 영구 보관하고 검색할 수 있습니다. 스토리를 원하는 만큼 읽지 않은 상태로 유지하세요.",
+        "description": "Premium의 모든 기능과 함께 모든 스토리를 영구 보관하고 검색할 수 있는 보관함을 이용하세요. 스토리를 원하는 만큼 읽지 않은 상태로 유지할 수 있습니다.",
         "benefits": [
           "Premium의 모든 기능",
           "스토리를 영원히 읽지 않은 상태로 유지",

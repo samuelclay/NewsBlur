@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Suscripción a NewsBlur Premium",
-        "description": "Reúne carpetas en una lista de lectura, busca en tus feeds, etiqueta artículos guardados y recibe actualizaciones de feeds más rápidas.",
+        "description": "Lee carpetas en una sola lista, busca en tus feeds, organiza artículos guardados con etiquetas y disfruta de actualizaciones de feeds más rápidas.",
         "benefits": [
           "Lee carpetas en una lista de artículos",
           "Busca en todos tus feeds",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "Suscripción a NewsBlur Premium Archive",
-        "description": "Todo lo de Premium, más un archivo permanente de cada artículo en el que puedes buscar. Mantén los artículos sin leer tanto tiempo como quieras.",
+        "description": "Obtén todas las funciones de Premium y un archivo permanente de cada artículo en el que puedes buscar. Mantén los artículos sin leer tanto tiempo como quieras.",
         "benefits": [
           "Todo lo de Premium",
           "Deja artículos sin leer para siempre",

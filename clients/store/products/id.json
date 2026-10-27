@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "Langganan NewsBlur Premium",
-        "description": "Gabungkan folder dalam satu daftar bacaan, cari di feed Anda, beri tag pada artikel tersimpan, dan dapatkan pembaruan feed lebih cepat.",
+        "description": "Baca folder dalam satu daftar, cari di feed Anda, atur artikel tersimpan dengan tag, dan nikmati pembaruan feed yang lebih cepat.",
         "benefits": [
           "Baca folder dalam satu daftar artikel",
           "Cari di seluruh feed",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "Langganan NewsBlur Premium Archive",
-        "description": "Semua fitur Premium, plus arsip permanen setiap artikel dengan fitur pencarian. Biarkan artikel belum dibaca selama yang Anda inginkan.",
+        "description": "Dapatkan semua fitur Premium serta arsip permanen setiap artikel yang dapat ditelusuri. Biarkan artikel belum dibaca selama yang Anda inginkan.",
         "benefits": [
           "Semua fitur Premium",
           "Artikel belum dibaca tanpa batas waktu",

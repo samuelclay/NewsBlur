@@ -25,7 +25,7 @@
     "subscriptions": {
       "nb.premium.36": {
         "title": "NewsBlur Premium Subscription",
-        "description": "Bring folders into one reading list, search your feeds, tag saved stories, and get faster feed updates.",
+        "description": "Read folders in one list, search your feeds, organize saved stories with tags, and enjoy faster feed updates.",
         "benefits": [
           "Read folders in one story list",
           "Search across feeds",
@@ -35,7 +35,7 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive Subscription",
-        "description": "Everything in Premium, plus a permanent archive of every story that you can search. Keep stories unread for as long as you like.",
+        "description": "Get every Premium feature plus a permanent, searchable archive of every story. Keep stories unread for as long as you want.",
         "benefits": [
           "Everything in Premium",
           "Keep stories unread forever",
