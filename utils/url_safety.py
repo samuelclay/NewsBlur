@@ -29,6 +29,12 @@ def normalize_url_for_safety(url):
 
 
 def validate_public_url(url):
+    # urllib3 ends the authority at a backslash, while urlparse does not. Reject it
+    # before parsing so utils/url_safety.py cannot validate a different host from
+    # the one the HTTP client requests.
+    if "\\" in (url or ""):
+        raise UnsafeUrlError("Invalid URL.")
+
     try:
         url = normalize_url_for_safety(url)
         parsed = urlparse(url)
