@@ -8796,3 +8796,124 @@ class Test_TrimKeepsTheFetchedBatch(TestCase):
         # A feed with recent reads keeps its normal cutoff and isn't under the no-reads cap.
         mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
         self.assertEqual(feed.story_retention(published_count=50), (200, False))
+
+
+# Docker installs count every subscriber as active (Feed.count_subscribers), so count like production.
+@override_settings(DOCKERBUILD=False)
+@patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+@patch("apps.rss_feeds.models.MStory.remove_from_redis")
+@patch("apps.profile.models.Profile.count_feed_subscribers")
+@patch("apps.rss_feeds.models.TrimFeed")
+@patch("apps.rss_feeds.models.redis")
+class Test_TrimFeedsNobodyReads(TestCase):
+    """A feed with no active subscribers is never fetched again (apps/rss_feeds/tasks.py only
+    schedules feeds with active subscribers), so the trim that follows each fetch
+    (utils/feed_fetcher.py) never runs on it. A feed an Archive subscriber left kept up to
+    10,000 stories forever, which filled the Mongo secondaries' disks in October 2026."""
+
+    STORIES = 30
+
+    def _feed(self, name, **counts):
+        feed = Feed.objects.create(
+            feed_address="https://rss.example.com/quiet/%s.xml" % name,
+            feed_link="https://www.example.com/%s" % name,
+            feed_title=name,
+        )
+        if counts:
+            Feed.objects.filter(pk=feed.pk).update(**counts)
+        for number in range(self.STORIES):
+            MStory(
+                story_feed_id=feed.pk,
+                story_guid="%s-%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number),
+            ).save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        return Feed.objects.get(pk=feed.pk)
+
+    def _subscribe(self, feed, username, last_seen_days_ago, is_archive=False):
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=is_archive,
+            is_archive=is_archive,
+        )
+        UserSubscription.objects.create(user=user, feed=feed, active=True)
+
+    def _no_reads_and_postgres_counts(self, mock_redis):
+        # No fR:<feed>:<week> read counters, so a quiet feed is under the no-reads cap of 10,
+        # and no Redis subscriber sets, so count_subscribers counts from Postgres.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        mock_redis.Redis.return_value.zscore.return_value = None
+
+    def test_a_feed_that_loses_its_last_active_reader_is_trimmed(self, mock_redis, mock_trim, *mocks):
+        from apps.rss_feeds.tasks import TrimFeed
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("lost-reader", active_subscribers=1, num_subscribers=1)
+
+        feed.count_subscribers()
+
+        mock_trim.delay.assert_called_once_with(feed.pk)
+        TrimFeed(feed.pk)
+        kept = sorted(int(s.story_guid.split("-")[-1]) for s in MStory.objects(story_feed_id=feed.pk))
+        self.assertEqual(kept, list(range(self.STORIES - 10, self.STORIES)))
+
+    def test_a_feed_that_loses_its_last_archive_subscriber_is_trimmed(self, mock_redis, mock_trim, *mocks):
+        from apps.rss_feeds.tasks import TrimFeed
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        # The Archive subscriber stopped visiting a while ago, so the feed already had no active
+        # readers and kept its stories only for the archive.
+        feed = self._feed("lost-archive", active_subscribers=0, archive_subscribers=1, num_subscribers=1)
+
+        feed.count_subscribers()
+
+        mock_trim.delay.assert_called_once_with(feed.pk)
+        TrimFeed(feed.pk)
+        self.assertEqual(MStory.objects(story_feed_id=feed.pk).count(), 10)
+
+    def test_a_recount_that_leaves_a_reader_or_an_archive_subscriber_trims_nothing(
+        self, mock_redis, mock_trim, *mocks
+    ):
+        from apps.rss_feeds.tasks import TrimFeed
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        read = self._feed("still-read", active_subscribers=1, num_subscribers=1)
+        self._subscribe(read, "stillreading", last_seen_days_ago=1)
+        archived = self._feed(
+            "still-archived", active_subscribers=1, archive_subscribers=1, num_subscribers=1
+        )
+        self._subscribe(archived, "stillarchiving", last_seen_days_ago=60, is_archive=True)
+        never_counted = self._feed("never-counted")
+
+        read.count_subscribers()
+        never_counted.count_subscribers()
+        self.assertFalse(mock_trim.delay.called)
+
+        # Its only subscriber went quiet, but the Archive tier keeps the feed's stories.
+        archived.count_subscribers()
+        mock_trim.delay.assert_called_once_with(archived.pk)
+        TrimFeed(archived.pk)
+        self.assertEqual(MStory.objects(story_feed_id=archived.pk).count(), self.STORIES)
+
+    def test_trim_feeds_trims_the_backlog_of_feeds_nobody_reads(self, mock_redis, mock_trim, *mocks):
+        import io
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        quiet = self._feed("quiet", active_subscribers=0, num_subscribers=1)
+        archived = self._feed("archived", active_subscribers=0, archive_subscribers=1, num_subscribers=1)
+        # Stored counts went stale: an inactive Archive subscriber still keeps this feed's stories.
+        stale = self._feed("stale-counts", active_subscribers=0, archive_subscribers=0, num_subscribers=0)
+        self._subscribe(stale, "stalearchive", last_seen_days_ago=60, is_archive=True)
+
+        management.call_command("trim_feeds", threads=1, dryrun=True, stdout=io.StringIO())
+        self.assertEqual(MStory.objects(story_feed_id=quiet.pk).count(), self.STORIES)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+
+        self.assertEqual(MStory.objects(story_feed_id=quiet.pk).count(), 10)
+        self.assertEqual(MStory.objects(story_feed_id=archived.pk).count(), self.STORIES)
+        self.assertEqual(MStory.objects(story_feed_id=stale.pk).count(), self.STORIES)
+        self.assertEqual(Feed.objects.get(pk=stale.pk).archive_subscribers, 1)

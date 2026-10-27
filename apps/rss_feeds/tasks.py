@@ -215,6 +215,19 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
+@app.task(name="trim-feed", time_limit=10 * 60, soft_time_limit=9 * 60, ignore_result=True)
+def TrimFeed(feed_id):
+    """Trims a feed whose recount just took away its last active reader or Archive subscriber
+    (Feed.count_subscribers in apps/rss_feeds/models.py). Nothing fetches a feed without
+    active subscribers, so the trim after each fetch (utils/feed_fetcher.py) never would.
+    apps/rss_feeds/tasks.py"""
+    from apps.rss_feeds.models import Feed
+
+    feed = Feed.get_by_id(feed_id)
+    if feed:
+        feed.trim_feed()
+
+
 @app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)
 def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
     """merge_feeds off the fetch queue. check_feed_link_for_feed_address hands a merge here

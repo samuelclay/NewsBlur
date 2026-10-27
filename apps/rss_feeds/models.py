@@ -51,6 +51,7 @@ from apps.rss_feeds.tasks import (
     MergeFeeds,
     PushFeeds,
     ScheduleCountTagsForUser,
+    TrimFeed,
     UpdateFeeds,
 )
 from apps.rss_feeds.text_importer import (
@@ -1474,6 +1475,14 @@ class Feed(models.Model):
                         "pro_subscribers",
                     ]
                 )
+
+        # Nothing fetches a feed without active subscribers, so the trim after each fetch
+        # (utils/feed_fetcher.py) stops for good once the last reader leaves, and a feed an
+        # Archive subscriber left kept up to 10,000 stories forever. Trim it on the way out.
+        lost_last_reader = (original_active_subs or 0) > 0 and not self.active_subscribers
+        lost_last_archive = (original_archive_subscribers or 0) > 0 and not self.archive_subscribers
+        if self.active_subscribers <= 0 and (lost_last_reader or lost_last_archive):
+            TrimFeed.delay(self.pk)
 
         if verbose:
             if self.num_subscribers <= 1:
