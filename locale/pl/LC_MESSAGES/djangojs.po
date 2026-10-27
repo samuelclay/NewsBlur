@@ -2939,6 +2939,9 @@ msgstr "Filtruj według witryny lub klasyfikatora..."
 msgid "Filter channels..."
 msgstr "Filtruj kanały..."
 
+msgid "Filter folders"
+msgstr "Filtruj foldery"
+
 msgid "Filter icons..."
 msgstr "Filtruj ikony..."
 
@@ -4136,6 +4139,10 @@ msgstr[0] "Przenieś %(count)s witrynę"
 msgstr[1] "Przenieś %(count)s witryny"
 msgstr[2] "Przenieś %(count)s witryn"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Przenieś do %(folder)s"
+
 msgid "Move to folder"
 msgstr "Przenieś do folderu"
 
@@ -4395,6 +4402,9 @@ msgstr "Nie znaleziono kanałów"
 
 msgid "No feeds found in this category."
 msgstr "Nie znaleziono kanałów w tej kategorii."
+
+msgid "No folders match"
+msgstr "Brak pasujących folderów"
 
 msgid "No gifts sent yet."
 msgstr "Nie wysłano jeszcze żadnych prezentów."

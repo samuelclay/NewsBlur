@@ -1,0 +1,30 @@
+{
+  "language": "th",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:20:51Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Thai captions and tone marks fit without clipping; repetition marks remain with preceding words rather than starting lines.",
+    "Native Thai search/source/navigation/filter/date controls visible; loaded cooking photos and article."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-01.png",
+      "sha256": "d5fa77ef1ddcd131513dfda31a23577db3a2f503e121bc8afcd5ca6f0f4dce8c"
+    },
+    {
+      "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-02.png",
+      "sha256": "554a8dfe8d2359db1220af90767ee0c56079cbb405d1d7b69af3e00e325e44a2"
+    },
+    {
+      "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-03.png",
+      "sha256": "09647dc8db45fa66edf52e395c96b9f07b366f3196de1c582cc1969f5ae06d55"
+    },
+    {
+      "filename": "newsblur-16.0.1-th-duo-inner-2853x2007-04.png",
+      "sha256": "578228689cdb0275aaaed9b5b8c4ae4e2f1bc959eb99a171b17646296e373199"
+    }
+  ],
+  "contact_sha256": "337c437be0cc0b9719894e963bfe1514f0ccb117fe0e943589e06eda45790311"
+}

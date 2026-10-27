@@ -2856,6 +2856,9 @@ msgstr "Filter berdasarkan situs atau pengklasifikasi..."
 msgid "Filter channels..."
 msgstr "Filter kanal..."
 
+msgid "Filter folders"
+msgstr "Filter folder"
+
 msgid "Filter icons..."
 msgstr "Filter ikon..."
 
@@ -4042,6 +4045,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "Pindahkan %(count)s situs"
 msgstr[1] "Pindahkan %(count)s situs"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Pindahkan ke %(folder)s"
+
 msgid "Move to folder"
 msgstr "Pindahkan ke folder"
 
@@ -4298,6 +4305,9 @@ msgstr "Feed tidak ditemukan"
 
 msgid "No feeds found in this category."
 msgstr "Tidak ada feed dalam kategori ini."
+
+msgid "No folders match"
+msgstr "Tidak ada folder yang cocok"
 
 msgid "No gifts sent yet."
 msgstr "Belum ada hadiah yang dikirim."

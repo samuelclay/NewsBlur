@@ -1,0 +1,30 @@
+{
+  "language": "ja",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:21:30Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Japanese captions use character-based line wrapping without clipped glyphs or leading closing punctuation; labels fit.",
+    "Native Japanese navigation/search/source/filter/date controls visible; all cooking photographs and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-01.png",
+      "sha256": "881886a6a6890e7bc98c2fed9d255b2396b668ac4fd61b5a995362b4564c3c6a"
+    },
+    {
+      "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-02.png",
+      "sha256": "5e250a415bd362648aa70228d6d2fd93e61b4deb66d420ad38dc89042ce13c82"
+    },
+    {
+      "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-03.png",
+      "sha256": "b3d6ea5d2fe55a1d8a63b87ab23a9df167022c8b839458c5137cb57dde072732"
+    },
+    {
+      "filename": "newsblur-16.0.1-ja-duo-inner-2853x2007-04.png",
+      "sha256": "43424bf59b61d6bf96f89540748bd9f6af9bf9233d42a045aa5346f54f1d1470"
+    }
+  ],
+  "contact_sha256": "4c063929099bcac7321ab26f5ae279751a7c8b257f537a0026069f490c1a6489"
+}

@@ -1,0 +1,10 @@
+{
+  "language": "en",
+  "reviewed_at": "2026-10-26T03:59:50Z",
+  "reviewer": "duo_renderer agent",
+  "scope": "All four exported panels inspected visually at contact-sheet scale; native UI language, loaded photographs and article content, caption layout, hardware fit, absence of loading/errors/blank capture checked.",
+  "status": "passed",
+  "notes": [
+    "Saved view keeps the native partially obscured Saved Stories sidebar row; actual four saved articles are present. No app pixels were reconstructed."
+  ]
+}

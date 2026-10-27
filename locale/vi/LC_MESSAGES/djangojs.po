@@ -2771,6 +2771,9 @@ msgstr "Lọc theo trang web hoặc bộ phân loại..."
 msgid "Filter channels..."
 msgstr "Lọc các kênh..."
 
+msgid "Filter folders"
+msgstr "Lọc thư mục"
+
 msgid "Filter icons..."
 msgstr "Lọc biểu tượng..."
 
@@ -3945,6 +3948,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "Di chuyển %(count)s trang web"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Chuyển đến %(folder)s"
+
 msgid "Move to folder"
 msgstr "Chuyển vào thư mục"
 
@@ -4202,6 +4209,9 @@ msgstr "Không tìm thấy nguồn cấp dữ liệu"
 
 msgid "No feeds found in this category."
 msgstr "Không tìm thấy nguồn cấp dữ liệu nào trong danh mục này."
+
+msgid "No folders match"
+msgstr "Không có thư mục nào phù hợp"
 
 msgid "No gifts sent yet."
 msgstr "Chưa gửi quà nào."

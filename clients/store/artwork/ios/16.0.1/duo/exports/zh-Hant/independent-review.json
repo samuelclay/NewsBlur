@@ -1,0 +1,30 @@
+{
+  "language": "zh-Hant",
+  "reviewer": "duo_visual_review independent agent",
+  "reviewed_at": "2026-10-26T04:25:41Z",
+  "status": "passed",
+  "scope": "All four exported panels viewed in contact sheet; caption wrapping, native language controls, loaded photos, absence of blank/error/loading states, frame fit and legibility checked.",
+  "notes": [
+    "Traditional Chinese glyphs and captions are intact and distinct from Simplified; no leading punctuation or clipping.",
+    "Native Traditional Chinese navigation/search/source/filter/date controls visible; all food photographs and article content loaded."
+  ],
+  "files": [
+    {
+      "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-01.png",
+      "sha256": "5d772415f29364378cf2b715a0056a66756fef8356ab5438d85932a187409aa1"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-02.png",
+      "sha256": "2f0ebc898a592fdbe53a2671185f19992ee893454795f411f818c9e0d310f2a0"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-03.png",
+      "sha256": "aded44258e6f7175fe687b773ce8994d7aba513de8abdd98e97fb291f71ce340"
+    },
+    {
+      "filename": "newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-04.png",
+      "sha256": "bcbeabde051be42a4fc47e4235a1bb0d43b86e09009dfcc7c9566ec88cb526da"
+    }
+  ],
+  "contact_sha256": "8bf9c45b0660acbf42988b0ccba5ebb8c9b10ddf7f4a367c5bbef5993f1d825b"
+}

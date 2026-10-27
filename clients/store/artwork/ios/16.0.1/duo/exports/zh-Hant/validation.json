@@ -1,0 +1,80 @@
+{
+  "language": "zh-Hant",
+  "checked_at": "2026-10-26T04:24:11Z",
+  "capture_format": "CoreGraphics/CoreText opaque PNG",
+  "note": "Technical validation does not establish visual approval or store persistence.",
+  "files": [
+    {
+      "path": "exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-01.png",
+      "panel": 1,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1177920,
+      "sha256": "5d772415f29364378cf2b715a0056a66756fef8356ab5438d85932a187409aa1",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.9508,
+        "largest_tile_error": 1.5703,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-02.png",
+      "panel": 2,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1201437,
+      "sha256": "2f0ebc898a592fdbe53a2671185f19992ee893454795f411f818c9e0d310f2a0",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.8968,
+        "largest_tile_error": 1.9167,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-03.png",
+      "panel": 3,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1905851,
+      "sha256": "aded44258e6f7175fe687b773ce8994d7aba513de8abdd98e97fb291f71ce340",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 1.0813,
+        "largest_tile_error": 2.4714,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    },
+    {
+      "path": "exports/zh-Hant/newsblur-16.0.1-zh-Hant-duo-inner-2853x2007-04.png",
+      "panel": 4,
+      "width": 2853,
+      "height": 2007,
+      "opaque": true,
+      "bytes": 1173236,
+      "sha256": "bcbeabde051be42a4fc47e4235a1bb0d43b86e09009dfcc7c9566ec88cb526da",
+      "native_pixel_check": {
+        "mean_absolute_rgb_error": 0.8695,
+        "largest_tile_error": 1.9167,
+        "mean_limit": 12,
+        "tile_limit": 25,
+        "status": "passed"
+      },
+      "visual_review": "required",
+      "store_upload": "unverified"
+    }
+  ]
+}

@@ -1,6 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-23T11:42:05-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-27T00:17:05-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
-</subtitle><entry><title type="html">NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications</title><link href="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/" rel="alternate" type="text/html" title="NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications" /><published>2026-10-22T00:00:00-04:00</published><updated>2026-10-22T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/"><![CDATA[<p>On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.</p>
+</subtitle><entry><title type="html">A folder picker with room for every folder</title><link href="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/" rel="alternate" type="text/html" title="A folder picker with room for every folder" /><published>2026-10-27T12:00:00-04:00</published><updated>2026-10-27T12:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/"><![CDATA[<p>When you right click a site and choose <strong>Change folders</strong>, NewsBlur shows a list of your folders. For years that list was a tiny box about four rows tall, no matter how big your screen was. A reader on the forum who files a lot of newsletters <a href="https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910">wrote up what was wrong with it</a>: the box was too small, it ignored the custom folder icons they use to find things at a glance, and checking a new folder added the site there instead of moving it. They were right on all three, so I rebuilt it.</p>
+
+<p>The list now grows to show every folder you have, as many as your window has room for, with the same icons you see in your sidebar. It opens scrolled to the folder the site is in now, and the text follows your sidebar’s text size.</p>
+
+<p><img src="/assets/folder-picker-before-after.png" alt="Before: the Change folders menu with a folder list about four rows tall and plain gray folder icons. After: the same menu showing every folder with its custom icon and the site's current folder checked." style="width: 70%;margin: 24px auto;display: block;" /></p>
+
+<p>Click a folder’s name and the site moves there. The old folder unchecks itself, and the button at the top reads <strong>Move to Tech</strong>, so you know exactly what’s about to happen. If you keep a site in more than one folder, click the circles beside the folders instead. Each circle adds or removes just that folder, and the button reads <strong>Save 2 folders</strong>.</p>
+
+<p><img src="/assets/folder-picker-multiple.png" alt="The folder picker in dark mode with Bloglets and Blogs both checked and a Save 2 folders button" style="width: 45%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="type-to-find-a-folder">Type to find a folder</h3>
+
+<p>There’s a filter box at the top of the picker, ready for typing as soon as it opens. Type a few letters and the list narrows to the folders that match, with their parent folders kept in place. The arrow keys move between matches, Enter picks one, and Enter again moves the site. So moving a site from Newsletters into Cooking can be a right click, a few letters, and two presses of Enter.</p>
+
+<p><img src="/assets/folder-picker-filter.png" alt="The folder picker with new typed in the filter box, narrowed to New York and Newsletters" style="width: 45%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The new folder picker is available now on the web. If something about it doesn’t feel right, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[When you right click a site and choose Change folders, NewsBlur shows a list of your folders. For years that list was a tiny box about four rows tall, no matter how big your screen was. A reader on the forum who files a lot of newsletters wrote up what was wrong with it: the box was too small, it ignored the custom folder icons they use to find things at a glance, and checking a new folder added the site there instead of moving it. They were right on all three, so I rebuilt it.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/folder-picker-before-after.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/folder-picker-before-after.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications</title><link href="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/" rel="alternate" type="text/html" title="NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications" /><published>2026-10-22T00:00:00-04:00</published><updated>2026-10-22T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/22/newsblur-16-for-mac/"><![CDATA[<p>On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.</p>
 
 <p>Put together, they give you a way to follow the news while you work. Headlines from the folders you care about sit one swipe away, and new stories from the handful of sites you never want to miss show up in the corner of your screen. You don’t have to pick up your phone to check, and you don’t have to open a reader and lose twenty minutes in it.</p>
 
@@ -157,59 +173,7 @@ A new sound of an old instrument.
 
 <p>If you read NewsBlur in one of these languages, I’d love your help. If a button reads awkwardly, a term sounds wrong, or a phrase doesn’t fit, tell me on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. Mention the language, where you saw it, and what it should say, and I’ll get it fixed.</p>
 
-<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
-
-<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
-
-<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
-
-<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
-
-<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
-
-<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
-
-<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
-
-<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
-
-<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
-
-<h3 id="sign-in-on-ios">Sign in on iOS</h3>
-
-<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="sign-in-on-android">Sign in on Android</h3>
-
-<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
-
-<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
+<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
 
 <p>I’ve rebuilt the first-time experience on iOS and Android around exploring interests, previewing feeds, and choosing what goes into your reader. You can put together a few folders of things you care about, or bring your existing collection from another app with an OPML import.</p>
 
@@ -275,7 +239,59 @@ A new sound of an old instrument.
 
 <p>You don’t need a new account to use the bundles. Existing readers can open <strong>Import or upload sites</strong> from the iOS menu or <strong>Import and feed bundles</strong> from the Android menu. It’s a way to explore a new interest whenever you want to add something to your reading.</p>
 
-<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
+<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
+
+<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
+
+<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
+
+<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
+
+<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
+
+<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
+
+<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
+
+<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
+
+<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
+
+<h3 id="sign-in-on-ios">Sign in on iOS</h3>
+
+<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="sign-in-on-android">Sign in on Android</h3>
+
+<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
+
+<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
 
 <h3 id="faster-story-lists">Faster story lists</h3>
 
@@ -628,51 +644,4 @@ A new sound of an old instrument.
 <img src="/assets/app-icons-android.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
 </div>
 
-<p>Custom app icons are available now on the latest iOS, Mac, and Android apps for any premium subscriber. If you have an idea for a flavor that’s missing, or anything else, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Someone on the forum posted a long-ish list of ideas, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/app-icons-preferences.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/app-icons-preferences.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Introducing Premium Pro: high-frequency fetching for instant notifications</title><link href="https://blog.newsblur.com/2026/04/06/premium-pro/" rel="alternate" type="text/html" title="Introducing Premium Pro: high-frequency fetching for instant notifications" /><published>2026-04-06T00:00:00-04:00</published><updated>2026-04-06T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/04/06/premium-pro</id><content type="html" xml:base="https://blog.newsblur.com/2026/04/06/premium-pro/"><![CDATA[<p>Some of you don’t just read the news. You monitor it. You’re tracking competitors, watching for security disclosures, following regulatory changes, or covering a beat where being 30 minutes late means you missed the story. NewsBlur has always been a great reader, but for people who need it to be a monitoring tool, I wanted to build something that takes feed fetching and filtering seriously.</p>
-
-<p>Premium Pro is the new top tier. It includes everything in <a href="https://newsblur.com/pricing/archive">Premium Archive</a> and adds two things that matter when speed is the priority: high-frequency fetching and a 10,000 site limit. And when you pair that with Premium Archive features like classifier-driven notifications, Pro becomes a real-time monitoring system.</p>
-
-<h3 id="every-feed-fetched-every-5-minutes">Every feed fetched every 5 minutes</h3>
-
-<p>This is the headline feature. When you’re on Pro, every single feed in your account is checked every 5 minutes. This isn’t based on how often the feed publishes or how popular it is. It’s every feed, every time, regardless.</p>
-
-<!-- SCREENSHOT: Feed statistics showing 5-minute fetch interval -->
-<p><img src="/assets/pro-fetch-frequency.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>For context, most RSS readers check feeds every hour or two. Even NewsBlur’s Premium tier updates feeds up to 5x more often than standard, but Pro goes further. If a CVE drops, a competitor publishes a press release, or a regulatory filing appears, you’ll see it in minutes, not hours.</p>
-
-<h3 id="notifications-that-actually-keep-up">Notifications that actually keep up</h3>
-
-<p>Fast fetching only matters if you find out about new stories quickly. NewsBlur has a full notification system that pairs perfectly with Pro’s 5-minute polling. You can enable notifications per feed and choose whether to be notified about all unread stories or only Focus stories that match your intelligence training.</p>
-
-<p>Notifications go to every platform at once: iOS push notifications, Android push notifications, browser notifications on the web, Mac notifications, and email. Set up a few critical feeds with notifications enabled and you have a real-time alerting pipeline built on RSS.</p>
-
-<!-- SCREENSHOT: iOS push notifications from NewsBlur -->
-<p><img src="/assets/pro-notifications-all-platforms.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="classifier-driven-notifications-supercharged-by-pro">Classifier-driven notifications, supercharged by Pro</h3>
-
-<p>Premium Archive recently added the ability to attach notifications directly to individual classifiers. Train a tag, author, title keyword, or phrase, and turn on notifications for that specific classifier. Track a specific author across a folder of feeds. Watch for a tag like “layoffs” or “acquisition” across your entire account. Get pinged the moment a story about a competitor shows up anywhere in your subscriptions. Classifier notifications work at every scope: per-feed, per-folder, or global across all your feeds.</p>
-
-<p>These classifiers now come in three flavors. Standard classifiers match exact tags, authors, and keywords. Regex classifiers let you write patterns like <code class="language-plaintext highlighter-rouge">\bCVE-\d{4}-\d+\b</code> to catch any CVE identifier, or <code class="language-plaintext highlighter-rouge">iPhone|iPad|MacBook</code> to track multiple products in a single classifier. And natural language classifiers let you describe what you’re looking for in plain English, like “stories about startup funding rounds over $50M” or “any mention of regulatory action against tech companies.” All three types can have notifications attached.</p>
-
-<!-- SCREENSHOT: Classifier tag with Notify on Match popover -->
-<p><img src="/assets/pro-classifier-notification.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>On their own, classifier notifications are already useful. But on Pro, where every feed is checked every 5 minutes, they become something else entirely. Create a natural language classifier for exactly the kind of story you’re watching for, attach a notification, and within minutes of that story appearing in any of your feeds, you have a push notification on your phone. That’s the difference between knowing about something the same day and knowing about it the same hour. If you’re already using classifier notifications on Premium Archive, Pro is what makes them fast enough for real monitoring.</p>
-
-<h3 id="follow-up-to-10000-sites">Follow up to 10,000 sites</h3>
-
-<p>Pro raises the feed limit to 10,000. Premium supports 1,024 sites, Premium Archive supports 4,096, and Pro takes it to 10,000. If you need comprehensive coverage across industries, beats, competitors, or research domains, this is the ceiling you’ve been looking for.</p>
-
-<h3 id="everything-in-archive-included">Everything in Archive, included</h3>
-
-<p>Pro includes the full <a href="https://newsblur.com/pricing/archive">Premium Archive</a> feature set. That means every story archived and searchable forever, Ask AI for answering questions about stories, full-text content training, global and folder-scoped intelligence training, per-feed auto-mark-read timers, and more. Pro adds speed and precision on top of that foundation.</p>
-
-<p>You also get priority support, so when you need help, you’re at the front of the line.</p>
-
-<h3 id="pricing">Pricing</h3>
-
-<p>Premium Pro is $29/month. It’s monthly rather than yearly because the high-frequency fetching infrastructure costs more to operate. You’re paying for dedicated polling of up to 10,000 feeds every 5 minutes. If your work depends on being the first to know, Pro pays for itself.</p>
-
-<p>You can upgrade from the <a href="https://newsblur.com/?next=premium">Premium page</a> on the web. If you have feedback or ideas for Pro, I’d love to hear them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[Some of you don’t just read the news. You monitor it. You’re tracking competitors, watching for security disclosures, following regulatory changes, or covering a beat where being 30 minutes late means you missed the story. NewsBlur has always been a great reader, but for people who need it to be a monitoring tool, I wanted to build something that takes feed fetching and filtering seriously.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/pro-fetch-frequency.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/pro-fetch-frequency.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>Custom app icons are available now on the latest iOS, Mac, and Android apps for any premium subscriber. If you have an idea for a flavor that’s missing, or anything else, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Someone on the forum posted a long-ish list of ideas, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/app-icons-preferences.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/app-icons-preferences.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

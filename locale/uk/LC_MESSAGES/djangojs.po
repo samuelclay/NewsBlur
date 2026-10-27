@@ -2940,6 +2940,9 @@ msgstr "Фільтрувати за сайтом або класифікатор
 msgid "Filter channels..."
 msgstr "Фільтрувати канали..."
 
+msgid "Filter folders"
+msgstr "Фільтрувати папки"
+
 msgid "Filter icons..."
 msgstr "Фільтрувати значки..."
 
@@ -4136,6 +4139,10 @@ msgstr[0] "Перемістити %(count)s сайт"
 msgstr[1] "Перемістити %(count)s сайти"
 msgstr[2] "Перемістити %(count)s сайтів"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Перемістити до %(folder)s"
+
 msgid "Move to folder"
 msgstr "Перемістити до папки"
 
@@ -4393,6 +4400,9 @@ msgstr "Стрічок не знайдено"
 
 msgid "No feeds found in this category."
 msgstr "У цій категорії стрічок не знайдено."
+
+msgid "No folders match"
+msgstr "Папок не знайдено"
 
 msgid "No gifts sent yet."
 msgstr "Подарунків ще не надіслано."
