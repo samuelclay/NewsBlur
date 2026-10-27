@@ -95,6 +95,7 @@ struct StoryTitleSwipeView<Content: View>: View {
     @State private var offset: CGFloat = 0
     @State private var restingOffset: CGFloat = 0
     @State private var width: CGFloat = 0
+    @State private var panRecognizer = UIPanGestureRecognizer()
 
     private var action: StoryTitleSwipeAction { offset > 0 ? rightAction : leftAction }
     private var menuWidth: CGFloat { min(width * 0.82, canMarkRead ? 234 : 156) }
@@ -128,7 +129,12 @@ struct StoryTitleSwipeView<Content: View>: View {
                     .accessibilityHidden(true)
                 }
             }
-            content().offset(x: offset)
+            content()
+                .gesture(StoryTitleTapGesture(panRecognizer: panRecognizer) {
+                    if restingOffset != 0 { close() }
+                    else { open() }
+                })
+                .offset(x: offset)
         }
         .background {
             GeometryReader { geometry in
@@ -143,21 +149,25 @@ struct StoryTitleSwipeView<Content: View>: View {
         }
         .onChange(of: rightAction) { _ in close() }
         .onChange(of: leftAction) { _ in close() }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 12)
-                .onChanged { value in
-                    // StoryTitleSwipePreference.swift reserves edge navigation and the default full-screen back gesture.
-                    guard value.startLocation.x >= 20, StoryTitleSwipePreference.actionsEnabled,
-                          abs(value.translation.width) > abs(value.translation.height) else { return }
-                    let next = restingOffset + value.translation.width
+        .gesture(StoryTitlePanGesture(recognizer: panRecognizer,
+                shouldBegin: { start, velocity in
+                    // StoryTitleSwipePreference.swift rejects vertical scrolling before the row gesture can claim it.
+                    guard start.x >= 20, StoryTitleSwipePreference.actionsEnabled,
+                          abs(velocity.x) > abs(velocity.y) else { return false }
+                    let direction = restingOffset == 0 ? velocity.x : restingOffset
+                    let selected = direction > 0 ? rightAction : leftAction
+                    return !(direction > 0 && selected == .back) && (selected != .read || canMarkRead)
+                },
+                changed: { translation in
+                    let next = restingOffset + translation.x
                     let selected = next > 0 ? rightAction : leftAction
                     guard !(next > 0 && selected == .back), selected != .read || canMarkRead else { return }
                     cache.openSwipeStoryID = storyID
                     offset = next
-                }
-                .onEnded { value in
-                    guard value.startLocation.x >= 20, StoryTitleSwipePreference.actionsEnabled,
-                          width > 0, abs(value.translation.width) > abs(value.translation.height) else {
+                },
+                ended: { translation in
+                    guard StoryTitleSwipePreference.actionsEnabled,
+                          width > 0, abs(translation.x) > abs(translation.y) else {
                         close()
                         return
                     }
@@ -173,13 +183,8 @@ struct StoryTitleSwipeView<Content: View>: View {
                         if abs(offset) >= width * 0.2 { perform(action) }
                         close()
                     }
-                }
-                // StoryTitleSwipePreference.swift prevents a canceled short swipe from also opening the story.
-                .exclusively(before: TapGesture().onEnded {
-                    if restingOffset != 0 { close() }
-                    else { open() }
-                })
-        )
+                },
+                cancelled: close))
     }
 
     private func menuButton(_ action: StoryTitleSwipeAction) -> some View {
@@ -208,5 +213,72 @@ struct StoryTitleSwipeView<Content: View>: View {
     private func close() {
         restingOffset = 0
         withAnimation(.easeOut(duration: 0.2)) { offset = 0 }
+    }
+}
+
+// StoryTitleSwipePreference.swift uses UIKit's failure arbitration so a vertical drag belongs to the enclosing scroll view.
+private struct StoryTitlePanGesture: UIGestureRecognizerRepresentable {
+    let recognizer: UIPanGestureRecognizer
+    let shouldBegin: (CGPoint, CGPoint) -> Bool
+    let changed: (CGPoint) -> Void
+    let ended: (CGPoint) -> Void
+    let cancelled: () -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator {
+        Coordinator(converter: converter, shouldBegin: shouldBegin)
+    }
+
+    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
+        recognizer.maximumNumberOfTouches = 1
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func updateUIGestureRecognizer(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        context.coordinator.shouldBegin = shouldBegin
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        let translation = context.converter.localTranslation ?? recognizer.translation(in: recognizer.view)
+        switch recognizer.state {
+        case .began, .changed: changed(translation)
+        case .ended: ended(translation)
+        case .cancelled, .failed: cancelled()
+        default: break
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        let converter: CoordinateSpaceConverter
+        var shouldBegin: (CGPoint, CGPoint) -> Bool
+
+        init(converter: CoordinateSpaceConverter, shouldBegin: @escaping (CGPoint, CGPoint) -> Bool) {
+            self.converter = converter
+            self.shouldBegin = shouldBegin
+        }
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+            let translation = converter.localTranslation ?? pan.translation(in: pan.view)
+            let location = converter.localLocation
+            let start = CGPoint(x: location.x - translation.x, y: location.y - translation.y)
+            return shouldBegin(start, converter.localVelocity ?? pan.velocity(in: pan.view))
+        }
+    }
+}
+
+private struct StoryTitleTapGesture: UIGestureRecognizerRepresentable {
+    let panRecognizer: UIPanGestureRecognizer
+    let action: () -> Void
+
+    func makeUIGestureRecognizer(context: Context) -> UITapGestureRecognizer {
+        let tap = UITapGestureRecognizer()
+        // StoryTitleSwipePreference.swift keeps short, canceled row swipes from also opening the story.
+        tap.require(toFail: panRecognizer)
+        return tap
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UITapGestureRecognizer, context: Context) {
+        if recognizer.state == .ended { action() }
     }
 }
