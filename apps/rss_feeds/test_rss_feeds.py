@@ -8897,6 +8897,15 @@ class Test_TrimAbandonedFeeds(TestCase):
             self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
         recount.assert_not_called()
 
+    def test_a_stale_archive_count_is_recounted_before_its_cutoff_is_trusted(self, mock_redis, *mocks):
+        """trim_feeds --feed can name a feed whose last Archive subscriber left but whose stored
+        count still says 1, which gives it the 10,000 story Archive cutoff until it's recounted."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("archive-left", archive_subscribers=1)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
+        self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 0)
+
     def test_a_reader_away_for_less_than_the_unread_window_keeps_their_stories(self, mock_redis, *mocks):
         """A Premium reader on an 8 day vacation no longer counts as active (SUBSCRIBER_EXPIRE),
         but still has 30 days of unread stories waiting."""

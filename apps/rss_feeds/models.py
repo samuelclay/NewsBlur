@@ -2544,9 +2544,12 @@ class Feed(models.Model):
             return 0
         # A feed trimmed on an earlier day sits at its cutoff, often above the floor when its last
         # reader read it recently. trim_feed would delete nothing, so skip the recount and the
-        # reader lookup. A recount can only find more subscribers and so a higher cutoff.
+        # reader lookup. That only holds while the stored counts show no readers and no Archive
+        # subscriber, as every daily candidate's do: a recount can then only raise the cutoff. A
+        # feed named to trim_feeds --feed can carry a stale Archive count, so it's recounted first.
         cutoff = feed.story_cutoff
-        if stored <= cutoff:
+        stored_counts_are_quiet = feed.active_subscribers <= 0 and not (feed.archive_subscribers or 0) > 0
+        if stored_counts_are_quiet and stored <= cutoff:
             return 0
 
         if not dryrun:
