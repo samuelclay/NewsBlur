@@ -703,6 +703,12 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
     "activate-next-new-user": {
         "task": "activate-next-new-user",
         "schedule": datetime.timedelta(minutes=5),
