@@ -542,8 +542,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
                 applyNextSession(session);
-            } else backToFeedList();
-        } else backToFeedList();
+                return;
+            }
+        }
+        // ItemsList.java action completion returns to feeds without treating an already open
+        // FeedListDrawer.kt as a request to leave the app, as explicit Back navigation does.
+        if (slidesOverFeedDrawer()) FeedListDrawer.open(this);
+        else finish();
     }
 
     @Nullable
