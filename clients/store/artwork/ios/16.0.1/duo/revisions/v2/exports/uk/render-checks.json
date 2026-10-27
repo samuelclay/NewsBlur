@@ -1,0 +1,80 @@
+[
+  {
+    "capture": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-closed.png",
+    "capture_bounds": {
+      "height": 1488.5097538742027,
+      "width": 1023.076025524157,
+      "x": 1378.5744872379214,
+      "y": 259.24512306289876
+    },
+    "frame": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-outer-closed-portrait.png",
+    "frame_clip": "frame-alpha",
+    "frame_pose": "closed",
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 5,
+    "headline_size": 142.65,
+    "language": "uk",
+    "output": "revisions/v2/exports/uk/newsblur-16.0.1-uk-duo-closed-2853x2007-01-v2.png",
+    "panel": 1,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "capture_sha256": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+    "source_sha256": {
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/inputs.json": "bcab0169f721f8d1c12bce22d266e0dacae6530cb2a1ae384c3c68174435f046",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-outer-closed-portrait.json": "c1726dd32fb654551593a036631a57eaaee32b577dcb621a6c99418f88af5808",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-outer-closed-portrait.png": "f972a6062a0ca2bef2186d61366beaf746a7725a34a4bfa1dabc4410d7c0dbdf",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-closed.png": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-fullscreen.png": "c89c1e7359e0b4eb18a0f730b422e8cce9f6f019b5eaa55f155c85b4e0bacf06",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-01.png": "ae70769704ec42f6665c89d8c5cfad6ce0f0b8b039627878093a70e855383ec7",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-02.png": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-03.png": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-04.png": "74d5a8a5b629b1197aab848aacbf6909c247a82e57d33d69be2379727b1106a3",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/native-render.swift": "ee67b975e7f77ec422f0ff0c55ff961320ddf5413113a33d21ff57767a89e40b",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/export-native.rb": "0815ef658f2d320213823130a69bcb875c5acce1c467d8c1ef0c62edb1afbe59",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1"
+    },
+    "output_sha256": "ac7115fa5567e4fa33e8f2dba156e7f1cbf9bc7a20e20506368f9fce92d40f98"
+  },
+  {
+    "capture": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-fullscreen.png",
+    "capture_bounds": {
+      "height": 1175.5549903006788,
+      "width": 1671.0804122211443,
+      "x": 1054.5722938894278,
+      "y": 415.7225048496605
+    },
+    "frame": "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-inner-landscape.png",
+    "frame_clip": "rounded-rectangle",
+    "frame_pose": "open",
+    "headline_font": ".AppleSystemUIFontDemi",
+    "headline_lines": 4,
+    "headline_size": 142.65,
+    "language": "uk",
+    "output": "revisions/v2/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-04-v2.png",
+    "panel": 4,
+    "size": "2853x2007",
+    "status": "rendered_requires_pixel_and_visual_review",
+    "capture_sha256": "c89c1e7359e0b4eb18a0f730b422e8cce9f6f019b5eaa55f155c85b4e0bacf06",
+    "source_sha256": {
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/inputs.json": "bcab0169f721f8d1c12bce22d266e0dacae6530cb2a1ae384c3c68174435f046",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-outer-closed-portrait.json": "c1726dd32fb654551593a036631a57eaaee32b577dcb621a6c99418f88af5808",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-outer-closed-portrait.png": "f972a6062a0ca2bef2186d61366beaf746a7725a34a4bfa1dabc4410d7c0dbdf",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-closed.png": "58f779de87bb883ea7dd193163f4f05b4d7cd0948349a1174d9c25767f7d3ba8",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/revisions/v2/captures/uk/duo-fullscreen.png": "c89c1e7359e0b4eb18a0f730b422e8cce9f6f019b5eaa55f155c85b4e0bacf06",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-01.png": "ae70769704ec42f6665c89d8c5cfad6ce0f0b8b039627878093a70e855383ec7",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-02.png": "4ea79f5836bad819d8de2c7a74fdfca6b411156cb4803bd00445660135a608d1",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-03.png": "dc405238b4da4fb733d451b9b9a8e19cd1ec971ac7dd7c716eb6e05c622ff684",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/exports/uk/newsblur-16.0.1-uk-duo-inner-2853x2007-04.png": "74d5a8a5b629b1197aab848aacbf6909c247a82e57d33d69be2379727b1106a3",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/native-render.swift": "ee67b975e7f77ec422f0ff0c55ff961320ddf5413113a33d21ff57767a89e40b",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/export-native.rb": "0815ef658f2d320213823130a69bcb875c5acce1c467d8c1ef0c62edb1afbe59",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/screenshots/copy/uk.json": "7a3152627284273d738bace019ad120f6b4a13019e709b286500b5567269d998",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/screenshots/verify-native-pixels.rb": "c82788142c9d87cf408766e7d0c42f328353d36ede95b44dcb9b8f8150fb6fb3",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0/selected/assets/icon.png": "0ea65f5ec112c4c67f6d302a70cf610e61ac6d4d2ccac9be86f77820f23580a7",
+      "/Users/sclay/projects/newsblur/clients/store/artwork/ios/16.0.1/duo/assets/iphone-duo-inner-landscape.png": "bd684d4cd2b68756ca008c158b9c0cbfeeb134bf3b5e481b3d0dd02d783211f1"
+    },
+    "output_sha256": "753c42f06adfbd128022bc8f4aba0ff00b267c30430e81ecdb123781cf222305"
+  }
+]

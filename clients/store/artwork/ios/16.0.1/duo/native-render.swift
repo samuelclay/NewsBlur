@@ -1,4 +1,4 @@
-// native-render.swift adapts the approved Sage typography and palette to the unfolded Duo landscape frame.
+// native-render.swift retains approved Sage artwork with measured open or closed Duo frames.
 // export-native.rb validates temporary renders before installing a complete four-panel set.
 import AppKit
 import CoreGraphics
@@ -11,6 +11,23 @@ struct Copy: Decodable {
     let language: String
     let headlines: [String]
     let labels: [String]
+}
+
+// export-native.rb supplies frame measurements; native-render.swift never infers an opening from capture size.
+struct FrameSpec: Decodable {
+    struct Opening: Decodable {
+        let x: CGFloat
+        let y: CGFloat
+        let width: CGFloat
+        let height: CGFloat
+        let cornerRadius: CGFloat
+    }
+    let frame: String
+    let width: CGFloat
+    let height: CGFloat
+    let pose: String
+    let opening: Opening
+    var clip: String? = nil
 }
 
 struct TextLayout {
@@ -55,10 +72,73 @@ func loadImage(_ url: URL) -> CGImage {
     return image
 }
 let capture = loadImage(arguments["--capture"].map { URL(fileURLWithPath: $0) } ?? root.appendingPathComponent(capturePath))
-guard capture.width == 2853 && capture.height == 2007 else { fail("Native capture dimensions do not match the device.") }
+let frameSpec: FrameSpec
+let frameURL: URL
+if let specPath = arguments["--frame-spec"] {
+    let specURL = URL(fileURLWithPath: specPath)
+    frameSpec = try JSONDecoder().decode(FrameSpec.self, from: Data(contentsOf: specURL))
+    frameURL = URL(fileURLWithPath: frameSpec.frame, relativeTo: specURL.deletingLastPathComponent()).standardizedFileURL
+} else {
+    frameSpec = FrameSpec(frame: "assets/iphone-duo-inner-landscape.png", width: 3093, height: 2247, pose: "open",
+        opening: FrameSpec.Opening(x: 120, y: 120, width: 2853, height: 2007, cornerRadius: 202))
+    frameURL = root.appendingPathComponent(frameSpec.frame)
+}
+let opening = frameSpec.opening
+guard ["open", "closed"].contains(frameSpec.pose), frameSpec.width > 0, frameSpec.height > 0,
+      opening.x >= 0, opening.y >= 0, opening.width > 0, opening.height > 0,
+      opening.x + opening.width <= frameSpec.width, opening.y + opening.height <= frameSpec.height,
+      opening.cornerRadius >= 0, opening.cornerRadius <= min(opening.width, opening.height) / 2 else {
+    fail("Invalid measured frame opening.")
+}
+guard CGFloat(capture.width) == opening.width && CGFloat(capture.height) == opening.height else {
+    fail("Native capture dimensions do not match the measured frame opening.")
+}
 let assets = root.appendingPathComponent("../../16.0/selected/assets")
-let bezel = loadImage(root.appendingPathComponent("assets/iphone-duo-inner-landscape.png"))
-guard bezel.width == 3093 && bezel.height == 2247 else { fail("Unexpected official Duo frame dimensions.") }
+let bezel = loadImage(frameURL)
+guard CGFloat(bezel.width) == frameSpec.width && CGFloat(bezel.height) == frameSpec.height else {
+    fail("Official frame dimensions do not match frame metadata.")
+}
+guard frameSpec.clip == nil || frameSpec.clip == "frame-alpha" else { fail("Unsupported frame clipping mode.") }
+func frameOpeningMask() -> CGImage {
+    // native-render.swift follows the official frame's connected screen opening, including asymmetric corners.
+    let bitmap = NSBitmapImageRep(cgImage: bezel)
+    guard bitmap.bitsPerSample == 8, bitmap.samplesPerPixel == 4, !bitmap.isPlanar,
+          let pixels = bitmap.bitmapData else { fail("Frame must decode to 8-bit RGBA for alpha clipping.") }
+    let maskWidth = Int(opening.width), maskHeight = Int(opening.height)
+    let alphaOffset = bitmap.bitmapFormat.contains(.alphaFirst) ? 0 : 3
+    func alpha(_ index: Int) -> UInt8 {
+        pixels[(Int(opening.y) + index / maskWidth) * bitmap.bytesPerRow +
+            (Int(opening.x) + index % maskWidth) * 4 + alphaOffset]
+    }
+    let seed = maskHeight / 2 * maskWidth + maskWidth / 2
+    guard alpha(seed) == 0 else { fail("Frame screen center is not transparent.") }
+    var mask = [UInt8](repeating: 0, count: maskWidth * maskHeight)
+    mask[seed] = 255
+    var queue = [seed]
+    var cursor = 0
+    while cursor < queue.count {
+        let index = queue[cursor]
+        cursor += 1
+        let x = index % maskWidth, y = index / maskWidth
+        var neighbors: [Int] = []
+        if x > 0 { neighbors.append(index - 1) }
+        if x + 1 < maskWidth { neighbors.append(index + 1) }
+        if y > 0 { neighbors.append(index - maskWidth) }
+        if y + 1 < maskHeight { neighbors.append(index + maskWidth) }
+        for next in neighbors where mask[next] == 0 && alpha(next) < 255 {
+            mask[next] = 255
+            queue.append(next)
+        }
+    }
+    guard queue.count > mask.count / 2,
+          let provider = CGDataProvider(data: Data(mask) as CFData),
+          let image = CGImage(width: maskWidth, height: maskHeight, bitsPerComponent: 8, bitsPerPixel: 8,
+            bytesPerRow: maskWidth, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: 0),
+            provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else {
+        fail("Cannot derive the official frame's screen mask.")
+    }
+    return image
+}
 let icon = loadImage(assets.appendingPathComponent("icon.png"))
 guard let context = CGContext(data: nil, width: dimensions[0], height: dimensions[1], bitsPerComponent: 8,
     bytesPerRow: dimensions[0] * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else { fail("Cannot create image context.") }
@@ -185,21 +265,25 @@ let brand = fitText("NewsBlur", initial: width * 0.024, maxWidth: textWidth - ic
 drawText(brand, x: margin + iconSide + width * 0.013, top: iconTop + (iconSide - brand.lineHeight) / 2,
     width: textWidth - iconSide - width * 0.013, rightToLeft: false)
 
-// The official 3093 x 2247 PNG has a 2853 x 2007 opening beginning at (120, 120).
-// Alpha runs measured on both center axes verify these edges; the screen is uniformly scaled without cropping.
-let deviceWidth = width * 0.635
-let deviceHeight = deviceWidth * 2247.0 / 3093
-let deviceLeft = width * 0.345
+// native-render.swift uniformly fits a measured frame into the Sage device column, without cropping the screen.
+// The default open-frame arithmetic preserves the original exports' device placement.
+let deviceWidth = frameSpec.pose == "closed" ? min(width * 0.635, height * 0.80 * frameSpec.width / frameSpec.height) : width * 0.635
+let deviceHeight = deviceWidth * frameSpec.height / frameSpec.width
+let deviceLeft = width * 0.345 + (width * 0.635 - deviceWidth) / 2
 let deviceTop = (height - deviceHeight) / 2
-let scale = deviceWidth / 3093
-let displayLeft = deviceLeft + 120 * scale
-let displayTop = deviceTop + 120 * scale
-let displayWidth = 2853 * scale
-let displayHeight = 2007 * scale
+let scale = deviceWidth / frameSpec.width
+let displayLeft = deviceLeft + opening.x * scale
+let displayTop = deviceTop + opening.y * scale
+let displayWidth = opening.width * scale
+let displayHeight = opening.height * scale
 let displayRect = rect(displayLeft, displayTop, displayWidth, displayHeight)
 context.saveGState()
-context.addPath(CGPath(roundedRect: displayRect, cornerWidth: 202 * scale, cornerHeight: 202 * scale, transform: nil))
-context.clip()
+if frameSpec.clip == "frame-alpha" {
+    context.clip(to: displayRect, mask: frameOpeningMask())
+} else {
+    context.addPath(CGPath(roundedRect: displayRect, cornerWidth: opening.cornerRadius * scale, cornerHeight: opening.cornerRadius * scale, transform: nil))
+    context.clip()
+}
 fill(displayRect, 0xe8eae5)
 context.draw(capture, in: displayRect)
 context.restoreGState()
@@ -228,6 +312,7 @@ guard let image = context.makeImage(), let destination = CGImageDestinationCreat
 CGImageDestinationAddImage(destination, image, nil)
 guard CGImageDestinationFinalize(destination) else { fail("PNG encoding failed.") }
 let evidence: [String: Any] = ["language": language, "size": size, "panel": panel, "capture": arguments["--capture"] ?? capturePath,
+    "frame": frameURL.path, "frame_pose": frameSpec.pose, "frame_clip": frameSpec.clip ?? "rounded-rectangle",
     "output": output.path, "headline_font": headline.font.fontName, "headline_size": headline.size,
     "headline_lines": headline.lines.count, "capture_bounds": ["x": displayLeft, "y": displayTop, "width": displayWidth, "height": displayHeight],
     "status": "rendered_requires_pixel_and_visual_review"]
