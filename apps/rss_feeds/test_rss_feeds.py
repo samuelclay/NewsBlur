@@ -8906,6 +8906,26 @@ class Test_TrimAbandonedFeeds(TestCase):
         self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
         self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 0)
 
+    def test_a_dry_run_estimates_what_the_real_run_deletes_despite_stale_counts(self, mock_redis, *mocks):
+        """A dry run doesn't recount, so stale counts made it report 0 for a feed the real run
+        trims, or a negative number when a stale reader raised the cutoff past what's stored."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Read within story_retention's read window, so a counted reader would raise the cutoff to 100.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        stale_archive = self._feed("stale-archive-dry", archive_subscribers=1)
+        stale_reader = self._feed("stale-reader-dry", active_subscribers=1)
+
+        for feed in (stale_archive, stale_reader):
+            estimate = Feed.trim_if_abandoned(feed.pk, dryrun=True)
+            self.assertEqual(self._stored(feed), self.STORIES)
+            self.assertGreater(estimate, 0)
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), estimate)
+
+        # A real Archive subscriber found the same way keeps a dry run at 0.
+        archived = self._feed("archived-dry", archive_subscribers=0)
+        self._subscribe(archived, "dryarchive", last_seen_days_ago=60, is_archive=True)
+        self.assertEqual(Feed.trim_if_abandoned(archived.pk, dryrun=True), 0)
+
     def test_a_reader_away_for_less_than_the_unread_window_keeps_their_stories(self, mock_redis, *mocks):
         """A Premium reader on an 8 day vacation no longer counts as active (SUBSCRIBER_EXPIRE),
         but still has 30 days of unread stories waiting."""

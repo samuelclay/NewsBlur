@@ -2498,19 +2498,35 @@ class Feed(models.Model):
 
         return stories_removed
 
-    def has_reader_within_unread_window(self):
-        """Whether anyone subscribed has been seen in the last DAYS_OF_UNREAD days and so may still
-        have unread stories here, counting the original feed and its branches as count_subscribers
-        does. apps/rss_feeds/models.py"""
-        from apps.reader.models import UserSubscription
-
+    def subscriber_feed_ids(self):
+        """The original feed and its branches, which count_subscribers counts subscribers across.
+        apps/rss_feeds/models.py"""
         feed_ids = list(
             Feed.objects.filter(branch_from_feed=self.original_feed_id).values_list("pk", flat=True)
         )
         feed_ids.append(self.original_feed_id)
+        return feed_ids
+
+    def has_reader_within_unread_window(self):
+        """Whether anyone subscribed has been seen in the last DAYS_OF_UNREAD days and so may still
+        have unread stories here. apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
         unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         return UserSubscription.objects.filter(
-            feed__in=feed_ids, active=True, user__profile__last_seen_on__gte=unread_window_start
+            feed__in=self.subscriber_feed_ids(),
+            active=True,
+            user__profile__last_seen_on__gte=unread_window_start,
+        ).exists()
+
+    def has_archive_subscriber(self):
+        """Whether an Archive subscriber still keeps this feed's stories, asked of Postgres directly
+        as count_subscribers counts archive_subscribers, so stale stored counts don't matter.
+        apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        return UserSubscription.objects.filter(
+            feed__in=self.subscriber_feed_ids(), active=True, user__profile__is_archive=True
         ).exists()
 
     @classmethod
@@ -2552,16 +2568,22 @@ class Feed(models.Model):
         if stored_counts_are_quiet and stored <= cutoff:
             return 0
 
-        if not dryrun:
-            # Stored counts go stale, and an Archive subscriber they missed still needs every story.
-            feed.count_subscribers()
+        if dryrun:
+            # A dry run writes nothing, so instead of recounting it asks what a recount would find,
+            # then estimates with the counts that recount would store for an abandoned feed.
+            if feed.has_archive_subscriber() or feed.has_reader_within_unread_window():
+                return 0
+            feed.active_subscribers = 0
+            feed.active_premium_subscribers = 0
+            feed.archive_subscribers = 0
+            return max(0, stored - feed.story_cutoff)
+
+        # Stored counts go stale, and an Archive subscriber they missed still needs every story.
+        feed.count_subscribers()
         if (feed.archive_subscribers or 0) > 0:
             return 0
         if feed.has_reader_within_unread_window():
             return 0
-
-        if dryrun:
-            return stored - cutoff
         return feed.trim_feed()
 
     def count_fs_size_bytes(self):
