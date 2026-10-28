@@ -1104,7 +1104,9 @@
 		A387B305A16381FA9C41F886 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
 		A91220260000000000000001 /* StoryTitleSwipeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91220260000000000000002 /* StoryTitleSwipeTests.swift */; };
 		A91220260000000000000003 /* StoryTitleSwipePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91220260000000000000005 /* StoryTitleSwipePreference.swift */; };
+		B92720260000000000000003 /* ReaderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92720260000000000000005 /* ReaderMotion.swift */; };
 		A91220260000000000000004 /* StoryTitleSwipePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91220260000000000000005 /* StoryTitleSwipePreference.swift */; };
+		B92720260000000000000004 /* ReaderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92720260000000000000005 /* ReaderMotion.swift */; };
 		A91320260000000000000003 /* GesturePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000005 /* GesturePreferences.swift */; };
 		A91320260000000000000004 /* GesturePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000005 /* GesturePreferences.swift */; };
 		A91320260000000000000011 /* StoryPreloadFailureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91320260000000000000012 /* StoryPreloadFailureTests.swift */; };
@@ -2191,6 +2193,7 @@
 		A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIconRenderer.swift; sourceTree = "<group>"; };
 		A91220260000000000000002 /* StoryTitleSwipeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTitleSwipeTests.swift; sourceTree = "<group>"; };
 		A91220260000000000000005 /* StoryTitleSwipePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTitleSwipePreference.swift; sourceTree = "<group>"; };
+		B92720260000000000000005 /* ReaderMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderMotion.swift; sourceTree = "<group>"; };
 		A91320260000000000000005 /* GesturePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturePreferences.swift; sourceTree = "<group>"; };
 		A91320260000000000000012 /* StoryPreloadFailureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPreloadFailureTests.swift; sourceTree = "<group>"; };
 		A9220000000000000000000C /* FeedSubscriptionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSubscriptionRequest.swift; sourceTree = "<group>"; };
@@ -3902,6 +3905,7 @@
 				1726AA632CD1E7100058A9CD /* DashList.swift */,
 				17BC56AC2BBF6C0000A30C41 /* StoryCache.swift */,
 				A91220260000000000000005 /* StoryTitleSwipePreference.swift */,
+				B92720260000000000000005 /* ReaderMotion.swift */,
 				A91320260000000000000005 /* GesturePreferences.swift */,
 				17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */,
 				171B3E1D2D94C8080056DA9A /* Request.swift */,
@@ -6006,6 +6010,7 @@
 				175792B22930605500490924 /* TUSafariActivity.m in Sources */,
 				17BC56AE2BBF6C0000A30C41 /* StoryCache.swift in Sources */,
 				A91220260000000000000004 /* StoryTitleSwipePreference.swift in Sources */,
+				B92720260000000000000004 /* ReaderMotion.swift in Sources */,
 				A91320260000000000000004 /* GesturePreferences.swift in Sources */,
 				175792B32930605500490924 /* PremiumViewController.m in Sources */,
 				PREM1EW5W1FT000000000002 /* PremiumView.swift in Sources */,
@@ -6277,6 +6282,7 @@
 				FF03AFF319F87F2E0063002A /* TUSafariActivity.m in Sources */,
 				17BC56AD2BBF6C0000A30C41 /* StoryCache.swift in Sources */,
 				A91220260000000000000003 /* StoryTitleSwipePreference.swift in Sources */,
+				B92720260000000000000003 /* ReaderMotion.swift in Sources */,
 				A91320260000000000000003 /* GesturePreferences.swift in Sources */,
 				FF83FF051FB52565008DAC0F /* PremiumViewController.m in Sources */,
 				PREM1EW5W1FT000000000003 /* PremiumView.swift in Sources */,

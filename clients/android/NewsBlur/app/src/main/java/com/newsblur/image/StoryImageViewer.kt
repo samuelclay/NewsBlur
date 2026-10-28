@@ -592,6 +592,7 @@ class StoryImageViewer(
                         Mode.CLOSE -> 240
                         Mode.RESIZE -> RESIZE_MS
                     }
+                interpolator = if (mode == Mode.OPEN) android.view.animation.OvershootInterpolator(.4f) else android.view.animation.DecelerateInterpolator()
                 addUpdateListener {
                     val t = it.animatedValue as Float
                     val rect =
@@ -607,8 +608,8 @@ class StoryImageViewer(
                     // Resizing to make room for the panels leaves the backdrop and controls alone.
                     if (mode != Mode.RESIZE) {
                         val opening = mode == Mode.OPEN
-                        backdrop.alpha = if (opening) t else startBackdrop * (1 - t)
-                        close.alpha = if (opening) t else startClose * (1 - t)
+                        backdrop.alpha = (if (opening) t else startBackdrop * (1 - t)).coerceIn(0f, 1f)
+                        close.alpha = (if (opening) t else startClose * (1 - t)).coerceIn(0f, 1f)
                         status.alpha = close.alpha
                         setPanelsAlpha(close.alpha)
                         transition.alpha = if (opening) 1f else 1f - t

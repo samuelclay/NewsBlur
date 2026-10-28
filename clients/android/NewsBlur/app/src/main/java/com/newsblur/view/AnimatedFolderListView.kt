@@ -54,6 +54,7 @@ class AnimatedFolderListView
         private var progress = 0f
         private var touchDownY = 0f
         private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+        private val seenRows = mutableSetOf<Long>()
 
         fun animateGroupChange(
             groupPosition: Int,
@@ -157,8 +158,8 @@ class AnimatedFolderListView
             applyProgress()
             animator =
                 ValueAnimator.ofFloat(0f, 1f).apply {
-                    duration = 220L
-                    interpolator = DecelerateInterpolator(1.5f)
+                    duration = if (expanding) 320L else 180L
+                    interpolator = if (expanding) android.view.animation.OvershootInterpolator(.45f) else DecelerateInterpolator(1.5f)
                     addUpdateListener {
                         progress = it.animatedValue as Float
                         applyProgress()
@@ -177,7 +178,7 @@ class AnimatedFolderListView
         private fun applyProgress() {
             for ((view, motion) in movingViews) {
                 view.translationY = interpolate(motion.before.top, motion.after.top) - view.top
-                view.alpha = interpolate(motion.before.alpha, motion.after.alpha)
+                view.alpha = interpolate(motion.before.alpha, motion.after.alpha).coerceIn(0f, 1f)
                 val oldRotation = motion.before.indicatorRotation
                 val newRotation = motion.after.indicatorRotation
                 if (oldRotation != null && newRotation != null) {
@@ -241,6 +242,15 @@ class AnimatedFolderListView
             // Scrolling, sync updates and rotation in FolderListFragment.java must never recycle a translated row.
             if (!preparingChange && pendingLayout == null) finishTransition()
             super.layoutChildren()
+            // AnimatedFolderListView.kt reveals only newly visible identities, including rows arriving after sync.
+            var entranceIndex = 0
+            for (index in 0 until childCount) {
+                val child = getChildAt(index)
+                if (child.bottom <= paddingTop || child.top >= height - paddingBottom || child.height == 0) continue
+                if (seenRows.add(getItemIdAtPosition(firstVisiblePosition + index)) && !preparingChange && pendingLayout == null) {
+                    ReaderMotion.enter(child, entranceIndex++ * 35L, 12f)
+                }
+            }
         }
 
         override fun onDetachedFromWindow() {

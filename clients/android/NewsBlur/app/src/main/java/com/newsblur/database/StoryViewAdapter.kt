@@ -95,6 +95,9 @@ class StoryViewAdapter(
     listener: OnStoryClickListener,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
+    private val motionSeen = mutableSetOf<String>()
+    private val motionRect = android.graphics.Rect()
+    private var motionAwaitingFeedCommit = false
     private var lastStoryOpenElapsedRealtime = 0L
 
     private val stories = mutableListOf<Story>()
@@ -233,6 +236,9 @@ class StoryViewAdapter(
 
     fun updateFeedSet(fs: FeedSet?) {
         if (fs != diffFeedSet) {
+            motionSeen.clear()
+            // StoryViewAdapter.kt must not count the previous feed's rows while the new diff is pending.
+            motionAwaitingFeedCommit = true
             invalidateStoryDiffs()
             oldScrollState = null
             pendingScrollStoryHash = null
@@ -374,6 +380,7 @@ class StoryViewAdapter(
             displayItems.addAll(result.items)
             rebuildStoryDisplayPositions()
             committedLoadId = submission.loadId
+            motionAwaitingFeedCommit = false
             result.diff.dispatchUpdatesTo(this)
             val lm = rv.layoutManager
             if (startAtFirstStory) {
@@ -684,12 +691,39 @@ class StoryViewAdapter(
         returnObserver = recyclerView.viewTreeObserver
         returnPreDrawListener = ViewTreeObserver.OnPreDrawListener {
             if (pendingScrollStoryHash != null || pendingHighlightStoryHash != null) applyPendingStoryReturn(recyclerView, presentationFrame = true)
+            // StoryViewAdapter.kt checks actual visibility, so prefetched rows keep their first entrance.
+            val entrances = mutableListOf<StoryEntrance>()
+            for (index in 0 until recyclerView.childCount) {
+                if (motionAwaitingFeedCommit) break
+                val row = recyclerView.getChildAt(index)
+                val holder = recyclerView.getChildViewHolder(row)
+                val key = when (holder) {
+                    is StoryViewHolder -> holder.story?.storyHash
+                    is ClusterRowViewHolder -> holder.clusterStory?.storyHash
+                    else -> null
+                } ?: continue
+                if (key !in motionSeen && recyclerView.getChildAdapterPosition(row) != RecyclerView.NO_POSITION &&
+                    com.newsblur.view.ReaderMotion.canEnter(row) && row.getGlobalVisibleRect(motionRect)) {
+                    entrances.add(StoryEntrance(row, key, motionRect.top, motionRect.left))
+                }
+            }
+            val visible = entrances.distinctBy { it.key }.sortedWith(compareBy({ it.top }, { it.left }))
+            val scrolling = recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
+            val spread = if (scrolling) 90L else 175L
+            val step = if (visible.size > 1) minOf(35.0, spread.toDouble() / (visible.size - 1)) else 0.0
+            visible.forEachIndexed { index, entrance ->
+                if (com.newsblur.view.ReaderMotion.enter(entrance.row, (index * step).toLong(), if (scrolling) 9f else 16f)) {
+                    motionSeen.add(entrance.key)
+                }
+            }
             true
         }.also { returnObserver?.addOnPreDrawListener(it) }
         returnFocusListener = ViewTreeObserver.OnWindowFocusChangeListener { focused ->
             if (focused) recyclerView.invalidate()
         }.also { returnObserver?.addOnWindowFocusChangeListener(it) }
     }
+
+    private data class StoryEntrance(val row: View, val key: String, val top: Int, val left: Int)
 
     fun setTextSize(textSize: Float) {
         this.textSize = textSize
@@ -1133,6 +1167,7 @@ class StoryViewAdapter(
                 val story = item.story
                 val storyHolder = viewHolder as StoryViewHolder
                 if (storyHolder.story?.storyHash != story.storyHash) {
+                    storyHolder.itemView.clearAnimation()
                     storyHolder.dismissStoryMenu()
                     storyHolder.cancelRowSwipe()
                 }
@@ -1509,6 +1544,7 @@ class StoryViewAdapter(
     }
 
     override fun onViewRecycled(viewHolder: RecyclerView.ViewHolder) {
+        viewHolder.itemView.clearAnimation()
         cancelReturnHighlight(viewHolder)
         if (viewHolder is StoryViewHolder) {
             viewHolder.dismissStoryMenu()
@@ -1531,6 +1567,7 @@ class StoryViewAdapter(
         item: DisplayItem.ClusterRow,
     ) {
         val clusterStory = item.clusterStory
+        if (vh.clusterStory?.storyHash != clusterStory.storyHash) vh.itemView.clearAnimation()
         vh.clusterStory = clusterStory
         vh.readStateAnimator.cancel()
 

@@ -15,6 +15,12 @@ struct FeedDetailDashboardView: View {
     @ObservedObject var cache: StoryCache
     
     var body: some View {
+        GeometryReader { reader in
+            dashboard.environment(\.readerMotionViewport, reader.frame(in: .global))
+        }
+    }
+
+    private var dashboard: some View {
         ScrollView {
             if cache.dashboardAll.isEmpty {
                 VStack(alignment: .center) {

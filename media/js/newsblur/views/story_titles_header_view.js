@@ -219,6 +219,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         }
 
         this.$el.html($view);
+        requestAnimationFrame(_.bind(function () { NEWSBLUR.motion.cascade(this.$el.find(".NB-feedbar-options, .feed_favicon, .feed_title, .folder_title_text, .NB-search-container").toArray(), 7); }, this));
 
         if (NEWSBLUR.reader.flags.searching) {
             this.focus_search();

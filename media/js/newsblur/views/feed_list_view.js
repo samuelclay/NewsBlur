@@ -25,6 +25,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
         $('.NB-callout-ftux .NB-callout-text').text(gettext('Loading feeds...'));
         this.$s.$feed_link_loader.css({ 'display': 'block' });
+        NEWSBLUR.motion.enter(this.$s.$feed_link_loader[0], 0, 10);
         this.$s.$feed_link_error.css({ 'display': 'none' });
         NEWSBLUR.assets.feeds.bind('reset', _.bind(function (options) {
             this.make_feeds(options);
@@ -82,19 +83,19 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             feed_chooser: this.options.feed_chooser,
             organizer: this.options.organizer
         }).render();
-        this.$el.css({
-            'display': 'block',
-            'opacity': 0
-        });
+        this.$el.stop(true).css({ 'display': 'block', 'opacity': 1 });
         this.$el.addClass("NB-sort-" + this.options.sorting);
         this.$el.html(this.folder_view.el);
-        this.$el.animate({ 'opacity': 1 }, { 'duration': 700 });
+        // feed_list_view.js shares identity across count refreshes, and waits for each row's first viewport entry.
+        var rows = this.$('.feed:not(.NB-empty), .folder_title').toArray().map(function (el) {
+            return { el: el, model: { id: el.getAttribute('data-id') || 'folder:' + $(el).find('.folder_title_text').text() } };
+        });
+        NEWSBLUR.motion.watch(this, rows, this.$s.$feed_lists[0], 'feeds');
         // this.count_collapsed_unread_stories();
 
         this.$s.$feed_link_error.css({ 'display': 'none' });
-        this.$s.$feed_link_loader.fadeOut(250, _.bind(function () {
-            this.$s.$feed_link_loader.css({ 'display': 'none' });
-        }, this));
+        NEWSBLUR.motion.depart(this.$s.$feed_link_loader[0]);
+        this.$s.$feed_link_loader.hide();
 
         if (!this.options.feed_chooser && !options.feed_selector) {
             if (NEWSBLUR.Globals.is_authenticated &&
@@ -157,12 +158,16 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         console.log(['Error loading feeds', model, resp, options]);
 
         this.$s.$feed_link_error.css({ 'display': 'block' });
+        NEWSBLUR.motion.enter(this.$s.$feed_link_error[0], 0, 10);
+        NEWSBLUR.motion.depart(this.$s.$feed_link_loader[0]);
         this.$s.$feed_link_loader.css({ 'display': 'none' });
     },
 
     retry: function () {
         if (!NEWSBLUR.assets.folders.size()) {
             this.$s.$feed_link_loader.css({ 'display': 'block' });
+            NEWSBLUR.motion.enter(this.$s.$feed_link_loader[0], 0, 10);
+            NEWSBLUR.motion.depart(this.$s.$feed_link_error[0]);
             this.$s.$feed_link_error.css({ 'display': 'none' });
 
             NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this));

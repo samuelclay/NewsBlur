@@ -1173,6 +1173,11 @@ abstract class Reading :
         interactiveBackSurface().postDelayed(timeout, 1000L)
     }
 
+    override fun isThemeTransitionReady(): Boolean {
+        val position = pager?.currentStoryPosition ?: return false
+        return readingAdapter?.getExistingItem(position)?.isReadyForDisplay() == true
+    }
+
     private fun navigateToStory(position: Int, isHistoryBack: Boolean = false) {
         cancelUnreadSearch()
         val activePager = pager ?: return

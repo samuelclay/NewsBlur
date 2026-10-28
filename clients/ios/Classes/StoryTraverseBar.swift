@@ -124,6 +124,7 @@ class StoryTraverseBar: NSObject {
     }
 
     @objc private func highlightUp(_ sender: UIButton) {
+        ReaderMotion.pop(sender)
         let hv = sender.viewWithTag(StoryTraverseBar.highlightTag)
         UIView.animate(withDuration: 0.15) {
             hv?.backgroundColor = .clear
@@ -140,6 +141,7 @@ class StoryTraverseBar: NSObject {
         buildLeftGroup(in: traverseView)
         buildRightGroup(in: traverseView)
         buildLayout(in: traverseView)
+        ReaderMotion.cascade(traverseView.subviews)
         installHighlightHandler(textButton)
         installHighlightHandler(sendButton)
         installHighlightHandler(previousButton)

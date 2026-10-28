@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -42,12 +43,28 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     private var uniqueLoginKey: String? = null
     private var lastTheme: ThemeValue? = null
     private var themePreferences: SharedPreferences? = null
+    private var themeTransitionToken: String? = null
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (com.newsblur.view.ThemeTransition.reveal(this, themeTransitionToken) { isThemeTransitionReady() }) {
+            themeTransitionToken = null
+            return
+        }
+        // NbActivity.kt gives settings, account, discovery and other screens the same first-presentation motion.
+        if (this is Main || this is ItemsList || this is Reading) return
+        val content = findViewById<android.view.ViewGroup>(android.R.id.content)
+        content.doOnPreDraw {
+            com.newsblur.view.ReaderMotion.cascade((0 until content.childCount).map { content.getChildAt(it) })
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // A foldable that started folded gets its split rules once any window opens up wide.
         StorySplitView.installIfWideEnough(this)
         applyTheme(readStartupTheme(), shouldUseTranslucentTheme())
         super.onCreate(savedInstanceState)
+        themeTransitionToken = savedInstanceState?.getString("themeTransitionToken")
         Log.d(this, "onCreate")
         lastTheme = prefsRepo.getSelectedTheme()
 
@@ -69,6 +86,10 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
 
         finishIfNotLoggedIn()
 
+        startSyncObservers()
+    }
+
+    internal fun startSyncObservers() {
         lifecycleScope.launch {
             // Translucent reading/list transitions can leave activities underneath in STARTED,
             // which causes hidden screens to react to sync updates and fight over the reading session.
@@ -78,7 +99,25 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
                 }
             }
         }
+        if (shouldObserveSyncStatusWhileStarted()) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    // NbActivity.kt refreshes a returning banner even if the non-replaying flow missed idle while stopped.
+                    handleVisibleSyncStatus()
+                    NbSyncManager.state.collect { update ->
+                        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                            update is NBSync.Update && update.type and NbSyncManager.UPDATE_STATUS != 0) {
+                            handleVisibleSyncStatus()
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    protected open fun shouldObserveSyncStatusWhileStarted(): Boolean = false
+
+    protected open fun handleVisibleSyncStatus() = Unit
 
     override fun onResume() {
         Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this))
@@ -113,6 +152,7 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
         val currentSelectedTheme = prefsRepo.getSelectedTheme()
         if (lastTheme != currentSelectedTheme) {
             lastTheme = currentSelectedTheme
+            themeTransitionToken = com.newsblur.view.ThemeTransition.capture(this)
             UIUtils.restartActivity(this)
         }
     }
@@ -124,6 +164,8 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     }
 
     protected open fun shouldUseTranslucentTheme(): Boolean = false
+
+    protected open fun isThemeTransitionReady(): Boolean = true
 
     private fun readStartupTheme(): ThemeValue {
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, Context.MODE_PRIVATE)
@@ -146,6 +188,7 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         Log.d(this, "onSave")
         savedInstanceState.putString(UNIQUE_LOGIN_KEY, uniqueLoginKey)
+        savedInstanceState.putString("themeTransitionToken", themeTransitionToken)
         super.onSaveInstanceState(savedInstanceState)
     }
 

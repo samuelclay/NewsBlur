@@ -2987,6 +2987,18 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self prepareVisibleFeedFavicons];
 }
 
+// FeedsObjCViewController.m keys entrances by feed identity so count refreshes never replay them.
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *key = cell.accessibilityIdentifier;
+    if (key.length == 0) key = [NSString stringWithFormat:@"feed-section-%ld-row-%ld", (long)indexPath.section, (long)indexPath.row];
+    [ReaderMotion row:cell key:key owner:self scrolling:tableView.dragging || tableView.decelerating position:[ReaderMotion positionForIndexPath:indexPath table:tableView]];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    NSString *key = [NSString stringWithFormat:@"folder-%@", section < appDelegate.dictFoldersArray.count ? appDelegate.dictFoldersArray[section] : @(section)];
+    [ReaderMotion row:view key:key owner:self scrolling:tableView.dragging || tableView.decelerating position:[ReaderMotion positionForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section] table:tableView]];
+}
+
 - (void)refreshFolderCounts {
     [appDelegate.folderCountCache removeAllObjects];
 
@@ -3969,6 +3981,7 @@ heightForHeaderInSection:(NSInteger)section {
 #pragma mark - Table Actions
 
 - (void)didCollapseFolder:(UIButton *)button {
+    [ReaderMotion pop:button];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
 
     NSString *folderName = appDelegate.dictFoldersArray[button.tag];
@@ -3991,6 +4004,15 @@ heightForHeaderInSection:(NSInteger)section {
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
 
+    if (isFolderCollapsed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSMutableArray *rows = [NSMutableArray array];
+            for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
+                if ([self.feedTitlesTable indexPathForCell:cell].section == button.tag) [rows addObject:cell.contentView];
+            }
+            [ReaderMotion cascade:rows];
+        });
+    }
     [self updateAllStoriesCollapseButton];
 }
 
@@ -4468,7 +4490,7 @@ heightForHeaderInSection:(NSInteger)section {
 - (void)finishRefresh {
     self.inPullToRefresh_ = NO;
 #if !TARGET_OS_MACCATALYST
-    [self.refreshControl endRefreshing];
+    [ReaderMotion finishRefresh:self.refreshControl];
 #endif
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.syncNotifier updateFrameInSuperview];

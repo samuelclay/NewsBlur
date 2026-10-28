@@ -1406,6 +1406,55 @@ import XCTest
         XCTAssertTrue(fixture.stories.isStoryUnread(second))
     }
 
+    func test_cachedUnreadTitlesAdoptServerReadArtworkWithoutMarkingStoriesRead() async throws {
+        try await assertCacheReadReconciliationWithoutReading(serverReadStatus: 1)
+    }
+
+    func test_cachedUnreadTitlesStayUnreadWhenServerStillReportsUnread() async throws {
+        try await assertCacheReadReconciliationWithoutReading(serverReadStatus: 0)
+    }
+
+    private func assertCacheReadReconciliationWithoutReading(serverReadStatus: Int) async throws {
+        let fixture = makeFixture()
+        let cachedStories = makeStories(0..<12)
+        try await prime(fixture, stories: cachedStories)
+        let cacheLoaded = expectation(description: "Warm feed publishes its provisional unread titles")
+        fixture.controller.cacheLookupFinished = { cacheLoaded.fulfill() }
+        fixture.open()
+        await fulfillment(of: [cacheLoaded], timeout: SimulatorTestTiming.realWorkTimeout)
+        fixture.controller.cacheLookupFinished = nil
+
+        let cached = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        XCTAssertEqual(cached["_nb_provisional_read_state"] as? Bool, true)
+        XCTAssertTrue(fixture.stories.isStoryUnread(cached))
+        let cachedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
+        let cachedCell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: cachedPath) as? FeedDetailTableCell)
+        XCTAssertFalse(cachedCell.isRead)
+
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        var authoritativeStories = cachedStories
+        authoritativeStories[0]["read_status"] = serverReadStatus
+        fixture.app.reply(to: fixture.app.requests.count - 1, with: response(stories: authoritativeStories))
+        await settle()
+        fixture.table.layoutIfNeeded()
+        fixture.controller.checkScroll()
+
+        let refreshed = try XCTUnwrap((fixture.stories.activeFeedStories as? [[AnyHashable: Any]])?.first)
+        XCTAssertNil(refreshed["_nb_provisional_read_state"])
+        XCTAssertEqual(fixture.stories.isStoryUnread(refreshed), serverReadStatus == 0)
+        let refreshedPath = try XCTUnwrap(fixture.controller.indexPath(forStoryLocation: 0))
+        let refreshedCell = try XCTUnwrap(fixture.controller.tableView(fixture.table, cellForRowAt: refreshedPath) as? FeedDetailTableCell)
+        XCTAssertEqual(refreshedCell.isRead, serverReadStatus == 1,
+                       "StoryFirstPageLoadingTests.swift distinguishes authoritative read artwork from a new read action.")
+        XCTAssertTrue(fixture.controller.markReadAttempts.isEmpty, "Opening and reconciling a feed cannot attempt to mark a story read")
+        XCTAssertTrue(fixture.app.postURLs.filter { $0.contains("mark_story_hashes_as_read") }.isEmpty)
+        XCTAssertEqual(fixture.app.recentlyReadStories.count, 0)
+        XCTAssertNil(fixture.app.activeStory)
+        XCTAssertNil(fixture.table.indexPathForSelectedRow)
+    }
+
     func test_authoritativeInsertionPreservesVisibleStoryPixelOffsetAndSelection() async throws {
         let fixture = makeFixture()
         try await prime(fixture)
@@ -2365,6 +2414,7 @@ private final class FirstPageLoadingStories: StoriesCollection {
     override var tryFeedRefreshTimeout: TimeInterval { testRefreshTimeout }
     var testRowHeight: CGFloat = 80
     var markedHashes: [String] = []
+    var markReadAttempts: [String] = []
     var holdCache = false
     var heldCache: [() -> Void] = []
     var cacheLookupFinished: (() -> Void)?
@@ -2403,6 +2453,7 @@ private final class FirstPageLoadingStories: StoriesCollection {
     override func showFetchingBanner(_ title: String!, isOffline: Bool) { fetchingTitle = title }
     override func hideFetchingBanner() { fetchingTitle = nil }
     override func markStoryReadIfNeeded(_ story: [AnyHashable: Any]!, isScrolling: Bool) -> Bool {
+        if let hash = story["story_hash"] as? String { markReadAttempts.append(hash) }
         if isScrolling, let hash = story["story_hash"] as? String { markedHashes.append(hash) }
         return false
     }
@@ -2528,7 +2579,9 @@ private final class FirstPageLoadingAppDelegate: NewsBlurAppDelegate {
     var requests: [CapturedRequest] = []
     var readFlushes: [() -> Void] = []
     var postResults: [(Bool) -> Void] = []
+    var postURLs: [String] = []
     override func post(_ urlString: String!, parameters: Any!, success: ((URLSessionDataTask?, Any?) -> Void)!, failure: ((URLSessionDataTask?, Error?) -> Void)!) {
+        postURLs.append(urlString)
         postResults.append { passed in
             if passed { success(nil, [:]) }
             else { failure(nil, NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet)) }

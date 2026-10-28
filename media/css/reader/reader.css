@@ -42934,3 +42934,35 @@ span.NB-briefing-inline-favicon {
     text-align: -webkit-match-parent;
     text-align: match-parent;
 }
+
+/* reader.css keeps motion independent of palette, text direction, and layout geometry. */
+@media (prefers-reduced-motion: no-preference) {
+    .NB-story-title .story_title, .NB-story-title .NB-storytitles-indicator,
+    .NB-feed-story .NB-feed-story-title, .NB-feedlist .feed_counts {
+        transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
+    }
+    .NB-intelligence-slider-control, .NB-feedlist-collapse-icon {
+        transition: background-color 220ms ease, color 180ms ease;
+    }
+    .NB-story-title-search-input { transition: width 260ms cubic-bezier(.2,.8,.3,1); }
+}
+
+/* image_motion.js keeps a native modal focus boundary and returns focus without scrolling. */
+.NB-motion-image-viewer {
+    position: fixed; inset: 0; margin: auto; padding: 48px 24px 24px;
+    width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh;
+    box-sizing: border-box; border: 0; background: transparent; overflow: hidden;
+}
+.NB-motion-image-viewer[open] { display: flex; align-items: center; justify-content: center; }
+.NB-motion-image-viewer::backdrop { background: rgba(0, 0, 0, .9); }
+.NB-motion-image-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.NB-motion-image-viewer button {
+    position: absolute; inset-inline-end: 12px; top: 8px; width: 44px; height: 44px;
+    border: 0; border-radius: 50%; color: white; background: #333; font-size: 30px; cursor: pointer;
+}
+.NB-motion-refresh-check {
+    position: fixed; z-index: 1000; pointer-events: none; border-radius: 50%;
+    width: 28px; height: 28px; line-height: 28px; text-align: center;
+    background: #e3e6e0; color: #4b673e; font-size: 20px;
+}
+.NB-dark .NB-motion-refresh-check { background: #303936; color: #b6d99f; }

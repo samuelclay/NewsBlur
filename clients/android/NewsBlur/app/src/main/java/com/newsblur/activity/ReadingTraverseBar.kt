@@ -56,6 +56,7 @@ class ReadingTraverseBar(
         configureImageButtons()
         applyPalette()
         syncState()
+        binding.root.post { com.newsblur.view.ReaderMotion.cascade(listOf(binding.readingOverlayText, binding.readingOverlaySend, binding.readingOverlayLeft, binding.readingOverlayRight)) }
     }
 
     fun updateTheme(selectedTheme: ThemeValue) {
@@ -72,6 +73,7 @@ class ReadingTraverseBar(
     }
 
     fun updateNextShowDone(showDone: Boolean) {
+        if (showDone != nextShowsDone) com.newsblur.view.ReaderMotion.pop(binding.readingOverlayRight)
         nextShowsDone = showDone
         binding.readingOverlayRight.text = context.getString(if (showDone) R.string.overlay_done else R.string.overlay_next)
         binding.readingOverlayRight.contentDescription = binding.readingOverlayRight.text

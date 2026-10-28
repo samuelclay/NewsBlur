@@ -69,6 +69,7 @@ class StoryLoadingBar @JvmOverloads constructor(context: Context, attrs: Attribu
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        if (isShown) ReaderMotion.enter(this, 0, 10f)
         updateAnimation()
     }
     override fun onDetachedFromWindow() {

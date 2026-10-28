@@ -88,14 +88,21 @@
         <LinearLayout
             android:id="@+id/main_sync_status_container"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="wrap_content"
+            android:minHeight="28dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/shape_sync_status_pill"
             android:gravity="center_vertical"
             android:paddingStart="10dp"
             android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             android:visibility="gone"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="1"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/main_unread_count_posi_text"
             app:layout_constraintEnd_toStartOf="@id/main_fullscreen_button"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -103,9 +110,7 @@
                 android:id="@+id/main_sync_status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:maxWidth="140dp"
+                android:layout_weight="1"
                 android:textColor="@color/status_overlay_text"
                 android:textSize="12sp" />
 

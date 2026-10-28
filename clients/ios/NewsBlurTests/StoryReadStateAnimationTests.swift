@@ -604,3 +604,283 @@ private final class ReadFadeAppDelegate: NewsBlurAppDelegate {
         super.draw(rect)
     }
 }
+
+@MainActor final class Test_ReaderMotion: XCTestCase {
+    func test_loadingDepartureDoesNotCreateOffscreenRowsOrTriggerDisplayCallbacks() {
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let host = UIView(frame: table.frame)
+        let source = ReaderMotionLoadingDataSource()
+        table.dataSource = source
+        table.delegate = source
+        host.addSubview(table)
+        table.reloadData()
+        XCTAssertEqual(source.cellsRequested, 0)
+
+        ReaderMotion.retireLoadingRows(table)
+
+        XCTAssertEqual(source.cellsRequested, 0, "An outgoing visual must not materialize rows before the data reload.")
+        XCTAssertEqual(source.displayedRows, 0, "FeedDetailObjCViewController.m schedules pagination from display callbacks.")
+    }
+
+    func test_heldStoryCellReuseAndHashChangesCannotLeaveTheNextStoryBlank() throws {
+        let owner = FeedDetailObjCViewController()
+        ReaderMotion.session(owner).prepareForAppearance()
+        let cell = FeedDetailTableCell(style: .default, reuseIdentifier: "held")
+        cell.storyHash = "first"
+        cell.contentView.alpha = 0.6
+        ReaderMotion.row(cell.contentView, key: "first", owner: owner, scrolling: false, position: 0)
+        XCTAssertNotNil(cell.contentView.layer.animation(forKey: "readerWaitingForAppearance"))
+        cell.prepareForReuse()
+        XCTAssertNil(cell.contentView.layer.animation(forKey: "readerWaitingForAppearance"))
+        XCTAssertEqual(cell.contentView.alpha, 0.6, accuracy: 0.001)
+        ReaderMotion.row(cell.contentView, key: "first", owner: owner, scrolling: false, position: 0)
+        cell.storyHash = nil
+        XCTAssertNil(cell.contentView.layer.animation(forKey: "readerWaitingForAppearance"), "A placeholder without a story hash will not get another row animation callback.")
+    }
+
+    func test_reduceMotionReleasesPendingRowsWithoutChangingTheirReadOpacity() throws {
+        let owner = FeedDetailObjCViewController()
+        ReaderMotion.session(owner).prepareForAppearance()
+        let row = UIView()
+        row.alpha = 0.4
+        ReaderMotion.row(row, key: "waiting", owner: owner, scrolling: false, position: 0)
+        XCTAssertNotNil(row.layer.animation(forKey: "readerWaitingForAppearance"))
+        // StoryReadStateAnimationTests.swift invokes the accessibility observer's action without changing the user's setting.
+        ReaderMotion.finishPendingEntrancesForReducedMotion()
+        XCTAssertNil(row.layer.animation(forKey: "readerWaitingForAppearance"))
+        XCTAssertEqual(row.alpha, 0.4, accuracy: 0.001)
+        XCTAssertFalse(ReaderMotion.session(owner).hasSeen("waiting"))
+    }
+
+    func test_cachedRowsWaitForAppearanceAndReloadKeepsTheSameEntranceTime() throws {
+        let owner = FeedDetailObjCViewController()
+        let session = ReaderMotion.session(owner)
+        session.prepareForAppearance()
+        let first = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 80))
+        let window = motionWindow(containing: [first])
+        defer { window.isHidden = true }
+        ReaderMotion.row(first, key: "cached", owner: owner, scrolling: false, position: 0)
+        XCTAssertNil(first.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNotNil(first.layer.animation(forKey: "readerWaitingForAppearance"))
+        XCTAssertFalse(session.hasSeen("cached"))
+
+        session.didAppear()
+        ReaderMotion.row(first, key: "cached", owner: owner, scrolling: false, position: 0)
+        let entrance = try XCTUnwrap(first.layer.animation(forKey: "readerEntrance"))
+        XCTAssertNil(first.layer.animation(forKey: "readerWaitingForAppearance"))
+        first.layer.removeAnimation(forKey: "readerEntrance")
+        let replacement = UIView(frame: first.frame)
+        first.superview!.addSubview(replacement)
+        ReaderMotion.row(replacement, key: "cached", owner: owner, scrolling: false, position: 0)
+        XCTAssertEqual(try XCTUnwrap(replacement.layer.animation(forKey: "readerEntrance")).beginTime, entrance.beginTime)
+        XCTAssertEqual(replacement.alpha, 1)
+    }
+
+    func test_swiftUICardsWaitForFirstAppearanceButVisibleSourceSwitchesStayReady() throws {
+        let session = ReaderMotionSession()
+        let viewport = CGRect(x: 0, y: 0, width: 320, height: 600)
+        session.prepareForAppearance()
+        XCTAssertNil(session.start(for: "prepared-card", frame: viewport, viewport: viewport))
+        session.didAppear()
+        XCTAssertNotNil(session.start(for: "prepared-card", frame: viewport, viewport: viewport))
+        session.prepareForAppearance()
+        XCTAssertTrue(session.presentationReady, "Returning to an already presented feed must not blank it.")
+        session.reset()
+        XCTAssertTrue(session.presentationReady, "A feed changed in an already visible iPad/Mac pane must animate immediately.")
+        XCTAssertNotNil(session.start(for: "next-feed-card", frame: viewport, viewport: viewport))
+    }
+
+    private func motionWindow(containing views: [UIView]) -> UIWindow {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let host = UIViewController()
+        window.rootViewController = host
+        for view in views { host.view.addSubview(view) }
+        window.isHidden = false
+        return window
+    }
+
+    func test_preparedFeedRowsKeepTheirEntranceUntilTheyAreVisible() throws {
+        let owner = NSObject()
+        let row = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 80))
+        // StoryReadStateAnimationTests.swift reproduces cached feeds preparing rows before the phone push.
+        ReaderMotion.row(row, key: "cached-feed-story", owner: owner, scrolling: false, position: 0)
+        XCTAssertNil(row.layer.animation(forKey: "readerEntrance"), "An off-window row must not spend its entrance before the feed is visible.")
+
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let host = UIViewController()
+        window.rootViewController = host
+        host.view.addSubview(row)
+        window.isHidden = false
+        defer { window.isHidden = true }
+        ReaderMotion.row(row, key: "cached-feed-story", owner: owner, scrolling: false, position: 0)
+        XCTAssertNotNil(row.layer.animation(forKey: "readerEntrance"), "The first visible display must still animate.")
+    }
+
+    func test_variableHeightCardsStartFromTopToBottomRegardlessOfGeometryCallbackOrder() throws {
+        let session = ReaderMotionSession()
+        let viewport = CGRect(x: 0, y: 150, width: 320, height: 800)
+        let frames = [CGRect(x: 0, y: 150, width: 320, height: 90),
+                      CGRect(x: 0, y: 240, width: 320, height: 250),
+                      CGRect(x: 0, y: 490, width: 320, height: 120)]
+        var starts = [Int: CFTimeInterval]()
+        for index in [2, 0, 1] {
+            starts[index] = session.start(for: "card-\(index)", frame: frames[index], viewport: viewport)
+        }
+        XCTAssertLessThan(try XCTUnwrap(starts[0]), try XCTUnwrap(starts[1]))
+        XCTAssertLessThan(try XCTUnwrap(starts[1]), try XCTUnwrap(starts[2]))
+        XCTAssertNil(session.start(for: "card-1", frame: frames[1], viewport: viewport))
+    }
+
+    func test_loadingPulseKeepsItsPhaseAcrossReloadAndThemeChanges() throws {
+        let defaults = UserDefaults.standard
+        let keys = ["theme_style", "theme_light", "theme_dark"]
+        let saved = keys.map { defaults.object(forKey: $0) }
+        defer {
+            for (key, value) in zip(keys, saved) {
+                if let value { defaults.set(value, forKey: key) }
+                else { defaults.removeObject(forKey: key) }
+            }
+        }
+        defaults.set("light", forKey: "theme_style")
+        defaults.set("light", forKey: "theme_light")
+        defaults.set("dark", forKey: "theme_dark")
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let host = UIView(frame: window.bounds)
+        window.addSubview(host)
+        let cell = NBLoadingCell(frame: CGRect(x: 0, y: 0, width: 320, height: 120))
+        host.addSubview(cell)
+        cell.animate()
+        let first = try XCTUnwrap(cell.layer.animation(forKey: "readerLoadingPulse") as? CABasicAnimation)
+        cell.endAnimation()
+        cell.removeFromSuperview()
+        host.addSubview(cell)
+        cell.animate()
+        let reattached = try XCTUnwrap(cell.layer.animation(forKey: "readerLoadingPulse") as? CABasicAnimation)
+        XCTAssertEqual(first.beginTime, reattached.beginTime)
+        defaults.set("dark", forKey: "theme_style")
+        cell.animate()
+        let dark = try XCTUnwrap(cell.layer.animation(forKey: "readerLoadingPulse") as? CABasicAnimation)
+        XCTAssertEqual(first.beginTime, dark.beginTime)
+        let color = try XCTUnwrap(cell.backgroundColor)
+        XCTAssertEqual(color, ThemeManager.shared.color(fromLightRGB: 0x5C89C9, darkRGB: 0x666666))
+        XCTAssertFalse((first.fromValue as! CGColor) == (dark.fromValue as! CGColor))
+        cell.endAnimation()
+    }
+
+    func test_repeatedThemeApplicationKeepsTheVisibleNavigationTitleAndBackButtonHost() throws {
+        let controller = ReaderMotionThemeController()
+        let app = ReaderMotionThemeAppDelegate()
+        controller.appDelegate = app
+        controller.storiesCollection = StoriesCollection()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let navigation = UINavigationController(navigationBarClass: ReaderMotionNavigationBar.self, toolbarClass: nil)
+        navigation.viewControllers = [controller]
+        controller.updateTheme()
+        let title = try XCTUnwrap(controller.navigationItem.titleView)
+        let bar = try XCTUnwrap(navigation.navigationBar as? ReaderMotionNavigationBar)
+        let changes = bar.appearanceChanges
+        controller.updateTheme()
+        XCTAssertTrue(controller.navigationItem.titleView === title, "A no-op theme update must not replace a visible title during push.")
+        XCTAssertEqual(bar.appearanceChanges, changes, "Rebuilding the navigation appearance can restart the native back-button crossfade.")
+    }
+
+    func test_storyEntrancesFollowVisualOrderWhenDisplayCallbacksArriveOutOfOrder() throws {
+        let controller = FeedDetailObjCViewController()
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let cells = (0..<10).map { index -> FeedDetailTableCell in
+            let cell = FeedDetailTableCell(style: .default, reuseIdentifier: nil)
+            cell.storyHash = "ordered-story-\(index)"
+            cell.frame = CGRect(x: 0, y: index * 50, width: 320, height: 50)
+            return cell
+        }
+        let window = motionWindow(containing: cells)
+        defer { window.isHidden = true }
+        let delegate: UITableViewDelegate = controller
+        for index in [9, 2, 5, 0, 8, 3, 6, 4, 7, 1] {
+            delegate.tableView?(table, willDisplay: cells[index], forRowAt: IndexPath(row: index, section: 0))
+        }
+        let starts = try cells.map { try XCTUnwrap($0.contentView.layer.animation(forKey: "readerEntrance")).beginTime }
+        // StoryReadStateAnimationTests.swift models Catalyst delivering the last visible cell first.
+        for index in 1..<starts.count { XCTAssertLessThan(starts[index - 1], starts[index]) }
+        XCTAssertLessThan(starts.last! - starts.first!, 0.175)
+    }
+
+    func test_loadingOnlyReloadKeepsTheSamePulseCell() throws {
+        let controller = ReadFadeController()
+        controller.view = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 600))
+        let selector = NSSelectorFromString("makeLoadingCell")
+        let first = try XCTUnwrap(controller.perform(selector)?.takeUnretainedValue() as? NBLoadingCell)
+        let second = try XCTUnwrap(controller.perform(selector)?.takeUnretainedValue() as? NBLoadingCell)
+        XCTAssertTrue(first === second)
+    }
+
+    func test_repeatedLoadingDisplayDoesNotRestartItsEntrance() throws {
+        let controller = FeedDetailObjCViewController()
+        let table = UITableView()
+        let cell = NBLoadingCell(frame: CGRect(x: 0, y: 0, width: 320, height: 120))
+        let window = motionWindow(containing: [cell])
+        defer { window.isHidden = true }
+        let delegate: UITableViewDelegate = controller
+        let indexPath = IndexPath(row: 0, section: 0)
+        delegate.tableView?(table, willDisplay: cell, forRowAt: indexPath)
+        let entrance = try XCTUnwrap(cell.layer.animation(forKey: "readerEntrance"))
+        delegate.tableView?(table, willDisplay: cell, forRowAt: indexPath)
+        let redisplayed = try XCTUnwrap(cell.layer.animation(forKey: "readerEntrance"))
+        // StoryReadStateAnimationTests.swift catches the same loading row fading back to zero during reload.
+        XCTAssertEqual(redisplayed.beginTime, entrance.beginTime)
+    }
+
+    func test_reusedStoriesDoNotReplayUntilTheFeedVisitResets() {
+        let session = ReaderMotionSession()
+        XCTAssertNotNil(session.delay(for: "feed:story"))
+        XCTAssertNil(session.delay(for: "feed:story"))
+        for index in 0..<100 {
+            XCTAssertLessThanOrEqual(session.delay(for: "other-\(index)") ?? 1, 0.175)
+        }
+        session.reset()
+        XCTAssertNotNil(session.delay(for: "feed:story"))
+    }
+
+    func test_entrancePreservesNavigationTransformAndReadOpacity() {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 240, height: 80))
+        view.transform = CGAffineTransform(translationX: 42, y: -10)
+        view.alpha = 0.4
+        let expectedTransform = view.transform
+        ReaderMotion.enter(view, delay: 0, distance: 16)
+        XCTAssertEqual(view.transform, expectedTransform)
+        XCTAssertEqual(view.alpha, 0.4, accuracy: 0.001)
+        view.layer.removeAllAnimations()
+        XCTAssertEqual(view.transform, expectedTransform)
+        XCTAssertEqual(view.alpha, 0.4, accuracy: 0.001)
+    }
+}
+
+@MainActor private final class ReaderMotionThemeController: FeedDetailObjCViewController {
+    override func viewDidLoad() {}
+    override func reload() {}
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { true }
+}
+
+@MainActor private final class ReaderMotionLoadingDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
+    var cellsRequested = 0
+    var displayedRows = 0
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        cellsRequested += 1
+        return NBLoadingCell(frame: CGRect(x: 0, y: 0, width: 320, height: 120))
+    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        displayedRows += 1
+    }
+}
+
+@MainActor private final class ReaderMotionThemeAppDelegate: NewsBlurAppDelegate {
+    override func makeFeedTitle(_ feed: [AnyHashable: Any]!) -> UIView! { UILabel() }
+}
+
+@MainActor private final class ReaderMotionNavigationBar: UINavigationBar {
+    var appearanceChanges = 0
+    override var standardAppearance: UINavigationBarAppearance {
+        didSet { appearanceChanges += 1 }
+    }
+}

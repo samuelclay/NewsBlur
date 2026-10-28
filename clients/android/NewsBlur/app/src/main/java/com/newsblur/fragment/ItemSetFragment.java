@@ -244,6 +244,7 @@ public class ItemSetFragment extends NbFragment {
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
         binding.itemgridfragmentGrid.setLayoutManager(layoutManager);
+        binding.itemgridfragmentGrid.setItemAnimator(new com.newsblur.view.StoryEntranceItemAnimator());
         setupAnimSpeeds();
 
         calcGridSpacing(listStyle);
@@ -458,6 +459,13 @@ public class ItemSetFragment extends NbFragment {
         return (adapter != null) && (adapter.getRawStoryCount() > 0);
     }
 
+    private boolean themeContentCommitted = false;
+
+    public boolean isThemeContentReady() {
+        return themeContentCommitted && binding != null &&
+                (!hasStories() || binding.itemgridfragmentGrid.getChildCount() > 0);
+    }
+
     private void updateAdapter(@NonNull List<Story> stories, Long loadId, int lastUnreadIndex) {
         FeedSet submittedFeed = FeedSet.fromCompactSerial(getFeedSet().toCompactSerial());
         RecyclerView submittedGrid = binding.itemgridfragmentGrid;
@@ -469,8 +477,9 @@ public class ItemSetFragment extends NbFragment {
             // ItemSetFragment.java must use committed rows: a pre-diff zero count makes
             // SyncServiceState.kt restart pagination, producing another batch that cancels the initial diff.
             boolean empty = adapter.getRawStoryCount() == 0;
+            themeContentCommitted = true;
             submittedGrid.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
-            binding.emptyView.setVisibility(empty ? View.VISIBLE : View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyView, empty ? View.VISIBLE : View.INVISIBLE);
             storyThawCompleted(lastUnreadIndex);
             ensureSufficientStories();
             updateLoadingIndicators();
@@ -490,32 +499,32 @@ public class ItemSetFragment extends NbFragment {
                 hasStories, dataSeenYet, syncServiceState.isFeedSetSyncing(getFeedSet()),
                 syncServiceState.isFeedSetExhausted(getFeedSet()), !isOffline);
         boolean loadingNextPage = loading == com.newsblur.util.StoryLoadingState.NEXT_PAGE;
-        fleuronBinding.bottomLoadingIndicator.setVisibility(loadingNextPage ? View.VISIBLE : View.GONE);
-        fleuronBinding.fleuron.setVisibility(loadingNextPage ? View.GONE : View.VISIBLE);
-        binding.emptyViewText.setVisibility(View.VISIBLE);
+        com.newsblur.view.ReaderMotion.visibility(fleuronBinding.bottomLoadingIndicator, loadingNextPage ? View.VISIBLE : View.GONE);
+        com.newsblur.view.ReaderMotion.visibility(fleuronBinding.fleuron, loadingNextPage ? View.GONE : View.VISIBLE);
         com.newsblur.service.TryFeedRefreshStatus tryFeedStatus = syncServiceState.getTryFeedRefreshStatus(getFeedSet());
         boolean canRetryTryFeed = !hasStories && (tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.EMPTY || tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.FAILED);
         binding.emptyViewText.setClickable(canRetryTryFeed);
         binding.emptyViewText.setFocusable(canRetryTryFeed);
         if (canRetryTryFeed) {
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewText, View.VISIBLE);
             binding.emptyViewText.setText(tryFeedStatus == com.newsblur.service.TryFeedRefreshStatus.FAILED ? R.string.try_feed_fetch_failed : R.string.try_feed_empty);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewText.setAlpha(1.0f);
-            binding.emptyViewImage.setVisibility(View.VISIBLE);
-            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            fleuronBinding.containerSubscribe.setVisibility(View.GONE);
-            fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewImage, View.VISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.topLoadingIndicator, View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.containerSubscribe, View.GONE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.getRoot(), View.INVISIBLE);
             updateBottomNextFeedControl();
             return;
         }
 
         if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
-            fleuronBinding.getRoot().setVisibility(View.VISIBLE);
-            fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.getRoot(), View.VISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.containerSubscribe, View.VISIBLE);
             updateUpgradeBannerText();
-            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            fleuronBinding.bottomLoadingIndicator.setVisibility(View.GONE);
-            fleuronBinding.fleuron.setVisibility(View.VISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.topLoadingIndicator, View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.bottomLoadingIndicator, View.GONE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.fleuron, View.VISIBLE);
             fleuronResized = false;
             hideBottomNextFeedControl();
             return;
@@ -523,16 +532,17 @@ public class ItemSetFragment extends NbFragment {
 
         if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet()) || waitingForApiResult) {
             binding.emptyViewText.setText(isOffline ? R.string.sync_status_offline : R.string.empty_list_view_no_stories);
-            binding.emptyViewText.setVisibility(isOffline ? View.VISIBLE : View.GONE);
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewText, isOffline ? View.VISIBLE : View.GONE);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewText.setAlpha(1.0f);
-            binding.emptyViewImage.setVisibility(View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewImage, View.INVISIBLE);
 
-            binding.topLoadingIndicator.setVisibility(loading == com.newsblur.util.StoryLoadingState.INITIAL ? View.VISIBLE : View.INVISIBLE);
-            fleuronBinding.containerSubscribe.setVisibility(View.GONE);
-            fleuronBinding.getRoot().setVisibility(loadingNextPage ? View.VISIBLE : View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.topLoadingIndicator, loading == com.newsblur.util.StoryLoadingState.INITIAL ? View.VISIBLE : View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.containerSubscribe, View.GONE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.getRoot(), loadingNextPage ? View.VISIBLE : View.INVISIBLE);
         } else {
             ReadFilter readFilter = prefsRepo.getReadFilter(getFeedSet());
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewText, View.VISIBLE);
             if (readFilter == ReadFilter.UNREAD) {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
             } else {
@@ -540,13 +550,13 @@ public class ItemSetFragment extends NbFragment {
             }
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.NORMAL);
             binding.emptyViewText.setAlpha(1.0f);
-            binding.emptyViewImage.setVisibility(View.VISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.emptyViewImage, View.VISIBLE);
 
-            binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
-            fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(binding.topLoadingIndicator, View.INVISIBLE);
+            com.newsblur.view.ReaderMotion.visibility(fleuronBinding.getRoot(), View.INVISIBLE);
             if (dataSeenYet && syncServiceState.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
-                fleuronBinding.containerSubscribe.setVisibility(View.GONE);
-                fleuronBinding.getRoot().setVisibility(View.VISIBLE);
+                com.newsblur.view.ReaderMotion.visibility(fleuronBinding.containerSubscribe, View.GONE);
+                com.newsblur.view.ReaderMotion.visibility(fleuronBinding.getRoot(), View.VISIBLE);
             }
         }
         updateBottomNextFeedControl();
@@ -941,21 +951,15 @@ public class ItemSetFragment extends NbFragment {
     }
 
     private void setupAnimSpeeds() {
-        // to mitigate taps missed because of list pushdowns, RVs animate them. however, the speed
-        // is device and settings dependent.  to keep the UI consistent across installs, take the
-        // system default speed and tweak it towards a speed that looked and functioned well in
-        // testing while still somewhat respecting the system's requested adjustments to speed.
-        long targetAddDuration = 250L;
+        // ItemSetFragment.java keeps rearrangements consistent; ReaderMotion owns new-row entrances.
         // moves are especially jarring, and very rare
         long targetMovDuration = 500L;
         // if there are no stories in the list at all, let the first insert happen very quickly
         if ((adapter == null) || (adapter.getRawStoryCount() < 1)) {
-            targetAddDuration = 0L;
             targetMovDuration = 0L;
         }
 
         RecyclerView.ItemAnimator anim = binding.itemgridfragmentGrid.getItemAnimator();
-        anim.setAddDuration((anim.getAddDuration() + targetAddDuration) / 2L);
         anim.setMoveDuration((anim.getMoveDuration() + targetMovDuration) / 2L);
     }
 

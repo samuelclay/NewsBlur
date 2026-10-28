@@ -3253,6 +3253,9 @@
     self.webView.accessibilityElementsHidden = NO;
     if (ReaderPerformance.recordsUITestPresentation) NSLog(@"[ReaderPresentation] fadePreparedStory hash=%@ page=%p gen=%lu", self.activeStoryId, self, (unsigned long)self.storyLoadGeneration);
     // StoryDetailObjCViewController.m reveals only the finished document; native reader controls are already usable.
+    if (!UIAccessibilityIsReduceMotionEnabled()) {
+        [self.webView evaluateJavaScript:@"newsblurAnimateStoryEntrance()" completionHandler:nil];
+    }
     [UIView animateWithDuration:UIAccessibilityIsReduceMotionEnabled() ? 0 : .14
                           delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction
                      animations:^{ self.webView.alpha = 1; } completion:nil];
