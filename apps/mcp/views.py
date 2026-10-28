@@ -9,7 +9,11 @@ The same documents are also served at the bare origin root
 (/.well-known/oauth-authorization-server, /.well-known/oauth-protected-resource)
 because clients on the 2025-03-26 MCP auth spec drop the /mcp path and look
 only there. Without it they never find the registration endpoint, skip OAuth,
-and report a rejected API token (Littlebird, forum #13806).
+and report a rejected API token (Littlebird, forum #13806). The root copy keeps
+issuer https://host/mcp rather than the bare origin, which RFC 8414 section 3.3
+would want: those older clients don't check it, and the issuer has to match the
+tokens FastMCP issues. If a strict client ever reports an issuer mismatch at
+the root URL, this is why.
 
 The identity URLs here (resource, authorization_servers, issuer) must use the
 canonical no-trailing-slash form https://host/mcp: strict clients (Codex's rmcp)
