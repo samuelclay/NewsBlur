@@ -375,3 +375,14 @@ del {
 .NB-cluster-locked-upsell {
     background-color: rgba(255, 255, 255, .04);
 }
+
+/* AI Classifier Pills: storyDetailViewMedium.css deepens the fills so white text stays readable on the dark header */
+.NB-story-ai-classifier.NB-score-1 {
+    background-color: #5F9150;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
+
+.NB-story-ai-classifier.NB-score--1 {
+    background-color: #A85A5C;
+    border-color: rgba(255, 255, 255, .15) transparent rgba(0, 0, 0, .4);
+}
