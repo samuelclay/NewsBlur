@@ -123,7 +123,17 @@ class FeedApiImpl(
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
         val response: APIResponse = networkClient.post(urlString, values)
-        return response.getResponse(gson, NewsBlurResponse::class.java)
+        val result = response.getResponse(gson, NewsBlurResponse::class.java)
+        // apps/analyzer/views.py save_classifier takes one scope per request, so folder and global
+        // AI prompt changes follow the feed-scoped save as their own requests.
+        for (scoped in classifier.getScopedPromptRequests()) {
+            scoped.values.put(APIConstants.PARAMETER_FEEDID, feedId)
+            scoped.values.put(APIConstants.PARAMETER_SCOPE, scoped.scope.scope)
+            scoped.values.put(APIConstants.PARAMETER_FOLDER_NAME, scoped.scope.folderName)
+            val scopedResult = networkClient.post(urlString, scoped.values).getResponse(gson, NewsBlurResponse::class.java)
+            if (result != null && !result.isError && (scopedResult == null || scopedResult.isError)) return scopedResult
+        }
+        return result
     }
 
     override suspend fun addFeed(

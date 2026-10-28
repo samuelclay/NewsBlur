@@ -45,6 +45,7 @@ import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
 import com.newsblur.util.ThumbnailStyle
+import com.newsblur.util.UsageBillingState
 import com.newsblur.util.VolumeKeyNavigation
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.disableWidgetUpdate
@@ -1029,6 +1030,24 @@ class PrefsRepo(
     }
 
     fun getIsPro() = prefs.getBoolean(PrefConstants.IS_PRO, false)
+
+    fun setUsageBillingState(state: UsageBillingState) {
+        prefs.edit {
+            putBoolean(PrefConstants.IS_USAGE_BILLING, state.isUsageBilling)
+            putBoolean(PrefConstants.IS_SELF_HOSTED_AI, state.isSelfHostedAi)
+            putBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, state.canUseAiClassifiers)
+            // PrefsRepo.kt stores the limit as a string so a cleared limit stays distinct from $0.
+            putString(PrefConstants.USAGE_BILLING_LIMIT, state.usageBillingLimit?.toString())
+        }
+    }
+
+    fun getUsageBillingState(): UsageBillingState =
+        UsageBillingState(
+            isUsageBilling = prefs.getBoolean(PrefConstants.IS_USAGE_BILLING, false),
+            isSelfHostedAi = prefs.getBoolean(PrefConstants.IS_SELF_HOSTED_AI, false),
+            canUseAiClassifiers = prefs.getBoolean(PrefConstants.CAN_USE_AI_CLASSIFIERS, false),
+            usageBillingLimit = prefs.getString(PrefConstants.USAGE_BILLING_LIMIT, null)?.toDoubleOrNull(),
+        )
 
     fun setIsStaff(isStaff: Boolean) {
         prefs.edit {
