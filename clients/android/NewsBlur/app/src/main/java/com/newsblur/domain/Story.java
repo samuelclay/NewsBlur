@@ -315,7 +315,20 @@ public class Story implements Serializable {
 		public int intelligencePrompt = 0;
 
         public int calcTotalIntel() {
-            // AI prompt classifier takes absolute priority
+            // Mirrors apps/analyzer/models.py:compute_story_score. A manual super dislike (-2)
+            // outranks everything, then an AI prompt match outranks the remaining manual scores.
+            int min = 0;
+            min = Math.min(min, intelligenceAuthors);
+            min = Math.min(min, intelligenceAuthorRegex);
+            min = Math.min(min, intelligenceTags);
+            min = Math.min(min, intelligenceTitle);
+            min = Math.min(min, intelligenceTitleRegex);
+            min = Math.min(min, intelligenceText);
+            min = Math.min(min, intelligenceTextRegex);
+            min = Math.min(min, intelligenceUrl);
+            min = Math.min(min, intelligenceUrlRegex);
+
+            if (min <= -2) return min;
             if (intelligencePrompt != 0) return intelligencePrompt;
 
             int max = 0;
@@ -329,18 +342,6 @@ public class Story implements Serializable {
             max = Math.max(max, intelligenceUrl);
             max = Math.max(max, intelligenceUrlRegex);
 
-            int min = 0;
-            min = Math.min(min, intelligenceAuthors);
-            min = Math.min(min, intelligenceAuthorRegex);
-            min = Math.min(min, intelligenceTags);
-            min = Math.min(min, intelligenceTitle);
-            min = Math.min(min, intelligenceTitleRegex);
-            min = Math.min(min, intelligenceText);
-            min = Math.min(min, intelligenceTextRegex);
-            min = Math.min(min, intelligenceUrl);
-            min = Math.min(min, intelligenceUrlRegex);
-
-            if (min <= -2) return min;
             if (max > 0) return max;
             if (min < 0) return min;
 
