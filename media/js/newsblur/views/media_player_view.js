@@ -109,7 +109,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.bind_playback_state_refresh();
 
         var state = NEWSBLUR.assets.playback_state;
-        if (!state || !state.current_media_url) return;
+        if (!state) return;
 
         // Always restore settings from state, even if we don't show the player
         this.skip_back_seconds = state.skip_back_seconds || 15;
@@ -117,6 +117,14 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         if (state.auto_play_next !== undefined) this.auto_play_next = state.auto_play_next;
         if (state.remember_position !== undefined) this.remember_position = state.remember_position;
         if (state.resume_on_load !== undefined) this.resume_on_load = state.resume_on_load;
+
+        // media_player_view.js: Up Next and history are shared with the iOS and Android Listen
+        // players, which queue stories without setting a current item, so they're restored even
+        // when there's no player to show. They appear once something plays.
+        this.queue = state.queue || [];
+        this.history = state.history || [];
+
+        if (!state.current_media_url) return;
 
         // If resume on load is disabled, don't restore the player UI
         if (this.resume_on_load === false) return;
@@ -134,8 +142,6 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // saved_playback_rate); Listen items use listen_speed.
         this.media_playback_rate = this.playback_rate;
         this.volume = state.current_volume || 1.0;
-        this.queue = state.queue || [];
-        this.history = state.history || [];
         this.current_position = state.current_position || 0;
         this.current_duration = state.current_duration || 0;
 
