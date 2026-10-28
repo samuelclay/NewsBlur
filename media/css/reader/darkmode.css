@@ -4127,6 +4127,10 @@ a.mention, a.mention-group {
     background: rgba(107, 0, 1, 0.15);
 }
 
+.NB-dark .NB-explainer-level-ai {
+    background: rgba(74, 144, 217, 0.15);
+}
+
 .NB-dark .NB-explainer-level-like {
     background: rgba(52, 145, 46, 0.15);
 }
@@ -4145,6 +4149,14 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-classifier-explainer .NB-classifier-title-super-dislike {
     color: #c04040;
+}
+
+.NB-dark .NB-classifier-explainer .NB-classifier-title-ai {
+    color: #7fb2e5;
+}
+
+.NB-dark .NB-classifier-explainer .NB-explainer-icon-ai {
+    color: #5b9fd9;
 }
 
 .NB-dark .NB-explainer-separator-line {

@@ -13505,6 +13505,8 @@ form.opml_import_form input {
 
 .NB-explainer-hierarchy {
     display: inline-flex;
+    flex-wrap: wrap;
+    row-gap: 4px;
     align-items: center;
     justify-content: center;
     background: #f5f5ee;
@@ -13527,6 +13529,11 @@ form.opml_import_form input {
     background: rgba(107, 0, 1, 0.06);
 }
 
+/* reader.css: AI Filter level, blue like the content filter header icon */
+.NB-explainer-level-ai {
+    background: rgba(74, 144, 217, 0.08);
+}
+
 .NB-explainer-level-like {
     background: rgba(52, 145, 46, 0.06);
 }
@@ -13547,16 +13554,30 @@ form.opml_import_form input {
     color: #6B0001;
 }
 
+.NB-classifier-explainer .NB-classifier-title-ai {
+    color: #2F6FB3;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-ai {
+    display: inline-flex;
+    color: #4A90D9;
+}
+
+.NB-classifier-explainer .NB-explainer-icon-ai svg {
+    display: block;
+}
+
+/* reader.css: Separators stay compact so four levels fit the trainer's 760px minimum width */
 .NB-explainer-separator {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    margin: 0 6px;
+    gap: 5px;
+    margin: 0 5px;
 }
 
 .NB-explainer-separator-line {
     display: block;
-    width: 12px;
+    width: 10px;
     height: 1px;
     background: #ccc;
 }
@@ -13690,6 +13711,21 @@ form.opml_import_form input {
     width: 10px;
     height: 10px;
     filter: brightness(0) invert(1);
+}
+
+/* reader.css: AI filter pill in the scoring popover, a focus match with the robot glyph */
+.NB-scoring-pill-ai-icon {
+    display: inline-flex;
+}
+
+.NB-scoring-pill-ai-icon svg {
+    display: block;
+    width: 11px;
+    height: 11px;
+}
+
+.NB-scoring-example-pills-followup {
+    margin-top: 10px;
 }
 
 .NB-scoring-pill-double-icon {
