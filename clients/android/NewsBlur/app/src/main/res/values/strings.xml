@@ -1392,4 +1392,107 @@ people together to talk about the world.</string>
     <string name="story_list_exit_fullscreen">Show tablet columns</string>
     <string name="resize_feed_list">Resize feed list</string>
     <string name="resize_story_list">Resize story titles</string>
+    <!-- ReadingItemFragment.kt: the AI filter chips in the story header, as media/js/newsblur/views/story_detail_view.js shows them. -->
+    <string name="ai_filter_content_label">Content Filter</string>
+    <string name="ai_filter_image_label">Image Filter</string>
+    <!-- ReadingItemFragment.kt: %1$s is Content Filter or Image Filter, %2$s is the reader's own prompt. -->
+    <string name="ai_filter_chip">%1$s: %2$s</string>
+    <!-- AiClassifierSections.kt: the trainer's natural language classifier sections, from media/js/newsblur/reader/reader_classifier.js. -->
+    <string name="ai_text_classifier_header">Natural Language Text Classifier</string>
+    <string name="ai_image_classifier_header">Natural Language Image Classifier</string>
+    <string name="ai_text_classifier_explainer">Describe a topic and AI will score each story against your prompt to focus or hide matches.</string>
+    <string name="ai_image_classifier_explainer">Describe what to look for and AI will analyze each story’s images against your prompt.</string>
+    <string name="ai_text_prompt_hint">e.g., “AI and machine learning” or “local politics”</string>
+    <string name="ai_image_prompt_hint">e.g., “food photography” or “charts and graphs”</string>
+    <string name="ai_prompt_placeholder">Describe what to focus or hide</string>
+    <string name="ai_prompt_type_content">Content</string>
+    <string name="ai_prompt_type_image">Image</string>
+    <string name="ai_prompt_focus">Focus stories that match</string>
+    <string name="ai_prompt_hide">Hide stories that match</string>
+    <string name="ai_prompt_remove">Remove this filter</string>
+    <string name="ai_test_story">Test on this story</string>
+    <string name="ai_testing_story">Testing on this story…</string>
+    <string name="ai_test_image">Test on this image</string>
+    <string name="ai_test_images">Test on these images</string>
+    <string name="ai_analyzing_images">Analyzing images…</string>
+    <string name="ai_story_matches">✓ Story matches this filter</string>
+    <string name="ai_story_no_match">✗ Story does not match this filter</string>
+    <string name="ai_image_matches">✓ Image matches this filter</string>
+    <string name="ai_image_no_match">✗ Image does not match this filter</string>
+    <string name="ai_images_no_match">✗ No images match this filter</string>
+    <!-- AiClassifierSections.kt: %1$d images out of %2$d matched; the plural follows the total. -->
+    <plurals name="ai_images_match">
+        <item quantity="one">✓ %1$d of %2$d image matches this filter</item>
+        <item quantity="other">✓ %1$d of %2$d images match this filter</item>
+    </plurals>
+    <string name="ai_test_failed">Test failed</string>
+    <string name="ai_image_label_match">Match</string>
+    <string name="ai_image_label_no_match">No match</string>
+    <!-- AiClassifierCost.kt: %1$s is a dollar amount. -->
+    <string name="ai_cost_monthly">%1$s/mo</string>
+    <string name="ai_cost_daily">%1$s/day</string>
+    <plurals name="ai_cost_stories_per_month">
+        <item quantity="one">%1$s story/mo</item>
+        <item quantity="other">%1$s stories/mo</item>
+    </plurals>
+    <plurals name="ai_cost_content_filters">
+        <item quantity="one">%1$d content filter</item>
+        <item quantity="other">%1$d content filters</item>
+    </plurals>
+    <plurals name="ai_cost_image_filters">
+        <item quantity="one">%1$d image filter</item>
+        <item quantity="other">%1$d image filters</item>
+    </plurals>
+    <string name="ai_cost_per_story">%1$s/story</string>
+    <!-- AiClassifierCost.kt: %1$d is a number of filters and %2$s a story count such as 120 stories/mo. -->
+    <string name="ai_cost_scope_feed">%1$d on this site (%2$s)</string>
+    <string name="ai_cost_scope_folder">%1$d on folder (%2$s)</string>
+    <string name="ai_cost_scope_global">%1$d on all sites (%2$s)</string>
+    <string name="ai_billing_manage_limits">Manage billing and limits</string>
+    <string name="ai_billing_set_up">Set up billing</string>
+    <!-- AiClassifierSections.kt: %1$s is the ai_billing_banner_link text, shown as a link. -->
+    <string name="ai_billing_banner">AI filters are saved but won’t run until you %1$s.</string>
+    <string name="ai_billing_banner_link">set up usage-based billing</string>
+    <string name="ai_limit_reached_title">Monthly spending limit reached.</string>
+    <string name="ai_limit_reached_body">Natural language classifiers are paused until next billing cycle.</string>
+    <string name="ai_limit_reached_link">Increase or remove your limit</string>
+    <string name="ai_scope_feed">This site only</string>
+    <string name="ai_scope_folder">All sites in folder</string>
+    <string name="ai_scope_global">All sites</string>
+    <!-- AiClassifierSections.kt: %1$s is the folder's name. -->
+    <string name="ai_scope_folder_named">All sites in %1$s</string>
+    <string name="ai_scope_requires_archive">Requires Premium Archive</string>
+    <!-- UsageBillingActivity.kt: natural language classifier billing, from media/js/newsblur/reader/reader_account.js. -->
+    <string name="usage_billing_title">Natural language classifier billing</string>
+    <string name="usage_billing_status_enabled">Usage-based billing is enabled for natural language classifiers.</string>
+    <string name="usage_billing_status_self_hosted">Natural language classifiers are using your instance’s API keys.</string>
+    <string name="usage_billing_status_off">Set up usage-based billing to use natural language content and image filters.</string>
+    <string name="usage_billing_manage">Manage billing on Stripe</string>
+    <!-- UsageBillingActivity.kt: the current billing cycle, such as Oct 1 – Oct 31, 2026. -->
+    <string name="usage_billing_period">%1$s – %2$s</string>
+    <!-- UsageBillingActivity.kt: spending so far out of the monthly limit, such as $4.50 / $10.00. -->
+    <string name="usage_billing_limit_progress">%1$s / %2$s</string>
+    <string name="usage_billing_limit_reached_note">Spending limit reached. Classifiers paused until next cycle.</string>
+    <string name="usage_billing_upcoming_charge">Upcoming charge: %1$s</string>
+    <string name="usage_billing_limit_label">Monthly spending limit</string>
+    <string name="usage_billing_limit_hint">No limit</string>
+    <string name="usage_billing_limit_per_month">/month</string>
+    <string name="usage_billing_limit_help">Optional. Classifiers pause when the limit is reached and resume next billing cycle.</string>
+    <string name="usage_billing_limit_save">Save limit</string>
+    <string name="usage_billing_limit_saved">Spending limit saved</string>
+    <string name="usage_billing_limit_cleared">Spending limit removed</string>
+    <string name="usage_billing_limit_failed">Couldn’t save the spending limit. Please try again.</string>
+    <string name="usage_billing_history_title">Usage billing history</string>
+    <string name="usage_billing_none">No usage billing set up.</string>
+    <string name="usage_billing_no_invoices">No usage billing invoices yet.</string>
+    <string name="usage_billing_upcoming">(upcoming)</string>
+    <string name="usage_billing_invoice">Invoice</string>
+    <!-- UsageBillingActivity.kt: how many classifications a line item covers, such as ×1,200. -->
+    <string name="usage_billing_quantity">×%1$s</string>
+    <string name="usage_billing_load_failed">Couldn’t load usage billing. Pull down to try again.</string>
+    <string name="usage_billing_stripe_failed">Couldn’t reach Stripe. Please try again.</string>
+    <string name="usage_billing_already_active">Usage-based billing is already set up.</string>
+    <string name="usage_billing_setup_complete">Usage-based billing is set up. Your AI filters will start running on new stories.</string>
+    <string name="usage_billing_no_browser">Install a web browser to set up billing.</string>
+    <string name="usage_billing_provider" translatable="false">stripe</string>
 </resources>
