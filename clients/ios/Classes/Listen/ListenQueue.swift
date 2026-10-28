@@ -63,22 +63,71 @@ struct ListenQueueItem: Identifiable, Equatable {
     }
 }
 
+/// How ListenQueue.swift reaches apps/media_player/views.py. Paths are relative to the account's server.
+/// Test_ListenQueue answers requests itself, in whatever order it likes.
+protocol ListenQueueTransport: AnyObject {
+    func get(_ path: String, success: @escaping (Any?) -> Void, failure: @escaping (Error?) -> Void)
+    func post(_ path: String, parameters: [String: String], success: @escaping (Any?) -> Void,
+              failure: @escaping (Error?) -> Void)
+}
+
+/// ListenQueue.swift's requests go through the app delegate's session, so they carry the session cookie like every
+/// other API call.
+private final class ListenQueueAppTransport: ListenQueueTransport {
+    func get(_ path: String, success: @escaping (Any?) -> Void, failure: @escaping (Error?) -> Void) {
+        guard let appDelegate = NewsBlurAppDelegate.shared() else { return failure(nil) }
+        appDelegate.get(ListenAPI.shared.baseURL + path, parameters: [:], success: { _, response in
+            success(response)
+        }, failure: { _, error in
+            failure(error)
+        })
+    }
+
+    func post(_ path: String, parameters: [String: String], success: @escaping (Any?) -> Void,
+              failure: @escaping (Error?) -> Void) {
+        guard let appDelegate = NewsBlurAppDelegate.shared() else { return failure(nil) }
+        appDelegate.post(ListenAPI.shared.baseURL + path, parameters: parameters, success: { _, response in
+            success(response)
+        }, failure: { _, error in
+            failure(error)
+        })
+    }
+}
+
 /// ListenQueue.swift is Up Next: the account's media queue in apps/media_player, shared with the web and Android.
-/// Edits show at once and are sent to the server; the server's answer replaces the local copy once no other edit
-/// is still on its way, so a slow reply can't undo a newer change.
+/// Edits show at once and are sent to the server one at a time, in the order they were made, because the server
+/// reads and replaces the whole queue on every edit (as Android's ListenManager.kt queue mutex does). The server's
+/// answer replaces the local copy once no other edit is waiting, so a slow reply can't undo a newer change.
 final class ListenQueue: NSObject, ObservableObject {
-    static let shared = ListenQueue()
+    static let shared = ListenQueue(transport: ListenQueueAppTransport())
     static let didChange = Notification.Name("ListenQueueDidChange")
     static let listenMediaType = "listen"
 
     /// Every queued item in order, including ones mobile doesn't play.
     @Published private(set) var items: [ListenQueueItem] = []
-    private var pendingWrites = 0
     private var hasLoaded = false
 
-    private var appDelegate: NewsBlurAppDelegate? { NewsBlurAppDelegate.shared() }
+    /// An Up Next edit waiting for the ones before it to be answered.
+    private struct Write {
+        let path: String
+        let parameters: [String: String]
+    }
 
-    private override init() {
+    /// Edits not sent yet, oldest first. Only one edit is on its way at a time.
+    private var waitingWrites: [Write] = []
+    private var isSendingWrite = false
+    /// Counts local edits, so a queue read that left before one can't undo it when it lands after (refresh()).
+    private var editCount = 0
+    /// Bumped by reset(), so answers for the previous account are ignored.
+    private var accountSession = 0
+
+    private var hasPendingWrites: Bool { isSendingWrite || !waitingWrites.isEmpty }
+
+    private let transport: ListenQueueTransport
+
+    /// The app uses `shared`; Test_ListenQueue makes its own queue in front of a fake server.
+    init(transport: ListenQueueTransport) {
+        self.transport = transport
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -105,12 +154,15 @@ final class ListenQueue: NSObject, ObservableObject {
 
     /// GET /media_player/playback_state, when Now Playing opens, the app returns to the foreground and the feed
     /// list loads (FeedsObjCViewController.m through ListenStoryBridge.swift).
+    /// Skipped while edits are on their way: the last one's answer brings the server's queue.
     func refresh() {
-        guard let appDelegate else { return }
-        appDelegate.get(ListenAPI.shared.baseURL + "/media_player/playback_state", parameters: [:], success: { [weak self] _, response in
-            guard let self, self.pendingWrites == 0 else { return }
+        guard !hasPendingWrites else { return }
+        let edits = editCount
+        let session = accountSession
+        transport.get("/media_player/playback_state", success: { [weak self] response in
+            guard let self, session == self.accountSession, edits == self.editCount, !self.hasPendingWrites else { return }
             self.apply(response)
-        }, failure: { _, error in
+        }, failure: { error in
             NSLog("Listen couldn't load Up Next: %@", (error as NSError?) ?? NSError())
         })
     }
@@ -128,7 +180,9 @@ final class ListenQueue: NSObject, ObservableObject {
 
     /// Logout or a new server: the old account's queue is forgotten (ListenStoryBridge.swift).
     func reset() {
-        pendingWrites = 0
+        accountSession += 1
+        waitingWrites = []
+        isSendingWrite = false
         hasLoaded = false
         replaceItems([])
     }
@@ -205,30 +259,43 @@ final class ListenQueue: NSObject, ObservableObject {
         if let feedId = item.feedId {
             parameters["image_url"] = ListenAPI.shared.baseURL + "/rss_feeds/icon/" + feedId
         }
-        appDelegate?.post(ListenAPI.shared.baseURL + "/media_player/add_to_media_history", parameters: parameters,
-                          success: nil, failure: { _, error in
+        transport.post("/media_player/add_to_media_history", parameters: parameters, success: { _ in }, failure: { error in
             NSLog("Listen couldn't save history: %@", (error as NSError?) ?? NSError())
         })
     }
 
     // MARK: - Transport
 
+    /// Queues an edit behind any still on their way. A reorder carries the whole queue as it stood when the user
+    /// made it, which is what the server holds once the edits before it have landed.
     private func write(_ path: String, parameters: [String: String]) {
-        guard let appDelegate else { return }
-        pendingWrites += 1
-        appDelegate.post(ListenAPI.shared.baseURL + path, parameters: parameters, success: { [weak self] _, response in
-            guard let self else { return }
-            self.pendingWrites = max(0, self.pendingWrites - 1)
-            if self.pendingWrites == 0 {
+        editCount += 1
+        waitingWrites.append(Write(path: path, parameters: parameters))
+        sendNextWrite()
+    }
+
+    private func sendNextWrite() {
+        guard !isSendingWrite, !waitingWrites.isEmpty else { return }
+        let write = waitingWrites.removeFirst()
+        let session = accountSession
+        isSendingWrite = true
+        transport.post(write.path, parameters: write.parameters, success: { [weak self] response in
+            guard let self, session == self.accountSession else { return }
+            self.isSendingWrite = false
+            if self.waitingWrites.isEmpty {
                 self.apply(response)
+            } else {
+                self.sendNextWrite()
             }
-        }, failure: { [weak self] _, error in
-            guard let self else { return }
+        }, failure: { [weak self] error in
+            guard let self, session == self.accountSession else { return }
             NSLog("Listen couldn't update Up Next: %@", (error as NSError?) ?? NSError())
-            self.pendingWrites = max(0, self.pendingWrites - 1)
-            if self.pendingWrites == 0 {
+            self.isSendingWrite = false
+            if self.waitingWrites.isEmpty {
                 // ListenQueue.swift puts the server's queue back when an edit didn't go through.
                 self.refresh()
+            } else {
+                self.sendNextWrite()
             }
         })
     }
