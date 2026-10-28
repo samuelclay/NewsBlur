@@ -310,6 +310,17 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
+    protected boolean shouldObserveSyncStatusWhileStarted() {
+        return true;
+    }
+
+    @Override
+    protected void handleVisibleSyncStatus() {
+        // Main.java keeps the tablet's visible sidebar banner current without reloading its reading session.
+        if (binding != null) updateStatusIndicators();
+    }
+
+    @Override
     public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
             folderFeedList.reset();

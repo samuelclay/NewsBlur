@@ -441,9 +441,9 @@ class DefaultSyncServiceState
         // SyncServiceState.kt keeps message-less prefetch phases active until the service explicitly goes idle.
         override fun isSyncRunning(): Boolean = serviceState.value != ServiceState.Idle
 
-        // SyncServiceState.kt distinguishes reader page/prefetch jobs from feed-list refresh status.
+        // SyncServiceState.kt leaves offline unread-download counts visible on the feed list.
         override fun isStoryContentSyncRunning(): Boolean = when (serviceState.value) {
-            ServiceState.StorySync, ServiceState.UnreadsSync, ServiceState.ImagePrefetchSync -> true
+            ServiceState.StorySync, ServiceState.ImagePrefetchSync -> true
             else -> false
         }
     }

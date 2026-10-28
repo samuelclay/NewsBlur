@@ -86,6 +86,10 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
 
         finishIfNotLoggedIn()
 
+        startSyncObservers()
+    }
+
+    internal fun startSyncObservers() {
         lifecycleScope.launch {
             // Translucent reading/list transitions can leave activities underneath in STARTED,
             // which causes hidden screens to react to sync updates and fight over the reading session.
@@ -95,7 +99,25 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
                 }
             }
         }
+        if (shouldObserveSyncStatusWhileStarted()) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    // NbActivity.kt refreshes a returning banner even if the non-replaying flow missed idle while stopped.
+                    handleVisibleSyncStatus()
+                    NbSyncManager.state.collect { update ->
+                        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                            update is NBSync.Update && update.type and NbSyncManager.UPDATE_STATUS != 0) {
+                            handleVisibleSyncStatus()
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    protected open fun shouldObserveSyncStatusWhileStarted(): Boolean = false
+
+    protected open fun handleVisibleSyncStatus() = Unit
 
     override fun onResume() {
         Log.d(this, "onResume" + UIUtils.getMemoryUsageDebug(this))

@@ -11,13 +11,93 @@ import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.onboarding.SetupQueue
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.UIUtils
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleRegistry
+import com.newsblur.service.NbSyncManager
+import com.newsblur.service.NBSync
+import com.newsblur.service.UnreadsSubService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class Test_SyncStatusMotion {
+    @Test fun test_unread_download_progress_is_visible_until_all_stories_are_synced() {
+        val state = com.newsblur.service.DefaultSyncServiceState()
+        val f = Fixture()
+        f.useState(state)
+        mockkObject(UnreadsSubService.Companion)
+        try {
+            every { f.main.resources.getString(R.string.sync_status_unreads) } returns "Syncing %s stories"
+            every { UnreadsSubService.pendingCount } returns "12"
+            state.setServiceState(com.newsblur.service.ServiceState.UnreadsSync)
+            f.invoke("updateStatusIndicators")
+            verify(exactly = 1) { f.text.text = "Syncing 12 stories" }
+            every { UnreadsSubService.pendingCount } returns "3"
+            f.invoke("updateStatusIndicators")
+            verify(exactly = 1) { f.text.text = "Syncing 3 stories" }
+            assertTrue(f.delayed.isEmpty())
+            state.setServiceState(com.newsblur.service.ServiceState.Idle)
+            f.invoke("updateStatusIndicators")
+            f.delayed.last().first.run()
+            verify(exactly = 1) { f.text.text = "All Done" }
+        } finally {
+            unmockkObject(UnreadsSubService.Companion)
+        }
+    }
+
+    @Test fun test_paused_visible_banner_receives_completion_without_general_sync_updates() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        val f = Fixture()
+        val lifecycle = LifecycleRegistry.createUnsafe(f.main)
+        every { f.main.lifecycle } returns lifecycle
+        every { f.main.startSyncObservers() } answers { callOriginal() }
+        every { f.main["handleSyncUpdate"](any<NBSync>()) } answers { callOriginal() }
+        every { f.main["shouldObserveSyncStatusWhileStarted"]() } answers { callOriginal() }
+        every { f.main["handleVisibleSyncStatus"]() } answers { callOriginal() }
+        every { f.main.handleUpdate(any()) } answers { callOriginal() }
+        try {
+            lifecycle.currentState = Lifecycle.State.CREATED
+            f.main.startSyncObservers()
+            runCurrent()
+            lifecycle.currentState = Lifecycle.State.RESUMED
+            runCurrent()
+            every { f.sync.getSyncStatusMessage(f.main, false) } returns "Counting is difficult"
+            NbSyncManager.submitUpdate(NbSyncManager.UPDATE_STATUS)
+            runCurrent()
+            verify(exactly = 1) { f.text.text = "Counting is difficult" }
+
+            lifecycle.currentState = Lifecycle.State.STARTED
+            runCurrent()
+            every { f.sync.getSyncStatusMessage(f.main, false) } returns null
+            NbSyncManager.submitUpdate(NbSyncManager.UPDATE_STATUS or NbSyncManager.UPDATE_DB_READY or NbSyncManager.UPDATE_STORY)
+            runCurrent()
+            assertEquals("The visible paused banner must receive the worker's idle event", 1, f.delayed.size)
+            f.delayed.single().first.run()
+            verify(exactly = 1) { f.text.text = "All Done" }
+            verify(exactly = 1) { f.main.handleUpdate(any()) }
+
+            lifecycle.currentState = Lifecycle.State.CREATED
+            runCurrent()
+            every { f.sync.getSyncStatusMessage(f.main, false) } returns "A stopped screen must not redraw"
+            NbSyncManager.submitUpdate(NbSyncManager.UPDATE_STATUS)
+            runCurrent()
+            verify(exactly = 0) { f.text.text = "A stopped screen must not redraw" }
+        } finally {
+            lifecycle.currentState = Lifecycle.State.DESTROYED
+            runCurrent()
+            Dispatchers.resetMain()
+        }
+    }
     @Test fun test_reader_page_jobs_do_not_restart_done_or_announce_global_completion() {
         val state = com.newsblur.service.DefaultSyncServiceState()
         val f = Fixture()
