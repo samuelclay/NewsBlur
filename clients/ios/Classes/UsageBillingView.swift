@@ -78,6 +78,14 @@ import SwiftUI
 
     private var hasEditedLimit = false
 
+    /// Stripe's webhook turns billing on server side, which can land after the checkout returns to the app, so
+    /// UsageBillingView.swift keeps showing billing as active and re-reads the profile a few times until it agrees.
+    private var activationChecksRemaining = 0
+    static let activationCheckLimit = 4
+    var scheduleActivationCheck: (_ delay: TimeInterval, _ check: @escaping () -> Void) -> Void = { delay, check in
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: check)
+    }
+
     init(api: AIClassifierAPI? = nil, browser: UsageBillingBrowser? = nil,
          readStatus: (() -> UsageBillingStatus)? = nil,
          refreshProfile: (() -> Void)? = nil) {
@@ -99,7 +107,14 @@ import SwiftUI
     /// The feed list finished reloading, so the profile's billing flags may have changed.
     func profileDidRefresh() {
         let previous = status
-        status = readStatus()
+        let fresh = readStatus()
+        if activationChecksRemaining > 0, !fresh.isUsageBilling {
+            activationChecksRemaining -= 1
+            scheduleActivationCheck(3) { [weak self] in self?.refreshProfile() }
+            return
+        }
+        activationChecksRemaining = 0
+        status = fresh
         if status != previous {
             if !hasEditedLimit { limitText = Self.limitString(status.usageBillingLimit) }
             fetchHistory()
@@ -218,6 +233,7 @@ import SwiftUI
                                     isError: false)
             status.isUsageBilling = true
             status.canUseAIClassifiers = true
+            activationChecksRemaining = Self.activationCheckLimit
         case .cancelled, .portalReturn:
             break
         }

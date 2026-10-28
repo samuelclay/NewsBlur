@@ -524,6 +524,37 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(transport.requests(to: "/profile/usage_billing_history").count, 1)
     }
 
+    func test_setupKeepsBillingActiveUntilTheWebhookReachesTheProfile() {
+        let transport = RecordingAITransport()
+        transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
+        let browser = RecordingBillingBrowser()
+        var profile = freeStatus
+        var profileRefreshes = 0
+        var scheduled: [() -> Void] = []
+        let model = UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
+                                      readStatus: { profile }, refreshProfile: { profileRefreshes += 1 })
+        model.scheduleActivationCheck = { _, check in scheduled.append(check) }
+
+        model.openStripe()
+        browser.completion?(URL(string: "newsblur-auth://usage-billing?status=setup_complete"), nil)
+        XCTAssertEqual(profileRefreshes, 1)
+
+        model.profileDidRefresh()
+        XCTAssertTrue(model.status.isUsageBilling, "A profile from before the webhook doesn't undo the checkout")
+        XCTAssertEqual(scheduled.count, 1)
+        scheduled.removeFirst()()
+        XCTAssertEqual(profileRefreshes, 2)
+
+        profile = activeStatus
+        model.profileDidRefresh()
+        XCTAssertTrue(model.status.isUsageBilling)
+        XCTAssertTrue(scheduled.isEmpty, "Checks stop once the profile agrees")
+
+        profile = freeStatus
+        model.profileDidRefresh()
+        XCTAssertFalse(model.status.isUsageBilling, "Later profile changes apply normally")
+    }
+
     func test_billingUsersManageOnStripeAndRefreshAfterThePortal() {
         let transport = RecordingAITransport()
         transport.responses["/profile/manage_usage_billing/"] = ["code": 0, "url": "https://billing.stripe.com/p/session/test_app"]
