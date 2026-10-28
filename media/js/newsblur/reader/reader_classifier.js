@@ -237,6 +237,7 @@ var classifier_prototype = {
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -272,6 +273,7 @@ var classifier_prototype = {
         this.handle_text_highlight();
         this.handle_regex_input();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -3675,9 +3677,17 @@ var classifier_prototype = {
                 }
             }, 100);
         });
+    },
 
-        // Handle scoring info icon hover - show popover on mouseenter, hide on mouseleave
-        $modal.on('mouseenter', '.NB-explainer-scoring-info', function (e) {
+    // reader_classifier.js: Show the scoring popover while hovering the explainer's ⓘ.
+    // Called by runner_feed and runner_story, which both build the explainer in
+    // make_modal_title. The handlers are namespaced and unbound first, so calling
+    // this again never stacks a second set on the modal or the document.
+    handle_scoring_info_hover: function () {
+        var $modal = this.$modal;
+
+        $modal.off('.scoring_info');
+        $modal.on('mouseenter.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover') || $icon.closest('.NB-classifier-explainer').find('.NB-scoring-popover');
 
@@ -3699,7 +3709,7 @@ var classifier_prototype = {
             $icon.data('popover', $popover);
         });
 
-        $modal.on('mouseleave', '.NB-explainer-scoring-info', function (e) {
+        $modal.on('mouseleave.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover');
 
@@ -3712,7 +3722,8 @@ var classifier_prototype = {
             }, 100);
         });
 
-        $(document).on('mouseleave', '.NB-scoring-popover', function (e) {
+        $(document).off('mouseleave.scoring_info');
+        $(document).on('mouseleave.scoring_info', '.NB-scoring-popover', function (e) {
             var $popover = $(this);
 
             setTimeout(function () {
