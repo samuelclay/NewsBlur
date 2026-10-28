@@ -72,7 +72,7 @@ data class ListenStory(
     val faviconUrl: String?,
     val feedColor: String?,
     val feedFade: String?,
-    /** The story itself, so finishing it can mark it read through FeedUtils.kt. */
+    /** This device's copy of the story, or null for one queued elsewhere; ListenStoryRead.kt marks either read. */
     val story: Story?,
 )
 
@@ -166,6 +166,7 @@ class ListenManager
         private val feedUtils: FeedUtils,
         private val dbHelper: BlurDatabaseHelper,
         @param:IconFileCache private val iconCache: FileCache,
+        private val storyRead: ListenStoryRead,
     ) {
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         private val mutableState =
@@ -1132,7 +1133,7 @@ class ListenManager
             exoPlayer?.playWhenReady = false
             stopTicking()
             publish()
-            finished.story?.let { feedUtils.markStoryAsRead(it, context) }
+            NBScope.launch(Dispatchers.IO) { storyRead.markFinished(finished) }
             // Up Next plays first, whether or not auto-continue is on; then the next unread story in the list.
             val queuedNext = ListenUpNextQueue.next(upNextQueue)
             if (queuedNext == null && !listenPreferences.current().autoContinue) return
