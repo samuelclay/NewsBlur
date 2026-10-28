@@ -339,9 +339,18 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="need_to_register">
         <u>Kayıt olmam gerekiyor</u>
     </string>
-    <string name="public_comment_count">%d herkese açık yorum</string>
-    <string name="friends_comments_count">%d yorum</string>
-    <string name="friends_shares_count">%d paylaşım</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d herkese açık yorum</item>
+        <item quantity="other">%d herkese açık yorum</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d yorum</item>
+        <item quantity="other">%d yorum</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d paylaşım</item>
+        <item quantity="other">%d paylaşım</item>
+    </plurals>
     <string name="unknown_user">Bilinmeyen Kullanıcı</string>
     <string name="delete_feed_message">“%s” akışı silinsin mi?</string>
     <string name="delete_saved_search_message">%s kayıtlı araması silinsin mi?</string>

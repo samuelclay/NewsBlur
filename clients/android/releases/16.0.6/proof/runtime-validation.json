@@ -1,0 +1,24 @@
+{
+  "device": "Samsung Galaxy Tab A8 SM-X200",
+  "androidVersion": "14",
+  "beforeVersion": "16.0.5 (297) debug source",
+  "beforeActions": ["bottom mark all read button", "red mark all read feed-menu action"],
+  "beforeResult": "Both actions sent NewsBlur to the background; process PID 2921 stayed alive and foreground changed to com.crabigator.app. No new AndroidRuntime exception.",
+  "testFeed": "Boris Cherny's Blog, already read",
+  "rootCause": "ItemsList.onReadingActionCompleted reused backToFeedList; when the tablet feed drawer was already open, this called moveTaskToBack(true).",
+  "regressionTestBefore": "Test_ItemsListMarkReadNavigation.test_mark_read_with_tablet_feed_pane_open_keeps_app_foreground failed with AssertionError before implementation.",
+  "focusedTestsAfter": 32,
+  "fixSource": "727f44a7b88d36f33696e570e057f44a8c9708d5",
+  "themeChecks": {
+    "light": "bottom and menu actions keep the app open",
+    "dark": "bottom and menu actions keep the app open",
+    "black": "bottom and menu actions keep the app open",
+    "sepia": "bottom and menu actions keep the app open"
+  },
+  "runtimeVersionNote": "Successful fixed-source interaction checks preceded the version-only bump to 16.0.6 (298).",
+  "installedDebug298": ["Samsung Galaxy Tab A8 SM-X200", "Samsung Galaxy S22 SM-S901U1"],
+  "sessionPreserved": true,
+  "instrumentationTestsInstalled": false,
+  "limitations": ["Customer Lenovo tablet and email log attachment unavailable", "Samsung S22 locked; phone UI not verified"],
+  "screenshots": "screenshots.json"
+}

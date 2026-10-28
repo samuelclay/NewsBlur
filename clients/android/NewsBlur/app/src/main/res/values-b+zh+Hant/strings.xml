@@ -339,9 +339,15 @@
     <string name="need_to_register">
         <u>我需要註冊</u>
     </string>
-    <string name="public_comment_count">%d 則公開留言</string>
-    <string name="friends_comments_count">%d 則留言</string>
-    <string name="friends_shares_count">%d 次分享</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">%d 則公開留言</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">%d 則留言</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">%d 次分享</item>
+    </plurals>
     <string name="unknown_user">未知使用者</string>
     <string name="delete_feed_message">要刪除訂閱來源「%s」嗎？</string>
     <string name="delete_saved_search_message">要刪除已儲存的搜尋「%s」嗎？</string>

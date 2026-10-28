@@ -2948,6 +2948,9 @@ msgstr "Nach Website oder Klassifikator filtern ..."
 msgid "Filter channels..."
 msgstr "Kanäle filtern …"
 
+msgid "Filter folders"
+msgstr "Ordner filtern"
+
 msgid "Filter icons..."
 msgstr "Symbole filtern..."
 
@@ -4175,6 +4178,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s Website verschieben"
 msgstr[1] "%(count)s Websites verschieben"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "In %(folder)s verschieben"
+
 msgid "Move to folder"
 msgstr "In Ordner verschieben"
 
@@ -4437,6 +4444,9 @@ msgstr "Keine Feeds gefunden"
 
 msgid "No feeds found in this category."
 msgstr "In dieser Kategorie wurden keine Feeds gefunden."
+
+msgid "No folders match"
+msgstr "Keine passenden Ordner"
 
 msgid "No gifts sent yet."
 msgstr "Noch keine Geschenke verschickt."

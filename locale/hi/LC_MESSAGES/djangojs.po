@@ -2926,6 +2926,9 @@ msgstr "साइट या क्लासिफ़ायर के आधा�
 msgid "Filter channels..."
 msgstr "चैनल फ़िल्टर करें..."
 
+msgid "Filter folders"
+msgstr "फ़ोल्डर फ़िल्टर करें"
+
 msgid "Filter icons..."
 msgstr "आइकन फ़िल्टर करें..."
 
@@ -4146,6 +4149,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s साइट स्थानांतरित करें"
 msgstr[1] "%(count)s साइटें स्थानांतरित करें"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "%(folder)s में ले जाएँ"
+
 msgid "Move to folder"
 msgstr "फ़ोल्डर में ले जाएँ"
 
@@ -4406,6 +4413,9 @@ msgstr "कोई फ़ीड नहीं मिली"
 
 msgid "No feeds found in this category."
 msgstr "इस श्रेणी में कोई फ़ीड नहीं मिली।"
+
+msgid "No folders match"
+msgstr "कोई फ़ोल्डर मेल नहीं खाता"
 
 msgid "No gifts sent yet."
 msgstr "अभी तक कोई उपहार नहीं भेजा गया।"

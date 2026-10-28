@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-27 15:28:05 UTC",
+  "production": "16.0.5",
+  "versionCode": 297,
+  "availability": "Available on Google Play",
+  "rollout": "Full rollout",
+  "managedPublishing": false,
+  "pendingChanges": [
+
+  ],
+  "customListings": [
+
+  ],
+  "subscriptionIds": [
+    "nb.premium.36",
+    "nb.premium.archive.99"
+  ],
+  "storeLocales": 21
+}

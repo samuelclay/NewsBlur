@@ -339,9 +339,15 @@
     <string name="need_to_register">
         <u>ฉันต้องลงทะเบียน</u>
     </string>
-    <string name="public_comment_count">ความคิดเห็นสาธารณะ %d รายการ</string>
-    <string name="friends_comments_count">ความคิดเห็น %d รายการ</string>
-    <string name="friends_shares_count">แชร์ %d ครั้ง</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">ความคิดเห็นสาธารณะ %d รายการ</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">ความคิดเห็น %d รายการ</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">การแชร์ %d ครั้ง</item>
+    </plurals>
     <string name="unknown_user">ผู้ใช้ที่ไม่รู้จัก</string>
     <string name="delete_feed_message">ลบฟีด \"%s\" หรือไม่</string>
     <string name="delete_saved_search_message">ลบการค้นหาที่บันทึกไว้ %s หรือไม่</string>

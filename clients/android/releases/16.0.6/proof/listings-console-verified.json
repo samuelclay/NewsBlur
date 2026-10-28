@@ -1,0 +1,34 @@
+{
+  "command": "verify-listings",
+  "packageName": "com.newsblur",
+  "version": "16.0.6",
+  "baseline": "/tmp/newsblur-1606-play-before.json",
+  "completed": [],
+  "status": "verified",
+  "result": {
+    "verifiedLocales": [
+      "ar",
+      "de-DE",
+      "en-US",
+      "es-ES",
+      "fr-FR",
+      "hi-IN",
+      "id",
+      "it-IT",
+      "iw-IL",
+      "ja-JP",
+      "ko-KR",
+      "nl-NL",
+      "pl-PL",
+      "pt-BR",
+      "ru-RU",
+      "th",
+      "tr-TR",
+      "uk",
+      "vi",
+      "zh-CN",
+      "zh-TW"
+    ],
+    "requestedLocales": 21
+  }
+}

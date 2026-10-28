@@ -542,8 +542,13 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             Session session = sessionDataSource.getNextSession();
             if (session != null) {
                 applyNextSession(session);
-            } else backToFeedList();
-        } else backToFeedList();
+                return;
+            }
+        }
+        // ItemsList.java action completion returns to feeds without treating an already open
+        // FeedListDrawer.kt as a request to leave the app, as explicit Back navigation does.
+        if (slidesOverFeedDrawer()) FeedListDrawer.open(this);
+        else finish();
     }
 
     @Nullable
@@ -1094,7 +1099,9 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             return;
         }
 
-        if (fs.isSingleNormal()) {
+        if (fs.isFolder()) {
+            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
+        } else if (fs.isSingleNormal()) {
             String feedId = fs.getSingleFeed();
             com.newsblur.domain.Feed sourceFeed = dbHelper.getFeed(feedId);
             if (sourceFeed != null) {
@@ -1102,8 +1109,6 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             } else {
                 DiscoverFeedsActivity.startForFeed(this, feedId);
             }
-        } else if (fs.isFolder()) {
-            DiscoverFeedsActivity.startForFeeds(this, fs.getAllFeeds());
         }
     }
 
@@ -1712,7 +1717,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             storyStatusBannerAnimator.cancel();
             storyStatusBannerAnimator = null;
         }
-        binding.itemlistStoryStatusBanner.animate().cancel();
+        // NbActivity.kt can finish for missing login credentials before ItemsList.java inflates its layout.
+        if (binding != null) {
+            binding.itemlistStoryStatusBanner.animate().cancel();
+        }
     }
 
     private void setupOnBackPressed() {

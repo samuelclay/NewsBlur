@@ -339,9 +339,15 @@
     <string name="need_to_register">
         <u>新規登録はこちら</u>
     </string>
-    <string name="public_comment_count">公開コメント%d件</string>
-    <string name="friends_comments_count">%d件のコメント</string>
-    <string name="friends_shares_count">%d件の共有</string>
+    <plurals name="public_comment_count">
+        <item quantity="other">%d 件の公開コメント</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="other">%d 件のコメント</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="other">%d 件の共有</item>
+    </plurals>
     <string name="unknown_user">不明なユーザー</string>
     <string name="delete_feed_message">フィード「%s」を削除しますか？</string>
     <string name="delete_saved_search_message">保存した検索「%s」を削除しますか？</string>

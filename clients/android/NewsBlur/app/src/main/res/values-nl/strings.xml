@@ -339,9 +339,18 @@ om over de wereld te praten.</string>
     <string name="need_to_register">
         <u>Ik moet me registreren</u>
     </string>
-    <string name="public_comment_count">%d openbare reacties</string>
-    <string name="friends_comments_count">%d reacties</string>
-    <string name="friends_shares_count">%d keer gedeeld</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d openbare reactie</item>
+        <item quantity="other">%d openbare reacties</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d reactie</item>
+        <item quantity="other">%d reacties</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d keer gedeeld</item>
+        <item quantity="other">%d keer gedeeld</item>
+    </plurals>
     <string name="unknown_user">Onbekende gebruiker</string>
     <string name="delete_feed_message">Feed \"%s\" verwijderen?</string>
     <string name="delete_saved_search_message">Opgeslagen zoekopdracht %s verwijderen?</string>

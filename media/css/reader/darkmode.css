@@ -311,6 +311,39 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* Folder picker for Change folders and Move to folder (reader.js: make_folder_picker) */
+.NB-dark .NB-menu-manage .NB-folder-picker-filter-input {
+    color: #c0c0c0;
+    background-color: #151613;
+    border-color: #4a5356;
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option:hover,
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-highlighted {
+    background-color: rgba(255, 255, 255, .07);
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active {
+    background-color: rgba(110, 167, 78, .22);
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active:hover,
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option.NB-folder-option-active.NB-folder-option-highlighted {
+    background-color: rgba(110, 167, 78, .32);
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option-check {
+    border-color: rgba(255, 255, 255, .3);
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-option-active .NB-folder-option-check {
+    border-color: #6EA74E;
+}
+
+.NB-dark .NB-menu-manage .NB-change-folders .NB-folder-picker-empty {
+    color: rgba(255, 255, 255, .45);
+}
+
 /* Dividers */
 .NB-dark .NB-popover-section,
 .NB-dark .NB-menu-manage li.NB-menu-separator {

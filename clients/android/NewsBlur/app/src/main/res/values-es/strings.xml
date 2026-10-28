@@ -339,9 +339,21 @@ a personas para hablar del mundo.</string>
     <string name="need_to_register">
         <u>Necesito registrarme</u>
     </string>
-    <string name="public_comment_count">%d comentarios públicos</string>
-    <string name="friends_comments_count">%d comentarios</string>
-    <string name="friends_shares_count">%d compartidos</string>
+    <plurals name="public_comment_count">
+        <item quantity="many">%d comentarios públicos</item>
+        <item quantity="one">%d comentario público</item>
+        <item quantity="other">%d comentarios públicos</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="many">%d comentarios</item>
+        <item quantity="one">%d comentario</item>
+        <item quantity="other">%d comentarios</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="many">%d veces compartido</item>
+        <item quantity="one">%d vez compartido</item>
+        <item quantity="other">%d veces compartido</item>
+    </plurals>
     <string name="unknown_user">Usuario desconocido</string>
     <string name="delete_feed_message">¿Eliminar feed \"%s\"?</string>
     <string name="delete_saved_search_message">¿Eliminar búsqueda guardada %s?</string>

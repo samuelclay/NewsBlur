@@ -339,9 +339,18 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="need_to_register">
         <u>Ich muss mich registrieren</u>
     </string>
-    <string name="public_comment_count">%d öffentliche Kommentare</string>
-    <string name="friends_comments_count">%d Kommentare</string>
-    <string name="friends_shares_count">%d Shares</string>
+    <plurals name="public_comment_count">
+        <item quantity="one">%d öffentlicher Kommentar</item>
+        <item quantity="other">%d öffentliche Kommentare</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="one">%d Kommentar</item>
+        <item quantity="other">%d Kommentare</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="one">%d-mal geteilt</item>
+        <item quantity="other">%d-mal geteilt</item>
+    </plurals>
     <string name="unknown_user">Unbekannter Benutzer</string>
     <string name="delete_feed_message">Feed „%s“ löschen?</string>
     <string name="delete_saved_search_message">Gespeicherte Suche %s löschen?</string>

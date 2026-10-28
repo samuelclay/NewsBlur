@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-10-26T00:14:48-04:00</updated>
+  <updated>2026-10-28T10:46:52-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,44 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">A folder picker with room for every folder</title>
+    <link href="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/" rel="alternate" type="text/html" title="A folder picker with room for every folder" />
+    <published>2026-10-27T12:00:00-04:00</published>
+    <updated>2026-10-27T12:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/">
+      <![CDATA[<p>When you right click a site and choose <strong>Change folders</strong>, NewsBlur shows a list of your folders. For years that list was a tiny box about four rows tall, no matter how big your screen was. A reader on the forum who files a lot of newsletters <a href="https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910">wrote up what was wrong with it</a>: the box was too small, it ignored the custom folder icons they use to find things at a glance, and checking a new folder added the site there instead of moving it. They were right on all three, so I rebuilt it.</p>
+
+<p>The list now grows to show every folder you have, as many as your window has room for, with the same icons you see in your sidebar. It opens scrolled to the folder the site is in now, and the text follows your sidebar’s text size.</p>
+
+<p><img src="/assets/folder-picker-before-after.png" alt="Before: the Change folders menu with a folder list about four rows tall and plain gray folder icons. After: the same menu showing every folder with its custom icon and the site's current folder checked." style="width: 70%;margin: 24px auto;display: block;" /></p>
+
+<p>Click a folder’s name and the site moves there. The old folder unchecks itself, and the button at the top reads <strong>Move to Tech</strong>, so you know exactly what’s about to happen. If you keep a site in more than one folder, click the circles beside the folders instead. Each circle adds or removes just that folder, and the button reads <strong>Save 2 folders</strong>.</p>
+
+<p><img src="/assets/folder-picker-multiple.png" alt="The folder picker in dark mode with Bloglets and Blogs both checked and a Save 2 folders button" style="width: 45%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="type-to-find-a-folder">Type to find a folder</h3>
+
+<p>There’s a filter box at the top of the picker, ready for typing as soon as it opens. Type a few letters and the list narrows to the folders that match, with their parent folders kept in place. The arrow keys move between matches, Enter picks one, and Enter again moves the site. So moving a site from Newsletters into Cooking can be a right click, a few letters, and two presses of Enter.</p>
+
+<p><img src="/assets/folder-picker-filter.png" alt="The folder picker with new typed in the filter box, narrowed to New York and Newsletters" style="width: 45%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The new folder picker is available now on the web. If something about it doesn’t feel right, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[When you right click a site and choose Change folders, NewsBlur shows a list of your folders. For years that list was a tiny box about four rows tall, no matter how big your screen was. A reader on the forum who files a lot of newsletters wrote up what...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur 16 for Mac: your dashboard in widgets, your news in notifications</title>
@@ -2221,73 +2259,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[NewsBlur has always been great at reading feeds. But finding new ones? That was mostly on you. The old “Add Site” dialog was a search box and not much else. If you already had a feed URL, it worked fine. If you were looking for something new to read, you...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A mini media player for podcasts, audio, and video</title>
-    <link href="https://blog.newsblur.com/2026/03/02/mini-media-player/" rel="alternate" type="text/html" title="A mini media player for podcasts, audio, and video" />
-    <published>2026-03-02T00:00:00-05:00</published>
-    <updated>2026-03-02T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/03/02/mini-media-player</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/02/mini-media-player/">
-      <![CDATA[<p>A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or switch feeds, the audio just stops. I wanted something that keeps playing while you keep reading.</p>
-
-<p>So I built a persistent mini media player. It sits at the bottom of your screen and handles audio, video, and YouTube from any story. Play something and it stays with you as you navigate feeds, open folders, or scroll through stories.</p>
-
-<p><img src="/assets/mini-player-feed-list.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>When you open a story that contains audio, video, or a YouTube embed, you’ll see overlay buttons right on the media element: <strong>Play in Mini Media Player</strong>, <strong>Play Next</strong>, and <strong>Play Last</strong>. Click any of them and the mini player appears at the bottom of the screen. If you click the native play button on an audio or video element, it hands off to the mini player automatically.</p>
-
-<p><img src="/assets/mini-player-podcast.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The player has a three-row layout. The top row shows the feed favicon, feed name, and story title (click the title to scroll back to the story). The middle row is a full-width scrubber so you can seek precisely. The bottom row has playback controls: skip back, play/pause, skip forward, a time display, playback speed, and a volume slider that appears on hover.</p>
-
-<h3 id="build-a-queue">Build a queue</h3>
-
-<p>The real power is the queue. As you’re reading through stories, you can add media to your queue with “Play Next” (inserts at the top) or “Play Last” (appends to the end). The queue shows up right below the player with a count of upcoming items. Drag items to reorder them, or remove items you’ve changed your mind about. When the current item finishes, the next one starts automatically.</p>
-
-<p><img src="/assets/mini-player-youtube.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="playback-history">Playback history</h3>
-
-<p>Switch from the “Up Next” tab to the “History” tab to see your last 10 played items. Each entry shows where you left off, so you can pick up a podcast episode right where you stopped. Click any history item to resume it.</p>
-
-<h3 id="settings">Settings</h3>
-
-<p>Click the gear icon in the player to customize your experience:</p>
-
-<p><img src="/assets/mini-player-settings.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<ul>
-  <li><strong>Skip back/forward</strong>: Choose how far to jump (5s, 10s, 15s, 30s, or 60s in each direction)</li>
-  <li><strong>Auto-play</strong>: Automatically play the next queued item when the current one finishes (on by default)</li>
-  <li><strong>Resume position</strong>: Remember where you left off in each episode (on by default)</li>
-  <li><strong>Show on load</strong>: Restore the player when you reload NewsBlur, so you can pick up right where you left off (on by default)</li>
-</ul>
-
-<h3 id="synced-across-reloads">Synced across reloads</h3>
-
-<p>Your playback state, queue, history, and settings are all saved to your NewsBlur account. Reload the page and the player comes back with your queue intact and the current episode paused where you left it. Position data syncs in real time via WebSocket so there’s no lag.</p>
-
-<h3 id="playback-speed">Playback speed</h3>
-
-<p>Click the speed indicator (next to the time display) to cycle through speeds: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x, and 3x. Your speed preference is saved and applied to the next item in your queue automatically.</p>
-
-<p>The mini media player is available now on the web for all NewsBlur users. If you have feedback or ideas for how to make it better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[A lot of the sites I subscribe to have audio and video embedded directly in the stories. Podcasts, YouTube channels, news clips. But playing them in NewsBlur has always been a bit awkward: you hit play on the native browser control, then if you scroll to the next story or...]]>
     </summary>
     
   </entry>

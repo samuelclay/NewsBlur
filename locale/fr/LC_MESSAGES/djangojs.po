@@ -2947,6 +2947,9 @@ msgstr "Filtrer par site ou classificateur..."
 msgid "Filter channels..."
 msgstr "Filtrer les chaînes..."
 
+msgid "Filter folders"
+msgstr "Filtrer les dossiers"
+
 msgid "Filter icons..."
 msgstr "Filtrer les icônes…"
 
@@ -4183,6 +4186,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "Déplacer %(count)s site"
 msgstr[1] "Déplacer %(count)s sites"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "Déplacer vers %(folder)s"
+
 msgid "Move to folder"
 msgstr "Déplacer vers le dossier"
 
@@ -4445,6 +4452,9 @@ msgstr "Aucun flux trouvé"
 
 msgid "No feeds found in this category."
 msgstr "Aucun flux trouvé dans cette catégorie."
+
+msgid "No folders match"
+msgstr "Aucun dossier ne correspond"
 
 msgid "No gifts sent yet."
 msgstr "Aucun cadeau envoyé pour le moment."

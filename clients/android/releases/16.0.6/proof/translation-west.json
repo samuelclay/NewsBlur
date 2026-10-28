@@ -1,0 +1,140 @@
+{
+  "version": "16.0.6",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk"
+  ],
+  "review": "translator self-check; independent review pending",
+  "source": "clients/store/metadata/en.json; clients/store/products/en.json; clients/store/releases/16.0.6/en.json",
+  "changes": "Refreshed Android short description, opening paragraph, subscription descriptions, and new release notes. Reviewed and retained remaining Android fields against unchanged English. Other platform sections preserved.",
+  "checks": [
+    {
+      "language": "es",
+      "lengths": {
+        "short": 67,
+        "premium": 146,
+        "archive": 159,
+        "notes": 216
+      },
+      "metadata_sha256": "ef2ee57e275c4ebecb17f6e32de962cc352b0edbc2b27c0d9cbbcea2f7aec2cf",
+      "products_sha256": "fb74ce2fa04c07119d4de8d51e4a97a7c01a9c0a3429c292cd38cc85a43eaf5c",
+      "notes_sha256": "3d91366bd8c98cc5555701c3eb7d1ed73071afe3674401c15dda5b3cd732798c"
+    },
+    {
+      "language": "fr",
+      "lengths": {
+        "short": 75,
+        "premium": 166,
+        "archive": 169,
+        "notes": 229
+      },
+      "metadata_sha256": "dee9c81667b8e1f747f63336c343ca2acd3dc6b1633740a3dcf8ba61af89ea78",
+      "products_sha256": "abd4be7418653070f971667dc89287f87e408db508175a07ecc49c7303229416",
+      "notes_sha256": "5ac298a6ff1570df8e768ec2687826a138e82f77155145b8c5ca047c0fab4bf3"
+    },
+    {
+      "language": "de",
+      "lengths": {
+        "short": 74,
+        "premium": 141,
+        "archive": 140,
+        "notes": 239
+      },
+      "metadata_sha256": "c79579fa78ce07c059f9a43b561f724574c34d799ab979bbe226e8ebbb2c78af",
+      "products_sha256": "2a94217bcb0ebcb8f1e110e5fd68432e0224f0068180a331e6631fe74fc78c0f",
+      "notes_sha256": "fcf3eacbbb281ff1c1f6ebc45884774be594bc2ac9419d2d9f568b18d63d97b2"
+    },
+    {
+      "language": "pt-BR",
+      "lengths": {
+        "short": 65,
+        "premium": 134,
+        "archive": 137,
+        "notes": 204
+      },
+      "metadata_sha256": "f4e41b467eb4713d39fc69e16a3b674064baad218744f25f7a80b6096ee95f22",
+      "products_sha256": "1c92c3e96e081ec8cf3f553b9f261455103fc888a734225df58dcb18331e6aad",
+      "notes_sha256": "35b20f459b29ba8223a08183ad07342d8604f4efb494495bcf43a7a1889834e0"
+    },
+    {
+      "language": "it",
+      "lengths": {
+        "short": 64,
+        "premium": 149,
+        "archive": 155,
+        "notes": 211
+      },
+      "metadata_sha256": "3a6d98a49d9cdef72f98a419d0b170d78bf5a9040efb261fae6f10c147980214",
+      "products_sha256": "25deb821602dc3392f4b236793a01043a958640439ea6e5a4d17ec9ad6b8ad8f",
+      "notes_sha256": "50e2c9f6f8abd14c26be68fa8a0548d85d3df7ef5cfeb94f45f9dc096599e786"
+    },
+    {
+      "language": "nl",
+      "lengths": {
+        "short": 68,
+        "premium": 119,
+        "archive": 130,
+        "notes": 210
+      },
+      "metadata_sha256": "15a8e3024f2eb87e2f311ccf7e3e15a3cd1f2df22a93e76fc269421f3fa08548",
+      "products_sha256": "b8a74f7eb5fd9b06f6ea676689ffce70d3f314ec5832f7116fe429ad377033a0",
+      "notes_sha256": "dc66e447708b8fc16ef477c74f5cb882f99701daf3cbd2142d59155bfd9c61a8"
+    },
+    {
+      "language": "pl",
+      "lengths": {
+        "short": 73,
+        "premium": 141,
+        "archive": 159,
+        "notes": 223
+      },
+      "metadata_sha256": "788df69771462bed57a62ed76cae2e9c68f20ae1afbabec5e4ec60e8df22d4ca",
+      "products_sha256": "034b5b874350675115a028ba99103b9cc164cbfc1acf0e6da48c42d8b62c681a",
+      "notes_sha256": "b46a4d5078589dc99944d5dc2df840bed96f597eede1baf27f83a331ac0d3c19"
+    },
+    {
+      "language": "tr",
+      "lengths": {
+        "short": 79,
+        "premium": 146,
+        "archive": 132,
+        "notes": 209
+      },
+      "metadata_sha256": "e8b9201d06258d5dbdaead890c73f9b7a2e6ea55bfef226d14ff1afb72a772cd",
+      "products_sha256": "574ccd1b446a256f839dcfa1f93cae0d273f7c7633b33e6039327f42f6c28c93",
+      "notes_sha256": "de488072c2a65fe43099ec44ff85682b85b3eaa2593a6d5ad089b4f28826ab10"
+    },
+    {
+      "language": "ru",
+      "lengths": {
+        "short": 70,
+        "premium": 138,
+        "archive": 142,
+        "notes": 221
+      },
+      "metadata_sha256": "68a4c584e257180308b11f450549516789c4b33bc3fff6e045ca5d4219857fa8",
+      "products_sha256": "c251c9e429f5d95e0a721e6709fdea820352482580284460a1e92b78309addba",
+      "notes_sha256": "59ec174a73c88621008766239be69d4b70e6e9bc356b945feeb033ea421b6c0e"
+    },
+    {
+      "language": "uk",
+      "lengths": {
+        "short": 69,
+        "premium": 129,
+        "archive": 139,
+        "notes": 220
+      },
+      "metadata_sha256": "d2ece0ee8832b97218be3e348f8e9d58dfa5d737b60209d17823525b8e7cc8e7",
+      "products_sha256": "a3d5742298994afa7b2f9b915d0d4bc0515cdf28adbff44ad8f4228547be9d68",
+      "notes_sha256": "7d848933c5e2544a7ed352344d6c85ad9d1d0c8dcc52a47fe42147961e1dba99"
+    }
+  ]
+}

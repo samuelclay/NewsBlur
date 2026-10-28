@@ -8,6 +8,7 @@ import time
 import redis
 from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
+from django.db import connection
 
 from apps.profile.middleware import DBProfilerMiddleware
 from newsblur_web.celeryapp import app
@@ -149,7 +150,6 @@ def UpdateFeeds(feed_pks):
     profiler = DBProfilerMiddleware()
     profiler_activated = profiler.process_celery()
     if profiler_activated:
-        settings.MONGO_COMMAND_LOGGER.process_celery(profiler)
         redis_middleware = RedisDumpMiddleware()
         redis_middleware.process_celery(profiler)
 
@@ -163,23 +163,35 @@ def UpdateFeeds(feed_pks):
     if not isinstance(feed_pks, list):
         feed_pks = [feed_pks]
 
-    for feed_pk in feed_pks:
-        feed = Feed.get_by_id(feed_pk)
-        if not feed or feed.pk != int(feed_pk):
-            logging.info(
-                " ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..."
-                % (feed_pk, feed and feed.pk)
-            )
-            r.zrem("tasked_feeds", feed_pk)
-        if not feed:
-            continue
-        try:
-            feed.update(**options)
-        except SoftTimeLimitExceeded as e:
-            feed.save_feed_history(505, "Timeout", e)
-            logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
-        if profiler_activated:
-            profiler.process_celery_finished()
+    try:
+        for feed_pk in feed_pks:
+            feed = Feed.get_by_id(feed_pk)
+            if not feed or feed.pk != int(feed_pk):
+                logging.info(
+                    " ---> ~FRRemoving feed_id %s from tasked_feeds queue, points to %s..."
+                    % (feed_pk, feed and feed.pk)
+                )
+                r.zrem("tasked_feeds", feed_pk)
+            if not feed:
+                continue
+            if profiler_activated:
+                # process_celery_finished reads each feed's queries and turns recording off
+                # (apps/profile/middleware.py SQLLogToConsoleMiddleware), so every feed turns it on.
+                settings.MONGO_COMMAND_LOGGER.process_celery(profiler)
+            try:
+                feed.update(**options)
+            except SoftTimeLimitExceeded as e:
+                feed.save_feed_history(505, "Timeout", e)
+                logging.info(" ---> [%-30s] ~BR~FWTime limit hit!~SB~FR Moving on to next feed..." % feed)
+            if profiler_activated:
+                profiler.process_celery_finished()
+    finally:
+        # A feed that raised skipped process_celery_finished, which would leave recording on for every
+        # later task on this worker thread (utils/mongo_command_monitor.py), and leave the DEBUG that
+        # DBProfilerMiddleware.process_celery turned on, which makes the fetcher skip PuSH and Sentry.
+        connection.queriesx = None
+        if profiler_activated and not getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG):
+            settings.DEBUG = False
 
 
 @app.task(name="new-feeds", time_limit=10 * 60, soft_time_limit=9 * 60, ignore_result=True)
@@ -215,6 +227,48 @@ def PushFeeds(feed_id, xml):
         feed.update(options=options)
 
 
+@app.task(name="trim-abandoned-feeds", time_limit=60 * 60, soft_time_limit=55 * 60, ignore_result=True)
+def TrimAbandonedFeeds(time_budget_seconds=50 * 60):
+    """Daily: trims feeds nobody has been seen reading in DAYS_OF_UNREAD days
+    (Feed.trim_if_abandoned in apps/rss_feeds/models.py), oldest last fetch first. A feed stays
+    a candidate until its last fetch is twice DAYS_OF_UNREAD old, so a day that runs out of time
+    is picked up the next day. Older feeds are left to manage.py trim_feeds.
+    apps/rss_feeds/tasks.py"""
+    from apps.rss_feeds.models import Feed
+
+    oldest_fetch = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD * 2)
+    feed_ids = list(
+        Feed.abandoned_feed_candidates()
+        .filter(last_update__gte=oldest_fetch)
+        .order_by("last_update")
+        .values_list("pk", flat=True)
+    )
+    started = time.time()
+    checked = 0
+    trimmed_feeds = 0
+    trimmed_stories = 0
+    for feed_id in feed_ids:
+        if time.time() - started > time_budget_seconds:
+            break
+        checked += 1
+        try:
+            removed = Feed.trim_if_abandoned(feed_id)
+        except SoftTimeLimitExceeded:
+            raise
+        except Exception as e:
+            # One bad feed shouldn't hold up the rest; it stays a candidate for tomorrow.
+            logging.debug(" ***> ~FRCouldn't trim abandoned feed %s: %s" % (feed_id, e))
+            continue
+        if removed:
+            trimmed_feeds += 1
+            trimmed_stories += removed
+
+    logging.debug(
+        " ---> ~FBTrimmed ~SB%s~SN stories from ~SB%s~SN abandoned feeds (%s of %s candidates checked)"
+        % (trimmed_stories, trimmed_feeds, checked, len(feed_ids))
+    )
+
+
 @app.task(name="merge-feeds", time_limit=65 * 60, soft_time_limit=60 * 60, ignore_result=True)
 def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
     """merge_feeds off the fetch queue. check_feed_link_for_feed_address hands a merge here
@@ -228,12 +282,7 @@ def MergeFeeds(original_feed_id, duplicate_feed_id, feed_address=None):
     """
     from redis.exceptions import LockError
 
-    from apps.rss_feeds.models import (
-        Feed,
-        clear_merge_feeds_queued,
-        merge_feeds,
-        settle_address_check_merge,
-    )
+    from apps.rss_feeds.models import Feed, clear_merge_feeds_queued, merge_feeds, settle_address_check_merge
 
     try:
         survivor = Feed.get_by_id(merge_feeds(original_feed_id, duplicate_feed_id))

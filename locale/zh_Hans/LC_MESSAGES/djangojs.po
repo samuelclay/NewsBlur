@@ -2809,6 +2809,9 @@ msgstr "按网站或分类器筛选…"
 msgid "Filter channels..."
 msgstr "筛选频道…"
 
+msgid "Filter folders"
+msgstr "筛选文件夹"
+
 msgid "Filter icons..."
 msgstr "筛选图标…"
 
@@ -4001,6 +4004,10 @@ msgid "Move %(count)s site"
 msgid_plural "Move %(count)s sites"
 msgstr[0] "移动 %(count)s 个网站"
 
+#, python-format
+msgid "Move to %(folder)s"
+msgstr "移动到 %(folder)s"
+
 msgid "Move to folder"
 msgstr "移至文件夹"
 
@@ -4258,6 +4265,9 @@ msgstr "未找到订阅源"
 
 msgid "No feeds found in this category."
 msgstr "此分类中没有找到订阅源。"
+
+msgid "No folders match"
+msgstr "没有匹配的文件夹"
 
 msgid "No gifts sent yet."
 msgstr "尚未发送礼物。"

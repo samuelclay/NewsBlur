@@ -339,9 +339,24 @@
     <string name="need_to_register">
         <u>Muszę się zarejestrować</u>
     </string>
-    <string name="public_comment_count">%d publicznych komentarzy</string>
-    <string name="friends_comments_count">%d komentarzy</string>
-    <string name="friends_shares_count">%d udostępnień</string>
+    <plurals name="public_comment_count">
+        <item quantity="few">%d komentarze publiczne</item>
+        <item quantity="many">%d komentarzy publicznych</item>
+        <item quantity="one">%d komentarz publiczny</item>
+        <item quantity="other">%d komentarzy publicznych</item>
+    </plurals>
+    <plurals name="friends_comments_count">
+        <item quantity="few">%d komentarze</item>
+        <item quantity="many">%d komentarzy</item>
+        <item quantity="one">%d komentarz</item>
+        <item quantity="other">%d komentarzy</item>
+    </plurals>
+    <plurals name="friends_shares_count">
+        <item quantity="few">%d udostępnienia</item>
+        <item quantity="many">%d udostępnień</item>
+        <item quantity="one">%d udostępnienie</item>
+        <item quantity="other">%d udostępnień</item>
+    </plurals>
     <string name="unknown_user">Nieznany użytkownik</string>
     <string name="delete_feed_message">Usunąć kanał „%s”?</string>
     <string name="delete_saved_search_message">Usunąć zapisane wyszukiwanie %s?</string>
