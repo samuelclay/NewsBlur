@@ -51,7 +51,7 @@ The voices come from <a href="https://elevenlabs.io">ElevenLabs</a>. Each langua
 
 **Delivery** sets how much emotion goes into the reading: Steady, Natural, or Expressive. **Fine-tune voice** opens up the stability, similarity, and style settings behind those three if you want to tinker.
 
-Speed goes from 0.75× to 3×, with presets and a slider for anything in between. The pitch stays put at any speed, so 1.5× sounds like a fast talker and not a chipmunk.
+Speed goes from 0.5× to 3×, with presets and a slider for anything in between. The pitch stays put at any speed, so 1.5× sounds like a fast talker and not a chipmunk.
 
 ### Every language gets its own voice
 
