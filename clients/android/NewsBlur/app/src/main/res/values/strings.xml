@@ -799,6 +799,8 @@ people together to talk about the world.</string>
     <string name="intel_feed_header">Everything by publisher</string>
     <string name="intel_super_dislike">Super dislike</string>
     <string name="explainer_super_dislike">Super Dislike</string>
+    <!-- include_intel_explainer.xml: the AI prompt classifier level, between Super Dislike and Like. -->
+    <string name="explainer_ai_filter">AI Filter</string>
     <string name="explainer_like">Like</string>
     <string name="explainer_dislike">Dislike</string>
     <string name="explainer_beats">beats</string>
@@ -806,6 +808,7 @@ people together to talk about the world.</string>
     <string name="explainer_example1_result">Story shows in Focus view</string>
     <string name="explainer_example2_header">A single super dislike overrides everything</string>
     <string name="explainer_example2_result">Story is always hidden</string>
+    <string name="explainer_example3_header">An AI filter overrides likes and dislikes, but not a super dislike</string>
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>

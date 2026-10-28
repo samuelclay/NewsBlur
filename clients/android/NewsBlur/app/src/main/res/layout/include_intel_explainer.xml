@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/intel_explainer_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,156 +12,209 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Hierarchy bar: horizontally scrollable so it never collapses -->
-    <HorizontalScrollView
+    <!-- Hierarchy bar: Super Dislike beats AI Filter beats Like beats Dislike. The Flow wraps the
+         levels onto a second line instead of running past the edge of a phone screen. -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/explainer_hierarchy_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:fillViewport="true">
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="4dp">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/explainer_hierarchy_flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="explainer_pill_super,explainer_sep_group_1,explainer_pill_ai,explainer_sep_group_2,explainer_pill_like,explainer_sep_group_3,explainer_pill_dislike,explainer_info_toggle"
+            app:flow_horizontalBias="0"
+            app:flow_horizontalGap="0dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_verticalGap="4dp"
+            app:flow_wrapMode="chain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/explainer_hierarchy_bar"
+            android:id="@+id/explainer_pill_super"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingVertical="5dp"
-            android:paddingHorizontal="4dp">
-
-            <!-- Super Dislike pill -->
-            <LinearLayout
-                android:id="@+id/explainer_pill_super"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="8dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/explainer_label_super"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/explainer_super_dislike"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="3dp"
-                    android:src="@drawable/ic_thumb_down_double_crimson"
-                    android:importantForAccessibility="no" />
-            </LinearLayout>
-
-            <!-- Separator 1 -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="1dp">
-                <View
-                    android:id="@+id/explainer_line_1a"
-                    android:layout_width="8dp"
-                    android:layout_height="1dp" />
-                <TextView
-                    android:id="@+id/explainer_sep_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="3dp"
-                    android:text="@string/explainer_beats"
-                    android:textSize="8sp"
-                    android:textAllCaps="true"
-                    android:letterSpacing="0.06" />
-                <View
-                    android:id="@+id/explainer_line_1b"
-                    android:layout_width="8dp"
-                    android:layout_height="1dp" />
-            </LinearLayout>
-
-            <!-- Like pill -->
-            <LinearLayout
-                android:id="@+id/explainer_pill_like"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="8dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/explainer_label_like"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/explainer_like"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginStart="3dp"
-                    android:src="@drawable/ic_thumb_up_green"
-                    android:importantForAccessibility="no" />
-            </LinearLayout>
-
-            <!-- Separator 2 -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="1dp">
-                <View
-                    android:id="@+id/explainer_line_2a"
-                    android:layout_width="8dp"
-                    android:layout_height="1dp" />
-                <TextView
-                    android:id="@+id/explainer_sep_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="3dp"
-                    android:text="@string/explainer_beats"
-                    android:textSize="8sp"
-                    android:textAllCaps="true"
-                    android:letterSpacing="0.06" />
-                <View
-                    android:id="@+id/explainer_line_2b"
-                    android:layout_width="8dp"
-                    android:layout_height="1dp" />
-            </LinearLayout>
-
-            <!-- Dislike pill -->
-            <LinearLayout
-                android:id="@+id/explainer_pill_dislike"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="8dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/explainer_label_dislike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/explainer_dislike"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginStart="3dp"
-                    android:src="@drawable/ic_thumb_down_red"
-                    android:importantForAccessibility="no" />
-            </LinearLayout>
-
-            <!-- Info icon -->
+            android:paddingHorizontal="8dp"
+            android:orientation="horizontal">
             <TextView
-                android:id="@+id/explainer_info_toggle"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:gravity="center"
-                android:layout_marginStart="2dp"
-                android:text="@string/ui_0c2dd345a681"
-                android:textSize="16sp" />
-
+                android:id="@+id/explainer_label_super"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_super_dislike"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/explainer_pill_super_icon"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="3dp"
+                android:src="@drawable/ic_thumb_down_double_crimson"
+                android:importantForAccessibility="no" />
         </LinearLayout>
 
-    </HorizontalScrollView>
+        <LinearLayout
+            android:id="@+id/explainer_sep_group_1"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="1dp">
+            <View
+                android:id="@+id/explainer_line_1a"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/explainer_sep_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:text="@string/explainer_beats"
+                android:textSize="8sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.06" />
+            <View
+                android:id="@+id/explainer_line_1b"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explainer_pill_ai"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/explainer_label_ai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_ai_filter"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/explainer_pill_ai_icon"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_marginStart="3dp"
+                android:src="@drawable/ic_ai_text_filter"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explainer_sep_group_2"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="1dp">
+            <View
+                android:id="@+id/explainer_line_2a"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/explainer_sep_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:text="@string/explainer_beats"
+                android:textSize="8sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.06" />
+            <View
+                android:id="@+id/explainer_line_2b"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explainer_pill_like"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/explainer_label_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_like"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/explainer_pill_like_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="3dp"
+                android:src="@drawable/ic_thumb_up_green"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explainer_sep_group_3"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="1dp">
+            <View
+                android:id="@+id/explainer_line_3a"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+            <TextView
+                android:id="@+id/explainer_sep_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="3dp"
+                android:text="@string/explainer_beats"
+                android:textSize="8sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.06" />
+            <View
+                android:id="@+id/explainer_line_3b"
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/explainer_pill_dislike"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/explainer_label_dislike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_dislike"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/explainer_pill_dislike_icon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="3dp"
+                android:src="@drawable/ic_thumb_down_red"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/explainer_info_toggle"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:gravity="center"
+            android:layout_marginStart="2dp"
+            android:text="@string/ui_0c2dd345a681"
+            android:textSize="16sp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Expandable examples section (hidden by default) -->
     <LinearLayout
@@ -301,6 +356,116 @@
                 android:layout_marginEnd="6dp" />
             <TextView
                 android:id="@+id/explainer_ex2_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_example2_result"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <!-- Example 3: An AI filter beats likes and dislikes, but not a super dislike. The Daring Fireball
+             sponsor post, as in media/js/newsblur/reader/reader_classifier.js make_scoring_popover. -->
+        <TextView
+            android:id="@+id/explainer_example3_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/explainer_example3_header"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex3_pill1"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="Non-apple related news"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp"
+                tools:ignore="HardcodedText" />
+            <TextView
+                android:id="@+id/explainer_ex3_pill2"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="DF Department of Commerce"
+                android:textSize="10sp"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:id="@+id/explainer_ex3_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_5fc52b1a5a92"
+                android:textSize="12sp"
+                android:layout_marginEnd="6dp" />
+            <TextView
+                android:id="@+id/explainer_ex3_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/explainer_example1_result"
+                android:textSize="10sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex3_pill3"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="Non-apple related news"
+                android:textSize="10sp"
+                android:layout_marginEnd="4dp"
+                tools:ignore="HardcodedText" />
+            <TextView
+                android:id="@+id/explainer_ex3_pill4"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:text="DF Department of Commerce"
+                android:textSize="10sp"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+            <TextView
+                android:id="@+id/explainer_ex3_arrow2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ui_5fc52b1a5a92"
+                android:textSize="12sp"
+                android:layout_marginEnd="6dp" />
+            <TextView
+                android:id="@+id/explainer_ex3_result2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/explainer_example2_result"

@@ -47,6 +47,11 @@ object AiClassifierPalette {
         val progressFill: Int,
         val progressWarning: Int,
         val progressLimit: Int,
+        // The AI Filter level of the trainer's scoring legend (util/UIUtils.java setupIntelExplainer),
+        // in the content filter's blue like media/css/reader/reader.css NB-explainer-level-ai.
+        val legendBackground: Int = 0x184A90D9,
+        val legendText: Int = 0xFF2F6FB3.toInt(),
+        val legendIcon: Int = 0xFF4A90D9.toInt(),
         val accent: Int = 0xFF709E5D.toInt(),
         val accentText: Int = 0xFFFFFFFF.toInt(),
     )
@@ -147,6 +152,9 @@ object AiClassifierPalette {
             progressFill = 0xFF7ECE72.toInt(),
             progressWarning = 0xFFE6A040.toInt(),
             progressLimit = 0xFFEF5350.toInt(),
+            legendBackground = 0x404A90D9,
+            legendText = 0xFF7FB2E5.toInt(),
+            legendIcon = 0xFF5B9FD9.toInt(),
         )
 
     private val black =
