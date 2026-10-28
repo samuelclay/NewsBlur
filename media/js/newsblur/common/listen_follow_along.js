@@ -246,7 +246,9 @@ NEWSBLUR.ListenFollowAlong = {
     // listen_follow_along.js: Mirrors _collect in apps/listen/text.py. Loose text inside a
     // container that also holds blocks is wrapped in a span so it can be highlighted on its own.
     // A run never swallows skipped elements or embeds: moving an iframe or video in the DOM
-    // would reload it, so they end the run instead.
+    // would reload it, so they end the run instead. Blocks and containers holding an embed are
+    // still read, like the server reads them: a block is highlighted in place and a container is
+    // walked, where the embed itself is skipped, so neither moves the embed.
     collect_blocks: function (root) {
         var blocks = [];
         this.walk(root, blocks, root);
@@ -288,7 +290,7 @@ NEWSBLUR.ListenFollowAlong = {
                 // listen_follow_along.js: Already wrapped by an earlier mapping of this content.
                 flush();
                 blocks.push({ el: child, key: this.match_key(this.inline_text(child)) });
-            } else if (this.is_skipped(child) || this.contains_embed(child)) {
+            } else if (this.is_skipped(child)) {
                 flush();
             } else if (tag === 'br') {
                 run.push(child);
@@ -301,6 +303,10 @@ NEWSBLUR.ListenFollowAlong = {
                 this.has_block_descendant(child)) {
                 flush();
                 this.walk(child, blocks, root);
+            } else if (this.contains_embed(child)) {
+                // listen_follow_along.js: An inline element holding an embed would move with the
+                // run's wrapper span, so it ends the run and stays where it is.
+                flush();
             } else {
                 run.push(child);
                 run_text += this.inline_text(child);
