@@ -2328,11 +2328,9 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        # AI prompt classifier takes absolute priority
-        prompt = scores.get("prompt", 0)
-        if prompt != 0:
-            return prompt
-
+        # models.py: Same order as apps/analyzer/models.py compute_story_score. A manual
+        # super dislike (-2) beats everything, the AI prompt included. Otherwise a
+        # non-zero AI prompt score beats every manual like and dislike.
         max_score = max(
             scores["author"],
             scores.get("author_regex", 0),
@@ -2358,7 +2356,12 @@ class UserSubscription(models.Model):
 
         if min_score <= -2:
             return min_score  # super downvote wins; keep -2 so clients can tell it from a -1 dislike
-        elif max_score > 0:
+
+        prompt = scores.get("prompt", 0)
+        if prompt != 0:
+            return prompt
+
+        if max_score > 0:
             return 1
         elif min_score < 0:
             return -1
