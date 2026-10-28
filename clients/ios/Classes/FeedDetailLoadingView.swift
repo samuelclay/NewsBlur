@@ -14,8 +14,10 @@ struct FeedDetailLoadingView: View {
     let cache: StoryCache
 
     @State private var animate = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     var body: some View {
+        ZStack {
         if feedDetailInteraction.hasNoMoreStories {
             VStack {
                 if let image = UIImage(named: "fleuron.png") {
@@ -33,6 +35,8 @@ struct FeedDetailLoadingView: View {
                 }
             }
             .padding(cache.isGrid ? 0 : 20)
+            .modifier(ReaderEntrance(session: cache.motionSession, key: "end-of-stories"))
+            .transition(.opacity.combined(with: .offset(y: 10)))
             .onTapGesture {
                 if feedDetailInteraction.isPremiumRestriction {
                     feedDetailInteraction.openPremiumDialog()
@@ -43,14 +47,20 @@ struct FeedDetailLoadingView: View {
                 .fill(animate ? Color.themed([0x5C89C9, 0x666666]) : Color.themed([0xE1EBFF, 0x222222]))
                 .frame(height: 120)
                 .onAppear { animate.toggle() }
-                .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: animate)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 1).repeatForever(autoreverses: true), value: animate)
+                .transition(.opacity.combined(with: .offset(y: 10)))
+                .modifier(ReaderEntrance(session: cache.motionSession, key: "loading-\(cache.before.count + cache.after.count)"))
         } else {
             Rectangle()
                 .fill(animate ? Color.themed([0x5C89C9, 0x666666]) : Color.themed([0xE1EBFF, 0x222222]))
                 .frame(height: 120)
                 .padding(-20)
                 .onAppear { animate.toggle() }
-                .animation(.easeInOut(duration: 1).repeatForever(autoreverses: true), value: animate)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 1).repeatForever(autoreverses: true), value: animate)
+                .transition(.opacity.combined(with: .offset(y: 10)))
+                .modifier(ReaderEntrance(session: cache.motionSession, key: "loading-\(cache.before.count + cache.after.count)"))
         }
+        }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.24), value: feedDetailInteraction.hasNoMoreStories)
     }
 }

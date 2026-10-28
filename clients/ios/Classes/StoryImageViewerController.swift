@@ -456,7 +456,7 @@ final class StoryImageViewerController: UIViewController, UIScrollViewDelegate, 
         controls.alpha = 0
         let target = imageView.convert(imageView.bounds, to: view)
         UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0.18 : 0.35, delay: 0,
-                       usingSpringWithDamping: 1, initialSpringVelocity: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+                       usingSpringWithDamping: 0.86, initialSpringVelocity: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
             self.backdrop.alpha = 1
             self.controls.alpha = 1
             if UIAccessibility.isReduceMotionEnabled { flying.alpha = 0 } else { flying.frame = target }

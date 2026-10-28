@@ -102,6 +102,7 @@ struct FeedDetailGridView: View {
                 }
             }
             .accessibilityIdentifier("story-titles-scroll")
+            .environment(\.readerMotionViewport, reader.frame(in: .global))
             .accessibilityElement(children: .contain)
             .modify({ view in
 #if !targetEnvironment(macCatalyst)

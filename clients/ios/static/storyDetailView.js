@@ -399,3 +399,24 @@ fitVideos();
 Zepto(function($) {
       attachFastClick();
 });
+
+// storyDetailView.js starts motion only after the native paint/readiness gate opens.
+function newsblurAnimateStoryEntrance() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var elements = document.querySelectorAll('.NB-story-title, .NB-story-date, #NB-story-author, #NB-story');
+    Array.prototype.forEach.call(elements, function (element, index) {
+        if (!element.animate) return;
+        element.animate([
+            { opacity: 0, transform: 'translateY(10px)' },
+            { opacity: 1, transform: 'translateY(-.5px)', offset: .8 },
+            { opacity: 1, transform: 'translateY(0)' }
+        ], { duration: 320, delay: Math.min(index * 25, 75), easing: 'cubic-bezier(.2,.75,.3,1)', fill: 'backwards' });
+    });
+}
+
+// storyDetailView.js adds feedback to existing actions without delaying their native bridge.
+$('.NB-save-button, .NB-button').live('click', function () {
+    if (!this.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.animate([{ transform: 'scale(.86)' }, { transform: 'scale(1.12)', offset: .65 }, { transform: 'scale(1)' }],
+        { duration: 320, easing: 'ease-out' });
+});

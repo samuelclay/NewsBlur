@@ -59,6 +59,7 @@ class StoryToolbar: UIView {
         buildSeparator()
         buildLayout()
         updateTheme()
+        ReaderMotion.cascade([backButton, settingsButton, browserButton])
     }
 
     // MARK: - Back Button
@@ -196,14 +197,17 @@ class StoryToolbar: UIView {
     // MARK: - Actions
 
     @objc private func backTapped() {
+        ReaderMotion.pop(backButton)
         delegate?.toolbarDidTapBack()
     }
 
     @objc private func settingsTapped() {
+        ReaderMotion.pop(settingsButton)
         delegate?.toolbarDidTapSettings()
     }
 
     @objc private func browserTapped() {
+        ReaderMotion.pop(browserButton)
         delegate?.toolbarDidTapBrowser()
     }
 }
