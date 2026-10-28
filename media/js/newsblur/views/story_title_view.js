@@ -608,6 +608,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'));
         var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
+        NEWSBLUR.motion.pop($star[0]);
 
         if (story_titles_visible) {
             NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);

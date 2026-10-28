@@ -428,6 +428,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $children = this.$el.children('ul.folder');
         var $folder = $(e.currentTarget).closest('li.folder');
         if ($folder[0] != this.el) return;
+        $children.stop(true, true);
 
         // Hiding / Collapsing
         if (options.force_collapse ||
@@ -443,12 +444,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.$el.addClass('NB-folder-collapsed');
             $children.animate({ 'opacity': 0 }, {
                 'queue': false,
-                'duration': options.force_collapse ? 0 : 200,
+                'duration': options.force_collapse ? 0 : NEWSBLUR.motion.duration(100),
                 'complete': function () {
                     self.show_collapsed_folder_count();
                     self.show_folder_highlight_status();
                     $children.slideUp({
-                        'duration': 270,
+                        'duration': NEWSBLUR.motion.duration(170),
                         'easing': 'easeOutQuart'
                     });
                 }
@@ -469,13 +470,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             if (!NEWSBLUR.assets.preference('folder_counts')) {
                 this.hide_collapsed_folder_count();
             }
-            $children.css({ 'opacity': 0 }).slideDown({
-                'duration': 240,
-                'easing': 'easeInOutCubic',
-                'complete': function () {
-                    $children.animate({ 'opacity': 1 }, { 'queue': false, 'duration': 200 });
-                }
+            $children.css({ 'opacity': 1 }).slideDown({
+                'duration': NEWSBLUR.motion.duration(260),
+                'easing': 'easeInOutCubic'
             });
+            NEWSBLUR.motion.cascade($children.children().toArray(), 12);
         }
     },
 

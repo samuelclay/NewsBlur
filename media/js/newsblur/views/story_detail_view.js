@@ -852,6 +852,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_selected: function (model, selected, options) {
         options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
+        if (selected && !options.selected_by_scrolling) {
+            requestAnimationFrame(_.bind(function () {
+                if (this.model.get('selected') && this.el.isConnected) NEWSBLUR.motion.article(this.el);
+            }, this));
+        }
         _.defer(_.bind(this.update_sideoptions_sticky_state, this));
         NEWSBLUR.app.taskbar_info.hide_stories_error();
 

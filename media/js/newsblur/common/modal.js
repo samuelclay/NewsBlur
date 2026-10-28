@@ -23,17 +23,16 @@ NEWSBLUR.Modal.prototype = {
             'overlayClose': this.options.overlayClose,
             'onOpen': function (dialog) {
                 self.flags.open = true;
-                dialog.overlay.fadeIn(200, function () {
+                dialog.overlay.fadeIn(NEWSBLUR.motion.duration(200), function () {
                     dialog.container.addClass(self.options.modal_container_class);
-                    dialog.container.fadeIn(200);
-                    dialog.data.fadeIn(200, function () {
-                        if (self.options.onOpen) {
-                            self.options.onOpen();
-                        }
-                        if (callback) {
-                            callback();
-                        }
-                    });
+                    dialog.container.show();
+                    dialog.data.show();
+                    if (self.options.onOpen) self.options.onOpen();
+                    if (callback) callback();
+                    self.resize();
+                    self.section_motion_root = dialog.container[0];
+                    self.animate_sections(dialog.data);
+                    NEWSBLUR.motion.enter(dialog.container[0], 0, 14);
                     setTimeout(function () {
                         // $(window).resize();
                         self.resize();
@@ -49,16 +48,28 @@ NEWSBLUR.Modal.prototype = {
             },
             'onClose': function (dialog, callback) {
                 self.flags.open = false;
-                dialog.data.hide().empty().remove();
-                dialog.container.hide().empty().remove();
-                dialog.overlay.fadeOut(200, function () {
+                if (self.section_motion_owner && self.section_motion_owner.motion_observer) self.section_motion_owner.motion_observer.disconnect();
+                var container = dialog.container[0];
+                container.inert = true;
+                container.style.pointerEvents = 'none';
+                var transitions_remaining = 2;
+                function complete_close() {
+                    if (--transitions_remaining) return;
+                    dialog.data.hide().empty().remove();
+                    dialog.container.hide().empty().remove();
                     if (self.options.onOpen) {
                         self.options.onOpen();
                     }
                     dialog.overlay.empty().remove();
+                    $('.NB-modal-holder').empty().remove();
                     $.modal.close(callback);
+                }
+                dialog.overlay.fadeOut(NEWSBLUR.motion.duration(200), complete_close);
+                // modal.js keeps ID-based styling on the live container throughout its exit.
+                NEWSBLUR.motion.exit(container, function () {
+                    container.style.opacity = 0;
+                    complete_close();
                 });
-                $('.NB-modal-holder').empty().remove();
             }
         });
     },
@@ -66,6 +77,24 @@ NEWSBLUR.Modal.prototype = {
     resize: function () {
         // $(window).trigger('resize.simplemodal');
         $.modal.resize();
+    },
+
+    animate_sections: function ($root) {
+        // modal.js reveals complete sections before first paint, without stacking parent and child entrances.
+        var sections = $root.find('.NB-modal-title, .NB-modal-subtitle, .NB-modal-tabs, .NB-preference, .NB-fieldset, fieldset, .NB-modal-section, .NB-keyboard-group, .NB-modal-submit').toArray();
+        $root.children().add($root.find('form > *, .NB-tab.NB-active > *')).each(function () {
+            var section = this;
+            if ($(section).is('form, .NB-tab, .NB-modal-loading')) return;
+            if (!sections.some(function (other) { return other === section || other.contains(section) || section.contains(other); })) sections.push(section);
+        });
+        sections = sections.filter(function (section) {
+            return !sections.some(function (parent) { return parent !== section && parent.contains(section); });
+        });
+        // modal.js keeps offscreen sections pending and resets the observer when switching tabs.
+        this.section_motion_owner = this.section_motion_owner || {};
+        NEWSBLUR.motion.watch(this.section_motion_owner, sections.map(function (section) {
+            return { el: section, model: { id: section } };
+        }), this.section_motion_root || $root[0], $root[0], { distance: 8, spacing: 30, spread: 180 });
     },
 
     close: function (callback) {
@@ -142,7 +171,8 @@ NEWSBLUR.Modal.prototype = {
         $tabs.removeClass('NB-active');
 
         $modal_tabs.filter('.NB-modal-tab-' + newtab).addClass('NB-active');
-        $tabs.filter('.NB-tab-' + newtab).addClass('NB-active');
+        var $selected = $tabs.filter('.NB-tab-' + newtab).addClass('NB-active');
+        this.animate_sections($selected);
     }
 
 };
