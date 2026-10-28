@@ -1496,6 +1496,9 @@ msgstr "Artikel konnte nicht gespeichert werden: nicht gefunden"
 msgid "Could not unsave story, not found"
 msgstr "Artikel konnte nicht aus den gespeicherten entfernt werden: nicht gefunden"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe konnte nicht erreicht werden. Bitte versuche es erneut."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Abdeckungszeitraum: %(start)s &ndash; %(end)s"
@@ -4050,6 +4053,9 @@ msgstr "Kein Trainingssystem"
 msgid "No uncategorized archives found"
 msgstr "Keine nicht kategorisierten Archive gefunden"
 
+msgid "No usage billing set up."
+msgstr "Keine nutzungsbasierte Abrechnung eingerichtet."
+
 msgid "No user has that email address."
 msgstr "Es gibt keinen Benutzer mit dieser E-Mail-Adresse."
 
@@ -4273,6 +4279,9 @@ msgstr "Bitte gib eine Suchanfrage mit Stichworten ein."
 
 msgid "Please enter in an email address."
 msgstr "Bitte gib eine E-Mail-Adresse ein."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Bitte melde dich erneut bei NewsBlur an."
 
 msgid "Please login to continue."
 msgstr "Bitte melde dich an, um fortzufahren."
@@ -6188,6 +6197,9 @@ msgstr "Nutzungsabhängige Abrechnung nicht aktiviert"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Nutzungsabrechnung für KI-Klassifikatoren erforderlich"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Nutzungsbasierte Abrechnung ist derzeit nicht verfügbar."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

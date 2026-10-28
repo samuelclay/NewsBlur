@@ -1245,6 +1245,9 @@ msgstr "Mostrar siempre los botones Entrenar/Guardar/Compartir debajo de los art
 msgid "Always show unread counts on folders"
 msgstr "Mostrar siempre recuentos de no leídos en carpetas"
 
+msgid "An AI filter overrides likes and dislikes, but not a super dislike"
+msgstr "Un filtro de IA tiene prioridad sobre Me gusta y No me gusta, pero no sobre No me gusta nada"
+
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."

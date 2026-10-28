@@ -66,6 +66,22 @@
 			<string>%@ Kommentare</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ Inhaltsfilter</string>
+			<key>other</key>
+			<string>%@ Inhaltsfilter</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -194,6 +210,22 @@
 			<string>%@ Fokus-Artikel</string>
 		</dict>
 	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ Bildfilter</string>
+			<key>other</key>
+			<string>%@ Bildfilter</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -304,6 +336,22 @@
 			<string>Noch %@ Artikel</string>
 			<key>other</key>
 			<string>Noch %@ Artikel</string>
+		</dict>
+	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ Artikel/Monat</string>
+			<key>other</key>
+			<string>%@ Artikel/Monat</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -704,6 +752,22 @@
 			<string>Du hast %@ Website abonniert</string>
 			<key>other</key>
 			<string>Du hast %@ Websites abonniert</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>✓ %2$@ von %1$@ Bildern entspricht diesem Filter</string>
+			<key>other</key>
+			<string>✓ %2$@ von %1$@ Bildern entsprechen diesem Filter</string>
 		</dict>
 	</dict>
 </dict>

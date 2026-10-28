@@ -1388,6 +1388,9 @@ msgstr "스토리를 찾을 수 없어 저장할 수 없습니다"
 msgid "Could not unsave story, not found"
 msgstr "스토리를 저장 취소할 수 없습니다. 스토리를 찾을 수 없습니다."
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe에 연결할 수 없습니다. 다시 시도하세요."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "기간: %(start)s &ndash; %(end)s"
@@ -3714,6 +3717,9 @@ msgstr "학습 시스템 없음"
 msgid "No uncategorized archives found"
 msgstr "분류되지 않은 아카이브가 없습니다"
 
+msgid "No usage billing set up."
+msgstr "사용량 결제가 설정되지 않았습니다."
+
 msgid "No user has that email address."
 msgstr "해당 이메일 주소를 사용하는 사용자가 없습니다."
 
@@ -3927,6 +3933,9 @@ msgstr "키워드 검색어를 입력해 주세요."
 
 msgid "Please enter in an email address."
 msgstr "이메일 주소를 입력해 주세요."
+
+msgid "Please log in to NewsBlur again."
+msgstr "NewsBlur에 다시 로그인하세요."
 
 msgid "Please login to continue."
 msgstr "계속하려면 로그인해 주세요."
@@ -5715,6 +5724,9 @@ msgstr "사용량 결제가 활성화되지 않았습니다"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "AI 분류기에는 사용량 기반 결제가 필요합니다"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "현재 사용량 기반 결제를 이용할 수 없습니다."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

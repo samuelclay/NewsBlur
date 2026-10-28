@@ -1247,6 +1247,9 @@ msgstr "Mostra sempre i pulsanti Addestra/Salva/Condividi sotto gli articoli"
 msgid "Always show unread counts on folders"
 msgstr "Mostra sempre il numero di articoli non letti nelle cartelle"
 
+msgid "An AI filter overrides likes and dislikes, but not a super dislike"
+msgstr "Un filtro AI prevale su Mi piace e Non mi piace, ma non su Non mi piace per niente"
+
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."

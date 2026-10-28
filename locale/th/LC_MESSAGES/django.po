@@ -1449,6 +1449,9 @@ msgstr "บันทึกบทความไม่ได้ ไม่พบ�
 msgid "Could not unsave story, not found"
 msgstr "ยกเลิกการบันทึกบทความไม่ได้ ไม่พบบทความ"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "ช่วงเวลาที่ครอบคลุม: %(start)s &ndash; %(end)s"
@@ -3916,6 +3919,9 @@ msgstr "ไม่มีระบบฝึก"
 msgid "No uncategorized archives found"
 msgstr "ไม่พบคลังที่ไม่มีหมวดหมู่"
 
+msgid "No usage billing set up."
+msgstr "ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน"
+
 msgid "No user has that email address."
 msgstr "ไม่มีผู้ใช้ที่ใช้ที่อยู่อีเมลนี้"
 
@@ -4133,6 +4139,9 @@ msgstr "โปรดป้อนคำค้นหา"
 
 msgid "Please enter in an email address."
 msgstr "โปรดป้อนที่อยู่อีเมล"
+
+msgid "Please log in to NewsBlur again."
+msgstr "โปรดเข้าสู่ระบบ NewsBlur อีกครั้ง"
 
 msgid "Please login to continue."
 msgstr "โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ"
@@ -5981,6 +5990,9 @@ msgstr "ยังไม่ได้เปิดใช้การเรียก
 
 msgid "Usage billing required for AI classifiers"
 msgstr "ต้องเปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนก AI"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "ขณะนี้ยังไม่มีบริการเรียกเก็บเงินตามการใช้งาน"
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

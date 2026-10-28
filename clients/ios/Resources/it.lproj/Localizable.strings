@@ -11,6 +11,9 @@
 "%1$@ folder, collapsed, %2$@" = "Cartella %1$@, compressa, %2$@";
 "%1$@ followed %2$@." = "%1$@ ha iniziato a seguire %2$@.";
 "%1$@ of %2$@ sites indexed" = "%1$@ siti indicizzati su %2$@";
+"%1$@ on all sites (%2$@)" = "%1$@ su tutti i siti (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ nella cartella (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ su questo sito (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ ha ricondiviso %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ ha ricondiviso %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ ha risposto a %2$@: \n \n%3$@";
@@ -18,11 +21,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ ha risposto alla tua risposta su %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ ha condiviso %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ ha condiviso %2$@:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ siti widget";
 "%@ ago" = "%@ fa";
 "%@ categories to choose from" = "%@ categorie tra cui scegliere";
 "%@ comments" = "%@ commenti";
+"%@ content filters" = "Filtri dei contenuti %@";
 "%@ could not be added." = "Impossibile aggiungere %@ feed.";
 "%@ days" = "%@ giorni";
 "%@ feed" = "Feed %@";
@@ -33,6 +38,7 @@
 "%@ feeds selected" = "%@ feed selezionati";
 "%@ focused stories" = "%@ articoli in evidenza";
 "%@ folder" = "Cartella %@";
+"%@ image filters" = "%@ filtri immagini";
 "%@ is now following you." = "%@ ora ti segue.";
 "%@ opens" = "%@ aperture";
 "%@ or search" = "%@ o cerca";
@@ -42,15 +48,21 @@
 "%@ sources" = "%@ fonti";
 "%@ stories" = "%@ articoli";
 "%@ stories left" = "Restano %@ articoli";
+"%@ stories/mo" = "%@ articoli/mese";
 "%@ stories/month" = "%@ articoli/mese";
 "%@ subscribers" = "%@ iscritti";
 "%@ unread stories" = "%@ articoli non letti";
+"%@/story" = "%@/articolo";
 "%ldd ago" = "%ldg fa";
 "%ldh ago" = "%ldh fa";
 "%ldm ago" = "%ld min fa";
 "%ldw ago" = "%ld sett. fa";
+"(upcoming)" = "(in arrivo)";
 "+ %@ more sites" = "+ altri %@ siti";
 "..." = "...";
+"/day" = "/giorno";
+"/mo" = "/mese";
+"/month" = "/mese";
 "1 Widget Site" = "1 sito widget";
 "1,000 stories" = "1.000 articoli";
 "10 stories" = "10 articoli";
@@ -71,6 +83,8 @@
 "< 60/month" = "< 60/mese";
 "< 90/month" = "< 90/mese";
 "A personal news reader bringing\npeople together to talk about the world." = "Un lettore di notizie personale che riunisce\nle persone per parlare del mondo.";
+"AI Filter" = "Filtro AI";
+"AI filters are saved but won't run until you %@." = "I filtri AI sono stati salvati, ma non verranno eseguiti finché non %@.";
 "AI finds the stories" = "L’IA trova gli articoli";
 "ALL" = "TUTTI";
 "ALL NOTIFICATIONS" = "TUTTE LE NOTIFICHE";
@@ -139,7 +153,9 @@
 "Already have an account? Sign in" = "Hai già un account? Accedi";
 "Already have feeds?" = "Hai già dei feed?";
 "Also published by %@ sites" = "Pubblicato anche da %@ siti";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Un filtro AI prevale su Mi piace e Non mi piace, ma non su Non mi piace per niente";
 "Analyze" = "Analizza";
+"Analyzing images..." = "Analisi delle immagini...";
 "App Badge" = "Badge dell'app";
 "App Icon" = "Icona dell’app";
 "Apply training across a folder" = "Applica l'addestramento a un'intera cartella";
@@ -216,6 +232,8 @@
 "Connect an existing account" = "Collega un account esistente";
 "Connect your account" = "Collega il tuo account";
 "Connecting" = "Connessione in corso";
+"Content" = "Contenuti";
+"Content Filter" = "Filtro dei contenuti";
 "Continue" = "Continua";
 "Control how much is included and how it is written" = "Controlla quanto includere e come scriverlo";
 "Copied" = "Copiato";
@@ -223,6 +241,9 @@
 "Coral Rose" = "Rosa corallo";
 "Could not completely clear the cache. Please try again." = "Impossibile svuotare completamente la cache. Riprova.";
 "Could not save your language. Please try again." = "Impossibile salvare la lingua. Riprova.";
+"Couldn't load usage billing history." = "Impossibile caricare la cronologia della fatturazione per l'utilizzo.";
+"Couldn't open billing. Please try again." = "Impossibile aprire la fatturazione. Riprova.";
+"Couldn't save your spending limit. Please try again." = "Impossibile salvare il limite di spesa. Riprova.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Impossibile caricare l'immagine completa. Puoi provare ad aprirla nel browser.";
 "Counting is difficult..." = "Contare è difficile...";
 "Create a feed from any web page" = "Crea un feed da qualsiasi pagina web";
@@ -263,6 +284,9 @@
 "Deleting saved search..." = "Eliminazione della ricerca salvata...";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "L’eliminazione definitiva dell’account rimuove i feed, gli articoli salvati e i dati dell’account. L’operazione è irreversibile.";
 "Deleting..." = "Eliminazione...";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Descrivi un argomento e l’IA valuterà ogni articolo in base al tuo prompt per metterlo in evidenza o nascondere le corrispondenze.";
+"Describe what to focus or hide" = "Descrivi cosa mettere in evidenza o nascondere";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Descrivi cosa cercare e l'AI analizzerà le immagini di ogni articolo in base al tuo prompt.";
 "Discover" = "Scopri";
 "Discover more to read" = "Scopri altri contenuti da leggere";
 "Discover related sites" = "Scopri siti correlati";
@@ -406,6 +430,8 @@
 "Hide toolbars when reading" = "Nascondi le barre degli strumenti durante la lettura";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Se nessuna delle opzioni corrisponde, inserisci il titolo di un articolo che vedi nella pagina e lo analizzeremo di nuovo.";
 "Ignore system theme, use screen brightness instead" = "Ignora il tema di sistema e usa la luminosità dello schermo";
+"Image" = "Immagine";
+"Image Filter" = "Filtro immagini";
 "Image Preview" = "Anteprima immagine";
 "Image actions" = "Azioni sulle immagini";
 "Images from %@ days ago" = "Immagini di %@ giorni fa";
@@ -425,6 +451,7 @@
 "Include already-read stories" = "Includi gli articoli già letti";
 "Include in bundle" = "Includi nel pacchetto";
 "Included in bundle" = "Incluso nel pacchetto";
+"Increase or remove your limit" = "Aumenta o rimuovi il tuo limite";
 "Infrequent Site Stories" = "Articoli dei siti poco attivi";
 "Infrequent Stories" = "Articoli dei siti poco attivi";
 "Infrequent stories per month" = "Soglia dei siti poco attivi (articoli al mese)";
@@ -434,6 +461,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Invece di seguire la modalità scura/chiara del sistema, cambia automaticamente tema in base alla luminosità dello schermo. Utile per adattare il tema alla luce ambientale.";
 "Interactions" = "Interazioni";
 "Invalid: %@" = "Non valido: %@";
+"Invoice" = "Fattura";
 "Keeps the dark icon no matter how your device is set." = "Mantiene l'icona scura indipendentemente dalle impostazioni del dispositivo.";
 "Keeps the light icon no matter how your device is set." = "Mantiene l'icona chiara indipendentemente dalle impostazioni del dispositivo.";
 "Keyboard Shortcuts" = "Scorciatoie da tastiera";
@@ -487,6 +515,8 @@
 "Manage" = "Gestisci";
 "Manage Account on the Web" = "Gestisci account sul Web";
 "Manage Subscription" = "Gestisci abbonamento";
+"Manage billing and limits" = "Gestisci fatturazione e limiti";
+"Manage billing on Stripe" = "Gestisci la fatturazione su Stripe";
 "Manage this folder…" = "Gestisci questa cartella…";
 "Manage this site…" = "Gestisci questo sito…";
 "Manual scroll" = "Scorrimento manuale";
@@ -537,6 +567,8 @@
 "Medium [theme]" = "Grigio";
 "Model" = "Modello";
 "Monday" = "Lunedì";
+"Monthly spending limit" = "Limite di spesa mensile";
+"Monthly spending limit reached. " = "Limite di spesa mensile raggiunto. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Più articoli occupano più spazio su disco, ma per il resto non influiscono in modo percepibile sulle prestazioni.";
 "Morning" = "Mattina";
 "Morning Briefing" = "Briefing del mattino";
@@ -569,6 +601,11 @@
 "NEXT" = "AVANTI";
 "Name" = "Nome";
 "Name your folder to continue" = "Assegna un nome alla cartella per continuare";
+"Natural Language Image Classifier" = "Classificatore di immagini in linguaggio naturale";
+"Natural Language Text Classifier" = "Classificatore di testo in linguaggio naturale";
+"Natural language classifier billing" = "Fatturazione del classificatore in linguaggio naturale";
+"Natural language classifiers are paused until next billing cycle. " = "I classificatori in linguaggio naturale sono sospesi fino al prossimo ciclo di fatturazione. ";
+"Natural language classifiers are using your instance's API keys." = "I classificatori con prompt usano le chiavi API della tua istanza.";
 "Natural language text and image classifiers" = "Classificatori di testo e immagini in linguaggio naturale";
 "Nested" = "Annidato";
 "Never" = "Mai";
@@ -602,7 +639,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Non ci sono ancora feed da mostrare. Prova un altro interesse o cerca in tutti i siti.";
 "No friends to suggest." = "Non ci sono amici da suggerire.";
 "No interests or sites found. Try another search." = "Nessun interesse o sito trovato. Prova un'altra ricerca.";
+"No limit" = "Nessun limite";
 "No longer saved" = "Non più salvato";
+"No match" = "Nessuna corrispondenza";
 "No match in story" = "Nessuna corrispondenza nell'articolo";
 "No matching sites" = "Nessun sito corrispondente";
 "No notifications yet." = "Non ci sono ancora notifiche.";
@@ -613,6 +652,8 @@
 "No stories yet" = "Ancora nessun articolo";
 "No story selected" = "Nessun articolo selezionato";
 "No unread stories" = "Nessun articolo non letto";
+"No usage billing invoices yet." = "Non ci sono ancora fatture per la fatturazione a consumo.";
+"No usage billing set up." = "La fatturazione a consumo non è configurata.";
 "None" = "Nessuno";
 "Normal" = "Normale";
 "Not included in bundle" = "Non incluso nel pacchetto";
@@ -655,6 +696,7 @@
 "Open story trainer" = "Apri l’addestramento degli articoli";
 "Open the next site/folder" = "Apri il sito/la cartella successivi";
 "Opening site…" = "Apertura del sito…";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Facoltativo. I classificatori vengono messi in pausa al raggiungimento del limite e riprendono nel ciclo di fatturazione successivo.";
 "Options" = "Opzioni";
 "Ordered" = "Ordinato";
 "Organize Sites" = "Organizza i siti";
@@ -778,6 +820,7 @@
 "Saved on %@" = "Salvato il %@";
 "Saving Daily Briefing settings…" = "Salvataggio delle impostazioni del briefing quotidiano…";
 "Saving search..." = "Salvataggio della ricerca...";
+"Saving..." = "Salvataggio...";
 "Schedule" = "Programma";
 "Scroll horizontally" = "Scorrimento orizzontale";
 "Scroll to Comments" = "Scorri fino ai commenti";
@@ -806,6 +849,8 @@
 "Sepia Cocoa" = "Cacao seppia";
 "Server URL" = "URL del server";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Configura il briefing quotidiano per generare un riepilogo degli articoli che più ti interessano.";
+"Set up billing" = "Configura la fatturazione";
+"Set up usage-based billing to use natural language content and image filters." = "Configura la fatturazione a consumo per usare filtri dei contenuti in linguaggio naturale e filtri per immagini.";
 "Settings" = "Impostazioni";
 "Share" = "Condividi";
 "Share This Story" = "Condividi questo articolo";
@@ -872,6 +917,7 @@
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "La barra spaziatrice e Maiusc+barra spaziatrice scorrono questa percentuale dell’articolo visibile. In fondo, la barra spaziatrice apre l’articolo non letto successivo. In cima, Maiusc+barra spaziatrice apre l’articolo precedente.";
 "Space scroll amount" = "Quantità di scorrimento con la barra spaziatrice";
 "Spacing" = "Spaziatura";
+"Spending limit reached. Classifiers paused until next cycle." = "Limite di spesa raggiunto. I classificatori sono in pausa fino al ciclo successivo.";
 "Stale — last story %@" = "Inattivo — ultimo articolo %@";
 "Standard" = "Standard";
 "Start reading" = "Inizia a leggere";
@@ -902,12 +948,14 @@
 "Story count" = "Numero di articoli";
 "Story detail" = "Dettagli dell'articolo";
 "Story image" = "Immagine dell'articolo";
+"Story is always hidden" = "L'articolo è sempre nascosto";
 "Story is hidden (super dislike wins)" = "Articolo nascosto (prevale Non mi piace per niente)";
 "Story is shown (like wins)" = "Articolo mostrato (prevale Mi piace)";
 "Story list toolbar position" = "Posizione della barra degli strumenti dell'elenco articoli";
 "Story options" = "Opzioni articolo";
 "Story order" = "Ordine degli articoli";
 "Story settings" = "Impostazioni dell'articolo";
+"Story shows in Focus view" = "L’articolo appare nella vista In evidenza";
 "Story title preview" = "Anteprima del titolo dell'articolo";
 "Story titles" = "Titoli degli articoli";
 "Story titles layout" = "Layout dei titoli degli articoli";
@@ -945,6 +993,11 @@
 "Tall [grid height]" = "Alto";
 "Teal Mint" = "Verde acqua menta";
 "Terms of Use" = "Condizioni d'uso";
+"Test failed" = "Test non riuscito";
+"Test on these images" = "Prova su queste immagini";
+"Test on this image" = "Prova su questa immagine";
+"Test on this story" = "Prova sull’articolo";
+"Testing on this story..." = "Test sull'articolo in corso...";
 "Text" = "Testo";
 "Text Size" = "Dimensione del testo";
 "Text View" = "Vista testo";
@@ -1041,6 +1094,7 @@
 "Unsave story" = "Rimuovi dai salvati";
 "Unsave this story" = "Rimuovi questo articolo dai salvati";
 "Unsaved" = "Rimosso dai salvati";
+"Upcoming charge: " = "Prossimo addebito: ";
 "Updated %@ days ago" = "Aggiornato %@ giorni fa";
 "Updated %@ months ago" = "Aggiornato %@ mesi fa";
 "Updated %@ weeks ago" = "Aggiornato %@ settimane fa";
@@ -1052,6 +1106,9 @@
 "Upgrade to Archive" = "Passa ad Archive";
 "Upgrade to Premium" = "Passa a Premium";
 "Upgrade to Premium Archive" = "Passa a Premium Archive";
+"Usage Billing" = "Fatturazione a consumo";
+"Usage billing history" = "Cronologia della fatturazione per l'utilizzo";
+"Usage-based billing is enabled for natural language classifiers." = "La fatturazione a consumo è attiva per i classificatori con prompt.";
 "Use %@" = "Usa %@";
 "Use another sign-in method" = "Usa un altro metodo di accesso";
 "Use both" = "Usa entrambi";
@@ -1114,6 +1171,8 @@
 "by %@" = "di %@";
 "dislike" = "non ti piace";
 "e.g. %@" = "ad es. %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "ad es. “IA e apprendimento automatico” o “politica locale”";
+"e.g., \"food photography\" or \"charts and graphs\"" = "ad es. “fotografia di cibo” o “grafici e diagrammi”";
 "like" = "ti piace";
 "no content" = "nessun contenuto";
 "no date" = "nessuna data";
@@ -1121,5 +1180,12 @@
 "no story" = "nessun articolo";
 "or" = "o";
 "premium subscribers" = "abbonati Premium";
+"set up usage-based billing" = "Configura la fatturazione a consumo";
 "your account" = "il tuo account";
 "‹ Feeds" = "‹ Feed";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ di %1$@ immagini corrispondono a questo filtro";
+"✓ Image matches this filter" = "✓ L'immagine corrisponde a questo filtro";
+"✓ Story matches this filter" = "✓ L’articolo corrisponde a questo filtro";
+"✗ Image does not match this filter" = "✗ L’immagine non corrisponde a questo filtro";
+"✗ No images match this filter" = "✗ Nessuna immagine corrisponde a questo filtro";
+"✗ Story does not match this filter" = "✗ L'articolo non corrisponde a questo filtro";

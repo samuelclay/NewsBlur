@@ -1166,6 +1166,9 @@ msgstr "一律在文章下方顯示訓練／儲存／分享按鈕"
 msgid "Always show unread counts on folders"
 msgstr "一律在資料夾上顯示未讀數量"
 
+msgid "An AI filter overrides likes and dislikes, but not a super dislike"
+msgstr "AI 篩選器會優先於喜歡和不喜歡設定，但不會優先於超級不喜歡設定"
+
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."

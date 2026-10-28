@@ -1464,6 +1464,9 @@ msgstr "Không thể lưu bài viết, không tìm thấy"
 msgid "Could not unsave story, not found"
 msgstr "Không thể bỏ lưu bài viết, không tìm thấy bài viết"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Không thể kết nối với Stripe. Vui lòng thử lại."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Khoảng thời gian: %(start)s &ndash; %(end)s"
@@ -3969,6 +3972,9 @@ msgstr "Không có hệ thống huấn luyện"
 msgid "No uncategorized archives found"
 msgstr "Không tìm thấy mục lưu trữ nào chưa phân loại"
 
+msgid "No usage billing set up."
+msgstr "Chưa thiết lập thanh toán theo mức sử dụng."
+
 msgid "No user has that email address."
 msgstr "Không có người dùng nào có địa chỉ email đó."
 
@@ -4186,6 +4192,9 @@ msgstr "Vui lòng nhập truy vấn tìm kiếm từ khóa."
 
 msgid "Please enter in an email address."
 msgstr "Vui lòng nhập địa chỉ email."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Vui lòng đăng nhập lại vào NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Vui lòng đăng nhập để tiếp tục."
@@ -6068,6 +6077,9 @@ msgstr "Tính phí theo mức sử dụng chưa được bật"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Cần tính phí theo mức sử dụng cho bộ phân loại AI"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Hiện không thể thanh toán theo mức sử dụng."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

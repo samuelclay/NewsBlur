@@ -1361,6 +1361,9 @@ msgstr "无法保存文章，未找到该文章"
 msgid "Could not unsave story, not found"
 msgstr "无法取消保存文章，未找到该文章"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "无法连接到 Stripe。请重试。"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "涵盖时段：%(start)s &ndash; %(end)s"
@@ -3629,6 +3632,9 @@ msgstr "无训练系统"
 msgid "No uncategorized archives found"
 msgstr "未找到未分类的归档"
 
+msgid "No usage billing set up."
+msgstr "尚未设置按用量计费。"
+
 msgid "No user has that email address."
 msgstr "没有使用该电子邮件地址的用户。"
 
@@ -3840,6 +3846,9 @@ msgstr "请输入关键词搜索查询。"
 
 msgid "Please enter in an email address."
 msgstr "请输入电子邮件地址。"
+
+msgid "Please log in to NewsBlur again."
+msgstr "请重新登录 NewsBlur。"
 
 msgid "Please login to continue."
 msgstr "请登录以继续。"
@@ -5595,6 +5604,9 @@ msgstr "用量计费未启用"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "AI 分类器需要按用量计费"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "目前无法使用按用量计费。"
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

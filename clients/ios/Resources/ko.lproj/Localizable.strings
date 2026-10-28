@@ -11,6 +11,9 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@ 폴더, 접힘, %2$@";
 "%1$@ followed %2$@." = "%1$@님이 %2$@님을 팔로우했습니다.";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
+"%1$@ on all sites (%2$@)" = "모든 사이트에서 %1$@ (%2$@)";
+"%1$@ on folder (%2$@)" = "폴더에서 %1$@ (%2$@)";
+"%1$@ on this site (%2$@)" = "이 사이트의 %1$@ (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@님이 %2$@을(를) 다시 공유했습니다.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 다시 공유했습니다:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@님이 %2$@님에게 답글을 남겼습니다: \n \n%3$@";
@@ -18,11 +21,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@님이 %2$@에 남긴 회원님의 답글에 답했습니다:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@님이 %2$@을(를) 공유했습니다.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@님이 %2$@을(를) 공유했습니다:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ 위젯 사이트";
 "%@ ago" = "%@ 전";
 "%@ categories to choose from" = "선택 가능한 카테고리 %@개";
 "%@ comments" = "댓글 %@개";
+"%@ content filters" = "%@개 콘텐츠 필터";
 "%@ could not be added." = "피드 %@개를 추가하지 못했습니다.";
 "%@ days" = "%@일";
 "%@ feed" = "%@ 피드";
@@ -33,6 +38,7 @@
 "%@ feeds selected" = "피드 %@개 선택됨";
 "%@ focused stories" = "%@개의 집중 스토리";
 "%@ folder" = "%@ 폴더";
+"%@ image filters" = "%@개 이미지 필터";
 "%@ is now following you." = "%@님이 회원님을 팔로우하기 시작했습니다.";
 "%@ opens" = "%@회 열림";
 "%@ or search" = "%@ 또는 검색";
@@ -42,15 +48,21 @@
 "%@ sources" = "%@개 소스";
 "%@ stories" = "스토리 %@개";
 "%@ stories left" = "남은 스토리 %@개";
+"%@ stories/mo" = "%@개 스토리/월";
 "%@ stories/month" = "월 %@개 스토리";
 "%@ subscribers" = "구독자 %@명";
 "%@ unread stories" = "읽지 않은 스토리 %@개";
+"%@/story" = "%@/스토리";
 "%ldd ago" = "%ld일 전";
 "%ldh ago" = "%ld시간 전";
 "%ldm ago" = "%ld분 전";
 "%ldw ago" = "%ld주 전";
+"(upcoming)" = "(예정)";
 "+ %@ more sites" = "외 %@개 사이트";
 "..." = "…";
+"/day" = "/일";
+"/mo" = "/월";
+"/month" = "/월";
 "1 Widget Site" = "위젯 사이트 1개";
 "1,000 stories" = "스토리 1,000개";
 "10 stories" = "스토리 10개";
@@ -71,6 +83,8 @@
 "< 60/month" = "월 60개 미만";
 "< 90/month" = "월 90개 미만";
 "A personal news reader bringing\npeople together to talk about the world." = "사람들이 세상에 대해 이야기하도록\n이어 주는 개인 뉴스 리더입니다.";
+"AI Filter" = "AI 필터";
+"AI filters are saved but won't run until you %@." = "AI 필터가 저장되었습니다. %@ 전까지는 실행되지 않습니다.";
 "AI finds the stories" = "AI가 스토리를 찾아냅니다";
 "ALL" = "전체";
 "ALL NOTIFICATIONS" = "모든 알림";
@@ -139,7 +153,9 @@
 "Already have an account? Sign in" = "이미 계정이 있으신가요? 로그인";
 "Already have feeds?" = "이미 피드가 있으신가요?";
 "Also published by %@ sites" = "%@개 사이트에도 게시됨";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "AI 필터는 좋아요와 싫어요를 덮어쓰지만, 매우 싫어요는 덮어쓰지 않습니다";
 "Analyze" = "분석";
+"Analyzing images..." = "이미지 분석 중...";
 "App Badge" = "앱 배지";
 "App Icon" = "앱 아이콘";
 "Apply training across a folder" = "폴더 전체에 학습 적용";
@@ -216,6 +232,8 @@
 "Connect an existing account" = "기존 계정 연결";
 "Connect your account" = "계정 연결";
 "Connecting" = "연결 중";
+"Content" = "콘텐츠";
+"Content Filter" = "콘텐츠 필터";
 "Continue" = "계속";
 "Control how much is included and how it is written" = "포함할 내용의 양과 작성 방식을 조정하세요";
 "Copied" = "복사됨";
@@ -223,6 +241,9 @@
 "Coral Rose" = "코럴 로즈";
 "Could not completely clear the cache. Please try again." = "캐시를 완전히 비우지 못했습니다. 다시 시도해 주세요.";
 "Could not save your language. Please try again." = "언어를 저장하지 못했습니다. 다시 시도해 주세요.";
+"Couldn't load usage billing history." = "사용량 기반 결제 내역을 불러오지 못했습니다.";
+"Couldn't open billing. Please try again." = "결제 정보를 열 수 없습니다. 다시 시도하세요.";
+"Couldn't save your spending limit. Please try again." = "지출 한도를 저장하지 못했습니다. 다시 시도하세요.";
 "Couldn’t load the full image. You can try opening it in your browser." = "전체 이미지를 불러올 수 없습니다. 브라우저에서 열어 보세요.";
 "Counting is difficult..." = "세는 건 어렵네요...";
 "Create a feed from any web page" = "웹페이지에서 피드 만들기";
@@ -263,6 +284,9 @@
 "Deleting saved search..." = "저장된 검색 삭제 중...";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "계정을 영구적으로 삭제하면 피드, 저장한 스토리, 계정 데이터가 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.";
 "Deleting..." = "삭제 중...";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "주제를 설명하면 AI가 각 스토리를 프롬프트에 따라 평가하고 일치하는 스토리를 집중하거나 숨깁니다.";
+"Describe what to focus or hide" = "집중하거나 숨길 항목을 설명하세요";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "찾으려는 내용을 설명하면 AI가 각 스토리의 이미지를 프롬프트와 비교해 분석합니다.";
 "Discover" = "둘러보기";
 "Discover more to read" = "더 읽을거리 찾아보기";
 "Discover related sites" = "관련 사이트 찾기";
@@ -406,6 +430,8 @@
 "Hide toolbars when reading" = "읽는 동안 도구 모음 숨기기";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "해당하는 항목이 없으면 페이지에서 스토리 제목을 입력하세요. 다시 분석해 드립니다.";
 "Ignore system theme, use screen brightness instead" = "시스템 테마를 무시하고 화면 밝기 사용";
+"Image" = "이미지";
+"Image Filter" = "이미지 필터";
 "Image Preview" = "이미지 미리보기";
 "Image actions" = "이미지 작업";
 "Images from %@ days ago" = "%@일 전 이미지";
@@ -425,6 +451,7 @@
 "Include already-read stories" = "읽은 스토리 포함";
 "Include in bundle" = "번들에 포함";
 "Included in bundle" = "번들에 포함됨";
+"Increase or remove your limit" = "한도를 늘리거나 삭제하세요";
 "Infrequent Site Stories" = "업데이트가 드문 사이트의 스토리";
 "Infrequent Stories" = "드물게 올라오는 스토리";
 "Infrequent stories per month" = "업데이트가 드문 사이트 기준(월 스토리 수)";
@@ -434,6 +461,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "시스템의 다크/라이트 모드를 따르는 대신, 화면 밝기에 따라 테마를 자동으로 전환합니다. 주변 조명에 맞춰 테마를 전환할 때 유용합니다.";
 "Interactions" = "상호작용";
 "Invalid: %@" = "유효하지 않음: %@";
+"Invoice" = "청구서";
 "Keeps the dark icon no matter how your device is set." = "기기 설정과 관계없이 어두운 아이콘을 유지합니다.";
 "Keeps the light icon no matter how your device is set." = "기기 설정과 관계없이 밝은 아이콘을 유지합니다.";
 "Keyboard Shortcuts" = "키보드 단축키";
@@ -487,6 +515,8 @@
 "Manage" = "관리";
 "Manage Account on the Web" = "웹에서 계정 관리";
 "Manage Subscription" = "구독 관리";
+"Manage billing and limits" = "결제 및 한도 관리";
+"Manage billing on Stripe" = "Stripe에서 결제 관리";
 "Manage this folder…" = "이 폴더 관리…";
 "Manage this site…" = "이 사이트 관리…";
 "Manual scroll" = "수동 스크롤";
@@ -537,6 +567,8 @@
 "Medium [theme]" = "미디엄";
 "Model" = "모델";
 "Monday" = "월요일";
+"Monthly spending limit" = "월간 지출 한도";
+"Monthly spending limit reached. " = "월간 지출 한도에 도달했습니다. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "스토리를 더 많이 저장하면 디스크 공간을 더 사용하지만, 그 외에는 성능에 눈에 띄는 영향이 없습니다.";
 "Morning" = "아침";
 "Morning Briefing" = "아침 브리핑";
@@ -569,6 +601,11 @@
 "NEXT" = "다음";
 "Name" = "이름";
 "Name your folder to continue" = "계속하려면 폴더 이름을 지정하세요";
+"Natural Language Image Classifier" = "자연어 이미지 분류기";
+"Natural Language Text Classifier" = "자연어 텍스트 분류기";
+"Natural language classifier billing" = "자연어 분류기 결제";
+"Natural language classifiers are paused until next billing cycle. " = "자연어 분류기는 다음 결제 주기까지 일시 중지됩니다. ";
+"Natural language classifiers are using your instance's API keys." = "자연어 분류기가 인스턴스의 API 키를 사용하고 있습니다.";
 "Natural language text and image classifiers" = "자연어 텍스트 및 이미지 분류기";
 "Nested" = "중첩";
 "Never" = "안 함";
@@ -602,7 +639,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "표시할 피드가 아직 없습니다. 다른 관심사를 선택하거나 모든 사이트를 검색해 보세요.";
 "No friends to suggest." = "추천할 친구가 없습니다.";
 "No interests or sites found. Try another search." = "관심사나 사이트를 찾을 수 없습니다. 다른 검색어를 입력해 보세요.";
+"No limit" = "한도 없음";
 "No longer saved" = "더 이상 저장되지 않음";
+"No match" = "일치 항목 없음";
 "No match in story" = "스토리에 일치하는 항목이 없습니다";
 "No matching sites" = "일치하는 사이트가 없습니다";
 "No notifications yet." = "아직 알림이 없습니다.";
@@ -613,6 +652,8 @@
 "No stories yet" = "아직 스토리가 없습니다";
 "No story selected" = "선택된 스토리가 없습니다";
 "No unread stories" = "읽지 않은 스토리가 없습니다";
+"No usage billing invoices yet." = "사용량 결제 청구서가 아직 없습니다.";
+"No usage billing set up." = "사용량 기반 결제가 설정되지 않았습니다.";
 "None" = "없음";
 "Normal" = "보통";
 "Not included in bundle" = "번들에 포함되지 않음";
@@ -655,6 +696,7 @@
 "Open story trainer" = "스토리 트레이너 열기";
 "Open the next site/folder" = "다음 사이트/폴더 열기";
 "Opening site…" = "사이트 여는 중…";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "선택 사항입니다. 한도에 도달하면 분류기가 일시 중지되고 다음 결제 주기에 다시 시작됩니다.";
 "Options" = "옵션";
 "Ordered" = "정렬됨";
 "Organize Sites" = "사이트 정리";
@@ -778,6 +820,7 @@
 "Saved on %@" = "%@에 저장됨";
 "Saving Daily Briefing settings…" = "데일리 브리핑 설정 저장 중…";
 "Saving search..." = "검색 저장 중...";
+"Saving..." = "저장 중...";
 "Schedule" = "일정";
 "Scroll horizontally" = "가로로 스크롤";
 "Scroll to Comments" = "댓글로 이동";
@@ -806,6 +849,8 @@
 "Sepia Cocoa" = "세피아 코코아";
 "Server URL" = "서버 URL";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "가장 중요한 스토리를 요약하도록 데일리 브리핑을 설정하세요.";
+"Set up billing" = "결제 설정";
+"Set up usage-based billing to use natural language content and image filters." = "자연어 콘텐츠 및 이미지 필터를 사용하려면 사용량 기반 결제를 설정하세요.";
 "Settings" = "설정";
 "Share" = "공유";
 "Share This Story" = "이 스토리 공유";
@@ -872,6 +917,7 @@
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "스페이스와 Shift-스페이스를 누르면 표시된 스토리에서 이 비율만큼 스크롤합니다. 아래쪽에서 스페이스를 누르면 다음 읽지 않은 스토리가 열립니다. 위쪽에서 Shift-스페이스를 누르면 이전 스토리가 열립니다.";
 "Space scroll amount" = "스페이스 스크롤 양";
 "Spacing" = "간격";
+"Spending limit reached. Classifiers paused until next cycle." = "지출 한도에 도달했습니다. 분류기가 다음 주기까지 일시 중지되었습니다.";
 "Stale — last story %@" = "오래됨 — 마지막 스토리 %@";
 "Standard" = "표준";
 "Start reading" = "읽기 시작";
@@ -902,12 +948,14 @@
 "Story count" = "스토리 수";
 "Story detail" = "스토리 세부 정보";
 "Story image" = "스토리 이미지";
+"Story is always hidden" = "스토리가 항상 숨김 처리됩니다";
 "Story is hidden (super dislike wins)" = "스토리가 숨겨짐(매우 싫어요가 우선)";
 "Story is shown (like wins)" = "스토리가 표시됨(좋아요가 우선)";
 "Story list toolbar position" = "스토리 목록 도구 모음 위치";
 "Story options" = "스토리 옵션";
 "Story order" = "스토리 순서";
 "Story settings" = "스토리 설정";
+"Story shows in Focus view" = "스토리가 집중 보기에도 표시됩니다";
 "Story title preview" = "스토리 제목 미리보기";
 "Story titles" = "스토리 제목";
 "Story titles layout" = "스토리 제목 레이아웃";
@@ -945,6 +993,11 @@
 "Tall [grid height]" = "높음";
 "Teal Mint" = "청록 민트";
 "Terms of Use" = "이용 약관";
+"Test failed" = "테스트 실패";
+"Test on these images" = "이 이미지로 테스트";
+"Test on this image" = "이 이미지로 테스트";
+"Test on this story" = "이 스토리에서 테스트";
+"Testing on this story..." = "이 스토리에서 테스트 중...";
 "Text" = "텍스트";
 "Text Size" = "텍스트 크기";
 "Text View" = "텍스트 보기";
@@ -1041,6 +1094,7 @@
 "Unsave story" = "스토리 저장 취소";
 "Unsave this story" = "이 스토리 저장 취소";
 "Unsaved" = "저장되지 않음";
+"Upcoming charge: " = "예정된 청구 금액: ";
 "Updated %@ days ago" = "%@일 전에 업데이트됨";
 "Updated %@ months ago" = "%@개월 전에 업데이트됨";
 "Updated %@ weeks ago" = "%@주 전에 업데이트됨";
@@ -1052,6 +1106,9 @@
 "Upgrade to Archive" = "아카이브로 업그레이드";
 "Upgrade to Premium" = "프리미엄으로 업그레이드";
 "Upgrade to Premium Archive" = "프리미엄 아카이브로 업그레이드";
+"Usage Billing" = "사용량 결제";
+"Usage billing history" = "사용량 기반 결제 내역";
+"Usage-based billing is enabled for natural language classifiers." = "자연어 분류기의 사용량 기반 결제가 활성화되어 있습니다.";
 "Use %@" = "%@ 사용";
 "Use another sign-in method" = "다른 로그인 방법 사용";
 "Use both" = "둘 다 사용";
@@ -1114,6 +1171,8 @@
 "by %@" = "%@ 작성";
 "dislike" = "싫어요";
 "e.g. %@" = "예: %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "예: “AI 및 머신 러닝” 또는 “지역 정치”";
+"e.g., \"food photography\" or \"charts and graphs\"" = "예: “음식 사진” 또는 “차트와 그래프”";
 "like" = "좋아요";
 "no content" = "콘텐츠 없음";
 "no date" = "날짜 없음";
@@ -1121,5 +1180,12 @@
 "no story" = "스토리 없음";
 "or" = "또는";
 "premium subscribers" = "프리미엄 구독자";
+"set up usage-based billing" = "사용량 기반 결제 설정";
 "your account" = "내 계정";
 "‹ Feeds" = "‹ 피드";
+"✓ %2$@ of %1$@ images match this filter" = "이미지 %1$@개 중 %2$@개가 이 필터와 일치합니다";
+"✓ Image matches this filter" = "✓ 이미지가 이 필터와 일치합니다";
+"✓ Story matches this filter" = "✓ 스토리가 이 필터와 일치합니다";
+"✗ Image does not match this filter" = "✗ 이미지가 이 필터와 일치하지 않습니다";
+"✗ No images match this filter" = "✗ 이 필터와 일치하는 이미지가 없습니다";
+"✗ Story does not match this filter" = "✗ 스토리가 이 필터와 일치하지 않습니다";

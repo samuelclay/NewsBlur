@@ -11,6 +11,9 @@
 "%1$@ folder, collapsed, %2$@" = "%1$@フォルダー、折りたたみ済み、%2$@";
 "%1$@ followed %2$@." = "%1$@さんが%2$@さんをフォローしました。";
 "%1$@ of %2$@ sites indexed" = "%2$@件中%1$@件のサイトをインデックス済み";
+"%1$@ on all sites (%2$@)" = "すべてのサイトで%1$@（%2$@）";
+"%1$@ on folder (%2$@)" = "フォルダー内の%1$@（%2$@）";
+"%1$@ on this site (%2$@)" = "このサイトの%1$@（%2$@）";
 "%1$@ re-shared %2$@." = "%1$@が%2$@を再共有しました。";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@が%2$@を再共有しました：\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@さんが%2$@さんに返信しました：\n \n%3$@";
@@ -18,11 +21,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@が%2$@へのあなたの返信に返信しました：\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@が%2$@を共有しました。";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@さんが%2$@を共有しました：\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@、%2$@";
 "%@ Widget Sites" = "%@ ウィジェットサイト";
 "%@ ago" = "%@前";
 "%@ categories to choose from" = "%@個のカテゴリから選択";
 "%@ comments" = "コメント%@件";
+"%@ content filters" = "%@件のコンテンツフィルター";
 "%@ could not be added." = "%@を追加できませんでした。";
 "%@ days" = "%@日間";
 "%@ feed" = "%@ フィード";
@@ -33,6 +38,7 @@
 "%@ feeds selected" = "%@件のフィードを選択中";
 "%@ focused stories" = "フォーカス記事 %@ 件";
 "%@ folder" = "%@フォルダー";
+"%@ image filters" = "%@件の画像フィルター";
 "%@ is now following you." = "%@さんがあなたをフォローしました。";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
@@ -42,15 +48,21 @@
 "%@ sources" = "%@件のソース";
 "%@ stories" = "%@件の記事";
 "%@ stories left" = "残り%@件";
+"%@ stories/mo" = "%@件／月";
 "%@ stories/month" = "月あたり%@件の記事";
 "%@ subscribers" = "%@人の購読者";
 "%@ unread stories" = "%@件の未読記事";
+"%@/story" = "%@/記事";
 "%ldd ago" = "%ld日前";
 "%ldh ago" = "%ld時間前";
 "%ldm ago" = "%ld分前";
 "%ldw ago" = "%ld週間前";
+"(upcoming)" = "（予定）";
 "+ %@ more sites" = "ほか%@サイト";
 "..." = "…";
+"/day" = "/日";
+"/mo" = "/月";
+"/month" = "/月";
 "1 Widget Site" = "ウィジェットサイト 1 件";
 "1,000 stories" = "1,000件の記事";
 "10 stories" = "10件の記事";
@@ -71,6 +83,8 @@
 "< 60/month" = "月60件未満";
 "< 90/month" = "月90件未満";
 "A personal news reader bringing\npeople together to talk about the world." = "人々が世界について語り合うための、\nパーソナルニュースリーダー。";
+"AI Filter" = "AIフィルター";
+"AI filters are saved but won't run until you %@." = "AIフィルターは保存されましたが、%@まで実行されません。";
 "AI finds the stories" = "AIが記事を見つける";
 "ALL" = "すべて";
 "ALL NOTIFICATIONS" = "すべての通知";
@@ -139,7 +153,9 @@
 "Already have an account? Sign in" = "アカウントをお持ちですか？ログイン";
 "Already have feeds?" = "すでにフィードをお持ちですか？";
 "Also published by %@ sites" = "ほか%@サイトでも公開";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "AIフィルターは「いいね」と「低評価」を上書きしますが、「強い低評価」は上書きしません";
 "Analyze" = "分析";
+"Analyzing images..." = "画像を分析中...";
 "App Badge" = "アプリアイコンのバッジ";
 "App Icon" = "アプリアイコン";
 "Apply training across a folder" = "フォルダー全体に学習を適用";
@@ -216,6 +232,8 @@
 "Connect an existing account" = "既存のアカウントに接続";
 "Connect your account" = "アカウントを接続";
 "Connecting" = "接続中";
+"Content" = "コンテンツ";
+"Content Filter" = "コンテンツフィルター";
 "Continue" = "続行";
 "Control how much is included and how it is written" = "含める量と文章の書き方を調整";
 "Copied" = "コピーしました";
@@ -223,6 +241,9 @@
 "Coral Rose" = "コーラルローズ";
 "Could not completely clear the cache. Please try again." = "キャッシュを完全に消去できませんでした。もう一度お試しください。";
 "Could not save your language. Please try again." = "言語を保存できませんでした。もう一度お試しください。";
+"Couldn't load usage billing history." = "従量課金の履歴を読み込めませんでした。";
+"Couldn't open billing. Please try again." = "請求情報を開けませんでした。もう一度お試しください。";
+"Couldn't save your spending limit. Please try again." = "支出上限を保存できませんでした。もう一度お試しください。";
 "Couldn’t load the full image. You can try opening it in your browser." = "画像全体を読み込めませんでした。ブラウザーで開いてみてください。";
 "Counting is difficult..." = "数えるのは難しいですね…";
 "Create a feed from any web page" = "どのウェブページからでもフィードを作成";
@@ -263,6 +284,9 @@
 "Deleting saved search..." = "保存した検索を削除しています…";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "アカウントを完全に削除すると、フィード、保存した記事、アカウントデータが削除されます。この操作は取り消せません。";
 "Deleting..." = "削除中...";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "トピックを説明してください。AIが各記事をプロンプトに照らして評価し、一致する記事をフォーカスまたは非表示にします。";
+"Describe what to focus or hide" = "フォーカスまたは非表示にする内容を説明";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "探したい内容を説明してください。AIが各記事の画像をプロンプトに照らして分析します。";
 "Discover" = "見つける";
 "Discover more to read" = "もっと読むものを見つける";
 "Discover related sites" = "関連サイトを探す";
@@ -406,6 +430,8 @@
 "Hide toolbars when reading" = "記事を読むときにツールバーを非表示にする";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "どの選択肢も当てはまらない場合は、ページ上に表示されている記事のタイトルを入力してください。再分析します。";
 "Ignore system theme, use screen brightness instead" = "システムのテーマを無視して、画面の明るさを使用";
+"Image" = "画像";
+"Image Filter" = "画像フィルター";
 "Image Preview" = "画像プレビュー";
 "Image actions" = "画像のアクション";
 "Images from %@ days ago" = "%@日前の画像";
@@ -425,6 +451,7 @@
 "Include already-read stories" = "既読の記事を含める";
 "Include in bundle" = "バンドルに含める";
 "Included in bundle" = "バンドルに含まれています";
+"Increase or remove your limit" = "上限を引き上げる、または解除";
 "Infrequent Site Stories" = "更新頻度の低いサイトの記事";
 "Infrequent Stories" = "更新頻度の低いサイトの記事";
 "Infrequent stories per month" = "月あたりの低頻度記事数";
@@ -434,6 +461,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "システムのダーク／ライトモードに従う代わりに、画面の明るさに応じてテーマを自動で切り替えます。周囲の明るさに合わせてテーマを切り替えるのに便利です。";
 "Interactions" = "やり取り";
 "Invalid: %@" = "無効：%@";
+"Invoice" = "請求書";
 "Keeps the dark icon no matter how your device is set." = "デバイスの設定にかかわらず、暗いアイコンを維持します。";
 "Keeps the light icon no matter how your device is set." = "デバイスの設定にかかわらず、ライトアイコンを表示します。";
 "Keyboard Shortcuts" = "キーボードショートカット";
@@ -487,6 +515,8 @@
 "Manage" = "管理";
 "Manage Account on the Web" = "ウェブでアカウントを管理";
 "Manage Subscription" = "サブスクリプションを管理";
+"Manage billing and limits" = "請求と上限を管理";
+"Manage billing on Stripe" = "Stripeで請求を管理";
 "Manage this folder…" = "このフォルダーを管理…";
 "Manage this site…" = "このサイトを管理…";
 "Manual scroll" = "手動スクロール";
@@ -537,6 +567,8 @@
 "Medium [theme]" = "ミディアム";
 "Model" = "モデル";
 "Monday" = "月曜日";
+"Monthly spending limit" = "月間利用上限";
+"Monthly spending limit reached. " = "月間利用上限に達しました。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "記事を増やすとディスク容量を多く使いますが、それ以外にパフォーマンスへの目立った影響はありません。";
 "Morning" = "朝";
 "Morning Briefing" = "朝のブリーフィング";
@@ -569,6 +601,11 @@
 "NEXT" = "次へ";
 "Name" = "名前";
 "Name your folder to continue" = "続行するにはフォルダー名を入力してください";
+"Natural Language Image Classifier" = "自然言語画像分類器";
+"Natural Language Text Classifier" = "自然言語テキスト分類器";
+"Natural language classifier billing" = "自然言語分類器の請求";
+"Natural language classifiers are paused until next billing cycle. " = "自然言語分類器は次の請求サイクルまで一時停止されています。";
+"Natural language classifiers are using your instance's API keys." = "自然言語分類器は、このインスタンスのAPIキーを使用しています。";
 "Natural language text and image classifiers" = "自然言語のテキスト・画像分類器";
 "Nested" = "入れ子";
 "Never" = "しない";
@@ -602,7 +639,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "表示できるフィードがまだありません。別の興味のある項目を選ぶか、すべてのサイトを検索してください。";
 "No friends to suggest." = "おすすめできる友達はいません。";
 "No interests or sites found. Try another search." = "興味のある項目やサイトが見つかりません。別のキーワードで検索してください。";
+"No limit" = "上限なし";
 "No longer saved" = "保存されなくなりました";
+"No match" = "一致なし";
 "No match in story" = "記事内に一致する箇所がありません";
 "No matching sites" = "一致するサイトがありません";
 "No notifications yet." = "通知はまだありません。";
@@ -613,6 +652,8 @@
 "No stories yet" = "まだ記事がありません";
 "No story selected" = "記事が選択されていません";
 "No unread stories" = "未読の記事はありません";
+"No usage billing invoices yet." = "利用状況の請求書はまだありません。";
+"No usage billing set up." = "従量課金が設定されていません。";
 "None" = "なし";
 "Normal" = "標準";
 "Not included in bundle" = "バンドルに含まれていません";
@@ -655,6 +696,7 @@
 "Open story trainer" = "記事トレーナーを開く";
 "Open the next site/folder" = "次のサイト／フォルダーを開く";
 "Opening site…" = "サイトを開いています…";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "任意。上限に達すると分類器は一時停止し、次の請求サイクルに再開します。";
 "Options" = "オプション";
 "Ordered" = "並び順";
 "Organize Sites" = "サイトを整理";
@@ -778,6 +820,7 @@
 "Saved on %@" = "%@に保存";
 "Saving Daily Briefing settings…" = "デイリーブリーフィングの設定を保存中…";
 "Saving search..." = "検索を保存中...";
+"Saving..." = "保存中…";
 "Schedule" = "スケジュール";
 "Scroll horizontally" = "横スクロール";
 "Scroll to Comments" = "コメントまでスクロール";
@@ -806,6 +849,8 @@
 "Sepia Cocoa" = "セピアココア";
 "Server URL" = "サーバーURL";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "デイリーブリーフィングを設定して、あなたにとって重要な記事の要約を作成しましょう。";
+"Set up billing" = "請求を設定";
+"Set up usage-based billing to use natural language content and image filters." = "自然言語によるコンテンツフィルターと画像フィルターを使うには、従量課金を設定してください。";
 "Settings" = "設定";
 "Share" = "共有";
 "Share This Story" = "この記事を共有";
@@ -872,6 +917,7 @@
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "SpaceキーとShift-Spaceキーで、表示中の記事のこの割合分だけスクロールします。下端では、Spaceキーで次の未読記事を開きます。上端では、Shift-Spaceキーで前の記事を開きます。";
 "Space scroll amount" = "Spaceキーでスクロールする量";
 "Spacing" = "間隔";
+"Spending limit reached. Classifiers paused until next cycle." = "支出上限に達しました。分類器は次のサイクルまで一時停止されています。";
 "Stale — last story %@" = "更新停止 — 最後の記事は%@";
 "Standard" = "標準";
 "Start reading" = "読み始める";
@@ -902,12 +948,14 @@
 "Story count" = "記事数";
 "Story detail" = "記事の詳細";
 "Story image" = "記事の画像";
+"Story is always hidden" = "記事は常に非表示";
 "Story is hidden (super dislike wins)" = "記事は非表示（「強い低評価」が優先）";
 "Story is shown (like wins)" = "記事は表示（「いいね」が優先）";
 "Story list toolbar position" = "記事リストのツールバー位置";
 "Story options" = "記事のオプション";
 "Story order" = "記事の順序";
 "Story settings" = "記事の設定";
+"Story shows in Focus view" = "記事はフォーカスビューに表示されます";
 "Story title preview" = "記事タイトルのプレビュー";
 "Story titles" = "記事のタイトル";
 "Story titles layout" = "記事タイトルのレイアウト";
@@ -945,6 +993,11 @@
 "Tall [grid height]" = "高";
 "Teal Mint" = "ティールミント";
 "Terms of Use" = "利用規約";
+"Test failed" = "テストに失敗しました";
+"Test on these images" = "これらの画像でテスト";
+"Test on this image" = "この画像でテスト";
+"Test on this story" = "この記事でテスト";
+"Testing on this story..." = "この記事でテスト中…";
 "Text" = "テキスト";
 "Text Size" = "文字サイズ";
 "Text View" = "テキスト表示";
@@ -1041,6 +1094,7 @@
 "Unsave story" = "記事の保存を解除";
 "Unsave this story" = "この記事の保存を解除";
 "Unsaved" = "未保存";
+"Upcoming charge: " = "次回の請求額：";
 "Updated %@ days ago" = "%@日前に更新";
 "Updated %@ months ago" = "%@か月前に更新";
 "Updated %@ weeks ago" = "%@週間前に更新";
@@ -1052,6 +1106,9 @@
 "Upgrade to Archive" = "アーカイブにアップグレード";
 "Upgrade to Premium" = "プレミアムにアップグレード";
 "Upgrade to Premium Archive" = "プレミアムアーカイブにアップグレード";
+"Usage Billing" = "従量課金";
+"Usage billing history" = "従量課金の履歴";
+"Usage-based billing is enabled for natural language classifiers." = "自然言語分類器の従量課金が有効になっています。";
 "Use %@" = "%@を使用";
 "Use another sign-in method" = "別のサインイン方法を使う";
 "Use both" = "両方を使用";
@@ -1114,6 +1171,8 @@
 "by %@" = "著者：%@";
 "dislike" = "低評価";
 "e.g. %@" = "例：%@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "例：「AIと機械学習」または「地域政治」";
+"e.g., \"food photography\" or \"charts and graphs\"" = "例：「料理の写真」や「チャートとグラフ」";
 "like" = "いいね";
 "no content" = "コンテンツなし";
 "no date" = "日付なし";
@@ -1121,5 +1180,12 @@
 "no story" = "記事なし";
 "or" = "または";
 "premium subscribers" = "プレミアム購読者";
+"set up usage-based billing" = "従量課金を設定";
 "your account" = "あなたのアカウント";
 "‹ Feeds" = "‹ フィード";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ / %1$@ 枚の画像がこのフィルターに一致";
+"✓ Image matches this filter" = "✓ 画像がこのフィルターに一致";
+"✓ Story matches this filter" = "✓ 記事はこのフィルターに一致します";
+"✗ Image does not match this filter" = "✗ 画像はこのフィルターに一致しません";
+"✗ No images match this filter" = "✗ このフィルターに一致する画像はありません";
+"✗ Story does not match this filter" = "✗ 記事がこのフィルターに一致しません";

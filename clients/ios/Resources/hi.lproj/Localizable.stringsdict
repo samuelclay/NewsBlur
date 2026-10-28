@@ -66,6 +66,22 @@
 			<string>%@ टिप्पणियाँ</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ सामग्री फ़िल्टर</string>
+			<key>other</key>
+			<string>%@ कंटेंट फ़िल्टर</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -194,6 +210,22 @@
 			<string>%@ फ़ोकस लेख</string>
 		</dict>
 	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ छवि फ़िल्टर</string>
+			<key>other</key>
+			<string>%@ छवि फ़िल्टर</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -304,6 +336,22 @@
 			<string>%@ लेख बाकी</string>
 			<key>other</key>
 			<string>%@ लेख बाकी</string>
+		</dict>
+	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%@ लेख/माह</string>
+			<key>other</key>
+			<string>%@ लेख/माह</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -704,6 +752,22 @@
 			<string>आपने %@ साइट की सदस्यता ली है</string>
 			<key>other</key>
 			<string>आपने %@ साइटों की सदस्यता ली हुई है</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>✓ %2$@ में से %1$@ छवि इस फ़िल्टर से मेल खाती है</string>
+			<key>other</key>
+			<string>✓ %2$@ में से %1$@ छवियाँ इस फ़िल्टर से मेल खाती हैं</string>
 		</dict>
 	</dict>
 </dict>

@@ -1557,6 +1557,9 @@ msgstr "تعذّر حفظ القصة، لم يتم العثور عليها"
 msgid "Could not unsave story, not found"
 msgstr "تعذّر إلغاء حفظ القصة؛ لم يتم العثور عليها"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "تعذّر الاتصال بـ Stripe. يُرجى المحاولة مجددًا."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "الفترة المشمولة: %(start)s &ndash; %(end)s"
@@ -4043,6 +4046,9 @@ msgstr "لا يوجد نظام تدريب"
 msgid "No uncategorized archives found"
 msgstr "لم يُعثر على أرشيفات غير مصنفة"
 
+msgid "No usage billing set up."
+msgstr "لم تُعدّ الفوترة حسب الاستخدام."
+
 msgid "No user has that email address."
 msgstr "لا يوجد مستخدم بهذا البريد الإلكتروني."
 
@@ -4256,6 +4262,9 @@ msgstr "يُرجى إدخال عبارة بحث بالكلمات المفتاح�
 
 msgid "Please enter in an email address."
 msgstr "يُرجى إدخال عنوان بريد إلكتروني."
+
+msgid "Please log in to NewsBlur again."
+msgstr "يُرجى تسجيل الدخول إلى NewsBlur مجددًا."
 
 msgid "Please login to continue."
 msgstr "يرجى تسجيل الدخول للمتابعة."
@@ -6145,6 +6154,9 @@ msgstr "الفوترة حسب الاستخدام غير مفعّلة"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "يلزم تفعيل الفوترة حسب الاستخدام لمصنّفات الذكاء الاصطناعي"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "الفوترة حسب الاستخدام غير متاحة حاليًا."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

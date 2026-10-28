@@ -1485,6 +1485,9 @@ msgstr "Kan artikel niet opslaan; niet gevonden"
 msgid "Could not unsave story, not found"
 msgstr "Kan artikel niet uit opgeslagen artikelen verwijderen: niet gevonden"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Er kon geen verbinding worden gemaakt met Stripe. Probeer het opnieuw."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode: %(start)s &ndash; %(end)s"
@@ -4011,6 +4014,9 @@ msgstr "Geen trainingssysteem"
 msgid "No uncategorized archives found"
 msgstr "Geen niet-gecategoriseerde archieven gevonden"
 
+msgid "No usage billing set up."
+msgstr "Facturering op basis van gebruik is niet ingesteld."
+
 msgid "No user has that email address."
 msgstr "Er is geen gebruiker met dat e-mailadres."
 
@@ -4230,6 +4236,9 @@ msgstr "Voer een zoekopdracht op trefwoorden in."
 
 msgid "Please enter in an email address."
 msgstr "Voer een e-mailadres in."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Log opnieuw in bij NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Log in om door te gaan."
@@ -6126,6 +6135,9 @@ msgstr "Facturering op basis van gebruik is niet ingeschakeld"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Facturering op basis van gebruik vereist voor AI-classifiers"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Facturering op basis van gebruik is momenteel niet beschikbaar."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

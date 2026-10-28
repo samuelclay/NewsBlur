@@ -1487,6 +1487,9 @@ msgstr "Tidak dapat menyimpan artikel, tidak ditemukan"
 msgid "Could not unsave story, not found"
 msgstr "Tidak dapat membatalkan penyimpanan artikel, artikel tidak ditemukan"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Tidak dapat terhubung ke Stripe. Silakan coba lagi."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Periode cakupan: %(start)s &ndash; %(end)s"
@@ -4017,6 +4020,9 @@ msgstr "Tanpa sistem pelatihan"
 msgid "No uncategorized archives found"
 msgstr "Tidak ditemukan arsip tanpa kategori"
 
+msgid "No usage billing set up."
+msgstr "Penagihan berdasarkan penggunaan belum disiapkan."
+
 msgid "No user has that email address."
 msgstr "Tidak ada pengguna dengan alamat email tersebut."
 
@@ -4234,6 +4240,9 @@ msgstr "Masukkan kueri pencarian kata kunci."
 
 msgid "Please enter in an email address."
 msgstr "Masukkan alamat email."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Silakan masuk kembali ke NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Silakan masuk untuk melanjutkan."
@@ -6135,6 +6144,9 @@ msgstr "Penagihan berdasarkan pemakaian tidak diaktifkan"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Penagihan penggunaan diperlukan untuk pengklasifikasi AI"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Penagihan berdasarkan penggunaan tidak tersedia saat ini."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

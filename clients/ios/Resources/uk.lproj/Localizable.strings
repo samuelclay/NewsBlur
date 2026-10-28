@@ -11,6 +11,9 @@
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, згорнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ тепер стежить за %2$@.";
 "%1$@ of %2$@ sites indexed" = "Проіндексовано сайтів: %1$@ із %2$@";
+"%1$@ on all sites (%2$@)" = "%1$@ на всіх сайтах (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ у папці (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ на цьому сайті (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ повторно поширює %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ повторно поширює %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ відповідає користувачу %2$@: \n \n%3$@";
@@ -18,11 +21,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ відповідає на вашу відповідь до %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ поширює %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ поширює %2$@:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ сайти віджетів";
 "%@ ago" = "%@ тому";
 "%@ categories to choose from" = "На вибір %@ категорій";
 "%@ comments" = "%@ коментарів";
+"%@ content filters" = "%@ фільтрів вмісту";
 "%@ could not be added." = "Не вдалося додати стрічок: %@.";
 "%@ days" = "%@ днів";
 "%@ feed" = "стрічка %@";
@@ -33,6 +38,7 @@
 "%@ feeds selected" = "Вибрано %@ стрічок";
 "%@ focused stories" = "%@ вибраних статей";
 "%@ folder" = "Папка %@";
+"%@ image filters" = "%@ фільтрів зображень";
 "%@ is now following you." = "Тепер %@ стежить за вами.";
 "%@ opens" = "%@ відкриттів";
 "%@ or search" = "%@ або пошук";
@@ -42,15 +48,21 @@
 "%@ sources" = "%@ джерел";
 "%@ stories" = "%@ статей";
 "%@ stories left" = "Залишилося історій: %@";
+"%@ stories/mo" = "%@ статей на місяць";
 "%@ stories/month" = "%@ публікацій на місяць";
 "%@ subscribers" = "%@ підписників";
 "%@ unread stories" = "%@ непрочитаних статей";
+"%@/story" = "%@/статтю";
 "%ldd ago" = "%ld дн. тому";
 "%ldh ago" = "%ld год тому";
 "%ldm ago" = "%ld хв тому";
 "%ldw ago" = "%ld тиж. тому";
+"(upcoming)" = "(незабаром)";
 "+ %@ more sites" = "+ ще %@ сайтів";
 "..." = "...";
+"/day" = "/день";
+"/mo" = "/міс.";
+"/month" = "/місяць";
 "1 Widget Site" = "1 сайт віджета";
 "1,000 stories" = "1 000 статей";
 "10 stories" = "10 статей";
@@ -71,6 +83,8 @@
 "< 60/month" = "< 60/місяць";
 "< 90/month" = "< 90/місяць";
 "A personal news reader bringing\npeople together to talk about the world." = "Персональна програма для читання новин, що об’єднує\nлюдей для обговорення подій у світі.";
+"AI Filter" = "Фільтр зі ШІ";
+"AI filters are saved but won't run until you %@." = "Фільтри ШІ збережено, але вони не працюватимуть, доки ви не %@.";
 "AI finds the stories" = "ШІ знаходить статті";
 "ALL" = "УСІ";
 "ALL NOTIFICATIONS" = "УСІ СПОВІЩЕННЯ";
@@ -139,7 +153,9 @@
 "Already have an account? Sign in" = "Уже маєте обліковий запис? Увійти";
 "Already have feeds?" = "Уже маєте стрічки?";
 "Also published by %@ sites" = "Також опубліковано на %@ сайтах";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Фільтр зі ШІ має пріоритет над «Подобається» та «Не подобається», але не над «Дуже не подобається»";
 "Analyze" = "Аналізувати";
+"Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
 "App Icon" = "Іконка застосунку";
 "Apply training across a folder" = "Застосувати навчання до всієї папки";
@@ -216,6 +232,8 @@
 "Connect an existing account" = "Під’єднати наявний обліковий запис";
 "Connect your account" = "Підключіть свій обліковий запис";
 "Connecting" = "Підключення";
+"Content" = "Вміст";
+"Content Filter" = "Фільтр вмісту";
 "Continue" = "Продовжити";
 "Control how much is included and how it is written" = "Налаштуйте обсяг включеного вмісту та стиль його викладу";
 "Copied" = "Скопійовано";
@@ -223,6 +241,9 @@
 "Coral Rose" = "Коралово-рожевий";
 "Could not completely clear the cache. Please try again." = "Не вдалося повністю очистити кеш. Спробуйте ще раз.";
 "Could not save your language. Please try again." = "Не вдалося зберегти мову. Спробуйте ще раз.";
+"Couldn't load usage billing history." = "Не вдалося завантажити історію оплати за використання.";
+"Couldn't open billing. Please try again." = "Не вдалося відкрити розділ оплати. Спробуйте ще раз.";
+"Couldn't save your spending limit. Please try again." = "Не вдалося зберегти ліміт витрат. Спробуйте ще раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не вдалося завантажити зображення повністю. Спробуйте відкрити його у браузері.";
 "Counting is difficult..." = "Рахувати складно...";
 "Create a feed from any web page" = "Створити стрічку з будь-якої вебсторінки";
@@ -263,6 +284,9 @@
 "Deleting saved search..." = "Видалення збереженого пошуку...";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Після видалення облікового запису назавжди буде видалено ваші стрічки, збережені статті та дані облікового запису. Цю дію не можна скасувати.";
 "Deleting..." = "Видалення...";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Опишіть тему, і ШІ оцінить кожну статтю за вашим запитом, щоб виділяти або приховувати відповідні статті.";
+"Describe what to focus or hide" = "Опишіть, що виділяти або приховувати";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Опишіть, що потрібно знайти, і ШІ аналізуватиме зображення в кожній статті відповідно до вашого запиту.";
 "Discover" = "Знайти сайти";
 "Discover more to read" = "Знайдіть ще більше цікавого";
 "Discover related sites" = "Знайти схожі сайти";
@@ -406,6 +430,8 @@
 "Hide toolbars when reading" = "Приховувати панелі інструментів під час читання";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Якщо жоден варіант не підходить, введіть заголовок статті, яку бачите на сторінці, і ми проаналізуємо її ще раз.";
 "Ignore system theme, use screen brightness instead" = "Ігнорувати тему системи та використовувати яскравість екрана";
+"Image" = "Зображення";
+"Image Filter" = "Фільтр зображень";
 "Image Preview" = "Попередній перегляд зображення";
 "Image actions" = "Дії із зображеннями";
 "Images from %@ days ago" = "Зображення за %@ днів тому";
@@ -425,6 +451,7 @@
 "Include already-read stories" = "Включати вже прочитані статті";
 "Include in bundle" = "Додати до добірки";
 "Included in bundle" = "Входить до добірки";
+"Increase or remove your limit" = "Збільшити ліміт або прибрати його";
 "Infrequent Site Stories" = "Статті з нечасто оновлюваних сайтів";
 "Infrequent Stories" = "Нечасто оновлювані сайти";
 "Infrequent stories per month" = "Поріг нечасто оновлюваних сайтів";
@@ -434,6 +461,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Замість системного темного чи світлого режиму теми автоматично перемикаються залежно від яскравості екрана. Це зручно, щоб підлаштовувати тему до навколишнього освітлення.";
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
+"Invoice" = "Рахунок";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";
 "Keyboard Shortcuts" = "Комбінації клавіш";
@@ -487,6 +515,8 @@
 "Manage" = "Керувати";
 "Manage Account on the Web" = "Керування обліковим записом у вебверсії";
 "Manage Subscription" = "Керувати підпискою";
+"Manage billing and limits" = "Керувати оплатою та лімітами";
+"Manage billing on Stripe" = "Керувати оплатою в Stripe";
 "Manage this folder…" = "Керувати цією папкою…";
 "Manage this site…" = "Керувати цим сайтом…";
 "Manual scroll" = "Прокручування вручну";
@@ -537,6 +567,8 @@
 "Medium [theme]" = "Сіра";
 "Model" = "Модель";
 "Monday" = "Понеділок";
+"Monthly spending limit" = "Місячний ліміт витрат";
+"Monthly spending limit reached. " = "Місячний ліміт витрат вичерпано. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість статей займає більше місця на диску, але майже не впливає на продуктивність.";
 "Morning" = "Ранок";
 "Morning Briefing" = "Ранковий огляд";
@@ -569,6 +601,11 @@
 "NEXT" = "ДАЛІ";
 "Name" = "Назва";
 "Name your folder to continue" = "Назвіть папку, щоб продовжити";
+"Natural Language Image Classifier" = "Класифікатор зображень природною мовою";
+"Natural Language Text Classifier" = "Текстовий класифікатор природною мовою";
+"Natural language classifier billing" = "Оплата за використання класифікатора природною мовою";
+"Natural language classifiers are paused until next billing cycle. " = "Класифікатори природною мовою призупинено до наступного платіжного циклу. ";
+"Natural language classifiers are using your instance's API keys." = "Класифікатори природної мови використовують ключі API вашого екземпляра.";
 "Natural language text and image classifiers" = "Класифікатори тексту й зображень на основі природної мови";
 "Nested" = "Вкладений";
 "Never" = "Ніколи";
@@ -602,7 +639,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Стрічок поки немає. Спробуйте вибрати інший інтерес або пошукати на всіх сайтах.";
 "No friends to suggest." = "Немає друзів, яких можна запропонувати.";
 "No interests or sites found. Try another search." = "Інтересів або сайтів не знайдено. Спробуйте інший пошуковий запит.";
+"No limit" = "Без обмежень";
 "No longer saved" = "Більше не збережено";
+"No match" = "Немає збігів";
 "No match in story" = "Збігів у статті немає";
 "No matching sites" = "Відповідних сайтів не знайдено";
 "No notifications yet." = "Сповіщень поки немає.";
@@ -613,6 +652,8 @@
 "No stories yet" = "Статей поки немає";
 "No story selected" = "Статтю не вибрано";
 "No unread stories" = "Немає непрочитаних статей";
+"No usage billing invoices yet." = "Рахунків за використання ще немає.";
+"No usage billing set up." = "Оплату за використання не налаштовано.";
 "None" = "Немає";
 "Normal" = "Звичайний";
 "Not included in bundle" = "Не включено до добірки";
@@ -655,6 +696,7 @@
 "Open story trainer" = "Відкрити навчання за статтею";
 "Open the next site/folder" = "Відкрити наступний сайт/папку";
 "Opening site…" = "Відкриваємо сайт…";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Необов’язково. Класифікатори призупиняються після досягнення ліміту й відновлюють роботу в наступному платіжному циклі.";
 "Options" = "Параметри";
 "Ordered" = "Упорядковано";
 "Organize Sites" = "Упорядкувати сайти";
@@ -778,6 +820,7 @@
 "Saved on %@" = "Збережено %@";
 "Saving Daily Briefing settings…" = "Збереження налаштувань щоденного огляду…";
 "Saving search..." = "Збереження пошуку...";
+"Saving..." = "Збереження…";
 "Schedule" = "Розклад";
 "Scroll horizontally" = "Прокручувати горизонтально";
 "Scroll to Comments" = "Перейти до коментарів";
@@ -806,6 +849,8 @@
 "Sepia Cocoa" = "Сепія какао";
 "Server URL" = "URL-адреса сервера";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Налаштуйте щоденний огляд, щоб створювати підсумок найважливіших для вас статей.";
+"Set up billing" = "Налаштувати оплату";
+"Set up usage-based billing to use natural language content and image filters." = "Налаштуйте оплату за використання, щоб користуватися фільтрами вмісту й зображень природною мовою.";
 "Settings" = "Налаштування";
 "Share" = "Поділитися";
 "Share This Story" = "Поділитися цією статтею";
@@ -872,6 +917,7 @@
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Пробіл і Shift+Пробіл прокручують видиму статтю на цей відсоток. Унизу пробіл відкриває наступну непрочитану статтю. Угорі Shift+Пробіл відкриває попередню статтю.";
 "Space scroll amount" = "Величина прокручування пробілом";
 "Spacing" = "Інтервали";
+"Spending limit reached. Classifiers paused until next cycle." = "Ліміт витрат досягнуто. Класифікатори призупинено до наступного циклу.";
 "Stale — last story %@" = "Неактивний — остання стаття %@";
 "Standard" = "Стандартний";
 "Start reading" = "Почати читання";
@@ -902,12 +948,14 @@
 "Story count" = "Кількість статей";
 "Story detail" = "Деталі статті";
 "Story image" = "Зображення статті";
+"Story is always hidden" = "Статтю завжди приховано";
 "Story is hidden (super dislike wins)" = "Статтю приховано («Дуже не подобається» важливіше)";
 "Story is shown (like wins)" = "Статтю показано («Подобається» важливіше)";
 "Story list toolbar position" = "Розташування панелі інструментів списку статей";
 "Story options" = "Параметри статті";
 "Story order" = "Порядок статей";
 "Story settings" = "Налаштування статті";
+"Story shows in Focus view" = "Стаття відображається в режимі «Фокус»";
 "Story title preview" = "Попередній перегляд заголовка статті";
 "Story titles" = "Заголовки статей";
 "Story titles layout" = "Макет заголовків статей";
@@ -945,6 +993,11 @@
 "Tall [grid height]" = "Високий";
 "Teal Mint" = "Бірюзова м’ята";
 "Terms of Use" = "Умови використання";
+"Test failed" = "Не вдалося виконати тест";
+"Test on these images" = "Перевірити на цих зображеннях";
+"Test on this image" = "Перевірити на цьому зображенні";
+"Test on this story" = "Перевірити на цій статті";
+"Testing on this story..." = "Перевірка цієї статті…";
 "Text" = "Текст";
 "Text Size" = "Розмір тексту";
 "Text View" = "Текстовий вигляд";
@@ -1041,6 +1094,7 @@
 "Unsave story" = "Прибрати зі збережених";
 "Unsave this story" = "Прибрати цю статтю зі збережених";
 "Unsaved" = "Не збережено";
+"Upcoming charge: " = "Наступне списання: ";
 "Updated %@ days ago" = "Оновлено %@ днів тому";
 "Updated %@ months ago" = "Оновлено %@ місяців тому";
 "Updated %@ weeks ago" = "Оновлено %@ тижнів тому";
@@ -1052,6 +1106,9 @@
 "Upgrade to Archive" = "Перейти на Archive";
 "Upgrade to Premium" = "Перейдіть на Premium";
 "Upgrade to Premium Archive" = "Перейдіть на Premium Archive";
+"Usage Billing" = "Оплата за використання";
+"Usage billing history" = "Історія оплати за використання";
+"Usage-based billing is enabled for natural language classifiers." = "Для класифікаторів природної мови ввімкнено оплату за використання.";
 "Use %@" = "Використовувати мову: %@";
 "Use another sign-in method" = "Скористатися іншим способом входу";
 "Use both" = "Використовувати обидва";
@@ -1114,6 +1171,8 @@
 "by %@" = "від %@";
 "dislike" = "не подобається";
 "e.g. %@" = "наприклад, %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "Наприклад: «ШІ та машинне навчання» або «місцева політика»";
+"e.g., \"food photography\" or \"charts and graphs\"" = "Наприклад, «фуд-фотографія» або «діаграми та графіки»";
 "like" = "подобається";
 "no content" = "немає вмісту";
 "no date" = "без дати";
@@ -1121,5 +1180,12 @@
 "no story" = "немає статті";
 "or" = "або";
 "premium subscribers" = "передплатники Premium";
+"set up usage-based billing" = "Налаштувати оплату за використання";
 "your account" = "ваш обліковий запис";
 "‹ Feeds" = "‹ Стрічки";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ із %1$@ зображень відповідають цьому фільтру";
+"✓ Image matches this filter" = "✓ Зображення відповідає цьому фільтру";
+"✓ Story matches this filter" = "✓ Стаття відповідає цьому фільтру";
+"✗ Image does not match this filter" = "✗ Зображення не відповідає цьому фільтру";
+"✗ No images match this filter" = "✗ Жодне зображення не відповідає цьому фільтру";
+"✗ Story does not match this filter" = "✗ Стаття не відповідає цьому фільтру";

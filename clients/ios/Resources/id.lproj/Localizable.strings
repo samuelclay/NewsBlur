@@ -11,6 +11,9 @@
 "%1$@ folder, collapsed, %2$@" = "Folder %1$@, diciutkan, %2$@";
 "%1$@ followed %2$@." = "%1$@ mengikuti %2$@.";
 "%1$@ of %2$@ sites indexed" = "%1$@ dari %2$@ situs telah diindeks";
+"%1$@ on all sites (%2$@)" = "%1$@ di semua situs (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ di folder (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ di situs ini (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ membagikan ulang %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ membagikan ulang %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ membalas %2$@: \n \n%3$@";
@@ -18,11 +21,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ membalas balasan Anda di %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ membagikan %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ membagikan %2$@:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Situs Widget";
 "%@ ago" = "%@ yang lalu";
 "%@ categories to choose from" = "%@ kategori yang bisa dipilih";
 "%@ comments" = "%@ komentar";
+"%@ content filters" = "%@ filter konten";
 "%@ could not be added." = "%@ feed tidak dapat ditambahkan.";
 "%@ days" = "%@ hari";
 "%@ feed" = "%@ feed";
@@ -33,6 +38,7 @@
 "%@ feeds selected" = "%@ feed dipilih";
 "%@ focused stories" = "%@ artikel terpilih";
 "%@ folder" = "Folder %@";
+"%@ image filters" = "filter gambar %@";
 "%@ is now following you." = "%@ kini mengikuti Anda.";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
@@ -42,15 +48,21 @@
 "%@ sources" = "%@ sumber";
 "%@ stories" = "%@ artikel";
 "%@ stories left" = "Sisa %@ artikel";
+"%@ stories/mo" = "%@ artikel/bln";
 "%@ stories/month" = "%@ artikel/bulan";
 "%@ subscribers" = "%@ pelanggan";
 "%@ unread stories" = "%@ artikel belum dibaca";
+"%@/story" = "%@/artikel";
 "%ldd ago" = "%ld hari lalu";
 "%ldh ago" = "%ld jam yang lalu";
 "%ldm ago" = "%ld menit yang lalu";
 "%ldw ago" = "%ld minggu lalu";
+"(upcoming)" = "(akan datang)";
 "+ %@ more sites" = "+ %@ situs lainnya";
 "..." = "...";
+"/day" = "/hari";
+"/mo" = "/bln";
+"/month" = "/bulan";
 "1 Widget Site" = "1 Situs Widget";
 "1,000 stories" = "1.000 artikel";
 "10 stories" = "10 artikel";
@@ -71,6 +83,8 @@
 "< 60/month" = "< 60/bulan";
 "< 90/month" = "< 90/bulan";
 "A personal news reader bringing\npeople together to talk about the world." = "Pembaca berita pribadi yang menyatukan\norang-orang untuk membicarakan dunia.";
+"AI Filter" = "Filter AI";
+"AI filters are saved but won't run until you %@." = "Filter AI tersimpan, tetapi tidak akan berjalan sampai Anda %@.";
 "AI finds the stories" = "AI menemukan artikel";
 "ALL" = "SEMUA";
 "ALL NOTIFICATIONS" = "SEMUA NOTIFIKASI";
@@ -139,7 +153,9 @@
 "Already have an account? Sign in" = "Sudah punya akun? Masuk";
 "Already have feeds?" = "Sudah punya feed?";
 "Also published by %@ sites" = "Juga diterbitkan oleh %@ situs";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sangat Tidak Suka";
 "Analyze" = "Analisis";
+"Analyzing images..." = "Menganalisis gambar...";
 "App Badge" = "Lencana Aplikasi";
 "App Icon" = "Ikon Aplikasi";
 "Apply training across a folder" = "Terapkan pelatihan ke seluruh folder";
@@ -216,6 +232,8 @@
 "Connect an existing account" = "Hubungkan akun yang sudah ada";
 "Connect your account" = "Hubungkan akun Anda";
 "Connecting" = "Menghubungkan";
+"Content" = "Konten";
+"Content Filter" = "Filter Konten";
 "Continue" = "Lanjutkan";
 "Control how much is included and how it is written" = "Atur seberapa banyak yang disertakan dan cara penulisannya";
 "Copied" = "Disalin";
@@ -223,6 +241,9 @@
 "Coral Rose" = "Mawar Koral";
 "Could not completely clear the cache. Please try again." = "Tidak dapat mengosongkan cache sepenuhnya. Silakan coba lagi.";
 "Could not save your language. Please try again." = "Bahasa Anda tidak dapat disimpan. Silakan coba lagi.";
+"Couldn't load usage billing history." = "Tidak dapat memuat riwayat penagihan berdasarkan penggunaan.";
+"Couldn't open billing. Please try again." = "Tidak dapat membuka penagihan. Silakan coba lagi.";
+"Couldn't save your spending limit. Please try again." = "Batas pengeluaran Anda tidak dapat disimpan. Silakan coba lagi.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Gambar penuh tidak dapat dimuat. Anda dapat mencoba membukanya di browser.";
 "Counting is difficult..." = "Menghitung itu sulit...";
 "Create a feed from any web page" = "Buat feed dari halaman web mana pun";
@@ -263,6 +284,9 @@
 "Deleting saved search..." = "Menghapus pencarian tersimpan...";
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Menghapus akun secara permanen akan menghapus feed, artikel tersimpan, dan data akun Anda. Tindakan ini tidak dapat dibatalkan.";
 "Deleting..." = "Menghapus...";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Jelaskan topik, lalu AI akan memberi skor pada setiap artikel berdasarkan instruksi Anda untuk menyorot atau menyembunyikan artikel yang cocok.";
+"Describe what to focus or hide" = "Jelaskan apa yang ingin difokuskan atau disembunyikan";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Jelaskan hal yang perlu dicari, lalu AI akan menganalisis gambar pada setiap artikel berdasarkan instruksi Anda.";
 "Discover" = "Temukan";
 "Discover more to read" = "Temukan bacaan lainnya";
 "Discover related sites" = "Temukan situs terkait";
@@ -406,6 +430,8 @@
 "Hide toolbars when reading" = "Sembunyikan bilah alat saat membaca";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Jika tidak ada opsi yang cocok, ketik judul artikel yang terlihat di halaman dan kami akan menganalisis ulang.";
 "Ignore system theme, use screen brightness instead" = "Abaikan tema sistem, gunakan kecerahan layar";
+"Image" = "Gambar";
+"Image Filter" = "Filter Gambar";
 "Image Preview" = "Pratinjau gambar";
 "Image actions" = "Tindakan gambar";
 "Images from %@ days ago" = "Gambar dari %@ hari yang lalu";
@@ -425,6 +451,7 @@
 "Include already-read stories" = "Sertakan artikel yang sudah dibaca";
 "Include in bundle" = "Sertakan dalam bundel";
 "Included in bundle" = "Termasuk dalam bundel";
+"Increase or remove your limit" = "Tingkatkan atau hapus batas Anda";
 "Infrequent Site Stories" = "Artikel Situs yang Jarang Diperbarui";
 "Infrequent Stories" = "Artikel yang Jarang Muncul";
 "Infrequent stories per month" = "Artikel tidak rutin per bulan";
@@ -434,6 +461,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Alih-alih mengikuti mode gelap/terang sistem, tema akan berganti otomatis berdasarkan tingkat kecerahan layar Anda. Berguna untuk menyesuaikan tema dengan pencahayaan sekitar.";
 "Interactions" = "Interaksi";
 "Invalid: %@" = "Tidak valid: %@";
+"Invoice" = "Faktur";
 "Keeps the dark icon no matter how your device is set." = "Tetap menggunakan ikon gelap terlepas dari pengaturan perangkat Anda.";
 "Keeps the light icon no matter how your device is set." = "Ikon terang tetap digunakan, apa pun pengaturan perangkat Anda.";
 "Keyboard Shortcuts" = "Pintasan Keyboard";
@@ -487,6 +515,8 @@
 "Manage" = "Kelola";
 "Manage Account on the Web" = "Kelola Akun di Web";
 "Manage Subscription" = "Kelola Langganan";
+"Manage billing and limits" = "Kelola penagihan dan batas";
+"Manage billing on Stripe" = "Kelola penagihan di Stripe";
 "Manage this folder…" = "Kelola folder ini…";
 "Manage this site…" = "Kelola situs ini…";
 "Manual scroll" = "Gulir manual";
@@ -537,6 +567,8 @@
 "Medium [theme]" = "Abu-abu";
 "Model" = "Model";
 "Monday" = "Senin";
+"Monthly spending limit" = "Batas pengeluaran bulanan";
+"Monthly spending limit reached. " = "Batas pengeluaran bulanan tercapai. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Semakin banyak artikel, semakin besar ruang disk yang digunakan, tetapi selain itu tidak ada dampak nyata pada kinerja.";
 "Morning" = "Pagi";
 "Morning Briefing" = "Ringkasan Pagi";
@@ -569,6 +601,11 @@
 "NEXT" = "BERIKUTNYA";
 "Name" = "Nama";
 "Name your folder to continue" = "Beri nama folder Anda untuk melanjutkan";
+"Natural Language Image Classifier" = "Pengklasifikasi Gambar Bahasa Alami";
+"Natural Language Text Classifier" = "Pengklasifikasi Teks Bahasa Alami";
+"Natural language classifier billing" = "Penagihan pengklasifikasi bahasa alami";
+"Natural language classifiers are paused until next billing cycle. " = "Pengklasifikasi bahasa alami dijeda hingga siklus penagihan berikutnya. ";
+"Natural language classifiers are using your instance's API keys." = "Pengklasifikasi bahasa alami menggunakan kunci API instans Anda.";
 "Natural language text and image classifiers" = "Pengklasifikasi teks dan gambar berbasis bahasa alami";
 "Nested" = "Bertingkat";
 "Never" = "Tidak pernah";
@@ -602,7 +639,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Belum ada feed untuk ditampilkan. Coba minat lain atau telusuri semua situs.";
 "No friends to suggest." = "Tidak ada teman untuk disarankan.";
 "No interests or sites found. Try another search." = "Minat atau situs tidak ditemukan. Coba penelusuran lain.";
+"No limit" = "Tanpa batas";
 "No longer saved" = "Tidak lagi disimpan";
+"No match" = "Tidak cocok";
 "No match in story" = "Tidak ada kecocokan di artikel";
 "No matching sites" = "Tidak ada situs yang cocok";
 "No notifications yet." = "Belum ada notifikasi.";
@@ -613,6 +652,8 @@
 "No stories yet" = "Belum ada artikel";
 "No story selected" = "Tidak ada artikel yang dipilih";
 "No unread stories" = "Tidak ada artikel yang belum dibaca";
+"No usage billing invoices yet." = "Belum ada faktur penagihan penggunaan.";
+"No usage billing set up." = "Penagihan berdasarkan penggunaan belum disiapkan.";
 "None" = "Tidak ada";
 "Normal" = "Normal";
 "Not included in bundle" = "Tidak disertakan dalam bundel";
@@ -655,6 +696,7 @@
 "Open story trainer" = "Buka pelatih artikel";
 "Open the next site/folder" = "Buka situs/folder berikutnya";
 "Opening site…" = "Membuka situs…";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Opsional. Pengklasifikasi dijeda saat batas tercapai dan dilanjutkan pada siklus penagihan berikutnya.";
 "Options" = "Opsi";
 "Ordered" = "Diurutkan";
 "Organize Sites" = "Atur Situs";
@@ -778,6 +820,7 @@
 "Saved on %@" = "Disimpan pada %@";
 "Saving Daily Briefing settings…" = "Menyimpan pengaturan Ringkasan Harian…";
 "Saving search..." = "Menyimpan pencarian...";
+"Saving..." = "Menyimpan...";
 "Schedule" = "Jadwal";
 "Scroll horizontally" = "Gulir horizontal";
 "Scroll to Comments" = "Gulir ke Komentar";
@@ -806,6 +849,8 @@
 "Sepia Cocoa" = "Kakao Sepia";
 "Server URL" = "URL server";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Siapkan Ringkasan Harian untuk membuat rangkuman artikel yang paling penting bagi Anda.";
+"Set up billing" = "Siapkan penagihan";
+"Set up usage-based billing to use natural language content and image filters." = "Siapkan penagihan berdasarkan penggunaan untuk menggunakan filter konten dan gambar dengan bahasa alami.";
 "Settings" = "Pengaturan";
 "Share" = "Bagikan";
 "Share This Story" = "Bagikan Artikel Ini";
@@ -872,6 +917,7 @@
 "Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story." = "Space dan Shift-Space menggulir artikel yang terlihat sebesar persentase ini. Di bagian bawah, Space membuka artikel belum dibaca berikutnya. Di bagian atas, Shift-Space membuka artikel sebelumnya.";
 "Space scroll amount" = "Jumlah guliran Space";
 "Spacing" = "Jarak";
+"Spending limit reached. Classifiers paused until next cycle." = "Batas pengeluaran tercapai. Pengklasifikasi dijeda hingga siklus berikutnya.";
 "Stale — last story %@" = "Usang — artikel terakhir %@";
 "Standard" = "Standar";
 "Start reading" = "Mulai membaca";
@@ -902,12 +948,14 @@
 "Story count" = "Jumlah artikel";
 "Story detail" = "Detail artikel";
 "Story image" = "Gambar artikel";
+"Story is always hidden" = "Artikel selalu disembunyikan";
 "Story is hidden (super dislike wins)" = "Artikel disembunyikan (sangat tidak suka menang)";
 "Story is shown (like wins)" = "Artikel ditampilkan (suka menang)";
 "Story list toolbar position" = "Posisi bilah alat daftar artikel";
 "Story options" = "Opsi artikel";
 "Story order" = "Urutan artikel";
 "Story settings" = "Pengaturan artikel";
+"Story shows in Focus view" = "Artikel ditampilkan di tampilan Fokus";
 "Story title preview" = "Pratinjau judul artikel";
 "Story titles" = "Judul artikel";
 "Story titles layout" = "Tata letak judul artikel";
@@ -945,6 +993,11 @@
 "Tall [grid height]" = "Tinggi";
 "Teal Mint" = "Mint Teal";
 "Terms of Use" = "Ketentuan Penggunaan";
+"Test failed" = "Pengujian gagal";
+"Test on these images" = "Uji pada gambar-gambar ini";
+"Test on this image" = "Uji pada gambar ini";
+"Test on this story" = "Uji pada artikel ini";
+"Testing on this story..." = "Menguji artikel ini...";
 "Text" = "Teks";
 "Text Size" = "Ukuran teks";
 "Text View" = "Tampilan teks";
@@ -1041,6 +1094,7 @@
 "Unsave story" = "Batal simpan artikel";
 "Unsave this story" = "Batal simpan artikel ini";
 "Unsaved" = "Batal disimpan";
+"Upcoming charge: " = "Tagihan berikutnya: ";
 "Updated %@ days ago" = "Diperbarui %@ hari lalu";
 "Updated %@ months ago" = "Diperbarui %@ bulan lalu";
 "Updated %@ weeks ago" = "Diperbarui %@ minggu lalu";
@@ -1052,6 +1106,9 @@
 "Upgrade to Archive" = "Tingkatkan ke Archive";
 "Upgrade to Premium" = "Tingkatkan ke Premium";
 "Upgrade to Premium Archive" = "Tingkatkan ke Premium Archive";
+"Usage Billing" = "Penagihan Penggunaan";
+"Usage billing history" = "Riwayat penagihan berdasarkan penggunaan";
+"Usage-based billing is enabled for natural language classifiers." = "Penagihan berdasarkan penggunaan diaktifkan untuk pengklasifikasi bahasa alami.";
 "Use %@" = "Gunakan %@";
 "Use another sign-in method" = "Gunakan metode masuk lain";
 "Use both" = "Gunakan keduanya";
@@ -1114,6 +1171,8 @@
 "by %@" = "oleh %@";
 "dislike" = "tidak suka";
 "e.g. %@" = "misalnya %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "misalnya, \"AI dan pembelajaran mesin\" atau \"politik lokal\"";
+"e.g., \"food photography\" or \"charts and graphs\"" = "misalnya, \"fotografi makanan\" atau \"diagram dan grafik\"";
 "like" = "suka";
 "no content" = "tanpa konten";
 "no date" = "tanpa tanggal";
@@ -1121,5 +1180,12 @@
 "no story" = "tidak ada artikel";
 "or" = "atau";
 "premium subscribers" = "pelanggan premium";
+"set up usage-based billing" = "menyiapkan penagihan berdasarkan penggunaan";
 "your account" = "akun Anda";
 "‹ Feeds" = "‹ Feed";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ dari %1$@ gambar cocok dengan filter ini";
+"✓ Image matches this filter" = "✓ Gambar cocok dengan filter ini";
+"✓ Story matches this filter" = "✓ Artikel cocok dengan filter ini";
+"✗ Image does not match this filter" = "✗ Gambar tidak cocok dengan filter ini";
+"✗ No images match this filter" = "✗ Tidak ada gambar yang cocok dengan filter ini";
+"✗ Story does not match this filter" = "✗ Artikel tidak cocok dengan filter ini";
