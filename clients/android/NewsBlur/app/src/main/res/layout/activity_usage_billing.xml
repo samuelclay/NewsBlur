@@ -117,6 +117,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:layout_marginTop="16dp"
+                        android:letterSpacing="0"
                         android:textAllCaps="false"
                         app:cornerRadius="8dp" />
 
@@ -180,6 +181,7 @@
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
                                 android:text="@string/usage_billing_limit_save"
+                                android:letterSpacing="0"
                                 android:textAllCaps="false"
                                 app:cornerRadius="6dp" />
 

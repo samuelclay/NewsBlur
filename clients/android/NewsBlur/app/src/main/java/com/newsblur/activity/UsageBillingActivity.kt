@@ -224,7 +224,7 @@ class UsageBillingActivity : NbActivity() {
     private fun render() {
         binding.billingStatus.setText(
             when {
-                billing.isUsageBilling -> R.string.usage_billing_status_enabled
+                billing.hasUsageBilling -> R.string.usage_billing_status_enabled
                 billing.isSelfHostedAi -> R.string.usage_billing_status_self_hosted
                 else -> R.string.usage_billing_status_off
             },

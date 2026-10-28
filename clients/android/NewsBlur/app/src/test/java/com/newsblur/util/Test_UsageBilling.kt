@@ -41,6 +41,11 @@ class Test_UsageBilling {
         assertEquals(UsageBillingAction.MANAGE, UsageBillingState(isUsageBilling = true, canUseAiClassifiers = true).action)
         assertEquals("Self-hosted AI has no billing buttons", UsageBillingAction.NONE, UsageBillingState(isSelfHostedAi = true, canUseAiClassifiers = true).action)
         assertEquals(UsageBillingAction.MANAGE, UsageBillingState(isUsageBilling = true, isSelfHostedAi = true).action)
+        assertEquals(
+            "Being able to use AI without self-hosting means billing is set up",
+            UsageBillingAction.MANAGE,
+            UsageBillingState(canUseAiClassifiers = true).action,
+        )
     }
 
     @Test

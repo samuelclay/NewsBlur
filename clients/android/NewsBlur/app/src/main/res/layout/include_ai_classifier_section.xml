@@ -83,6 +83,7 @@
             android:insetBottom="0dp"
             android:maxWidth="150dp"
             android:paddingHorizontal="10dp"
+            android:letterSpacing="0"
             android:textAllCaps="false"
             android:textSize="12sp"
             app:cornerRadius="6dp" />
@@ -136,6 +137,7 @@
             android:insetBottom="0dp"
             android:maxWidth="140dp"
             android:paddingHorizontal="10dp"
+            android:letterSpacing="0"
             android:textAllCaps="false"
             android:textSize="12sp"
             android:visibility="gone"

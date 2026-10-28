@@ -14,11 +14,19 @@ data class UsageBillingState(
     val canUseAiClassifiers: Boolean = false,
     val usageBillingLimit: Double? = null,
 ) {
+    /**
+     * apps/profile/models.py can_use_ai_classifiers is usage billing or self-hosted AI, so an
+     * account that can use AI without self-hosting has billing set up, even when the server or a
+     * stale sync hasn't sent is_usage_billing.
+     */
+    val hasUsageBilling: Boolean
+        get() = isUsageBilling || (canUseAiClassifiers && !isSelfHostedAi)
+
     /** The action the billing buttons offer, following media/js/newsblur/reader/reader_account.js. */
     val action: UsageBillingAction
         get() =
             when {
-                isUsageBilling -> UsageBillingAction.MANAGE
+                hasUsageBilling -> UsageBillingAction.MANAGE
                 isSelfHostedAi -> UsageBillingAction.NONE
                 else -> UsageBillingAction.SET_UP
             }

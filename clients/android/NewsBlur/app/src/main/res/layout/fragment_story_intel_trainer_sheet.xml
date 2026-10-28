@@ -30,11 +30,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- A zero height with weight lets the scrolling content shrink to fit, so the AI classifier
+         sections can't push the save buttons below the screen. -->
     <include
         android:id="@+id/train_content"
         layout="@layout/dialog_trainstory"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
