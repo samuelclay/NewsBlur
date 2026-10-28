@@ -101,6 +101,15 @@
         android:orientation="vertical"
     />
 
+    <!-- fragment/AiClassifierSections.kt adds the natural language classifier sections here. -->
+    <LinearLayout
+        android:id="@+id/ai_classifier_container"
+        android:layout_below="@id/existing_feed_intel_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+    />
+
 </RelativeLayout>
 
 </LinearLayout>

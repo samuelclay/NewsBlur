@@ -21,6 +21,9 @@ import com.newsblur.databinding.FragmentStoryIntelTrainerSheetBinding;
 import com.newsblur.design.ReaderSheetPalette;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.di.ThumbnailLoader;
+import com.newsblur.network.ClassifierApi;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.FeedSet;
@@ -44,10 +47,18 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
     @Inject
     PrefsRepo prefsRepo;
 
+    @Inject
+    ClassifierApi classifierApi;
+
+    @Inject
+    @ThumbnailLoader
+    ImageLoader thumbnailLoader;
+
     private Story story;
     private FeedSet fs;
     private Classifier classifier;
     private Integer newTitleTraining;
+    private AiClassifierSections aiSections;
     private DialogTrainstoryBinding contentBinding;
     private FragmentStoryIntelTrainerSheetBinding binding;
 
@@ -173,6 +184,11 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, story.feedId);
         contentBinding.existingFeedIntelContainer.addView(rowFeed);
 
+        // the natural language text and image classifiers, as on the web trainer
+        aiSections = new AiClassifierSections(this, contentBinding.aiClassifierContainer, classifier, story, story.feedId,
+                prefsRepo.getResolvedTheme(requireContext()), prefsRepo, dbHelper, classifierApi, thumbnailLoader);
+        aiSections.bind();
+
         binding.cancelButton.setOnClickListener(v -> dismiss());
         binding.saveButton.setOnClickListener(v -> saveAndDismiss());
     }
@@ -181,6 +197,7 @@ public class StoryIntelTrainerFragment extends BottomSheetDialogFragment {
         if ((newTitleTraining != null) && (!TextUtils.isEmpty(contentBinding.intelTitleSelection.getSelection()))) {
             classifier.title.put(contentBinding.intelTitleSelection.getSelection(), newTitleTraining);
         }
+        aiSections.commit();
         feedUtils.updateClassifier(story.feedId, classifier, fs, requireActivity());
         dismiss();
     }

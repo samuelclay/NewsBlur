@@ -18,6 +18,9 @@ import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.DialogTrainfeedBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.di.ThumbnailLoader;
+import com.newsblur.network.ClassifierApi;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
@@ -39,10 +42,18 @@ public class FeedIntelTrainerFragment extends DialogFragment {
     @Inject
     PrefsRepo prefsRepo;
 
+    @Inject
+    ClassifierApi classifierApi;
+
+    @Inject
+    @ThumbnailLoader
+    ImageLoader thumbnailLoader;
+
     private Feed feed;
     private FeedSet fs;
     private Classifier classifier;
     private DialogTrainfeedBinding binding;
+    private AiClassifierSections aiSections;
 
     public static FeedIntelTrainerFragment newInstance(Feed feed, FeedSet fs) {
         FeedIntelTrainerFragment fragment = new FeedIntelTrainerFragment();
@@ -116,6 +127,11 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, feed.feedId);
         binding.existingFeedIntelContainer.addView(rowFeed);
 
+        // the natural language text and image classifiers, as on the web trainer
+        aiSections = new AiClassifierSections(this, binding.aiClassifierContainer, classifier, null, feed.feedId,
+                prefsRepo.getResolvedTheme(requireContext()), prefsRepo, dbHelper, classifierApi, thumbnailLoader);
+        aiSections.bind();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(R.string.feed_intel_dialog_title);
         builder.setView(v);
@@ -129,6 +145,7 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                aiSections.commit();
                 feedUtils.updateClassifier(feed.feedId, classifier, fs, requireContext());
                 FeedIntelTrainerFragment.this.dismiss();
             }
