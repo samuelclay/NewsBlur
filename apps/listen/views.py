@@ -23,9 +23,11 @@ from apps.listen.manifest import (
     stream_job,
     was_charged,
 )
-from apps.listen.storage import object_key
+from apps.listen.storage import cached_segment, object_key
 from apps.listen.usage import ListenUsageTracker
-from apps.rss_feeds.models import MStory
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed, MStarredStory, MStory
+from apps.social.models import MSharedStory, MSocialProfile
 from utils import json_functions as json_functions
 from utils import log as logging
 from utils.languages import LANGUAGES
@@ -66,6 +68,48 @@ def _record_cost(user_id, model, characters, feature_metadata):
     LLMCostTracker.record_speech(
         model=model, characters=characters, user_id=user_id, metadata=feature_metadata
     )
+
+
+def _can_read_feed(user, feed):
+    """The reader's rule for a feed's stories (load_single_feed in apps/reader/views.py): a newsletter needs a
+    subscription, and so does a feed with a single subscriber, since it may be that reader's private feed."""
+    if not feed:
+        return False
+    if UserSubscription.objects.filter(user=user, feed=feed).exists():
+        return True
+    if feed.is_newsletter:
+        return False
+    if feed.num_subscribers == 1 and not user.is_staff:
+        return False
+    return True
+
+
+def _can_read_blurblog(user, sharer_id):
+    """The reader's rule for a shared story (load_social_stories in apps/social/views.py): a private blurblog
+    is only open to its followers."""
+    if sharer_id == user.pk:
+        return True
+    sharer = MSocialProfile.objects(user_id=sharer_id).only("private", "follower_user_ids").first()
+    return not sharer or not sharer.private or sharer.is_followed_by_user(user.pk)
+
+
+def _readable_story(user, story_hash):
+    """The copy of a story this user may read, or None when they can't read any.
+
+    Listen speaks a story's text and hands back its paragraphs, so it only opens stories the reader would show
+    this user. MStory.find_story alone would also return another account's newsletter or private feed story,
+    and anyone's saved copy.
+    """
+    story, _ = MStory.find_story(story_hash=story_hash, original_only=True)
+    if story and _can_read_feed(user, Feed.get_by_id(story.story_feed_id)):
+        return story
+    saved_story = MStarredStory.objects(user_id=user.pk, story_hash=story_hash).first()
+    if saved_story:
+        return saved_story
+    for shared_story in MSharedStory.objects(story_hash=story_hash):
+        if _can_read_blurblog(user, shared_story.user_id):
+            return shared_story
+    return None
 
 
 @ajax_login_required
@@ -129,15 +173,16 @@ def listen_manifest(request):
         return _failure(
             "rate_limited", gettext("Too many stories started at once. Try again in a few minutes.")
         )
+    # A story this user can't read looks exactly like one that doesn't exist.
+    story = _readable_story(request.user, story_hash)
+    if not story:
+        return _failure("not_found", gettext("Story not found"))
+
     allowed, reason, message = tracker.check_story(story_hash)
     if not allowed:
         logging.user(request, f"~FRListen denied ({reason}): ~SB{story_hash}")
         tracker.record_denied(reason, story_hash=story_hash)
         return _failure(reason, message, tracker)
-
-    story, _ = MStory.find_story(story_hash=story_hash)
-    if not story:
-        return _failure("not_found", gettext("Story not found"))
 
     manifest = build_manifest(
         request.user,
@@ -205,8 +250,11 @@ def _serve_segment(user, manifest, index, tracker):
     segment = manifest["segments"][index]
     key = segment["cache_key"]
     already_charged = was_charged(user.pk, key)
+    # Asked now rather than read from the manifest: audio cached since the manifest was built (this player's
+    # first pass, another listener) plays free, even past the monthly cap.
+    cached_now = bool(cached_segment(key))
     allowed, reason, message = tracker.check_segment(
-        manifest["story_hash"], cached=bool(segment["cached"]) or already_charged
+        manifest["story_hash"], cached=cached_now or already_charged
     )
     if not allowed:
         tracker.record_denied(
@@ -280,7 +328,8 @@ def listen_preview(request):
     story = None
     story_hash = request.POST.get("story_hash")
     if story_hash:
-        story, _ = MStory.find_story(story_hash=story_hash)
+        # A story this user can't read previews the generic greeting, like a story that doesn't exist.
+        story = _readable_story(request.user, story_hash)
     preferences = _preferences(request.user)
     for field, preference in PREVIEW_OVERRIDE_KEYS.items():
         if field in request.POST:

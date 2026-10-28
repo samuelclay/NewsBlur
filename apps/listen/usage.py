@@ -142,10 +142,12 @@ class ListenUsageTracker:
 
     # Checks -------------------------------------------------------------------
     def check_story(self, story_hash):
-        """(allowed, reason, message) for starting to listen to a story."""
+        """(allowed, reason, message) for starting to listen to a story.
+
+        Premium Archive and Pro users can always open a story. Their monthly cap only limits fresh audio, so
+        check_segment() enforces it on each uncached segment and stories already cached keep playing past it.
+        """
         if self.is_archive_tier:
-            if self.seconds_used() >= self.monthly_limit:
-                return False, "cap_reached", self.cap_message()
             return True, None, None
         sampled = self.sampled_story_hashes()
         if story_hash in sampled or len(sampled) < SAMPLE_STORIES_PER_DAY:

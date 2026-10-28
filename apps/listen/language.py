@@ -17,7 +17,10 @@ SIMPLIFIED_ONLY = set("们这为说时会来过还进对开关问题发经与东
 TRADITIONAL_ONLY = set("們這為說時會來過還進對開關問題發經與東車長門見現實國個後從發動應學種當義戰計報處觀統權證認議邊區組際變選級")
 
 UKRAINIAN_LETTERS = set("іїєґ")
-VIETNAMESE_LETTERS = set("ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ")
+# Letters only Vietnamese writes among the Latin script languages: its tone marks, ơ, ư and đ. Plain â, ê
+# and ô are left out because French and Portuguese write them too (tempête, forêt, você, avô), and so is ă,
+# which Romanian writes.
+VIETNAMESE_LETTERS = set("đơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ")
 
 STOPWORDS = {
     "en": "the and of to in is that for it with as was on are be this by have from or at an not but they".split(),
@@ -97,23 +100,29 @@ def detect_language(text):
     if share("cyrillic") > 0.3:
         if sum(1 for character in lowered if character in UKRAINIAN_LETTERS) >= 3:
             return "uk"
-        return _best_stopword_match(words, CYRILLIC_LANGUAGES) or "ru"
+        return _best_stopword_match(_stopword_scores(words, CYRILLIC_LANGUAGES)) or "ru"
     if share("latin") > 0.3:
-        if sum(1 for character in lowered if character in VIETNAMESE_LETTERS) >= 5:
+        scores = _stopword_scores(words, LATIN_LANGUAGES)
+        # Vietnamese names (Nguyễn, Hồ Chí Minh) carry these letters into other languages' stories too, so the
+        # letters only decide it when no other language's stopwords outscore Vietnamese ones.
+        vietnamese_letters = sum(1 for character in lowered if character in VIETNAMESE_LETTERS)
+        if vietnamese_letters >= 5 and scores["vi"] >= max(scores.values()):
             return "vi"
-        return _best_stopword_match(words, LATIN_LANGUAGES)
+        return _best_stopword_match(scores)
     return None
 
 
-def _best_stopword_match(words, languages):
-    if not words:
-        return None
+def _stopword_scores(words, languages):
     scores = {language: 0 for language in languages}
     for word in words:
         for language in languages:
             if word in STOPWORD_SETS[language]:
                 scores[language] += 1
-    best = max(languages, key=lambda language: scores[language])
+    return scores
+
+
+def _best_stopword_match(scores):
+    best = max(scores, key=lambda language: scores[language])
     if scores[best] < 2:
         return None
     return best

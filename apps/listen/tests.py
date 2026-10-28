@@ -17,7 +17,9 @@ from apps.listen.text import (
     truncate_segments,
 )
 from apps.listen.usage import SAMPLE_STORIES_PER_DAY, ListenUsageTracker
-from apps.rss_feeds.models import MStory
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed, MStarredStory, MStory
+from apps.social.models import MSharedStory, MSocialProfile
 from utils.llm_costs import LLMCostTracker
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ListenTests"
@@ -117,6 +119,36 @@ class Test_ListenLanguage(SimpleTestCase):
             with self.subTest(language=language):
                 self.assertEqual(detect_language(text), language)
 
+    def test_letters_vietnamese_shares_with_other_languages_are_not_vietnamese(self):
+        samples = [
+            (
+                "fr",
+                "La tempête a frappé la forêt près du théâtre. "
+                "Même les fenêtres de l'hôpital ont été endommagées.",
+            ),
+            (
+                "pt-BR",
+                "Você também pôde ver o ônibus na avenida, e o avô disse que a lâmpada da câmera "
+                "não está pronta para o português.",
+            ),
+            # Romanian isn't one of our languages, so it falls back to the account's language instead.
+            (
+                None,
+                "Guvernul a anunțat că va investi în infrastructură. Președintele a declarat că această "
+                "hotărâre este importantă pentru țară și pentru cetățeni în următoarea perioadă.",
+            ),
+        ]
+        for language, text in samples:
+            with self.subTest(language=language):
+                self.assertEqual(detect_language(text), language)
+
+    def test_vietnamese_names_in_an_english_story_stay_english(self):
+        text = (
+            "Nguyễn Phú Trọng visited Hồ Chí Minh City on Monday, and officials in Hà Nội said that "
+            "the Việt Nam trade plan was in good shape for the year."
+        )
+        self.assertEqual(detect_language(text), "en")
+
     def test_too_little_text_is_undetermined(self):
         self.assertIsNone(detect_language("OK"))
 
@@ -131,35 +163,58 @@ class ListenTestCase(TestCase):
         self.user = User.objects.create_user("listener", "listener@example.com", "password")
         self.client = Client(HTTP_USER_AGENT=USER_AGENT)
         self.client.login(username="listener", password="password")
+        # A public feed: anyone may read its stories without subscribing (load_single_feed, apps/reader/views.py).
+        self.feed = Feed.objects.create(
+            pk=900,
+            feed_address="https://city.example/feed.xml",
+            feed_link="https://city.example",
+            feed_title="City Desk",
+            num_subscribers=20,
+        )
         MListenUsage.drop_collection()
         MStory.drop_collection()
         self.clear_redis()
 
-    def clear_redis(self):
-        """Listen keeps per-user state in the shared pubsub Redis, and test users reuse ids across runs."""
+    def pubsub_redis(self):
         import redis
         from django.conf import settings
 
-        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        for pattern in ("charged", "recorded", "manifests"):
-            for key in r.scan_iter(f"listen:{pattern}:{self.user.pk}:*"):
-                r.delete(key)
-        r.delete(f"listen:segment_lock:{self.user.pk}", "listen:library_blocked")
+        return redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
 
-    def set_tier(self, premium=False, archive=False, pro=False):
-        profile = self.user.profile
+    def clear_redis(self, user=None):
+        """Listen keeps per-user state in the shared pubsub Redis, and test users reuse ids across runs."""
+        user = user or self.user
+        r = self.pubsub_redis()
+        for pattern in ("charged", "recorded", "manifests"):
+            for key in r.scan_iter(f"listen:{pattern}:{user.pk}:*"):
+                r.delete(key)
+        r.delete(f"listen:segment_lock:{user.pk}", "listen:library_blocked")
+
+    def mark_cached(self, manifest):
+        """Stands in for the node stream server (node/listen.coffee) having uploaded every segment to S3."""
+        r = self.pubsub_redis()
+        for segment in manifest["segments"]:
+            marker = f"listen:cached:{segment['cache_key']}"
+            r.set(marker, json.dumps({"duration": 4.0, "bytes": 32000}))
+            self.addCleanup(r.delete, marker)
+
+    def set_tier(self, premium=False, archive=False, pro=False, user=None):
+        profile = (user or self.user).profile
         profile.is_premium = premium
         profile.is_archive = archive
         profile.is_pro = pro
         profile.save()
 
-    def make_story(self, story_hash="900:abc123", paragraphs=12):
-        body = "".join(
+    def story_body(self, paragraphs=12):
+        return "".join(
             f"<p>Paragraph {n} talks about the city council and the housing plan in some detail.</p>"
             for n in range(paragraphs)
         )
+
+    def make_story(self, story_hash="900:abc123", paragraphs=12, feed_id=900):
+        body = self.story_body(paragraphs)
         story = MStory(
-            story_feed_id=900,
+            story_feed_id=feed_id,
             story_hash=story_hash,
             story_guid=story_hash,
             story_title="Council approves housing plan",
@@ -220,13 +275,37 @@ class Test_ListenViews(ListenTestCase):
         self.assertEqual(first["url"], second["url"])
         self.assertEqual(MListenUsage.objects(user_id=self.user.pk, segment_index=1).count(), 1)
 
-    def test_archive_cap_blocks_new_stories(self, configured):
+    def test_archive_cap_blocks_fresh_audio(self, configured):
         self.set_tier(premium=True, archive=True)
         MListenUsage(user_id=self.user.pk, kind="segment", seconds=2 * 60 * 60, cached=False).save()
         story = self.make_story()
-        denied = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.assertEqual(manifest["code"], 1)
+        denied = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         self.assertEqual(denied["reason"], "cap_reached")
         self.assertEqual(denied["usage"]["seconds_remaining"], 0)
+
+    def test_cached_stories_still_play_after_the_monthly_cap(self, configured):
+        from apps.listen.manifest import load_manifest
+
+        self.set_tier(premium=True, archive=True)
+        story = self.make_story()
+        before_cap = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.mark_cached(load_manifest(before_cap["manifest_id"], self.user))
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=2 * 60 * 60, cached=False).save()
+
+        # A player still holding the manifest from before its audio was cached plays it without a new charge.
+        held = self.post("/listen/segment", {"manifest_id": before_cap["manifest_id"], "index": 1})
+        self.assertEqual(held["code"], 1)
+        self.assertTrue(held["cached"])
+
+        reopened = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.assertEqual(reopened["code"], 1)
+        self.assertTrue(all(segment["cached"] for segment in reopened["segments"]))
+        replay = self.post("/listen/segment", {"manifest_id": reopened["manifest_id"], "index": 0})
+        self.assertEqual(replay["code"], 1)
+        self.assertTrue(replay["cached"])
+        self.assertEqual(ListenUsageTracker(self.user).seconds_used(), 2 * 60 * 60)
 
     def test_cached_audio_does_not_count_against_the_cap(self, configured):
         self.set_tier(premium=True, archive=True)
@@ -244,6 +323,101 @@ class Test_ListenViews(ListenTestCase):
             other.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0}).content
         )
         self.assertEqual(response["reason"], "manifest_expired")
+
+
+@patch("apps.listen.elevenlabs.is_configured", return_value=True)
+class Test_ListenStoryAccess(ListenTestCase):
+    """Listen reads a story's text aloud, so a second account may only open the stories it could read anyway."""
+
+    def setUp(self):
+        super().setUp()
+        MStarredStory.drop_collection()
+        MSharedStory.drop_collection()
+        MSocialProfile.drop_collection()
+        self.set_tier(premium=True, archive=True)
+        self.intruder = User.objects.create_user("intruder", "intruder@example.com", "password")
+        self.set_tier(premium=True, archive=True, user=self.intruder)
+        self.intruder_client = Client(HTTP_USER_AGENT=USER_AGENT)
+        self.intruder_client.login(username="intruder", password="password")
+        self.clear_redis(self.intruder)
+
+    def manifest(self, client, story_hash):
+        return json.loads(client.post("/listen/manifest", {"story_hash": story_hash}).content)
+
+    def preview_text(self, client, story_hash):
+        from apps.listen import voices
+
+        response = client.post(
+            "/listen/preview", {"voice_id": voices.default_voice_id("en"), "story_hash": story_hash}
+        )
+        return json.loads(response.content)["text"]
+
+    def assert_only_the_owner_can_listen(self, story_hash):
+        self.assertEqual(self.manifest(self.client, story_hash)["code"], 1)
+        self.assertIn("city council", self.preview_text(self.client, story_hash))
+        denied = self.manifest(self.intruder_client, story_hash)
+        self.assertEqual(denied["reason"], "not_found")
+        self.assertNotIn("paragraphs", denied)
+        self.assertNotIn("city council", self.preview_text(self.intruder_client, story_hash))
+
+    def private_feed(self, **fields):
+        feed = Feed.objects.create(feed_link="https://private.example", feed_title="Private", **fields)
+        UserSubscription.objects.create(user=self.user, feed=feed)
+        return feed
+
+    def test_another_accounts_newsletter_story_is_not_found(self, configured):
+        # Enough subscribers that only the newsletter rule can keep it private.
+        feed = self.private_feed(feed_address="newsletter:listener-inbox", num_subscribers=20)
+        story = self.make_story(story_hash="letter", feed_id=feed.pk)
+        self.assert_only_the_owner_can_listen(story.story_hash)
+
+    def test_another_accounts_private_feed_story_is_not_found(self, configured):
+        feed = self.private_feed(feed_address="https://private.example/rss?token=secret", num_subscribers=1)
+        story = self.make_story(story_hash="private", feed_id=feed.pk)
+        self.assert_only_the_owner_can_listen(story.story_hash)
+
+    def test_another_accounts_saved_story_is_not_found(self, configured):
+        # The feed trimmed the story, so the owner's saved copy is the only one left.
+        body = self.story_body()
+        saved = MStarredStory(
+            user_id=self.user.pk,
+            story_feed_id=900,
+            story_guid="https://city.example/saved",
+            story_title="Council approves housing plan",
+            story_date=datetime.datetime.utcnow(),
+            starred_date=datetime.datetime.utcnow(),
+            story_content=body,
+            original_text_z=zlib.compress(body.encode()),
+        )
+        saved.save()
+        self.assertIsNone(MStory.objects(story_hash=saved.story_hash).first())
+        self.assert_only_the_owner_can_listen(saved.story_hash)
+
+    def test_public_feed_stories_are_open_to_every_account(self, configured):
+        story = self.make_story(story_hash="public")
+        self.assertFalse(UserSubscription.objects.filter(user=self.intruder, feed=self.feed).exists())
+        self.assertEqual(self.manifest(self.intruder_client, story.story_hash)["code"], 1)
+        self.assertIn("city council", self.preview_text(self.intruder_client, story.story_hash))
+
+    def test_a_private_story_shared_to_a_public_blurblog_is_open_to_its_readers(self, configured):
+        feed = self.private_feed(feed_address="https://private.example/rss?token=shared", num_subscribers=1)
+        story = self.make_story(story_hash="shared", feed_id=feed.pk)
+        body = self.story_body()
+        MSharedStory(
+            user_id=self.user.pk,
+            story_feed_id=feed.pk,
+            story_guid=story.story_guid,
+            story_title=story.story_title,
+            story_date=story.story_date,
+            story_content=body,
+            original_text_z=zlib.compress(body.encode()),
+        ).save()
+        self.assertEqual(self.manifest(self.intruder_client, story.story_hash)["code"], 1)
+
+        blurblog = MSocialProfile.get_user(self.user.pk)
+        blurblog.private = True
+        blurblog.save()
+        self.assertEqual(self.manifest(self.intruder_client, story.story_hash)["reason"], "not_found")
 
 
 class Test_ListenFallbackVoices(SimpleTestCase):
