@@ -415,6 +415,13 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
+            # models.py: AI classifier billing state for the iOS and Android apps, which read
+            # user_profile from /reader/feeds. The web gets the same values from
+            # templates/base.html NEWSBLUR.Globals.
+            "is_usage_billing": bool(self.is_usage_billing),
+            "is_self_hosted_ai": self.is_self_hosted_ai,
+            "can_use_ai_classifiers": self.can_use_ai_classifiers,
+            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
     def save(self, *args, **kwargs):

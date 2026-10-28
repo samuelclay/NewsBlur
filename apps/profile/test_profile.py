@@ -2312,3 +2312,41 @@ class Test_UsageBillingSubscriptionIsolation(TestCase):
         self.assertEqual(result, "sub_reactivated")
         _, kwargs = mock_create.call_args
         self.assertEqual(kwargs["items"], [{"price": Profile.plan_to_stripe_price("premium")}])
+
+
+@override_settings(
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_ProfileCanonicalUsageBilling(TestCase):
+    """Profile.canonical() is the user_profile the iOS and Android apps load from
+    /reader/feeds, so it carries the AI classifier billing state (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="canonicalbilling", password="password", email="canonicalbilling@test.com"
+        )
+        self.profile = self.user.profile
+
+    def test_billing_flags_default_off(self):
+        canonical = self.profile.canonical()
+
+        self.assertIs(canonical["is_usage_billing"], False)
+        self.assertIs(canonical["is_self_hosted_ai"], False)
+        self.assertIs(canonical["can_use_ai_classifiers"], False)
+        self.assertIsNone(canonical["usage_billing_limit"])
+
+    def test_billing_flags_with_usage_billing_and_limit(self):
+        self.profile.is_usage_billing = True
+        self.profile.usage_billing_limit = "25.50"
+        self.profile.save()
+        self.profile = Profile.objects.get(pk=self.profile.pk)
+
+        payload = json.decode(json.encode(self.profile))
+
+        self.assertIs(payload["is_usage_billing"], True)
+        self.assertIs(payload["is_self_hosted_ai"], False)
+        self.assertIs(payload["can_use_ai_classifiers"], True)
+        # A Decimal would encode as the string "25.50"; the apps need a number.
+        self.assertEqual(payload["usage_billing_limit"], 25.5)
+        self.assertIsInstance(payload["usage_billing_limit"], float)
