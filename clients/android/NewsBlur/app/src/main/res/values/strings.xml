@@ -432,6 +432,7 @@ people together to talk about the world.</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
     <string name="premium_discover_related">Discover related stories and sites</string>
+    <string name="premium_natural_language_classifiers">Natural language text and image classifiers</string>
     <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
 
     <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
@@ -454,7 +455,6 @@ people together to talk about the world.</string>
     <string name="pro_all_feeds_fetched">All feeds fetched every 5-15 minutes</string>
     <string name="pro_regex_train">Train stories with regular expressions</string>
     <string name="pro_priority_support">Priority support</string>
-    <string name="pro_natural_language_filters">Natural language filters</string>
     <string name="pro_natural_language_search">Natural language search</string>
 
     <string name="settings_cat_offline">Offline reading</string>

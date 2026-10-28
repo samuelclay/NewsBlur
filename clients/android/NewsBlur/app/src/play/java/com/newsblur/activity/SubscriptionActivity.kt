@@ -125,6 +125,7 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.premium_custom_rss, R.drawable.ic_rss, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.premium_text_view, R.drawable.ic_file_edit, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.premium_discover_related, R.drawable.ic_world, R.color.premium_feature_teal),
+                    SubscriptionFeature(R.string.premium_natural_language_classifiers, R.drawable.ic_ai_text_filter, R.color.premium_feature_purple),
                     SubscriptionFeature(R.string.premium_shiloh, R.drawable.ic_dining, R.color.premium_feature_brown),
                 ),
             showDogImage = true,
@@ -172,7 +173,6 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.pro_all_feeds_fetched, R.drawable.ic_bolt, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.pro_regex_train, android.R.drawable.ic_menu_edit, R.color.premium_feature_yellow),
                     SubscriptionFeature(R.string.pro_priority_support, android.R.drawable.ic_menu_call, R.color.premium_feature_yellow),
-                    SubscriptionFeature(R.string.pro_natural_language_filters, R.drawable.ic_search, R.color.premium_feature_gray, upcoming = true),
                     SubscriptionFeature(R.string.pro_natural_language_search, R.drawable.ic_search_2, R.color.premium_feature_gray, upcoming = true),
                 ),
         )
