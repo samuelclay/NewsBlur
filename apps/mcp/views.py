@@ -5,6 +5,12 @@ at the origin root. Since HAProxy only routes /mcp/* to the MCP server, these
 Django views serve the discovery metadata directly so clients can find the
 OAuth endpoints.
 
+The same documents are also served at the bare origin root
+(/.well-known/oauth-authorization-server, /.well-known/oauth-protected-resource)
+because clients on the 2025-03-26 MCP auth spec drop the /mcp path and look
+only there. Without it they never find the registration endpoint, skip OAuth,
+and report a rejected API token (Littlebird, forum #13806).
+
 The identity URLs here (resource, authorization_servers, issuer) must use the
 canonical no-trailing-slash form https://host/mcp: strict clients (Codex's rmcp)
 derive the expected issuer from the path-insertion discovery URL without a

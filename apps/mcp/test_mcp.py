@@ -47,6 +47,17 @@ class Test_MCPOAuthMetadata(TestCase):
         self.assertEqual(resource_metadata["resource"], server_metadata["issuer"])
         self.assertEqual(resource_metadata["authorization_servers"], [server_metadata["issuer"]])
 
+    def test_root_discovery_serves_the_mcp_oauth_endpoints(self):
+        # Clients on the 2025-03-26 MCP auth spec (Littlebird, forum #13806) drop
+        # the /mcp path and only look at the origin root. When that 404s they
+        # skip OAuth entirely and report the server as rejecting an API token.
+        root_server_metadata = self.get_json("/.well-known/oauth-authorization-server")
+        self.assertEqual(root_server_metadata, self.get_json("/.well-known/oauth-authorization-server/mcp"))
+        self.assertEqual(root_server_metadata["registration_endpoint"], "https://testserver/mcp/register")
+
+        root_resource_metadata = self.get_json("/.well-known/oauth-protected-resource")
+        self.assertEqual(root_resource_metadata, self.get_json("/.well-known/oauth-protected-resource/mcp"))
+
     def test_resource_satisfies_strict_clients_for_both_configured_variants(self):
         # Codex accepts the advertised resource only if it equals the configured
         # URL or is a prefix of it on a path-segment boundary. The no-slash form
