@@ -21,7 +21,6 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.newsblur.NbApplication;
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
@@ -58,6 +57,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class Main extends NbActivity implements StateChangedListener, SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener, KeyboardListener {
     private static final long SYNC_STATUS_ANIMATION_DURATION_MS = 500L;
     private static final long SYNC_STATUS_DONE_DURATION_MS = 5000L;
+    private static final long SYNC_STATUS_SETTLE_DURATION_MS = 300L;
     private static final DecelerateInterpolator SYNC_STATUS_SHOW_INTERPOLATOR = new DecelerateInterpolator();
     private static final AccelerateInterpolator SYNC_STATUS_HIDE_INTERPOLATOR = new AccelerateInterpolator();
     // Main.java's bottom toolbar hugs its contents on screens at least this wide (tablets).
@@ -87,12 +87,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Inject com.newsblur.onboarding.SetupQueue setupQueue;
 
     private boolean isShowingLoadingSyncPlaceholder = true;
-    private boolean shouldTrackActiveSyncStatus = false;
-    private int lastForegroundSessionId = 0;
-    private final Runnable hideSyncStatusRunnable = () -> {
-        isShowingDoneSyncStatus = false;
-        hideSyncStatusIndicator(true);
-    };
+    private Runnable hideSyncStatusRunnable;
+    private Runnable completeSyncStatusRunnable;
+    private boolean isHidingSyncStatus = false;
+    private long syncStatusMotionGeneration = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,10 +190,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             folderFeedList.forceShowFeed(forceShowFeedId);
         }
 
-        int foregroundSessionId = NbApplication.getForegroundSessionId();
-        shouldTrackActiveSyncStatus = foregroundSessionId != lastForegroundSessionId;
-        lastForegroundSessionId = foregroundSessionId;
-
         // triggerSync() might not actually do enough to push a UI update if background sync has been
         // behaving itself. because the system will re-use the activity, at least one update on resume
         // will be required, however inefficient
@@ -217,17 +211,16 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Override
     protected void onPause() {
         keyboardManager.removeListener();
-        cancelPendingSyncStatusHide();
-        hasSeenActiveSyncStatus = false;
-        isShowingDoneSyncStatus = false;
-        shouldTrackActiveSyncStatus = false;
-        hideSyncStatusIndicator(false);
+        // Main.java can stay visible behind a tablet pane while paused; its sync phase still owns the banner.
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         cancelPendingSyncStatusHide();
+        cancelPendingSyncStatusCompletion();
+        syncStatusMotionGeneration++;
+        if (binding != null) binding.mainSyncStatusContainer.animate().withEndAction(null).cancel();
         if (visibleMainRef.get() == this) {
             visibleMainRef.clear();
         }
@@ -386,12 +379,12 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         setupQueue.feedListRendered();
         // LanguageChooserDialog.kt asks once which language to use, after a feed list has loaded.
         if (folderFeedList.firstCursorSeenYet) com.newsblur.compose.LanguageChooserGate.feedListLoaded(this);
-        if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isFeedCountSyncRunning()) {
+        if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isSyncRunning()) {
             updateStatusIndicators();
         }
 
         if (feedCount < 1) {
-            if (setupQueue.isPending() || syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+            if (setupQueue.isPending() || syncServiceState.isSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -411,15 +404,39 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
+    @Override protected boolean isThemeTransitionReady() {
+        return folderFeedList != null && folderFeedList.firstCursorSeenYet;
+    }
+
+    private boolean motionRefreshRequested = false;
+    private boolean motionRefreshStarted = false;
+
     private void updateStatusIndicators() {
         String rawSyncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        // Main.java leaves story fetching to ItemsList.java. Page/prefetch jobs neither replace
+        // an active feed-list message nor restart its completed pill's existing hold timer.
+        if (!isOfflineSyncStatus(rawSyncStatus) && syncServiceState.isStoryContentSyncRunning() && !setupQueue.isPending()) {
+            cancelPendingSyncStatusCompletion();
+            binding.content.setRefreshing(false);
+            return;
+        }
+        // Main.java bridges status-message gaps while the feed/count worker is still active.
+        if (rawSyncStatus == null && syncServiceState.isSyncRunning()) rawSyncStatus = getString(R.string.loading);
         if (setupQueue.isPending() && !isOfflineSyncStatus(rawSyncStatus)) rawSyncStatus = getString(R.string.loading);
         boolean isOfflineSyncStatus = isOfflineSyncStatus(rawSyncStatus);
         boolean isShowingActiveSyncPill = rawSyncStatus != null && !isOfflineSyncStatus;
-        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning() && !isShowingActiveSyncPill);
+        boolean syncRunning = syncServiceState.isFeedFolderSyncRunning();
+        if (motionRefreshRequested && syncRunning) motionRefreshStarted = true;
+        if (motionRefreshStarted && !syncRunning) {
+            motionRefreshRequested = false;
+            motionRefreshStarted = false;
+            if (!isOfflineSyncStatus) com.newsblur.view.ReaderMotion.refreshFinished(binding.content);
+        }
+        binding.content.setRefreshing(syncRunning && !isShowingActiveSyncPill);
 
         String displayedSyncStatus = rawSyncStatus;
         if (displayedSyncStatus != null) {
+            cancelPendingSyncStatusCompletion();
             if (AppConstants.VERBOSE_LOG) {
                 displayedSyncStatus = displayedSyncStatus + UIUtils.getMemoryUsageDebug(this);
             }
@@ -429,9 +446,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 hasSeenActiveSyncStatus = false;
                 showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.NONE);
             } else {
-                if (shouldTrackActiveSyncStatus) {
-                    hasSeenActiveSyncStatus = true;
-                }
+                hasSeenActiveSyncStatus = true;
                 showSyncStatusIndicator(displayedSyncStatus, SyncStatusAccessory.SPINNER);
             }
             return;
@@ -439,17 +454,14 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         // FolderListFragment.java may still be reading cached feeds before the service reports any status.
         if (!folderFeedList.firstCursorSeenYet) {
+            cancelPendingSyncStatusCompletion();
             isShowingLoadingSyncPlaceholder = true;
             showSyncStatusIndicator(getString(R.string.loading), SyncStatusAccessory.SPINNER);
             return;
         }
 
         if (hasSeenActiveSyncStatus) {
-            hasSeenActiveSyncStatus = false;
-            shouldTrackActiveSyncStatus = false;
-            isShowingLoadingSyncPlaceholder = false;
-            showSyncStatusIndicator(getString(R.string.sync_status_done), SyncStatusAccessory.DONE);
-            scheduleDoneSyncStatusHide();
+            scheduleSyncStatusCompletion();
         } else if (isShowingLoadingSyncPlaceholder) {
             isShowingLoadingSyncPlaceholder = false;
             hideSyncStatusIndicator(false);
@@ -472,28 +484,26 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         updateSyncStatusIndicatorBackground(accessory);
 
         View container = binding.mainSyncStatusContainer;
-        container.animate().cancel();
-        if (container.getVisibility() != View.VISIBLE) {
+        // Main.java updates an active banner in place, including while its first entrance is running.
+        if (container.getVisibility() == View.VISIBLE && !isHidingSyncStatus) return;
+        boolean wasHidden = container.getVisibility() != View.VISIBLE;
+        isHidingSyncStatus = false;
+        long generation = ++syncStatusMotionGeneration;
+        container.animate().withEndAction(null).cancel();
+        if (wasHidden) {
+            container.setTranslationX(getShownSyncStatusStartTranslation());
+            container.setAlpha(0f);
             container.setVisibility(View.VISIBLE);
-            container.post(() -> {
-                container.setTranslationX(getShownSyncStatusStartTranslation());
-                container.setAlpha(0f);
-                container.animate()
-                        .translationX(0f)
-                        .alpha(1f)
-                        .setInterpolator(SYNC_STATUS_SHOW_INTERPOLATOR)
-                        .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
-                        .start();
-            });
-            return;
         }
-
-        container.animate()
+        container.post(() -> {
+            if (generation != syncStatusMotionGeneration) return;
+            container.animate()
                 .translationX(0f)
                 .alpha(1f)
                 .setInterpolator(SYNC_STATUS_SHOW_INTERPOLATOR)
                 .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
                 .start();
+        });
     }
 
     private void updateSyncStatusIndicatorBackground(SyncStatusAccessory accessory) {
@@ -508,10 +518,11 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         cancelPendingSyncStatusHide();
 
         View container = binding.mainSyncStatusContainer;
-        container.animate().cancel();
-        if (container.getVisibility() != View.VISIBLE) {
+        if (container.getVisibility() != View.VISIBLE || isHidingSyncStatus) {
             return;
         }
+        long generation = ++syncStatusMotionGeneration;
+        container.animate().withEndAction(null).cancel();
 
         if (!animated) {
             container.setVisibility(View.GONE);
@@ -520,17 +531,23 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
             return;
         }
 
-        container.post(() -> container.animate()
+        isHidingSyncStatus = true;
+        container.post(() -> {
+            if (generation != syncStatusMotionGeneration) return;
+            container.animate()
                 .translationX(getHiddenSyncStatusTranslation())
                 .alpha(0f)
                 .setInterpolator(SYNC_STATUS_HIDE_INTERPOLATOR)
                 .setDuration(SYNC_STATUS_ANIMATION_DURATION_MS)
                 .withEndAction(() -> {
+                    if (generation != syncStatusMotionGeneration) return;
+                    isHidingSyncStatus = false;
                     container.setVisibility(View.GONE);
                     container.setTranslationX(0f);
                     container.setAlpha(1f);
                 })
-                .start());
+                .start();
+        });
     }
 
     // Main.java slides the sync pill past the end edge, which is the left edge in right-to-left layouts.
@@ -543,19 +560,56 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void scheduleDoneSyncStatusHide() {
-        binding.mainSyncStatusContainer.removeCallbacks(hideSyncStatusRunnable);
+        cancelPendingSyncStatusHide();
+        hideSyncStatusRunnable = new Runnable() {
+            @Override public void run() {
+                if (hideSyncStatusRunnable != this || !isShowingDoneSyncStatus) return;
+                hideSyncStatusRunnable = null;
+                isShowingDoneSyncStatus = false;
+                hideSyncStatusIndicator(true);
+            }
+        };
         binding.mainSyncStatusContainer.postDelayed(hideSyncStatusRunnable, SYNC_STATUS_DONE_DURATION_MS);
     }
 
+    private void scheduleSyncStatusCompletion() {
+        if (completeSyncStatusRunnable != null) return;
+        // Main.java waits through brief service-phase gaps before announcing completion.
+        completeSyncStatusRunnable = new Runnable() {
+            @Override public void run() {
+                if (completeSyncStatusRunnable != this) return;
+                completeSyncStatusRunnable = null;
+                if (syncServiceState.getSyncStatusMessage(Main.this, false) != null ||
+                        syncServiceState.isSyncRunning() || setupQueue.isPending()) {
+                    updateStatusIndicators();
+                    return;
+                }
+                hasSeenActiveSyncStatus = false;
+                isShowingLoadingSyncPlaceholder = false;
+                showSyncStatusIndicator(getString(R.string.sync_status_done), SyncStatusAccessory.DONE);
+                scheduleDoneSyncStatusHide();
+            }
+        };
+        binding.mainSyncStatusContainer.postDelayed(completeSyncStatusRunnable, SYNC_STATUS_SETTLE_DURATION_MS);
+    }
+
+    private void cancelPendingSyncStatusCompletion() {
+        if (binding != null && completeSyncStatusRunnable != null) {
+            binding.mainSyncStatusContainer.removeCallbacks(completeSyncStatusRunnable);
+        }
+        completeSyncStatusRunnable = null;
+    }
+
     private void cancelPendingSyncStatusHide() {
-        if (binding != null) {
+        if (binding != null && hideSyncStatusRunnable != null) {
             binding.mainSyncStatusContainer.removeCallbacks(hideSyncStatusRunnable);
         }
+        hideSyncStatusRunnable = null;
     }
 
     @Override
     public void onRefresh() {
-        shouldTrackActiveSyncStatus = true;
+        motionRefreshRequested = true;
         syncServiceState.forceFeedsFolders();
         triggerSync();
         folderFeedList.clearRecents();

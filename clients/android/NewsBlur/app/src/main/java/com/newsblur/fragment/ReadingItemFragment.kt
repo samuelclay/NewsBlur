@@ -186,6 +186,7 @@ class ReadingItemFragment :
     private val isWebLoadFinished = AtomicBoolean(false)
     private var isWebVisualStateReady = false
     private var nativeHeaderStoryHash: String? = null
+    private var motionHeaderHash: String? = null
     private val articleReveal = ReaderArticleReveal {
         syncStoryLoadingUi()
         story?.storyHash?.let { hash ->
@@ -404,6 +405,7 @@ class ReadingItemFragment :
         ensureReadingWebview().resumeTimers()
         ensureReadingWebview().onResume()
         articleReveal.resume()
+        animateHeaderEntrance()
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
     }
 
@@ -416,6 +418,7 @@ class ReadingItemFragment :
         readingItemActionsBinding = ReadingItemActionsBinding.bind(binding.root)
         lastMetadataSnapshot = null
         nativeHeaderStoryHash = null
+        motionHeaderHash = null
         lastClusterSnapshot = null
         lastSocialSnapshot = null
 
@@ -462,10 +465,10 @@ class ReadingItemFragment :
             story?.storyHash?.let { (activity as? Reading)?.onReaderPageNativeReady(it) }
         }
 
-        readingItemActionsBinding.trainStoryButton.setOnClickListener { openStoryTrainer() }
-        readingItemActionsBinding.saveStoryButton.setOnClickListener { switchStorySavedState() }
-        readingItemActionsBinding.shareStoryButton.setOnClickListener { openShareDialog() }
-        readingItemActionsBinding.askAiStoryButton.setOnClickListener { openAskAiDialog() }
+        readingItemActionsBinding.trainStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openStoryTrainer() }
+        readingItemActionsBinding.saveStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); switchStorySavedState() }
+        readingItemActionsBinding.shareStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openShareDialog() }
+        readingItemActionsBinding.askAiStoryButton.setOnClickListener { com.newsblur.view.ReaderMotion.pop(it); openAskAiDialog() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -965,6 +968,7 @@ class ReadingItemFragment :
 
         setupTagsAndIntel()
         nativeHeaderStoryHash = story?.storyHash
+        animateHeaderEntrance()
     }
 
     private fun setupTagsAndIntel() {
@@ -1646,6 +1650,14 @@ class ReadingItemFragment :
         articleReveal.ready()
         maybeFinishInitialStoryRender()
         story?.storyHash?.let { (activity as? Reading)?.onReaderPageVisualReady(it) }
+    }
+
+    private fun animateHeaderEntrance() {
+        val hash = nativeHeaderStoryHash ?: return
+        if (!isResumed || motionHeaderHash == hash || !::binding.isInitialized) return
+        motionHeaderHash = hash
+        com.newsblur.view.ReaderMotion.cascade(listOf(binding.readingFeedTitle, binding.readingItemTitle,
+            binding.readingItemDate, binding.readingItemAuthors, readingItemActionsBinding.readerTraversalFooter))
     }
 
     fun isNativeHeaderReady(storyHash: String): Boolean =
