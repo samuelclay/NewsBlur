@@ -4515,14 +4515,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
     int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    // AI prompt classifier takes absolute priority
-    if (prompt != 0) return prompt;
-
     int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex))))))));
     int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex))))))));
 
-    if (score_min <= -2) score = score_min;
-    else if (score_max > 0)      score = score_max;
+    // A super dislike on any manual classifier always wins, even over an AI prompt match
+    if (score_min <= -2) return score_min;
+
+    // Otherwise an AI prompt classifier match outranks the other manual classifiers
+    if (prompt != 0) return prompt;
+
+    if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
 
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
