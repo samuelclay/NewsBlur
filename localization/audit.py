@@ -57,8 +57,14 @@ EXAMPLES = {
     ("clients/ios/Classes/DiscoverSites/Tabs/GoogleNewsTabView.swift", "en"),
     ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "John Gruber"),
     ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "Apple"),
-    ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "Non-apple related news"),
-    ("clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml", "DF Department of Commerce"),
+    (
+        "clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml",
+        "Non-apple related news",
+    ),
+    (
+        "clients/android/NewsBlur/app/src/main/res/layout/include_intel_explainer.xml",
+        "DF Department of Commerce",
+    ),
 }
 
 
