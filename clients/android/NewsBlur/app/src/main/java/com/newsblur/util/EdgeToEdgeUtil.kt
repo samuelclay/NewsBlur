@@ -180,6 +180,8 @@ object EdgeToEdgeUtil {
                     val controlsBottom = controlsLocation[1] + controls.height - controls.paddingBottom
                     bottom = maxOf(bottom, viewportLocation[1] + height - controlsBottom + gap)
                 }
+                // Reading.kt leaves the height Listen's mini player covers above the footer on the window.
+                bottom += rootView.getTag(R.id.listen_mini_player_inset) as? Int ?: 0
                 if (targetView.paddingBottom != bottom) targetView.updateBottomPadding(bottom)
                 true
             }

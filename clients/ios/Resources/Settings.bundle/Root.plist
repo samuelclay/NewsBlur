@@ -1067,6 +1067,46 @@
 			<string>show_ask_ai</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Train</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_sideoption_train</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Share</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_sideoption_share</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Save</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_sideoption_save</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Listen</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_sideoption_listen</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>App badge</string>
 			<key>Type</key>

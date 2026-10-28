@@ -77,6 +77,10 @@ def feature_ask_ai(request):
     return render(request, "static/feature_ask_ai.xhtml")
 
 
+def feature_listen(request):
+    return render(request, "static/feature_listen.xhtml")
+
+
 def feature_web_feeds(request):
     return render(request, "static/feature_web_feeds.xhtml")
 

@@ -11,6 +11,10 @@
             <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/prompt.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-coral">{% trans "Ask AI & Daily Briefing" %}</div>
             <div class="NB-feature-detail-crosslink-desc">{% trans "AI-powered story analysis and daily summaries" %}</div>
         </a>
+        <a href="{% url "feature-listen" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-listen">
+            <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/listen.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Listen" %}</div>
+            <div class="NB-feature-detail-crosslink-desc">{% trans "Have any story read aloud" %}</div>
+        </a>
         <a href="{% url "feature-web-feeds" %}" class="NB-feature-detail-crosslink NB-feature-detail-crosslink-web-feeds">
             <div class="NB-feature-detail-crosslink-name"><img src="{{ MEDIA_URL }}embed/icons/nouns/web-feed.svg" class="NB-splash-dropdown-icon NB-splash-dropdown-icon-purple">{% trans "Web Feeds" %}</div>
             <div class="NB-feature-detail-crosslink-desc">{% trans "Follow any website, even without RSS" %}</div>

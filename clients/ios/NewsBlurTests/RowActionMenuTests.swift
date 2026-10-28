@@ -552,8 +552,13 @@ import UIKit
     func test_storyMenuGroupsReadSaveAndShareWithoutSelectingStory() throws {
         let defaults = UserDefaults.standard
         let previous = defaults.object(forKey: "show_ask_ai")
-        defer { defaults.set(previous, forKey: "show_ask_ai") }
+        let previousListen = defaults.object(forKey: "show_sideoption_listen")
+        defer {
+            defaults.set(previous, forKey: "show_ask_ai")
+            defaults.set(previousListen, forKey: "show_sideoption_listen")
+        }
         defaults.set(true, forKey: "show_ask_ai")
+        defaults.set(true, forKey: "show_sideoption_listen")
         let (app, _) = feedFixture()
         let controller = FeedDetailViewController()
         controller.appDelegate = app
@@ -563,7 +568,7 @@ import UIKit
         story.isRead = false
         story.isSaved = false
         let groups = RowActionMenus.story(story, controller: controller, source: UIView())
-        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save"],
+        XCTAssertEqual(groups.map { $0.map(\.id) }, [["read", "newer", "older"], ["save", "up-next"],
                                                    ["share-link", "share-story", "share-newsblur"], ["train", "ask-ai"]])
         XCTAssertNil(app.activeStory)
         for action in groups.flatMap({ $0 }) { XCTAssertNotNil(action.native.image, action.symbol) }

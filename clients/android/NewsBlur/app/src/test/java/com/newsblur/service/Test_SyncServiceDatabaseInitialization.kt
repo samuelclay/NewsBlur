@@ -27,7 +27,7 @@ class Test_SyncServiceDatabaseInitialization {
             Provider { mockk() }, Provider { mockk() }, Provider { mockk() },
             Provider { mockk() }, Provider { mockk() }, provider,
             Provider { mockk() }, Provider { mockk() }, Provider { mockk() },
-            Provider { mockk() }, Provider { mockk() }
+            Provider { mockk() }, Provider { mockk() }, Provider { mockk() }
         ).injectMembers(service)
 
         assertEquals("Service injection must not wait on database disk IO", 0, initializationThreads.size)

@@ -1136,6 +1136,38 @@ a.NB-show-profile {
     float: none;
     margin: 0;
 }
+.NB-button.NB-listen-button {
+    float: none;
+    margin: 0;
+}
+/* storyDetailView.css gives a Listen button carrying its "30s preview" pill more of a shared row. */
+.NB-button.NB-listen-button.NB-listen-has-pill {
+    flex-grow: 1.8;
+}
+.NB-button.NB-share-button div {
+    overflow: hidden;
+}
+.NB-button.NB-share-button .NB-sideoption-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* storyDetailView.css lays five story buttons out as three over two on a portrait iPhone. */
+.NB-iphone .NB-sideoptions-five .NB-share-inner-wrapper {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding-bottom: 20px;
+}
+.NB-iphone .NB-sideoptions-five .NB-button.NB-share-button {
+    flex: 1 1 28%;
+    height: auto;
+    padding-bottom: 0;
+}
+.NB-iphone .NB-sideoptions-five .NB-button.NB-share-button:nth-child(n+4) {
+    flex-basis: 40%;
+}
 
 .NB-button.NB-read-button {
     margin: 0;
@@ -1259,6 +1291,117 @@ a.NB-show-profile {
     background-size: 14px 14px;
     position: relative;
     top: -1px;
+}
+
+.NB-button.NB-listen-button .NB-icon {
+    background: url("listen.svg") no-repeat center center;
+    background-size: 12px 12px;
+}
+
+.NB-button.NB-listen-button.NB-listen-playing .NB-icon {
+    background-image: url("listen-pause.svg");
+    background-size: 11px 11px;
+}
+
+/* storyDetailView.css sets the + for Up Next (Classes/Listen/ListenStoryBridge.swift) right beside Listen. */
+.NB-button.NB-listen-button.NB-listen-has-queue {
+    display: flex;
+    gap: 5px;
+    /* storyDetailView.css: story buttons are 40px tall with 20px of bottom padding, so their links overflow the
+       20px content box. Top alignment keeps Listen and + at their natural height instead of stretching to it. */
+    align-items: flex-start;
+    flex-grow: 1.7;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-has-queue {
+    flex-grow: 2.2;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a {
+    display: flex;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a > div {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a.NB-listen-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.NB-button.NB-listen-button.NB-listen-has-queue > a.NB-listen-queue {
+    flex: 0 0 auto;
+}
+.NB-button.NB-share-button a.NB-listen-queue.NB-listen-queued div {
+    background: rgba(0, 0, 0, 0.08);
+}
+.NB-button.NB-share-button a.NB-listen-queue div {
+    justify-content: center;
+    padding-left: 9px;
+    padding-right: 9px;
+    /* storyDetailView.css: the + holds only an icon, so it takes a text line's height to match Listen. */
+    min-height: 18px;
+}
+.NB-button.NB-listen-button a.NB-listen-queue .NB-icon {
+    position: static;
+    margin: 0;
+    background: url("listen-queue-add.svg") no-repeat center center;
+    background-size: 11px 11px;
+}
+.NB-button.NB-listen-button a.NB-listen-queue.NB-listen-queued .NB-icon {
+    background-image: url("listen-queue-added.svg");
+    background-size: 12px 12px;
+    opacity: .8;
+}
+
+/* storyDetailView.js newsblurListenFitPill hides the pill when it would cut the Listen label short, and the
+   button gives back the extra room it took for the pill. */
+.NB-listen-pill-hidden .NB-listen-pill {
+    display: none;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-pill-hidden {
+    flex-grow: 1;
+}
+.NB-button.NB-listen-button.NB-listen-has-pill.NB-listen-has-queue.NB-listen-pill-hidden {
+    flex-grow: 1.7;
+}
+
+.NB-listen-pill {
+    flex-shrink: 0;
+    margin: 0 6px 0 -2px;
+    padding: 2px 5px;
+    border-radius: 6px;
+    background: rgba(140, 89, 217, 0.13);
+    color: rgba(115, 70, 190, 0.95);
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 8.5px;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+/* Listen follow-along (Classes/Listen/ListenStoryBridge.swift): a soft wash behind the paragraph being read. */
+#story_pane.NB-listen-active [data-nb-listen-index],
+#story_pane.NB-listen-active .NB-story-title {
+    transition: background-color .35s ease, box-shadow .35s ease;
+}
+
+#story_pane.NB-listen-active [data-nb-listen-index] {
+    cursor: pointer;
+}
+
+.NB-listen-highlight {
+    background-color: rgba(255, 196, 0, 0.16);
+    box-shadow: 0 0 0 5px rgba(255, 196, 0, 0.16);
+    border-radius: 3px;
+}
+
+span.NB-listen-run.NB-listen-highlight {
+    box-shadow: none;
+    padding: 2px 0;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+#story_pane.NB-listen-mini-player {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom));
 }
 
 .NB-button.NB-share-button .NB-sideoption-text {

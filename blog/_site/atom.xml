@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-27T00:17:05-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://blog.newsblur.com/atom.xml" rel="self" type="application/atom+xml" /><link href="https://blog.newsblur.com/" rel="alternate" type="text/html" /><updated>2026-10-28T12:09:22-04:00</updated><id>https://blog.newsblur.com/atom.xml</id><title type="html">The NewsBlur Blog</title><subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
 A new sound of an old instrument.
 </subtitle><entry><title type="html">A folder picker with room for every folder</title><link href="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/" rel="alternate" type="text/html" title="A folder picker with room for every folder" /><published>2026-10-27T12:00:00-04:00</published><updated>2026-10-27T12:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/27/a-folder-picker-with-room-for-every-folder/"><![CDATA[<p>When you right click a site and choose <strong>Change folders</strong>, NewsBlur shows a list of your folders. For years that list was a tiny box about four rows tall, no matter how big your screen was. A reader on the forum who files a lot of newsletters <a href="https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910">wrote up what was wrong with it</a>: the box was too small, it ignored the custom folder icons they use to find things at a glance, and checking a new folder added the site there instead of moving it. They were right on all three, so I rebuilt it.</p>
 
@@ -63,7 +63,93 @@ A new sound of an old instrument.
   <li><strong>Space</strong> pages down through a story, and when you reach the bottom it opens the next unread story, just like on the web. <strong>Shift Space</strong> pages back up and opens the previous story at the top. You can set how far each press scrolls in Preferences or in the Keyboard Shortcuts dialog.</li>
 </ul>
 
-<p>NewsBlur 16 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">Mac App Store</a>. If you’ve found a widget setup you like, or something isn’t working the way you’d expect, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="macos" /><summary type="html"><![CDATA[On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/macos-16-widgets.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/macos-16-widgets.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur in your language: native language support on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/14/newsblur-in-your-language/" rel="alternate" type="text/html" title="NewsBlur in your language: native language support on the web, iOS, and Android" /><published>2026-10-14T00:00:00-04:00</published><updated>2026-10-14T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/14/newsblur-in-your-language</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/14/newsblur-in-your-language/"><![CDATA[<p>Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.</p>
+<p>NewsBlur 16 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">Mac App Store</a>. If you’ve found a widget setup you like, or something isn’t working the way you’d expect, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="macos" /><summary type="html"><![CDATA[On the web, I keep NewsBlur’s dashboard open all day with a few folders side by side, so I can glance over and see what’s new. On my Mac I wanted that same glance without a browser tab or the app sitting in front of me. NewsBlur 16 for Mac gets there with two pieces that work together: widgets that each show a folder or site of your choice, and native Mac notifications from the sites you pick.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/macos-16-widgets.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/macos-16-widgets.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title><link href="https://blog.newsblur.com/2026/10/21/listen-to-your-stories/" rel="alternate" type="text/html" title="Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android" /><published>2026-10-21T00:00:00-04:00</published><updated>2026-10-21T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/21/listen-to-your-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/21/listen-to-your-stories/"><![CDATA[<p>Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.</p>
+
+<p>Here’s Jon, the default English voice, reading that paragraph:</p>
+
+<audio controls="" preload="none" src="/assets/listen-sample-jon.mp3" style="width: 100%;margin: 8px auto 16px;display: block;"></audio>
+
+<p>And if you’re reading this in NewsBlur, you can press Listen right now and have the rest of this post read to you.</p>
+
+<p><img src="/assets/listen-hero.jpg" alt="Listen playing on the web, Android, iOS, and Mac, each showing the story's title, its voice, the scrubber, and the play controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>This one launched everywhere on the same day. The web, the iOS and Mac apps, and the Android app all got Listen together, with its interface translated into the same 21 languages from <a href="/2026/10/14/newsblur-in-your-language/">last week’s language launch</a>. If you already play podcasts in NewsBlur’s <a href="/2026/03/02/mini-media-player/">media player</a>, Listen turns any story into one more thing to queue up.</p>
+
+<h3 id="press-listen">Press Listen</h3>
+
+<p>On the web, Listen sits with the other story buttons, and the <strong>y</strong> key does the same thing. On iPhone, iPad, and Android it’s in the row of buttons at the end of each story. On the Mac it’s in the <strong>Story</strong> menu, also on <strong>Y</strong>, with a play and pause button in the toolbar.</p>
+
+<p><img src="/assets/listen-start.webp" alt="Where Listen lives on each platform: the web's story side options with the Read this story aloud (y) tooltip, the story buttons at the end of a story on iOS and Android, and Listen in the Mac app's Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>On the web, stories play in the sidebar, in the same mini player that handles podcasts and YouTube. On iPhone, iPad, and Android, a mini player sits above the bottom bar. Tap it to open Now Playing, with a scrubber, 15 seconds back, 30 seconds forward, speed, and a button to skip to the next story.</p>
+
+<h3 id="follow-along">Follow along</h3>
+
+<p>While a story plays, the paragraph being read is highlighted and the story scrolls gently to keep it in view. If you scroll away to look at something, it waits a few seconds before following again. Click or tap any paragraph to jump straight to it, which is also the quickest way past a long intro.</p>
+
+<p><img src="/assets/listen-follow-along.webp" alt="Paragraphs highlighted as they're read on an iPad, an iPhone, and an Android phone" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>Listen reads the headline, then the article’s paragraphs, headings, lists, and quotes. It skips what doesn’t work out loud: images, captions, code blocks, tables, and embeds. And if a feed only publishes a summary, Listen fetches the full article from the site and reads that, so you hear the whole story and not just the first two sentences.</p>
+
+<h3 id="up-next">Up Next</h3>
+
+<p>Next to Listen is a small <strong>+</strong> that adds the story to <strong>Up Next</strong>. Queue a few stories while you read, press play, and walk away. Drag to reorder, and swipe or tap × to remove one.</p>
+
+<p><img src="/assets/listen-up-next.webp" alt="Adding stories to Up Next on iPhone and the web, and the Up Next list in Now Playing on Android" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>When Up Next runs out, Listen keeps going with the next unread stories in whatever feed or folder you’re in. Each story is marked read when it finishes, and the reader follows along to the next one. If you’d rather it stop after each story, turn off <strong>Auto-continue</strong>.</p>
+
+<p>Up Next is the same queue your podcasts use, and it’s saved to your account. Queue a story on your phone and it’s waiting in Up Next on the web.</p>
+
+<h3 id="pick-a-voice">Pick a voice</h3>
+
+<p>The voices come from <a href="https://elevenlabs.io">ElevenLabs</a>. Each language has ten recommended voices, and you can search the rest of the ElevenLabs library by gender, age, accent, and style. Every voice has a play button so you can hear it before you choose.</p>
+
+<p><img src="/assets/listen-voices.webp" alt="The voice picker on iPhone and the web, and the speed control on Android" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p><strong>Delivery</strong> sets how much emotion goes into the reading: Steady, Natural, or Expressive. <strong>Fine-tune voice</strong> opens up the stability, similarity, and style settings behind those three if you want to tinker.</p>
+
+<p>Speed goes from 0.5× to 3×, with presets and a slider for anything in between. The pitch stays put at any speed, so 1.5× sounds like a fast talker and not a chipmunk.</p>
+
+<h3 id="every-language-gets-its-own-voice">Every language gets its own voice</h3>
+
+<p>Listen works out what language each story is written in and reads it with your voice for that language. Jon reads my English stories, and when a French story comes through, Victoria picks it up. Choose a different voice for any language from the menu at the top of the voice list. These are the defaults:</p>
+
+<p><img src="/assets/listen-languages.webp" alt="NewsBlur's 21 languages with the default Listen voice for each: English, Jon; Español, Lydia; Français, Victoria; Deutsch, Lea; Português (Brasil), Keren; Italiano, Violetta; Nederlands, Ruth; Polski, Magdalena; Türkçe, Derya; Русский, Marina; Українська, Yaroslava; العربية, Sara; עברית, Noa; हिन्दी, Monika Sogam; Bahasa Indonesia, Arunika; Tiếng Việt, Ngân Nguyễn; ไทย, Mali; 日本語, Yui; 한국어, Anna Kim; 简体中文, Stacy; 繁體中文, Anna Su" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="keeps-playing-with-the-screen-off">Keeps playing with the screen off</h3>
+
+<p>On iPhone, iPad, and Android, Listen keeps going when you lock your phone or switch apps. It shows up on the lock screen, in Control Center, and in Android’s media controls, with the same 15 and 30 second skips, and headphone buttons play and pause.</p>
+
+<p><img src="/assets/listen-lock-screen.webp" alt="Listen on the iPhone lock screen and in Android's media controls" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="on-the-mac">On the Mac</h3>
+
+<p>The Mac app has <strong>Listen</strong> and <strong>Add to Up Next</strong> in the Story menu, and a play and pause button in the toolbar so you can stop a story without hunting for the player. Now Playing opens as a sheet over the reader, with the same Up Next list as everywhere else.</p>
+
+<p><img src="/assets/listen-mac.webp" alt="Now Playing in the NewsBlur Mac app, with Listen and Add to Up Next in the Story menu" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="try-it-for-30-seconds">Try it for 30 seconds</h3>
+
+<p>Listen is part of <a href="https://newsblur.com/?next=premium">Premium Archive and Premium Pro</a>. On a free or Premium account you can still try it: Listen plays a 30 second preview of a few stories a day. Voice previews in the picker work too, so you can find a voice you like first.</p>
+
+<p><img src="/assets/listen-preview.webp" alt="The 30 second preview banner on iPhone, Android, and the web" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Reading every story in everyone’s feeds ahead of time would be a huge waste, so Listen makes the audio on demand. When you press play, NewsBlur splits the story into short segments, usually a paragraph each, and asks ElevenLabs for the first one. The audio streams to you while it’s still being generated, so it starts quickly, and the next segment is fetched while the current one plays. Each segment is sent along with the text around it so the voice keeps its rhythm across paragraph breaks.</p>
+
+<p><img src="/assets/listen-how-it-works.webp" alt="A story split into paragraphs: the ones already played are saved, the current one is highlighted, the next one is streaming from ElevenLabs, and the rest aren't made until you get there" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>Once a segment has been read in a voice, it’s saved. The next person who listens to that story with the same voice gets it right away, and if you stop halfway through a story, the rest of it never gets made at all.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Listen is available today on the web, in NewsBlur for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and in NewsBlur for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. If you don’t want the button, you can hide it, along with any other story button, in Preferences on the web and in the apps, and that choice syncs between them.</p>
+
+<p><img src="/assets/listen-story-buttons.webp" alt="The story button choices in Preferences on the web, iOS, and Android, with Listen turned on beside Train, Save, Share, and Ask AI" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>I’d love to hear which voice you picked and how Listen handles your feeds. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/listen-hero.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/listen-hero.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur in your language: native language support on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/14/newsblur-in-your-language/" rel="alternate" type="text/html" title="NewsBlur in your language: native language support on the web, iOS, and Android" /><published>2026-10-14T00:00:00-04:00</published><updated>2026-10-14T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/14/newsblur-in-your-language</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/14/newsblur-in-your-language/"><![CDATA[<p>Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.</p>
 
 <p><img src="/assets/native-language-reader-ja.jpg" alt="The NewsBlur web reader in Japanese, with an English article from Ars Technica open" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
 
@@ -173,7 +259,59 @@ A new sound of an old instrument.
 
 <p>If you read NewsBlur in one of these languages, I’d love your help. If a button reads awkwardly, a term sounds wrong, or a phrase doesn’t fit, tell me on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. Mention the language, where you saw it, and what it should say, and I’ll get it fixed.</p>
 
-<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
+<p>Native language support is available now on the web and coming in the next iOS and Android updates.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Since 2009, NewsBlur has only spoken English. Plenty of you read feeds in other languages every day, and you’ve still had to find your way around the reader in English. Starting today, NewsBlur’s interface is available in 21 languages on the web, iOS, and Android. Menus, buttons, settings, dialogs, and the first-time setup all appear in your language, picked up automatically from your browser or phone.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" /><media:content medium="image" url="https://blog.newsblur.com/assets/native-language-reader-ja.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
+
+<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
+
+<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
+
+<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
+
+<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
+
+<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
+
+<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
+
+<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
+
+<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
+
+<h3 id="sign-in-on-ios">Sign in on iOS</h3>
+
+<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="sign-in-on-android">Sign in on Android</h3>
+
+<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
+
+<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">A new first-time experience on iOS and Android: find your first feeds</title><link href="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/" rel="alternate" type="text/html" title="A new first-time experience on iOS and Android: find your first feeds" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/new-first-time-experience-ios-android/"><![CDATA[<p>An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.</p>
 
 <p>I’ve rebuilt the first-time experience on iOS and Android around exploring interests, previewing feeds, and choosing what goes into your reader. You can put together a few folders of things you care about, or bring your existing collection from another app with an OPML import.</p>
 
@@ -239,165 +377,7 @@ A new sound of an old instrument.
 
 <p>You don’t need a new account to use the bundles. Existing readers can open <strong>Import or upload sites</strong> from the iOS menu or <strong>Import and feed bundles</strong> from the Android menu. It’s a way to explore a new interest whenever you want to add something to your reading.</p>
 
-<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">Sign in with Apple or Google on the web, iOS, and Android</title><link href="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/" rel="alternate" type="text/html" title="Sign in with Apple or Google on the web, iOS, and Android" /><published>2026-10-11T00:00:00-04:00</published><updated>2026-10-11T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/11/sign-in-with-apple-and-google/"><![CDATA[<p>NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.</p>
-
-<h3 id="apple-and-google-sign-in-on-the-web">Apple and Google sign-in on the web</h3>
-
-<p>The welcome page, login page, and signup page now have Apple and Google buttons above the usual username and password fields. Choose either provider to sign in or create a NewsBlur account. For a new account, you’ll choose a NewsBlur username so you still have your own name when sharing stories and commenting.</p>
-
-<p><img src="/assets/apple-google-web-signin.png" alt="NewsBlur's welcome page with Sign in with Apple and Sign in with Google above the password form" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If you already have a NewsBlur account, you can connect it instead of starting over. Choose <strong>Connect an existing account</strong> and enter your NewsBlur username and password. If you try to create an account with a username that’s already taken, NewsBlur brings you to that connection step and explains what to do.</p>
-
-<p>You only need to confirm your NewsBlur password when making that connection. Afterward, the Apple or Google button takes you back to the same feeds, saved stories, and subscription.</p>
-
-<h3 id="different-email-addresses-one-newsblur-account">Different email addresses, one NewsBlur account</h3>
-
-<p>Your Apple email doesn’t have to match your Google email, and neither has to match your NewsBlur email. You can connect a personal Apple account and a work Google account to the same NewsBlur username. Connecting them leaves your NewsBlur email address unchanged.</p>
-
-<p>Open <strong>Manage &gt; Account</strong> on the web and look under your email address. The new <strong>Connected accounts</strong> section lists each connected Apple or Google account and its email. Use <strong>Connect Apple</strong> or <strong>Connect Google</strong> to add another, or the little × beside a connection to remove it.</p>
-
-<p><img src="/assets/apple-google-connected-accounts.png" alt="NewsBlur Account settings listing connected Apple and Google email addresses, connection buttons, and disconnect controls" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>An Apple or Google account can belong to one NewsBlur account at a time. To move it, disconnect it from the old account first. NewsBlur also makes sure you keep a way to sign in before removing your last connection.</p>
-
-<h3 id="sign-in-on-ios">Sign in on iOS</h3>
-
-<p>The iPhone and iPad apps get the same Apple and Google sign-in choices. You can also create an account with an email, username, and password right on the welcome screen.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/ios-ftux-signin.png" alt="NewsBlur on iPhone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="sign-in-on-android">Sign in on Android</h3>
-
-<p>Android gets both provider buttons as well, including Sign in with Apple. The account connection works across platforms: connect a provider on the web and use it to sign into that same NewsBlur account on your phone.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <img src="/assets/android-ftux-signin.png" alt="NewsBlur on a Samsung Galaxy phone with Apple, Google, and password sign-in" loading="lazy" />
-      
-    </div>
-  </div>
-</figure>
-
-<p>For new readers, both mobile apps also have a <a href="/2026/10/11/new-first-time-experience-ios-android/">new first-time experience</a> that helps you choose your first feeds and get reading.</p>
-
-<p>Apple and Google sign-in are available now on the web and coming in the next iOS and Android updates. If you have feedback, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><category term="ios" /><category term="android" /><summary type="html"><![CDATA[NewsBlur has asked for a username and password since the beginning. That still works, but I wanted getting into your reader to be easier, especially on a new phone. I’ve added Sign in with Apple and Sign in with Google on the web, iOS, and Android. You can use either to create an account or connect to the NewsBlur account you already have.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/apple-google-web-signin.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
-
-<h3 id="faster-story-lists">Faster story lists</h3>
-
-<p>Loading the next page of a folder used to reload the entire list. Now new stories are added in place. Favicons, thumbnails, and story text get prepared in the background ahead of time instead of while you’re scrolling. Opening a feed shows its cached stories immediately while fresh ones load, and articles appear fully laid out instead of flashing blank first.</p>
-
-<p>Opening All Site Stories went from 1.1s to 0.2s. A single feed went from 0.7s to 0.2s. Loading another page into a list of 5,000 stories went from 0.7s to 0.02s.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-story-list.webp" aria-label="iPhone story list with the floating glass toolbar at the bottom">
-        <source src="/assets/ios-15-reader.mp4" type="video/mp4" />
-        <img src="/assets/ios-15-story-list.webp" alt="iPhone story list with the floating glass toolbar at the bottom" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="a-glass-toolbar">A glass toolbar</h3>
-
-<p>The story list toolbar is now a floating glass bar at the bottom of the screen on iPhone and iPad, and your stories scroll right behind it. Related Sites, story order, and search are on the left. Add and Mark as read are on the right. If you’d rather keep it at the top, you can move it back in Preferences. In the reader, the controls hide as you scroll down and come back when you scroll up.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-reader.webp" aria-label="Scrolling an article on iPhone as its floating controls hide and return">
-        <source src="/assets/ios-15-article-scroll.mp4" type="video/mp4" />
-        <img src="/assets/ios-15-reader.webp" alt="Scrolling an article on iPhone as its floating controls hide and return" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="images">Images</h3>
-
-<p>Tap an image in a story and it opens full screen, zooming out from its spot in the article. Pinch or double tap to zoom, drag to look around, and swipe to go back. On iPad the viewer covers all three columns, and you land right back where you were in the story.</p>
-
-<p>Long press an image to see its hover text above it, which is where comics like xkcd hide the punchline. Copy Image, Save Image, and Share Image are right there with it.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-image-viewer.webp" aria-label="An article image opening in the iPhone image viewer and returning to the article">
-        <source src="/assets/ios-15-image-viewer.mp4" type="video/mp4" />
-        <img src="/assets/ios-15-image-viewer.webp" alt="An article image opening in the iPhone image viewer and returning to the article" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="add--discover-sites">Add + Discover Sites</h3>
-
-<p>The + button opens a Quick Add sheet. Paste an address or search for a site, pick a folder, and add it. Below that are shortcuts into every discovery source: Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News. You can swipe between them like pages. It’s the same <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites</a> catalog from the web, rebuilt natively for iOS.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-add-site.webp" aria-label="The iPhone Add Site sheet with an address field and discovery source shortcuts">
-        <source src="/assets/ios-15-add-site.mp4" type="video/mp4" />
-        <img src="/assets/ios-15-add-site.webp" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<p>Each site shows its latest stories with an image and a short excerpt, along with how recently it published. Tap a story to read it, or tap <strong>Try</strong> to browse the site without subscribing. When you come back, you’re in the same spot with that story highlighted. On iPad, Try keeps all three columns, so you can browse a new site and read its stories side by side. Related Sites uses the same cards.</p>
-
-<figure class="mobile-release-phone mobile-release-phone--iphone-17">
-  <div class="mobile-release-phone__device">
-    <div class="mobile-release-phone__screen">
-      
-      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-discover.webp" aria-label="Opening a story from iPhone discovery results and returning to its highlighted preview">
-        <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
-        <img src="/assets/ios-15-discover.webp" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" />
-      </video>
-      
-    </div>
-  </div>
-</figure>
-
-<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
-
-<p>A reader on the forum noticed NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Cleanup skipped pruning whenever you were all caught up, it never cleared cached article text, and it compacted the database before deleting anything, so no space ever came back.</p>
-
-<p>All three are fixed. Cleanup now keeps storage within your Stories to store limit, and <strong>Delete offline stories</strong> in Preferences actually gives you the space back. Your subscriptions and any pending read or save changes are kept.</p>
-
-<h3 id="everything-else">Everything else</h3>
-
-<ul>
-  <li>Long press any feed, folder, or story for a native menu.</li>
-  <li>Mark newer as read and Mark older as read update your unread counts right away, even inside collapsed folders and while offline.</li>
-  <li>Feed and story gestures each have their own settings.</li>
-  <li>The Mac app gets the new discovery screen, image viewer, menus, and offline cleanup too.</li>
-  <li>Tapping a notification opens the story instead of sometimes getting stuck.</li>
-  <li>Reading positions are restored correctly.</li>
-</ul>
-
-<p>NewsBlur 15 is available on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The <a href="/2026/10/03/newsblur-15-for-android/">Android release</a> got a lot of the same work. If you have feedback, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/ios-15-story-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/ios-15-story-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/" rel="alternate" type="text/html" title="NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/"><![CDATA[<p>I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.</p>
+<p>The new setup experience is coming in the next iOS and Android updates, alongside <a href="/2026/10/11/sign-in-with-apple-and-google/">Sign in with Apple and Google</a>. I’d love to hear how the first few minutes feel, whether you’re starting fresh or helping someone else get into RSS. Let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[An empty reader is a hard place to start. If you already know which sites you want to follow, adding them is straightforward. But if you’re trying RSS for the first time, finding those first few feeds is part of the work. I wanted NewsBlur to help with that, right inside the app.]]></summary></entry><entry><title type="html">NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/" rel="alternate" type="text/html" title="NewsBlur 15 for Android: faster scrolling, a tablet layout, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-android</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-android/"><![CDATA[<p>I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.</p>
 
 <h3 id="its-faster">It’s faster</h3>
 
@@ -526,7 +506,113 @@ A new sound of an old instrument.
   <li>Jumping to the next folder no longer loops forever when nothing is unread.</li>
 </ul>
 
-<p>NewsBlur 15 for Android is available on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. The <a href="/2026/10/03/newsblur-15-for-ios/">iOS and Mac release</a> got a lot of the same work. If something doesn’t feel right, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/android-15-story-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/android-15-story-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Matching Stories: see every story behind a tag, author, or classifier</title><link href="https://blog.newsblur.com/2026/09/15/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" /><published>2026-09-15T00:00:00-04:00</published><updated>2026-09-15T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/15/matching-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/15/matching-stories/"><![CDATA[<p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
+<p>NewsBlur 15 for Android is available on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. The <a href="/2026/10/03/newsblur-15-for-ios/">iOS and Mac release</a> got a lot of the same work. If something doesn’t feel right, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="android" /><summary type="html"><![CDATA[I spent a lot of this release optimizing speed in the Android app. I measured scrolling across the feed list, the story list, and long articles, then fixed whatever the numbers pointed at. Then I kept going.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/android-15-story-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/android-15-story-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites</title><link href="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/" rel="alternate" type="text/html" title="NewsBlur 15 for iOS and Mac: faster story lists, a glass toolbar, and Add + Discover Sites" /><published>2026-10-03T00:00:00-04:00</published><updated>2026-10-03T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios</id><content type="html" xml:base="https://blog.newsblur.com/2026/10/03/newsblur-15-for-ios/"><![CDATA[<p>I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.</p>
+
+<h3 id="faster-story-lists">Faster story lists</h3>
+
+<p>Loading the next page of a folder used to reload the entire list. Now new stories are added in place. Favicons, thumbnails, and story text get prepared in the background ahead of time instead of while you’re scrolling. Opening a feed shows its cached stories immediately while fresh ones load, and articles appear fully laid out instead of flashing blank first.</p>
+
+<p>Opening All Site Stories went from 1.1s to 0.2s. A single feed went from 0.7s to 0.2s. Loading another page into a list of 5,000 stories went from 0.7s to 0.02s.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-story-list.webp" aria-label="iPhone story list with the floating glass toolbar at the bottom">
+        <source src="/assets/ios-15-reader.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-story-list.webp" alt="iPhone story list with the floating glass toolbar at the bottom" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="a-glass-toolbar">A glass toolbar</h3>
+
+<p>The story list toolbar is now a floating glass bar at the bottom of the screen on iPhone and iPad, and your stories scroll right behind it. Related Sites, story order, and search are on the left. Add and Mark as read are on the right. If you’d rather keep it at the top, you can move it back in Preferences. In the reader, the controls hide as you scroll down and come back when you scroll up.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-reader.webp" aria-label="Scrolling an article on iPhone as its floating controls hide and return">
+        <source src="/assets/ios-15-article-scroll.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-reader.webp" alt="Scrolling an article on iPhone as its floating controls hide and return" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="images">Images</h3>
+
+<p>Tap an image in a story and it opens full screen, zooming out from its spot in the article. Pinch or double tap to zoom, drag to look around, and swipe to go back. On iPad the viewer covers all three columns, and you land right back where you were in the story.</p>
+
+<p>Long press an image to see its hover text above it, which is where comics like xkcd hide the punchline. Copy Image, Save Image, and Share Image are right there with it.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-image-viewer.webp" aria-label="An article image opening in the iPhone image viewer and returning to the article">
+        <source src="/assets/ios-15-image-viewer.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-image-viewer.webp" alt="An article image opening in the iPhone image viewer and returning to the article" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="add--discover-sites">Add + Discover Sites</h3>
+
+<p>The + button opens a Quick Add sheet. Paste an address or search for a site, pick a folder, and add it. Below that are shortcuts into every discovery source: Search, Web Feed, Popular, YouTube, Reddit, Newsletters, Podcasts, and Google News. You can swipe between them like pages. It’s the same <a href="/2026/03/04/add-and-discover-sites/">Add + Discover Sites</a> catalog from the web, rebuilt natively for iOS.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-add-site.webp" aria-label="The iPhone Add Site sheet with an address field and discovery source shortcuts">
+        <source src="/assets/ios-15-add-site.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-add-site.webp" alt="The iPhone Add Site sheet with an address field and discovery source shortcuts" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>Each site shows its latest stories with an image and a short excerpt, along with how recently it published. Tap a story to read it, or tap <strong>Try</strong> to browse the site without subscribing. When you come back, you’re in the same spot with that story highlighted. On iPad, Try keeps all three columns, so you can browse a new site and read its stories side by side. Related Sites uses the same cards.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/ios-15-discover.webp" aria-label="Opening a story from iPhone discovery results and returning to its highlighted preview">
+        <source src="/assets/ios-15-discover.mp4" type="video/mp4" />
+        <img src="/assets/ios-15-discover.webp" alt="Opening a story from iPhone discovery results and returning to its highlighted preview" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="offline-storage-that-cleans-up-after-itself">Offline storage that cleans up after itself</h3>
+
+<p>A reader on the forum noticed NewsBlur using 4.2 GB on their iPhone with no unread stories. Digging in turned up three bugs in the offline cache. Cleanup skipped pruning whenever you were all caught up, it never cleared cached article text, and it compacted the database before deleting anything, so no space ever came back.</p>
+
+<p>All three are fixed. Cleanup now keeps storage within your Stories to store limit, and <strong>Delete offline stories</strong> in Preferences actually gives you the space back. Your subscriptions and any pending read or save changes are kept.</p>
+
+<h3 id="everything-else">Everything else</h3>
+
+<ul>
+  <li>Long press any feed, folder, or story for a native menu.</li>
+  <li>Mark newer as read and Mark older as read update your unread counts right away, even inside collapsed folders and while offline.</li>
+  <li>Feed and story gestures each have their own settings.</li>
+  <li>The Mac app gets the new discovery screen, image viewer, menus, and offline cleanup too.</li>
+  <li>Tapping a notification opens the story instead of sometimes getting stuck.</li>
+  <li>Reading positions are restored correctly.</li>
+</ul>
+
+<p>NewsBlur 15 is available on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. The <a href="/2026/10/03/newsblur-15-for-android/">Android release</a> got a lot of the same work. If you have feedback, I’d love to hear it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><summary type="html"><![CDATA[I spent a lot of this release optimizing speed in the iOS app. Opening a big folder took over a second, scrolling would hitch whenever the next page of stories loaded, and articles flashed blank for a moment before appearing. So I measured every part of the story list and the reader, then fixed whatever the numbers pointed at.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/ios-15-story-list.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/ios-15-story-list.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Matching Stories: see every story behind a tag, author, or classifier</title><link href="https://blog.newsblur.com/2026/09/15/matching-stories/" rel="alternate" type="text/html" title="Matching Stories: see every story behind a tag, author, or classifier" /><published>2026-09-15T00:00:00-04:00</published><updated>2026-09-15T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/09/15/matching-stories</id><content type="html" xml:base="https://blog.newsblur.com/2026/09/15/matching-stories/"><![CDATA[<p>The Intelligence Trainer has always asked you to decide blind. You see a tag or an author on a story and you can train it up or down, but you can’t see what else that decision would touch. Is this author a regular on this site or a one-time guest? Does the “review” tag mean product reviews or book reviews? How many stories does “sponsored” actually hit? Until now the only way to find out was to train it and watch the scores change across the feed.</p>
 
 <p>Now every tag, author, and URL on a story has a small button next to it: <strong>View matching stories</strong>. Click it and the story list turns into a view of every story on that site that carries that exact value. Not just unread stories, read ones too, so you get the whole picture. It’s the fastest way I’ve found to answer “what else is like this?”</p>
 
@@ -631,17 +717,4 @@ A new sound of an old instrument.
 
 <p>Your classifiers still apply to all four. If you have trained a tag, an author, or a site, those green and red scores carry through, including on stories from feeds you do not subscribe to. And all four work as dashboard rivers, so you can park any of them next to your regular feeds.</p>
 
-<p>Good Reads and the rebuilt Global Shared Stories are available now on the web. If a story shows up in one of these feeds that clearly should not have, I want to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[I’m announcing two new global feeds: a redesigned Global Shared Stories and a new feed called Good Reads.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/global-shared-stories.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/global-shared-stories.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Custom app icons for iOS, Mac, and Android</title><link href="https://blog.newsblur.com/2026/05/15/custom-app-icons/" rel="alternate" type="text/html" title="Custom app icons for iOS, Mac, and Android" /><published>2026-05-15T00:00:00-04:00</published><updated>2026-05-15T00:00:00-04:00</updated><id>https://blog.newsblur.com/2026/05/15/custom-app-icons</id><content type="html" xml:base="https://blog.newsblur.com/2026/05/15/custom-app-icons/"><![CDATA[<p>Someone on the forum posted <a href="https://forum.newsblur.com/t/a-long-ish-list-of-ideas-and-bugs/13674/11">a long-ish list of ideas</a>, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.</p>
-
-<p>There are 12 color flavors: Sunrise Gold, Ember Orange, Coral Rose, Ruby Red, Plum Berry, Lavender Iris, Atlantic Blue, Arctic Cyan, Teal Mint, Meadow Sage, Slate Gray, and Sepia Cocoa. Every flavor comes in a light and a dark variant, so there are 24 icons to pick from. Match a bright home screen, match a dark one, or just pick the color you like best.</p>
-
-<p><img src="/assets/app-icons-preferences.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>To change yours, open Preferences and find the App Icon section, then tap Choose Icon. The chooser shows a live preview of every flavor, and the new icon takes effect right away.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/app-icons-ios.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/app-icons-android.png" style="width: 42%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<p>Custom app icons are available now on the latest iOS, Mac, and Android apps for any premium subscriber. If you have an idea for a flavor that’s missing, or anything else, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="ios" /><category term="android" /><summary type="html"><![CDATA[Someone on the forum posted a long-ish list of ideas, and one of them was small enough that I built it the same week: let people change the NewsBlur app icon. Your home screen is yours, and an app you open dozens of times a day should look the way you want it to. So premium subscribers can now choose a custom app icon on iOS, Mac, and Android.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/app-icons-preferences.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/app-icons-preferences.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>Good Reads and the rebuilt Global Shared Stories are available now on the web. If a story shows up in one of these feeds that clearly should not have, I want to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>]]></content><author><name></name></author><category term="web" /><summary type="html"><![CDATA[I’m announcing two new global feeds: a redesigned Global Shared Stories and a new feed called Good Reads.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://blog.newsblur.com/assets/global-shared-stories.png" /><media:content medium="image" url="https://blog.newsblur.com/assets/global-shared-stories.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

@@ -88,6 +88,11 @@ msgid_plural "%(count)d days ago"
 msgstr[0] "%(count)d 天前"
 
 #, python-format
+msgid "%(count)d hour"
+msgid_plural "%(count)d hours"
+msgstr[0] "%(count)d 小时"
+
+#, python-format
 msgid "%(count)d hour ago"
 msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d 小时前"
@@ -544,6 +549,9 @@ msgstr "一款让人们相聚畅谈世界的个人新闻阅读器。"
 msgid "A summary of your top stories, customizable and delivered every day"
 msgstr "每天为你送上热门文章摘要，可自定义"
 
+msgid "A voice for each of NewsBlur's 21 languages"
+msgstr "为 NewsBlur 支持的 21 种语言分别提供语音"
+
 msgid "AI Assistant (Feedly AI)"
 msgstr "AI 助手（Feedly AI）"
 
@@ -644,6 +652,9 @@ msgstr "在 <code>%(path)s</code> 的 <code>%(key)s</code> 下添加："
 #, python-format
 msgid "Add to <code>%(path)s</code>:"
 msgstr "添加到 <code>%(path)s</code>："
+
+msgid "Advertising"
+msgstr "广告"
 
 msgid ""
 "After entering Y Combinator, Samuel launched Blurblogs, the iPad and Android apps, and better intelligence "
@@ -1089,6 +1100,9 @@ msgstr "使用 CLI 需要订阅高级归档版（99 美元/年）或高级专业
 msgid "CTO, Parse.ly"
 msgstr "Parse.ly 首席技术官"
 
+msgid "Calm"
+msgstr "平静"
+
 msgid "Can I automatically mark duplicates as read?"
 msgstr "可以自动将重复文章标记为已读吗？"
 
@@ -1146,11 +1160,17 @@ msgstr "可添加任意 URL"
 msgid "Cancel"
 msgstr "取消"
 
+msgid "Casual"
+msgstr "随意"
+
 msgid "Category-based rules"
 msgstr "基于类别的规则"
 
 msgid "Changed your mind? Manage your email settings"
 msgstr "改变主意了？管理电子邮件设置"
+
+msgid "Characters"
+msgstr "字符"
 
 msgid "Cheapest Paid Plan"
 msgstr "最便宜的付费套餐"
@@ -1163,6 +1183,9 @@ msgstr "首席士气官"
 
 msgid "Choose Your 64"
 msgstr "选择你的 64 个网站"
+
+msgid "Choose when stories are automatically marked as read"
+msgstr "选择自动将文章标记为已读的时机"
 
 msgid "Choose when stories are marked as read"
 msgstr "选择何时将文章标记为已读"
@@ -1265,6 +1288,9 @@ msgstr "完成！"
 msgid "Comprehensive"
 msgstr "全面"
 
+msgid "Confident"
+msgstr "自信"
+
 msgid "Confirm your password"
 msgstr "确认密码"
 
@@ -1337,6 +1363,9 @@ msgstr "继续前往 NewsBlur"
 msgid "Control the Original View"
 msgstr "控制原始视图"
 
+msgid "Conversational"
+msgstr "对话式"
+
 msgid "Could not determine RSS feed URL."
 msgstr "无法确定 RSS 订阅源网址。"
 
@@ -1388,6 +1417,9 @@ msgstr "创建账户"
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "通过 Stripe 和 PayPal 使用信用卡/借记卡支付。"
 
+msgid "Crisp"
+msgstr "清晰"
+
 msgid "Currently viewing"
 msgstr "当前正在查看"
 
@@ -1404,6 +1436,9 @@ msgstr "必须填写自定义问题"
 msgid "Custom questions are limited to %(limit)d characters"
 msgstr "自定义问题最多可输入 %(limit)d 个字符"
 
+msgid "Custom voice"
+msgstr "自定义语音"
+
 msgid "Customizable AI summaries"
 msgstr "可自定义的 AI 摘要"
 
@@ -1412,6 +1447,9 @@ msgstr "按网站或文件夹自定义自动阅读行为。可设置为滚动时
 
 msgid "Customize auto-read by site or folder"
 msgstr "按网站或文件夹自定义自动标记为已读"
+
+msgid "Customize auto-read settings by site or folder"
+msgstr "按网站或文件夹自定义自动标记为已读的设置"
 
 msgid "Customize briefing sections and delivery schedule"
 msgstr "自定义简报版块和发送时间"
@@ -1476,6 +1514,9 @@ msgstr "Deb 的春日沙拉焕新，灵感来自一次巴黎之旅，当时木�
 
 msgid "Decline"
 msgstr "拒绝"
+
+msgid "Deep"
+msgstr "深度"
 
 msgid "Deep highlighting and annotation"
 msgstr "深度高亮和注释"
@@ -1598,6 +1639,9 @@ msgstr "在新闻流中，重复内容会折叠到得分最高的版本下方"
 msgid "Each newsletter sender becomes its own feed"
 msgstr "每个邮件简报发件人都会成为一个独立订阅源"
 
+msgid "Each paragraph is highlighted as it's read"
+msgstr "朗读时会逐段高亮"
+
 msgid "Each river must have river_id, river_side, and river_order"
 msgstr "每条聚合流都必须包含 river_id、river_side 和 river_order"
 
@@ -1665,6 +1709,9 @@ msgstr "喜欢高级功能？永久保留它们！"
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "输入你的电子邮箱地址，我们会向你发送设置新密码的链接。"
+
+msgid "Entertainment"
+msgstr "娱乐"
 
 msgid "Even sites that don't publish RSS feeds can be followed"
 msgstr "即使网站不提供 RSS 订阅源，也可以关注"
@@ -1734,6 +1781,9 @@ msgstr "每篇文章都会永久归档并可供搜索。订阅新订阅源时，
 
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "永久归档并可搜索每篇文章。你的个人知识库。"
+
+msgid "Every story from every site is archived and searchable forever"
+msgstr "所有网站的每篇文章都会永久归档，并可供搜索"
 
 msgid "Every story kept and searchable forever"
 msgstr "永久保存并可搜索每篇文章"
@@ -1807,6 +1857,9 @@ msgstr "将符合训练条件的文章从任意文件夹导出为 RSS 订阅源�
 
 msgid "Export trained stories from folders"
 msgstr "从文件夹导出训练过的文章"
+
+msgid "Export trained stories from folders as RSS feeds"
+msgstr "将文件夹中经过训练的文章导出为 RSS 订阅源"
 
 msgid ""
 "Export your OPML file from Feedly (Settings &rarr; Organize Sources &rarr; Export OPML), then import it "
@@ -1927,16 +1980,25 @@ msgstr "回填订阅源的历史内容，形成完整归档"
 msgid "Feeds fetched"
 msgstr "已抓取的订阅源"
 
+msgid "Feeds that support paging are back-filled in for a complete archive"
+msgstr "支持分页的订阅源会补全过往文章，形成完整归档"
+
 msgid ""
 "Feel free to rename newsletters to better fit their name. Sometimes newsletters come in as names when they "
 "should be the name of the organization. Easy to change!"
 msgstr "你可以随意重命名邮件简报，让名称更贴切。有时邮件简报会显示为某个人的名字，而它本应显示为机构的名称。修改起来很简单！"
+
+msgid "Female"
+msgstr "女声"
 
 msgid "Fetching your feeds"
 msgstr "正在获取你的订阅源"
 
 msgid "Filter stories by date range"
 msgstr "按日期范围筛选文章"
+
+msgid "Filter stories by date range to find exactly what you need"
+msgstr "按日期范围筛选文章，准确找到你需要的内容"
 
 msgid "Find answers to common questions about features, pricing, training, AI, and more."
 msgstr "查找有关功能、定价、训练、AI 等常见问题的答案。"
@@ -1994,6 +2056,9 @@ msgstr "在 GitHub 上关注 %(handle)s"
 #, python-format
 msgid "Follow %(handle)s on X"
 msgstr "在 X 上关注 %(handle)s"
+
+msgid "Follow along as each paragraph is highlighted, and tap any paragraph to jump to it"
+msgstr "跟随朗读进度查看逐段高亮，也可以点按任意段落跳转到那里"
 
 msgid ""
 "Follow any website, even if it doesn't have an RSS feed. NewsBlur monitors the page for changes and "
@@ -2077,6 +2142,9 @@ msgstr "忘记了 NewsBlur 上的密码？"
 msgid "Forgot your password? No problem."
 msgstr "忘记密码了？没关系。"
 
+msgid "Formal"
+msgstr "正式"
+
 msgid "Forward or subscribe newsletters to that address"
 msgstr "将邮件简报转发到该地址，或直接用该地址订阅"
 
@@ -2134,6 +2202,10 @@ msgid ""
 msgstr ""
 "FreshRSS、Miniflux 和 Tiny Tiny RSS 都是优秀的项目，但你需要自行搭建和维护服务器。这意味着要配置 VPS 和数据库、管理更新并处理备份。NewsBlur 为你提供了选择。你可以在 "
 "newsblur.com 注册，几秒钟内开始阅读；也可以通过 Docker 自行托管整套服务。没有其他开源 RSS 阅读器能同时提供这两种选择。"
+
+#, python-format
+msgid "From %(feed_title)s."
+msgstr "来自 %(feed_title)s。"
 
 msgid "From casual reading to professional news intelligence. Every plan starts with a free 30-day premium trial."
 msgstr "从轻松阅读到专业新闻洞察。每个套餐均可免费体验高级版 30 天。"
@@ -2372,6 +2444,25 @@ msgid ""
 "support forum</a> and we'll consider it for a future release."
 msgstr "有关于新工具或工作流程的想法？请发布到 <a href=\"https://forum.newsblur.com\">NewsBlur 支持论坛</a>，我们会考虑在未来版本中推出。"
 
+msgid "Have any story read aloud"
+msgstr "让任意文章朗读出来"
+
+msgid "Have any story read aloud on the web, iPhone, iPad, Mac, and Android."
+msgstr "在网页、iPhone、iPad、Mac 和 Android 上朗读任意文章。"
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Each paragraph is highlighted as it's"
+" read, stories queue up in Up Next, and when one ends the next unread story begins. Listen works out each "
+"story's language and reads it with your voice for that language, in any of NewsBlur's 21 languages."
+msgstr ""
+"在网页、iPhone、iPad、Mac 和 Android "
+"上朗读任意文章。朗读时会逐段高亮，文章会排入“接下来播放”，一篇结束后便开始朗读下一篇未读文章。收听功能会识别每篇文章的语言，并使用对应语言的语音朗读，支持 NewsBlur 的 21 种语言。"
+
+msgid ""
+"Have any story read aloud on the web, iPhone, iPad, Mac, and Android. Follow along as each paragraph is "
+"highlighted, queue stories in Up Next, and pick a voice for each of 21 languages."
+msgstr "在网页、iPhone、iPad、Mac 和 Android 上朗读任意文章。跟随朗读进度查看逐段高亮，将文章排入“接下来播放”，并为 21 种语言分别选择语音。"
+
 #, python-format
 msgid "Head over to <a href=\"https://%(domain)s\">NewsBlur</a> and get reading."
 msgstr "前往 <a href=\"https://%(domain)s\">NewsBlur</a>，开始阅读吧。"
@@ -2414,6 +2505,9 @@ msgstr "嗨，%(username)s，你的高级版账户即将到期……"
 #, python-format
 msgid "Hi %(username)s,"
 msgstr "你好，%(username)s："
+
+msgid "Hi, I'm one of the voices that can read your stories to you on NewsBlur."
+msgstr "嗨，我是可以在 NewsBlur 上为你朗读文章的语音之一。"
 
 msgid "Hide"
 msgstr "隐藏"
@@ -2578,6 +2672,9 @@ msgstr "导入网站"
 
 msgid "Import sites"
 msgstr "导入网站"
+
+msgid "Informative"
+msgstr "信息丰富"
 
 msgid "Infrequent Site Stories"
 msgstr "低频网站文章"
@@ -2761,6 +2858,9 @@ msgstr "只需前往<a href=\"https://%(domain)s/?next=opml\">“管理 NewsBlur
 msgid "Just go to Manage NewsBlur > Import or upload sites."
 msgstr "只需前往“管理 NewsBlur”>“导入或上传网站”。"
 
+msgid "Keep listening with the screen off, from the lock screen or your phone's media controls"
+msgstr "关闭屏幕后、在锁定屏幕或通过手机的媒体控制继续收听"
+
 msgid "Keep sharing your referral link to earn more free subscription time. Every referral adds up!"
 msgstr "继续分享你的推荐链接，赚取更多免费订阅时长。每次推荐都能增加时长！"
 
@@ -2825,6 +2925,43 @@ msgstr "受限（仅限自己的应用）"
 msgctxt "story layout"
 msgid "List"
 msgstr "列表"
+
+msgid "Listen"
+msgstr "收听"
+
+msgid "Listen - NewsBlur"
+msgstr "收听 - NewsBlur"
+
+msgid ""
+"Listen fetches the full article from the site and reads that instead. Images, captions, code, and tables "
+"are skipped."
+msgstr "收听功能会从网站获取完整文章并朗读全文，不会朗读图片、说明文字、代码和表格。"
+
+msgid ""
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
+" preview of a few stories a day."
+msgstr "高级归档版（每年 99 美元）和高级专业版包含收听功能。其他套餐每天可试听几篇文章的 30 秒片段。"
+
+msgid "Listen on the web, iPad, iPhone, and Android"
+msgstr "在网页、iPad、iPhone 和 Android 上使用收听功能"
+
+msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
+msgstr "收听功能正在 MacBook、iPad、iPhone 和 Android 手机上播放"
+
+msgid "Listen to stories read aloud"
+msgstr "收听朗读的文章"
+
+msgid ""
+"Listen works out each story's language and reads it with your voice for that language. Each of NewsBlur's "
+"21 languages has ten recommended voices from ElevenLabs, and you can search the rest of the ElevenLabs "
+"voice library."
+msgstr "收听功能会识别每篇文章的语言，并使用对应语言的语音朗读。NewsBlur 支持的 21 种语言各有 10 种 ElevenLabs 推荐语音，你也可以搜索 ElevenLabs 的其他语音。"
+
+msgid "Listening is busy. Try again in a moment."
+msgstr "Listen 当前正忙。请稍后重试。"
+
+msgid "Listening isn't available right now."
+msgstr "暂时无法使用朗读功能。"
 
 msgid "Load stories from feeds, folders, or all"
 msgstr "从订阅源、文件夹或全部内容加载文章"
@@ -2930,6 +3067,9 @@ msgstr "将你的 Blurblog 设为私密，仅自己可查看分享的文章。�
 msgid "Maker"
 msgstr "创客"
 
+msgid "Male"
+msgstr "男声"
+
 msgid "Manage NewsBlur"
 msgstr "管理 NewsBlur"
 
@@ -2964,6 +3104,9 @@ msgid ""
 "Mark stories as read, save stories with tags and notes, subscribe to new feeds, share stories to your "
 "blurblog"
 msgstr "将文章标记为已读，使用标签和备注保存文章，订阅新订阅源，并将文章分享到你的 Blurblog"
+
+msgid "Middle aged"
+msgstr "中年"
 
 msgid "Migrating is easy with OPML import"
 msgstr "通过 OPML 导入，迁移轻而易举"
@@ -3046,6 +3189,9 @@ msgstr ""
 "则凭借智能训练系统更进一步。你可以针对作者、标签、标题关键词、全文、网址和正则表达式进行训练，突出显示你关注的文章并隐藏其他内容。文章会以绿色、红色或中性色标记，让你直观看到训练效果。此外，“询问 AI”还可以通过"
 " Claude、GPT、Gemini 或 Grok 查询任意文章，为你生成摘要、提取要点或回答后续问题。"
 
+msgid "Most used"
+msgstr "最常用"
+
 msgid "Move and rename feeds"
 msgstr "移动并重命名订阅源"
 
@@ -3060,6 +3206,9 @@ msgstr "屏蔽网站"
 
 msgid "Muted!"
 msgstr "已静音！"
+
+msgid "Narration"
+msgstr "旁白"
 
 msgid "Native"
 msgstr "原生"
@@ -3111,6 +3260,9 @@ msgstr ""
 msgid "Navigate your archive with date filters. Find stories from any time period."
 msgstr "使用日期筛选浏览归档，查找任意时间段的文章。"
 
+msgid "Neutral"
+msgstr "中性"
+
 msgid ""
 "Never miss a post from sites that publish rarely. The Infrequent Site Stories view collects stories from "
 "feeds that only post once a week or less, making sure those gems don't get buried under high-volume feeds. "
@@ -3154,6 +3306,9 @@ msgstr "新订阅会自动导入订阅源的全部历史内容，让你从第一
 
 msgid "New tag name is required."
 msgstr "必须填写新标签名称。"
+
+msgid "Newest"
+msgstr "最新"
 
 msgid "NewsBlur - Connecting..."
 msgstr "NewsBlur - 正在连接…"
@@ -3680,6 +3835,9 @@ msgstr "用于从其他阅读器导入订阅源的 OPML 导入对话框"
 msgid "Official Hosted Option"
 msgstr "官方托管方案"
 
+msgid "Old"
+msgstr "较旧"
+
 #, python-format
 msgid "On %(deadline_date)s, when your subscription renews, you'll need to choose one of these options:"
 msgstr "你的订阅将于 %(deadline_date)s 续订，届时你需要从以下选项中选择一项："
@@ -3706,6 +3864,11 @@ msgstr ""
 msgid "On first use, a browser window opens for you to log in and authorize access."
 msgstr "首次使用时，浏览器窗口会打开，让你登录并授权访问。"
 
+msgid ""
+"On the web and in the iPhone, iPad, Mac, and Android apps. Up Next is saved to your account, so stories you"
+" queue on one device are waiting on the others."
+msgstr "可在网页以及 iPhone、iPad、Mac 和 Android 应用中使用。“接下来播放”会保存到你的账户，因此你在一台设备上排队的文章会在其他设备上等待播放。"
+
 msgid "One-Command Install"
 msgstr "一键安装"
 
@@ -3726,6 +3889,9 @@ msgstr "开源 RSS"
 
 msgid "Open Source RSS Readers"
 msgstr "开源 RSS 阅读器"
+
+msgid "Open any story and press Listen"
+msgstr "打开任意文章，然后按“收听”"
 
 msgid "Open source (MIT)"
 msgstr "开源（MIT）"
@@ -3796,6 +3962,9 @@ msgstr "需要 POST 请求"
 msgid "Paid Plan"
 msgstr "付费套餐"
 
+msgid "Paragraphs highlighted as they are read on an iPad, an iPhone, and an Android phone"
+msgstr "在 iPad、iPhone 和 Android 手机上朗读时逐段高亮"
+
 msgid "Parameter"
 msgstr "参数"
 
@@ -3825,6 +3994,9 @@ msgstr "每个订阅源的提醒"
 
 msgid "Permanent with Archive plan"
 msgstr "永久保存（需归档版套餐）"
+
+msgid "Pick a voice for each language and set the delivery and speed"
+msgstr "为每种语言选择语音，并设置语气和语速"
 
 msgid "Plan"
 msgstr "套餐"
@@ -3926,6 +4098,10 @@ msgstr "高级归档版显示数月前的未读文章"
 msgid "Premium Archive subscription"
 msgstr "高级归档版订阅"
 
+#, python-format
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "高级归档版可解锁完整文章朗读，每月最多 %(limit)s。"
+
 msgid "Premium Pro"
 msgstr "高级专业版"
 
@@ -3962,6 +4138,9 @@ msgstr "高级订阅"
 
 msgid "Premium upgrade"
 msgstr "升级为高级版"
+
+msgid "Press + to add stories to Up Next, then keep going with your next unread stories"
+msgstr "按 + 将文章添加到“接下来播放”，然后继续收听下一篇未读文章"
 
 msgid "Press Information and Resources"
 msgstr "媒体信息与资源"
@@ -4030,6 +4209,9 @@ msgstr "专业版：所有订阅源每 5 分钟更新一次"
 
 msgid "Processing question"
 msgstr "正在处理问题"
+
+msgid "Professional"
+msgstr "专业"
 
 msgid "Professional-grade feed monitoring"
 msgstr "专业级订阅源监控"
@@ -4570,6 +4752,9 @@ msgstr "查看全文搜索"
 msgid "See Intelligence Training"
 msgstr "查看智能训练"
 
+msgid "See Listen"
+msgstr "了解收听功能"
+
 msgid "See Native Apps"
 msgstr "查看原生应用"
 
@@ -4792,6 +4977,12 @@ msgstr "社交 / 分享"
 msgid "Social Features"
 msgstr "社交功能"
 
+msgid "Social media"
+msgstr "社交媒体"
+
+msgid "Soft"
+msgstr "柔和"
+
 msgid "Software Engineer"
 msgstr "软件工程师"
 
@@ -4879,6 +5070,9 @@ msgid ""
 msgstr ""
 "文章发布后会立即推送给你。免费用户可通过 PubSubHubbub 实时获取更新。高级用户的订阅源检查频率最高可提升至 5 倍。专业版用户账户中的每个订阅源都会每隔 5-15 分钟抓取一次，使 NewsBlur "
 "成为专业人士及时掌握最新消息的监控级工具。"
+
+msgid "Stories can stay unread for however long you choose"
+msgstr "你可以自行决定文章保留未读状态的时长"
 
 msgid "Stories can stay unread forever"
 msgstr "文章可以永远保持未读状态"
@@ -5117,6 +5311,9 @@ msgstr "感谢试用 NewsBlur！希望 NewsBlur 能让你的日常阅读更加�
 msgid "Thanks!"
 msgstr "谢谢！"
 
+msgid "That part of the story doesn't exist."
+msgstr "文章的这一部分不存在。"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "该文章已从订阅源中移除，无需将其标记为未读。"
 
@@ -5207,6 +5404,9 @@ msgstr ""
 "NewsBlur，突出显示你关注的作者和主题，并隐藏其余内容。文章会用不同颜色标记，让你一眼浏览各个订阅源。随着时间推移，阅读器会逐渐适应你的兴趣。The Old Reader "
 "没有过滤或训练系统，因此管理大量订阅源需要更多手动操作。"
 
+msgid "The default Listen voice for each of NewsBlur’s 21 languages"
+msgstr "NewsBlur 支持的 21 种语言各自的默认收听语音"
+
 msgid "The email will be sent to:"
 msgstr "邮件将发送至："
 
@@ -5247,6 +5447,9 @@ msgstr "我们的故事"
 
 msgid "The team"
 msgstr "团队"
+
+msgid "The voice library couldn't be reached. Try again in a moment."
+msgstr "无法连接语音库。请稍后再试。"
 
 msgid "Themes"
 msgstr "主题"
@@ -5341,6 +5544,12 @@ msgstr "这已经是 RSS 订阅源。正在直接订阅。"
 msgid "This payment has been refunded."
 msgstr "此笔款项已退款。"
 
+msgid "This story has no text to read aloud."
+msgstr "这篇文章没有可朗读的文字。"
+
+msgid "This story needs to be reloaded."
+msgstr "需要重新加载这篇文章。"
+
 msgid "This user has limited their shared stories only to followers."
 msgstr "此用户仅与关注者分享文章。"
 
@@ -5406,6 +5615,9 @@ msgstr "令牌已保存。"
 msgid "Token saved."
 msgstr "令牌已保存。"
 
+msgid "Too many stories started at once. Try again in a few minutes."
+msgstr "同时启动的文章太多了。请几分钟后重试。"
+
 msgid "Top Level"
 msgstr "顶层"
 
@@ -5455,6 +5667,9 @@ msgstr "按作者、标签、标题和关键词训练文章。给想看的内容
 msgid "Train stories on full text content"
 msgstr "根据全文内容训练文章分类"
 
+msgid "Train stories on full text content, not just titles and tags"
+msgstr "根据文章全文进行训练，而不只是根据标题和标签"
+
 msgid "Train stories with regular expressions"
 msgstr "使用正则表达式训练文章"
 
@@ -5475,6 +5690,9 @@ msgstr "可对作者、标签和标题点赞或点踩的训练对话框"
 
 msgid "Training dialog with thumbs up/down"
 msgstr "带赞/踩按钮的训练对话框"
+
+msgid "Trending"
+msgstr "趋势"
 
 msgid "Trial Premium Subscription"
 msgstr "试用高级订阅"
@@ -5560,6 +5778,9 @@ msgstr "不支持的语言"
 msgid "Until then, nothing changes for you. Your %(feed_count)s site will continue working normally."
 msgid_plural "Until then, nothing changes for you. All %(feed_count)s of your sites will continue working normally."
 msgstr[0] "在此之前，你的使用不会有任何变化。你的 %(feed_count)s 个网站将继续正常运行。"
+
+msgid "Upbeat"
+msgstr "轻快"
 
 msgid "Upgrade here:"
 msgstr "在此升级："
@@ -5690,6 +5911,9 @@ msgstr "想要更多 MCP 功能吗？"
 msgid "Want to unlock even more?"
 msgstr "想解锁更多功能吗？"
 
+msgid "Warm"
+msgstr "温暖"
+
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett 用 64 字节 RAM 编写了一个 BASIC 解释器。最多 9 行、64 个符号，整数范围为 0&ndash;99。"
 
@@ -5809,6 +6033,9 @@ msgstr "如果降级会怎样？"
 msgid "What happens to my data if I downgrade?"
 msgstr "如果我降级，我的数据会怎样？"
 
+msgid "What if a feed only publishes a summary?"
+msgstr "如果订阅源只发布摘要，该怎么办？"
+
 msgid "What is MCP?"
 msgstr "什么是 MCP？"
 
@@ -5887,6 +6114,9 @@ msgstr "订阅源后，NewsBlur 会补齐该源所有可用的历史内容。此
 msgid "When you subscribe to a new feed, its history is back-filled"
 msgstr "订阅新订阅源时，系统会回填其历史内容"
 
+msgid "Where does Listen work?"
+msgstr "收听功能适用于哪些地方？"
+
 msgid ""
 "Whether you're coming from Google Reader's old OPML export, another RSS reader, or starting fresh, NewsBlur"
 " makes it simple to get set up. Import your OPML file and all your feeds and folders appear instantly. "
@@ -5897,6 +6127,9 @@ msgstr ""
 
 msgid "Which AI models are available?"
 msgstr "有哪些可用的 AI 模型？"
+
+msgid "Which languages and voices are available?"
+msgstr "支持哪些语言和语音？"
 
 msgid "Whitney"
 msgstr "Whitney"
@@ -6375,6 +6608,24 @@ msgid ""
 "NewsBlur."
 msgstr "感谢你帮忙宣传 NewsBlur，你获得了 <b>%(credit_text)s</b> 的免费 %(tier_name)s。"
 
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
+" for %(pro_limit)s a month."
+msgstr "本月你已收听 %(limit)s 篇文章。收听次数将于 %(date)s 重置，或升级到高级专业版，每月 %(pro_limit)s。"
+
+#, python-format
+msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+msgstr "本月你已收听 %(limit)s 篇文章。收听次数将于 %(date)s 重置。"
+
+msgid "You've played all your voice previews for today. They reset at midnight."
+msgstr "你今天已用完所有语音试听次数。次数将在午夜重置。"
+
+#, python-format
+msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
+msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
+msgstr[0] "你今天已试听 %(count)d 篇文章。升级到高级归档版即可收听完整文章。"
+
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
 "you just need to renew your premium account. Let's help you do that."
@@ -6382,6 +6633,9 @@ msgstr "你最近使用过 NewsBlur，所以你可能并不是想转为免费账
 
 msgid "YouTube search request failed."
 msgstr "YouTube 搜索请求失败。"
+
+msgid "Young"
+msgstr "年轻"
 
 #, python-format
 msgid "Your %(tier_name)s gift subscription is ready. Share this link with the lucky recipient:"
