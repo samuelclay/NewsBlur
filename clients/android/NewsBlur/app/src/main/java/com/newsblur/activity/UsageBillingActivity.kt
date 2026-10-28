@@ -182,10 +182,10 @@ class UsageBillingActivity : NbActivity() {
                     load()
                 }
                 url != null -> openInCustomTab(Uri.parse(url))
-                else ->
-                    Toast
-                        .makeText(this@UsageBillingActivity, response.message ?: getString(R.string.usage_billing_stripe_failed), Toast.LENGTH_LONG)
-                        .show()
+                else -> {
+                    val message = response.message ?: getString(R.string.usage_billing_stripe_failed)
+                    Toast.makeText(this@UsageBillingActivity, message, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -205,7 +205,8 @@ class UsageBillingActivity : NbActivity() {
             val response = withContext(Dispatchers.IO) { usageBillingApi.saveLimit(limit) }
             binding.limitSave.isEnabled = true
             if (!response.isSaved) {
-                Toast.makeText(this@UsageBillingActivity, response.message ?: getString(R.string.usage_billing_limit_failed), Toast.LENGTH_LONG).show()
+                val message = response.message ?: getString(R.string.usage_billing_limit_failed)
+                Toast.makeText(this@UsageBillingActivity, message, Toast.LENGTH_LONG).show()
                 return@launch
             }
             billing = billing.copy(usageBillingLimit = response.limit)
@@ -298,7 +299,8 @@ class UsageBillingActivity : NbActivity() {
             binding.limitBarText.text =
                 getString(R.string.usage_billing_limit_progress, UsageBilling.formatDollars(spend), UsageBilling.formatDollars(limit))
             binding.limitBar.post {
-                binding.limitBarFill.layoutParams = binding.limitBarFill.layoutParams.apply { width = (binding.limitBar.width * fraction).roundToInt() }
+                binding.limitBarFill.layoutParams =
+                    binding.limitBarFill.layoutParams.apply { width = (binding.limitBar.width * fraction).roundToInt() }
             }
         }
         val upcoming = history.upcomingInvoice
@@ -326,15 +328,13 @@ class UsageBillingActivity : NbActivity() {
             LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) }
+                layoutParams = rowParams(topMarginDp = 10)
                 alpha = if (scheduled) 0.7f else 1f
             }
-        header.addView(text(invoice.date?.let { formatDate(parseDate(it), "yMMMMdd") }.orEmpty(), colors.textPrimary, 14f), LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        val date = invoice.date?.let { formatDate(parseDate(it), "yMMMMdd") }.orEmpty()
+        header.addView(text(date, colors.textPrimary, 14f), fillParams())
         header.addView(text(UsageBilling.formatDollars(amount), colors.textPrimary, 14f, bold = true))
-        header.addView(
-            text(provider, colors.textSecondary, 13f),
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) },
-        )
+        header.addView(text(provider, colors.textSecondary, 13f), trailingParams())
         binding.historyList.addView(header)
 
         invoice.hostedInvoiceUrl?.takeIf { it.startsWith("https://") }?.let { url ->
@@ -349,17 +349,27 @@ class UsageBillingActivity : NbActivity() {
             val row =
                 LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
-                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(2) }
+                    layoutParams = rowParams(topMarginDp = 2)
                 }
-            row.addView(text(item.description.orEmpty(), colors.textSecondary, 12f), LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-            row.addView(text(getString(R.string.usage_billing_quantity, NumberFormat.getIntegerInstance().format(item.quantity)), colors.textSecondary, 12f))
-            row.addView(
-                text(UsageBilling.formatDollars(item.amount), colors.textSecondary, 12f),
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) },
-            )
+            val quantity = getString(R.string.usage_billing_quantity, NumberFormat.getIntegerInstance().format(item.quantity))
+            row.addView(text(item.description.orEmpty(), colors.textSecondary, 12f), fillParams())
+            row.addView(text(quantity, colors.textSecondary, 12f))
+            row.addView(text(UsageBilling.formatDollars(item.amount), colors.textSecondary, 12f), trailingParams())
             binding.historyList.addView(row)
         }
     }
+
+    private fun rowParams(topMarginDp: Int) =
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+            topMargin = dp(topMarginDp)
+        }
+
+    private fun fillParams() = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+
+    private fun trailingParams() =
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+            marginStart = dp(8)
+        }
 
     private fun text(
         value: String,
@@ -378,10 +388,22 @@ class UsageBillingActivity : NbActivity() {
         binding.refresh.setBackgroundColor(colors.screenBackground)
         binding.billingCard.background = rounded(colors.cardBackground, colors.cardBorder, radiusDp = 10)
         binding.historyCard.background = rounded(colors.cardBackground, colors.cardBorder, radiusDp = 10)
-        listOf(binding.billingTitle, binding.historyTitle, binding.spendAmount, binding.limitLabel, binding.limitDollar, binding.limitBarText)
-            .forEach { it.setTextColor(colors.textPrimary) }
-        listOf(binding.billingStatus, binding.spendPeriod, binding.upcomingCharge, binding.limitPerMonth, binding.limitHelp, binding.historyMessage)
-            .forEach { it.setTextColor(colors.textSecondary) }
+        listOf(
+            binding.billingTitle,
+            binding.historyTitle,
+            binding.spendAmount,
+            binding.limitLabel,
+            binding.limitDollar,
+            binding.limitBarText,
+        ).forEach { it.setTextColor(colors.textPrimary) }
+        listOf(
+            binding.billingStatus,
+            binding.spendPeriod,
+            binding.upcomingCharge,
+            binding.limitPerMonth,
+            binding.limitHelp,
+            binding.historyMessage,
+        ).forEach { it.setTextColor(colors.textSecondary) }
         binding.limitReachedNote.setTextColor(colors.limitBannerText)
         binding.limitBar.background = rounded(colors.progressTrack, radiusDp = 6)
         binding.limitInput.background = rounded(colors.inputBackground, colors.cardBorder, radiusDp = 6)

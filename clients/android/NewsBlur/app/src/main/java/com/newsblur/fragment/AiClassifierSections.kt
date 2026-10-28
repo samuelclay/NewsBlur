@@ -179,7 +179,9 @@ class AiClassifierSections(
             binding.aiSectionIcon.imageTintList = ColorStateList.valueOf(colors.textSecondary)
             binding.aiSectionTitle.setText(if (imagePrompt) R.string.ai_image_classifier_header else R.string.ai_text_classifier_header)
             binding.aiSectionTitle.setTextColor(colors.textPrimary)
-            binding.aiSectionExplainer.setText(if (imagePrompt) R.string.ai_image_classifier_explainer else R.string.ai_text_classifier_explainer)
+            binding.aiSectionExplainer.setText(
+                if (imagePrompt) R.string.ai_image_classifier_explainer else R.string.ai_text_classifier_explainer,
+            )
             binding.aiSectionExplainer.setTextColor(colors.textSecondary)
             binding.aiCostBox.background = rounded(colors.costBackground, colors.costBorder)
             binding.aiCostAmounts.setTextColor(colors.textPrimary)
@@ -428,15 +430,20 @@ class AiClassifierSections(
             label.text = builder
             // A removed prompt stays listed, struck through, until the trainer saves.
             val removed = score == Classifier.CLEAR_LIKE || score == Classifier.CLEAR_DISLIKE
-            label.paintFlags = if (removed) label.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else label.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            label.paintFlags =
+                if (removed) label.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else label.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
 
         private fun styleThumbs(
             row: IncludeAiPromptRowBinding,
             score: Int?,
         ) {
-            row.aiPromptLike.setBackgroundResource(if (score == Classifier.LIKE) R.drawable.ic_thumb_up_green else R.drawable.ic_thumb_up_yellow)
-            row.aiPromptDislike.setBackgroundResource(if (score == Classifier.DISLIKE) R.drawable.ic_thumb_down_red else R.drawable.ic_thumb_down_yellow)
+            row.aiPromptLike.setBackgroundResource(
+                if (score == Classifier.LIKE) R.drawable.ic_thumb_up_green else R.drawable.ic_thumb_up_yellow,
+            )
+            row.aiPromptDislike.setBackgroundResource(
+                if (score == Classifier.DISLIKE) R.drawable.ic_thumb_down_red else R.drawable.ic_thumb_down_yellow,
+            )
         }
 
         private fun activeScopes(): List<ClassifierScope> {
@@ -535,7 +542,8 @@ class AiClassifierSections(
             binding.aiTestButton.setText(if (imagePrompt) R.string.ai_analyzing_images else R.string.ai_testing_story)
             thumbs.forEach { (frame, _) -> frame.alpha = 0.5f }
             refresh()
-            val request = PromptTestRequest(prompt, storyHash, feedId, includeImages = imagePrompt, hidden = previewScore == Classifier.DISLIKE)
+            val request =
+                PromptTestRequest(prompt, storyHash, feedId, includeImages = imagePrompt, hidden = previewScore == Classifier.DISLIKE)
             fragment.lifecycleScope.launch {
                 val response = withContext(Dispatchers.IO) { classifierApi.testPrompt(request) }
                 if (!fragment.isAdded) return@launch
@@ -550,14 +558,20 @@ class AiClassifierSections(
 
         private fun showTestResult(response: PromptTestResponse) {
             if (!response.isSuccess) {
-                showStatus(response.message ?: context.getString(R.string.ai_test_failed), colors.errorBackground, colors.errorText, colors.errorBorder)
+                val message = response.message ?: context.getString(R.string.ai_test_failed)
+                showStatus(message, colors.errorBackground, colors.errorText, colors.errorBorder)
                 return
             }
             if (!imagePrompt) {
                 if (response.matched) {
                     showStatus(context.getString(R.string.ai_story_matches), colors.matchBackground, colors.matchText, colors.matchBorder)
                 } else {
-                    showStatus(context.getString(R.string.ai_story_no_match), colors.noMatchBackground, colors.noMatchText, colors.noMatchBorder)
+                    showStatus(
+                        context.getString(R.string.ai_story_no_match),
+                        colors.noMatchBackground,
+                        colors.noMatchText,
+                        colors.noMatchBorder,
+                    )
                 }
                 return
             }
@@ -579,7 +593,8 @@ class AiClassifierSections(
                         colors.noMatchText,
                         colors.noMatchBorder,
                     )
-                total == 1 -> showStatus(context.getString(R.string.ai_image_matches), colors.matchBackground, colors.matchText, colors.matchBorder)
+                total == 1 ->
+                    showStatus(context.getString(R.string.ai_image_matches), colors.matchBackground, colors.matchText, colors.matchBorder)
                 else ->
                     showStatus(
                         context.resources.getQuantityString(R.plurals.ai_images_match, total, matches, total),

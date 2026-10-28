@@ -22,9 +22,11 @@ class UsageBillingApiImpl(
         return parse(response, UsageBillingLimitResponse())
     }
 
-    override suspend fun startSetup(platform: String): UsageBillingSessionResponse = startSession(APIConstants.PATH_SETUP_USAGE_BILLING, platform)
+    override suspend fun startSetup(platform: String): UsageBillingSessionResponse =
+        startSession(APIConstants.PATH_SETUP_USAGE_BILLING, platform)
 
-    override suspend fun openPortal(platform: String): UsageBillingSessionResponse = startSession(APIConstants.PATH_MANAGE_USAGE_BILLING, platform)
+    override suspend fun openPortal(platform: String): UsageBillingSessionResponse =
+        startSession(APIConstants.PATH_MANAGE_USAGE_BILLING, platform)
 
     private suspend fun startSession(
         path: String,
