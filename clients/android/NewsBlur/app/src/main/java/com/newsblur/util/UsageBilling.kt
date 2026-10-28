@@ -2,6 +2,7 @@ package com.newsblur.util
 
 import android.net.Uri
 import com.newsblur.BuildConfig
+import kotlinx.coroutines.delay
 
 /**
  * Natural language classifier billing flags from /reader/feeds user_profile
@@ -49,6 +50,27 @@ enum class UsageBillingReturn(
 
 object UsageBilling {
     const val CALLBACK_HOST = "usage-billing"
+
+    // UsageBilling.kt: billing turns on when Stripe's checkout.session.completed webhook reaches
+    // the server, which can land a few seconds after the browser returns setup_complete.
+    @JvmField
+    val ACTIVATION_BACKOFF_MS = longArrayOf(1_000, 2_000, 4_000)
+
+    /**
+     * Checks [isActive] right away and again after each backoff delay, returning true as soon as
+     * billing is on and false once the delays run out.
+     */
+    suspend fun awaitActivation(
+        delaysMs: LongArray = ACTIVATION_BACKOFF_MS,
+        isActive: suspend () -> Boolean,
+    ): Boolean {
+        if (isActive()) return true
+        for (wait in delaysMs) {
+            delay(wait)
+            if (isActive()) return true
+        }
+        return false
+    }
 
     // UsageBilling.kt mirrors onboarding/AccountViewModel.kt: the alpha build has its own
     // callback scheme (app/build.gradle.kts socialCallbackScheme), registered on the server

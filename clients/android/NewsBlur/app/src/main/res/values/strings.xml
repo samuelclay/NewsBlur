@@ -1492,6 +1492,8 @@ people together to talk about the world.</string>
     <string name="usage_billing_load_failed">Couldn’t load usage billing. Pull down to try again.</string>
     <string name="usage_billing_stripe_failed">Couldn’t reach Stripe. Please try again.</string>
     <string name="usage_billing_already_active">Usage-based billing is already set up.</string>
+    <string name="usage_billing_activating">Activating usage-based billing. This takes a few seconds once Stripe confirms your payment details.</string>
+    <string name="usage_billing_activating_slow">Stripe is still confirming your billing. Pull down to check again in a moment.</string>
     <string name="usage_billing_setup_complete">Usage-based billing is set up. Your AI filters will start running on new stories.</string>
     <string name="usage_billing_no_browser">Install a web browser to set up billing.</string>
     <string name="usage_billing_provider" translatable="false">stripe</string>

@@ -35,7 +35,6 @@ import com.newsblur.util.UsageBillingState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.NumberFormat
@@ -66,9 +65,17 @@ class UsageBillingActivity : NbActivity() {
     private var loadJob: Job? = null
     private var sessionStarting = false
 
-    // UsageBillingActivity.kt rechecks a few times after Stripe Checkout, since the webhook
-    // that turns billing on can land a moment after the browser returns.
-    private var confirmSetupAttempts = 0
+    // UsageBillingActivity.kt waits for billing to turn on after Stripe Checkout returns, since
+    // the server only enables it once Stripe's webhook arrives.
+    private var activation = Activation.NONE
+
+    private enum class Activation {
+        NONE,
+        ACTIVATING,
+
+        // The backoff ran out before the webhook landed. Pull to refresh checks again.
+        DELAYED,
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,8 +100,17 @@ class UsageBillingActivity : NbActivity() {
             saveLimit()
             true
         }
-        if (savedInstanceState == null) handleStripeReturn(intent)
+        if (savedInstanceState == null) {
+            handleStripeReturn(intent)
+        } else {
+            activation = Activation.valueOf(savedInstanceState.getString(STATE_ACTIVATION, Activation.NONE.name))
+        }
         render()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_ACTIVATION, activation.name)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -117,16 +133,15 @@ class UsageBillingActivity : NbActivity() {
         if (updated == billing) return
         billing = updated
         render()
-        load()
+        // An activation in progress picks up the new flags on its next check.
+        if (activation != Activation.ACTIVATING) load()
     }
 
     private fun handleStripeReturn(intent: Intent?) {
         val result = UsageBilling.parseReturn(intent?.data) ?: return
-        if (result == UsageBillingReturn.SETUP_COMPLETE) {
-            Toast.makeText(this, R.string.usage_billing_setup_complete, Toast.LENGTH_LONG).show()
-            confirmSetupAttempts = 3
-        }
+        if (result == UsageBillingReturn.SETUP_COMPLETE && !billing.hasUsageBilling) activation = Activation.ACTIVATING
         refreshAccountFlags()
+        render()
     }
 
     private fun refreshAccountFlags() {
@@ -139,17 +154,15 @@ class UsageBillingActivity : NbActivity() {
         binding.refresh.isRefreshing = true
         loadJob =
             lifecycleScope.launch {
-                var usage = withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(null) }
-                while (usage.code == 0 && !usage.canUseAi && confirmSetupAttempts > 0) {
-                    confirmSetupAttempts--
-                    delay(2_000)
-                    usage = withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(null) }
-                }
-                if (usage.code == 0 && usage.canUseAi) confirmSetupAttempts = 0
-                if (usage.code == 0 && usage.canUseAi != billing.canUseAiClassifiers) {
-                    billing = billing.copy(canUseAiClassifiers = usage.canUseAi)
-                    prefsRepo.setUsageBillingState(billing)
-                    refreshAccountFlags()
+                if (activation != Activation.NONE) {
+                    awaitActivation()
+                } else {
+                    val usage = withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(null) }
+                    if (usage.code == 0 && usage.canUseAi != billing.canUseAiClassifiers) {
+                        billing = billing.copy(canUseAiClassifiers = usage.canUseAi)
+                        prefsRepo.setUsageBillingState(billing)
+                        refreshAccountFlags()
+                    }
                 }
                 render()
                 if (!billing.canUseAiClassifiers) {
@@ -160,6 +173,31 @@ class UsageBillingActivity : NbActivity() {
                 }
                 binding.refresh.isRefreshing = false
             }
+    }
+
+    /**
+     * Rechecks the account with backoff until the webhook turns billing on. The AI usage endpoint
+     * reads the same Profile.can_use_ai_classifiers that user_profile sends and is much lighter
+     * than /reader/feeds, so it does the polling, and one forced feeds sync then brings the
+     * rest of user_profile.
+     */
+    private suspend fun awaitActivation() {
+        render()
+        val active =
+            UsageBilling.awaitActivation {
+                prefsRepo.getUsageBillingState().hasUsageBilling ||
+                    withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(null) }.let { it.code == 0 && it.canUseAi }
+            }
+        if (!active) {
+            activation = Activation.DELAYED
+            return
+        }
+        activation = Activation.NONE
+        val current = prefsRepo.getUsageBillingState()
+        billing = current.copy(canUseAiClassifiers = true, isUsageBilling = current.isUsageBilling || !current.isSelfHostedAi)
+        prefsRepo.setUsageBillingState(billing)
+        refreshAccountFlags()
+        Toast.makeText(this, R.string.usage_billing_setup_complete, Toast.LENGTH_LONG).show()
     }
 
     private fun startStripeSession(setup: Boolean) {
@@ -225,6 +263,8 @@ class UsageBillingActivity : NbActivity() {
     private fun render() {
         binding.billingStatus.setText(
             when {
+                activation == Activation.ACTIVATING -> R.string.usage_billing_activating
+                activation == Activation.DELAYED -> R.string.usage_billing_activating_slow
                 billing.hasUsageBilling -> R.string.usage_billing_status_enabled
                 billing.isSelfHostedAi -> R.string.usage_billing_status_self_hosted
                 else -> R.string.usage_billing_status_off
@@ -235,7 +275,8 @@ class UsageBillingActivity : NbActivity() {
             UsageBillingAction.SET_UP -> binding.billingButton.setText(R.string.ai_billing_set_up)
             UsageBillingAction.NONE -> Unit
         }
-        binding.billingButton.isVisible = billing.action != UsageBillingAction.NONE
+        // No second checkout while Stripe is still confirming the first.
+        binding.billingButton.isVisible = billing.action != UsageBillingAction.NONE && activation == Activation.NONE
         binding.limitSection.isVisible = billing.canUseAiClassifiers
         if (!binding.limitInput.hasFocus()) binding.limitInput.setText(formatLimit(billing.usageBillingLimit))
         if (!billing.canUseAiClassifiers) binding.spendSection.isVisible = false
@@ -463,4 +504,8 @@ class UsageBillingActivity : NbActivity() {
             limit % 1.0 == 0.0 -> limit.toLong().toString()
             else -> String.format(Locale.US, "%.2f", limit)
         }
+
+    companion object {
+        private const val STATE_ACTIVATION = "usage_billing_activation"
+    }
 }

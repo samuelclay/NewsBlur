@@ -1,7 +1,11 @@
 package com.newsblur.util
 
+import kotlinx.coroutines.test.currentTime
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 // Test_UsageBilling.kt: the Stripe return link, the platform the server maps to that link, and
@@ -56,4 +60,34 @@ class Test_UsageBilling {
         assertEquals("$1.25", UsageBilling.formatCost(1.25))
         assertEquals("$12.50", UsageBilling.formatDollars(12.5))
     }
+
+    @Test
+    fun test_activation_rechecks_with_backoff_until_the_webhook_lands() =
+        runTest {
+            val checkedAt = mutableListOf<Long>()
+
+            val active =
+                UsageBilling.awaitActivation {
+                    checkedAt.add(currentTime)
+                    checkedAt.size == 3
+                }
+
+            assertTrue(active)
+            assertEquals("Checks right away, then after 1s and 2s more", listOf(0L, 1_000L, 3_000L), checkedAt)
+        }
+
+    @Test
+    fun test_activation_gives_up_after_the_backoff_without_failing() =
+        runTest {
+            var checks = 0
+
+            val active = UsageBilling.awaitActivation {
+                    checks++
+                    false
+                }
+
+            assertFalse(active)
+            assertEquals(4, checks)
+            assertEquals("1s, 2s and 4s of backoff", 7_000L, currentTime)
+        }
 }
