@@ -23,11 +23,12 @@ object ReaderMotion {
             return
         }
         val parent = view.parent as? android.view.ViewGroup
-        if (view.isShown && parent != null && view.width > 0 && view.height > 0 &&
-            view.width.toLong() * view.height <= 4_000_000 && ValueAnimator.areAnimatorsEnabled() &&
+        val bitmap = if (view.isShown && parent != null && view.width > 0 && view.height > 0 &&
+            view.width.toLong() * view.height <= 1_000_000 && ValueAnimator.areAnimatorsEnabled() &&
             !com.newsblur.util.ViewUtils.isPowerSaveMode(view.context)) {
-            val bitmap = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)
-            view.draw(android.graphics.Canvas(bitmap))
+            departureSnapshot(view)
+        } else null
+        if (bitmap != null && parent != null) {
             val ghost = android.graphics.drawable.BitmapDrawable(view.resources, bitmap)
             val left = view.left - parent.scrollX
             val top = view.top - parent.scrollY
@@ -52,6 +53,19 @@ object ReaderMotion {
         }
         view.clearAnimation()
         view.visibility = visibility
+    }
+
+    private fun departureSnapshot(view: View): android.graphics.Bitmap? {
+        var bitmap: android.graphics.Bitmap? = null
+        return try {
+            bitmap = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)
+            view.draw(android.graphics.Canvas(bitmap))
+            bitmap
+        } catch (_: OutOfMemoryError) {
+            // ReaderMotion.kt treats the drawing copy as optional; hiding the real view must still succeed.
+            bitmap?.recycle()
+            null
+        }
     }
 
     @JvmStatic fun canEnter(view: View): Boolean {

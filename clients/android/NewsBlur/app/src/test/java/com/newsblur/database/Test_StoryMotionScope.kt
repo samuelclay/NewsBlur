@@ -83,6 +83,17 @@ class Test_StoryMotionScope {
         assertEquals(setOf("1:row0"), seen)
     }
 
+    @Test fun test_seen_rows_skip_visibility_and_geometry_work_on_later_frames() {
+        val row = row()
+        val preDraw = attach(adapter(mutableSetOf("1:row0")), listOf(row))
+
+        repeat(10) { preDraw.onPreDraw() }
+
+        verify(exactly = 0) { ReaderMotion.canEnter(row) }
+        verify(exactly = 0) { row.getGlobalVisibleRect(any()) }
+        verify(exactly = 0) { ReaderMotion.enter(any(), any(), any()) }
+    }
+
     private fun row(): View = mockk<View>(relaxed = true).also {
         every { it.isAttachedToWindow } returns true
         every { it.isShown } returns true
