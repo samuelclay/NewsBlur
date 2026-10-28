@@ -597,12 +597,13 @@ public class UIUtils {
         styleExamplePill(root.findViewById(R.id.explainer_ex2_pill2), likeBg, likeColor, pillRadius, R.drawable.ic_thumb_up_green, iconSize);
         styleExamplePill(root.findViewById(R.id.explainer_ex2_pill3), superBg, superColor, pillRadius, R.drawable.ic_thumb_down_double_crimson, iconSize);
 
-        // Example 3: an AI focus match beats a disliked author, but a super-disliked author still hides it
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill1), aiBg, aiColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
-        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill1), aiColors.getLegendIcon());
+        // Example 3: an AI focus match beats a disliked author, but a super-disliked author still hides it.
+        // The match is a focus green like the story header's AI chip; the legend's blue is only for its level.
+        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill1), likeBg, likeColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
+        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill1), likeColor);
         styleExamplePill(root.findViewById(R.id.explainer_ex3_pill2), dislikeBg, dislikeColor, pillRadius, R.drawable.ic_thumb_down_red, iconSize);
-        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill3), aiBg, aiColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
-        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill3), aiColors.getLegendIcon());
+        styleExamplePill(root.findViewById(R.id.explainer_ex3_pill3), likeBg, likeColor, pillRadius, R.drawable.ic_ai_text_filter, iconSize);
+        tintExamplePillIcon(root.findViewById(R.id.explainer_ex3_pill3), likeColor);
         styleExamplePill(root.findViewById(R.id.explainer_ex3_pill4), superBg, superColor, pillRadius, R.drawable.ic_thumb_down_double_crimson, iconSize);
     }
 
