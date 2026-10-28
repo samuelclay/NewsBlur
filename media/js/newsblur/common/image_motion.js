@@ -27,6 +27,7 @@ $(document).on('click.nb-image-motion', '.NB-feed-story-content img', function (
             (from.top + from.height / 2 - to.top - to.height / 2) + 'px) scale(' + from.width / to.width + ',' + from.height / to.height + ')';
     }
     function remove() {
+        release_keyboard();
         dialog.close();
         dialog.remove();
         if (previous_focus && previous_focus.isConnected) previous_focus.focus({ preventScroll: true });
@@ -44,14 +45,27 @@ $(document).on('click.nb-image-motion', '.NB-feed-story-content img', function (
     }
     close.onclick = dismiss;
     dialog.onclick = function (e) { if (e.target === dialog || e.target === image) dismiss(); };
-    dialog.addEventListener('keydown', function (e) {
+    function handle_keydown(e) {
+        // image_motion.js keeps reader shortcuts outside the modal while preserving native buttons and Tab.
+        // Modifier events still reach jquery.hotkeys.js so its pressed/released state stays current.
+        if (['Shift', 'Control', 'Alt', 'Meta'].indexOf(e.key) !== -1 ||
+            [16, 17, 18, 91, 93, 224].indexOf(e.keyCode || e.which) !== -1) return;
+        e.stopImmediatePropagation();
         // image_motion.js also recognizes the key codes used by jquery.hotkeys.js and runs the same accessible dismissal.
         if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27 || e.which === 27) {
             e.preventDefault();
-            e.stopPropagation();
             dismiss();
         }
-    });
+    }
+    function handle_keypress(e) { e.stopImmediatePropagation(); }
+    function release_keyboard() {
+        document.removeEventListener('keydown', handle_keydown, true);
+        document.removeEventListener('keypress', handle_keypress, true);
+    }
+    // image_motion.js uses document capture because native Tab can move focus outside the dialog's DOM subtree.
+    document.addEventListener('keydown', handle_keydown, true);
+    document.addEventListener('keypress', handle_keypress, true);
+    dialog.addEventListener('close', release_keyboard);
     dialog.addEventListener('cancel', function (e) { e.preventDefault(); dismiss(); });
     function reveal() {
         if (closing || !dialog.isConnected) return;

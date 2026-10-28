@@ -8,7 +8,10 @@ function harness() {
     class Element {
         constructor(tag) { this.tag = tag; this.nodeName = tag.toUpperCase(); this.listeners = {}; this.children = []; this.isConnected = true; }
         appendChild(child) { child.parentNode = this; this.children.push(child); }
-        addEventListener(type, callback) { (this.listeners[type] ||= []).push(callback); }
+        addEventListener(type, callback, capture = false) { (this.listeners[type] ||= []).push({ callback, capture }); }
+        removeEventListener(type, callback, capture = false) {
+            this.listeners[type] = (this.listeners[type] || []).filter(entry => entry.callback !== callback || entry.capture !== capture);
+        }
         setAttribute() {}
         showModal() { this.open = true; }
         close() { this.open = false; }
@@ -20,11 +23,24 @@ function harness() {
         const event = {
             target, type, defaultPrevented: false, propagationStopped: false, ...properties,
             preventDefault() { this.defaultPrevented = true; },
-            stopPropagation() { this.propagationStopped = true; }
+            stopPropagation() { this.propagationStopped = true; },
+            stopImmediatePropagation() { this.propagationStopped = true; this.immediateStopped = true; }
         };
-        for (let node = target; node; node = node.parentNode) {
-            for (const listener of node.listeners[type] || []) listener.call(node, event);
-            if (event.propagationStopped || !properties.bubbles) break;
+        const path = [];
+        for (let node = target; node; node = node.parentNode) path.push(node);
+        function deliver(node, capture) {
+            for (const listener of [...(node.listeners[type] || [])]) {
+                if (listener.capture === capture) listener.callback.call(node, event);
+                if (event.immediateStopped) break;
+            }
+        }
+        for (const node of [...path].reverse()) {
+            deliver(node, true);
+            if (event.propagationStopped) return event;
+        }
+        for (const node of path) {
+            deliver(node, false);
+            if (event.propagationStopped || !properties.bubbles) return event;
         }
         return event;
     }
@@ -53,14 +69,83 @@ function harness() {
         event: { special: {} },
         each: (items, callback) => items.forEach(item => callback.call(item))
     };
-    vm.runInNewContext(fs.readFileSync('media/js/vendor/jquery.hotkeys.js', 'utf8'), { NEWSBLUR: {}, jQuery });
-    function bind_escape(handler) {
-        const registration = { data: 'esc', handler };
-        jQuery.event.special.keydown.add(registration);
-        document.addEventListener('keydown', registration.handler);
+    const newsblur = {};
+    vm.runInNewContext(fs.readFileSync('media/js/vendor/jquery.hotkeys.js', 'utf8'), { NEWSBLUR: newsblur, jQuery });
+    document.addEventListener('keydown', event => newsblur.hotkeys.down(event));
+    document.addEventListener('keyup', event => newsblur.hotkeys.up(event));
+    function bind_key(key, handler, type = 'keydown') {
+        const registration = { data: key, handler };
+        jQuery.event.special[type].add(registration);
+        document.addEventListener(type, registration.handler);
     }
-    return { document, dialog, close, prior_focus, dispatch, bind_escape };
+    return { document, dialog, close, prior_focus, dispatch, bind_key, hotkeys: newsblur.hotkeys,
+        bind_escape: handler => bind_key('esc', handler) };
 }
+
+test('character shortcuts stay inside the dialog while modifier tracking remains current', () => {
+    const h = harness();
+    let reader_actions = 0;
+    h.bind_key('a', event => { event.preventDefault(); reader_actions++; }, 'keypress');
+    const key = h.dispatch(h.close, 'keypress', { key: 'a', keyCode: 97, which: 97, bubbles: true });
+    assert.equal(reader_actions, 0, 'Reader article actions must not run behind the modal');
+    assert.equal(key.defaultPrevented, false);
+    h.dispatch(h.close, 'keydown', { key: 'Shift', keyCode: 16, which: 16, bubbles: true });
+    assert.equal(h.hotkeys.shift, true);
+    h.dispatch(h.close, 'keyup', { key: 'Shift', keyCode: 16, which: 16, bubbles: true });
+    assert.equal(h.hotkeys.shift, false, 'Releasing a modifier inside the dialog must clear its tracked state');
+});
+
+for (const [key, code, shortcut] of [['Enter', 13, 'return'], [' ', 32, 'space']]) {
+    test(`${shortcut} keeps native close-button activation without triggering reader shortcuts`, () => {
+        const h = harness();
+        let reader_actions = 0;
+        h.bind_key(shortcut, event => { event.preventDefault(); reader_actions++; });
+        const event = h.dispatch(h.close, 'keydown', { key, keyCode: code, which: code, bubbles: true });
+        assert.equal(reader_actions, 0, 'The real hotkey wrapper must not dispatch outside the modal');
+        assert.equal(event.defaultPrevented, false, 'Native button activation must remain available');
+        // test_image_motion.cjs models the browser activation only when keydown permits its default action.
+        if (!event.defaultPrevented) h.close.onclick();
+        assert.equal(h.dialog.isConnected, false);
+        assert.equal(h.document.activeElement, h.prior_focus);
+    });
+}
+
+test('Tab stays native and does not escape to reader shortcuts', () => {
+    const h = harness();
+    let reader_actions = 0;
+    h.bind_key('tab', event => { event.preventDefault(); reader_actions++; });
+    const event = h.dispatch(h.close, 'keydown', { key: 'Tab', keyCode: 9, which: 9, bubbles: true });
+    assert.equal(reader_actions, 0);
+    assert.equal(event.defaultPrevented, false);
+    assert.equal(h.dialog.open, true);
+});
+
+for (const target of ['document', 'body']) {
+    test(`Escape closes the modal after native focus leaves its button for ${target}`, () => {
+        const h = harness();
+        let dashboard_navigations = 0;
+        h.bind_escape(event => { event.preventDefault(); dashboard_navigations++; });
+        const focused = target === 'document' ? h.document : h.document.body;
+        focused.focus();
+        h.dispatch(focused, 'keydown', { key: 'Escape', keyCode: 27, which: 27, bubbles: true });
+        assert.equal(dashboard_navigations, 0);
+        assert.equal(h.dialog.open, false);
+        h.dispatch(h.document.body, 'keydown', { key: 'Escape', keyCode: 27, which: 27, bubbles: true });
+        assert.equal(dashboard_navigations, 1, 'Closing the image must restore reader keyboard shortcuts');
+    });
+}
+
+test('reader shortcuts stay blocked after native focus leaves the dialog', () => {
+    const h = harness();
+    let reader_actions = 0;
+    h.bind_key('return space', event => { event.preventDefault(); reader_actions++; });
+    h.bind_key('a', event => { event.preventDefault(); reader_actions++; }, 'keypress');
+    h.document.body.focus();
+    h.dispatch(h.document.body, 'keydown', { key: 'Enter', keyCode: 13, which: 13, bubbles: true });
+    h.dispatch(h.document.body, 'keydown', { key: ' ', keyCode: 32, which: 32, bubbles: true });
+    h.dispatch(h.document.body, 'keypress', { key: 'a', keyCode: 97, which: 97, bubbles: true });
+    assert.equal(reader_actions, 0);
+});
 
 test('Escape dismisses the image without invoking the reader dashboard shortcut', () => {
     const h = harness();
