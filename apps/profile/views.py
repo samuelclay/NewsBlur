@@ -7,6 +7,7 @@ and account import/export (OPML).
 
 import calendar
 import datetime
+import functools
 import json as python_json
 import re
 from urllib.parse import urlencode
@@ -23,12 +24,17 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import (
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 from paypal.standard.ipn.views import ipn as paypal_standard_ipn
 
@@ -40,6 +46,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     MClassifierUrl,
 )
+from apps.api.social_auth import APP_SCHEMES, AppRedirect
 from apps.profile.forms import (
     PLANS,
     AccountSettingsForm,
@@ -1166,14 +1173,61 @@ def stripe_checkout(request):
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
-@login_required
+# views.py: The iOS and Android apps post a platform to setup_usage_billing and
+# manage_usage_billing and get JSON with the Stripe URL back, since they open it in an
+# in-app browser (ASWebAuthenticationSession on iOS, a Custom Tab on Android) instead
+# of following a redirect. Stripe then returns that browser to usage_billing_app_return,
+# which hands off to the app's fixed scheme from apps/api/social_auth.py APP_SCHEMES.
+USAGE_BILLING_APP_RETURN_STATUSES = ("setup_complete", "cancelled", "portal_return")
+
+
+def _usage_billing_app_platform(request):
+    """views.py: The app platform a usage billing request came from, or None for the web."""
+    platform = request.POST.get("platform")
+    if platform in APP_SCHEMES:
+        return platform
+    return None
+
+
+def _usage_billing_app_return_url(domain, platform, status):
+    return "https://%s%s?%s" % (
+        domain,
+        reverse("usage-billing-app-return"),
+        urlencode({"platform": platform, "status": status}),
+    )
+
+
+def _usage_billing_app_error(message, status=200):
+    # views.py: Errors stay HTTP 200 with code -1, like json_view, because the Android
+    # client drops the body of any non-200 response and would lose the message.
+    return JsonResponse({"code": -1, "message": message}, status=status)
+
+
+def _usage_billing_login_required(view_func):
+    """views.py: login_required for the web. The apps get a JSON 403 instead of a
+    redirect to the login page, which their HTTP clients can't follow."""
+    web_view = login_required(view_func)
+
+    @functools.wraps(view_func)
+    def _view(request, *args, **kwargs):
+        if not request.user.is_authenticated and _usage_billing_app_platform(request):
+            return _usage_billing_app_error(gettext("Please log in to NewsBlur again."), status=403)
+        return web_view(request, *args, **kwargs)
+
+    return _view
+
+
+@_usage_billing_login_required
 @require_POST
 def setup_usage_billing(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
+    app_platform = _usage_billing_app_platform(request)
 
     if not settings.STRIPE_PRICE_TEXT_CLASSIFICATION or not settings.STRIPE_PRICE_IMAGE_CLASSIFICATION:
         logging.user(request, "~BR~FRStripe usage billing prices not configured")
+        if app_platform:
+            return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
         return HttpResponseRedirect(reverse("index"))
 
     # Guard against duplicate subscriptions. Meter events are customer-scoped,
@@ -1196,12 +1250,21 @@ def setup_usage_billing(request):
                             request,
                             "~BR~FRUsage billing already active; redirecting to portal",
                         )
+                        if app_platform:
+                            return JsonResponse({"code": 0, "already_active": True})
                         return HttpResponseRedirect(
                             "https://%s%s?next=payments&usage_billing=already_active"
                             % (domain, reverse("index"))
                         )
         except stripe.error.StripeError as e:
             logging.user(request, f"~BR~FRStripe subscription list failed: {e}")
+
+    if app_platform:
+        success_url = _usage_billing_app_return_url(domain, app_platform, "setup_complete")
+        cancel_url = _usage_billing_app_return_url(domain, app_platform, "cancelled")
+    else:
+        success_url = "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index"))
+        cancel_url = "https://%s%s?next=payments" % (domain, reverse("index"))
 
     session_dict = {
         "line_items": [
@@ -1214,36 +1277,76 @@ def setup_usage_billing(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk, "purpose": "usage_billing"},
-        "success_url": "https://%s%s?next=payments&usage_billing=setup_complete" % (domain, reverse("index")),
-        "cancel_url": "https://%s%s?next=payments" % (domain, reverse("index")),
+        "success_url": success_url,
+        "cancel_url": cancel_url,
     }
     if request.user.profile.stripe_id:
         session_dict["customer"] = request.user.profile.stripe_id
     else:
         session_dict["customer_email"] = request.user.email
 
-    checkout_session = stripe.checkout.Session.create(**session_dict)
+    try:
+        checkout_session = stripe.checkout.Session.create(**session_dict)
+    except stripe.error.StripeError as e:
+        if not app_platform:
+            raise
+        logging.user(request, f"~BR~FRStripe usage billing checkout failed: {e}")
+        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
 
     logging.user(request, "~BM~FBLoading Stripe usage billing checkout")
 
+    if app_platform:
+        return JsonResponse({"code": 0, "url": checkout_session.url})
     return HttpResponseRedirect(checkout_session.url, status=303)
 
 
-@login_required
+@_usage_billing_login_required
 @require_POST
 def manage_usage_billing(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
+    app_platform = _usage_billing_app_platform(request)
 
     if not request.user.profile.stripe_id:
+        if app_platform:
+            return _usage_billing_app_error(gettext("No usage billing set up."))
         return HttpResponseRedirect(reverse("index"))
 
-    portal_session = stripe.billing_portal.Session.create(
-        customer=request.user.profile.stripe_id,
-        return_url="https://%s%s?next=payments" % (domain, reverse("index")),
-    )
+    if app_platform:
+        return_url = _usage_billing_app_return_url(domain, app_platform, "portal_return")
+    else:
+        return_url = "https://%s%s?next=payments" % (domain, reverse("index"))
 
+    try:
+        portal_session = stripe.billing_portal.Session.create(
+            customer=request.user.profile.stripe_id,
+            return_url=return_url,
+        )
+    except stripe.error.StripeError as e:
+        if not app_platform:
+            raise
+        logging.user(request, f"~BR~FRStripe billing portal failed: {e}")
+        return _usage_billing_app_error(gettext("Couldn't reach Stripe. Please try again."))
+
+    if app_platform:
+        return JsonResponse({"code": 0, "url": portal_session.url})
     return HttpResponseRedirect(portal_session.url, status=303)
+
+
+@require_GET
+def usage_billing_app_return(request):
+    """views.py: Where Stripe sends the in-app browser after checkout or the billing
+    portal. Redirecting to the app's scheme closes ASWebAuthenticationSession on iOS and
+    reopens the app from its Custom Tab on Android. This needs no login, since the in-app
+    browser has no NewsBlur session, and the destination is only ever a fixed scheme from
+    apps/api/social_auth.py APP_SCHEMES plus a whitelisted status."""
+    platform = request.GET.get("platform")
+    status = request.GET.get("status")
+    if platform not in APP_SCHEMES or status not in USAGE_BILLING_APP_RETURN_STATUSES:
+        logging.user(request, "~BR~FRUnknown usage billing app return: %s / %s" % (platform, status))
+        return HttpResponseRedirect(reverse("index"))
+
+    return AppRedirect("%s://usage-billing?%s" % (APP_SCHEMES[platform], urlencode({"status": status})))
 
 
 @ajax_login_required
