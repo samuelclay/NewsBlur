@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5EC04B2113D03D9B6EDD69CD /* AIClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14A3559D053D2CD5D339238 /* AIClassifierTests.swift */; };
+		2181911304C58A4AC4B80219 /* UsageBillingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CBAA8E9630AEC6B27BDC5D /* UsageBillingView.swift */; };
+		89ABD49C175CE1B9325082E3 /* UsageBillingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82CBAA8E9630AEC6B27BDC5D /* UsageBillingView.swift */; };
+		D71C75FECA45FFA5CCE8BC7C /* TrainerAIPromptSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B3975D67E06FE24C03524 /* TrainerAIPromptSection.swift */; };
+		98F063A65560107DFAFC7214 /* TrainerAIPromptSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0B3975D67E06FE24C03524 /* TrainerAIPromptSection.swift */; };
 		69A6D958749A05590B72559D /* AIClassifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC847224688E4D7CDC933C3 /* AIClassifiers.swift */; };
 		62715348CCA6CF24D9A9BEBA /* AIClassifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC847224688E4D7CDC933C3 /* AIClassifiers.swift */; };
 		010EDEFA1B2386B7003B79DE /* OnePasswordExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */; };
@@ -1741,6 +1746,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C14A3559D053D2CD5D339238 /* AIClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIClassifierTests.swift; sourceTree = "<group>"; };
+		82CBAA8E9630AEC6B27BDC5D /* UsageBillingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageBillingView.swift; sourceTree = "<group>"; };
+		8E0B3975D67E06FE24C03524 /* TrainerAIPromptSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerAIPromptSection.swift; sourceTree = "<group>"; };
 		0AC847224688E4D7CDC933C3 /* AIClassifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIClassifiers.swift; sourceTree = "<group>"; };
 		01039C41DB97CCE6BF8CAA21 /* DiscoverFeedCardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedCardView.swift; sourceTree = "<group>"; };
 		010EDEF81B2386B7003B79DE /* OnePasswordExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OnePasswordExtension.m; path = "Other Sources/OnePasswordExtension/OnePasswordExtension.m"; sourceTree = "<group>"; };
@@ -3397,6 +3405,8 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
+				82CBAA8E9630AEC6B27BDC5D /* UsageBillingView.swift */,
+				8E0B3975D67E06FE24C03524 /* TrainerAIPromptSection.swift */,
 				0AC847224688E4D7CDC933C3 /* AIClassifiers.swift */,
 				171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */,
 				7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */,
@@ -3983,6 +3993,7 @@
 		C1D2E3F40516273849A00001 /* NewsBlurTests */ = {
 			isa = PBXGroup;
 			children = (
+				C14A3559D053D2CD5D339238 /* AIClassifierTests.swift */,
 				E91820260918000100000002 /* DuoPresentationTests.swift */,
 				E91620260916000200000002 /* ShareStoryUpdateTests.swift */,
 				E91620260916000300000002 /* StoryURLContrastTests.swift */,
@@ -5836,6 +5847,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89ABD49C175CE1B9325082E3 /* UsageBillingView.swift in Sources */,
+				98F063A65560107DFAFC7214 /* TrainerAIPromptSection.swift in Sources */,
 				62715348CCA6CF24D9A9BEBA /* AIClassifiers.swift in Sources */,
 				175792262930605500490924 /* AFAutoPurgingImageCache.m in Sources */,
 				176B596C2CDAB433003B0C48 /* Folder.swift in Sources */,
@@ -6111,6 +6124,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2181911304C58A4AC4B80219 /* UsageBillingView.swift in Sources */,
+				D71C75FECA45FFA5CCE8BC7C /* TrainerAIPromptSection.swift in Sources */,
 				69A6D958749A05590B72559D /* AIClassifiers.swift in Sources */,
 				FFC0E5A81F7AC00A0023B9D9 /* AFAutoPurgingImageCache.m in Sources */,
 				176B596D2CDAB433003B0C48 /* Folder.swift in Sources */,
@@ -6367,6 +6382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EC04B2113D03D9B6EDD69CD /* AIClassifierTests.swift in Sources */,
 				0F8A8E142FF74BADA0000077 /* NotificationNavigationTests.swift in Sources */,
 				6272E9F4868AFC518EC2DDDE /* StoryListReloadTests.swift in Sources */,
 				B11924FAD010202609100001 /* StoryReadStateAnimationTests.swift in Sources */,

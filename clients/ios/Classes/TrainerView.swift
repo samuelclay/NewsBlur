@@ -11,6 +11,8 @@ import SwiftUI
 /// A protocol of interaction between the trainer view and the enclosing view controller.
 @MainActor protocol TrainerInteraction {
     var isStoryTrainer: Bool { get set }
+    /// TrainerViewController.swift keeps the natural language prompt state across TrainerView reloads.
+    var aiPrompts: TrainerAIPromptModel { get }
     func reloadTrainerContext()
 }
 
@@ -248,6 +250,18 @@ struct TrainerView: View {
                     header(story: "Story URL", feed: "URLs")
                 })
 
+                ForEach(PromptClassifierKind.allCases, id: \.self) { kind in
+                    Section(content: {
+                        TrainerAIPromptSection(kind: kind, model: interaction.aiPrompts, feed: feed,
+                                               story: interaction.isStoryTrainer ? cache.selected : nil,
+                                               isPremiumArchive: isArchive, currentFolderName: currentFolderName,
+                                               fontBuilder: font)
+                            .listRowBackground(rowBackground)
+                    }, header: {
+                        TrainerAIPromptHeader(kind: kind, font: font(named: "WhitneySSm-Medium", size: 16), color: textColor)
+                    })
+                }
+
                 Section(content: {
                     HStack {
                         if let feed = feed {
@@ -282,6 +296,7 @@ struct TrainerView: View {
     func reload() {
         interaction.reloadTrainerContext()
         addingTitle = ""
+        interaction.aiPrompts.prepare(feedId: feed?.id, storyHash: interaction.isStoryTrainer ? cache.selected?.hash : nil)
     }
 
     // MARK: - Classifier Row

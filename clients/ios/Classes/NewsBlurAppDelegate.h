@@ -338,6 +338,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
 - (void)showPremiumDialogForPro;
+- (void)showUsageBillingDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
@@ -564,6 +565,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)toggleFeedClassifier:(NSString *)feedId;
+- (void)savePromptClassifier:(NSString *)prompt feedId:(NSString *)feedId score:(NSInteger)score includeImages:(BOOL)includeImages scope:(NSString *)scope folderName:(NSString *)folderName;
 - (void)changeClassifierScope:(NSString *)classifierType value:(NSString *)value
                        feedId:(NSString *)feedId score:(NSInteger)score
                      oldScope:(NSString *)oldScope oldFolderName:(NSString *)oldFolderName
