@@ -398,6 +398,20 @@
       "note": "Checked 2026-10-16: full Discourse JSON includes Avi, steanne, sergiomarchesini. Both HTTPS RSS feeds HTTP 200 locally; NewsBlur FeedFinder discovers both homepages and direct RSS URLs; actual FetchFeed.fetch using unsaved feed objects returns FEED_OK/200, 25 entries, bozo=False in ~0.5s each. Upsilandre newest article 2025-01-31 Les Ghouls'n Ghosts; Djayesse newest 2026-10-11 L'Etranger. Production happ-web-01 and htask-celery-01 curl cannot establish TCP to either host. Production safe_requests_get also ConnectTimeout on HTTP/HTTPS and over-blog.com/overblog.com variants. Production FeedFinder returns [] for all three reported URLs due to connect timeouts. DNS resolves public IPs 185.128.239.39 and 185.128.239.66. Production Upsilandre feed 8404574 has repeated 505 Timeout, latest 2026-10-12; old HTTP feed 7814178 last updated 2020; no Djayesse feed row matched. Code utils/feed_fetcher.py maps TimeoutError to internal 505. Root failure is production-to-OverBlog reachability; who drops connections is unproven. No parser/discovery defect reproduced locally and no code fix, branch, PR or deployment made. No working alternate URL found; network restoration or a separately evaluated proxy workaround remains needed. Browser screenshots unavailable because neither iab nor chrome is exposed. MFetchHistory.feed helper used per skill; it may create empty analytics history if missing.",
       "reply": "Both RSS feeds are valid. I can fetch and parse them locally, but connections from NewsBlur’s servers to OverBlog time out before any response comes back. The 505 shown in NewsBlur means a timeout, not an HTTP error returned by the blog.\n\nUpsilandre’s latest post is January 31, 2025, but its feed still works. Djayesse is actively publishing, with a post from October 11, 2026. This is a connectivity problem between NewsBlur and OverBlog. It hasn’t been fixed yet, and changing the feed URL doesn’t appear to help.",
       "question": null
+    },
+    "13910": {
+      "title": "Change Folders picker on web: too small, no folder icons, and “add” instead of “move”",
+      "url": "https://forum.newsblur.com/t/change-folders-picker-on-web-too-small-no-folder-icons-and-add-instead-of-move/13910",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-10-25T19:35:27Z",
+      "last_posted_at": "2026-10-23T13:39:09.510Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2188",
+      "branch": "forum-13910-folder-picker",
+      "worktree": ".worktree/forum-13910-folder-picker",
+      "note": "Sam chose the design in two interview rounds: click name moves, check circle adds, fit all folders capped at window, check plus tinted row, sidebar font size, type to filter with arrows/Enter, open at current folder, and the same picker for a folder's Move to folder menu. Reply assumes make deploy plus make deploy_static. Merged as 0709f9282a on 2026-10-27 with the blog post (dated 2026-10-27 09:00 -0700); deployed with make deploy, deploy_static and blog.",
+      "reply": "Thanks for the detailed writeup, this was overdue. The Change Folders list now grows to show all your folders, as many as your window has room for, and it uses your custom folder icons. It also opens scrolled to the folder the site is in now, and the text follows your sidebar font size.\n\nThe bigger change is that clicking a folder's name now moves the site there, so there's no more going back to uncheck Newsletters. If you do want a site in two folders, click the circle next to the second folder to add it. There's also a filter box at the top, so you can type a few letters, press Enter to pick the folder and Enter again to move.",
+      "question": null
     }
   }
 }

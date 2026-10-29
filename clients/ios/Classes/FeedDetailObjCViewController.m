@@ -1239,20 +1239,23 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
     [self configureAdaptiveStoryToolbar];
     [self restorePendingNotificationViewport];
+    // FeedDetailObjCViewController.m also leaves room for the Listen mini player when it covers this list
+    // (Listen/ListenMiniPlayer.swift).
+    CGFloat listenInset = [ListenStoryBridge miniPlayerInsetForView:self.storyTitlesTable];
     // FeedDetailObjCViewController.m leaves room to scroll the final row above the experimental glass bar.
     if (!self.storyTitlesHeaderBar.headerContainer.hidden &&
         (self.storyTitlesHeaderBar.usesSystemVerticalBar ? self.storyTitlesHeaderBar.isSearchActive : self.storyTitlesHeaderBar.usesFloatingBottomBar)) {
         CGRect bar = [self.storyTitlesHeaderBar.headerContainer convertRect:self.storyTitlesHeaderBar.headerContainer.bounds toView:self.storyTitlesTable];
-        CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar));
+        CGFloat bottom = MAX(0, CGRectGetMaxY(self.storyTitlesTable.bounds) - CGRectGetMinY(bar)) + listenInset;
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
         inset.bottom = bottom;
         if (!UIEdgeInsetsEqualToEdgeInsets(self.storyTitlesTable.contentInset, inset)) {
             self.storyTitlesTable.contentInset = inset;
             self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
         }
-    } else if (self.storyTitlesTable.contentInset.bottom != 0) {
+    } else if (self.storyTitlesTable.contentInset.bottom != listenInset) {
         UIEdgeInsets inset = self.storyTitlesTable.contentInset;
-        inset.bottom = 0;
+        inset.bottom = listenInset;
         self.storyTitlesTable.contentInset = inset;
         self.storyTitlesTable.verticalScrollIndicatorInsets = inset;
     }

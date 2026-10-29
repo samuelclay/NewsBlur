@@ -235,6 +235,9 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 ## Blog
 - Posts live in `blog/_posts/`, drafts in `blog/_drafts/`
 - `blog/_site/` contains generated output and **must be committed** — it's how the blog gets deployed
+- Regenerate `blog/_site/` with `make blog-build`, never a plain `jekyll build`. The fonts, Google Analytics and Disqus comments only render with `JEKYLL_ENV=production`, so a plain build strips them from every page.
+- Give every post an explicit `date: YYYY-MM-DD 09:00:00 -0700` (`-0800` outside daylight time) that matches its filename. `blog/_config.yml` uses `timezone: America/New_York`, so a post dated only by its filename publishes at midnight Eastern, which feed readers in Pacific time show as the evening before.
+- Deploy with `make blog` after the regenerated `_site` is on `main`; the blog server pulls `main`.
 
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`

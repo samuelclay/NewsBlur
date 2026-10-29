@@ -83,6 +83,14 @@ public class NewsblurWebview extends WebView {
                             fragment.openStoryImage(this, message.getData());
                         }
                     });
+            // NewsblurWebview.java passes listenFollowAlong.js paragraph taps to ListenStoryFollower.kt.
+            WebViewCompat.addWebMessageListener(this, "NewsBlurListen",
+                    java.util.Collections.singleton("https://appassets.androidplatform.net"),
+                    (view, message, origin, mainFrame, reply) -> {
+                        if (mainFrame && fragment != null && message.getData() != null) {
+                            fragment.onListenMessage(this, message.getData());
+                        }
+                    });
         }
     }
 

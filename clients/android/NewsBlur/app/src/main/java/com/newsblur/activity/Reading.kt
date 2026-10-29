@@ -28,8 +28,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.appbar.AppBarLayout
@@ -41,6 +43,7 @@ import com.newsblur.database.ReadingAdapter
 import com.newsblur.databinding.ActivityReadingBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Story
+import com.newsblur.listen.ListenEvent
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.VERTICAL_SCROLL_DISTANCE_DP
 import com.newsblur.fragment.ReadingPagerFragment
@@ -735,6 +738,39 @@ abstract class Reading :
         readingViewModel.activeStories.observe(this) {
             setStoryData(it)
         }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                listenManager.events.collect(::followListenAdvance)
+            }
+        }
+    }
+
+    /** Reading.kt's stories in order, so Listen can continue with the next unread one when a story finishes. */
+    fun listenQueue(): List<Story> = readingAdapter?.storiesSnapshot().orEmpty()
+
+    /** The feed or folder this reader shows, for Now Playing's "Then from …" (ListenNowPlayingSheet.kt). */
+    fun listenQueueName(): String? =
+        findViewById<android.widget.TextView>(R.id.toolbar_text)
+            ?.text
+            ?.toString()
+            ?.takeIf { it.isNotBlank() }
+
+    /** When Listen auto-continues from the story on screen, the reader turns to the next one with it. */
+    private fun followListenAdvance(event: ListenEvent) {
+        if (event !is ListenEvent.Advanced) return
+        if (currentReadingStory()?.storyHash != event.fromStoryHash) return
+        val position = readingAdapter?.findHash(event.to.storyHash) ?: -1
+        if (position >= 0) navigateToStory(position)
+    }
+
+    override fun listenMiniPlayerAnchor(): View? = binding.contentBottomOverlay
+
+    override fun showsListenMiniPlayer(): Boolean = true
+
+    override fun onListenMiniPlayerInsetChanged(insetPx: Int) {
+        // EdgeToEdgeUtil.kt's reader footer reads this, so a story's last buttons scroll clear of the mini player.
+        window.decorView.setTag(R.id.listen_mini_player_inset, insetPx)
+        window.decorView.invalidate()
     }
 
     /**
@@ -1806,6 +1842,9 @@ abstract class Reading :
             } else {
                 readingAdapter!!.getActiveItem() ?: readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)
             }
+
+    /** A story switched its own view (Listen showing the full article), so the Text button follows it. */
+    fun refreshViewModeControls() = updateOverlayText()
 
     fun viewModeChanged() {
         var frag = readingAdapter!!.getExistingItem(pager!!.currentStoryPosition)

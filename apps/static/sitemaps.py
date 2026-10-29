@@ -27,6 +27,7 @@ class StaticSitemap(Sitemap):
             "compare-feedbin",
             "feature-intelligence-training",
             "feature-ask-ai",
+            "feature-listen",
             "feature-web-feeds",
             "feature-newsletters",
             "feature-search",
