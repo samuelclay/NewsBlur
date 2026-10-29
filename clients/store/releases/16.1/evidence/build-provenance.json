@@ -1,0 +1,34 @@
+{
+  "ios": {
+    "version": "16.1",
+    "build": 351,
+    "source": "13a3b511e2c5724e0be4795406be116157b48878",
+    "tag": "iOS_16.1",
+    "archive": "/tmp/NewsBlur-iOS-16.1-351.xcarchive",
+    "toolchain": "Xcode 27.0 (27A266a)",
+    "archiveResult": "succeeded",
+    "signatureVerification": "codesign --verify --deep --strict passed",
+    "uploadResult": "EXPORT SUCCEEDED",
+    "processingState": "VALID",
+    "buildId": "29a41b15-2d07-4352-ae40-9705cab82aa1",
+    "usesNonExemptEncryption": false
+  },
+  "android": {
+    "version": "16.1",
+    "versionCode": 299,
+    "source": "64a769a9c86a27eebeea6be41ef0554d0eaf68b7",
+    "tag": "Android_16.1",
+    "unitTests": 999,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "aabSha256": "a84b4fce0e6f34de36043ca244151e297ac1f7dc7cb40cec660304b544022e0c",
+    "minSdk": 26,
+    "targetSdk": 36
+  },
+  "blog": {
+    "path": "blog/_posts/2026-10-30-listen-to-your-stories.md",
+    "deployed": false,
+    "releaseCondition": "Both mobile updates publicly available"
+  }
+}

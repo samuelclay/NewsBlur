@@ -1,0 +1,89 @@
+{
+  "locales": [
+    {
+      "locale": "en-US",
+      "mismatch": []
+    },
+    {
+      "locale": "ar",
+      "mismatch": []
+    },
+    {
+      "locale": "zh-CN",
+      "mismatch": []
+    },
+    {
+      "locale": "zh-TW",
+      "mismatch": []
+    },
+    {
+      "locale": "nl-NL",
+      "mismatch": []
+    },
+    {
+      "locale": "fr-FR",
+      "mismatch": []
+    },
+    {
+      "locale": "de-DE",
+      "mismatch": []
+    },
+    {
+      "locale": "iw-IL",
+      "mismatch": []
+    },
+    {
+      "locale": "hi-IN",
+      "mismatch": []
+    },
+    {
+      "locale": "id",
+      "mismatch": []
+    },
+    {
+      "locale": "it-IT",
+      "mismatch": []
+    },
+    {
+      "locale": "ja-JP",
+      "mismatch": []
+    },
+    {
+      "locale": "ko-KR",
+      "mismatch": []
+    },
+    {
+      "locale": "pl-PL",
+      "mismatch": []
+    },
+    {
+      "locale": "pt-BR",
+      "mismatch": []
+    },
+    {
+      "locale": "ru-RU",
+      "mismatch": []
+    },
+    {
+      "locale": "es-ES",
+      "mismatch": []
+    },
+    {
+      "locale": "th",
+      "mismatch": []
+    },
+    {
+      "locale": "tr-TR",
+      "mismatch": []
+    },
+    {
+      "locale": "uk",
+      "mismatch": []
+    },
+    {
+      "locale": "vi",
+      "mismatch": []
+    }
+  ],
+  "correction": "Ukrainian full description restored exactly after translation import; all saved fields independently verified through Publisher API."
+}
