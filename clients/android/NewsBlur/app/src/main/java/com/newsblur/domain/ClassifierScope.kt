@@ -48,6 +48,9 @@ data class ScopedPromptSave(
     @JvmField val prompt: String = "",
     // Classifier.LIKE, DISLIKE, CLEAR_LIKE or CLEAR_DISLIKE.
     @JvmField val value: Int = Classifier.LIKE,
+    // ClassifierScope.kt: the scope a prompt moved to, set on the removal at its old scope.
+    // FeedApiImpl.kt sends that removal only once the new scope saved.
+    @JvmField val movedTo: ClassifierScope? = null,
 ) : Serializable {
     companion object {
         private const val serialVersionUID = 1L

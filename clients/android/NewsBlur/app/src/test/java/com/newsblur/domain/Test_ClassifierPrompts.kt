@@ -99,19 +99,26 @@ class Test_ClassifierPrompts {
     }
 
     @Test
-    fun test_moving_a_feed_prompt_to_global_removes_the_feed_copy() {
+    fun test_moving_a_feed_prompt_to_global_removes_the_feed_copy_once_global_saves() {
         val classifier = classifier()
         val original = classifier.copyPrompts()
         classifier.setPromptScope(false, "Non-apple related news", ClassifierScope.GLOBAL_SCOPE)
 
         classifier.recordScopedPromptChanges(original)
 
-        assertEquals("remove_like_prompt=Non-apple+related+news", form(classifier.getAPITuples()).split("&").first { "Non-apple" in it })
+        assertTrue("The feed save leaves the feed copy alone", "Non-apple" !in form(classifier.getAPITuples()))
         assertEquals("like_prompt=Non-apple+related+news", form(classifier.getScopedPromptRequests().single().values))
+        val removal = classifier.getMoveRemovalRequests(setOf(ClassifierScope.FEED_SCOPE, ClassifierScope.GLOBAL_SCOPE)).single()
+        assertEquals(ClassifierScope.FEED_SCOPE, removal.scope)
+        assertEquals("remove_like_prompt=Non-apple+related+news", form(removal.values))
+        assertTrue(
+            "A global save that failed keeps the feed copy",
+            classifier.getMoveRemovalRequests(setOf(ClassifierScope.FEED_SCOPE)).isEmpty(),
+        )
     }
 
     @Test
-    fun test_moving_a_global_prompt_to_feed_removes_the_global_copy() {
+    fun test_moving_a_global_prompt_to_feed_removes_the_global_copy_once_the_feed_saves() {
         val classifier = classifier()
         val original = classifier.copyPrompts()
         classifier.setPromptScope(false, "Crypto", ClassifierScope.FEED_SCOPE)
@@ -119,9 +126,28 @@ class Test_ClassifierPrompts {
         classifier.recordScopedPromptChanges(original)
 
         assertTrue("like_prompt=Crypto" in form(classifier.getAPITuples()))
-        val request = classifier.getScopedPromptRequests().single()
+        assertTrue(classifier.getScopedPromptRequests().isEmpty())
+        val request = classifier.getMoveRemovalRequests(setOf(ClassifierScope.FEED_SCOPE)).single()
         assertEquals(ClassifierScope.GLOBAL_SCOPE, request.scope)
         assertEquals("remove_like_prompt=Crypto", form(request.values))
+    }
+
+    @Test
+    fun test_a_prompt_moved_and_removed_drops_its_old_copy_right_away() {
+        val classifier = classifier()
+        val original = classifier.copyPrompts()
+        classifier.setPromptScope(false, "Non-apple related news", ClassifierScope.GLOBAL_SCOPE)
+        classifier.prompts["Non-apple related news"] = Classifier.CLEAR_LIKE
+        classifier.setPromptScope(false, "Crypto", ClassifierScope.folder("News"))
+        classifier.prompts["Crypto"] = Classifier.CLEAR_LIKE
+
+        classifier.recordScopedPromptChanges(original)
+
+        assertTrue("remove_like_prompt=Non-apple+related+news" in form(classifier.getAPITuples()))
+        val globalRemoval = classifier.getScopedPromptRequests().single()
+        assertEquals(ClassifierScope.GLOBAL_SCOPE, globalRemoval.scope)
+        assertEquals("remove_like_prompt=Crypto", form(globalRemoval.values))
+        assertTrue("Nothing waits on a new scope", classifier.getMoveRemovalRequests(setOf(ClassifierScope.FEED_SCOPE)).isEmpty())
     }
 
     @Test

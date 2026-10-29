@@ -111,21 +111,31 @@ class Classifier : Serializable {
         imagePrompts.forEach { (key, value) ->
             if (key !in imagePromptsScope) buildPromptTupleKey(value, IMAGE_PROMPT_POSTFIX)?.let { values.put(it, key) }
         }
-        scopedPromptSaves.filter { it.scope.isFeed }.forEach { save ->
+        // A moved prompt's feed copy waits for getMoveRemovalRequests, after its new scope saves.
+        scopedPromptSaves.filter { it.scope.isFeed && it.movedTo == null }.forEach { save ->
             buildPromptTupleKey(save.value, promptPostfix(save.imagePrompt))?.let { values.put(it, save.prompt) }
         }
 
         return values
     }
 
-    /** One /classifier/save request per folder or global scope with prompt changes. */
+    /** One /classifier/save request per folder or global scope with prompt changes, sent after the feed save. */
     fun getScopedPromptRequests(): List<ScopedPromptRequest> =
-        scopedPromptSaves
-            .filter { !it.scope.isFeed }
+        promptRequests(scopedPromptSaves.filter { !it.scope.isFeed && it.movedTo == null })
+
+    /**
+     * The removals at their old scope of prompts that moved to one of [savedScopes], sent last so
+     * a prompt whose new scope didn't save keeps its original instead of disappearing.
+     */
+    fun getMoveRemovalRequests(savedScopes: Set<ClassifierScope>): List<ScopedPromptRequest> =
+        promptRequests(scopedPromptSaves.filter { it.movedTo != null && it.movedTo in savedScopes })
+
+    private fun promptRequests(saves: List<ScopedPromptSave>): List<ScopedPromptRequest> =
+        saves
             .groupBy { it.scope }
-            .map { (scope, saves) ->
+            .map { (scope, scopeSaves) ->
                 val values = ValueMultimap()
-                saves.forEach { save ->
+                scopeSaves.forEach { save ->
                     buildPromptTupleKey(save.value, promptPostfix(save.imagePrompt))?.let { values.put(it, save.prompt) }
                 }
                 ScopedPromptRequest(scope, values)
@@ -180,8 +190,11 @@ class Classifier : Serializable {
             val originalScope = if (originalScore == null) scope else originalScopes[prompt] ?: ClassifierScope.FEED_SCOPE
             val active = score == LIKE || score == DISLIKE
             if (originalScope != scope) {
+                // The old copy goes once the new one saves. A prompt that moved and was removed
+                // has no new copy, so its old one goes with the rest of the changes.
                 if (originalScore == LIKE || originalScore == DISLIKE) {
-                    scopedPromptSaves.add(ScopedPromptSave(originalScope, imagePrompt, prompt, clearValue(originalScore)))
+                    val movedTo = if (active) scope else null
+                    scopedPromptSaves.add(ScopedPromptSave(originalScope, imagePrompt, prompt, clearValue(originalScore), movedTo))
                 }
                 if (!scope.isFeed && active) scopedPromptSaves.add(ScopedPromptSave(scope, imagePrompt, prompt, score))
             } else if (!scope.isFeed && score != originalScore) {
