@@ -135,8 +135,17 @@ import SwiftUI
         return prompt.scope == .folder ? prompt.folderName : ""
     }
 
-    func scopeBinding(for prompt: PromptClassifier) -> Binding<ClassifierScope> {
-        Binding(get: { self.scope(for: prompt) }, set: { self.scopeOverrides[self.overrideKey(prompt)] = $0 })
+    func scopeBinding(for prompt: PromptClassifier, currentFolderName: String) -> Binding<ClassifierScope> {
+        Binding(get: { self.scope(for: prompt) }, set: { newScope in
+            guard Self.hasDestination(newScope, folderName: currentFolderName) else { return }
+            self.scopeOverrides[self.overrideKey(prompt)] = newScope
+        })
+    }
+
+    /// apps/analyzer/views.py saves a folder prompt without a folder name as feed_id=0 and an empty folder_id, which
+    /// is a global prompt that runs, and bills, on every site. So a site outside any folder can't scope to its folder.
+    static func hasDestination(_ scope: ClassifierScope, folderName: String) -> Bool {
+        scope != .folder || !folderName.isEmpty
     }
 
     func tap(_ prompt: PromptClassifier, feedId: String?, currentFolderName: String) {
@@ -150,18 +159,22 @@ import SwiftUI
     }
 
     func changeScope(_ prompt: PromptClassifier, to newScope: ClassifierScope, feedId: String?, currentFolderName: String) {
+        let newFolderName = newScope == .folder ? currentFolderName : ""
+        // NewsBlurAppDelegate.m changeClassifierScope removes the prompt before saving it again, so the new scope
+        // is checked first and an invalid move leaves the original prompt where it was.
+        guard Self.hasDestination(newScope, folderName: newFolderName) else { return }
         let oldScope = scope(for: prompt)
         let oldFolderName = folderName(for: prompt, currentFolderName: currentFolderName)
         scopeOverrides[overrideKey(prompt)] = newScope
         guard let feedId, prompt.score != 0 else { return }
-        changeScope(prompt.prompt, prompt.kind, feedId, prompt.score, oldScope, oldFolderName,
-                    newScope, newScope == .folder ? currentFolderName : "")
+        changeScope(prompt.prompt, prompt.kind, feedId, prompt.score, oldScope, oldFolderName, newScope, newFolderName)
     }
 
     private func save(_ prompt: PromptClassifier, score: Int, feedId: String?, currentFolderName: String) {
-        guard let feedId else { return }
-        savePrompt(prompt.prompt, prompt.kind, feedId, score, scope(for: prompt),
-                   folderName(for: prompt, currentFolderName: currentFolderName))
+        let savedScope = scope(for: prompt)
+        let savedFolderName = folderName(for: prompt, currentFolderName: currentFolderName)
+        guard let feedId, Self.hasDestination(savedScope, folderName: savedFolderName) else { return }
+        savePrompt(prompt.prompt, prompt.kind, feedId, score, savedScope, savedFolderName)
     }
 
     private func overrideKey(_ prompt: PromptClassifier) -> String {
@@ -532,7 +545,9 @@ struct TrainerAIPromptSection: View {
             model.tap(prompt, feedId: feed?.id, currentFolderName: currentFolderName)
         } label: {
             TrainerPromptCapsule(kind: kind, text: prompt.prompt, score: prompt.score, showsScope: true,
-                                 scope: model.scopeBinding(for: prompt), isPremiumArchive: isPremiumArchive,
+                                 scope: model.scopeBinding(for: prompt, currentFolderName: currentFolderName),
+                                 isPremiumArchive: isPremiumArchive,
+                                 isFolderAvailable: TrainerAIPromptModel.hasDestination(.folder, folderName: currentFolderName),
                                  onScopeChanged: { newScope in
                                      model.changeScope(prompt, to: newScope, feedId: feed?.id, currentFolderName: currentFolderName)
                                  },
@@ -624,12 +639,14 @@ struct TrainerPromptCapsule: View {
     var showsScope = false
     @Binding var scope: ClassifierScope
     var isPremiumArchive = false
+    var isFolderAvailable = true
     var onScopeChanged: ((ClassifierScope) -> Void)?
     var onDislike: (() -> Void)?
 
     init(kind: PromptClassifierKind, text: String, score: Int, isPlaceholder: Bool = false, isDraft: Bool = false,
          showsScope: Bool = false, scope: Binding<ClassifierScope> = .constant(.feed), isPremiumArchive: Bool = false,
-         onScopeChanged: ((ClassifierScope) -> Void)? = nil, onDislike: (() -> Void)? = nil) {
+         isFolderAvailable: Bool = true, onScopeChanged: ((ClassifierScope) -> Void)? = nil,
+         onDislike: (() -> Void)? = nil) {
         self.kind = kind
         self.text = text
         self.score = score
@@ -638,6 +655,7 @@ struct TrainerPromptCapsule: View {
         self.showsScope = showsScope
         self._scope = scope
         self.isPremiumArchive = isPremiumArchive
+        self.isFolderAvailable = isFolderAvailable
         self.onScopeChanged = onScopeChanged
         self.onDislike = onDislike
     }
@@ -656,7 +674,8 @@ struct TrainerPromptCapsule: View {
 
                 if showsScope {
                     ScopeToggleView(classifierType: kindLabel, activeScope: $scope, score: classifierScore,
-                                    isPremiumArchive: isPremiumArchive, onScopeChanged: onScopeChanged)
+                                    isPremiumArchive: isPremiumArchive, onScopeChanged: onScopeChanged,
+                                    isFolderAvailable: isFolderAvailable)
                 }
 
                 Text(kindLabel.uppercased())

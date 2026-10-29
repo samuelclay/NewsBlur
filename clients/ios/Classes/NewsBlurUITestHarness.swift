@@ -635,6 +635,8 @@ private enum ReaderUITestFixtures {
     private static let aiClassifiersEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-classifiers")
     private static let aiUnbilled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-unbilled")
     private static let aiLimitReached = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-limit-reached")
+    /// Moves Swift Weekly out of Tech ▸ Swift to the top level, where the trainer has no folder scope.
+    private static let swiftFeedAtTopLevel = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-top-level-site")
     private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
     private static let cachedPagingImageURLs = (0..<3).map { "https://ui-test.newsblur.example/paging-cache-\($0).jpg" }
     private static let bulkReadLock = NSLock()
@@ -797,7 +799,12 @@ private enum ReaderUITestFixtures {
             "activities": [],
             "dashboard_rivers": [],
             "social_feeds": [],
-            "flat_folders_with_inactive": [
+            "flat_folders_with_inactive": swiftFeedAtTopLevel ? [
+                " ": [Int(swiftFeedId)!],
+                "Tech": [Int(techFeedId)!],
+                "Tech ▸ Swift": [Int(swiftClusterFeedId)!],
+                "Culture": [Int(cultureFeedId)!],
+            ] : [
                 "Tech": [Int(techFeedId)!],
                 "Tech ▸ Swift": [Int(swiftFeedId)!, Int(swiftClusterFeedId)!],
                 "Culture": [Int(cultureFeedId)!],

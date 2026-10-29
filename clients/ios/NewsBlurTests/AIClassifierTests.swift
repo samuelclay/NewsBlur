@@ -435,6 +435,37 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(model.draftScore(.image), 1, "The next prompt starts as a focus prompt again")
     }
 
+    func test_topLevelSiteNeverScopesAPromptToAMissingFolder() {
+        var moves: [String] = []
+        var saves: [String] = []
+        let model = makeModel(transport: RecordingAITransport(), canUseAI: true)
+        model.changeScope = { _, _, _, _, oldScope, oldFolderName, scope, folderName in
+            moves.append("\(oldScope.rawValue):\(oldFolderName) -> \(scope.rawValue):\(folderName)")
+        }
+        model.savePrompt = { _, _, _, score, scope, folderName in saves.append("\(score) \(scope.rawValue):\(folderName)") }
+        let prompt = PromptClassifier(prompt: "Sponsored posts", kind: .content, score: -1, scope: .feed, folderName: "")
+
+        model.changeScope(prompt, to: .folder, feedId: "42", currentFolderName: "")
+        XCTAssertEqual(moves, [], "The original prompt is never removed for a move with nowhere to go")
+        XCTAssertEqual(model.scope(for: prompt), .feed)
+        model.scopeBinding(for: prompt, currentFolderName: "").wrappedValue = .folder
+        XCTAssertEqual(model.scope(for: prompt), .feed, "The scope toggle can't pick a folder the site isn't in")
+        model.tap(prompt, feedId: "42", currentFolderName: "")
+        XCTAssertEqual(saves, ["0 feed:"])
+
+        model.scopeOverrides[ClassifierScopeResolver.overrideKey(type: prompt.kind.saveType, name: prompt.prompt)] = .folder
+        model.tapDislike(prompt, feedId: "42", currentFolderName: "")
+        XCTAssertEqual(saves, ["0 feed:"], "A folder save without a folder name, which the server makes global, is never sent")
+
+        model.scopeOverrides = [:]
+        model.changeScope(prompt, to: .global, feedId: "42", currentFolderName: "")
+        XCTAssertEqual(moves, ["feed: -> global:"], "A top-level site can still go global on purpose")
+
+        let foldered = PromptClassifier(prompt: "Apple rumors", kind: .image, score: 1, scope: .feed, folderName: "")
+        model.changeScope(foldered, to: .folder, feedId: "42", currentFolderName: "Apple")
+        XCTAssertEqual(moves.last, "feed: -> folder:Apple", "A site in a folder scopes to it")
+    }
+
     private func makeModel(transport: RecordingAITransport, canUseAI: Bool) -> TrainerAIPromptModel {
         TrainerAIPromptModel(api: AIClassifierAPI(transport: transport),
                              billingStatus: { UsageBillingStatus(isUsageBilling: canUseAI, isSelfHostedAI: false,
