@@ -11792,6 +11792,32 @@ form.opml_import_form input {
     flex: 1;
 }
 
+/* Listen: "Preparing audio..." reads in place of the times while a segment loads, on the same
+   one line, so the player keeps its height (media_player_view.js update_listen_loading_display) */
+.NB-media-player-time-loading {
+    display: none;
+}
+
+.NB-media-player-time.NB-listen-loading {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-current,
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-separator,
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-duration {
+    display: none;
+}
+
+.NB-media-player-time.NB-listen-loading .NB-media-player-time-loading {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    animation: NB-listen-banner-in 0.25s ease-out;
+}
+
 .NB-media-player-speed {
     font-size: 10px;
     font-weight: 600;
