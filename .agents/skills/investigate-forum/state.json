@@ -423,9 +423,10 @@
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2194",
       "branch": "forum-13806-root-oauth-metadata",
       "worktree": ".worktree/forum-13806-root-oauth-metadata",
-      "note": "Littlebird never starts OAuth: root /.well-known/oauth-authorization-server 404ed on newsblur.com while every comparable DCR MCP host serves it; 2025-03-26 spec clients only look at the root. Sam chose the root metadata PR. Unverified against Littlebird itself. Merged as 29b90e5cb4 on 2026-10-28; deploy pending. Follow-up: FastMCP's trailing-slash 307s (/mcp/register/ -> http://newsblur.com/register) lose the /mcp prefix.",
+      "note": "Littlebird never starts OAuth: root /.well-known/oauth-authorization-server 404ed on newsblur.com while every comparable DCR MCP host serves it; 2025-03-26 spec clients only look at the root. Sam chose the root metadata PR. Unverified against Littlebird itself. Merged as 29b90e5cb4 and deployed with make deploy on 2026-10-28; all root and /mcp discovery URLs verified 200 on prod with and without a trailing slash. Follow-up PR #2196 stops FastMCP's trailing-slash 307s (/mcp/register/ -> http://newsblur.com/register), needs make push_mcp + make deploy_mcp. Reply is safe to post now.",
       "reply": "I think I found it. Littlebird looks for our OAuth details at the root of newsblur.com, the way an older version of the MCP spec worked. We only published them under /mcp, so Littlebird never learned that NewsBlur uses OAuth. It skipped the browser sign in and called the server with no token, which is the \"rejected the API token\" error.\n\nNewsBlur now publishes those details in both places. There's no API token to find, MCP only uses the OAuth sign in. Remove the server in Littlebird and add https://newsblur.com/mcp again, with or without the trailing slash. Your earlier screenshot had https:/newsblur.com/mcp/ with a single slash, so make sure it starts with https:// this time. It should then open a browser window to approve access. If it still fails, tell me exactly what it says and I'll keep digging.",
-      "question": null
+      "question": null,
+      "follow_up_pr": "https://github.com/samuelclay/NewsBlur/pull/2196"
     }
   }
 }
