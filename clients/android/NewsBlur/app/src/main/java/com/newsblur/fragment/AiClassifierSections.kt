@@ -167,10 +167,13 @@ class AiClassifierSections(
         var previewScope = ClassifierScope.FEED_SCOPE
         val imageUrls: List<String> = if (imagePrompt && story != null) dbHelper.getStoryImageUrls(story.storyHash) else emptyList()
         val thumbs = mutableListOf<Pair<FrameLayout, TextView>>()
-        var testing = false
+        val tester = AiPromptTester(fragment.lifecycleScope, classifierApi)
 
         val typedPrompt: String
             get() = binding.aiPromptInput.text.toString().trim()
+
+        val draft: AiPromptDraft
+            get() = AiPromptDraft(typedPrompt, hidden = previewScore == Classifier.DISLIKE)
 
         fun bind() {
             container.addView(binding.root)
@@ -241,7 +244,7 @@ class AiClassifierSections(
 
         fun refresh() {
             renderPreviewRow()
-            binding.aiTestButton.isEnabled = typedPrompt.isNotEmpty() && !testing
+            binding.aiTestButton.isEnabled = typedPrompt.isNotEmpty() && !tester.isTesting
             binding.aiTestButton.alpha = if (binding.aiTestButton.isEnabled) 1f else 0.5f
             renderCost()
             renderBanner()
@@ -292,18 +295,19 @@ class AiClassifierSections(
         private fun bindPreviewRow() {
             val row = binding.aiPreviewRow
             row.aiPromptClear.isVisible = false
-            row.aiPromptLike.setOnClickListener {
-                previewScore = Classifier.LIKE
-                refresh()
-            }
-            row.aiPromptDislike.setOnClickListener {
-                previewScore = Classifier.DISLIKE
-                refresh()
-            }
+            row.aiPromptLike.setOnClickListener { choosePreviewScore(Classifier.LIKE) }
+            row.aiPromptDislike.setOnClickListener { choosePreviewScore(Classifier.DISLIKE) }
             bindScopeButtons(row) { scope ->
                 previewScope = scope
                 refresh()
             }
+        }
+
+        // A test result answers for one direction, so flipping it clears the result like editing does.
+        private fun choosePreviewScore(score: Int) {
+            if (score != previewScore) clearTestResults()
+            previewScore = score
+            refresh()
         }
 
         private fun renderPreviewRow() {
@@ -534,26 +538,24 @@ class AiClassifierSections(
             }
 
         private fun runTest() {
-            val prompt = typedPrompt
+            val tested = draft
             val storyHash = story?.storyHash ?: return
-            if (prompt.isEmpty() || testing) return
-            testing = true
+            if (tested.prompt.isEmpty() || tester.isTesting) return
             clearTestResults()
             binding.aiTestButton.setText(if (imagePrompt) R.string.ai_analyzing_images else R.string.ai_testing_story)
             thumbs.forEach { (frame, _) -> frame.alpha = 0.5f }
-            refresh()
-            val request =
-                PromptTestRequest(prompt, storyHash, feedId, includeImages = imagePrompt, hidden = previewScore == Classifier.DISLIKE)
-            fragment.lifecycleScope.launch {
-                val response = withContext(Dispatchers.IO) { classifierApi.testPrompt(request) }
-                if (!fragment.isAdded) return@launch
-                testing = false
+            val request = PromptTestRequest(tested.prompt, storyHash, feedId, includeImages = imagePrompt, hidden = tested.hidden)
+            tester.run(request, currentDraft = { draft }) { response, isCurrent ->
+                if (!fragment.isAdded) return@run
                 binding.aiTestButton.setText(testLabel())
                 thumbs.forEach { (frame, _) -> frame.alpha = 1f }
                 response.costEstimate?.let { costEstimate = it }
-                showTestResult(response)
+                // AiClassifierSections.kt drops a result for a draft that changed mid-test, so an
+                // untested prompt never looks verified.
+                if (isCurrent) showTestResult(response)
                 refresh()
             }
+            refresh()
         }
 
         private fun showTestResult(response: PromptTestResponse) {
