@@ -180,18 +180,24 @@ import SwiftUI
         guard !prompt.isEmpty, let storyHash, !storyHash.isEmpty, test(kind) != .testing else { return }
         tests[kind] = .testing
         let key = contextKey
-        let classifierType = draftScore(kind) < 0 ? "hidden" : "focus"
+        let classifierType = testClassifierType(kind)
         api.testPrompt(prompt, kind: kind, storyHash: storyHash, feedId: feedId ?? "0",
                        classifierType: classifierType) { [weak self] result in
             guard let self, self.contextKey == key else { return }
             if let estimate = result.costEstimate { self.estimate = estimate }
-            // A newer draft replaces the result, matching reader_classifier.js clearing it on input.
-            guard self.trimmedDraft(kind) == prompt else {
+            // A newer draft or a flipped focus/hide direction replaces the result, matching reader_classifier.js
+            // clearing it on input, since the result answered a different filter.
+            guard self.trimmedDraft(kind) == prompt, self.testClassifierType(kind) == classifierType else {
                 self.tests[kind] = .idle
                 return
             }
             self.tests[kind] = .finished(result.outcome)
         }
+    }
+
+    /// The classifier_type apps/analyzer/views.py test_prompt_classifier scores the draft as.
+    private func testClassifierType(_ kind: PromptClassifierKind) -> String {
+        draftScore(kind) < 0 ? "hidden" : "focus"
     }
 
     /// The badge under the prompt field after a test, from reader_classifier.js.

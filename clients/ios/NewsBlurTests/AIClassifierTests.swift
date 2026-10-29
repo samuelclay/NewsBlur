@@ -13,19 +13,37 @@ import XCTest
 
     var requests: [Request] = []
     var responses: [String: [String: Any]] = [:]
+    /// Holds every response until releaseHeldResponses(), like a slow network.
+    var holdsResponses = false
+    private var heldResponses: [() -> Void] = []
 
     func get(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
         requests.append(Request(method: "GET", path: path, parameters: parameters))
-        completion(responses[path].map { .success($0) } ?? .failure(URLError(.badServerResponse)))
+        respond(path, completion: completion)
     }
 
     func post(_ path: String, parameters: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
         requests.append(Request(method: "POST", path: path, parameters: parameters))
-        completion(responses[path].map { .success($0) } ?? .failure(URLError(.badServerResponse)))
+        respond(path, completion: completion)
     }
 
     func requests(to path: String) -> [Request] {
         requests.filter { $0.path == path }
+    }
+
+    func releaseHeldResponses() {
+        let held = heldResponses
+        heldResponses = []
+        held.forEach { $0() }
+    }
+
+    private func respond(_ path: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        let result: Result<[String: Any], Error> = responses[path].map { .success($0) } ?? .failure(URLError(.badServerResponse))
+        if holdsResponses {
+            heldResponses.append { completion(result) }
+        } else {
+            completion(result)
+        }
     }
 }
 
@@ -282,6 +300,33 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         let status = model.testStatus(.content, imageCount: 0)
         XCTAssertEqual(status?.text, "Usage billing required for AI classifiers")
         XCTAssertEqual(status?.isError, true)
+    }
+
+    func test_promptTestResultIsDroppedWhenTheDraftChangesDuringTheRequest() {
+        let transport = RecordingAITransport()
+        transport.responses["/classifier/test_prompt"] = ["code": 0, "classification": 1]
+        transport.holdsResponses = true
+        let model = makeModel(transport: transport, canUseAI: true)
+        model.setDraft("Non-apple related news", for: .content)
+
+        model.runTest(.content, storyHash: "42:abc", feedId: "42")
+        XCTAssertEqual(transport.requests.last?.parameters["classifier_type"] as? String, "focus")
+        model.toggleDraftDirection(.content)
+        XCTAssertEqual(model.test(.content), .testing, "Flipping the direction waits for the running test")
+        transport.releaseHeldResponses()
+        XCTAssertEqual(model.test(.content), .idle, "A focus result never shows for a hide filter")
+        XCTAssertNil(model.testStatus(.content, imageCount: 0))
+
+        model.runTest(.content, storyHash: "42:abc", feedId: "42")
+        XCTAssertEqual(transport.requests.last?.parameters["classifier_type"] as? String, "hidden")
+        model.setDraft("Apple news", for: .content)
+        transport.releaseHeldResponses()
+        XCTAssertEqual(model.test(.content), .idle, "A result for the old prompt never shows for the new one")
+
+        model.runTest(.content, storyHash: "42:abc", feedId: "42")
+        transport.releaseHeldResponses()
+        XCTAssertEqual(model.test(.content), .finished(.classified(matches: true, imageMatches: [])),
+                       "An unchanged draft shows its result")
     }
 
     func test_promptTestNeedsAPromptAndAStory() {
