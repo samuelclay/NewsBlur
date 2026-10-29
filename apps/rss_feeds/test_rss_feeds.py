@@ -9019,3 +9019,161 @@ class Test_TrimAbandonedFeeds(TestCase):
         self.assertEqual(self._stored(archived), self.STORIES)
         self.assertEqual(self._stored(stale), self.STORIES)
         self.assertEqual(self._stored(returning), self.STORIES)
+
+
+class Test_TrimOldSavedStories(TestCase):
+    """MStarredStory.trim_old_stories (apps/rss_feeds/models.py) deletes saved stories nobody can
+    come back for: the copies unsaving leaves under user_id 0, saves left by deleted accounts, and
+    the saves of free accounts that never had premium and haven't been seen in two years. Accounts
+    that paid, or had premium any other way, keep theirs, since they may come back."""
+
+    def _user(self, username, last_seen_days_ago, premium=False, paid=False, granted=False):
+        from apps.profile.models import PaymentHistory
+
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=premium,
+            # A grant, an extension or a trial sets premium_expire without a PaymentHistory row.
+            premium_expire=datetime.datetime.now() - datetime.timedelta(days=900) if granted else None,
+        )
+        if paid:
+            PaymentHistory.objects.create(
+                user=user,
+                payment_date=datetime.datetime.now() - datetime.timedelta(days=1500),
+                payment_amount=36,
+                payment_provider="stripe",
+            )
+        return user.pk
+
+    def _save(self, user_id, count, name):
+        from apps.rss_feeds.models import MStarredStory
+
+        for number in range(count):
+            MStarredStory(
+                user_id=user_id,
+                story_feed_id=42,
+                story_guid="https://www.example.com/%s/%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2020, 1, 1),
+                starred_date=datetime.datetime(2020, 1, 1) + datetime.timedelta(minutes=number),
+            ).save()
+        self.addCleanup(lambda: MStarredStory.objects(user_id=user_id).delete())
+
+    def _saved(self, user_id):
+        from apps.rss_feeds.models import MStarredStory
+
+        return MStarredStory.objects(user_id=user_id).count()
+
+    def test_only_saves_nobody_can_come_back_for_are_deleted(self):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        gone = self._user("gonefree", last_seen_days_ago=800)
+        lapsed = self._user("lapsedpaid", last_seen_days_ago=800, paid=True)
+        premium = self._user("stillpremium", last_seen_days_ago=800, premium=True)
+        recent = self._user("recentfree", last_seen_days_ago=100)
+        few = self._user("fewsaves", last_seen_days_ago=800)
+        granted = self._user("grantedonce", last_seen_days_ago=800, granted=True)
+        deleted_account = User.objects.order_by("-pk").first().pk + 1000
+        self._save(0, 4, "unsaved")
+        self._save(deleted_account, 3, "deleted-account")
+        for user_id in (gone, lapsed, premium, recent, granted):
+            self._save(user_id, 12, "user-%s" % user_id)
+        self._save(few, 5, "few")
+        MStarredStoryCounts.count_for_user(gone)
+        self.assertTrue(MStarredStoryCounts.objects(user_id=gone).count())
+
+        estimate = MStarredStory.trim_old_stories(dryrun=True, batch_size=3)
+        self.assertEqual(self._saved(0), 4)
+        self.assertEqual(self._saved(gone), 12)
+
+        trimmed = MStarredStory.trim_old_stories(batch_size=3)
+
+        self.assertEqual(trimmed, estimate)
+        self.assertEqual(self._saved(0), 0)
+        self.assertEqual(self._saved(deleted_account), 0)
+        self.assertEqual(self._saved(gone), 0)
+        counts, total = MStarredStoryCounts.user_counts(gone, include_total=True, try_counting=False)
+        self.assertEqual(total, 0)
+        self.assertFalse([c for c in counts if c["feed_id"] or c["tag"]])
+        for kept in (lapsed, premium, recent, granted):
+            self.assertEqual(self._saved(kept), 12)
+        self.assertEqual(self._saved(few), 5)
+
+    @patch("apps.rss_feeds.models.time.sleep")
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_deletes_wait_while_the_secondaries_lag(self, mock_lag, mock_sleep):
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 4, "lagging")
+        # Behind by 45 seconds once, then caught up.
+        mock_lag.side_effect = [45] + [0] * 50
+
+        MStarredStory.trim_old_stories(batch_size=2)
+
+        self.assertEqual(self._saved(0), 0)
+        # Checked after each of the two batches, and once more after waiting out the 45 seconds.
+        self.assertEqual(mock_lag.call_count, 3)
+        mock_sleep.assert_any_call(5)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_an_account_that_comes_back_mid_trim_keeps_the_rest_of_its_saves(self, mock_lag):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        returning = self._user("comesback", last_seen_days_ago=800)
+        self._save(returning, 12, "returning")
+
+        def comes_back_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                Profile.objects.filter(user_id=returning).update(last_seen_on=datetime.datetime.now())
+            return 0
+
+        mock_lag.side_effect = comes_back_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        # The first batch went before they came back; the rest stay, and the counts match them.
+        self.assertEqual(self._saved(returning), 7)
+        counts, total = MStarredStoryCounts.user_counts(returning, include_total=True, try_counting=False)
+        self.assertEqual(total, 7)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_a_story_saved_during_the_trim_is_kept(self, mock_lag):
+        """An app can save a story without the profile's last_seen_on catching up first."""
+        from apps.rss_feeds.models import MStarredStory
+
+        quiet = self._user("savesquietly", last_seen_days_ago=800)
+        self._save(quiet, 12, "quiet")
+
+        def saves_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                MStarredStory(
+                    user_id=quiet,
+                    story_feed_id=42,
+                    story_guid="https://www.example.com/quiet/new",
+                    story_title="Saved mid-trim",
+                    story_permalink="https://www.example.com/quiet/new",
+                    story_date=datetime.datetime.now(),
+                    starred_date=datetime.datetime.now(),
+                ).save()
+            return 0
+
+        mock_lag.side_effect = saves_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        self.assertEqual([s.story_title for s in MStarredStory.objects(user_id=quiet)], ["Saved mid-trim"])
+
+    def test_a_batch_size_below_one_is_refused(self):
+        """pymongo reads a limit of 0 as no limit, which would delete everything in one request."""
+        import io
+
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 2, "refused")
+        with self.assertRaises(ValueError):
+            MStarredStory.trim_old_stories(batch_size=0)
+        with self.assertRaises(CommandError):
+            management.call_command("trim_saved_stories", batch=0, stdout=io.StringIO())
+        self.assertEqual(self._saved(0), 2)
