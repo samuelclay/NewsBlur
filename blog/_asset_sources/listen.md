@@ -1,6 +1,6 @@
 # Listen launch images and audio
 
-Made October 21, 2026 for `2026-10-21-listen-to-your-stories.md`.
+Made October 21, 2026 for `2026-10-30-listen-to-your-stories.md` (written as 2026-10-21, publication dated October 30).
 
 ## Screenshots
 
