@@ -35,6 +35,7 @@ import com.newsblur.databinding.IncludeAiPromptRowBinding
 import com.newsblur.design.AiClassifierPalette
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.ClassifierScope
+import com.newsblur.domain.Folder
 import com.newsblur.domain.Story
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
@@ -122,21 +123,13 @@ class AiClassifierSections(
 
     private fun canUseWiderScopes(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
 
-    /** The feed's first folder as apps/reader/models.py flatten_folders names it, like "Blogs - Tumblrs". */
-    private val feedFolderPath: String? by lazy {
-        folders
-            .firstOrNull { it.name != AppConstants.ROOT_FOLDER && it.feedIds.contains(feedId) }
-            ?.let { folder -> (folder.parents.filter { it != AppConstants.ROOT_FOLDER } + folder.name).joinToString(" - ") }
-    }
+    private val feedFolderPath: String? by lazy { folderPathOfFeed(folders, feedId) }
 
     private fun storiesForScope(scope: ClassifierScope): Int =
         when {
             scope.scope == ClassifierScope.GLOBAL -> storiesByFeed.values.sum()
             scope.scope == ClassifierScope.FOLDER -> {
-                val folder =
-                    folders.firstOrNull { folder ->
-                        (folder.parents.filter { it != AppConstants.ROOT_FOLDER } + folder.name).joinToString(" - ") == scope.folderName
-                    }
+                val folder = folders.firstOrNull { folderPath(it) == scope.folderName }
                 folder?.feedIds?.sumOf { storiesByFeed[it] ?: 0 } ?: 0
             }
             else -> feedStories
@@ -370,6 +363,7 @@ class AiClassifierSections(
                 if (!canUseWiderScopes()) return@setOnClickListener scopeDenied()
                 onScope(ClassifierScope.GLOBAL_SCOPE)
             }
+            // A top-level feed has no folder, and a folder scope without one would save as global.
             row.aiPromptScopeFolder.isEnabled = feedFolderPath != null
         }
 
@@ -626,5 +620,17 @@ class AiClassifierSections(
                 label.isVisible = false
             }
         }
+    }
+
+    companion object {
+        /** [folder]'s path as apps/reader/models.py flatten_folders names it, like "Blogs - Tumblrs". */
+        fun folderPath(folder: Folder): String =
+            (folder.parents.filter { it != AppConstants.ROOT_FOLDER } + folder.name).joinToString(" - ")
+
+        /** The first folder holding [feedId], or null for a feed that is only at the top level. */
+        fun folderPathOfFeed(
+            folders: List<Folder>,
+            feedId: String,
+        ): String? = folders.firstOrNull { it.name != AppConstants.ROOT_FOLDER && it.feedIds.contains(feedId) }?.let(::folderPath)
     }
 }

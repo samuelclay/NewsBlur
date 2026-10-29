@@ -151,6 +151,39 @@ class Test_ClassifierPrompts {
     }
 
     @Test
+    fun test_a_folder_scope_without_a_folder_keeps_the_prompt_where_it_was() {
+        val classifier = classifier()
+        val original = classifier.copyPrompts()
+
+        // A top-level feed has no folder path, which would make a folder scope with an empty name.
+        classifier.setPromptScope(false, "Non-apple related news", ClassifierScope.folder(""))
+        classifier.recordScopedPromptChanges(original)
+
+        assertEquals(ClassifierScope.FEED_SCOPE, classifier.promptScope(false, "Non-apple related news"))
+        assertTrue(classifier.scopedPromptSaves.isEmpty())
+        assertTrue("like_prompt=Non-apple+related+news" in form(classifier.getAPITuples()))
+    }
+
+    @Test
+    fun test_a_folder_scope_without_a_folder_never_goes_out_or_removes_the_original() {
+        val classifier = classifier()
+        val original = classifier.copyPrompts()
+        // Test_ClassifierPrompts.kt writes the map directly, past setPromptScope's guard.
+        classifier.promptsScope["Sports"] = ClassifierScope.folder("")
+
+        classifier.recordScopedPromptChanges(original)
+
+        assertTrue(classifier.scopedPromptSaves.isEmpty())
+        val everyScope = setOf(ClassifierScope.FEED_SCOPE, ClassifierScope.GLOBAL_SCOPE, ClassifierScope.folder(""))
+        assertTrue(classifier.getMoveRemovalRequests(everyScope).isEmpty())
+        assertTrue("Sports" !in form(classifier.getAPITuples()))
+
+        // A queued save from before the guard is dropped rather than sent as a global prompt.
+        classifier.scopedPromptSaves.add(ScopedPromptSave(ClassifierScope.folder(""), false, "Sports", Classifier.DISLIKE))
+        assertTrue(classifier.getScopedPromptRequests().isEmpty())
+    }
+
+    @Test
     fun test_new_folder_prompt_saves_only_at_folder_scope() {
         val classifier = classifier()
         val original = classifier.copyPrompts()

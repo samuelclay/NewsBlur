@@ -130,8 +130,10 @@ class Classifier : Serializable {
     fun getMoveRemovalRequests(savedScopes: Set<ClassifierScope>): List<ScopedPromptRequest> =
         promptRequests(scopedPromptSaves.filter { it.movedTo != null && it.movedTo in savedScopes })
 
+    // A folder scope without its folder never goes out, see ClassifierScope.isValid.
     private fun promptRequests(saves: List<ScopedPromptSave>): List<ScopedPromptRequest> =
         saves
+            .filter { it.scope.isValid }
             .groupBy { it.scope }
             .map { (scope, scopeSaves) ->
                 val values = ValueMultimap()
@@ -160,6 +162,8 @@ class Classifier : Serializable {
         prompt: String,
         scope: ClassifierScope,
     ) {
+        // A feed outside every folder has no folder scope to move to, so its prompts stay put.
+        if (!scope.isValid) return
         val scopes = if (imagePrompt) imagePromptsScope else promptsScope
         if (scope.isFeed) scopes.remove(prompt) else scopes[prompt] = scope
     }
@@ -186,6 +190,8 @@ class Classifier : Serializable {
         for (prompt in scores.keys) {
             val score = scores.getValue(prompt)
             val scope = scopes[prompt] ?: ClassifierScope.FEED_SCOPE
+            // Nothing is sent for a prompt headed to an invalid scope, so its original survives.
+            if (!scope.isValid) continue
             val originalScore = originalScores[prompt]
             val originalScope = if (originalScore == null) scope else originalScopes[prompt] ?: ClassifierScope.FEED_SCOPE
             val active = score == LIKE || score == DISLIKE

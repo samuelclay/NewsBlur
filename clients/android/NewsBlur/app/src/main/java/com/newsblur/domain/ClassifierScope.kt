@@ -19,6 +19,13 @@ data class ClassifierScope(
     val isFeed: Boolean
         get() = scope != FOLDER && scope != GLOBAL
 
+    /**
+     * apps/analyzer/views.py saves a folder scope without a folder name as feed_id=0 and
+     * folder_id="", which is a global prompt that runs, and bills, on every site.
+     */
+    val isValid: Boolean
+        get() = scope != FOLDER || folderName.isNotBlank()
+
     companion object {
         private const val serialVersionUID = 1L
 

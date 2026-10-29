@@ -139,5 +139,21 @@ class Test_FeedIntelScopedSaves {
             assertEquals(3, bodies.size)
         }
 
+    @Test
+    fun test_a_folder_scope_without_a_folder_never_reaches_the_server() =
+        runTest {
+            respond { ok }
+            val classifier = Gson().fromJson("""{"prompts": {"Feed prompt": 1}}""", Classifier::class.java)
+            val original = classifier.copyPrompts()
+            // Test_FeedIntelScopedSaves.kt writes the map directly, past setPromptScope's guard.
+            classifier.promptsScope["Feed prompt"] = ClassifierScope.folder("")
+            classifier.recordScopedPromptChanges(original)
+
+            feedApi.updateFeedIntel("42", classifier)
+
+            assertEquals("Only the feed save went out: $bodies", 1, bodies.size)
+            assertFalse(bodies.single(), "scope=" in bodies.single() || "remove_like_prompt" in bodies.single())
+        }
+
     private fun form(values: ValueMultimap): String = Buffer().also { values.asFormEncodedRequestBody().writeTo(it) }.readUtf8()
 }
