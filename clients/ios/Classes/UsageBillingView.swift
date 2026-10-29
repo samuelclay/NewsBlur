@@ -75,6 +75,8 @@ import SwiftUI
     var readStatus: () -> UsageBillingStatus
     /// Reloads /reader/feeds so NewsBlurAppDelegate.m's dictUserProfile carries the new billing flags.
     var refreshProfile: () -> Void
+    /// The region whose decimal separator the decimal pad types, such as the comma in German and French.
+    let locale: Locale
 
     private var hasEditedLimit = false
 
@@ -88,19 +90,21 @@ import SwiftUI
 
     init(api: AIClassifierAPI? = nil, browser: UsageBillingBrowser? = nil,
          readStatus: (() -> UsageBillingStatus)? = nil,
-         refreshProfile: (() -> Void)? = nil) {
+         refreshProfile: (() -> Void)? = nil,
+         locale: Locale = .current) {
         let readStatus = readStatus ?? { UsageBillingStatus.current }
         self.api = api ?? AIClassifierAPI()
         self.browser = browser
         self.readStatus = readStatus
         self.refreshProfile = refreshProfile ?? { NewsBlurAppDelegate.shared?.reloadFeedsView(false) }
+        self.locale = locale
         status = readStatus()
-        limitText = Self.limitString(status.usageBillingLimit)
+        limitText = Self.limitString(status.usageBillingLimit, locale: locale)
     }
 
     func load() {
         status = readStatus()
-        if !hasEditedLimit { limitText = Self.limitString(status.usageBillingLimit) }
+        if !hasEditedLimit { limitText = Self.limitString(status.usageBillingLimit, locale: locale) }
         fetchHistory()
     }
 
@@ -116,7 +120,7 @@ import SwiftUI
         activationChecksRemaining = 0
         status = fresh
         if status != previous {
-            if !hasEditedLimit { limitText = Self.limitString(status.usageBillingLimit) }
+            if !hasEditedLimit { limitText = Self.limitString(status.usageBillingLimit, locale: locale) }
             fetchHistory()
         }
     }
@@ -134,17 +138,18 @@ import SwiftUI
                 return
             }
             self.historyState = .loaded(history)
-            if !self.hasEditedLimit { self.limitText = Self.limitString(history.usageBillingLimit) }
+            if !self.hasEditedLimit { self.limitText = Self.limitString(history.usageBillingLimit, locale: self.locale) }
         }
     }
 
     // MARK: Spending limit
 
     func editLimit(_ text: String) {
-        // UsageBillingView.swift keeps whole dollars and cents, like the web's number field.
-        let filtered = String(text.filter { $0.isNumber || $0 == "." }.prefix(9))
-        guard filtered != limitText else { return }
-        limitText = filtered
+        let edited = Self.editableLimit(text, locale: locale)
+        let changed = edited != limitText
+        // Publishing an unchanged value still puts the field back when the filter dropped what was typed.
+        limitText = edited
+        guard changed else { return }
         hasEditedLimit = true
         limitMessage = nil
     }
@@ -153,13 +158,13 @@ import SwiftUI
         guard !isSavingLimit else { return }
         isSavingLimit = true
         limitMessage = nil
-        api.saveUsageBillingLimit(limitText) { [weak self] result in
+        api.saveUsageBillingLimit(Self.serverLimit(limitText, locale: locale)) { [weak self] result in
             guard let self else { return }
             self.isSavingLimit = false
             switch result {
             case .saved(let limit):
                 self.hasEditedLimit = false
-                self.limitText = Self.limitString(limit)
+                self.limitText = Self.limitString(limit, locale: self.locale)
                 self.status.usageBillingLimit = limit
                 self.limitMessage = Message(text: NBLocalization.text("Saved"), isError: false)
                 self.fetchHistory()
@@ -170,14 +175,60 @@ import SwiftUI
         }
     }
 
-    static func limitString(_ limit: Double?) -> String {
+    /// The saved limit as the field shows it: plain digits with the region's decimal separator, so "10,5" in German.
+    static func limitString(_ limit: Double?, locale: Locale) -> String {
         guard let limit, limit > 0 else { return "" }
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 2
         formatter.usesGroupingSeparator = false
-        return formatter.string(from: NSNumber(value: limit)) ?? ""
+        let plain = formatter.string(from: NSNumber(value: limit)) ?? ""
+        return plain.replacingOccurrences(of: ".", with: decimalSeparator(locale))
+    }
+
+    /// UsageBillingView.swift keeps whole dollars and cents, like the web's number field. Both "." and the region's
+    /// decimal separator start the cents, which show with the region's separator. Anything else, such as a grouping
+    /// separator, is dropped, so a German "10,50" stays $10.50 instead of becoming $1,050.
+    static func editableLimit(_ text: String, locale: Locale) -> String {
+        let separator = decimalSeparator(locale)
+        var dollars = ""
+        var cents: String?
+        for character in text {
+            if character == "." || String(character) == separator {
+                // The first separator starts the cents and any later one is dropped.
+                if cents == nil { cents = "" }
+            } else if let digit = asciiDigit(character) {
+                if let typedCents = cents {
+                    if typedCents.count < 2 { cents = typedCents + digit }
+                } else if dollars.count < 6 {
+                    dollars += digit
+                }
+            }
+        }
+        guard let cents else { return dollars }
+        return dollars + separator + cents
+    }
+
+    /// The limit for apps/profile/views.py save_usage_billing_limit, which parses it with Python's Decimal and needs
+    /// "10.50". A blank field clears the limit, and a lone separator sends "0" so the server rejects it instead.
+    static func serverLimit(_ text: String, locale: Locale) -> String {
+        let edited = editableLimit(text, locale: locale)
+        guard let range = edited.range(of: decimalSeparator(locale)) else { return edited }
+        let dollars = edited[..<range.lowerBound].isEmpty ? "0" : String(edited[..<range.lowerBound])
+        let cents = edited[range.upperBound...]
+        return cents.isEmpty ? dollars : "\(dollars).\(cents)"
+    }
+
+    private static func decimalSeparator(_ locale: Locale) -> String {
+        locale.decimalSeparator ?? "."
+    }
+
+    /// A decimal digit in any script, such as the Arabic-Indic digits some decimal pads type, as an ASCII digit.
+    private static func asciiDigit(_ character: Character) -> String? {
+        guard character.unicodeScalars.count == 1, character.unicodeScalars.first?.properties.numericType == .decimal,
+              let value = character.wholeNumberValue else { return nil }
+        return String(value)
     }
 
     // MARK: Stripe

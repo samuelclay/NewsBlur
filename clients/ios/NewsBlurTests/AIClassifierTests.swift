@@ -500,6 +500,49 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         }
     }
 
+    func test_limitKeepsTheRegionsDecimalSeparatorAndSavesAPlainDecimal() {
+        let transport = RecordingAITransport()
+        transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": 10.5]
+        let german = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "de_DE"))
+
+        german.editLimit("10,50")
+        XCTAssertEqual(german.limitText, "10,50")
+        german.saveLimit()
+        XCTAssertEqual(transport.requests(to: "/profile/save_usage_billing_limit").last?.parameters as NSDictionary?,
+                       ["limit": "10.50"], "A German 10,50 is $10.50, not $1,050")
+        XCTAssertEqual(german.limitText, "10,5", "The saved limit shows with the comma again")
+
+        german.editLimit("12.5")
+        XCTAssertEqual(german.limitText, "12,5", "A period from a hardware keyboard also starts the cents")
+        german.editLimit("12,505")
+        XCTAssertEqual(german.limitText, "12,50", "Cents stop at two digits")
+        german.editLimit("12,50,")
+        XCTAssertEqual(german.limitText, "12,50", "A second separator is dropped")
+        german.editLimit(",5")
+        XCTAssertEqual(UsageBillingModel.serverLimit(german.limitText, locale: german.locale), "0.5")
+        german.editLimit(",")
+        XCTAssertEqual(UsageBillingModel.serverLimit(german.limitText, locale: german.locale), "0",
+                       "A lone separator is rejected by the server instead of clearing the limit")
+
+        transport.responses["/profile/save_usage_billing_limit"] = ["code": 1, "limit": NSNull()]
+        german.editLimit("")
+        german.saveLimit()
+        XCTAssertEqual(transport.requests(to: "/profile/save_usage_billing_limit").last?.parameters as NSDictionary?, ["limit": ""])
+        XCTAssertEqual(german.limitText, "")
+
+        let american = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "en_US"))
+        american.editLimit("10.50")
+        XCTAssertEqual(american.limitText, "10.50")
+        XCTAssertEqual(UsageBillingModel.serverLimit(american.limitText, locale: american.locale), "10.50")
+        american.editLimit("1,050")
+        XCTAssertEqual(american.limitText, "1050", "A comma is only a grouping separator in English")
+
+        let arabic = makeModel(transport: transport, status: activeStatus, locale: Locale(identifier: "ar_SA"))
+        arabic.editLimit("١٠\(arabic.locale.decimalSeparator ?? ".")٥٠")
+        XCTAssertEqual(UsageBillingModel.serverLimit(arabic.limitText, locale: arabic.locale), "10.50",
+                       "Arabic-Indic digits and the region's separator save as a plain decimal")
+    }
+
     func test_setupOpensStripeAndRefreshesWhenItReturns() throws {
         let transport = RecordingAITransport()
         transport.responses["/profile/setup_usage_billing/"] = ["code": 0, "url": "https://checkout.stripe.com/c/pay/cs_test_app"]
@@ -633,9 +676,11 @@ private final class PromptSaveAppDelegate: NewsBlurAppDelegate {
         UsageBillingStatus(isUsageBilling: false, isSelfHostedAI: false, canUseAIClassifiers: false, usageBillingLimit: nil)
     }
 
+    /// Pins the region to English unless a test asks for another, since the limit field follows its decimal separator.
     private func makeModel(transport: RecordingAITransport, status: UsageBillingStatus,
-                           browser: UsageBillingBrowser? = nil, refreshProfile: (() -> Void)? = nil) -> UsageBillingModel {
+                           browser: UsageBillingBrowser? = nil, locale: Locale = Locale(identifier: "en_US"),
+                           refreshProfile: (() -> Void)? = nil) -> UsageBillingModel {
         UsageBillingModel(api: AIClassifierAPI(transport: transport), browser: browser,
-                          readStatus: { status }, refreshProfile: refreshProfile ?? {})
+                          readStatus: { status }, refreshProfile: refreshProfile ?? {}, locale: locale)
     }
 }
