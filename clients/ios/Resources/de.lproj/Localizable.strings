@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Dadurch wird das Abonnement aus deinen Feeds entfernt.";
 "This setting only applies after the app is restarted." = "Diese Einstellung wird erst nach einem Neustart der App angewendet.";
 "This site already has a feed" = "Für diese Website gibt es bereits einen Feed";
+"This site isn't in a folder" = "Diese Website ist keinem Ordner zugeordnet";
 "This story has no text to read aloud." = "Dieser Artikel enthält keinen Text zum Vorlesen.";
 "Three" = "Drei";
 "Three columns" = "Drei Spalten";

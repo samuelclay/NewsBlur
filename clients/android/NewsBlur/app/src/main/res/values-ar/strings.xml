@@ -1368,6 +1368,7 @@
     <string name="usage_billing_limit_saved">تم حفظ حد الإنفاق</string>
     <string name="usage_billing_limit_cleared">تمت إزالة حد الإنفاق</string>
     <string name="usage_billing_limit_failed">تعذّر حفظ حد الإنفاق. يُرجى المحاولة مرة أخرى.</string>
+    <string name="usage_billing_limit_invalid">أدخل الحد بالدولار، مثل %1$s.</string>
     <string name="usage_billing_history_title">سجل الفوترة حسب الاستخدام</string>
     <string name="usage_billing_none">لم يتم إعداد فوترة الاستخدام.</string>
     <string name="usage_billing_no_invoices">لا توجد فواتير للاستخدام حتى الآن.</string>

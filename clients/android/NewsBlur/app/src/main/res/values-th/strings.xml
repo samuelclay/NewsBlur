@@ -1238,6 +1238,7 @@
     <string name="usage_billing_limit_saved">บันทึกวงเงินใช้จ่ายแล้ว</string>
     <string name="usage_billing_limit_cleared">นำวงเงินใช้จ่ายออกแล้ว</string>
     <string name="usage_billing_limit_failed">บันทึกวงเงินใช้จ่ายไม่สำเร็จ โปรดลองอีกครั้ง</string>
+    <string name="usage_billing_limit_invalid">ป้อนขีดจำกัดเป็นดอลลาร์ เช่น %1$s</string>
     <string name="usage_billing_history_title">ประวัติการเรียกเก็บเงินตามการใช้งาน</string>
     <string name="usage_billing_none">ยังไม่ได้ตั้งค่าการเรียกเก็บเงินตามการใช้งาน</string>
     <string name="usage_billing_no_invoices">ยังไม่มีใบแจ้งหนี้การเรียกเก็บเงินตามการใช้งาน</string>

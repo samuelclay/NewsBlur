@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Подписка будет удалена из ваших лент.";
 "This setting only applies after the app is restarted." = "Эта настройка применяется только после перезапуска приложения.";
 "This site already has a feed" = "У этого сайта уже есть лента";
+"This site isn't in a folder" = "Этот сайт не находится в папке";
 "This story has no text to read aloud." = "В этой статье нет текста для озвучивания.";
 "Three" = "Три";
 "Three columns" = "Три колонки";

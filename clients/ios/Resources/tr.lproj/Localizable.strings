@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Bu işlem aboneliği akışlarınızdan kaldırır.";
 "This setting only applies after the app is restarted." = "Bu ayar yalnızca uygulama yeniden başlatıldıktan sonra uygulanır.";
 "This site already has a feed" = "Bu sitenin zaten bir akışı var";
+"This site isn't in a folder" = "Bu site bir klasörde değil";
 "This story has no text to read aloud." = "Bu haberde sesli okunacak metin yok.";
 "Three" = "Üç";
 "Three columns" = "Üç sütun";

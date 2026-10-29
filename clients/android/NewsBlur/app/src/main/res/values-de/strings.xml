@@ -1264,6 +1264,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="usage_billing_limit_saved">Ausgabenlimit gespeichert</string>
     <string name="usage_billing_limit_cleared">Ausgabenlimit entfernt</string>
     <string name="usage_billing_limit_failed">Das Ausgabenlimit konnte nicht gespeichert werden. Bitte versuche es erneut.</string>
+    <string name="usage_billing_limit_invalid">Gib das Limit in Dollar ein, zum Beispiel %1$s.</string>
     <string name="usage_billing_history_title">Abrechnungsverlauf nach Nutzung</string>
     <string name="usage_billing_none">Keine nutzungsbasierte Abrechnung eingerichtet.</string>
     <string name="usage_billing_no_invoices">Noch keine Rechnungen für die nutzungsbasierte Abrechnung.</string>

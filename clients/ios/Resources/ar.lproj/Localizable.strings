@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "سيؤدي هذا إلى إزالة الاشتراك من خلاصاتك.";
 "This setting only applies after the app is restarted." = "لا يُطبَّق هذا الإعداد إلا بعد إعادة تشغيل التطبيق.";
 "This site already has a feed" = "هذا الموقع لديه خلاصة بالفعل";
+"This site isn't in a folder" = "هذا الموقع ليس ضمن مجلد";
 "This story has no text to read aloud." = "لا يتوفر نص لقراءة هذه القصة بصوت عالٍ.";
 "Three" = "ثلاثة";
 "Three columns" = "ثلاثة أعمدة";

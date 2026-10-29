@@ -1238,6 +1238,7 @@
     <string name="usage_billing_limit_saved">利用上限を保存しました</string>
     <string name="usage_billing_limit_cleared">利用上限を削除しました</string>
     <string name="usage_billing_limit_failed">利用上限を保存できませんでした。もう一度お試しください。</string>
+    <string name="usage_billing_limit_invalid">上限をドルで入力してください（例：%1$s）。</string>
     <string name="usage_billing_history_title">従量課金の履歴</string>
     <string name="usage_billing_none">従量課金が設定されていません。</string>
     <string name="usage_billing_no_invoices">利用状況の請求書はまだありません。</string>

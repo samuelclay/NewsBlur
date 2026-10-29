@@ -1238,6 +1238,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="usage_billing_limit_saved">Batas pengeluaran disimpan</string>
     <string name="usage_billing_limit_cleared">Batas pengeluaran dihapus</string>
     <string name="usage_billing_limit_failed">Tidak dapat menyimpan batas pengeluaran. Silakan coba lagi.</string>
+    <string name="usage_billing_limit_invalid">Masukkan batas dalam dolar, seperti %1$s.</string>
     <string name="usage_billing_history_title">Riwayat penagihan penggunaan</string>
     <string name="usage_billing_none">Penagihan berdasarkan penggunaan belum disiapkan.</string>
     <string name="usage_billing_no_invoices">Belum ada faktur penagihan penggunaan.</string>

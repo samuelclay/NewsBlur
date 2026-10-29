@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "การดำเนินการนี้จะนำการสมัครรับข้อมูลออกจากฟีดของคุณ";
 "This setting only applies after the app is restarted." = "การตั้งค่านี้จะมีผลหลังจากเริ่มแอปใหม่เท่านั้น";
 "This site already has a feed" = "เว็บไซต์นี้มีฟีดอยู่แล้ว";
+"This site isn't in a folder" = "เว็บไซต์นี้ไม่ได้อยู่ในโฟลเดอร์";
 "This story has no text to read aloud." = "บทความนี้ไม่มีข้อความให้อ่านออกเสียง";
 "Three" = "สาม";
 "Three columns" = "สามคอลัมน์";

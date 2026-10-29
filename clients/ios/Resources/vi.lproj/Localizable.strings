@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Thao tác này sẽ xóa đăng ký theo dõi khỏi các nguồn cấp của bạn.";
 "This setting only applies after the app is restarted." = "Cài đặt này chỉ có hiệu lực sau khi khởi động lại ứng dụng.";
 "This site already has a feed" = "Trang web này đã có nguồn cấp dữ liệu";
+"This site isn't in a folder" = "Trang web này không nằm trong thư mục nào";
 "This story has no text to read aloud." = "Bài viết này không có văn bản để đọc thành tiếng.";
 "Three" = "Ba";
 "Three columns" = "Ba cột";

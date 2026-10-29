@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "इससे आपकी फ़ीड से सदस्यता हट जाएगी।";
 "This setting only applies after the app is restarted." = "यह सेटिंग ऐप को दोबारा शुरू करने के बाद ही लागू होगी।";
 "This site already has a feed" = "इस साइट की फ़ीड पहले से मौजूद है";
+"This site isn't in a folder" = "यह साइट किसी फ़ोल्डर में नहीं है।";
 "This story has no text to read aloud." = "इस लेख में सुनने के लिए कोई पाठ नहीं है।";
 "Three" = "तीन";
 "Three columns" = "तीन स्तंभ";

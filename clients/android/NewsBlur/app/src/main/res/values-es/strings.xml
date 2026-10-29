@@ -1290,6 +1290,7 @@ a personas para hablar del mundo.</string>
     <string name="usage_billing_limit_saved">Límite de gasto guardado</string>
     <string name="usage_billing_limit_cleared">Límite de gasto eliminado</string>
     <string name="usage_billing_limit_failed">No se pudo guardar el límite de gasto. Inténtalo de nuevo.</string>
+    <string name="usage_billing_limit_invalid">Introduce el límite en dólares, como %1$s.</string>
     <string name="usage_billing_history_title">Historial de facturación por uso</string>
     <string name="usage_billing_none">No hay facturación por uso configurada.</string>
     <string name="usage_billing_no_invoices">Todavía no hay facturas de facturación según el uso.</string>

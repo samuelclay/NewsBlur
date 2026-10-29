@@ -1316,6 +1316,7 @@
     <string name="usage_billing_limit_saved">Ліміт витрат збережено</string>
     <string name="usage_billing_limit_cleared">Ліміт витрат видалено</string>
     <string name="usage_billing_limit_failed">Не вдалося зберегти ліміт витрат. Спробуйте ще раз.</string>
+    <string name="usage_billing_limit_invalid">Введіть ліміт у доларах, наприклад %1$s.</string>
     <string name="usage_billing_history_title">Історія оплати за використання</string>
     <string name="usage_billing_none">Оплату за використання не налаштовано.</string>
     <string name="usage_billing_no_invoices">Рахунків за оплату за використання поки немає.</string>

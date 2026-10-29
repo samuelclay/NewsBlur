@@ -1264,6 +1264,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="usage_billing_limit_saved">Harcama sınırı kaydedildi</string>
     <string name="usage_billing_limit_cleared">Harcama sınırı kaldırıldı</string>
     <string name="usage_billing_limit_failed">Harcama sınırı kaydedilemedi. Lütfen yeniden deneyin.</string>
+    <string name="usage_billing_limit_invalid">Sınırı dolar cinsinden girin; örneğin %1$s.</string>
     <string name="usage_billing_history_title">Kullanım faturalandırma geçmişi</string>
     <string name="usage_billing_none">Kullanıma dayalı faturalandırma ayarlanmamış.</string>
     <string name="usage_billing_no_invoices">Henüz kullanım faturalandırması faturası yok.</string>

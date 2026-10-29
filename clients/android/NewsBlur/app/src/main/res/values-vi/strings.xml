@@ -1238,6 +1238,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="usage_billing_limit_saved">Đã lưu giới hạn chi tiêu</string>
     <string name="usage_billing_limit_cleared">Đã xóa giới hạn chi tiêu</string>
     <string name="usage_billing_limit_failed">Không lưu được giới hạn chi tiêu. Vui lòng thử lại.</string>
+    <string name="usage_billing_limit_invalid">Nhập giới hạn bằng đô la, chẳng hạn %1$s.</string>
     <string name="usage_billing_history_title">Lịch sử thanh toán theo mức sử dụng</string>
     <string name="usage_billing_none">Chưa thiết lập thanh toán theo mức sử dụng.</string>
     <string name="usage_billing_no_invoices">Chưa có hóa đơn thanh toán theo mức sử dụng.</string>

@@ -1316,6 +1316,7 @@
     <string name="usage_billing_limit_saved">Zapisano limit wydatków</string>
     <string name="usage_billing_limit_cleared">Usunięto limit wydatków</string>
     <string name="usage_billing_limit_failed">Nie udało się zapisać limitu wydatków. Spróbuj ponownie.</string>
+    <string name="usage_billing_limit_invalid">Wpisz limit w dolarach, np. %1$s.</string>
     <string name="usage_billing_history_title">Historia rozliczeń według użycia</string>
     <string name="usage_billing_none">Nie skonfigurowano rozliczeń według użycia.</string>
     <string name="usage_billing_no_invoices">Nie ma jeszcze faktur za korzystanie z usługi.</string>

@@ -1290,6 +1290,7 @@
     <string name="usage_billing_limit_saved">מגבלת ההוצאות נשמרה</string>
     <string name="usage_billing_limit_cleared">מגבלת ההוצאה הוסרה</string>
     <string name="usage_billing_limit_failed">שמירת מגבלת ההוצאה נכשלה. נסו שוב.</string>
+    <string name="usage_billing_limit_invalid">יש להזין את המגבלה בדולרים, למשל %1$s.</string>
     <string name="usage_billing_history_title">היסטוריית חיוב לפי שימוש</string>
     <string name="usage_billing_none">לא הוגדר חיוב לפי שימוש.</string>
     <string name="usage_billing_no_invoices">עדיין אין חשבוניות חיוב לפי שימוש.</string>

@@ -1290,6 +1290,7 @@ le persone per parlare del mondo.</string>
     <string name="usage_billing_limit_saved">Limite di spesa salvato</string>
     <string name="usage_billing_limit_cleared">Limite di spesa rimosso</string>
     <string name="usage_billing_limit_failed">Impossibile salvare il limite di spesa. Riprova.</string>
+    <string name="usage_billing_limit_invalid">Inserisci il limite in dollari, ad esempio %1$s.</string>
     <string name="usage_billing_history_title">Cronologia della fatturazione a consumo</string>
     <string name="usage_billing_none">La fatturazione a consumo non è configurata.</string>
     <string name="usage_billing_no_invoices">Non ci sono ancora fatture per la fatturazione a consumo.</string>

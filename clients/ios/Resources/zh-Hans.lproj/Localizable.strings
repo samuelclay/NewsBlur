@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "这会从你的订阅源中移除此订阅。";
 "This setting only applies after the app is restarted." = "此设置仅在重新启动应用后生效。";
 "This site already has a feed" = "此网站已有订阅源";
+"This site isn't in a folder" = "此网站不在任何文件夹中";
 "This story has no text to read aloud." = "这篇文章没有可朗读的文字。";
 "Three" = "三列";
 "Three columns" = "三列";

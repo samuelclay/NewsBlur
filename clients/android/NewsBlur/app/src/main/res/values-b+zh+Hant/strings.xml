@@ -1238,6 +1238,7 @@
     <string name="usage_billing_limit_saved">已儲存支出上限</string>
     <string name="usage_billing_limit_cleared">已移除支出上限</string>
     <string name="usage_billing_limit_failed">無法儲存支出上限。請重試。</string>
+    <string name="usage_billing_limit_invalid">請以美元輸入上限，例如 %1$s。</string>
     <string name="usage_billing_history_title">用量計費記錄</string>
     <string name="usage_billing_none">尚未設定按用量計費。</string>
     <string name="usage_billing_no_invoices">尚無用量帳單。</string>

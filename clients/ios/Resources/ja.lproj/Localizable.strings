@@ -1119,6 +1119,7 @@
 "This removes the subscription from your feeds." = "この操作を行うと、フィードから購読が削除されます。";
 "This setting only applies after the app is restarted." = "この設定はアプリを再起動した後にのみ適用されます。";
 "This site already has a feed" = "このサイトにはすでにフィードがあります";
+"This site isn't in a folder" = "このサイトはフォルダーに入っていません";
 "This story has no text to read aloud." = "この記事には読み上げ可能なテキストがありません。";
 "Three" = "3つ";
 "Three columns" = "3列";

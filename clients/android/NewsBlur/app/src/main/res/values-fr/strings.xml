@@ -1290,6 +1290,7 @@ les gens pour parler du monde.</string>
     <string name="usage_billing_limit_saved">Limite de dépenses enregistrée</string>
     <string name="usage_billing_limit_cleared">Limite de dépenses supprimée</string>
     <string name="usage_billing_limit_failed">Impossible d’enregistrer la limite de dépenses. Veuillez réessayer.</string>
+    <string name="usage_billing_limit_invalid">Saisissez la limite en dollars, par exemple %1$s.</string>
     <string name="usage_billing_history_title">Historique de facturation à l’usage</string>
     <string name="usage_billing_none">La facturation à l’usage n’est pas configurée.</string>
     <string name="usage_billing_no_invoices">Aucune facture de facturation à l’usage pour le moment.</string>

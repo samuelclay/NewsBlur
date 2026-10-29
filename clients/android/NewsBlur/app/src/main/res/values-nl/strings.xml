@@ -1264,6 +1264,7 @@ om over de wereld te praten.</string>
     <string name="usage_billing_limit_saved">Bestedingslimiet opgeslagen</string>
     <string name="usage_billing_limit_cleared">Bestedingslimiet verwijderd</string>
     <string name="usage_billing_limit_failed">De bestedingslimiet kon niet worden opgeslagen. Probeer het opnieuw.</string>
+    <string name="usage_billing_limit_invalid">Voer de limiet in dollars in, bijvoorbeeld %1$s.</string>
     <string name="usage_billing_history_title">Overzicht van gebruikskosten</string>
     <string name="usage_billing_none">Facturering op basis van gebruik is niet ingesteld.</string>
     <string name="usage_billing_no_invoices">Nog geen facturen voor gebruik.</string>
