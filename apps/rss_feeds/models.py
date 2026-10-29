@@ -5106,17 +5106,23 @@ class MStarredStory(mongo.DynamicDocument):
     @classmethod
     def trim_old_stories(cls, days=730, min_stories=10, batch_size=1000, max_lag_seconds=10, dryrun=False):
         """Deletes the saved stories nobody can come back for and returns how many went, or in a
-        dry run, how many would:
+        dry run, about how many would:
         - the copies unsaving leaves behind under user_id 0 (apps/reader/views.py reassigns an
           unsaved story to user 0 instead of deleting it),
         - the saves of accounts that no longer exist, and
-        - the saves of a free account that never paid and hasn't been seen in `days` days, when it
-          has at least `min_stories` of them.
-        An account that paid at some point keeps its saves, since it may resubscribe. Each account
-        is checked again right before its saves go, deletes go `batch_size` at a time and wait while
-        the secondaries are more than `max_lag_seconds` behind, and a trimmed account's saved story
-        counts are cleared so a returning user doesn't see counts for stories that are gone.
-        manage.py trim_saved_stories runs it. apps/rss_feeds/models.py"""
+        - the saves of a free account that never had premium and hasn't been seen in `days` days,
+          when it has at least `min_stories` of them.
+        An account that paid, or had premium any other way, keeps its saves, since it may come back.
+        Each account is checked again before every batch of its saves goes, and only saves made
+        before the trim started are deleted, so one that comes back mid-trim keeps the rest. Deletes
+        go `batch_size` at a time and wait while the secondaries are more than `max_lag_seconds`
+        behind, and a trimmed account's saved story counts are recounted. manage.py
+        trim_saved_stories runs it. apps/rss_feeds/models.py"""
+        if batch_size < 1:
+            # pymongo reads a limit of 0 as no limit, which would delete everything in one request.
+            raise ValueError("batch_size must be at least 1, not %s" % batch_size)
+
+        started = datetime.datetime.now()
         saved_by_user = cls.saved_story_counts_by_user()
         user_ids = [user_id for user_id in saved_by_user if user_id]
         existing_user_ids = set()
@@ -5133,7 +5139,12 @@ class MStarredStory(mongo.DynamicDocument):
         logging.debug(
             " ---> ~FBSaved stories: ~SB%s~SN users, ~SB%s~SN unsaved copies, ~SB%s~SN deleted accounts, "
             "~SB%s~SN accounts to check"
-            % (len(saved_by_user), saved_by_user.get(0, 0), len(ownerless_ids) - 1, len(candidate_ids))
+            % (
+                len(saved_by_user),
+                saved_by_user.get(0, 0),
+                len([user_id for user_id in ownerless_ids if user_id]),
+                len(candidate_ids),
+            )
         )
 
         trimmed = 0
@@ -5141,25 +5152,33 @@ class MStarredStory(mongo.DynamicDocument):
             trimmed += cls.delete_saved_stories(
                 user_id, saved_by_user[user_id], batch_size, max_lag_seconds, dryrun
             )
+        ownerless_trimmed = trimmed
 
-        seen_since = datetime.datetime.now() - datetime.timedelta(days=days)
+        seen_since = started - datetime.timedelta(days=days)
         trimmed_accounts = 0
         for user_id in candidate_ids:
             if not cls.saves_are_abandoned(user_id, seen_since):
                 continue
             trimmed += cls.delete_saved_stories(
-                user_id, saved_by_user[user_id], batch_size, max_lag_seconds, dryrun
+                user_id,
+                saved_by_user[user_id],
+                batch_size,
+                max_lag_seconds,
+                dryrun,
+                saved_before=started,
+                still_abandoned=lambda: cls.saves_are_abandoned(user_id, seen_since),
             )
             trimmed_accounts += 1
             if not dryrun:
-                MStarredStoryCounts.objects(user_id=user_id).delete()
+                # Recounted rather than cleared, in case the account kept saves by coming back.
+                MStarredStoryCounts.count_for_user(user_id)
 
         logging.debug(
             " ---> ~FB%s ~SB%s~SN saved stories, ~SB%s~SN of them from %s abandoned accounts"
             % (
                 "Would delete" if dryrun else "Deleted",
                 trimmed,
-                trimmed - sum(saved_by_user[u] for u in ownerless_ids),
+                trimmed - ownerless_trimmed,
                 trimmed_accounts,
             )
         )
@@ -5182,33 +5201,51 @@ class MStarredStory(mongo.DynamicDocument):
     @classmethod
     def saves_are_abandoned(cls, user_id, seen_since):
         """Whether a still existing account's saves can go: it's free, hasn't been seen since
-        seen_since, and never paid, so it has no subscription to come back to.
-        apps/rss_feeds/models.py"""
+        seen_since, never paid, and never had premium any other way (a grant, an extension or a
+        trial all set premium_expire), so it has nothing to come back to. apps/rss_feeds/models.py"""
         from apps.profile.models import PaymentHistory, Profile
 
-        profile = Profile.objects.filter(user_id=user_id).values("is_premium", "last_seen_on").first()
-        if not profile or profile["is_premium"]:
+        profile = (
+            Profile.objects.filter(user_id=user_id)
+            .values("is_premium", "premium_expire", "last_seen_on")
+            .first()
+        )
+        if not profile or profile["is_premium"] or profile["premium_expire"]:
             return False
         if not profile["last_seen_on"] or profile["last_seen_on"] > seen_since:
             return False
         return not PaymentHistory.objects.filter(user_id=user_id).exists()
 
     @classmethod
-    def delete_saved_stories(cls, user_id, saved_count, batch_size, max_lag_seconds, dryrun):
-        """Deletes every saved story of user_id in batches, waiting after each one while the
-        secondaries catch up, and returns how many went, or in a dry run, saved_count.
-        apps/rss_feeds/models.py"""
+    def delete_saved_stories(
+        cls,
+        user_id,
+        saved_count,
+        batch_size,
+        max_lag_seconds,
+        dryrun,
+        saved_before=None,
+        still_abandoned=None,
+    ):
+        """Deletes the saved stories of user_id in batches, waiting after each one while the
+        secondaries catch up, and returns how many went, or in a dry run, saved_count. With
+        saved_before, only saves made before then go; with still_abandoned, it stops as soon as that
+        says the account came back. apps/rss_feeds/models.py"""
         if dryrun:
             return saved_count
+        query = {"user_id": user_id}
+        if saved_before:
+            # $not keeps old saves that never got a starred_date in the trim.
+            query["starred_date"] = {"$not": {"$gte": saved_before}}
         collection = cls._get_collection()
         deleted = 0
         while True:
-            batch = [
-                doc["_id"] for doc in collection.find({"user_id": user_id}, {"_id": 1}).limit(batch_size)
-            ]
+            if still_abandoned and not still_abandoned():
+                return deleted
+            batch = [doc["_id"] for doc in collection.find(query, {"_id": 1}).limit(batch_size)]
             if not batch:
                 return deleted
-            deleted += collection.delete_many({"_id": {"$in": batch}, "user_id": user_id}).deleted_count
+            deleted += collection.delete_many(dict(query, _id={"$in": batch})).deleted_count
             cls.wait_for_replication(max_lag_seconds)
 
     @classmethod

@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from apps.rss_feeds.models import MStarredStory
 
@@ -24,6 +24,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if options["batch"] < 1:
+            # pymongo reads a limit of 0 as no limit, which would delete everything in one request.
+            raise CommandError("--batch must be at least 1")
         trimmed = MStarredStory.trim_old_stories(
             days=options["days"],
             min_stories=options["min_stories"],
