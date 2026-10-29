@@ -7,6 +7,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.Locale
 
 // Test_UsageBilling.kt: the Stripe return link, the platform the server maps to that link, and
 // which billing action each account state offers.
@@ -90,4 +91,48 @@ class Test_UsageBilling {
             assertEquals(4, checks)
             assertEquals("1s, 2s and 4s of backoff", 7_000L, currentTime)
         }
+
+    private val german = Locale.GERMANY
+    private val english = Locale.US
+
+    @Test
+    fun test_a_german_limit_with_a_decimal_comma_saves_as_a_decimal_point() {
+        assertEquals("10.50", UsageBilling.normalizeLimit("10,50", german))
+        assertEquals("10.50", UsageBilling.normalizeLimit("10,5", german))
+        assertEquals("A keyboard that sends a point still works", "10.50", UsageBilling.normalizeLimit("10.50", german))
+        assertEquals("1000.50", UsageBilling.normalizeLimit("1.000,50", german))
+    }
+
+    @Test
+    fun test_an_english_limit_saves_as_typed() {
+        assertEquals("10.50", UsageBilling.normalizeLimit(" 10.50 ", english))
+        assertEquals("25.00", UsageBilling.normalizeLimit("25", english))
+        assertEquals("0.50", UsageBilling.normalizeLimit(".5", english))
+        assertEquals("1000.50", UsageBilling.normalizeLimit("1,000.50", english))
+    }
+
+    @Test
+    fun test_a_blank_limit_clears_it() {
+        assertEquals("", UsageBilling.normalizeLimit("", english))
+        assertEquals("", UsageBilling.normalizeLimit("   ", german))
+    }
+
+    @Test
+    fun test_text_that_is_not_an_amount_is_never_sent() {
+        assertNull("Three digits after the separator is ambiguous", UsageBilling.normalizeLimit("1,000", english))
+        assertNull(UsageBilling.normalizeLimit("10,505", german))
+        assertNull(UsageBilling.normalizeLimit("1,2,3", english))
+        assertNull(UsageBilling.normalizeLimit(".", english))
+        assertNull(UsageBilling.normalizeLimit("1.000,50", english))
+        assertNull(UsageBilling.normalizeLimit("ten", english))
+    }
+
+    @Test
+    fun test_a_saved_limit_shows_in_the_locale_and_reads_back() {
+        assertEquals("10,50", UsageBilling.formatLimit(10.5, german))
+        assertEquals("10.50", UsageBilling.formatLimit(10.5, english))
+        assertEquals("25", UsageBilling.formatLimit(25.0, german))
+        assertEquals("", UsageBilling.formatLimit(null, german))
+        assertEquals("10.50", UsageBilling.normalizeLimit(UsageBilling.formatLimit(10.5, german), german))
+    }
 }

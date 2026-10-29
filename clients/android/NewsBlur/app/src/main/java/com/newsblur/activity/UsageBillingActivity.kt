@@ -237,7 +237,12 @@ class UsageBillingActivity : NbActivity() {
     }
 
     private fun saveLimit() {
-        val limit = binding.limitInput.text.toString().trim()
+        // UsageBillingActivity.kt sends "10.50" whichever decimal separator the locale typed.
+        val limit = UsageBilling.normalizeLimit(binding.limitInput.text.toString(), limitLocale)
+        if (limit == null) {
+            Toast.makeText(this, getString(R.string.usage_billing_limit_invalid, formatLimit(10.5)), Toast.LENGTH_LONG).show()
+            return
+        }
         binding.limitSave.isEnabled = false
         lifecycleScope.launch {
             val response = withContext(Dispatchers.IO) { usageBillingApi.saveLimit(limit) }
@@ -498,12 +503,11 @@ class UsageBillingActivity : NbActivity() {
         return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale).format(date)
     }
 
-    private fun formatLimit(limit: Double?): String =
-        when {
-            limit == null -> ""
-            limit % 1.0 == 0.0 -> limit.toLong().toString()
-            else -> String.format(Locale.US, "%.2f", limit)
-        }
+    // The app's language, which the in-app language preference can set apart from the device's.
+    private val limitLocale: Locale
+        get() = resources.configuration.locales[0]
+
+    private fun formatLimit(limit: Double?): String = UsageBilling.formatLimit(limit, limitLocale)
 
     companion object {
         private const val STATE_ACTIVATION = "usage_billing_activation"

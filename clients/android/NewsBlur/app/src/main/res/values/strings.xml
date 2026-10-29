@@ -1485,6 +1485,8 @@ people together to talk about the world.</string>
     <string name="usage_billing_limit_saved">Spending limit saved</string>
     <string name="usage_billing_limit_cleared">Spending limit removed</string>
     <string name="usage_billing_limit_failed">Couldn’t save the spending limit. Please try again.</string>
+    <!-- UsageBillingActivity.kt: %1$s is an example amount, such as 10.50 or 10,50, in the language's decimal separator. -->
+    <string name="usage_billing_limit_invalid">Enter the limit in dollars, such as %1$s.</string>
     <string name="usage_billing_history_title">Usage billing history</string>
     <string name="usage_billing_none">No usage billing set up.</string>
     <string name="usage_billing_no_invoices">No usage billing invoices yet.</string>

@@ -3,6 +3,10 @@ package com.newsblur.util
 import android.net.Uri
 import com.newsblur.BuildConfig
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 /**
  * Natural language classifier billing flags from /reader/feeds user_profile
@@ -114,4 +118,49 @@ object UsageBilling {
 
     @JvmStatic
     fun formatDollars(amount: Double): String = "$" + String.format(java.util.Locale.US, "%.2f", amount)
+
+    private val LIMIT_PATTERN = Regex("""(\d*)(?:[.,](\d{0,2}))?""")
+
+    /**
+     * The spending limit field's text the way apps/profile/views.py save_usage_billing_limit
+     * parses it with Python's Decimal: "10.50", or "" to clear the limit. A comma-decimal locale
+     * types "10,50", so either separator works, with at most two digits after it. Text with both
+     * drops the [locale]'s grouping separator, as in German "1.000,50". Null means it isn't an
+     * amount, and nothing should be sent.
+     */
+    @JvmStatic
+    fun normalizeLimit(
+        input: String,
+        locale: Locale,
+    ): String? {
+        // isWhitespace covers the no-break spaces French and others group thousands with.
+        var text = input.filterNot { it.isWhitespace() }
+        if (text.isEmpty()) return ""
+        if ('.' in text && ',' in text) {
+            val grouping = DecimalFormatSymbols.getInstance(locale).groupingSeparator
+            if (grouping != '.' && grouping != ',') return null
+            text = text.replace(grouping.toString(), "")
+        }
+        val match = LIMIT_PATTERN.matchEntire(text) ?: return null
+        val (whole, fraction) = match.destructured
+        if (whole.isEmpty() && fraction.isEmpty()) return null
+        return BigDecimal("${whole.ifEmpty { "0" }}.${fraction.ifEmpty { "0" }}").setScale(2).toPlainString()
+    }
+
+    /**
+     * A saved limit for the spending limit field, like "25" or "10,50" in German. It keeps ASCII
+     * digits and no grouping so [normalizeLimit] reads it back, and falls back to "." for a
+     * locale whose separator the field can't type.
+     */
+    @JvmStatic
+    fun formatLimit(
+        limit: Double?,
+        locale: Locale,
+    ): String {
+        if (limit == null) return ""
+        val amount = BigDecimal.valueOf(limit).setScale(2, RoundingMode.HALF_UP)
+        if (amount.stripTrailingZeros().scale() <= 0) return amount.toBigInteger().toString()
+        val separator = if (DecimalFormatSymbols.getInstance(locale).decimalSeparator == ',') ',' else '.'
+        return amount.toPlainString().replace('.', separator)
+    }
 }
