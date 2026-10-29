@@ -46,6 +46,9 @@ NEWSBLUR.ListenEngine = function (options) {
     this.fade_timer = null;
     this.seek_wait = null;
     this.seek_settle_timer = null;
+    // listen_engine.js: The segment a seek or resume moved to, until its audio starts (see
+    // start_offset).
+    this.landing_index = null;
     this.current_request = null;
     this.progress_seconds = 0;
     this.progress_baseline = null;
@@ -315,9 +318,12 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
             this.segment_index = this.segment_for_paragraph(paragraph);
             this.pending_time = this.segments[this.segment_index] ? this.segments[this.segment_index].start : 0;
         } else {
+            // listen_engine.js: A resume time or a seek made before the manifest arrived lands in
+            // a segment that hasn't played yet.
             var position = this.locate(this.pending_time || 0);
             this.segment_index = position.index;
             this.pending_time = position.time;
+            this.landing_index = position.index;
         }
         this.start_paragraph = null;
 
@@ -452,8 +458,6 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
         }
         this.clear_seek_settle();
         var index = this.segment_index;
-        var segment = this.segments[index];
-        var offset = Math.max(0, this.pending_time - segment.start);
         if (this.prefetched && this.prefetched.index !== index && this.prefetched.index !== index + 1) {
             // listen_engine.js: A seek left the buffered segment behind.
             this.discard_prefetch();
@@ -463,7 +467,7 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
             var entry = this.prefetched;
             if (entry.audio) {
                 this.prefetched = null;
-                this.use_audio(entry.audio, index, offset);
+                this.use_audio(entry.audio, index, this.start_offset(entry.audio, index, entry.cached));
                 return;
             }
             // listen_engine.js: The prefetch request is still out; it starts playing when it
@@ -484,7 +488,8 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
         this.request_segment(index, _.bind(function (response) {
             if (this.current_request === request) this.current_request = null;
             if (index !== this.segment_index) return;
-            this.use_audio(this.make_audio(response.url), index, this.offset_in_segment(index));
+            var audio = this.make_audio(response.url);
+            this.use_audio(audio, index, this.start_offset(audio, index, response.cached));
         }, this), {
             on_error: _.bind(function () {
                 if (this.current_request === request) this.current_request = null;
@@ -494,6 +499,21 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
 
     offset_in_segment: function (index) {
         return Math.max(0, this.pending_time - this.segments[index].start);
+    },
+
+    // listen_engine.js: Where a segment's audio starts. A seek or resume into a segment that hasn't
+    // played picks its offset from the manifest's estimated durations, which can lie past the
+    // paragraph's real end. Audio still streaming live from node can't seek past what it has
+    // downloaded, so seek_within would play it muted to its end and reading would pick up a
+    // paragraph later. Instead a live stream that hasn't downloaded the offset yet is read aloud
+    // from the start of the paragraph, and the timeline snaps there. Cached audio (S3) lands on the
+    // exact offset, and so does any segment that was already playing.
+    start_offset: function (audio, index, cached) {
+        var offset = this.offset_in_segment(index);
+        var landed = this.landing_index === index;
+        this.landing_index = null;
+        if (!landed || cached || this.is_seekable(audio, offset)) return offset;
+        return 0;
     },
 
     make_audio: function (url) {
@@ -631,17 +651,20 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
         if (this.prefetched && this.prefetched.index === index) return;
         if (this.is_preview() && this.segments[index].start >= this.preview_seconds()) return;
         this.discard_prefetch();
-        var entry = { index: index, audio: null, promote: false };
+        // listen_engine.js: cached says whether the audio is the seekable S3 copy rather than a
+        // live node stream, for start_offset.
+        var entry = { index: index, audio: null, cached: false, promote: false };
         this.prefetched = entry;
         this.request_segment(index, _.bind(function (response) {
             if (this.prefetched !== entry) return;
             var audio = this.make_audio(response.url);
             if (entry.promote && index === this.segment_index) {
                 this.prefetched = null;
-                this.use_audio(audio, index, this.offset_in_segment(index));
+                this.use_audio(audio, index, this.start_offset(audio, index, response.cached));
                 return;
             }
             entry.audio = audio;
+            entry.cached = !!response.cached;
             audio.addEventListener('error', _.bind(function () {
                 // listen_engine.js: A dead prefetch (a 502 or 429 from node) is dropped, so the
                 // segment is asked for again when it's reached instead of playing a broken element.
@@ -719,6 +742,10 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
         if (position.index === this.segment_index && this.audio && this.audio_index === position.index) {
             this.seek_within(this.audio, position.offset);
         } else {
+            // listen_engine.js: Moving to another segment lands there (see start_offset). A seek
+            // within the current one keeps whatever it had: still landing if its audio hasn't
+            // started, otherwise not.
+            if (position.index !== this.segment_index) this.landing_index = position.index;
             this.segment_index = position.index;
             if (this.wants_play) {
                 // listen_engine.js: Dragging the scrubber crosses many segments, and every segment
