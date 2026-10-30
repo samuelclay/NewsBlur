@@ -28,6 +28,7 @@ class Test_AiClassifierApis {
         every { response.isError } returns (body == null)
         every { response.responseBody } returns body
         coEvery { networkClient.post(capture(urls), capture(bodies)) } returns response
+        coEvery { networkClient.postWithoutRetry(capture(urls), capture(bodies), any()) } returns response
         coEvery { networkClient.get(capture(urls), capture(bodies)) } returns response
     }
 

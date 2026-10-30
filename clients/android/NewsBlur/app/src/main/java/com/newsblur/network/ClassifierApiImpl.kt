@@ -19,7 +19,15 @@ class ClassifierApiImpl(
                 put(APIConstants.PARAMETER_CLASSIFIER_TYPE, if (request.hidden) "hidden" else "focus")
                 put(APIConstants.PARAMETER_FEEDID, request.feedId ?: "0")
             }
-        val response = networkClient.post(APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_TEST_PROMPT), values)
+        // ClassifierApiImpl.kt: apps/analyzer/views.py test_prompt_classifier bills every run, and
+        // a timed out or 504'd run may still have finished and billed, so one tap is one request.
+        // The retrying post would send it up to three times.
+        val response =
+            networkClient.postWithoutRetry(
+                APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_TEST_PROMPT),
+                values,
+                PROMPT_TEST_TIMEOUT_SECONDS,
+            )
         return parse(response, PromptTestResponse())
     }
 
@@ -41,5 +49,12 @@ class ClassifierApiImpl(
         } catch (_: JsonParseException) {
             fallback
         }
+    }
+
+    companion object {
+        // An image test downloads every story image one at a time, up to 10 seconds each in
+        // utils/ai_functions.py, before classifying them. config/gunicorn_conf.py stops a request
+        // at 120 seconds, so waiting that long never gives up on a run the server is still doing.
+        const val PROMPT_TEST_TIMEOUT_SECONDS = 120L
     }
 }
