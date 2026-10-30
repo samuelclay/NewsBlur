@@ -63,6 +63,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         document.addEventListener('touchcancel', this.handle_touchcancel, { passive: true });
         this.setup_long_press();
         this.setup_pull_to_refresh();
+        this.setup_player();
 
         this.check_mode();
     },
@@ -108,6 +109,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.tag_entry(screen);
         this.update_titles_bar();
         this.refresh_story_layout();
+        this.dock_player(true);
     },
 
     deactivate: function () {
@@ -124,6 +126,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             $screen[0].style.removeProperty('--nb-mobile-shade-opacity');
         });
         this.screen = null;
+        this.dock_player(false);
         this.refresh_story_layout();
         if (NEWSBLUR.reader.layout.outerLayout) {
             NEWSBLUR.reader.layout.outerLayout.resizeAll();
@@ -618,7 +621,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     is_overlay_open: function () {
         return ($.modal && $.modal.impl && _.keys($.modal.impl.d).length) ||
             (NEWSBLUR.ReaderPopover && NEWSBLUR.ReaderPopover.is_open()) ||
-            this.$body.hasClass('NB-mobile-sheet-open');
+            this.$body.hasClass('NB-mobile-sheet-open') ||
+            this.$body.hasClass('NB-mobile-player-open');
     },
 
     is_edge_touch: function (x) {
@@ -632,6 +636,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.swipe = null;
         if (!this.active || this.transition || e.touches.length !== 1) return;
         if (this.screen === 'feeds' || this.is_overlay_open()) return;
+        if ($(e.target).closest('.NB-media-player').length) return;
         var touch = e.touches[0];
         if (!this.is_edge_touch(touch.clientX)) return;
         this.swipe = {
@@ -730,6 +735,75 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             }
             self.$body.removeClass('NB-mobile-transitioning');
         }, this.transition_duration() + 40);
+    },
+
+    // ===================
+    // = Listen player   =
+    // ===================
+
+    // views/media_player_view.js docks the player in the feed list's footer. On a phone it floats
+    // above every screen as a one-row bar (mobile.css), so audio started from a story keeps its
+    // controls while you read, and tapping the bar opens the full player as a bottom sheet.
+    setup_player: function () {
+        this.$player = $('.NB-media-player').first();
+        if (!this.$player.length) return;
+        this.$player_home = this.$player.parent();
+        this.$player_shade = $.make('div', { className: 'NB-mobile-player-shade' });
+        this.$body.append(this.$player_shade);
+        this.$player_shade.on('click', _.bind(this.collapse_player, this));
+
+        // The player shows and hides itself with NB-hidden.
+        var observer = new MutationObserver(_.bind(this.update_player_visibility, this));
+        observer.observe(this.$player[0], { attributes: true, attributeFilter: ['class'] });
+
+        // Tapping the collapsed bar anywhere but play/pause or close expands it. In the sheet, a
+        // tap on its top edge (the grab handle) collapses it again.
+        this.$player[0].addEventListener('click', _.bind(function (e) {
+            if (!this.active) return;
+            var expanded = this.$player.hasClass('NB-mobile-player-expanded');
+            if (!expanded && !$(e.target).closest('.NB-media-player-play-pause, .NB-media-player-close').length) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.expand_player();
+            } else if (expanded && e.target === this.$player[0]) {
+                this.collapse_player();
+            }
+        }, this), true);
+    },
+
+    dock_player: function (mobile) {
+        if (!this.$player || !this.$player.length) return;
+        if (mobile) {
+            this.$body.append(this.$player);
+            this.$player.addClass('NB-mobile-player');
+        } else {
+            this.collapse_player();
+            this.$player.removeClass('NB-mobile-player');
+            this.$player_home.prepend(this.$player);
+            // media_player_view.js sizes the feed list's footer pane to the player.
+            if (!this.$player.hasClass('NB-hidden') && NEWSBLUR.app.media_player) {
+                NEWSBLUR.app.media_player.show_player();
+            }
+        }
+        this.update_player_visibility();
+    },
+
+    update_player_visibility: function () {
+        if (!this.$player) return;
+        var visible = this.active && !this.$player.hasClass('NB-hidden');
+        this.$body.toggleClass('NB-mobile-has-player', visible);
+        if (!visible) this.collapse_player();
+    },
+
+    expand_player: function () {
+        this.$player.addClass('NB-mobile-player-expanded');
+        this.$body.addClass('NB-mobile-player-open');
+    },
+
+    collapse_player: function () {
+        if (!this.$player) return;
+        this.$player.removeClass('NB-mobile-player-expanded');
+        this.$body.removeClass('NB-mobile-player-open');
     },
 
     // ======================

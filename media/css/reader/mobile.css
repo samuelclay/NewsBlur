@@ -1274,3 +1274,148 @@ body.NB-mobile.NB-mobile-sheet-open .NB-mobile-sheet-shade {
     background: rgba(0, 0, 0, 0.35);
     z-index: 2000;
 }
+
+/* ======================================================= */
+/* = Listen player (views/media_player_view.js)          = */
+/* = mobile_layout_view.js moves it out of the feed list  = */
+/* = footer so it floats above every screen as a bar.     = */
+/* ======================================================= */
+
+body.NB-mobile {
+    --nb-mobile-player-offset: 8px;
+}
+
+/* mobile.css: the bar sits above whichever bottom toolbar the screen has. */
+body.NB-mobile.NB-mobile-screen-is-feeds {
+    --nb-mobile-player-offset: 46px;
+}
+
+body.NB-mobile.NB-mobile-screen-is-story {
+    --nb-mobile-player-offset: calc(var(--nb-mobile-toolbar-height) + 8px);
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(var(--nb-mobile-player-offset) + var(--nb-mobile-safe-bottom));
+    z-index: 1500;
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: bottom 300ms var(--nb-mobile-ease);
+    cursor: pointer;
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-hidden {
+    display: none;
+}
+
+/* mobile.css: collapsed, the player is one row: artwork, title, play/pause, close. */
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-mini {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "art info play close";
+    align-items: center;
+    column-gap: 10px;
+    padding: 8px 6px 8px 10px;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-info,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-controls,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-controls {
+    display: contents;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-icon,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-artwork,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-video-container {
+    grid-area: art;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-info {
+    grid-area: info;
+    min-width: 0;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-play-pause {
+    grid-area: play;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-close {
+    grid-area: close;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice-settings,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-settings,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-skip-back,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-skip-forward,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-time,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-right-controls,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-scrubber,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-banner,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-queue-area {
+    display: none !important;
+}
+
+/* mobile.css: expanded, the whole player opens from the bottom like the other sheets. */
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding: 18px 0 var(--nb-mobile-safe-bottom);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 2001;
+    cursor: default;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    margin-left: -18px;
+    border-radius: 3px;
+    background: var(--nb-mobile-sheet-handle);
+}
+
+body.NB-mobile .NB-mobile-player-shade {
+    display: none;
+}
+
+body.NB-mobile.NB-mobile-player-open .NB-mobile-player-shade {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2000;
+}
+
+/* mobile.css: lists scroll their last rows clear of the floating bar. */
+body.NB-mobile.NB-mobile-has-player .left-center > .left-center-content,
+body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles,
+body.NB-mobile.NB-mobile-has-player .NB-mobile-story-page,
+body.NB-mobile.NB-mobile-has-player #NB-splash > .NB-splash-modules {
+    padding-bottom: 88px !important;
+}

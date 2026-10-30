@@ -39,7 +39,7 @@ SCENARIO_DIR = SKILL_DIR / "scenarios"
 GUARD_PATH_IN_CONTAINER = "/tmp/mobile_web_prefs_guard.py"
 SNAPSHOT_PATH_IN_CONTAINER = "/tmp/mobile_web_prefs_snapshot.json"
 # run.py: "all" skips next_unread, which marks a feed's unread stories read as it goes.
-DEFAULT_ALL = ["smoke", "modals", "rtl", "landscape", "tablet", "resize", "desktop"]
+DEFAULT_ALL = ["smoke", "modals", "player", "rtl", "landscape", "tablet", "resize", "desktop"]
 
 
 def available_scenarios():
