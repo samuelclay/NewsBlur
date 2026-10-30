@@ -13,6 +13,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     EDGE_WIDTH: 28,
     LONG_PRESS_MS: 480,
+    PRESS_DELAY_MS: 120,
+    PRESS_FLASH_MS: 160,
 
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
@@ -31,6 +33,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.pending_entry = null;
         this.transition = null;
         this.following_unread = null;
+        this.$pressed = null;
 
         this.$body = $('body');
         this.$screens = {
@@ -874,16 +877,18 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var $target = $(e.currentTarget);
         this.long_press_fired = false;
         this.long_press_origin = { x: touch.clientX, y: touch.clientY };
+        this.start_press($target);
         clearTimeout(this.long_press_timer);
         this.long_press_timer = setTimeout(_.bind(function () {
             this.long_press_fired = Date.now();
+            this.release_press(false);
             if (navigator.vibrate) navigator.vibrate(10);
             this.open_manage_menu_for($target);
         }, this), this.LONG_PRESS_MS);
     },
 
     handle_long_press_cancel: function (e) {
-        if (!this.long_press_timer) return;
+        if (!this.long_press_timer && !this.$pressed) return;
         if (e.type === 'touchmove') {
             var touch = e.originalEvent.touches[0];
             var origin = this.long_press_origin;
@@ -891,8 +896,36 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
                 return;
             }
         }
+        this.release_press(e.type === 'touchend');
         clearTimeout(this.long_press_timer);
         this.long_press_timer = null;
+    },
+
+    // A row shows it's pressed only once a finger rests on it, the way a native list delays its
+    // highlight, so a thumb that lands on a row to scroll never lights it up. mobile.css styles
+    // NB-mobile-pressed and turns off the desktop :hover that touch browsers apply on contact.
+    start_press: function ($target) {
+        this.release_press(false);
+        this.$pressed = $target;
+        this.press_timer = setTimeout(_.bind(function () {
+            if (this.$pressed) this.$pressed.addClass('NB-mobile-pressed');
+        }, this), this.PRESS_DELAY_MS);
+    },
+
+    release_press: function (tapped) {
+        clearTimeout(this.press_timer);
+        var $pressed = this.$pressed;
+        this.$pressed = null;
+        if (!$pressed) return;
+        if (!tapped) {
+            $pressed.removeClass('NB-mobile-pressed');
+            return;
+        }
+        // A quick tap lifts before the press shows, so flash it to acknowledge the tap.
+        $pressed.addClass('NB-mobile-pressed');
+        _.delay(function () {
+            $pressed.removeClass('NB-mobile-pressed');
+        }, this.PRESS_FLASH_MS);
     },
 
     // A browser may follow the long press with a click, which would open the feed or story

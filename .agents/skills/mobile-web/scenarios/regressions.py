@@ -11,6 +11,19 @@ STORY_LISTENERS = (
     "(() => { var s = NEWSBLUR.reader.active_story; "
     "return (s._events['change:selected'] || []).length + (s._events['change'] || []).length; })()"
 )
+# Everything visible about a row and its contents, to compare a row at rest with the same row
+# under a forced :hover and :active.
+ROW_LOOKS = """(el) => {
+  var looks = {};
+  [el].concat(Array.from(el.querySelectorAll('*'))).forEach(function (node, i) {
+    var s = getComputedStyle(node);
+    looks[i + ' ' + (typeof node.className === 'string' ? node.className : node.tagName)] = [
+      s.display, s.visibility, s.opacity, s.backgroundColor, s.color, s.transform, s.boxShadow
+    ].join(' | ');
+  });
+  return looks;
+}"""
+STORY_ROW = "#story_titles .NB-story-title-container:nth-child(5) .NB-story-title"
 
 
 def check_regressions(ctx, feed_id):
@@ -76,7 +89,107 @@ def check_regressions(ctx, feed_id):
     )
     ctx.set_layout("list")
     check_story_iframe_sandbox(ctx, feed_id)
+    check_story_toolbar_fits(ctx)
+    check_touch_hover(ctx, feed_id)
     check_discovery_back(ctx)
+
+
+def hover_changes(ctx, selector):
+    """What a forced :hover and :active changes on the first match. Touch browsers apply both
+    the moment a thumb lands, before they know it's a scroll."""
+    cdp = ctx.touch.cdp
+    cdp.send("DOM.enable")
+    cdp.send("CSS.enable")
+    root = cdp.send("DOM.getDocument", {"depth": 0})["root"]["nodeId"]
+    node = cdp.send("DOM.querySelector", {"nodeId": root, "selector": selector})["nodeId"]
+    row = ctx.page.locator(selector).first
+    rest = row.evaluate(ROW_LOOKS)
+    cdp.send("CSS.forcePseudoState", {"nodeId": node, "forcedPseudoClasses": ["hover", "active"]})
+    ctx.wait(50)
+    touched = row.evaluate(ROW_LOOKS)
+    cdp.send("CSS.forcePseudoState", {"nodeId": node, "forcedPseudoClasses": []})
+    return {key: (rest.get(key), touched.get(key)) for key in rest if rest.get(key) != touched.get(key)}
+
+
+def check_touch_hover(ctx, feed_id):
+    """A thumb landing on a row to scroll the list lit it up with the desktop hover (its manage
+    arrow, a darker background, a shrunken grid card), as if half selected. Rows now show a
+    press only once a finger rests on them. Expects to be on the story list."""
+    feed_row = f".NB-feedlist .feed[data-id='{feed_id}']"
+    for theme in ("light", "dark"):
+        ctx.evaluate(f"(() => {{ document.body.classList.toggle('NB-dark', {str(theme == 'dark').lower()}); }})()")
+        for layout in ("list", "grid"):
+            ctx.set_layout(layout)
+            changes = hover_changes(ctx, STORY_ROW)
+            ctx.check(f"a touch doesn't light up a {layout} story ({theme})", not changes, changes)
+        changes = hover_changes(ctx, feed_row)
+        ctx.check(f"a touch doesn't light up a feed row ({theme})", not changes, changes)
+    ctx.evaluate("(() => { document.body.classList.remove('NB-dark'); })()")
+    ctx.set_layout("list")
+
+    # A finger that rests on a row shows a press, and one that moves off to scroll clears it.
+    row = ctx.page.locator(STORY_ROW).first
+    ctx.press_point(row)
+    story_before = ctx.state()["story"]
+    box = row.bounding_box()
+    x, y = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+    pressed = "document.querySelector('" + STORY_ROW + "').classList.contains('NB-mobile-pressed')"
+    ctx.touch._send("touchStart", x, y)
+    ctx.wait(40)
+    early = ctx.evaluate(pressed)
+    ctx.wait(200)
+    resting = ctx.evaluate(pressed)
+    for step in range(1, 6):
+        ctx.touch._send("touchMove", x, y - step * 12)
+        ctx.wait(16)
+    scrolled = ctx.evaluate(pressed)
+    ctx.touch._send("touchEnd")
+    ctx.wait(300)
+    ctx.check(
+        "a resting finger presses a row, and scrolling releases it",
+        not early and resting and not scrolled,
+        {"early": early, "resting": resting, "scrolled": scrolled},
+    )
+    ctx.check("scrolling off a pressed row doesn't open it", ctx.state()["story"] == story_before)
+
+
+TOOLBAR_FIT = """(() => {
+  var bar = document.querySelector('.NB-mobile-story-toolbar').getBoundingClientRect();
+  var buttons = Array.from(document.querySelectorAll('.NB-mobile-story-toolbar .NB-mobile-toolbar-button'));
+  var label = document.querySelector('.NB-mobile-story-next-unread span');
+  return {
+    clipped: buttons.filter(function (b) {
+      var r = b.getBoundingClientRect();
+      return r.left < bar.left - 0.5 || r.right > bar.right + 0.5 || r.width < 36;
+    }).map(function (b) { return b.className; }),
+    label_visible: label.getBoundingClientRect().width > 0
+  };
+})()"""
+
+
+def check_story_toolbar_fits(ctx):
+    """The story toolbar needed about 384px, so 320 and 360px phones clipped Next unread. Every
+    button must fit, with a long translation too. Expects to be on the story list."""
+    page = ctx.page
+    ctx.set_layout("grid")
+    ctx.tap_story(1)
+    for width in (320, 360):
+        page.set_viewport_size({"width": width, "height": 700})
+        ctx.wait(400)
+        fit = ctx.evaluate(TOOLBAR_FIT)
+        ctx.check(f"every story toolbar button fits at {width}px", not fit["clipped"] and fit["label_visible"], fit)
+    ctx.evaluate(
+        "(() => { document.querySelector('.NB-mobile-story-next-unread span').textContent = "
+        "'N\u00e4chste ungelesene Geschichte'; })()"
+    )
+    ctx.wait(100)
+    fit = ctx.evaluate(TOOLBAR_FIT)
+    ctx.check("a long Next unread translation still fits at 320px", not fit["clipped"], fit)
+    page.set_viewport_size({"width": ctx.viewport["width"], "height": ctx.viewport["height"]})
+    ctx.wait(400)
+    ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    ctx.set_layout("list")
 
 
 def check_story_iframe_sandbox(ctx, feed_id):

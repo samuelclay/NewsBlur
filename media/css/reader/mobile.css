@@ -16,6 +16,7 @@ body.NB-mobile {
     --nb-mobile-bar-subtext: #8b8b85;
     --nb-mobile-tint: #4a6fa5;
     --nb-mobile-tint-active: rgba(74, 111, 165, 0.12);
+    --nb-mobile-row-pressed: #EEEEE9;
     --nb-mobile-screen-bg: #F7F8F5;
     --nb-mobile-story-bg: #FFFFFF;
     --nb-mobile-shade: rgba(0, 0, 0, 0.18);
@@ -41,6 +42,7 @@ body.NB-mobile.NB-dark {
     --nb-mobile-bar-subtext: #9a9a9a;
     --nb-mobile-tint: #8fb4e6;
     --nb-mobile-tint-active: rgba(143, 180, 230, 0.16);
+    --nb-mobile-row-pressed: #202223;
     --nb-mobile-screen-bg: #2a2b2d;
     --nb-mobile-story-bg: #303030;
     --nb-mobile-shade: rgba(0, 0, 0, 0.45);
@@ -599,7 +601,7 @@ body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid {
     transition: transform 160ms ease;
 }
 
-body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid:active {
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid.NB-mobile-pressed {
     transform: scale(0.985);
 }
 
@@ -877,6 +879,36 @@ body.NB-mobile .NB-mobile-story-save.NB-active .NB-mobile-icon-star {
 body.NB-mobile .NB-mobile-toolbar-group {
     display: flex;
     align-items: center;
+}
+
+/* mobile.css: the story toolbar shares its width between every control so all six fit on the
+   narrowest phones. The icons split what's left after Next unread, whose label truncates only
+   when a long translation leaves no room. */
+body.NB-mobile .NB-mobile-story-toolbar {
+    gap: 0;
+    padding-inline: 4px;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-toolbar-group {
+    display: contents;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-toolbar-button {
+    flex: 1 1 0;
+    min-width: 36px;
+    padding: 0 4px;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-story-next-unread {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0 10px;
+}
+
+body.NB-mobile .NB-mobile-story-next-unread span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 body.NB-mobile .NB-mobile-story-bar .NB-mobile-bar-back {
@@ -1239,6 +1271,45 @@ body.NB-mobile .NB-feed-story-header {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+}
+
+/* mobile.css: touch browsers apply :hover and :active the moment a thumb lands, before they know
+   it's a scroll, so the desktop hover lit up every row a scroll started on: a darker background
+   and the manage arrow, as if half selected. On a touch screen rows keep their resting look and
+   show NB-mobile-pressed instead, which mobile_layout_view.js adds only once a finger rests. */
+@media (hover: none) {
+    body.NB-mobile .NB-story-title:hover:not(.NB-selected) {
+        background-color: #FDFCFA;
+    }
+
+    body.NB-mobile.NB-dark .NB-story-title:hover:not(.NB-selected) {
+        background-color: #292b2c;
+    }
+
+    body.NB-mobile .NB-briefing-summary-story .NB-story-title:hover:not(.NB-selected) {
+        background: linear-gradient(135deg, #E8EEF8 0%, #F0F4FA 40%, #EDF0F8 100%);
+    }
+
+    body.NB-mobile.NB-dark .NB-briefing-summary-story .NB-story-title:hover:not(.NB-selected) {
+        background: linear-gradient(135deg, #1C2233 0%, #212838 40%, #1E2535 100%);
+    }
+
+    body.NB-mobile .NB-story-title:hover .NB-story-manage-icon,
+    body.NB-mobile .NB-story-title:hover .NB-story-sentiment {
+        display: none;
+    }
+
+    body.NB-mobile .NB-feedlist .feed:hover .NB-feedlist-manage-icon,
+    body.NB-mobile .NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
+        opacity: 0;
+    }
+}
+
+body.NB-mobile .NB-story-title.NB-mobile-pressed:not(.NB-selected):not(.NB-story-title-grid),
+body.NB-mobile .NB-feedlist .feed.NB-mobile-pressed:not(.selected),
+body.NB-mobile .NB-feedlist .folder_title.NB-mobile-pressed {
+    background-color: var(--nb-mobile-row-pressed);
+    transition: none;
 }
 
 /* mobile.css: the Ask AI question menu (story_detail_view.js show_ask_ai_menu) opens over
