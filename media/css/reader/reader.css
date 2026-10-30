@@ -27356,6 +27356,16 @@ h5.NB-classifier-section-header {
     overflow: hidden;
 }
 
+.NB-modal-account .NB-account-invoice-text {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 110px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .NB-account-payments,
 .NB-account-usage-payments {
     margin: 0;

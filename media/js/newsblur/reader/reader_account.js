@@ -244,6 +244,21 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             gettext('Premium details')
                         ])
                     ])),
+                    $.make('div', { className: 'NB-preference NB-preference-invoice-text' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('textarea', {
+                                id: 'NB-preference-invoice-text', name: 'invoice_text',
+                                className: 'NB-input NB-account-invoice-text', rows: 5, maxlength: 2000,
+                                dir: 'auto', 'aria-describedby': 'NB-invoice-text-help'
+                            }).val(NEWSBLUR.Preferences.invoice_text || ''),
+                            $.make('div', { className: 'NB-preference-error', role: 'alert' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            $.make('label', { 'for': 'NB-preference-invoice-text' }, gettext('Invoice details')),
+                            $.make('div', { className: 'NB-preference-sublabel', id: 'NB-invoice-text-help' },
+                                gettext('Add your company name, VAT number, address, or other text. Save to update all subscription invoices, including past payments.'))
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-premium-history' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'NB-account-payments' }, [
@@ -891,8 +906,13 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             } else if (data.code == -3) {
                 $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
                 return self.disable_save();
+            } else if (data.code == -4) {
+                this.switch_tab('premium');
+                $('.NB-preference-invoice-text .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
             }
 
+            NEWSBLUR.Preferences.invoice_text = data.payload.invoice_text;
             NEWSBLUR.Globals.username = data.payload.username;
             NEWSBLUR.Globals.email = data.payload.email;
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
@@ -1192,6 +1212,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     handle_change: function () {
+        $('.NB-account-invoice-text', this.$modal).on('input change', _.bind(this.enable_save, this));
         $('input[type=radio],input[type=checkbox],select,input', this.$modal).not('.NB-preference-delete-classifiers input').bind('change', _.bind(this.enable_save, this));
         $('input', this.$modal).not('.NB-preference-delete-classifiers input').bind('keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save, this));

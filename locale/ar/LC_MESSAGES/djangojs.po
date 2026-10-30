@@ -1458,6 +1458,13 @@ msgstr "إضافة إلى التالي"
 msgid "Add to folder"
 msgstr "أضف إلى مجلد"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"أضف اسم شركتك أو رقم ضريبة القيمة المضافة أو عنوانك أو أي نص آخر. احفظ لتحديث جميع فواتير الاشتراك، بما "
+"فيها الدفعات السابقة."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "تمت الإضافة %(date)s"
@@ -4002,6 +4009,9 @@ msgstr "تعبير نمطي غير صالح: %(error)s"
 
 msgid "Invoice"
 msgstr "فاتورة"
+
+msgid "Invoice details"
+msgstr "تفاصيل الفاتورة"
 
 msgid "Is my data safe?"
 msgstr "هل بياناتي آمنة؟"

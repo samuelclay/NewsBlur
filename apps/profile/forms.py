@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy
 
 from apps.profile.models import MCustomStyling, MGiftCode, blank_authenticate, change_password
 from apps.social.models import MSocialProfile
+from utils import json_functions as json
 from vendor.zebra.forms import StripePaymentForm
 
 PLANS = [
@@ -135,6 +136,7 @@ class AccountSettingsForm(forms.Form):
     custom_css = forms.CharField(
         widget=forms.TextInput(attrs={"class": "NB-input"}), label="custom_css", required=False
     )
+    invoice_text = forms.CharField(widget=forms.Textarea, max_length=2000, required=False)
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -205,6 +207,16 @@ class AccountSettingsForm(forms.Form):
             change_password(self.user, old_password, new_password)
 
         MCustomStyling.save_user(self.user.pk, custom_css, custom_js)
+
+        if "invoice_text" in self.data:
+            preferences = json.decode(self.user.profile.preferences)
+            invoice_text = self.cleaned_data["invoice_text"]
+            if invoice_text:
+                preferences["invoice_text"] = invoice_text
+            else:
+                preferences.pop("invoice_text", None)
+            self.user.profile.preferences = json.encode(preferences)
+            self.user.profile.save(update_fields=["preferences"])
 
 
 class RedeemCodeForm(forms.Form):

@@ -1173,6 +1173,13 @@ msgstr "הוספה לתור הבא"
 msgid "Add to folder"
 msgstr "הוסף לתיקייה"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"הוסיפו את שם החברה, מספר המע״מ, הכתובת או כל טקסט אחר. שמרו כדי לעדכן את כל חשבוניות המינוי, כולל תשלומים "
+"קודמים."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "נוסף %(date)s"
@@ -3651,6 +3658,9 @@ msgstr "ביטוי רגולרי לא תקין: %(error)s"
 
 msgid "Invoice"
 msgstr "חשבונית"
+
+msgid "Invoice details"
+msgstr "פרטי החשבונית"
 
 msgid "Is my data safe?"
 msgstr "האם הנתונים שלי בטוחים?"

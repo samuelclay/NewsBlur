@@ -285,10 +285,15 @@ def set_account_settings(request):
     else:
         message = form.errors[list(form.errors.keys())[0]][0]
 
+    if "invoice_text" in form.errors:
+        code = -4
+        message = form.errors["invoice_text"][0]
+
     payload = {
         "username": request.user.username,
         "email": request.user.email,
         "social_profile": MSocialProfile.profile(request.user.pk),
+        "invoice_text": json.decode(request.user.profile.preferences).get("invoice_text", ""),
     }
     return dict(code=code, message=message, payload=payload)
 
@@ -1520,6 +1525,7 @@ def invoice(request, payment_id):
         {
             "payment": payment,
             "invoice_number": invoice_number,
+            "invoice_text": json.decode(payment.user.profile.preferences).get("invoice_text", ""),
             "user": payment.user,
             "coverage_start": coverage_start,
             "coverage_end": coverage_end,

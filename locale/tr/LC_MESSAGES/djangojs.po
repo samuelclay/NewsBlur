@@ -1106,6 +1106,13 @@ msgstr "Sıraya ekle"
 msgid "Add to folder"
 msgstr "Klasöre ekle"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Şirket adınızı, KDV numaranızı, adresinizi veya başka bir metni ekleyin. Tüm abonelik faturalarını, geçmiş "
+"ödemeler dahil, güncellemek için Kaydet’e basın."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s eklendi"
@@ -3593,6 +3600,9 @@ msgstr "Geçersiz regex: %(error)s"
 
 msgid "Invoice"
 msgstr "Fatura"
+
+msgid "Invoice details"
+msgstr "Fatura bilgileri"
 
 msgid "Is my data safe?"
 msgstr "Verilerim güvende mi?"

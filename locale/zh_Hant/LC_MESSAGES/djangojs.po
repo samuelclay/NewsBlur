@@ -1102,6 +1102,11 @@ msgstr "加入接下來播放"
 msgid "Add to folder"
 msgstr "加入資料夾"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr "新增公司名稱、營業稅號碼、地址或其他文字。儲存後，所有訂閱發票都會更新，包括過去的付款發票。"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "新增於 %(date)s"
@@ -3531,6 +3536,9 @@ msgstr "無效的正規表示式：%(error)s"
 
 msgid "Invoice"
 msgstr "發票"
+
+msgid "Invoice details"
+msgstr "發票詳細資料"
 
 msgid "Is my data safe?"
 msgstr "我的資料安全嗎？"
