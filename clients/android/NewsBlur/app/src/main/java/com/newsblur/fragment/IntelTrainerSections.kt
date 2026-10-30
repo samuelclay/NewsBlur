@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -174,13 +175,14 @@ class IntelTrainerSections(
             TextView(context).apply {
                 setText(R.string.trainer_choose_title_words)
                 typeface = medium
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
                 setTextColor(colors.textSecondary)
             },
             matchWidth(topMargin = dp(4)),
         )
-        val words = flow(horizontal = dp(3), vertical = dp(6))
-        card.addView(words, matchWidth(topMargin = dp(10)))
+        // TrainerWord.swift keeps the words tight, a light row of tappable text rather than buttons.
+        val words = flow(horizontal = dp(2), vertical = dp(5))
+        card.addView(words, matchWidth(topMargin = dp(8)))
 
         var phrase = ""
         // TrainerView.swift: the phrase's capsule with a clear button beside it. The row wraps its
@@ -191,10 +193,7 @@ class IntelTrainerSections(
         val adding = TrainerCapsuleView(context)
         addingRow.addView(
             adding,
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                weight =
-                    1f
-            },
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { weight = 1f },
         )
         val clear = clearButton()
         addingRow.addView(clear, LinearLayout.LayoutParams(dp(38), dp(38)).apply { marginStart = dp(4) })
@@ -241,10 +240,11 @@ class IntelTrainerSections(
                 TextView(context).apply {
                     text = word
                     typeface = medium
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
                     setTextColor(colors.wordText)
-                    setPadding(dp(5), dp(3), dp(5), dp(3))
-                    background = rounded(colors.wordBackground, dp(5).toFloat())
+                    setPadding(dp(3), dp(1), dp(3), dp(1))
+                    background = rounded(colors.wordBackground, dp(4).toFloat())
+                    foreground = RippleDrawable(ColorStateList.valueOf(0x33000000), null, rounded(-1, dp(4).toFloat()))
                     setOnClickListener {
                         phrase = TrainerPhrase.appendWord(phrase, word)
                         renderAdding()
