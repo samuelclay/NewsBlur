@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Descubre Escuchar: artículos en audio en 21 idiomas. Elige voces, sigue los párrafos resaltados, toca para saltar y ajusta la velocidad. Crea tu cola en A continuación, sincronizada entre dispositivos, y escucha con la pantalla bloqueada. La continuación automática reproduce el siguiente artículo sin leer. Escucha completa incluida en Premium Archive y Premium Pro; avances de 30 segundos para cuentas gratuitas y Premium."
+  },
+  "macos": {
+    "whats_new": "Esta actualización corrige un problema por el que la lista de artículos podía quedarse cargando al abrir una notificación después de cerrar la ventana de NewsBlur.\n\nEscuchar ya está disponible en Mac. Escucha artículos en 21 idiomas, sigue los párrafos resaltados, elige voces, ajusta la velocidad de reproducción y añade artículos a A continuación. Tu cola se sincroniza entre dispositivos. La escucha completa está incluida en Premium Archive y Premium Pro; las cuentas gratuitas y Premium pueden probar avances de 30 segundos.\n\nTambién se ha corregido el desplazamiento por la cuadrícula de artículos."
   }
 }

@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Découvrez Écouter : vos articles lus en 21 langues. Choisissez les voix, suivez les paragraphes surlignés, touchez pour avancer et réglez la vitesse. Ajoutez des articles à la file À suivre, synchronisée entre appareils. Écoutez même avec l’écran verrouillé. La lecture automatique passe au prochain article non lu. Écoute intégrale incluse dans Premium Archive et Premium Pro ; extraits de 30 secondes pour les comptes gratuits et Premium."
+  },
+  "macos": {
+    "whats_new": "Cette mise à jour corrige un problème qui pouvait laisser la liste d’articles en cours de chargement après l’ouverture d’une notification lorsque la fenêtre NewsBlur avait été fermée.\n\nÉcouter est désormais disponible sur Mac. Écoutez vos articles dans 21 langues, suivez les paragraphes surlignés, choisissez les voix, réglez la vitesse et ajoutez des articles à la file À suivre. Votre file se synchronise entre vos appareils. L’écoute intégrale est incluse dans Premium Archive et Premium Pro ; les comptes gratuits et Premium peuvent essayer des extraits de 30 secondes.\n\nCette mise à jour corrige aussi le défilement dans la grille d’articles."
   }
 }

@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Dengarkan membacakan artikel dalam 21 bahasa. Pilih suara, ikuti paragraf yang disorot, ketuk untuk melompat, dan atur kecepatan. Antrekan artikel di Berikutnya yang tersinkron antarperangkat, lalu dengarkan saat layar terkunci. Lanjut otomatis memutar artikel berikutnya yang belum dibaca. Audio lengkap termasuk dalam Premium Archive dan Premium Pro; akun gratis dan Premium dapat mencoba cuplikan 30 detik."
+  },
+  "macos": {
+    "whats_new": "Pembaruan ini memperbaiki daftar artikel yang bisa terus memuat saat Anda membuka notifikasi setelah menutup jendela NewsBlur.\n\nDengarkan kini tersedia di Mac. Dengarkan artikel dalam 21 bahasa, ikuti paragraf yang disorot, pilih suara, atur kecepatan pemutaran, dan antrekan artikel di Berikutnya. Antrean Anda tersinkron antarperangkat. Mendengarkan artikel lengkap termasuk dalam Premium Archive dan Premium Pro; akun gratis dan Premium dapat mencoba cuplikan 30 detik.\n\nJuga menyertakan perbaikan untuk menggulir kisi artikel."
   }
 }

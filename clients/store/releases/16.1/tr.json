@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Dinle ile haberleri 21 dilde dinleyin. Ses seçin, vurgulanan paragrafları takip edin, dokunarak atlayın ve hızı ayarlayın. Haberleri cihazlar arasında eşitlenen Sıradaki listesine ekleyin, ekran kilitliyken dinleyin. Otomatik devam sonraki okunmamış haberi oynatır. Tam dinleme Premium Archive ve Premium Pro’ya dahildir; ücretsiz ve Premium hesaplar 30 saniyelik önizlemeleri deneyebilir."
+  },
+  "macos": {
+    "whats_new": "Bu güncelleme, NewsBlur penceresini kapattıktan sonra bir bildirimi açtığınızda haber listelerinin yükleniyor durumunda kalabilmesi sorununu giderir.\n\nDinle artık Mac’te de kullanılabilir. Haberleri 21 dilde dinleyin, vurgulanan paragrafları takip edin, sesleri seçin, oynatma hızını ayarlayın ve haberleri Sıradaki listesine ekleyin. Listeniz cihazlar arasında eşitlenir. Tam dinleme Premium Archive ve Premium Pro’ya dahildir; ücretsiz ve Premium hesaplar 30 saniyelik önizlemeleri deneyebilir.\n\nHaber ızgarasında kaydırmayla ilgili bir düzeltme de içerir."
   }
 }

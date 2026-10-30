@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Neu: Anhören liest Artikel in 21 Sprachen vor. Wähle Stimmen, folge markierten Absätzen, tippe zum Springen und ändere das Tempo. Füge Artikel zu Als Nächstes hinzu; die Warteschlange synchronisiert sich zwischen Geräten. Höre bei gesperrtem Bildschirm weiter. Automatisch fortfahren spielt den nächsten ungelesenen Artikel. Vollständiges Anhören mit Premium Archive und Premium Pro; 30-Sekunden-Hörproben für kostenlose Konten und Premium."
+  },
+  "macos": {
+    "whats_new": "Dieses Update behebt ein Problem, bei dem die Artikelliste nach dem Öffnen einer Mitteilung endlos laden konnte, wenn das NewsBlur-Fenster zuvor geschlossen worden war.\n\nAnhören ist jetzt auf dem Mac verfügbar. Lass dir Artikel in 21 Sprachen vorlesen, folge den hervorgehobenen Absätzen, wähle Stimmen, passe das Tempo an und stelle Artikel unter Als Nächstes in die Warteschlange. Deine Warteschlange wird geräteübergreifend synchronisiert. Vollständiges Anhören ist in Premium Archive und Premium Pro enthalten; kostenlose Konten und Premium-Konten können 30-Sekunden-Hörproben ausprobieren.\n\nAußerdem wurde das Scrollen durch das Artikelraster korrigiert."
   }
 }

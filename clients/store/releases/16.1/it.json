@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Scopri Ascolta: articoli letti ad alta voce in 21 lingue. Scegli le voci, segui i paragrafi evidenziati, tocca per saltare e regola la velocità. Aggiungi articoli alla lista In coda, sincronizzata tra i dispositivi. Ascolta anche con lo schermo bloccato. La riproduzione automatica passa all’articolo non letto successivo. Ascolto completo incluso in Premium Archive e Premium Pro; anteprime di 30 secondi per account gratuiti e Premium."
+  },
+  "macos": {
+    "whats_new": "Questo aggiornamento risolve un problema per cui l’elenco degli articoli poteva restare in caricamento aprendo una notifica dopo aver chiuso la finestra di NewsBlur.\n\nAscolta è ora disponibile su Mac. Ascolta articoli in 21 lingue, segui i paragrafi evidenziati, scegli le voci, regola la velocità e aggiungi articoli alla lista In coda. La coda si sincronizza tra i tuoi dispositivi. L’ascolto completo è incluso in Premium Archive e Premium Pro; gli account gratuiti e Premium possono provare anteprime di 30 secondi.\n\nInclude anche una correzione per lo scorrimento della griglia degli articoli."
   }
 }

@@ -4,5 +4,8 @@
   },
   "android": {
     "release_notes": "Nieuw: Luisteren leest artikelen voor in 21 talen. Kies stemmen, volg gemarkeerde alinea’s, tik om te springen en pas het tempo aan. Voeg artikelen toe aan Hierna; je wachtrij synchroniseert tussen apparaten. Luister verder met een vergrendeld scherm. Automatisch doorgaan speelt het volgende ongelezen artikel. Volledig luisteren met Premium Archive en Premium Pro; fragmenten van 30 seconden voor gratis accounts en Premium."
+  },
+  "macos": {
+    "whats_new": "Deze update verhelpt een probleem waarbij de artikellijst bleef laden als je een melding opende nadat je het NewsBlur-venster had gesloten.\n\nLuisteren is nu beschikbaar op de Mac. Laat artikelen voorlezen in 21 talen, volg de gemarkeerde alinea’s, kies stemmen, pas de afspeelsnelheid aan en voeg artikelen toe aan Hierna. Je wachtrij wordt tussen apparaten gesynchroniseerd. Volledig luisteren is inbegrepen bij Premium Archive en Premium Pro; gratis accounts en Premium-accounts kunnen fragmenten van 30 seconden uitproberen.\n\nOok het scrollen door het artikelraster is verbeterd."
   }
 }
