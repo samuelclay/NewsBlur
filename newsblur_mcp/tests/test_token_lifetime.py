@@ -60,6 +60,10 @@ async def test_verifier_rejects_tokens_django_rejects(verifier):
     user_info.mock(return_value=httpx.Response(401, json={"message": "You must have a valid OAuth token."}))
     assert await verifier.verify_token("revoked-token") is None
 
+    # Once Django has rejected it, an outage mustn't bring it back from the cache.
+    user_info.mock(side_effect=httpx.ConnectError("newsblur_web is restarting"))
+    assert await verifier.verify_token("revoked-token") is None
+
 
 @pytest.mark.asyncio
 @respx.mock

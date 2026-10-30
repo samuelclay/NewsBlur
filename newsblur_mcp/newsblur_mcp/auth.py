@@ -43,8 +43,11 @@ MCP_SCOPES = ["read", "write", "mcp"]
 MCP_TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 365 * 10
 
 # NewsBlurTokenVerifier's last good verification of each upstream token, keyed by
-# the token's hash so the raw token never sits in Redis.
+# the token's hash so the raw token never sits in Redis. It only has to outlast a
+# Django outage, and every successful verification rewrites it, so 30 days covers
+# any connection in use without keeping a key for every token ever issued.
 VERIFIED_CLAIMS_COLLECTION = "mcp-verified-claims"
+VERIFIED_CLAIMS_TTL_SECONDS = 60 * 60 * 24 * 30
 
 
 def _token_key(token: str) -> str:
@@ -80,6 +83,8 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 logger.warning(
                     "Django rejected token: status=%d url=%s", response.status_code, self.upstream_base_url
                 )
+                # A revoked token must stay dead, even through a later Django outage.
+                await self._forget_claims(token)
                 return None
             response.raise_for_status()
             user_info = response.json()
@@ -120,10 +125,18 @@ class NewsBlurTokenVerifier(TokenVerifier):
                 key=_token_key(token),
                 value=claims,
                 collection=VERIFIED_CLAIMS_COLLECTION,
-                ttl=MCP_TOKEN_LIFETIME_SECONDS,
+                ttl=VERIFIED_CLAIMS_TTL_SECONDS,
             )
         except Exception as e:
             logger.warning("Couldn't remember verified token claims: %s", e)
+
+    async def _forget_claims(self, token: str) -> None:
+        if self.claims_store is None:
+            return
+        try:
+            await self.claims_store.delete(key=_token_key(token), collection=VERIFIED_CLAIMS_COLLECTION)
+        except Exception as e:
+            logger.warning("Couldn't forget rejected token claims: %s", e)
 
     async def _remembered_access_token(self, token: str) -> AccessToken | None:
         if self.claims_store is None:
