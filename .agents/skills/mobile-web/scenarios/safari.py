@@ -47,12 +47,30 @@ def run(ctx):
         {"slid": slid, "state": ctx.state()},
     )
 
-    # A Safari swipe let go of before it went anywhere cancels the touch with no popstate. A later
-    # Back from Safari's toolbar, which sends the page no touches, still slides.
+    # A slow Safari swipe can take several seconds before it goes back, and still doesn't slide
+    # twice.
+    window_ms = ctx.evaluate("NEWSBLUR.app.mobile.BROWSER_SWIPE_MS")
     ctx.open_feed(feed_id)
     ctx.touch._send("touchStart", 5, 400)
     ctx.touch._send("touchCancel")
-    ctx.wait(4500)
+    ctx.wait(5000)
+    page.go_back()
+    ctx.wait(30)
+    slid = ctx.evaluate(ANIMATING)
+    ctx.wait(800)
+    ctx.check(
+        "a slow Safari swipe-back doesn't slide twice",
+        not slid and ctx.state()["screen"] == "feeds",
+        {"slid": slid, "state": ctx.state()},
+    )
+
+    # A Safari swipe let go of before it went anywhere cancels the touch with no popstate. Once
+    # BROWSER_SWIPE_MS has passed, a Back from Safari's toolbar, which sends the page no touches,
+    # slides again.
+    ctx.open_feed(feed_id)
+    ctx.touch._send("touchStart", 5, 400)
+    ctx.touch._send("touchCancel")
+    ctx.wait(window_ms + 500)
     page.go_back()
     ctx.wait(30)
     slid = ctx.evaluate(ANIMATING)

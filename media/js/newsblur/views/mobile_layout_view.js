@@ -13,7 +13,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     EDGE_WIDTH: 28,
     LONG_PRESS_MS: 480,
-    BROWSER_SWIPE_MS: 4000,
+    BROWSER_SWIPE_MS: 8000,
     PRESS_DELAY_MS: 120,
     PRESS_FLASH_MS: 160,
 
@@ -718,8 +718,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // The browser's swipe cancels the page's touch instead of ending it, so a touch that began at
     // the edge and hasn't ended when popstate arrives is the browser's own swipe, which already
     // slid the screens. A tap on the nav bar's back button ends normally and keeps its slide. A
-    // swipe let go of before it goes anywhere sends no popstate, so the touch only counts for a
-    // few seconds, or a later Back from the browser's toolbar would skip its slide.
+    // swipe let go of before it goes anywhere sends no popstate, so the touch only counts for long
+    // enough to cover a slow swipe, or a later Back from the browser's toolbar would skip its
+    // slide.
     browser_swiped: function () {
         return !!this.browser_edge_touch_at && Date.now() - this.browser_edge_touch_at < this.BROWSER_SWIPE_MS;
     },
