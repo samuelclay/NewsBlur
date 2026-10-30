@@ -4935,7 +4935,7 @@ var classifier_prototype = {
             label_id: scope_label_id,
             on_change: function (value) {
                 state.scope_value = value;
-                self.update_manage_add_row($row);
+                self.update_all_manage_add_rows();
             }
         });
         var start_value = _.find(options.scope_values || [], function (value) {
@@ -5017,24 +5017,35 @@ var classifier_prototype = {
         $row.data('scope_picker', picker);
         this.update_manage_add_row($row);
         this.bind_manage_add_row($row);
+        // A new panel can move the shared scope (scope_values above), so panels already open follow it
+        this.update_all_manage_add_rows();
 
         return $row;
     },
 
-    // A trainer can hold more than one panel (a site or story tab and Manage Training),
-    // so every handler works on its own $row.
+    // A trainer can hold more than one panel (a site or story tab and Manage Training).
+    // They share this.manage_add, so a change to the type, scope, opinion or regex redraws
+    // every panel; otherwise one could show a site while its Add saves a global classifier.
+    update_all_manage_add_rows: function () {
+        var self = this;
+        $('.NB-manage-add', this.$modal).each(function () {
+            self.update_manage_add_row($(this));
+        });
+    },
+
+    // The phrase field is per panel, so typing still only touches its own $row.
     bind_manage_add_row: function ($row) {
         var self = this;
         var state = this.get_manage_add_state();
 
         $('.NB-manage-add-type', $row).on('change', function () {
             state.type = $(this).val();
-            self.update_manage_add_row($row);
+            self.update_all_manage_add_rows();
         });
         $('.NB-manage-add-regex', $row).on('click', function (e) {
             e.preventDefault();
             state.is_regex = !state.is_regex;
-            self.update_manage_add_row($row);
+            self.update_all_manage_add_rows();
         });
         _.each({ regex: '.NB-manage-add-regex', opinions: '.NB-manage-add-opinions-info' }, function (selector, name) {
             $(selector, $row).on('mouseenter focus', function () {
@@ -5059,7 +5070,7 @@ var classifier_prototype = {
         $('.NB-manage-add-sentiment', $row).on('click', function (e) {
             e.preventDefault();
             state.sentiment = $(this).data('sentiment');
-            self.update_manage_add_row($row);
+            self.update_all_manage_add_rows();
         });
         $('.NB-manage-add-button', $row).on('click', function (e) {
             e.preventDefault();
@@ -5170,6 +5181,13 @@ var classifier_prototype = {
             interpolate(gettext('e.g., %(first)s or %(second)s'), regex_examples[state.type], true) :
             placeholders[state.type];
 
+        // The type and scope controls show the shared state another panel may have changed
+        $('.NB-manage-add-type', $row).val(state.type);
+        var picker = $row.data('scope_picker');
+        if (picker && picker.value !== state.scope_value && picker.has_value(state.scope_value)) {
+            picker.set_value(state.scope_value);
+        }
+
         $('.NB-manage-add-match', $row).toggleClass('NB-regex-mode', regex_on);
         $('.NB-manage-add-input', $row).attr({
             placeholder: placeholder,
@@ -5261,7 +5279,13 @@ var classifier_prototype = {
                 return;
             }
             $button_label.text(button_label);
-            $input.val('').focus();
+            var next_value = utils.input_after_add($input.val(), entry.value);
+            if (next_value) {
+                // The reader started the next phrase while this one saved, so leave it and the caret
+                $input.val(next_value);
+            } else {
+                $input.val('').focus();
+            }
             self.update_manage_add_row($row);
             self.show_manage_add_status($row);
             self.manage_add_needs_feeds_refresh = true;

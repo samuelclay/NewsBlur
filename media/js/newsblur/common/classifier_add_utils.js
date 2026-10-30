@@ -115,14 +115,20 @@
         return lowered.normalize ? lowered.normalize('NFD').replace(/[̀-ͯ]/g, '') : lowered;
     }
 
+    // What the phrase field holds once an add saves. The field stays editable while the save
+    // is out, so anything typed since then is the reader's next classifier and is kept.
+    function input_after_add(current_value, submitted_value) {
+        return String(current_value || '').trim() === submitted_value ? '' : String(current_value || '');
+    }
+
     // Picker options for a search (views/feed_folder_picker_view.js). Every word must
-    // appear in the option's title or, for a nested folder, its full path.
+    // appear in the option's title or, for a nested folder, its parent folders.
     function filter_scope_options(options, query) {
         var words = normalize_search_text(query).split(/\s+/).filter(Boolean);
         if (!words.length) return options;
 
         return options.filter(function (option) {
-            var haystack = normalize_search_text(option.title + ' ' + (option.path || ''));
+            var haystack = normalize_search_text(option.title + ' ' + (option.parent_path || ''));
             return words.every(function (word) {
                 return haystack.indexOf(word) !== -1;
             });
@@ -132,6 +138,7 @@
     return {
         TYPES: TYPES,
         filter_scope_options: filter_scope_options,
+        input_after_add: input_after_add,
         supports_regex: supports_regex,
         parse_scope: parse_scope,
         folder_path: folder_path,

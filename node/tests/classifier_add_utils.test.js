@@ -184,10 +184,12 @@ test('opinion names ignore a regex flag on types without regex classifiers', fun
     assert.equal(classifier_add_utils.opinion_name('feed', -1, 0, true), 'dislike_feed');
 });
 
+// Shaped like make_manage_add_scope_items in reader_classifier.js and items_from_select in
+// views/feed_folder_picker_view.js: a nested folder carries its parents in parent_path.
 const scope_options = [
     { value: 'global', title: 'All sites' },
-    { value: 'folder:Tech', title: 'Tech', path: 'Tech' },
-    { value: 'folder:Tech - Apple', title: 'Apple', path: 'Tech - Apple' },
+    { value: 'folder:Tech', title: 'Tech', parent_path: '' },
+    { value: 'folder:Tech - Apple', title: 'Apple', parent_path: 'Tech' },
     { value: 'feed:1', title: 'Café Society' },
     { value: 'feed:2', title: 'Apple Insider' }
 ];
@@ -209,6 +211,14 @@ test('scope search finds a nested folder by its parent folder and needs every wo
 
 test('an empty scope search keeps every option', function () {
     assert.equal(classifier_add_utils.filter_scope_options(scope_options, '   ').length, scope_options.length);
+});
+
+test('a finished add clears only the phrase it saved, not one typed while it was saving', function () {
+    assert.equal(classifier_add_utils.input_after_add('apple', 'apple'), '');
+    assert.equal(classifier_add_utils.input_after_add('  apple ', 'apple'), '');
+    assert.equal(classifier_add_utils.input_after_add('apple pie', 'apple'), 'apple pie');
+    assert.equal(classifier_add_utils.input_after_add('ban', 'apple'), 'ban');
+    assert.equal(classifier_add_utils.input_after_add('', 'apple'), '');
 });
 
 function _extend(base, overrides) {
