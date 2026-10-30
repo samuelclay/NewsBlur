@@ -371,12 +371,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
         // Only an edge swipe leaves the screens mid-slide; the header button starts from rest.
         var from_drag = !!(this.pending_back && this.pending_back.from_drag);
+        var browser_swiped = this.browser_swiped();
+        this.browser_edge_touch = false;
         this.pending_back = null;
         clearTimeout(this.pending_back_timer);
         this.show_screen(screen, {
             direction: direction === 'none' ? 'pop' : direction,
             // The browser already animated its own swipe-back, don't slide a second time.
-            animate: !e.hasUAVisualTransition,
+            animate: !e.hasUAVisualTransition && !browser_swiped,
             from_drag: from_drag,
             complete: _.bind(this.after_screen_change, this)
         });
@@ -700,9 +702,34 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         return x <= this.EDGE_WIDTH;
     },
 
+    // iOS Safari and the other iOS browsers swipe back and forward from the screen's edges
+    // themselves, sliding a snapshot of the page, so the layout's own edge swipe stands down
+    // there or both run at once. A home screen web app has no browser gesture and keeps it.
+    // navigator.standalone is iOS WebKit's, false in the browser and true from the home screen.
+    browser_owns_edge_swipe: function () {
+        return window.navigator.standalone === false;
+    },
+
+    is_browser_edge_touch: function (x) {
+        return x <= this.EDGE_WIDTH || x >= window.innerWidth - this.EDGE_WIDTH;
+    },
+
+    // The browser's swipe cancels the page's touch instead of ending it, so a touch that began at
+    // the edge and hasn't ended when popstate arrives is the browser's own swipe, which already
+    // slid the screens. A tap on the nav bar's back button ends normally and keeps its slide.
+    browser_swiped: function () {
+        return !!this.browser_edge_touch;
+    },
+
     handle_touchstart: function (e) {
         this.swipe = null;
-        if (!this.active || this.transition || e.touches.length !== 1) return;
+        this.browser_edge_touch = false;
+        if (!this.active || e.touches.length !== 1) return;
+        if (this.browser_owns_edge_swipe()) {
+            this.browser_edge_touch = this.is_browser_edge_touch(e.touches[0].clientX);
+            return;
+        }
+        if (this.transition) return;
         if (this.screen === 'feeds' || this.is_overlay_open()) return;
         if ($(e.target).closest('.NB-media-player').length) return;
         var touch = e.touches[0];
@@ -742,6 +769,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     handle_touchend: function (e) {
         var swipe = this.swipe;
         this.swipe = null;
+        this.browser_edge_touch = false;
         if (!swipe || !swipe.dragging) return;
         var first = swipe.samples[0];
         var last = swipe.samples[swipe.samples.length - 1];
