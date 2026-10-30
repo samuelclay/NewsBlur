@@ -413,14 +413,128 @@ body.NB-mobile #NB-splash > .NB-splash-modules {
     padding-bottom: var(--nb-mobile-safe-bottom);
 }
 
+/* mobile.css: the dashboard runs edge to edge like the story list, its rivers stacked as flat
+   sections with a one-line header, instead of inset desktop cards. */
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    max-width: none;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 body.NB-mobile #NB-splash .NB-modules-center,
 body.NB-mobile #NB-splash .NB-modules-right,
-body.NB-mobile #NB-splash .NB-modules-left {
+body.NB-mobile #NB-splash .NB-modules-left,
+body.NB-mobile #NB-splash .NB-account-wide,
+body.NB-mobile #NB-splash .NB-dashboard-account {
     float: none !important;
     width: auto !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 0 12px !important;
+    padding: 0 !important;
+}
+
+body.NB-mobile #NB-splash .NB-module {
+    margin: 0 0 16px !important;
+    border-radius: 0;
+}
+
+body.NB-mobile #NB-splash .NB-module h5,
+body.NB-mobile #NB-splash .NB-module-header {
+    margin: 0 !important;
+    padding: 10px 16px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    font-size: 17px;
+    text-align: start;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-dashboard-column-control {
+    display: none !important;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-title {
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-title-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-settings {
+    flex: none;
+    margin-inline-start: 10px;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-feedbar-options {
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 16px;
+    padding: 4px 6px 4px 10px;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-view-river,
+body.NB-mobile #NB-splash .NB-module-river .NB-view-river .NB-module-item {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* The account section stacks your account and settings over the site's numbers, each a row of
+   tiles, and the text sections keep a gutter while their headers run edge to edge. */
+body.NB-mobile #NB-splash .NB-account {
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+body.NB-mobile #NB-splash .NB-account-right {
+    order: 1;
+}
+
+body.NB-mobile #NB-splash .NB-account-left {
+    order: 2;
+}
+
+body.NB-mobile #NB-splash .NB-account-left,
+body.NB-mobile #NB-splash .NB-account-right {
+    flex: none;
+    margin: 0 !important;
+    padding: 0 12px;
+}
+
+body.NB-mobile #NB-splash .NB-module-features > :not(.NB-module-header) {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+/* The settings menu sits in a .NB-module-stats-counts too, so only rows of tiles change. A tile
+   is at least a quarter wide, so one never squeezes onto the full-width subscription row. */
+body.NB-mobile #NB-splash .NB-module-stats-counts:has(> .NB-module-stats-count) {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+body.NB-mobile #NB-splash .NB-module-stats-count {
+    flex: 1 1 0;
+    min-width: 25%;
+    border-bottom: 0;
+    border-inline-start: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.NB-mobile #NB-splash .NB-module-stats-count:first-child,
+body.NB-mobile #NB-splash .NB-module-account-subscription + .NB-module-stats-count {
+    border-inline-start: 0;
+}
+
+body.NB-mobile #NB-splash .NB-module-account-subscription {
+    flex-basis: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 body.NB-mobile #NB-splash-overlay,

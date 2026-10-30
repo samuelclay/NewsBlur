@@ -95,6 +95,7 @@ def check_regressions(ctx, feed_id):
     check_touch_hover(ctx, feed_id)
     check_discovery_back(ctx)
     check_folder_pills(ctx)
+    check_dashboard_edge_to_edge(ctx)
 
 
 def hover_changes(ctx, selector):
@@ -454,6 +455,44 @@ def check_folder_pills(ctx):
     ctx.check("Global Shared Stories has no mark read button, as on desktop", shown == 0, shown)
     page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
     ctx.wait(1200)
+
+
+DASHBOARD = """(() => {
+  var width = document.querySelector('#NB-splash').clientWidth;
+  var rivers = Array.from(document.querySelectorAll('#NB-splash .NB-module-river')).filter(function (m) { return m.offsetWidth; });
+  var lines = function (el) {
+    var s = getComputedStyle(el);
+    var content = el.clientHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom);
+    return Math.round(content / parseFloat(s.lineHeight));
+  };
+  return {
+    width: width,
+    rivers: rivers.map(function (m) { var r = m.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; }),
+    title_lines: rivers.map(function (m) { var t = m.querySelector('.NB-module-river-title-text'); return t ? lines(t) : 0; }),
+    options_lines: rivers.map(function (m) { var o = m.querySelector('.NB-feedbar-options'); return o ? lines(o) : 0; }),
+    column_controls: $('#NB-splash .NB-dashboard-column-control:visible').length,
+    squeezed_tiles: $('#NB-splash .NB-module-stats-count:visible').filter(function () { return this.offsetWidth < 60; }).length
+  };
+})()"""
+
+
+def check_dashboard_edge_to_edge(ctx):
+    """The dashboard's rivers were inset desktop cards 36px from each side, with headers that
+    wrapped their title and story options onto two lines. Expects the feed list."""
+    page = ctx.page
+    page.locator(".NB-feeds-header-river-dashboard").tap()
+    ctx.wait(2500)
+    dash = ctx.evaluate(DASHBOARD)
+    edge = all(left == 0 and right == dash["width"] for left, right in dash["rivers"])
+    ctx.check("the dashboard's rivers run edge to edge", dash["rivers"] and edge, dash)
+    ctx.check(
+        "river headers keep their title and story options on one line",
+        all(n <= 1 for n in dash["title_lines"] + dash["options_lines"]) and not dash["column_controls"],
+        dash,
+    )
+    ctx.check("no dashboard tile is squeezed out", not dash["squeezed_tiles"], dash)
+    page.locator(".NB-mobile-dashboard-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
 
 
 def check_story_iframe_sandbox(ctx, feed_id):
