@@ -9,7 +9,7 @@ See https://forum.newsblur.com/t/13801 for the failure both variants hit.
 
 import json
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class Test_MCPOAuthMetadata(TestCase):
@@ -70,3 +70,29 @@ class Test_MCPOAuthMetadata(TestCase):
                 or (configured.startswith(resource) and configured[len(resource)] == "/"),
                 f"resource {resource!r} would be rejected for configured URL {configured!r}",
             )
+
+
+@override_settings(TEST_DEBUG=False)
+class Test_MCPOAuthMetadataWithoutUserAgent(TestCase):
+    """apps/profile/middleware.py:UserAgentBanMiddleware 403s requests with no
+    User-Agent. The Python MCP SDK builds its discovery requests without one, so
+    server-side MCP clients (Littlebird, forum #13806) were refused every
+    discovery document, gave up on OAuth and fell back to asking for an API token.
+    """
+
+    DISCOVERY_PATHS = [
+        "/.well-known/oauth-protected-resource/mcp/",
+        "/.well-known/oauth-protected-resource/mcp",
+        "/.well-known/oauth-protected-resource",
+        "/.well-known/oauth-authorization-server/mcp",
+        "/.well-known/oauth-authorization-server",
+    ]
+
+    def test_discovery_documents_serve_clients_without_a_user_agent(self):
+        for path in self.DISCOVERY_PATHS:
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200, f"{path} returned {response.content!r}")
+
+    def test_missing_user_agent_is_still_banned_elsewhere(self):
+        response = self.client.get("/reader/feeds")
+        self.assertEqual(response.status_code, 403)
