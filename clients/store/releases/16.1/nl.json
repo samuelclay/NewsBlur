@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Ontdek Luisteren, een nieuwe manier om van je artikelen te genieten.\n\nTik op Luisteren om een artikel te laten voorlezen in een van de 21 talen. Volg de gemarkeerde alinea’s, tik op een alinea om erheen te springen en kies voor elke taal een stem. Pas de expressie en het afspeeltempo aan van 0,5× tot 3×.\n\nVoeg artikelen toe aan Hierna, verander de volgorde en luister verder met een vergrendeld scherm of terwijl je een andere app gebruikt. Je wachtrij wordt tussen apparaten gesynchroniseerd. Automatisch doorgaan speelt het volgende ongelezen artikel af. Artikelen die je helemaal hebt beluisterd, worden als gelezen gemarkeerd.\n\nLuisteren is inbegrepen bij Premium Archive en Premium Pro. Gratis accounts en Premium-accounts kunnen artikelfragmenten van 30 seconden uitproberen.\n\nDeze update maakt de navigatie ook vloeiender en verhelpt problemen met scrollen door het artikelraster."
+  },
+  "android": {
+    "release_notes": "Nieuw: Luisteren leest artikelen voor in 21 talen. Kies stemmen, volg gemarkeerde alinea’s, tik om te springen en pas het tempo aan. Voeg artikelen toe aan Hierna; je wachtrij synchroniseert tussen apparaten. Luister verder met een vergrendeld scherm. Automatisch doorgaan speelt het volgende ongelezen artikel. Volledig luisteren met Premium Archive en Premium Pro; fragmenten van 30 seconden voor gratis accounts en Premium."
+  },
+  "macos": {
+    "whats_new": "Deze update verhelpt een probleem waarbij de artikellijst bleef laden als je een melding opende nadat je het NewsBlur-venster had gesloten.\n\nLuisteren is nu beschikbaar op de Mac. Laat artikelen voorlezen in 21 talen, volg de gemarkeerde alinea’s, kies stemmen, pas de afspeelsnelheid aan en voeg artikelen toe aan Hierna. Je wachtrij wordt tussen apparaten gesynchroniseerd. Volledig luisteren is inbegrepen bij Premium Archive en Premium Pro; gratis accounts en Premium-accounts kunnen fragmenten van 30 seconden uitproberen.\n\nOok het scrollen door het artikelraster is verbeterd."
+  }
+}

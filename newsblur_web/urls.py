@@ -138,14 +138,16 @@ urlpatterns = [
     url(r"^privacy/?", static_views.privacy, name="privacy"),
     url(r"^tos/?", static_views.tos, name="tos"),
     url(r"^manifest.webmanifest", static_views.webmanifest, name="webmanifest"),
-    # MCP OAuth discovery (RFC 8414 / RFC 9728)
+    # MCP OAuth discovery (RFC 8414 / RFC 9728). The /mcp-less root forms are
+    # for clients on the 2025-03-26 MCP auth spec, which strip the server path
+    # and only look at the origin root (forum #13806, apps/mcp/views.py).
     url(
-        r"^\.well-known/oauth-authorization-server/mcp/?$",
+        r"^\.well-known/oauth-authorization-server(?:/mcp)?/?$",
         mcp_views.oauth_authorization_server_metadata,
         name="mcp-oauth-metadata",
     ),
     url(
-        r"^\.well-known/oauth-protected-resource/mcp/?$",
+        r"^\.well-known/oauth-protected-resource(?:/mcp)?/?$",
         mcp_views.oauth_protected_resource_metadata,
         name="mcp-oauth-protected-resource",
     ),

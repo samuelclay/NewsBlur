@@ -213,7 +213,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
         html += '</div>'; // end row-info
 
-        // Listen: preview countdown, upgrade prompts, loading and errors
+        // Listen: preview countdown, upgrade prompts and errors. "Preparing audio" shows in the
+        // time display instead (see update_listen_loading_display).
         if (this.is_listen()) {
             html += '<div class="NB-media-player-listen-banner"></div>';
         }
@@ -234,6 +235,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '<span class="NB-media-player-time-current">' + this.format_time(this.current_position) + '</span>';
         html += '<span class="NB-media-player-time-separator">/</span>';
         html += '<span class="NB-media-player-time-duration">' + this.format_time(this.current_duration) + '</span>';
+        if (this.is_listen()) {
+            html += '<span class="NB-media-player-time-loading">' + _.escape(gettext('Preparing audio...')) + '</span>';
+        }
         html += '</div>';
         html += '<div class="NB-media-player-right-controls">';
         html += '<div class="NB-media-player-speed" title="' + _.escape(gettext('Playback speed')) + '">' + this.format_speed(this.playback_rate) + '</div>';
@@ -261,6 +265,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         if (this.is_listen()) {
             this.render_listen_banner({ skip_resize: true });
         }
+        this.update_listen_loading_display();
         this.update_progress_display();
         if (is_video) {
             this._bind_fullscreen_change();
@@ -1848,7 +1853,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var engine = this.listen_engine();
             if (!engine || engine.paused) return;
             this.listen_loading = true;
-            this.render_listen_banner();
+            this.update_listen_loading_display();
         }, this), this.LISTEN_LOADING_DELAY);
     },
 
@@ -1857,10 +1862,16 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             clearTimeout(this.listen_loading_timer);
             this.listen_loading_timer = null;
         }
-        if (this.listen_loading) {
-            this.listen_loading = false;
-            this.render_listen_banner();
-        }
+        this.listen_loading = false;
+        this.update_listen_loading_display();
+    },
+
+    // media_player_view.js: "Preparing audio..." takes the place of the times in the time display
+    // (NB-listen-loading in reader.css) rather than a banner row of its own, so pressing Next Story
+    // while listening never grows and shrinks the player. Only a Listen story can be loading.
+    update_listen_loading_display: function () {
+        var loading = !!(this.listen_loading && this.listen_engine());
+        this.$('.NB-media-player-time').toggleClass('NB-listen-loading', loading);
     },
 
     listen_is_archive_tier: function () {
@@ -1911,9 +1922,6 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
                 'Previewing %(seconds)s seconds. Premium Archive unlocks full stories', seconds),
                 { seconds: seconds }, true)) + '</div>';
             html += '<div class="NB-media-player-listen-countdown"></div>';
-        } else if (this.listen_loading) {
-            kind = 'loading';
-            html += '<div class="NB-media-player-listen-message">' + _.escape(gettext('Preparing audio...')) + '</div>';
         }
 
         $banner.html(html)

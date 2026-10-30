@@ -1,0 +1,174 @@
+{
+  "version": "16.0.2",
+  "platform": "macos",
+  "build": "352",
+  "role": "translator",
+  "locales": [
+    {
+      "language": "vi",
+      "apple_locale": "vi",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 2887,
+        "promotional_text": 158,
+        "whats_new": 498,
+        "keywords_bytes": 82
+      }
+    },
+    {
+      "language": "th",
+      "apple_locale": "th",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 2410,
+        "promotional_text": 130,
+        "whats_new": 426,
+        "keywords_bytes": 95
+      }
+    },
+    {
+      "language": "ja",
+      "apple_locale": "ja",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 1436,
+        "promotional_text": 101,
+        "whats_new": 259,
+        "keywords_bytes": 95
+      }
+    },
+    {
+      "language": "ko",
+      "apple_locale": "ko",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 1584,
+        "promotional_text": 89,
+        "whats_new": 281,
+        "keywords_bytes": 84
+      }
+    },
+    {
+      "language": "zh-Hans",
+      "apple_locale": "zh-Hans",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 1051,
+        "promotional_text": 62,
+        "whats_new": 181,
+        "keywords_bytes": 91
+      }
+    },
+    {
+      "language": "zh-Hant",
+      "apple_locale": "zh-Hant",
+      "fields_reviewed": [
+        "name",
+        "subtitle",
+        "description",
+        "promotional_text",
+        "keywords",
+        "whats_new",
+        "subscription_names",
+        "subscription_descriptions",
+        "subscription_group_name",
+        "subscription_group_app_name"
+      ],
+      "fields_changed": [
+        "description",
+        "promotional_text",
+        "whats_new"
+      ],
+      "character_counts": {
+        "description": 1087,
+        "promotional_text": 87,
+        "whats_new": 208,
+        "keywords_bytes": 87
+      }
+    }
+  ],
+  "status": "translated_and_self_reviewed",
+  "independent_review": "pending",
+  "products": "Reviewed existing localized iOS subscription and group copy against English. Meaning and billing facts preserved; no product edits.",
+  "source": "clients/store/metadata/en.json and clients/store/releases/16.0.2/en.json"
+}

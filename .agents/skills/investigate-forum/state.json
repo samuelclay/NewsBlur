@@ -412,6 +412,21 @@
       "note": "Sam chose the design in two interview rounds: click name moves, check circle adds, fit all folders capped at window, check plus tinted row, sidebar font size, type to filter with arrows/Enter, open at current folder, and the same picker for a folder's Move to folder menu. Reply assumes make deploy plus make deploy_static. Merged as 0709f9282a on 2026-10-27 with the blog post (dated 2026-10-27 09:00 -0700); deployed with make deploy, deploy_static and blog.",
       "reply": "Thanks for the detailed writeup, this was overdue. The Change Folders list now grows to show all your folders, as many as your window has room for, and it uses your custom folder icons. It also opens scrolled to the folder the site is in now, and the text follows your sidebar font size.\n\nThe bigger change is that clicking a folder's name now moves the site there, so there's no more going back to uncheck Newsletters. If you do want a site in two folders, click the circle next to the second folder to add it. There's also a filter box at the top, so you can type a few letters, press Enter to pick the folder and Enter again to move.",
       "question": null
+    },
+    "13806": {
+      "title": "MCP access from LIttlebird ai",
+      "url": "https://forum.newsblur.com/t/mcp-access-from-littlebird-ai/13806",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-10-28T17:38:35Z",
+      "last_posted_at": "2026-10-19T12:55:16.988Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2194",
+      "branch": "forum-13806-root-oauth-metadata",
+      "worktree": ".worktree/forum-13806-root-oauth-metadata",
+      "note": "Littlebird never starts OAuth: root /.well-known/oauth-authorization-server 404ed on newsblur.com while every comparable DCR MCP host serves it; 2025-03-26 spec clients only look at the root. Sam chose the root metadata PR. Unverified against Littlebird itself. #2194 merged as 29b90e5cb4 and deployed with make deploy on 2026-10-28. Follow-up #2196 (FastMCP trailing-slash 307s to http://newsblur.com/register) merged as 5a14898d61, shipped with make push_mcp + make deploy_mcp on 2026-10-29. Old-spec client probe on prod passed 9/9: root discovery, DCR, authorize and token each with and without a trailing slash. Reply is safe to post now.",
+      "reply": "I think I found it. Littlebird looks for our OAuth details at the root of newsblur.com, the way an older version of the MCP spec worked. We only published them under /mcp, so Littlebird never learned that NewsBlur uses OAuth. It skipped the browser sign in and called the server with no token, which is the \"rejected the API token\" error.\n\nNewsBlur now publishes those details in both places. There's no API token to find, MCP only uses the OAuth sign in. Remove the server in Littlebird and add https://newsblur.com/mcp again, with or without the trailing slash. Your earlier screenshot had https:/newsblur.com/mcp/ with a single slash, so make sure it starts with https:// this time. It should then open a browser window to approve access. If it still fails, tell me exactly what it says and I'll keep digging.",
+      "question": null,
+      "follow_up_pr": "https://github.com/samuelclay/NewsBlur/pull/2196"
     }
   }
 }
