@@ -33,9 +33,19 @@ final class StoryReadyMessageHandler: NSObject, WKScriptMessageHandler {
 class StoryDetailViewController: StoryDetailObjCViewController {
     var openingImage = false
     private var imageLongPressStartedDuringScroll = false
+    /// Listen/ListenStoryBridge.swift: the manifest whose paragraphs this page has mapped for follow-along.
+    var listenMappedManifestId: String?
+    /// Listen/ListenStoryBridge.swift: the Listen button state last drawn, so only real changes redraw it.
+    var listenButtonState: String?
+    var listenObservers: [NSObjectProtocol] = []
+
+    deinit {
+        listenObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        listenObservePlayer()
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressImage(_:)))
         longPress.delegate = self
         longPress.cancelsTouchesInView = false

@@ -80,7 +80,7 @@ _.extend(NEWSBLUR.ReaderFeatures.prototype, {
                 gettext('Ask AI can transcribe a podcast or video first, then answer questions about it.')
             ],
             faqs: [
-                { q: gettext('Which AI models are available?'), a: gettext('Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (xAI). Switch between them at any time.') },
+                { q: gettext('Which AI models are available?'), a: gettext('Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time.') },
                 { q: gettext('Does Ask AI work with audio and video?'), a: gettext('Yes, it can transcribe audio and video content and then answer questions about it.') },
                 { q: gettext('What is the Daily Briefing?'), a: gettext('An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered topics, and custom sections you define.') }
             ],

@@ -466,6 +466,7 @@ INSTALLED_APPS = (
     "apps.categories",
     "apps.discover",
     "apps.ask_ai",
+    "apps.listen",
     "apps.webfeed",
     "apps.archive_extension",
     "apps.mcp",
@@ -703,6 +704,12 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
+    # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).
+    "trim-abandoned-feeds": {
+        "task": "trim-abandoned-feeds",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
     "activate-next-new-user": {
         "task": "activate-next-new-user",
         "schedule": datetime.timedelta(minutes=5),
@@ -820,6 +827,11 @@ YOUTUBE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPENINJA_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 SCRAPINGBEE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
+# Listen (apps/listen) reads stories aloud with ElevenLabs. Without a real key the feature reports itself
+# unavailable. The node stream server (node/listen.coffee) reads the same key from node/.env.
+ELEVENLABS_API_KEY = "sk_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+LISTEN_MODEL = "eleven_v4_turbo"
+
 # ===============
 # = AWS Backing =
 # ===============
@@ -835,6 +847,7 @@ S3_BACKUP_BUCKET = "newsblur-backups"
 S3_PAGES_BUCKET_NAME = "pages.newsblur.com"
 S3_ICONS_BUCKET_NAME = "icons.newsblur.com"
 S3_AVATARS_BUCKET_NAME = "avatars.newsblur.com"
+S3_LISTEN_BUCKET_NAME = "listen.newsblur.com"
 
 # ==================
 # = Configurations =

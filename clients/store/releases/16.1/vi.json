@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Khám phá Nghe, cách mới để thưởng thức bài viết.\n\nChạm Nghe để nghe bài viết được đọc bằng một trong 21 ngôn ngữ. Theo dõi các đoạn được tô sáng, chạm vào đoạn để chuyển đến đó và chọn giọng đọc cho từng ngôn ngữ. Điều chỉnh cách diễn đạt và tốc độ phát từ 0,5× đến 3×.\n\nThêm bài viết vào Tiếp theo, sắp xếp lại hàng đợi và tiếp tục nghe khi khóa màn hình hoặc dùng ứng dụng khác. Hàng đợi được đồng bộ giữa các thiết bị. Tự động phát tiếp chuyển sang bài chưa đọc tiếp theo; bài đã nghe xong được đánh dấu đã đọc.\n\nNghe có trong Premium Archive và Premium Pro. Tài khoản miễn phí và Premium có thể nghe thử bài viết trong 30 giây.\n\nBản cập nhật này cũng giúp điều hướng mượt mà hơn và khắc phục lỗi cuộn trong lưới bài viết."
+  },
+  "android": {
+    "release_notes": "Nghe bài viết bằng 21 ngôn ngữ. Chọn giọng, theo dõi đoạn được tô sáng, chạm để chuyển đoạn và chỉnh tốc độ. Thêm bài vào Tiếp theo, đồng bộ hàng đợi giữa các thiết bị và nghe cả khi khóa màn hình. Tự động phát tiếp chuyển sang bài chưa đọc tiếp theo. Premium Archive và Premium Pro cho phép nghe toàn bài; tài khoản miễn phí và Premium có thể nghe thử 30 giây."
+  },
+  "macos": {
+    "whats_new": "Bản cập nhật này khắc phục lỗi danh sách bài viết có thể tải mãi khi bạn mở thông báo sau khi đóng cửa sổ NewsBlur.\n\nTính năng Nghe nay đã có trên Mac. Nghe bài viết bằng 21 ngôn ngữ, theo dõi các đoạn được tô sáng, chọn giọng đọc, điều chỉnh tốc độ phát và thêm bài vào Tiếp theo. Hàng đợi được đồng bộ giữa các thiết bị. Premium Archive và Premium Pro bao gồm tính năng nghe toàn bộ bài viết; tài khoản miễn phí và Premium có thể nghe thử 30 giây.\n\nBản cập nhật cũng khắc phục lỗi cuộn trong lưới bài viết."
+  }
+}

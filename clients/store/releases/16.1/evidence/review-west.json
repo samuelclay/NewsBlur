@@ -1,0 +1,321 @@
+{
+  "version": "16.1",
+  "reviewed_at": "2026-10-29T14:05:34Z",
+  "reviewer": "translate_east",
+  "independent_from_translator": "translate_west",
+  "source": "clients/store/metadata/en.json and clients/store/releases/16.1/en.json",
+  "checks": [
+    "meaning",
+    "omissions",
+    "naturalness",
+    "glossary",
+    "plan_qualification",
+    "platform_claims",
+    "field_limits",
+    "URLs",
+    "retained_products"
+  ],
+  "languages": [
+    {
+      "language": "es",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2711,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 148,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 854,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2174,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 69,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 424,
+          "limit": 500
+        }
+      },
+      "corrections": [],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "290f2e6773938a97d50d53567d7463f417993cbd0e88557d8ba03fe93856b496",
+        "release": "e7c8f86439f3b92023676c05a8311d8b8d990e1475fb0e0e9d7df9b7ba4d4a94",
+        "products": "fb74ce2fa04c07119d4de8d51e4a97a7c01a9c0a3429c292cd38cc85a43eaf5c"
+      }
+    },
+    {
+      "language": "fr",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2999,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 167,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 898,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2468,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 78,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 440,
+          "limit": 500
+        }
+      },
+      "corrections": [
+        {
+          "field": "android.release_notes",
+          "reason": "Restore explicit instruction to add articles to Up Next; original only stated queue synchronization.",
+          "before": "La file À suivre se synchronise entre appareils.",
+          "after": "Ajoutez des articles à la file À suivre, synchronisée entre appareils."
+        }
+      ],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "0975288f72d034c9007a179700708f95cf1c8b6901f223119591b0df33089178",
+        "release": "44c5b95e10025bf6fc596e16b4d82e2864d6c427baab282cb77b109ea1409bb3",
+        "products": "abd4be7418653070f971667dc89287f87e408db508175a07ecc49c7303229416"
+      }
+    },
+    {
+      "language": "de",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2899,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 165,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 899,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2303,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 71,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 440,
+          "limit": 500
+        }
+      },
+      "corrections": [
+        {
+          "field": "android.release_notes",
+          "reason": "Restore explicit instruction to add articles to Up Next; original only stated queue synchronization.",
+          "before": "Als Nächstes synchronisiert deine Warteschlange zwischen Geräten.",
+          "after": "Füge Artikel zu Als Nächstes hinzu; die Warteschlange synchronisiert sich zwischen Geräten."
+        }
+      ],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "3efc481166ff1d19d7359e8d35d7635350f5461b56f8bf15c946c6db7313bbfe",
+        "release": "5a6d7da74a6e19c93690d663a2bca8705cb8b0cb0ffd32925ff888fdee88a21a",
+        "products": "2a94217bcb0ebcb8f1e110e5fd68432e0224f0068180a331e6631fe74fc78c0f"
+      }
+    },
+    {
+      "language": "pt-BR",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2614,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 146,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 820,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2099,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 66,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 408,
+          "limit": 500
+        }
+      },
+      "corrections": [],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "40fe91eccea4e383c012493d9c9258e828eac63f6a32c79a773ce3e1b2c06872",
+        "release": "d2c0b376db9ee7bc9b8146301b744e7c17f8e749bc2d9a3b777e6170b9843727",
+        "products": "1c92c3e96e081ec8cf3f553b9f261455103fc888a734225df58dcb18331e6aad"
+      }
+    },
+    {
+      "language": "it",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2786,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 152,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 885,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2239,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 69,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 437,
+          "limit": 500
+        }
+      },
+      "corrections": [
+        {
+          "field": "android.release_notes",
+          "reason": "Restore explicit instruction to add articles to Up Next; original only stated queue synchronization.",
+          "before": "In coda si sincronizza tra i dispositivi.",
+          "after": "Aggiungi articoli alla lista In coda, sincronizzata tra i dispositivi."
+        }
+      ],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "fe221d1e150dcb3fdbc067c91a358bea621c772a36dcad650bb3ef6811750b03",
+        "release": "7c88ca1ace08fecef41d1dbe4413aafa9924580cc97898aa52f57e071f4cffac",
+        "products": "25deb821602dc3392f4b236793a01043a958640439ea6e5a4d17ec9ad6b8ad8f"
+      }
+    },
+    {
+      "language": "nl",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2657,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 161,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 889,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2139,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 74,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 426,
+          "limit": 500
+        }
+      },
+      "corrections": [
+        {
+          "field": "android.release_notes",
+          "reason": "Restore explicit instruction to add articles to Up Next; original only stated queue synchronization.",
+          "before": "Je wachtrij in Hierna synchroniseert tussen apparaten.",
+          "after": "Voeg artikelen toe aan Hierna; je wachtrij synchroniseert tussen apparaten."
+        }
+      ],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "1d8915548cd7edf5c3f01c119918b90e6d498d63257493e112f51d08c84de102",
+        "release": "e7387fd433f07a42537e1a88de18cb5c5ccacffc9e61b41d646eddfee59f88aa",
+        "products": "b8a74f7eb5fd9b06f6ea676689ffce70d3f314ec5832f7116fe429ad377033a0"
+      }
+    },
+    {
+      "language": "pl",
+      "status": "passed",
+      "fields": {
+        "ios.description": {
+          "characters": 2702,
+          "limit": 4000
+        },
+        "ios.promotional_text": {
+          "characters": 142,
+          "limit": 170
+        },
+        "ios.whats_new": {
+          "characters": 854,
+          "limit": 4000
+        },
+        "android.full_description": {
+          "characters": 2137,
+          "limit": 4000
+        },
+        "android.short_description": {
+          "characters": 70,
+          "limit": 80
+        },
+        "android.release_notes": {
+          "characters": 429,
+          "limit": 500
+        }
+      },
+      "corrections": [
+        {
+          "field": "android.release_notes",
+          "reason": "Restore explicit instruction to add articles to Up Next; original only stated queue synchronization.",
+          "before": "Lista Następny w kolejce synchronizuje się między urządzeniami.",
+          "after": "Dodawaj artykuły do listy Następny w kolejce, synchronizowanej między urządzeniami."
+        }
+      ],
+      "retained_listing_review": "Matches English product claims and locale register; macOS, names, subtitles, keywords, and URLs preserved.",
+      "products_review": "Matches English product meaning; no changes.",
+      "sha256": {
+        "metadata": "9199aff5308b735cf3d3c43a431db1f8e92c3c51c3183628e5ea939d1f1bb508",
+        "release": "2132b94415201c3a3da67a5c6a5dffcf0ae4f577d5ca59342a2ae149b17f493d",
+        "products": "034b5b874350675115a028ba99103b9cc164cbfc1acf0e6da48c42d8b62c681a"
+      }
+    }
+  ]
+}

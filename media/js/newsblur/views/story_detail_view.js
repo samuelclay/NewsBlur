@@ -20,6 +20,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
         "mouseenter .NB-feed-story-ask-ai": "mouseenter_sideoption_ask_ai",
         "mouseleave .NB-feed-story-ask-ai": "mouseleave_sideoption_ask_ai",
+        "mouseenter .NB-feed-story-listen": "mouseenter_sideoption_listen",
+        "mouseleave .NB-feed-story-listen": "mouseleave_sideoption_listen",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -56,6 +58,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-search-folder-selection": "search_selected_text_folder",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
         "click .NB-feed-story-ask-ai": "show_ask_ai_menu",
+        "click .NB-feed-story-listen": "toggle_listen",
+        "click .NB-sideoption-listen-queue": "toggle_listen_queue",
+        "click .NB-listen-paragraph": "click_listen_paragraph",
         "click .NB-cluster-locked-upsell": "open_clustering_upgrade",
         "click .NB-clustering-detail-upgrade-pill": "open_clustering_upgrade",
         "mouseenter .NB-clustering-detail-info-icon": "show_clustering_tooltip",
@@ -127,6 +132,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             comments_without_quote: extracted.comments
         });
         this.$el.html(this.template(params));
+        // story_detail_view.js: Lets listen_follow_along.js find every rendered copy of a story.
+        this.el.nb_story_detail_view = this;
 
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
@@ -174,6 +181,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.watch_images_load();
         this.attach_custom_handler();
         this.attach_media_player_handler();
+        this.attach_listen_handler();
     },
 
     attach_custom_handler: function () {
@@ -292,6 +300,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
             show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
+            show_sideoption_listen: NEWSBLUR.assets.preference("show_sideoption_listen") !== false,
+            listen_is_preview: !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro,
+            listen_state: this.listen_state(),
+            listen_queue_state: NEWSBLUR.app.media_player ? NEWSBLUR.app.media_player.listen_queue_state(this.model.get('story_hash')) : null,
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
         };
     },
@@ -519,6 +531,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
                         </div>\
                     <% } %>\
+                    <% if (show_sideoption_listen) { %>\
+                        <div class="NB-sideoption NB-feed-story-listen <% if (listen_state) { %>NB-listen-current<% } %> <% if (listen_state == "playing") { %>NB-listen-playing<% } %> <% if (listen_queue_state == "can_queue") { %>NB-listen-can-queue<% } %> <% if (listen_queue_state == "queued") { %>NB-listen-queued<% } %>" data-story-hash="<%- story.get("story_hash") %>" role="button">\
+                            <div class="NB-sideoption-title"><%- listen_state == "playing" ? gettext("Pause") : gettext("Listen") %></div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-listen">&nbsp;</div>\
+                            <div class="NB-sideoption-listen-queue" role="button" title="<%- listen_queue_state == "queued" ? gettext("Queued. Click to remove from Up Next") : gettext("Add to Up Next") %>"></div>\
+                            <% if (listen_is_preview) { %>\
+                                <div class="NB-sideoption-listen-preview-pill"><%- gettext("30s preview") %></div>\
+                            <% } %>\
+                        </div>\
+                    <% } %>\
                 </div>\
             </div>\
         </div>\
@@ -742,6 +764,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         clearTimeout(this.truncate_delay_function);
         this.images_to_load = null;
+        if (this.el.nb_story_detail_view === this) this.el.nb_story_detail_view = null;
+        this.$('.NB-feed-story-listen').tipsy('hide');
         this.model.unbind(null, null, this);
         if (this.collection) this.collection.unbind(null, null, this);
         // this.sideoptions_view.destroy();
@@ -2150,6 +2174,86 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     mouseleave_sideoption_ask_ai: function () {
         this.$('.NB-feed-story-ask-ai').removeClass('NB-hover-inverse');
+    },
+
+    // ==========
+    // = Listen =
+    // ==========
+
+    // story_detail_view.js: "playing", "paused" or null, for this story in the media player.
+    listen_state: function () {
+        var media_player = NEWSBLUR.app.media_player;
+        if (!media_player || !media_player.is_listening_to(this.model.get('story_hash'))) return null;
+        return media_player.is_playing ? 'playing' : 'paused';
+    },
+
+    toggle_listen: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        this.$('.NB-feed-story-listen').tipsy('hide');
+        NEWSBLUR.reader.toggle_listen(this.model);
+    },
+
+    // story_detail_view.js: The + beside Listen adds this story to Up Next, or takes it out again.
+    toggle_listen_queue: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        this.$('.NB-feed-story-listen').tipsy('hide');
+        if (NEWSBLUR.app.media_player) NEWSBLUR.app.media_player.toggle_listen_queue(this.model);
+    },
+
+    listen_tooltip: function () {
+        if (NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.is_listening_to(this.model.get('story_hash'))) {
+            return gettext('Pause or resume reading aloud (y)');
+        }
+        if (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) {
+            return gettext('Hear the first 30 seconds read aloud. Premium Archive reads whole stories.');
+        }
+        return gettext('Read this story aloud (y)');
+    },
+
+    // story_detail_view.js: Like Ask AI, the hover opens upward when the button is near the bottom.
+    mouseenter_sideoption_listen: function () {
+        var $button = this.$('.NB-feed-story-listen');
+        var tooltip_height = 80;
+        $button.toggleClass('NB-hover-inverse', $button.offset().top > $(window).height() - tooltip_height);
+        if (!$button.data('tipsy')) {
+            var self = this;
+            $button.tipsy({
+                trigger: 'manual',
+                gravity: function () {
+                    return $(this).hasClass('NB-hover-inverse') ? 's' : 'n';
+                },
+                title: function () {
+                    return self.listen_tooltip();
+                },
+                opacity: 1
+            });
+        }
+        $button.tipsy('show');
+    },
+
+    mouseleave_sideoption_listen: function () {
+        var $button = this.$('.NB-feed-story-listen');
+        $button.removeClass('NB-hover-inverse');
+        $button.tipsy('hide');
+    },
+
+    attach_listen_handler: function () {
+        if (NEWSBLUR.ListenFollowAlong) {
+            NEWSBLUR.ListenFollowAlong.attach_view(this);
+        }
+    },
+
+    click_listen_paragraph: function (e) {
+        // story_detail_view.js: Nested mapped blocks each match the delegated selector; only the
+        // innermost one handles the click.
+        if ($(e.target).closest('.NB-listen-paragraph')[0] !== e.currentTarget) return;
+        NEWSBLUR.ListenFollowAlong.handle_click(this, e);
     },
 
     show_ask_ai_menu: function (e) {

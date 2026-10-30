@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Die Tablet-Steuerung ist zurück: Öffne Feedliste, Artikeltitel oder Artikel unabhängig voneinander im Vollbild. Ziehe die Trennlinien, um die Bereiche zu vergrößern oder zu verkleinern. NewsBlur merkt sich ihre Breiten.\n\nEnthält die Oberfläche in 21 Sprachen und die fest positionierte Steuerung zum nächsten Artikel aus Version 16.0."
+  },
+  "macos": {
+    "whats_new": "Dieses Update macht das Lesen auf dem Mac angenehmer.\n\nDie Leertaste scrollt im Artikel nach unten und öffnet am Ende den nächsten ungelesenen Artikel. Umschalt-Leertaste scrollt nach oben und kehrt am Anfang zum vorherigen Artikel zurück. Lege unter Einstellungen oder Tastenkürzel fest, wie weit jeder Tastendruck scrollt.\n\nÖffne Tastenkürzel direkt im Menü für die Artikeleinstellungen.\n\nNewsBlur merkt sich jetzt Größe und Position deines Fensters, wenn du die App beendest und erneut öffnest.\n\nAuch die Modellnamen in KI fragen wurden aktualisiert."
   }
 }

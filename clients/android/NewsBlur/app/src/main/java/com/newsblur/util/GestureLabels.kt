@@ -23,6 +23,7 @@ object GestureLabels {
                 GestureAction.GEST_ACTION_SHARE -> R.string.gesture_share
                 GestureAction.GEST_ACTION_TOGGLE_SAVE -> R.string.gesture_toggle_save
                 GestureAction.GEST_ACTION_ASK_AI -> R.string.gesture_ask_ai
+                GestureAction.GEST_ACTION_LISTEN -> R.string.gesture_listen
                 GestureAction.GEST_ACTION_TRAIN -> R.string.gesture_train
                 GestureAction.GEST_ACTION_NOTIFICATIONS -> R.string.gesture_notifications
                 GestureAction.GEST_ACTION_READ_RANGE -> R.string.gesture_read_range

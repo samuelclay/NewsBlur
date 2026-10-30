@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-10-25T19:37:06Z",
+  "packageName": "com.newsblur",
+  "version": "16.0.5",
+  "versionCode": 297,
+  "sourceCommit": "cb80c8f4c7a1c546a08abdac0b066a38627b9567",
+  "remoteTag": "Android_16.0.5",
+  "remoteTagCommit": "cb80c8f4c7a1c546a08abdac0b066a38627b9567",
+  "consoleState": "Changes in review",
+  "quickChecks": "Running; changes sent for review when checks complete successfully",
+  "submissionAction": "Confirmed Send changes for review",
+  "submittedChanges": 43,
+  "productionAction": "Start full rollout",
+  "managedPublishing": false,
+  "approved": false,
+  "publicAvailabilityVerified": false,
+  "consoleUrl": "https://play.google.com/console/u/1/developers/6280481402178293168/app/4972990522498280751/publishing",
+  "screenshot": "/tmp/newsblur-16.0.5-play-submission.png"
+}

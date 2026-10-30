@@ -684,6 +684,17 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
             BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
+#if TARGET_OS_MACCATALYST
+            if (!self.window) {
+                // NewsBlurAppDelegate.m waits for SceneDelegate.swift to replace the reader retained after Command-W.
+                self.pendingFolder = nil;
+                self.pendingNotificationStory = isDailyBriefing ? nil : @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
+                self.pendingDailyBriefingStoryHash = isDailyBriefing ?
+                    [DailyBriefingStartupDecision pendingStoryHashForStoryHash:storyHash] : nil;
+                if (completionHandler) completionHandler();
+                return;
+            }
+#endif
             if (isDailyBriefing) {
                 self.pendingNotificationStory = nil;
                 [self openDailyBriefingWithStoryHash:storyHash];
@@ -1151,6 +1162,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                 appDelegate.cachedURL = nil;
                 if (![appDelegate.url isEqualToString:previousURL]) {
                     // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+                    [ListenStoryBridge stopForAccountChange];
                     [appDelegate clearNetworkManager];
                 }
             }];
@@ -1176,8 +1188,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)showKeyboardShortcuts {
-    [self hidePopover];
-
     if (@available(iOS 15.0, *)) {
         KeyboardShortcutsHostingController *shortcutsVC = [[KeyboardShortcutsHostingController alloc] init];
 
@@ -1188,8 +1198,11 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             shortcutsVC.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
-        [feedsNavigationController presentViewController:shortcutsVC animated:YES completion:^{
-            [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
+        // NewsBlurAppDelegate.m waits for the story settings popover before presenting its shortcuts dialog.
+        [self hidePopoverAnimated:YES completion:^{
+            [self.navigationControllerForPopover presentViewController:shortcutsVC animated:YES completion:^{
+                [[ThemeManager themeManager] addThemeGestureRecognizerToView:shortcutsVC.view];
+            }];
         }];
     }
 }
@@ -1522,6 +1535,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)showLogin {
     [self resetFeedSubscriptionForAccountChange];
+    // NewsBlurAppDelegate.m stops a story being read aloud so it can't carry over to the next account.
+    [ListenStoryBridge stopForAccountChange];
     [self.detailViewController resetDiscoveryForAccountChange];
     if (self.loginViewController.view.window != nil) {
         return;
@@ -2629,6 +2644,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)backgroundLoadNotificationStory {
+#if TARGET_OS_MACCATALYST
+    // NewsBlurAppDelegate.m preserves pending navigation when a late feed refresh finishes after the window closes.
+    if (!self.window) return;
+#endif
     NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
                                                                                 pendingFolder:self.pendingFolder];
 

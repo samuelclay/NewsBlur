@@ -38,18 +38,6 @@ def is_transient_llm_error(error):
     return status_code >= 500
 
 
-def is_refused_llm_error(error):
-    """
-    Did the provider refuse to serve the account: a bad key, no credits left, a spending
-    limit, or a rate limit? Retrying the same provider won't help, but another one can.
-    xAI answers 403 once its credits run out. apps/briefing/summary.py
-    """
-    status_code = getattr(error, "status_code", None)
-    if status_code is None:
-        status_code = getattr(error, "code", None)
-    return status_code in (401, 402, 403, 429)
-
-
 def _generate_with_retries(provider, messages, model_id, max_tokens, thinking_config, user_id):
     """Generate the summary, retrying transient LLM failures so a momentary outage doesn't cost
     the user their briefing for the day. The final failure is raised. apps/briefing/summary.py"""
@@ -423,6 +411,7 @@ def generate_briefing_summary(
             LLM_EXCEPTIONS,
             get_briefing_model_config,
             get_briefing_provider,
+            is_refused_llm_error,
         )
 
         model_name, model_config = get_briefing_model_config(model)
@@ -461,9 +450,9 @@ def generate_briefing_summary(
                 provider, messages, model_id, max_tokens, thinking_config, user_id
             )
         except LLM_EXCEPTIONS as e:
-            # summary.py: xAI refuses outright once its account runs out of credits or hits its
-            # spending limit. Users who picked Grok get their briefing from the default model
-            # instead of none at all.
+            # summary.py: SpaceXSI (formerly xAI) refuses outright once its account runs out of
+            # credits or hits its spending limit. Users who picked Grok get their briefing from
+            # the default model instead of none at all.
             if (
                 model_config.get("vendor") != "xai"
                 or model_name == DEFAULT_BRIEFING_MODEL
@@ -471,7 +460,7 @@ def generate_briefing_summary(
             ):
                 raise
             logging.info(
-                " ---> Briefing summary for user %s refused by xAI, using %s instead: %s"
+                " ---> Briefing summary for user %s refused by SpaceXSI, using %s instead: %s"
                 % (user_id, DEFAULT_BRIEFING_MODEL, str(e))
             )
             model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)

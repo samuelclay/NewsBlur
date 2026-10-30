@@ -242,27 +242,38 @@
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"newsblurOpenImageAt(%f, %f, %f, %f, %f)",
                                          pt.x, pt.y, offset.x, offset.y, self.webView.bounds.size.width] completionHandler:^(id openedImage, NSError *error) {
             if ([openedImage isKindOfClass:NSNumber.class] && [openedImage boolValue]) return;
-            [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-                // Special case to handle the story title, Train, Save, and Share buttons.
-                if ([self isTag:tagName equalTo:@"DIV"]) {
-                    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
-                        [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
-                            if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
-                                [self.appDelegate.storyPagesViewController tappedStory];
-                            }
-                        }];
-                    }];
-
-                    return;
-                }
-
-                // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
-                if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
-                    [self.appDelegate.storyPagesViewController tappedStory];
-                }
+            if (![self isKindOfClass:StoryDetailViewController.class]) {
+                [self continueTapAtPoint:pt];
+                return;
+            }
+            // Listen/ListenStoryBridge.swift jumps playback to a tapped paragraph of the story being read aloud.
+            [(StoryDetailViewController *)self listenHandleTapAt:pt completion:^(BOOL handled) {
+                if (!handled) [self continueTapAtPoint:pt];
             }];
         }];
     }
+}
+
+- (void)continueTapAtPoint:(CGPoint)pt {
+    [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
+        // Special case to handle the story title, Train, Save, and Share buttons.
+        if ([self isTag:tagName equalTo:@"DIV"]) {
+            [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'id');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *identifier, NSError *error) {
+                [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'outerHTML');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *outerHTML, NSError *error) {
+                    if ([identifier isEqualToString:@"NB-story"] || ![outerHTML containsString:@"NB-"]) {
+                        [self.appDelegate.storyPagesViewController tappedStory];
+                    }
+                }];
+            }];
+
+            return;
+        }
+
+        // Ignore links, videos, and iframes (e.g. embedded YouTube videos).
+        if (![@[@"A", @"IMG", @"VIDEO", @"IFRAME"] containsObject:tagName]) {
+            [self.appDelegate.storyPagesViewController tappedStory];
+        }
+    }];
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)gestureRecognizer {
@@ -1784,8 +1795,13 @@
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
 
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
+    // StoryDetailObjCViewController.m shows each story button unless it's hidden in preferences; the choices sync
+    // through the server's show_sideoption_* preferences (Listen/ListenPreferences.swift).
+    BOOL showTrain = [ListenStoryBridge showsStoryButton:@"train"];
+    BOOL showShare = [ListenStoryBridge showsStoryButton:@"share"];
+    BOOL showSave = [ListenStoryBridge showsStoryButton:@"save"];
+    BOOL showAskAI = [ListenStoryBridge showsStoryButton:@"ask_ai"];
+    BOOL showListen = [ListenStoryBridge showsStoryButton:@"listen"];
 
     // StoryDetailObjCViewController.m escapes the translated button labels for the story document. Each label is an
     // explicit NBLocalization call so localization/manage.py extracts it.
@@ -1793,45 +1809,64 @@
         return [translated stringByEncodingHTMLEntities];
     };
 
-    NSString *askAIButton = showAskAI ? [NSString stringWithFormat:@
-                             "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
-                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                             "      <span class=\"NB-sideoption-text\">%@</span>"
-                             "      <span class=\"NB-icon\"></span>"
-                             "    </div></a>"
-                             "  </div>", label([NBLocalization text:@"Ask AI"])] : @"";
+    NSMutableArray<NSString *> *buttons = [NSMutableArray array];
+    if (showTrain) {
+        [buttons addObject:[NSString stringWithFormat:@
+                            "  <div class='NB-share-button NB-train-button NB-button'>"
+                            "    <a href=\"http://ios.newsblur.com/train\"><div>"
+                            "      <span class=\"NB-sideoption-text\">%@</span>"
+                            "      <span class=\"NB-icon\"></span>"
+                            "    </div></a>"
+                            "  </div>", label([NBLocalization text:@"Train"])]];
+    }
+    if (showShare) {
+        [buttons addObject:[NSString stringWithFormat:@
+                            "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
+                            "    <a href=\"http://ios.newsblur.com/share\"><div>"
+                            "      <span class=\"NB-sideoption-text\">%@</span>"
+                            "      <span class=\"NB-icon\"></span>"
+                            "    </div></a>"
+                            "  </div>",
+                            isShared ? @"NB-button-active" : @"",
+                            isShared ? label([NBLocalization text:@"Shared"]) : label([NBLocalization text:@"Share"])]];
+    }
+    if (showSave) {
+        [buttons addObject:[NSString stringWithFormat:@
+                            "  <div class='NB-share-button NB-save-button NB-button %@'>"
+                            "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
+                            "      <span class=\"NB-sideoption-text\">%@</span>"
+                            "      <span class=\"NB-icon\"></span>"
+                            "    </div></a>"
+                            "  </div>",
+                            isSaved ? @"NB-button-active" : @"",
+                            isSaved ? label([NBLocalization text:@"Saved"]) : label([NBLocalization text:@"Save"])]];
+    }
+    if (showAskAI) {
+        [buttons addObject:[NSString stringWithFormat:@
+                            "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
+                            "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
+                            "      <span class=\"NB-sideoption-text\">%@</span>"
+                            "      <span class=\"NB-icon\"></span>"
+                            "    </div></a>"
+                            "  </div>", label([NBLocalization text:@"Ask AI"])]];
+    }
+    if (showListen) {
+        [buttons addObject:[ListenStoryBridge listenButtonHTMLForStory:self.activeStory]];
+    }
 
+    if (!buttons.count) {
+        return @"";
+    }
+
+    // storyDetailView.css wraps five buttons into rows of three and two on a portrait iPhone.
     NSString *sideOptions = [NSString stringWithFormat:@
-                             "<div class='NB-sideoptions'>"
+                             "<div class='NB-sideoptions%@'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                             "  <div class='NB-share-button NB-train-button NB-button'>"
-                             "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                             "      <span class=\"NB-sideoption-text\">%@</span>"
-                             "      <span class=\"NB-icon\"></span>"
-                             "    </div></a>"
-                             "  </div>"
-                             "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
-                             "    <a href=\"http://ios.newsblur.com/share\"><div>"
-                             "      <span class=\"NB-sideoption-text\">%@</span>"
-                             "      <span class=\"NB-icon\"></span>"
-                             "    </div></a>"
-                             "  </div>"
-                             "  <div class='NB-share-button NB-save-button NB-button %@'>"
-                             "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
-                             "      <span class=\"NB-sideoption-text\">%@</span>"
-                             "      <span class=\"NB-icon\"></span>"
-                             "    </div></a>"
-                             "  </div>"
                              "%@"
                              "</div></div></div>",
-                             label([NBLocalization text:@"Train"]),
-                             isShared ? @"NB-button-active" : @"",
-                             isShared ? label([NBLocalization text:@"Shared"]) : label([NBLocalization text:@"Share"]),
-                             isSaved ? @"NB-button-active" : @"",
-                             isSaved ? label([NBLocalization text:@"Saved"]) : label([NBLocalization text:@"Save"]),
-                             askAIButton
-                             ];
+                             buttons.count == 5 ? @" NB-sideoptions-five" : @"",
+                             [buttons componentsJoinedByString:@""]];
 
     return sideOptions;
 }
@@ -2826,6 +2861,16 @@
             [appDelegate openAskAIDialog:self.activeStory];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"listen"]) {
+            // StoryDetailObjCViewController.m starts, pauses or resumes reading this story aloud (Listen/ListenPlayer.swift).
+            [ListenStoryBridge toggleListenForStory:self.activeStory];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"listen-queue"]) {
+            // StoryDetailObjCViewController.m: the + beside Listen adds this story to Up Next, or takes it back off.
+            [ListenStoryBridge toggleQueueForStory:self.activeStory];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
@@ -3207,6 +3252,10 @@
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
     [self applyClassifierHighlights];
+    if ([self isKindOfClass:StoryDetailViewController.class]) {
+        // Listen/ListenStoryBridge.swift maps the story's paragraphs for follow-along when it's being read aloud.
+        [(StoryDetailViewController *)self listenStoryDidLoad];
+    }
     [self finishPreparingStoryPresentation];
 }
 
@@ -3882,26 +3931,41 @@
 }
 
 - (void)tryScrollingDown:(BOOL)down {
+    StoryPagesViewController *pages = appDelegate.storyPagesViewController;
+    if (!self.hasStory || self.pageIndex < 0 || !webView || webView.loading ||
+        (pages.currentPage && pages.currentPage != self)) return;
+
     UIScrollView *scrollView = webView.scrollView;
     CGPoint contentOffset = scrollView.contentOffset;
-    CGFloat frameHeight = scrollView.frame.size.height;
-    CGFloat scrollHeight = frameHeight - 45; // ~height of source bar and buttons
-    if (down) {
-        CGSize contentSize = scrollView.contentSize;
-        if (contentOffset.y + frameHeight == contentSize.height)
-            return;
-        contentOffset.y = MIN(contentOffset.y + scrollHeight, contentSize.height - frameHeight);
-    } else {
-        if (contentOffset.y <= 0)
-            return;
-        contentOffset.y = MAX(contentOffset.y - scrollHeight, 0);
+    UIEdgeInsets insets = scrollView.adjustedContentInset;
+    CGFloat viewportHeight = scrollView.bounds.size.height - insets.top - insets.bottom;
+    CGFloat contentHeight = scrollView.contentSize.height;
+    if (!isfinite(viewportHeight) || viewportHeight <= 0 ||
+        !isfinite(contentHeight) || contentHeight <= 0 || !isfinite(contentOffset.y)) return;
+
+    CGFloat top = -insets.top;
+    CGFloat bottom = MAX(top, contentHeight - scrollView.bounds.size.height + insets.bottom);
+    // StoryDetailObjCViewController.m checks the starting position so the final screen remains readable before advancing.
+    CGFloat boundaryTolerance = 0.5;
+    if (down && contentOffset.y >= bottom - boundaryTolerance) {
+        [pages doNextUnreadStory:nil];
+        return;
+    } else if (!down && contentOffset.y <= top + boundaryTolerance) {
+        [pages changeToPreviousPage:nil];
+        return;
     }
+
+    id preference = [[NSUserDefaults standardUserDefaults] objectForKey:@"space_scroll_spacing"];
+    double percentage = [preference respondsToSelector:@selector(doubleValue)] ? [preference doubleValue] : 40;
+    if (!isfinite(percentage) || percentage < 10 || percentage > 100) percentage = 40;
+    CGFloat scrollHeight = viewportHeight * percentage / 100.0;
+    contentOffset.y = MIN(bottom, MAX(top, contentOffset.y + (down ? scrollHeight : -scrollHeight)));
     if (CGPointEqualToPoint(contentOffset, scrollView.contentOffset)) return;
     // StoryDetailObjCViewController.m treats keyboard paging as user activity, including while a saved-position query is pending.
     self.storyScrollActivityGeneration++;
     self.awaitingStoryScrollRestoration = NO;
     hasScrolled = YES;
-    if (contentOffset.y > 0) self.hasScrolledAwayFromTop = YES;
+    if (contentOffset.y > top) self.hasScrolledAwayFromTop = YES;
     [scrollView setContentOffset:contentOffset animated:YES];
 }
 

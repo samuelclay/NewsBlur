@@ -1,0 +1,18 @@
+{
+  "version": "16.1",
+  "build": 351,
+  "status": "Waiting for Review",
+  "submissionId": "d2094525-7001-4d8a-ad40-913ca46b7ff6",
+  "submittedAt": "2026-10-29T15:03:53.754Z",
+  "automaticRelease": true,
+  "phasedRelease": false,
+  "ageRating": "13+",
+  "ageRatingApprovedByOwner": true,
+  "regionalRatings": {
+    "171 countries or regions": "13+",
+    "2 countries or regions": "16+",
+    "Korea, Republic of": "15+"
+  },
+  "legacyOSRating": "4+ with regional exceptions",
+  "screenshot": "/tmp/newsblur-ios-16.1-waiting-review.png"
+}

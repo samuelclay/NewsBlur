@@ -1,0 +1,138 @@
+{
+  "data": {
+    "type": "buildUploads",
+    "id": "c439a04c-8cc1-46cd-a69f-b038ada0ef54",
+    "attributes": {
+      "cfBundleVersion": "352",
+      "createdDate": "2026-10-29T12:22:02-07:00",
+      "state": {
+        "errors": [],
+        "warnings": [],
+        "infos": [],
+        "state": "COMPLETE"
+      },
+      "cfBundleShortVersionString": "16.1",
+      "uploadedDate": "2026-10-29T12:24:24-07:00",
+      "platform": "MAC_OS"
+    },
+    "relationships": {
+      "buildUploadFiles": {
+        "links": {
+          "self": "https://api.appstoreconnect.apple.com/v1/buildUploads/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/buildUploadFiles",
+          "related": "https://api.appstoreconnect.apple.com/v1/buildUploads/c439a04c-8cc1-46cd-a69f-b038ada0ef54/buildUploadFiles"
+        }
+      },
+      "build": {
+        "data": {
+          "type": "builds",
+          "id": "c439a04c-8cc1-46cd-a69f-b038ada0ef54"
+        }
+      }
+    },
+    "links": {
+      "self": "https://api.appstoreconnect.apple.com/v1/buildUploads/c439a04c-8cc1-46cd-a69f-b038ada0ef54"
+    }
+  },
+  "included": [
+    {
+      "type": "builds",
+      "id": "c439a04c-8cc1-46cd-a69f-b038ada0ef54",
+      "attributes": {
+        "minOsVersion": "26.0",
+        "processingState": "VALID",
+        "buildAudienceType": "APP_STORE_ELIGIBLE",
+        "expired": false,
+        "lsMinimumSystemVersion": "26.0",
+        "iconAssetToken": {
+          "templateUrl": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/f8/d0/86/f8d08687-d242-d459-ec72-8c55c625ae4a/AppIcon.icns/{w}x{h}bb.{f}",
+          "width": 256,
+          "height": 256
+        },
+        "usesNonExemptEncryption": false,
+        "uploadedDate": "2026-10-29T12:29:43-07:00",
+        "version": "352",
+        "computedMinVisionOsVersion": null,
+        "computedMinMacOsVersion": null,
+        "expirationDate": "2027-01-27T11:29:43-08:00"
+      },
+      "relationships": {
+        "individualTesters": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/individualTesters",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/individualTesters"
+          }
+        },
+        "betaGroups": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/betaGroups"
+          }
+        },
+        "app": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/app",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/app"
+          }
+        },
+        "preReleaseVersion": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/preReleaseVersion",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/preReleaseVersion"
+          }
+        },
+        "betaAppReviewSubmission": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/betaAppReviewSubmission",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/betaAppReviewSubmission"
+          }
+        },
+        "appStoreVersion": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/appStoreVersion",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/appStoreVersion"
+          }
+        },
+        "perfPowerMetrics": {
+          "links": {
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/perfPowerMetrics"
+          }
+        },
+        "appEncryptionDeclaration": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/appEncryptionDeclaration",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/appEncryptionDeclaration"
+          }
+        },
+        "buildBetaDetail": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/buildBetaDetail",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/buildBetaDetail"
+          }
+        },
+        "icons": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/icons",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/icons"
+          }
+        },
+        "diagnosticSignatures": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/diagnosticSignatures",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/diagnosticSignatures"
+          }
+        },
+        "betaBuildLocalizations": {
+          "links": {
+            "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/relationships/betaBuildLocalizations",
+            "related": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54/betaBuildLocalizations"
+          }
+        }
+      },
+      "links": {
+        "self": "https://api.appstoreconnect.apple.com/v1/builds/c439a04c-8cc1-46cd-a69f-b038ada0ef54"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.appstoreconnect.apple.com/v1/buildUploads/c439a04c-8cc1-46cd-a69f-b038ada0ef54?include=build"
+  }
+}

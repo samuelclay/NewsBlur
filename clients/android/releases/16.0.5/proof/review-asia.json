@@ -1,0 +1,42 @@
+{
+  "reviewer": "coordinator",
+  "independent_of": "translate_asia",
+  "status": "passed",
+  "languages": [
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "scope": "All Android listing, subscription and 16.0.5 release text, including retained fields",
+  "checks": [
+    "Meaning and completeness against English",
+    "Natural phrasing and distinct Simplified/Traditional Chinese scripts",
+    "NewsBlur branding and exact URLs",
+    "Account plan qualifications and subscription entitlements retained",
+    "Release claims match crash audit"
+  ],
+  "findings": [],
+  "files": {
+    "clients/store/metadata/vi.json": "a834d40c349c94af9a1b54df5b51f48655f732c26145602f08356699ee46e959",
+    "clients/store/products/vi.json": "5b3c37e50839c66aa1a09bdea1c2392989dde18306c2eb8b428fd89f5cfcda52",
+    "clients/store/releases/16.0.5/vi.json": "76e8159e735a839ef6c6b30d60686b3d056faeb9a8bf9cf8079fa581c5a745c6",
+    "clients/store/metadata/th.json": "8bed9ac8ff0c3e0c3660889f7535a985caa760a571f78d1364303b7ca05bd7ec",
+    "clients/store/products/th.json": "568457d0a9c5b9644bb5120d96e7e883bb585e2e7c62b777eeea52bd7a0c770c",
+    "clients/store/releases/16.0.5/th.json": "0f3d05c05406f24da779d2521e175c6f6a46403c6281985cef6eafc24d849153",
+    "clients/store/metadata/ja.json": "b00290a3f499a73b497aff6394ddd52231d29caddafd7e746b236708603166ae",
+    "clients/store/products/ja.json": "8149c71d9afe66f644886bb64ece8e1b2682613b5818956c73c8f8e89204df70",
+    "clients/store/releases/16.0.5/ja.json": "d02fe5a7e5bcf5691c9d74f4b695a285e72f8fdf12644900e0b13b176eeaeb89",
+    "clients/store/metadata/ko.json": "dccb55267554bddc855d7c24abb8a43cc6324c439b9cec715caeaf3ecaf84bf9",
+    "clients/store/products/ko.json": "c1a6f717067b1542c9bc3dd02cb739a6e42128e160b3edb57ed340ee00884cd1",
+    "clients/store/releases/16.0.5/ko.json": "1a23d1329ca0615be07eb23993bb28f45459c6f0907225ba994eb54c1967475b",
+    "clients/store/metadata/zh-Hans.json": "0aefc8d02f02388c99018c578f187e6b02aa1006506cca006439bdf8395e437b",
+    "clients/store/products/zh-Hans.json": "59fb37a31da374f96f2658d6f7b7782c6c1d909b436dd73caafb497242deea59",
+    "clients/store/releases/16.0.5/zh-Hans.json": "546b5938d52570aa7941d969017819ee93702e36f734d340eb01916b685f9218",
+    "clients/store/metadata/zh-Hant.json": "6c6f2fc9e20727628c0933bfd8bea8fad771f02dc353d83e7718dbe115ee115f",
+    "clients/store/products/zh-Hant.json": "b688e4d7f0db6f3cbd05d5f0ffb6f70802fadcd4be753340f7fadd3fbb8d65ab",
+    "clients/store/releases/16.0.5/zh-Hant.json": "263df7ec984da89a65b807515b8b605da1fc3c6059e863bb40bf5461c7003789"
+  }
+}

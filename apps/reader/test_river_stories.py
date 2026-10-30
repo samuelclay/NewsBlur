@@ -26,6 +26,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     MClassifierUrl,
 )
+from apps.profile.middleware import SQLLogToConsoleMiddleware
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.search.models import SearchStory
@@ -33,7 +34,11 @@ from apps.statistics.rtrending import RTrendingStory
 from utils import json_functions as json
 
 
+# DEBUG_QUERIES turns on query recording and the Redis instrumentation these tests count. The console
+# logger would read the recorded queries and turn recording off at the end of each request
+# (apps/profile/middleware.py), so it passes responses through and count_queries reads them instead.
 @override_settings(DEBUG_QUERIES=True)
+@patch.object(SQLLogToConsoleMiddleware, "process_response", lambda self, request, response: response)
 class Test_RiverStories(TransactionTestCase):
     """
     Test river stories endpoint with query counting to prevent performance regressions.

@@ -1,0 +1,89 @@
+{
+  "reviewer": "mac_copy_central",
+  "role": "Independent reviewer; did not produce this batch",
+  "source": "clients/store/metadata/en.json macos; clients/store/releases/16.0.1/en.json macos; clients/store/products/en.json ios",
+  "scope": [
+    "all Mac listing fields",
+    "Mac 16.0.1 release notes",
+    "shared Apple subscription and group names/descriptions"
+  ],
+  "checks": [
+    "meaning and omission comparison",
+    "natural language and script",
+    "glossary terminology and register",
+    "Space/Shift-Space direction and story boundary behavior",
+    "window size/position persistence",
+    "brand and URL preservation",
+    "unchanged shared name/subtitle and non-Mac keys",
+    "Apple character limits and UTF-8 keyword byte limits"
+  ],
+  "corrections": [
+    {
+      "language": "id",
+      "field": "macos.whats_new",
+      "old": "artikel belum dibaca berikutnya",
+      "new": "artikel berikutnya yang belum dibaca",
+      "reason": "Natural Indonesian modifier order for next unread story."
+    },
+    {
+      "language": "vi",
+      "field": "macos.description and macos.whats_new",
+      "old": "Shift-phím cách",
+      "new": "Shift + phím cách",
+      "reason": "Make the combined key press clearer in Vietnamese prose."
+    }
+  ],
+  "remaining_findings": [],
+  "product_changes_needed": false,
+  "locales": [
+    {
+      "language": "id",
+      "status": "passed",
+      "macos_listing_sha256": "638b2e793b95d4885729d5c80a96d5703854cd08463b4578425a9759c59e7c61",
+      "macos_release_sha256": "9023fd00ea2ec27a2b72c77807f415a0b355792507205106091529a8fe8ae239",
+      "apple_products_sha256": "77b7c4aed8616dc956317899a3df0b2baa4d0808644e000c5b62886c45ea16d5"
+    },
+    {
+      "language": "vi",
+      "status": "passed",
+      "macos_listing_sha256": "31a3849644d652895558d3652c9cf5307e31ae03b9508978c7885fffb01baac2",
+      "macos_release_sha256": "ca8568b5aa733f10021d40638b9cbc8829eac501a42f0b12852e31dc32145875",
+      "apple_products_sha256": "973113a10076e0d62fffde5365c2a30dc7957256d54c6d79b3f487a1fd5e77ad"
+    },
+    {
+      "language": "th",
+      "status": "passed",
+      "macos_listing_sha256": "5c03a271dfb6431018b982e49681efc02a92949a5ee2e99737dea2b1439b4375",
+      "macos_release_sha256": "2284b818b855197df9aa35083391001c55fe86ff69a3acbc265109f6274484c7",
+      "apple_products_sha256": "50954e38cb880237c4bb55b27345babbcb73e7d9175eadcea689a591997613ff"
+    },
+    {
+      "language": "ja",
+      "status": "passed",
+      "macos_listing_sha256": "39fe67dc3064202b0330a9b8f824ea1449128d24e9df90405fd03572f292f2ec",
+      "macos_release_sha256": "f65c86b8fc0eba34dbe0fba3ac186645d2c529315619c863e0ed41b332fbb848",
+      "apple_products_sha256": "a7fbdf7a89c669de0b9a8a63d7fb9fe49003e990b4733da4402a17f3672030ce"
+    },
+    {
+      "language": "ko",
+      "status": "passed",
+      "macos_listing_sha256": "ab6e03084023a7a3993d8fe7863f13fe4ed0dca770fc14e90cdbec1cf48325ff",
+      "macos_release_sha256": "12e3952ebee07b6745fbe12d1a9b814e94fe8524569918ee859210988ee26276",
+      "apple_products_sha256": "f058e365e7d15f1fa4273cdf6a1340fca60884ba14f168b2c762caa4b08fcc0f"
+    },
+    {
+      "language": "zh-Hans",
+      "status": "passed",
+      "macos_listing_sha256": "8d0fc5478f6e9c52b77837eaaff107a7a70c8e558810576608b9b664a98a4014",
+      "macos_release_sha256": "43599a8b9d5705388d9eb81c177ecaa419ed45df00d54a39351eddb4cbae12ef",
+      "apple_products_sha256": "9400ba2a13ba49d0a3bce7aa80ef3ee1f02b425d964eaa9e3ea2906a1707891e"
+    },
+    {
+      "language": "zh-Hant",
+      "status": "passed",
+      "macos_listing_sha256": "f00e11ebc6f57b3e2d56a471feade2e7a8c8df7a1c1c3b6c198c41e2fee8b052",
+      "macos_release_sha256": "33668c9e7edebd7d34d19f2e601adf4bce8a75c3ba6346cf39757bd6efc1760c",
+      "apple_products_sha256": "98871f8e9c55491ac20821699de0ddcb238858d5e34dbf5fb564789be7c58ecc"
+    }
+  ]
+}

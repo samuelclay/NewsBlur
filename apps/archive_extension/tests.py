@@ -380,6 +380,36 @@ class Test_ContentExtraction(TestCase):
 
 
 # =============================================================================
+# Unit Tests: AI Categorization
+# =============================================================================
+
+
+class Test_AICategorization(TestCase):
+    """_categorize_single_archive in apps/archive_extension/tasks.py."""
+
+    @patch("apps.ask_ai.providers.AnthropicProvider.is_configured", return_value=True)
+    @patch("anthropic.Anthropic")
+    def test_reads_categories_after_a_leading_thinking_block(self, mock_anthropic, mock_configured):
+        """Haiku 5.5 thinks by default, so the answer is not always content[0]."""
+        from apps.archive_extension.tasks import _categorize_single_archive
+
+        archive = MagicMock(title="Asyncio in depth", domain="example.com")
+        archive.get_content.return_value = "A long look at Python's asyncio event loop."
+        mock_anthropic.return_value.messages.create.return_value = MagicMock(
+            content=[
+                MagicMock(type="thinking", thinking="", signature="sig"),
+                MagicMock(type="text", text="Python, Concurrency"),
+            ]
+        )
+
+        categories = _categorize_single_archive(archive, user_categories=[])
+
+        self.assertEqual(categories, ["Python", "Concurrency"])
+        create_kwargs = mock_anthropic.return_value.messages.create.call_args.kwargs
+        self.assertEqual(create_kwargs["extra_body"], {"output_config": {"effort": "low"}})
+
+
+# =============================================================================
 # Unit Tests: Content Storage Decision
 # =============================================================================
 

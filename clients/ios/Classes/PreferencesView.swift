@@ -417,10 +417,18 @@ class PreferencesViewModel: ObservableObject {
         )
     }
 
+    /// PreferencesView.swift redraws once per main-queue turn however many UserDefaults writes land in it.
+    private var isRefreshScheduled = false
+
     @objc private func settingDidChange(_ notification: Notification) {
         DispatchQueue.main.async {
-            self.updateHiddenKeys()
-            self.refreshTrigger.toggle()
+            guard !self.isRefreshScheduled else { return }
+            self.isRefreshScheduled = true
+            DispatchQueue.main.async {
+                self.isRefreshScheduled = false
+                self.updateHiddenKeys()
+                self.refreshTrigger.toggle()
+            }
         }
     }
 
@@ -461,7 +469,10 @@ class PreferencesViewModel: ObservableObject {
             hidden.formUnion(["story_title_swipe_left", "story_title_swipe_right"])
         }
 
-        hiddenKeys = hidden
+        // PreferencesView.swift publishes hidden keys only when they change, so other settings don't redraw every row.
+        if hidden != hiddenKeys {
+            hiddenKeys = hidden
+        }
     }
 
     func shouldShow(key: String) -> Bool {
@@ -946,6 +957,18 @@ class PreferencesViewModel: ObservableObject {
                 iconColor: .green,
                 items: [
                     PreferenceItem(
+                        title: NBLocalization.text("Space scroll amount"),
+                        icon: "keyboard",
+                        iconColor: .green,
+                        type: .multiValue(
+                            key: KeyboardPagingPreferences.key,
+                            titles: KeyboardPagingPreferences.percentages.map { KeyboardPagingPreferences.title(for: $0) },
+                            values: KeyboardPagingPreferences.percentages,
+                            defaultValue: KeyboardPagingPreferences.defaultPercentage
+                        ),
+                        subtitle: NBLocalization.text("Percentage of the visible story scrolled by Space or Shift-Space")
+                    ),
+                    PreferenceItem(
                         title: NBLocalization.text("Scroll horizontally"),
                         icon: "arrow.left.arrow.right.square",
                         iconColor: .green,
@@ -992,12 +1015,100 @@ class PreferencesViewModel: ObservableObject {
                         icon: "arrow.down.to.line.compact",
                         iconColor: .orange,
                         type: .toggle(key: "story_autoscroll", defaultValue: false)
+                    )
+                ]
+            ),
+
+            // MARK: Story Buttons Section
+            // PreferencesView.swift's story button toggles sync across devices (Listen/ListenPreferences.swift).
+            PreferenceSection(
+                title: NBLocalization.text("Story Buttons"),
+                icon: "rectangle.grid.1x2",
+                iconColor: .orange,
+                footerText: NBLocalization.text("Choose the buttons shown below each story. Your choices sync to your other devices."),
+                items: [
+                    PreferenceItem(
+                        title: NBLocalization.text("Show Train"),
+                        icon: "brain",
+                        iconColor: .purple,
+                        type: .toggle(key: "show_sideoption_train", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Show Share"),
+                        icon: "square.and.arrow.up",
+                        iconColor: .blue,
+                        type: .toggle(key: "show_sideoption_share", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Show Save"),
+                        icon: "bookmark",
+                        iconColor: .green,
+                        type: .toggle(key: "show_sideoption_save", defaultValue: true)
                     ),
                     PreferenceItem(
                         title: NBLocalization.text("Show Ask AI"),
                         icon: "sparkles",
                         iconColor: Color(red: 0.85, green: 0.45, blue: 0.37),
                         type: .toggle(key: "show_ask_ai", defaultValue: true)
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Show Listen"),
+                        icon: "headphones",
+                        iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
+                        type: .toggle(key: "show_sideoption_listen", defaultValue: true)
+                    )
+                ]
+            ),
+
+            // MARK: Listen Section
+            PreferenceSection(
+                title: NBLocalization.text("Listen"),
+                icon: "headphones",
+                iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
+                items: [
+                    PreferenceItem(
+                        title: NBLocalization.text("Voice"),
+                        icon: "person.wave.2",
+                        iconColor: Color(red: 0.55, green: 0.35, blue: 0.85),
+                        type: .button(key: "listen_voice", action: "listenVoice")
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Delivery"),
+                        icon: "waveform",
+                        iconColor: .indigo,
+                        type: .multiValue(
+                            key: ListenPreferences.deliveryKey,
+                            titles: [NBLocalization.text("Steady"), NBLocalization.text("Natural"),
+                                     NBLocalization.text("Expressive"), NBLocalization.text("Custom")],
+                            values: ["steady", "natural", "expressive", "custom"],
+                            defaultValue: "natural"
+                        )
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Speed"),
+                        icon: "speedometer",
+                        iconColor: .orange,
+                        type: .multiValue(
+                            key: ListenPreferences.speedKey,
+                            titles: Self.listenSpeedChoices.map { ListenFormat.speed($0) },
+                            values: Self.listenSpeedChoices.map { ListenPreferences.speedString($0) },
+                            defaultValue: ListenPreferences.speedString(1)
+                        ),
+                        subtitle: NBLocalization.text("Set an exact speed under Voice")
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Auto-continue"),
+                        icon: "forward.end",
+                        iconColor: .green,
+                        type: .toggle(key: ListenPreferences.autoContinueKey, defaultValue: true),
+                        subtitle: NBLocalization.text("Mark the story read and play the next unread story")
+                    ),
+                    PreferenceItem(
+                        title: NBLocalization.text("Follow along"),
+                        icon: "text.line.first.and.arrowtriangle.forward",
+                        iconColor: .yellow,
+                        type: .toggle(key: ListenPreferences.highlightKey, defaultValue: true),
+                        subtitle: NBLocalization.text("Highlight the paragraph being read")
                     )
                 ]
             ),
@@ -1184,6 +1295,18 @@ class PreferencesViewModel: ObservableObject {
                                pickerTitle: NBLocalization.text("Swipe from the left edge while reading"))
             ])
         ])
+    }
+
+    /// The Listen speed presets, plus a speed tuned to the hundredth elsewhere so the row shows it
+    /// (Listen/ListenSpeedControl.swift).
+    private static var listenSpeedChoices: [Double] {
+        var choices = ListenSpeed.presets
+        let current = ListenPreferences.speed
+        if !choices.contains(where: { ListenSpeed.isSame($0, current) }) {
+            choices.append(current)
+            choices.sort()
+        }
+        return choices
     }
 
     private func getAppVersion() -> String {
@@ -2006,20 +2129,22 @@ struct ButtonItemView: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
+            // PreferencesView.swift makes the whole row tappable, not just its title.
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .onAppear {
-            // Check for dynamic button label
-            if let label = UserDefaults.standard.string(forKey: key), !label.isEmpty {
-                buttonLabel = label
-            }
-        }
+        .onAppear(perform: refreshLabel)
+        // PreferencesView.swift hears every UserDefaults write in the app here, so the label only changes when the
+        // stored text does; assigning it each time redrew every button row on each write.
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-            if let label = UserDefaults.standard.string(forKey: key), !label.isEmpty {
-                buttonLabel = label
-            } else {
-                buttonLabel = ""
-            }
+            refreshLabel()
+        }
+    }
+
+    private func refreshLabel() {
+        let label = UserDefaults.standard.string(forKey: key) ?? ""
+        if label != buttonLabel {
+            buttonLabel = label
         }
     }
 }

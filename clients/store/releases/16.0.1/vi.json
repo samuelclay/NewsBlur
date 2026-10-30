@@ -1,5 +1,8 @@
 {
   "android": {
     "release_notes": "Các nút điều khiển trên máy tính bảng đã trở lại: mở riêng danh sách nguồn cấp, danh sách tiêu đề hoặc bài viết ở chế độ toàn màn hình. Kéo các đường phân cách để đổi kích thước khung; NewsBlur ghi nhớ chiều rộng của từng khung.\n\nBao gồm hỗ trợ 21 ngôn ngữ giao diện và nút chuyển bài viết tiếp theo ở vị trí cố định từ phiên bản 16.0."
+  },
+  "macos": {
+    "whats_new": "Bản cập nhật này giúp bạn đọc thoải mái hơn trên Mac.\n\nPhím cách cuộn bài viết xuống, rồi chuyển sang bài viết chưa đọc tiếp theo khi bạn đến cuối bài. Shift + phím cách cuộn lên và trở về bài viết trước đó khi bạn ở đầu bài. Chọn khoảng cuộn cho mỗi lần nhấn trong Tùy chọn hoặc Phím tắt.\n\nMở Phím tắt ngay từ menu cài đặt bài viết.\n\nNewsBlur giờ đây ghi nhớ kích thước và vị trí cửa sổ khi bạn thoát rồi mở lại ứng dụng.\n\nTên các mô hình trong Hỏi AI cũng đã được cập nhật."
   }
 }

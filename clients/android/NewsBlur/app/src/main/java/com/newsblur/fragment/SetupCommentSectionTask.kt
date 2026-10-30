@@ -269,51 +269,31 @@ class SetupCommentSectionTask(
             commentGrid.addView(image)
         }
         if (allCommentCount > 0) {
-            var countText = context.getString(R.string.friends_comments_count)
-            if (allCommentCount == 1) {
-                countText = countText.substring(0, countText.length - 1)
-            }
-            headerCommentTotal.text = String.format(countText, allCommentCount)
+            headerCommentTotal.text = context.resources.getQuantityString(R.plurals.friends_comments_count, allCommentCount, allCommentCount)
             headerCommentTotal.visibility = View.VISIBLE
         } else {
             headerCommentTotal.visibility = View.GONE
         }
         if (allShareCount > 0) {
-            var countText = context.getString(R.string.friends_shares_count)
-            if (allShareCount == 1) {
-                countText = countText.substring(0, countText.length - 1)
-            }
-            headerShareTotal.text = String.format(countText, allShareCount)
+            headerShareTotal.text = context.resources.getQuantityString(R.plurals.friends_shares_count, allShareCount, allShareCount)
             headerShareTotal.visibility = View.VISIBLE
         } else {
             headerShareTotal.visibility = View.GONE
         }
         if (publicCommentCount > 0) {
-            var commentCount = context.getString(R.string.public_comment_count)
-            if (publicCommentCount == 1) {
-                commentCount = commentCount.substring(0, commentCount.length - 1)
-            }
-            publicCommentTotal.text = String.format(commentCount, publicCommentCount)
+            publicCommentTotal.text = context.resources.getQuantityString(R.plurals.public_comment_count, publicCommentCount, publicCommentCount)
             view.findViewById<View>(R.id.reading_public_comment_header).visibility = View.VISIBLE
         } else {
             view.findViewById<View>(R.id.reading_public_comment_header).visibility = View.GONE
         }
         if (friendCommentCount > 0) {
-            var commentCount = context.getString(R.string.friends_comments_count)
-            if (friendCommentCount == 1) {
-                commentCount = commentCount.substring(0, commentCount.length - 1)
-            }
-            friendCommentTotal.text = String.format(commentCount, friendCommentCount)
+            friendCommentTotal.text = context.resources.getQuantityString(R.plurals.friends_comments_count, friendCommentCount, friendCommentCount)
             view.findViewById<View>(R.id.reading_friend_comment_header).visibility = View.VISIBLE
         } else {
             view.findViewById<View>(R.id.reading_friend_comment_header).visibility = View.GONE
         }
         if (friendShareCount > 0) {
-            var commentCount = context.getString(R.string.friends_shares_count)
-            if (friendShareCount == 1) {
-                commentCount = commentCount.substring(0, commentCount.length - 1)
-            }
-            friendShareTotal.text = String.format(commentCount, friendShareCount)
+            friendShareTotal.text = context.resources.getQuantityString(R.plurals.friends_shares_count, friendShareCount, friendShareCount)
             view.findViewById<View>(R.id.reading_friend_emptyshare_header).visibility = View.VISIBLE
         } else {
             view.findViewById<View>(R.id.reading_friend_emptyshare_header).visibility = View.GONE

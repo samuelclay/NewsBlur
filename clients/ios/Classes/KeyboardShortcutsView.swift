@@ -8,6 +8,20 @@
 
 import SwiftUI
 
+// KeyboardShortcutsView.swift shares the paging choices with PreferencesView.swift.
+enum KeyboardPagingPreferences {
+    static let key = "space_scroll_spacing"
+    static let defaultPercentage = 40
+    static let percentages = Array(stride(from: 10, through: 100, by: 10))
+
+    static func title(for percentage: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.locale = Locale(identifier: NBLocalization.resolvedLanguage)
+        return formatter.string(from: NSNumber(value: Double(percentage) / 100)) ?? "\(percentage)%"
+    }
+}
+
 // MARK: - Keyboard Shortcuts Colors (Theme-aware)
 
 @available(iOS 15.0, *)
@@ -126,14 +140,15 @@ private func shortcutSections() -> [ShortcutSection] {
             KeyboardShortcut(keys: ["K"], description: NBLocalization.text("Previous story")),
             KeyboardShortcut(keys: ["N"], description: NBLocalization.text("Next unread story")),
             KeyboardShortcut(keys: ["\u{21E7}", "\u{21A9}"], description: NBLocalization.text("Text view")),
-            KeyboardShortcut(keys: ["space"], description: NBLocalization.text("Page down")),
-            KeyboardShortcut(keys: ["\u{21E7}", "space"], description: NBLocalization.text("Page up")),
+            KeyboardShortcut(keys: ["space"], description: NBLocalization.text("Page down; next unread story at the bottom")),
+            KeyboardShortcut(keys: ["\u{21E7}", "space"], description: NBLocalization.text("Page up; previous story at the top")),
             KeyboardShortcut(keys: ["U"], description: NBLocalization.text("Toggle read/unread")),
             KeyboardShortcut(keys: ["S"], description: NBLocalization.text("Save/unsave story")),
             KeyboardShortcut(keys: ["O"], description: NBLocalization.text("Open in browser")),
             KeyboardShortcut(keys: ["\u{21E7}", "S"], description: NBLocalization.text("Share story")),
             KeyboardShortcut(keys: ["C"], description: NBLocalization.text("Scroll to comments")),
             KeyboardShortcut(keys: ["T"], description: NBLocalization.text("Open story trainer")),
+            KeyboardShortcut(keys: ["Y"], description: NBLocalization.text("Listen to story")),
         ]),
     ]
 }
@@ -193,6 +208,7 @@ private struct ShortcutRowView: View {
 @available(iOS 15.0, *)
 struct KeyboardShortcutsView: View {
     @State private var selectedTab = 0
+    @AppStorage(KeyboardPagingPreferences.key) private var scrollPercentage = KeyboardPagingPreferences.defaultPercentage
     let onDismiss: (() -> Void)?
 
     private let sections = shortcutSections()
@@ -204,6 +220,10 @@ struct KeyboardShortcutsView: View {
                     .padding(.top, 8)
 
                 ScrollView {
+                    pagingPreferences
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+
                     LazyVStack(alignment: .leading, spacing: 0) {
                         let section = sections[selectedTab]
                         ForEach(Array(section.shortcuts.enumerated()), id: \.element.id) { index, shortcut in
@@ -239,6 +259,34 @@ struct KeyboardShortcutsView: View {
             }
         }
         .navigationViewStyle(.stack)
+    }
+
+    private var pagingPreferences: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(NBLocalization.text("Space scroll amount"))
+                Spacer()
+                Picker(NBLocalization.text("Space scroll amount"), selection: $scrollPercentage) {
+                    ForEach(KeyboardPagingPreferences.percentages, id: \.self) { percentage in
+                        Text(KeyboardPagingPreferences.title(for: percentage)).tag(percentage)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .tint(ShortcutsColors.tabActive)
+                .accessibilityIdentifier(KeyboardPagingPreferences.key)
+            }
+
+            Text(NBLocalization.text("Space and Shift-Space scroll by this percentage of the visible story. At the bottom, Space opens the next unread story. At the top, Shift-Space opens the previous story."))
+                .font(.system(size: 12))
+                .foregroundColor(ShortcutsColors.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .font(.system(size: 14))
+        .foregroundColor(ShortcutsColors.textPrimary)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 10).fill(ShortcutsColors.cardBackground))
     }
 
     private var tabBar: some View {

@@ -1,0 +1,62 @@
+{
+  "version": "16.0.1",
+  "platform": "macos",
+  "agent": "mac_copy_west",
+  "source": "clients/store/metadata/en.json and clients/store/releases/16.0.1/en.json",
+  "languages": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl"
+  ],
+  "scope": "Translated changed Mac description, promotional text and complete release notes. Reviewed all Mac listing fields and shared iOS product translations against English. Preserved shared names/subtitles, non-Mac keys, URLs, product IDs, billing and plan facts.",
+  "product_findings": [],
+  "independent_review": "Pending separate agent",
+  "validation": [
+    {
+      "language": "es",
+      "promotional_text_length": 128,
+      "whats_new_length": 577,
+      "description_length": 2643
+    },
+    {
+      "language": "fr",
+      "promotional_text_length": 120,
+      "whats_new_length": 631,
+      "description_length": 2879
+    },
+    {
+      "language": "de",
+      "promotional_text_length": 123,
+      "whats_new_length": 553,
+      "description_length": 2778
+    },
+    {
+      "language": "pt-BR",
+      "promotional_text_length": 122,
+      "whats_new_length": 534,
+      "description_length": 2507
+    },
+    {
+      "language": "it",
+      "promotional_text_length": 135,
+      "whats_new_length": 595,
+      "description_length": 2675
+    },
+    {
+      "language": "nl",
+      "promotional_text_length": 123,
+      "whats_new_length": 513,
+      "description_length": 2520
+    },
+    {
+      "language": "pl",
+      "promotional_text_length": 118,
+      "whats_new_length": 521,
+      "description_length": 2603
+    }
+  ]
+}

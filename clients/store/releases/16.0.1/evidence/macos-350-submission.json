@@ -1,0 +1,62 @@
+{
+  "version": "16.0.1",
+  "build": "350",
+  "platform": "macOS",
+  "source_base_commit": "ed451a3cda07cff7d84c48e780addca044a40698",
+  "source_status": "Committed after submission; recorded source hashes match the submitted archive",
+  "source_patch": "/tmp/newsblur-mac-350-source.patch",
+  "source_patch_sha256": "c563db20ebe389548eda00ee6281c8864879a75d85fe7b1e5ffb05565256e834",
+  "source_files_sha256": {
+    "clients/ios/Classes/FeedDetailObjCViewController.h": "877bd5eb8545e889a414b6588e67a2cb60aa693f0fa5c5402fe18db2cf7e7475",
+    "clients/ios/Classes/FeedDetailObjCViewController.m": "6ca6cf049775ef44a423152355053a5f2599f5fc1d3c79b144911b71cd7215e5",
+    "clients/ios/Classes/StoryPagesObjCViewController.m": "1e49368e8843a326b5ba4551ce6a1b7be3c9387eadcd65b2d109babe91a1081a",
+    "clients/ios/NewsBlur.xcodeproj/project.pbxproj": "1c22b6d1d7fadae012a7a205244ae192da4adbc888878a3df4fc069b71052cfa",
+    "clients/ios/NewsBlurTests/StoryDetailLoadingTests.swift": "f497e3bf7b5e4a7b2e64b935d876a6c6708cd29ac105dbf0ed43e6260206ab43"
+  },
+  "toolchain": "Xcode 27.0 (27A266a)",
+  "archive": "/tmp/NewsBlur-Mac-16.0.1-350.xcarchive",
+  "architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "archive_validation": "Succeeded; app and both extensions build 350; codesign deep strict verification passed",
+  "app_executable_sha256": "dffa32a009b95cdf04518c9cc34303147075f05186586099981b7607164657c1",
+  "upload": "Succeeded",
+  "state": "WAITING_FOR_REVIEW",
+  "previous_submission_id": "444ea2ba-5077-44fe-af3d-4c614f03f7dd",
+  "previous_submission_state": "Cancelled on October 25; Mac version became Developer Rejected before build replacement",
+  "validation": {
+    "focused_mac_tests": 30,
+    "final_failures": 0,
+    "test_note": "29 of 30 initially passed; the failing animation sample-count check passed unchanged on focused rerun, alongside the new selection matrix. Initial run missed 204ms of display-link frames.",
+    "test_logs": [
+      "/tmp/newsblur-immediate-read-before.log",
+      "/tmp/newsblur-immediate-read-after.log",
+      "/tmp/newsblur-immediate-read-focused.log"
+    ],
+    "runtime_ui": "Updated Alpha installed and running; final manual screenshot unavailable because native automation could not access the window",
+    "store_validation": "21 languages, 294 fields",
+    "store_regression_tests": "12 tests, 85 assertions, 0 failures"
+  },
+  "listing": "Same-version localized copy and artwork retained from build 349",
+  "publicly_available": false,
+  "upload_log": "/tmp/newsblur-mac-350-upload-retry.log",
+  "uploaded_at": "2026-10-25T08:18:50-07:00",
+  "processing": "Complete",
+  "build_id": "0bce538f-e31a-4b16-a8fb-5ae1347e937a",
+  "submission_id": "4087e003-91e5-4bd3-ab82-7643bbb1d6a8",
+  "submission_url": "https://appstoreconnect.apple.com/apps/463981119/distribution/reviewsubmissions/details/4087e003-91e5-4bd3-ab82-7643bbb1d6a8",
+  "submitted_at": "2026-10-25T08:24:00-07:00",
+  "automatic_release": true,
+  "phased_release": false,
+  "items": [
+    {
+      "platform": "macOS",
+      "version": "16.0.1",
+      "build": "350",
+      "state": "WAITING_FOR_REVIEW"
+    }
+  ],
+  "screenshot": "/tmp/newsblur-mac-350-waiting-for-review.png",
+  "source_commit": "535eafe752c4d084ae7d5bccccbaaf17c06a0f41"
+}

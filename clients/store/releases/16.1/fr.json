@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Découvrez Écouter, une nouvelle façon de profiter de vos articles.\n\nTouchez Écouter pour entendre un article lu à voix haute dans l’une des 21 langues. Suivez les paragraphes surlignés, touchez un paragraphe pour y accéder et choisissez une voix pour chaque langue. Réglez l’expressivité et la vitesse de lecture de 0,5× à 3×.\n\nAjoutez des articles à la file À suivre, réorganisez votre file d’attente et continuez à écouter avec l’écran verrouillé ou en utilisant une autre app. Votre file se synchronise entre vos appareils. La lecture automatique passe au prochain article non lu et les articles terminés sont marqués comme lus.\n\nÉcouter est inclus dans Premium Archive et Premium Pro. Les comptes gratuits et Premium peuvent essayer des extraits d’articles de 30 secondes.\n\nCette mise à jour rend aussi la navigation plus fluide et corrige des problèmes de défilement dans la grille d’articles."
+  },
+  "android": {
+    "release_notes": "Découvrez Écouter : vos articles lus en 21 langues. Choisissez les voix, suivez les paragraphes surlignés, touchez pour avancer et réglez la vitesse. Ajoutez des articles à la file À suivre, synchronisée entre appareils. Écoutez même avec l’écran verrouillé. La lecture automatique passe au prochain article non lu. Écoute intégrale incluse dans Premium Archive et Premium Pro ; extraits de 30 secondes pour les comptes gratuits et Premium."
+  },
+  "macos": {
+    "whats_new": "Cette mise à jour corrige un problème qui pouvait laisser la liste d’articles en cours de chargement après l’ouverture d’une notification lorsque la fenêtre NewsBlur avait été fermée.\n\nÉcouter est désormais disponible sur Mac. Écoutez vos articles dans 21 langues, suivez les paragraphes surlignés, choisissez les voix, réglez la vitesse et ajoutez des articles à la file À suivre. Votre file se synchronise entre vos appareils. L’écoute intégrale est incluse dans Premium Archive et Premium Pro ; les comptes gratuits et Premium peuvent essayer des extraits de 30 secondes.\n\nCette mise à jour corrige aussi le défilement dans la grille d’articles."
+  }
+}

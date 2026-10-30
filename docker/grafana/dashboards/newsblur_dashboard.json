@@ -11581,6 +11581,1531 @@
     "x": 0,
     "y": 471
    },
+   "id": 374,
+   "panels": [],
+   "targets": [
+    {
+     "datasource": {
+      "type": "datasource",
+      "uid": "grafana"
+     },
+     "refId": "A"
+    }
+   ],
+   "title": "Listen Usage",
+   "type": "row"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Users who actually listened (players report playback through /listen/progress).",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "All time"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 0,
+    "y": 472
+   },
+   "id": 375,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"listeners\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Today",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"listeners\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Last 30 days",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"listeners\",period=\"alltime\"}",
+     "interval": "",
+     "legendFormat": "All time",
+     "refId": "C"
+    }
+   ],
+   "title": "Listeners",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Stories, all time"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Feeds, all time"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 8,
+    "y": 472
+   },
+   "id": 376,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Stories today",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Stories, 30 days",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"feeds\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Feeds today",
+     "refId": "C"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"feeds\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Feeds, 30 days",
+     "refId": "D"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories\",period=\"alltime\"}",
+     "interval": "",
+     "legendFormat": "Stories, all time",
+     "refId": "E"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"feeds\",period=\"alltime\"}",
+     "interval": "",
+     "legendFormat": "Feeds, all time",
+     "refId": "F"
+    }
+   ],
+   "title": "Unique Stories & Feeds",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Wall-clock minutes of playback. Audio minutes (at 1x) are listen{metric=\"audio_minutes\"}.",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "m"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "All time"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 16,
+    "y": 472
+   },
+   "id": 377,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_listened\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Today",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_listened\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Last 30 days",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_listened\",period=\"alltime\"}",
+     "interval": "",
+     "legendFormat": "All time",
+     "refId": "C"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_finished\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Stories finished today",
+     "refId": "D"
+    }
+   ],
+   "title": "Minutes Listened",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "m"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 0,
+    "y": 480
+   },
+   "id": 378,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "sort_desc(listen{metric=\"minutes_by_language\"})",
+     "interval": "",
+     "legendFormat": "{{language}}",
+     "refId": "A",
+     "instant": true
+    }
+   ],
+   "title": "Minutes by Language (30 days)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 8,
+    "y": 480
+   },
+   "id": 379,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_by_length\",length=\"under_2\"}",
+     "interval": "",
+     "legendFormat": "Under 2 min",
+     "refId": "A",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_by_length\",length=\"2_to_5\"}",
+     "interval": "",
+     "legendFormat": "2 to 5 min",
+     "refId": "B",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_by_length\",length=\"5_to_10\"}",
+     "interval": "",
+     "legendFormat": "5 to 10 min",
+     "refId": "C",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_by_length\",length=\"10_to_20\"}",
+     "interval": "",
+     "legendFormat": "10 to 20 min",
+     "refId": "D",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"stories_by_length\",length=\"over_20\"}",
+     "interval": "",
+     "legendFormat": "Over 20 min",
+     "refId": "E",
+     "instant": true
+    }
+   ],
+   "title": "Stories by Length (30 days)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 16,
+    "y": 480
+   },
+   "id": 380,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"listeners_by_tier\"}",
+     "interval": "",
+     "legendFormat": "{{tier}}",
+     "refId": "A"
+    }
+   ],
+   "title": "Listeners by Plan (30 days)",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "m"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 488
+   },
+   "id": 381,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "topk(20, listen{metric=\"voice_minutes\"})",
+     "interval": "",
+     "legendFormat": "{{voice}}",
+     "refId": "A",
+     "instant": true
+    }
+   ],
+   "title": "Top Voices (30 days, minutes)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "m"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 6,
+    "x": 12,
+    "y": 488
+   },
+   "id": 382,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_delivery\"}",
+     "interval": "",
+     "legendFormat": "{{delivery}}",
+     "refId": "A",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_source\"}",
+     "interval": "",
+     "legendFormat": "{{source}} voices",
+     "refId": "B",
+     "instant": true
+    }
+   ],
+   "title": "Delivery & Voice Source (30 days, minutes)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "m"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 6,
+    "x": 18,
+    "y": 488
+   },
+   "id": 383,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_speed\",speed=\"under_0.9\"}",
+     "interval": "",
+     "legendFormat": "Under 0.9x",
+     "refId": "A",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_speed\",speed=\"0.9_to_1.1\"}",
+     "interval": "",
+     "legendFormat": "0.9x to 1.1x",
+     "refId": "B",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_speed\",speed=\"1.1_to_1.5\"}",
+     "interval": "",
+     "legendFormat": "1.1x to 1.5x",
+     "refId": "C",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_speed\",speed=\"1.5_to_2\"}",
+     "interval": "",
+     "legendFormat": "1.5x to 2x",
+     "refId": "D",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"minutes_by_speed\",speed=\"over_2\"}",
+     "interval": "",
+     "legendFormat": "Over 2x",
+     "refId": "E",
+     "instant": true
+    }
+   ],
+   "title": "Playback Speed (30 days, minutes)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Share of the last 30 days' listeners with each preference.",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "thresholds"
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     },
+     "unit": "percentunit",
+     "decimals": 0
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 0,
+    "y": 496
+   },
+   "id": 384,
+   "options": {
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto",
+    "orientation": "auto",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "textMode": "value_and_name"
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"auto_continue_on\"} / listen{metric=\"settings_listeners\"}",
+     "interval": "",
+     "legendFormat": "Auto-continue on",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"follow_along_on\"} / listen{metric=\"settings_listeners\"}",
+     "interval": "",
+     "legendFormat": "Follow along on",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"listen_button_hidden\"} / listen{metric=\"settings_listeners\"}",
+     "interval": "",
+     "legendFormat": "Listen button hidden",
+     "refId": "C"
+    }
+   ],
+   "title": "Listener Settings (30 days)",
+   "type": "stat"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Free and Premium users who tried Listen in the last 30 days.",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "continuous-BlPu"
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 8,
+    "y": 496
+   },
+   "id": 385,
+   "options": {
+    "displayMode": "gradient",
+    "minVizHeight": 10,
+    "minVizWidth": 0,
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "fields": "",
+     "values": false
+    },
+    "showUnfilled": true
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"preview_sampled_users\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Sampled a story",
+     "refId": "A",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"preview_completed_users\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Heard the full 30 seconds",
+     "refId": "B",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"preview_limit_users\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Hit the 3 story limit",
+     "refId": "C",
+     "instant": true
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"preview_upgraded_users\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Now Premium Archive or Pro",
+     "refId": "D",
+     "instant": true
+    }
+   ],
+   "title": "Preview Funnel (30 days)",
+   "type": "bargauge"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "currencyUSD"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Cache hit rate"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       },
+       {
+        "id": "unit",
+        "value": "percentunit"
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 16,
+    "y": 496
+   },
+   "id": 386,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"cost_usd\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Cost, last 24 hours",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"cost_usd\",period=\"monthly\"}",
+     "interval": "",
+     "legendFormat": "Cost, last 30 days",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"cache_hit_rate\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Cache hit rate",
+     "refId": "C"
+    }
+   ],
+   "title": "ElevenLabs Cost & Cache",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "sample_limit: free story previews used up. cap_reached: monthly Archive/Pro cap. preview_ended: tried to go past 30 seconds. preview_limit: voice previews used up.",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 504
+   },
+   "id": 387,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"denied_users\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "{{reason}}",
+     "refId": "A"
+    }
+   ],
+   "title": "Limits Reached (last 24 hours, users)",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "",
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": true,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "min": 0,
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Characters generated"
+      },
+      "properties": [
+       {
+        "id": "custom.axisPlacement",
+        "value": "right"
+       }
+      ]
+     }
+    ]
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 504
+   },
+   "id": 388,
+   "options": {
+    "legend": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "pluginVersion": "9.0.2",
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"segments_generated\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Segments generated",
+     "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"segments_cached\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Segments from cache",
+     "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"previews_generated\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Voice previews generated",
+     "refId": "C"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "exemplar": true,
+     "expr": "listen{metric=\"characters_generated\",period=\"daily\"}",
+     "interval": "",
+     "legendFormat": "Characters generated",
+     "refId": "D"
+    }
+   ],
+   "title": "Audio Generated (last 24 hours)",
+   "type": "timeseries"
+  },
+  {
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 512
+   },
    "id": 200,
    "panels": [],
    "title": "LLM Costs",
@@ -11628,7 +13153,7 @@
     "h": 5,
     "w": 4,
     "x": 0,
-    "y": 472
+    "y": 513
    },
    "id": 201,
    "options": {
@@ -11710,7 +13235,7 @@
     "h": 5,
     "w": 4,
     "x": 4,
-    "y": 472
+    "y": 513
    },
    "id": 202,
    "options": {
@@ -11792,7 +13317,7 @@
     "h": 5,
     "w": 4,
     "x": 8,
-    "y": 472
+    "y": 513
    },
    "id": 203,
    "options": {
@@ -11861,7 +13386,7 @@
     "h": 5,
     "w": 4,
     "x": 12,
-    "y": 472
+    "y": 513
    },
    "id": 204,
    "options": {
@@ -11930,7 +13455,7 @@
     "h": 5,
     "w": 4,
     "x": 20,
-    "y": 472
+    "y": 513
    },
    "id": 209,
    "options": {
@@ -12030,7 +13555,7 @@
     "h": 8,
     "w": 6,
     "x": 0,
-    "y": 477
+    "y": 518
    },
    "id": 205,
    "options": {
@@ -12117,7 +13642,7 @@
     "h": 8,
     "w": 6,
     "x": 6,
-    "y": 477
+    "y": 518
    },
    "id": 206,
    "options": {
@@ -12204,7 +13729,7 @@
     "h": 8,
     "w": 6,
     "x": 12,
-    "y": 477
+    "y": 518
    },
    "id": 210,
    "options": {
@@ -12290,7 +13815,7 @@
     "h": 8,
     "w": 6,
     "x": 18,
-    "y": 477
+    "y": 518
    },
    "id": 207,
    "options": {
@@ -12323,7 +13848,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 485
+    "y": 526
    },
    "id": 283,
    "panels": [],
@@ -12421,7 +13946,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 486
+    "y": 527
    },
    "id": 290,
    "options": {
@@ -12512,7 +14037,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 486
+    "y": 527
    },
    "id": 291,
    "options": {
@@ -12614,7 +14139,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 486
+    "y": 527
    },
    "id": 292,
    "options": {
@@ -12711,7 +14236,7 @@
     "h": 8,
     "w": 24,
     "x": 0,
-    "y": 494
+    "y": 535
    },
    "id": 293,
    "options": {
@@ -12860,7 +14385,7 @@
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 502,
+    "y": 543,
     "w": 24,
     "h": 1
    },
@@ -12877,7 +14402,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 503,
+    "y": 544,
     "w": 6,
     "h": 4
    },
@@ -12927,7 +14452,7 @@
    },
    "gridPos": {
     "x": 6,
-    "y": 503,
+    "y": 544,
     "w": 6,
     "h": 4
    },
@@ -12977,7 +14502,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 503,
+    "y": 544,
     "w": 6,
     "h": 4
    },
@@ -13027,7 +14552,7 @@
    },
    "gridPos": {
     "x": 18,
-    "y": 503,
+    "y": 544,
     "w": 6,
     "h": 4
    },
@@ -13077,7 +14602,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 507,
+    "y": 548,
     "w": 12,
     "h": 8
    },
@@ -13139,7 +14664,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 507,
+    "y": 548,
     "w": 12,
     "h": 8
    },
@@ -13201,7 +14726,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 515,
+    "y": 556,
     "w": 12,
     "h": 8
    },
@@ -13263,7 +14788,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 515,
+    "y": 556,
     "w": 12,
     "h": 8
    },
@@ -13325,7 +14850,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 523,
+    "y": 564,
     "w": 12,
     "h": 8
    },
@@ -13387,7 +14912,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 523,
+    "y": 564,
     "w": 12,
     "h": 8
    },
@@ -13449,7 +14974,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 531,
+    "y": 572,
     "w": 12,
     "h": 8
    },
@@ -13511,7 +15036,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 531,
+    "y": 572,
     "w": 12,
     "h": 8
    },
@@ -13568,7 +15093,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 539
+    "y": 580
    },
    "id": 161,
    "panels": [],
@@ -13611,7 +15136,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 540
+    "y": 581
    },
    "id": 163,
    "options": {
@@ -13681,7 +15206,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 540
+    "y": 581
    },
    "id": 164,
    "options": {
@@ -13751,7 +15276,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 540
+    "y": 581
    },
    "id": 165,
    "options": {
@@ -13842,7 +15367,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 548
+    "y": 589
    },
    "id": 166,
    "options": {
@@ -13930,7 +15455,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 548
+    "y": 589
    },
    "id": 167,
    "options": {
@@ -13997,7 +15522,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 556
+    "y": 597
    },
    "id": 168,
    "options": {
@@ -14067,7 +15592,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 556
+    "y": 597
    },
    "id": 169,
    "options": {
@@ -14206,7 +15731,7 @@
     "h": 8,
     "w": 24,
     "x": 0,
-    "y": 564
+    "y": 605
    },
    "id": 326,
    "options": {
@@ -14268,7 +15793,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 572
+    "y": 613
    },
    "id": 171,
    "panels": [],
@@ -14311,7 +15836,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 573
+    "y": 614
    },
    "id": 173,
    "options": {
@@ -14381,7 +15906,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 573
+    "y": 614
    },
    "id": 174,
    "options": {
@@ -14473,7 +15998,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 573
+    "y": 614
    },
    "id": 175,
    "options": {
@@ -14514,7 +16039,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 624
+    "y": 665
    },
    "id": 176,
    "panels": [],
@@ -14591,7 +16116,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 625
+    "y": 666
    },
    "id": 177,
    "options": {
@@ -14683,7 +16208,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 625
+    "y": 666
    },
    "id": 178,
    "options": {
@@ -14971,7 +16496,7 @@
     "h": 12,
     "w": 24,
     "x": 0,
-    "y": 633
+    "y": 674
    },
    "id": 211,
    "options": {
@@ -15049,7 +16574,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 645
+    "y": 686
    },
    "id": 212,
    "panels": [],
@@ -15118,7 +16643,7 @@
     "h": 8,
     "w": 24,
     "x": 0,
-    "y": 646
+    "y": 687
    },
    "id": 213,
    "options": {
@@ -15217,7 +16742,7 @@
     "h": 8,
     "w": 24,
     "x": 0,
-    "y": 654
+    "y": 695
    },
    "id": 216,
    "options": {
@@ -15254,7 +16779,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 662
+    "y": 703
    },
    "id": 218,
    "panels": [],
@@ -15319,7 +16844,7 @@
     "h": 8,
     "w": 24,
     "x": 0,
-    "y": 663
+    "y": 704
    },
    "id": 219,
    "options": {
@@ -15356,7 +16881,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 671
+    "y": 712
    },
    "id": 266,
    "panels": [],
@@ -15425,7 +16950,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 672
+    "y": 713
    },
    "id": 267,
    "options": {
@@ -15519,7 +17044,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 672
+    "y": 713
    },
    "id": 268,
    "options": {
@@ -15557,7 +17082,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 680
+    "y": 721
    },
    "id": 239,
    "panels": [],
@@ -15625,7 +17150,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 681
+    "y": 722
    },
    "id": 240,
    "options": {
@@ -15754,7 +17279,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 681
+    "y": 722
    },
    "id": 241,
    "options": {
@@ -15883,7 +17408,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 681
+    "y": 722
    },
    "id": 242,
    "options": {
@@ -16012,7 +17537,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 689
+    "y": 730
    },
    "id": 243,
    "options": {
@@ -16141,7 +17666,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 689
+    "y": 730
    },
    "id": 270,
    "options": {
@@ -16258,7 +17783,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 689
+    "y": 730
    },
    "id": 271,
    "options": {
@@ -16308,7 +17833,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 591
+    "y": 632
    },
    "id": 249,
    "panels": [],
@@ -16343,7 +17868,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 592
+    "y": 633
    },
    "id": 250,
    "options": {
@@ -16405,7 +17930,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 592
+    "y": 633
    },
    "id": 251,
    "options": {
@@ -16467,7 +17992,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 592
+    "y": 633
    },
    "id": 252,
    "options": {
@@ -16529,7 +18054,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 600
+    "y": 641
    },
    "id": 253,
    "options": {
@@ -16591,7 +18116,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 600
+    "y": 641
    },
    "id": 254,
    "options": {
@@ -16653,7 +18178,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 600
+    "y": 641
    },
    "id": 255,
    "options": {
@@ -16745,7 +18270,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 608
+    "y": 649
    },
    "id": 256,
    "options": {
@@ -16856,7 +18381,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 608
+    "y": 649
    },
    "id": 257,
    "options": {
@@ -16915,7 +18440,7 @@
     "h": 8,
     "w": 6,
     "x": 0,
-    "y": 616
+    "y": 657
    },
    "id": 258,
    "options": {
@@ -16977,7 +18502,7 @@
     "h": 8,
     "w": 6,
     "x": 6,
-    "y": 616
+    "y": 657
    },
    "id": 259,
    "options": {
@@ -17039,7 +18564,7 @@
     "h": 8,
     "w": 6,
     "x": 12,
-    "y": 616
+    "y": 657
    },
    "id": 260,
    "options": {
@@ -17101,7 +18626,7 @@
     "h": 8,
     "w": 6,
     "x": 18,
-    "y": 616
+    "y": 657
    },
    "id": 261,
    "options": {
@@ -17145,7 +18670,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 690
+    "y": 731
    },
    "id": 276,
    "panels": [],
@@ -17188,7 +18713,7 @@
     "h": 8,
     "w": 12,
     "x": 0,
-    "y": 691
+    "y": 732
    },
    "id": 277,
    "options": {
@@ -17252,7 +18777,7 @@
     "h": 8,
     "w": 12,
     "x": 12,
-    "y": 691
+    "y": 732
    },
    "id": 278,
    "options": {
@@ -17304,7 +18829,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 699
+    "y": 740
    },
    "id": 279,
    "panels": [],
@@ -17381,7 +18906,7 @@
     "h": 8,
     "w": 8,
     "x": 0,
-    "y": 700
+    "y": 741
    },
    "id": 280,
    "options": {
@@ -17534,7 +19059,7 @@
     "h": 8,
     "w": 8,
     "x": 8,
-    "y": 700
+    "y": 741
    },
    "id": 281,
    "options": {
@@ -17663,7 +19188,7 @@
     "h": 8,
     "w": 8,
     "x": 16,
-    "y": 700
+    "y": 741
    },
    "id": 282,
    "options": {
@@ -18382,7 +19907,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 708
+    "y": 749
    },
    "id": 327,
    "targets": [
@@ -18409,7 +19934,7 @@
     "h": 4,
     "w": 6,
     "x": 0,
-    "y": 709
+    "y": 750
    },
    "fieldConfig": {
     "defaults": {
@@ -18468,7 +19993,7 @@
     "h": 4,
     "w": 6,
     "x": 6,
-    "y": 709
+    "y": 750
    },
    "fieldConfig": {
     "defaults": {
@@ -18527,7 +20052,7 @@
     "h": 4,
     "w": 6,
     "x": 12,
-    "y": 709
+    "y": 750
    },
    "fieldConfig": {
     "defaults": {
@@ -18586,7 +20111,7 @@
     "h": 4,
     "w": 6,
     "x": 18,
-    "y": 709
+    "y": 750
    },
    "fieldConfig": {
     "defaults": {
@@ -18645,7 +20170,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 713
+    "y": 754
    },
    "fieldConfig": {
     "defaults": {
@@ -18831,7 +20356,7 @@
     "h": 9,
     "w": 12,
     "x": 12,
-    "y": 713
+    "y": 754
    },
    "fieldConfig": {
     "defaults": {
@@ -19017,7 +20542,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 722
+    "y": 763
    },
    "fieldConfig": {
     "defaults": {
@@ -19207,7 +20732,7 @@
     "h": 9,
     "w": 12,
     "x": 12,
-    "y": 722
+    "y": 763
    },
    "fieldConfig": {
     "defaults": {
@@ -19335,7 +20860,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 731
+    "y": 772
    },
    "fieldConfig": {
     "defaults": {
@@ -19451,7 +20976,7 @@
     "h": 1,
     "w": 24,
     "x": 0,
-    "y": 740
+    "y": 781
    },
    "id": 343,
    "panels": [],
@@ -19486,7 +21011,7 @@
     "h": 5,
     "w": 4,
     "x": 0,
-    "y": 741
+    "y": 782
    },
    "id": 344,
    "options": {
@@ -19548,7 +21073,7 @@
     "h": 5,
     "w": 4,
     "x": 4,
-    "y": 741
+    "y": 782
    },
    "id": 345,
    "options": {
@@ -19619,7 +21144,7 @@
     "h": 5,
     "w": 4,
     "x": 8,
-    "y": 741
+    "y": 782
    },
    "id": 346,
    "options": {
@@ -19682,7 +21207,7 @@
     "h": 5,
     "w": 4,
     "x": 12,
-    "y": 741
+    "y": 782
    },
    "id": 347,
    "options": {
@@ -19744,7 +21269,7 @@
     "h": 5,
     "w": 4,
     "x": 16,
-    "y": 741
+    "y": 782
    },
    "id": 348,
    "options": {
@@ -19806,7 +21331,7 @@
     "h": 5,
     "w": 4,
     "x": 20,
-    "y": 741
+    "y": 782
    },
    "id": 349,
    "options": {
@@ -19898,7 +21423,7 @@
     "h": 9,
     "w": 8,
     "x": 0,
-    "y": 746
+    "y": 787
    },
    "id": 350,
    "options": {
@@ -19987,7 +21512,7 @@
     "h": 9,
     "w": 8,
     "x": 8,
-    "y": 746
+    "y": 787
    },
    "id": 351,
    "options": {
@@ -20076,7 +21601,7 @@
     "h": 9,
     "w": 8,
     "x": 16,
-    "y": 746
+    "y": 787
    },
    "id": 352,
    "options": {
@@ -20146,7 +21671,7 @@
     "h": 9,
     "w": 12,
     "x": 0,
-    "y": 755
+    "y": 796
    },
    "id": 353,
    "options": {
@@ -20209,7 +21734,7 @@
     "h": 9,
     "w": 12,
     "x": 12,
-    "y": 755
+    "y": 796
    },
    "id": 354,
    "options": {
@@ -20276,7 +21801,7 @@
     "h": 5,
     "w": 4,
     "x": 0,
-    "y": 764
+    "y": 805
    },
    "id": 355,
    "options": {
@@ -20342,7 +21867,7 @@
     "h": 5,
     "w": 4,
     "x": 4,
-    "y": 764
+    "y": 805
    },
    "id": 356,
    "options": {
@@ -20404,7 +21929,7 @@
     "h": 5,
     "w": 4,
     "x": 8,
-    "y": 764
+    "y": 805
    },
    "id": 357,
    "options": {
@@ -20466,7 +21991,7 @@
     "h": 5,
     "w": 4,
     "x": 12,
-    "y": 764
+    "y": 805
    },
    "id": 358,
    "options": {
@@ -20528,7 +22053,7 @@
     "h": 5,
     "w": 4,
     "x": 16,
-    "y": 764
+    "y": 805
    },
    "id": 359,
    "options": {
@@ -20590,7 +22115,7 @@
     "h": 5,
     "w": 4,
     "x": 20,
-    "y": 764
+    "y": 805
    },
    "id": 360,
    "options": {
@@ -20631,7 +22156,7 @@
    "collapsed": false,
    "gridPos": {
     "x": 0,
-    "y": 732,
+    "y": 773,
     "w": 24,
     "h": 1
    },
@@ -20648,7 +22173,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 733,
+    "y": 774,
     "w": 6,
     "h": 4
    },
@@ -20698,7 +22223,7 @@
    },
    "gridPos": {
     "x": 6,
-    "y": 733,
+    "y": 774,
     "w": 6,
     "h": 4
    },
@@ -20748,7 +22273,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 733,
+    "y": 774,
     "w": 6,
     "h": 4
    },
@@ -20798,7 +22323,7 @@
    },
    "gridPos": {
     "x": 18,
-    "y": 733,
+    "y": 774,
     "w": 6,
     "h": 4
    },
@@ -20848,7 +22373,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 737,
+    "y": 778,
     "w": 12,
     "h": 8
    },
@@ -20910,7 +22435,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 737,
+    "y": 778,
     "w": 12,
     "h": 8
    },
@@ -20972,7 +22497,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 745,
+    "y": 786,
     "w": 12,
     "h": 8
    },
@@ -21034,7 +22559,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 745,
+    "y": 786,
     "w": 12,
     "h": 8
    },
@@ -21096,7 +22621,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 753,
+    "y": 794,
     "w": 12,
     "h": 8
    },
@@ -21158,7 +22683,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 753,
+    "y": 794,
     "w": 12,
     "h": 8
    },
@@ -21220,7 +22745,7 @@
    },
    "gridPos": {
     "x": 0,
-    "y": 761,
+    "y": 802,
     "w": 12,
     "h": 8
    },
@@ -21282,7 +22807,7 @@
    },
    "gridPos": {
     "x": 12,
-    "y": 761,
+    "y": 802,
     "w": 12,
     "h": 8
    },

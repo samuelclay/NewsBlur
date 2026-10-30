@@ -1,0 +1,1 @@
+Sửa lỗi ứng dụng bị đóng trên máy tính bảng Samsung cũ và các thiết bị khác khi mở NewsBlur hoặc quay lại nguồn cấp. Cũng sửa lỗi với bài viết lớn, bản xem trước nguồn cấp, thư mục chỉ có một nguồn cấp, tiện ích và số bình luận trong bản dịch. Giảm tình trạng treo khi khởi động, đồng bộ và kiểm tra gói đăng ký.

@@ -37,6 +37,7 @@ final class NewsBlurUITestHarness {
     private static var didRequestFixtureFeedSidebar = false
     private static var didIsolateReaderStorage = false
     private static var didFinishReaderFeedLoad = false
+    private static var didDismissMarketingFullscreenOverlay = false
     private static var readerFeedLoadObserver: NSObjectProtocol?
 
     static func prepareLaunchEnvironmentIfNeeded(appDelegate: NewsBlurAppDelegate) {
@@ -492,6 +493,11 @@ final class NewsBlurUITestHarness {
             appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: CookingMarketingFixtures.enabled ? "Cooking" : "Tech ▸ Swift")
         case .swiftStoryOne:
             appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: CookingMarketingFixtures.enabled ? "cooking-pasta-1" : "ui-story-swift-1", animated: false)
+#if DEBUG && targetEnvironment(simulator)
+            if CookingMarketingFixtures.enabled && ProcessInfo.processInfo.arguments.contains("-newsblur-marketing-fullscreen") {
+                prepareMarketingFullscreenReader(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
+            }
+#endif
         case .cookingSaved:
             appDelegate.loadStarredDetailView(withStory: nil, showFindingStory: false)
         case .swiftClusterFeed:
@@ -504,6 +510,29 @@ final class NewsBlurUITestHarness {
             )
         }
     }
+
+#if DEBUG && targetEnvironment(simulator)
+    private static func prepareMarketingFullscreenReader(on appDelegate: NewsBlurAppDelegate, deadline: TimeInterval) {
+        guard CookingMarketingFixtures.enabled, !didDismissMarketingFullscreenOverlay else { return }
+        let page = appDelegate.storyPagesViewController?.currentPage
+        let detail = appDelegate.detailViewController
+        // NewsBlurUITestHarness.swift waits for the requested native article's paint gate before using the real sidebar action.
+        if appDelegate.activeStory?["story_hash"] as? String == "cooking-pasta-1",
+           page?.activeStoryId == "cooking-pasta-1", page?.readyForPresentation == true,
+           page?.viewIfLoaded?.window != nil, detail?.isDuoFullscreenReader == true {
+            didDismissMarketingFullscreenOverlay = true
+            detail?.dismissFullscreenSidebarOverlayAfterStorySelection()
+            detail?.view.layoutIfNeeded()
+            NSLog("[NewsBlurMarketing] Fullscreen article ready; fixture sidebar dismissed once")
+            return
+        }
+        precondition(ProcessInfo.processInfo.systemUptime < deadline,
+                     "NewsBlurUITestHarness.swift timed out waiting for the requested fullscreen marketing article")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            prepareMarketingFullscreenReader(on: appDelegate, deadline: deadline)
+        }
+    }
+#endif
 
     private static func readerScenario(for screen: String) -> ReaderScenario? {
         switch screen {

@@ -75,6 +75,9 @@ class ReadingAdapter(
 
     fun getStory(position: Int): Story? = stories.getOrNull(position)
 
+    /** ReadingAdapter.kt's current story order, for Listen's Up Next and auto-continue (ListenManager.kt). */
+    fun storiesSnapshot(): List<Story> = stories
+
     override fun getCount(): Int = stories.size
 
     fun storyPositionForPage(page: Int): Int = pageOrder.storyPositionFor(page, count)

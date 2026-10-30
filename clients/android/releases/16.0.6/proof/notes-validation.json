@@ -1,0 +1,1708 @@
+{
+  "version": "16.0.6",
+  "languages": [
+    "en",
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "it",
+    "nl",
+    "pl",
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi",
+    "id",
+    "vi",
+    "th",
+    "ja",
+    "ko",
+    "zh-Hans",
+    "zh-Hant"
+  ],
+  "fields": {
+    "/Users/sclay/projects/newsblur/clients/store/metadata/en.json: android.title": {
+      "length": 25,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/en.json: android.short_description": {
+      "length": 70,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/en.json: android.full_description": {
+      "length": 1546,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/es.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/es.json: android.short_description": {
+      "length": 67,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/es.json: android.full_description": {
+      "length": 1801,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/fr.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/fr.json: android.short_description": {
+      "length": 75,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/fr.json: android.full_description": {
+      "length": 2069,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/de.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/de.json: android.short_description": {
+      "length": 74,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/de.json: android.full_description": {
+      "length": 1896,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pt-BR.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pt-BR.json: android.short_description": {
+      "length": 65,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pt-BR.json: android.full_description": {
+      "length": 1737,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/it.json: android.title": {
+      "length": 21,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/it.json: android.short_description": {
+      "length": 64,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/it.json: android.full_description": {
+      "length": 1862,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/nl.json: android.title": {
+      "length": 19,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/nl.json: android.short_description": {
+      "length": 68,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/nl.json: android.full_description": {
+      "length": 1757,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pl.json: android.title": {
+      "length": 21,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pl.json: android.short_description": {
+      "length": 73,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/pl.json: android.full_description": {
+      "length": 1774,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/tr.json: android.title": {
+      "length": 27,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/tr.json: android.short_description": {
+      "length": 79,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/tr.json: android.full_description": {
+      "length": 1821,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ru.json: android.title": {
+      "length": 23,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ru.json: android.short_description": {
+      "length": 70,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ru.json: android.full_description": {
+      "length": 1729,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/uk.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/uk.json: android.short_description": {
+      "length": 69,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/uk.json: android.full_description": {
+      "length": 1742,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ar.json: android.title": {
+      "length": 24,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ar.json: android.short_description": {
+      "length": 48,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ar.json: android.full_description": {
+      "length": 1370,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/he.json: android.title": {
+      "length": 24,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/he.json: android.short_description": {
+      "length": 59,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/he.json: android.full_description": {
+      "length": 1319,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/hi.json: android.title": {
+      "length": 25,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/hi.json: android.short_description": {
+      "length": 67,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/hi.json: android.full_description": {
+      "length": 1681,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/id.json: android.title": {
+      "length": 28,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/id.json: android.short_description": {
+      "length": 76,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/id.json: android.full_description": {
+      "length": 1731,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/vi.json: android.title": {
+      "length": 27,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/vi.json: android.short_description": {
+      "length": 61,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/vi.json: android.full_description": {
+      "length": 1785,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/th.json: android.title": {
+      "length": 22,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/th.json: android.short_description": {
+      "length": 59,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/th.json: android.full_description": {
+      "length": 1427,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ja.json: android.title": {
+      "length": 20,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ja.json: android.short_description": {
+      "length": 38,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ja.json: android.full_description": {
+      "length": 884,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ko.json: android.title": {
+      "length": 19,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ko.json: android.short_description": {
+      "length": 46,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/ko.json: android.full_description": {
+      "length": 981,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hans.json: android.title": {
+      "length": 18,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hans.json: android.short_description": {
+      "length": 30,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hans.json: android.full_description": {
+      "length": 630,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hant.json: android.title": {
+      "length": 18,
+      "limit": 30,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hant.json: android.short_description": {
+      "length": 30,
+      "limit": 80,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/metadata/zh-Hant.json: android.full_description": {
+      "length": 646,
+      "limit": 4000,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/en.json: android.release_notes": {
+      "length": 185,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/es.json: android.release_notes": {
+      "length": 216,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/fr.json: android.release_notes": {
+      "length": 229,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/de.json: android.release_notes": {
+      "length": 239,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/pt-BR.json: android.release_notes": {
+      "length": 204,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/it.json: android.release_notes": {
+      "length": 211,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/nl.json: android.release_notes": {
+      "length": 210,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/pl.json: android.release_notes": {
+      "length": 223,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/tr.json: android.release_notes": {
+      "length": 209,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/ru.json: android.release_notes": {
+      "length": 221,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/uk.json: android.release_notes": {
+      "length": 220,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/ar.json: android.release_notes": {
+      "length": 177,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/he.json: android.release_notes": {
+      "length": 166,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/hi.json: android.release_notes": {
+      "length": 203,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/id.json: android.release_notes": {
+      "length": 226,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/vi.json: android.release_notes": {
+      "length": 190,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/th.json: android.release_notes": {
+      "length": 158,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/ja.json: android.release_notes": {
+      "length": 106,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/ko.json: android.release_notes": {
+      "length": 107,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/zh-Hans.json: android.release_notes": {
+      "length": 75,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/releases/16.0.6/zh-Hant.json: android.release_notes": {
+      "length": 78,
+      "limit": 500,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.title": {
+      "length": 29,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.description": {
+      "length": 109,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 37,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 123,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/en.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.description": {
+      "length": 146,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 38,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 159,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/es.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.description": {
+      "length": 166,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 169,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/fr.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.description": {
+      "length": 141,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 140,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/de.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.description": {
+      "length": 134,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 38,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 137,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pt-BR.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.title": {
+      "length": 28,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.description": {
+      "length": 149,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 36,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 155,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/it.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.description": {
+      "length": 119,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 35,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 130,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/nl.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.title": {
+      "length": 28,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.description": {
+      "length": 141,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 36,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 159,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/pl.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.description": {
+      "length": 146,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 132,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/tr.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 33,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.title": {
+      "length": 25,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.description": {
+      "length": 138,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 33,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 142,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ru.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.title": {
+      "length": 25,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.description": {
+      "length": 129,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 36,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 33,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 139,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/uk.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.title": {
+      "length": 23,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.description": {
+      "length": 109,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 31,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 117,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 35,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ar.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.title": {
+      "length": 22,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.description": {
+      "length": 101,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 30,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 107,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/he.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.title": {
+      "length": 24,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.description": {
+      "length": 118,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 32,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 32,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 118,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/hi.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.description": {
+      "length": 129,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 37,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 20,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 143,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 38,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 39,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/id.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 34,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.title": {
+      "length": 24,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.description": {
+      "length": 123,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 40,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 27,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 23,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 28,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 32,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 133,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 30,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/vi.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 29,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.title": {
+      "length": 31,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.description": {
+      "length": 103,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 31,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 22,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 17,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 39,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 106,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 26,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 25,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/th.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 24,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.title": {
+      "length": 26,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.description": {
+      "length": 60,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 18,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 34,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 64,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 16,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ja.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.description": {
+      "length": 72,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 19,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 10,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 89,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 14,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 21,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 12,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/ko.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.description": {
+      "length": 46,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 6,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 52,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hans.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 9,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.title": {
+      "length": 19,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.description": {
+      "length": 48,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[0]": {
+      "length": 15,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[1]": {
+      "length": 7,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[2]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.36.benefits[3]": {
+      "length": 9,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.title": {
+      "length": 27,
+      "limit": 55,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.description": {
+      "length": 53,
+      "limit": 200,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[0]": {
+      "length": 13,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[1]": {
+      "length": 11,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[2]": {
+      "length": 8,
+      "limit": 40,
+      "unit": "characters"
+    },
+    "/Users/sclay/projects/newsblur/clients/store/products/zh-Hant.json: android.subscriptions.nb.premium.archive.99.benefits[3]": {
+      "length": 10,
+      "limit": 40,
+      "unit": "characters"
+    }
+  }
+}

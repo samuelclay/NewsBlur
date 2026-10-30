@@ -1,0 +1,70 @@
+{
+  "version": "16.0.1",
+  "platform": "macos",
+  "reviewer": "mac_copy_west",
+  "independent_of": "mac_copy_central",
+  "languages": [
+    "tr",
+    "ru",
+    "uk",
+    "ar",
+    "he",
+    "hi"
+  ],
+  "result": "pass",
+  "findings": [],
+  "changes_made": [],
+  "checks": [
+    "All six Mac listing fields and complete release notes compared against finalized English",
+    "Space and Shift-Space directions, unread next versus previous story, boundary behavior and adjustable scroll distance preserved",
+    "Window geometry across quit/reopen and updated AI model labels preserved without unsupported feature claims",
+    "Reviewed shared Apple subscription names, descriptions and group name against English; product IDs and plan facts unchanged",
+    "Arabic and Hebrew linguistic direction, mixed-script key names and punctuation reviewed; no visual UI proof claimed",
+    "Glossary terminology and language register reviewed",
+    "Shared iOS/Mac name and subtitle equality, Apple length limits, exact terms/privacy URLs verified"
+  ],
+  "evidence": [
+    {
+      "language": "tr",
+      "result": "pass",
+      "metadata_sha256": "903f28dc35ef6ded6cafbfaf20667a23ea4382c7ea5edce510f66da8996cff7e",
+      "release_sha256": "c1184cc420a56f2b41f58ee233ee6c2ca817b87ebec6a0e3b0d99d6788935226",
+      "products_sha256": "68ea9abace037a5f520af98ffa2d5fdb4620739c152eeda40a22eb1db3fb0d60"
+    },
+    {
+      "language": "ru",
+      "result": "pass",
+      "metadata_sha256": "b174bd33f7758ebe81ea359ca98c916b64208ddd3c33da081893cbf250cfba85",
+      "release_sha256": "5a536b57d5addfc4ad2f79f71f4c7f488664a89b471209532bade833b6a6deeb",
+      "products_sha256": "b57651c3aec7195849d4e7c0cea9cfd06e9fd1e18b8f409705a2183aae6c3b27"
+    },
+    {
+      "language": "uk",
+      "result": "pass",
+      "metadata_sha256": "7922a4b1052e63441845ac9979d478ff64844e143d0e0be724e324a52cda073d",
+      "release_sha256": "e206d24565bf21ea607a933c66180d5a1c6faea08f9793ed29f69a2a1f34eb99",
+      "products_sha256": "a0b5d3c340e19424cda94fcb8b9a518c8116b43ec244e34805677d5b64097faa"
+    },
+    {
+      "language": "ar",
+      "result": "pass",
+      "metadata_sha256": "2032e471870120d939d1d00814c8bd65dbf78f897c63d6c70966fe6156d91d81",
+      "release_sha256": "6406e60a4ccca68177a99f88f1bb380fa6cd123218bc1a7237006d6ecff7ec71",
+      "products_sha256": "d51aab945c84ba09bdaafd6e737be9dd875bb802627960f6c532d6201172ceaa"
+    },
+    {
+      "language": "he",
+      "result": "pass",
+      "metadata_sha256": "3e371b4443207b5ab6314c452f478821a8e010f476de7e12a296c1db163646b2",
+      "release_sha256": "ddc0effd27691b4d0a1bc5213dcb2ed42c682484a4dd0c53b45492ab529e780d",
+      "products_sha256": "e9efb997baa5404bb0ea0aa9f0fcaf305674203854daa319fab610470d1b9f98"
+    },
+    {
+      "language": "hi",
+      "result": "pass",
+      "metadata_sha256": "45c8734784ebbaf12cdd28f5c28d5df62a7c18ac9c9e9dbe62a7a6a07987c42a",
+      "release_sha256": "a3bf7644e7bf394c631caf6c14a1534305e8cb850fea0ea41bb19c94bf0fee87",
+      "products_sha256": "ca1787cd4238ef25fffe6b69630adec83e7f0a2d95f5ae54e9f3c5a19ca3b939"
+    }
+  ]
+}

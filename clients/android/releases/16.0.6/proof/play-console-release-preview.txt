@@ -1,0 +1,313 @@
+- progressbar
+- generic: Loading Google Play Console
+- banner:
+  - link "Google Play Console logo":
+    - /url: /console/u/1/developers/6280481402178293168/home
+    - button "Google Play Console logo"
+  - button "Unread notifications Open notification center":
+    - img: notifications_unread
+    - generic: Unread notifications
+  - button "Switch developer accounts":
+    - img: more_vert
+  - 'button "Google Account: Samuel Clay (conesus@gmail.com), Google membership"':
+- navigation:
+  - list:
+    - listitem "Home":
+      - button "Home":
+        - img: home
+    - listitem "Manage account":
+      - button "Manage account":
+        - img: badge
+    - 'listitem "NewsBlur: RSS News Reader"':
+      - 'button "NewsBlur: RSS News Reader"':
+        - img: play_prism
+    - listitem "Dashboard":
+      - button "Dashboard":
+        - img: dashboard
+    - listitem "Statistics":
+      - button "Statistics":
+        - img: bar_chart
+    - listitem "Publishing overview":
+      - button "Publishing overview":
+        - img: overview
+    - listitem "Protected with Play":
+      - button "Protected with Play":
+        - img: shield
+    - listitem "Test and release":
+      - button "Test and release":
+        - img: rocket_launch
+    - listitem "Monitor and improve":
+      - button "Monitor and improve":
+        - img: vital_signs
+    - listitem "Grow users":
+      - button "Grow users":
+        - img: finance_mode
+    - listitem "Monetize with Play":
+      - button "Monetize with Play":
+        - img: sell
+- heading "Create production release" [level=1]
+- img: warning
+- generic: We found some problems with your release
+- tablist:
+  - tab "Step 1 of 2, Create release" [disabled]:
+    - img: check
+    - generic: Create release
+  - tab "Step 2 of 2, Preview and confirm" [selected]:
+    - generic: "2"
+    - generic: Preview and confirm
+- tabpanel
+- button "Discard draft release":
+  - generic: Discard draft release
+- heading "Errors, warnings and messages" [level=2]
+- img: warning
+- strong: 1 Warning
+- button "Show less validation details" [expanded] [active]:
+  - generic: Show less
+  - img: expand_less
+- generic: 1 message for version code 298
+- img: warning
+- generic: Warning
+- paragraph:
+  - text: This App Bundle contains native code, and you've not uploaded debug symbols. We recommend you upload a symbol file to make your crashes and ANRs easier to analyze and debug.
+  - link "Learn More":
+    - /url: " https://developer.android.com/studio/build/shrink-code#native-crash-support"
+- heading "Changes to your supported devices" [level=2]
+- generic: Reasons for changes to your supported devices may include changes to your manifest, or a missing app bundle. Devices excluded in device catalog are not shown here.
+- grid "Supported form factors":
+  - row "Form factor Devices supported by last release Devices no longer supported Newly supported devices Total devices supported by this release":
+    - cell
+    - columnheader "Form factor"
+    - columnheader "Devices supported by last release":
+      - text: Devices supported by last release
+      - img: help_outline
+    - columnheader "Devices no longer supported":
+      - text: Devices no longer supported
+      - img: help_outline
+    - columnheader "Newly supported devices":
+      - text: Newly supported devices
+      - img: help_outline
+    - columnheader "Total devices supported by this release":
+      - text: Total devices supported by this release
+      - img: help_outline
+    - cell
+  - row "Phone 11,469 0 0 11,469":
+    - gridcell
+    - gridcell "Phone":
+      - generic: Phone
+    - gridcell "11,469":
+      - generic: 11,469
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "11,469":
+      - generic: 11,469
+    - gridcell
+  - row "Tablet 6,476 0 0 6,476":
+    - gridcell
+    - gridcell "Tablet":
+      - generic: Tablet
+    - gridcell "6,476":
+      - generic: 6,476
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "6,476":
+      - generic: 6,476
+    - gridcell
+  - row "TV 4 0 0 4":
+    - gridcell
+    - gridcell "TV":
+      - generic: TV
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "4":
+      - generic: "4"
+    - gridcell
+  - row "Wearable 0 0 0 0":
+    - gridcell
+    - gridcell "Wearable":
+      - generic: Wearable
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell
+  - row "Car 27 0 0 27":
+    - gridcell
+    - gridcell "Car":
+      - generic: Car
+    - gridcell "27":
+      - generic: "27"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "27":
+      - generic: "27"
+    - gridcell
+  - row "Chromebook 77 0 0 77":
+    - gridcell
+    - gridcell "Chromebook":
+      - generic: Chromebook
+    - gridcell "77":
+      - generic: "77"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "77":
+      - generic: "77"
+    - gridcell
+  - row "Android XR 1 0 0 1":
+    - gridcell
+    - gridcell "Android XR":
+      - generic: Android XR
+    - gridcell "1":
+      - generic: "1"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "0":
+      - generic: "0"
+    - gridcell "1":
+      - generic: "1"
+    - gridcell
+- heading "Release delivery" [level=2]
+- button "Size for new installs"
+- generic: 7.53 MB
+- img: arrow_left_alt
+- generic: "-84 B"
+- generic: vs. previous release
+- button "Time to download"
+- generic: 4s
+- generic: 0s
+- generic: vs. previous release
+- button "Size for updates"
+- generic: 523 KB
+- heading "New app bundles" [level=2]
+- grid "Artifacts":
+  - row "File type Version API levels Target SDK Screen layouts ABIs Required features":
+    - cell
+    - columnheader "File type"
+    - columnheader "Version"
+    - columnheader "API levels"
+    - columnheader "Target SDK"
+    - columnheader "Screen layouts"
+    - columnheader "ABIs"
+    - columnheader "Required features"
+    - cell
+  - 'row "App bundle This app bundle has the following file attached: ReTrace mapping file Enhanced 298 (16.0.6) 26+ 36 4 4 2 View details for App bundle: 298 (16.0.6)"':
+    - gridcell
+    - 'gridcell "App bundle This app bundle has the following file attached: ReTrace mapping file Enhanced"':
+      - generic: App bundle
+      - 'img "This app bundle has the following file attached: ReTrace mapping file"': attachment
+      - button "Enhanced":
+        - img: info
+        - generic: Enhanced
+    - gridcell "298 (16.0.6)":
+      - generic: 298 (16.0.6)
+    - gridcell "26+":
+      - generic: 26+
+    - gridcell "36":
+      - generic: "36"
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "2":
+      - generic: "2"
+    - 'gridcell "View details for App bundle: 298 (16.0.6)"':
+      - 'button "View details for App bundle: 298 (16.0.6)"':
+        - img: arrow_right_alt
+- heading "Previous release" [level=3]
+- heading "Included" [level=4]
+- img: rocket_launch
+- paragraph: No app bundles from your previous release will be included in this release
+- heading "Not Included" [level=4]
+- generic: These versions from your previous release won't be included in this release
+- grid "Artifacts":
+  - row "File type Version API levels Target SDK Screen layouts ABIs Required features":
+    - columnheader "File type"
+    - columnheader "Version"
+    - columnheader "API levels"
+    - columnheader "Target SDK"
+    - columnheader "Screen layouts"
+    - columnheader "ABIs"
+    - columnheader "Required features"
+    - cell
+  - 'row "App bundle This app bundle has the following file attached: ReTrace mapping file Enhanced 297 (16.0.5) 26+ 36 4 4 2 View details for App bundle: 297 (16.0.5)"':
+    - 'gridcell "App bundle This app bundle has the following file attached: ReTrace mapping file Enhanced"':
+      - generic: App bundle
+      - 'img "This app bundle has the following file attached: ReTrace mapping file"': attachment
+      - button "Enhanced":
+        - img: info
+        - generic: Enhanced
+    - gridcell "297 (16.0.5)":
+      - generic: 297 (16.0.5)
+    - gridcell "26+":
+      - generic: 26+
+    - gridcell "36":
+      - generic: "36"
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "4":
+      - generic: "4"
+    - gridcell "2":
+      - generic: "2"
+    - 'gridcell "View details for App bundle: 297 (16.0.5)"':
+      - 'button "View details for App bundle: 297 (16.0.5)"':
+        - img: arrow_right_alt
+- heading "Release notes" [level=2]
+- generic: Default language - en-US
+- generic: Fixes an issue on tablets where marking a feed as read could send NewsBlur to the background. Both the bottom button and the feed menu now keep the app open so you can continue reading.
+- generic: Release notes provided for 21 of 21 languages
+- button "Show all":
+  - generic: Show all
+  - img: expand_more
+- heading "Staged roll-out" [level=2]
+- generic: Enter the percentage of your user base that you want to roll-out this release to
+- group "7,619 installs on active devices":
+  - generic: Installs on active devices
+  - generic: 7,619
+- group "Roll-out percentage":
+  - generic: Roll-out percentage *
+  - textbox "%": "100.0"
+  - generic: "%"
+- group "Country availability":
+  - generic: Country availability
+  - radio "Available in all targeted countries" [checked]
+  - generic: Available in all targeted countries
+  - radio "Select specific countries / regions"
+  - generic: Select specific countries / regions
+- group "7,619 installs targeted by rollout":
+  - generic: Installs targeted by rollout
+  - generic: 7,619
+- generic: If you save, changes will be saved in Publishing overview, ready for you to send for review
+- button "Back":
+  - generic: Back
+- button "Save":
+  - generic: Save
+- link "Product updates":
+  - /url: https://play.google.com/console/about/whats-new/
+- link "Status dashboard":
+  - /url: https://status.play.google.com/
+- link "Help":
+  - /url: /console/u/1/developers/6280481402178293168/help-and-support?app=4972990522498280751
+- generic: © 2026 Google
+- link "Privacy":
+  - /url: https://www.google.com/policies/privacy/
+- link "Developer Distribution Agreement":
+  - /url: https://play.google.com/about/developer-distribution-agreement.html
+- link "Terms of Service":
+  - /url: https://play.google.com/about/console/terms-of-service/
+- status
+- status: 1Password menu is available. Press down arrow to select.
