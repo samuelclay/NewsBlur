@@ -492,6 +492,14 @@ public class UIUtils {
                 .setImageTintList(android.content.res.ColorStateList.valueOf(aiColors.getLegendIcon()));
         ((TextView) root.findViewById(R.id.explainer_label_like)).setTextColor(likeColor);
         ((TextView) root.findViewById(R.id.explainer_label_dislike)).setTextColor(dislikeColor);
+        // The level icons take their label's color, as in TrainerView.swift, so the crimson super
+        // dislike stays visible on the dark themes.
+        ((android.widget.ImageView) root.findViewById(R.id.explainer_pill_super_icon))
+                .setImageTintList(android.content.res.ColorStateList.valueOf(superColor));
+        ((android.widget.ImageView) root.findViewById(R.id.explainer_pill_like_icon))
+                .setImageTintList(android.content.res.ColorStateList.valueOf(likeColor));
+        ((android.widget.ImageView) root.findViewById(R.id.explainer_pill_dislike_icon))
+                .setImageTintList(android.content.res.ColorStateList.valueOf(dislikeColor));
 
         // Separator text and lines
         ((TextView) root.findViewById(R.id.explainer_sep_1)).setTextColor(separatorColor);
@@ -578,6 +586,9 @@ public class UIUtils {
         pill.setTextColor(textColor);
         Drawable icon = pill.getContext().getDrawable(iconRes);
         if (icon != null) {
+            // Like the legend's level icons, each example's icon takes its text color.
+            icon = icon.mutate();
+            icon.setTint(textColor);
             icon.setBounds(0, 0, iconSize, iconSize);
             pill.setCompoundDrawablesRelative(null, null, icon, null);
             pill.setCompoundDrawablePadding((int) (3 * pill.getResources().getDisplayMetrics().density));
