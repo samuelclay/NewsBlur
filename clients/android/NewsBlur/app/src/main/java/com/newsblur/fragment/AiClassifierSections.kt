@@ -13,11 +13,11 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.StyleSpan
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.TypedValue
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -168,7 +168,10 @@ class AiClassifierSections(
         val tester = AiPromptTester(fragment.lifecycleScope, classifierApi)
 
         val typedPrompt: String
-            get() = binding.aiPromptInput.text.toString().trim()
+            get() =
+                binding.aiPromptInput.text
+                    .toString()
+                    .trim()
 
         val draft: AiPromptDraft
             get() = AiPromptDraft(typedPrompt, hidden = previewScore == Classifier.DISLIKE)
@@ -203,9 +206,19 @@ class AiClassifierSections(
             binding.aiPromptInput.typeface = medium
             binding.aiPromptInput.addTextChangedListener(
                 object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int,
+                    ) = Unit
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int,
+                    ) = Unit
 
                     override fun afterTextChanged(s: Editable?) {
                         clearTestResults()
@@ -406,7 +419,8 @@ class AiClassifierSections(
         private val originalScores: Map<String, Int>
             get() = if (imagePrompt) original.imagePrompts else original.prompts
 
-        private fun typeLabel(): String = context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
+        private fun typeLabel(): String =
+            context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
 
         /**
          * ScopeToggleView.swift handleTap, after reader_classifier.js select_scope: folder and

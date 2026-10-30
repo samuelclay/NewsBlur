@@ -116,9 +116,19 @@ class TrainerPhraseInput(
             if (kind == TrainerPhraseKind.URL) InputType.TYPE_TEXT_VARIATION_URI else 0
         textField.addTextChangedListener(
             object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) = Unit
 
                 override fun afterTextChanged(s: Editable?) = render()
             },
@@ -130,16 +140,34 @@ class TrainerPhraseInput(
         clearButton.setPadding(dp(7), dp(7), dp(7), dp(7))
         clearButton.setOnClickListener { textField.setText("") }
         fieldRow.addView(clearButton, LinearLayout.LayoutParams(dp(38), dp(38)).apply { marginStart = dp(4) })
-        view.addView(fieldRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        view.addView(
+            fieldRow,
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin =
+                    dp(8)
+            },
+        )
 
         badges.horizontalSpacing = dp(6)
         badges.verticalSpacing = dp(6)
-        view.addView(badges, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        view.addView(
+            badges,
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin =
+                    dp(8)
+            },
+        )
 
         draft.onTap = { add { current, original -> TrainerScores.afterTap(tapStyle(), current, original) } }
         draft.onDislike = { add(TrainerScores::afterDislike) }
         draft.onSuperDislike = { add(TrainerScores::afterSuperDislike) }
-        view.addView(draft, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        view.addView(
+            draft,
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin =
+                    dp(8)
+            },
+        )
 
         render()
     }
@@ -350,7 +378,10 @@ class TrainerPhraseInput(
                         setPadding(dp(5), dp(2), dp(5), dp(2))
                         background = rounded(ColorUtils.setAlphaComponent(colors.regexAccent, 26), dp(4).toFloat())
                     },
-                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) },
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                        topMargin =
+                            dp(6)
+                    },
                 )
                 card.addView(
                     TextView(context).apply {

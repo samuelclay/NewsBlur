@@ -179,7 +179,12 @@ class Test_TrainerSaveParams {
     fun test_a_phrase_from_title_words_saves_like_the_old_title_selection() {
         val classifier = classifier()
         val original = classifier()
-        val phrase = TrainerPhrase.words("[Sponsor] WorkOS: Build Your App").drop(1).take(1).fold("", TrainerPhrase::appendWord)
+        val phrase =
+            TrainerPhrase
+                .words("[Sponsor] WorkOS: Build Your App")
+                .drop(1)
+                .take(1)
+                .fold("", TrainerPhrase::appendWord)
         assertEquals("WorkOS:", phrase)
         val typed = TrainerPhrase.appendWord("", "WorkOS")
         press(classifier.title, original.title, typed, superDislike)
@@ -256,7 +261,11 @@ class Test_TrainerSaveParams {
         press(prompts.prompts, original.prompts, "Crypto", tap(TapStyle.CYCLE))
         press(prompts.prompts, original.prompts, "Crypto", tap(TapStyle.CYCLE))
 
-        val oldButtons = Gson().fromJson("""{"prompts": {"Non-apple related news": 1, "Sports": -1, "Crypto": 1}}""", Classifier::class.java)
+        val oldButtons =
+            Gson().fromJson(
+                """{"prompts": {"Non-apple related news": 1, "Sports": -1, "Crypto": 1}}""",
+                Classifier::class.java,
+            )
         oldButtons.prompts["Non-apple related news"] = Classifier.DISLIKE
         oldButtons.prompts["Sports"] = Classifier.CLEAR_DISLIKE
         oldButtons.prompts["Crypto"] = Classifier.CLEAR_LIKE

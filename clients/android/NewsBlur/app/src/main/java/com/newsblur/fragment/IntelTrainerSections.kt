@@ -99,7 +99,19 @@ class IntelTrainerSections(
         val aiContainer = LinearLayout(context)
         aiContainer.orientation = LinearLayout.VERTICAL
         container.addView(aiContainer)
-        aiSections = AiClassifierSections(fragment, aiContainer, classifier, story, feedId, theme, prefsRepo, dbHelper, classifierApi, thumbnailLoader)
+        aiSections =
+            AiClassifierSections(
+                fragment,
+                aiContainer,
+                classifier,
+                story,
+                feedId,
+                theme,
+                prefsRepo,
+                dbHelper,
+                classifierApi,
+                thumbnailLoader,
+            )
         aiSections.bind()
         addPublisherSection()
     }
@@ -181,10 +193,22 @@ class IntelTrainerSections(
         addingRow.orientation = LinearLayout.HORIZONTAL
         addingRow.gravity = Gravity.CENTER_VERTICAL
         val adding = TrainerCapsuleView(context)
-        addingRow.addView(adding, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { weight = 1f })
+        addingRow.addView(
+            adding,
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                weight =
+                    1f
+            },
+        )
         val clear = clearButton()
         addingRow.addView(clear, LinearLayout.LayoutParams(dp(38), dp(38)).apply { marginStart = dp(4) })
-        card.addView(addingRow, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
+        card.addView(
+            addingRow,
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                topMargin =
+                    dp(10)
+            },
+        )
 
         fun renderAdding() {
             addingRow.isVisible = phrase.isNotEmpty()
@@ -264,7 +288,13 @@ class IntelTrainerSections(
                 value = feed?.title.orEmpty(),
                 faviconUrl = feed?.faviconUrl,
             )
-        card.addView(capsule, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        card.addView(
+            capsule,
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                topMargin =
+                    dp(4)
+            },
+        )
     }
 
     // Which classifiers each section lists
@@ -275,7 +305,9 @@ class IntelTrainerSections(
      */
     private fun shownPhrases(kind: TrainerPhraseKind): List<String> {
         val saved = kind.phrases(classifier).keys
-        val story = story ?: return if (kind == TrainerPhraseKind.AUTHOR) (dbHelper.getAuthorsForFeed(feedId) + saved).distinct() else saved.toList()
+        val story =
+            story
+                ?: return if (kind == TrainerPhraseKind.AUTHOR) (dbHelper.getAuthorsForFeed(feedId) + saved).distinct() else saved.toList()
         return when (kind) {
             // A story has a single author, trained or not.
             TrainerPhraseKind.AUTHOR -> listOfNotNull(story.authors?.takeIf { it.isNotBlank() })
@@ -317,7 +349,14 @@ class IntelTrainerSections(
         }
 
     /** NewsBlurAppDelegate.m: authors cycle through a dislike, titles, text and URLs toggle a like. */
-    private fun phraseTapStyle(kind: TrainerPhraseKind): TapStyle = if (kind == TrainerPhraseKind.AUTHOR) TapStyle.CYCLE else TapStyle.TOGGLE_LIKE
+    private fun phraseTapStyle(kind: TrainerPhraseKind): TapStyle =
+        if (kind ==
+            TrainerPhraseKind.AUTHOR
+        ) {
+            TapStyle.CYCLE
+        } else {
+            TapStyle.TOGGLE_LIKE
+        }
 
     // Views
 

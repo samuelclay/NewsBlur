@@ -302,7 +302,14 @@ class TrainerCapsuleView(
             }
         label.setTextColor(valueColor)
         val labelColor = if (isActive) colors.capsuleActiveLabel else colors.capsuleNeutralLabel
-        val header = if (model.style == Style.PHRASE && model.label.isNotEmpty()) context.getString(R.string.trainer_capsule_label, model.label) else null
+        val header =
+            if (model.style == Style.PHRASE &&
+                model.label.isNotEmpty()
+            ) {
+                context.getString(R.string.trainer_capsule_label, model.label)
+            } else {
+                null
+            }
         // The header runs inline so a long value wraps under it, except around the publisher's favicon.
         prefix.isVisible = header != null && favicon.isVisible
         prefix.text = header
@@ -361,7 +368,15 @@ class TrainerCapsuleView(
                 shape = GradientDrawable.OVAL
                 setColor(if (isOn) onColor else 0)
             }
-        button.background = RippleDrawable(ColorStateList.valueOf(RIPPLE), circle, GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(-1) })
+        button.background =
+            RippleDrawable(
+                ColorStateList.valueOf(RIPPLE),
+                circle,
+                GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(-1)
+                },
+            )
         button.isSelected = isOn
     }
 
