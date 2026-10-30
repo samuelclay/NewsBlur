@@ -177,7 +177,9 @@ class Context:
         feeds = self.visible_feeds()
         if not feeds:
             raise RuntimeError("No visible feed to test with; pass --feed to run.py")
-        best = max(feeds, key=lambda feed: (feed["unread"] > 0, feed["shows_read"], feed["unread"], feed["recent"]))
+        best = max(
+            feeds, key=lambda feed: (feed["unread"] > 0, feed["shows_read"], feed["unread"], feed["recent"])
+        )
         return best["id"]
 
     def press_point(self, locator):

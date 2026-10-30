@@ -45,9 +45,17 @@ def run(ctx):
     state = ctx.state()
     ctx.shot("01-next-feed")
     ctx.check("Next unread moved on to another feed", f"/site/{feed_id}/" not in state["path"], state)
-    ctx.check("and stayed on the story screen", state["screen"] == "story" and state["entry"]["screen"] == "story", state)
+    ctx.check(
+        "and stayed on the story screen",
+        state["screen"] == "story" and state["entry"]["screen"] == "story",
+        state,
+    )
     page.go_back()
     ctx.wait(1200)
     state = ctx.state()
-    ctx.check("back lands on the new feed's story list", state["screen"] == "titles" and f"/site/{feed_id}/" not in state["path"], state)
+    ctx.check(
+        "back lands on the new feed's story list",
+        state["screen"] == "titles" and f"/site/{feed_id}/" not in state["path"],
+        state,
+    )
     ctx.check_no_page_errors()

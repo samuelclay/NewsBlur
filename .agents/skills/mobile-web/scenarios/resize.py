@@ -16,7 +16,9 @@ def run(ctx):
     feed_id = ctx.pick_feed()
     ctx.evaluate(f"NEWSBLUR.reader.open_feed({feed_id})")
     ctx.wait(2500)
-    layout = ctx.evaluate(f"NEWSBLUR.Preferences.view_settings['{feed_id}'] && NEWSBLUR.Preferences.view_settings['{feed_id}'].l")
+    layout = ctx.evaluate(
+        f"NEWSBLUR.Preferences.view_settings['{feed_id}'] && NEWSBLUR.Preferences.view_settings['{feed_id}'].l"
+    )
     ctx.check("desktop starts without the phone layout", not ctx.state()["active"])
     ctx.shot("01-desktop")
 
@@ -35,7 +37,10 @@ def run(ctx):
     )
     ctx.check(
         "the feed's desktop layout is unchanged",
-        ctx.evaluate(f"NEWSBLUR.Preferences.view_settings['{feed_id}'] && NEWSBLUR.Preferences.view_settings['{feed_id}'].l") == layout,
+        ctx.evaluate(
+            f"NEWSBLUR.Preferences.view_settings['{feed_id}'] && NEWSBLUR.Preferences.view_settings['{feed_id}'].l"
+        )
+        == layout,
     )
     ctx.shot("03-desktop-again")
     ctx.check_no_page_errors()

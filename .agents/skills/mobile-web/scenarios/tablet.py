@@ -6,7 +6,7 @@ VIEWPORT = {
     "width": 768,
     "height": 1024,
     "user_agent": "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 "
-                  "(KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    "(KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
 }
 
 

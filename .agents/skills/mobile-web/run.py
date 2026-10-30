@@ -47,7 +47,9 @@ def available_scenarios():
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "scenarios",
         nargs="+",
@@ -58,8 +60,12 @@ def build_parser():
         help="Worktree name (basename of .worktree/<name>) or 'main'. Defaults to the current checkout.",
     )
     parser.add_argument("--user", default="samuel", help="Dev username to autologin as (default samuel)")
-    parser.add_argument("--feed", type=int, help="Feed id to test with (default: the visible feed with most stories)")
-    parser.add_argument("--args", default="", help="Extra argument passed to each scenario (tour takes light or dark)")
+    parser.add_argument(
+        "--feed", type=int, help="Feed id to test with (default: the visible feed with most stories)"
+    )
+    parser.add_argument(
+        "--args", default="", help="Extra argument passed to each scenario (tour takes light or dark)"
+    )
     parser.add_argument("--out", default="/tmp/newsblur-mobile-web", help="Directory for screenshots")
     parser.add_argument("--image", default=PLAYWRIGHT_IMAGE, help="Docker image to run (built on demand)")
     return parser
@@ -124,16 +130,26 @@ def run_guard(web_container, mode, user):
 
 def run_scenario(name, args, haproxy_container, out_dir):
     command = [
-        "docker", "run", "--rm",
-        "--network", f"container:{haproxy_container}",
-        "-v", f"{SKILL_DIR}:/skill:ro",
-        "-v", f"{out_dir}:/out",
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        f"container:{haproxy_container}",
+        "-v",
+        f"{SKILL_DIR}:/skill:ro",
+        "-v",
+        f"{out_dir}:/out",
         args.image,
-        "python", "/skill/harness.py",
-        "--scenario", name,
-        "--user", args.user,
-        "--out", "/out",
-        "--args", args.args,
+        "python",
+        "/skill/harness.py",
+        "--scenario",
+        name,
+        "--user",
+        args.user,
+        "--out",
+        "/out",
+        "--args",
+        args.args,
     ]
     if args.feed:
         command += ["--feed", str(args.feed)]

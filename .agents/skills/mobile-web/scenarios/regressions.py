@@ -3,10 +3,14 @@ regressions.py: bugs found in code review of the phone layout (PR #2189), each c
 before its fix. smoke.py runs these too.
 """
 
-FEEDS_SCREEN_X = "(() => { var m = getComputedStyle(document.querySelector('.left-pane')).transform; " \
+FEEDS_SCREEN_X = (
+    "(() => { var m = getComputedStyle(document.querySelector('.left-pane')).transform; "
     "return m === 'none' ? 0 : parseFloat(m.split(',')[4]); })()"
-STORY_LISTENERS = "(() => { var s = NEWSBLUR.reader.active_story; " \
+)
+STORY_LISTENERS = (
+    "(() => { var s = NEWSBLUR.reader.active_story; "
     "return (s._events['change:selected'] || []).length + (s._events['change'] || []).length; })()"
+)
 
 
 def check_regressions(ctx, feed_id):
@@ -39,13 +43,17 @@ def check_regressions(ctx, feed_id):
     story_before = ctx.state()["story"]
     ctx.page.locator(".NB-mobile-story-next").tap()
     ctx.wait(60)
-    ctx.evaluate("(() => { NEWSBLUR.app.mobile.set_screen('titles'); NEWSBLUR.app.mobile.after_screen_change(); })()")
+    ctx.evaluate(
+        "(() => { NEWSBLUR.app.mobile.set_screen('titles'); NEWSBLUR.app.mobile.after_screen_change(); })()"
+    )
     ctx.wait(1200)
     pager = ctx.evaluate(
         "({story: !!NEWSBLUR.app.mobile.story_pager.story, "
         "views: $('.NB-mobile-story-page .NB-feed-story-content').length})"
     )
-    ctx.check("closing mid page turn leaves the pager empty", not pager["story"] and pager["views"] == 0, pager)
+    ctx.check(
+        "closing mid page turn leaves the pager empty", not pager["story"] and pager["views"] == 0, pager
+    )
     ctx.check("closing mid page turn doesn't select the next story", ctx.state()["story"] == story_before)
 
     # A screen change during an edge swipe (reader_opened, feed_reset) used to leave the drag's

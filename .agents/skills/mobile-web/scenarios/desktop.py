@@ -15,11 +15,15 @@ def run(ctx):
     ctx.shot("01-dashboard")
     ctx.evaluate(f"NEWSBLUR.reader.open_feed({ctx.pick_feed()})")
     ctx.wait(3000)
-    ctx.evaluate("(() => { var story = NEWSBLUR.assets.stories.at(1); if (story) story.set('selected', true); })()")
+    ctx.evaluate(
+        "(() => { var story = NEWSBLUR.assets.stories.at(1); if (story) story.set('selected', true); })()"
+    )
     ctx.wait(1500)
     ctx.check(
         "no phone chrome is visible",
-        ctx.evaluate("$('.NB-mobile-bar:visible, .NB-mobile-story-screen:visible, .NB-mobile-toolbar:visible').length == 0"),
+        ctx.evaluate(
+            "$('.NB-mobile-bar:visible, .NB-mobile-story-screen:visible, .NB-mobile-toolbar:visible').length == 0"
+        ),
     )
     ctx.check("history entries are left untagged", not (ctx.state()["entry"]))
     ctx.shot("02-feed")
