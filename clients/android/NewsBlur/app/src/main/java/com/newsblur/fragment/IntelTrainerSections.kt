@@ -221,7 +221,7 @@ class IntelTrainerSections(
                 TextView(context).apply {
                     text = word
                     typeface = medium
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
                     setTextColor(colors.wordText)
                     setPadding(dp(5), dp(3), dp(5), dp(3))
                     background = rounded(colors.wordBackground, dp(5).toFloat())
@@ -262,11 +262,8 @@ class IntelTrainerSections(
                 context.getString(R.string.trainer_label_site),
                 TapStyle.CYCLE,
                 value = feed?.title.orEmpty(),
+                faviconUrl = feed?.faviconUrl,
             )
-        feed?.faviconUrl?.let { url ->
-            capsule.favicon.isVisible = true
-            iconLoader.displayImage(url, capsule.favicon)
-        }
         card.addView(capsule, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
     }
 
@@ -332,8 +329,13 @@ class IntelTrainerSections(
         label: String,
         tapStyle: TapStyle,
         value: String = key,
+        faviconUrl: String? = null,
     ): TrainerCapsuleView {
         val capsule = TrainerCapsuleView(context)
+        if (faviconUrl != null) {
+            capsule.favicon.isVisible = true
+            iconLoader.displayImage(faviconUrl, capsule.favicon)
+        }
 
         fun render() {
             capsule.bind(
@@ -409,7 +411,7 @@ class IntelTrainerSections(
             TextView(context).apply {
                 text = title
                 typeface = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
                 setTextColor(colors.textPrimary)
             }
 
@@ -418,7 +420,7 @@ class IntelTrainerSections(
             val density = context.resources.displayMetrics.density
             return LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 marginStart = (32 * density).roundToInt()
-                marginEnd = (32 * density).roundToInt()
+                marginEnd = (8 * density).roundToInt()
                 topMargin = (24 * density).roundToInt()
                 bottomMargin = (8 * density).roundToInt()
             }

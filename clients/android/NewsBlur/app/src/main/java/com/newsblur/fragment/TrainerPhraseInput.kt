@@ -76,8 +76,8 @@ class TrainerPhraseInput(
         listOf(exactSegment to R.string.trainer_exact_phrase, regexSegment to R.string.trainer_regex).forEach { (segment, text) ->
             segment.setText(text)
             segment.typeface = medium
-            segment.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            segment.setPadding(dp(14), dp(6), dp(14), dp(6))
+            segment.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            segment.setPadding(dp(12), dp(5), dp(12), dp(5))
             segment.gravity = Gravity.CENTER
             track.addView(segment)
         }
@@ -103,7 +103,7 @@ class TrainerPhraseInput(
         fieldRow.gravity = Gravity.CENTER_VERTICAL
         textField.background = rounded(colors.fieldBackground, dp(6).toFloat(), colors.fieldBorder)
         textField.setPadding(dp(10), dp(9), dp(10), dp(9))
-        textField.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        textField.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
         textField.setTextColor(colors.textPrimary)
         textField.setHintTextColor(colors.textSecondary)
         textField.isSingleLine = true
@@ -168,7 +168,7 @@ class TrainerPhraseInput(
         textField.typeface = if (isRegex) Typeface.MONOSPACE else medium
         textField.hint = placeholder()
         val pattern = pattern
-        clearButton.visibility = if (textField.text.isNotEmpty()) View.VISIBLE else View.INVISIBLE
+        clearButton.isVisible = textField.text.isNotEmpty()
         renderBadges(pattern)
         draft.isVisible = pattern.isNotEmpty()
         if (pattern.isEmpty()) return

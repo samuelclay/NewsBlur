@@ -7,6 +7,9 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -17,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.newsblur.R
 import com.newsblur.design.TrainerPalette
 import com.newsblur.domain.ClassifierScope
@@ -72,13 +76,13 @@ class TrainerCapsuleView(
         listOf(ClassifierScope.FEED, ClassifierScope.FOLDER, ClassifierScope.GLOBAL).associateWith { ImageView(context) }
     private val badge = TextView(context)
 
-    // TrainerCapsule.swift content: the dimmer "Author:" before the value.
+    // TrainerCapsule.swift content: the dimmer "Site:" before the publisher's favicon. Other
+    // capsules put their "Author:" inline in the label.
     private val prefix = TextView(context)
     private val label = TextView(context)
     private val divider = View(context)
     private val dislikeButton = ImageView(context)
     private val superDislikeButton = ImageView(context)
-    private var model: Model? = null
 
     init {
         orientation = HORIZONTAL
@@ -122,7 +126,7 @@ class TrainerCapsuleView(
         body.addView(badge, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
 
         prefix.typeface = medium
-        prefix.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        prefix.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
         prefix.isSingleLine = true
         body.addView(prefix, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { marginStart = dp(7) })
 
@@ -151,7 +155,6 @@ class TrainerCapsuleView(
         model: Model,
         colors: TrainerPalette.Colors,
     ) {
-        this.model = model
         val isActive = model.level != Level.NEUTRAL
         val isPrompt = model.style == Style.PROMPT
         val isRegex = model.style == Style.REGEX
@@ -176,7 +179,7 @@ class TrainerCapsuleView(
                 },
             )
         val iconSize = if (model.level == Level.SUPER_DISLIKE) dp(18) else dp(15)
-        scoreIcon.layoutParams = (scoreIcon.layoutParams as LayoutParams).apply {
+        scoreIcon.updateLayoutParams<LayoutParams> {
             width = iconSize
             height = iconSize
         }
@@ -202,7 +205,6 @@ class TrainerCapsuleView(
         // TrainerCapsule.swift trailingButtons.
         divider.isVisible = hasButtons
         divider.setBackgroundColor(if (isActive) ColorUtils.setAlphaComponent(colors.capsuleActiveText, 64) else colors.capsuleDivider)
-        (divider.layoutParams as LayoutParams).marginStart = 0
         bindInlineButton(
             dislikeButton,
             model.showsDislike,
@@ -298,20 +300,31 @@ class TrainerCapsuleView(
                 else -> colors.capsuleNeutralText
             }
         label.setTextColor(valueColor)
-        val showsPrefix = model.style == Style.PHRASE && model.label.isNotEmpty()
-        prefix.isVisible = showsPrefix
-        prefix.text = if (showsPrefix) context.getString(R.string.trainer_capsule_label, model.label) else null
-        prefix.setTextColor(if (isActive) colors.capsuleActiveLabel else colors.capsuleNeutralLabel)
-        (label.layoutParams as LayoutParams).marginStart = dp(if (showsPrefix || favicon.isVisible) 5 else 7)
-        label.text = model.value
+        val labelColor = if (isActive) colors.capsuleActiveLabel else colors.capsuleNeutralLabel
+        val header = if (model.style == Style.PHRASE && model.label.isNotEmpty()) context.getString(R.string.trainer_capsule_label, model.label) else null
+        // The header runs inline so a long value wraps under it, except around the publisher's favicon.
+        prefix.isVisible = header != null && favicon.isVisible
+        prefix.text = header
+        prefix.setTextColor(labelColor)
+        // updateLayoutParams resolves the start margin again, which a capsule rebinding needs.
+        label.updateLayoutParams<LayoutParams> { marginStart = dp(if (favicon.isVisible) 5 else 7) }
+        label.text =
+            if (header != null && !favicon.isVisible) {
+                SpannableStringBuilder(header).apply {
+                    setSpan(ForegroundColorSpan(labelColor), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    append(" ").append(model.value)
+                }
+            } else {
+                model.value
+            }
         when (model.style) {
             Style.PHRASE -> {
                 label.typeface = medium
-                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             }
             Style.REGEX -> {
                 label.typeface = Typeface.MONOSPACE
-                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
             }
             Style.PROMPT -> {
                 label.typeface = if (model.isPlaceholder) Typeface.create(medium, Typeface.ITALIC) else medium

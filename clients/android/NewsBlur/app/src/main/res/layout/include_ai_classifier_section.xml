@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/ai_section_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:importantForAccessibility="no" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:textSize="18sp" />
+            android:textSize="17sp" />
 
     </LinearLayout>
 
