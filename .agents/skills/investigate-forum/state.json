@@ -418,15 +418,19 @@
       "url": "https://forum.newsblur.com/t/mcp-access-from-littlebird-ai/13806",
       "status": "merged",
       "tier": 2,
-      "handled_at": "2026-10-28T17:38:35Z",
-      "last_posted_at": "2026-10-19T12:55:16.988Z",
-      "pr": "https://github.com/samuelclay/NewsBlur/pull/2194",
-      "branch": "forum-13806-root-oauth-metadata",
-      "worktree": ".worktree/forum-13806-root-oauth-metadata",
-      "note": "Littlebird never starts OAuth: root /.well-known/oauth-authorization-server 404ed on newsblur.com while every comparable DCR MCP host serves it; 2025-03-26 spec clients only look at the root. Sam chose the root metadata PR. Unverified against Littlebird itself. #2194 merged as 29b90e5cb4 and deployed with make deploy on 2026-10-28. Follow-up #2196 (FastMCP trailing-slash 307s to http://newsblur.com/register) merged as 5a14898d61, shipped with make push_mcp + make deploy_mcp on 2026-10-29. Old-spec client probe on prod passed 9/9: root discovery, DCR, authorize and token each with and without a trailing slash. Reply is safe to post now.",
-      "reply": "I think I found it. Littlebird looks for our OAuth details at the root of newsblur.com, the way an older version of the MCP spec worked. We only published them under /mcp, so Littlebird never learned that NewsBlur uses OAuth. It skipped the browser sign in and called the server with no token, which is the \"rejected the API token\" error.\n\nNewsBlur now publishes those details in both places. There's no API token to find, MCP only uses the OAuth sign in. Remove the server in Littlebird and add https://newsblur.com/mcp again, with or without the trailing slash. Your earlier screenshot had https:/newsblur.com/mcp/ with a single slash, so make sure it starts with https:// this time. It should then open a browser window to approve access. If it still fails, tell me exactly what it says and I'll keep digging.",
+      "handled_at": "2026-10-30T04:45:00Z",
+      "last_posted_at": "2026-10-29T14:15:58.377Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2200",
+      "branch": "forum-13806-wellknown-ua-ban",
+      "worktree": ".worktree/forum-13806-wellknown-ua-ban",
+      "note": "Follow-up after GraBird's post #11: #2194 and #2196 shipped but Littlebird still failed. Real cause: UserAgentBanMiddleware 403'd every /.well-known/ discovery doc for requests with no User-Agent, and the Python MCP SDK sends discovery with none. Littlebird discovers on its backend (H.mcp.discoverServer in their web bundle) and MCP logs showed it reaching the last fallback /mcp/.well-known/openid-configuration (404) at each retry. #2200 exempts /.well-known/ from the ban; merged 42fe495d36 and deployed with make deploy 2026-10-30. Python SDK probe on prod now registers and reaches /mcp/authorize. Littlebird link is strong but circumstantial (web logs from Oct 29 14:14 rotated). Earlier: #2194 root discovery and #2196 trailing slashes, both deployed. Token lifetime work Sam asked for is PR #2201 (separate, not a forum fix).",
+      "reply": "Thanks for trying again, that helped me find the real problem. Littlebird checks for OAuth from its own servers, and those requests don't send a browser user agent. NewsBlur blocks requests with no user agent to keep scrapers out, and that block was also catching the OAuth discovery files. So Littlebird never saw that NewsBlur supports OAuth and fell back to asking for an API token.\n\nThose discovery files are now open to any client. Delete the server in Littlebird and add https://newsblur.com/mcp one more time. It should open a browser window to approve access this time. If it doesn't, let me know and I'll reach out to Littlebird directly.",
       "question": null,
-      "follow_up_pr": "https://github.com/samuelclay/NewsBlur/pull/2196"
+      "follow_up_pr": "https://github.com/samuelclay/NewsBlur/pull/2196",
+      "earlier_prs": [
+        "https://github.com/samuelclay/NewsBlur/pull/2194",
+        "https://github.com/samuelclay/NewsBlur/pull/2196"
+      ]
     }
   }
 }
