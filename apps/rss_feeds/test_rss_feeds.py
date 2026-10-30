@@ -9177,3 +9177,30 @@ class Test_TrimOldSavedStories(TestCase):
         with self.assertRaises(CommandError):
             management.call_command("trim_saved_stories", batch=0, stdout=io.StringIO())
         self.assertEqual(self._saved(0), 2)
+
+    def test_each_batch_is_deleted_by_id_alone(self):
+        """A delete that also filtered on user_id let Mongo plan it on the (user_id, -starred_date)
+        index, so every batch of user 0's unsaved copies walked all 6.9 million of them and the first
+        production run stalled for minutes per batch. The batch's ids come from the filtered find."""
+        import pymongo.collection
+
+        from apps.rss_feeds.models import MStarredStory
+
+        gone = self._user("deletedbyid", last_seen_days_ago=800)
+        self._save(0, 3, "by-id")
+        self._save(gone, 12, "by-id-account")
+        filters = []
+        delete_many = pymongo.collection.Collection.delete_many
+
+        def recording(collection, filter, *args, **kwargs):
+            if collection.name == "starred_stories":
+                filters.append(filter)
+            return delete_many(collection, filter, *args, **kwargs)
+
+        with patch.object(pymongo.collection.Collection, "delete_many", recording):
+            MStarredStory.trim_old_stories(batch_size=5)
+
+        self.assertTrue(filters)
+        self.assertEqual({tuple(f) for f in filters}, {("_id",)})
+        self.assertEqual(self._saved(0), 0)
+        self.assertEqual(self._saved(gone), 0)
