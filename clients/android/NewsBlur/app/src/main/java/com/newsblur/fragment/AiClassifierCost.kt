@@ -3,6 +3,7 @@ package com.newsblur.fragment
 import android.content.res.Resources
 import com.newsblur.R
 import com.newsblur.domain.ClassifierScope
+import com.newsblur.domain.Folder
 import com.newsblur.util.UsageBilling
 import java.text.NumberFormat
 
@@ -56,6 +57,28 @@ internal object AiClassifierCost {
             groups = groups.values.toList(),
         )
     }
+
+    /**
+     * The stories [scope]'s filters run on in a month. A folder scope names its folder by the full
+     * path apps/reader/models.py flatten_folders gives it, such as "Tech - Swift", which
+     * TrainerScopePicker.folderPath builds the same way, so a nested folder is found by its whole
+     * path and never by a leaf name another folder shares. Like flatten_folders, a folder counts
+     * only the sites directly in it.
+     */
+    fun storiesForScope(
+        scope: ClassifierScope,
+        feedStories: Int,
+        folders: List<Folder>,
+        storiesByFeed: Map<String, Int>,
+    ): Int =
+        when (scope.scope) {
+            ClassifierScope.GLOBAL -> storiesByFeed.values.sum()
+            ClassifierScope.FOLDER -> {
+                val folder = folders.firstOrNull { TrainerScopePicker.folderPath(it) == scope.folderName }
+                folder?.feedIds?.sumOf { storiesByFeed[it] ?: 0 } ?: 0
+            }
+            else -> feedStories
+        }
 
     /** "$0.12/mo · $0.004/day" */
     fun amounts(

@@ -122,15 +122,7 @@ class AiClassifierSections(
         context.startActivity(Intent(context, UsageBillingActivity::class.java))
     }
 
-    private fun storiesForScope(scope: ClassifierScope): Int =
-        when {
-            scope.scope == ClassifierScope.GLOBAL -> storiesByFeed.values.sum()
-            scope.scope == ClassifierScope.FOLDER -> {
-                val folder = folders.firstOrNull { TrainerScopePicker.folderPath(it) == scope.folderName }
-                folder?.feedIds?.sumOf { storiesByFeed[it] ?: 0 } ?: 0
-            }
-            else -> feedStories
-        }
+    private fun storiesForScope(scope: ClassifierScope): Int = AiClassifierCost.storiesForScope(scope, feedStories, folders, storiesByFeed)
 
     private fun dp(value: Int): Int = (value * context.resources.displayMetrics.density).roundToInt()
 
