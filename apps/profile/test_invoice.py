@@ -2,9 +2,12 @@ import datetime
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
+from apps.profile.forms import AccountSettingsForm
 from apps.profile.models import PaymentHistory
 from utils import json_functions as json
 
@@ -82,3 +85,49 @@ class Test_InvoiceDetails(TestCase):
         self.assertNotContains(response, "Viewer VAT details")
         self.client.logout()
         self.assertEqual(self.client.get(self.url).status_code, 302)
+
+    def test_account_saves_invoice_and_email_preferences_together(self):
+        result = self.save_details(
+            invoice_text="VAT: DE123456789", send_emails="false", notify_before_renewal="true"
+        )
+        self.assertEqual(result["code"], 1, result)
+        preferences = self.preferences()
+        self.assertFalse(self.user.profile.send_emails)
+        self.assertTrue(preferences["notify_before_renewal"])
+        self.assertEqual(preferences["invoice_text"], "VAT: DE123456789")
+        self.assertFalse(result["payload"]["send_emails"])
+        self.assertTrue(result["payload"]["notify_before_renewal"])
+        self.save_details(invoice_text="Updated address")
+        self.assertTrue(self.preferences()["notify_before_renewal"])
+        self.assertFalse(self.user.profile.send_emails)
+        self.save_details(notify_before_renewal="false", send_emails="true")
+        self.assertFalse(self.preferences()["notify_before_renewal"])
+        self.assertTrue(self.user.profile.send_emails)
+        self.assertEqual(self.preferences()["invoice_text"], "Updated address")
+
+    def test_rejected_account_save_does_not_change_email_preferences(self):
+        result = self.save_details(invoice_text="x" * 2001, send_emails="false", notify_before_renewal="true")
+        self.assertEqual(result["code"], -4)
+        self.assertNotIn("notify_before_renewal", self.preferences())
+        self.assertTrue(self.user.profile.send_emails)
+
+    def test_unchanged_invoice_text_does_not_rewrite_preferences(self):
+        self.save_details(invoice_text="Original")
+        self.preferences()
+        form = AccountSettingsForm(
+            user=self.user,
+            data={"username": self.user.username, "email": self.user.email, "invoice_text": "Original"},
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        with patch("apps.profile.forms.MCustomStyling.save_user"), CaptureQueriesContext(
+            connection
+        ) as queries:
+            form.save()
+        writes = [query["sql"] for query in queries if query["sql"].startswith('UPDATE "profile_profile"')]
+        self.assertFalse(any('"preferences" =' in query for query in writes), writes)
+
+    def test_generic_preferences_cannot_overwrite_account_invoice_details(self):
+        self.save_details(invoice_text="Original")
+        self.client.post("/profile/set_preference", {"invoice_text": "x" * 2001, "hide_read_feeds": "true"})
+        self.assertEqual(self.preferences()["invoice_text"], "Original")
+        self.assertTrue(self.preferences()["hide_read_feeds"])

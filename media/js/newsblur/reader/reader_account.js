@@ -882,20 +882,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
 
-        NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
-        this.model.preference('send_emails', form['send_emails']);
-        this.model.preference('notify_before_renewal', form['notify_before_renewal']);
-
-        // Save usage billing limit if changed
-        if (NEWSBLUR.Globals.can_use_ai_classifiers) {
-            var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
-            this.model.save_usage_billing_limit(limit, function (data) {
-                if (data.code === 1) {
-                    NEWSBLUR.Globals.usage_billing_limit = data.limit;
-                }
-            });
-        }
-
         this.model.save_account_settings(form, _.bind(function (data) {
             if (data.code == -1) {
                 $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
@@ -913,6 +899,17 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             }
 
             NEWSBLUR.Preferences.invoice_text = data.payload.invoice_text;
+            NEWSBLUR.Preferences.send_emails = data.payload.send_emails;
+            NEWSBLUR.Preferences.notify_before_renewal = data.payload.notify_before_renewal;
+            // reader_account.js waits for the account save because usage billing also writes the profile.
+            if (NEWSBLUR.Globals.can_use_ai_classifiers) {
+                var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
+                this.model.save_usage_billing_limit(limit, function (data) {
+                    if (data.code === 1) {
+                        NEWSBLUR.Globals.usage_billing_limit = data.limit;
+                    }
+                });
+            }
             NEWSBLUR.Globals.username = data.payload.username;
             NEWSBLUR.Globals.email = data.payload.email;
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
