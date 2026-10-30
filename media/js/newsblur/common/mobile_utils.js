@@ -43,19 +43,16 @@
         return !!coarse_pointer && height > 0 && height <= MAX_LANDSCAPE_HEIGHT;
     }
 
-    // Backbone routes that open a story list (media/js/newsblur/common/router.js). Everything
-    // else, including the bare root and /welcome, lands on the feed list.
-    var TITLES_ROUTE_PREFIXES = [
-        'site/', 'folder/', 'social/', 'saved', 'read', 'archive', 'briefing', 'try/'
+    // First path segments of the Backbone routes that open a story list or Add + Discover
+    // (media/js/newsblur/common/router.js). Everything else, including the bare root and
+    // /welcome, lands on the feed list.
+    var TITLES_ROUTES = [
+        'site', 'folder', 'social', 'saved', 'read', 'archive', 'briefing', 'briefing-admin', 'try', 'add'
     ];
 
     function screen_for_path(pathname) {
-        var path = (pathname || '').replace(/^\/+/, '');
-        if (!path) return 'feeds';
-        for (var i = 0; i < TITLES_ROUTE_PREFIXES.length; i++) {
-            if (path.indexOf(TITLES_ROUTE_PREFIXES[i]) === 0) return 'titles';
-        }
-        return 'feeds';
+        var segment = (pathname || '').replace(/^\/+/, '').split('/')[0];
+        return TITLES_ROUTES.indexOf(segment) >= 0 ? 'titles' : 'feeds';
     }
 
     // Each history entry the phone layout touches carries {screen, depth, parent_depth,

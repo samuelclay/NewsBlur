@@ -586,7 +586,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var title = feed_id && NEWSBLUR.reader.feed_title(feed_id);
         this.$titles_bar.find('.NB-mobile-bar-title-text').text(title || '');
         var $favicon = this.$titles_bar.find('.NB-mobile-bar-favicon').empty();
-        if (feed_id) {
+        if (feed_id === 'add-site') {
+            // jquery.newsblur.js $.favicon knows feeds, rivers and the saved, read and archive
+            // lists, but Add + Discover is a view of its own, so it gets the sidebar's add icon.
+            $favicon.html($.make('img', {
+                className: 'feed_favicon',
+                src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/add.svg'
+            }));
+        } else if (feed_id) {
             $favicon.html($.favicon_html(feed_id));
         }
         var back_label = this.titles_parent === 'dashboard' ? gettext('Dashboard') : gettext('Feeds');

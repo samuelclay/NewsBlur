@@ -33,6 +33,18 @@ test('routes that open a story list land on the titles screen', function () {
     assert.equal(mobile_utils.screen_for_path('/saved/recipes'), 'titles');
     assert.equal(mobile_utils.screen_for_path('/read'), 'titles');
     assert.equal(mobile_utils.screen_for_path('/briefing'), 'titles');
+    assert.equal(mobile_utils.screen_for_path('/briefing-admin'), 'titles');
+});
+
+test('Add + Discover and its tabs are a titles screen', function () {
+    // Switching discovery tabs writes /add/<tab> entries; tagging them as the feed list made
+    // browser Back drop out of discovery.
+    assert.equal(mobile_utils.screen_for_path('/add'), 'titles');
+    assert.equal(mobile_utils.screen_for_path('/add/youtube'), 'titles');
+    assert.equal(mobile_utils.screen_for_path('/add/popular/news/tech'), 'titles');
+    // Only whole route segments count.
+    assert.equal(mobile_utils.screen_for_path('/address'), 'feeds');
+    assert.equal(mobile_utils.screen_for_path('/readers'), 'feeds');
 });
 
 test('history entries keep their tag and fall back to the URL when untagged', function () {

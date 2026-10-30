@@ -43,9 +43,7 @@ def check_regressions(ctx, feed_id):
     story_before = ctx.state()["story"]
     ctx.page.locator(".NB-mobile-story-next").tap()
     ctx.wait(60)
-    ctx.evaluate(
-        "(() => { NEWSBLUR.app.mobile.set_screen('titles'); NEWSBLUR.app.mobile.after_screen_change(); })()"
-    )
+    ctx.evaluate("(() => { NEWSBLUR.app.mobile.story_pager.close(); })()")
     ctx.wait(1200)
     pager = ctx.evaluate(
         "({story: !!NEWSBLUR.app.mobile.story_pager.story, "
@@ -55,6 +53,9 @@ def check_regressions(ctx, feed_id):
         "closing mid page turn leaves the pager empty", not pager["story"] and pager["views"] == 0, pager
     )
     ctx.check("closing mid page turn doesn't select the next story", ctx.state()["story"] == story_before)
+    # Leave the story screen through history, the way a pop really happens.
+    ctx.page.go_back()
+    ctx.wait(1000)
 
     # A screen change during an edge swipe (reader_opened, feed_reset) used to leave the drag's
     # classes behind, and NB-mobile-transitioning makes every screen ignore taps.
@@ -74,6 +75,69 @@ def check_regressions(ctx, feed_id):
         stuck,
     )
     ctx.set_layout("list")
+    check_story_iframe_sandbox(ctx, feed_id)
+    check_discovery_back(ctx)
+
+
+def check_story_iframe_sandbox(ctx, feed_id):
+    """The phone Story view's iframe once had allow-same-origin. /rss_feeds/original_story serves
+    the publisher's page from NewsBlur's origin, so its scripts could act as the signed-in reader.
+    Expects to be on the story list."""
+    ctx.set_layout("grid")
+    ctx.tap_story(1)
+    # The test feed may block framing; the iframe's sandbox is what matters, so allow it here.
+    ctx.evaluate(
+        f"(() => {{ NEWSBLUR.assets.get_feed({feed_id}).set('disabled_page', false, {{silent: true}}); "
+        "NEWSBLUR.app.mobile.story_pager.update_chrome(); })()"
+    )
+    ctx.page.locator(".NB-mobile-story-view-option[data-view='story']").tap()
+    ctx.wait(1500)
+    sandbox = ctx.evaluate(
+        "(() => { var f = document.querySelector('.NB-mobile-story-page-current iframe'); "
+        "return f ? {sandbox: f.getAttribute('sandbox'), reachable: !!f.contentDocument} : null; })()"
+    )
+    ctx.check(
+        "the Story view iframe can't reach the reader's origin",
+        sandbox and "allow-same-origin" not in sandbox["sandbox"] and not sandbox["reachable"],
+        sandbox,
+    )
+    ctx.page.locator(".NB-mobile-story-view-option[data-view='feed']").tap()
+    ctx.wait(500)
+    ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    ctx.set_layout("list")
+
+
+def check_discovery_back(ctx):
+    """Add + Discover's tab entries were tagged as the feed list, so browser Back between two tabs
+    hid discovery and showed the feeds. Expects to be on the story list."""
+    ctx.page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    ctx.page.locator(".NB-feeds-header-add-site").tap()
+    ctx.wait(2500)
+    # A phone shows only the current tab; the rest live under More (add_site_view.js). Visit two
+    # other tabs so Back crosses an entry written by a tab change.
+    paths = [ctx.evaluate("location.pathname")]
+    tags = []
+    for index in (1, 2):
+        ctx.page.locator(".NB-add-site-tabs-overflow-button").tap()
+        ctx.wait(500)
+        ctx.page.locator(".NB-add-site-tabs-overflow-item >> visible=true").nth(index).tap()
+        ctx.wait(1200)
+        paths.append(ctx.evaluate("location.pathname"))
+        tags.append(ctx.state()["entry"]["screen"])
+    ctx.check("discovery tabs each write their own history entry", len(set(paths)) == 3, paths)
+    ctx.check("discovery tab entries belong to the story list screen", tags == ["titles", "titles"], tags)
+    ctx.page.go_back()
+    ctx.wait(1200)
+    state = ctx.state()
+    ctx.check(
+        "browser Back between discovery tabs stays in Add + Discover",
+        state["screen"] == "titles" and ctx.evaluate("!!NEWSBLUR.reader.flags.add_site_view"),
+        state,
+    )
+    ctx.page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+    ctx.wait(1200)
 
 
 def run(ctx):
