@@ -534,9 +534,9 @@ body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > .folder_title 
     display: contents;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header > .feed > *,
-body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > :not(.folder_title),
-body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > .folder_title > * {
+/* :where() keeps these below the per-pill rules that follow, such as the options pill's flex. */
+body.NB-mobile .right-pane .NB-story-titles-header > :where(.feed, .NB-folder) > :where(:not(.folder_title)),
+body.NB-mobile .right-pane .NB-story-titles-header > :where(.NB-folder) > :where(.folder_title) > * {
     float: none !important;
     flex: none;
     margin: 0 !important;

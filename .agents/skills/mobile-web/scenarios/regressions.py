@@ -414,6 +414,21 @@ def check_folder_pills(ctx):
         len(pills) >= 3 and ordered and len({pill["top"] for pill in pills}) == 1,
         bar,
     )
+    # The folder wrapper's child rule once outranked the options pill's own flex, so the pill
+    # couldn't shrink and pushed the others off a narrow screen.
+    for width in (360, 320):
+        page.set_viewport_size({"width": width, "height": 760})
+        ctx.wait(500)
+        bar = ctx.evaluate(PILL_BAR)
+        pills, pane = bar["pills"], bar["pane"]
+        inside = pills[0]["left"] >= pane["left"] and pills[-1]["right"] <= pane["right"]
+        ctx.check(
+            f"a folder's pills fit at {width}px without clipping the options label",
+            inside and bar["options_fits"],
+            bar,
+        )
+    page.set_viewport_size({"width": ctx.viewport["width"], "height": ctx.viewport["height"]})
+    ctx.wait(500)
     page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
     ctx.wait(300)
     days = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-time:visible').length")
