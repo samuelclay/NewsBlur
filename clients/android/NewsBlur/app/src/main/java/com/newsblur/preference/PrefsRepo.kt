@@ -18,6 +18,7 @@ import com.newsblur.NbApplication
 import com.newsblur.activity.LoginActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
+import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncService
@@ -41,6 +42,7 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.SpacingStyle
 import com.newsblur.util.StateFilter
+import com.newsblur.util.StoryButton
 import com.newsblur.util.StoryContentPreviewStyle
 import com.newsblur.util.StoryListStyle
 import com.newsblur.util.StoryOrder
@@ -205,6 +207,8 @@ class PrefsRepo(
         context: Context,
         dbHelper: BlurDatabaseHelper,
     ) {
+        // PrefsRepo.kt stops Listen first so the signed-out account's story stops playing and its notification goes.
+        ListenManager.from(context).stopForAccountChange()
         SyncService.stop(context)
         syncServiceState.clearState()
 
@@ -239,7 +243,12 @@ class PrefsRepo(
         context.startActivity(i)
     }
 
-    fun clearPrefsAndDbForLoginAs(dbHelper: BlurDatabaseHelper) {
+    fun clearPrefsAndDbForLoginAs(
+        context: Context,
+        dbHelper: BlurDatabaseHelper,
+    ) {
+        // The previous account's story mustn't keep playing, or report its listening, as the new one.
+        ListenManager.from(context).stopForAccountChange()
         // wipe the prefs store except for the cookie and login keys since we need to
         // authenticate further API calls
         val keys: MutableSet<String> = HashSet(prefs.all.keys)
@@ -921,11 +930,12 @@ class PrefsRepo(
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
-    fun isShowAskAi() = prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true)
+    // PrefsRepo.kt reads the synced show_sideoption_ask_ai toggle, falling back to the old device-only one.
+    fun isShowAskAi() =
+        prefs.getBoolean(StoryButton.ASK_AI.prefKey, prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true))
 
-    fun setShowAskAi(value: Boolean) {
-        prefs.edit { putBoolean(PrefConstants.SHOW_ASK_AI, value) }
-    }
+    fun isShowStoryButton(button: StoryButton): Boolean =
+        if (button == StoryButton.ASK_AI) isShowAskAi() else prefs.getBoolean(button.prefKey, true)
 
     fun getAskAiModel(): String? = prefs.getString(PrefConstants.ASK_AI_MODEL, null)
 

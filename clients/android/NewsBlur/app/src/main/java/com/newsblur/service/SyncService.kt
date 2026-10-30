@@ -22,6 +22,7 @@ import com.newsblur.network.StoryApi
 import com.newsblur.network.UserApi
 import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
@@ -84,7 +85,11 @@ open class SyncService :
     lateinit var networkClient: NetworkClient
 
     @Inject
-    lateinit var dbHelper: BlurDatabaseHelper
+    lateinit var dbHelperLazy: dagger.Lazy<BlurDatabaseHelper>
+
+    // NbApplication.kt warms this singleton on IO; eager injection would block service startup
+    // on that same database lock. SyncService.kt first accesses it from its IO coroutine work.
+    val dbHelper: BlurDatabaseHelper get() = dbHelperLazy.get()
 
     @IconFileCache
     @Inject
@@ -100,6 +105,9 @@ open class SyncService :
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var listenPreferences: ListenPreferences
 
     @Inject
     lateinit var syncServiceState: SyncServiceState
@@ -490,6 +498,8 @@ open class SyncService :
                 prefsRepo.putString(PrefConstants.CLUSTER_MODE, it)
             }
             prefsRepo.putBoolean(PrefConstants.CLUSTER_MARK_READ, feedResponse.clusterMarkRead)
+            // SyncService.kt brings in the Listen settings and story button toggles saved on other devices.
+            listenPreferences.applyServerPreferences(feedResponse.preferences)
             // SyncService.kt saves a language chosen on this device first; otherwise the account's language wins.
             val localLanguage = LanguageSettings.selected(this)
             if (LanguageSettings.pending(this)) {

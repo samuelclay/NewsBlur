@@ -28,8 +28,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 296
-        versionName = "16.0.4"
+        versionCode = 299
+        versionName = "16.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
@@ -78,6 +78,7 @@ android {
     // StoreCaptureActivity.kt shares the licensed cooking fixture with the iOS capture harness.
     sourceSets.getByName("storecapture").assets.srcDir("../../../ios/MarketingCooking")
     sourceSets.getByName("main").java.srcDir(if (fdroid) "src/fdroid/java" else "src/play/java")
+    if (!fdroid) sourceSets.getByName("test").java.srcDir("src/playTest/java")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -120,6 +121,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.webkit)
     implementation(libs.androidx.window)
+    // app/build.gradle.kts: Media3 (Apache 2.0) plays Listen audio in both the Play and F-Droid builds.
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 

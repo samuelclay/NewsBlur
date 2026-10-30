@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-10-23T11:42:05-04:00</updated>
+  <updated>2026-10-29T10:00:16-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,101 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Secure images for everybody</title>
+    <link href="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/" rel="alternate" type="text/html" title="Secure images for everybody" />
+    <published>2019-08-15T10:59:11-04:00</published>
+    <updated>2019-08-15T10:59:11-04:00</updated>
+    <id>https://blog.newsblur.com/2019/08/15/secure-images-for-everybody</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/">
+      <![CDATA[<p>There are two ways to connect to the NewsBlur website. The first is <em>http</em>://www.newsblur.com. The second is <em>https</em>://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</p>
+
+<p>Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.</p>
+
+<p>One is that using an encrypted https connection to NewsBlur protects what you read from hackers or a man-in-the-middle changing your data as it comes to you. This could be your internet service provider (ISP) inserting ads or it could be snooping wifi router that you are connected to that injects malware into your content. Some companies have been known to do this and https protects you.</p>
+
+<p>But the second reason is that your privacy is also protected from more benign, aggregate collections by ISPs and middlemen that sees what you read and sells that data. NewsBlur doesn’t sell any of your data and beginning this week NewsBlur can ensure that nobody other than you and the site you read can either.</p>
+
+<p>The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.</p>
+
+<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png" /></figure>
+
+<p>You should notice next to no difference. The only difference you may notice is that some images may load <em>faster</em>, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.</p>
+
+<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png" /></figure>
+
+<p>Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.</p>
+
+<p>And to answer the question of why you wouldn’t wan t to use https — it used to mean serving and loading pages over https gave a slight performance hit, but that’s no longer true. But some people use http because it will load images from both http and https websites, whereas loading NewsBlur via https means that you can only load images via https, as loading an image via http will throw up a Mixed Content Warning. This update addresses that issue and it is my hope that http-only will be phased out.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[There are two ways to connect to the NewsBlur website. The first is http://www.newsblur.com. The second is https://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title>
+    <link href="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" />
+    <published>2019-07-01T09:29:07-04:00</published>
+    <updated>2019-07-01T09:29:07-04:00</updated>
+    <id>https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
+      <![CDATA[<p>A whopper of a release with many, many new features!</p>
+
+<ul>
+  <li>Autoscroll: Read long stories hands-free</li>
+  <li>Full screen: Reading stories without the toolbar for a better experience</li>
+  <li>Longer story titles: New options for longer and shorter story title and content previews in the story titles list</li>
+  <li>Smaller image previews: New option for smaller image previews in the story titles list</li>
+  <li>Show story changes: All stories with edits now show a “Show Changes” button at the top that lets you see the differences</li>
+  <li>Return to last read story: When you return to the app, you will start where you left off</li>
+  <li>Return to last read scroll position: When you return to a story, you will automatically scroll to where you left off</li>
+</ul>
+
+<p>Take a look at some of the image and story title customizations you can now make:</p>
+
+<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png" /></figure>
+
+<p>There’s also many smaller fixes that improve the polish of the app:</p>
+
+<ul>
+  <li>If you had a slow connection, some stories would take a while to draw while images were downloaded. Now they show immediately</li>
+  <li>Support for larger iPad Pros</li>
+  <li>Suport for iOS 13</li>
+  <li>Fixes for split mode on iPad</li>
+  <li>Fixes for marking stories as read while scrolling the story titles list</li>
+  <li>Fixes for navigating stories with an external keyboard</li>
+  <li>Fixes for scroll performance on the feed list and the story titles list</li>
+  <li>Fixes for sharing stories accidentally having double titles in emails and messages</li>
+</ul>
+
+<p>Thanks to <a href="https://github.com/dejal">David Sinclair</a> for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please <a href="https://forum.newsblur.com/c/idea">submit them to the forum</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[A whopper of a release with many, many new features!
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Updates to the Android app and a new addition to the team</title>
@@ -1046,82 +1141,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Tracking story changes with NewsBlur</title>
-    <link href="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/" rel="alternate" type="text/html" title="Tracking story changes with NewsBlur" />
-    <published>2016-03-03T12:55:11-05:00</published>
-    <updated>2016-03-03T12:55:11-05:00</updated>
-    <id>https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/">
-      <![CDATA[<p>NewsBlur has been tracking story changes for a long, long time now (first mentioned <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">on the blog five years ago in April 2011</a>). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.</p>
-
-<p>If you use a third-party client to read NewsBlur, like Reeder, ReadKit, or Unread, you may have noticed strange <ins style="text-decoration: underline;color: #006600">revision</ins> change highlighters that cross out what gets edited out by a publisher and highlights what gets added.</p>
-
-<p>This is great, except you probably don’t want this turned on for every single story.</p>
-
-<p>By default you will now only see the final edit of the story. And if you are on the web you will see a new Show Story Changes button in the heading of any story that has seen changes.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes_button.png" alt="" /></p>
-
-<p>You can also toggle back and forth between showing and hiding story changes, so you can take a peek behind the curtains and still come back to the read the story in its final, finished form.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes.png" alt="" /></p>
-
-<p>This should relieve the burden of having to implement a story change tracker in third-party clients when almost no other news readers have this feature. So third-party reading app makers neglected to include support, leading to a less than ideal NewsBlur reading experience. No longer!</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur has been tracking story changes for a long, long time now (first mentioned on the blog five years ago in April 2011). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Story thumbnails for story titles</title>
-    <link href="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/" rel="alternate" type="text/html" title="Story thumbnails for story titles" />
-    <published>2016-02-19T06:30:10-05:00</published>
-    <updated>2016-02-19T06:30:10-05:00</updated>
-    <id>https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/">
-      <![CDATA[<p>The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images.png" alt="" /></p>
-
-<p>What I’ve noticed is that while I don’t use the image to identify which stories I want to read, I do use them to act as a signature of a story.</p>
-
-<p>There’s precedence for this on NewsBlur. Every site already does this using the color of its favicon. NewsBlur liberally applies a two-tone color palette based on each feed’s favicon. This serves as a per-feed signature, giving context to a story when it’s in the same view as every other feed’s stories.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_left.png" alt="" /></p>
-
-<p>These story preview thumbnails serve as the same signature. Stories are best remembered through their colors and photos, so thumbnails act as a visual signature that’s easy to recognize. It works on a subconscious but perceptable level.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_pref.png" alt="" /></p>
-
-<p>Of course you can turn them right off.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
 ]]>
     </summary>
     

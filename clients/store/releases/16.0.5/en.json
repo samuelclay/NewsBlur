@@ -1,0 +1,5 @@
+{
+  "android": {
+    "release_notes": "Fixes crashes on older Samsung tablets and other devices when opening NewsBlur or returning to feeds. Also fixes crashes with large articles, feed previews, one-feed folders, widgets, and translated comment counts. Reduces freezes during startup, sync, and subscription checks."
+  }
+}

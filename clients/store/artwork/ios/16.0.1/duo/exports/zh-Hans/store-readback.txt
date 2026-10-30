@@ -1,0 +1,58 @@
+" [level=3]
+  - button "Chinese (Simplified)" [active]:
+    - text: Chinese (Simplified)
+  - button "?"
+  - paragraph:
+    - text: The assets and metadata below help customers discover your app and engage with it on your product page and in search results.
+    - link "Learn more...":
+      - /url: https://developer.apple.com/app-store/asset-best-practices/
+  - paragraph: New Ways to Market Apps
+  - paragraph: Elevate your app's product page with a custom header and refine how your app appears in App Store search results. You can now also upload app previews and screenshots for iPhone Duo, adding support for the latest device.
+  - button:
+  - tablist:
+    - tab "Header and Search Results"
+    - tab "App Previews and Screenshots" [selected]
+  - paragraph:
+    - link "View All Sizes in Media Manager":
+      - /url: /apps/463981119/distribution/ios/version/inflight/media-manager/iphone
+  - tabpanel "App Previews and Screenshots":
+    - paragraph:
+      - text: Use app previews and screenshots to visually communicate your app's user experience. Screenshots will automatically scale down to smaller device sizes unless you add specific app previews and screenshots for other device sizes and localizations. Screenshots must show your app in use or primarily depict your app's user experience.
+      - link "Learn more...":
+        - /url: https://developer.apple.com/app-store/asset-best-practices/#screenshots
+    - button "DropZone"
+    - tablist:
+      - tab "iPhone with Dynamic Island (medium display)":
+        - generic: iPhone with Dynamic Island
+        - generic: (medium display)
+      - tab "iPhone Duo" [selected]:
+        - generic: iPhone Duo
+      - tab "iPad 13\" display":
+        - generic: iPad
+        - generic: 13" display
+      - tab "Apple Watch Ultra 4, Series 12, 9, 6, 3":
+        - generic: Apple Watch
+        - generic: Ultra 4, Series 12, 9, 6, 3
+    - button "Preview":
+      - generic: Preview
+    - region:
+      - tabpanel "iPhone Duo":
+        - list:
+          - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-01.png":
+            - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-01.png":
+              - button "Remove":
+          - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png":
+            - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-02.png":
+              - button "Remove":
+          - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png":
+            - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-03.png":
+              - button "Remove":
+          - button "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04.png":
+            - img "Screenshot newsblur-16.0.1-zh-Hans-duo-inner-2853x2007-04.png":
+              - button "Remove":
+      - paragraph: 0 of 3 App Previews
+      - paragraph: 4 of 10 App Screenshots
+      - button "Browse Assets"
+      - button "Upload"
+      - button "Remove All"
+      - paragraph: Drag and drop to add assets or choose from your Asset Library. Supported sizes for app previews include 1920 × 886px and 886 × 1920px. For app screenshots, supported sizes include 2034 × 1398px, 1398 × 2034px, 2853 × 2007px and 2007 × 2853px.

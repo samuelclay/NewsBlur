@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="story_list_back_swipe_original_layer_type" type="id" />
+    <item name="listen_mini_player" type="id" />
+    <item name="listen_mini_player_inset" type="id" />
 </resources>

@@ -189,6 +189,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Ask AI questions about stories')
                         ]),
+                        $.make('li', { className: 'NB-19 NB-feature-listen' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Listen to stories read aloud')
+                        ]),
                         $.make('li', { className: 'NB-15 NB-feature-date-filter' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Filter stories by date range')

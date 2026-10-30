@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-10-29T14:24:05Z",
+  "version": {
+    "versionString": "16.1",
+    "platform": "IOS",
+    "appStoreState": "PREPARE_FOR_SUBMISSION",
+    "releaseType": "AFTER_APPROVAL"
+  },
+  "build": {
+    "version": "351",
+    "processingState": "VALID"
+  },
+  "metadata": "21 locales, 5 fields each verified by direct resource GET",
+  "mismatches": []
+}

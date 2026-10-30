@@ -11,6 +11,7 @@ from django.contrib.sites.models import Site
 from django.utils import dateformat, formats, translation
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext
 from pipeline.templatetags.pipeline import JavascriptNode, StylesheetNode, javascript, stylesheet
 
 from apps.ask_ai.prompts import get_prompts_for_frontend
@@ -180,15 +181,16 @@ def render_premium_archive_module(context):
     # utils_tags.py: Each reason pairs with the NB-feature-<slug> line in the premium
     # upgrade modal's archive tier so the button can highlight the matching feature.
     reasons = [
-        ("Stories can stay unread for however long you choose", "stay-unread"),
-        ("Every story from every site is archived and searchable forever", "archive-forever"),
-        ("Feeds that support paging are back-filled in for a complete archive", "backfill"),
-        ("Train stories on full text content, not just titles and tags", "text-training"),
-        ("Export trained stories from folders as RSS feeds", "export-folders"),
-        ("Choose when stories are automatically marked as read", "choose-mark-read"),
-        ("Ask AI questions about stories", "ask-ai"),
-        ("Customize auto-read settings by site or folder", "auto-mark-read"),
-        ("Filter stories by date range to find exactly what you need", "date-filter"),
+        (gettext("Stories can stay unread for however long you choose"), "stay-unread"),
+        (gettext("Every story from every site is archived and searchable forever"), "archive-forever"),
+        (gettext("Feeds that support paging are back-filled in for a complete archive"), "backfill"),
+        (gettext("Train stories on full text content, not just titles and tags"), "text-training"),
+        (gettext("Export trained stories from folders as RSS feeds"), "export-folders"),
+        (gettext("Choose when stories are automatically marked as read"), "choose-mark-read"),
+        (gettext("Ask AI questions about stories"), "ask-ai"),
+        (gettext("Customize auto-read settings by site or folder"), "auto-mark-read"),
+        (gettext("Filter stories by date range to find exactly what you need"), "date-filter"),
+        (gettext("Listen to stories read aloud"), "listen"),
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 

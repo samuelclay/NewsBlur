@@ -37,6 +37,7 @@ urlpatterns = [
     url(r"^$", reader_views.index, name="index"),
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),
+    url(r"^listen/", include("apps.listen.urls")),
     url(r"^webfeed/", include("apps.webfeed.urls")),
     url(r"^welcome/?$", reader_views.welcome_req, name="welcome-page"),
     url(r"^add(?:/.*)?$", reader_views.index),
@@ -96,6 +97,7 @@ urlpatterns = [
         name="feature-intelligence-training",
     ),
     url(r"^features/ask-ai/?$", static_views.feature_ask_ai, name="feature-ask-ai"),
+    url(r"^features/listen/?$", static_views.feature_listen, name="feature-listen"),
     url(r"^features/web-feeds/?$", static_views.feature_web_feeds, name="feature-web-feeds"),
     url(r"^features/newsletters/?$", static_views.feature_newsletters, name="feature-newsletters"),
     url(r"^features/search/?$", static_views.feature_search, name="feature-search"),
@@ -136,14 +138,16 @@ urlpatterns = [
     url(r"^privacy/?", static_views.privacy, name="privacy"),
     url(r"^tos/?", static_views.tos, name="tos"),
     url(r"^manifest.webmanifest", static_views.webmanifest, name="webmanifest"),
-    # MCP OAuth discovery (RFC 8414 / RFC 9728)
+    # MCP OAuth discovery (RFC 8414 / RFC 9728). The /mcp-less root forms are
+    # for clients on the 2025-03-26 MCP auth spec, which strip the server path
+    # and only look at the origin root (forum #13806, apps/mcp/views.py).
     url(
-        r"^\.well-known/oauth-authorization-server/mcp/?$",
+        r"^\.well-known/oauth-authorization-server(?:/mcp)?/?$",
         mcp_views.oauth_authorization_server_metadata,
         name="mcp-oauth-metadata",
     ),
     url(
-        r"^\.well-known/oauth-protected-resource/mcp/?$",
+        r"^\.well-known/oauth-protected-resource(?:/mcp)?/?$",
         mcp_views.oauth_protected_resource_metadata,
         name="mcp-oauth-protected-resource",
     ),

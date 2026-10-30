@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Poznaj funkcję Słuchaj, nowy sposób na korzystanie z artykułów.\n\nDotknij Słuchaj, aby odsłuchać artykuł w jednym z 21 języków. Śledź wyróżnione akapity, dotknij akapitu, aby do niego przejść, i wybierz głos dla każdego języka. Dostosuj ekspresję i tempo odtwarzania od 0,5× do 3×.\n\nDodawaj artykuły do listy Następny w kolejce, zmieniaj ich kolejność i słuchaj przy zablokowanym ekranie lub podczas korzystania z innej aplikacji. Twoja kolejka synchronizuje się między urządzeniami. Automatyczna kontynuacja przechodzi do następnego nieprzeczytanego artykułu, a odsłuchane do końca artykuły są oznaczane jako przeczytane.\n\nFunkcja Słuchaj jest dostępna w Premium Archive i Premium Pro. Konta bezpłatne i Premium mogą wypróbować 30-sekundowe fragmenty artykułów.\n\nTa aktualizacja zapewnia też płynniejszą nawigację i poprawia przewijanie siatki artykułów."
+  },
+  "android": {
+    "release_notes": "Poznaj Słuchaj: artykuły czytane na głos w 21 językach. Wybieraj głosy, śledź wyróżnione akapity, dotykaj, by przeskakiwać, i zmieniaj tempo. Dodawaj artykuły do listy Następny w kolejce, synchronizowanej między urządzeniami. Słuchaj przy zablokowanym ekranie. Automatyczna kontynuacja odtwarza następny nieprzeczytany artykuł. Pełny odsłuch w Premium Archive i Premium Pro; 30-sekundowe fragmenty dla kont bezpłatnych i Premium."
+  },
+  "macos": {
+    "whats_new": "Ta aktualizacja usuwa błąd, przez który lista artykułów mogła pozostawać w stanie ładowania po otwarciu powiadomienia, jeśli wcześniej zamknięto okno NewsBlur.\n\nFunkcja Słuchaj jest teraz dostępna na Macu. Słuchaj artykułów w 21 językach, śledź wyróżnione akapity, wybieraj głosy, dostosuj prędkość odtwarzania i dodawaj artykuły do listy Następny w kolejce. Twoja kolejka synchronizuje się między urządzeniami. Pełny odsłuch jest dostępny w Premium Archive i Premium Pro; konta bezpłatne i Premium mogą wypróbować 30-sekundowe fragmenty.\n\nPoprawiono też przewijanie siatki artykułów."
+  }
+}

@@ -8796,3 +8796,384 @@ class Test_TrimKeepsTheFetchedBatch(TestCase):
         # A feed with recent reads keeps its normal cutoff and isn't under the no-reads cap.
         mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
         self.assertEqual(feed.story_retention(published_count=50), (200, False))
+
+
+# Docker installs count every subscriber as active (Feed.count_subscribers), and test settings keep
+# unread stories for 9999 days, so count and keep them like production.
+@override_settings(DOCKERBUILD=False, DAYS_OF_UNREAD=30)
+@patch("apps.rss_feeds.models.MStory.remove_from_search_index")
+@patch("apps.rss_feeds.models.MStory.remove_from_redis")
+@patch("apps.profile.models.Profile.count_feed_subscribers")
+@patch("apps.rss_feeds.models.redis")
+class Test_TrimAbandonedFeeds(TestCase):
+    """A feed with no active subscribers is never fetched again (apps/rss_feeds/tasks.py only
+    schedules feeds with active subscribers), so the trim that follows each fetch
+    (utils/feed_fetcher.py) never runs on it. A feed an Archive subscriber left kept up to
+    10,000 stories forever, which filled the Mongo secondaries' disks in October 2026. Readers
+    keep DAYS_OF_UNREAD days of unread stories, so a feed is only trimmed once nobody has been
+    seen in that long."""
+
+    STORIES = 30
+
+    def _feed(self, name, last_fetch_days_ago=33, **counts):
+        feed = Feed.objects.create(
+            feed_address="https://rss.example.com/quiet/%s.xml" % name,
+            feed_link="https://www.example.com/%s" % name,
+            feed_title=name,
+        )
+        Feed.objects.filter(pk=feed.pk).update(
+            last_update=datetime.datetime.now() - datetime.timedelta(days=last_fetch_days_ago),
+            **dict({"active_subscribers": 0, "num_subscribers": 0}, **counts),
+        )
+        for number in range(self.STORIES):
+            MStory(
+                story_feed_id=feed.pk,
+                story_guid="%s-%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2026, 9, 1) + datetime.timedelta(hours=number),
+            ).save()
+        self.addCleanup(lambda: MStory.objects(story_feed_id=feed.pk).delete())
+        return Feed.objects.get(pk=feed.pk)
+
+    def _subscribe(self, feed, username, last_seen_days_ago, is_archive=False):
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=True,
+            is_archive=is_archive,
+        )
+        UserSubscription.objects.create(user=user, feed=feed, active=True)
+
+    def _stored(self, feed):
+        return MStory.objects(story_feed_id=feed.pk).count()
+
+    def _no_reads_and_postgres_counts(self, mock_redis):
+        # No fR:<feed>:<week> read counters, so a quiet feed is under the no-reads cap of 10,
+        # and no Redis subscriber sets, so count_subscribers counts from Postgres.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = []
+        mock_redis.Redis.return_value.zscore.return_value = None
+
+    def test_a_feed_nobody_has_seen_in_the_unread_window_is_trimmed(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("gone", num_subscribers=1)
+        self._subscribe(feed, "longgone", last_seen_days_ago=40)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
+
+        kept = sorted(int(s.story_guid.split("-")[-1]) for s in MStory.objects(story_feed_id=feed.pk))
+        self.assertEqual(kept, list(range(self.STORIES - 10, self.STORIES)))
+
+    def test_the_last_fetch_before_a_reader_returns_keeps_their_unread_stories(self, mock_redis, *mocks):
+        """The fetch that finds the only reader away SUBSCRIBER_EXPIRE days is the feed's last, and
+        it used to cut the feed to 25 stories, or 10 without recent reads, while a Premium reader
+        still had 30 days of unread stories in it."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("last-fetch", last_fetch_days_ago=0, active_subscribers=1, num_subscribers=1)
+        self._subscribe(feed, "awayontrip", last_seen_days_ago=10)
+        # The fetch recounts (Feed.update_all_statistics) before it trims (utils/feed_fetcher.py).
+        feed.count_subscribers()
+        self.assertEqual(feed.active_subscribers, 0)
+
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+
+        # Once the unread window has passed, the same trim cuts it down.
+        Profile.objects.filter(user__username="awayontrip").update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=40)
+        )
+        self.assertEqual(feed.trim_feed(fetched_story_hashes=[]), self.STORIES - 10)
+
+    def test_a_feed_already_trimmed_to_its_cutoff_is_not_recounted_every_day(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Its last reader read it within story_retention's read window, so it keeps more than 10.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        feed = self._feed("trimmed-yesterday")
+        Feed.trim_if_abandoned(feed.pk)
+        self.assertEqual(self._stored(feed), feed.story_cutoff)
+        self.assertGreater(self._stored(feed), 10)
+
+        with patch.object(Feed, "count_subscribers") as recount:
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        recount.assert_not_called()
+
+    def test_a_stale_archive_count_is_recounted_before_its_cutoff_is_trusted(self, mock_redis, *mocks):
+        """trim_feeds --feed can name a feed whose last Archive subscriber left but whose stored
+        count still says 1, which gives it the 10,000 story Archive cutoff until it's recounted."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("archive-left", archive_subscribers=1)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), self.STORIES - 10)
+        self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 0)
+
+    def test_a_dry_run_estimates_what_the_real_run_deletes_despite_stale_counts(self, mock_redis, *mocks):
+        """A dry run doesn't recount, so stale counts made it report 0 for a feed the real run
+        trims, or a negative number when a stale reader raised the cutoff past what's stored."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        # Read within story_retention's read window, so a counted reader would raise the cutoff to 100.
+        mock_redis.Redis.return_value.pipeline.return_value.execute.return_value = ["3"]
+        stale_archive = self._feed("stale-archive-dry", archive_subscribers=1)
+        stale_reader = self._feed("stale-reader-dry", active_subscribers=1)
+
+        for feed in (stale_archive, stale_reader):
+            estimate = Feed.trim_if_abandoned(feed.pk, dryrun=True)
+            self.assertEqual(self._stored(feed), self.STORIES)
+            self.assertGreater(estimate, 0)
+            self.assertEqual(Feed.trim_if_abandoned(feed.pk), estimate)
+
+        # A real Archive subscriber found the same way keeps a dry run at 0.
+        archived = self._feed("archived-dry", archive_subscribers=0)
+        self._subscribe(archived, "dryarchive", last_seen_days_ago=60, is_archive=True)
+        self.assertEqual(Feed.trim_if_abandoned(archived.pk, dryrun=True), 0)
+
+    def test_a_reader_away_for_less_than_the_unread_window_keeps_their_stories(self, mock_redis, *mocks):
+        """A Premium reader on an 8 day vacation no longer counts as active (SUBSCRIBER_EXPIRE),
+        but still has 30 days of unread stories waiting."""
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("vacation", num_subscribers=1)
+        self._subscribe(feed, "onvacation", last_seen_days_ago=8)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+
+    def test_an_archive_subscriber_hidden_by_stale_counts_keeps_every_story(self, mock_redis, *mocks):
+        self._no_reads_and_postgres_counts(mock_redis)
+        feed = self._feed("stale-counts", archive_subscribers=0)
+        self._subscribe(feed, "quietarchive", last_seen_days_ago=60, is_archive=True)
+
+        self.assertEqual(Feed.trim_if_abandoned(feed.pk), 0)
+        self.assertEqual(self._stored(feed), self.STORIES)
+        self.assertEqual(Feed.objects.get(pk=feed.pk).archive_subscribers, 1)
+
+    def test_the_daily_task_trims_feeds_that_went_quiet_in_the_last_month_or_two(self, mock_redis, *mocks):
+        from apps.rss_feeds.tasks import TrimAbandonedFeeds
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        quiet = self._feed("quiet-a-month", last_fetch_days_ago=33)
+        just_quiet = self._feed("quiet-a-week", last_fetch_days_ago=10)
+        long_quiet = self._feed("quiet-for-months", last_fetch_days_ago=90)
+
+        # Out of time before the first feed: nothing is trimmed, and tomorrow picks it up.
+        TrimAbandonedFeeds(time_budget_seconds=-1)
+        self.assertEqual(self._stored(quiet), self.STORIES)
+
+        TrimAbandonedFeeds()
+
+        self.assertEqual(self._stored(quiet), 10)
+        # Its last reader may still come back within the unread window.
+        self.assertEqual(self._stored(just_quiet), self.STORIES)
+        # Left to manage.py trim_feeds, so the daily task doesn't re-check millions of old feeds.
+        self.assertEqual(self._stored(long_quiet), self.STORIES)
+
+    def test_trimming_keeps_no_record_of_every_mongo_command_it_ran(self, mock_redis, *mocks):
+        """The global Mongo command monitor (utils/mongo_command_monitor.py) kept every command it
+        saw, and nothing resets it outside a request or a Celery task, so a trim_feeds pass over
+        millions of feeds ran a 3 GB task server out of memory near feed 800,000."""
+        import io
+
+        from django.db import connection
+
+        from apps.rss_feeds.tasks import TrimAbandonedFeeds
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        for number in range(4):
+            self._feed("quiet-%s" % number)
+        monitor = settings.MONGO_COMMAND_LOGGER
+        # Nothing is profiling this process, as in a management command or most Celery tasks.
+        connection.queriesx = None
+        self.addCleanup(setattr, connection, "queriesx", None)
+        commands_before = len(monitor.seen_request_ids)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        for number in range(4, 8):
+            self._feed("quiet-%s" % number)
+        TrimAbandonedFeeds()
+        self.assertLessEqual(len(monitor.seen_request_ids), commands_before)
+        self.assertIsNone(connection.queriesx)
+
+        # A profiled request or task turns recording on, and then its commands are kept for it.
+        connection.queriesx = []
+        MStory.objects(story_feed_id=0).count()
+        self.assertEqual({q["mongo"]["collection"] for q in connection.queriesx}, {"stories"})
+
+    def test_trim_feeds_catches_up_on_the_backlog(self, mock_redis, *mocks):
+        import io
+
+        self._no_reads_and_postgres_counts(mock_redis)
+        long_quiet = self._feed("backlog", last_fetch_days_ago=400)
+        archived = self._feed("archived", archive_subscribers=1)
+        stale = self._feed("stale-archive")
+        self._subscribe(stale, "stalearchive", last_seen_days_ago=60, is_archive=True)
+        returning = self._feed("returning")
+        self._subscribe(returning, "returning", last_seen_days_ago=8)
+
+        management.call_command("trim_feeds", threads=1, dryrun=True, stdout=io.StringIO())
+        self.assertEqual(self._stored(long_quiet), self.STORIES)
+
+        management.call_command("trim_feeds", threads=1, stdout=io.StringIO())
+
+        self.assertEqual(self._stored(long_quiet), 10)
+        self.assertEqual(self._stored(archived), self.STORIES)
+        self.assertEqual(self._stored(stale), self.STORIES)
+        self.assertEqual(self._stored(returning), self.STORIES)
+
+
+class Test_TrimOldSavedStories(TestCase):
+    """MStarredStory.trim_old_stories (apps/rss_feeds/models.py) deletes saved stories nobody can
+    come back for: the copies unsaving leaves under user_id 0, saves left by deleted accounts, and
+    the saves of free accounts that never had premium and haven't been seen in two years. Accounts
+    that paid, or had premium any other way, keep theirs, since they may come back."""
+
+    def _user(self, username, last_seen_days_ago, premium=False, paid=False, granted=False):
+        from apps.profile.models import PaymentHistory
+
+        user = User.objects.create_user(username, "%s@example.com" % username, "password")
+        Profile.objects.filter(user=user).update(
+            last_seen_on=datetime.datetime.now() - datetime.timedelta(days=last_seen_days_ago),
+            is_premium=premium,
+            # A grant, an extension or a trial sets premium_expire without a PaymentHistory row.
+            premium_expire=datetime.datetime.now() - datetime.timedelta(days=900) if granted else None,
+        )
+        if paid:
+            PaymentHistory.objects.create(
+                user=user,
+                payment_date=datetime.datetime.now() - datetime.timedelta(days=1500),
+                payment_amount=36,
+                payment_provider="stripe",
+            )
+        return user.pk
+
+    def _save(self, user_id, count, name):
+        from apps.rss_feeds.models import MStarredStory
+
+        for number in range(count):
+            MStarredStory(
+                user_id=user_id,
+                story_feed_id=42,
+                story_guid="https://www.example.com/%s/%s" % (name, number),
+                story_title="%s %s" % (name, number),
+                story_permalink="https://www.example.com/%s/%s" % (name, number),
+                story_date=datetime.datetime(2020, 1, 1),
+                starred_date=datetime.datetime(2020, 1, 1) + datetime.timedelta(minutes=number),
+            ).save()
+        self.addCleanup(lambda: MStarredStory.objects(user_id=user_id).delete())
+
+    def _saved(self, user_id):
+        from apps.rss_feeds.models import MStarredStory
+
+        return MStarredStory.objects(user_id=user_id).count()
+
+    def test_only_saves_nobody_can_come_back_for_are_deleted(self):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        gone = self._user("gonefree", last_seen_days_ago=800)
+        lapsed = self._user("lapsedpaid", last_seen_days_ago=800, paid=True)
+        premium = self._user("stillpremium", last_seen_days_ago=800, premium=True)
+        recent = self._user("recentfree", last_seen_days_ago=100)
+        few = self._user("fewsaves", last_seen_days_ago=800)
+        granted = self._user("grantedonce", last_seen_days_ago=800, granted=True)
+        deleted_account = User.objects.order_by("-pk").first().pk + 1000
+        self._save(0, 4, "unsaved")
+        self._save(deleted_account, 3, "deleted-account")
+        for user_id in (gone, lapsed, premium, recent, granted):
+            self._save(user_id, 12, "user-%s" % user_id)
+        self._save(few, 5, "few")
+        MStarredStoryCounts.count_for_user(gone)
+        self.assertTrue(MStarredStoryCounts.objects(user_id=gone).count())
+
+        estimate = MStarredStory.trim_old_stories(dryrun=True, batch_size=3)
+        self.assertEqual(self._saved(0), 4)
+        self.assertEqual(self._saved(gone), 12)
+
+        trimmed = MStarredStory.trim_old_stories(batch_size=3)
+
+        self.assertEqual(trimmed, estimate)
+        self.assertEqual(self._saved(0), 0)
+        self.assertEqual(self._saved(deleted_account), 0)
+        self.assertEqual(self._saved(gone), 0)
+        counts, total = MStarredStoryCounts.user_counts(gone, include_total=True, try_counting=False)
+        self.assertEqual(total, 0)
+        self.assertFalse([c for c in counts if c["feed_id"] or c["tag"]])
+        for kept in (lapsed, premium, recent, granted):
+            self.assertEqual(self._saved(kept), 12)
+        self.assertEqual(self._saved(few), 5)
+
+    @patch("apps.rss_feeds.models.time.sleep")
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_deletes_wait_while_the_secondaries_lag(self, mock_lag, mock_sleep):
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 4, "lagging")
+        # Behind by 45 seconds once, then caught up.
+        mock_lag.side_effect = [45] + [0] * 50
+
+        MStarredStory.trim_old_stories(batch_size=2)
+
+        self.assertEqual(self._saved(0), 0)
+        # Checked after each of the two batches, and once more after waiting out the 45 seconds.
+        self.assertEqual(mock_lag.call_count, 3)
+        mock_sleep.assert_any_call(5)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_an_account_that_comes_back_mid_trim_keeps_the_rest_of_its_saves(self, mock_lag):
+        from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+
+        returning = self._user("comesback", last_seen_days_ago=800)
+        self._save(returning, 12, "returning")
+
+        def comes_back_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                Profile.objects.filter(user_id=returning).update(last_seen_on=datetime.datetime.now())
+            return 0
+
+        mock_lag.side_effect = comes_back_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        # The first batch went before they came back; the rest stay, and the counts match them.
+        self.assertEqual(self._saved(returning), 7)
+        counts, total = MStarredStoryCounts.user_counts(returning, include_total=True, try_counting=False)
+        self.assertEqual(total, 7)
+
+    @patch("apps.rss_feeds.models.mongo_max_replication_lag")
+    def test_a_story_saved_during_the_trim_is_kept(self, mock_lag):
+        """An app can save a story without the profile's last_seen_on catching up first."""
+        from apps.rss_feeds.models import MStarredStory
+
+        quiet = self._user("savesquietly", last_seen_days_ago=800)
+        self._save(quiet, 12, "quiet")
+
+        def saves_during_the_first_wait(connection):
+            if mock_lag.call_count == 1:
+                MStarredStory(
+                    user_id=quiet,
+                    story_feed_id=42,
+                    story_guid="https://www.example.com/quiet/new",
+                    story_title="Saved mid-trim",
+                    story_permalink="https://www.example.com/quiet/new",
+                    story_date=datetime.datetime.now(),
+                    starred_date=datetime.datetime.now(),
+                ).save()
+            return 0
+
+        mock_lag.side_effect = saves_during_the_first_wait
+
+        MStarredStory.trim_old_stories(batch_size=5)
+
+        self.assertEqual([s.story_title for s in MStarredStory.objects(user_id=quiet)], ["Saved mid-trim"])
+
+    def test_a_batch_size_below_one_is_refused(self):
+        """pymongo reads a limit of 0 as no limit, which would delete everything in one request."""
+        import io
+
+        from apps.rss_feeds.models import MStarredStory
+
+        self._save(0, 2, "refused")
+        with self.assertRaises(ValueError):
+            MStarredStory.trim_old_stories(batch_size=0)
+        with self.assertRaises(CommandError):
+            management.call_command("trim_saved_stories", batch=0, stdout=io.StringIO())
+        self.assertEqual(self._saved(0), 2)

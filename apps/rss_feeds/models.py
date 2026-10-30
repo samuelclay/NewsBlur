@@ -65,6 +65,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils import urlnorm
 from utils.analytics_degradation import skip_when_analytics_down
+from utils.db_functions import mongo_max_replication_lag
 from utils.feed_functions import (
     TimeoutError,
     is_openrss_feed_address,
@@ -96,6 +97,9 @@ MAX_STORY_CONTENT_BYTES = 2 * 1024 * 1024
 # Feed.task_feeds marks and publishes feeds this many at a time, which caps how many feeds a
 # failed publish can leave counted as tasked without a fetch. apps/rss_feeds/models.py
 TASK_FEEDS_CHUNK_SIZE = 100
+# Feed.story_retention never keeps fewer stories than this (its no-reads cap), so a feed holding
+# no more than this has nothing to trim. apps/rss_feeds/models.py
+FEWEST_STORIES_KEPT = 10
 
 
 def truncate_story_content(content_bytes, max_bytes=MAX_STORY_CONTENT_BYTES):
@@ -2446,7 +2450,7 @@ class Feed(models.Model):
             # apps/rss_feeds/models.py still keeps every story in the feed's current response, so a feed that
             # posts a whole issue at once (forum #13884) isn't cut to its newest 10 the moment it arrives, and
             # stories it trimmed aren't re-added as new on every fetch.
-            cutoff = min(cutoff, max(10, published_count))
+            cutoff = min(cutoff, max(FEWEST_STORIES_KEPT, published_count))
             try:
                 logging.debug(
                     "   ---> [%-30s] ~FBTrimming down to ~SB%s (instead of %s)~SN stories (~FM%s~FB)"
@@ -2471,6 +2475,12 @@ class Feed(models.Model):
         return int(cutoff), unread_capped
 
     def trim_feed(self, verbose=False, cutoff=None, fetched_story_hashes=None):
+        if not cutoff and self.active_subscribers <= 0 and self.has_reader_within_unread_window():
+            # The fetch that finds every reader away SUBSCRIBER_EXPIRE days is the feed's last until
+            # one comes back, but they keep DAYS_OF_UNREAD days of unread stories, which story_retention's
+            # no-readers cutoff of 25 would delete. Feed.trim_if_abandoned trims it once that has passed.
+            return 0
+
         fetched_story_hashes = fetched_story_hashes or []
         keep_story_hashes = None
         if not cutoff:
@@ -2488,6 +2498,94 @@ class Feed(models.Model):
             self.count_fs_size_bytes()
 
         return stories_removed
+
+    def subscriber_feed_ids(self):
+        """The original feed and its branches, which count_subscribers counts subscribers across.
+        apps/rss_feeds/models.py"""
+        feed_ids = list(
+            Feed.objects.filter(branch_from_feed=self.original_feed_id).values_list("pk", flat=True)
+        )
+        feed_ids.append(self.original_feed_id)
+        return feed_ids
+
+    def has_reader_within_unread_window(self):
+        """Whether anyone subscribed has been seen in the last DAYS_OF_UNREAD days and so may still
+        have unread stories here. apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        unread_window_start = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        return UserSubscription.objects.filter(
+            feed__in=self.subscriber_feed_ids(),
+            active=True,
+            user__profile__last_seen_on__gte=unread_window_start,
+        ).exists()
+
+    def has_archive_subscriber(self):
+        """Whether an Archive subscriber still keeps this feed's stories, asked of Postgres directly
+        as count_subscribers counts archive_subscribers, so stale stored counts don't matter.
+        apps/rss_feeds/models.py"""
+        from apps.reader.models import UserSubscription
+
+        return UserSubscription.objects.filter(
+            feed__in=self.subscriber_feed_ids(), active=True, user__profile__is_archive=True
+        ).exists()
+
+    @classmethod
+    def abandoned_feed_candidates(cls):
+        """Feeds that may be abandoned: no active or Archive subscribers, and no fetch in
+        DAYS_OF_UNREAD - SUBSCRIBER_EXPIRE days. A feed stops being fetched once its last reader
+        has been away SUBSCRIBER_EXPIRE days, so a last fetch that old means nobody has been seen
+        in DAYS_OF_UNREAD days. Feed.trim_if_abandoned confirms that before deleting anything.
+        apps/rss_feeds/models.py"""
+        unfetched_since = datetime.datetime.now() - datetime.timedelta(
+            days=settings.DAYS_OF_UNREAD - settings.SUBSCRIBER_EXPIRE
+        )
+        return cls.objects.filter(active_subscribers__lte=0, last_update__lte=unfetched_since).exclude(
+            archive_subscribers__gt=0
+        )
+
+    @classmethod
+    def trim_if_abandoned(cls, feed_id, dryrun=False):
+        """Trims a feed nobody can still read and returns how many stories went, or in a dry run,
+        about how many would. Nothing fetches a feed without active subscribers, so the trim after
+        each fetch (utils/feed_fetcher.py) stops once its last reader leaves, and a feed an Archive
+        subscriber left kept up to 10,000 stories. Readers keep DAYS_OF_UNREAD days of unread
+        stories and Archive subscribers keep everything, so a feed is abandoned only once it has no
+        Archive subscriber and no subscriber has been seen in that long.
+        apps/rss_feeds/models.py"""
+        stored = MStory.objects(story_feed_id=feed_id).count()
+        if stored <= FEWEST_STORIES_KEPT:
+            return 0
+        feed = cls.objects.filter(pk=feed_id).first()
+        if not feed:
+            return 0
+        # A feed trimmed on an earlier day sits at its cutoff, often above the floor when its last
+        # reader read it recently. trim_feed would delete nothing, so skip the recount and the
+        # reader lookup. That only holds while the stored counts show no readers and no Archive
+        # subscriber, as every daily candidate's do: a recount can then only raise the cutoff. A
+        # feed named to trim_feeds --feed can carry a stale Archive count, so it's recounted first.
+        cutoff = feed.story_cutoff
+        stored_counts_are_quiet = feed.active_subscribers <= 0 and not (feed.archive_subscribers or 0) > 0
+        if stored_counts_are_quiet and stored <= cutoff:
+            return 0
+
+        if dryrun:
+            # A dry run writes nothing, so instead of recounting it asks what a recount would find,
+            # then estimates with the counts that recount would store for an abandoned feed.
+            if feed.has_archive_subscriber() or feed.has_reader_within_unread_window():
+                return 0
+            feed.active_subscribers = 0
+            feed.active_premium_subscribers = 0
+            feed.archive_subscribers = 0
+            return max(0, stored - feed.story_cutoff)
+
+        # Stored counts go stale, and an Archive subscriber they missed still needs every story.
+        feed.count_subscribers()
+        if (feed.archive_subscribers or 0) > 0:
+            return 0
+        if feed.has_reader_within_unread_window():
+            return 0
+        return feed.trim_feed()
 
     def count_fs_size_bytes(self):
         stories = MStory.objects.filter(story_feed_id=self.pk)
@@ -5006,49 +5104,156 @@ class MStarredStory(mongo.DynamicDocument):
         return stories
 
     @classmethod
-    def trim_old_stories(cls, stories=10, days=90, dryrun=False):
-        print(" ---> Fetching starred story counts...")
-        stats = settings.MONGODB.newsblur.starred_stories.aggregate(
-            [
-                {
-                    "$group": {
-                        "_id": "$user_id",
-                        "stories": {"$sum": 1},
-                    },
-                },
-                {
-                    "$match": {"stories": {"$gte": stories}},
-                },
-            ]
-        )
-        month_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-        user_ids = list(stats)
-        user_ids = sorted(user_ids, key=lambda x: x["stories"], reverse=True)
-        print(" ---> Found %s users with more than %s starred stories" % (len(user_ids), stories))
+    def trim_old_stories(cls, days=730, min_stories=10, batch_size=1000, max_lag_seconds=10, dryrun=False):
+        """Deletes the saved stories nobody can come back for and returns how many went, or in a
+        dry run, about how many would:
+        - the copies unsaving leaves behind under user_id 0 (apps/reader/views.py reassigns an
+          unsaved story to user 0 instead of deleting it),
+        - the saves of accounts that no longer exist, and
+        - the saves of a free account that never had premium and hasn't been seen in `days` days,
+          when it has at least `min_stories` of them.
+        An account that paid, or had premium any other way, keeps its saves, since it may come back.
+        Each account is checked again before every batch of its saves goes, and only saves made
+        before the trim started are deleted, so one that comes back mid-trim keeps the rest. Deletes
+        go `batch_size` at a time and wait while the secondaries are more than `max_lag_seconds`
+        behind, and a trimmed account's saved story counts are recounted. manage.py
+        trim_saved_stories runs it. apps/rss_feeds/models.py"""
+        if batch_size < 1:
+            # pymongo reads a limit of 0 as no limit, which would delete everything in one request.
+            raise ValueError("batch_size must be at least 1, not %s" % batch_size)
 
-        total = 0
-        for stat in user_ids:
-            try:
-                user = User.objects.select_related("profile").get(pk=stat["_id"])
-            except User.DoesNotExist:
-                user = None
-
-            if user and (user.profile.is_premium or user.profile.last_seen_on > month_ago):
-                continue
-
-            total += stat["stories"]
-            username = "%s (%s)" % (user and user.username or " - ", stat["_id"])
-            print(
-                " ---> %19.19s: %-20.20s %s stories"
-                % (user and user.profile.last_seen_on or "Deleted", username, stat["stories"])
+        started = datetime.datetime.now()
+        saved_by_user = cls.saved_story_counts_by_user()
+        user_ids = [user_id for user_id in saved_by_user if user_id]
+        existing_user_ids = set()
+        for start in range(0, len(user_ids), 5000):
+            existing_user_ids.update(
+                User.objects.filter(pk__in=user_ids[start : start + 5000]).values_list("pk", flat=True)
             )
-            if not dryrun and stat["_id"]:
-                cls.objects.filter(user_id=stat["_id"]).delete()
-            elif not dryrun and stat["_id"] == 0:
-                print(" ---> Deleting unstarred stories (user_id = 0)")
-                cls.objects.filter(user_id=stat["_id"]).delete()
+        ownerless_ids = [user_id for user_id in saved_by_user if user_id not in existing_user_ids]
+        candidate_ids = [
+            user_id
+            for user_id in user_ids
+            if user_id in existing_user_ids and saved_by_user[user_id] >= min_stories
+        ]
+        logging.debug(
+            " ---> ~FBSaved stories: ~SB%s~SN users, ~SB%s~SN unsaved copies, ~SB%s~SN deleted accounts, "
+            "~SB%s~SN accounts to check"
+            % (
+                len(saved_by_user),
+                saved_by_user.get(0, 0),
+                len([user_id for user_id in ownerless_ids if user_id]),
+                len(candidate_ids),
+            )
+        )
 
-        print(" ---> Deleted %s stories in total." % total)
+        trimmed = 0
+        for user_id in ownerless_ids:
+            trimmed += cls.delete_saved_stories(
+                user_id, saved_by_user[user_id], batch_size, max_lag_seconds, dryrun
+            )
+        ownerless_trimmed = trimmed
+
+        seen_since = started - datetime.timedelta(days=days)
+        trimmed_accounts = 0
+        for user_id in candidate_ids:
+            if not cls.saves_are_abandoned(user_id, seen_since):
+                continue
+            trimmed += cls.delete_saved_stories(
+                user_id,
+                saved_by_user[user_id],
+                batch_size,
+                max_lag_seconds,
+                dryrun,
+                saved_before=started,
+                still_abandoned=lambda: cls.saves_are_abandoned(user_id, seen_since),
+            )
+            trimmed_accounts += 1
+            if not dryrun:
+                # Recounted rather than cleared, in case the account kept saves by coming back.
+                MStarredStoryCounts.count_for_user(user_id)
+
+        logging.debug(
+            " ---> ~FB%s ~SB%s~SN saved stories, ~SB%s~SN of them from %s abandoned accounts"
+            % (
+                "Would delete" if dryrun else "Deleted",
+                trimmed,
+                trimmed - ownerless_trimmed,
+                trimmed_accounts,
+            )
+        )
+        return trimmed
+
+    @classmethod
+    def saved_story_counts_by_user(cls):
+        """How many saved stories each user_id has, read off the (user_id, -starred_date) index on
+        a secondary instead of scanning every saved story on the primary. apps/rss_feeds/models.py"""
+        collection = cls._get_collection().with_options(
+            read_preference=pymongo.ReadPreference.SECONDARY_PREFERRED
+        )
+        pipeline = [
+            # Sorting on the index's leading field lets $group read user_ids from the index alone.
+            {"$sort": {"user_id": 1}},
+            {"$group": {"_id": "$user_id", "stories": {"$sum": 1}}},
+        ]
+        return {row["_id"]: row["stories"] for row in collection.aggregate(pipeline, allowDiskUse=True)}
+
+    @classmethod
+    def saves_are_abandoned(cls, user_id, seen_since):
+        """Whether a still existing account's saves can go: it's free, hasn't been seen since
+        seen_since, never paid, and never had premium any other way (a grant, an extension or a
+        trial all set premium_expire), so it has nothing to come back to. apps/rss_feeds/models.py"""
+        from apps.profile.models import PaymentHistory, Profile
+
+        profile = (
+            Profile.objects.filter(user_id=user_id)
+            .values("is_premium", "premium_expire", "last_seen_on")
+            .first()
+        )
+        if not profile or profile["is_premium"] or profile["premium_expire"]:
+            return False
+        if not profile["last_seen_on"] or profile["last_seen_on"] > seen_since:
+            return False
+        return not PaymentHistory.objects.filter(user_id=user_id).exists()
+
+    @classmethod
+    def delete_saved_stories(
+        cls,
+        user_id,
+        saved_count,
+        batch_size,
+        max_lag_seconds,
+        dryrun,
+        saved_before=None,
+        still_abandoned=None,
+    ):
+        """Deletes the saved stories of user_id in batches, waiting after each one while the
+        secondaries catch up, and returns how many went, or in a dry run, saved_count. With
+        saved_before, only saves made before then go; with still_abandoned, it stops as soon as that
+        says the account came back. apps/rss_feeds/models.py"""
+        if dryrun:
+            return saved_count
+        query = {"user_id": user_id}
+        if saved_before:
+            # $not keeps old saves that never got a starred_date in the trim.
+            query["starred_date"] = {"$not": {"$gte": saved_before}}
+        collection = cls._get_collection()
+        deleted = 0
+        while True:
+            if still_abandoned and not still_abandoned():
+                return deleted
+            batch = [doc["_id"] for doc in collection.find(query, {"_id": 1}).limit(batch_size)]
+            if not batch:
+                return deleted
+            deleted += collection.delete_many(dict(query, _id={"$in": batch})).deleted_count
+            cls.wait_for_replication(max_lag_seconds)
+
+    @classmethod
+    def wait_for_replication(cls, max_lag_seconds):
+        """Waits while any secondary is more than max_lag_seconds behind the primary, so a big trim
+        can't leave the secondaries serving stale reads. apps/rss_feeds/models.py"""
+        while mongo_max_replication_lag(settings.MONGODB) > max_lag_seconds:
+            time.sleep(5)
 
     @property
     def guid_hash(self):
