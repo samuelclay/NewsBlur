@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-10-29T10:00:16-04:00</updated>
+  <updated>2026-10-29T23:04:22-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -24,8 +24,8 @@ A new sound of an old instrument.
   <entry>
     <title type="html">Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android</title>
     <link href="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/" rel="alternate" type="text/html" title="Listen: NewsBlur reads your stories aloud on the web, iOS, Mac, and Android" />
-    <published>2026-10-30T12:00:00-04:00</published>
-    <updated>2026-10-30T12:00:00-04:00</updated>
+    <published>2026-10-30T03:00:00-04:00</published>
+    <updated>2026-10-30T03:00:00-04:00</updated>
     <id>https://blog.newsblur.com/2026/10/30/listen-to-your-stories</id>
     <content type="html" xml:base="https://blog.newsblur.com/2026/10/30/listen-to-your-stories/">
       <![CDATA[<p>Every story in NewsBlur now has a Listen button. Press it and NewsBlur reads the story to you, starting with the headline and going paragraph by paragraph, highlighting each one as it goes. When the story ends, the next one starts. It works on the web, iPhone, iPad, Mac, and Android starting today, and it can read stories in all 21 languages NewsBlur speaks.</p>
