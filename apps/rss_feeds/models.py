@@ -5245,7 +5245,10 @@ class MStarredStory(mongo.DynamicDocument):
             batch = [doc["_id"] for doc in collection.find(query, {"_id": 1}).limit(batch_size)]
             if not batch:
                 return deleted
-            deleted += collection.delete_many(dict(query, _id={"$in": batch})).deleted_count
+            # By _id alone: the ids came from the filtered find above, and adding user_id lets Mongo plan
+            # the delete on the (user_id, -starred_date) index, which for user 0's 6.9 million unsaved
+            # copies walked all of them on every batch.
+            deleted += collection.delete_many({"_id": {"$in": batch}}).deleted_count
             cls.wait_for_replication(max_lag_seconds)
 
     @classmethod
