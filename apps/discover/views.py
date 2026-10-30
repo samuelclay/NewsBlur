@@ -155,6 +155,38 @@ def search_feed(request):
         return dict(code=-1, message=gettext("No feed found matching that XML or website address."))
 
 
+FEED_URL_HOST = re.compile(r"^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$", re.IGNORECASE)
+
+
+def _parse_feed_url_term(term):
+    """Return (hostname, address without scheme) when the term looks like a feed URL, else None.
+
+    Accepts http(s):// in any case, feed://, feed:https://, scheme-relative //host/path and a bare
+    host/path. A bare term needs a path, so a name like "node.js" stays a name search.
+    """
+    term = re.sub(r"^feed:(?=//|https?:)", "", term.strip(), flags=re.IGNORECASE)
+    if re.search(r"\s", term):
+        return None
+    explicit = re.match(r"(?:https?:)?//", term, re.IGNORECASE)
+    if explicit:
+        rest = term[explicit.end() :]
+    elif "://" in term or "/" not in term:
+        return None
+    else:
+        rest = term
+    try:
+        parts = urlparse("//" + rest)
+        hostname, port = parts.hostname, parts.port
+    except ValueError:
+        return None
+    if not hostname or not (explicit or FEED_URL_HOST.match(hostname)):
+        return None
+    address = (
+        hostname + (f":{port}" if port else "") + parts.path + (f"?{parts.query}" if parts.query else "")
+    )
+    return hostname, address.rstrip("/")
+
+
 @json.json_view
 def feed_autocomplete(request):
     """Autocomplete search for feeds by name or URL."""
@@ -166,7 +198,31 @@ def feed_autocomplete(request):
     if not query:
         return dict(code=-1, message=gettext("Specify a search 'term'."), feeds=[], term=query)
 
-    if "." in query:
+    # A feed URL is answered by address, then by host, before any word matching.
+    url_host = None
+    exact_feed_ids = []
+    feed_ids = []
+    url_host, bare_url = _parse_feed_url_term(query) or (None, None)
+    if url_host:
+        addresses = [f"{scheme}://{bare_url}{slash}" for scheme in ("https", "http") for slash in ("", "/")]
+        exact_feed_ids = list(
+            Feed.objects.filter(feed_address__in=addresses)
+            .order_by("-num_subscribers")
+            .values_list("pk", flat=True)[:20]
+        )
+        search_ids = Feed.autocomplete(url_host, limit=20)
+        addresses_by_pk = dict(Feed.objects.filter(pk__in=search_ids).values_list("pk", "feed_address"))
+        host_feed_ids = [
+            pk
+            for pk in search_ids
+            if pk not in exact_feed_ids and urlparse(addresses_by_pk.get(pk, "")).hostname == url_host
+        ]
+        feed_ids = (exact_feed_ids + host_feed_ids)[:20]
+        if not feed_ids:
+            # Nothing matches the address or host: search the URL words like any other term.
+            url_host = None
+
+    if "." in query and not url_host:
         try:
             parts = urlparse(query)
             if not parts.hostname and not query.startswith("http"):
@@ -178,9 +234,8 @@ def feed_autocomplete(request):
         except Exception:
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
 
-    query_params = query.split(" ")
+    query_params = [] if url_host else query.split(" ")
     tries_left = 5
-    feed_ids = []
     while len(query_params) and tries_left:
         tries_left -= 1
         # Use higher limit (20) to include semantic matches alongside exact matches
@@ -191,7 +246,7 @@ def feed_autocomplete(request):
             query_params = query_params[:-1]
 
     # Fallback to database search if Elasticsearch returns no results
-    if not feed_ids:
+    if not feed_ids and not url_host:
         from django.db.models import Q
 
         search_query = query.split()[0] if query.split() else query
@@ -230,7 +285,7 @@ def feed_autocomplete(request):
         ]
     else:
         feeds = [feed.canonical(full=True) for feed in feeds]
-    feeds = sorted(feeds, key=lambda f: -1 * f["num_subscribers"])
+    feeds = sorted(feeds, key=lambda f: (f["id"] not in exact_feed_ids, -1 * f["num_subscribers"]))
 
     feed_ids = [f["id"] for f in feeds]
     feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
