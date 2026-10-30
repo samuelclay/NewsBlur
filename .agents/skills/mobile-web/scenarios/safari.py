@@ -47,6 +47,22 @@ def run(ctx):
         {"slid": slid, "state": ctx.state()},
     )
 
+    # A Safari swipe let go of before it went anywhere cancels the touch with no popstate. A later
+    # Back from Safari's toolbar, which sends the page no touches, still slides.
+    ctx.open_feed(feed_id)
+    ctx.touch._send("touchStart", 5, 400)
+    ctx.touch._send("touchCancel")
+    ctx.wait(4500)
+    page.go_back()
+    ctx.wait(30)
+    slid = ctx.evaluate(ANIMATING)
+    ctx.wait(800)
+    ctx.check(
+        "a toolbar Back after an abandoned Safari swipe still slides",
+        slid and ctx.state()["screen"] == "feeds",
+        {"slid": slid, "state": ctx.state()},
+    )
+
     # The nav bar's back button sits at the edge too, and a tap there still slides.
     ctx.open_feed(feed_id)
     page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap(position={"x": 8, "y": 20})

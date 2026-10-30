@@ -13,6 +13,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     EDGE_WIDTH: 28,
     LONG_PRESS_MS: 480,
+    BROWSER_SWIPE_MS: 4000,
     PRESS_DELAY_MS: 120,
     PRESS_FLASH_MS: 160,
 
@@ -372,7 +373,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         // Only an edge swipe leaves the screens mid-slide; the header button starts from rest.
         var from_drag = !!(this.pending_back && this.pending_back.from_drag);
         var browser_swiped = this.browser_swiped();
-        this.browser_edge_touch = false;
+        this.browser_edge_touch_at = null;
         this.pending_back = null;
         clearTimeout(this.pending_back_timer);
         this.show_screen(screen, {
@@ -716,17 +717,19 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     // The browser's swipe cancels the page's touch instead of ending it, so a touch that began at
     // the edge and hasn't ended when popstate arrives is the browser's own swipe, which already
-    // slid the screens. A tap on the nav bar's back button ends normally and keeps its slide.
+    // slid the screens. A tap on the nav bar's back button ends normally and keeps its slide. A
+    // swipe let go of before it goes anywhere sends no popstate, so the touch only counts for a
+    // few seconds, or a later Back from the browser's toolbar would skip its slide.
     browser_swiped: function () {
-        return !!this.browser_edge_touch;
+        return !!this.browser_edge_touch_at && Date.now() - this.browser_edge_touch_at < this.BROWSER_SWIPE_MS;
     },
 
     handle_touchstart: function (e) {
         this.swipe = null;
-        this.browser_edge_touch = false;
+        this.browser_edge_touch_at = null;
         if (!this.active || e.touches.length !== 1) return;
         if (this.browser_owns_edge_swipe()) {
-            this.browser_edge_touch = this.is_browser_edge_touch(e.touches[0].clientX);
+            if (this.is_browser_edge_touch(e.touches[0].clientX)) this.browser_edge_touch_at = Date.now();
             return;
         }
         if (this.transition) return;
@@ -769,7 +772,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     handle_touchend: function (e) {
         var swipe = this.swipe;
         this.swipe = null;
-        this.browser_edge_touch = false;
+        this.browser_edge_touch_at = null;
         if (!swipe || !swipe.dragging) return;
         var first = swipe.samples[0];
         var last = swipe.samples[swipe.samples.length - 1];
