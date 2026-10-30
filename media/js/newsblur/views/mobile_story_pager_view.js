@@ -138,7 +138,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
     },
 
     // Shown while Next unread opens another feed.
-    show_loading: function () {
+    show_loading: function (message) {
         this.cancel_page_turn();
         if (this.story) {
             NEWSBLUR.assets.stories.unbind('add', this.stories_added, this);
@@ -151,7 +151,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         }, this);
         this.pages.current.$el.removeClass('NB-mobile-story-page-empty').html($.make('div', {
             className: 'NB-mobile-story-loading'
-        }, gettext('Loading the next unread story...')));
+        }, message));
     },
 
     neighbors: function (story) {

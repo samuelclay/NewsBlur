@@ -90,6 +90,7 @@ def check_regressions(ctx, feed_id):
     ctx.set_layout("list")
     check_story_iframe_sandbox(ctx, feed_id)
     check_story_toolbar_fits(ctx)
+    check_cross_feed_back(ctx, feed_id)
     check_touch_hover(ctx, feed_id)
     check_discovery_back(ctx)
 
@@ -189,6 +190,53 @@ def check_story_toolbar_fits(ctx):
     ctx.wait(400)
     ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
     ctx.wait(900)
+    ctx.set_layout("list")
+
+
+def check_cross_feed_back(ctx, feed_id):
+    """Next unread can carry the story screen into the next feed. Back from there to the first
+    feed's story entry found its story missing from the next feed's stories, still loaded at
+    that moment, and showed the list under a story entry. Expects to be on the story list."""
+    feeds = ctx.visible_feeds()
+    others = [feed for feed in feeds if feed["id"] != feed_id and (feed["unread"] or feed["shows_read"])]
+    if not others:
+        ctx.check("cross-feed back has a second feed to test with", False, feeds)
+        return
+    other = max(others, key=lambda feed: (feed["shows_read"], feed["unread"]))["id"]
+    ctx.set_layout("grid")
+    ctx.tap_story(1)
+    story_a = ctx.state()["story"]
+    # What Next unread does once this feed runs out: open the next feed and select its story.
+    ctx.evaluate(
+        f"(() => {{ NEWSBLUR.app.mobile.follow_next_unread(); NEWSBLUR.reader.open_feed({other}); }})()"
+    )
+    ctx.page.wait_for_function(
+        f"NEWSBLUR.reader.active_feed == {other} && NEWSBLUR.assets.stories.length > 0", timeout=30000
+    )
+    ctx.evaluate("(() => { NEWSBLUR.assets.stories.at(0).set('selected', true); })()")
+    ctx.wait(800)
+    state = ctx.state()
+    ctx.check(
+        "Next unread's story in the next feed has its own entry",
+        state["screen"] == "story" and state["entry"]["screen"] == "story" and state["story"] != story_a,
+        state,
+    )
+    ctx.page.go_back()
+    ctx.wait(1200)
+    ctx.check("Back from it shows the next feed's list", ctx.state()["screen"] == "titles", ctx.state())
+    ctx.page.go_back()
+    ctx.page.wait_for_function(f"NEWSBLUR.reader.active_feed == {feed_id}", timeout=30000)
+    ctx.wait(2500)
+    state = ctx.state()
+    ctx.check(
+        "Back again reopens the first feed's story",
+        state["screen"] == "story" and state["story"] == story_a and state["entry"]["story_hash"] == story_a,
+        state,
+    )
+    if state["screen"] == "story":
+        ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+        ctx.wait(900)
+        ctx.check("and its back button returns to the first feed's list", ctx.state()["screen"] == "titles")
     ctx.set_layout("list")
 
 

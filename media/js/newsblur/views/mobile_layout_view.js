@@ -33,6 +33,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.pending_entry = null;
         this.transition = null;
         this.following_unread = null;
+        this.awaiting_story = null;
         this.$pressed = null;
 
         this.$body = $('body');
@@ -46,6 +47,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$body.append(this.story_pager.$el);
 
         NEWSBLUR.assets.stories.bind('change:selected', this.story_selected, this);
+        NEWSBLUR.assets.stories.bind('reset', this.stories_reset, this);
 
         this.build_titles_bar();
         this.build_dashboard_bar();
@@ -346,10 +348,16 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.update_titles_bar();
 
         var screen = target.screen;
+        this.awaiting_story = null;
         if (screen === 'story') {
             var story = target.story_hash && NEWSBLUR.assets.stories.get_by_story_hash(target.story_hash);
             if (story) {
                 this.story_pager.open(story);
+            } else if (target.story_hash && this.router_will_route()) {
+                // The entry belongs to another feed (Next unread crossed into this one), which the
+                // router opens once this handler returns. stories_reset opens the story then.
+                this.awaiting_story = target.story_hash;
+                this.story_pager.show_loading(gettext('Loading...'));
             } else {
                 screen = 'titles';
             }
@@ -369,6 +377,31 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             from_drag: from_drag,
             complete: _.bind(this.after_screen_change, this)
         });
+    },
+
+    // Backbone's popstate listener runs after handle_popstate, which was added first, so a
+    // fragment that differs from the router's last one is a route it's about to open.
+    router_will_route: function () {
+        return !!Backbone.History.started &&
+            Backbone.history.getFragment() !== Backbone.history.fragment;
+    },
+
+    // NEWSBLUR.assets.stories reset: a story list finished loading. reader.js reset_feed empties
+    // the collection with a bare reset first, which passes no count of added stories.
+    stories_reset: function (stories, options) {
+        if (!this.awaiting_story || !options || options.added === undefined) return;
+        var story_hash = this.awaiting_story;
+        this.awaiting_story = null;
+        if (!this.active || this.screen !== 'story') return;
+        var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
+        if (story) {
+            this.story_pager.open(story);
+            return;
+        }
+        // The story has dropped off the feed's first page, so show the list it was in.
+        this.story_pager.close();
+        this.tag_entry('titles');
+        this.show_screen('titles', { direction: 'pop', complete: _.bind(this.after_screen_change, this) });
     },
 
     after_screen_change: function () {
@@ -433,9 +466,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (this.screen === 'titles') return;
         if (this.screen === 'story') {
             if (this.is_following_unread()) {
-                this.story_pager.show_loading();
+                this.story_pager.show_loading(gettext('Loading the next unread story...'));
                 return;
             }
+            if (this.awaiting_story) return;
             this.story_pager.close();
             this.set_screen('titles');
             return;
@@ -469,9 +503,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     feed_reset: function () {
         if (!this.active || this.screen !== 'story') return;
         if (this.is_following_unread()) {
-            this.story_pager.show_loading();
+            this.story_pager.show_loading(gettext('Loading the next unread story...'));
             return;
         }
+        if (this.awaiting_story) return;
         this.story_pager.close();
         this.set_screen('titles');
         this.tag_entry('titles');
