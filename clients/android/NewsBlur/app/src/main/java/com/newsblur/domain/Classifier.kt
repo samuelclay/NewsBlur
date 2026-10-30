@@ -93,7 +93,15 @@ class Classifier : Serializable {
     // Not vended by the API. The trainers (fragment/IntelTrainerSections.kt) fill this through
     // recordChanges with every classifier they changed, the only ones /classifier/save receives.
     @JvmField
+    @SerializedName("changes")
     val changes: ArrayList<ClassifierChange> = arrayListOf()
+
+    // Not vended by the API either. recordChanges sets it, so a ReadingAction.UpdateIntel queued
+    // by this release says its changes are complete, even when there are none. One queued by the
+    // previous release has neither field and replays as that release sent it, see getAPITuples.
+    @JvmField
+    @SerializedName("changes_recorded")
+    var changesRecorded: Boolean = false
 
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
@@ -160,8 +168,24 @@ class Classifier : Serializable {
         scope: ClassifierScope,
     ) = setScope(promptType(imagePrompt), prompt, scope)
 
-    /** The feed-scoped /classifier/save request: the changes at feed scope, except removals waiting on a move. */
-    fun getAPITuples(): ValueMultimap = tuples(changes.filter { it.scope.isFeed && it.movedTo == null })
+    /**
+     * The feed-scoped /classifier/save request: the changes at feed scope, except removals waiting
+     * on a move. A classifier that never recorded its changes is an UpdateIntel the previous
+     * release queued, which still sends what that release did.
+     */
+    fun getAPITuples(): ValueMultimap =
+        if (changesRecorded) tuples(changes.filter { it.scope.isFeed && it.movedTo == null }) else legacyTuples()
+
+    // Classifier.kt: the previous release's getAPITuples, every author, author regex, title, tag,
+    // site, text and URL score at feed scope. Its trainer couldn't edit title, text or URL regexes
+    // and never sent them, so they stay out here too.
+    private fun legacyTuples(): ValueMultimap {
+        val values = ValueMultimap()
+        LEGACY_SAVED_TYPES.forEach { type ->
+            scores(type).forEach { (key, score) -> tupleKey(type, score)?.let { values.put(it, key) } }
+        }
+        return values
+    }
 
     /** One /classifier/save request per folder or global scope with changes, sent after the feed save. */
     fun getScopedRequests(): List<ScopedClassifierRequest> = requests(changes.filter { !it.scope.isFeed && it.movedTo == null })
@@ -209,6 +233,7 @@ class Classifier : Serializable {
     fun recordChanges(original: Classifier) {
         changes.clear()
         SAVED_TYPES.forEach { type -> recordChanges(type, original) }
+        changesRecorded = true
     }
 
     private fun recordChanges(
@@ -464,6 +489,9 @@ class Classifier : Serializable {
         /** Every type a trainer can change, in the order recordChanges lists them. */
         private val SAVED_TYPES =
             listOf(AUTHOR, AUTHOR_REGEX, TITLE, TITLE_REGEX, TAG, FEED, TEXT, TEXT_REGEX, URL, URL_REGEX, PROMPT, IMAGE_PROMPT)
+
+        /** The types the previous release's getAPITuples sent, in its order, see legacyTuples. */
+        private val LEGACY_SAVED_TYPES = listOf(AUTHOR, AUTHOR_REGEX, TITLE, TAG, FEED, TEXT, URL)
 
         // The classifier table rows that hold folder and global scopes, by row type.
         private val STORED_SCOPES: Map<Int, (Classifier) -> LinkedHashMap<String, ClassifierScope>> =
