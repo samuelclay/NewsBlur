@@ -13,6 +13,9 @@
 "%1$@ of %2$@ of listening left this month" = "נותרו %1$@ מתוך %2$@ להאזנה החודש";
 "%1$@ of %2$@ sites indexed" = "אונדקסו %1$@ מתוך %2$@ אתרים";
 "%1$@ of %2$@ story previews used today" = "נעשה שימוש היום בתצוגות מקדימות של %1$@ מתוך %2$@ כתבות";
+"%1$@ on all sites (%2$@)" = "%1$@ בכל האתרים (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ בתיקייה (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ באתר הזה (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ שיתף/ה מחדש את %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ שיתף/ה מחדש את %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ השיב/ה ל־%2$@: \n \n%3$@";
@@ -20,11 +23,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ הגיב/ה לתשובה שלך על %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ שיתף/ה את %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ שיתף/ה את %2$@:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ אתרים לווידג'טים";
 "%@ ago" = "לפני %@";
 "%@ categories to choose from" = "%@ קטגוריות לבחירה";
 "%@ comments" = "%@ תגובות";
+"%@ content filters" = "%@ מסנני תוכן";
 "%@ could not be added." = "לא ניתן היה להוסיף %@ פידים.";
 "%@ days" = "%@ ימים";
 "%@ feed" = "פיד %@";
@@ -36,6 +41,7 @@
 "%@ focused stories" = "%@ כתבות ממוקדות";
 "%@ folder" = "תיקיית %@";
 "%@ free story previews left today" = "נותרו להיום %@ תצוגות מקדימות של כתבות בחינם";
+"%@ image filters" = "מסנני תמונות מסוג %@";
 "%@ is now following you." = "%@ עוקב/ת אחריך כעת.";
 "%@ left in this preview" = "נותרו %@ בתצוגה המקדימה הזו";
 "%@ match" = "התאמה של %@";
@@ -48,17 +54,23 @@
 "%@ sources" = "%@ מקורות";
 "%@ stories" = "%@ כתבות";
 "%@ stories left" = "נותרו %@ כתבות";
+"%@ stories/mo" = "%@ כתבות בחודש";
 "%@ stories/month" = "%@ כתבות בחודש";
 "%@ subscribers" = "%@ מנויים";
 "%@ unread stories" = "%@ כתבות שלא נקראו";
 "%@ voice previews left" = "נותרו %@ תצוגות קול מקדימות";
+"%@/story" = "%@/כתבה";
 "%@×" = "%@×";
 "%ldd ago" = "לפני %ld ימים";
 "%ldh ago" = "לפני %ld שעות";
 "%ldm ago" = "לפני %ld דקות";
 "%ldw ago" = "לפני %ld שבועות";
+"(upcoming)" = "(בקרוב)";
 "+ %@ more sites" = "+ עוד %@ אתרים";
 "..." = "...";
+"/day" = "/יום";
+"/mo" = "/חודש";
+"/month" = "/חודש";
 "1 Widget Site" = "אתר ווידג'טים אחד";
 "1,000 stories" = "1,000 כתבות";
 "10 stories" = "10 כתבות";
@@ -81,6 +93,8 @@
 "< 90/month" = "פחות מ־90 לחודש";
 "A clearer, closer sound" = "צליל ברור וקרוב יותר";
 "A personal news reader bringing\npeople together to talk about the world." = "קורא חדשות אישי שמחבר בין\nאנשים כדי לדבר על העולם.";
+"AI Filter" = "מסנן AI";
+"AI filters are saved but won't run until you %@." = "מסנני AI נשמרו, אך לא יפעלו עד %@.";
 "AI finds the stories" = "הבינה המלאכותית מוצאת את הכתבות";
 "ALL" = "הכול";
 "ALL NOTIFICATIONS" = "כל ההתראות";
@@ -153,7 +167,9 @@
 "Already have an account? Sign in" = "כבר יש לך חשבון? התחברות";
 "Already have feeds?" = "כבר יש לך פידים?";
 "Also published by %@ sites" = "פורסם גם ב־%@ אתרים";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "מסנן AI גובר על אהבתי ולא אהבתי, אבל לא על סלידה חזקה";
 "Analyze" = "ניתוח";
+"Analyzing images..." = "מתבצע ניתוח של התמונות...";
 "App Badge" = "תג אפליקציה";
 "App Icon" = "סמל האפליקציה";
 "Apply training across a folder" = "החלת האימון על תיקייה";
@@ -237,6 +253,8 @@
 "Connect an existing account" = "חיבור חשבון קיים";
 "Connect your account" = "חיבור החשבון שלך";
 "Connecting" = "מתחבר";
+"Content" = "תוכן";
+"Content Filter" = "מסנן תוכן";
 "Continue" = "המשך";
 "Control how much is included and how it is written" = "שליטה בכמות התוכן שנכללת ובאופן כתיבתו";
 "Copied" = "הועתק";
@@ -244,7 +262,10 @@
 "Coral Rose" = "ורד אלמוג";
 "Could not completely clear the cache. Please try again." = "לא ניתן היה לנקות את המטמון במלואו. נסה שוב.";
 "Could not save your language. Please try again." = "לא ניתן לשמור את השפה שלך. נסה שוב.";
+"Couldn't load usage billing history." = "לא ניתן לטעון את היסטוריית החיובים לפי שימוש.";
+"Couldn't open billing. Please try again." = "לא ניתן לפתוח את החיוב. נסו שוב.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "לא ניתן להתחבר אל NewsBlur. בדקו את החיבור ונסו שוב.";
+"Couldn't save your spending limit. Please try again." = "שמירת מגבלת ההוצאה נכשלה. נסו שוב.";
 "Couldn’t load the full image. You can try opening it in your browser." = "לא ניתן לטעון את התמונה המלאה. אפשר לנסות לפתוח אותה בדפדפן.";
 "Counting is difficult..." = "קשה לספור...";
 "Create a feed from any web page" = "יצירת פיד מכל דף אינטרנט";
@@ -288,6 +309,9 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "מחיקת החשבון לצמיתות תסיר את הפידים, הכתבות השמורות ונתוני החשבון שלך. אי אפשר לבטל את הפעולה.";
 "Deleting..." = "מוחק...";
 "Delivery" = "אופן ההקראה";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "תארו נושא והבינה המלאכותית תדרג כל כתבה לפי מידת ההתאמה להנחיה שלך, כדי למקד או להסתיר התאמות.";
+"Describe what to focus or hide" = "תארו מה למקד או להסתיר";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "תארו מה לחפש, ו-AI ינתח את תמונות כל כתבה בהתאם להנחיה שלך.";
 "Discover" = "גילוי";
 "Discover more to read" = "גלו עוד דברים לקריאה";
 "Discover related sites" = "גילוי אתרים קשורים";
@@ -441,6 +465,8 @@
 "How much emotion" = "מידת הרגש";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "אם אף אחת מהאפשרויות לא מתאימה, הקלידו כותרת של כתבה שמופיעה בעמוד וננתח אותה מחדש.";
 "Ignore system theme, use screen brightness instead" = "התעלמות מעיצוב המערכת ושימוש בבהירות המסך במקום זאת";
+"Image" = "תמונה";
+"Image Filter" = "מסנן תמונות";
 "Image Preview" = "תצוגה מקדימה של תמונה";
 "Image actions" = "פעולות תמונה";
 "Images from %@ days ago" = "תמונות מלפני %@ ימים";
@@ -460,6 +486,7 @@
 "Include already-read stories" = "הכללת כתבות שכבר נקראו";
 "Include in bundle" = "הכללה בחבילה";
 "Included in bundle" = "כלול בחבילה";
+"Increase or remove your limit" = "הגדלת המגבלה או הסרתה";
 "Infrequent Site Stories" = "כתבות מאתרים שמפרסמים לעיתים רחוקות";
 "Infrequent Stories" = "כתבות מאתרים שמתעדכנים לעיתים רחוקות";
 "Infrequent stories per month" = "כתבות בחודש באתרים שמתעדכנים לעיתים רחוקות";
@@ -469,6 +496,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "במקום להשתמש בערכת הנושא הכהה או הבהירה של המערכת, מעבר אוטומטי בין ערכות נושא בהתאם לרמת הבהירות של המסך. שימושי להתאמת ערכת הנושא לתאורת הסביבה.";
 "Interactions" = "אינטראקציות";
 "Invalid: %@" = "לא תקין: %@";
+"Invoice" = "חשבונית";
 "Keeps the dark icon no matter how your device is set." = "משאיר את הסמל הכהה ללא קשר להגדרות המכשיר שלך.";
 "Keeps the light icon no matter how your device is set." = "הסמל יישאר בהיר ללא קשר להגדרות המכשיר שלכם.";
 "Keyboard Shortcuts" = "קיצורי מקלדת";
@@ -528,6 +556,8 @@
 "Manage" = "ניהול";
 "Manage Account on the Web" = "ניהול החשבון באינטרנט";
 "Manage Subscription" = "ניהול המינוי";
+"Manage billing and limits" = "ניהול חיוב ומגבלות";
+"Manage billing on Stripe" = "ניהול החיוב ב־Stripe";
 "Manage this folder…" = "ניהול התיקייה הזו…";
 "Manage this site…" = "ניהול האתר הזה…";
 "Manual scroll" = "גלילה ידנית";
@@ -579,6 +609,8 @@
 "Medium [theme]" = "אפור";
 "Model" = "מודל";
 "Monday" = "יום שני";
+"Monthly spending limit" = "מגבלת הוצאה חודשית";
+"Monthly spending limit reached. " = "הגעת למגבלת ההוצאה החודשית. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "יותר כתבות תופסות יותר מקום בדיסק, אך מלבד זאת אין להן השפעה מורגשת על הביצועים.";
 "More voices" = "קולות נוספים";
 "Morning" = "בוקר";
@@ -616,7 +648,12 @@
 "Name" = "שם";
 "Name your folder to continue" = "תנו שם לתיקייה כדי להמשיך";
 "Natural" = "טבעי";
+"Natural Language Image Classifier" = "מסווג תמונות בשפה טבעית";
+"Natural Language Text Classifier" = "מסווג טקסט בשפה טבעית";
 "Natural [listen delivery]" = "טבעי";
+"Natural language classifier billing" = "חיוב עבור מסווג שפה טבעית";
+"Natural language classifiers are paused until next billing cycle. " = "המסווגים בשפה טבעית מושהים עד למחזור החיוב הבא. ";
+"Natural language classifiers are using your instance's API keys." = "המסווגים בשפה טבעית משתמשים במפתחות ה-API של המערכת שלך.";
 "Natural language text and image classifiers" = "מסווגי טקסט ותמונות בשפה טבעית";
 "Nested" = "מקונן";
 "Never" = "אף פעם";
@@ -650,7 +687,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "אין עדיין פידים להצגה. נסו תחום עניין אחר או חפשו בכל האתרים.";
 "No friends to suggest." = "אין חברים להציע.";
 "No interests or sites found. Try another search." = "לא נמצאו תחומי עניין או אתרים. נסו חיפוש אחר.";
+"No limit" = "ללא הגבלה";
 "No longer saved" = "לא נשמר עוד";
+"No match" = "אין התאמה";
 "No match in story" = "לא נמצאה התאמה בכתבה";
 "No matching sites" = "לא נמצאו אתרים תואמים";
 "No notifications yet." = "עדיין אין התראות.";
@@ -661,6 +700,8 @@
 "No stories yet" = "עדיין אין כתבות";
 "No story selected" = "לא נבחרה כתבה";
 "No unread stories" = "אין כתבות שלא נקראו";
+"No usage billing invoices yet." = "עדיין אין חשבוניות חיוב לפי שימוש.";
+"No usage billing set up." = "לא הוגדר חיוב לפי שימוש.";
 "No voices match these filters" = "אין קולות שתואמים למסננים האלה";
 "None" = "ללא";
 "Normal" = "רגיל";
@@ -706,6 +747,7 @@
 "Open the next site/folder" = "פתיחת האתר/התיקייה הבאים";
 "Opening site…" = "האתר נפתח…";
 "Opens Now Playing" = "פותח את ״מתנגן כעת״";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "רשות. המסווגים מושהים כשהמגבלה מגיעה, ומתחדשים במחזור החיוב הבא.";
 "Options" = "אפשרויות";
 "Ordered" = "ממוינות";
 "Organize Sites" = "ארגון אתרים";
@@ -851,6 +893,7 @@
 "Saved on %@" = "נשמר ב־%@";
 "Saving Daily Briefing settings…" = "שומר את הגדרות התדריך היומי…";
 "Saving search..." = "שומר את החיפוש...";
+"Saving..." = "שמירה...";
 "Schedule" = "לוח זמנים";
 "Scroll horizontally" = "גלילה אופקית";
 "Scroll to Comments" = "גלילה לתגובות";
@@ -881,6 +924,8 @@
 "Server URL" = "כתובת URL של השרת";
 "Set an exact speed under Voice" = "הגדרת מהירות מדויקת תחת קול";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "הגדירו את התדריך היומי כדי ליצור תקציר של הכתבות החשובות לכם ביותר.";
+"Set up billing" = "הגדרת חיוב";
+"Set up usage-based billing to use natural language content and image filters." = "הגדירו חיוב לפי שימוש כדי להשתמש במסנני תוכן ותמונה בשפה טבעית.";
 "Settings" = "הגדרות";
 "Share" = "שיתוף";
 "Share This Story" = "שיתוף הכתבה";
@@ -954,6 +999,7 @@
 "Spacing" = "מרווחים";
 "Speaker boost" = "הגברת קול הדובר";
 "Speed" = "מהירות";
+"Spending limit reached. Classifiers paused until next cycle." = "מגבלת ההוצאה הושגה. המסווגים הושהו עד למחזור הבא.";
 "Stability" = "יציבות";
 "Stability, similarity and style" = "יציבות, דמיון וסגנון";
 "Stale — last story %@" = "לא מעודכן — הכתבה האחרונה %@";
@@ -992,6 +1038,7 @@
 "Story count" = "מספר הכתבות";
 "Story detail" = "פרטי הכתבה";
 "Story image" = "תמונת הכתבה";
+"Story is always hidden" = "הכתבה מוסתרת תמיד";
 "Story is hidden (super dislike wins)" = "הכתבה מוסתרת (סלידה חזקה גוברת)";
 "Story is shown (like wins)" = "הכתבה מוצגת (אהבתי גובר)";
 "Story language" = "שפת הכתבה";
@@ -999,6 +1046,7 @@
 "Story options" = "אפשרויות הכתבה";
 "Story order" = "סדר הכתבות";
 "Story settings" = "הגדרות כתבה";
+"Story shows in Focus view" = "הכתבה מופיעה בתצוגת מיקוד";
 "Story title preview" = "תצוגה מקדימה של כותרת הכתבה";
 "Story titles" = "כותרות כתבות";
 "Story titles layout" = "פריסת כותרות הכתבות";
@@ -1038,6 +1086,11 @@
 "Tall [grid height]" = "גבוה";
 "Teal Mint" = "מנטה טורקיז";
 "Terms of Use" = "תנאי השימוש";
+"Test failed" = "הבדיקה נכשלה";
+"Test on these images" = "בדיקה בתמונות האלה";
+"Test on this image" = "בדיקה על התמונה הזו";
+"Test on this story" = "בדיקה על הכתבה הזו";
+"Testing on this story..." = "הבדיקה של הכתבה הזו מתבצעת...";
 "Text" = "טקסט";
 "Text Size" = "גודל טקסט";
 "Text View" = "תצוגת טקסט";
@@ -1066,6 +1119,7 @@
 "This removes the subscription from your feeds." = "הפעולה תסיר את המינוי מהפידים שלך.";
 "This setting only applies after the app is restarted." = "ההגדרה תיכנס לתוקף רק לאחר הפעלה מחדש של האפליקציה.";
 "This site already has a feed" = "לאתר הזה כבר יש פיד";
+"This site isn't in a folder" = "האתר הזה לא נמצא בתיקייה";
 "This story has no text to read aloud." = "אין בכתבה הזו טקסט להקראה.";
 "Three" = "שלוש";
 "Three columns" = "שלוש עמודות";
@@ -1141,6 +1195,7 @@
 "Unsaved" = "לא נשמר";
 "Untitled story" = "כתבה ללא כותרת";
 "Up Next" = "בתור הבא";
+"Upcoming charge: " = "החיוב הבא: ";
 "Updated %@ days ago" = "עודכן לפני %@ ימים";
 "Updated %@ months ago" = "עודכן לפני %@ חודשים";
 "Updated %@ weeks ago" = "עודכן לפני %@ שבועות";
@@ -1154,6 +1209,9 @@
 "Upgrade to Premium" = "שדרוג ל-Premium";
 "Upgrade to Premium Archive" = "שדרגו ל-Premium Archive";
 "Upgrade to Premium Pro" = "שדרוג ל־Premium Pro";
+"Usage Billing" = "חיוב לפי שימוש";
+"Usage billing history" = "היסטוריית חיובים לפי שימוש";
+"Usage-based billing is enabled for natural language classifiers." = "חיוב לפי שימוש מופעל עבור מסווגים בשפה טבעית.";
 "Use %@" = "השתמשו ב־%@";
 "Use another sign-in method" = "שימוש בשיטת התחברות אחרת";
 "Use both" = "להשתמש בשניהם";
@@ -1219,6 +1277,8 @@
 "by %@" = "מאת %@";
 "dislike" = "לא אהבת";
 "e.g. %@" = "לדוגמה %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "למשל, ״בינה מלאכותית ולמידת מכונה״ או ״פוליטיקה מקומית״";
+"e.g., \"food photography\" or \"charts and graphs\"" = "לדוגמה, ״צילום אוכל״ או ״תרשימים וגרפים״";
 "like" = "אהבת";
 "no content" = "אין תוכן";
 "no date" = "ללא תאריך";
@@ -1226,5 +1286,12 @@
 "no story" = "אין כתבות";
 "or" = "או";
 "premium subscribers" = "מנויי Premium";
+"set up usage-based billing" = "הגדרת חיוב לפי שימוש";
 "your account" = "החשבון שלך";
 "‹ Feeds" = "‹ פידים";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ מתוך %1$@ תמונות תואמות למסנן הזה";
+"✓ Image matches this filter" = "✓ התמונה תואמת למסנן הזה";
+"✓ Story matches this filter" = "✓ הכתבה תואמת למסנן הזה";
+"✗ Image does not match this filter" = "✗ התמונה לא תואמת למסנן הזה";
+"✗ No images match this filter" = "✗ אין תמונות שתואמות למסנן הזה";
+"✗ Story does not match this filter" = "✗ הכתבה לא תואמת למסנן הזה";

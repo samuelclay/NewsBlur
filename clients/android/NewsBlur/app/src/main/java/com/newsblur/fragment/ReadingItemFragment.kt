@@ -52,6 +52,7 @@ import com.newsblur.design.ListenPalette
 import com.newsblur.di.IconLoader
 import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
+import com.newsblur.domain.PromptClassifierMatch
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
 import com.newsblur.image.StoryImageViewerHost
@@ -1170,9 +1171,9 @@ class ReadingItemFragment :
 
         binding.readingItemDate.text = StoryUtils.formatLongDate(requireContext(), story!!.timestamp)
 
-        if (story!!.tags.isEmpty()) {
-            binding.readingItemTags.visibility = View.GONE
-        }
+        // ReadingItemFragment.kt shares the tag row with the AI filter chips from setupTagsAndIntel.
+        binding.readingItemTags.visibility =
+            if (story!!.tags.isEmpty() && story!!.promptClassifiers.isNullOrEmpty()) View.GONE else View.VISIBLE
 
         if (selectedViewMode == DefaultFeedView.STORY && story!!.hasModifications) {
             binding.readingStoryChanges.visibility = View.VISIBLE
@@ -1251,6 +1252,11 @@ class ReadingItemFragment :
             }
 
             binding.readingItemTags.addView(v)
+        }
+
+        // Matched AI prompts explain why a story is focused or hidden, even past a disliked author.
+        for (match in story!!.promptClassifiers.orEmpty()) {
+            binding.readingItemTags.addView(createAiFilterChip(match))
         }
 
         setupUserTags()
@@ -1572,6 +1578,31 @@ class ReadingItemFragment :
     }
 
     private fun isArchiveUser(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
+
+    private fun createAiFilterChip(match: PromptClassifierMatch): View {
+        val v = layoutInflater.inflate(R.layout.chip_view, null)
+        val chip: Chip = v.findViewById(R.id.chip)
+        chip.text = aiFilterChipText(requireContext(), match)
+        chip.ellipsize = TextUtils.TruncateAt.END
+        if (match.isFocus) {
+            chip.setChipBackgroundColorResource(R.color.tag_green)
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_green_text))
+            chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_up_green)
+        } else {
+            chip.setChipBackgroundColorResource(R.color.tag_red)
+            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.tag_red_text))
+            chip.chipIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_thumb_down_red)
+        }
+        // Like the tag chips above, tapping opens the trainer, whose AI sections hold this prompt.
+        if (!(fs!!.isAllSaved || fs!!.singleSavedTag != null)) {
+            v.setOnClickListener {
+                if (story!!.feedId == "0") return@setOnClickListener // cannot train on feedless stories
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
+            }
+        }
+        return v
+    }
 
     private fun createTagChip(
         tag: String,

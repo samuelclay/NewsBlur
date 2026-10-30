@@ -10,6 +10,7 @@
     app:chipCornerRadius="4dp"
     app:chipEndPadding="8dp"
     app:chipIconSize="14dp"
+    app:iconEndPadding="4dp"
     app:chipMinHeight="18dp"
     app:chipMinTouchTargetSize="18dp"
     app:chipStartPadding="8dp"

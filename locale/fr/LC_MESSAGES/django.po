@@ -1531,6 +1531,9 @@ msgstr "Impossible d'enregistrer l'article : introuvable"
 msgid "Could not unsave story, not found"
 msgstr "Impossible de retirer l’article des éléments enregistrés : introuvable"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Impossible de joindre Stripe. Veuillez réessayer."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Période couverte : %(start)s &ndash; %(end)s"
@@ -4277,6 +4280,9 @@ msgstr "Aucun système d’entraînement"
 msgid "No uncategorized archives found"
 msgstr "Aucune archive sans catégorie trouvée"
 
+msgid "No usage billing set up."
+msgstr "La facturation à l’usage n’est pas configurée."
+
 msgid "No user has that email address."
 msgstr "Aucun utilisateur ne possède cette adresse e-mail."
 
@@ -4523,6 +4529,9 @@ msgstr "Veuillez saisir une requête de recherche par mot-clé."
 
 msgid "Please enter in an email address."
 msgstr "Veuillez saisir une adresse e-mail."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Veuillez vous reconnecter à NewsBlur."
 
 msgid "Please login to continue."
 msgstr "Veuillez vous connecter pour continuer."
@@ -6495,6 +6504,9 @@ msgstr "Facturation à l’usage non activée"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "La facturation à l’usage est requise pour les classificateurs IA"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "La facturation à l’usage n’est pas disponible pour le moment."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

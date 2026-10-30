@@ -600,6 +600,19 @@ struct PremiumView: View {
 
     private var footerSection: some View {
         VStack(spacing: 12) {
+            // PremiumView.swift links to natural language classifier billing (UsageBillingView.swift), which is
+            // separate from the subscription.
+            Button(action: {
+                NewsBlurAppDelegate.shared?.showUsageBillingDialog()
+            }) {
+                Text(NBLocalization.text("Natural language classifier billing"))
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(PremiumColors.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(PremiumColors.cardBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
             linkButton(title: NBLocalization.text("Privacy Policy"), url: "https://newsblur.com/privacy/")
             linkButton(title: NBLocalization.text("Terms of Use"), url: "https://newsblur.com/tos/")
         }

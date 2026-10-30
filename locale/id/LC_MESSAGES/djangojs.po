@@ -1305,6 +1305,9 @@ msgstr "Selalu tampilkan tombol Latih/Simpan/Bagikan di bawah artikel"
 msgid "Always show unread counts on folders"
 msgstr "Selalu tampilkan jumlah belum dibaca di folder"
 
+msgid "An AI filter overrides likes and dislikes, but not a super dislike"
+msgstr "Filter AI mengesampingkan Suka dan Tidak suka, tetapi tidak Sangat Tidak Suka"
+
 msgid ""
 "An AI-generated summary of your top stories, with sections for top stories, long reads, widely covered "
 "topics, and custom sections you define."

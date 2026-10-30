@@ -1544,6 +1544,9 @@ msgstr "Не вдалося зберегти статтю: її не знайд�
 msgid "Could not unsave story, not found"
 msgstr "Не вдалося прибрати статтю зі збережених — її не знайдено"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Не вдалося зв’язатися зі Stripe. Спробуйте ще раз."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Період дії: %(start)s &ndash; %(end)s"
@@ -4242,6 +4245,9 @@ msgstr "Без системи навчання"
 msgid "No uncategorized archives found"
 msgstr "Архівів без категорії не знайдено"
 
+msgid "No usage billing set up."
+msgstr "Оплату за використання не налаштовано."
+
 msgid "No user has that email address."
 msgstr "Немає користувача з такою адресою електронної пошти."
 
@@ -4478,6 +4484,9 @@ msgstr "Введіть пошуковий запит із ключовими с�
 
 msgid "Please enter in an email address."
 msgstr "Введіть адресу електронної пошти."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Увійдіть у NewsBlur ще раз."
 
 msgid "Please login to continue."
 msgstr "Увійдіть, щоб продовжити."
@@ -6439,6 +6448,9 @@ msgstr "Оплату за використання не ввімкнено"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Для класифікаторів ШІ потрібна оплата за використання"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Оплата за використання зараз недоступна."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

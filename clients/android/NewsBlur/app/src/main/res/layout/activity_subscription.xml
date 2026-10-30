@@ -41,6 +41,50 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp" />
 
+            <!-- SubscriptionActivity.kt links to activity/UsageBillingActivity.kt from here. -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/container_usage_billing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/text_usage_billing_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/usage_billing_title"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/text_usage_billing_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_usage_billing"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="12dp"
+                        android:letterSpacing="0"
+                        android:textAllCaps="false"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/text_no_subscriptions"
                 android:layout_width="match_parent"

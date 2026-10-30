@@ -1478,6 +1478,9 @@ msgstr "שמירת הכתבה נכשלה: הכתבה לא נמצאה"
 msgid "Could not unsave story, not found"
 msgstr "לא ניתן להסיר את הכתבה מהשמורים; היא לא נמצאה"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "החיבור ל־Stripe נכשל. נסו שוב."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "תקופת הכיסוי: %(start)s &ndash; %(end)s"
@@ -4046,6 +4049,9 @@ msgstr "ללא מערכת אימון"
 msgid "No uncategorized archives found"
 msgstr "לא נמצאו ארכיונים ללא קטגוריה"
 
+msgid "No usage billing set up."
+msgstr "לא הוגדר חיוב לפי שימוש."
+
 msgid "No user has that email address."
 msgstr "לא נמצא משתמש עם כתובת האימייל הזו."
 
@@ -4278,6 +4284,9 @@ msgstr "נא להזין שאילתת חיפוש לפי מילות מפתח."
 
 msgid "Please enter in an email address."
 msgstr "נא להזין כתובת אימייל."
+
+msgid "Please log in to NewsBlur again."
+msgstr "התחברו שוב אל NewsBlur."
 
 msgid "Please login to continue."
 msgstr "יש להתחבר כדי להמשיך."
@@ -6169,6 +6178,9 @@ msgstr "חיוב לפי שימוש לא מופעל"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "נדרש חיוב לפי שימוש עבור מסווגי AI"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "חיוב לפי שימוש אינו זמין כרגע."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

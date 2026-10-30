@@ -13,6 +13,9 @@
 "%1$@ of %2$@ of listening left this month" = "本月剩餘聆聽時間：%1$@／%2$@";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
+"%1$@ on all sites (%2$@)" = "%1$@ 個網站（%2$@）";
+"%1$@ on folder (%2$@)" = "%1$@，適用於資料夾（%2$@）";
+"%1$@ on this site (%2$@)" = "%1$@（此網站：%2$@）";
 "%1$@ re-shared %2$@." = "%1$@ 重新分享了 %2$@。";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ 重新分享了 %2$@：\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ 回覆了 %2$@： \n \n%3$@";
@@ -20,11 +23,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ 回覆了你在 %2$@ 的回覆：\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ 分享了 %2$@。";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ 分享了 %2$@：\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@、%2$@";
 "%@ Widget Sites" = "%@ 小工具網站";
 "%@ ago" = "%@前";
 "%@ categories to choose from" = "可選擇 %@ 個分類";
 "%@ comments" = "%@ 則留言";
+"%@ content filters" = "%@ 個內容篩選器";
 "%@ could not be added." = "無法新增 %@。";
 "%@ days" = "%@ 天";
 "%@ feed" = "%@ 訂閱來源";
@@ -36,6 +41,7 @@
 "%@ focused stories" = "%@ 篇焦點文章";
 "%@ folder" = "%@ 資料夾";
 "%@ free story previews left today" = "今天還可免費預覽 %@ 篇文章";
+"%@ image filters" = "%@ 個圖片篩選器";
 "%@ is now following you." = "%@ 現在開始追蹤你。";
 "%@ left in this preview" = "此預覽還剩 %@";
 "%@ match" = "符合 %@ 項";
@@ -48,17 +54,23 @@
 "%@ sources" = "%@ 個來源";
 "%@ stories" = "%@ 篇文章";
 "%@ stories left" = "剩下 %@ 篇文章";
+"%@ stories/mo" = "每月 %@ 篇文章";
 "%@ stories/month" = "每月 %@ 篇文章";
 "%@ subscribers" = "%@ 位訂閱者";
 "%@ unread stories" = "%@ 篇未讀文章";
 "%@ voice previews left" = "剩餘 %@ 次語音預覽";
+"%@/story" = "%@/篇文章";
 "%@×" = "%@ 倍";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小時前";
 "%ldm ago" = "%ld 分鐘前";
 "%ldw ago" = "%ld 週前";
+"(upcoming)" = "（即將推出）";
 "+ %@ more sites" = "+ 另有 %@ 個網站";
 "..." = "…";
+"/day" = "/天";
+"/mo" = "/月";
+"/month" = "/月";
 "1 Widget Site" = "1 個小工具網站";
 "1,000 stories" = "1,000 篇文章";
 "10 stories" = "10 篇文章";
@@ -81,6 +93,8 @@
 "< 90/month" = "每月少於 90 篇";
 "A clearer, closer sound" = "聲音更清晰、更貼近";
 "A personal news reader bringing\npeople together to talk about the world." = "一款個人新聞閱讀器，讓人們\n齊聚一堂，暢談世界。";
+"AI Filter" = "AI 篩選器";
+"AI filters are saved but won't run until you %@." = "AI 篩選器已儲存，但在你 %@ 之前不會執行。";
 "AI finds the stories" = "由 AI 找出文章";
 "ALL" = "全部";
 "ALL NOTIFICATIONS" = "所有通知";
@@ -153,7 +167,9 @@
 "Already have an account? Sign in" = "已有帳戶？登入";
 "Already have feeds?" = "已經有訂閱來源了嗎？";
 "Also published by %@ sites" = "另有 %@ 個網站刊載";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "AI 篩選器會覆蓋喜歡和不喜歡的判斷，但不會覆蓋超級不喜歡";
 "Analyze" = "分析";
+"Analyzing images..." = "正在分析圖片…";
 "App Badge" = "App 圖示標記";
 "App Icon" = "應用程式圖示";
 "Apply training across a folder" = "將訓練套用至整個資料夾";
@@ -237,6 +253,8 @@
 "Connect an existing account" = "連結現有帳戶";
 "Connect your account" = "連結你的帳戶";
 "Connecting" = "正在連線";
+"Content" = "內容";
+"Content Filter" = "內容篩選器";
 "Continue" = "繼續";
 "Control how much is included and how it is written" = "控制包含的內容及其撰寫方式";
 "Copied" = "已複製";
@@ -244,7 +262,10 @@
 "Coral Rose" = "珊瑚玫瑰";
 "Could not completely clear the cache. Please try again." = "無法完全清除快取。請再試一次。";
 "Could not save your language. Please try again." = "無法儲存語言設定，請再試一次。";
+"Couldn't load usage billing history." = "無法載入按用量計費記錄。";
+"Couldn't open billing. Please try again." = "無法開啟帳單頁面。請再試一次。";
 "Couldn't reach NewsBlur. Check your connection and try again." = "無法連線至 NewsBlur。請檢查網路連線後再試一次。";
+"Couldn't save your spending limit. Please try again." = "無法儲存你的支出上限。請再試一次。";
 "Couldn’t load the full image. You can try opening it in your browser." = "無法載入完整圖片。你可以試著在瀏覽器中開啟。";
 "Counting is difficult..." = "計數真不容易……";
 "Create a feed from any web page" = "從任何網頁建立訂閱來源";
@@ -288,6 +309,9 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "永久刪除帳戶會移除你的訂閱來源、已儲存的文章和帳戶資料。此操作無法復原。";
 "Deleting..." = "正在刪除…";
 "Delivery" = "呈現方式";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "描述一個主題，AI 就會根據你的提示為每篇文章評分，並將符合條件的文章設為焦點或隱藏。";
+"Describe what to focus or hide" = "描述要聚焦或隱藏的內容";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "描述你要尋找的內容，AI 就會根據你的提示分析每篇文章中的圖片。";
 "Discover" = "探索";
 "Discover more to read" = "探索更多閱讀內容";
 "Discover related sites" = "探索相關網站";
@@ -441,6 +465,8 @@
 "How much emotion" = "情感表現程度";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "如果這些選項都不符合，請輸入你在頁面上看到的文章標題，我們會重新分析。";
 "Ignore system theme, use screen brightness instead" = "忽略系統主題，改用螢幕亮度";
+"Image" = "圖片";
+"Image Filter" = "圖片篩選器";
 "Image Preview" = "圖片預覽";
 "Image actions" = "圖片操作";
 "Images from %@ days ago" = "%@ 天前的圖片";
@@ -460,6 +486,7 @@
 "Include already-read stories" = "包含已讀文章";
 "Include in bundle" = "加入套件";
 "Included in bundle" = "已包含在套件中";
+"Increase or remove your limit" = "提高或移除你的上限";
 "Infrequent Site Stories" = "不常更新的網站文章";
 "Infrequent Stories" = "不常更新的網站文章";
 "Infrequent stories per month" = "不常更新網站的每月文章數";
@@ -469,6 +496,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "不跟隨系統的深色／淺色模式，而是根據螢幕亮度自動切換佈景主題。適合依環境光線切換佈景主題。";
 "Interactions" = "互動";
 "Invalid: %@" = "無效：%@";
+"Invoice" = "發票";
 "Keeps the dark icon no matter how your device is set." = "無論裝置如何設定，都會維持深色圖示。";
 "Keeps the light icon no matter how your device is set." = "無論裝置設定為何，圖示都會保持淺色。";
 "Keyboard Shortcuts" = "鍵盤快速鍵";
@@ -528,6 +556,8 @@
 "Manage" = "管理";
 "Manage Account on the Web" = "在網頁上管理帳戶";
 "Manage Subscription" = "管理訂閱";
+"Manage billing and limits" = "管理帳單與上限";
+"Manage billing on Stripe" = "在 Stripe 管理帳單";
 "Manage this folder…" = "管理此資料夾…";
 "Manage this site…" = "管理此網站…";
 "Manual scroll" = "手動捲動";
@@ -579,6 +609,8 @@
 "Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
+"Monthly spending limit" = "每月支出上限";
+"Monthly spending limit reached. " = "已達每月支出上限。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "更多文章會占用更多磁碟空間，但除此之外，不會對效能造成明顯影響。";
 "More voices" = "更多語音";
 "Morning" = "早上";
@@ -616,7 +648,12 @@
 "Name" = "名稱";
 "Name your folder to continue" = "請為資料夾命名以繼續";
 "Natural" = "自然";
+"Natural Language Image Classifier" = "自然語言影像分類器";
+"Natural Language Text Classifier" = "自然語言文字分類器";
 "Natural [listen delivery]" = "自然";
+"Natural language classifier billing" = "自然語言分類器計費";
+"Natural language classifiers are paused until next billing cycle. " = "自然語言分類器已暫停使用，直到下一個計費週期。";
+"Natural language classifiers are using your instance's API keys." = "自然語言分類器正在使用你執行個體的 API 金鑰。";
 "Natural language text and image classifiers" = "自然語言文字與影像分類器";
 "Nested" = "巢狀";
 "Never" = "永不";
@@ -650,7 +687,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "目前沒有可顯示的訂閱來源。請嘗試其他興趣，或搜尋所有網站。";
 "No friends to suggest." = "沒有可推薦的朋友。";
 "No interests or sites found. Try another search." = "找不到興趣或網站。請嘗試其他搜尋。";
+"No limit" = "不限";
 "No longer saved" = "已取消儲存";
+"No match" = "不符合";
 "No match in story" = "文章中沒有相符內容";
 "No matching sites" = "找不到相符的網站";
 "No notifications yet." = "目前沒有通知。";
@@ -661,6 +700,8 @@
 "No stories yet" = "尚無文章";
 "No story selected" = "未選取文章";
 "No unread stories" = "沒有未讀文章";
+"No usage billing invoices yet." = "尚無用量帳單。";
+"No usage billing set up." = "尚未設定按用量計費。";
 "No voices match these filters" = "沒有符合這些篩選條件的語音";
 "None" = "無";
 "Normal" = "一般";
@@ -706,6 +747,7 @@
 "Open the next site/folder" = "開啟下一個網站／資料夾";
 "Opening site…" = "正在開啟網站⋯";
 "Opens Now Playing" = "開啟「現正播放」";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "選填。達到上限時，分類器會暫停，並於下一個計費週期恢復。";
 "Options" = "選項";
 "Ordered" = "已排序";
 "Organize Sites" = "整理網站";
@@ -851,6 +893,7 @@
 "Saved on %@" = "儲存於 %@";
 "Saving Daily Briefing settings…" = "正在儲存每日簡報設定…";
 "Saving search..." = "正在儲存搜尋…";
+"Saving..." = "正在儲存…";
 "Schedule" = "排程";
 "Scroll horizontally" = "水平捲動";
 "Scroll to Comments" = "捲動至留言";
@@ -881,6 +924,8 @@
 "Server URL" = "伺服器網址";
 "Set an exact speed under Voice" = "在「語音」中設定精確速度";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "設定每日簡報，為你整理最重要文章的摘要。";
+"Set up billing" = "設定帳單";
+"Set up usage-based billing to use natural language content and image filters." = "設定依用量計費，即可使用自然語言內容和圖片篩選器。";
 "Settings" = "設定";
 "Share" = "分享";
 "Share This Story" = "分享此文章";
@@ -954,6 +999,7 @@
 "Spacing" = "間距";
 "Speaker boost" = "增強語音";
 "Speed" = "速度";
+"Spending limit reached. Classifiers paused until next cycle." = "已達支出上限。分類器已暫停，直到下一個週期。";
 "Stability" = "穩定度";
 "Stability, similarity and style" = "穩定度、相似度和風格";
 "Stale — last story %@" = "已停更 — 最後一篇文章發布於 %@";
@@ -992,6 +1038,7 @@
 "Story count" = "文章數量";
 "Story detail" = "文章詳細資料";
 "Story image" = "文章圖片";
+"Story is always hidden" = "文章一律隱藏";
 "Story is hidden (super dislike wins)" = "文章已隱藏（超級不喜歡優先）";
 "Story is shown (like wins)" = "顯示文章（喜歡優先）";
 "Story language" = "文章語言";
@@ -999,6 +1046,7 @@
 "Story options" = "文章選項";
 "Story order" = "文章排序";
 "Story settings" = "文章設定";
+"Story shows in Focus view" = "文章會顯示在焦點檢視中";
 "Story title preview" = "文章標題預覽";
 "Story titles" = "文章標題";
 "Story titles layout" = "文章標題版面";
@@ -1038,6 +1086,11 @@
 "Tall [grid height]" = "高";
 "Teal Mint" = "藍綠薄荷";
 "Terms of Use" = "使用條款";
+"Test failed" = "測試失敗";
+"Test on these images" = "在這些圖片上測試";
+"Test on this image" = "在這張圖片上測試";
+"Test on this story" = "在這篇文章上測試";
+"Testing on this story..." = "正在測試這篇文章…";
 "Text" = "文字";
 "Text Size" = "文字大小";
 "Text View" = "文字檢視";
@@ -1066,6 +1119,7 @@
 "This removes the subscription from your feeds." = "這會從你的訂閱來源中移除此訂閱。";
 "This setting only applies after the app is restarted." = "這項設定會在重新啟動應用程式後才生效。";
 "This site already has a feed" = "此網站已有訂閱來源";
+"This site isn't in a folder" = "這個網站不在任何資料夾中";
 "This story has no text to read aloud." = "這篇文章沒有可朗讀的文字。";
 "Three" = "三";
 "Three columns" = "三欄";
@@ -1141,6 +1195,7 @@
 "Unsaved" = "未儲存";
 "Untitled story" = "未命名文章";
 "Up Next" = "接下來";
+"Upcoming charge: " = "即將扣款：";
 "Updated %@ days ago" = "%@ 天前更新";
 "Updated %@ months ago" = "%@ 個月前更新";
 "Updated %@ weeks ago" = "%@ 週前更新";
@@ -1154,6 +1209,9 @@
 "Upgrade to Premium" = "升級至 Premium";
 "Upgrade to Premium Archive" = "升級至 Premium Archive";
 "Upgrade to Premium Pro" = "升級至 Premium Pro";
+"Usage Billing" = "用量計費";
+"Usage billing history" = "按用量計費記錄";
+"Usage-based billing is enabled for natural language classifiers." = "自然語言分類器已啟用按用量計費。";
 "Use %@" = "使用 %@";
 "Use another sign-in method" = "使用其他登入方式";
 "Use both" = "兩者皆用";
@@ -1219,6 +1277,8 @@
 "by %@" = "由 %@ 撰寫";
 "dislike" = "不喜歡";
 "e.g. %@" = "例如 %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "例如：「AI 和機器學習」或「地方政治」";
+"e.g., \"food photography\" or \"charts and graphs\"" = "例如：「美食攝影」或「圖表」";
 "like" = "喜歡";
 "no content" = "沒有內容";
 "no date" = "無日期";
@@ -1226,5 +1286,12 @@
 "no story" = "沒有文章";
 "or" = "或";
 "premium subscribers" = "付費訂閱者";
+"set up usage-based billing" = "設定按用量計費";
 "your account" = "你的帳戶";
 "‹ Feeds" = "‹ 訂閱來源";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ 張圖片中有 %1$@ 張符合此篩選條件";
+"✓ Image matches this filter" = "✓ 圖片符合此篩選條件";
+"✓ Story matches this filter" = "✓ 文章符合此篩選條件";
+"✗ Image does not match this filter" = "✗ 圖片不符合此篩選條件";
+"✗ No images match this filter" = "✗ 沒有圖片符合此篩選器";
+"✗ Story does not match this filter" = "✗ 文章不符合此篩選器";

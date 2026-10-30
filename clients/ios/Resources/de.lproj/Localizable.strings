@@ -13,6 +13,9 @@
 "%1$@ of %2$@ of listening left this month" = "Diesen Monat noch %1$@ von %2$@ Hörzeit";
 "%1$@ of %2$@ sites indexed" = "%1$@ von %2$@ Websites indexiert";
 "%1$@ of %2$@ story previews used today" = "Heute verwendete Artikelvorschauen: %1$@ von %2$@";
+"%1$@ on all sites (%2$@)" = "%1$@ auf allen Websites (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ im Ordner (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ für diese Website (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ hat %2$@ erneut geteilt.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ hat %2$@ erneut geteilt:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ hat %2$@ geantwortet: \n \n%3$@";
@@ -20,11 +23,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ hat auf deine Antwort zu %2$@ geantwortet:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ hat %2$@ geteilt.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ hat %2$@ geteilt:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Widget-Websites";
 "%@ ago" = "vor %@";
 "%@ categories to choose from" = "%@ Kategorien zur Auswahl";
 "%@ comments" = "%@ Kommentare";
+"%@ content filters" = "%@ Inhaltsfilter";
 "%@ could not be added." = "%@ konnte nicht hinzugefügt werden.";
 "%@ days" = "%@ Tage";
 "%@ feed" = "Feed von %@";
@@ -36,6 +41,7 @@
 "%@ focused stories" = "%@ Fokus-Artikel";
 "%@ folder" = "Ordner %@";
 "%@ free story previews left today" = "Heute noch %@ kostenlose Artikelvorschauen";
+"%@ image filters" = "%@ Bildfilter";
 "%@ is now following you." = "%@ folgt dir jetzt.";
 "%@ left in this preview" = "In dieser Vorschau noch %@";
 "%@ match" = "%@ Übereinstimmung";
@@ -48,17 +54,23 @@
 "%@ sources" = "%@ Quellen";
 "%@ stories" = "%@ Artikel";
 "%@ stories left" = "Noch %@ Artikel";
+"%@ stories/mo" = "%@ Artikel/Monat";
 "%@ stories/month" = "%@ Artikel/Monat";
 "%@ subscribers" = "%@ Abonnenten";
 "%@ unread stories" = "%@ ungelesene Artikel";
 "%@ voice previews left" = "Noch %@ Sprachvorschauen übrig";
+"%@/story" = "%@/Artikel";
 "%@×" = "%@×";
 "%ldd ago" = "vor %ld Tg.";
 "%ldh ago" = "vor %ld Std.";
 "%ldm ago" = "vor %ld Min.";
 "%ldw ago" = "vor %ld Wo.";
+"(upcoming)" = "(anstehend)";
 "+ %@ more sites" = "+ %@ weitere Websites";
 "..." = "…";
+"/day" = "/Tag";
+"/mo" = "/Monat";
+"/month" = "/Monat";
 "1 Widget Site" = "1 Widget-Website";
 "1,000 stories" = "1.000 Artikel";
 "10 stories" = "10 Artikel";
@@ -81,6 +93,8 @@
 "< 90/month" = "< 90/Monat";
 "A clearer, closer sound" = "Ein klarerer, unmittelbarer Klang";
 "A personal news reader bringing\npeople together to talk about the world." = "Ein persönlicher Newsreader, der Menschen zusammenbringt,\num über die Welt zu sprechen.";
+"AI Filter" = "KI-Filter";
+"AI filters are saved but won't run until you %@." = "KI-Filter sind gespeichert, werden aber erst ausgeführt, wenn du %@.";
 "AI finds the stories" = "Die KI findet die Artikel";
 "ALL" = "ALLE";
 "ALL NOTIFICATIONS" = "ALLE BENACHRICHTIGUNGEN";
@@ -153,7 +167,9 @@
 "Already have an account? Sign in" = "Du hast bereits ein Konto? Anmelden";
 "Already have feeds?" = "Hast du bereits Feeds?";
 "Also published by %@ sites" = "Ebenfalls veröffentlicht auf %@ Websites";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Ein KI-Filter setzt „Gefällt mir“ und „Gefällt mir nicht“ außer Kraft, aber nicht „Gefällt mir gar nicht“.";
 "Analyze" = "Analysieren";
+"Analyzing images..." = "Bilder werden analysiert…";
 "App Badge" = "App-Symbolkennzeichen";
 "App Icon" = "App-Symbol";
 "Apply training across a folder" = "Training auf einen Ordner anwenden";
@@ -237,6 +253,8 @@
 "Connect an existing account" = "Bestehendes Konto verbinden";
 "Connect your account" = "Konto verbinden";
 "Connecting" = "Verbindung wird hergestellt";
+"Content" = "Inhalt";
+"Content Filter" = "Inhaltsfilter";
 "Continue" = "Weiter";
 "Control how much is included and how it is written" = "Steuere, wie viel enthalten ist und wie es formuliert wird";
 "Copied" = "Kopiert";
@@ -244,7 +262,10 @@
 "Coral Rose" = "Korallenrosa";
 "Could not completely clear the cache. Please try again." = "Der Cache konnte nicht vollständig geleert werden. Bitte versuche es erneut.";
 "Could not save your language. Please try again." = "Deine Sprache konnte nicht gespeichert werden. Bitte versuche es erneut.";
+"Couldn't load usage billing history." = "Der Abrechnungsverlauf konnte nicht geladen werden.";
+"Couldn't open billing. Please try again." = "Abrechnung konnte nicht geöffnet werden. Bitte versuche es erneut.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "NewsBlur konnte nicht erreicht werden. Überprüfe deine Verbindung und versuche es erneut.";
+"Couldn't save your spending limit. Please try again." = "Dein Ausgabenlimit konnte nicht gespeichert werden. Bitte versuche es erneut.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Das vollständige Bild konnte nicht geladen werden. Du kannst versuchen, es in deinem Browser zu öffnen.";
 "Counting is difficult..." = "Zählen ist schwierig ...";
 "Create a feed from any web page" = "Feed von einer beliebigen Webseite erstellen";
@@ -288,6 +309,9 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Wenn du dein Konto löschst, werden deine Feeds, gespeicherten Artikel und Kontodaten dauerhaft entfernt. Dieser Vorgang kann nicht rückgängig gemacht werden.";
 "Deleting..." = "Wird gelöscht...";
 "Delivery" = "Sprechweise";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Beschreibe ein Thema, und die KI bewertet jeden Artikel anhand deiner Eingabe, um passende Artikel hervorzuheben oder auszublenden.";
+"Describe what to focus or hide" = "Beschreibe, worauf du dich konzentrieren oder was du ausblenden möchtest";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Beschreibe, wonach gesucht werden soll, und die KI vergleicht die Bilder jedes Artikels mit deiner Beschreibung.";
 "Discover" = "Entdecken";
 "Discover more to read" = "Weitere Leseempfehlungen entdecken";
 "Discover related sites" = "Ähnliche Websites entdecken";
@@ -441,6 +465,8 @@
 "How much emotion" = "Wie viel Emotion";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Wenn keine der Optionen passt, gib einen Artikeltitel ein, den du auf der Seite siehst, und wir führen die Analyse erneut durch.";
 "Ignore system theme, use screen brightness instead" = "Systemdesign ignorieren und stattdessen die Bildschirmhelligkeit verwenden";
+"Image" = "Bild";
+"Image Filter" = "Bildfilter";
 "Image Preview" = "Bildvorschau";
 "Image actions" = "Bildaktionen";
 "Images from %@ days ago" = "Bilder der letzten %@ Tage";
@@ -460,6 +486,7 @@
 "Include already-read stories" = "Bereits gelesene Artikel einschließen";
 "Include in bundle" = "Ins Paket aufnehmen";
 "Included in bundle" = "Im Paket enthalten";
+"Increase or remove your limit" = "Erhöhe oder entferne dein Limit";
 "Infrequent Site Stories" = "Artikel selten aktiver Websites";
 "Infrequent Stories" = "Artikel selten aktiver Websites";
 "Infrequent stories per month" = "Grenze für selten aktive Websites";
@@ -469,6 +496,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Anstatt dem Dunkel-/Hellmodus des Systems zu folgen, werden die Designs automatisch an die Bildschirmhelligkeit angepasst. Nützlich, um das Design an die Umgebungsbeleuchtung anzupassen.";
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
+"Invoice" = "Rechnung";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
 "Keyboard Shortcuts" = "Tastenkombinationen";
@@ -528,6 +556,8 @@
 "Manage" = "Verwalten";
 "Manage Account on the Web" = "Konto im Web verwalten";
 "Manage Subscription" = "Abonnement verwalten";
+"Manage billing and limits" = "Abrechnung und Limits verwalten";
+"Manage billing on Stripe" = "Abrechnung bei Stripe verwalten";
 "Manage this folder…" = "Diesen Ordner verwalten …";
 "Manage this site…" = "Diese Website verwalten…";
 "Manual scroll" = "Manuelles Scrollen";
@@ -579,6 +609,8 @@
 "Medium [theme]" = "Grau";
 "Model" = "Modell";
 "Monday" = "Montag";
+"Monthly spending limit" = "Monatliches Ausgabenlimit";
+"Monthly spending limit reached. " = "Monatliches Ausgabenlimit erreicht. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mehr Artikel benötigen mehr Speicherplatz, haben ansonsten aber keine spürbaren Auswirkungen auf die Leistung.";
 "More voices" = "Weitere Stimmen";
 "Morning" = "Morgen";
@@ -616,7 +648,12 @@
 "Name" = "Name";
 "Name your folder to continue" = "Benenne deinen Ordner, um fortzufahren";
 "Natural" = "Natürlich";
+"Natural Language Image Classifier" = "Bildklassifikator für natürliche Sprache";
+"Natural Language Text Classifier" = "Textklassifikator für natürliche Sprache";
 "Natural [listen delivery]" = "Natürlich";
+"Natural language classifier billing" = "Abrechnung für Klassifikatoren für natürliche Sprache";
+"Natural language classifiers are paused until next billing cycle. " = "Klassifikatoren für natürliche Sprache sind bis zum nächsten Abrechnungszeitraum pausiert. ";
+"Natural language classifiers are using your instance's API keys." = "Klassifikatoren in natürlicher Sprache verwenden die API-Schlüssel deiner Instanz.";
 "Natural language text and image classifiers" = "Klassifikatoren für natürliche Sprache und Bilder";
 "Nested" = "Verschachtelt";
 "Never" = "Nie";
@@ -650,7 +687,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Noch keine Feeds vorhanden. Wähle ein anderes Interesse oder durchsuche alle Websites.";
 "No friends to suggest." = "Keine Freunde zum Vorschlagen.";
 "No interests or sites found. Try another search." = "Keine Interessen oder Websites gefunden. Versuche es mit einer anderen Suche.";
+"No limit" = "Kein Limit";
 "No longer saved" = "Nicht mehr gespeichert";
+"No match" = "Keine Übereinstimmung";
 "No match in story" = "Keine Übereinstimmung im Artikel";
 "No matching sites" = "Keine passenden Websites";
 "No notifications yet." = "Noch keine Benachrichtigungen.";
@@ -661,6 +700,8 @@
 "No stories yet" = "Noch keine Artikel";
 "No story selected" = "Kein Artikel ausgewählt";
 "No unread stories" = "Keine ungelesenen Artikel";
+"No usage billing invoices yet." = "Noch keine Rechnungen für die nutzungsbasierte Abrechnung.";
+"No usage billing set up." = "Keine nutzungsbasierte Abrechnung eingerichtet.";
 "No voices match these filters" = "Keine Stimme entspricht diesen Filtern";
 "None" = "Keine";
 "Normal" = "Normal";
@@ -706,6 +747,7 @@
 "Open the next site/folder" = "Nächste Website / nächsten Ordner öffnen";
 "Opening site…" = "Website wird geöffnet…";
 "Opens Now Playing" = "Öffnet „Jetzt läuft“";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Optional. Klassifikatoren werden bei Erreichen des Limits pausiert und im nächsten Abrechnungszeitraum fortgesetzt.";
 "Options" = "Optionen";
 "Ordered" = "Sortiert";
 "Organize Sites" = "Websites organisieren";
@@ -851,6 +893,7 @@
 "Saved on %@" = "Gespeichert am %@";
 "Saving Daily Briefing settings…" = "Einstellungen des Tagesbriefings werden gespeichert…";
 "Saving search..." = "Suche wird gespeichert …";
+"Saving..." = "Wird gespeichert …";
 "Schedule" = "Zeitplan";
 "Scroll horizontally" = "Horizontal scrollen";
 "Scroll to Comments" = "Zu den Kommentaren scrollen";
@@ -881,6 +924,8 @@
 "Server URL" = "Server-URL";
 "Set an exact speed under Voice" = "Lege unter „Stimme“ eine genaue Geschwindigkeit fest";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Richte das Tagesbriefing ein, um eine Zusammenfassung der Artikel zu erstellen, die dir am wichtigsten sind.";
+"Set up billing" = "Abrechnung einrichten";
+"Set up usage-based billing to use natural language content and image filters." = "Richte eine nutzungsbasierte Abrechnung ein, um Filter für Inhalte in natürlicher Sprache und Bilder zu verwenden.";
 "Settings" = "Einstellungen";
 "Share" = "Teilen";
 "Share This Story" = "Diesen Artikel teilen";
@@ -954,6 +999,7 @@
 "Spacing" = "Abstand";
 "Speaker boost" = "Stimmverstärkung";
 "Speed" = "Geschwindigkeit";
+"Spending limit reached. Classifiers paused until next cycle." = "Ausgabenlimit erreicht. Klassifikatoren bis zum nächsten Abrechnungszeitraum pausiert.";
 "Stability" = "Stabilität";
 "Stability, similarity and style" = "Stabilität, Ähnlichkeit und Stil";
 "Stale — last story %@" = "Veraltet — letzter Artikel %@";
@@ -992,6 +1038,7 @@
 "Story count" = "Artikelanzahl";
 "Story detail" = "Artikeldetails";
 "Story image" = "Artikelbild";
+"Story is always hidden" = "Artikel immer ausblenden";
 "Story is hidden (super dislike wins)" = "Artikel wird ausgeblendet („Gefällt mir gar nicht“ hat Vorrang)";
 "Story is shown (like wins)" = "Artikel wird angezeigt („Gefällt mir“ hat Vorrang)";
 "Story language" = "Artikelsprache";
@@ -999,6 +1046,7 @@
 "Story options" = "Artikeloptionen";
 "Story order" = "Reihenfolge der Artikel";
 "Story settings" = "Artikeleinstellungen";
+"Story shows in Focus view" = "Artikel wird in der Fokusansicht angezeigt";
 "Story title preview" = "Vorschau des Artikeltitels";
 "Story titles" = "Artikeltitel";
 "Story titles layout" = "Layout der Artikeltitel";
@@ -1038,6 +1086,11 @@
 "Tall [grid height]" = "Hoch";
 "Teal Mint" = "Türkis-Mint";
 "Terms of Use" = "Nutzungsbedingungen";
+"Test failed" = "Test fehlgeschlagen";
+"Test on these images" = "An diesen Bildern testen";
+"Test on this image" = "Mit diesem Bild testen";
+"Test on this story" = "An diesem Artikel testen";
+"Testing on this story..." = "Artikel wird getestet …";
 "Text" = "Text";
 "Text Size" = "Textgröße";
 "Text View" = "Textansicht";
@@ -1066,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Dadurch wird das Abonnement aus deinen Feeds entfernt.";
 "This setting only applies after the app is restarted." = "Diese Einstellung wird erst nach einem Neustart der App angewendet.";
 "This site already has a feed" = "Für diese Website gibt es bereits einen Feed";
+"This site isn't in a folder" = "Diese Website ist keinem Ordner zugeordnet";
 "This story has no text to read aloud." = "Dieser Artikel enthält keinen Text zum Vorlesen.";
 "Three" = "Drei";
 "Three columns" = "Drei Spalten";
@@ -1141,6 +1195,7 @@
 "Unsaved" = "Nicht gespeichert";
 "Untitled story" = "Artikel ohne Titel";
 "Up Next" = "Als Nächstes";
+"Upcoming charge: " = "Anstehende Abbuchung: ";
 "Updated %@ days ago" = "Vor %@ Tagen aktualisiert";
 "Updated %@ months ago" = "Vor %@ Monaten aktualisiert";
 "Updated %@ weeks ago" = "Vor %@ Wochen aktualisiert";
@@ -1154,6 +1209,9 @@
 "Upgrade to Premium" = "Auf Premium upgraden";
 "Upgrade to Premium Archive" = "Auf Premium Archive upgraden";
 "Upgrade to Premium Pro" = "Auf Premium Pro upgraden";
+"Usage Billing" = "Nutzungsbasierte Abrechnung";
+"Usage billing history" = "Abrechnungsverlauf nach Nutzung";
+"Usage-based billing is enabled for natural language classifiers." = "Nutzungsbasierte Abrechnung ist für Klassifikatoren in natürlicher Sprache aktiviert.";
 "Use %@" = "%@ verwenden";
 "Use another sign-in method" = "Andere Anmeldemethode verwenden";
 "Use both" = "Beides verwenden";
@@ -1219,6 +1277,8 @@
 "by %@" = "von %@";
 "dislike" = "missfällt";
 "e.g. %@" = "z. B. %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "z. B. „KI und maschinelles Lernen“ oder „Lokalpolitik“";
+"e.g., \"food photography\" or \"charts and graphs\"" = "z. B. „Food-Fotografie“ oder „Diagramme und Grafiken“";
 "like" = "gefällt";
 "no content" = "kein Inhalt";
 "no date" = "kein Datum";
@@ -1226,5 +1286,12 @@
 "no story" = "kein Artikel";
 "or" = "oder";
 "premium subscribers" = "Premium-Abonnenten";
+"set up usage-based billing" = "nutzungsbasierte Abrechnung einrichten";
 "your account" = "dein Konto";
 "‹ Feeds" = "‹ Feeds";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ von %1$@ Bildern entsprechen diesem Filter";
+"✓ Image matches this filter" = "✓ Bild entspricht diesem Filter";
+"✓ Story matches this filter" = "✓ Artikel entspricht diesem Filter";
+"✗ Image does not match this filter" = "✗ Bild entspricht diesem Filter nicht";
+"✗ No images match this filter" = "✗ Keine Bilder passen zu diesem Filter";
+"✗ Story does not match this filter" = "✗ Der Artikel passt nicht zu diesem Filter";

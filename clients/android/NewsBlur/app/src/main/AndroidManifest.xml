@@ -842,6 +842,22 @@
 
         <activity android:name=".activity.SubscriptionActivity" />
 
+        <!-- UsageBillingActivity.kt: Stripe returns the Custom Tab to <socialCallbackScheme>://usage-billing,
+             and singleTask closes the tab and hands the result to the open billing screen. -->
+        <activity
+            android:name=".activity.UsageBillingActivity"
+            android:exported="true"
+            android:label="@string/usage_billing_title"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${socialCallbackScheme}" android:host="usage-billing" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".activity.MuteConfig"
             android:label="@string/mute_sites"

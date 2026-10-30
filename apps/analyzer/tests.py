@@ -1682,6 +1682,108 @@ class Test_SuperDownvote(TransactionTestCase):
         self.assertEqual(classifier.score, -2)
 
 
+class Test_AIPromptScorePriority(TransactionTestCase):
+    """An AI prompt match outranks manual likes and dislikes, but a manual super
+    dislike (-2) outranks the AI. Mirrors the Daring Fireball sponsor post: the
+    publisher is liked, the sponsor author is disliked, and a "Non-apple related
+    news" focus prompt matched, so the story was green."""
+
+    fixtures = [
+        "apps/rss_feeds/fixtures/initial_data.json",
+        "apps/rss_feeds/fixtures/rss_feeds.json",
+    ]
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="aipriority", password="testpass", email="ai@test.com")
+        self.feed = Feed.objects.get(pk=1)
+        self.story = {
+            "story_feed_id": self.feed.pk,
+            "story_title": "[Sponsor] WorkOS: Let Agents Sign Up for Your App",
+            "story_authors": "Daring Fireball Department of Commerce",
+            "story_tags": [],
+            "story_content": "Publish an auth.md file and agents register themselves.",
+            "story_permalink": "https://example.com/workos",
+        }
+
+    def tearDown(self):
+        MClassifierTitle.objects(user_id=self.user.pk).delete()
+        MClassifierAuthor.objects(user_id=self.user.pk).delete()
+        MClassifierFeed.objects(user_id=self.user.pk).delete()
+
+    def make_author_classifier(self, score):
+        return MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="Daring Fireball Department of Commerce",
+            score=score,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def make_feed_classifier(self, score):
+        return MClassifierFeed.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            score=score,
+            creation_date=datetime.datetime.now(),
+        )
+
+    def score(self, prompt_score, titles=None, authors=None, feeds=None):
+        return compute_story_score(
+            self.story,
+            classifier_titles=titles or [],
+            classifier_authors=authors or [],
+            classifier_tags=[],
+            classifier_feeds=feeds or [],
+            prompt_score=prompt_score,
+        )
+
+    def test_ai_focus_beats_plain_author_dislike(self):
+        """The sponsor post stays green: an AI focus match outranks a -1 author."""
+        score = self.score(
+            1,
+            authors=[self.make_author_classifier(-1)],
+            feeds=[self.make_feed_classifier(1)],
+        )
+        self.assertEqual(score, 1)
+
+    def test_super_dislike_author_beats_ai_focus(self):
+        """Turning the author into a super dislike makes the sponsor post red."""
+        score = self.score(
+            1,
+            authors=[self.make_author_classifier(-2)],
+            feeds=[self.make_feed_classifier(1)],
+        )
+        self.assertEqual(score, -2)
+
+    def test_super_dislike_keeps_its_strength_against_ai_hidden(self):
+        """A -2 author and a hidden AI match stay a super dislike, not a -1."""
+        score = self.score(-1, authors=[self.make_author_classifier(-2)])
+        self.assertEqual(score, -2)
+
+    def test_ai_hidden_beats_manual_like(self):
+        """An AI hidden match still outranks a liked title."""
+        title_like = MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="WorkOS",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        self.assertEqual(self.score(-1, titles=[title_like]), -1)
+
+    def test_score_story_super_dislike_beats_ai_focus(self):
+        """UserSubscription.score_story() builds the API score field with the same rule."""
+        scores = {"author": -2, "tags": 0, "title": 0, "feed": 1, "prompt": 1}
+        self.assertEqual(UserSubscription.score_story(scores), -2)
+
+    def test_score_story_ai_focus_beats_plain_dislike(self):
+        scores = {"author": -1, "tags": 0, "title": 0, "feed": 1, "prompt": 1}
+        self.assertEqual(UserSubscription.score_story(scores), 1)
+
+
 class Test_ScopedClassifiersParity(TransactionTestCase):
     """ScopedClassifiers is the fast path for per-story scoring — pre-buckets
     classifiers by (scope, feed_id) once so the inner loop only walks classifiers

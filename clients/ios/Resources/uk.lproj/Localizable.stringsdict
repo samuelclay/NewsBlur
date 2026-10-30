@@ -82,6 +82,26 @@
 			<string>%@ коментарів</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ фільтрів вмісту</string>
+			<key>many</key>
+			<string>%@ фільтрів вмісту</string>
+			<key>one</key>
+			<string>%@ фільтр вмісту</string>
+			<key>other</key>
+			<string>%@ фільтрів вмісту</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -262,6 +282,26 @@
 			<string>Сьогодні залишилося %@ безкоштовних попередніх переглядів статей</string>
 		</dict>
 	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ фільтрів зображень</string>
+			<key>many</key>
+			<string>%@ фільтрів зображень</string>
+			<key>one</key>
+			<string>%@ фільтр зображень</string>
+			<key>other</key>
+			<string>%@ фільтрів зображень</string>
+		</dict>
+	</dict>
 	<key>%@ match</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -440,6 +480,26 @@
 			<string>Залишилася %@ стаття</string>
 			<key>other</key>
 			<string>Залишилося %@ статей</string>
+		</dict>
+	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ статті/міс.</string>
+			<key>many</key>
+			<string>%@ статей на місяць</string>
+			<key>one</key>
+			<string>%@ стаття/міс.</string>
+			<key>other</key>
+			<string>%@ статей/міс.</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -960,6 +1020,26 @@
 			<string>Ви підписані на %@ сайт</string>
 			<key>other</key>
 			<string>Ви підписані на %@ сайтів</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>✓ %2$@ із %1$@ зображень відповідають цьому фільтру</string>
+			<key>many</key>
+			<string>✓ %2$@ із %1$@ зображень відповідають цьому фільтру</string>
+			<key>one</key>
+			<string>✓ %2$@ з %1$@ зображення відповідає цьому фільтру</string>
+			<key>other</key>
+			<string>✓ %2$@ із %1$@ зображень відповідають цьому фільтру</string>
 		</dict>
 	</dict>
 </dict>

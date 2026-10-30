@@ -1512,6 +1512,9 @@ msgstr "लेख सहेजा नहीं जा सका, नहीं �
 msgid "Could not unsave story, not found"
 msgstr "लेख को सहेजे गए लेखों से हटाया नहीं जा सका; लेख नहीं मिला"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripe से संपर्क नहीं हो सका। कृपया फिर से कोशिश करें।"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "कवरेज अवधि: %(start)s &ndash; %(end)s"
@@ -4161,6 +4164,9 @@ msgstr "कोई प्रशिक्षण प्रणाली नहीं
 msgid "No uncategorized archives found"
 msgstr "कोई अवर्गीकृत संग्रह नहीं मिला"
 
+msgid "No usage billing set up."
+msgstr "उपयोग-आधारित बिलिंग सेट अप नहीं है।"
+
 msgid "No user has that email address."
 msgstr "इस ईमेल पते से कोई उपयोगकर्ता जुड़ा नहीं है।"
 
@@ -4399,6 +4405,9 @@ msgstr "कृपया कीवर्ड खोज क्वेरी दर�
 
 msgid "Please enter in an email address."
 msgstr "कृपया ईमेल पता दर्ज करें।"
+
+msgid "Please log in to NewsBlur again."
+msgstr "कृपया NewsBlur में फिर से लॉग इन करें।"
 
 msgid "Please login to continue."
 msgstr "जारी रखने के लिए कृपया लॉग इन करें।"
@@ -6333,6 +6342,9 @@ msgstr "उपयोग बिलिंग सक्षम नहीं है"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "AI क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग आवश्यक है"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "उपयोग-आधारित बिलिंग अभी उपलब्ध नहीं है।"
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

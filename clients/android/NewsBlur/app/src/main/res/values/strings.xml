@@ -432,6 +432,7 @@ people together to talk about the world.</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
     <string name="premium_discover_related">Discover related stories and sites</string>
+    <string name="premium_natural_language_classifiers">Natural language text and image classifiers</string>
     <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
 
     <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
@@ -454,7 +455,6 @@ people together to talk about the world.</string>
     <string name="pro_all_feeds_fetched">All feeds fetched every 5-15 minutes</string>
     <string name="pro_regex_train">Train stories with regular expressions</string>
     <string name="pro_priority_support">Priority support</string>
-    <string name="pro_natural_language_filters">Natural language filters</string>
     <string name="pro_natural_language_search">Natural language search</string>
 
     <string name="settings_cat_offline">Offline reading</string>
@@ -799,6 +799,8 @@ people together to talk about the world.</string>
     <string name="intel_feed_header">Everything by publisher</string>
     <string name="intel_super_dislike">Super dislike</string>
     <string name="explainer_super_dislike">Super Dislike</string>
+    <!-- include_intel_explainer.xml: the AI prompt classifier level, between Super Dislike and Like. -->
+    <string name="explainer_ai_filter">AI Filter</string>
     <string name="explainer_like">Like</string>
     <string name="explainer_dislike">Dislike</string>
     <string name="explainer_beats">beats</string>
@@ -806,6 +808,75 @@ people together to talk about the world.</string>
     <string name="explainer_example1_result">Story shows in Focus view</string>
     <string name="explainer_example2_header">A single super dislike overrides everything</string>
     <string name="explainer_example2_result">Story is always hidden</string>
+    <string name="explainer_example3_header">An AI filter overrides likes and dislikes, but not a super dislike</string>
+    <!-- IntelTrainerSections.kt: the trainer's question, from clients/ios/Classes/TrainerView.swift. %1$s is
+         trainer_question_like and %2$s is trainer_question_dislike, colored green and red. -->
+    <string name="trainer_question_story">What do you 👍 %1$s and 👎 %2$s about this story?</string>
+    <string name="trainer_question_site">What do you 👍 %1$s and 👎 %2$s about this site?</string>
+    <string name="trainer_question_like">like</string>
+    <string name="trainer_question_dislike">dislike</string>
+    <!-- IntelTrainerSections.kt: section headers in the story trainer and the site trainer. -->
+    <string name="trainer_section_story_title">Story Title</string>
+    <string name="trainer_section_titles">Titles &amp; Phrases</string>
+    <string name="trainer_section_story_author">Story Author</string>
+    <string name="trainer_section_authors">Authors</string>
+    <string name="trainer_section_story_tags">Story Categories &amp; Tags</string>
+    <string name="trainer_section_tags">Categories &amp; Tags</string>
+    <string name="trainer_section_story_text">Story Text</string>
+    <string name="trainer_section_texts">Text &amp; Phrases</string>
+    <string name="trainer_section_story_url">Story URL</string>
+    <string name="trainer_section_urls">URLs</string>
+    <string name="trainer_section_publisher">Everything by This Publisher</string>
+    <string name="trainer_choose_title_words">Choose one or more words from the title:</string>
+    <!-- TrainerCapsuleView.kt: the classifier type before a capsule's value, as in "Author: John Gruber". -->
+    <string name="trainer_capsule_label">%1$s:</string>
+    <string name="trainer_label_title">Title</string>
+    <string name="trainer_label_author">Author</string>
+    <string name="trainer_label_tag">Tag</string>
+    <string name="trainer_label_text">Text</string>
+    <string name="trainer_label_url">URL</string>
+    <string name="trainer_label_site">Site</string>
+    <string name="trainer_label_title_regex">Title Regex</string>
+    <string name="trainer_label_author_regex">Author Regex</string>
+    <string name="trainer_label_text_regex">Text Regex</string>
+    <string name="trainer_label_url_regex">URL Regex</string>
+    <!-- TrainerPhraseInput.kt: the phrase box under each trainer section, from TrainerRegexInput.swift. -->
+    <string name="trainer_exact_phrase">Exact phrase</string>
+    <string name="trainer_regex">Regex</string>
+    <string name="trainer_title_phrase_hint">Enter title phrase...</string>
+    <string name="trainer_author_phrase_hint">Enter author phrase...</string>
+    <string name="trainer_text_phrase_hint">Enter text phrase...</string>
+    <string name="trainer_url_phrase_hint">Enter URL phrase...</string>
+    <!-- TrainerPhraseInput.kt: %1$s is an example regex such as \bbreaking\b. -->
+    <string name="trainer_regex_example">e.g. %1$s</string>
+    <string name="trainer_clear_phrase">Clear phrase</string>
+    <string name="trainer_regex_valid">✓ Valid</string>
+    <string name="trainer_regex_matches_story">✓ Matches story</string>
+    <string name="trainer_regex_no_match">No match in story</string>
+    <!-- TrainerPhraseInput.kt: %1$s is the regex engine's error message. -->
+    <string name="trainer_regex_invalid">Invalid: %1$s</string>
+    <string name="trainer_regex_invalid_pattern">Invalid pattern</string>
+    <string name="trainer_regex_requires_pro">Regex requires Premium Pro</string>
+    <string name="trainer_scope_no_folder">This site isn\'t in a folder</string>
+    <!-- TrainerPhraseInput.kt: the regex help, from TrainerRegexInput.swift regexHelpContent. -->
+    <string name="trainer_regex_help">Regex help</string>
+    <string name="trainer_regex_help_title">Regex Patterns</string>
+    <string name="trainer_regex_help_footer">All patterns are case-insensitive by default</string>
+    <string name="trainer_regex_help_word_matching">Word Matching</string>
+    <string name="trainer_regex_help_whole_word">Whole word</string>
+    <string name="trainer_regex_help_either_word">Either word</string>
+    <string name="trainer_regex_help_position">Position</string>
+    <string name="trainer_regex_help_starts_with">Starts with</string>
+    <string name="trainer_regex_help_ends_with">Ends with</string>
+    <string name="trainer_regex_help_words_in_order">Words in order</string>
+    <string name="trainer_regex_help_patterns">Patterns</string>
+    <string name="trainer_regex_help_numbers">Numbers</string>
+    <string name="trainer_regex_help_dollar_amounts">Dollar amounts</string>
+    <string name="trainer_regex_help_hashtags">Hashtags</string>
+    <string name="trainer_regex_help_advanced">Advanced</string>
+    <string name="trainer_regex_help_exclude_word">Exclude word</string>
+    <string name="trainer_regex_help_four_digits">Exactly 4 digits</string>
+    <string name="trainer_regex_help_acronyms">Acronyms</string>
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>
@@ -1392,6 +1463,113 @@ people together to talk about the world.</string>
     <string name="story_list_exit_fullscreen">Show tablet columns</string>
     <string name="resize_feed_list">Resize feed list</string>
     <string name="resize_story_list">Resize story titles</string>
+    <!-- ReadingItemFragment.kt: the AI filter chips in the story header, as media/js/newsblur/views/story_detail_view.js shows them. -->
+    <string name="ai_filter_content_label">Content Filter</string>
+    <string name="ai_filter_image_label">Image Filter</string>
+    <!-- ReadingItemFragment.kt: %1$s is Content Filter or Image Filter, %2$s is the reader's own prompt. -->
+    <string name="ai_filter_chip">%1$s: %2$s</string>
+    <!-- AiClassifierSections.kt: the trainer's natural language classifier sections, from media/js/newsblur/reader/reader_classifier.js. -->
+    <string name="ai_text_classifier_header">Natural Language Text Classifier</string>
+    <string name="ai_image_classifier_header">Natural Language Image Classifier</string>
+    <string name="ai_text_classifier_explainer">Describe a topic and AI will score each story against your prompt to focus or hide matches.</string>
+    <string name="ai_image_classifier_explainer">Describe what to look for and AI will analyze each story’s images against your prompt.</string>
+    <string name="ai_text_prompt_hint">e.g., “AI and machine learning” or “local politics”</string>
+    <string name="ai_image_prompt_hint">e.g., “food photography” or “charts and graphs”</string>
+    <string name="ai_prompt_placeholder">Describe what to focus or hide</string>
+    <string name="ai_prompt_type_content">Content</string>
+    <string name="ai_prompt_type_image">Image</string>
+    <string name="ai_prompt_focus">Focus stories that match</string>
+    <string name="ai_prompt_hide">Hide stories that match</string>
+    <string name="ai_prompt_remove">Remove this filter</string>
+    <string name="ai_test_story">Test on this story</string>
+    <string name="ai_testing_story">Testing on this story…</string>
+    <string name="ai_test_image">Test on this image</string>
+    <string name="ai_test_images">Test on these images</string>
+    <string name="ai_analyzing_images">Analyzing images…</string>
+    <string name="ai_story_matches">✓ Story matches this filter</string>
+    <string name="ai_story_no_match">✗ Story does not match this filter</string>
+    <string name="ai_image_matches">✓ Image matches this filter</string>
+    <string name="ai_image_no_match">✗ Image does not match this filter</string>
+    <string name="ai_images_no_match">✗ No images match this filter</string>
+    <!-- AiClassifierSections.kt: %1$d images out of %2$d matched; the plural follows the total. -->
+    <plurals name="ai_images_match">
+        <item quantity="one">✓ %1$d of %2$d image matches this filter</item>
+        <item quantity="other">✓ %1$d of %2$d images match this filter</item>
+    </plurals>
+    <string name="ai_test_failed">Test failed</string>
+    <string name="ai_image_label_match">Match</string>
+    <string name="ai_image_label_no_match">No match</string>
+    <!-- AiClassifierCost.kt: %1$s is a dollar amount. -->
+    <string name="ai_cost_monthly">%1$s/mo</string>
+    <string name="ai_cost_daily">%1$s/day</string>
+    <plurals name="ai_cost_stories_per_month">
+        <item quantity="one">%1$s story/mo</item>
+        <item quantity="other">%1$s stories/mo</item>
+    </plurals>
+    <plurals name="ai_cost_content_filters">
+        <item quantity="one">%1$d content filter</item>
+        <item quantity="other">%1$d content filters</item>
+    </plurals>
+    <plurals name="ai_cost_image_filters">
+        <item quantity="one">%1$d image filter</item>
+        <item quantity="other">%1$d image filters</item>
+    </plurals>
+    <string name="ai_cost_per_story">%1$s/story</string>
+    <!-- AiClassifierCost.kt: %1$d is a number of filters and %2$s a story count such as 120 stories/mo. -->
+    <string name="ai_cost_scope_feed">%1$d on this site (%2$s)</string>
+    <string name="ai_cost_scope_folder">%1$d on folder (%2$s)</string>
+    <string name="ai_cost_scope_global">%1$d on all sites (%2$s)</string>
+    <string name="ai_billing_manage_limits">Manage billing and limits</string>
+    <string name="ai_billing_set_up">Set up billing</string>
+    <!-- AiClassifierSections.kt: %1$s is the ai_billing_banner_link text, shown as a link. -->
+    <string name="ai_billing_banner">AI filters are saved but won’t run until you %1$s.</string>
+    <string name="ai_billing_banner_link">set up usage-based billing</string>
+    <string name="ai_limit_reached_title">Monthly spending limit reached.</string>
+    <string name="ai_limit_reached_body">Natural language classifiers are paused until next billing cycle.</string>
+    <string name="ai_limit_reached_link">Increase or remove your limit</string>
+    <string name="ai_scope_feed">This site only</string>
+    <string name="ai_scope_folder">All sites in folder</string>
+    <string name="ai_scope_global">All sites</string>
+    <!-- AiClassifierSections.kt: %1$s is the folder's name. -->
+    <string name="ai_scope_folder_named">All sites in %1$s</string>
+    <string name="ai_scope_requires_archive">Requires Premium Archive</string>
+    <!-- UsageBillingActivity.kt: natural language classifier billing, from media/js/newsblur/reader/reader_account.js. -->
+    <string name="usage_billing_title">Natural language classifier billing</string>
+    <string name="usage_billing_status_enabled">Usage-based billing is enabled for natural language classifiers.</string>
+    <string name="usage_billing_status_self_hosted">Natural language classifiers are using your instance’s API keys.</string>
+    <string name="usage_billing_status_off">Set up usage-based billing to use natural language content and image filters.</string>
+    <string name="usage_billing_manage">Manage billing on Stripe</string>
+    <!-- UsageBillingActivity.kt: the current billing cycle, such as Oct 1 – Oct 31, 2026. -->
+    <string name="usage_billing_period">%1$s – %2$s</string>
+    <!-- UsageBillingActivity.kt: spending so far out of the monthly limit, such as $4.50 / $10.00. -->
+    <string name="usage_billing_limit_progress">%1$s / %2$s</string>
+    <string name="usage_billing_limit_reached_note">Spending limit reached. Classifiers paused until next cycle.</string>
+    <string name="usage_billing_upcoming_charge">Upcoming charge: %1$s</string>
+    <string name="usage_billing_limit_label">Monthly spending limit</string>
+    <string name="usage_billing_limit_hint">No limit</string>
+    <string name="usage_billing_limit_per_month">/month</string>
+    <string name="usage_billing_limit_help">Optional. Classifiers pause when the limit is reached and resume next billing cycle.</string>
+    <string name="usage_billing_limit_save">Save limit</string>
+    <string name="usage_billing_limit_saved">Spending limit saved</string>
+    <string name="usage_billing_limit_cleared">Spending limit removed</string>
+    <string name="usage_billing_limit_failed">Couldn’t save the spending limit. Please try again.</string>
+    <!-- UsageBillingActivity.kt: %1$s is an example amount, such as 10.50 or 10,50, in the language's decimal separator. -->
+    <string name="usage_billing_limit_invalid">Enter the limit in dollars, such as %1$s.</string>
+    <string name="usage_billing_history_title">Usage billing history</string>
+    <string name="usage_billing_none">No usage billing set up.</string>
+    <string name="usage_billing_no_invoices">No usage billing invoices yet.</string>
+    <string name="usage_billing_upcoming">(upcoming)</string>
+    <string name="usage_billing_invoice">Invoice</string>
+    <!-- UsageBillingActivity.kt: how many classifications a line item covers, such as ×1,200. -->
+    <string name="usage_billing_quantity">×%1$s</string>
+    <string name="usage_billing_load_failed">Couldn’t load usage billing. Pull down to try again.</string>
+    <string name="usage_billing_stripe_failed">Couldn’t reach Stripe. Please try again.</string>
+    <string name="usage_billing_already_active">Usage-based billing is already set up.</string>
+    <string name="usage_billing_activating">Activating usage-based billing. This takes a few seconds once Stripe confirms your payment details.</string>
+    <string name="usage_billing_activating_slow">Stripe is still confirming your billing. Pull down to check again in a moment.</string>
+    <string name="usage_billing_setup_complete">Usage-based billing is set up. Your AI filters will start running on new stories.</string>
+    <string name="usage_billing_no_browser">Install a web browser to set up billing.</string>
+    <string name="usage_billing_provider" translatable="false">stripe</string>
 
     <!-- strings.xml: Listen, the read-aloud player (ListenManager.kt and the listen package). -->
     <string name="listen_story_button">Listen</string>

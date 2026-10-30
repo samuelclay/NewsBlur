@@ -2031,6 +2031,11 @@ static BOOL NBBoolPreferenceValue(id value) {
             [self.appDelegate showPremiumDialog];
         }];
     }
+
+    // FeedsObjCViewController.m offers natural language classifier billing beside the subscription (UsageBillingView.swift).
+    [viewController addFeedListTitle:[NBLocalization text:@"Usage Billing"] iconName:@"icons8-prompt-100" selectionShouldDismiss:YES handler:^{
+        [self.appDelegate showUsageBillingDialog];
+    }];
     
     [viewController addFeedListTitle:[NBLocalization text:@"Support Forum"] iconName:@"feed-menu-feedback" selectionShouldDismiss:YES handler:^{
         NSURL *url = [NSURL URLWithString:@"https://forum.newsblur.com"];

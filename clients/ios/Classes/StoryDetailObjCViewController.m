@@ -1744,6 +1744,9 @@
         }
     }
 
+    // StoryDetailObjCViewController.m shows matched natural language prompts like the web's story header (AIClassifiers.swift).
+    NSString *storyAIClassifiers = [StoryAIClassifierPills headerHTMLFor:[self.activeStory objectForKey:@"prompt_classifiers"]];
+
     NSString *storyToggleChanges = [self.activeStory[@"has_modifications"] boolValue] ? [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/togglechanges\" "
                                                                            "class=\"NB-story-toggle-changes\" id=\"NB-story-toggle-changes\">%@</a><span class=\"NB-middot\">&middot;</span>", [(self.activeStory[@"story_changes"] != nil ? [NBLocalization text:@"Hide Changes"] : [NBLocalization text:@"Show Changes"]) stringByEncodingHTMLEntities]] : @"";
     
@@ -1763,6 +1766,7 @@
                              "%@"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              [self contentDirectionAttribute],
                              storyUnread,
@@ -1773,6 +1777,7 @@
                              storyAuthor,
                              storyTags,
                              storyUrlMatch,
+                             storyAIClassifiers,
                              storyStarred,
                              storyUserTags];
     return storyHeader;
@@ -2876,6 +2881,11 @@
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
                                width:[[urlComponents objectAtIndex:4] intValue]
                               height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"train"]) {
+            // StoryDetailObjCViewController.m still opens the trainer if a header pill's tap arrives without coordinates.
+            [self openTrainingDialog:0 yCoordinate:0 width:0 height:0];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"save"]) {

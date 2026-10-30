@@ -1033,6 +1033,14 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [self.premiumViewController.view setNeedsLayout];
 }
 
+// NewsBlurAppDelegate.m opens natural language classifier billing (UsageBillingView.swift) from the settings menu,
+// the Premium screen and the trainer's billing banners, replacing whatever sheet or popover is showing.
+- (void)showUsageBillingDialog {
+    UIViewController *usageBilling = [UsageBillingViewController makePresentable];
+    [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
+    [self.splitViewController presentViewController:usageBilling animated:YES completion:nil];
+}
+
 - (void)updateSplitBehavior:(BOOL)refresh {
     if (self.detailViewController.isDuoFullscreenReader) {
         [self.detailViewController updateDuoFullscreenSplitBehavior];
@@ -4533,14 +4541,16 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     int urlRegex = [[intelligence objectForKey:@"url_regex"] intValue];
     int prompt = [[intelligence objectForKey:@"prompt"] intValue];
 
-    // AI prompt classifier takes absolute priority
-    if (prompt != 0) return prompt;
-
     int score_max = MAX(title, MAX(titleRegex, MAX(author, MAX(authorRegex, MAX(tags, MAX(text, MAX(textRegex, MAX(url, urlRegex))))))));
     int score_min = MIN(title, MIN(titleRegex, MIN(author, MIN(authorRegex, MIN(tags, MIN(text, MIN(textRegex, MIN(url, urlRegex))))))));
 
-    if (score_min <= -2) score = score_min;
-    else if (score_max > 0)      score = score_max;
+    // A super dislike on any manual classifier always wins, even over an AI prompt match
+    if (score_min <= -2) return score_min;
+
+    // Otherwise an AI prompt classifier match outranks the other manual classifiers
+    if (prompt != 0) return prompt;
+
+    if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
 
     if (score == 0) score = [[intelligence objectForKey:@"feed"] intValue];
@@ -6017,6 +6027,45 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
     }
 
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+// NewsBlurAppDelegate.m saves a natural language prompt from TrainerAIPromptSection.swift. A score of 0 removes it,
+// but the trainer keeps showing it as neutral until the classifiers reload so it can be turned back on.
+- (void)savePromptClassifier:(NSString *)prompt feedId:(NSString *)feedId score:(NSInteger)score includeImages:(BOOL)includeImages scope:(NSString *)scope folderName:(NSString *)folderName {
+    if (!prompt.length || !feedId.length) return;
+    [self.trainerViewController restoreRetainedStoryClassifiers];
+    NSString *classifierKey = includeImages ? @"image_prompts" : @"prompts";
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *prompts = [[feedClassifiers objectForKey:classifierKey] mutableCopy];
+    if (!prompts) prompts = [NSMutableDictionary dictionary];
+    NSInteger previousScore = [[prompts objectForKey:prompt] integerValue];
+    NSDictionary *params = [PromptClassifierSave parametersWithPrompt:prompt
+                                                               feedId:feedId
+                                                                score:score
+                                                        previousScore:previousScore
+                                                        includeImages:includeImages
+                                                                scope:scope
+                                                           folderName:folderName];
+    if (!params) return;
+
+    [prompts setObject:[NSNumber numberWithInteger:score] forKey:prompt];
+    [feedClassifiers setObject:prompts forKey:classifierKey];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.trainerViewController captureRetainedStoryContext];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {

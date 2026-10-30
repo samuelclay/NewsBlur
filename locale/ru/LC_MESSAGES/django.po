@@ -1547,6 +1547,9 @@ msgstr "Не удалось сохранить статью: она не най�
 msgid "Could not unsave story, not found"
 msgstr "Не удалось удалить статью из сохранённых: она не найдена"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Не удалось связаться со Stripe. Попробуйте ещё раз."
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "Период действия: %(start)s &ndash; %(end)s"
@@ -4258,6 +4261,9 @@ msgstr "Без системы обучения"
 msgid "No uncategorized archives found"
 msgstr "Архивов без категории не найдено"
 
+msgid "No usage billing set up."
+msgstr "Оплата по факту использования не настроена."
+
 msgid "No user has that email address."
 msgstr "Нет пользователя с таким адресом электронной почты."
 
@@ -4498,6 +4504,9 @@ msgstr "Введите поисковый запрос по ключевым с�
 
 msgid "Please enter in an email address."
 msgstr "Введите адрес электронной почты."
+
+msgid "Please log in to NewsBlur again."
+msgstr "Войдите в NewsBlur ещё раз."
 
 msgid "Please login to continue."
 msgstr "Войдите, чтобы продолжить."
@@ -6452,6 +6461,9 @@ msgstr "Оплата по использованию не включена"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "Для классификаторов ИИ требуется оплата по факту использования"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "Оплата по факту использования сейчас недоступна."
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

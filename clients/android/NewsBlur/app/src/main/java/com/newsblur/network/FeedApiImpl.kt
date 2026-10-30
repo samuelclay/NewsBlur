@@ -4,7 +4,9 @@ import android.content.ContentValues
 import android.text.TextUtils
 import com.google.gson.Gson
 import com.newsblur.domain.Classifier
+import com.newsblur.domain.ClassifierScope
 import com.newsblur.domain.FeedResult
+import com.newsblur.domain.ScopedClassifierRequest
 import com.newsblur.domain.ValueMultimap
 import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.network.domain.DiscoverFeedsResponse
@@ -123,7 +125,40 @@ class FeedApiImpl(
         values.put(APIConstants.PARAMETER_FEEDID, feedId)
         val urlString = APIConstants.buildUrl(APIConstants.PATH_CLASSIFIER_SAVE)
         val response: APIResponse = networkClient.post(urlString, values)
-        return response.getResponse(gson, NewsBlurResponse::class.java)
+        val result = response.getResponse(gson, NewsBlurResponse::class.java)
+        // A failed feed save sends nothing else, so no scoped change goes out on its own.
+        if (result == null || result.isError) return result
+
+        // apps/analyzer/views.py save_classifier takes one scope per request, so folder and global
+        // classifier changes follow the feed-scoped save as their own requests. Every one is tried
+        // even when another fails. Each save sets a classifier to a fixed state, so when
+        // SyncService.kt retries the whole action after a network error, the saves that already
+        // landed repeat without changing anything.
+        val failures = mutableListOf<NewsBlurResponse?>()
+        val savedScopes = mutableSetOf(ClassifierScope.FEED_SCOPE)
+        for (scoped in classifier.getScopedRequests()) {
+            val scopedResult = postScoped(urlString, feedId, scoped)
+            if (scopedResult == null || scopedResult.isError) failures.add(scopedResult) else savedScopes.add(scoped.scope)
+        }
+        for (removal in classifier.getMoveRemovalRequests(savedScopes)) {
+            val removalResult = postScoped(urlString, feedId, removal)
+            if (removalResult == null || removalResult.isError) failures.add(removalResult)
+        }
+        if (failures.isEmpty()) return result
+        // A network error outranks a server message, since SyncService.kt keeps the action queued
+        // for a retry only for the former.
+        return failures.firstOrNull { it?.isProtocolError == true } ?: failures.first()
+    }
+
+    private suspend fun postScoped(
+        urlString: String,
+        feedId: String?,
+        scoped: ScopedClassifierRequest,
+    ): NewsBlurResponse? {
+        scoped.values.put(APIConstants.PARAMETER_FEEDID, feedId)
+        scoped.values.put(APIConstants.PARAMETER_SCOPE, scoped.scope.scope)
+        scoped.values.put(APIConstants.PARAMETER_FOLDER_NAME, scoped.scope.folderName)
+        return networkClient.post(urlString, scoped.values).getResponse(gson, NewsBlurResponse::class.java)
     }
 
     override suspend fun addFeed(

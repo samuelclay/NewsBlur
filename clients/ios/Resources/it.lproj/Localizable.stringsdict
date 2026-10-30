@@ -74,6 +74,24 @@
 			<string>%@ commenti</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtri dei contenuti</string>
+			<key>one</key>
+			<string>%@ filtro dei contenuti</string>
+			<key>other</key>
+			<string>%@ filtri dei contenuti</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -236,6 +254,24 @@
 			<string>Oggi ti restano %@ anteprime gratuite degli articoli</string>
 		</dict>
 	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ filtri immagine</string>
+			<key>one</key>
+			<string>%@ filtro immagini</string>
+			<key>other</key>
+			<string>%@ filtri immagini</string>
+		</dict>
+	</dict>
 	<key>%@ match</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -396,6 +432,24 @@
 			<string>Resta %@ articolo</string>
 			<key>other</key>
 			<string>Restano %@ articoli</string>
+		</dict>
+	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>%@ articoli/mese</string>
+			<key>one</key>
+			<string>%@ articolo/mese</string>
+			<key>other</key>
+			<string>%@ articoli/mese</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -864,6 +918,24 @@
 			<string>Sei iscritto a %@ sito</string>
 			<key>other</key>
 			<string>Sei iscritto a %@ siti</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>many</key>
+			<string>✓ %2$@ immagini su %1$@ corrispondono a questo filtro</string>
+			<key>one</key>
+			<string>✓ %2$@ di %1$@ immagine corrisponde a questo filtro</string>
+			<key>other</key>
+			<string>✓ %2$@ di %1$@ immagini corrispondono a questo filtro</string>
 		</dict>
 	</dict>
 </dict>

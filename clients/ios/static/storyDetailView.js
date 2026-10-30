@@ -115,6 +115,14 @@ $('.NB-train-button a').live('click', function () {
     return false;
 });
 
+// storyDetailView.js sends a tapped AI classifier header pill's position so StoryDetailObjCViewController.m anchors the trainer to it.
+$('a.NB-story-ai-classifier').live('click', function () {
+    var offset = $(this).offset();
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
 $('.NB-user-tag').live('click', function () {
     var offset = $(this).offset();
     console.log(['Offset', offset]);
@@ -299,6 +307,10 @@ function attachFastClick() {
     var tags = document.getElementsByClassName("NB-story-tag");
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
                                                 new NoClickDelay(tag);
+                                                });
+    var aiClassifiers = document.getElementsByClassName("NB-story-ai-classifier");
+    Array.prototype.slice.call(aiClassifiers, 0).forEach(function(pill) {
+                                                new NoClickDelay(pill);
                                                 });
     var userTags = document.getElementsByClassName("NB-user-tag");
     Array.prototype.slice.call(userTags, 0).forEach(function(tag) {

@@ -13,6 +13,9 @@
 "%1$@ of %2$@ of listening left this month" = "%1$@ van %2$@ luisterminuten resterend deze maand";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
+"%1$@ on all sites (%2$@)" = "%1$@ op alle sites (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ in map (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ op deze site (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ heeft %2$@ opnieuw gedeeld.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ heeft %2$@ opnieuw gedeeld:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ heeft gereageerd op %2$@: \n \n%3$@";
@@ -20,11 +23,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ heeft gereageerd op jouw reactie op %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ heeft %2$@ gedeeld.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ heeft %2$@ gedeeld:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ widgetsites";
 "%@ ago" = "%@ geleden";
 "%@ categories to choose from" = "%@ categorieën om uit te kiezen";
 "%@ comments" = "%@ reacties";
+"%@ content filters" = "%@ inhoudsfilters";
 "%@ could not be added." = "%@ kon niet worden toegevoegd.";
 "%@ days" = "%@ dagen";
 "%@ feed" = "%@-feed";
@@ -36,6 +41,7 @@
 "%@ focused stories" = "%@ focusartikelen";
 "%@ folder" = "map %@";
 "%@ free story previews left today" = "Vandaag nog %@ gratis artikelvoorbeelden";
+"%@ image filters" = "%@ afbeeldingsfilters";
 "%@ is now following you." = "%@ volgt je nu.";
 "%@ left in this preview" = "%@ over in deze preview";
 "%@ match" = "%@ overeenkomst";
@@ -48,17 +54,23 @@
 "%@ sources" = "%@ bronnen";
 "%@ stories" = "%@ artikelen";
 "%@ stories left" = "Nog %@ artikelen";
+"%@ stories/mo" = "%@ artikelen/maand";
 "%@ stories/month" = "%@ artikelen/maand";
 "%@ subscribers" = "%@ abonnees";
 "%@ unread stories" = "%@ ongelezen artikelen";
 "%@ voice previews left" = "%@ stemvoorbeelden over";
+"%@/story" = "%@/artikel";
 "%@×" = "%@×";
 "%ldd ago" = "%ld d geleden";
 "%ldh ago" = "%ld uur geleden";
 "%ldm ago" = "%ld min geleden";
 "%ldw ago" = "%ld w geleden";
+"(upcoming)" = "(aankomend)";
 "+ %@ more sites" = "+ %@ andere sites";
 "..." = "...";
+"/day" = "/dag";
+"/mo" = "/mnd";
+"/month" = "/maand";
 "1 Widget Site" = "1 widgetsite";
 "1,000 stories" = "1.000 artikelen";
 "10 stories" = "10 artikelen";
@@ -81,6 +93,8 @@
 "< 90/month" = "< 90/maand";
 "A clearer, closer sound" = "Een helderder, voller geluid";
 "A personal news reader bringing\npeople together to talk about the world." = "Een persoonlijke nieuwslezer die mensen samenbrengt\nom over de wereld te praten.";
+"AI Filter" = "AI-filter";
+"AI filters are saved but won't run until you %@." = "AI-filters zijn opgeslagen, maar worden pas uitgevoerd nadat je %@.";
 "AI finds the stories" = "AI vindt de artikelen";
 "ALL" = "ALLES";
 "ALL NOTIFICATIONS" = "ALLE MELDINGEN";
@@ -153,7 +167,9 @@
 "Already have an account? Sign in" = "Heb je al een account? Log in";
 "Already have feeds?" = "Heb je al feeds?";
 "Also published by %@ sites" = "Ook gepubliceerd op %@ sites";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Een AI-filter gaat voor op Vind ik leuk en Vind ik niet leuk, maar niet op Vind ik helemaal niet leuk";
 "Analyze" = "Analyseren";
+"Analyzing images..." = "Afbeeldingen analyseren...";
 "App Badge" = "Appbadge";
 "App Icon" = "App-pictogram";
 "Apply training across a folder" = "Training toepassen op een map";
@@ -237,6 +253,8 @@
 "Connect an existing account" = "Een bestaand account koppelen";
 "Connect your account" = "Verbind je account";
 "Connecting" = "Verbinden";
+"Content" = "Inhoud";
+"Content Filter" = "Inhoudsfilter";
 "Continue" = "Doorgaan";
 "Control how much is included and how it is written" = "Bepaal hoeveel er wordt opgenomen en hoe het wordt geschreven";
 "Copied" = "Gekopieerd";
@@ -244,7 +262,10 @@
 "Coral Rose" = "Koraalroze";
 "Could not completely clear the cache. Please try again." = "De cache kon niet volledig worden gewist. Probeer het opnieuw.";
 "Could not save your language. Please try again." = "Je taal kon niet worden opgeslagen. Probeer het opnieuw.";
+"Couldn't load usage billing history." = "Kan de factureringsgeschiedenis niet laden.";
+"Couldn't open billing. Please try again." = "Facturering openen is niet gelukt. Probeer het opnieuw.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Kan NewsBlur niet bereiken. Controleer je verbinding en probeer het opnieuw.";
+"Couldn't save your spending limit. Please try again." = "Je bestedingslimiet kan niet worden opgeslagen. Probeer het opnieuw.";
 "Couldn’t load the full image. You can try opening it in your browser." = "De volledige afbeelding kon niet worden geladen. Je kunt proberen deze in je browser te openen.";
 "Counting is difficult..." = "Tellen is lastig...";
 "Create a feed from any web page" = "Maak een feed van elke webpagina";
@@ -288,6 +309,9 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Als je je account verwijdert, worden je feeds, opgeslagen artikelen en accountgegevens definitief verwijderd. Dit kan niet ongedaan worden gemaakt.";
 "Deleting..." = "Bezig met verwijderen...";
 "Delivery" = "Bezorging";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Beschrijf een onderwerp en AI beoordeelt elk artikel op basis van je prompt om overeenkomsten uit te lichten of te verbergen.";
+"Describe what to focus or hide" = "Beschrijf wat je wilt uitlichten of verbergen";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Beschrijf waar je naar wilt zoeken; AI analyseert de afbeeldingen bij elk artikel aan de hand van je prompt.";
 "Discover" = "Ontdekken";
 "Discover more to read" = "Ontdek meer om te lezen";
 "Discover related sites" = "Gerelateerde sites ontdekken";
@@ -441,6 +465,8 @@
 "How much emotion" = "Hoeveel emotie";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Als geen van de opties overeenkomt, typ dan een artikeltitel die je op de pagina ziet; dan analyseren we de pagina opnieuw.";
 "Ignore system theme, use screen brightness instead" = "Negeer het systeemthema en gebruik de schermhelderheid";
+"Image" = "Afbeelding";
+"Image Filter" = "Afbeeldingsfilter";
 "Image Preview" = "Voorbeeld van afbeelding";
 "Image actions" = "Afbeeldingsacties";
 "Images from %@ days ago" = "Afbeeldingen van %@ dagen geleden";
@@ -460,6 +486,7 @@
 "Include already-read stories" = "Ook al gelezen artikelen weergeven";
 "Include in bundle" = "Opnemen in bundel";
 "Included in bundle" = "Inbegrepen in bundel";
+"Increase or remove your limit" = "Verhoog of verwijder je limiet";
 "Infrequent Site Stories" = "Artikelen van weinig actieve sites";
 "Infrequent Stories" = "Artikelen van weinig actieve sites";
 "Infrequent stories per month" = "Grens voor weinig actieve sites";
@@ -469,6 +496,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Schakel thema's automatisch op basis van de helderheid van je scherm, in plaats van de donkere of lichte systeemmodus te volgen. Handig om thema's aan te passen aan het omgevingslicht.";
 "Interactions" = "Interacties";
 "Invalid: %@" = "Ongeldig: %@";
+"Invoice" = "Factuur";
 "Keeps the dark icon no matter how your device is set." = "Behoudt het donkere pictogram, ongeacht de instelling van je apparaat.";
 "Keeps the light icon no matter how your device is set." = "Houdt het lichte pictogram aan, ongeacht de instelling van je apparaat.";
 "Keyboard Shortcuts" = "Sneltoetsen";
@@ -528,6 +556,8 @@
 "Manage" = "Beheren";
 "Manage Account on the Web" = "Account beheren op het web";
 "Manage Subscription" = "Abonnement beheren";
+"Manage billing and limits" = "Facturering en limieten beheren";
+"Manage billing on Stripe" = "Facturering beheren via Stripe";
 "Manage this folder…" = "Deze map beheren…";
 "Manage this site…" = "Deze site beheren…";
 "Manual scroll" = "Handmatig scrollen";
@@ -579,6 +609,8 @@
 "Medium [theme]" = "Grijs";
 "Model" = "Model";
 "Monday" = "maandag";
+"Monthly spending limit" = "Maandelijkse bestedingslimiet";
+"Monthly spending limit reached. " = "Maandelijkse bestedingslimiet bereikt. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Meer artikelen nemen meer schijfruimte in beslag, maar hebben verder geen merkbare invloed op de prestaties.";
 "More voices" = "Meer stemmen";
 "Morning" = "Ochtend";
@@ -616,7 +648,12 @@
 "Name" = "Naam";
 "Name your folder to continue" = "Geef je map een naam om door te gaan";
 "Natural" = "Natuurlijk";
+"Natural Language Image Classifier" = "Classifier voor natuurlijke taal voor afbeeldingen";
+"Natural Language Text Classifier" = "Classifier voor natuurlijke taal voor tekst";
 "Natural [listen delivery]" = "Natuurlijk";
+"Natural language classifier billing" = "Facturering voor classifiers voor natuurlijke taal";
+"Natural language classifiers are paused until next billing cycle. " = "Classifiers voor natuurlijke taal zijn gepauzeerd tot de volgende factureringsperiode. ";
+"Natural language classifiers are using your instance's API keys." = "Classifiers in natuurlijke taal voor tekst gebruiken de API-sleutels van je instantie.";
 "Natural language text and image classifiers" = "Classifiers in natuurlijke taal voor tekst en afbeeldingen";
 "Nested" = "Genest";
 "Never" = "Nooit";
@@ -650,7 +687,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Er zijn nog geen feeds om weer te geven. Probeer een andere interesse of zoek op alle sites.";
 "No friends to suggest." = "Geen vrienden om voor te stellen.";
 "No interests or sites found. Try another search." = "Geen interesses of sites gevonden. Probeer een andere zoekopdracht.";
+"No limit" = "Geen limiet";
 "No longer saved" = "Niet langer opgeslagen";
+"No match" = "Geen overeenkomst";
 "No match in story" = "Geen overeenkomst in artikel";
 "No matching sites" = "Geen overeenkomende sites";
 "No notifications yet." = "Nog geen meldingen.";
@@ -661,6 +700,8 @@
 "No stories yet" = "Nog geen artikelen";
 "No story selected" = "Geen artikel geselecteerd";
 "No unread stories" = "Geen ongelezen artikelen";
+"No usage billing invoices yet." = "Nog geen facturen voor gebruik.";
+"No usage billing set up." = "Facturering op basis van gebruik is niet ingesteld.";
 "No voices match these filters" = "Geen stemmen komen overeen met deze filters";
 "None" = "Geen";
 "Normal" = "Normaal";
@@ -706,6 +747,7 @@
 "Open the next site/folder" = "Open de volgende site/map";
 "Opening site…" = "Site openen…";
 "Opens Now Playing" = "Opent ‘Wordt nu afgespeeld’";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Optioneel. Classifiers worden gepauzeerd zodra de limiet is bereikt en hervat in de volgende factureringsperiode.";
 "Options" = "Opties";
 "Ordered" = "Volgorde";
 "Organize Sites" = "Sites organiseren";
@@ -851,6 +893,7 @@
 "Saved on %@" = "Opgeslagen op %@";
 "Saving Daily Briefing settings…" = "Instellingen voor dagelijkse briefing opslaan…";
 "Saving search..." = "Zoekopdracht opslaan...";
+"Saving..." = "Opslaan...";
 "Schedule" = "Planning";
 "Scroll horizontally" = "Horizontaal scrollen";
 "Scroll to Comments" = "Scroll naar reacties";
@@ -881,6 +924,8 @@
 "Server URL" = "Server-URL";
 "Set an exact speed under Voice" = "Stel een exacte snelheid in bij Stem";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Stel de dagelijkse briefing in om een samenvatting te maken van de artikelen die voor jou het belangrijkst zijn.";
+"Set up billing" = "Facturering instellen";
+"Set up usage-based billing to use natural language content and image filters." = "Stel facturering op basis van gebruik in om filters voor natuurlijke taal en afbeeldingen te gebruiken.";
 "Settings" = "Instellingen";
 "Share" = "Delen";
 "Share This Story" = "Dit artikel delen";
@@ -954,6 +999,7 @@
 "Spacing" = "Tussenruimte";
 "Speaker boost" = "Stemversterking";
 "Speed" = "Snelheid";
+"Spending limit reached. Classifiers paused until next cycle." = "Bestedingslimiet bereikt. Classifiers zijn gepauzeerd tot de volgende periode.";
 "Stability" = "Stabiliteit";
 "Stability, similarity and style" = "Stabiliteit, gelijkenis en stijl";
 "Stale — last story %@" = "Inactief — laatste artikel %@";
@@ -992,6 +1038,7 @@
 "Story count" = "Aantal artikelen";
 "Story detail" = "Artikeldetails";
 "Story image" = "Artikelafbeelding";
+"Story is always hidden" = "Artikel wordt altijd verborgen";
 "Story is hidden (super dislike wins)" = "Artikel is verborgen (‘helemaal niet leuk’ wint)";
 "Story is shown (like wins)" = "Artikel wordt getoond (‘leuk’ wint)";
 "Story language" = "Taal van het artikel";
@@ -999,6 +1046,7 @@
 "Story options" = "Artikelopties";
 "Story order" = "Artikelvolgorde";
 "Story settings" = "Artikelinstellingen";
+"Story shows in Focus view" = "Artikel verschijnt in de focusweergave";
 "Story title preview" = "Voorbeeld van artikeltitel";
 "Story titles" = "Artikeltitels";
 "Story titles layout" = "Indeling van artikeltitels";
@@ -1038,6 +1086,11 @@
 "Tall [grid height]" = "Hoog";
 "Teal Mint" = "Tealmunt";
 "Terms of Use" = "Gebruiksvoorwaarden";
+"Test failed" = "Test mislukt";
+"Test on these images" = "Test op deze afbeeldingen";
+"Test on this image" = "Test op deze afbeelding";
+"Test on this story" = "Testen op dit artikel";
+"Testing on this story..." = "Dit artikel testen...";
 "Text" = "Tekst";
 "Text Size" = "Tekstgrootte";
 "Text View" = "Tekstweergave";
@@ -1066,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Hiermee wordt het abonnement uit je feeds verwijderd.";
 "This setting only applies after the app is restarted." = "Deze instelling wordt pas toegepast nadat de app opnieuw is gestart.";
 "This site already has a feed" = "Deze site heeft al een feed";
+"This site isn't in a folder" = "Deze site staat niet in een map";
 "This story has no text to read aloud." = "Dit artikel bevat geen tekst om voor te lezen.";
 "Three" = "Drie";
 "Three columns" = "Drie kolommen";
@@ -1141,6 +1195,7 @@
 "Unsaved" = "Niet meer opgeslagen";
 "Untitled story" = "Artikel zonder titel";
 "Up Next" = "Hierna";
+"Upcoming charge: " = "Aankomende kosten: ";
 "Updated %@ days ago" = "%@ dagen geleden bijgewerkt";
 "Updated %@ months ago" = "%@ maanden geleden bijgewerkt";
 "Updated %@ weeks ago" = "%@ weken geleden bijgewerkt";
@@ -1154,6 +1209,9 @@
 "Upgrade to Premium" = "Upgraden naar Premium";
 "Upgrade to Premium Archive" = "Upgraden naar Premium Archive";
 "Upgrade to Premium Pro" = "Upgraden naar Premium Pro";
+"Usage Billing" = "Facturering op basis van gebruik";
+"Usage billing history" = "Overzicht van gebruikskosten";
+"Usage-based billing is enabled for natural language classifiers." = "Facturering op basis van gebruik is ingeschakeld voor classifiers in natuurlijke taal voor tekst.";
 "Use %@" = "Gebruik %@";
 "Use another sign-in method" = "Een andere inlogmethode gebruiken";
 "Use both" = "Beide gebruiken";
@@ -1219,6 +1277,8 @@
 "by %@" = "door %@";
 "dislike" = "niet leuk";
 "e.g. %@" = "bijv. %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "bijv. “AI en machine learning” of “lokale politiek”";
+"e.g., \"food photography\" or \"charts and graphs\"" = "bijv. ‘voedselfotografie’ of ‘grafieken en diagrammen’";
 "like" = "leuk";
 "no content" = "geen inhoud";
 "no date" = "geen datum";
@@ -1226,5 +1286,12 @@
 "no story" = "geen artikel";
 "or" = "of";
 "premium subscribers" = "premiumabonnees";
+"set up usage-based billing" = "facturering op basis van gebruik instellen";
 "your account" = "je account";
 "‹ Feeds" = "‹ Feeds";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ van %1$@ afbeeldingen voldoen aan dit filter";
+"✓ Image matches this filter" = "✓ Afbeelding voldoet aan dit filter";
+"✓ Story matches this filter" = "✓ Artikel komt overeen met dit filter";
+"✗ Image does not match this filter" = "✗ Afbeelding komt niet overeen met dit filter";
+"✗ No images match this filter" = "✗ Geen afbeeldingen komen overeen met dit filter";
+"✗ Story does not match this filter" = "✗ Artikel komt niet overeen met dit filter";

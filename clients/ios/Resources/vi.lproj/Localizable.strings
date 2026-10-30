@@ -13,6 +13,9 @@
 "%1$@ of %2$@ of listening left this month" = "Còn %1$@ trên tổng %2$@ thời lượng nghe trong tháng này";
 "%1$@ of %2$@ sites indexed" = "Đã lập chỉ mục %1$@ trên %2$@ trang web";
 "%1$@ of %2$@ story previews used today" = "Đã dùng %1$@ trên %2$@ lượt nghe thử bài viết hôm nay";
+"%1$@ on all sites (%2$@)" = "%1$@ trên mọi trang web (%2$@)";
+"%1$@ on folder (%2$@)" = "%1$@ trong thư mục (%2$@)";
+"%1$@ on this site (%2$@)" = "%1$@ trên trang web này (%2$@)";
 "%1$@ re-shared %2$@." = "%1$@ đã chia sẻ lại %2$@.";
 "%1$@ re-shared %2$@:\n \n%3$@" = "%1$@ đã chia sẻ lại %2$@:\n \n%3$@";
 "%1$@ replied to %2$@: \n \n%3$@" = "%1$@ đã trả lời %2$@: \n \n%3$@";
@@ -20,11 +23,13 @@
 "%1$@ replied to your reply on %2$@:\n \n%3$@" = "%1$@ đã trả lời câu trả lời của bạn về %2$@:\n \n%3$@";
 "%1$@ shared %2$@." = "%1$@ đã chia sẻ %2$@.";
 "%1$@ shared %2$@:\n \n%3$@" = "%1$@ đã chia sẻ %2$@:\n \n%3$@";
+"%1$@ – %2$@" = "%1$@ – %2$@";
 "%1$@, %2$@" = "%1$@, %2$@";
 "%@ Widget Sites" = "%@ Trang web tiện ích";
 "%@ ago" = "%@ trước";
 "%@ categories to choose from" = "Có %@ danh mục để chọn";
 "%@ comments" = "%@ bình luận";
+"%@ content filters" = "%@ bộ lọc nội dung";
 "%@ could not be added." = "Không thể thêm %@ nguồn cấp.";
 "%@ days" = "%@ ngày";
 "%@ feed" = "%@ nguồn cấp dữ liệu";
@@ -36,6 +41,7 @@
 "%@ focused stories" = "%@ bài viết được chú ý";
 "%@ folder" = "Thư mục %@";
 "%@ free story previews left today" = "Hôm nay bạn còn %@ lượt nghe thử bài viết miễn phí";
+"%@ image filters" = "%@ bộ lọc hình ảnh";
 "%@ is now following you." = "%@ hiện đang theo dõi bạn.";
 "%@ left in this preview" = "Còn %@ trong bản xem trước này";
 "%@ match" = "%@ kết quả phù hợp";
@@ -48,17 +54,23 @@
 "%@ sources" = "%@ nguồn";
 "%@ stories" = "%@ bài viết";
 "%@ stories left" = "Còn %@ bài viết";
+"%@ stories/mo" = "%@ bài viết/tháng";
 "%@ stories/month" = "%@ bài/tháng";
 "%@ subscribers" = "%@ người đăng ký";
 "%@ unread stories" = "%@ bài viết chưa đọc";
 "%@ voice previews left" = "Còn %@ lượt nghe thử giọng";
+"%@/story" = "%@/bài viết";
 "%@×" = "%@×";
 "%ldd ago" = "%ld ngày trước";
 "%ldh ago" = "%ld giờ trước";
 "%ldm ago" = "%ld phút trước";
 "%ldw ago" = "%ld tuần trước";
+"(upcoming)" = "(sắp tới)";
 "+ %@ more sites" = "+ %@ trang khác";
 "..." = "...";
+"/day" = "/ngày";
+"/mo" = "/tháng";
+"/month" = "/tháng";
 "1 Widget Site" = "1 trang web cho tiện ích";
 "1,000 stories" = "1.000 bài viết";
 "10 stories" = "10 bài viết";
@@ -81,6 +93,8 @@
 "< 90/month" = "< 90/tháng";
 "A clearer, closer sound" = "Âm thanh rõ và gần hơn";
 "A personal news reader bringing\npeople together to talk about the world." = "Trình đọc tin cá nhân giúp mọi người cùng trò chuyện về thế giới.";
+"AI Filter" = "Bộ lọc AI";
+"AI filters are saved but won't run until you %@." = "Bộ lọc AI đã được lưu nhưng sẽ không chạy cho đến khi bạn %@.";
 "AI finds the stories" = "AI tìm các bài viết";
 "ALL" = "TẤT CẢ";
 "ALL NOTIFICATIONS" = "TẤT CẢ THÔNG BÁO";
@@ -153,7 +167,9 @@
 "Already have an account? Sign in" = "Đã có tài khoản? Đăng nhập";
 "Already have feeds?" = "Bạn đã có nguồn cấp?";
 "Also published by %@ sites" = "Cũng được đăng trên %@ trang";
+"An AI filter overrides likes and dislikes, but not a super dislike" = "Bộ lọc AI ghi đè lượt thích và không thích, nhưng không ghi đè lượt rất không thích";
 "Analyze" = "Phân tích";
+"Analyzing images..." = "Đang phân tích hình ảnh...";
 "App Badge" = "Huy hiệu ứng dụng";
 "App Icon" = "Biểu tượng ứng dụng";
 "Apply training across a folder" = "Áp dụng huấn luyện cho toàn bộ thư mục";
@@ -237,6 +253,8 @@
 "Connect an existing account" = "Kết nối tài khoản hiện có";
 "Connect your account" = "Kết nối tài khoản";
 "Connecting" = "Đang kết nối";
+"Content" = "Nội dung";
+"Content Filter" = "Bộ lọc nội dung";
 "Continue" = "Tiếp tục";
 "Control how much is included and how it is written" = "Kiểm soát nội dung được đưa vào và cách trình bày";
 "Copied" = "Đã sao chép";
@@ -244,7 +262,10 @@
 "Coral Rose" = "Hồng san hô";
 "Could not completely clear the cache. Please try again." = "Không thể xóa hoàn toàn bộ nhớ đệm. Vui lòng thử lại.";
 "Could not save your language. Please try again." = "Không thể lưu ngôn ngữ của bạn. Vui lòng thử lại.";
+"Couldn't load usage billing history." = "Không tải được lịch sử thanh toán theo mức sử dụng.";
+"Couldn't open billing. Please try again." = "Không thể mở mục thanh toán. Vui lòng thử lại.";
 "Couldn't reach NewsBlur. Check your connection and try again." = "Không thể kết nối với NewsBlur. Hãy kiểm tra kết nối rồi thử lại.";
+"Couldn't save your spending limit. Please try again." = "Không thể lưu giới hạn chi tiêu. Vui lòng thử lại.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Không thể tải toàn bộ hình ảnh. Bạn có thể thử mở hình ảnh trong trình duyệt.";
 "Counting is difficult..." = "Đếm cũng khó lắm...";
 "Create a feed from any web page" = "Tạo nguồn cấp dữ liệu từ bất kỳ trang web nào";
@@ -288,6 +309,9 @@
 "Deleting your account permanently removes your feeds, saved stories, and account data. This cannot be undone." = "Xóa tài khoản vĩnh viễn sẽ xóa các nguồn cấp, bài viết đã lưu và dữ liệu tài khoản của bạn. Bạn không thể hoàn tác thao tác này.";
 "Deleting..." = "Đang xóa...";
 "Delivery" = "Cách đọc";
+"Describe a topic and AI will score each story against your prompt to focus or hide matches." = "Mô tả chủ đề, AI sẽ chấm điểm từng bài viết dựa trên nội dung bạn nhập để ưu tiên hoặc ẩn các bài viết phù hợp.";
+"Describe what to focus or hide" = "Mô tả nội dung cần tập trung hoặc ẩn";
+"Describe what to look for and AI will analyze each story’s images against your prompt." = "Mô tả nội dung cần tìm, AI sẽ phân tích hình ảnh của từng bài viết dựa trên nội dung bạn nhập.";
 "Discover" = "Khám phá";
 "Discover more to read" = "Khám phá thêm nội dung để đọc";
 "Discover related sites" = "Khám phá các trang web liên quan";
@@ -441,6 +465,8 @@
 "How much emotion" = "Mức độ cảm xúc";
 "If none of the options match, type a story title you see on the page and we'll re-analyze." = "Nếu không lựa chọn nào phù hợp, hãy nhập tiêu đề bài viết bạn thấy trên trang để chúng tôi phân tích lại.";
 "Ignore system theme, use screen brightness instead" = "Bỏ qua giao diện hệ thống, dùng độ sáng màn hình";
+"Image" = "Hình ảnh";
+"Image Filter" = "Bộ lọc hình ảnh";
 "Image Preview" = "Xem trước hình ảnh";
 "Image actions" = "Thao tác với hình ảnh";
 "Images from %@ days ago" = "Hình ảnh từ %@ ngày trước";
@@ -460,6 +486,7 @@
 "Include already-read stories" = "Bao gồm bài viết đã đọc";
 "Include in bundle" = "Đưa vào gói";
 "Included in bundle" = "Có trong gói";
+"Increase or remove your limit" = "Tăng hoặc xóa giới hạn";
 "Infrequent Site Stories" = "Bài viết từ trang ít cập nhật";
 "Infrequent Stories" = "Bài viết từ trang ít cập nhật";
 "Infrequent stories per month" = "Số bài viết mỗi tháng của trang ít cập nhật";
@@ -469,6 +496,7 @@
 "Instead of following system dark/light mode, automatically switch themes based on your screen brightness level. Useful for switching themes based on ambient lighting." = "Thay vì theo chế độ sáng/tối của hệ thống, tự động chuyển giao diện dựa trên độ sáng màn hình. Hữu ích khi muốn đổi giao diện theo ánh sáng môi trường.";
 "Interactions" = "Tương tác";
 "Invalid: %@" = "Không hợp lệ: %@";
+"Invoice" = "Hóa đơn";
 "Keeps the dark icon no matter how your device is set." = "Luôn giữ biểu tượng tối bất kể thiết lập trên thiết bị của bạn.";
 "Keeps the light icon no matter how your device is set." = "Luôn dùng biểu tượng sáng bất kể cài đặt thiết bị của bạn.";
 "Keyboard Shortcuts" = "Phím tắt";
@@ -528,6 +556,8 @@
 "Manage" = "Quản lý";
 "Manage Account on the Web" = "Quản lý tài khoản trên web";
 "Manage Subscription" = "Quản lý gói đăng ký";
+"Manage billing and limits" = "Quản lý thanh toán và giới hạn";
+"Manage billing on Stripe" = "Quản lý thanh toán trên Stripe";
 "Manage this folder…" = "Quản lý thư mục này…";
 "Manage this site…" = "Quản lý trang web này…";
 "Manual scroll" = "Cuộn thủ công";
@@ -579,6 +609,8 @@
 "Medium [theme]" = "Xám";
 "Model" = "Mô hình";
 "Monday" = "Thứ Hai";
+"Monthly spending limit" = "Giới hạn chi tiêu hàng tháng";
+"Monthly spending limit reached. " = "Đã đạt giới hạn chi tiêu hàng tháng. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Nhiều bài viết hơn sẽ chiếm thêm dung lượng đĩa, nhưng ngoài ra không ảnh hưởng đáng kể đến hiệu năng.";
 "More voices" = "Thêm giọng đọc";
 "Morning" = "Buổi sáng";
@@ -616,7 +648,12 @@
 "Name" = "Tên";
 "Name your folder to continue" = "Đặt tên thư mục để tiếp tục";
 "Natural" = "Tự nhiên";
+"Natural Language Image Classifier" = "Bộ phân loại hình ảnh bằng ngôn ngữ tự nhiên";
+"Natural Language Text Classifier" = "Bộ phân loại văn bản bằng ngôn ngữ tự nhiên";
 "Natural [listen delivery]" = "Tự nhiên";
+"Natural language classifier billing" = "Thanh toán cho bộ phân loại ngôn ngữ tự nhiên";
+"Natural language classifiers are paused until next billing cycle. " = "Bộ phân loại ngôn ngữ tự nhiên đã tạm dừng cho đến chu kỳ thanh toán tiếp theo. ";
+"Natural language classifiers are using your instance's API keys." = "Các bộ phân loại ngôn ngữ tự nhiên đang sử dụng khóa API của máy chủ bạn.";
 "Natural language text and image classifiers" = "Bộ phân loại văn bản và hình ảnh bằng ngôn ngữ tự nhiên";
 "Nested" = "Lồng nhau";
 "Never" = "Không bao giờ";
@@ -650,7 +687,9 @@
 "No feeds to show yet. Try another interest or search all sites." = "Chưa có nguồn cấp dữ liệu nào để hiển thị. Hãy thử chủ đề quan tâm khác hoặc tìm kiếm trên tất cả trang web.";
 "No friends to suggest." = "Không có bạn bè nào để gợi ý.";
 "No interests or sites found. Try another search." = "Không tìm thấy chủ đề quan tâm hoặc trang web nào. Hãy thử tìm kiếm khác.";
+"No limit" = "Không giới hạn";
 "No longer saved" = "Không còn được lưu";
+"No match" = "Không khớp";
 "No match in story" = "Không tìm thấy kết quả trong bài viết";
 "No matching sites" = "Không tìm thấy trang phù hợp";
 "No notifications yet." = "Chưa có thông báo nào.";
@@ -661,6 +700,8 @@
 "No stories yet" = "Chưa có bài viết nào";
 "No story selected" = "Chưa chọn bài viết nào";
 "No unread stories" = "Không có bài viết chưa đọc";
+"No usage billing invoices yet." = "Chưa có hóa đơn thanh toán theo mức sử dụng.";
+"No usage billing set up." = "Chưa thiết lập thanh toán theo mức sử dụng.";
 "No voices match these filters" = "Không có giọng đọc nào khớp với các bộ lọc này";
 "None" = "Không có";
 "Normal" = "Bình thường";
@@ -706,6 +747,7 @@
 "Open the next site/folder" = "Mở trang web/thư mục tiếp theo";
 "Opening site…" = "Đang mở trang web…";
 "Opens Now Playing" = "Mở mục Đang phát";
+"Optional. Classifiers pause when the limit is reached and resume next billing cycle." = "Không bắt buộc. Bộ phân loại sẽ tạm dừng khi đạt đến giới hạn và tiếp tục vào chu kỳ thanh toán tiếp theo.";
 "Options" = "Tùy chọn";
 "Ordered" = "Thứ tự";
 "Organize Sites" = "Sắp xếp trang web";
@@ -851,6 +893,7 @@
 "Saved on %@" = "Đã lưu vào %@";
 "Saving Daily Briefing settings…" = "Đang lưu cài đặt Bản tin hằng ngày…";
 "Saving search..." = "Đang lưu tìm kiếm...";
+"Saving..." = "Đang lưu...";
 "Schedule" = "Lịch";
 "Scroll horizontally" = "Cuộn ngang";
 "Scroll to Comments" = "Cuộn đến phần bình luận";
@@ -881,6 +924,8 @@
 "Server URL" = "URL máy chủ";
 "Set an exact speed under Voice" = "Đặt tốc độ chính xác trong mục Giọng nói";
 "Set up Daily Briefing to generate a summary of the stories that matter most to you." = "Thiết lập Bản tin hằng ngày để tạo bản tóm tắt những bài viết quan trọng nhất với bạn.";
+"Set up billing" = "Thiết lập thanh toán";
+"Set up usage-based billing to use natural language content and image filters." = "Thiết lập thanh toán theo mức sử dụng để dùng bộ lọc nội dung bằng ngôn ngữ tự nhiên và bộ lọc hình ảnh.";
 "Settings" = "Cài đặt";
 "Share" = "Chia sẻ";
 "Share This Story" = "Chia sẻ bài viết này";
@@ -954,6 +999,7 @@
 "Spacing" = "Khoảng cách";
 "Speaker boost" = "Tăng cường giọng nói";
 "Speed" = "Tốc độ";
+"Spending limit reached. Classifiers paused until next cycle." = "Đã đạt giới hạn chi tiêu. Bộ phân loại đã tạm dừng cho đến chu kỳ tiếp theo.";
 "Stability" = "Độ ổn định";
 "Stability, similarity and style" = "Độ ổn định, độ tương đồng và phong cách";
 "Stale — last story %@" = "Đã cũ — bài viết cuối cùng %@";
@@ -992,6 +1038,7 @@
 "Story count" = "Số lượng bài viết";
 "Story detail" = "Chi tiết bài viết";
 "Story image" = "Ảnh bài viết";
+"Story is always hidden" = "Bài viết luôn bị ẩn";
 "Story is hidden (super dislike wins)" = "Bài viết bị ẩn (rất không thích được ưu tiên)";
 "Story is shown (like wins)" = "Bài viết được hiển thị (thích được ưu tiên)";
 "Story language" = "Ngôn ngữ bài viết";
@@ -999,6 +1046,7 @@
 "Story options" = "Tùy chọn bài viết";
 "Story order" = "Thứ tự bài viết";
 "Story settings" = "Cài đặt bài viết";
+"Story shows in Focus view" = "Bài viết xuất hiện trong chế độ xem Tập trung";
 "Story title preview" = "Xem trước tiêu đề bài viết";
 "Story titles" = "Tiêu đề bài viết";
 "Story titles layout" = "Bố cục tiêu đề bài viết";
@@ -1038,6 +1086,11 @@
 "Tall [grid height]" = "Cao";
 "Teal Mint" = "Xanh bạc hà ngọc lam";
 "Terms of Use" = "Điều khoản sử dụng";
+"Test failed" = "Thử nghiệm thất bại";
+"Test on these images" = "Thử trên những hình ảnh này";
+"Test on this image" = "Thử nghiệm trên hình ảnh này";
+"Test on this story" = "Thử trên bài viết này";
+"Testing on this story..." = "Đang kiểm tra bài viết này...";
 "Text" = "Văn bản";
 "Text Size" = "Cỡ chữ";
 "Text View" = "Chế độ xem văn bản";
@@ -1066,6 +1119,7 @@
 "This removes the subscription from your feeds." = "Thao tác này sẽ xóa đăng ký theo dõi khỏi các nguồn cấp của bạn.";
 "This setting only applies after the app is restarted." = "Cài đặt này chỉ có hiệu lực sau khi khởi động lại ứng dụng.";
 "This site already has a feed" = "Trang web này đã có nguồn cấp dữ liệu";
+"This site isn't in a folder" = "Trang web này không nằm trong thư mục nào";
 "This story has no text to read aloud." = "Bài viết này không có văn bản để đọc thành tiếng.";
 "Three" = "Ba";
 "Three columns" = "Ba cột";
@@ -1141,6 +1195,7 @@
 "Unsaved" = "Đã bỏ lưu";
 "Untitled story" = "Bài viết không có tiêu đề";
 "Up Next" = "Tiếp theo";
+"Upcoming charge: " = "Khoản phí sắp tới: ";
 "Updated %@ days ago" = "Cập nhật %@ ngày trước";
 "Updated %@ months ago" = "Cập nhật %@ tháng trước";
 "Updated %@ weeks ago" = "Cập nhật %@ tuần trước";
@@ -1154,6 +1209,9 @@
 "Upgrade to Premium" = "Nâng cấp lên Premium";
 "Upgrade to Premium Archive" = "Nâng cấp lên Premium Archive";
 "Upgrade to Premium Pro" = "Nâng cấp lên Premium Pro";
+"Usage Billing" = "Thanh toán theo mức sử dụng";
+"Usage billing history" = "Lịch sử thanh toán theo mức sử dụng";
+"Usage-based billing is enabled for natural language classifiers." = "Thanh toán theo mức sử dụng đã được bật cho các bộ phân loại ngôn ngữ tự nhiên.";
 "Use %@" = "Dùng %@";
 "Use another sign-in method" = "Dùng phương thức đăng nhập khác";
 "Use both" = "Dùng cả hai";
@@ -1219,6 +1277,8 @@
 "by %@" = "bởi %@";
 "dislike" = "không thích";
 "e.g. %@" = "ví dụ: %@";
+"e.g., \"AI and machine learning\" or \"local politics\"" = "ví dụ: \"AI và học máy\" hoặc \"chính trị địa phương\"";
+"e.g., \"food photography\" or \"charts and graphs\"" = "ví dụ: \"ảnh chụp món ăn\" hoặc \"biểu đồ và đồ thị\"";
 "like" = "thích";
 "no content" = "không có nội dung";
 "no date" = "không có ngày";
@@ -1226,5 +1286,12 @@
 "no story" = "không có bài viết";
 "or" = "hoặc";
 "premium subscribers" = "người đăng ký Premium";
+"set up usage-based billing" = "thiết lập thanh toán theo mức sử dụng";
 "your account" = "tài khoản của bạn";
 "‹ Feeds" = "‹ Nguồn cấp";
+"✓ %2$@ of %1$@ images match this filter" = "✓ %2$@ trên %1$@ hình ảnh khớp với bộ lọc này";
+"✓ Image matches this filter" = "✓ Hình ảnh khớp với bộ lọc này";
+"✓ Story matches this filter" = "✓ Bài viết khớp với bộ lọc này";
+"✗ Image does not match this filter" = "✗ Hình ảnh không khớp với bộ lọc này";
+"✗ No images match this filter" = "✗ Không có hình ảnh nào khớp với bộ lọc này";
+"✗ Story does not match this filter" = "✗ Bài viết không khớp với bộ lọc này";

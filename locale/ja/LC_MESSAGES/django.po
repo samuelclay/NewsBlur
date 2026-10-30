@@ -1386,6 +1386,9 @@ msgstr "記事を保存できませんでした。見つかりません。"
 msgid "Could not unsave story, not found"
 msgstr "記事を保存解除できませんでした。見つかりません。"
 
+msgid "Couldn't reach Stripe. Please try again."
+msgstr "Stripeに接続できませんでした。もう一度お試しください。"
+
 #, python-format
 msgid "Coverage period: %(start)s &ndash; %(end)s"
 msgstr "対象期間: %(start)s &ndash; %(end)s"
@@ -3745,6 +3748,9 @@ msgstr "学習システムなし"
 msgid "No uncategorized archives found"
 msgstr "未分類のアーカイブは見つかりませんでした"
 
+msgid "No usage billing set up."
+msgstr "従量課金は設定されていません。"
+
 msgid "No user has that email address."
 msgstr "そのメールアドレスのユーザーはいません。"
 
@@ -3973,6 +3979,9 @@ msgstr "キーワード検索のクエリを入力してください。"
 
 msgid "Please enter in an email address."
 msgstr "メールアドレスを入力してください。"
+
+msgid "Please log in to NewsBlur again."
+msgstr "もう一度NewsBlurにログインしてください。"
 
 msgid "Please login to continue."
 msgstr "続行するにはログインしてください。"
@@ -5773,6 +5782,9 @@ msgstr "従量課金は有効になっていません"
 
 msgid "Usage billing required for AI classifiers"
 msgstr "AI分類器の利用には従量課金の設定が必要です"
+
+msgid "Usage-based billing isn't available right now."
+msgstr "従量課金は現在ご利用いただけません。"
 
 msgctxt "heading for CLI usage examples"
 msgid "Use"

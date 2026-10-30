@@ -11,6 +11,8 @@ import SwiftUI
 /// A protocol of interaction between the trainer view and the enclosing view controller.
 @MainActor protocol TrainerInteraction {
     var isStoryTrainer: Bool { get set }
+    /// TrainerViewController.swift keeps the natural language prompt state across TrainerView reloads.
+    var aiPrompts: TrainerAIPromptModel { get }
     func reloadTrainerContext()
 }
 
@@ -248,6 +250,18 @@ struct TrainerView: View {
                     header(story: "Story URL", feed: "URLs")
                 })
 
+                ForEach(PromptClassifierKind.allCases, id: \.self) { kind in
+                    Section(content: {
+                        TrainerAIPromptSection(kind: kind, model: interaction.aiPrompts, feed: feed,
+                                               story: interaction.isStoryTrainer ? cache.selected : nil,
+                                               isPremiumArchive: isArchive, currentFolderName: currentFolderName,
+                                               fontBuilder: font)
+                            .listRowBackground(rowBackground)
+                    }, header: {
+                        TrainerAIPromptHeader(kind: kind, font: font(named: "WhitneySSm-Medium", size: 16), color: textColor)
+                    })
+                }
+
                 Section(content: {
                     HStack {
                         if let feed = feed {
@@ -282,6 +296,7 @@ struct TrainerView: View {
     func reload() {
         interaction.reloadTrainerContext()
         addingTitle = ""
+        interaction.aiPrompts.prepare(feedId: feed?.id, storyHash: interaction.isStoryTrainer ? cache.selected?.hash : nil)
     }
 
     // MARK: - Classifier Row
@@ -346,17 +361,33 @@ struct TrainerView: View {
         }
     }
 
+    var aiFilterColor: Color {
+        Color.themed([0x2F6FB3, 0x2F6FB3, 0x7FB2E5, 0x7FB2E5])
+    }
+
+    /// TrainerView.swift orders the levels like compute_story_score in NewsBlurAppDelegate.m: a super dislike beats an
+    /// AI filter match, which beats likes and dislikes. Narrow trainers drop the BEATS labels so all four levels fit.
     var explainerHierarchyChain: some View {
-        HStack(spacing: 0) {
-            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true)
-            explainerSeparator
-            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9)
-            explainerSeparator
-            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9)
+        ViewThatFits(in: .horizontal) {
+            explainerHierarchyChain(compact: false)
+            explainerHierarchyChain(compact: true)
         }
     }
 
-    func explainerPill(_ label: String, color: Color, bgOpacity: Double, icon: String, iconSize: CGFloat, isSuperDislike: Bool = false) -> some View {
+    func explainerHierarchyChain(compact: Bool) -> some View {
+        HStack(spacing: 0) {
+            explainerPill(NBLocalization.text("Super dislike"), color: superDislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 10, isSuperDislike: true, compact: compact)
+            explainerSeparator(compact: compact)
+            explainerPill(NBLocalization.text("AI Filter"), color: aiFilterColor, bgOpacity: 0.1, icon: "sparkles", iconSize: 9, compact: compact)
+            explainerSeparator(compact: compact)
+            explainerPill(NBLocalization.text("Like"), color: likeColor, bgOpacity: 0.1, icon: "hand.thumbsup.fill", iconSize: 9, compact: compact)
+            explainerSeparator(compact: compact)
+            explainerPill(NBLocalization.text("Dislike"), color: dislikeColor, bgOpacity: 0.1, icon: "hand.thumbsdown.fill", iconSize: 9, compact: compact)
+        }
+        .fixedSize()
+    }
+
+    func explainerPill(_ label: String, color: Color, bgOpacity: Double, icon: String, iconSize: CGFloat, isSuperDislike: Bool = false, compact: Bool = false) -> some View {
         HStack(spacing: 3) {
             Text(label)
                 .font(.system(size: 11, weight: .bold))
@@ -369,7 +400,7 @@ struct TrainerView: View {
                     .foregroundColor(color)
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, compact ? 6 : 8)
         .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: 6)
@@ -377,14 +408,20 @@ struct TrainerView: View {
         )
     }
 
-    var explainerSeparator: some View {
+    func explainerSeparator(compact: Bool) -> some View {
         HStack(spacing: 3) {
-            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
-            Text(NBLocalization.text("BEATS"))
-                .font(.system(size: 7, weight: .medium))
-                .tracking(0.5)
-                .foregroundColor(separatorTextColor)
-            Rectangle().fill(explainerLineColor).frame(width: 8, height: 1)
+            Rectangle().fill(explainerLineColor).frame(width: compact ? 4 : 8, height: 1)
+            if compact {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundColor(separatorTextColor)
+            } else {
+                Text(NBLocalization.text("BEATS"))
+                    .font(.system(size: 7, weight: .medium))
+                    .tracking(0.5)
+                    .foregroundColor(separatorTextColor)
+            }
+            Rectangle().fill(explainerLineColor).frame(width: compact ? 4 : 8, height: 1)
         }
         .padding(.horizontal, 1)
     }
@@ -432,6 +469,45 @@ struct TrainerView: View {
                         .font(.system(size: 12))
                         .foregroundColor(explainerBodyColor)
                     Text(NBLocalization.text("Story is hidden (super dislike wins)"))
+                        .font(.system(size: 10, weight: .medium))
+                        .italic()
+                        .foregroundColor(superDislikeColor)
+                }
+            }
+
+            // TrainerView.swift uses the web's Daring Fireball sponsor example (reader_classifier.js).
+            VStack(alignment: .leading, spacing: 4) {
+                Text(NBLocalization.text("An AI filter overrides likes and dislikes, but not a super dislike"))
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(textColor)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 4) {
+                    examplePill("Non-apple related news", color: likeColor, icon: "sparkles")
+                    examplePill("DF Department of Commerce", color: dislikeColor, icon: "hand.thumbsdown.fill")
+                }
+
+                HStack(spacing: 6) {
+                    Text("\u{2192}")
+                        .font(.system(size: 12))
+                        .foregroundColor(explainerBodyColor)
+                    Text(NBLocalization.text("Story shows in Focus view"))
+                        .font(.system(size: 10, weight: .medium))
+                        .italic()
+                        .foregroundColor(likeColor)
+                }
+
+                HStack(spacing: 4) {
+                    examplePill("Non-apple related news", color: likeColor, icon: "sparkles")
+                    examplePill("DF Department of Commerce", color: superDislikeColor, icon: "hand.thumbsdown.fill", isSuperDislike: true)
+                }
+                .padding(.top, 2)
+
+                HStack(spacing: 6) {
+                    Text("\u{2192}")
+                        .font(.system(size: 12))
+                        .foregroundColor(explainerBodyColor)
+                    Text(NBLocalization.text("Story is always hidden"))
                         .font(.system(size: 10, weight: .medium))
                         .italic()
                         .foregroundColor(superDislikeColor)

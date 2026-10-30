@@ -511,11 +511,12 @@ def compute_story_score(
 
     score = 0
 
-    # If we have a prompt score, it takes priority
-    if "prompt" in intelligence and intelligence["prompt"] != 0:
-        return intelligence["prompt"]
-
-    # Otherwise use the traditional classifier logic
+    # models.py: Scoring order. A manual super dislike (-2) beats everything, the AI
+    # prompt included. Otherwise a non-zero AI prompt score beats every manual
+    # like and dislike. Otherwise the strongest manual like, then the strongest
+    # manual dislike, then the feed classifier. Mirrored in
+    # apps/reader/models.py UserSubscription.score_story and
+    # media/js/newsblur/reader/reader_utils.js compute_story_score.
     score_max = max(
         intelligence["title"],
         intelligence["title_regex"],
@@ -539,8 +540,12 @@ def compute_story_score(
         intelligence["url_regex"],
     )
     if score_min <= -2:
-        score = score_min  # super downvote beats any positive
-    elif score_max > 0:
+        return score_min  # super downvote beats any positive, including the AI prompt
+
+    if "prompt" in intelligence and intelligence["prompt"] != 0:
+        return intelligence["prompt"]
+
+    if score_max > 0:
         score = score_max
     elif score_min < 0:
         score = score_min

@@ -1,34 +1,39 @@
 package com.newsblur.fragment;
 
-import java.util.List;
-import java.util.Map;
-
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-import android.view.Gravity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
-import com.newsblur.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.newsblur.database.BlurDatabaseHelper;
-import com.newsblur.databinding.DialogTrainfeedBinding;
+import com.newsblur.databinding.FragmentIntelTrainerSheetBinding;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
+import com.newsblur.di.IconLoader;
+import com.newsblur.di.ThumbnailLoader;
+import com.newsblur.network.ClassifierApi;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.preference.PrefsRepo;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.UIUtils;
+import com.newsblur.util.NewsBlurBottomSheet;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/**
+ * The site trainer, the same bottom sheet as StoryIntelTrainerFragment.java without a story, as
+ * clients/ios/Classes/TrainerView.swift shows it. IntelTrainerSections.kt lays it out.
+ */
 @AndroidEntryPoint
-public class FeedIntelTrainerFragment extends DialogFragment {
+public class FeedIntelTrainerFragment extends BottomSheetDialogFragment {
 
     @Inject
     FeedUtils feedUtils;
@@ -39,10 +44,22 @@ public class FeedIntelTrainerFragment extends DialogFragment {
     @Inject
     PrefsRepo prefsRepo;
 
+    @Inject
+    ClassifierApi classifierApi;
+
+    @Inject
+    @ThumbnailLoader
+    ImageLoader thumbnailLoader;
+
+    @Inject
+    @IconLoader
+    ImageLoader iconLoader;
+
     private Feed feed;
     private FeedSet fs;
     private Classifier classifier;
-    private DialogTrainfeedBinding binding;
+    private IntelTrainerSections sections;
+    private FragmentIntelTrainerSheetBinding binding;
 
     public static FeedIntelTrainerFragment newInstance(Feed feed, FeedSet fs) {
         FeedIntelTrainerFragment fragment = new FeedIntelTrainerFragment();
@@ -53,91 +70,55 @@ public class FeedIntelTrainerFragment extends DialogFragment {
         return fragment;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        return NewsBlurBottomSheet.createDialog(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            IntelTrainerSections.expandSheet(dialog, prefsRepo.getResolvedTheme(requireContext()));
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentIntelTrainerSheetBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         feed = (Feed) getArguments().getSerializable("feed");
         fs = (FeedSet) getArguments().getSerializable("feedset");
         classifier = dbHelper.getClassifierForFeed(feed.feedId);
+        PrefConstants.ThemeValue theme = prefsRepo.getResolvedTheme(requireContext());
+        IntelTrainerSections.styleSheet(binding, theme, false);
 
-        View v = getLayoutInflater().inflate(R.layout.dialog_trainfeed, null);
-        binding = DialogTrainfeedBinding.bind(v);
+        sections = new IntelTrainerSections(this, binding.trainerSections, classifier, null, feed.feedId, theme,
+                prefsRepo, dbHelper, classifierApi, thumbnailLoader, iconLoader);
+        sections.bind();
 
-        UIUtils.setupIntelExplainer(v, prefsRepo.getResolvedTheme(requireContext()));
+        binding.cancelButton.setOnClickListener(v -> dismiss());
+        binding.saveButton.setOnClickListener(v -> saveAndDismiss());
+    }
 
-        // display known title classifiers
-        for (Map.Entry<String, Integer> rule : classifier.title.entrySet()) {
-                View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-                TextView label = row.findViewById(R.id.intel_row_label);
-                label.setText(rule.getKey());
-                UIUtils.setupIntelDialogRow(row, classifier.title, rule.getKey());
-                binding.existingTitleIntelContainer.addView(row);
-        }
-        if (classifier.title.size() < 1) binding.intelTitleHeader.setVisibility(View.GONE);
-        
-        // get the list of suggested tags
-        List<String> allTags = dbHelper.getTagsForFeed(feed.feedId);
-        // augment that list with known trained tags
-        for (Map.Entry<String, Integer> rule : classifier.tags.entrySet()) {
-            if (!allTags.contains(rule.getKey())) {
-                allTags.add(rule.getKey());
-            }
-        }
-        for (String tag : allTags) {
-            View row = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView label = row.findViewById(R.id.intel_row_label);
-            label.setText(tag);
-            UIUtils.setupIntelDialogRow(row, classifier.tags, tag);
-            binding.existingTagIntelContainer.addView(row);
-        }
-        if (allTags.size() < 1) binding.intelTagHeader.setVisibility(View.GONE);
+    private void saveAndDismiss() {
+        sections.commit();
+        feedUtils.updateClassifier(feed.feedId, classifier, fs, requireContext());
+        dismiss();
+    }
 
-        // get the list of suggested authors
-        List<String> allAuthors = dbHelper.getAuthorsForFeed(feed.feedId);
-        // augment that list with known trained authors
-        for (Map.Entry<String, Integer> rule : classifier.authors.entrySet()) {
-            if (!allAuthors.contains(rule.getKey())) {
-                allAuthors.add(rule.getKey());
-            }
-        }
-        for (String author : allAuthors) {
-            View rowAuthor = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-            TextView labelAuthor = rowAuthor.findViewById(R.id.intel_row_label);
-            labelAuthor.setText(author);
-            UIUtils.setupIntelDialogRow(rowAuthor, classifier.authors, author);
-            binding.existingAuthorIntelContainer.addView(rowAuthor);
-        }
-        if (allAuthors.size() < 1) binding.intelAuthorHeader.setVisibility(View.GONE);
-
-        // for feel-level intel, the label is the title and the intel identifier is the feed ID
-        View rowFeed = getLayoutInflater().inflate(R.layout.include_intel_row, null);
-        TextView labelFeed = rowFeed.findViewById(R.id.intel_row_label);
-        labelFeed.setText(feed.title);
-        UIUtils.setupIntelDialogRow(rowFeed, classifier.feeds, feed.feedId);
-        binding.existingFeedIntelContainer.addView(rowFeed);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(R.string.feed_intel_dialog_title);
-        builder.setView(v);
-
-        builder.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                FeedIntelTrainerFragment.this.dismiss();
-            }
-        });
-        builder.setPositiveButton(R.string.dialog_story_intel_save, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                feedUtils.updateClassifier(feed.feedId, classifier, fs, requireContext());
-                FeedIntelTrainerFragment.this.dismiss();
-            }
-        });
-
-        Dialog dialog = builder.create();
-        dialog.getWindow().getAttributes().gravity = Gravity.BOTTOM;
-        return dialog;
+    @Override
+    public void onDestroyView() {
+        binding = null;
+        super.onDestroyView();
     }
 
 }
-

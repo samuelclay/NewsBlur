@@ -98,6 +98,30 @@
 			<string>%@ تعليق</string>
 		</dict>
 	</dict>
+	<key>%@ content filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@content_filters@</string>
+		<key>content_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ من فلاتر المحتوى</string>
+			<key>many</key>
+			<string>%@ من فلاتر المحتوى</string>
+			<key>one</key>
+			<string>%@ فلتر محتوى</string>
+			<key>other</key>
+			<string>%@ فلاتر المحتوى</string>
+			<key>two</key>
+			<string>%@ مرشّحَي محتوى</string>
+			<key>zero</key>
+			<string>%@ من فلاتر المحتوى</string>
+		</dict>
+	</dict>
 	<key>%@ could not be added.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -314,6 +338,30 @@
 			<string>تبقّى %@ معاينة مجانية للقصص اليوم</string>
 		</dict>
 	</dict>
+	<key>%@ image filters</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@image_filters@</string>
+		<key>image_filters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>many</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>one</key>
+			<string>%@ فلتر صور</string>
+			<key>other</key>
+			<string>%@ فلتر صورة</string>
+			<key>two</key>
+			<string>%@ من فلاتر الصور</string>
+			<key>zero</key>
+			<string>%@ من فلاتر الصور</string>
+		</dict>
+	</dict>
 	<key>%@ match</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -528,6 +576,30 @@
 			<string>تبقّت %@ قصتان</string>
 			<key>zero</key>
 			<string>تبقّى %@ قصة</string>
+		</dict>
+	</dict>
+	<key>%@ stories/mo</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@stories_per_month_estimate@</string>
+		<key>stories_per_month_estimate</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ قصص/شهر</string>
+			<key>many</key>
+			<string>%@ قصة شهريًا</string>
+			<key>one</key>
+			<string>%@ قصة/شهر</string>
+			<key>other</key>
+			<string>%@ قصة/شهر</string>
+			<key>two</key>
+			<string>%@ قصةً/الشهر</string>
+			<key>zero</key>
+			<string>%@ قصة/شهر</string>
 		</dict>
 	</dict>
 	<key>%@ stories/month</key>
@@ -1152,6 +1224,30 @@
 			<string>أنت مشترك في %@ موقعين</string>
 			<key>zero</key>
 			<string>أنت مشترك في %@ موقع</string>
+		</dict>
+	</dict>
+	<key>✓ %2$@ of %1$@ images match this filter</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@image_filter_matches@</string>
+		<key>image_filter_matches</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
+			<key>many</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
+			<key>one</key>
+			<string>✓ تطابق %2$@ صورة واحدة من أصل %1$@ مع هذا الفلتر</string>
+			<key>other</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة مع هذا الفلتر</string>
+			<key>two</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة مع هذا الفلتر</string>
+			<key>zero</key>
+			<string>✓ تطابق %2$@ من أصل %1$@ صورة هذا الفلتر</string>
 		</dict>
 	</dict>
 </dict>

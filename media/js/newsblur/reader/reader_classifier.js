@@ -12,6 +12,11 @@ NEWSBLUR.ClassifierConstants = {
     // surface shows the same stacked-stories icon.
     MATCHING_STORIES_ICON: '<svg aria-hidden="true" viewBox="0 0 256 256" focusable="false"><path d="M224,104v96a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V104A16,16,0,0,1,48,88H208A16,16,0,0,1,224,104ZM56,72H200a8,8,0,0,0,0-16H56a8,8,0,0,0,0,16ZM72,40H184a8,8,0,0,0,0-16H72a8,8,0,0,0,0,16Z"/></svg>',
 
+    // reader_classifier.js: Robot glyph for natural language (AI) filters, shared by
+    // the content filter section header, the scoring explainer's AI Filter level
+    // and the AI pill in the scoring popover.
+    AI_FILTER_ICON: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>',
+
     // Scope toggle icons rendered inside every classifier pill (trainer,
     // manage tab, filter banner). One entry per scope with its tooltip
     // label and inline SVG source.
@@ -232,6 +237,7 @@ var classifier_prototype = {
         this.find_story_and_feed();
         this.make_modal_feed();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -267,6 +273,7 @@ var classifier_prototype = {
         this.handle_text_highlight();
         this.handle_regex_input();
         this.make_modal_title();
+        this.handle_scoring_info_hover();
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
@@ -1000,6 +1007,20 @@ var classifier_prototype = {
             ]);
         };
 
+        var make_ai_pill = function (label) {
+            return $.make('span', { className: 'NB-scoring-example-pill NB-scoring-pill-like NB-scoring-pill-ai' }, [
+                $.make('span', { className: 'NB-scoring-pill-ai-icon' }, NEWSBLUR.ClassifierConstants.AI_FILTER_ICON),
+                $.make('span', { className: 'NB-scoring-pill-label' }, label)
+            ]);
+        };
+
+        // reader_classifier.js: The AI example is the Daring Fireball sponsor post. Its
+        // "Non-apple related news" focus prompt matched, so it outranks the disliked
+        // sponsor author, but a super dislike on that author still hides it. Mirrors
+        // compute_story_score in reader_utils.js and apps/analyzer/models.py.
+        var ai_prompt = 'Non-apple related news';
+        var ai_author = 'DF Department of Commerce';
+
         return $.make('div', { className: 'NB-scoring-popover' }, [
             $.make('div', { className: 'NB-scoring-popover-content' }, [
                 // Section 1: Like beats dislikes
@@ -1026,6 +1047,27 @@ var classifier_prototype = {
                         make_mini_pill('Apple', 'tag', 'like'),
                         make_mini_pill('review', 'tag', 'dislike'),
                         make_super_pill('rumor')
+                    ]),
+                    $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-hidden' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/indicator-hidden.svg', className: 'NB-scoring-result-indicator' }),
+                        $.make('span', { className: 'NB-scoring-result-label' }, gettext('Story is always hidden'))
+                    ])
+                ]),
+                $.make('hr', { className: 'NB-scoring-divider' }),
+                // Section 3: An AI filter beats likes and dislikes, but not a super dislike
+                $.make('div', { className: 'NB-scoring-example' }, [
+                    $.make('div', { className: 'NB-scoring-example-header' }, gettext('An AI filter overrides likes and dislikes, but not a super dislike')),
+                    $.make('div', { className: 'NB-scoring-example-pills' }, [
+                        make_ai_pill(ai_prompt),
+                        make_mini_pill(ai_author, 'author', 'dislike')
+                    ]),
+                    $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-focus' }, [
+                        $.make('img', { src: '/media/embed/icons/nouns/indicator-focus.svg', className: 'NB-scoring-result-indicator' }),
+                        $.make('span', { className: 'NB-scoring-result-label' }, gettext('Story shows in Focus view'))
+                    ]),
+                    $.make('div', { className: 'NB-scoring-example-pills NB-scoring-example-pills-followup' }, [
+                        make_ai_pill(ai_prompt),
+                        make_super_pill(ai_author)
                     ]),
                     $.make('div', { className: 'NB-scoring-example-result NB-scoring-result-hidden' }, [
                         $.make('img', { src: '/media/embed/icons/nouns/indicator-hidden.svg', className: 'NB-scoring-result-indicator' }),
@@ -1186,7 +1228,7 @@ var classifier_prototype = {
         var story = this.story;
         var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
-        var ai_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></svg>';
+        var ai_svg = NEWSBLUR.ClassifierConstants.AI_FILTER_ICON;
 
         var $prompt_classifier = this.make_prompt_classifier(
             '<span class="NB-classifier-content-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', '', 'content'
@@ -1984,6 +2026,17 @@ var classifier_prototype = {
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike' }),
                         $.make('img', { src: '/media/embed/icons/nouns/thumbs-down.svg', className: 'NB-explainer-icon NB-explainer-icon-super-dislike NB-explainer-icon-super-dislike-shadow' })
                     ])
+                ]),
+                $.make('span', { className: 'NB-explainer-separator' }, [
+                    $.make('span', { className: 'NB-explainer-separator-line' }),
+                    $.make('span', { className: 'NB-explainer-separator-label' }, gettext('beats any')),
+                    $.make('span', { className: 'NB-explainer-separator-line' })
+                ]),
+                // reader_classifier.js: A matching AI filter outranks likes and dislikes but not
+                // a super dislike, the same order as compute_story_score in reader_utils.js.
+                $.make('span', { className: 'NB-explainer-level NB-explainer-level-ai' }, [
+                    $.make('span', { className: 'NB-classifier-title-ai' }, gettext('AI Filter')),
+                    $.make('span', { className: 'NB-explainer-icon-ai' }, NEWSBLUR.ClassifierConstants.AI_FILTER_ICON)
                 ]),
                 $.make('span', { className: 'NB-explainer-separator' }, [
                     $.make('span', { className: 'NB-explainer-separator-line' }),
@@ -3624,9 +3677,17 @@ var classifier_prototype = {
                 }
             }, 100);
         });
+    },
 
-        // Handle scoring info icon hover - show popover on mouseenter, hide on mouseleave
-        $modal.on('mouseenter', '.NB-explainer-scoring-info', function (e) {
+    // reader_classifier.js: Show the scoring popover while hovering the explainer's ⓘ.
+    // Called by runner_feed and runner_story, which both build the explainer in
+    // make_modal_title. The handlers are namespaced and unbound first, so calling
+    // this again never stacks a second set on the modal or the document.
+    handle_scoring_info_hover: function () {
+        var $modal = this.$modal;
+
+        $modal.off('.scoring_info');
+        $modal.on('mouseenter.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover') || $icon.closest('.NB-classifier-explainer').find('.NB-scoring-popover');
 
@@ -3648,7 +3709,7 @@ var classifier_prototype = {
             $icon.data('popover', $popover);
         });
 
-        $modal.on('mouseleave', '.NB-explainer-scoring-info', function (e) {
+        $modal.on('mouseleave.scoring_info', '.NB-explainer-scoring-info', function (e) {
             var $icon = $(this);
             var $popover = $icon.data('popover');
 
@@ -3661,7 +3722,8 @@ var classifier_prototype = {
             }, 100);
         });
 
-        $(document).on('mouseleave', '.NB-scoring-popover', function (e) {
+        $(document).off('mouseleave.scoring_info');
+        $(document).on('mouseleave.scoring_info', '.NB-scoring-popover', function (e) {
             var $popover = $(this);
 
             setTimeout(function () {

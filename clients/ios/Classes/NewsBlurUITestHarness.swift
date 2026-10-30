@@ -83,7 +83,7 @@ final class NewsBlurUITestHarness {
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
-        case "preferences":
+        case "preferences", "usage-billing":
             installReaderFixtureNetwork(on: appDelegate)
             ReaderUITestFixtures.prepareAppState(for: appDelegate)
             appDelegate.replaceUnreadCounts(forTesting: ReaderUITestFixtures.unreadCountRows())
@@ -155,6 +155,9 @@ final class NewsBlurUITestHarness {
         case "preferences":
             didScheduleScenario = true
             configurePreferences(on: appDelegate, remainingRetries: 20)
+        case "usage-billing":
+            didScheduleScenario = true
+            configureUsageBilling(on: appDelegate, remainingRetries: 200)
         case let screen? where readerScenario(for: screen) != nil:
             didScheduleScenario = true
             configureReader(
@@ -363,6 +366,42 @@ final class NewsBlurUITestHarness {
         }
     }
 
+    /// NewsBlurUITestHarness.swift opens UsageBillingView.swift over the fixture account once its profile has loaded.
+    private static func configureUsageBilling(on appDelegate: NewsBlurAppDelegate, remainingRetries: Int) {
+        guard remainingRetries > 0 else { return }
+        loadFixtureFeedList(on: appDelegate)
+        guard didFinishReaderFeedLoad, appDelegate.splitViewController?.viewIfLoaded?.window != nil else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                configureUsageBilling(on: appDelegate, remainingRetries: remainingRetries - 1)
+            }
+            return
+        }
+        appDelegate.feedsViewController.loadWorkItem?.cancel()
+        appDelegate.showUsageBillingDialog()
+    }
+
+    /// NewsBlurUITestHarness.swift opens the story trainer once the AI classifier fixture story is on screen.
+    private static func openStoryTrainerWhenReady(on appDelegate: NewsBlurAppDelegate, deadline: TimeInterval) {
+        let page = appDelegate.storyPagesViewController?.currentPage
+        if appDelegate.activeStory?["story_hash"] as? String == "ui-story-swift-1",
+           page?.readyForPresentation == true, page?.viewIfLoaded?.window != nil {
+            appDelegate.openTrainStory(appDelegate.storyPagesViewController.settingsPresentationBarButton)
+            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-draft") {
+                // NewsBlurUITestHarness.swift answers these prompt tests from its fixture server, never a real AI provider.
+                let prompts = appDelegate.trainerViewController.aiPrompts
+                prompts.setDraft("Apple earnings coverage", for: .content)
+                prompts.setDraft("Charts and graphs", for: .image)
+                prompts.runTest(.content, storyHash: "ui-story-swift-1", feedId: ReaderUITestFixtures.swiftFeedId)
+                prompts.runTest(.image, storyHash: "ui-story-swift-1", feedId: ReaderUITestFixtures.swiftFeedId)
+            }
+            return
+        }
+        guard ProcessInfo.processInfo.systemUptime < deadline else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            openStoryTrainerWhenReady(on: appDelegate, deadline: deadline)
+        }
+    }
+
     private static func configureReader(
         on appDelegate: NewsBlurAppDelegate,
         scenario: ReaderScenario,
@@ -493,6 +532,9 @@ final class NewsBlurUITestHarness {
             appDelegate.feedsViewController.selectFeed(ReaderUITestFixtures.swiftFeedId, inFolder: CookingMarketingFixtures.enabled ? "Cooking" : "Tech ▸ Swift")
         case .swiftStoryOne:
             appDelegate.loadFeed(ReaderUITestFixtures.swiftFeedId, withStory: CookingMarketingFixtures.enabled ? "cooking-pasta-1" : "ui-story-swift-1", animated: false)
+            if ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-open-trainer") {
+                openStoryTrainerWhenReady(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
+            }
 #if DEBUG && targetEnvironment(simulator)
             if CookingMarketingFixtures.enabled && ProcessInfo.processInfo.arguments.contains("-newsblur-marketing-fullscreen") {
                 prepareMarketingFullscreenReader(on: appDelegate, deadline: ProcessInfo.processInfo.systemUptime + 60)
@@ -588,6 +630,13 @@ private enum ReaderUITestFixtures {
     static let swiftClusterMatchStoryHash = "ui-story-swift-cluster-match"
     static let swiftClusterRelatedStoryHash = "ui-story-swift-cluster-related"
     private static let bulkReadEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-bulk-read")
+    // NewsBlurUITestHarness.swift's natural language classifier fixtures (AIClassifiers.swift): saved prompts on Swift
+    // Weekly, matched prompts on its first story, and a usage billing account unless -newsblur-ui-test-ai-unbilled.
+    private static let aiClassifiersEnabled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-classifiers")
+    private static let aiUnbilled = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-unbilled")
+    private static let aiLimitReached = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-ai-limit-reached")
+    /// Moves Swift Weekly out of Tech ▸ Swift to the top level, where the trainer has no folder scope.
+    private static let swiftFeedAtTopLevel = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-top-level-site")
     private static let cachedImagePaging = ProcessInfo.processInfo.arguments.contains("-newsblur-ui-test-cached-image-paging")
     private static let cachedPagingImageURLs = (0..<3).map { "https://ui-test.newsblur.example/paging-cache-\($0).jpg" }
     private static let bulkReadLock = NSLock()
@@ -742,11 +791,20 @@ private enum ReaderUITestFixtures {
                     "story_clustering": true,
                     "cluster_mode": "related",
                 ],
+                "is_usage_billing": aiClassifiersEnabled && !aiUnbilled,
+                "is_self_hosted_ai": false,
+                "can_use_ai_classifiers": aiClassifiersEnabled && !aiUnbilled,
+                "usage_billing_limit": aiClassifiersEnabled && !aiUnbilled ? 10.0 : NSNull(),
             ],
             "activities": [],
             "dashboard_rivers": [],
             "social_feeds": [],
-            "flat_folders_with_inactive": [
+            "flat_folders_with_inactive": swiftFeedAtTopLevel ? [
+                " ": [Int(swiftFeedId)!],
+                "Tech": [Int(techFeedId)!],
+                "Tech ▸ Swift": [Int(swiftClusterFeedId)!],
+                "Culture": [Int(cultureFeedId)!],
+            ] : [
                 "Tech": [Int(techFeedId)!],
                 "Tech ▸ Swift": [Int(swiftFeedId)!, Int(swiftClusterFeedId)!],
                 "Culture": [Int(cultureFeedId)!],
@@ -827,6 +885,8 @@ private enum ReaderUITestFixtures {
                 Thread.sleep(forTimeInterval: min(max(delay, 0), 5))
             }
             payload = feedListResponse()
+        } else if aiClassifiersEnabled, let aiPayload = aiClassifierResponse(for: url.path) {
+            payload = aiPayload
         } else if url.path == "/reader/refresh_feeds" || url.path == "/reader/feed_unread_count" {
             payload = refreshFeedsResponse()
         } else if url.path == "/reader/logout" {
@@ -975,14 +1035,72 @@ private enum ReaderUITestFixtures {
     }
 
     private static func feedStoriesResponse(feedID: String?, stories: [[String: Any]]) -> [String: Any] {
-        [
+        let usesAIClassifiers = aiClassifiersEnabled && feedID == swiftFeedId
+        return [
             "feed_id": feedID ?? "",
-            "stories": stories,
-            "classifiers": [:],
+            "stories": usesAIClassifiers ? stories.map(addingAIClassifierMatches) : stories,
+            "classifiers": usesAIClassifiers ? aiFeedClassifiers : [:],
             "feed_tags": [],
             "feed_authors": [],
             "user_profiles": [],
         ]
+    }
+
+    private static let aiFeedClassifiers: [String: Any] = [
+        "feeds": [:], "authors": [:], "titles": [:], "tags": [:], "texts": [:], "urls": [:],
+        "prompts": ["Swift concurrency deep dives": 1, "Sponsored posts and giveaways": -1],
+        "prompts_scope": ["Sponsored posts and giveaways": ["scope": "global", "folder_name": ""]],
+        "image_prompts": ["Charts and graphs": 1],
+        "image_prompts_scope": [:],
+    ]
+
+    private static func addingAIClassifierMatches(_ story: [String: Any]) -> [String: Any] {
+        guard story["story_hash"] as? String == "ui-story-swift-1" else { return story }
+        var matched = story
+        matched["prompt_classifiers"] = [
+            ["prompt": "Swift concurrency deep dives", "score": 1, "include_images": false],
+            ["prompt": "Charts and graphs", "score": 1, "include_images": true],
+        ]
+        var intelligence = story["intelligence"] as? [String: Any] ?? [:]
+        intelligence["prompt"] = 1
+        intelligence["author"] = -1
+        matched["intelligence"] = intelligence
+        matched["image_urls"] = ["Lyric", "Shiloh"].compactMap { Bundle.main.url(forResource: $0, withExtension: "jpg")?.absoluteString }
+        return matched
+    }
+
+    private static func aiClassifierResponse(for path: String) -> [String: Any]? {
+        switch path {
+        case "/classifier/ai_classifier_usage":
+            if aiUnbilled { return ["code": 0, "can_use_ai": false] }
+            return ["code": 0, "can_use_ai": true, "avg_cost_per_text": 0.00042, "avg_cost_per_image": 0.0021,
+                    "is_limit_reached": aiLimitReached, "current_cycle_spend": aiLimitReached ? 10.0 : 3.42,
+                    "usage_billing_limit": 10.0]
+        case "/profile/usage_billing_history":
+            if aiUnbilled { return ["invoices": [], "upcoming_invoice": NSNull()] }
+            return [
+                "current_cycle_spend": aiLimitReached ? 10.0 : 8.42, "usage_billing_limit": 10.0, "is_limit_reached": aiLimitReached,
+                "cycle_start": "2026-10-01", "cycle_end": "2026-10-31",
+                "upcoming_invoice": [
+                    "date": "2026-11-01", "amount": 8.42, "status": "upcoming",
+                    "line_items": [
+                        ["description": "Natural language text classifier", "quantity": 14_820, "amount": 6.23],
+                        ["description": "Natural language image classifier", "quantity": 1_043, "amount": 2.19],
+                    ],
+                ],
+                "invoices": [
+                    ["date": "2026-10-01", "amount": 5.17, "amount_paid": 5.17, "status": "paid",
+                     "hosted_invoice_url": "https://ui-test.newsblur.example/invoice/1",
+                     "line_items": [["description": "Natural language text classifier", "quantity": 12_310, "amount": 5.17]]],
+                ],
+            ]
+        case "/classifier/save", "/profile/save_usage_billing_limit":
+            return ["code": 1, "limit": 10.0]
+        case "/classifier/test_prompt":
+            return ["code": 0, "classification": 1, "image_results": [1, 0]]
+        default:
+            return nil
+        }
     }
 
     private static func pageNumber(from url: URL) -> Int {
@@ -1015,6 +1133,7 @@ private enum ReaderUITestFixtures {
             "ng": 0,
             "favicon_fade": "707070",
             "favicon_color": "707070",
+            "stories_last_month": id == swiftFeedId ? 120 : 40,
         ]
     }
 

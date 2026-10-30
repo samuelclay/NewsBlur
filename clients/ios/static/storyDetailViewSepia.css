@@ -330,3 +330,9 @@ html[dir="rtl"] .NB-story blockquote:dir(rtl) {
 span.NB-listen-run.NB-listen-highlight {
     box-shadow: none;
 }
+
+
+/* AI Classifier Pills: storyDetailViewSepia.css warms the pill edge to match the sepia tags */
+.NB-story-ai-classifier {
+    border-color: rgba(255, 255, 255, .3) transparent rgba(60, 50, 38, .15);
+}

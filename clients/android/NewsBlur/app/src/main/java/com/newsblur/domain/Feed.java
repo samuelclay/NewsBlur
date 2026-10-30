@@ -64,6 +64,10 @@ public class Feed implements Comparable<Feed>, Serializable {
 	@SerializedName("average_stories_per_month")
     public int storiesPerMonth;
 
+    // StoryIntelTrainerFragment.java estimates AI classifier costs from this, like the web trainer.
+    @SerializedName("stories_last_month")
+    public int storiesLastMonth;
+
 	@SerializedName("feed_title")
 	public String title;
 
@@ -97,6 +101,7 @@ public class Feed implements Comparable<Feed>, Serializable {
 		values.put(DatabaseConstants.FEED_OPENS, feedOpens);
 		values.put(DatabaseConstants.FEED_LAST_STORY_DATE, lastStoryDate);
 		values.put(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH, storiesPerMonth);
+        values.put(DatabaseConstants.FEED_STORIES_LAST_MONTH, storiesLastMonth);
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
         values.put(DatabaseConstants.FEED_NOTIFICATION_TYPES, DatabaseConstants.flattenStringList(notificationTypes));
@@ -125,6 +130,8 @@ public class Feed implements Comparable<Feed>, Serializable {
 		feed.subscribers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.feedOpens = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_OPENS));
 		feed.storiesPerMonth = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_AVERAGE_STORIES_PER_MONTH));
+        int storiesLastMonthIndex = cursor.getColumnIndex(DatabaseConstants.FEED_STORIES_LAST_MONTH);
+        if (storiesLastMonthIndex >= 0) feed.storiesLastMonth = cursor.getInt(storiesLastMonthIndex);
 		feed.lastStoryDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_LAST_STORY_DATE));
 		feed.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
         feed.lastUpdated = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
