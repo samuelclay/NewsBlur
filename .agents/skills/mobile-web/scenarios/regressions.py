@@ -88,6 +88,7 @@ def check_regressions(ctx, feed_id):
         stuck,
     )
     ctx.set_layout("list")
+    check_story_list_pills(ctx)
     check_story_iframe_sandbox(ctx, feed_id)
     check_story_toolbar_fits(ctx)
     check_cross_feed_back(ctx, feed_id)
@@ -118,7 +119,9 @@ def check_touch_hover(ctx, feed_id):
     press only once a finger rests on them. Expects to be on the story list."""
     feed_row = f".NB-feedlist .feed[data-id='{feed_id}']"
     for theme in ("light", "dark"):
-        ctx.evaluate(f"(() => {{ document.body.classList.toggle('NB-dark', {str(theme == 'dark').lower()}); }})()")
+        ctx.evaluate(
+            f"(() => {{ document.body.classList.toggle('NB-dark', {str(theme == 'dark').lower()}); }})()"
+        )
         for layout in ("list", "grid"):
             ctx.set_layout(layout)
             changes = hover_changes(ctx, STORY_ROW)
@@ -178,7 +181,9 @@ def check_story_toolbar_fits(ctx):
         page.set_viewport_size({"width": width, "height": 700})
         ctx.wait(400)
         fit = ctx.evaluate(TOOLBAR_FIT)
-        ctx.check(f"every story toolbar button fits at {width}px", not fit["clipped"] and fit["label_visible"], fit)
+        ctx.check(
+            f"every story toolbar button fits at {width}px", not fit["clipped"] and fit["label_visible"], fit
+        )
     ctx.evaluate(
         "(() => { document.querySelector('.NB-mobile-story-next-unread span').textContent = "
         "'N\u00e4chste ungelesene Geschichte'; })()"
@@ -238,6 +243,115 @@ def check_cross_feed_back(ctx, feed_id):
         ctx.wait(900)
         ctx.check("and its back button returns to the first feed's list", ctx.state()["screen"] == "titles")
     ctx.set_layout("list")
+
+
+PILL_BAR = """(() => {
+  var pane = document.querySelector('.right-pane').getBoundingClientRect();
+  var row = document.querySelector('.right-pane .NB-story-titles-header > .feed, .right-pane .NB-story-titles-header > .NB-folder');
+  var names = ['NB-feedbar-discover-container', 'NB-feedbar-options-container', 'NB-search-container',
+               'NB-story-title-indicator', 'NB-feedbar-mark-feed-read-container'];
+  var pills = names.map(function (name) {
+    var el = row.querySelector('.' + name);
+    if (!el || !el.offsetWidth) return null;
+    var r = el.getBoundingClientRect();
+    return {name: name, left: r.left, right: r.right, top: Math.round(r.top), bottom: Math.round(r.bottom)};
+  }).filter(Boolean);
+  var options = row.querySelector('.NB-feedbar-options');
+  row.classList.add('NB-mobile-options-measure');
+  var natural = options.offsetWidth, room = options.parentNode.clientWidth;
+  row.classList.remove('NB-mobile-options-measure');
+  var player = document.querySelector('.NB-media-player.NB-mobile-player');
+  var player_box = player && player.offsetWidth && getComputedStyle(player).display !== 'none' ? player.getBoundingClientRect() : null;
+  return {
+    pane: {left: pane.left, right: pane.right, bottom: pane.bottom},
+    pills: pills,
+    options_fits: natural <= room + 1,
+    options_mode: row.classList.contains('NB-mobile-options-icon') ? 'icon' :
+      row.classList.contains('NB-mobile-options-compact') ? 'compact' : 'full',
+    player_bottom: player_box && Math.round(player_box.bottom)
+  };
+})()"""
+
+
+def check_story_list_pills(ctx):
+    """The story list's controls were a single scrolling row under the nav bar that hid mark read
+    off screen. They now float at the bottom as the iOS app's pills. Expects the story list."""
+    page = ctx.page
+    for width in (393, 360, 320):
+        page.set_viewport_size({"width": width, "height": 760})
+        ctx.wait(500)
+        bar = ctx.evaluate(PILL_BAR)
+        pills, pane = bar["pills"], bar["pane"]
+        ordered = all(a["right"] <= b["left"] for a, b in zip(pills, pills[1:]))
+        one_row = len({pill["top"] for pill in pills}) == 1
+        inside = pills[0]["left"] >= pane["left"] and pills[-1]["right"] <= pane["right"]
+        at_bottom = pane["bottom"] - pills[0]["bottom"] <= 12
+        ctx.check(
+            f"the story list's pills sit in one row along the bottom at {width}px",
+            ordered and one_row and inside and at_bottom and pills[-1]["name"].startswith("NB-feedbar-mark"),
+            bar,
+        )
+        ctx.check(f"the story options pill never clips its label at {width}px", bar["options_fits"], bar)
+        if bar["player_bottom"]:
+            ctx.check(
+                f"the Listen player sits above the pills at {width}px",
+                bar["player_bottom"] <= pills[0]["top"],
+                bar,
+            )
+    page.set_viewport_size({"width": ctx.viewport["width"], "height": ctx.viewport["height"]})
+    ctx.wait(500)
+
+    clearance = ctx.evaluate(
+        "(() => { var list = document.querySelector('#story_titles'); list.scrollTop = list.scrollHeight; "
+        "var rows = list.querySelectorAll('.NB-story-title'); var last = rows[rows.length - 1].getBoundingClientRect(); "
+        "var bar = document.querySelector('.right-pane .NB-feedbar-mark-feed-read-container, "
+        ".right-pane .NB-search-container').getBoundingClientRect(); "
+        "return {last_bottom: Math.round(last.bottom), bar_top: Math.round(bar.top)}; })()"
+    )
+    ctx.check(
+        "the last story scrolls clear of the pills",
+        clearance["last_bottom"] <= clearance["bar_top"],
+        clearance,
+    )
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
+
+    page.locator(".right-pane .NB-search-container").tap()
+    ctx.wait(500)
+    field = ctx.evaluate(
+        "(() => { var input = document.querySelector('.right-pane .NB-story-title-search-input'); "
+        "var r = input.getBoundingClientRect(); var bar = document.querySelector('.right-pane .NB-search-container').getBoundingClientRect(); "
+        "var hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); "
+        "return {focused: document.activeElement === input, width: Math.round(r.width), above: r.bottom <= bar.top, "
+        "uncovered: hit === input, pane: document.querySelector('.right-pane').clientWidth}; })()"
+    )
+    ctx.check(
+        "tapping search opens an uncovered field across the bar above the pills",
+        field["focused"] and field["above"] and field["uncovered"] and field["width"] >= field["pane"] - 40,
+        field,
+    )
+    ctx.evaluate("(() => { document.activeElement.blur(); })()")
+    ctx.wait(400)
+    ctx.check(
+        "an empty search closes again",
+        not ctx.evaluate(
+            "document.querySelector('.right-pane .NB-story-titles-header').classList.contains('NB-searching')"
+        ),
+    )
+
+    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
+    ctx.wait(300)
+    days = ctx.evaluate(
+        "(() => ({days: $('.right-pane .NB-feedbar-mark-feed-read-time:visible').length, "
+        "others: $('.right-pane .NB-feedbar-options-container:visible, .right-pane .NB-search-container:visible').length}))()"
+    )
+    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
+    ctx.wait(300)
+    closed = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-time:visible').length")
+    ctx.check(
+        "+ lays the mark read day choices across the bar and closes them",
+        days["days"] == 4 and days["others"] == 0 and closed == 0,
+        (days, closed),
+    )
 
 
 def check_story_iframe_sandbox(ctx, feed_id):

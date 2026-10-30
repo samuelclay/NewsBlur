@@ -55,6 +55,8 @@ Other data does change and is not restored: opening stories marks them read, and
 - **`page.evaluate` invokes a snippet whose value is a function.** Wrap snippets that assign functions in `(() => { ... })()`.
 - **A feed can appear in several folders.** Locate rows with `>> visible=true` (`ctx.feed_row` does).
 - **Emulated Chromium is not Safari.** iOS Safari's own edge swipe-back, rubber banding and the soft keyboard still need a real iPhone. When the browser animates its own swipe-back, popstate carries `hasUAVisualTransition` and the layout switches screens without a second slide.
+- **CDP touch events never set `:hover` or `:active`**, but real phones apply both the moment a thumb lands. To test what a touch looks like, force the states with `CSS.forcePseudoState` (`hover_changes` in `scenarios/regressions.py`).
+- **A `backdrop-filter`, like `transform` or `filter`, makes an element the containing block** of its absolutely positioned descendants. The story list's search pill drops its glass while its field is open for that reason.
 
 ## Screenshots on a PR
 

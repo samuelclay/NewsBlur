@@ -10,6 +10,7 @@
 body.NB-mobile {
     --nb-mobile-bar-height: 48px;
     --nb-mobile-toolbar-height: 52px;
+    --nb-mobile-titles-bar-space: 64px;
     --nb-mobile-bar-bg: #F3F3EE;
     --nb-mobile-bar-border: #dbdbda;
     --nb-mobile-bar-text: #303030;
@@ -17,6 +18,9 @@ body.NB-mobile {
     --nb-mobile-tint: #4a6fa5;
     --nb-mobile-tint-active: rgba(74, 111, 165, 0.12);
     --nb-mobile-row-pressed: #EEEEE9;
+    --nb-mobile-glass-bg: rgba(250, 250, 247, 0.93);
+    --nb-mobile-glass-edge: rgba(0, 0, 0, 0.1);
+    --nb-mobile-pill-icon: #5f605b;
     --nb-mobile-screen-bg: #F7F8F5;
     --nb-mobile-story-bg: #FFFFFF;
     --nb-mobile-shade: rgba(0, 0, 0, 0.18);
@@ -43,6 +47,9 @@ body.NB-mobile.NB-dark {
     --nb-mobile-tint: #8fb4e6;
     --nb-mobile-tint-active: rgba(143, 180, 230, 0.16);
     --nb-mobile-row-pressed: #202223;
+    --nb-mobile-glass-bg: rgba(58, 60, 62, 0.93);
+    --nb-mobile-glass-edge: rgba(255, 255, 255, 0.1);
+    --nb-mobile-pill-icon: #d0d0cc;
     --nb-mobile-screen-bg: #2a2b2d;
     --nb-mobile-story-bg: #303030;
     --nb-mobile-shade: rgba(0, 0, 0, 0.45);
@@ -431,15 +438,22 @@ body.NB-mobile .NB-layout .right-pane {
     background-color: var(--nb-mobile-screen-bg);
 }
 
+/* mobile.css: the story list's controls float over the bottom of the list as glass pills, the
+   way the iOS app's story titles bar does on iPhone. Touches between the pills reach the list. */
 body.NB-mobile .right-pane > .content-north {
-    position: relative !important;
-    inset: auto !important;
+    position: absolute !important;
+    inset: auto 0 0 0 !important;
     width: auto !important;
     height: auto !important;
-    flex: none;
     display: block !important;
-    z-index: 2 !important;
+    z-index: 3 !important;
     overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 10px calc(8px + var(--nb-mobile-safe-bottom)) !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
 }
 
 body.NB-mobile .right-pane > .content-south,
@@ -471,7 +485,7 @@ body.NB-mobile .content-pane > #story_titles {
     overflow-x: hidden !important;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: var(--nb-mobile-safe-bottom);
+    padding-bottom: calc(var(--nb-mobile-titles-bar-space) + var(--nb-mobile-safe-bottom));
     box-sizing: border-box;
 }
 
@@ -482,33 +496,36 @@ body.NB-mobile .content-pane > #ask_ai_pane {
     display: none !important;
 }
 
-/* mobile.css: the feed bar under the nav bar keeps its controls (story order, search, mark
-   read, hidden stories, related sites) in one scrolling row. The nav bar above already shows
-   the title and icon, so those go. */
+/* mobile.css: the pills, in the iOS order: related sites, story options, search, hidden
+   stories, and the mark read split button on the trailing edge. The nav bar above already shows
+   the title and icon, so those go. The controls stay inside their views (feed_title_view.js,
+   folder_view.js, story_titles_header_view.js) so their click handlers still apply. */
 body.NB-mobile .right-pane .NB-story-titles-header {
     padding: 0;
     margin: 0 !important;
     overflow: visible;
+    background: none;
+    border: 0;
+    pointer-events: none;
+    container-type: inline-size;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header > .feed,
 body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     flex-wrap: nowrap;
     height: auto;
-    min-height: 40px;
-    padding: 4px 12px;
-    box-sizing: border-box;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-}
-
-body.NB-mobile .right-pane .NB-story-titles-header > .feed::-webkit-scrollbar,
-body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder::-webkit-scrollbar {
-    display: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+    pointer-events: none;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header > .feed > *,
@@ -517,46 +534,486 @@ body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > * {
     flex: none;
     margin: 0 !important;
     position: relative;
+    pointer-events: auto;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header .feed_counts,
-body.NB-mobile .right-pane .NB-story-titles-header .feed_favicon,
+body.NB-mobile .right-pane .NB-story-titles-header > .feed > .feed_favicon,
 body.NB-mobile .right-pane .NB-story-titles-header .feed_title,
 body.NB-mobile .right-pane .NB-story-titles-header .folder_title_text,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-highlight,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-exception-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-unfetched-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-manage-icon {
     display: none !important;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container { order: 1; }
-body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container { order: 2; }
-body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator { order: 3; }
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container { order: 4; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container { order: 1; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container { order: 2; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container { order: 3; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator { order: 4; }
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
     order: 5;
     margin-inline-start: auto !important;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options {
-    display: inline-flex;
-    align-items: center;
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+    box-sizing: border-box;
+    height: 44px;
+    min-width: 44px;
+    margin: 0;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: var(--nb-mobile-bar-text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 44px;
+    text-transform: uppercase;
     white-space: nowrap;
+    cursor: pointer;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-pill-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container::before,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator::before,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand::before,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read .NB-icon {
+    flex: none;
+    float: none;
+    margin: 0;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: no-repeat center / contain;
+    mask: no-repeat center / contain;
+}
+
+/* Related sites: just its icon on a phone, where the other pills need the room, and the first
+   three related favicons beside it on a wider screen. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: 44px;
+    overflow: hidden;
+    padding: 0 13px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-icon {
+    width: 18px;
+    height: 18px;
+    margin-inline-end: 3px;
+    -webkit-mask-image: url('/media/img/icons/nouns/discover.svg');
+    mask-image: url('/media/img/icons/nouns/discover.svg');
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .feed_favicon {
+    display: none;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border-radius: 3px;
+    filter: none;
+    opacity: 0.85;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-text,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .NB-icon {
+    display: none;
+}
+
+@container (min-width: 480px) {
+    body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+        width: auto;
+    }
+
+    body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .feed_favicon:nth-of-type(-n+3) {
+        display: block;
+    }
+}
+
+/* Story options: the label truncates before anything else does. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 44px;
+    background: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 11px 0 13px;
 }
 
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon {
-    float: none;
-    order: 2;
+    float: right;
+    width: 10px;
+    height: 44px;
+    margin-inline-start: 6px !important;
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
+    -webkit-mask-size: 10px;
+    mask-size: 10px;
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-measure .NB-feedbar-options {
+    flex: none;
+    width: max-content;
+    max-width: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-compact .NB-feedbar-options-order {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options {
+    width: 44px;
+    padding: 0;
+    font-size: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options .NB-icon {
+    float: none;
+    width: 44px;
     margin: 0 !important;
-    float: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options > :not(.NB-icon) {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-feedbar-notifications-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-feedbar-auto-mark-read-icon {
+    display: inline-block;
+    float: none;
+    vertical-align: middle;
+    margin: -2px 0 0;
+}
+
+/* Search: a round button. The input covers it, so a tap focuses the field and brings up the
+   keyboard directly. Focused or holding a query (feed_search_view.js adds NB-searching), the
+   field opens as its own row above the pills. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container {
+    width: 44px;
+    padding: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container::before {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 44px;
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+    -webkit-mask-size: 18px;
+    mask-size: 18px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search {
+    position: absolute;
+    inset: 0;
+    float: none;
+    margin: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    opacity: 0;
+    font-size: 16px;
+    transition: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search .NB-search-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search .NB-search-close {
+    display: none;
+}
+
+/* A backdrop-filter would make the pill the containing block of the field it opens. */
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container {
+    background: var(--nb-mobile-tint);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container::before {
+    background: var(--nb-mobile-glass-bg);
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search {
+    position: static;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-feedbar-options-container,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-feedbar-discover-container {
+    display: flex;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search-input {
+    inset: auto 0 calc(100% + 8px) 0;
+    width: auto;
+    height: 40px;
+    padding: 0 40px 0 38px;
+    border-radius: 20px;
+    opacity: 1;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: var(--nb-mobile-bar-text);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-icon,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-close {
+    display: block;
+    position: absolute;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: calc(100% + 8px + 11px);
+    width: 18px;
+    height: 18px;
+    opacity: 1;
+    z-index: 1;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: no-repeat center / contain;
+    mask: no-repeat center / contain;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-icon {
+    inset-inline-start: 13px;
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+    pointer-events: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-close {
+    inset-inline-end: 12px;
+    -webkit-mask-image: url('/media/img/icons/nouns/close.svg');
+    mask-image: url('/media/img/icons/nouns/close.svg');
+}
+
+/* Hidden stories: an eye and the count, shown only while the feed's filter hides some
+   (story_titles_header_view.js toggles it). An open eye-slash hides them again. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator {
+    padding: 0 10px 0 9px;
+    font-size: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 44px;
+    margin-inline-end: 4px;
+    vertical-align: top;
+    -webkit-mask-image: url('/media/img/icons/nouns/eye.svg');
+    mask-image: url('/media/img/icons/nouns/eye.svg');
+    -webkit-mask-size: 20px;
+    mask-size: 20px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator.unread_threshold_negative::before {
+    -webkit-mask-image: url('/media/img/icons/nouns/eye-slash.svg');
+    mask-image: url('/media/img/icons/nouns/eye-slash.svg');
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .NB-story-title-indicator-text {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .NB-story-title-indicator-count {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .feed_counts_floater {
+    display: inline-flex;
+    align-items: center;
+    float: none;
+    height: 44px;
+    padding: 0;
     font-size: 11px;
-    line-height: 20px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .feed_counts_floater .unread_count {
+    float: none;
+    margin: 0;
+}
+
+/* Mark read: a split button, + for the day options and the checkmark to mark everything. The +
+   lays the 1d to 14d choices out across the bar (mobile_layout_view.js toggle_mark_read_days). */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 44px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-time {
+    position: relative;
+    inset: auto;
+    float: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    opacity: 1;
+    z-index: auto;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand {
+    order: 1;
+    box-sizing: border-box;
+    width: 30px;
+    padding-inline-start: 4px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-expand::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    -webkit-mask-image: url('/media/img/icons/nouns/add.svg');
+    mask-image: url('/media/img/icons/nouns/add.svg');
+}
+
+/* reader.js show_mark_read_confirm hides then shows the pill's buttons, and jQuery's show()
+   leaves the hidden day choices an inline display, so theirs is !important. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-time {
+    order: 2;
+    display: none !important;
+    width: 40px;
+    color: var(--nb-mobile-tint);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read {
+    order: 3;
+    width: 48px;
+    border-inline-start: 0.5px solid var(--nb-mobile-glass-edge);
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read .NB-icon {
+    width: 22px;
+    height: 22px;
+    -webkit-mask-image: url('/media/img/icons/nouns/mark-read.svg');
+    mask-image: url('/media/img/icons/nouns/mark-read.svg');
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days > * > :not(.NB-feedbar-mark-feed-read-container),
+body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) > * > :not(.NB-feedbar-mark-feed-read-container) {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-container,
+body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) .NB-feedbar-mark-feed-read-container {
+    flex: 1 1 auto;
+    margin-inline-start: 0 !important;
+}
+
+/* The mark read confirmation (reader.js show_mark_read_confirm) takes the whole bar. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container:has(.NB-feedbar-mark-feed-read-confirm) > :not(.NB-feedbar-mark-feed-read-confirm) {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    gap: 8px;
+    min-width: 0;
+    height: 44px;
+    margin: 0;
+    padding: 0 6px 0 16px;
+    float: none;
+    font-size: 13px;
+    line-height: 32px;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--nb-mobile-bar-text);
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-no {
+    flex: none;
+    height: 32px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 32px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-yes {
+    background: var(--nb-mobile-tint);
+    color: #FFFFFF;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-no {
+    background: var(--nb-mobile-tint-active);
+    color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-confirm .NB-confirm-shortcut {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-time {
+    display: flex !important;
+    flex: 1 1 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-expand {
+    width: 44px;
+    padding: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days .NB-feedbar-mark-feed-read-expand::before {
+    -webkit-mask-image: url('/media/img/icons/nouns/close.svg');
+    mask-image: url('/media/img/icons/nouns/close.svg');
 }
 
 /* ================= */
@@ -1365,6 +1822,20 @@ body.NB-mobile.NB-mobile-screen-is-story {
     --nb-mobile-player-offset: calc(var(--nb-mobile-toolbar-height) + 8px);
 }
 
+/* mobile.css: on the story list it clears the floating pills, except in Add + Discover, which
+   replaces the list and its pills. */
+body.NB-mobile.NB-mobile-screen-is-titles {
+    --nb-mobile-player-offset: var(--nb-mobile-titles-bar-space);
+}
+
+body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-story-titles-header.NB-searching) {
+    --nb-mobile-player-offset: calc(var(--nb-mobile-titles-bar-space) + 48px);
+}
+
+body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-layout.NB-add-site-active) {
+    --nb-mobile-player-offset: 8px;
+}
+
 body.NB-mobile .NB-media-player.NB-mobile-player {
     position: fixed;
     left: 8px;
@@ -1489,4 +1960,8 @@ body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles,
 body.NB-mobile.NB-mobile-has-player .NB-mobile-story-page,
 body.NB-mobile.NB-mobile-has-player #NB-splash > .NB-splash-modules {
     padding-bottom: 88px !important;
+}
+
+body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles {
+    padding-bottom: calc(88px + var(--nb-mobile-titles-bar-space)) !important;
 }

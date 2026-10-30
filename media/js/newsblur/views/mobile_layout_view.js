@@ -19,7 +19,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     initialize: function () {
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
-            'handle_long_press_click');
+            'handle_long_press_click', 'handle_mark_read_days', 'fit_pills');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -62,6 +62,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             this.media_query.addListener(this.check_mode);
         }
         window.addEventListener('popstate', this.handle_popstate);
+        window.addEventListener('resize', _.debounce(this.fit_pills, 100));
         document.addEventListener('touchstart', this.handle_touchstart, { passive: true });
         document.addEventListener('touchmove', this.handle_touchmove, { passive: false });
         document.addEventListener('touchend', this.handle_touchend, { passive: true });
@@ -620,6 +621,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     update_titles_bar: function () {
         if (!this.$titles_bar) return;
+        // The pill bar's header element outlives the story list it controls, and the list's own
+        // controls render right after this.
+        $('.right-pane .NB-story-titles-header').removeClass('NB-mobile-mark-read-days');
+        _.defer(this.fit_pills);
         var feed_id = NEWSBLUR.reader.active_feed;
         var title = feed_id && NEWSBLUR.reader.feed_title(feed_id);
         this.$titles_bar.find('.NB-mobile-bar-title-text').text(title || '');
@@ -895,6 +900,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.$body.on('touchmove.mobile_long_press touchend.mobile_long_press ' +
             'touchcancel.mobile_long_press', this.handle_long_press_cancel);
         document.addEventListener('click', this.handle_long_press_click, true);
+        document.addEventListener('click', this.handle_mark_read_days, true);
         // Android Chrome fires its own contextmenu on a long press. The long press above already
         // opened the menu, and letting this through would toggle it shut again.
         document.addEventListener('contextmenu', _.bind(function (e) {
@@ -977,6 +983,51 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!recent) return;
         e.preventDefault();
         e.stopPropagation();
+    },
+
+    // ======================
+    // = Story list pills   =
+    // ======================
+
+    // Like StoryTitlesHeaderBar.swift relayoutPills in the iOS app: when the pills don't fit, the
+    // story options pill drops its story order, then its words, before anything else gives way
+    // (mobile.css NB-mobile-options-compact and NB-mobile-options-icon).
+    fit_pills: function () {
+        var $row = $('.right-pane .NB-story-titles-header').children('.feed, .NB-folder');
+        $row.removeClass('NB-mobile-options-compact NB-mobile-options-icon');
+        var options = $row.find('.NB-feedbar-options')[0];
+        if (!this.active || !options || !options.clientWidth) return;
+        // NB-mobile-options-measure lays the pill out at its natural width, which its container
+        // can only give it when there's room.
+        $row.addClass('NB-mobile-options-measure');
+        var clipped = function () {
+            return options.offsetWidth > options.parentNode.clientWidth + 1;
+        };
+        if (clipped()) $row.addClass('NB-mobile-options-compact');
+        if (clipped()) $row.addClass('NB-mobile-options-icon');
+        $row.removeClass('NB-mobile-options-measure');
+    },
+
+    // The + beside the story list's mark read checkmark lays the 1d to 14d choices out across
+    // the pill bar (mobile.css NB-mobile-mark-read-days) instead of fanning them out the desktop
+    // way (feed_title_view.js expand_mark_read). It closes on a second tap, a choice or a tap
+    // anywhere else.
+    handle_mark_read_days: function (e) {
+        if (!this.active) return;
+        var $target = $(e.target);
+        var $header = $target.closest('.right-pane .NB-story-titles-header');
+        if ($target.closest('.NB-feedbar-mark-feed-read-expand').length && $header.length) {
+            e.preventDefault();
+            e.stopPropagation();
+            $header.toggleClass('NB-mobile-mark-read-days');
+            return;
+        }
+        var $open = $('.right-pane .NB-story-titles-header.NB-mobile-mark-read-days');
+        if (!$open.length) return;
+        // A choice still reaches its view, which marks the stories read, before this closes.
+        _.defer(function () {
+            $open.removeClass('NB-mobile-mark-read-days');
+        });
     },
 
     // The feed, folder and story views already open their manage menu on contextmenu. The
