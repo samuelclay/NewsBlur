@@ -44,7 +44,13 @@ class Test_ReaderPreferencesBootstrap(TestCase):
         response = self.client.get(reverse("index"))
         content = response.content.decode("utf-8")
 
-        self.assertRegex(content, re.compile(r'"briefing_enabled"\s*:\s*true'))
+        preferences_match = re.search(
+            r"_\.extend\(NEWSBLUR\.Preferences,\s*JSON\.parse\('([^']*)'\)\)", content
+        )
+        self.assertIsNotNone(preferences_match)
+        serialized_preferences = json.decode('"' + preferences_match.group(1) + '"')
+        preferences = json.decode(serialized_preferences)
+        self.assertIs(preferences["briefing_enabled"], True)
 
 
 class Test_RenameStarredTag(TestCase):

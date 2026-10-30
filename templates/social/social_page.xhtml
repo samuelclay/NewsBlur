@@ -267,7 +267,7 @@
 {% include_javascripts "blurblog" %}
 
 <script type="text/javascript" charset="utf-8">
-    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}JSON.parse('{{ user_profile.preferences|escapejs }}'){% else %}{}{% endif %});
 </script>
 
 </body>
