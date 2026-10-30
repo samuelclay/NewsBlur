@@ -241,4 +241,29 @@ class Test_TrainerSaveParams {
 
         assertEquals(with("" to "super_dislike_url_regex=%2Fsponsor%2F"), fields(restored))
     }
+
+    @Test
+    fun test_prompt_capsules_save_like_the_old_focus_hide_and_remove_buttons() {
+        val prompts =
+            Gson().fromJson(
+                """{"prompts": {"Non-apple related news": 1, "Sports": -1, "Crypto": 1}}""",
+                Classifier::class.java,
+            )
+        val original = prompts.copyPrompts()
+        // fragment/AiClassifierSections.kt: tapping a focus prompt hides it, tapping a hidden one removes it.
+        press(prompts.prompts, original.prompts, "Non-apple related news", tap(TapStyle.CYCLE))
+        press(prompts.prompts, original.prompts, "Sports", tap(TapStyle.CYCLE))
+        press(prompts.prompts, original.prompts, "Crypto", tap(TapStyle.CYCLE))
+        press(prompts.prompts, original.prompts, "Crypto", tap(TapStyle.CYCLE))
+
+        val oldButtons = Gson().fromJson("""{"prompts": {"Non-apple related news": 1, "Sports": -1, "Crypto": 1}}""", Classifier::class.java)
+        oldButtons.prompts["Non-apple related news"] = Classifier.DISLIKE
+        oldButtons.prompts["Sports"] = Classifier.CLEAR_DISLIKE
+        oldButtons.prompts["Crypto"] = Classifier.CLEAR_LIKE
+        assertEquals(fields(oldButtons), fields(prompts))
+        assertEquals(
+            listOf("dislike_prompt=Non-apple+related+news", "remove_dislike_prompt=Sports", "remove_like_prompt=Crypto"),
+            fields(prompts),
+        )
+    }
 }

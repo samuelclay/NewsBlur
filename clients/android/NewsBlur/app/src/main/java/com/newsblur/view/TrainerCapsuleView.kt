@@ -144,7 +144,6 @@ class TrainerCapsuleView(
             addView(button, LayoutParams(dp(30), dp(30)).apply { marginStart = dp(2) })
         }
         dislikeButton.setImageResource(R.drawable.ic_thumb_down_red)
-        dislikeButton.contentDescription = context.getString(R.string.explainer_dislike)
         dislikeButton.setOnClickListener { onDislike?.invoke() }
         superDislikeButton.setImageResource(R.drawable.ic_thumb_down_double_crimson)
         superDislikeButton.contentDescription = context.getString(R.string.intel_super_dislike)
@@ -205,6 +204,8 @@ class TrainerCapsuleView(
         // TrainerCapsule.swift trailingButtons.
         divider.isVisible = hasButtons
         divider.setBackgroundColor(if (isActive) ColorUtils.setAlphaComponent(colors.capsuleActiveText, 64) else colors.capsuleDivider)
+        // A prompt's thumbs down hides its matches rather than disliking them.
+        dislikeButton.contentDescription = context.getString(if (isPrompt) R.string.ai_prompt_hide else R.string.explainer_dislike)
         bindInlineButton(
             dislikeButton,
             model.showsDislike,
