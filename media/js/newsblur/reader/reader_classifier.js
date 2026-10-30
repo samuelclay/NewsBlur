@@ -5286,7 +5286,8 @@ var classifier_prototype = {
             } else {
                 $input.val('').focus();
             }
-            self.update_manage_add_row($row);
+            // Every panel's Add was disabled while this saved, not just this one's
+            self.update_all_manage_add_rows();
             self.show_manage_add_status($row);
             self.manage_add_needs_feeds_refresh = true;
             if ($row.closest('.NB-tab-manage').length) {
@@ -5298,7 +5299,7 @@ var classifier_prototype = {
         }, function (response) {
             self.manage_add_saving = false;
             $button_label.text(button_label);
-            self.update_manage_add_row($row);
+            self.update_all_manage_add_rows();
             var message = (response && response.code < 0 && response.message) ||
                 gettext('Could not add this classifier. Try again.');
             $('.NB-manage-add-notice', $row).empty()
