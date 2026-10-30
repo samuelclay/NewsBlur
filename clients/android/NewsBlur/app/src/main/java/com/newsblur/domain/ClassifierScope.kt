@@ -64,6 +64,20 @@ data class ScopedPromptSave(
     }
 }
 
+/**
+ * A title, text or URL regex the reader changed in a trainer, recorded by
+ * Classifier.recordRegexChanges so getAPITuples sends it.
+ */
+data class RegexChange(
+    // Classifier.TITLE_REGEX, TEXT_REGEX or URL_REGEX.
+    @JvmField val type: Int = Classifier.TITLE_REGEX,
+    @JvmField val pattern: String = "",
+) : Serializable {
+    companion object {
+        private const val serialVersionUID = 1L
+    }
+}
+
 /** The values for one extra /classifier/save request, see Classifier.getScopedPromptRequests. */
 data class ScopedPromptRequest(
     val scope: ClassifierScope,

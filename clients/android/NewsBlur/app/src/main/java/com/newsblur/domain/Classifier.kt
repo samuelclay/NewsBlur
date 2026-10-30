@@ -72,6 +72,11 @@ class Classifier : Serializable {
     @JvmField
     val scopedPromptSaves: ArrayList<ScopedPromptSave> = arrayListOf()
 
+    // Not vended by the API. The trainers fill this through recordRegexChanges with the title,
+    // text and URL regexes the reader changed, the only ones getAPITuples sends.
+    @JvmField
+    val changedRegexes: ArrayList<RegexChange> = arrayListOf()
+
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
     var feedId: String? = null
@@ -102,6 +107,17 @@ class Classifier : Serializable {
         }
         urls.forEach { (key, value) ->
             buildAPITupleKey(value, URL_POSTFIX)?.let { values.put(it, key) }
+        }
+        // Title, text and URL regexes were never sent back unchanged, so only the trainer's
+        // changes to them go out, see recordRegexChanges.
+        changedRegexes.forEach { change ->
+            val (scores, postfix) =
+                when (change.type) {
+                    TITLE_REGEX -> titleRegex to TITLE_REGEX_POSTFIX
+                    TEXT_REGEX -> textRegex to TEXT_REGEX_POSTFIX
+                    else -> urlRegex to URL_REGEX_POSTFIX
+                }
+            scores[change.pattern]?.let { value -> buildAPITupleKey(value, postfix)?.let { values.put(it, change.pattern) } }
         }
         // Folder and global prompts go out through getScopedPromptRequests instead. Sending them
         // here, at feed scope, would create a feed copy that runs (and bills) alongside the original.
@@ -151,6 +167,32 @@ class Classifier : Serializable {
             copy.promptsScope.putAll(promptsScope)
             copy.imagePromptsScope.putAll(imagePromptsScope)
         }
+
+    /** A copy of the title, text and URL regexes, taken when a trainer opens, for recordRegexChanges. */
+    fun copyRegexes(): Classifier =
+        Classifier().also { copy ->
+            copy.titleRegex.putAll(titleRegex)
+            copy.textRegex.putAll(textRegex)
+            copy.urlRegex.putAll(urlRegex)
+        }
+
+    /** Lists the title, text and URL regexes whose score differs from the state the trainer opened with. */
+    fun recordRegexChanges(original: Classifier) {
+        changedRegexes.clear()
+        recordRegexChanges(TITLE_REGEX, original.titleRegex, titleRegex)
+        recordRegexChanges(TEXT_REGEX, original.textRegex, textRegex)
+        recordRegexChanges(URL_REGEX, original.urlRegex, urlRegex)
+    }
+
+    private fun recordRegexChanges(
+        type: Int,
+        originalScores: Map<String, Int>,
+        scores: Map<String, Int>,
+    ) {
+        scores.forEach { (pattern, score) ->
+            if (originalScores[pattern] != score) changedRegexes.add(RegexChange(type, pattern))
+        }
+    }
 
     fun promptScope(
         imagePrompt: Boolean,
@@ -409,6 +451,9 @@ class Classifier : Serializable {
         private const val TAG_POSTFIX = "tag"
         private const val TEXT_POSTFIX = "text"
         private const val URL_POSTFIX = "url"
+        private const val TITLE_REGEX_POSTFIX = "title_regex"
+        private const val TEXT_REGEX_POSTFIX = "text_regex"
+        private const val URL_REGEX_POSTFIX = "url_regex"
         private const val PROMPT_POSTFIX = "prompt"
         private const val IMAGE_PROMPT_POSTFIX = "image_prompt"
         private const val LIKE_PREFIX = "like_"
