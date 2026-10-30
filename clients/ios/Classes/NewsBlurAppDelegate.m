@@ -684,6 +684,17 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
             BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
+#if TARGET_OS_MACCATALYST
+            if (!self.window) {
+                // NewsBlurAppDelegate.m waits for SceneDelegate.swift to replace the reader retained after Command-W.
+                self.pendingFolder = nil;
+                self.pendingNotificationStory = isDailyBriefing ? nil : @{@"feedId": feedIdStr, @"storyHash": storyHash ?: @""};
+                self.pendingDailyBriefingStoryHash = isDailyBriefing ?
+                    [DailyBriefingStartupDecision pendingStoryHashForStoryHash:storyHash] : nil;
+                if (completionHandler) completionHandler();
+                return;
+            }
+#endif
             if (isDailyBriefing) {
                 self.pendingNotificationStory = nil;
                 [self openDailyBriefingWithStoryHash:storyHash];
@@ -2633,6 +2644,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (void)backgroundLoadNotificationStory {
+#if TARGET_OS_MACCATALYST
+    // NewsBlurAppDelegate.m preserves pending navigation when a late feed refresh finishes after the window closes.
+    if (!self.window) return;
+#endif
     NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
                                                                                 pendingFolder:self.pendingFolder];
 
