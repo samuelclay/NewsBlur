@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.ClassifierScope
 import com.newsblur.domain.FeedResult
-import com.newsblur.domain.ScopedPromptRequest
+import com.newsblur.domain.ScopedClassifierRequest
 import com.newsblur.domain.ValueMultimap
 import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.network.domain.DiscoverFeedsResponse
@@ -130,18 +130,18 @@ class FeedApiImpl(
         if (result == null || result.isError) return result
 
         // apps/analyzer/views.py save_classifier takes one scope per request, so folder and global
-        // AI prompt changes follow the feed-scoped save as their own requests. Every one is tried
-        // even when another fails. Each save sets a prompt to a fixed state, so when SyncService.kt
-        // retries the whole action after a network error, the saves that already landed repeat
-        // without changing anything.
+        // classifier changes follow the feed-scoped save as their own requests. Every one is tried
+        // even when another fails. Each save sets a classifier to a fixed state, so when
+        // SyncService.kt retries the whole action after a network error, the saves that already
+        // landed repeat without changing anything.
         val failures = mutableListOf<NewsBlurResponse?>()
         val savedScopes = mutableSetOf(ClassifierScope.FEED_SCOPE)
-        for (scoped in classifier.getScopedPromptRequests()) {
-            val scopedResult = postScopedPrompts(urlString, feedId, scoped)
+        for (scoped in classifier.getScopedRequests()) {
+            val scopedResult = postScoped(urlString, feedId, scoped)
             if (scopedResult == null || scopedResult.isError) failures.add(scopedResult) else savedScopes.add(scoped.scope)
         }
         for (removal in classifier.getMoveRemovalRequests(savedScopes)) {
-            val removalResult = postScopedPrompts(urlString, feedId, removal)
+            val removalResult = postScoped(urlString, feedId, removal)
             if (removalResult == null || removalResult.isError) failures.add(removalResult)
         }
         if (failures.isEmpty()) return result
@@ -150,10 +150,10 @@ class FeedApiImpl(
         return failures.firstOrNull { it?.isProtocolError == true } ?: failures.first()
     }
 
-    private suspend fun postScopedPrompts(
+    private suspend fun postScoped(
         urlString: String,
         feedId: String?,
-        scoped: ScopedPromptRequest,
+        scoped: ScopedClassifierRequest,
     ): NewsBlurResponse? {
         scoped.values.put(APIConstants.PARAMETER_FEEDID, feedId)
         scoped.values.put(APIConstants.PARAMETER_SCOPE, scoped.scope.scope)

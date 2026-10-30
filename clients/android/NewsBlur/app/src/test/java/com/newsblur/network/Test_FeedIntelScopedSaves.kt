@@ -16,9 +16,10 @@ import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-// Test_FeedIntelScopedSaves.kt: FeedApiImpl.updateFeedIntel sends folder and global AI prompt
-// changes only after the feed save lands, tries every scope even when one fails, and removes a
-// moved prompt's old copy only once its new scope saved.
+// Test_FeedIntelScopedSaves.kt: FeedApiImpl.updateFeedIntel sends folder and global classifier
+// changes (AI prompts, titles, authors, tags, text and URLs) only after the feed save lands, tries
+// every scope even when one fails, and removes a moved classifier's old copy only once its new
+// scope saved.
 class Test_FeedIntelScopedSaves {
     private val networkClient = mockk<NetworkClient>()
     private val feedApi = FeedApiImpl(Gson(), networkClient)
@@ -57,11 +58,11 @@ class Test_FeedIntelScopedSaves {
                 """.trimIndent(),
                 Classifier::class.java,
             )
-        val original = classifier.copyPrompts()
+        val original = classifier.snapshot()
         classifier.setPromptScope(false, "Feed prompt", ClassifierScope.GLOBAL_SCOPE)
         classifier.prompts["Crypto"] = Classifier.DISLIKE
         classifier.prompts["Local politics"] = Classifier.CLEAR_DISLIKE
-        classifier.recordScopedPromptChanges(original)
+        classifier.recordChanges(original)
         return classifier
     }
 
@@ -144,15 +145,82 @@ class Test_FeedIntelScopedSaves {
         runTest {
             respond { ok }
             val classifier = Gson().fromJson("""{"prompts": {"Feed prompt": 1}}""", Classifier::class.java)
-            val original = classifier.copyPrompts()
+            val original = classifier.snapshot()
             // Test_FeedIntelScopedSaves.kt writes the map directly, past setPromptScope's guard.
             classifier.promptsScope["Feed prompt"] = ClassifierScope.folder("")
-            classifier.recordScopedPromptChanges(original)
+            classifier.recordChanges(original)
 
             feedApi.updateFeedIntel("42", classifier)
 
             assertEquals("Only the feed save went out: $bodies", 1, bodies.size)
             assertFalse(bodies.single(), "scope=" in bodies.single() || "remove_like_prompt" in bodies.single())
+        }
+
+    /**
+     * Titles, authors and tags take the same path: a global title edit, a feed author moved to a
+     * folder, and an untouched global tag that must not go out at all.
+     */
+    private fun phraseClassifier(): Classifier {
+        val classifier =
+            Gson().fromJson(
+                """
+                {
+                  "titles": {"[Sponsor]": -2},
+                  "authors": {"John Gruber": 1},
+                  "tags": {"tech": -1},
+                  "titles_scope": {"[Sponsor]": {"scope": "global", "folder_name": ""}},
+                  "tags_scope": {"tech": {"scope": "global", "folder_name": ""}}
+                }
+                """.trimIndent(),
+                Classifier::class.java,
+            )
+        val original = classifier.snapshot()
+        classifier.title["[Sponsor]"] = Classifier.DISLIKE
+        classifier.setScope(Classifier.AUTHOR, "John Gruber", ClassifierScope.folder("Tech"))
+        classifier.recordChanges(original)
+        return classifier
+    }
+
+    @Test
+    fun test_scoped_titles_and_authors_go_out_at_their_scope_after_the_feed_save() =
+        runTest {
+            respond { ok }
+
+            assertSame(ok, feedApi.updateFeedIntel("42", phraseClassifier()))
+
+            assertTrue(isFeedSave(bodies[0]))
+            val feedSave = bodies[0]
+            assertFalse("Nothing scoped is sent at feed scope: $feedSave", listOf("Sponsor", "Gruber", "tech").any { it in feedSave })
+            val global = bodies.single(::isGlobal)
+            assertTrue(global, "dislike_title=%5BSponsor%5D" in global)
+            assertFalse("The untouched global tag isn't sent: $global", "tech" in global)
+            val folder = bodies.single(::isFolder)
+            assertTrue(folder, "like_author=John+Gruber" in folder && "folder_name=Tech" in folder)
+            val removal = bodies.last()
+            assertTrue("The moved author left the feed once its folder saved: $removal", "scope=feed" in removal)
+            assertTrue(removal, "remove_like_author=John+Gruber" in removal)
+            assertEquals(4, bodies.size)
+        }
+
+    @Test
+    fun test_a_failed_folder_save_keeps_the_feed_author_and_reports_after_the_rest() =
+        runTest {
+            respond { body -> if (isFolder(body)) archiveRequired else ok }
+
+            val result = feedApi.updateFeedIntel("42", phraseClassifier())
+
+            assertSame(archiveRequired, result)
+            assertEquals("The global title still saved: $bodies", 1, bodies.count(::isGlobal))
+            assertFalse("The feed copy stays: $bodies", bodies.any { "remove_like_author" in it })
+        }
+
+    @Test
+    fun test_a_failed_feed_save_sends_no_scoped_titles_or_authors() =
+        runTest {
+            respond { body -> if (isFeedSave(body)) networkError else ok }
+
+            assertSame(networkError, feedApi.updateFeedIntel("42", phraseClassifier()))
+            assertEquals("Only the feed save went out: $bodies", 1, bodies.size)
         }
 
     private fun form(values: ValueMultimap): String = Buffer().also { values.asFormEncodedRequestBody().writeTo(it) }.readUtf8()

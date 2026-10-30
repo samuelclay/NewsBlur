@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 /**
- * Where a classifier applies, from the classifier payload's prompts_scope and image_prompts_scope
- * (apps/analyzer/models.py). A prompt that has no entry there is feed scoped.
+ * Where a classifier applies, from the classifier payload's prompts_scope, titles_scope and the
+ * other *_scope maps (apps/analyzer/models.py). A classifier that has no entry there is feed scoped.
  */
 data class ClassifierScope(
     @JvmField
@@ -45,17 +45,18 @@ data class ClassifierScope(
 }
 
 /**
- * One prompt change that /classifier/save has to receive at a folder or global scope, or a
- * feed-scoped removal after a prompt moved to a wider scope. Classifier.kt collects these
+ * One classifier change for /classifier/save, recorded by Classifier.recordChanges: a score at a
+ * scope, or the removal at its old scope of a classifier that moved. Classifier.kt collects these
  * because that endpoint takes a single scope per request.
  */
-data class ScopedPromptSave(
+data class ClassifierChange(
     @JvmField val scope: ClassifierScope = ClassifierScope.FEED_SCOPE,
-    @JvmField val imagePrompt: Boolean = false,
-    @JvmField val prompt: String = "",
-    // Classifier.LIKE, DISLIKE, CLEAR_LIKE or CLEAR_DISLIKE.
+    // Classifier.TITLE, AUTHOR_REGEX, PROMPT and the like.
+    @JvmField val type: Int = Classifier.TITLE,
+    @JvmField val key: String = "",
+    // Classifier.LIKE, DISLIKE, SUPER_DISLIKE or one of the CLEAR values.
     @JvmField val value: Int = Classifier.LIKE,
-    // ClassifierScope.kt: the scope a prompt moved to, set on the removal at its old scope.
+    // ClassifierScope.kt: the scope a classifier moved to, set on the removal at its old scope.
     // FeedApiImpl.kt sends that removal only once the new scope saved.
     @JvmField val movedTo: ClassifierScope? = null,
 ) : Serializable {
@@ -64,22 +65,8 @@ data class ScopedPromptSave(
     }
 }
 
-/**
- * A title, text or URL regex the reader changed in a trainer, recorded by
- * Classifier.recordRegexChanges so getAPITuples sends it.
- */
-data class RegexChange(
-    // Classifier.TITLE_REGEX, TEXT_REGEX or URL_REGEX.
-    @JvmField val type: Int = Classifier.TITLE_REGEX,
-    @JvmField val pattern: String = "",
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-}
-
-/** The values for one extra /classifier/save request, see Classifier.getScopedPromptRequests. */
-data class ScopedPromptRequest(
+/** The values for one extra /classifier/save request, see Classifier.getScopedRequests. */
+data class ScopedClassifierRequest(
     val scope: ClassifierScope,
     val values: ValueMultimap,
 )

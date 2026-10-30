@@ -8,28 +8,20 @@ import java.util.regex.PatternSyntaxException
  * The phrase sections of the trainer (IntelTrainerSections.kt): Title, Author, Text and URL. Each
  * has exact phrase classifiers and regex classifiers, like clients/ios/Classes/TrainerRegexInput.swift.
  */
-enum class TrainerPhraseKind {
-    TITLE,
-    AUTHOR,
-    TEXT,
-    URL,
+enum class TrainerPhraseKind(
+    // The Classifier.kt types of this section's phrases and regexes.
+    val phraseType: Int,
+    val regexType: Int,
+) {
+    TITLE(Classifier.TITLE, Classifier.TITLE_REGEX),
+    AUTHOR(Classifier.AUTHOR, Classifier.AUTHOR_REGEX),
+    TEXT(Classifier.TEXT, Classifier.TEXT_REGEX),
+    URL(Classifier.URL, Classifier.URL_REGEX),
     ;
 
-    fun phrases(classifier: Classifier): LinkedHashMap<String, Int> =
-        when (this) {
-            TITLE -> classifier.title
-            AUTHOR -> classifier.authors
-            TEXT -> classifier.texts
-            URL -> classifier.urls
-        }
+    fun phrases(classifier: Classifier): LinkedHashMap<String, Int> = classifier.scores(phraseType)
 
-    fun regexes(classifier: Classifier): LinkedHashMap<String, Int> =
-        when (this) {
-            TITLE -> classifier.titleRegex
-            AUTHOR -> classifier.authorRegex
-            TEXT -> classifier.textRegex
-            URL -> classifier.urlRegex
-        }
+    fun regexes(classifier: Classifier): LinkedHashMap<String, Int> = classifier.scores(regexType)
 }
 
 object TrainerPhrase {

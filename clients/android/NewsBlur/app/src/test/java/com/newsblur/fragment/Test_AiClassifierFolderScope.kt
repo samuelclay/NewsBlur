@@ -6,9 +6,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-// Test_AiClassifierFolderScope.kt: AiClassifierSections.kt disables the folder scope button when
-// the trainer's feed has no folder path, so a top-level feed can't save a folder scope with an
-// empty folder name, which apps/analyzer/views.py would store as a global prompt.
+// Test_AiClassifierFolderScope.kt: TrainerScopePicker.kt refuses the folder scope when the
+// trainer's feed has no folder path, so a top-level feed can't save a folder scope with an empty
+// folder name, which apps/analyzer/views.py would store as a global classifier.
 class Test_AiClassifierFolderScope {
     private fun folder(
         name: String,
@@ -29,17 +29,17 @@ class Test_AiClassifierFolderScope {
 
     @Test
     fun test_a_top_level_feed_has_no_folder_path() {
-        assertNull(AiClassifierSections.folderPathOfFeed(folders, "1"))
+        assertNull(TrainerScopePicker.folderPathOfFeed(folders, "1"))
     }
 
     @Test
     fun test_a_feed_in_a_folder_uses_the_flattened_folder_path() {
-        assertEquals("Blogs", AiClassifierSections.folderPathOfFeed(folders, "3"))
-        assertEquals("Blogs - Tumblrs", AiClassifierSections.folderPathOfFeed(folders, "4"))
+        assertEquals("Blogs", TrainerScopePicker.folderPathOfFeed(folders, "3"))
+        assertEquals("Blogs - Tumblrs", TrainerScopePicker.folderPathOfFeed(folders, "4"))
         assertEquals(
             "A feed also at the top level still has its folder",
             "Blogs - Tumblrs",
-            AiClassifierSections.folderPathOfFeed(folders, "2"),
+            TrainerScopePicker.folderPathOfFeed(folders, "2"),
         )
     }
 }

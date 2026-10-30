@@ -36,7 +36,6 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import com.newsblur.view.TrainerCapsuleView
 import com.newsblur.view.TrainerFlowLayout
-import java.util.IdentityHashMap
 import kotlin.math.roundToInt
 
 /**
@@ -69,25 +68,18 @@ class IntelTrainerSections(
     private val medium: Typeface? = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
     private val isStoryTrainer = story != null
     private val feed = dbHelper.getFeed(feedId)
-    private val originalRegexes = classifier.copyRegexes()
 
-    // The scores the trainer opened with, so a capsule set back to neutral removes a saved opinion
-    // or restores an untrained one, see TrainerScores.neutral.
-    private val originals =
-        IdentityHashMap<Map<String, Int>, Map<String, Int>>().apply {
-            listOf(
-                classifier.title,
-                classifier.titleRegex,
-                classifier.authors,
-                classifier.authorRegex,
-                classifier.tags,
-                classifier.texts,
-                classifier.textRegex,
-                classifier.urls,
-                classifier.urlRegex,
-                classifier.feeds,
-            ).forEach { put(it, LinkedHashMap(it)) }
-        }
+    // The classifier as the trainer opened it. A capsule set back to neutral removes a saved
+    // opinion or restores an untrained one (TrainerScores.neutral), and commit compares against it.
+    private val original = classifier.snapshot()
+
+    // ScopeToggleView.swift: folder and global scopes need Premium Archive, like the web.
+    private val scopePicker =
+        TrainerScopePicker(
+            context,
+            canUseWiderScopes = prefsRepo.getIsArchive() || prefsRepo.getIsPro(),
+            folderPath = TrainerScopePicker.folderPathOfFeed(dbHelper.getFolders(), feedId),
+        )
     private lateinit var aiSections: AiClassifierSections
 
     fun bind() {
@@ -111,18 +103,21 @@ class IntelTrainerSections(
                 dbHelper,
                 classifierApi,
                 thumbnailLoader,
+                original,
+                scopePicker,
             )
         aiSections.bind()
         addPublisherSection()
     }
 
-    /** Records the regex changes and the AI prompt changes that need their own save requests. */
+    /**
+     * Adds a typed but unadded AI prompt, then records every classifier that changed since the
+     * trainer opened, the only ones FeedApiImpl.kt sends.
+     */
     fun commit() {
-        classifier.recordRegexChanges(originalRegexes)
         aiSections.commit()
+        classifier.recordChanges(original)
     }
-
-    private fun originalOf(scores: Map<String, Int>): Map<String, Int> = originals[scores].orEmpty()
 
     // Sections
 
@@ -136,10 +131,10 @@ class IntelTrainerSections(
             capsules.removeAllViews()
             val label = context.getString(phraseLabel(kind))
             phrases.forEach { phrase ->
-                capsules.addView(capsule(kind.phrases(classifier), phrase, TrainerCapsuleView.Style.PHRASE, label, phraseTapStyle(kind)))
+                capsules.addView(capsule(kind.phraseType, phrase, TrainerCapsuleView.Style.PHRASE, label, phraseTapStyle(kind)))
             }
             regexes.forEach { regex ->
-                capsules.addView(capsule(kind.regexes(classifier), regex, TrainerCapsuleView.Style.REGEX, label, TapStyle.TOGGLE_LIKE))
+                capsules.addView(capsule(kind.regexType, regex, TrainerCapsuleView.Style.REGEX, label, TapStyle.TOGGLE_LIKE))
             }
             capsules.isVisible = capsules.childCount > 0
         }
@@ -149,8 +144,9 @@ class IntelTrainerSections(
             isRegex: Boolean,
             change: (current: Int?, original: Int?) -> Int?,
         ) {
-            val scores = if (isRegex) kind.regexes(classifier) else kind.phrases(classifier)
-            TrainerScores.store(scores, pattern, change(scores[pattern], originalOf(scores)[pattern]))
+            val type = if (isRegex) kind.regexType else kind.phraseType
+            val scores = classifier.scores(type)
+            TrainerScores.store(scores, pattern, change(scores[pattern], original.scores(type)[pattern]))
             (if (isRegex) regexes else phrases).add(pattern)
             render()
         }
@@ -271,7 +267,7 @@ class IntelTrainerSections(
         val card = addSection(context.getString(if (isStoryTrainer) R.string.trainer_section_story_tags else R.string.trainer_section_tags))
         val capsules = flow()
         val label = context.getString(R.string.trainer_label_tag)
-        tags.forEach { tag -> capsules.addView(capsule(classifier.tags, tag, TrainerCapsuleView.Style.PHRASE, label, TapStyle.CYCLE)) }
+        tags.forEach { tag -> capsules.addView(capsule(Classifier.TAG, tag, TrainerCapsuleView.Style.PHRASE, label, TapStyle.CYCLE)) }
         card.addView(capsules, matchWidth(topMargin = dp(4)))
     }
 
@@ -280,7 +276,7 @@ class IntelTrainerSections(
         val card = addSection(context.getString(R.string.trainer_section_publisher))
         val capsule =
             capsule(
-                classifier.feeds,
+                Classifier.FEED,
                 feedId,
                 TrainerCapsuleView.Style.PHRASE,
                 context.getString(R.string.trainer_label_site),
@@ -360,9 +356,12 @@ class IntelTrainerSections(
 
     // Views
 
-    /** One classifier's capsule, which rebinds itself as the reader taps it. */
+    /**
+     * One classifier's capsule, which rebinds itself as the reader taps it. Every type but the
+     * publisher carries ScopeToggleView.swift's site, folder and global toggles.
+     */
     private fun capsule(
-        scores: MutableMap<String, Int>,
+        type: Int,
         key: String,
         style: TrainerCapsuleView.Style,
         label: String,
@@ -371,6 +370,7 @@ class IntelTrainerSections(
         faviconUrl: String? = null,
     ): TrainerCapsuleView {
         val capsule = TrainerCapsuleView(context)
+        val scores = classifier.scores(type)
         if (faviconUrl != null) {
             capsule.favicon.isVisible = true
             iconLoader.displayImage(faviconUrl, capsule.favicon)
@@ -385,18 +385,26 @@ class IntelTrainerSections(
                     value = value,
                     showsDislike = true,
                     showsSuperDislike = true,
+                    scope = if (Classifier.canScope(type)) TrainerScopePicker.kind(classifier.scope(type, key)) else null,
+                    isFolderAvailable = scopePicker.isFolderAvailable,
                 ),
                 colors,
             )
         }
 
         fun change(next: (current: Int?, original: Int?) -> Int?) {
-            TrainerScores.store(scores, key, next(scores[key], originalOf(scores)[key]))
+            TrainerScores.store(scores, key, next(scores[key], original.scores(type)[key]))
             render()
         }
         capsule.onTap = { change { current, original -> TrainerScores.afterTap(tapStyle, current, original) } }
         capsule.onDislike = { change(TrainerScores::afterDislike) }
         capsule.onSuperDislike = { change(TrainerScores::afterSuperDislike) }
+        capsule.onScope = { kind ->
+            scopePicker.request(kind) { scope ->
+                classifier.setScope(type, key, scope)
+                render()
+            }
+        }
         render()
         return capsule
     }

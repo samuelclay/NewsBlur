@@ -23,7 +23,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -36,14 +35,12 @@ import com.newsblur.design.AiClassifierPalette
 import com.newsblur.design.TrainerPalette
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.ClassifierScope
-import com.newsblur.domain.Folder
 import com.newsblur.domain.Story
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
 import com.newsblur.network.domain.AiCostEstimate
 import com.newsblur.network.domain.PromptTestResponse
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UsageBillingAction
@@ -61,7 +58,8 @@ import kotlin.math.roundToInt
  * get removed, a new prompt can be typed (with a live preview capsule) and tested on the current
  * story, and the section shows the monthly cost estimate and the billing or limit banners.
  *
- * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves.
+ * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves, then
+ * Classifier.recordChanges, as IntelTrainerSections.kt does.
  */
 class AiClassifierSections(
     private val fragment: Fragment,
@@ -75,13 +73,15 @@ class AiClassifierSections(
     private val dbHelper: BlurDatabaseHelper,
     private val classifierApi: ClassifierApi,
     private val thumbnailLoader: ImageLoader,
+    // The classifier as the trainer opened it, from Classifier.snapshot.
+    private val original: Classifier,
+    private val scopePicker: TrainerScopePicker,
 ) {
     private val context: Context = fragment.requireContext()
     private val inflater = LayoutInflater.from(context)
     private val colors = AiClassifierPalette.colors(theme)
     private val trainerColors = TrainerPalette.colors(theme)
     private val medium: Typeface? = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
-    private val original = classifier.copyPrompts()
     private var billing = prefsRepo.getUsageBillingState()
     private var costEstimate: AiCostEstimate? = null
     private var limitReached = false
@@ -95,13 +95,9 @@ class AiClassifierSections(
         fetchUsage()
     }
 
-    /**
-     * Keeps a typed but unadded prompt, since the web saves its live preview pill too, and records
-     * the folder and global prompt changes that need their own save requests.
-     */
+    /** Keeps a typed but unadded prompt, since the web saves its live preview pill too. */
     fun commit() {
         sections.forEach { it.commitTypedPrompt() }
-        classifier.recordScopedPromptChanges(original)
     }
 
     private fun fetchUsage() {
@@ -126,15 +122,11 @@ class AiClassifierSections(
         context.startActivity(Intent(context, UsageBillingActivity::class.java))
     }
 
-    private fun canUseWiderScopes(): Boolean = prefsRepo.getIsArchive() || prefsRepo.getIsPro()
-
-    private val feedFolderPath: String? by lazy { folderPathOfFeed(folders, feedId) }
-
     private fun storiesForScope(scope: ClassifierScope): Int =
         when {
             scope.scope == ClassifierScope.GLOBAL -> storiesByFeed.values.sum()
             scope.scope == ClassifierScope.FOLDER -> {
-                val folder = folders.firstOrNull { folderPath(it) == scope.folderName }
+                val folder = folders.firstOrNull { TrainerScopePicker.folderPath(it) == scope.folderName }
                 folder?.feedIds?.sumOf { storiesByFeed[it] ?: 0 } ?: 0
             }
             else -> feedStories
@@ -326,7 +318,7 @@ class AiClassifierSections(
                 choosePreviewScore(if (previewScore == Classifier.DISLIKE) Classifier.LIKE else Classifier.DISLIKE)
             }
             preview.onScope = { scope ->
-                requestScope(scope) {
+                scopePicker.request(scope) {
                     previewScope = it
                     refresh()
                 }
@@ -352,8 +344,8 @@ class AiClassifierSections(
                     showsDislike = prompt.isNotEmpty(),
                     isDraft = prompt.isNotEmpty(),
                     isPlaceholder = prompt.isEmpty(),
-                    scope = if (prompt.isEmpty()) null else scopeKind(previewScope),
-                    isFolderAvailable = feedFolderPath != null,
+                    scope = if (prompt.isEmpty()) null else TrainerScopePicker.kind(previewScope),
+                    isFolderAvailable = scopePicker.isFolderAvailable,
                 ),
                 trainerColors,
             )
@@ -376,8 +368,8 @@ class AiClassifierSections(
                             showsDislike = true,
                             // A removed prompt stays listed, struck through, until the trainer saves.
                             isRemoved = TrainerScores.level(score) == TrainerScores.Level.NEUTRAL,
-                            scope = scopeKind(scope),
-                            isFolderAvailable = feedFolderPath != null,
+                            scope = TrainerScopePicker.kind(scope),
+                            isFolderAvailable = scopePicker.isFolderAvailable,
                         ),
                         trainerColors,
                     )
@@ -400,7 +392,7 @@ class AiClassifierSections(
                 capsule.onTap = { change { current, original -> TrainerScores.afterTap(TrainerScores.TapStyle.CYCLE, current, original) } }
                 capsule.onDislike = { change(TrainerScores::afterDislike) }
                 capsule.onScope = { scope ->
-                    requestScope(scope) {
+                    scopePicker.request(scope) {
                         classifier.setPromptScope(imagePrompt, prompt, it)
                         render()
                         refresh()
@@ -421,52 +413,6 @@ class AiClassifierSections(
 
         private fun typeLabel(): String =
             context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
-
-        /**
-         * ScopeToggleView.swift handleTap, after reader_classifier.js select_scope: folder and
-         * global need Premium Archive, and a site outside every folder has no folder scope.
-         */
-        private fun requestScope(
-            kind: String,
-            apply: (ClassifierScope) -> Unit,
-        ) {
-            val scope =
-                when (kind) {
-                    ClassifierScope.FEED -> ClassifierScope.FEED_SCOPE
-                    ClassifierScope.GLOBAL -> if (canUseWiderScopes()) ClassifierScope.GLOBAL_SCOPE else return scopeDenied()
-                    else -> {
-                        if (!canUseWiderScopes()) return scopeDenied()
-                        // A top-level feed has no folder, and a folder scope without one would save as global.
-                        val folder = feedFolderPath ?: return toast(R.string.trainer_scope_no_folder)
-                        ClassifierScope.folder(folder)
-                    }
-                }
-            apply(scope)
-            // ScopeToggleView.swift briefly names the scope it switched to.
-            toast(scopeLabel(scope))
-        }
-
-        private fun scopeDenied() = toast(R.string.ai_scope_requires_archive)
-
-        private fun toast(text: Int) = toast(context.getString(text))
-
-        private fun toast(text: String) {
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-        }
-
-        private fun scopeKind(scope: ClassifierScope): String = if (scope.isFeed) ClassifierScope.FEED else scope.scope
-
-        private fun scopeLabel(scope: ClassifierScope): String =
-            when (scopeKind(scope)) {
-                ClassifierScope.GLOBAL -> context.getString(R.string.ai_scope_global)
-                ClassifierScope.FOLDER ->
-                    if (scope.folderName.isEmpty()) {
-                        context.getString(R.string.ai_scope_folder)
-                    } else {
-                        context.getString(R.string.ai_scope_folder_named, scope.folderName)
-                    }
-                else -> context.getString(R.string.ai_scope_feed)
-            }
 
         private fun activeScopes(): List<ClassifierScope> {
             val saved = scores.filterValues(::isActive).keys.map { classifier.promptScope(imagePrompt, it) }
@@ -645,17 +591,5 @@ class AiClassifierSections(
                 label.isVisible = false
             }
         }
-    }
-
-    companion object {
-        /** [folder]'s path as apps/reader/models.py flatten_folders names it, like "Blogs - Tumblrs". */
-        fun folderPath(folder: Folder): String =
-            (folder.parents.filter { it != AppConstants.ROOT_FOLDER } + folder.name).joinToString(" - ")
-
-        /** The first folder holding [feedId], or null for a feed that is only at the top level. */
-        fun folderPathOfFeed(
-            folders: List<Folder>,
-            feedId: String,
-        ): String? = folders.firstOrNull { it.name != AppConstants.ROOT_FOLDER && it.feedIds.contains(feedId) }?.let(::folderPath)
     }
 }

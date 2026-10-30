@@ -67,15 +67,33 @@ class Classifier : Serializable {
     @SerializedName("image_prompts_scope")
     val imagePromptsScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
 
-    // Not vended by the API. StoryIntelTrainerFragment.java fills this through
-    // recordScopedPromptChanges with the prompt changes that need their own scoped request.
+    // Folder and global titles, authors, tags, text and URLs, from apps/analyzer/models.py
+    // get_classifiers_for_user. The server keys these by text for phrases and regexes alike, so a
+    // regex shares its entry with a phrase of the same text. A classifier missing here is feed scoped.
     @JvmField
-    val scopedPromptSaves: ArrayList<ScopedPromptSave> = arrayListOf()
+    @SerializedName("titles_scope")
+    val titlesScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
 
-    // Not vended by the API. The trainers fill this through recordRegexChanges with the title,
-    // text and URL regexes the reader changed, the only ones getAPITuples sends.
     @JvmField
-    val changedRegexes: ArrayList<RegexChange> = arrayListOf()
+    @SerializedName("authors_scope")
+    val authorsScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
+
+    @JvmField
+    @SerializedName("tags_scope")
+    val tagsScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
+
+    @JvmField
+    @SerializedName("texts_scope")
+    val textsScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
+
+    @JvmField
+    @SerializedName("urls_scope")
+    val urlsScope: LinkedHashMap<String, ClassifierScope> = linkedMapOf()
+
+    // Not vended by the API. The trainers (fragment/IntelTrainerSections.kt) fill this through
+    // recordChanges with every classifier they changed, the only ones /classifier/save receives.
+    @JvmField
+    val changes: ArrayList<ClassifierChange> = arrayListOf()
 
     // there are scenarios where this is not vended by API; must be set manually
     @JvmField
@@ -84,176 +102,172 @@ class Classifier : Serializable {
     fun hasStoryTextHighlights(): Boolean =
         texts.isNotEmpty() || textRegex.isNotEmpty()
 
-    fun getAPITuples(): ValueMultimap {
-        val values = ValueMultimap()
-
-        authors.forEach { (key, value) ->
-            buildAPITupleKey(value, AUTHOR_POSTFIX)?.let { values.put(it, key) }
-        }
-        authorRegex.forEach { (key, value) ->
-            buildAPITupleKey(value, AUTHOR_REGEX_POSTFIX)?.let { values.put(it, key) }
-        }
-        title.forEach { (key, value) ->
-            buildAPITupleKey(value, TITLE_POSTFIX)?.let { values.put(it, key) }
-        }
-        tags.forEach { (key, value) ->
-            buildAPITupleKey(value, TAG_POSTFIX)?.let { values.put(it, key) }
-        }
-        feeds.forEach { (key, value) ->
-            buildAPITupleKey(value, FEED_POSTFIX)?.let { values.put(it, key) }
-        }
-        texts.forEach { (key, value) ->
-            buildAPITupleKey(value, TEXT_POSTFIX)?.let { values.put(it, key) }
-        }
-        urls.forEach { (key, value) ->
-            buildAPITupleKey(value, URL_POSTFIX)?.let { values.put(it, key) }
-        }
-        // Title, text and URL regexes were never sent back unchanged, so only the trainer's
-        // changes to them go out, see recordRegexChanges.
-        changedRegexes.forEach { change ->
-            val (scores, postfix) =
-                when (change.type) {
-                    TITLE_REGEX -> titleRegex to TITLE_REGEX_POSTFIX
-                    TEXT_REGEX -> textRegex to TEXT_REGEX_POSTFIX
-                    else -> urlRegex to URL_REGEX_POSTFIX
-                }
-            scores[change.pattern]?.let { value -> buildAPITupleKey(value, postfix)?.let { values.put(it, change.pattern) } }
-        }
-        // Folder and global prompts go out through getScopedPromptRequests instead. Sending them
-        // here, at feed scope, would create a feed copy that runs (and bills) alongside the original.
-        prompts.forEach { (key, value) ->
-            if (key !in promptsScope) buildPromptTupleKey(value, PROMPT_POSTFIX)?.let { values.put(it, key) }
-        }
-        imagePrompts.forEach { (key, value) ->
-            if (key !in imagePromptsScope) buildPromptTupleKey(value, IMAGE_PROMPT_POSTFIX)?.let { values.put(it, key) }
-        }
-        // A moved prompt's feed copy waits for getMoveRemovalRequests, after its new scope saves.
-        scopedPromptSaves.filter { it.scope.isFeed && it.movedTo == null }.forEach { save ->
-            buildPromptTupleKey(save.value, promptPostfix(save.imagePrompt))?.let { values.put(it, save.prompt) }
+    /** The scores of one classifier type, such as [TITLE] or [IMAGE_PROMPT]. */
+    fun scores(type: Int): LinkedHashMap<String, Int> =
+        when (type) {
+            AUTHOR -> authors
+            AUTHOR_REGEX -> authorRegex
+            TITLE -> title
+            TITLE_REGEX -> titleRegex
+            TAG -> tags
+            FEED -> feeds
+            TEXT -> texts
+            TEXT_REGEX -> textRegex
+            URL -> urls
+            URL_REGEX -> urlRegex
+            PROMPT -> prompts
+            IMAGE_PROMPT -> imagePrompts
+            else -> throw IllegalArgumentException("Not a classifier type: $type")
         }
 
-        return values
-    }
-
-    /** One /classifier/save request per folder or global scope with prompt changes, sent after the feed save. */
-    fun getScopedPromptRequests(): List<ScopedPromptRequest> =
-        promptRequests(scopedPromptSaves.filter { !it.scope.isFeed && it.movedTo == null })
-
-    /**
-     * The removals at their old scope of prompts that moved to one of [savedScopes], sent last so
-     * a prompt whose new scope didn't save keeps its original instead of disappearing.
-     */
-    fun getMoveRemovalRequests(savedScopes: Set<ClassifierScope>): List<ScopedPromptRequest> =
-        promptRequests(scopedPromptSaves.filter { it.movedTo != null && it.movedTo in savedScopes })
-
-    // A folder scope without its folder never goes out, see ClassifierScope.isValid.
-    private fun promptRequests(saves: List<ScopedPromptSave>): List<ScopedPromptRequest> =
-        saves
-            .filter { it.scope.isValid }
-            .groupBy { it.scope }
-            .map { (scope, scopeSaves) ->
-                val values = ValueMultimap()
-                scopeSaves.forEach { save ->
-                    buildPromptTupleKey(save.value, promptPostfix(save.imagePrompt))?.let { values.put(it, save.prompt) }
-                }
-                ScopedPromptRequest(scope, values)
-            }
-
-    /** A copy of the prompt state, taken when a trainer opens, for recordScopedPromptChanges. */
-    fun copyPrompts(): Classifier =
-        Classifier().also { copy ->
-            copy.prompts.putAll(prompts)
-            copy.imagePrompts.putAll(imagePrompts)
-            copy.promptsScope.putAll(promptsScope)
-            copy.imagePromptsScope.putAll(imagePromptsScope)
+    // The publisher has no scope: apps/analyzer/views.py save_classifier always saves it per feed.
+    private fun scopes(type: Int): LinkedHashMap<String, ClassifierScope>? =
+        when (type) {
+            AUTHOR, AUTHOR_REGEX -> authorsScope
+            TITLE, TITLE_REGEX -> titlesScope
+            TAG -> tagsScope
+            TEXT, TEXT_REGEX -> textsScope
+            URL, URL_REGEX -> urlsScope
+            PROMPT -> promptsScope
+            IMAGE_PROMPT -> imagePromptsScope
+            else -> null
         }
 
-    /** A copy of the title, text and URL regexes, taken when a trainer opens, for recordRegexChanges. */
-    fun copyRegexes(): Classifier =
-        Classifier().also { copy ->
-            copy.titleRegex.putAll(titleRegex)
-            copy.textRegex.putAll(textRegex)
-            copy.urlRegex.putAll(urlRegex)
-        }
-
-    /** Lists the title, text and URL regexes whose score differs from the state the trainer opened with. */
-    fun recordRegexChanges(original: Classifier) {
-        changedRegexes.clear()
-        recordRegexChanges(TITLE_REGEX, original.titleRegex, titleRegex)
-        recordRegexChanges(TEXT_REGEX, original.textRegex, textRegex)
-        recordRegexChanges(URL_REGEX, original.urlRegex, urlRegex)
-    }
-
-    private fun recordRegexChanges(
+    fun scope(
         type: Int,
-        originalScores: Map<String, Int>,
-        scores: Map<String, Int>,
+        key: String,
+    ): ClassifierScope = scopes(type)?.get(key) ?: ClassifierScope.FEED_SCOPE
+
+    fun setScope(
+        type: Int,
+        key: String,
+        scope: ClassifierScope,
     ) {
-        scores.forEach { (pattern, score) ->
-            if (originalScores[pattern] != score) changedRegexes.add(RegexChange(type, pattern))
-        }
+        // A feed outside every folder has no folder scope to move to, so its classifiers stay put.
+        if (!scope.isValid) return
+        val scopes = scopes(type) ?: return
+        if (scope.isFeed) scopes.remove(key) else scopes[key] = scope
     }
 
     fun promptScope(
         imagePrompt: Boolean,
         prompt: String,
-    ): ClassifierScope = (if (imagePrompt) imagePromptsScope else promptsScope)[prompt] ?: ClassifierScope.FEED_SCOPE
+    ): ClassifierScope = scope(promptType(imagePrompt), prompt)
 
     fun setPromptScope(
         imagePrompt: Boolean,
         prompt: String,
         scope: ClassifierScope,
-    ) {
-        // A feed outside every folder has no folder scope to move to, so its prompts stay put.
-        if (!scope.isValid) return
-        val scopes = if (imagePrompt) imagePromptsScope else promptsScope
-        if (scope.isFeed) scopes.remove(prompt) else scopes[prompt] = scope
-    }
+    ) = setScope(promptType(imagePrompt), prompt, scope)
+
+    /** The feed-scoped /classifier/save request: the changes at feed scope, except removals waiting on a move. */
+    fun getAPITuples(): ValueMultimap = tuples(changes.filter { it.scope.isFeed && it.movedTo == null })
+
+    /** One /classifier/save request per folder or global scope with changes, sent after the feed save. */
+    fun getScopedRequests(): List<ScopedClassifierRequest> = requests(changes.filter { !it.scope.isFeed && it.movedTo == null })
 
     /**
-     * Compares the prompts with the state the trainer opened with and lists the changes that
-     * getAPITuples can't send at feed scope: edits to folder and global prompts, and both halves
-     * of a scope move (the removal at the old scope and the save at the new one), the same way
-     * media/js/newsblur/reader/reader_classifier.js save() collects scoped_saves.
+     * The removals at their old scope of classifiers that moved to one of [savedScopes], sent last
+     * so a classifier whose new scope didn't save keeps its original instead of disappearing.
      */
-    fun recordScopedPromptChanges(original: Classifier) {
-        scopedPromptSaves.clear()
-        recordScopedPromptChanges(false, original.prompts, original.promptsScope, prompts, promptsScope)
-        recordScopedPromptChanges(true, original.imagePrompts, original.imagePromptsScope, imagePrompts, imagePromptsScope)
+    fun getMoveRemovalRequests(savedScopes: Set<ClassifierScope>): List<ScopedClassifierRequest> =
+        requests(changes.filter { it.movedTo != null && it.movedTo in savedScopes })
+
+    // A folder scope without its folder never goes out, see ClassifierScope.isValid.
+    private fun requests(changes: List<ClassifierChange>): List<ScopedClassifierRequest> =
+        changes
+            .filter { it.scope.isValid }
+            .groupBy { it.scope }
+            .map { (scope, scopeChanges) -> ScopedClassifierRequest(scope, tuples(scopeChanges)) }
+
+    private fun tuples(changes: List<ClassifierChange>): ValueMultimap {
+        val values = ValueMultimap()
+        changes.forEach { change -> tupleKey(change.type, change.value)?.let { values.put(it, change.key) } }
+        return values
     }
 
-    private fun recordScopedPromptChanges(
-        imagePrompt: Boolean,
-        originalScores: Map<String, Int>,
-        originalScopes: Map<String, ClassifierScope>,
-        scores: Map<String, Int>,
-        scopes: Map<String, ClassifierScope>,
+    /** A copy of every score and scope, taken when a trainer opens, for recordChanges. */
+    fun snapshot(): Classifier =
+        Classifier().also { copy ->
+            SAVED_TYPES.forEach { type -> copy.scores(type).putAll(scores(type)) }
+            copy.promptsScope.putAll(promptsScope)
+            copy.imagePromptsScope.putAll(imagePromptsScope)
+            copy.titlesScope.putAll(titlesScope)
+            copy.authorsScope.putAll(authorsScope)
+            copy.tagsScope.putAll(tagsScope)
+            copy.textsScope.putAll(textsScope)
+            copy.urlsScope.putAll(urlsScope)
+        }
+
+    /**
+     * Compares every classifier with the state the trainer opened with and lists what changed, so
+     * an unchanged classifier is never sent again. A folder or global classifier is sent at its own
+     * scope, never at feed scope, and a scope move lists both halves (the save at the new scope and
+     * the removal at the old one), the way media/js/newsblur/reader/reader_classifier.js save()
+     * collects scoped_saves.
+     */
+    fun recordChanges(original: Classifier) {
+        changes.clear()
+        SAVED_TYPES.forEach { type -> recordChanges(type, original) }
+    }
+
+    private fun recordChanges(
+        type: Int,
+        original: Classifier,
     ) {
-        for (prompt in scores.keys) {
-            val score = scores.getValue(prompt)
-            val scope = scopes[prompt] ?: ClassifierScope.FEED_SCOPE
-            // Nothing is sent for a prompt headed to an invalid scope, so its original survives.
+        val originalScores = original.scores(type)
+        for ((key, score) in scores(type)) {
+            val scope = scope(type, key)
+            // Nothing is sent for a classifier headed to an invalid scope, so its original survives.
             if (!scope.isValid) continue
-            val originalScore = originalScores[prompt]
-            val originalScope = if (originalScore == null) scope else originalScopes[prompt] ?: ClassifierScope.FEED_SCOPE
-            val active = score == LIKE || score == DISLIKE
+            val originalScore = originalScores[key]
+            val originalScope = if (originalScore == null) scope else original.scope(type, key)
             if (originalScope != scope) {
-                // The old copy goes once the new one saves. A prompt that moved and was removed
-                // has no new copy, so its old one goes with the rest of the changes.
-                if (originalScore == LIKE || originalScore == DISLIKE) {
-                    val movedTo = if (active) scope else null
-                    scopedPromptSaves.add(ScopedPromptSave(originalScope, imagePrompt, prompt, clearValue(originalScore), movedTo))
+                // The old copy goes once the new one saves. A classifier that moved and lost its
+                // opinion has no new copy, so its old one goes with the rest of the changes.
+                if (isOpinion(originalScore)) {
+                    val movedTo = if (isOpinion(score)) scope else null
+                    changes.add(ClassifierChange(originalScope, type, key, clearValue(originalScore!!), movedTo))
                 }
-                if (!scope.isFeed && active) scopedPromptSaves.add(ScopedPromptSave(scope, imagePrompt, prompt, score))
-            } else if (!scope.isFeed && score != originalScore) {
-                scopedPromptSaves.add(ScopedPromptSave(scope, imagePrompt, prompt, score))
+                if (isOpinion(score)) changes.add(ClassifierChange(scope, type, key, score))
+            } else if (score != originalScore) {
+                changes.add(ClassifierChange(scope, type, key, score))
             }
         }
     }
 
-    private fun clearValue(score: Int): Int = if (score == DISLIKE) CLEAR_DISLIKE else CLEAR_LIKE
+    private fun isOpinion(score: Int?): Boolean = score == LIKE || score == DISLIKE || score == SUPER_DISLIKE
 
-    private fun promptPostfix(imagePrompt: Boolean): String = if (imagePrompt) IMAGE_PROMPT_POSTFIX else PROMPT_POSTFIX
+    private fun clearValue(score: Int): Int =
+        when (score) {
+            SUPER_DISLIKE -> CLEAR_SUPER_DISLIKE
+            DISLIKE -> CLEAR_DISLIKE
+            else -> CLEAR_LIKE
+        }
+
+    private fun promptType(imagePrompt: Boolean): Int = if (imagePrompt) IMAGE_PROMPT else PROMPT
+
+    private fun tupleKey(
+        type: Int,
+        value: Int,
+    ): String? {
+        val postfix =
+            when (type) {
+                AUTHOR -> AUTHOR_POSTFIX
+                AUTHOR_REGEX -> AUTHOR_REGEX_POSTFIX
+                TITLE -> TITLE_POSTFIX
+                TITLE_REGEX -> TITLE_REGEX_POSTFIX
+                TAG -> TAG_POSTFIX
+                FEED -> FEED_POSTFIX
+                TEXT -> TEXT_POSTFIX
+                TEXT_REGEX -> TEXT_REGEX_POSTFIX
+                URL -> URL_POSTFIX
+                URL_REGEX -> URL_REGEX_POSTFIX
+                PROMPT -> PROMPT_POSTFIX
+                else -> IMAGE_PROMPT_POSTFIX
+            }
+        return if (type == PROMPT || type == IMAGE_PROMPT) buildPromptTupleKey(value, postfix) else buildAPITupleKey(value, postfix)
+    }
 
     // Prompts have no super dislike, so apps/analyzer/views.py only accepts these four keys.
     private fun buildPromptTupleKey(
@@ -404,6 +418,12 @@ class Classifier : Serializable {
         imagePromptsScope.forEach { (key, scope) ->
             valuesList.add(promptContentValues(IMAGE_PROMPT_SCOPE, key, DatabaseConstants.JsonHelper.toJson(scope)))
         }
+        // Classifier.kt stores the other classifiers' folder and global scopes the same way.
+        STORED_SCOPES.forEach { (type, scopes) ->
+            scopes(this).forEach { (key, scope) ->
+                valuesList.add(promptContentValues(type, key, DatabaseConstants.JsonHelper.toJson(scope)))
+            }
+        }
 
         return valuesList
     }
@@ -435,6 +455,29 @@ class Classifier : Serializable {
         const val IMAGE_PROMPT: Int = 11
         const val PROMPT_SCOPE: Int = 12
         const val IMAGE_PROMPT_SCOPE: Int = 13
+        const val TITLE_SCOPE: Int = 14
+        const val AUTHOR_SCOPE: Int = 15
+        const val TAG_SCOPE: Int = 16
+        const val TEXT_SCOPE: Int = 17
+        const val URL_SCOPE: Int = 18
+
+        /** Every type a trainer can change, in the order recordChanges lists them. */
+        private val SAVED_TYPES =
+            listOf(AUTHOR, AUTHOR_REGEX, TITLE, TITLE_REGEX, TAG, FEED, TEXT, TEXT_REGEX, URL, URL_REGEX, PROMPT, IMAGE_PROMPT)
+
+        // The classifier table rows that hold folder and global scopes, by row type.
+        private val STORED_SCOPES: Map<Int, (Classifier) -> LinkedHashMap<String, ClassifierScope>> =
+            mapOf(
+                TITLE_SCOPE to { it.titlesScope },
+                AUTHOR_SCOPE to { it.authorsScope },
+                TAG_SCOPE to { it.tagsScope },
+                TEXT_SCOPE to { it.textsScope },
+                URL_SCOPE to { it.urlsScope },
+            )
+
+        /** Whether apps/analyzer/views.py save_classifier can store [type] at a folder or global scope. */
+        @JvmStatic
+        fun canScope(type: Int): Boolean = type != FEED
 
         const val LIKE: Int = 1
         const val DISLIKE: Int = -1
@@ -479,6 +522,12 @@ class Classifier : Serializable {
                     if (scope != null) {
                         if (type == PROMPT_SCOPE) classifier.promptsScope[key] = scope else classifier.imagePromptsScope[key] = scope
                     }
+                    continue
+                }
+                val storedScopes = STORED_SCOPES[type]
+                if (storedScopes != null) {
+                    val scope = DatabaseConstants.JsonHelper.fromJson(cursor.getString(valueIndex), ClassifierScope::class.java)
+                    if (scope != null) storedScopes(classifier)[key] = scope
                     continue
                 }
                 val value = cursor.getInt(valueIndex)
