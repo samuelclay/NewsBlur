@@ -21,8 +21,7 @@ def run(ctx):
     ctx.check("feed list fills the screen", ctx.screen_left(".left-pane") == 0)
 
     # Long press a feed: its manage menu opens as a bottom sheet and the feed doesn't open.
-    box = ctx.feed_row(feed_id).bounding_box()
-    ctx.touch.long_press(box["x"] + 150, box["y"] + box["height"] / 2)
+    ctx.long_press(ctx.feed_row(feed_id))
     ctx.wait(500)
     ctx.check(
         "long press opens the feed menu as a sheet",
@@ -49,7 +48,7 @@ def run(ctx):
 
     # Opening a feed slides in its story list.
     row = ctx.feed_row(feed_id)
-    row.scroll_into_view_if_needed()
+    ctx.press_point(row)
     row.tap()
     ctx.wait(150)
     ctx.check(
@@ -82,8 +81,7 @@ def run(ctx):
     ctx.check("the list stays on screen", ctx.state()["screen"] == "titles")
 
     titles = page.locator("#story_titles .NB-story-title")
-    box = titles.nth(min(4, titles.count() - 1)).bounding_box()
-    ctx.touch.long_press(box["x"] + 120, box["y"] + 20)
+    ctx.long_press(titles.nth(min(4, titles.count() - 1)))
     ctx.wait(500)
     ctx.check(
         "long press on a story opens its menu",
@@ -208,6 +206,9 @@ def run(ctx):
         "NEWSBLUR.reader.force_feeds_refresh = function () { window.__nb_refreshes++; "
         "return refresh.apply(this, arguments); }; })()"
     )
+    # Pull to refresh only starts at the top of the list, and press_point scrolled it earlier.
+    ctx.evaluate("(() => { document.querySelector('.left-center-content').scrollTop = 0; })()")
+    ctx.wait(300)
     ctx.touch.swipe(200, 200, 200, 420, steps=14, step_ms=20)
     ctx.wait(2500)
     ctx.check("pulling down the feed list refreshes it", ctx.evaluate("window.__nb_refreshes") == 1)

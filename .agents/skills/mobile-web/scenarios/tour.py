@@ -16,8 +16,7 @@ def run(ctx):
         ctx.shot(f"{theme}-{name}")
 
     shot("01-feeds")
-    box = ctx.feed_row(feed_id).bounding_box()
-    ctx.touch.long_press(box["x"] + 150, box["y"] + box["height"] / 2)
+    ctx.long_press(ctx.feed_row(feed_id))
     ctx.wait(600)
     shot("02-feed-longpress-menu")
     page.locator(".NB-mobile-sheet-shade").tap(position={"x": 200, "y": 100})

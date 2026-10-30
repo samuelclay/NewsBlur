@@ -180,6 +180,19 @@ class Context:
         best = max(feeds, key=lambda feed: (feed["unread"] > 0, feed["shows_read"], feed["unread"], feed["recent"]))
         return best["id"]
 
+    def press_point(self, locator):
+        """Scrolls an element to the middle of its scroller and returns its center. A row only
+        partly in view has coordinates over whatever sits below the list, such as the Listen
+        player in the feed list's footer, and a touch there lands on that instead."""
+        locator.evaluate("(el) => el.scrollIntoView({block: 'center'})")
+        self.wait(300)
+        box = locator.bounding_box()
+        return box["x"] + min(150, box["width"] / 2), box["y"] + min(20, box["height"] / 2)
+
+    def long_press(self, locator):
+        x, y = self.press_point(locator)
+        self.touch.long_press(x, y)
+
     def feed_title(self, feed_id):
         return self.evaluate(f"NEWSBLUR.assets.get_feed({feed_id}).get('feed_title')")
 
@@ -191,7 +204,7 @@ class Context:
         stories may show too few to swipe through, so it is switched to all stories (prefs_guard.py
         puts the read filter back after the run)."""
         row = self.feed_row(feed_id)
-        row.scroll_into_view_if_needed()
+        self.press_point(row)
         row.tap()
         self.page.wait_for_function(
             "NEWSBLUR.assets.stories.length > 0 || NEWSBLUR.assets.stories.no_more_stories", timeout=30000

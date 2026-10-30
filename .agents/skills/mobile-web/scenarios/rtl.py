@@ -15,7 +15,9 @@ def run(ctx):
     feed_id = ctx.pick_feed()
     ctx.shot("01-feeds")
 
-    ctx.feed_row(feed_id).tap()
+    row = ctx.feed_row(feed_id)
+    ctx.press_point(row)
+    row.tap()
     ctx.wait(150)
     x = ctx.evaluate(
         "(() => { var m = getComputedStyle(document.querySelector('.right-pane')).transform; "
