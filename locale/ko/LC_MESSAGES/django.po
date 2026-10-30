@@ -3406,6 +3406,16 @@ msgstr ""
 " 저장한 스토리 태그, 개인정보 보호 옵션, 텍스트 보기 및 모든 지능형 학습 기능을 제공합니다. 연 $99의 아카이브 플랜에는 영구 스토리 보관, Claude/GPT/Gemini/Grok "
 "기반 AI에게 질문하기, 일일 AI 브리핑, 웹 피드, 날짜 범위 필터링이 추가됩니다."
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur 프리미엄은 연간 $36로 변경되었으며, PayPal에서 NewsBlur님의 기존 연간 $%(old_amount)s 구독을 새 요금으로 변경할 수 없었습니다. 따라서 기존 "
+"요금으로 갱신되는 대신 %(date)s에 구독을 취소했습니다. PayPal 계정에는 문제가 없습니다. 프리미엄을 계속 이용하려면 새로운 연간 $36 요금으로 다시 구독하세요."
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "

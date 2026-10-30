@@ -3640,6 +3640,18 @@ msgstr ""
 "pengarsipan artikel permanen, Tanya AI dengan Claude/GPT/Gemini/Grok, ringkasan AI harian, feed web, dan "
 "pemfilteran rentang tanggal."
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur Premium kini berharga $36 per tahun, dan PayPal tidak mengizinkan NewsBlur memindahkan langganan "
+"lama Anda sebesar $%(old_amount)s/tahun ke tarif baru. Jadi, saya membatalkannya di %(date)s agar tidak "
+"diperpanjang dengan harga lama. Tidak ada masalah dengan akun PayPal Anda. Untuk tetap menggunakan Premium,"
+" berlangganan kembali dengan tarif baru $36/tahun."
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "

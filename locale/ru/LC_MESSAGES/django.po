@@ -3699,6 +3699,18 @@ msgstr ""
 "Archive за 99 $ в год дополнительно включает постоянное архивирование статей, функцию «Спросить ИИ» с "
 "Claude/GPT/Gemini/Grok, ежедневные ИИ-сводки, веб-ленты и фильтрацию по диапазону дат."
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur Стоимость Premium теперь составляет 36 $ в год, и PayPal не позволил NewsBlur перевести вашу "
+"прежнюю подписку за $%(old_amount)s в год на новый тариф. Поэтому я отменил её на %(date)s, вместо того "
+"чтобы продлевать по старой цене. С вашим аккаунтом PayPal всё в порядке. Чтобы сохранить Premium, оформите "
+"подписку заново по новому тарифу — 36 $ в год."
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
