@@ -933,7 +933,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     make_premium_renewal: function () {
         return $.make('div', [
             (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, gettext('Cancel subscription renewal'))),
-            (!NEWSBLUR.Globals.premium_renewal && gettext("Your subscription is no longer active.")),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, gettext("Your subscription is no longer active."))),
             (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, gettext('Restart your subscription')))
         ]);
     },
