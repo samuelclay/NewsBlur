@@ -1173,6 +1173,13 @@ msgstr "अगला सुनें सूची में जोड़ें"
 msgid "Add to folder"
 msgstr "फ़ोल्डर में जोड़ें"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"अपनी कंपनी का नाम, VAT नंबर, पता या अन्य जानकारी जोड़ें। सभी सदस्यता इनवॉइस अपडेट करने के लिए सहेजें, "
+"जिनमें पिछले भुगतान भी शामिल हैं।"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "जोड़ा गया %(date)s"
@@ -3663,6 +3670,9 @@ msgstr "अमान्य रेगेक्स: %(error)s"
 
 msgid "Invoice"
 msgstr "चालान"
+
+msgid "Invoice details"
+msgstr "इनवॉइस का विवरण"
 
 msgid "Is my data safe?"
 msgstr "क्या मेरा डेटा सुरक्षित है?"

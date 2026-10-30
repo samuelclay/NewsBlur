@@ -1175,6 +1175,13 @@ msgstr "Toevoegen aan Hierna afspelen"
 msgid "Add to folder"
 msgstr "Toevoegen aan map"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Voeg je bedrijfsnaam, btw-nummer, adres of andere tekst toe. Sla op om alle abonnementsfacturen bij te "
+"werken, ook die van eerdere betalingen."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s toegevoegd"
@@ -3668,6 +3675,9 @@ msgstr "Ongeldige regex: %(error)s"
 
 msgid "Invoice"
 msgstr "Factuur"
+
+msgid "Invoice details"
+msgstr "Factuurgegevens"
 
 msgid "Is my data safe?"
 msgstr "Zijn mijn gegevens veilig?"

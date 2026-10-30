@@ -1248,6 +1248,13 @@ msgstr "Dodaj do kolejki „Następne”"
 msgid "Add to folder"
 msgstr "Dodaj do folderu"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Dodaj nazwę firmy, numer VAT, adres lub inne informacje. Zapisz, aby zaktualizować wszystkie faktury za "
+"subskrypcję, w tym faktury za wcześniejsze płatności."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Dodano %(date)s"
@@ -3769,6 +3776,9 @@ msgstr "Nieprawidłowe wyrażenie regularne: %(error)s"
 
 msgid "Invoice"
 msgstr "Faktura"
+
+msgid "Invoice details"
+msgstr "Dane do faktury"
 
 msgid "Is my data safe?"
 msgstr "Czy moje dane są bezpieczne?"

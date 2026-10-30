@@ -1102,6 +1102,11 @@ msgstr "次に再生に追加"
 msgid "Add to folder"
 msgstr "フォルダーに追加"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr "会社名、VAT番号、住所などを入力してください。保存すると、過去のお支払い分を含むすべての購読請求書が更新されます。"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)sに追加"
@@ -3531,6 +3536,9 @@ msgstr "無効な正規表現: %(error)s"
 
 msgid "Invoice"
 msgstr "請求書"
+
+msgid "Invoice details"
+msgstr "請求書の詳細"
 
 msgid "Is my data safe?"
 msgstr "データは安全ですか？"

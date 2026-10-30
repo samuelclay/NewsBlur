@@ -244,6 +244,21 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             gettext('Premium details')
                         ])
                     ])),
+                    $.make('div', { className: 'NB-preference NB-preference-invoice-text' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('textarea', {
+                                id: 'NB-preference-invoice-text', name: 'invoice_text',
+                                className: 'NB-input NB-account-invoice-text', rows: 5, maxlength: 2000,
+                                dir: 'auto', 'aria-describedby': 'NB-invoice-text-help'
+                            }).val(NEWSBLUR.Preferences.invoice_text || ''),
+                            $.make('div', { className: 'NB-preference-error', role: 'alert' })
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            $.make('label', { 'for': 'NB-preference-invoice-text' }, gettext('Invoice details')),
+                            $.make('div', { className: 'NB-preference-sublabel', id: 'NB-invoice-text-help' },
+                                gettext('Add your company name, VAT number, address, or other text. Save to update all subscription invoices, including past payments.'))
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-premium-history' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('ul', { className: 'NB-account-payments' }, [
@@ -867,20 +882,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
 
-        NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
-        this.model.preference('send_emails', form['send_emails']);
-        this.model.preference('notify_before_renewal', form['notify_before_renewal']);
-
-        // Save usage billing limit if changed
-        if (NEWSBLUR.Globals.can_use_ai_classifiers) {
-            var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
-            this.model.save_usage_billing_limit(limit, function (data) {
-                if (data.code === 1) {
-                    NEWSBLUR.Globals.usage_billing_limit = data.limit;
-                }
-            });
-        }
-
         this.model.save_account_settings(form, _.bind(function (data) {
             if (data.code == -1) {
                 $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
@@ -891,8 +892,24 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             } else if (data.code == -3) {
                 $('.NB-preference-password .NB-preference-error', this.$modal).text(data.message);
                 return self.disable_save();
+            } else if (data.code == -4) {
+                this.switch_tab('premium');
+                $('.NB-preference-invoice-text .NB-preference-error', this.$modal).text(data.message);
+                return self.disable_save();
             }
 
+            NEWSBLUR.Preferences.invoice_text = data.payload.invoice_text;
+            NEWSBLUR.Preferences.send_emails = data.payload.send_emails;
+            NEWSBLUR.Preferences.notify_before_renewal = data.payload.notify_before_renewal;
+            // reader_account.js waits for the account save because usage billing also writes the profile.
+            if (NEWSBLUR.Globals.can_use_ai_classifiers) {
+                var limit = $('.NB-usage-billing-limit-input', this.$modal).val();
+                this.model.save_usage_billing_limit(limit, function (data) {
+                    if (data.code === 1) {
+                        NEWSBLUR.Globals.usage_billing_limit = data.limit;
+                    }
+                });
+            }
             NEWSBLUR.Globals.username = data.payload.username;
             NEWSBLUR.Globals.email = data.payload.email;
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
@@ -913,7 +930,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     make_premium_renewal: function () {
         return $.make('div', [
             (NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-cancel NB-modal-submit-button NB-modal-submit-red' }, gettext('Cancel subscription renewal'))),
-            (!NEWSBLUR.Globals.premium_renewal && gettext("Your subscription is no longer active.")),
+            (!NEWSBLUR.Globals.premium_renewal && $.make('div', { className: 'NB-block' }, gettext("Your subscription is no longer active."))),
             (!NEWSBLUR.Globals.premium_renewal && $.make('a', { href: '#', className: 'NB-block NB-account-premium-renew NB-modal-submit-button NB-modal-submit-green' }, gettext('Restart your subscription')))
         ]);
     },
@@ -1192,6 +1209,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     handle_change: function () {
+        $('.NB-account-invoice-text', this.$modal).on('input change', _.bind(this.enable_save, this));
         $('input[type=radio],input[type=checkbox],select,input', this.$modal).not('.NB-preference-delete-classifiers input').bind('change', _.bind(this.enable_save, this));
         $('input', this.$modal).not('.NB-preference-delete-classifiers input').bind('keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save, this));

@@ -1181,6 +1181,13 @@ msgstr "Ajouter à la file d’attente"
 msgid "Add to folder"
 msgstr "Ajouter au dossier"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Ajoutez le nom de votre entreprise, votre numéro de TVA, votre adresse ou tout autre texte. Enregistrez "
+"pour mettre à jour toutes les factures d’abonnement, y compris celles des paiements passés."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Ajouté %(date)s"
@@ -3698,6 +3705,9 @@ msgstr "Expression régulière invalide : %(error)s"
 
 msgid "Invoice"
 msgstr "Facture"
+
+msgid "Invoice details"
+msgstr "Détails de la facture"
 
 msgid "Is my data safe?"
 msgstr "Mes données sont-elles en sécurité ?"
