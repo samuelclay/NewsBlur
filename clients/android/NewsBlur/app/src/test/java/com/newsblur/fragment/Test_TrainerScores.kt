@@ -95,9 +95,9 @@ class Test_TrainerScores {
         assertEquals(TrainerPhrase.RegexCheck.Empty, TrainerPhrase.checkRegex("  "))
         assertEquals(TrainerPhrase.RegexCheck.Valid, TrainerPhrase.checkRegex("\\bsponsor(ed)?\\b"))
         assertTrue(TrainerPhrase.checkRegex("(unclosed") is TrainerPhrase.RegexCheck.Invalid)
-        assertEquals(true, TrainerPhrase.regexMatches("^\\[sponsor\\]", "[Sponsor] WorkOS"))
-        assertEquals(false, TrainerPhrase.regexMatches("^WorkOS", "[Sponsor] WorkOS"))
-        assertNull(TrainerPhrase.regexMatches("(unclosed", "[Sponsor] WorkOS"))
+        assertEquals(TrainerPhrase.RegexMatch.MATCH, TrainerPhrase.regexMatch("^\\[sponsor\\]", "[Sponsor] WorkOS"))
+        assertEquals(TrainerPhrase.RegexMatch.NO_MATCH, TrainerPhrase.regexMatch("^WorkOS", "[Sponsor] WorkOS"))
+        assertEquals(TrainerPhrase.RegexMatch.INVALID, TrainerPhrase.regexMatch("(unclosed", "[Sponsor] WorkOS"))
     }
 
     @Test

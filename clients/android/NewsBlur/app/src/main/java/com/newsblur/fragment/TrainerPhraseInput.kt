@@ -28,6 +28,12 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.TrainerScores.TapStyle
 import com.newsblur.view.TrainerCapsuleView
 import com.newsblur.view.TrainerFlowLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
@@ -44,6 +50,8 @@ class TrainerPhraseInput(
     private val colors: TrainerPalette.Colors,
     // reader_classifier.js: regex classifiers need Premium Pro, and apps/analyzer/models.py only scores them for Pro.
     private val canUseRegex: Boolean,
+    // Runs the story match off the main thread, cancelled with the trainer.
+    private val scope: CoroutineScope,
     private val onAdd: (pattern: String, isRegex: Boolean, change: (current: Int?, original: Int?) -> Int?) -> Unit,
 ) {
     private val density = context.resources.displayMetrics.density
@@ -58,6 +66,7 @@ class TrainerPhraseInput(
     private val badges = TrainerFlowLayout(context)
     private val draft = TrainerCapsuleView(context)
     private var isRegex = false
+    private var storyMatch: Job? = null
 
     private val pattern: String
         get() = textField.text.toString().trim()
@@ -216,19 +225,14 @@ class TrainerPhraseInput(
     }
 
     private fun renderBadges(pattern: String) {
+        storyMatch?.cancel()
         badges.removeAllViews()
         badges.isVisible = isRegex && pattern.isNotEmpty()
         if (!badges.isVisible) return
         when (val check = TrainerPhrase.checkRegex(pattern)) {
             TrainerPhrase.RegexCheck.Valid -> {
                 badges.addView(badge(context.getString(R.string.trainer_regex_valid), Badge.VALID))
-                if (story != null) {
-                    if (TrainerPhrase.regexMatches(pattern, storyText()) == true) {
-                        badges.addView(badge(context.getString(R.string.trainer_regex_matches_story), Badge.VALID))
-                    } else {
-                        badges.addView(badge(context.getString(R.string.trainer_regex_no_match), Badge.NO_MATCH))
-                    }
-                }
+                if (story != null) matchStory(pattern)
             }
             is TrainerPhrase.RegexCheck.Invalid -> {
                 val message = check.message.ifEmpty { context.getString(R.string.trainer_regex_invalid_pattern) }
@@ -236,6 +240,27 @@ class TrainerPhraseInput(
             }
             TrainerPhrase.RegexCheck.Empty -> Unit
         }
+    }
+
+    /**
+     * TrainerRegexInput.swift storyMatchResult, found once typing pauses. A pattern can backtrack
+     * for minutes, so TrainerPhrase.regexMatch gives up after its budget and the badge says the
+     * story couldn't be checked instead of guessing.
+     */
+    private fun matchStory(pattern: String) {
+        val text = storyText()
+        storyMatch =
+            scope.launch {
+                delay(STORY_MATCH_DEBOUNCE_MILLIS)
+                val match = withContext(Dispatchers.Default) { TrainerPhrase.regexMatch(pattern, text) }
+                val (message, style) =
+                    when (match) {
+                        TrainerPhrase.RegexMatch.MATCH -> R.string.trainer_regex_matches_story to Badge.VALID
+                        TrainerPhrase.RegexMatch.NO_MATCH -> R.string.trainer_regex_no_match to Badge.NO_MATCH
+                        else -> R.string.trainer_regex_not_checked to Badge.NO_MATCH
+                    }
+                badges.addView(badge(context.getString(message), style))
+            }
     }
 
     /** TrainerRegexInput.swift storyMatchResult: the part of the story this section classifies. */
@@ -437,4 +462,8 @@ class TrainerPhraseInput(
     }
 
     private fun dp(value: Int): Int = (value * density).roundToInt()
+
+    private companion object {
+        const val STORY_MATCH_DEBOUNCE_MILLIS = 250L
+    }
 }

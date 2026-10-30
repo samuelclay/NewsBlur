@@ -853,6 +853,8 @@ people together to talk about the world.</string>
     <string name="trainer_regex_valid">✓ Valid</string>
     <string name="trainer_regex_matches_story">✓ Matches story</string>
     <string name="trainer_regex_no_match">No match in story</string>
+    <!-- TrainerPhraseInput.kt: the regex ran past its time budget, so whether it matches the story is unknown. -->
+    <string name="trainer_regex_not_checked">Couldn\'t check story</string>
     <!-- TrainerPhraseInput.kt: %1$s is the regex engine's error message. -->
     <string name="trainer_regex_invalid">Invalid: %1$s</string>
     <string name="trainer_regex_invalid_pattern">Invalid pattern</string>

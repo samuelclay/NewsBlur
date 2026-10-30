@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.newsblur.R
@@ -37,6 +38,9 @@ import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import com.newsblur.view.TrainerCapsuleView
 import com.newsblur.view.TrainerFlowLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
@@ -125,7 +129,8 @@ class IntelTrainerSections(
     private fun addPhraseSection(kind: TrainerPhraseKind) {
         val card = addSection(context.getString(sectionTitle(kind)))
         val phrases = LinkedHashSet(shownPhrases(kind))
-        val regexes = LinkedHashSet(shownRegexes(kind))
+        // The story trainer adds the saved regexes this story matches once findMatchingRegexes has them.
+        val regexes = LinkedHashSet(if (story == null) kind.regexes(classifier).keys else emptySet())
         val capsules = flow()
 
         fun render() {
@@ -157,9 +162,19 @@ class IntelTrainerSections(
             addTitleWords(card, story) { phrase, change -> add(phrase, false, change) }
         }
         card.addView(capsules, matchWidth(topMargin = dp(6)))
-        val input = TrainerPhraseInput(context, kind, story, colors, prefsRepo.getIsPro(), ::add)
+        val input = TrainerPhraseInput(context, kind, story, colors, prefsRepo.getIsPro(), fragment.lifecycleScope, ::add)
         card.addView(input.view, matchWidth())
         render()
+        if (story != null) {
+            findMatchingRegexes(kind, story) { matched ->
+                // Regexes added while the search ran stay after the saved ones.
+                val added = regexes.toList()
+                regexes.clear()
+                regexes.addAll(matched)
+                regexes.addAll(added)
+                render()
+            }
+        }
     }
 
     /**
@@ -311,10 +326,26 @@ class IntelTrainerSections(
         }
     }
 
-    private fun shownRegexes(kind: TrainerPhraseKind): List<String> {
-        val saved = kind.regexes(classifier).keys
-        val story = story ?: return saved.toList()
-        return saved.filter { TrainerPhrase.regexMatches(it, storyText(kind, story)) == true }
+    /**
+     * The saved regexes [story] matches, found off the main thread since a pattern can backtrack
+     * for minutes. One that runs past TrainerPhrase.regexMatch's budget isn't listed, as
+     * apps/analyzer/models.py safe_regex_match doesn't score one past its own.
+     */
+    private fun findMatchingRegexes(
+        kind: TrainerPhraseKind,
+        story: Story,
+        onFound: (List<String>) -> Unit,
+    ) {
+        val saved = kind.regexes(classifier).keys.toList()
+        if (saved.isEmpty()) return
+        val text = storyText(kind, story)
+        fragment.lifecycleScope.launch {
+            val matched =
+                withContext(Dispatchers.Default) {
+                    saved.filter { TrainerPhrase.regexMatch(it, text) == TrainerPhrase.RegexMatch.MATCH }
+                }
+            if (matched.isNotEmpty()) onFound(matched)
+        }
     }
 
     private fun storyText(
