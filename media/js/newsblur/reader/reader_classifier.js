@@ -4451,7 +4451,10 @@ var classifier_prototype = {
         this.manage_filter_search = manage.search;
         this.manage_dirty_feeds = $.extend(true, {}, manage.dirty_feeds);
         if (manage.add) {
-            this.manage_add = $.extend(true, {}, manage.add);
+            // Merged in place: add panels built before the restore hold this object in their
+            // handlers (bind_manage_add_row), so a replacement would leave them editing a copy.
+            this.manage_add = $.extend(true, this.manage_add || {}, manage.add);
+            this.update_all_manage_add_rows();
         }
     },
 
@@ -4774,7 +4777,7 @@ var classifier_prototype = {
     // After a site, story or Site by Site trainer's add panel saves, show the classifier,
     // trained, in its section when it applies to the trainer's site, and score the open
     // stories with it right away, as save() does after the trainer's own Save.
-    show_trainer_added_classifier: function ($row, added, sentiment) {
+    show_trainer_added_classifier: function ($tab, added, sentiment) {
         var feed_id = this.trainer_feed_id();
         var feed = this.model.get_feed(feed_id);
         var applies = added.scope === 'global' ||
@@ -4798,7 +4801,6 @@ var classifier_prototype = {
         this.model.recalculate_story_scores(feed_id);
         this.model.stories.trigger('render:intelligence');
 
-        var $tab = $row.closest('.NB-tab');
         var input_name = 'like_' + added.type + (added.is_regex ? '_regex' : '');
         var $existing = $tab.find('.NB-classifier-input-like').filter(function () {
             return this.name === input_name && this.value === added.value;
@@ -4822,6 +4824,10 @@ var classifier_prototype = {
     show_classifier_scope: function ($pill, scope, folder_name) {
         var $classifier = $('.NB-classifier', $pill);
         $classifier.data('scope', scope).data('folder-name', folder_name || '')
+            .data('original-scope', scope).data('original-folder-name', folder_name || '');
+        // The bell saves notifications for the scope it holds (make_notification_bell), so it
+        // has to match too, or a global or folder classifier's notifications cover one site.
+        $('.NB-classifier-notification-bell', $pill).data('scope', scope).data('folder-name', folder_name || '')
             .data('original-scope', scope).data('original-folder-name', folder_name || '');
         $('.NB-scope-toggle', $pill).each(function () {
             $(this).toggleClass('NB-active', $(this).data('scope') === scope);
@@ -5028,6 +5034,7 @@ var classifier_prototype = {
     // every panel; otherwise one could show a site while its Add saves a global classifier.
     update_all_manage_add_rows: function () {
         var self = this;
+        if (!this.$modal) return;
         $('.NB-manage-add', this.$modal).each(function () {
             self.update_manage_add_row($(this));
         });
@@ -5293,9 +5300,12 @@ var classifier_prototype = {
             if ($row.closest('.NB-tab-manage').length) {
                 self.forget_manage_dirty_item(added);
                 self.refresh_manage_after_add(added);
-            } else {
-                self.show_trainer_added_classifier($row, added, entry.sentiment);
             }
+            // The story, site or Site by Site tab saves every pill it shows (serialize_classifier),
+            // so it shows the add too, wherever it was made, or saving that tab would undo it.
+            $('.NB-tab', self.$modal).not('.NB-tab-manage').each(function () {
+                self.show_trainer_added_classifier($(this), added, entry.sentiment);
+            });
         }, function (response) {
             self.manage_add_saving = false;
             $button_label.text(button_label);
