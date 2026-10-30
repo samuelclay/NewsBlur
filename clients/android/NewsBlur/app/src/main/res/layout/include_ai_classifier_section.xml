@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- include_ai_classifier_section.xml: a Natural Language Text or Image Classifier section of the trainer,
-     filled in by fragment/AiClassifierSections.kt the way media/js/newsblur/reader/reader_classifier.js builds it. -->
+<!-- include_ai_classifier_section.xml: a Natural Language Text or Image Classifier section of the trainer, a header
+     above a card like clients/ios/Classes/TrainerAIPromptSection.swift. fragment/AiClassifierSections.kt fills it
+     in the way media/js/newsblur/reader/reader_classifier.js builds it, and fragment/IntelTrainerSections.kt sizes
+     the header and card like the other trainer sections. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ai_section_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="14dp"
-    android:layout_marginEnd="8dp"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/ai_section_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -20,8 +19,8 @@
 
         <ImageView
             android:id="@+id/ai_section_icon"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:importantForAccessibility="no" />
 
         <TextView
@@ -30,143 +29,150 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/ai_section_explainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="13sp" />
 
     <LinearLayout
-        android:id="@+id/ai_cost_box"
+        android:id="@+id/ai_section_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/ai_cost_amounts"
-            android:layout_width="wrap_content"
+            android:id="@+id/ai_section_explainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/ai_cost_breakdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/ai_cost_billing_button"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginTop="8dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:letterSpacing="0"
-            android:paddingHorizontal="12dp"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            app:cornerRadius="6dp" />
-
-    </LinearLayout>
-
-    <HorizontalScrollView
-        android:id="@+id/ai_image_grid_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:scrollbars="none"
-        android:visibility="gone">
+            android:layout_marginTop="4dp"
+            android:textSize="13sp" />
 
         <LinearLayout
-            android:id="@+id/ai_image_grid"
+            android:id="@+id/ai_cost_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/ai_cost_amounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ai_cost_breakdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ai_cost_billing_button"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginTop="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:paddingHorizontal="12dp"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                app:cornerRadius="6dp" />
+
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/ai_image_grid_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/ai_image_grid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ai_prompt_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:importantForAutofill="no"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences"
+                android:maxLength="500"
+                android:minHeight="44dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/ai_test_button"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:maxWidth="140dp"
+                android:paddingHorizontal="10dp"
+                android:letterSpacing="0"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:cornerRadius="6dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/ai_test_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" />
+            android:layout_marginTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
-    </HorizontalScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/ai_prompt_input"
-            android:layout_width="0dp"
+        <!-- The draft prompt's capsule, a view/TrainerCapsuleView.kt that AiClassifierSections.kt adds. -->
+        <FrameLayout
+            android:id="@+id/ai_preview_holder"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:importantForAutofill="no"
-            android:imeOptions="actionDone"
-            android:inputType="textCapSentences"
-            android:maxLength="500"
-            android:minHeight="44dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:singleLine="true"
-            android:textSize="14sp" />
+            android:layout_marginTop="10dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/ai_test_button"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_marginStart="8dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:maxWidth="140dp"
-            android:paddingHorizontal="10dp"
-            android:letterSpacing="0"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:cornerRadius="6dp" />
+        <LinearLayout
+            android:id="@+id/ai_saved_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/ai_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:textSize="13sp"
+            android:visibility="gone" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/ai_test_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:paddingStart="8dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="4dp"
-        android:textSize="13sp"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/ai_preview_row"
-        layout="@layout/include_ai_prompt_row"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
-
-    <LinearLayout
-        android:id="@+id/ai_saved_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
-
-    <TextView
-        android:id="@+id/ai_banner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        android:textSize="13sp"
-        android:visibility="gone" />
 
 </LinearLayout>

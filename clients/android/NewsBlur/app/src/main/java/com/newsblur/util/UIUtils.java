@@ -440,57 +440,6 @@ public class UIUtils {
      * upon the provided classifier sub-type map while also setting up handlers to alter said
      * map if the buttons are pressed.
      */
-    public static void setupIntelDialogRow(final View row, @NonNull final Map<String,Integer> classifier, final String key) {
-        colourIntelDialogRow(row, classifier, key);
-        row.findViewById(R.id.intel_row_like).setOnClickListener(v -> {
-            classifier.put(key, Classifier.LIKE);
-            colourIntelDialogRow(row, classifier, key);
-        });
-        row.findViewById(R.id.intel_row_dislike).setOnClickListener(v -> {
-            classifier.put(key, Classifier.DISLIKE);
-            colourIntelDialogRow(row, classifier, key);
-        });
-        row.findViewById(R.id.intel_row_super_dislike).setOnClickListener(v -> {
-            classifier.put(key, Classifier.SUPER_DISLIKE);
-            colourIntelDialogRow(row, classifier, key);
-        });
-        row.findViewById(R.id.intel_row_clear).setOnClickListener(v -> {
-            Integer current = classifier.get(key);
-            if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(current)) {
-                classifier.put(key, Classifier.CLEAR_SUPER_DISLIKE);
-            } else if (Integer.valueOf(Classifier.DISLIKE).equals(current)) {
-                classifier.put(key, Classifier.CLEAR_DISLIKE);
-            } else {
-                classifier.put(key, Classifier.CLEAR_LIKE);
-            }
-            colourIntelDialogRow(row, classifier, key);
-        });
-    }
-
-    private static void colourIntelDialogRow(View row, Map<String,Integer> classifier, String key) {
-        if (Integer.valueOf(Classifier.LIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_green);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else if (Integer.valueOf(Classifier.SUPER_DISLIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_crimson);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else if (Integer.valueOf(Classifier.DISLIKE).equals(classifier.get(key))) {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_red);
-            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        } else {
-            row.findViewById(R.id.intel_row_like).setBackgroundResource(R.drawable.ic_thumb_up_yellow);
-            row.findViewById(R.id.intel_row_dislike).setBackgroundResource(R.drawable.ic_thumb_down_yellow);
-            row.findViewById(R.id.intel_row_super_dislike).setBackgroundResource(R.drawable.ic_thumb_down_double_yellow);
-            row.findViewById(R.id.intel_row_clear).setBackgroundResource(R.drawable.ic_clear);
-        }
-    }
-
     /**
      * Themes and wires up the intel explainer banner, including the info toggle
      * that expands/collapses the examples section.

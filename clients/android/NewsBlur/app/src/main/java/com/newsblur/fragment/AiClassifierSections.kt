@@ -3,7 +3,6 @@ package com.newsblur.fragment
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
@@ -18,12 +17,14 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.util.TypedValue
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -31,8 +32,8 @@ import com.newsblur.R
 import com.newsblur.activity.UsageBillingActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.IncludeAiClassifierSectionBinding
-import com.newsblur.databinding.IncludeAiPromptRowBinding
 import com.newsblur.design.AiClassifierPalette
+import com.newsblur.design.TrainerPalette
 import com.newsblur.domain.Classifier
 import com.newsblur.domain.ClassifierScope
 import com.newsblur.domain.Folder
@@ -46,6 +47,7 @@ import com.newsblur.util.AppConstants
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UsageBillingAction
+import com.newsblur.view.TrainerCapsuleView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,9 +56,10 @@ import kotlin.math.roundToInt
 /**
  * The trainer's Natural Language Text Classifier and Natural Language Image Classifier sections,
  * ported from media/js/newsblur/reader/reader_classifier.js make_content_filter_section and
- * make_image_filter_section. Saved prompts toggle between focus and hidden or get removed, a new
- * prompt can be typed (with a live preview) and tested on the current story, and the section
- * shows the monthly cost estimate and the billing or limit banners.
+ * make_image_filter_section and laid out like clients/ios/Classes/TrainerAIPromptSection.swift.
+ * Saved prompts are capsules (view/TrainerCapsuleView.kt) that toggle between focus and hidden or
+ * get removed, a new prompt can be typed (with a live preview capsule) and tested on the current
+ * story, and the section shows the monthly cost estimate and the billing or limit banners.
  *
  * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves.
  */
@@ -76,6 +79,8 @@ class AiClassifierSections(
     private val context: Context = fragment.requireContext()
     private val inflater = LayoutInflater.from(context)
     private val colors = AiClassifierPalette.colors(theme)
+    private val trainerColors = TrainerPalette.colors(theme)
+    private val medium: Typeface? = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
     private val original = classifier.copyPrompts()
     private var billing = prefsRepo.getUsageBillingState()
     private var costEstimate: AiCostEstimate? = null
@@ -170,25 +175,32 @@ class AiClassifierSections(
 
         fun bind() {
             container.addView(binding.root)
-            binding.root.background = rounded(colors.cardBackground, colors.cardBorder, radiusDp = 8)
+            // IntelTrainerSections.kt: the same header and card as the trainer's other sections.
+            binding.aiSectionHeader.layoutParams = IntelTrainerSections.sectionHeaderParams(context)
+            binding.aiSectionCard.layoutParams = IntelTrainerSections.sectionCardParams(context)
+            IntelTrainerSections.styleCard(binding.aiSectionCard, trainerColors)
             binding.aiSectionIcon.setImageResource(if (imagePrompt) R.drawable.ic_ai_image_filter else R.drawable.ic_ai_text_filter)
-            binding.aiSectionIcon.imageTintList = ColorStateList.valueOf(colors.textSecondary)
+            binding.aiSectionIcon.imageTintList = ColorStateList.valueOf(trainerColors.promptAccent)
             binding.aiSectionTitle.setText(if (imagePrompt) R.string.ai_image_classifier_header else R.string.ai_text_classifier_header)
-            binding.aiSectionTitle.setTextColor(colors.textPrimary)
+            binding.aiSectionTitle.setTextColor(trainerColors.textPrimary)
+            binding.aiSectionTitle.typeface = medium
             binding.aiSectionExplainer.setText(
                 if (imagePrompt) R.string.ai_image_classifier_explainer else R.string.ai_text_classifier_explainer,
             )
-            binding.aiSectionExplainer.setTextColor(colors.textSecondary)
-            binding.aiCostBox.background = rounded(colors.costBackground, colors.costBorder)
-            binding.aiCostAmounts.setTextColor(colors.textPrimary)
-            binding.aiCostBreakdown.setTextColor(colors.textSecondary)
+            binding.aiSectionExplainer.setTextColor(trainerColors.textSecondary)
+            binding.aiSectionExplainer.typeface = medium
+            binding.aiSectionExplainer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            binding.aiCostBox.background = rounded(trainerColors.insetBackground, radiusDp = 8)
+            binding.aiCostAmounts.setTextColor(trainerColors.textPrimary)
+            binding.aiCostBreakdown.setTextColor(trainerColors.textSecondary)
             styleButton(binding.aiCostBillingButton)
             binding.aiCostBillingButton.setOnClickListener { openBilling() }
 
             binding.aiPromptInput.setHint(if (imagePrompt) R.string.ai_image_prompt_hint else R.string.ai_text_prompt_hint)
-            binding.aiPromptInput.background = rounded(colors.inputBackground, colors.cardBorder)
-            binding.aiPromptInput.setTextColor(colors.textPrimary)
-            binding.aiPromptInput.setHintTextColor(colors.textSecondary)
+            binding.aiPromptInput.background = rounded(trainerColors.fieldBackground, trainerColors.fieldBorder)
+            binding.aiPromptInput.setTextColor(trainerColors.textPrimary)
+            binding.aiPromptInput.setHintTextColor(trainerColors.textSecondary)
+            binding.aiPromptInput.typeface = medium
             binding.aiPromptInput.addTextChangedListener(
                 object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -263,7 +275,7 @@ class AiClassifierSections(
                 val size = dp(76)
                 frame.layoutParams =
                     LinearLayout.LayoutParams(size, size).apply { if (index > 0) marginStart = dp(6) }
-                frame.background = rounded(colors.inputBackground, colors.cardBorder)
+                frame.background = rounded(trainerColors.insetBackground, trainerColors.fieldBorder)
                 frame.setPadding(dp(2), dp(2), dp(2), dp(2))
                 val image = ImageView(context)
                 image.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -285,14 +297,26 @@ class AiClassifierSections(
             }
         }
 
+        private val preview = TrainerCapsuleView(context)
+
+        /**
+         * TrainerAIPromptSection.swift draftCapsule: a dashed placeholder until a prompt is typed,
+         * then the prompt itself. Tapping it adds the prompt, its thumbs down flips it between
+         * focus and hidden, and its scope toggles pick where it will apply.
+         */
         private fun bindPreviewRow() {
-            val row = binding.aiPreviewRow
-            row.aiPromptClear.isVisible = false
-            row.aiPromptLike.setOnClickListener { choosePreviewScore(Classifier.LIKE) }
-            row.aiPromptDislike.setOnClickListener { choosePreviewScore(Classifier.DISLIKE) }
-            bindScopeButtons(row) { scope ->
-                previewScope = scope
-                refresh()
+            binding.aiPreviewHolder.addView(
+                preview,
+                FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT),
+            )
+            preview.onDislike = {
+                choosePreviewScore(if (previewScore == Classifier.DISLIKE) Classifier.LIKE else Classifier.DISLIKE)
+            }
+            preview.onScope = { scope ->
+                requestScope(scope) {
+                    previewScope = it
+                    refresh()
+                }
             }
         }
 
@@ -304,145 +328,131 @@ class AiClassifierSections(
         }
 
         private fun renderPreviewRow() {
-            val row = binding.aiPreviewRow
             val prompt = typedPrompt
-            val score = if (prompt.isEmpty()) null else previewScore
-            styleLabel(row.aiPromptLabel, prompt.ifEmpty { null }, score)
-            styleThumbs(row, score)
-            row.aiPromptLike.isEnabled = prompt.isNotEmpty()
-            row.aiPromptDislike.isEnabled = prompt.isNotEmpty()
-            styleScope(row, previewScope)
+            preview.onTap = if (prompt.isEmpty()) null else ({ addTypedPrompt() })
+            preview.bind(
+                TrainerCapsuleView.Model(
+                    style = TrainerCapsuleView.Style.PROMPT,
+                    level = if (prompt.isEmpty()) TrainerScores.Level.NEUTRAL else TrainerScores.level(previewScore),
+                    label = typeLabel(),
+                    value = prompt.ifEmpty { context.getString(R.string.ai_prompt_placeholder) },
+                    showsDislike = prompt.isNotEmpty(),
+                    isDraft = prompt.isNotEmpty(),
+                    isPlaceholder = prompt.isEmpty(),
+                    scope = if (prompt.isEmpty()) null else scopeKind(previewScope),
+                    isFolderAvailable = feedFolderPath != null,
+                ),
+                trainerColors,
+            )
         }
 
         private fun renderSavedList() {
             binding.aiSavedList.removeAllViews()
-            for (prompt in scores.keys) {
-                val row = IncludeAiPromptRowBinding.inflate(inflater, binding.aiSavedList, false)
+            for (prompt in scores.keys.toList()) {
+                val capsule = TrainerCapsuleView(context)
+
                 fun render() {
                     val score = scores[prompt]
-                    styleLabel(row.aiPromptLabel, prompt, score)
-                    styleThumbs(row, score)
-                    styleScope(row, classifier.promptScope(imagePrompt, prompt))
+                    val scope = classifier.promptScope(imagePrompt, prompt)
+                    capsule.bind(
+                        TrainerCapsuleView.Model(
+                            style = TrainerCapsuleView.Style.PROMPT,
+                            level = TrainerScores.level(score),
+                            label = typeLabel(),
+                            value = prompt,
+                            showsDislike = true,
+                            // A removed prompt stays listed, struck through, until the trainer saves.
+                            isRemoved = TrainerScores.level(score) == TrainerScores.Level.NEUTRAL,
+                            scope = scopeKind(scope),
+                            isFolderAvailable = feedFolderPath != null,
+                        ),
+                        trainerColors,
+                    )
                 }
-                row.aiPromptLike.setOnClickListener {
-                    scores[prompt] = Classifier.LIKE
-                    render()
+
+                // TrainerAIPromptSection.swift tap and tapDislike, through the same Classifier values
+                // the old focus, hide and remove buttons stored.
+                fun change(next: (current: Int?, original: Int?) -> Int?) {
+                    val value = next(scores[prompt], originalScores[prompt])
+                    TrainerScores.store(scores, prompt, value)
+                    if (value == null) {
+                        // A prompt added in this trainer and turned off again leaves nothing behind.
+                        classifier.setPromptScope(imagePrompt, prompt, ClassifierScope.FEED_SCOPE)
+                        renderSavedList()
+                    } else {
+                        render()
+                    }
                     refresh()
                 }
-                row.aiPromptDislike.setOnClickListener {
-                    scores[prompt] = Classifier.DISLIKE
-                    render()
-                    refresh()
-                }
-                row.aiPromptClear.setOnClickListener {
-                    scores[prompt] = if (scores[prompt] == Classifier.DISLIKE) Classifier.CLEAR_DISLIKE else Classifier.CLEAR_LIKE
-                    render()
-                    refresh()
-                }
-                bindScopeButtons(row) { scope ->
-                    classifier.setPromptScope(imagePrompt, prompt, scope)
-                    render()
-                    refresh()
+                capsule.onTap = { change { current, original -> TrainerScores.afterTap(TrainerScores.TapStyle.CYCLE, current, original) } }
+                capsule.onDislike = { change(TrainerScores::afterDislike) }
+                capsule.onScope = { scope ->
+                    requestScope(scope) {
+                        classifier.setPromptScope(imagePrompt, prompt, it)
+                        render()
+                        refresh()
+                    }
                 }
                 render()
-                binding.aiSavedList.addView(row.root)
-            }
-        }
-
-        /** Mirrors reader_classifier.js select_scope: folder and global need Premium Archive. */
-        private fun bindScopeButtons(
-            row: IncludeAiPromptRowBinding,
-            onScope: (ClassifierScope) -> Unit,
-        ) {
-            row.aiPromptScopeFeed.setOnClickListener { onScope(ClassifierScope.FEED_SCOPE) }
-            row.aiPromptScopeFolder.setOnClickListener {
-                if (!canUseWiderScopes()) return@setOnClickListener scopeDenied()
-                feedFolderPath?.let { onScope(ClassifierScope.folder(it)) }
-            }
-            row.aiPromptScopeGlobal.setOnClickListener {
-                if (!canUseWiderScopes()) return@setOnClickListener scopeDenied()
-                onScope(ClassifierScope.GLOBAL_SCOPE)
-            }
-            // A top-level feed has no folder, and a folder scope without one would save as global.
-            row.aiPromptScopeFolder.isEnabled = feedFolderPath != null
-        }
-
-        private fun scopeDenied() {
-            Toast.makeText(context, R.string.ai_scope_requires_archive, Toast.LENGTH_SHORT).show()
-        }
-
-        private fun styleScope(
-            row: IncludeAiPromptRowBinding,
-            scope: ClassifierScope,
-        ) {
-            val buttons =
-                listOf(
-                    ClassifierScope.FEED to row.aiPromptScopeFeed,
-                    ClassifierScope.FOLDER to row.aiPromptScopeFolder,
-                    ClassifierScope.GLOBAL to row.aiPromptScopeGlobal,
+                binding.aiSavedList.addView(
+                    capsule,
+                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                        topMargin = dp(6)
+                    },
                 )
-            val kind = if (scope.isFeed) ClassifierScope.FEED else scope.scope
-            for ((buttonScope, button) in buttons) {
-                button.imageTintList = ColorStateList.valueOf(if (buttonScope == kind) colors.scopeActive else colors.scopeInactive)
-                button.alpha = if (button.isEnabled) 1f else 0.4f
             }
-            row.aiPromptScopeLabel.setTextColor(colors.textSecondary)
-            row.aiPromptScopeLabel.text =
+        }
+
+        private val originalScores: Map<String, Int>
+            get() = if (imagePrompt) original.imagePrompts else original.prompts
+
+        private fun typeLabel(): String = context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
+
+        /**
+         * ScopeToggleView.swift handleTap, after reader_classifier.js select_scope: folder and
+         * global need Premium Archive, and a site outside every folder has no folder scope.
+         */
+        private fun requestScope(
+            kind: String,
+            apply: (ClassifierScope) -> Unit,
+        ) {
+            val scope =
                 when (kind) {
-                    ClassifierScope.GLOBAL -> context.getString(R.string.ai_scope_global)
-                    ClassifierScope.FOLDER ->
-                        if (scope.folderName.isEmpty()) {
-                            context.getString(R.string.ai_scope_folder)
-                        } else {
-                            context.getString(R.string.ai_scope_folder_named, scope.folderName)
-                        }
-                    else -> context.getString(R.string.ai_scope_feed)
+                    ClassifierScope.FEED -> ClassifierScope.FEED_SCOPE
+                    ClassifierScope.GLOBAL -> if (canUseWiderScopes()) ClassifierScope.GLOBAL_SCOPE else return scopeDenied()
+                    else -> {
+                        if (!canUseWiderScopes()) return scopeDenied()
+                        // A top-level feed has no folder, and a folder scope without one would save as global.
+                        val folder = feedFolderPath ?: return toast(R.string.trainer_scope_no_folder)
+                        ClassifierScope.folder(folder)
+                    }
                 }
+            apply(scope)
+            // ScopeToggleView.swift briefly names the scope it switched to.
+            toast(scopeLabel(scope))
         }
 
-        /** "Content  <prompt>" as a pill colored by focus, hidden, or neither, like the web's classifier pills. */
-        private fun styleLabel(
-            label: TextView,
-            prompt: String?,
-            score: Int?,
-        ) {
-            val (fill, text) =
-                when (score) {
-                    Classifier.LIKE -> colors.focusBackground to colors.focusText
-                    Classifier.DISLIKE -> colors.hiddenBackground to colors.hiddenText
-                    else -> colors.neutralBackground to colors.neutralText
-                }
-            label.background = rounded(fill)
-            label.setTextColor(text)
-            val type = context.getString(if (imagePrompt) R.string.ai_prompt_type_image else R.string.ai_prompt_type_content)
-            val builder = SpannableStringBuilder(type)
-            builder.setSpan(StyleSpan(Typeface.BOLD), 0, type.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            builder.append("  ")
-            if (prompt == null) {
-                val start = builder.length
-                builder.append(context.getString(R.string.ai_prompt_placeholder))
-                builder.setSpan(StyleSpan(Typeface.ITALIC), start, builder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            } else {
-                builder.append(prompt)
+        private fun scopeDenied() = toast(R.string.ai_scope_requires_archive)
+
+        private fun toast(text: Int) = toast(context.getString(text))
+
+        private fun toast(text: String) {
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+        }
+
+        private fun scopeKind(scope: ClassifierScope): String = if (scope.isFeed) ClassifierScope.FEED else scope.scope
+
+        private fun scopeLabel(scope: ClassifierScope): String =
+            when (scopeKind(scope)) {
+                ClassifierScope.GLOBAL -> context.getString(R.string.ai_scope_global)
+                ClassifierScope.FOLDER ->
+                    if (scope.folderName.isEmpty()) {
+                        context.getString(R.string.ai_scope_folder)
+                    } else {
+                        context.getString(R.string.ai_scope_folder_named, scope.folderName)
+                    }
+                else -> context.getString(R.string.ai_scope_feed)
             }
-            label.text = builder
-            // A removed prompt stays listed, struck through, until the trainer saves.
-            val removed = score == Classifier.CLEAR_LIKE || score == Classifier.CLEAR_DISLIKE
-            label.paintFlags =
-                if (removed) label.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else label.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-        }
-
-        private fun styleThumbs(
-            row: IncludeAiPromptRowBinding,
-            score: Int?,
-        ) {
-            row.aiPromptLike.setBackgroundResource(
-                if (score == Classifier.LIKE) R.drawable.ic_thumb_up_green else R.drawable.ic_thumb_up_yellow,
-            )
-            row.aiPromptDislike.setBackgroundResource(
-                if (score == Classifier.DISLIKE) R.drawable.ic_thumb_down_red else R.drawable.ic_thumb_down_yellow,
-            )
-        }
 
         private fun activeScopes(): List<ClassifierScope> {
             val saved = scores.filterValues(::isActive).keys.map { classifier.promptScope(imagePrompt, it) }
@@ -573,7 +583,7 @@ class AiClassifierSections(
             }
             thumbs.forEachIndexed { index, (frame, label) ->
                 val matched = response.imageMatched(index)
-                frame.background = rounded(colors.inputBackground, if (matched) colors.matchText else colors.cardBorder)
+                frame.background = rounded(trainerColors.insetBackground, if (matched) colors.matchText else trainerColors.fieldBorder)
                 label.setText(if (matched) R.string.ai_image_label_match else R.string.ai_image_label_no_match)
                 label.setBackgroundColor(if (matched) colors.matchText else 0xB3000000.toInt())
                 label.setTextColor(0xFFFFFFFF.toInt())
@@ -609,14 +619,15 @@ class AiClassifierSections(
         ) {
             binding.aiTestStatus.text = text
             binding.aiTestStatus.setTextColor(textColor)
-            binding.aiTestStatus.background = rounded(fill, border)
+            // TrainerAIPromptSection.swift statusBadge is a capsule.
+            binding.aiTestStatus.background = rounded(fill, border, radiusDp = 100)
             binding.aiTestStatus.isVisible = true
         }
 
         private fun clearTestResults() {
             binding.aiTestStatus.isVisible = false
             thumbs.forEach { (frame, label) ->
-                frame.background = rounded(colors.inputBackground, colors.cardBorder)
+                frame.background = rounded(trainerColors.insetBackground, trainerColors.fieldBorder)
                 label.isVisible = false
             }
         }

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- fragment_intel_trainer_sheet.xml: the story and site trainers' bottom sheet (StoryIntelTrainerFragment.java and
+     FeedIntelTrainerFragment.java). fragment/IntelTrainerSections.kt fills trainer_sections and colors the sheet. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -16,28 +18,35 @@
 
     <TextView
         android:id="@+id/sheet_title"
-        style="?defaultText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="@string/story_intel_dialog_title"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:paddingBottom="4dp"
+        android:textSize="19sp" />
 
     <include
         layout="@layout/include_intel_explainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- A zero height with weight lets the scrolling content shrink to fit, so the AI classifier
+    <!-- A zero height with weight lets the scrolling content shrink to fit, so the trainer's
          sections can't push the save buttons below the screen. -->
-    <include
-        android:id="@+id/train_content"
-        layout="@layout/dialog_trainstory"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/trainer_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/trainer_sections"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp" />
+
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -809,6 +809,74 @@ people together to talk about the world.</string>
     <string name="explainer_example2_header">A single super dislike overrides everything</string>
     <string name="explainer_example2_result">Story is always hidden</string>
     <string name="explainer_example3_header">An AI filter overrides likes and dislikes, but not a super dislike</string>
+    <!-- IntelTrainerSections.kt: the trainer's question, from clients/ios/Classes/TrainerView.swift. %1$s is
+         trainer_question_like and %2$s is trainer_question_dislike, colored green and red. -->
+    <string name="trainer_question_story">What do you 👍 %1$s and 👎 %2$s about this story?</string>
+    <string name="trainer_question_site">What do you 👍 %1$s and 👎 %2$s about this site?</string>
+    <string name="trainer_question_like">like</string>
+    <string name="trainer_question_dislike">dislike</string>
+    <!-- IntelTrainerSections.kt: section headers in the story trainer and the site trainer. -->
+    <string name="trainer_section_story_title">Story Title</string>
+    <string name="trainer_section_titles">Titles &amp; Phrases</string>
+    <string name="trainer_section_story_author">Story Author</string>
+    <string name="trainer_section_authors">Authors</string>
+    <string name="trainer_section_story_tags">Story Categories &amp; Tags</string>
+    <string name="trainer_section_tags">Categories &amp; Tags</string>
+    <string name="trainer_section_story_text">Story Text</string>
+    <string name="trainer_section_texts">Text &amp; Phrases</string>
+    <string name="trainer_section_story_url">Story URL</string>
+    <string name="trainer_section_urls">URLs</string>
+    <string name="trainer_section_publisher">Everything by This Publisher</string>
+    <string name="trainer_choose_title_words">Choose one or more words from the title:</string>
+    <!-- TrainerCapsuleView.kt: the classifier type before a capsule's value, as in "Author: John Gruber". -->
+    <string name="trainer_capsule_label">%1$s:</string>
+    <string name="trainer_label_title">Title</string>
+    <string name="trainer_label_author">Author</string>
+    <string name="trainer_label_tag">Tag</string>
+    <string name="trainer_label_text">Text</string>
+    <string name="trainer_label_url">URL</string>
+    <string name="trainer_label_site">Site</string>
+    <string name="trainer_label_title_regex">Title Regex</string>
+    <string name="trainer_label_author_regex">Author Regex</string>
+    <string name="trainer_label_text_regex">Text Regex</string>
+    <string name="trainer_label_url_regex">URL Regex</string>
+    <!-- TrainerPhraseInput.kt: the phrase box under each trainer section, from TrainerRegexInput.swift. -->
+    <string name="trainer_exact_phrase">Exact phrase</string>
+    <string name="trainer_regex">Regex</string>
+    <string name="trainer_title_phrase_hint">Enter title phrase...</string>
+    <string name="trainer_author_phrase_hint">Enter author phrase...</string>
+    <string name="trainer_text_phrase_hint">Enter text phrase...</string>
+    <string name="trainer_url_phrase_hint">Enter URL phrase...</string>
+    <!-- TrainerPhraseInput.kt: %1$s is an example regex such as \bbreaking\b. -->
+    <string name="trainer_regex_example">e.g. %1$s</string>
+    <string name="trainer_clear_phrase">Clear phrase</string>
+    <string name="trainer_regex_valid">✓ Valid</string>
+    <string name="trainer_regex_matches_story">✓ Matches story</string>
+    <string name="trainer_regex_no_match">No match in story</string>
+    <!-- TrainerPhraseInput.kt: %1$s is the regex engine's error message. -->
+    <string name="trainer_regex_invalid">Invalid: %1$s</string>
+    <string name="trainer_regex_invalid_pattern">Invalid pattern</string>
+    <string name="trainer_regex_requires_pro">Regex requires Premium Pro</string>
+    <string name="trainer_scope_no_folder">This site isn\'t in a folder</string>
+    <!-- TrainerPhraseInput.kt: the regex help, from TrainerRegexInput.swift regexHelpContent. -->
+    <string name="trainer_regex_help">Regex help</string>
+    <string name="trainer_regex_help_title">Regex Patterns</string>
+    <string name="trainer_regex_help_footer">All patterns are case-insensitive by default</string>
+    <string name="trainer_regex_help_word_matching">Word Matching</string>
+    <string name="trainer_regex_help_whole_word">Whole word</string>
+    <string name="trainer_regex_help_either_word">Either word</string>
+    <string name="trainer_regex_help_position">Position</string>
+    <string name="trainer_regex_help_starts_with">Starts with</string>
+    <string name="trainer_regex_help_ends_with">Ends with</string>
+    <string name="trainer_regex_help_words_in_order">Words in order</string>
+    <string name="trainer_regex_help_patterns">Patterns</string>
+    <string name="trainer_regex_help_numbers">Numbers</string>
+    <string name="trainer_regex_help_dollar_amounts">Dollar amounts</string>
+    <string name="trainer_regex_help_hashtags">Hashtags</string>
+    <string name="trainer_regex_help_advanced">Advanced</string>
+    <string name="trainer_regex_help_exclude_word">Exclude word</string>
+    <string name="trainer_regex_help_four_digits">Exactly 4 digits</string>
+    <string name="trainer_regex_help_acronyms">Acronyms</string>
 
     <string name="auto">Auto</string>
     <string name="light">Light</string>
