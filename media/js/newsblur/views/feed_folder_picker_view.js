@@ -101,9 +101,11 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
         var item = this.find_item(this.value) || this.items[0];
         var $trigger = this.$('.NB-feed-folder-picker-trigger').empty();
         if (!item) return;
+        // Titles and paths are plain text, never markup: a select option's .text() decodes an
+        // escaped feed title, and $.make with a string child would parse it as HTML.
         $trigger.append([
             this.make_icon(item),
-            $.make('span', { className: 'NB-feed-folder-picker-trigger-label', id: this.list_id + '-value' }, item.title)
+            $.make('span', { className: 'NB-feed-folder-picker-trigger-label', id: this.list_id + '-value' }).text(item.title)
         ]).attr('title', item.parent_path ? item.parent_path + ' › ' + item.title : item.title);
     },
 
@@ -136,7 +138,7 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
                     className: 'NB-feed-folder-picker-group',
                     'data-group': item.group,
                     role: 'presentation'
-                }, item.group));
+                }).text(item.group));
             }
             last_group = item.group;
 
@@ -150,8 +152,8 @@ NEWSBLUR.Views.FeedFolderPicker = Backbone.View.extend({
                 'aria-disabled': item.disabled ? 'true' : null
             }, [
                 self.make_icon(item),
-                $.make('span', { className: 'NB-feed-folder-picker-option-title' }, item.title),
-                (item.parent_path && $.make('span', { className: 'NB-feed-folder-picker-option-path' }, item.parent_path))
+                $.make('span', { className: 'NB-feed-folder-picker-option-title' }).text(item.title),
+                (item.parent_path && $.make('span', { className: 'NB-feed-folder-picker-option-path' }).text(item.parent_path))
             ]);
             if (item.depth) {
                 $option.css('padding-inline-start', 10 + item.depth * 16);
