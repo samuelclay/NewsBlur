@@ -94,6 +94,7 @@ def check_regressions(ctx, feed_id):
     check_cross_feed_back(ctx, feed_id)
     check_touch_hover(ctx, feed_id)
     check_discovery_back(ctx)
+    check_folder_pills(ctx)
 
 
 def hover_changes(ctx, selector):
@@ -128,6 +129,16 @@ def check_touch_hover(ctx, feed_id):
             ctx.check(f"a touch doesn't light up a {layout} story ({theme})", not changes, changes)
         changes = hover_changes(ctx, feed_row)
         ctx.check(f"a touch doesn't light up a feed row ({theme})", not changes, changes)
+        # Folder titles and the Saved Stories header showed their collapse arrow and pushed their
+        # counts aside on hover.
+        for name, selector in (
+            ("folder title", ".NB-feedlist .folder > .folder_title"),
+            ("collapsible header", ".NB-feeds-header:has(.NB-feedlist-collapse-icon)"),
+        ):
+            if not ctx.evaluate(f"!!document.querySelector({selector!r})"):
+                continue
+            changes = hover_changes(ctx, selector)
+            ctx.check(f"a touch doesn't change a {name} ({theme})", not changes, changes)
     ctx.evaluate("(() => { document.body.classList.remove('NB-dark'); })()")
     ctx.set_layout("list")
 
@@ -198,20 +209,12 @@ def check_story_toolbar_fits(ctx):
     ctx.set_layout("list")
 
 
-def check_cross_feed_back(ctx, feed_id):
-    """Next unread can carry the story screen into the next feed. Back from there to the first
-    feed's story entry found its story missing from the next feed's stories, still loaded at
-    that moment, and showed the list under a story entry. Expects to be on the story list."""
-    feeds = ctx.visible_feeds()
-    others = [feed for feed in feeds if feed["id"] != feed_id and (feed["unread"] or feed["shows_read"])]
-    if not others:
-        ctx.check("cross-feed back has a second feed to test with", False, feeds)
-        return
-    other = max(others, key=lambda feed: (feed["shows_read"], feed["unread"]))["id"]
+def cross_into_next_feed(ctx, feed_id, other):
+    """Opens a story in feed_id, then does what Next unread does once that feed runs out: opens
+    the next feed and selects its story. Returns the first story's hash."""
     ctx.set_layout("grid")
     ctx.tap_story(1)
     story_a = ctx.state()["story"]
-    # What Next unread does once this feed runs out: open the next feed and select its story.
     ctx.evaluate(
         f"(() => {{ NEWSBLUR.app.mobile.follow_next_unread(); NEWSBLUR.reader.open_feed({other}); }})()"
     )
@@ -220,6 +223,21 @@ def check_cross_feed_back(ctx, feed_id):
     )
     ctx.evaluate("(() => { NEWSBLUR.assets.stories.at(0).set('selected', true); })()")
     ctx.wait(800)
+    return story_a
+
+
+def check_cross_feed_back(ctx, feed_id):
+    """Next unread can carry the story screen into the next feed. Back from there to the first
+    feed's story entry found its story missing from the next feed's stories, still loaded at
+    that moment, and showed the list under a story entry. When the first feed then failed to
+    load, the story screen sat on Loading... for good. Expects to be on the story list."""
+    feeds = ctx.visible_feeds()
+    others = [feed for feed in feeds if feed["id"] != feed_id and (feed["unread"] or feed["shows_read"])]
+    if not others:
+        ctx.check("cross-feed back has a second feed to test with", False, feeds)
+        return
+    other = max(others, key=lambda feed: (feed["shows_read"], feed["unread"]))["id"]
+    story_a = cross_into_next_feed(ctx, feed_id, other)
     state = ctx.state()
     ctx.check(
         "Next unread's story in the next feed has its own entry",
@@ -242,6 +260,27 @@ def check_cross_feed_back(ctx, feed_id):
         ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
         ctx.wait(900)
         ctx.check("and its back button returns to the first feed's list", ctx.state()["screen"] == "titles")
+
+    # The same walk back, with the first feed's request failing.
+    cross_into_next_feed(ctx, feed_id, other)
+    ctx.page.go_back()
+    ctx.wait(1200)
+    route = f"**/reader/feed/{feed_id}**"
+    ctx.page.route(route, lambda request: request.fulfill(status=500, body="error"))
+    try:
+        ctx.page.go_back()
+        ctx.wait(3000)
+        state = ctx.state()
+    finally:
+        ctx.page.unroute(route)
+    ctx.check(
+        "a failed load while reopening a story falls back to the list",
+        state["screen"] == "titles" and state["entry"]["screen"] == "titles",
+        state,
+    )
+    ctx.evaluate("(() => { NEWSBLUR.reader.open_feed(%d); })()" % feed_id)
+    ctx.page.wait_for_function("NEWSBLUR.assets.stories.length > 0", timeout=30000)
+    ctx.wait(1200)
     ctx.set_layout("list")
 
 
@@ -352,6 +391,54 @@ def check_story_list_pills(ctx):
         days["days"] == 4 and days["others"] == 0 and closed == 0,
         (days, closed),
     )
+
+
+def check_folder_pills(ctx):
+    """A named folder wraps its controls in .folder_title (folder_view.js), so they stacked over
+    each other, and opening the mark read day choices or confirmation hid the whole wrapper. And
+    curated rivers like Global Shared Stories showed a mark read button that throws. Expects the
+    feed list."""
+    page = ctx.page
+    title = page.locator(".NB-feedlist .folder > .folder_title >> visible=true").first
+    ctx.press_point(title)
+    title.locator(".folder_title_text").tap()
+    page.wait_for_function(
+        "NEWSBLUR.reader.flags.river_view && NEWSBLUR.assets.stories.length > 0", timeout=30000
+    )
+    ctx.wait(1200)
+    bar = ctx.evaluate(PILL_BAR)
+    pills = bar["pills"]
+    ordered = all(a["right"] <= b["left"] for a, b in zip(pills, pills[1:]))
+    ctx.check(
+        "a folder's pills sit in one row along the bottom",
+        len(pills) >= 3 and ordered and len({pill["top"] for pill in pills}) == 1,
+        bar,
+    )
+    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
+    ctx.wait(300)
+    days = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-time:visible').length")
+    page.locator(".right-pane .NB-feedbar-mark-feed-read-expand").tap()
+    ctx.wait(300)
+    ctx.check("a folder's + shows its mark read day choices", days == 4, days)
+    # The confirmation depends on a preference, set here in the page only.
+    ctx.evaluate("(() => { NEWSBLUR.Preferences.mark_read_river_confirm = 'folders_only'; })()")
+    page.locator(".right-pane .NB-feedbar-mark-feed-read").tap()
+    ctx.wait(400)
+    confirm = ctx.evaluate(
+        "(() => ({yes: $('.right-pane .NB-confirm-yes:visible').length, no: $('.right-pane .NB-confirm-no:visible').length}))()"
+    )
+    ctx.check("a folder's mark read confirmation shows Yes and No", confirm == {"yes": 1, "no": 1}, confirm)
+    if confirm["no"]:
+        page.locator(".right-pane .NB-confirm-no").tap()
+        ctx.wait(300)
+
+    ctx.evaluate("(() => { NEWSBLUR.reader.open_river_blurblogs_stories({global: true}); })()")
+    page.wait_for_function("NEWSBLUR.reader.active_feed == 'river:global'", timeout=30000)
+    ctx.wait(2000)
+    shown = ctx.evaluate("$('.right-pane .NB-feedbar-mark-feed-read-container:visible').length")
+    ctx.check("Global Shared Stories has no mark read button, as on desktop", shown == 0, shown)
+    page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+    ctx.wait(1200)
 
 
 def check_story_iframe_sandbox(ctx, feed_id):

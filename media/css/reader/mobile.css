@@ -528,8 +528,15 @@ body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder {
     pointer-events: none;
 }
 
+/* A named folder (folder_view.js) wraps its controls in .folder_title, which steps aside so
+   they join the row like a feed's. */
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > .folder_title {
+    display: contents;
+}
+
 body.NB-mobile .right-pane .NB-story-titles-header > .feed > *,
-body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > * {
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > :not(.folder_title),
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > .folder_title > * {
     float: none !important;
     flex: none;
     margin: 0 !important;
@@ -545,7 +552,8 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-highlight,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-exception-icon,
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-unfetched-icon,
-body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-manage-icon {
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-manage-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-collapse-icon {
     display: none !important;
 }
 
@@ -867,6 +875,11 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .fe
     margin: 0;
 }
 
+/* Curated rivers like Global Shared Stories can't be marked read, as on desktop (reader.css). */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-fake .NB-feedbar-mark-feed-read-container {
+    display: none;
+}
+
 /* Mark read: a split button, + for the day options and the checkmark to mark everything. The +
    lays the 1d to 14d choices out across the bar (mobile_layout_view.js toggle_mark_read_days). */
 body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
@@ -936,8 +949,8 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read .N
     mask-image: url('/media/img/icons/nouns/mark-read.svg');
 }
 
-body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days > * > :not(.NB-feedbar-mark-feed-read-container),
-body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) > * > :not(.NB-feedbar-mark-feed-read-container) {
+body.NB-mobile .right-pane .NB-story-titles-header.NB-mobile-mark-read-days :is(.NB-feedbar-discover-container, .NB-feedbar-options-container, .NB-search-container, .NB-story-title-indicator),
+body.NB-mobile .right-pane .NB-story-titles-header:has(.NB-feedbar-mark-feed-read-confirm) :is(.NB-feedbar-discover-container, .NB-feedbar-options-container, .NB-search-container, .NB-story-title-indicator) {
     display: none !important;
 }
 
@@ -1730,6 +1743,19 @@ body.NB-mobile .NB-feed-story-header {
     user-select: none;
 }
 
+/* mobile.css: a folder's collapse arrow, which desktop shows on hover, stays out on a phone like
+   the native apps' chevrons, with the counts beside it. A thumb landing on the row then changes
+   nothing, and collapsing takes one tap. */
+body.NB-mobile .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
+body.NB-mobile .NB-feeds-header .NB-feedlist-collapse-icon {
+    display: block;
+}
+
+body.NB-mobile .NB-feedlist .folder .folder_title .feed_counts_floater,
+body.NB-mobile .NB-feeds-header .feed_counts_floater {
+    margin-right: 24px;
+}
+
 /* mobile.css: touch browsers apply :hover and :active the moment a thumb lands, before they know
    it's a scroll, so the desktop hover lit up every row a scroll started on: a darker background
    and the manage arrow, as if half selected. On a touch screen rows keep their resting look and
@@ -1756,9 +1782,24 @@ body.NB-mobile .NB-feed-story-header {
         display: none;
     }
 
-    body.NB-mobile .NB-feedlist .feed:hover .NB-feedlist-manage-icon,
-    body.NB-mobile .NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
+    body.NB-mobile .NB-feedlist .feed:hover .NB-feedlist-manage-icon {
         opacity: 0;
+    }
+
+    body.NB-mobile .NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
+        display: none;
+    }
+
+    body.NB-mobile .NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
+        display: block;
+    }
+
+    body.NB-mobile .NB-feeds-header:hover:not(.NB-selected) {
+        background-color: #e9ece6;
+    }
+
+    body.NB-mobile.NB-dark .NB-feeds-header:hover:not(.NB-selected) {
+        background-color: #646566;
     }
 }
 

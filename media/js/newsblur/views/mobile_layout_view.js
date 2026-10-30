@@ -350,6 +350,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
         var screen = target.screen;
         this.awaiting_story = null;
+        clearTimeout(this.awaiting_story_timer);
         if (screen === 'story') {
             var story = target.story_hash && NEWSBLUR.assets.stories.get_by_story_hash(target.story_hash);
             if (story) {
@@ -358,6 +359,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
                 // The entry belongs to another feed (Next unread crossed into this one), which the
                 // router opens once this handler returns. stories_reset opens the story then.
                 this.awaiting_story = target.story_hash;
+                this.awaiting_story_timer = setTimeout(_.bind(this.stories_failed, this), 15000);
                 this.story_pager.show_loading(gettext('Loading...'));
             } else {
                 screen = 'titles';
@@ -393,6 +395,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!this.awaiting_story || !options || options.added === undefined) return;
         var story_hash = this.awaiting_story;
         this.awaiting_story = null;
+        clearTimeout(this.awaiting_story_timer);
         if (!this.active || this.screen !== 'story') return;
         var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
         if (story) {
@@ -400,6 +403,21 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             return;
         }
         // The story has dropped off the feed's first page, so show the list it was in.
+        this.show_list_for_story();
+    },
+
+    // reader_taskbar_info.js show_stories_error: the story list failed to load. A story waiting
+    // on it gives up after 15 seconds too, offline requests can take that long to fail.
+    stories_failed: function () {
+        if (!this.awaiting_story) return;
+        this.awaiting_story = null;
+        clearTimeout(this.awaiting_story_timer);
+        if (!this.active || this.screen !== 'story') return;
+        this.show_list_for_story();
+    },
+
+    // The list shows the story list's own error or its stories, under an entry retagged to match.
+    show_list_for_story: function () {
         this.story_pager.close();
         this.tag_entry('titles');
         this.show_screen('titles', { direction: 'pop', complete: _.bind(this.after_screen_change, this) });
