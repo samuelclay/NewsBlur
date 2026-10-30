@@ -1102,6 +1102,11 @@ msgstr "다음 재생 목록에 추가"
 msgid "Add to folder"
 msgstr "폴더에 추가"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr "회사명, VAT 번호, 주소 또는 기타 내용을 추가하세요. 저장하면 이전 결제 내역을 포함한 모든 구독 청구서가 업데이트됩니다."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s 추가됨"
@@ -3539,6 +3544,9 @@ msgstr "잘못된 정규식: %(error)s"
 
 msgid "Invoice"
 msgstr "청구서"
+
+msgid "Invoice details"
+msgstr "청구서 정보"
 
 msgid "Is my data safe?"
 msgstr "내 데이터는 안전한가요?"

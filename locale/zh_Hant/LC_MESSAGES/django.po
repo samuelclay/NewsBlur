@@ -3341,6 +3341,16 @@ msgstr ""
 "提供全文搜尋、新聞流、已儲存的文章標籤、隱私選項、文字檢視，以及所有智慧訓練功能。每年 99 美元的 Archive 方案另提供永久文章封存、使用 Claude/GPT/Gemini/Grok 的「詢問 "
 "AI」、每日 AI 簡報、網頁訂閱來源和日期範圍篩選。"
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur Premium 年費已調漲至 $36，而 PayPal 不允許 NewsBlur 將你原本每年 $%(old_amount)s 的訂閱調整為新費率。因此，我已在 %(date)s "
+"取消訂閱，而不是讓它以舊價格續訂。你的 PayPal 帳戶沒有任何問題。若要繼續使用 Premium，請以每年 $36 的新費率重新訂閱。"
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "

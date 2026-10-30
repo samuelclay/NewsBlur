@@ -1748,6 +1748,98 @@ class Test_RefundLatestStripePayment(TestCase):
         self.assertIsNot(original.refunded, True)
 
 
+class Test_PremiumExpireEmailsAfterPricingCancel(TestCase):
+    """The grace and expired emails must say why Premium is ending when the pricing migration
+    cancelled a grandfathered PayPal subscription. A 13 year subscriber who missed the one pricing
+    email only got the generic "maybe you didn't mean to transition back" copy, so the cancellation
+    looked like a billing bug (apps/profile/models.py)."""
+
+    EXPLANATION = "PayPal would not let NewsBlur move your older $24/year subscription to the new rate"
+
+    def setUp(self):
+        from django.core import mail
+
+        mail.outbox = []
+        self.user = User.objects.create_user(
+            username="pricingexpire", password="password", email="pricingexpire@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.is_premium = True
+        self.profile.is_premium_trial = False
+        self.profile.premium_renewal = False
+        self.profile.active_provider = "paypal"
+        self.profile.last_seen_on = datetime.datetime.now()
+        self.profile.premium_expire = datetime.datetime.now() - datetime.timedelta(days=3)
+        self.profile.save()
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=368),
+            payment_amount=24,
+            payment_provider="paypal",
+        )
+
+    def _migration_row(self, paypal_canceled_days_ago=5):
+        from apps.profile.models import PremiumPricingMigration
+
+        canceled_date = None
+        if paypal_canceled_days_ago is not None:
+            canceled_date = datetime.datetime.now() - datetime.timedelta(days=paypal_canceled_days_ago)
+        return PremiumPricingMigration.objects.create(
+            user=self.user,
+            provider="paypal",
+            old_amount=24,
+            email_sent_date=canceled_date,
+            paypal_canceled_date=canceled_date,
+            status="cancelled",
+        )
+
+    def _sent_bodies(self):
+        from django.core import mail
+
+        self.assertEqual(len(mail.outbox), 1)
+        html = mail.outbox[0].alternatives[0][0]
+        return mail.outbox[0].body, html
+
+    def test_grace_email_explains_pricing_cancellation(self):
+        self._migration_row()
+
+        self.profile.send_premium_expire_grace_period_email()
+
+        text, html = self._sent_bodies()
+        for body in (text, html):
+            self.assertIn(self.EXPLANATION, body)
+            self.assertNotIn("maybe you didn't mean to transition back", body)
+
+    def test_expired_email_explains_pricing_cancellation(self):
+        self._migration_row(paypal_canceled_days_ago=36)
+
+        self.profile.send_premium_expire_email()
+
+        text, html = self._sent_bodies()
+        for body in (text, html):
+            self.assertIn(self.EXPLANATION, body)
+
+    def test_subscriber_who_cancelled_paypal_themselves_gets_generic_copy(self):
+        """Reconcile marks a row cancelled without paypal_canceled_date when the subscriber ended
+        the PayPal subscription on their own, so NewsBlur must not claim it cancelled it."""
+        self._migration_row(paypal_canceled_days_ago=None)
+
+        self.profile.send_premium_expire_grace_period_email()
+
+        text, _ = self._sent_bodies()
+        self.assertNotIn(self.EXPLANATION, text)
+        self.assertIn("maybe you didn't mean to transition back", text)
+
+    def test_payment_after_cancellation_gets_generic_copy(self):
+        """A subscriber who paid again after the cancellation is expiring for some later reason."""
+        self._migration_row(paypal_canceled_days_ago=400)
+
+        self.profile.send_premium_expire_email()
+
+        text, _ = self._sent_bodies()
+        self.assertNotIn(self.EXPLANATION, text)
+
+
 class Test_PremiumExpireBillingPeriod(TestCase):
     """A payment buys one billing period, not a flat year. Granting 365 days per
     charge pushed monthly Premium Pro subscribers out to expirations in the 2030s

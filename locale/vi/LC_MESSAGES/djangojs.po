@@ -1106,6 +1106,13 @@ msgstr "Thêm vào danh sách phát tiếp theo"
 msgid "Add to folder"
 msgstr "Thêm vào thư mục"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Thêm tên công ty, mã số thuế VAT, địa chỉ hoặc nội dung khác. Lưu để cập nhật tất cả hóa đơn gói đăng ký, "
+"kể cả các khoản thanh toán trước đây."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Đã thêm %(date)s"
@@ -3584,6 +3591,9 @@ msgstr "Biểu thức chính quy không hợp lệ: %(error)s"
 
 msgid "Invoice"
 msgstr "Hóa đơn"
+
+msgid "Invoice details"
+msgstr "Thông tin hóa đơn"
 
 msgid "Is my data safe?"
 msgstr "Dữ liệu của tôi có an toàn không?"

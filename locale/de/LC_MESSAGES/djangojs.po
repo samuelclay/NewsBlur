@@ -1185,6 +1185,13 @@ msgstr "Zur Wiedergabeliste hinzufügen"
 msgid "Add to folder"
 msgstr "Zu Ordner hinzufügen"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Füge deinen Firmennamen, deine Umsatzsteuer-Identifikationsnummer, deine Adresse oder andere Angaben hinzu."
+" Speichere die Änderungen, um alle Abo-Rechnungen zu aktualisieren, einschließlich früherer Zahlungen."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "%(date)s hinzugefügt"
@@ -3691,6 +3698,9 @@ msgstr "Ungültiger Regex: %(error)s"
 
 msgid "Invoice"
 msgstr "Rechnung"
+
+msgid "Invoice details"
+msgstr "Rechnungsdetails"
 
 msgid "Is my data safe?"
 msgstr "Sind meine Daten sicher?"

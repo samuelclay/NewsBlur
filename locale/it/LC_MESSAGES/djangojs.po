@@ -1179,6 +1179,13 @@ msgstr "Aggiungi a In coda"
 msgid "Add to folder"
 msgstr "Aggiungi alla cartella"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Aggiungi il nome della tua azienda, la partita IVA, l’indirizzo o altre informazioni. Salva per aggiornare "
+"tutte le fatture dell’abbonamento, comprese quelle dei pagamenti precedenti."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Aggiunto %(date)s"
@@ -3680,6 +3687,9 @@ msgstr "Espressione regolare non valida: %(error)s"
 
 msgid "Invoice"
 msgstr "Fattura"
+
+msgid "Invoice details"
+msgstr "Dati di fatturazione"
 
 msgid "Is my data safe?"
 msgstr "I miei dati sono al sicuro?"

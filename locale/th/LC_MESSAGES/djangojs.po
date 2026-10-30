@@ -1104,6 +1104,13 @@ msgstr "เพิ่มไปยังคิวถัดไป"
 msgid "Add to folder"
 msgstr "เพิ่มลงในโฟลเดอร์"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"เพิ่มชื่อบริษัท เลขประจำตัวผู้เสียภาษี ที่อยู่ หรือข้อความอื่นๆ "
+"บันทึกเพื่ออัปเดตใบแจ้งหนี้การสมัครสมาชิกทั้งหมด รวมถึงการชำระเงินที่ผ่านมา"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "เพิ่มเมื่อ %(date)s"
@@ -3563,6 +3570,9 @@ msgstr "regex ไม่ถูกต้อง: %(error)s"
 
 msgid "Invoice"
 msgstr "ใบแจ้งหนี้"
+
+msgid "Invoice details"
+msgstr "รายละเอียดใบแจ้งหนี้"
 
 msgid "Is my data safe?"
 msgstr "ข้อมูลของฉันปลอดภัยหรือไม่"

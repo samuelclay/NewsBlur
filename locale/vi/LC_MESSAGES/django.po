@@ -3604,6 +3604,18 @@ msgstr ""
 " bài viết vĩnh viễn, Hỏi AI với Claude/GPT/Gemini/Grok, bản tin AI hằng ngày, nguồn cấp web và lọc theo "
 "khoảng ngày."
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur Premium đã tăng lên $36 mỗi năm, và PayPal không cho phép NewsBlur chuyển gói đăng ký cũ "
+"$%(old_amount)s/năm của bạn sang mức giá mới. Vì vậy, tôi đã hủy gói trên %(date)s thay vì để gói tự gia "
+"hạn với giá cũ. Tài khoản PayPal của bạn không có vấn đề gì. Để tiếp tục dùng Premium, hãy đăng ký lại với "
+"mức giá mới $36/năm."
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "

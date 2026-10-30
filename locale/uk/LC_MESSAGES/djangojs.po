@@ -1251,6 +1251,13 @@ msgstr "Додати до черги «Далі»"
 msgid "Add to folder"
 msgstr "Додати до папки"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Додайте назву компанії, номер платника ПДВ, адресу чи інший текст. Збережіть, щоб оновити всі рахунки за "
+"підписку, зокрема за минулі платежі."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Додано %(date)s"
@@ -3769,6 +3776,9 @@ msgstr "Некоректний регулярний вираз: %(error)s"
 
 msgid "Invoice"
 msgstr "Рахунок"
+
+msgid "Invoice details"
+msgstr "Дані рахунку"
 
 msgid "Is my data safe?"
 msgstr "Чи в безпеці мої дані?"

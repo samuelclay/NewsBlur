@@ -69,12 +69,19 @@
 
         .invoice-details {
             display: flex;
+            gap: 24px;
             justify-content: space-between;
             margin-bottom: 40px;
         }
 
         .invoice-details .section {
             flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .invoice-details .invoice-custom-text {
+            white-space: pre-wrap;
         }
 
         .invoice-details .section h3 {
@@ -310,6 +317,7 @@
         <h3>{% trans "Bill To" %}</h3>
         <p class="name">{{ user.username }}</p>
         <p>{{ user.email }}</p>
+        {% if invoice_text %}<p class="invoice-custom-text" dir="auto">{{ invoice_text }}</p>{% endif %}
     </div>
 
     <div class="section section-right">

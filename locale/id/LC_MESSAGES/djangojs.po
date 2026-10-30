@@ -1177,6 +1177,13 @@ msgstr "Tambahkan ke Berikutnya"
 msgid "Add to folder"
 msgstr "Tambahkan ke folder"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Tambahkan nama perusahaan, nomor PPN, alamat, atau teks lainnya. Simpan untuk memperbarui semua faktur "
+"langganan, termasuk pembayaran sebelumnya."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Ditambahkan %(date)s"
@@ -3678,6 +3685,9 @@ msgstr "Regex tidak valid: %(error)s"
 
 msgid "Invoice"
 msgstr "Faktur"
+
+msgid "Invoice details"
+msgstr "Detail faktur"
 
 msgid "Is my data safe?"
 msgstr "Apakah data saya aman?"

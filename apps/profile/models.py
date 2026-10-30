@@ -3813,7 +3813,11 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire_grace.txt", data)
         html = render_to_string("mail/email_premium_expire_grace.xhtml", data)
         subject = gettext("Your premium account on NewsBlur has one more month!")
@@ -3850,7 +3854,11 @@ class Profile(models.Model):
         delta = datetime.datetime.now() - self.last_seen_on
         months_ago = round(delta.days / 30)
         user = self.user
-        data = dict(user=user, months_ago=months_ago)
+        data = dict(
+            user=user,
+            months_ago=months_ago,
+            pricing_cancellation=self.pricing_migration_paypal_cancellation(),
+        )
         text = render_to_string("mail/email_premium_expire.txt", data)
         html = render_to_string("mail/email_premium_expire.xhtml", data)
         subject = gettext("Your premium account on NewsBlur has expired")
@@ -4091,6 +4099,21 @@ class Profile(models.Model):
 
         if not preview:
             MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_pricing_upgrade")
+
+    def pricing_migration_paypal_cancellation(self):
+        """The PremiumPricingMigration row when the pricing migration cancelled this subscriber's
+        grandfathered PayPal subscription and nothing has been paid since, so the grace and expired
+        emails can say why Premium is ending. A subscriber who misses the one pricing email
+        otherwise sees a 13 year subscription lapse with no explanation. Rows the subscriber
+        cancelled themselves have no paypal_canceled_date (apps/profile/models.py)."""
+        row = PremiumPricingMigration.objects.filter(
+            user=self.user, status="cancelled", paypal_canceled_date__isnull=False
+        ).first()
+        if not row:
+            return None
+        if PaymentHistory.objects.filter(user=self.user, payment_date__gt=row.paypal_canceled_date).exists():
+            return None
+        return row
 
     def is_dormant_for_paypal_cancel(self, now=None):
         """True when this subscriber has been inactive long enough that force-cancelling their

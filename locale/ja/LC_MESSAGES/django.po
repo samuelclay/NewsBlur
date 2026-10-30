@@ -3318,6 +3318,16 @@ msgstr ""
 "NewsBlurプレミアムは、最大1,024サイトまで年間36ドルです。Feedly "
 "Proは年間72ドルからです。より低価格のNewsBlurには、全文検索、ニュースの流れ、保存記事タグ、プライバシー設定、テキスト表示、すべてのインテリジェンス学習機能が含まれています。年間99ドルのアーカイブプランでは、記事の永久保存、Claude/GPT/Gemini/Grokを使ったAIへの質問、毎日のAIブリーフィング、ウェブフィード、期間指定フィルターが追加されます。"
 
+#, python-format
+msgid ""
+"NewsBlur Premium has moved to $36 per year, and PayPal would not let NewsBlur move your older "
+"$%(old_amount)s/year subscription to the new rate. So I cancelled it on %(date)s instead of letting it "
+"renew at the old price. Nothing is wrong with your PayPal account. To keep Premium, resubscribe at the new "
+"$36/year rate."
+msgstr ""
+"NewsBlur "
+"プレミアムの年額料金が36ドルに変更されましたが、PayPalではNewsBlurの旧料金（年額$%(old_amount)s）のサブスクリプションを新料金に変更できませんでした。そのため、旧料金で自動更新されないよう、%(date)sに解約しました。PayPalアカウントに問題はありません。プレミアムを引き続きご利用になるには、新しい年額36ドルのプランを再購読してください。"
+
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "

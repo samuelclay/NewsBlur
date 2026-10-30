@@ -1255,6 +1255,13 @@ msgstr "Добавить в очередь «Далее»"
 msgid "Add to folder"
 msgstr "Добавить в папку"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr ""
+"Добавьте название компании, номер НДС, адрес или другой текст. Сохраните, чтобы обновить все счета за "
+"подписку, включая счета за прошлые платежи."
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "Добавлено: %(date)s"
@@ -3773,6 +3780,9 @@ msgstr "Недопустимое регулярное выражение: %(erro
 
 msgid "Invoice"
 msgstr "Счёт"
+
+msgid "Invoice details"
+msgstr "Данные для счёта"
 
 msgid "Is my data safe?"
 msgstr "Мои данные в безопасности?"

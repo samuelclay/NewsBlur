@@ -1102,6 +1102,11 @@ msgstr "添加到接下来播放"
 msgid "Add to folder"
 msgstr "添加到文件夹"
 
+msgid ""
+"Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
+"including past payments."
+msgstr "添加你的公司名称、增值税号、地址或其他信息。保存后，所有订阅发票（包括以往的付款记录）都会更新。"
+
 #, python-format
 msgid "Added %(date)s"
 msgstr "添加于 %(date)s"
@@ -3531,6 +3536,9 @@ msgstr "正则表达式无效：%(error)s"
 
 msgid "Invoice"
 msgstr "发票"
+
+msgid "Invoice details"
+msgstr "发票详情"
 
 msgid "Is my data safe?"
 msgstr "我的数据安全吗？"
