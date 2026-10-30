@@ -204,9 +204,13 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         if (!story) return;
 
         if (mode === 'story') {
+            // The original page is the publisher's HTML served from NewsBlur's origin, so the
+            // sandbox keeps it in an opaque origin, as the desktop Story view does
+            // (templates/reader/feeds_skeleton.xhtml). allow-same-origin would let its scripts
+            // act as the signed-in reader.
             page.$el.addClass('NB-mobile-story-page-iframe').html($.make('iframe', {
                 className: 'NB-mobile-story-iframe',
-                sandbox: 'allow-scripts allow-same-origin allow-popups',
+                sandbox: 'allow-scripts',
                 src: '/rss_feeds/original_story?story_hash=' + encodeURIComponent(story.get('story_hash'))
             }));
             page.view = { destroy: function () { page.$el.empty(); } };
