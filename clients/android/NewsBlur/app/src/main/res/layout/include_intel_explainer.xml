@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp"
+    android:paddingHorizontal="12dp"
     android:paddingTop="2dp"
     android:paddingBottom="6dp"
     android:clickable="true"

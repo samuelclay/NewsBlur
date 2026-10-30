@@ -95,7 +95,7 @@ class TrainerCapsuleView(
 
         scopeGroup.orientation = HORIZONTAL
         scopeGroup.gravity = Gravity.CENTER_VERTICAL
-        body.addView(scopeGroup, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { marginStart = dp(4) })
+        body.addView(scopeGroup, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { marginStart = dp(3) })
         scopeButtons.forEach { (scope, button) ->
             button.setImageResource(
                 when (scope) {
@@ -112,10 +112,11 @@ class TrainerCapsuleView(
                         else -> R.string.ai_scope_feed
                     },
                 )
-            button.setPadding(dp(3), dp(3), dp(3), dp(3))
+            // ScopeToggleView.swift: 12pt icons in 18pt frames, a touch larger here for fingers.
+            button.setPadding(dp(4), dp(4), dp(4), dp(4))
             button.background = ripple(oval = true)
             button.setOnClickListener { onScope?.invoke(scope) }
-            scopeGroup.addView(button, LayoutParams(dp(22), dp(22)))
+            scopeGroup.addView(button, LayoutParams(dp(20), dp(20)))
         }
 
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
@@ -141,7 +142,7 @@ class TrainerCapsuleView(
         listOf(dislikeButton, superDislikeButton).forEach { button ->
             button.scaleType = ImageView.ScaleType.CENTER_INSIDE
             button.setPadding(dp(7), dp(7), dp(7), dp(7))
-            addView(button, LayoutParams(dp(30), dp(30)).apply { marginStart = dp(2) })
+            addView(button, LayoutParams(dp(28), dp(28)))
         }
         dislikeButton.setImageResource(R.drawable.ic_thumb_down_red)
         dislikeButton.setOnClickListener { onDislike?.invoke() }
@@ -226,7 +227,7 @@ class TrainerCapsuleView(
         )
 
         val verticalPadding = if (isPrompt || isRegex) dp(6) else dp(5)
-        body.setPadding(dp(10), verticalPadding, if (hasButtons) dp(6) else dp(if (isRegex || isPrompt) 12 else 10), verticalPadding)
+        body.setPadding(dp(9), verticalPadding, if (hasButtons) dp(6) else dp(if (isRegex || isPrompt) 12 else 10), verticalPadding)
         setPadding(0, 0, if (hasButtons) dp(4) else 0, 0)
         minimumHeight = dp(32)
 

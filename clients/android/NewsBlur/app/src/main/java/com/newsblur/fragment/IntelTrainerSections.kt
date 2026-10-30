@@ -466,7 +466,7 @@ class IntelTrainerSections(
         fun sectionHeaderParams(context: Context): LinearLayout.LayoutParams {
             val density = context.resources.displayMetrics.density
             return LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                marginStart = (32 * density).roundToInt()
+                marginStart = (26 * density).roundToInt()
                 marginEnd = (8 * density).roundToInt()
                 topMargin = (24 * density).roundToInt()
                 bottomMargin = (8 * density).roundToInt()
@@ -490,7 +490,7 @@ class IntelTrainerSections(
             colors: TrainerPalette.Colors,
         ) {
             val density = card.resources.displayMetrics.density
-            val horizontal = (16 * density).roundToInt()
+            val horizontal = (14 * density).roundToInt()
             card.setPadding(horizontal, (12 * density).roundToInt(), horizontal, (16 * density).roundToInt())
             card.background =
                 GradientDrawable().apply {
@@ -501,7 +501,7 @@ class IntelTrainerSections(
 
         @JvmStatic
         fun sectionCardParams(context: Context): LinearLayout.LayoutParams {
-            val margin = (16 * context.resources.displayMetrics.density).roundToInt()
+            val margin = (12 * context.resources.displayMetrics.density).roundToInt()
             return LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 marginStart = margin
                 marginEnd = margin
