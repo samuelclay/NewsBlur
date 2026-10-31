@@ -957,6 +957,20 @@ def check_sheet_swipe(ctx):
     )
     ctx.close_overlays()
 
+    # Preferences' segmented controls change a setting without an input or change event, only
+    # enabling Save, and their change could still be swiped away.
+    ctx.evaluate("NEWSBLUR.reader.open_preferences_modal()")
+    ctx.wait(1800)
+    page.locator("#simplemodal-container .segmented-control li:not(.NB-active) >> visible=true").first.tap()
+    ctx.wait(300)
+    drag_sheet(ctx, "#simplemodal-container", 520)
+    ctx.wait(500)
+    ctx.check(
+        "a modal whose Save a segmented control enabled holds still under a drag down",
+        ctx.evaluate("!!document.querySelector('#simplemodal-container')"),
+    )
+    ctx.close_overlays()
+
 
 def check_swipe_back_anywhere(ctx):
     """The story list only went back from a swipe at the screen's edge. Like the iOS and Android

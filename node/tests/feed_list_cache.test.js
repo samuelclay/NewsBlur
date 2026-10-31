@@ -78,3 +78,37 @@ test('each user has a key of their own', function () {
     assert.notEqual(cache.cache_key(7), cache.cache_key(8));
     assert.equal(cache.cache_key(7).indexOf(cache.KEY_PREFIX), 0);
 });
+
+// feed_list_cache.test.js: write reads window.localStorage, so each test lends it one.
+function with_storage(store, run) {
+    const had_window = typeof global.window !== 'undefined';
+    const previous = had_window ? global.window : undefined;
+    global.window = { localStorage: store };
+    try {
+        run();
+    } finally {
+        if (had_window) global.window = previous;
+        else delete global.window;
+    }
+}
+
+test('a kept list says so, and one too big for storage is dropped and says so', function () {
+    const items = {};
+    const roomy = {
+        setItem: function (key, value) { items[key] = value; },
+        removeItem: function (key) { delete items[key]; }
+    };
+    with_storage(roomy, function () {
+        assert.equal(cache.write(7, response()), true);
+        assert.ok(items[cache.cache_key(7)]);
+    });
+
+    const full = {
+        setItem: function () { throw new Error('QuotaExceededError'); },
+        removeItem: function (key) { delete items[key]; }
+    };
+    with_storage(full, function () {
+        assert.equal(cache.write(7, response()), false);
+        assert.equal(items[cache.cache_key(7)], undefined, 'the stale list is removed');
+    });
+});

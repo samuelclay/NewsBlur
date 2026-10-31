@@ -733,9 +733,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         var loaded = function (subscriptions) {
             self.feed_list_subscriptions = subscriptions;
+            self.feed_list_saved_counts = null;
             if (cache) {
                 cache.clear(user_id);
-                cache.write(user_id, subscriptions);
+                self.feed_list_uncacheable = !cache.write(user_id, subscriptions);
             }
             if (!cached) {
                 apply_subscriptions(subscriptions);
@@ -806,19 +807,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     // assetmodel.js: writes the unread counts on screen into the cached feed list as the page
-    // hides, so the next page load starts from them (common/feed_list_cache.js).
+    // hides, so the next page load starts from them (common/feed_list_cache.js). Hiding happens
+    // on every tab switch, and twice as a tab closes, so the list is only written again once a
+    // count has changed, and never again once storage has refused it for its size.
     save_feed_list_counts: function () {
         var cache = NEWSBLUR.feed_list_cache;
         var user_id = NEWSBLUR.Globals.is_authenticated && NEWSBLUR.Globals.user_id;
-        if (!cache || !user_id || !this.feed_list_subscriptions) return;
+        if (!cache || !user_id || !this.feed_list_subscriptions || this.feed_list_uncacheable) return;
         var counts = {};
         var add_counts = function (feed) {
             counts[feed.id] = { ps: feed.get('ps'), nt: feed.get('nt'), ng: feed.get('ng') };
         };
         this.feeds.each(add_counts);
         this.social_feeds.each(add_counts);
+        var signature = JSON.stringify(counts);
+        if (signature === this.feed_list_saved_counts) return;
         this.feed_list_subscriptions = cache.with_counts(this.feed_list_subscriptions, counts);
-        cache.write(user_id, this.feed_list_subscriptions);
+        this.feed_list_uncacheable = !cache.write(user_id, this.feed_list_subscriptions);
+        this.feed_list_saved_counts = signature;
     },
 
     load_feed_favicons: function (callback, loaded_once, load_all) {

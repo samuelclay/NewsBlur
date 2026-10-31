@@ -46,6 +46,22 @@ def run(ctx):
     )
     ctx.shot("02-story")
 
+    # A story read aloud shows Next story in the bar, whose tap opened the full player instead
+    # of moving on. Next story is stubbed out so the account's player keeps its story.
+    if ctx.evaluate("!!document.querySelector('.NB-media-player .NB-media-player-next')"):
+        ctx.evaluate(
+            "(() => { var p = NEWSBLUR.app.media_player; p.next_taps = 0; "
+            "p.listen_play_next = function (e) { if (e) e.stopPropagation(); p.next_taps += 1; return true; }; "
+            "p.delegateEvents(); })()"
+        )
+        page.locator(".NB-media-player .NB-media-player-next").tap()
+        ctx.wait(500)
+        tapped = ctx.evaluate(
+            "({taps: NEWSBLUR.app.media_player.next_taps, "
+            "expanded: document.querySelector('.NB-media-player').classList.contains('NB-mobile-player-expanded')})"
+        )
+        ctx.check("Next story in the bar moves on without opening the player", tapped["taps"] == 1 and not tapped["expanded"], tapped)
+
     page.locator(".NB-media-player .NB-media-player-title").tap()
     ctx.wait(600)
     player = ctx.evaluate(PLAYER)

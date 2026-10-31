@@ -111,17 +111,20 @@
         }
     }
 
+    // Returns whether the list was kept. A list too big for the browser's storage isn't.
     function write(user_id, data) {
         var store = user_id && storage();
-        if (!store || !data) return;
+        if (!store || !data) return false;
         try {
             store.setItem(cache_key(user_id), JSON.stringify(storable(data)));
+            return true;
         } catch (e) {
             try {
                 store.removeItem(cache_key(user_id));
             } catch (ignored) {
                 // feed_list_cache.js: storage that refuses both is simply not used.
             }
+            return false;
         }
     }
 

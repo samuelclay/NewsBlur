@@ -970,12 +970,12 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         var observer = new MutationObserver(_.bind(this.update_player_visibility, this));
         observer.observe(this.$player[0], { attributes: true, attributeFilter: ['class'] });
 
-        // Tapping the collapsed bar anywhere but play/pause or close expands it. In the sheet, a
-        // tap on its top edge (the grab handle) collapses it again.
+        // Tapping the collapsed bar anywhere but play/pause, Next story or close expands it. In
+        // the sheet, a tap on its top edge (the grab handle) collapses it again.
         this.$player[0].addEventListener('click', _.bind(function (e) {
             if (!this.active) return;
             var expanded = this.$player.hasClass('NB-mobile-player-expanded');
-            if (!expanded && !$(e.target).closest('.NB-media-player-play-pause, .NB-media-player-close').length) {
+            if (!expanded && !$(e.target).closest('.NB-media-player-play-pause, .NB-media-player-next, .NB-media-player-close').length) {
                 e.preventDefault();
                 e.stopPropagation();
                 this.expand_player();
@@ -1260,13 +1260,29 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // Preferences, Account, Site Settings and the trainer save only from their Save button, so
     // once someone changes something in a modal, a swipe down would throw it away. Like an iOS
     // sheet with changes, the modal then only gives a little under the finger and springs back.
-    // Only a person's own edits count, not a modal setting its controls as it opens.
+    // Only a person's own edits count, not a modal setting its controls as it opens: their
+    // input, a trainer classifier they tap, or a Save button they have enabled since their first
+    // touch, which is how Preferences and Account notice their segmented controls.
     setup_sheet_edits: function () {
         $(document).on('input change click', '#simplemodal-container', function (e) {
             if (!e.originalEvent || !e.originalEvent.isTrusted) return;
             if (e.type === 'click' && !$(e.target).closest('.NB-classifier').length) return;
             $(e.currentTarget).addClass('NB-mobile-sheet-edited');
         });
+        document.addEventListener('touchstart', _.bind(function (e) {
+            var modal = $(e.target).closest('#simplemodal-container')[0];
+            if (!modal || modal.nb_disabled_saves !== undefined) return;
+            modal.nb_disabled_saves = this.disabled_saves(modal);
+        }, this), { capture: true, passive: true });
+    },
+
+    disabled_saves: function (modal) {
+        return $(modal).find('.NB-modal-submit-button, input[type=submit]').filter('.NB-disabled, [disabled]').length;
+    },
+
+    modal_edited: function (modal) {
+        return $(modal).hasClass('NB-mobile-sheet-edited') ||
+            (modal.nb_disabled_saves !== undefined && this.disabled_saves(modal) < modal.nb_disabled_saves);
     },
 
     // A drag inside anything scrolled down scrolls it back up instead.
@@ -1296,7 +1312,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             $overlay: sheet.overlay ? $(sheet.overlay) : $(),
             start_x: touch.clientX,
             start_y: touch.clientY,
-            held: !!sheet.holds_edits && $sheet.hasClass('NB-mobile-sheet-edited'),
+            held: !!sheet.holds_edits && this.modal_edited($sheet[0]),
             axis: null,
             dy: 0,
             samples: [{ y: touch.clientY, t: e.timeStamp }]
