@@ -3140,6 +3140,9 @@ msgstr "全寬"
 msgid "Full-Text Search"
 msgstr "全文搜尋"
 
+msgid "Full-screen list"
+msgstr "全螢幕清單"
+
 msgid "Full-text search across all stories"
 msgstr "搜尋所有文章的全文"
 
@@ -3528,6 +3531,9 @@ msgstr "不常更新的網站文章"
 msgid "Infrequent stories per month"
 msgstr "不常更新網站的每月文章數"
 
+msgid "Inline list"
+msgstr "行內清單"
+
 msgid "Insta-fetch stories"
 msgstr "立即擷取文章"
 
@@ -3664,6 +3670,9 @@ msgstr "上次更新"
 msgid "Last seen:"
 msgstr "上次上線："
 
+msgid "Layout"
+msgstr "版面配置"
+
 msgid "Leave unread"
 msgstr "保留為未讀"
 
@@ -3746,6 +3755,9 @@ msgstr "正在載入訂閱來源…"
 
 msgid "Loading more briefings..."
 msgstr "正在載入更多簡報…"
+
+msgid "Loading the next unread story..."
+msgstr "正在載入下一篇未讀文章…"
 
 msgid "Loading voices..."
 msgstr "正在載入語音…"
@@ -4259,6 +4271,9 @@ msgstr "下一步 "
 msgid "Next story"
 msgstr "下一篇文章"
 
+msgid "Next unread"
+msgstr "下一篇未讀文章"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接著，建立一個包含所有電子報的篩選器，讓它們轉寄到 NewsBlur 上的自訂地址。"
 
@@ -4561,6 +4576,11 @@ msgstr "糟糕，擷取該網址時發生問題，而且無法確定原因。"
 
 msgid "Old password"
 msgstr "舊密碼"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "超過 %(count)s 天"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6311,6 +6331,12 @@ msgstr "早於 %(date)s 的文章"
 msgid "Stories on %(date)s"
 msgstr "%(date)s 的文章"
 
+msgid "Stories open inside the list"
+msgstr "文章會在清單內開啟"
+
+msgid "Stories open on their own screen"
+msgstr "文章會在獨立畫面中開啟"
+
 msgid "Stories per day"
 msgstr "每日文章數"
 
@@ -6361,6 +6387,9 @@ msgstr "文章字體樣式"
 
 msgid "Story URL"
 msgstr "文章網址"
+
+msgid "Story cards open on their own screen"
+msgstr "文章卡片會在獨立畫面中開啟"
 
 msgid "Story clustering"
 msgstr "文章分群"

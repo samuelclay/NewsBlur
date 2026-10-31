@@ -3276,6 +3276,9 @@ msgstr "Lebar penuh"
 msgid "Full-Text Search"
 msgstr "Pencarian Teks Lengkap"
 
+msgid "Full-screen list"
+msgstr "Daftar layar penuh"
+
 msgid "Full-text search across all stories"
 msgstr "Pencarian teks lengkap di semua artikel"
 
@@ -3675,6 +3678,9 @@ msgstr "Artikel Situs yang Jarang Diperbarui"
 msgid "Infrequent stories per month"
 msgstr "Artikel yang jarang muncul per bulan"
 
+msgid "Inline list"
+msgstr "Daftar sebaris"
+
 msgid "Insta-fetch stories"
 msgstr "Ambil artikel secara instan"
 
@@ -3813,6 +3819,9 @@ msgstr "Pembaruan Terakhir"
 msgid "Last seen:"
 msgstr "Terakhir terlihat:"
 
+msgid "Layout"
+msgstr "Tata letak"
+
 msgid "Leave unread"
 msgstr "Biarkan belum dibaca"
 
@@ -3897,6 +3906,9 @@ msgstr "Memuat feed..."
 
 msgid "Loading more briefings..."
 msgstr "Memuat ringkasan lainnya..."
+
+msgid "Loading the next unread story..."
+msgstr "Memuat artikel belum dibaca berikutnya..."
 
 msgid "Loading voices..."
 msgstr "Memuat suara..."
@@ -4424,6 +4436,9 @@ msgstr "Langkah berikutnya "
 msgid "Next story"
 msgstr "Artikel berikutnya"
 
+msgid "Next unread"
+msgstr "Berikutnya yang belum dibaca"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Selanjutnya, buat filter untuk semua buletin Anda agar diteruskan ke alamat khusus di NewsBlur."
 
@@ -4729,6 +4744,12 @@ msgstr "Waduh, terjadi masalah saat mengambil URL tersebut dan tidak ada penjela
 
 msgid "Old password"
 msgstr "Kata sandi lama"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Lebih dari %(count)s hari yang lalu"
+msgstr[1] "Lebih dari %(count)s hari yang lalu"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6529,6 +6550,12 @@ msgstr "Artikel yang lebih lama dari %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artikel pada %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Artikel terbuka di dalam daftar"
+
+msgid "Stories open on their own screen"
+msgstr "Artikel terbuka di layar tersendiri"
+
 msgid "Stories per day"
 msgstr "Artikel per hari"
 
@@ -6579,6 +6606,9 @@ msgstr "Tipografi artikel"
 
 msgid "Story URL"
 msgstr "URL artikel"
+
+msgid "Story cards open on their own screen"
+msgstr "Kartu artikel terbuka di layar tersendiri"
 
 msgid "Story clustering"
 msgstr "Pengelompokan artikel"

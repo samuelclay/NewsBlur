@@ -123,8 +123,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                         &middot;\
                       <% } %>\
                       <%- setting_label(read_filter) %>\
-                      &middot;\
-                      <%- setting_label(NEWSBLUR.assets.view_setting(feed.id, "order")) %>\
+                      <span class="NB-feedbar-options-order">&middot;\
+                      <%- setting_label(NEWSBLUR.assets.view_setting(feed.id, "order")) %></span>\
                       <% if (has_notifications && has_notifications.length) { %>\
                           &middot;\
                           <div class="NB-feedbar-notifications-icon"></div>\
@@ -542,7 +542,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
 
     show_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
 
         return this.show_manage_menu(e);
     },

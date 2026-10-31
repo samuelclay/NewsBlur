@@ -3279,6 +3279,9 @@ msgstr "Ancho completo"
 msgid "Full-Text Search"
 msgstr "Búsqueda de texto completo"
 
+msgid "Full-screen list"
+msgstr "Lista a pantalla completa"
+
 msgid "Full-text search across all stories"
 msgstr "Búsqueda de texto completo en todos los artículos"
 
@@ -3682,6 +3685,9 @@ msgstr "Artículos de sitios poco activos"
 msgid "Infrequent stories per month"
 msgstr "Umbral de artículos al mes"
 
+msgid "Inline list"
+msgstr "Lista integrada"
+
 msgid "Insta-fetch stories"
 msgstr "Obtener artículos al instante"
 
@@ -3820,6 +3826,9 @@ msgstr "Última actualización"
 msgid "Last seen:"
 msgstr "Última vez visto:"
 
+msgid "Layout"
+msgstr "Diseño"
+
 msgid "Leave unread"
 msgstr "Dejar sin leer"
 
@@ -3904,6 +3913,9 @@ msgstr "Cargando feeds..."
 
 msgid "Loading more briefings..."
 msgstr "Cargando más resúmenes..."
+
+msgid "Loading the next unread story..."
+msgstr "Cargando el siguiente artículo sin leer..."
 
 msgid "Loading voices..."
 msgstr "Cargando voces..."
@@ -4433,6 +4445,9 @@ msgstr "Siguiente paso "
 msgid "Next story"
 msgstr "Siguiente artículo"
 
+msgid "Next unread"
+msgstr "Siguiente sin leer"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "A continuación, crea un filtro con todos tus boletines informativos para que se reenvíen a la dirección "
@@ -4738,6 +4753,12 @@ msgstr "Vaya, hubo un problema al obtener esa URL y no hay una explicación clar
 
 msgid "Old password"
 msgstr "Contraseña antigua"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "De hace más de %(count)s día"
+msgstr[1] "De hace más de %(count)s días"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6548,6 +6569,12 @@ msgstr "Artículos anteriores a %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artículos del %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Los artículos se abren dentro de la lista"
+
+msgid "Stories open on their own screen"
+msgstr "Los artículos se abren en su propia pantalla"
+
 msgid "Stories per day"
 msgstr "Artículos por día"
 
@@ -6598,6 +6625,9 @@ msgstr "Tipografía de artículos"
 
 msgid "Story URL"
 msgstr "URL del artículo"
+
+msgid "Story cards open on their own screen"
+msgstr "Las tarjetas de artículos se abren en su propia pantalla"
 
 msgid "Story clustering"
 msgstr "Agrupación de artículos"

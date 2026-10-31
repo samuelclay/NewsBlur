@@ -3274,6 +3274,9 @@ msgstr "Larghezza intera"
 msgid "Full-Text Search"
 msgstr "Ricerca nel testo completo"
 
+msgid "Full-screen list"
+msgstr "Elenco a schermo intero"
+
 msgid "Full-text search across all stories"
 msgstr "Ricerca nel testo completo di tutti gli articoli"
 
@@ -3677,6 +3680,9 @@ msgstr "Articoli dei siti poco attivi"
 msgid "Infrequent stories per month"
 msgstr "Soglia dei siti poco attivi (articoli al mese)"
 
+msgid "Inline list"
+msgstr "Elenco in linea"
+
 msgid "Insta-fetch stories"
 msgstr "Recupera subito gli articoli"
 
@@ -3815,6 +3821,9 @@ msgstr "Ultimo aggiornamento"
 msgid "Last seen:"
 msgstr "Ultimo accesso:"
 
+msgid "Layout"
+msgstr "Layout"
+
 msgid "Leave unread"
 msgstr "Lascia non letto"
 
@@ -3899,6 +3908,9 @@ msgstr "Caricamento dei feed..."
 
 msgid "Loading more briefings..."
 msgstr "Caricamento di altri briefing..."
+
+msgid "Loading the next unread story..."
+msgstr "Caricamento del prossimo articolo non letto..."
 
 msgid "Loading voices..."
 msgstr "Caricamento delle voci..."
@@ -4426,6 +4438,9 @@ msgstr "Passaggio successivo "
 msgid "Next story"
 msgstr "Articolo successivo"
 
+msgid "Next unread"
+msgstr "Prossimo non letto"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Poi crea un filtro con tutte le tue newsletter, in modo che vengano inoltrate all'indirizzo personalizzato "
@@ -4733,6 +4748,12 @@ msgstr ""
 
 msgid "Old password"
 msgstr "Vecchia password"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Più vecchio di %(count)s giorno"
+msgstr[1] "Più vecchio di %(count)s giorni"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6549,6 +6570,12 @@ msgstr "Articoli più vecchi del %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Articoli del %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Gli articoli si aprono all’interno dell’elenco"
+
+msgid "Stories open on their own screen"
+msgstr "Gli articoli si aprono in una schermata dedicata"
+
 msgid "Stories per day"
 msgstr "Articoli al giorno"
 
@@ -6599,6 +6626,9 @@ msgstr "Tipografia degli articoli"
 
 msgid "Story URL"
 msgstr "URL dell'articolo"
+
+msgid "Story cards open on their own screen"
+msgstr "Le schede degli articoli si aprono in una schermata dedicata"
 
 msgid "Story clustering"
 msgstr "Raggruppamento degli articoli"

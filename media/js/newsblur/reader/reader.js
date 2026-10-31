@@ -152,12 +152,16 @@
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
+            // reader.js: phones get stacked full-screen screens (views/mobile_layout_view.js).
+            NEWSBLUR.app.mobile = new NEWSBLUR.Views.MobileLayout();
 
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
-                // Restore media player state from server (only on initial load)
-                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
+                // Restore media player state from server (only on initial load). A feed list drawn
+                // from its cache (common/assetmodel.js load_feeds) waits for the server's state.
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored &&
+                    !NEWSBLUR.assets.flags['feed_list_from_cache']) {
                     NEWSBLUR.app.media_player.restore_state();
                     NEWSBLUR.app.media_player.setup_beforeunload();
                 }
@@ -166,6 +170,20 @@
                     NEWSBLUR.growth_prompts.check_on_load();
                 }
             }, this));
+
+            NEWSBLUR.assets.feeds.bind('loaded_from_server', function () {
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
+                    NEWSBLUR.app.media_player.restore_state();
+                    NEWSBLUR.app.media_player.setup_beforeunload();
+                }
+            });
+            // reader.js: the next page load draws the feed list with the unread counts on screen.
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') NEWSBLUR.assets.save_feed_list_counts();
+            });
+            window.addEventListener('pagehide', function () {
+                NEWSBLUR.assets.save_feed_list_counts();
+            });
 
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
@@ -229,6 +247,9 @@
 
         logout: function () {
             console.log(['Logout']);
+            // reader.js: nothing is written back as the page hides once signed out.
+            NEWSBLUR.assets.feed_list_subscriptions = null;
+            if (NEWSBLUR.feed_list_cache) NEWSBLUR.feed_list_cache.clear();
             window.location.href = "/reader/logout";
         },
 
@@ -344,7 +365,9 @@
             }
 
             if (center) {
-                var center_width = center.width();
+                // reader.js: the phone layout (views/mobile_layout_view.js) sizes panes with CSS,
+                // so jquery.layout's pane widths are stale there. The screen is the pane.
+                var center_width = this.flags.mobile ? window.innerWidth : center.width();
                 var narrow = center_width < 980;
                 if (NEWSBLUR.assets.preference('story_button_placement') == "bottom") {
                     narrow = true;
@@ -357,7 +380,7 @@
                 var extrawide = center_width > 1180;
                 $windows.toggleClass('NB-extra-wide-content', extrawide);
                 this.flags.narrow_content = !!narrow;
-                content_width = center_width + (west ? west.width() : 0);
+                content_width = center_width + (west && !this.flags.mobile ? west.width() : 0);
 
                 // Reposition discover view if it's open
                 if (this.active_story && this.active_story.story_discover_view) {
@@ -366,7 +389,7 @@
             }
 
             if ((north && north.width() < 640) ||
-                (content_width && content_width < 780)) {
+                (content_width && content_width < 780) || this.flags.mobile) {
                 $windows.addClass('NB-narrow');
             } else {
                 $windows.removeClass('NB-narrow');
@@ -408,6 +431,12 @@
                 .removeClass('NB-story-pane-hidden')
                 .toggleClass('NB-story-pane-' + story_anchor,
                     NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
+            // reader.js: a phone list (views/mobile_layout_view.js) borrows the compact rows of the
+            // side-by-side titles pane, which are styled under NB-story-pane-west.
+            if (this.flags.mobile &&
+                NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'list') {
+                $('.right-pane').addClass('NB-story-pane-west');
+            }
             if (!options.right_side) {
                 var outerLayoutOptions = {
                     zIndex: 2,
@@ -708,6 +737,7 @@
             this.$s.$body.addClass('NB-show-reader');
             this.flags['splash_page_frontmost'] = false;
             this.$s.$header_dashboard.removeClass('NB-selected');
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.reader_opened();
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -726,6 +756,7 @@
             this.$s.$body.removeClass('NB-show-reader');
             this.$s.$header_dashboard.addClass('NB-selected');
             this.flags['splash_page_frontmost'] = true;
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.splash_shown();
 
             if (!skip_router) {
                 NEWSBLUR.log(["Navigating to splash"]);
@@ -914,6 +945,9 @@
                 this.flags['select_story_title_in_feed'] = null;
                 _.delay(_.bind(function () {
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
+                    // reader.js: a story opened from the dashboard or a link shows full screen in
+                    // a phone grid (views/mobile_layout_view.js).
+                    if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.story_requested(story);
                 }, this), 100);
             } else if ((loaded_page_count >= this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
                 story_title &&
@@ -1521,6 +1555,7 @@
 
         reset_feed: function (options) {
             options = options || {};
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.feed_reset();
 
             // Clean up any active voice recordings from Ask AI menu
             var $menu = $('.NB-menu-ask-ai-container');
@@ -3750,6 +3785,9 @@
         },
 
         should_confirm_mark_read: function (type) {
+            // views/mobile_layout_view.js mark_list_read: a choice from the phone's mark read
+            // menu is already confirmed.
+            if (this.flags['mark_read_confirmed']) return false;
             var pref = NEWSBLUR.assets.preference('mark_read_river_confirm');
             // Backward compat with old boolean values
             if (pref === true) pref = 'folders_only';
@@ -3762,11 +3800,6 @@
         },
 
         show_mark_read_confirm: function ($container, callback, options) {
-            if (!$container || !$container.length) {
-                callback();
-                return;
-            }
-
             options = options || {};
             if (typeof options === 'string') options = { message: options };
 
@@ -3777,6 +3810,22 @@
                 message = interpolate(ngettext("Mark older than %(count)s day as read?", "Mark older than %(count)s days as read?", options.days), {count: options.days}, true);
             } else {
                 message = gettext('Mark all as read?');
+            }
+
+            // reader.js: a phone hides the feed bar this confirms in, so it asks in a bottom sheet
+            // (views/mobile_confirm_popover.js) instead of marking read unasked.
+            if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.is_active()) {
+                NEWSBLUR.MobileConfirmPopover.create({
+                    message: message,
+                    confirm_label: gettext('Mark as read'),
+                    on_confirm: callback
+                });
+                return;
+            }
+
+            if (!$container || !$container.length) {
+                callback();
+                return;
             }
 
             // Remove any existing confirmation
@@ -4426,6 +4475,7 @@
 
         make_feed_title_in_stories: function (options) {
             NEWSBLUR.app.search_header.render();
+            if (NEWSBLUR.app.mobile) NEWSBLUR.app.mobile.update_titles_bar();
 
             if ((this.flags.search || this.flags.searching)
                 && NEWSBLUR.app.story_titles_header.search_has_focus()) {
@@ -4731,6 +4781,9 @@
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')) &&
                 _.contains(['page', 'story'], view)) {
                 view = 'feed';
+                // reader.js: a phone (views/mobile_layout_view.js) reads split feeds as lists, so
+                // this fallback must not overwrite the Original or Story view saved on desktop.
+                if (this.flags.mobile) options.skip_save_view = true;
             }
 
             var $taskbar_buttons = $('.NB-taskbar-view .NB-taskbar-button');
@@ -4739,7 +4792,7 @@
             var $to_story_arrow = $('.NB-taskbar .NB-task-view-to-story-arrow');
             var $to_text_arrow = $('.NB-taskbar .NB-task-view-to-text-arrow');
 
-            if (!options.skip_save_type && this.story_view != view) {
+            if (!options.skip_save_type && !options.skip_save_view && this.story_view != view) {
                 this.model.view_setting(feed_id, { 'view': view });
             }
 
@@ -5892,6 +5945,15 @@
             }
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                 $item.children('.folder_title').hasClass("NB-toplevel");
+            // reader.js: on a phone (views/mobile_layout_view.js) the menu is a bottom sheet, so it
+            // always reads top to bottom instead of flipping upward near the bottom of the screen.
+            var mobile_sheet = !!this.flags.mobile;
+            if (mobile_sheet) inverse = false;
+            $manage_menu_container.toggleClass('NB-mobile-sheet', mobile_sheet);
+            this.$s.$body.toggleClass('NB-mobile-sheet-open', mobile_sheet);
+            // reader.js: .NB-layout is position fixed, a stacking context of its own beneath the
+            // sheet's shade, so the sheet moves to body to sit above the shade and the Listen player.
+            if (mobile_sheet) $manage_menu_container.appendTo(this.$s.$body);
             // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
             var $menu_anchor = $item;
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
@@ -6186,6 +6248,7 @@
             }
 
             if ($item) $item.removeClass('NB-showing-menu');
+            this.$s.$body.removeClass('NB-mobile-sheet-open');
 
             if (animate) {
                 $manage_menu_container.stop().animate({

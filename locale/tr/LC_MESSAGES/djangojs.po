@@ -3192,6 +3192,9 @@ msgstr "Tam genişlik"
 msgid "Full-Text Search"
 msgstr "Tam Metin Arama"
 
+msgid "Full-screen list"
+msgstr "Tam ekran liste"
+
 msgid "Full-text search across all stories"
 msgstr "Tüm haberlerde tam metin arama"
 
@@ -3590,6 +3593,9 @@ msgstr "Seyrek Güncellenen Sitelerin Haberleri"
 msgid "Infrequent stories per month"
 msgstr "Seyrek haber eşiği (aylık)"
 
+msgid "Inline list"
+msgstr "Satır içi liste"
+
 msgid "Insta-fetch stories"
 msgstr "Haberleri anında getir"
 
@@ -3728,6 +3734,9 @@ msgstr "Son güncelleme"
 msgid "Last seen:"
 msgstr "Son görülme:"
 
+msgid "Layout"
+msgstr "Düzen"
+
 msgid "Leave unread"
 msgstr "Okunmamış bırak"
 
@@ -3812,6 +3821,9 @@ msgstr "Akışlar yükleniyor..."
 
 msgid "Loading more briefings..."
 msgstr "Daha fazla özet yükleniyor..."
+
+msgid "Loading the next unread story..."
+msgstr "Sonraki okunmamış haber yükleniyor..."
 
 msgid "Loading voices..."
 msgstr "Sesler yükleniyor..."
@@ -4331,6 +4343,9 @@ msgstr "Sonraki adım "
 msgid "Next story"
 msgstr "Sonraki haber"
 
+msgid "Next unread"
+msgstr "Sonraki okunmamış"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Sonra, tüm bültenlerinizin NewsBlur'daki özel adrese yönlendirilmesini sağlayacak bir filtre oluşturun."
 
@@ -4633,6 +4648,11 @@ msgstr "Eyvah, bu URL alınırken bir sorun oluştu ve ne olduğuna dair geçerl
 
 msgid "Old password"
 msgstr "Eski şifre"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s günden eski"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6419,6 +6439,12 @@ msgstr "%(date)s öncesindeki haberler"
 msgid "Stories on %(date)s"
 msgstr "%(date)s tarihindeki haberler"
 
+msgid "Stories open inside the list"
+msgstr "Haberler listenin içinde açılır"
+
+msgid "Stories open on their own screen"
+msgstr "Haberler kendi ekranında açılır"
+
 msgid "Stories per day"
 msgstr "Günlük haber sayısı"
 
@@ -6469,6 +6495,9 @@ msgstr "Haber Tipografisi"
 
 msgid "Story URL"
 msgstr "Haber URL'si"
+
+msgid "Story cards open on their own screen"
+msgstr "Haber kartları kendi ekranında açılır"
 
 msgid "Story clustering"
 msgstr "Haber kümeleme"

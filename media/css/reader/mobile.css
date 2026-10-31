@@ -1,0 +1,2436 @@
+/* ================================================================ */
+/* = mobile.css: the phone layout                                 = */
+/* = body.NB-mobile is set by views/mobile_layout_view.js at or   = */
+/* = below 768px. The reader becomes stacked full-screen screens  = */
+/* = (feed list, dashboard, story titles, story) that slide over  = */
+/* = each other. jquery.layout keeps writing inline geometry onto = */
+/* = the panes, so pane overrides here need !important.           = */
+/* ================================================================ */
+
+body.NB-mobile {
+    --nb-mobile-bar-height: 48px;
+    --nb-mobile-toolbar-height: 48px;
+    /* The room the floating controls take at a screen's bottom: the feed list's and story
+       list's pills, and the story screen's toolbar, each 8px off the bottom. */
+    --nb-mobile-pill-bar-space: 64px;
+    --nb-mobile-toolbar-space: calc(var(--nb-mobile-toolbar-height) + 20px);
+    /* Set to 64px while the Listen player floats above those controls. */
+    --nb-mobile-player-space: 0px;
+    --nb-mobile-bar-bg: #F3F3EE;
+    --nb-mobile-bar-border: #dbdbda;
+    --nb-mobile-bar-text: #303030;
+    --nb-mobile-bar-subtext: #8b8b85;
+    --nb-mobile-tint: #4a6fa5;
+    --nb-mobile-tint-active: rgba(74, 111, 165, 0.12);
+    --nb-mobile-row-pressed: #EEEEE9;
+    --nb-mobile-glass-bg: rgba(250, 250, 247, 0.93);
+    --nb-mobile-glass-edge: rgba(0, 0, 0, 0.1);
+    --nb-mobile-pill-icon: #5f605b;
+    --nb-mobile-screen-bg: #F7F8F5;
+    --nb-mobile-story-bg: #FFFFFF;
+    --nb-mobile-shade: rgba(0, 0, 0, 0.18);
+    --nb-mobile-sheet-bg: #FFFFFF;
+    --nb-mobile-sheet-handle: rgba(0, 0, 0, 0.18);
+    --nb-mobile-card-bg: #FFFFFF;
+    --nb-mobile-card-border: rgba(0, 0, 0, 0.08);
+    --nb-mobile-ease: cubic-bezier(0.2, 0.85, 0.25, 1);
+    --nb-mobile-duration: 380ms;
+    --nb-mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+    /* How far a screen reaches below the visible page, under iOS Safari's toolbar. Set inline
+       by views/mobile_layout_view.js measure_browser_chrome; see Under Safari's toolbar. */
+    --nb-mobile-chrome-bottom: 0px;
+    /* What covers a screen's bottom edge: the home indicator and Safari's toolbar. Lists scroll
+       on beneath it and the controls at a screen's bottom sit above it. */
+    --nb-mobile-screen-bottom: calc(var(--nb-mobile-safe-bottom) + var(--nb-mobile-chrome-bottom));
+    --nb-mobile-direction: 1;
+
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+}
+
+body.NB-mobile.NB-dark {
+    --nb-mobile-bar-bg: #393b3c;
+    --nb-mobile-bar-border: #262728;
+    --nb-mobile-bar-text: #e0e0e0;
+    --nb-mobile-bar-subtext: #9a9a9a;
+    --nb-mobile-tint: #8fb4e6;
+    --nb-mobile-tint-active: rgba(143, 180, 230, 0.16);
+    --nb-mobile-row-pressed: #202223;
+    --nb-mobile-glass-bg: rgba(58, 60, 62, 0.93);
+    --nb-mobile-glass-edge: rgba(255, 255, 255, 0.1);
+    --nb-mobile-pill-icon: #d0d0cc;
+    --nb-mobile-screen-bg: #2a2b2d;
+    --nb-mobile-story-bg: #303030;
+    --nb-mobile-shade: rgba(0, 0, 0, 0.45);
+    --nb-mobile-sheet-bg: #2f3032;
+    --nb-mobile-sheet-handle: rgba(255, 255, 255, 0.25);
+    --nb-mobile-card-bg: #36383a;
+    --nb-mobile-card-border: rgba(255, 255, 255, 0.06);
+}
+
+/* mobile.css: right-to-left pages slide screens in from the left. */
+html[dir="rtl"] body.NB-mobile {
+    --nb-mobile-direction: -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.NB-mobile {
+        --nb-mobile-duration: 1ms;
+    }
+}
+
+body.NB-mobile .NB-layout {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto !important;
+    height: auto !important;
+    overflow: hidden;
+}
+
+/* ============================= */
+/* = Under Safari's toolbar    = */
+/* ============================= */
+
+/* mobile.css: iOS Safari draws a page under its floating toolbar only where the page isn't
+   position: fixed, so in its browser mode (views/mobile_layout_view.js measure_browser_chrome)
+   the screens are positioned absolutely, --nb-mobile-screen-height tall, reaching
+   --nb-mobile-chrome-bottom below the visible page. The page is that tall too, but only
+   scrolls when something asks it to, and the layout scrolls it back. */
+html:has(> body.NB-mobile.NB-mobile-under-chrome) {
+    overflow: hidden;
+    /* Safari tints its status bar with the page's own background once nothing fixed is there
+       to sample, so it matches the screens' nav bars. */
+    background-color: #F3F3EE;
+}
+
+html:has(> body.NB-mobile.NB-mobile-under-chrome.NB-dark) {
+    background-color: #393b3c;
+}
+
+/* The body holds the screens and clips them, so the ones parked off to the side don't widen
+   the page, which a phone would zoom out to fit. Clipped rather than hidden, so the body isn't
+   a scroller of its own. */
+body.NB-mobile.NB-mobile-under-chrome {
+    position: relative;
+    height: var(--nb-mobile-screen-height);
+    overflow: clip;
+}
+
+body.NB-mobile.NB-mobile-under-chrome .NB-layout,
+body.NB-mobile.NB-mobile-under-chrome .NB-mobile-screen {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    height: var(--nb-mobile-screen-height) !important;
+}
+
+/* Full-screen modals and the shades behind sheets cover the part under the toolbar as well.
+   The sheets themselves stay above it. */
+body.NB-mobile.NB-mobile-under-chrome #simplemodal-container,
+body.NB-mobile.NB-mobile-under-chrome.NB-mobile-sheet-open .NB-mobile-sheet-shade,
+body.NB-mobile.NB-mobile-under-chrome.NB-mobile-player-open .NB-mobile-player-shade {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    height: var(--nb-mobile-screen-height) !important;
+}
+
+body.NB-mobile.NB-mobile-under-chrome #simplemodal-container .NB-modal {
+    padding-bottom: calc(24px + var(--nb-mobile-screen-bottom)) !important;
+}
+
+/* ============= */
+/* = Screens   = */
+/* ============= */
+
+body.NB-mobile .NB-mobile-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    overflow: hidden !important;
+    background-color: var(--nb-mobile-screen-bg);
+    visibility: hidden;
+    z-index: 5 !important;
+    transform: translate3d(calc(100% * var(--nb-mobile-direction)), 0, 0);
+    box-shadow: none;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-center {
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    z-index: 20 !important;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-left {
+    visibility: visible;
+    transform: translate3d(calc(-28% * var(--nb-mobile-direction)), 0, 0);
+    z-index: 10 !important;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-right {
+    visibility: visible;
+    transform: translate3d(calc(100% * var(--nb-mobile-direction)), 0, 0);
+    z-index: 30 !important;
+}
+
+/* mobile.css: the screen a pushed screen slides over dims, like a native navigation stack. */
+body.NB-mobile .NB-mobile-screen::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--nb-mobile-shade);
+    opacity: var(--nb-mobile-shade-opacity, 0);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* mobile.css: an edge swipe overrides the shade inline as the finger drags. */
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-left {
+    --nb-mobile-shade-opacity: 1;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-right,
+body.NB-mobile .NB-mobile-screen.NB-mobile-pos-center.NB-mobile-elevated {
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.18);
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-animating {
+    transition: transform var(--nb-mobile-duration) var(--nb-mobile-ease),
+                box-shadow var(--nb-mobile-duration) var(--nb-mobile-ease);
+    will-change: transform;
+}
+
+body.NB-mobile .NB-mobile-screen.NB-mobile-animating::after {
+    transition: opacity var(--nb-mobile-duration) var(--nb-mobile-ease);
+}
+
+/* mobile.css: while a finger drags a screen, views/mobile_layout_view.js writes the transform
+   inline, so transitions must be off. */
+body.NB-mobile .NB-mobile-screen.NB-mobile-dragging,
+body.NB-mobile .NB-mobile-screen.NB-mobile-dragging::after {
+    transition: none !important;
+    will-change: transform;
+}
+
+body.NB-mobile.NB-mobile-transitioning .NB-mobile-screen {
+    pointer-events: none;
+}
+
+/* ===================== */
+/* = Navigation bars   = */
+/* ===================== */
+
+.NB-mobile-bar {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    position: relative;
+    height: var(--nb-mobile-bar-height);
+    padding: 0 4px;
+    box-sizing: border-box;
+    background: var(--nb-mobile-bar-bg);
+    border-bottom: 1px solid var(--nb-mobile-bar-border);
+    color: var(--nb-mobile-bar-text);
+    z-index: 50;
+    font-family: 'Whitney SSm A', 'Whitney SSm B', 'Lucida Grande', Verdana, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body.NB-mobile .NB-mobile-bar-back {
+    display: flex;
+    align-items: center;
+    flex: none;
+    max-width: 32%;
+    height: 40px;
+    padding: 0 10px 0 4px;
+    border-radius: 10px;
+    color: var(--nb-mobile-tint);
+    font-size: 15px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+body.NB-mobile .NB-mobile-bar-back:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-bar-back-icon {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    background-color: var(--nb-mobile-tint);
+    -webkit-mask: url('/media/img/icons/nouns/nav-left.svg') no-repeat center / 20px;
+    mask: url('/media/img/icons/nouns/nav-left.svg') no-repeat center / 20px;
+}
+
+html[dir="rtl"] body.NB-mobile .NB-mobile-bar-back-icon {
+    transform: scaleX(-1);
+}
+
+body.NB-mobile .NB-mobile-bar-back-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-inline-start: 2px;
+}
+
+body.NB-mobile .NB-mobile-bar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 6px;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+body.NB-mobile .NB-mobile-bar-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.NB-mobile .NB-mobile-bar-title img {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+}
+
+body.NB-mobile .NB-mobile-bar-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 44px;
+}
+
+body.NB-mobile .NB-mobile-bar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* .NB-hidden alone loses to the display above. */
+body.NB-mobile .NB-mobile-bar-button.NB-hidden {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-bar-button:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-bar-button .NB-mobile-icon {
+    width: 22px;
+    height: 22px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-icon {
+    display: block;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+body.NB-mobile .NB-mobile-icon-options {
+    -webkit-mask-image: url('/media/img/icons/nouns/settings.svg');
+    mask-image: url('/media/img/icons/nouns/settings.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-markread {
+    -webkit-mask-image: url('/media/img/icons/nouns/mark-read.svg');
+    mask-image: url('/media/img/icons/nouns/mark-read.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-search {
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-clock {
+    -webkit-mask-image: url('/media/img/icons/nouns/clock.svg');
+    mask-image: url('/media/img/icons/nouns/clock.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-layout-list {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-list.svg');
+    mask-image: url('/media/img/icons/nouns/layout-list.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-layout-page {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-full.svg');
+    mask-image: url('/media/img/icons/nouns/layout-full.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-layout-grid {
+    -webkit-mask-image: url('/media/img/icons/nouns/layout-grid.svg');
+    mask-image: url('/media/img/icons/nouns/layout-grid.svg');
+}
+
+/* mobile.css: the story list's layout menu (views/mobile_layout_popover.js), a bottom sheet. */
+body.NB-mobile .NB-mobile-layout-menu {
+    padding: 4px 0 calc(8px + var(--nb-mobile-safe-bottom));
+}
+
+body.NB-mobile .NB-mobile-layout-menu-title {
+    padding: 4px 20px 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--nb-mobile-bar-text);
+}
+
+body.NB-mobile .NB-mobile-layout-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 60px;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+
+/* The mark read menu (views/mobile_mark_read_popover.js) has one line per choice. */
+body.NB-mobile .NB-mobile-layout-option.NB-mobile-mark-read-option {
+    min-height: 36px;
+}
+
+body.NB-mobile .NB-mobile-layout-option:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-layout-option .NB-mobile-icon {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    background-color: var(--nb-mobile-bar-subtext);
+}
+
+body.NB-mobile .NB-mobile-layout-option.NB-active .NB-mobile-icon {
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-layout-option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.NB-mobile .NB-mobile-layout-option-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--nb-mobile-bar-text);
+}
+
+body.NB-mobile .NB-mobile-layout-option-detail {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--nb-mobile-bar-subtext);
+}
+
+body.NB-mobile .NB-mobile-layout-option-check {
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+
+body.NB-mobile .NB-mobile-layout-option.NB-active .NB-mobile-layout-option-check {
+    background-color: var(--nb-mobile-tint);
+    -webkit-mask: url('/media/img/icons/nouns/check-fat.svg') no-repeat center / contain;
+    mask: url('/media/img/icons/nouns/check-fat.svg') no-repeat center / contain;
+}
+
+/* ================= */
+/* = Feed list     = */
+/* ================= */
+
+body.NB-mobile .NB-layout .left-pane {
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+body.NB-mobile .left-pane > .left-north {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: none;
+    display: block !important;
+    z-index: 2 !important;
+}
+
+body.NB-mobile .left-pane > .left-center {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: block !important;
+    z-index: 1 !important;
+}
+
+body.NB-mobile .left-center > .left-center-content {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+    padding-bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
+}
+
+body.NB-mobile .left-center > .left-center-footer {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
+    top: auto !important;
+    width: auto !important;
+}
+
+/* mobile.css: the feed list's add and settings buttons and its All / Unread / Focus / Saved
+   filter float over the bottom of the list as glass pills, like the story list's, so the list
+   scrolls on beneath them and Safari's toolbar. Touches between the pills reach the list. */
+body.NB-mobile .left-pane > .left-south {
+    position: absolute !important;
+    inset: auto 0 0 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    z-index: 2 !important;
+    margin: 0 !important;
+    padding: 0 10px calc(8px + var(--nb-mobile-screen-bottom)) !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+body.NB-mobile .left-south > .NB-taskbar-container,
+body.NB-mobile .left-south .NB-feed-taskbar {
+    position: static;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    overflow: visible;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button,
+body.NB-mobile .left-south .NB-intelligence-slider {
+    box-sizing: border-box;
+    height: 44px;
+    border-radius: 22px;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    pointer-events: auto;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    float: none;
+    width: 44px;
+    margin: 0;
+    padding: 0;
+    opacity: 1;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button.NB-disabled {
+    opacity: 0.5;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-add {
+    order: 0;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-taskbar-intelligence {
+    order: 1;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-manage {
+    order: 2;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-button .NB-task-image {
+    width: 20px;
+    height: 20px;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: url('/media/embed/icons/nouns/add.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/add.svg') no-repeat center / contain;
+}
+
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-task-manage .NB-task-image {
+    -webkit-mask-image: url('/media/embed/icons/nouns/settings.svg');
+    mask-image: url('/media/embed/icons/nouns/settings.svg');
+}
+
+/* The filter takes the room between the buttons, and its sizing container hides the labels
+   of the filters not chosen when that room is short. */
+body.NB-mobile .left-south .NB-feed-taskbar > .NB-taskbar-intelligence {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    overflow: visible;
+    container-type: inline-size;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider {
+    display: block;
+    padding: 4px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider ul.segmented-control {
+    float: none;
+    display: flex;
+    gap: 2px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 18px;
+    background: none;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 36px;
+    margin: 0;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 18px;
+    background: none;
+    box-shadow: none;
+    color: var(--nb-mobile-bar-subtext);
+    text-shadow: none;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 36px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control.NB-active {
+    background: var(--nb-mobile-card-bg);
+    color: var(--nb-mobile-bar-text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control img {
+    float: none;
+    flex: none;
+    width: 9px;
+    height: 9px;
+    margin: 0;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-blue img {
+    width: 13px;
+    height: 13px;
+}
+
+body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-label {
+    display: inline !important;
+}
+
+@container (max-width: 250px) {
+    body.NB-mobile .left-south .NB-intelligence-slider .NB-intelligence-slider-control:not(.NB-active):not(.NB-intelligence-slider-red) .NB-intelligence-label {
+        display: none !important;
+    }
+}
+
+body.NB-mobile .NB-feeds-header-collapse-sidebar,
+body.NB-mobile .NB-taskbar-sidebar-toggle-open,
+body.NB-mobile .NB-story-titles-expand-sidebar,
+body.NB-mobile .ui-layout-resizer,
+body.NB-mobile .ui-layout-toggler,
+body.NB-mobile .NB-drag-handle,
+body.NB-mobile .tipsy {
+    display: none !important;
+}
+
+/* mobile.css: the selected-row highlight follows you back from a feed but means nothing once
+   the list is the only thing on screen, so it fades to a hint. */
+body.NB-mobile.NB-mobile-screen-is-feeds .NB-feedlist .feed.NB-selected,
+body.NB-mobile.NB-mobile-screen-is-feeds .NB-feeds-header.NB-selected {
+    transition: background-color 600ms ease;
+}
+
+/* ================= */
+/* = Dashboard     = */
+/* ================= */
+
+body.NB-mobile #NB-splash {
+    display: flex !important;
+    left: 0 !important;
+    right: 0 !important;
+    overflow: hidden !important;
+}
+
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
+}
+
+/* mobile.css: the dashboard runs edge to edge like the story list, its rivers stacked as flat
+   sections with a one-line header, instead of inset desktop cards. */
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    max-width: none;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body.NB-mobile #NB-splash .NB-modules-center,
+body.NB-mobile #NB-splash .NB-modules-right,
+body.NB-mobile #NB-splash .NB-modules-left,
+body.NB-mobile #NB-splash .NB-account-wide,
+body.NB-mobile #NB-splash .NB-dashboard-account {
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.NB-mobile #NB-splash .NB-module {
+    margin: 0 0 16px !important;
+    border-radius: 0;
+}
+
+body.NB-mobile #NB-splash .NB-module h5,
+body.NB-mobile #NB-splash .NB-module-header {
+    margin: 0 !important;
+    padding: 10px 16px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    font-size: 17px;
+    text-align: start;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-dashboard-column-control {
+    display: none !important;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-title {
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-title-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-module-river-settings {
+    flex: none;
+    margin-inline-start: 10px;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-feedbar-options {
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 16px;
+    padding: 4px 6px 4px 10px;
+}
+
+body.NB-mobile #NB-splash .NB-module-river .NB-view-river,
+body.NB-mobile #NB-splash .NB-module-river .NB-view-river .NB-module-item {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* The account section stacks your account and settings over the site's numbers, each a row of
+   tiles, and the text sections keep a gutter while their headers run edge to edge. */
+body.NB-mobile #NB-splash .NB-account {
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+body.NB-mobile #NB-splash .NB-account-right {
+    order: 1;
+}
+
+body.NB-mobile #NB-splash .NB-account-left {
+    order: 2;
+}
+
+body.NB-mobile #NB-splash .NB-account-left,
+body.NB-mobile #NB-splash .NB-account-right {
+    flex: none;
+    margin: 0 !important;
+    padding: 0 12px;
+}
+
+body.NB-mobile #NB-splash .NB-module-features > :not(.NB-module-header) {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+/* The settings menu sits in a .NB-module-stats-counts too, so only rows of tiles change. A tile
+   is at least a quarter wide, so one never squeezes onto the full-width subscription row. */
+body.NB-mobile #NB-splash .NB-module-stats-counts:has(> .NB-module-stats-count) {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+body.NB-mobile #NB-splash .NB-module-stats-count {
+    flex: 1 1 0;
+    min-width: 25%;
+    border-bottom: 0;
+    border-inline-start: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.NB-mobile #NB-splash .NB-module-stats-count:first-child,
+body.NB-mobile #NB-splash .NB-module-account-subscription + .NB-module-stats-count {
+    border-inline-start: 0;
+}
+
+body.NB-mobile #NB-splash .NB-module-account-subscription {
+    flex-basis: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.NB-mobile #NB-splash-overlay,
+body.NB-mobile .NB-splash-info,
+body.NB-mobile .NB-splash-heading {
+    display: none !important;
+}
+
+/* ================= */
+/* = Story titles  = */
+/* ================= */
+
+body.NB-mobile .NB-layout .right-pane {
+    display: flex !important;
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+/* mobile.css: the story list's controls float over the bottom of the list as glass pills, the
+   way the iOS app's story titles bar does on iPhone. Touches between the pills reach the list. */
+body.NB-mobile .right-pane > .content-north {
+    position: absolute !important;
+    inset: auto 0 0 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: flex-end;
+    gap: 5px;
+    z-index: 3 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 10px calc(8px + var(--nb-mobile-screen-bottom)) !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+body.NB-mobile .right-pane > .content-south {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane > .content-pane {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: block !important;
+    z-index: 1 !important;
+}
+
+/* mobile.css: the story list and dashboard leave sideways drags to the page, which goes back
+   from a swipe anywhere on them (mobile_layout_view.js swipes_from_anywhere). */
+body.NB-mobile .content-pane > #story_titles,
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    touch-action: pan-y pinch-zoom;
+}
+
+body.NB-mobile .content-pane > #story_titles {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--nb-mobile-pill-bar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom)) !important;
+    box-sizing: border-box;
+}
+
+/* mobile.css: phones never show the side-by-side story pane. List layout expands stories inside
+   #story_titles and grid pushes .NB-mobile-story-screen instead. */
+body.NB-mobile .content-pane > #story_pane,
+body.NB-mobile .content-pane > #ask_ai_pane {
+    display: none !important;
+}
+
+/* mobile.css: the pills, in the iOS order: related sites, story options, search, hidden
+   stories, and the mark read split button on the trailing edge. The nav bar above already shows
+   the title and icon, so those go. The controls stay inside their views (feed_title_view.js,
+   folder_view.js, story_titles_header_view.js) so their click handlers still apply. */
+/* The header and its row stay unpositioned, so the search field it opens spans the whole bar. */
+body.NB-mobile .right-pane .NB-story-titles-header {
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    margin: 0 !important;
+    overflow: visible;
+    background: none;
+    border: 0;
+    pointer-events: none;
+    container-type: inline-size;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header > .feed,
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible;
+    pointer-events: none;
+}
+
+/* A named folder (folder_view.js) wraps its controls in .folder_title, which steps aside so
+   they join the row like a feed's. */
+body.NB-mobile .right-pane .NB-story-titles-header > .NB-folder > .folder_title {
+    display: contents;
+}
+
+/* :where() keeps these below the per-pill rules that follow, such as the options pill's flex. */
+body.NB-mobile .right-pane .NB-story-titles-header > :where(.feed, .NB-folder) > :where(:not(.folder_title)),
+body.NB-mobile .right-pane .NB-story-titles-header > :where(.NB-folder) > :where(.folder_title) > * {
+    float: none !important;
+    flex: none;
+    margin: 0 !important;
+    position: relative;
+    pointer-events: auto;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .feed_counts,
+body.NB-mobile .right-pane .NB-story-titles-header > .feed > .feed_favicon,
+body.NB-mobile .right-pane .NB-story-titles-header .feed_title,
+body.NB-mobile .right-pane .NB-story-titles-header .folder_title_text,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-folder-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-highlight,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-exception-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feed-unfetched-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-manage-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedlist-collapse-icon {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container { order: 1; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container { order: 2; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container { order: 3; }
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator { order: 4; }
+
+/* Mark read moves up to the nav bar (mobile_layout_view.js open_mark_read_menu), whose menu
+   presses these hidden controls so each view still marks its own stories. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-mark-feed-read-container {
+    display: none !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator,
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav {
+    box-sizing: border-box;
+    height: 44px;
+    min-width: 44px;
+    margin: 0;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: var(--nb-mobile-bar-text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 44px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-pill-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container::before,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator::before,
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-image {
+    flex: none;
+    float: none;
+    margin: 0;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: no-repeat center / contain;
+    mask: no-repeat center / contain;
+}
+
+/* Related sites: just its icon on a phone, where the other pills need the room, and the first
+   three related favicons beside it on a wider screen. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    width: 44px;
+    overflow: hidden;
+    padding: 0 13px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-icon {
+    width: 18px;
+    height: 18px;
+    margin-inline-end: 3px;
+    -webkit-mask-image: url('/media/img/icons/nouns/discover.svg');
+    mask-image: url('/media/img/icons/nouns/discover.svg');
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .feed_favicon {
+    display: none;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border-radius: 3px;
+    filter: none;
+    opacity: 0.85;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-text,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .NB-icon {
+    display: none;
+}
+
+@container (min-width: 480px) {
+    body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container {
+        width: auto;
+    }
+
+    body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-discover-container .feed_favicon:nth-of-type(-n+3) {
+        display: block;
+    }
+}
+
+/* Story options: the label truncates before anything else does. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options-container {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 44px;
+    background: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 11px 0 13px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-icon {
+    float: right;
+    width: 10px;
+    height: 44px;
+    margin-inline-start: 6px !important;
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
+    -webkit-mask-size: 10px;
+    mask-size: 10px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-measure .NB-feedbar-options {
+    flex: none;
+    width: max-content;
+    max-width: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-compact .NB-feedbar-options-order {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options {
+    width: 44px;
+    padding: 0;
+    font-size: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options .NB-icon {
+    float: none;
+    width: 44px;
+    margin: 0 !important;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-mobile-options-icon .NB-feedbar-options > :not(.NB-icon) {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-feedbar-notifications-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-feedbar-options .NB-feedbar-auto-mark-read-icon {
+    display: inline-block;
+    float: none;
+    vertical-align: middle;
+    margin: -2px 0 0;
+}
+
+/* Search: a round button. The input covers it, so a tap focuses the field and brings up the
+   keyboard directly. Focused or holding a query (feed_search_view.js adds NB-searching), the
+   field opens as its own row above the pills. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container {
+    width: 44px;
+    padding: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-search-container::before {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 44px;
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+    -webkit-mask-size: 18px;
+    mask-size: 18px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search {
+    position: absolute;
+    inset: 0;
+    float: none;
+    margin: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    opacity: 0;
+    font-size: 16px;
+    transition: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search .NB-search-icon,
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-search .NB-search-close {
+    display: none;
+}
+
+/* A backdrop-filter would make the pill the containing block of the field it opens. */
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container {
+    background: var(--nb-mobile-tint);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container::before {
+    background: var(--nb-mobile-glass-bg);
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-search-container,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search {
+    position: static;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-feedbar-options-container,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-feedbar-discover-container {
+    display: flex;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search-input {
+    inset: auto 10px calc(100% + 8px) 10px;
+    width: auto;
+    height: 40px;
+    padding: 0 40px 0 38px;
+    border-radius: 20px;
+    opacity: 1;
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: var(--nb-mobile-bar-text);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-icon,
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-close {
+    display: block;
+    position: absolute;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: calc(100% + 8px + 11px);
+    width: 18px;
+    height: 18px;
+    opacity: 1;
+    z-index: 1;
+    background: var(--nb-mobile-pill-icon);
+    -webkit-mask: no-repeat center / contain;
+    mask: no-repeat center / contain;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-icon {
+    inset-inline-start: 23px;
+    -webkit-mask-image: url('/media/img/icons/nouns/search.svg');
+    mask-image: url('/media/img/icons/nouns/search.svg');
+    pointer-events: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header.NB-searching .NB-story-title-search .NB-search-close {
+    inset-inline-end: 22px;
+    -webkit-mask-image: url('/media/img/icons/nouns/close.svg');
+    mask-image: url('/media/img/icons/nouns/close.svg');
+}
+
+/* Hidden stories: an eye and the count, shown only while the feed's filter hides some
+   (story_titles_header_view.js toggles it). An open eye-slash hides them again. */
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator {
+    padding: 0 10px 0 9px;
+    font-size: 0;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 44px;
+    margin-inline-end: 4px;
+    vertical-align: top;
+    -webkit-mask-image: url('/media/img/icons/nouns/eye.svg');
+    mask-image: url('/media/img/icons/nouns/eye.svg');
+    -webkit-mask-size: 20px;
+    mask-size: 20px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator.unread_threshold_negative::before {
+    -webkit-mask-image: url('/media/img/icons/nouns/eye-slash.svg');
+    mask-image: url('/media/img/icons/nouns/eye-slash.svg');
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .NB-story-title-indicator-text {
+    display: none;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .NB-story-title-indicator-count {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .feed_counts_floater {
+    display: inline-flex;
+    align-items: center;
+    float: none;
+    height: 44px;
+    padding: 0;
+    font-size: 11px;
+}
+
+body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .feed_counts_floater .unread_count {
+    float: none;
+    margin: 0;
+}
+
+/* Only an inline list shows them; a full-screen list and a grid open stories on the story
+   screen, which has its own (mobile_layout_view.js update_titles_bar). */
+body.NB-mobile .right-pane:not(.NB-mobile-layout-list) > .content-north > .NB-taskbar-nav {
+    display: none !important;
+}
+
+/* Previous and Next unread, the reader's own story buttons (feeds_skeleton.xhtml NB-taskbar-nav),
+   on the trailing edge. A full-screen list or grid opens the story they pick on the story screen
+   (mobile_layout_view.js story_selected). */
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav {
+    order: 2;
+    display: flex;
+    flex: none;
+    align-items: stretch;
+    float: none;
+    padding: 0;
+    overflow: hidden;
+    pointer-events: auto;
+    list-style: none;
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-taskbar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    float: none;
+    width: auto;
+    height: 44px;
+    margin: 0;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--nb-mobile-tint);
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-previous {
+    width: 44px;
+    padding: 0;
+    border-inline-end: 0.5px solid var(--nb-mobile-glass-edge);
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-next {
+    display: none;
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-title {
+    display: inline;
+    float: none;
+    margin: 0;
+    padding: 0;
+    color: var(--nb-mobile-tint);
+    font-weight: 600;
+}
+
+body.NB-mobile .right-pane > .content-north.NB-mobile-nav-compact > .NB-taskbar-nav .NB-task-title {
+    display: none;
+}
+
+body.NB-mobile .right-pane > .content-north.NB-mobile-nav-compact > .NB-taskbar-nav .NB-task-story-next-unread {
+    width: 44px;
+    padding: 0;
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-image {
+    width: 20px;
+    height: 20px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-previous .NB-task-image {
+    -webkit-mask-image: url('/media/img/icons/nouns/up.svg');
+    mask-image: url('/media/img/icons/nouns/up.svg');
+}
+
+body.NB-mobile .right-pane > .content-north > .NB-taskbar-nav .NB-task-story-next-unread .NB-task-image {
+    order: 2;
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
+}
+
+/* ================= */
+/* = Grid cards    = */
+/* ================= */
+
+body.NB-mobile #story_titles.NB-layout-grid {
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid > .NB-story-titles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-gap: 14px;
+    padding: 14px 12px 24px;
+}
+
+@media (min-width: 600px) {
+    body.NB-mobile #story_titles.NB-layout-grid > .NB-story-titles {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-end-line {
+    margin: 0 -12px -24px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-container,
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-container.NB-selected {
+    margin: 0;
+    grid-column: auto;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid {
+    height: auto !important;
+    min-height: 0;
+    padding: 0 !important;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: var(--nb-mobile-card-bg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 160ms ease;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid.NB-mobile-pressed {
+    transform: scale(0.985);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid.NB-selected {
+    box-shadow: 0 0 0 2px var(--nb-mobile-tint), 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-story-image-container {
+    margin: 0;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-story-image {
+    width: 100%;
+    height: 200px !important;
+    background-size: cover !important;
+    background-position: 50% 35% !important;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-content {
+    height: auto;
+    margin: 14px 16px 6px 34px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-title {
+    font-size: 18px;
+    line-height: 1.3;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-content-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+body.NB-mobile #story_titles.NB-layout-grid .NB-story-title-grid .NB-storytitles-grid-bottom {
+    position: static;
+    width: auto;
+    padding: 4px 16px 12px 34px;
+    border-top: 0;
+    background: transparent;
+}
+
+/* ================= */
+/* = Story screen  = */
+/* ================= */
+
+.NB-mobile-story-screen {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-story-screen {
+    background-color: var(--nb-mobile-story-bg);
+}
+
+body.NB-mobile .NB-mobile-story-pager {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+body.NB-mobile .NB-mobile-story-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, 0, 0);
+}
+
+body.NB-mobile .NB-mobile-story-track.NB-mobile-animating {
+    transition: transform 320ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-mobile-story-page {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    background-color: var(--nb-mobile-story-bg);
+    box-sizing: border-box;
+    padding-bottom: calc(var(--nb-mobile-toolbar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
+    /* mobile.css: each page scrolls itself, so it has to opt out of horizontal panning too or
+       the browser claims the swipe that pages between stories. */
+    touch-action: pan-y pinch-zoom;
+}
+
+/* mobile.css: physical offsets are mirrored for right-to-left pages by utils/rtl_css.py, so the
+   neighbors need no direction variable here (transforms do, the mirror leaves those alone). */
+body.NB-mobile .NB-mobile-story-page-previous {
+    left: -100%;
+}
+
+body.NB-mobile .NB-mobile-story-page-current {
+    left: 0;
+}
+
+body.NB-mobile .NB-mobile-story-page-next {
+    left: 100%;
+}
+
+body.NB-mobile .NB-mobile-story-page-empty {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-story-page .NB-mobile-story-iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+}
+
+/* An original site scrolls inside its frame, which ends above the toolbar instead. */
+body.NB-mobile .NB-mobile-story-page.NB-mobile-story-page-iframe {
+    overflow: hidden;
+    padding-bottom: calc(var(--nb-mobile-toolbar-space) + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
+}
+
+body.NB-mobile .NB-mobile-story-loading {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--nb-mobile-bar-subtext);
+    font-size: 14px;
+}
+
+body.NB-mobile .NB-mobile-story-position {
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--nb-mobile-bar-subtext);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ================= */
+/* = Toolbars      = */
+/* ================= */
+
+/* mobile.css: a screen's toolbar floats over its bottom as a glass capsule, so the story
+   scrolls on beneath it and Safari's toolbar. */
+body.NB-mobile .NB-mobile-toolbar {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + var(--nb-mobile-screen-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    height: var(--nb-mobile-toolbar-height);
+    padding: 0 8px;
+    box-sizing: border-box;
+    border-radius: calc(var(--nb-mobile-toolbar-height) / 2);
+    background: var(--nb-mobile-glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.8);
+    backdrop-filter: blur(18px) saturate(1.8);
+    box-shadow: 0 0 0 0.5px var(--nb-mobile-glass-edge), 0 4px 16px rgba(0, 0, 0, 0.12);
+    color: var(--nb-mobile-bar-text);
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 50;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 44px;
+    height: 40px;
+    padding: 0 8px;
+    border-radius: 10px;
+    color: var(--nb-mobile-tint);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button:active {
+    background-color: var(--nb-mobile-tint-active);
+}
+
+body.NB-mobile .NB-mobile-toolbar-button.NB-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+body.NB-mobile .NB-mobile-toolbar-button .NB-mobile-icon {
+    width: 22px;
+    height: 22px;
+    background-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-segmented {
+    display: flex;
+    flex: none;
+    padding: 2px;
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+body.NB-mobile.NB-dark .NB-mobile-segmented {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+body.NB-mobile .NB-mobile-segmented-option {
+    min-width: 48px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nb-mobile-bar-subtext);
+    cursor: pointer;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+body.NB-mobile .NB-mobile-segmented-option.NB-disabled {
+    opacity: 0.35;
+}
+
+body.NB-mobile .NB-mobile-segmented-option.NB-active {
+    background: var(--nb-mobile-card-bg);
+    color: var(--nb-mobile-bar-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+body.NB-mobile .NB-mobile-icon-previous {
+    -webkit-mask-image: url('/media/img/icons/nouns/up.svg');
+    mask-image: url('/media/img/icons/nouns/up.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-next {
+    -webkit-mask-image: url('/media/img/icons/nouns/down.svg');
+    mask-image: url('/media/img/icons/nouns/down.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-next-unread {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-unread {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-unread.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-read {
+    -webkit-mask-image: url('/media/img/icons/nouns/indicator-read.svg');
+    mask-image: url('/media/img/icons/nouns/indicator-read.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-chevron-previous {
+    -webkit-mask-image: url('/media/img/icons/nouns/nav-left.svg');
+    mask-image: url('/media/img/icons/nouns/nav-left.svg');
+}
+
+body.NB-mobile .NB-mobile-icon-chevron-next {
+    -webkit-mask-image: url('/media/img/icons/nouns/nav-right.svg');
+    mask-image: url('/media/img/icons/nouns/nav-right.svg');
+}
+
+html[dir="rtl"] body.NB-mobile .NB-mobile-icon-chevron-previous,
+html[dir="rtl"] body.NB-mobile .NB-mobile-icon-chevron-next {
+    transform: scaleX(-1);
+}
+
+body.NB-mobile .NB-mobile-icon-star {
+    -webkit-mask-image: url('/media/img/icons/nouns/star.svg');
+    mask-image: url('/media/img/icons/nouns/star.svg');
+}
+
+body.NB-mobile .NB-mobile-story-save.NB-active .NB-mobile-icon-star {
+    background-color: #F5A623;
+}
+
+body.NB-mobile .NB-mobile-toolbar-group {
+    display: flex;
+    align-items: center;
+}
+
+/* mobile.css: the story toolbar shares its width between every control so all six fit on the
+   narrowest phones. The icons split what's left after Next unread, whose label truncates only
+   when a long translation leaves no room. */
+body.NB-mobile .NB-mobile-story-toolbar {
+    gap: 0;
+    padding-inline: 4px;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-toolbar-group {
+    display: contents;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-toolbar-button {
+    flex: 1 1 0;
+    min-width: 36px;
+    padding: 0 4px;
+}
+
+body.NB-mobile .NB-mobile-story-toolbar .NB-mobile-story-next-unread {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0 10px;
+}
+
+body.NB-mobile .NB-mobile-story-next-unread span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.NB-mobile .NB-mobile-story-bar .NB-mobile-bar-back {
+    max-width: none;
+}
+
+body.NB-mobile .NB-mobile-story-bar .NB-mobile-bar-back-label {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-story-bar .NB-mobile-segmented-option {
+    min-width: 52px;
+    padding: 5px 8px;
+}
+
+/* ====================== */
+/* = Pull to refresh    = */
+/* ====================== */
+
+.NB-mobile-ptr {
+    display: none;
+}
+
+body.NB-mobile .NB-mobile-ptr.NB-mobile-ptr-visible {
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.NB-mobile .NB-mobile-ptr-spinner {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 3px solid var(--nb-mobile-bar-border);
+    border-top-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-ptr-armed .NB-mobile-ptr-spinner {
+    border-right-color: var(--nb-mobile-tint);
+}
+
+body.NB-mobile .NB-mobile-ptr-spinning .NB-mobile-ptr-spinner {
+    animation: NB-mobile-spin 800ms linear infinite;
+}
+
+body.NB-mobile .NB-mobile-ptr-settling {
+    transition: transform 280ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .left-center > .left-center-content,
+body.NB-mobile .content-pane > #story_titles {
+    z-index: 1;
+    background-color: var(--nb-mobile-screen-bg);
+}
+
+@keyframes NB-mobile-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* mobile.css: a loading story list (story_titles_view.js show_loading) shows the pull to refresh
+   spinner instead of desktop's pulsing line, and a list with nothing in it yet a taller one, so
+   a reload into a feed doesn't look empty. */
+body.NB-mobile #story_titles .NB-end-line.NB-load-line {
+    position: relative;
+    grid-column: 1 / -1;
+    height: 72px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    animation: none;
+}
+
+body.NB-mobile #story_titles .NB-story-titles > .NB-end-line.NB-load-line:first-child {
+    height: 180px !important;
+}
+
+body.NB-mobile #story_titles .NB-end-line.NB-load-line::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 3px solid var(--nb-mobile-bar-border);
+    border-top-color: var(--nb-mobile-tint);
+    animation: NB-mobile-spin 800ms linear infinite;
+}
+
+/* mobile.css: a phone hides the reader page until views/mobile_layout_view.js has laid out its
+   screens (templates/reader/dashboard.xhtml), so the desktop layout never flashes on load. */
+body.NB-mobile-booting > * {
+    visibility: hidden !important;
+}
+
+body.NB-mobile .NB-mobile-icon-share {
+    -webkit-mask-image: url('/media/img/icons/nouns/share-export.svg');
+    mask-image: url('/media/img/icons/nouns/share-export.svg');
+}
+
+/* ===================================== */
+/* = Modals become full-screen sheets  = */
+/* ===================================== */
+
+body.NB-mobile #simplemodal-container {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    animation: NB-mobile-sheet-up 340ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile #simplemodal-container .simplemodal-wrap {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal {
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    padding: 56px 16px calc(24px + var(--nb-mobile-safe-bottom)) !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-title {
+    padding-inline-end: 40px;
+}
+
+body.NB-mobile #simplemodal-container a.modalCloseImg {
+    display: block !important;
+    position: fixed !important;
+    top: 8px !important;
+    right: 8px !important;
+    left: auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.06) url('/media/img/icons/nouns/close.svg') no-repeat center / 16px !important;
+    z-index: 10;
+}
+
+body.NB-mobile.NB-dark #simplemodal-container a.modalCloseImg {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* mobile.css: modal bodies scroll as one page inside the sheet instead of in fixed-height
+   inner panes, and two-column form rows stack. */
+body.NB-mobile #simplemodal-container .NB-modal .NB-tab,
+body.NB-mobile #simplemodal-container .NB-modal .NB-preferences-scroll {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    float: none !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs .NB-modal-tab {
+    flex: none;
+    float: none !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-label,
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-options {
+    float: none !important;
+    width: auto !important;
+    margin-left: 0 !important;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal .NB-preference .NB-preference-label {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal input[type="text"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="email"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="password"],
+body.NB-mobile #simplemodal-container .NB-modal input[type="url"],
+body.NB-mobile #simplemodal-container .NB-modal select,
+body.NB-mobile #simplemodal-container .NB-modal textarea,
+body.NB-mobile #simplemodal-container .NB-modal img,
+body.NB-mobile #simplemodal-container .NB-modal table {
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* mobile.css: modal pieces sized for a desktop dialog. */
+body.NB-mobile #simplemodal-container .NB-modal-goodies .NB-goodies-apps {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-intro-spinning-logo {
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    margin-left: -100px;
+    background-size: contain;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal fieldset {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+body.NB-mobile .NB-add-discover-sources {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.NB-mobile .NB-popover .popover-content {
+    overflow-x: hidden;
+}
+
+/* mobile.css: wide segmented controls inside modals scroll sideways instead of clipping. */
+body.NB-mobile #simplemodal-container .NB-modal ul.segmented-control {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal ul.segmented-control > li {
+    flex: none;
+    float: none;
+}
+
+/* mobile.css: the intro's step counter sits in the corner the close button now takes, and its
+   pages grow with their content instead of scrolling inside a fixed height. */
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-modal-page {
+    right: 60px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-intro .NB-page {
+    height: auto;
+    min-height: 460px;
+}
+
+/* mobile.css: phones only have list and grid layouts, so the split-pane and grid-column
+   choices in views/story_options_popover.js don't apply. */
+body.NB-mobile .NB-story-options-desktop-layout {
+    display: none !important;
+}
+
+@keyframes NB-mobile-sheet-up {
+    from { transform: translate3d(0, 100%, 0); }
+    to { transform: translate3d(0, 0, 0); }
+}
+
+/* ============================================== */
+/* = Popovers and menus become bottom sheets    = */
+/* ============================================== */
+
+body.NB-mobile .NB-popover.popover {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+    background: var(--nb-mobile-sheet-bg);
+    padding: 18px 0 var(--nb-mobile-safe-bottom) !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transform: translate3d(0, 100%, 0);
+    opacity: 1 !important;
+    transition: transform 320ms var(--nb-mobile-ease) !important;
+    z-index: 2000 !important;
+}
+
+body.NB-mobile .NB-popover.popover.in {
+    transform: translate3d(0, 0, 0);
+}
+
+body.NB-mobile .NB-popover.popover::before,
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    margin-left: -18px;
+    border-radius: 3px;
+    background: var(--nb-mobile-sheet-handle);
+}
+
+body.NB-mobile .NB-popover.popover .arrow {
+    display: none !important;
+}
+
+body.NB-mobile .NB-popover .popover-inner {
+    width: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    box-shadow: none;
+}
+
+body.NB-mobile .NB-popover .popover-content {
+    max-height: none !important;
+}
+
+body.NB-mobile .NB-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1999 !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-height: 80vh !important;
+    margin: 0 !important;
+    padding: 18px 0 var(--nb-mobile-safe-bottom) !important;
+    border-radius: 16px 16px 0 0 !important;
+    background: var(--nb-mobile-sheet-bg);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    z-index: 2001 !important;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage-arrow {
+    display: none !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage {
+    max-height: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet .NB-menu-manage li.NB-menu-item {
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+/* mobile.css: a held finger on a row opens its manage menu (mobile_layout_view.js), not the
+   browser's link preview or text selection. */
+body.NB-mobile .NB-feedlist .feed,
+body.NB-mobile .NB-feedlist .folder_title,
+body.NB-mobile .NB-story-title,
+body.NB-mobile .NB-story-title a,
+body.NB-mobile .NB-feed-story-header {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* mobile.css: a folder's collapse arrow, which desktop shows on hover, stays out on a phone like
+   the native apps' chevrons, with the counts beside it. A thumb landing on the row then changes
+   nothing, and collapsing takes one tap. */
+body.NB-mobile .NB-feedlist .folder .folder_title .NB-feedlist-collapse-icon,
+body.NB-mobile .NB-feeds-header .NB-feedlist-collapse-icon {
+    display: block;
+}
+
+body.NB-mobile .NB-feedlist .folder .folder_title .feed_counts_floater,
+body.NB-mobile .NB-feeds-header .feed_counts_floater {
+    margin-right: 24px;
+}
+
+/* mobile.css: touch browsers apply :hover and :active the moment a thumb lands, before they know
+   it's a scroll, so the desktop hover lit up every row a scroll started on: a darker background
+   and the manage arrow, as if half selected. On a touch screen rows keep their resting look and
+   show NB-mobile-pressed instead, which mobile_layout_view.js adds only once a finger rests. */
+@media (hover: none) {
+    body.NB-mobile .NB-story-title:hover:not(.NB-selected) {
+        background-color: #FDFCFA;
+    }
+
+    body.NB-mobile.NB-dark .NB-story-title:hover:not(.NB-selected) {
+        background-color: #292b2c;
+    }
+
+    body.NB-mobile .NB-briefing-summary-story .NB-story-title:hover:not(.NB-selected) {
+        background: linear-gradient(135deg, #E8EEF8 0%, #F0F4FA 40%, #EDF0F8 100%);
+    }
+
+    body.NB-mobile.NB-dark .NB-briefing-summary-story .NB-story-title:hover:not(.NB-selected) {
+        background: linear-gradient(135deg, #1C2233 0%, #212838 40%, #1E2535 100%);
+    }
+
+    body.NB-mobile .NB-story-title:hover .NB-story-manage-icon,
+    body.NB-mobile .NB-story-title:hover .NB-story-sentiment {
+        display: none;
+    }
+
+    body.NB-mobile .NB-feedlist .feed:hover .NB-feedlist-manage-icon {
+        opacity: 0;
+    }
+
+    body.NB-mobile .NB-feedlist .folder_title:hover .NB-feedlist-manage-icon {
+        display: none;
+    }
+
+    body.NB-mobile .NB-feedlist li.folder .folder_title.NB-toplevel:hover .NB-folder-icon {
+        display: block;
+    }
+
+    body.NB-mobile .NB-feeds-header:hover:not(.NB-selected) {
+        background-color: #e9ece6;
+    }
+
+    body.NB-mobile.NB-dark .NB-feeds-header:hover:not(.NB-selected) {
+        background-color: #646566;
+    }
+}
+
+body.NB-mobile .NB-story-title.NB-mobile-pressed:not(.NB-selected):not(.NB-story-title-grid),
+body.NB-mobile .NB-feedlist .feed.NB-mobile-pressed:not(.selected),
+body.NB-mobile .NB-feedlist .folder_title.NB-mobile-pressed {
+    background-color: var(--nb-mobile-row-pressed);
+    transition: none;
+}
+
+/* mobile.css: the Ask AI question menu (story_detail_view.js show_ask_ai_menu) opens over
+   the story screen as a bottom sheet. */
+body.NB-mobile .NB-menu-ask-ai-container {
+    position: fixed !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding-bottom: var(--nb-mobile-safe-bottom) !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25) !important;
+    z-index: 2001 !important;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-mobile-sheet-shade {
+    display: none;
+}
+
+body.NB-mobile.NB-mobile-sheet-open .NB-mobile-sheet-shade {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2000;
+}
+
+/* ======================================================= */
+/* = Listen player (views/media_player_view.js)          = */
+/* = mobile_layout_view.js moves it out of the feed list  = */
+/* = footer so it floats above every screen as a bar.     = */
+/* ======================================================= */
+
+body.NB-mobile {
+    --nb-mobile-player-offset: 8px;
+}
+
+/* mobile.css: the bar sits above whichever bottom toolbar the screen has. */
+body.NB-mobile.NB-mobile-screen-is-feeds {
+    --nb-mobile-player-offset: var(--nb-mobile-pill-bar-space);
+}
+
+body.NB-mobile.NB-mobile-screen-is-story {
+    --nb-mobile-player-offset: var(--nb-mobile-toolbar-space);
+}
+
+/* mobile.css: on the story list it clears the floating pills, except in Add + Discover, which
+   replaces the list and its pills. */
+body.NB-mobile.NB-mobile-screen-is-titles {
+    --nb-mobile-player-offset: var(--nb-mobile-pill-bar-space);
+}
+
+body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-story-titles-header.NB-searching) {
+    --nb-mobile-player-offset: calc(var(--nb-mobile-pill-bar-space) + 48px);
+}
+
+body.NB-mobile.NB-mobile-screen-is-titles:has(.NB-layout.NB-add-site-active) {
+    --nb-mobile-player-offset: 8px;
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(var(--nb-mobile-player-offset) + var(--nb-mobile-safe-bottom));
+    z-index: 1500;
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: bottom 300ms var(--nb-mobile-ease);
+    cursor: pointer;
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-hidden {
+    display: none;
+}
+
+/* mobile.css: collapsed, the player is one row: artwork, title, play/pause, close. */
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-mini {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "art info play close";
+    align-items: center;
+    column-gap: 10px;
+    padding: 8px 6px 8px 10px;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-info,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-controls,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-controls {
+    display: contents;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-icon,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-artwork,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-video-container {
+    grid-area: art;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-info {
+    grid-area: info;
+    min-width: 0;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-play-pause {
+    grid-area: play;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-close {
+    grid-area: close;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice-settings,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-settings,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-skip-back,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-skip-forward,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-time,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-right-controls,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-row-scrubber,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-banner,
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-queue-area {
+    display: none !important;
+}
+
+/* mobile.css: expanded, the whole player opens from the bottom like the other sheets. */
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 85vh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    padding: 18px 0 var(--nb-mobile-safe-bottom);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 2001;
+    cursor: default;
+    animation: NB-mobile-sheet-up 300ms var(--nb-mobile-ease);
+}
+
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-player-expanded::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    margin-left: -18px;
+    border-radius: 3px;
+    background: var(--nb-mobile-sheet-handle);
+}
+
+body.NB-mobile .NB-mobile-player-shade {
+    display: none;
+}
+
+body.NB-mobile.NB-mobile-player-open .NB-mobile-player-shade {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2000;
+}
+
+/* mobile.css: lists scroll their last rows clear of the floating bar. */
+body.NB-mobile.NB-mobile-has-player {
+    --nb-mobile-player-space: 64px;
+}
+
+/* ====================== */
+/* = Sheet dismissal    = */
+/* ====================== */
+
+/* mobile.css: the manage menu's sheet catches touches on its handle and padding too, so a drag
+   can start anywhere on it rather than falling through to the shade behind. */
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
+    pointer-events: auto;
+}
+
+/* mobile.css: a sheet follows the finger while it's dragged down
+   (mobile_layout_view.js handle_sheet_touchmove), so its own slide pauses. */
+body.NB-mobile .NB-popover.popover.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-menu-ask-ai-container.NB-mobile-sheet-dragging,
+body.NB-mobile #simplemodal-container.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-sheet-dragging {
+    transition: none !important;
+}

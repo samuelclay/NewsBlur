@@ -3266,6 +3266,9 @@ msgstr "Volledige breedte"
 msgid "Full-Text Search"
 msgstr "Zoeken in volledige tekst"
 
+msgid "Full-screen list"
+msgstr "Lijst op volledig scherm"
+
 msgid "Full-text search across all stories"
 msgstr "Zoeken in de volledige tekst van alle artikelen"
 
@@ -3665,6 +3668,9 @@ msgstr "Artikelen van weinig actieve sites"
 msgid "Infrequent stories per month"
 msgstr "Grens voor weinig actieve sites"
 
+msgid "Inline list"
+msgstr "Inline lijst"
+
 msgid "Insta-fetch stories"
 msgstr "Artikelen direct ophalen"
 
@@ -3803,6 +3809,9 @@ msgstr "Laatste update"
 msgid "Last seen:"
 msgstr "Laatst gezien:"
 
+msgid "Layout"
+msgstr "Indeling"
+
 msgid "Leave unread"
 msgstr "Ongelezen laten"
 
@@ -3887,6 +3896,9 @@ msgstr "Feeds laden..."
 
 msgid "Loading more briefings..."
 msgstr "Meer briefings laden..."
+
+msgid "Loading the next unread story..."
+msgstr "Het volgende ongelezen artikel laden..."
 
 msgid "Loading voices..."
 msgstr "Stemmen laden..."
@@ -4414,6 +4426,9 @@ msgstr "Volgende stap "
 msgid "Next story"
 msgstr "Volgend artikel"
 
+msgid "Next unread"
+msgstr "Volgende ongelezen"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
 "Maak vervolgens een filter aan voor al je nieuwsbrieven, zodat ze worden doorgestuurd naar het aangepaste "
@@ -4721,6 +4736,12 @@ msgstr ""
 
 msgid "Old password"
 msgstr "Oud wachtwoord"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "Ouder dan %(count)s dag"
+msgstr[1] "Ouder dan %(count)s dagen"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6525,6 +6546,12 @@ msgstr "Artikelen ouder dan %(date)s"
 msgid "Stories on %(date)s"
 msgstr "Artikelen op %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "Artikelen openen in de lijst"
+
+msgid "Stories open on their own screen"
+msgstr "Artikelen openen op een eigen scherm"
+
 msgid "Stories per day"
 msgstr "Artikelen per dag"
 
@@ -6575,6 +6602,9 @@ msgstr "Typografie van artikelen"
 
 msgid "Story URL"
 msgstr "URL van artikel"
+
+msgid "Story cards open on their own screen"
+msgstr "Artikelkaarten openen op een eigen scherm"
 
 msgid "Story clustering"
 msgstr "Artikelen groeperen"

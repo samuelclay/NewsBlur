@@ -3166,6 +3166,9 @@ msgstr "เต็มความกว้าง"
 msgid "Full-Text Search"
 msgstr "ค้นหาข้อความเต็ม"
 
+msgid "Full-screen list"
+msgstr "รายการแบบเต็มหน้าจอ"
+
 msgid "Full-text search across all stories"
 msgstr "ค้นหาข้อความเต็มในทุกบทความ"
 
@@ -3562,6 +3565,9 @@ msgstr "บทความจากเว็บไซต์ที่อัปเ
 msgid "Infrequent stories per month"
 msgstr "บทความต่อเดือนของเว็บไซต์ที่อัปเดตไม่บ่อย"
 
+msgid "Inline list"
+msgstr "รายการแบบแสดงในหน้า"
+
 msgid "Insta-fetch stories"
 msgstr "ดึงบทความทันที"
 
@@ -3698,6 +3704,9 @@ msgstr "อัปเดตล่าสุด"
 msgid "Last seen:"
 msgstr "พบเห็นล่าสุด:"
 
+msgid "Layout"
+msgstr "เลย์เอาต์"
+
 msgid "Leave unread"
 msgstr "คงสถานะยังไม่อ่าน"
 
@@ -3782,6 +3791,9 @@ msgstr "กำลังโหลดฟีด..."
 
 msgid "Loading more briefings..."
 msgstr "กำลังโหลดสรุปข่าวเพิ่มเติม..."
+
+msgid "Loading the next unread story..."
+msgstr "กำลังโหลดบทความที่ยังไม่อ่านถัดไป..."
 
 msgid "Loading voices..."
 msgstr "กำลังโหลดเสียงพูด..."
@@ -4299,6 +4311,9 @@ msgstr "ขั้นตอนถัดไป "
 msgid "Next story"
 msgstr "บทความถัดไป"
 
+msgid "Next unread"
+msgstr "บทความที่ยังไม่อ่านถัดไป"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "จากนั้นสร้างตัวกรองที่รวมจดหมายข่าวทั้งหมดของคุณ เพื่อส่งต่อไปยังที่อยู่เฉพาะบน NewsBlur"
 
@@ -4601,6 +4616,11 @@ msgstr "โอ๊ะ เกิดปัญหาในการดึง URL น
 
 msgid "Old password"
 msgstr "รหัสผ่านเดิม"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "เก่ากว่า %(count)s วัน"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6363,6 +6383,12 @@ msgstr "บทความที่เก่ากว่า %(date)s"
 msgid "Stories on %(date)s"
 msgstr "บทความวันที่ %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "บทความเปิดภายในรายการ"
+
+msgid "Stories open on their own screen"
+msgstr "บทความเปิดในหน้าของตัวเอง"
+
 msgid "Stories per day"
 msgstr "บทความต่อวัน"
 
@@ -6413,6 +6439,9 @@ msgstr "รูปแบบตัวอักษรของบทความ"
 
 msgid "Story URL"
 msgstr "URL ของบทความ"
+
+msgid "Story cards open on their own screen"
+msgstr "การ์ดบทความเปิดในหน้าของตัวเอง"
 
 msgid "Story clustering"
 msgstr "การจัดกลุ่มบทความ"

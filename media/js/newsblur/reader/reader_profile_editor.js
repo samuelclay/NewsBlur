@@ -361,7 +361,11 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         if (count > 50) return;
 
         if ($modal.height() > $modal_container.height() - 24) {
-            $tab.height($tab.height() - 5);
+            var tab_height = $tab.height();
+            $tab.height(tab_height - 5);
+            // reader_profile_editor.js: callers pass no count, so stop once the tab no longer
+            // shrinks (the phone layout sizes tabs with CSS) instead of recursing forever.
+            if ($tab.height() >= tab_height) return;
             this.resize_modal(count + 1);
         }
 

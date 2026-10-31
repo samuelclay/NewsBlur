@@ -3140,6 +3140,9 @@ msgstr "全宽"
 msgid "Full-Text Search"
 msgstr "全文搜索"
 
+msgid "Full-screen list"
+msgstr "全屏列表"
+
 msgid "Full-text search across all stories"
 msgstr "全文搜索所有文章"
 
@@ -3528,6 +3531,9 @@ msgstr "低频网站文章"
 msgid "Infrequent stories per month"
 msgstr "低频网站的每月文章数上限"
 
+msgid "Inline list"
+msgstr "内嵌列表"
+
 msgid "Insta-fetch stories"
 msgstr "即时抓取文章"
 
@@ -3664,6 +3670,9 @@ msgstr "上次更新"
 msgid "Last seen:"
 msgstr "上次出现："
 
+msgid "Layout"
+msgstr "布局"
+
 msgid "Leave unread"
 msgstr "保持未读"
 
@@ -3746,6 +3755,9 @@ msgstr "正在加载订阅源…"
 
 msgid "Loading more briefings..."
 msgstr "正在加载更多简报…"
+
+msgid "Loading the next unread story..."
+msgstr "正在加载下一篇未读文章…"
 
 msgid "Loading voices..."
 msgstr "正在加载语音…"
@@ -4259,6 +4271,9 @@ msgstr "下一步 "
 msgid "Next story"
 msgstr "下一篇文章"
 
+msgid "Next unread"
+msgstr "下一篇未读文章"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接下来，创建一个包含所有新闻简报的筛选器，将它们转发到 NewsBlur 上的自定义地址。"
 
@@ -4561,6 +4576,11 @@ msgstr "糟糕，获取该 URL 时出了问题，而且无法明确解释原因�
 
 msgid "Old password"
 msgstr "旧密码"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "超过 %(count)s 天"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6311,6 +6331,12 @@ msgstr "早于 %(date)s 的文章"
 msgid "Stories on %(date)s"
 msgstr "%(date)s 的文章"
 
+msgid "Stories open inside the list"
+msgstr "文章在列表中打开"
+
+msgid "Stories open on their own screen"
+msgstr "文章在独立页面中打开"
+
 msgid "Stories per day"
 msgstr "每日文章数"
 
@@ -6361,6 +6387,9 @@ msgstr "文章字体排版"
 
 msgid "Story URL"
 msgstr "文章 URL"
+
+msgid "Story cards open on their own screen"
+msgstr "文章卡片在独立页面中打开"
 
 msgid "Story clustering"
 msgstr "文章聚类"

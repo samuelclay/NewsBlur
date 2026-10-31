@@ -3249,6 +3249,9 @@ msgstr "רוחב מלא"
 msgid "Full-Text Search"
 msgstr "חיפוש בטקסט המלא"
 
+msgid "Full-screen list"
+msgstr "רשימה במסך מלא"
+
 msgid "Full-text search across all stories"
 msgstr "חיפוש בטקסט המלא בכל הכתבות"
 
@@ -3648,6 +3651,9 @@ msgstr "כתבות מאתרים שמתעדכנים לעיתים רחוקות"
 msgid "Infrequent stories per month"
 msgstr "אתרים שמתעדכנים לעיתים רחוקות: כתבות בחודש"
 
+msgid "Inline list"
+msgstr "רשימה משולבת"
+
 msgid "Insta-fetch stories"
 msgstr "שליפה מיידית של כתבות"
 
@@ -3786,6 +3792,9 @@ msgstr "עדכון אחרון"
 msgid "Last seen:"
 msgstr "נראה לאחרונה:"
 
+msgid "Layout"
+msgstr "פריסה"
+
 msgid "Leave unread"
 msgstr "להשאיר כלא נקרא"
 
@@ -3870,6 +3879,9 @@ msgstr "טוען פידים..."
 
 msgid "Loading more briefings..."
 msgstr "טוען תדריכים נוספים..."
+
+msgid "Loading the next unread story..."
+msgstr "טעינת הכתבה הבאה שלא נקראה..."
 
 msgid "Loading voices..."
 msgstr "הקולות נטענים..."
@@ -4395,6 +4407,9 @@ msgstr "השלב הבא "
 msgid "Next story"
 msgstr "הכתבה הבאה"
 
+msgid "Next unread"
+msgstr "הכתבה הבאה שלא נקראה"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "כעת צרו מסנן שיכלול את כל הניוזלטרים שלכם, כך שהם יועברו לכתובת המותאמת אישית ב-NewsBlur."
 
@@ -4698,6 +4713,12 @@ msgstr "אוי לא, הייתה בעיה בשליפת כתובת ה-URL הזו �
 
 msgid "Old password"
 msgstr "סיסמה ישנה"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "ישן מ־%(count)s יום"
+msgstr[1] "ישן מ־%(count)s ימים"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6480,6 +6501,12 @@ msgstr "כתבות שפורסמו לפני %(date)s"
 msgid "Stories on %(date)s"
 msgstr "כתבות ב־%(date)s"
 
+msgid "Stories open inside the list"
+msgstr "כתבות נפתחות בתוך הרשימה"
+
+msgid "Stories open on their own screen"
+msgstr "כתבות נפתחות במסך משלהן"
+
 msgid "Stories per day"
 msgstr "כתבות ביום"
 
@@ -6530,6 +6557,9 @@ msgstr "טיפוגרפיית כתבות"
 
 msgid "Story URL"
 msgstr "כתובת URL של כתבה"
+
+msgid "Story cards open on their own screen"
+msgstr "כרטיסי כתבות נפתחים במסך משלהם"
 
 msgid "Story clustering"
 msgstr "קיבוץ כתבות"

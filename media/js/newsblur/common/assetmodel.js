@@ -665,11 +665,22 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.user_profiles.add(profiles);
     },
 
-    load_feeds: function (callback, error_callback) {
+    // assetmodel.js: views/feed_list_view.js asks with from_cache on page load, which draws the
+    // feed list from the copy kept by common/feed_list_cache.js before the server answers. When
+    // the server's list draws the same (feed_list_cache.js structure_signature), its data merges
+    // in without redrawing, and the unread counts arrive from refresh_feeds, which the cached
+    // draw already started. A different list redraws as before.
+    load_feeds: function (callback, error_callback, options) {
         var self = this;
+        options = options || {};
+        var cache = NEWSBLUR.feed_list_cache;
+        var user_id = NEWSBLUR.Globals.is_authenticated && NEWSBLUR.Globals.user_id;
+        var cached = options.from_cache && cache && cache.read(user_id);
+
+        // The selected feed, taken before a response's feeds (each parsed as unselected) merge in.
         var selected = this.feeds.selected();
 
-        var pre_callback = function (feeds, subscriptions) {
+        var apply_subscriptions = function (subscriptions) {
             self.flags['favicons_fetching'] = self.feeds.any(function (feed) { return feed.get('favicons_fetching'); });
 
             self.folders.reset(_.compact(subscriptions.folders), { parse: true });
@@ -699,14 +710,102 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
 
             self.feeds.trigger('reset');
+        };
 
+        // The server's list draws the same as the cached one, so only the models catch up, and a
+        // row whose own data changed (a feed now fetched, a new favicon) redraws itself. Unread
+        // counts and the selected feed stay as they are: refresh_feeds may already have brought
+        // newer counts, and parsing either collection would mark every feed unselected. The saved
+        // and search sections redraw on their own, cheaply.
+        var merge_subscriptions = function (subscriptions) {
+            self.feeds.set(cache.without_counts(subscriptions.feeds), { remove: false });
+            self.social_feeds.set(cache.without_counts(subscriptions.social_feeds), { remove: false });
+            self.starred_count = subscriptions.starred_count;
+            self.starred_feeds.reset(subscriptions.starred_counts, { parse: true });
+            self.searches_feeds.reset(subscriptions.saved_searches, { parse: true });
+            self.user_profile.set(subscriptions.social_profile);
+            self.social_services = subscriptions.social_services;
+            self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
+            self.playback_state = subscriptions.playback_state || null;
+            self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
+            NEWSBLUR.reader.update_starred_count();
+        };
+
+        var loaded = function (subscriptions) {
+            self.feed_list_subscriptions = subscriptions;
+            if (cache) {
+                cache.clear(user_id);
+                cache.write(user_id, subscriptions);
+            }
+            if (!cached) {
+                apply_subscriptions(subscriptions);
+            } else if (cache.structure_signature(cached) === cache.structure_signature(subscriptions)) {
+                merge_subscriptions(subscriptions);
+            } else {
+                // The list changed since it was cached, so it redraws once the way it always has,
+                // without repeating what the cached draw already did on page load.
+                selected = self.feeds.selected();
+                self.feeds.set(self.feeds.parse(subscriptions), { silent: true });
+                self.flags['feed_list_refreshed_from_cache'] = true;
+                try {
+                    apply_subscriptions(subscriptions);
+                } finally {
+                    self.flags['feed_list_refreshed_from_cache'] = false;
+                }
+            }
+            self.feeds.trigger('loaded_from_server');
             callback && callback();
         };
 
-        this.feeds.fetch({
-            success: pre_callback,
-            error: error_callback
+        if (!cached) {
+            this.feeds.fetch({
+                success: function (feeds, subscriptions) {
+                    loaded(subscriptions);
+                },
+                error: error_callback
+            });
+            return;
+        }
+
+        // views/feed_list_view.js asks while reader.js init is still running, before the reader
+        // binds its own feed list handlers (the intelligence filter, dashboard rivers), so the
+        // cached list draws once init returns, as a server's answer always has.
+        _.defer(function () {
+            self.feed_list_subscriptions = cached;
+            self.feeds.set(cached, { parse: true, silent: true });
+            self.flags['feed_list_from_cache'] = true;
+            try {
+                apply_subscriptions(cached);
+            } finally {
+                self.flags['feed_list_from_cache'] = false;
+            }
         });
+        // Requested directly rather than with feeds.fetch, which would merge the server's stored
+        // counts over newer ones, and alongside refresh_feeds rather than queued ahead of it.
+        // A failed refresh leaves the cached list up instead of the feed list's load error.
+        this.make_request('/reader/feeds', { 'v': 2, 'update_counts': false }, loaded, function (error) {
+            NEWSBLUR.log(['Feed list refresh failed, keeping the cached list', error]);
+        }, {
+            request_type: 'GET',
+            ajax_group: 'rapid',
+            timeout: 60000
+        });
+    },
+
+    // assetmodel.js: writes the unread counts on screen into the cached feed list as the page
+    // hides, so the next page load starts from them (common/feed_list_cache.js).
+    save_feed_list_counts: function () {
+        var cache = NEWSBLUR.feed_list_cache;
+        var user_id = NEWSBLUR.Globals.is_authenticated && NEWSBLUR.Globals.user_id;
+        if (!cache || !user_id || !this.feed_list_subscriptions) return;
+        var counts = {};
+        var add_counts = function (feed) {
+            counts[feed.id] = { ps: feed.get('ps'), nt: feed.get('nt'), ng: feed.get('ng') };
+        };
+        this.feeds.each(add_counts);
+        this.social_feeds.each(add_counts);
+        this.feed_list_subscriptions = cache.with_counts(this.feed_list_subscriptions, counts);
+        cache.write(user_id, this.feed_list_subscriptions);
     },
 
     load_feed_favicons: function (callback, loaded_once, load_all) {
@@ -1848,12 +1947,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             var view_setting = feed && feed[s] || default_setting;
             // if (view_setting == "magazine") view_setting = "list";
+            // assetmodel.js: phones only have list and grid layouts (common/mobile_utils.js).
+            if (setting == 'layout' && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+                view_setting = NEWSBLUR.mobile_utils.mobile_story_layout(view_setting);
+            }
             return view_setting;
         }
 
         var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
         if (_.isString(view_settings)) {
             view_settings = { 'view': view_settings };
+        }
+        // assetmodel.js: a phone writes back the list or grid layout it shows whenever a feed
+        // opens. Skip that write when the stored desktop layout already reads as that layout,
+        // so a split feed stays split on desktop.
+        if (setting.hasOwnProperty('layout') && NEWSBLUR.reader && NEWSBLUR.reader.flags.mobile) {
+            var stored_layout = view_settings['l'] || NEWSBLUR.Preferences['story_layout'];
+            if (!NEWSBLUR.mobile_utils.should_save_mobile_layout(stored_layout, setting['layout'])) {
+                setting = _.omit(setting, 'layout');
+            }
         }
         var params = { 'feed_id': feed_id + '' };
         _.each([
@@ -1876,6 +1988,31 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/profile/set_view_setting', params, callback, null);
             return true;
         }
+    },
+
+    // assetmodel.js: the phone's layout menu (views/mobile_layout_popover.js) picks list, page or
+    // grid (common/mobile_utils.js phone_layout). view_setting's write path skips layouts that
+    // render the same list, which keeps the reader from turning a split feed into a list, so a
+    // pick saves here instead, as the desktop layout that reads as it.
+    phone_layout: function (feed_id) {
+        var feed = NEWSBLUR.Preferences.view_settings[feed_id + ''];
+        var stored_layout = feed && feed['l'] || NEWSBLUR.Preferences['story_layout'];
+        return NEWSBLUR.mobile_utils.phone_layout(stored_layout);
+    },
+
+    save_phone_layout: function (feed_id, phone_layout) {
+        if (this.phone_layout(feed_id) === phone_layout) return;
+        var layout = NEWSBLUR.mobile_utils.PHONE_LAYOUT_SAVES[phone_layout];
+        var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id + '']) || {};
+        if (_.isString(view_settings)) {
+            view_settings = { 'view': view_settings };
+        }
+        view_settings['l'] = layout;
+        NEWSBLUR.Preferences.view_settings[feed_id + ''] = view_settings;
+        this.make_request('/profile/set_view_setting', {
+            'feed_id': feed_id + '',
+            'feed_layout_setting': layout
+        }, null, null);
     },
 
     clear_view_settings: function (view_setting_type, callback) {

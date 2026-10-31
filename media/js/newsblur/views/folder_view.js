@@ -194,8 +194,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                               &middot;\
                             <% } %>\
                             <%- setting_label(NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter")) %>\
-                            &middot;\
-                            <%- setting_label(NEWSBLUR.assets.view_setting("river:"+folder_title, "order")) %>\
+                            <span class="NB-feedbar-options-order">&middot;\
+                            <%- setting_label(NEWSBLUR.assets.view_setting("river:"+folder_title, "order")) %></span>\
                             <% if (has_auto_mark_read) { %>\
                                 &middot;\
                                 <div class="NB-feedbar-auto-mark-read-icon"></div>\
@@ -381,7 +381,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
 
     show_manage_menu_rightclick: function (e) {
-        if (!NEWSBLUR.assets.preference('show_contextmenus')) return;
+        if (!e.mobile_long_press && !NEWSBLUR.assets.preference('show_contextmenus')) return;
 
         return this.show_manage_menu(e);
     },

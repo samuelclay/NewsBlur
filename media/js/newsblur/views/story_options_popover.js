@@ -49,7 +49,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         this.$el.html($.make('div', [
-            $.make('div', { className: 'NB-popover-section' }, [
+            $.make('div', { className: 'NB-popover-section NB-story-options-desktop-layout' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Layout - Split')),
                 $.make('ul', { className: 'segmented-control NB-options-story-titles-pane' }, [
                     $.make('li', { className: 'NB-story-titles-pane-option NB-options-story-titles-pane-west', role: "button" }, [
@@ -91,7 +91,7 @@ NEWSBLUR.StoryOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-popover-section' }, [
+            $.make('div', { className: 'NB-popover-section NB-story-options-desktop-layout' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, gettext('Story Layout - Grid Columns')),
                 $.make('ul', { className: 'segmented-control NB-options-grid-columns' }, [
                     $.make('li', { className: 'NB-grid-columns-option NB-options-grid-columns-0', role: "button" }, [

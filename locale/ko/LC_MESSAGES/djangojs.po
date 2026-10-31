@@ -3146,6 +3146,9 @@ msgstr "전체 너비"
 msgid "Full-Text Search"
 msgstr "전체 텍스트 검색"
 
+msgid "Full-screen list"
+msgstr "전체 화면 목록"
+
 msgid "Full-text search across all stories"
 msgstr "모든 스토리 전문 검색"
 
@@ -3536,6 +3539,9 @@ msgstr "업데이트가 드문 사이트의 스토리"
 msgid "Infrequent stories per month"
 msgstr "업데이트가 드문 사이트 기준(월 스토리 수)"
 
+msgid "Inline list"
+msgstr "인라인 목록"
+
 msgid "Insta-fetch stories"
 msgstr "스토리 즉시 가져오기"
 
@@ -3672,6 +3678,9 @@ msgstr "마지막 업데이트"
 msgid "Last seen:"
 msgstr "마지막 확인:"
 
+msgid "Layout"
+msgstr "레이아웃"
+
 msgid "Leave unread"
 msgstr "읽지 않은 상태로 두기"
 
@@ -3754,6 +3763,9 @@ msgstr "피드를 불러오는 중..."
 
 msgid "Loading more briefings..."
 msgstr "브리핑을 더 불러오는 중..."
+
+msgid "Loading the next unread story..."
+msgstr "다음 읽지 않은 스토리를 불러오는 중..."
 
 msgid "Loading voices..."
 msgstr "음성을 불러오는 중..."
@@ -4267,6 +4279,9 @@ msgstr "다음 단계 "
 msgid "Next story"
 msgstr "다음 스토리"
 
+msgid "Next unread"
+msgstr "다음 읽지 않은 스토리"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "다음으로 모든 뉴스레터를 포함하는 필터를 만들어 NewsBlur의 맞춤 주소로 전달되도록 설정하세요."
 
@@ -4569,6 +4584,11 @@ msgstr "이런, 해당 URL을 가져오는 중 문제가 발생했지만 원인�
 
 msgid "Old password"
 msgstr "이전 비밀번호"
+
+#, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s일보다 오래됨"
 
 #, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
@@ -6319,6 +6339,12 @@ msgstr "%(date)s 이전의 스토리"
 msgid "Stories on %(date)s"
 msgstr "%(date)s의 스토리"
 
+msgid "Stories open inside the list"
+msgstr "스토리를 목록 안에서 열기"
+
+msgid "Stories open on their own screen"
+msgstr "스토리를 별도 화면에서 열기"
+
 msgid "Stories per day"
 msgstr "일별 스토리 수"
 
@@ -6369,6 +6395,9 @@ msgstr "스토리 글꼴"
 
 msgid "Story URL"
 msgstr "스토리 URL"
+
+msgid "Story cards open on their own screen"
+msgstr "스토리 카드를 별도 화면에서 열기"
 
 msgid "Story clustering"
 msgstr "스토리 클러스터링"
