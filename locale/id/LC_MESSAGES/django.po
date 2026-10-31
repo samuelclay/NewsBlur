@@ -111,6 +111,12 @@ msgstr[0] "%(count)d jam yang lalu"
 msgstr[1] "%(count)d jam yang lalu"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d menit"
+msgstr[1] "%(count)d menit"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d menit yang lalu"
@@ -3230,6 +3236,12 @@ msgstr "Dengarkan di web, iPad, iPhone, dan Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Fitur Dengarkan diputar di MacBook, iPad, iPhone, dan ponsel Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
+
 msgid "Listen to stories read aloud"
 msgstr "Dengarkan artikel yang dibacakan"
 
@@ -4532,8 +4544,8 @@ msgid "Premium Archive subscription"
 msgstr "Langganan Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive membuka akses ke artikel lengkap yang dibacakan, hingga %(limit)s per bulan."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive membuka akses ke artikel lengkap yang dibacakan, hingga %(limit)s per minggu."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7288,15 +7300,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Anda telah mendengarkan %(limit)s artikel bulan ini. Jatah mendengarkan diatur ulang pada %(date)s, atau "
-"tingkatkan ke Premium Pro seharga %(pro_limit)s per bulan."
+"Anda telah mendengarkan %(limit)s artikel minggu ini. Waktu mendengarkan direset pada %(day)s, atau "
+"tingkatkan ke Premium Pro untuk %(pro_limit)s per minggu."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Anda telah mendengarkan %(limit)s artikel bulan ini. Penghitungan mendengarkan akan direset pada %(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Anda telah mendengarkan %(limit)s artikel minggu ini. Waktu mendengarkan direset pada %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Anda telah menggunakan semua pratinjau suara untuk hari ini. Pratinjau akan direset pada tengah malam."

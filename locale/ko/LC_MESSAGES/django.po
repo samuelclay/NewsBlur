@@ -104,6 +104,11 @@ msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d시간 전"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d분"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d분 전"
@@ -3013,6 +3018,12 @@ msgstr "웹, iPad, iPhone, Android에서 듣기"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "MacBook, iPad, iPhone, Android 휴대폰에서 재생 중인 듣기"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
+
 msgid "Listen to stories read aloud"
 msgstr "스토리를 소리 내어 들어 보세요"
 
@@ -4212,8 +4223,8 @@ msgid "Premium Archive subscription"
 msgstr "프리미엄 아카이브 구독"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "프리미엄 아카이브를 이용하면 한 달에 최대 %(limit)s까지 스토리 전문을 음성으로 들을 수 있습니다."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "프리미엄 아카이브에서는 일주일에 최대 %(limit)s까지 스토리 전문을 소리 내어 읽어주는 기능을 이용할 수 있습니다."
 
 msgid "Premium Pro"
 msgstr "프리미엄 프로"
@@ -6756,13 +6767,13 @@ msgstr "NewsBlur를 널리 알려 주신 데 대한 감사로 %(tier_name)s을(�
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
-msgstr "이번 달에 스토리 %(limit)s개를 들었습니다. 듣기 횟수는 %(date)s에 초기화됩니다. 또는 월 %(pro_limit)s에 프리미엄 프로로 업그레이드하세요."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
+msgstr "이번 주에 스토리 %(limit)s을(를) 들었습니다. 청취 한도는 %(day)s에 초기화됩니다. 또는 일주일에 %(pro_limit)s에 프리미엄 프로로 업그레이드하세요."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "이번 달 스토리 %(limit)s개를 들었습니다. 듣기 횟수는 %(date)s에 초기화됩니다."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "이번 주에 스토리 %(limit)s을(를) 들었습니다. 청취 한도는 %(day)s에 초기화됩니다."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "오늘 사용할 수 있는 음성 미리 듣기를 모두 사용했습니다. 자정에 초기화됩니다."

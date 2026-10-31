@@ -1255,9 +1255,14 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="listen_style_summary">Làm phong cách giọng đọc cường điệu hơn</string>
     <string name="listen_speaker_boost_summary">Âm thanh rõ và gần hơn</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">Còn %1$d phút trong tháng này</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d giờ</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d phút</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Còn %1$s trong tuần này</string>
     <string name="listen_resets_on">Đặt lại vào %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">Hôm nay còn %1$d lượt nghe thử bài viết miễn phí</item>
@@ -1279,5 +1284,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="settings_listen_voices_summary">Chọn giọng nói cho từng ngôn ngữ và cách đọc</string>
     <string name="settings_listen_delivery">Cách đọc</string>
     <string name="settings_listen_speed">Tốc độ phát</string>
-    <string name="archive_listen">Nghe bài viết được đọc thành tiếng</string>
+    <string name="archive_listen">Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần</string>
+    <string name="pro_listen">Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần</string>
 </resources>

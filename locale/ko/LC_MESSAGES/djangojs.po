@@ -266,6 +266,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s개 병합 (%(categories)s개 카테고리를 %(count)s개로)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s분"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s분 전"
@@ -465,6 +470,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "이번 주에 %(duration)s 남음"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s 알림이 설정되었습니다"
 
@@ -493,11 +502,6 @@ msgstr[0] "사이트 %(count)s개 중 %(indexed)s개가 색인되었습니다. �
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s 업그레이드하고 전체 아카이브에서 관련 스토리를 확인하세요."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "이번 달에 %(minutes)s분 남음"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3737,8 +3741,11 @@ msgstr "듣기"
 msgid "Listen timed out. Try again in a moment."
 msgstr "듣기 시간이 초과되었습니다. 잠시 후 다시 시도하세요."
 
-msgid "Listen to stories read aloud"
-msgstr "스토리를 소리 내어 듣기"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
 
 msgid "Listen to story"
 msgstr "스토리 듣기"
@@ -5446,8 +5453,8 @@ msgid "Reset to original favicon"
 msgstr "기본 파비콘으로 재설정"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "%(date)s에 초기화"
+msgid "Resets %(day)s"
+msgstr "%(day)s에 초기화됩니다"
 
 msgid "Resetting..."
 msgstr "초기화 중..."

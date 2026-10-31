@@ -392,6 +392,16 @@ msgstr[4] "%(count)s عملية دمج (%(categories)s من الفئات في %(
 msgstr[5] "%(count)s عملية دمج (%(categories)s من الفئات في %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s دقيقة"
+msgstr[1] "%(count)s دقيقة"
+msgstr[2] "%(count)s دقيقتين"
+msgstr[3] "%(count)s دقائق"
+msgstr[4] "%(count)s دقيقة"
+msgstr[5] "%(count)s دقيقة"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "قبل %(count)s دقيقة"
@@ -766,6 +776,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "تبقّى %(duration)s هذا الأسبوع"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "تم إعداد إشعارات %(feed_title)s"
 
@@ -804,16 +818,6 @@ msgstr[5] "تمت فهرسة %(indexed)s من أصل %(count)s موقع. افه�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s رقِّ لتتمكن من رؤية القصص ذات الصلة من أرشيفك بالكامل."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "تبقّى %(minutes)s دقيقة هذا الشهر"
-msgstr[1] "تبقّت %(minutes)s دقيقة هذا الشهر"
-msgstr[2] "تبقّت %(minutes)s دقيقتان هذا الشهر"
-msgstr[3] "تبقّت %(minutes)s دقائق هذا الشهر"
-msgstr[4] "تبقّت %(minutes)s دقيقة هذا الشهر"
-msgstr[5] "تبقّت %(minutes)s دقيقة هذا الشهر"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -4204,8 +4208,11 @@ msgstr "استمع"
 msgid "Listen timed out. Try again in a moment."
 msgstr "انتهت مهلة الاستماع. حاول مرة أخرى بعد قليل."
 
-msgid "Listen to stories read aloud"
-msgstr "استمع إلى القصص بصوت مسموع"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا"
 
 msgid "Listen to story"
 msgstr "استمع إلى القصة"
@@ -6028,8 +6035,8 @@ msgid "Reset to original favicon"
 msgstr "إعادة ضبط الأيقونة المفضلة إلى الأصلية"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "تتم إعادة الضبط بعد %(date)s"
+msgid "Resets %(day)s"
+msgstr "يُعاد الضبط %(day)s"
 
 msgid "Resetting..."
 msgstr "جارٍ إعادة الضبط..."

@@ -266,6 +266,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s件を統合（%(categories)sカテゴリを%(count)sに）"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s分"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s 分前"
@@ -465,6 +470,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "今週の残り%(duration)s"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)sの通知を設定しました"
 
@@ -493,11 +502,6 @@ msgstr[0] "%(count)s件中%(indexed)s件のサイトをインデックスしま�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s アップグレードすると、アーカイブ全体から関連記事を表示できます。"
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "今月の残り時間：%(minutes)s分"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3729,8 +3733,11 @@ msgstr "読み上げ"
 msgid "Listen timed out. Try again in a moment."
 msgstr "読み上げがタイムアウトしました。少し待ってからもう一度お試しください。"
 
-msgid "Listen to stories read aloud"
-msgstr "記事を音声で読み上げる"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "読み上げ記事を週1時間聴取"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "読み上げ記事を週10時間聴取"
 
 msgid "Listen to story"
 msgstr "記事を読み上げる"
@@ -5438,8 +5445,8 @@ msgid "Reset to original favicon"
 msgstr "元のファビコンに戻す"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "%(date)sにリセット"
+msgid "Resets %(day)s"
+msgstr "%(day)sにリセット"
 
 msgid "Resetting..."
 msgstr "リセット中…"

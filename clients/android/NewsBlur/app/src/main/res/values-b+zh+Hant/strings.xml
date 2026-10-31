@@ -1255,9 +1255,14 @@
     <string name="listen_style_summary">加強語音風格</string>
     <string name="listen_speaker_boost_summary">更清晰、更貼近的音效</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">本月剩餘 %1$d 分鐘</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d 小時</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d 分鐘</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">本週剩餘 %1$s</string>
     <string name="listen_resets_on">重設日期：%1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今天還有 %1$d 次免費文章預覽</item>
@@ -1279,5 +1284,6 @@
     <string name="settings_listen_voices_summary">為每種語言選擇語音及朗讀方式</string>
     <string name="settings_listen_delivery">語音表現</string>
     <string name="settings_listen_speed">播放速度</string>
-    <string name="archive_listen">聆聽朗讀的文章</string>
+    <string name="archive_listen">每週聆聽朗讀文章最多 1 小時</string>
+    <string name="pro_listen">每週聆聽朗讀文章最多 10 小時</string>
 </resources>

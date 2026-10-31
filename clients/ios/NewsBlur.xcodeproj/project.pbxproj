@@ -10,7 +10,9 @@
 		931E4EC29D132C7DA29F662D /* ListenPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E6860EC5737503801CA2B3 /* ListenPreferencesTests.swift */; };
 		38BDD01698DEA899BBEC60FE /* ListenPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E6860EC5737503801CA2B3 /* ListenPreferencesTests.swift */; };
 		1FFADF778EEDABB6C17660C9 /* ListenQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8699FB2BE7BCA751C12F4D18 /* ListenQueueTests.swift */; };
+		513FCD23DE5D46B1B30F2673 /* ListenPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AA9512D8D84631884F2DFA /* ListenPlayerTests.swift */; };
 		4844FA7395B90A989682898C /* ListenQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8699FB2BE7BCA751C12F4D18 /* ListenQueueTests.swift */; };
+		D9A3B72D712743A4B65E9C13 /* ListenPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AA9512D8D84631884F2DFA /* ListenPlayerTests.swift */; };
 		0FE60FAF2CE9C949662018E2 /* ListenQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1BD57F8DAF2BF197BCF68F /* ListenQueue.swift */; };
 		EB7F25DFF13FBF2CE1ADE260 /* ListenQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1BD57F8DAF2BF197BCF68F /* ListenQueue.swift */; };
 		87B9B7070E02A2AF658B316D /* listen-queue-add.svg in Resources */ = {isa = PBXBuildFile; fileRef = 184401FA84BEFA0BC70513A8 /* listen-queue-add.svg */; };
@@ -36,7 +38,9 @@
 		745931734B2F7FA9728B5279 /* ListenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB18380DDF2AEDE93179A73 /* ListenPresenter.swift */; };
 		6F46773FF62C63B0470EBBB6 /* ListenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB18380DDF2AEDE93179A73 /* ListenPresenter.swift */; };
 		FA1B0C690362B703A1351042 /* ListenStoryBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE632736F37A4FAD85186170 /* ListenStoryBridge.swift */; };
+		2B28683687A1405DB12F91A0 /* ListenToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008F1687D2D0454CB281CD43 /* ListenToolbarButton.swift */; };
 		1970BB98F9EB9374B9E75C8A /* ListenStoryBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE632736F37A4FAD85186170 /* ListenStoryBridge.swift */; };
+		BEB7B86476C7493D8FADDE1F /* ListenToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008F1687D2D0454CB281CD43 /* ListenToolbarButton.swift */; };
 		9C2780F1363FAC9D299950F8 /* ListenTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FFD99E29C40E7AEB5A6018 /* ListenTheme.swift */; };
 		082ADD705EFF265B3AA1EDE9 /* ListenTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FFD99E29C40E7AEB5A6018 /* ListenTheme.swift */; };
 		EF756BF830CD4F0ACB262D4F /* ListenVoiceSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C8FA5AAD9A01DF50310796 /* ListenVoiceSettingsModel.swift */; };
@@ -1781,6 +1785,7 @@
 /* Begin PBXFileReference section */
 		92E6860EC5737503801CA2B3 /* ListenPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenPreferencesTests.swift; sourceTree = "<group>"; };
 		8699FB2BE7BCA751C12F4D18 /* ListenQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenQueueTests.swift; sourceTree = "<group>"; };
+		B0AA9512D8D84631884F2DFA /* ListenPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenPlayerTests.swift; sourceTree = "<group>"; };
 		9D1BD57F8DAF2BF197BCF68F /* ListenQueue.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenQueue.swift; sourceTree = "<group>"; };
 		184401FA84BEFA0BC70513A8 /* listen-queue-add.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = listen-queue-add.svg; path = ../static/listen-queue-add.svg; sourceTree = "<group>"; };
 		42BCB2A85BDBAB721599001B /* listen-queue-added.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = listen-queue-added.svg; path = ../static/listen-queue-added.svg; sourceTree = "<group>"; };
@@ -1794,6 +1799,7 @@
 		0CD78361C284D6051CEBC48F /* ListenPreferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenPreferences.swift; sourceTree = "<group>"; };
 		2CB18380DDF2AEDE93179A73 /* ListenPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenPresenter.swift; sourceTree = "<group>"; };
 		BE632736F37A4FAD85186170 /* ListenStoryBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenStoryBridge.swift; sourceTree = "<group>"; };
+		008F1687D2D0454CB281CD43 /* ListenToolbarButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenToolbarButton.swift; sourceTree = "<group>"; };
 		E5FFD99E29C40E7AEB5A6018 /* ListenTheme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenTheme.swift; sourceTree = "<group>"; };
 		83C8FA5AAD9A01DF50310796 /* ListenVoiceSettingsModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenVoiceSettingsModel.swift; sourceTree = "<group>"; };
 		0C5133AA1F0C039546C4399E /* ListenVoiceSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListenVoiceSettingsView.swift; sourceTree = "<group>"; };
@@ -3000,6 +3006,7 @@
 				0CD78361C284D6051CEBC48F /* ListenPreferences.swift */,
 				2CB18380DDF2AEDE93179A73 /* ListenPresenter.swift */,
 				BE632736F37A4FAD85186170 /* ListenStoryBridge.swift */,
+				008F1687D2D0454CB281CD43 /* ListenToolbarButton.swift */,
 				E5FFD99E29C40E7AEB5A6018 /* ListenTheme.swift */,
 				83C8FA5AAD9A01DF50310796 /* ListenVoiceSettingsModel.swift */,
 				0C5133AA1F0C039546C4399E /* ListenVoiceSettingsView.swift */,
@@ -4083,6 +4090,7 @@
 				E91720260917000100000004 /* RowActionMenuTests.swift */,
 				92E6860EC5737503801CA2B3 /* ListenPreferencesTests.swift */,
 				8699FB2BE7BCA751C12F4D18 /* ListenQueueTests.swift */,
+				B0AA9512D8D84631884F2DFA /* ListenPlayerTests.swift */,
 				E91720260917000200000004 /* StoryImageViewerTests.swift */,
 				A91220260000000000000002 /* StoryTitleSwipeTests.swift */,
 				B11924FAD010202609100042 /* FeedUnreadCountRefreshTests.swift */,
@@ -6132,6 +6140,7 @@
 				C3CEC194D9F951135614C1C4 /* ListenPreferences.swift in Sources */,
 				745931734B2F7FA9728B5279 /* ListenPresenter.swift in Sources */,
 				FA1B0C690362B703A1351042 /* ListenStoryBridge.swift in Sources */,
+				2B28683687A1405DB12F91A0 /* ListenToolbarButton.swift in Sources */,
 				9C2780F1363FAC9D299950F8 /* ListenTheme.swift in Sources */,
 				EF756BF830CD4F0ACB262D4F /* ListenVoiceSettingsModel.swift in Sources */,
 				511B697A0D8D2C65740505BE /* ListenVoiceSettingsView.swift in Sources */,
@@ -6420,6 +6429,7 @@
 				4C07A7524D803D6315FE050D /* ListenPreferences.swift in Sources */,
 				6F46773FF62C63B0470EBBB6 /* ListenPresenter.swift in Sources */,
 				1970BB98F9EB9374B9E75C8A /* ListenStoryBridge.swift in Sources */,
+				BEB7B86476C7493D8FADDE1F /* ListenToolbarButton.swift in Sources */,
 				082ADD705EFF265B3AA1EDE9 /* ListenTheme.swift in Sources */,
 				15B1FCF76776660785753A50 /* ListenVoiceSettingsModel.swift in Sources */,
 				9CE7B34B026FE9903FEE6E1E /* ListenVoiceSettingsView.swift in Sources */,
@@ -6528,6 +6538,7 @@
 				E91720260917000100000003 /* RowActionMenuTests.swift in Sources */,
 				931E4EC29D132C7DA29F662D /* ListenPreferencesTests.swift in Sources */,
 				1FFADF778EEDABB6C17660C9 /* ListenQueueTests.swift in Sources */,
+				513FCD23DE5D46B1B30F2673 /* ListenPlayerTests.swift in Sources */,
 				E91720260917000200000003 /* StoryImageViewerTests.swift in Sources */,
 				A91320260000000000000011 /* StoryPreloadFailureTests.swift in Sources */,
 			);
@@ -6562,6 +6573,7 @@
 				FF1A84D1306AA52A00D68616 /* RowActionMenuTests.swift in Sources */,
 				38BDD01698DEA899BBEC60FE /* ListenPreferencesTests.swift in Sources */,
 				4844FA7395B90A989682898C /* ListenQueueTests.swift in Sources */,
+				D9A3B72D712743A4B65E9C13 /* ListenPlayerTests.swift in Sources */,
 				FF1A84D2306AA52A00D68616 /* StoryImageViewerTests.swift in Sources */,
 				FF1A84D3306AA52A00D68616 /* FeedUnreadCountRefreshTests.swift in Sources */,
 				FF1A84D4306AA52A00D68616 /* StoryTitlesHeaderBarLayoutTests.swift in Sources */,

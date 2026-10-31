@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 資料夾，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 資料夾，已收合，%2$@";
 "%1$@ followed %2$@." = "%1$@ 追蹤了 %2$@。";
-"%1$@ of %2$@ of listening left this month" = "本月剩餘聆聽時間：%1$@／%2$@";
+"%1$@ of %2$@ of listening left this week" = "本週聆聽時間剩餘 %1$@／共 %2$@";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
 "%1$@ re-shared %2$@." = "%1$@ 重新分享了 %2$@。";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "今天還可免費預覽 %@ 篇文章";
 "%@ is now following you." = "%@ 現在開始追蹤你。";
 "%@ left in this preview" = "此預覽還剩 %@";
+"%@ left this week" = "本週剩餘 %@";
 "%@ match" = "符合 %@ 項";
-"%@ minutes left this month" = "%@ 分鐘剩餘（本月）";
 "%@ opens" = "%@ 次開啟";
 "%@ or search" = "%@ 或搜尋";
 "%@ public comments" = "%@ 則公開留言";
@@ -496,7 +496,8 @@
 "List style" = "清單樣式";
 "Listen" = "聆聽";
 "Listen Settings" = "聆聽設定";
-"Listen to stories read aloud" = "聆聽語音朗讀的文章";
+"Listen to 1 hour of stories read aloud a week" = "每週聆聽朗讀文章最多 1 小時";
+"Listen to 10 hours of stories read aloud a week" = "每週聆聽朗讀文章最多 10 小時";
 "Listen to story" = "聆聽文章";
 "Listening isn't available right now." = "目前無法使用聆聽功能。";
 "Loading Google News topics..." = "正在載入 Google 新聞主題…";

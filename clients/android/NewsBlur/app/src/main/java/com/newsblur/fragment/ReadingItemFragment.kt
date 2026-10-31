@@ -1052,7 +1052,12 @@ class ReadingItemFragment :
     fun listenToStory() {
         val currentStory = story ?: return
         val reading = activity as? Reading
-        listenManager.listen(currentStory, reading?.listenQueue().orEmpty(), reading?.listenQueueName())
+        listenManager.listen(
+            currentStory,
+            reading?.listenQueue().orEmpty(),
+            reading?.listenQueueName(),
+            followsListOrder = reading?.listenFollowsListOrder() == true,
+        )
     }
 
     /** A paragraph tap from listenFollowAlong.js, through NewsblurWebview.java. */

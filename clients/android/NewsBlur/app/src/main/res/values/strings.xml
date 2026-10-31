@@ -1491,10 +1491,16 @@ people together to talk about the world.</string>
     <string name="listen_style_summary">Exaggerates the voice\'s style</string>
     <string name="listen_speaker_boost_summary">A clearer, closer sound</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">%1$d minute left this month</item>
-        <item quantity="other">%1$d minutes left this month</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">%1$s left this week</string>
     <string name="listen_resets_on">Resets %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">%1$d free story preview left today</item>
@@ -1518,5 +1524,6 @@ people together to talk about the world.</string>
     <string name="settings_listen_voices_summary">Pick a voice for each language and how it reads</string>
     <string name="settings_listen_delivery">Delivery</string>
     <string name="settings_listen_speed">Playback speed</string>
-    <string name="archive_listen">Listen to stories read aloud</string>
+    <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
+    <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
 </resources>

@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@フォルダー、%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@フォルダー、折りたたみ済み、%2$@";
 "%1$@ followed %2$@." = "%1$@さんが%2$@さんをフォローしました。";
-"%1$@ of %2$@ of listening left this month" = "今月の読み上げ残り：%1$@ / %2$@";
+"%1$@ of %2$@ of listening left this week" = "今週の聴取可能時間は%1$@／%2$@です";
 "%1$@ of %2$@ sites indexed" = "%2$@件中%1$@件のサイトをインデックス済み";
 "%1$@ of %2$@ story previews used today" = "本日使用した記事のプレビュー：%1$@／%2$@";
 "%1$@ re-shared %2$@." = "%1$@が%2$@を再共有しました。";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "本日残り%@件の記事プレビューを無料で利用できます";
 "%@ is now following you." = "%@さんがあなたをフォローしました。";
 "%@ left in this preview" = "このプレビューの残り%@";
+"%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
-"%@ minutes left this month" = "今月の残り%@分";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
 "%@ public comments" = "公開コメント%@件";
@@ -496,7 +496,8 @@
 "List style" = "リストのスタイル";
 "Listen" = "聴く";
 "Listen Settings" = "読み上げ設定";
-"Listen to stories read aloud" = "記事の読み上げを聴く";
+"Listen to 1 hour of stories read aloud a week" = "読み上げ記事を週1時間聴取";
+"Listen to 10 hours of stories read aloud a week" = "読み上げ記事を週10時間聴取";
 "Listen to story" = "記事を聴く";
 "Listening isn't available right now." = "現在、読み上げは利用できません。";
 "Loading Google News topics..." = "Google ニュースのトピックを読み込み中...";

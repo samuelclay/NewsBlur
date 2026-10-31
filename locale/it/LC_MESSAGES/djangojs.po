@@ -293,6 +293,12 @@ msgstr[0] "%(count)s unione (%(categories)s categorie in %(count)s)"
 msgstr[1] "%(count)s unioni (%(categories)s categorie in %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuto"
+msgstr[1] "%(count)s minuti"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s minuto fa"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "%(duration)s rimanenti questa settimana"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Le notifiche di %(feed_title)s sono configurate"
 
@@ -557,12 +567,6 @@ msgstr[1] "%(indexed)s di %(count)s siti indicizzati. Indicizza i feed rimanenti
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Passa a un piano superiore per vedere gli articoli correlati di tutto il tuo archivio."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "%(minutes)s minuto rimasto questo mese"
-msgstr[1] "%(minutes)s minuti rimasti questo mese"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3882,8 +3886,11 @@ msgstr "Ascolta"
 msgid "Listen timed out. Try again in a moment."
 msgstr "L’ascolto è scaduto. Riprova tra poco."
 
-msgid "Listen to stories read aloud"
-msgstr "Ascolta gli articoli letti ad alta voce"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Ascolta 1 ora di articoli letti ad alta voce a settimana"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Ascolta 10 ore di articoli letti ad alta voce a settimana"
 
 msgid "Listen to story"
 msgstr "Ascolta l'articolo"
@@ -5648,8 +5655,8 @@ msgid "Reset to original favicon"
 msgstr "Ripristina la favicon originale"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Reimposta %(date)s"
+msgid "Resets %(day)s"
+msgstr "Si azzera %(day)s"
 
 msgid "Resetting..."
 msgstr "Ripristino..."

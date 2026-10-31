@@ -16,7 +16,12 @@ from apps.listen.text import (
     extract_paragraphs,
     truncate_segments,
 )
-from apps.listen.usage import SAMPLE_STORIES_PER_DAY, ListenUsageTracker
+from apps.listen.usage import (
+    ARCHIVE_WEEKLY_SECONDS,
+    PRO_WEEKLY_SECONDS,
+    SAMPLE_STORIES_PER_DAY,
+    ListenUsageTracker,
+)
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.social.models import MSharedStory, MSocialProfile
@@ -73,6 +78,57 @@ class Test_ListenText(SimpleTestCase):
         paragraphs = build_paragraphs("Big News", "<h1>Big News</h1><p>The body.</p>")
         self.assertEqual([paragraph["text"] for paragraph in paragraphs], ["Big News", "The body."])
         self.assertEqual(paragraphs[0]["kind"], "title")
+
+    def test_a_headline_repeated_after_a_byline_is_cut_and_the_excerpt_is_kept(self):
+        # Techmeme: the title ends with "(Author/Source)" and the body opens "Author / Source : Headline — excerpt".
+        title = (
+            "Sources: Meta built a prototype humanoid robot with Chinese firm Fourier in three months "
+            "(Jyoti Mann/The Information)"
+        )
+        html = (
+            "<p>Jyoti Mann / The Information : Sources: Meta built a prototype humanoid robot with Chinese "
+            "firm Fourier in three months \u2014 Meta Platforms has built a prototype humanoid with Fourier.</p>"
+        )
+        paragraphs = build_paragraphs(title, html)
+        # The full text stays so the clients can match the rendered paragraph; the voice reads the remainder.
+        self.assertEqual(len(paragraphs), 2)
+        self.assertTrue(paragraphs[1]["text"].startswith("Jyoti Mann / The Information : Sources: Meta"))
+        self.assertEqual(
+            paragraphs[1]["spoken"], "Meta Platforms has built a prototype humanoid with Fourier."
+        )
+        segments = build_segments(paragraphs)
+        self.assertEqual(segments[1]["text"], "Meta Platforms has built a prototype humanoid with Fourier.")
+
+    def test_a_headline_repeated_with_different_quotes_and_punctuation_is_still_dropped(self):
+        title = 'How AI detectors are changing writing: authors drop "delve", or add typos (Morgan Meaker/Bloomberg)'
+        html = "<p>Morgan Meaker / Bloomberg : How AI detectors are changing writing: authors drop \u201cdelve\u201d, or add typos</p><p>As AI transforms writing.</p>"
+        paragraphs = build_paragraphs(title, html)
+        self.assertEqual(
+            [paragraph["text"] for paragraph in paragraphs], [title, "As AI transforms writing."]
+        )
+
+    def test_a_first_sentence_that_repeats_the_title_reads_only_the_rest(self):
+        paragraphs = build_paragraphs(
+            "Big News Arrives Today", "<p>Big News Arrives Today. The body continues.</p>"
+        )
+        self.assertEqual(paragraphs[1]["text"], "Big News Arrives Today. The body continues.")
+        self.assertEqual(paragraphs[1]["spoken"], "The body continues.")
+
+    def test_a_short_title_inside_a_longer_first_sentence_is_left_alone(self):
+        paragraphs = build_paragraphs("Update", "<p>Update your drivers before the weekend.</p>")
+        self.assertEqual(
+            [paragraph["text"] for paragraph in paragraphs],
+            ["Update", "Update your drivers before the weekend."],
+        )
+        self.assertNotIn("spoken", paragraphs[1])
+
+    def test_a_title_repeated_after_a_short_byline_paragraph_is_dropped(self):
+        html = "<p>By Jane Doe</p><p>Big News Arrives Today</p><p>The body.</p>"
+        paragraphs = build_paragraphs("Big News Arrives Today", html)
+        self.assertEqual(
+            [paragraph["text"] for paragraph in paragraphs],
+            ["Big News Arrives Today", "By Jane Doe", "The body."],
+        )
 
     def test_segments_start_with_the_title_merge_short_paragraphs_and_split_long_ones(self):
         long_paragraph = " ".join(f"Sentence number {n} has a few words in it." for n in range(40))
@@ -284,8 +340,11 @@ class Test_ListenViews(ListenTestCase):
         denied = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         self.assertEqual(denied["reason"], "cap_reached")
         self.assertEqual(denied["usage"]["seconds_remaining"], 0)
+        self.assertEqual(denied["usage"]["seconds_limit"], ARCHIVE_WEEKLY_SECONDS)
+        self.assertEqual(denied["usage"]["period"], "week")
+        self.assertIn("this week", denied["message"])
 
-    def test_cached_stories_still_play_after_the_monthly_cap(self, configured):
+    def test_cached_stories_still_play_after_the_weekly_cap(self, configured):
         from apps.listen.manifest import load_manifest
 
         self.set_tier(premium=True, archive=True)
@@ -630,16 +689,70 @@ class Test_ListenUsageWindows(SimpleTestCase):
         user = SimpleNamespace(pk=1, profile=SimpleNamespace(timezone=timezone_name))
         return ListenUsageTracker(user)
 
-    def test_month_and_day_windows_start_at_local_midnight_across_dst(self):
+    def test_week_and_day_windows_start_at_local_midnight_across_dst(self):
         import pytz
 
         tracker = self.tracker("America/New_York")
-        # Nov 20 is after the fall-back change; the month still began at midnight EDT (04:00 UTC).
-        now = pytz.UTC.localize(datetime.datetime(2026, 11, 20, 15, 0))
-        start, end, _ = tracker.month_window(now=now)
+        # Weeks start on Sunday. Nov 1, 2026 is a Sunday and the night the clocks fall back, so the week began at
+        # midnight EDT (04:00 UTC) and the next one begins at midnight EST (05:00 UTC).
+        now = pytz.UTC.localize(datetime.datetime(2026, 11, 4, 15, 0))
+        start, end, reset_local = tracker.week_window(now=now)
         self.assertEqual(start, datetime.datetime(2026, 11, 1, 4, 0))
-        self.assertEqual(end, datetime.datetime(2026, 12, 1, 5, 0))
+        self.assertEqual(end, datetime.datetime(2026, 11, 8, 5, 0))
+        self.assertEqual(reset_local.date(), datetime.date(2026, 11, 8))
+        # Sunday itself starts a new week.
+        start, end, _ = tracker.week_window(now=pytz.UTC.localize(datetime.datetime(2026, 11, 8, 10, 0)))
+        self.assertEqual(start, datetime.datetime(2026, 11, 8, 5, 0))
+        self.assertEqual(end, datetime.datetime(2026, 11, 15, 5, 0))
+        # Saturday night in UTC is still Saturday in New York, so it belongs to the week that is ending.
+        start, _, _ = tracker.week_window(now=pytz.UTC.localize(datetime.datetime(2026, 11, 8, 3, 0)))
+        self.assertEqual(start, datetime.datetime(2026, 11, 1, 4, 0))
         # Mar 8, 2026 springs forward at 2am; that day still began at midnight EST (05:00 UTC).
         day_start, day_end = tracker.day_window(now=pytz.UTC.localize(datetime.datetime(2026, 3, 8, 20, 0)))
         self.assertEqual(day_start, datetime.datetime(2026, 3, 8, 5, 0))
         self.assertEqual(day_end, datetime.datetime(2026, 3, 9, 4, 0))
+
+    def test_weekly_limits_are_ten_hours_for_pro_and_one_hour_for_archive(self):
+        self.assertEqual(PRO_WEEKLY_SECONDS, 10 * 60 * 60)
+        self.assertEqual(ARCHIVE_WEEKLY_SECONDS, 60 * 60)
+
+    def test_durations_read_as_hours_and_minutes(self):
+        tracker = self.tracker("UTC")
+        self.assertEqual(tracker.format_duration(30 * 60), "30 minutes")
+        self.assertEqual(tracker.format_duration(60 * 60), "1 hour")
+        self.assertEqual(tracker.format_duration(90 * 60), "1 hour 30 minutes")
+        self.assertEqual(tracker.format_duration(10 * 60 * 60), "10 hours")
+
+    def test_cap_messages_name_the_week_and_the_reset_day(self):
+        from types import SimpleNamespace
+
+        archive = ListenUsageTracker(
+            SimpleNamespace(
+                pk=1, profile=SimpleNamespace(timezone="UTC", is_pro=False, is_archive=True, is_premium=True)
+            )
+        )
+        self.assertEqual(
+            archive.cap_message(),
+            "You've listened to 1 hour of stories this week. Listening resets on Sunday, "
+            "or upgrade to Premium Pro for 10 hours a week.",
+        )
+        self.assertIsNone(archive.upgrade_message())
+        pro = ListenUsageTracker(
+            SimpleNamespace(
+                pk=1, profile=SimpleNamespace(timezone="UTC", is_pro=True, is_archive=True, is_premium=True)
+            )
+        )
+        self.assertEqual(
+            pro.cap_message(), "You've listened to 10 hours of stories this week. Listening resets on Sunday."
+        )
+        free = ListenUsageTracker(
+            SimpleNamespace(
+                pk=1,
+                profile=SimpleNamespace(timezone="UTC", is_pro=False, is_archive=False, is_premium=False),
+            )
+        )
+        self.assertEqual(
+            free.upgrade_message(), "Premium Archive unlocks full stories read aloud, up to 1 hour a week."
+        )
+        self.assertEqual(pro.weekly_limit, PRO_WEEKLY_SECONDS)
+        self.assertEqual(archive.weekly_limit, ARCHIVE_WEEKLY_SECONDS)

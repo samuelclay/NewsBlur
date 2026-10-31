@@ -293,6 +293,12 @@ msgstr[0] "%(count)s Zusammenführung (%(categories)s Kategorien in %(count)s)"
 msgstr[1] "%(count)s Zusammenführungen (%(categories)s Kategorien in %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s Minute"
+msgstr[1] "%(count)s Minuten"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "vor %(count)s Minute"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Diese Woche noch %(duration)s übrig"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Benachrichtigungen für %(feed_title)s sind eingerichtet"
 
@@ -561,12 +571,6 @@ msgstr[1] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Führe ein Upgrade durch, um ähnliche Artikel aus deinem gesamten Archiv zu sehen."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Diesen Monat noch %(minutes)s Minute"
-msgstr[1] "Diesen Monat noch %(minutes)s Minuten"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3893,8 +3897,11 @@ msgstr "Anhören"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Zeitüberschreitung beim Anhören. Versuche es gleich noch einmal."
 
-msgid "Listen to stories read aloud"
-msgstr "Artikel vorlesen lassen"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Pro Woche 1 Stunde lang Artikel vorlesen lassen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Pro Woche 10 Stunden lang Artikel vorlesen lassen"
 
 msgid "Listen to story"
 msgstr "Artikel vorlesen"
@@ -5660,8 +5667,8 @@ msgid "Reset to original favicon"
 msgstr "Ursprüngliches Favicon wiederherstellen"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Wird zurückgesetzt: %(date)s"
+msgid "Resets %(day)s"
+msgstr "Wird am %(day)s zurückgesetzt"
 
 msgid "Resetting..."
 msgstr "Wird zurückgesetzt…"

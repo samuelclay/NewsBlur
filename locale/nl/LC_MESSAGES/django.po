@@ -111,6 +111,12 @@ msgstr[0] "%(count)d uur geleden"
 msgstr[1] "%(count)d uur geleden"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d minuut"
+msgstr[1] "%(count)d minuten"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d minuut geleden"
@@ -3225,6 +3231,12 @@ msgstr "Luisteren op het web, iPad, iPhone en Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Luisteren afgespeeld op een MacBook, iPad, iPhone en Android-telefoon"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
+
 msgid "Listen to stories read aloud"
 msgstr "Laat artikelen voorlezen"
 
@@ -4528,8 +4540,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive-abonnement"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Met Premium Archive kun je volledige artikelen laten voorlezen, tot %(limit)s per maand."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Met Premium Archive kun je volledige artikelen laten voorlezen, tot %(limit)s per week."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7285,15 +7297,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Je hebt deze maand naar %(limit)s artikelen geluisterd. Je luistertijd wordt op %(date)s gereset, of "
-"upgrade naar Premium Pro voor %(pro_limit)s per maand."
+"Je hebt deze week %(limit)s naar artikelen geluisterd. Je luistert weer vanaf %(day)s, of upgrade naar "
+"Premium Pro voor %(pro_limit)s per week."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Je hebt deze maand %(limit)s aan artikelen beluisterd. Je luistertijd wordt op %(date)s gereset."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Je hebt deze week %(limit)s naar artikelen geluisterd. Je luistert weer vanaf %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Je hebt alle stemvoorbeelden voor vandaag beluisterd. Je kunt ze vanaf middernacht opnieuw beluisteren."

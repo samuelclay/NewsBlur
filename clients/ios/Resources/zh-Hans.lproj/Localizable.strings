@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 文件夹，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 文件夹，已折叠，%2$@";
 "%1$@ followed %2$@." = "%1$@ 关注了 %2$@。";
-"%1$@ of %2$@ of listening left this month" = "本月还可收听 %1$@ / %2$@";
+"%1$@ of %2$@ of listening left this week" = "本周还剩 %1$@，共 %2$@ 收听时长";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 个网站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@ / %2$@ 次文章试听";
 "%1$@ re-shared %2$@." = "%1$@ 重新分享了 %2$@。";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "今天还剩 %@ 次免费文章试听";
 "%@ is now following you." = "%@ 开始关注你了。";
 "%@ left in this preview" = "此预览还剩 %@";
+"%@ left this week" = "本周还剩 %@";
 "%@ match" = "%@ 个匹配项";
-"%@ minutes left this month" = "本月还剩 %@ 分钟";
 "%@ opens" = "%@ 次打开";
 "%@ or search" = "%@ 或搜索";
 "%@ public comments" = "%@ 条公开评论";
@@ -496,7 +496,8 @@
 "List style" = "列表样式";
 "Listen" = "聆听";
 "Listen Settings" = "收听设置";
-"Listen to stories read aloud" = "收听朗读的文章";
+"Listen to 1 hour of stories read aloud a week" = "每周可收听 1 小时文章朗读";
+"Listen to 10 hours of stories read aloud a week" = "每周可收听 10 小时文章朗读";
 "Listen to story" = "收听文章";
 "Listening isn't available right now." = "目前无法收听。";
 "Loading Google News topics..." = "正在加载 Google 新闻主题…";

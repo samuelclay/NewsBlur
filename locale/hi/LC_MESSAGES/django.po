@@ -111,6 +111,12 @@ msgstr[0] "%(count)d घंटे पहले"
 msgstr[1] "%(count)d घंटे पहले"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d मिनट"
+msgstr[1] "%(count)d मिनट"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d मिनट पहले"
@@ -3206,6 +3212,12 @@ msgstr "वेब, iPad, iPhone और Android पर Listen करें"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "MacBook, iPad, iPhone और Android फ़ोन पर Listen चल रहा है"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
+
 msgid "Listen to stories read aloud"
 msgstr "ज़ोर से पढ़े जा रहे लेख सुनें"
 
@@ -4498,8 +4510,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive सदस्यता"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive से महीने में %(limit)s तक पूरे लेख सुनने की सुविधा मिलती है।"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive से पूरे लेखों को पढ़कर सुनने की सुविधा मिलती है, हर सप्ताह अधिकतम %(limit)s तक।"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7231,15 +7243,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"इस महीने आपने %(limit)s लेखों में से इतने लेख सुने हैं। सुनने की सीमा %(date)s को रीसेट होगी, या Premium "
-"Pro में अपग्रेड करें और हर महीने %(pro_limit)s सुनें।"
+"इस सप्ताह आपने %(limit)s लेख सुने हैं। सुनने का समय %(day)s रीसेट होगा, या सप्ताह में %(pro_limit)s के लिए "
+"Premium Pro में अपग्रेड करें।"
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "इस महीने आपने %(limit)s लेख सुने हैं। सुनने का समय %(date)s को रीसेट होगा।"
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "इस सप्ताह आपने %(limit)s लेख सुने हैं। सुनने का समय %(day)s रीसेट होगा।"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "आज के लिए आपने आवाज़ के सभी पूर्वावलोकन चला लिए हैं। ये आधी रात को रीसेट हो जाएँगे।"

@@ -1327,12 +1327,20 @@
     <string name="listen_style_summary">Wyolbrzymia styl głosu</string>
     <string name="listen_speaker_boost_summary">Wyraźniejszy, bliższy dźwięk</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">Pozostało %1$d minut w tym miesiącu</item>
-        <item quantity="many">Pozostało %1$d minut w tym miesiącu</item>
-        <item quantity="one">Pozostała %1$d minuta w tym miesiącu</item>
-        <item quantity="other">Pozostało w tym miesiącu %1$d minut</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d godziny</item>
+        <item quantity="many">%1$d godzin</item>
+        <item quantity="one">%1$d godzina</item>
+        <item quantity="other">%1$d godzin</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d minuty</item>
+        <item quantity="many">%1$d minut</item>
+        <item quantity="one">%1$d minutę</item>
+        <item quantity="other">%1$d minut</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Pozostało %1$s w tym tygodniu</string>
     <string name="listen_resets_on">Resetuje się %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Pozostało dziś %1$d bezpłatnych podglądów artykułów</item>
@@ -1360,5 +1368,6 @@
     <string name="settings_listen_voices_summary">Wybierz głos dla każdego języka i sposób czytania</string>
     <string name="settings_listen_delivery">Sposób przekazywania</string>
     <string name="settings_listen_speed">Szybkość odtwarzania</string>
-    <string name="archive_listen">Słuchaj artykułów czytanych na głos</string>
+    <string name="archive_listen">Słuchaj artykułów czytanych na głos przez 1 godzinę tygodniowo</string>
+    <string name="pro_listen">Słuchaj artykułów czytanych na głos przez 10 godzin tygodniowo</string>
 </resources>

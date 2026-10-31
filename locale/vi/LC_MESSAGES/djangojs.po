@@ -266,6 +266,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s mục được gộp (%(categories)s danh mục vào %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s phút"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s phút trước"
@@ -465,6 +470,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Còn %(duration)s trong tuần này"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Đã thiết lập thông báo %(feed_title)s"
 
@@ -495,11 +504,6 @@ msgstr[0] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Nâng cấp để xem các bài viết liên quan từ toàn bộ kho lưu trữ của bạn."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Còn %(minutes)s phút trong tháng này"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3786,8 +3790,11 @@ msgstr "Nghe"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Đã hết thời gian chờ khi nghe. Hãy thử lại sau ít phút."
 
-msgid "Listen to stories read aloud"
-msgstr "Nghe bài viết được đọc thành tiếng"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
 
 msgid "Listen to story"
 msgstr "Nghe bài viết"
@@ -5517,8 +5524,8 @@ msgid "Reset to original favicon"
 msgstr "Khôi phục favicon ban đầu"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Đặt lại sau %(date)s"
+msgid "Resets %(day)s"
+msgstr "Đặt lại %(day)s"
 
 msgid "Resetting..."
 msgstr "Đang đặt lại..."

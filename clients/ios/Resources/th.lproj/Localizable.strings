@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "โฟลเดอร์ %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "โฟลเดอร์ %1$@ ยุบอยู่ %2$@";
 "%1$@ followed %2$@." = "%1$@ ติดตาม %2$@";
-"%1$@ of %2$@ of listening left this month" = "เหลือเวลาฟังเดือนนี้ %1$@ จาก %2$@";
+"%1$@ of %2$@ of listening left this week" = "สัปดาห์นี้เหลือเวลาฟัง %1$@ จาก %2$@";
 "%1$@ of %2$@ sites indexed" = "จัดทำดัชนีแล้ว %1$@ จาก %2$@ เว็บไซต์";
 "%1$@ of %2$@ story previews used today" = "ใช้ตัวอย่างบทความไปแล้ว %1$@ จาก %2$@ รายการในวันนี้";
 "%1$@ re-shared %2$@." = "%1$@ แชร์ต่อ %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "วันนี้ยังดูตัวอย่างบทความฟรีได้อีก %@ ครั้ง";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ left in this preview" = "เหลือ %@ ในตัวอย่างนี้";
+"%@ left this week" = "เหลือ %@ ในสัปดาห์นี้";
 "%@ match" = "ตรงกัน %@ รายการ";
-"%@ minutes left this month" = "เหลือเวลาอีก %@ นาทีในเดือนนี้";
 "%@ opens" = "เปิด %@ ครั้ง";
 "%@ or search" = "%@ หรือค้นหา";
 "%@ public comments" = "%@ ความคิดเห็นสาธารณะ";
@@ -496,7 +496,8 @@
 "List style" = "รูปแบบรายการ";
 "Listen" = "ฟัง";
 "Listen Settings" = "การตั้งค่าการฟัง";
-"Listen to stories read aloud" = "ฟังบทความที่อ่านออกเสียง";
+"Listen to 1 hour of stories read aloud a week" = "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์";
+"Listen to 10 hours of stories read aloud a week" = "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์";
 "Listen to story" = "ฟังบทความ";
 "Listening isn't available right now." = "ยังไม่สามารถฟังได้ในขณะนี้";
 "Loading Google News topics..." = "กำลังโหลดหัวข้อ Google News...";

@@ -291,6 +291,12 @@ msgstr[0] "%(count)s penggabungan (%(categories)s kategori ke %(count)s)"
 msgstr[1] "%(count)s penggabungan (%(categories)s kategori menjadi %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s menit"
+msgstr[1] "%(count)s menit"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s menit yang lalu"
@@ -525,6 +531,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Sisa %(duration)s minggu ini"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Notifikasi %(feed_title)s telah disiapkan"
 
@@ -559,12 +569,6 @@ msgstr[1] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Tingkatkan untuk melihat artikel terkait dari seluruh arsip Anda."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Sisa %(minutes)s menit bulan ini"
-msgstr[1] "Sisa %(minutes)s menit bulan ini"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3880,8 +3884,11 @@ msgstr "Dengarkan"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Waktu untuk mendengarkan habis. Coba lagi sebentar lagi."
 
-msgid "Listen to stories read aloud"
-msgstr "Dengarkan artikel dibacakan"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
 
 msgid "Listen to story"
 msgstr "Dengarkan artikel"
@@ -5636,8 +5643,8 @@ msgid "Reset to original favicon"
 msgstr "Kembalikan favicon asli"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Direset %(date)s"
+msgid "Resets %(day)s"
+msgstr "Direset %(day)s"
 
 msgid "Resetting..."
 msgstr "Mengatur ulang..."

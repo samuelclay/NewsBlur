@@ -1255,9 +1255,14 @@
     <string name="listen_style_summary">เน้นสไตล์ของเสียงให้ชัดเจนขึ้น</string>
     <string name="listen_speaker_boost_summary">เสียงชัดเจนและใกล้ยิ่งขึ้น</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">เดือนนี้เหลือเวลาอีก %1$d นาที</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d ชั่วโมง</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d นาที</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">เหลือ %1$s ในสัปดาห์นี้</string>
     <string name="listen_resets_on">รีเซ็ต %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">วันนี้เหลือตัวอย่างบทความฟรี %1$d รายการ</item>
@@ -1279,5 +1284,6 @@
     <string name="settings_listen_voices_summary">เลือกเสียงสำหรับแต่ละภาษาและรูปแบบการอ่าน</string>
     <string name="settings_listen_delivery">การนำเสนอ</string>
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
-    <string name="archive_listen">ฟังบทความแบบอ่านออกเสียง</string>
+    <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์</string>
+    <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
 </resources>

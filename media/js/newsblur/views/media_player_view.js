@@ -14,6 +14,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     SVG_PAUSE: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>',
     SVG_SKIP_BACK: '<svg viewBox="0 0 24 24"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>',
     SVG_SKIP_FORWARD: '<svg viewBox="0 0 24 24"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>',
+    // Next story, shown while a story is read aloud: the first Listen item in Up Next, else the
+    // next story down the list (see listen_next_story_item)
+    SVG_SKIP_NEXT: '<svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>',
     // Volume icons: mute (X), low (1 arc), medium (2 arcs), high (3 arcs)
     SVG_VOLUME_MUTE: '<svg viewBox="0 0 24 24"><path d="M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>',
     SVG_VOLUME_LOW: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>',
@@ -40,6 +43,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         'click .NB-media-player-play-pause': 'toggle_play_pause',
         'click .NB-media-player-skip-back': 'skip_back',
         'click .NB-media-player-skip-forward': 'skip_forward',
+        'click .NB-media-player-next': 'listen_play_next',
         'click .NB-media-player-close': 'close_player',
         'click .NB-media-player-speed': 'cycle_speed',
         'click .NB-media-player-title': 'scroll_to_story',
@@ -98,6 +102,13 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.listen_loading = false;
         this.listen_loading_timer = null;
         this.listen_text_view_story_hash = null;
+        // media_player_view.js: What plays after the current story depends on the story list, so
+        // a new list or stories being marked read refresh the Next story button and the
+        // "Then from" stories under Up Next.
+        if (NEWSBLUR.assets && NEWSBLUR.assets.stories) {
+            this.listenTo(NEWSBLUR.assets.stories, 'reset change:read_status',
+                _.debounce(_.bind(this.refresh_listen_upcoming, this), 250));
+        }
     },
 
     // ================
@@ -230,6 +241,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '<div class="NB-media-player-skip-back" title="' + _.escape(this.skip_back_title()) + '">' + this.SVG_SKIP_BACK + '</div>';
         html += '<div class="NB-media-player-play-pause" title="' + _.escape(gettext('Play/Pause')) + '">' + (this.is_playing ? this.SVG_PAUSE : this.SVG_PLAY) + '</div>';
         html += '<div class="NB-media-player-skip-forward" title="' + _.escape(this.skip_forward_title()) + '">' + this.SVG_SKIP_FORWARD + '</div>';
+        if (this.is_listen()) {
+            html += '<div class="NB-media-player-next' + (this.listen_next_story_item() ? '' : ' NB-disabled') + '" title="' + _.escape(gettext('Next story')) + '">' + this.SVG_SKIP_NEXT + '</div>';
+        }
         html += '</div>';
         html += '<div class="NB-media-player-time">';
         html += '<span class="NB-media-player-time-current">' + this.format_time(this.current_position) + '</span>';
@@ -829,10 +843,12 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             self.skip_back();
         });
         navigator.mediaSession.setActionHandler('nexttrack', function () {
-            if (self.queue.length > 0) {
+            // media_player_view.js: A story read aloud goes to the next story, the same one the
+            // Next story button plays. Podcasts and videos play what's queued, else skip ahead.
+            if (self.is_listen()) {
+                if (!self.listen_play_next()) self.skip_forward();
+            } else if (self.queue.length > 0) {
                 self.play_next();
-            } else if (self.is_listen()) {
-                if (!self.listen_play_next_story(self.current_media)) self.skip_forward();
             } else {
                 self.skip_forward();
             }
@@ -2068,8 +2084,10 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         return true;
     },
 
-    // media_player_view.js: The unread stories after the one being read, in list order, then any
-    // unread ones above it. Stories already in Up Next are left out, since they play from there.
+    // media_player_view.js: The stories after the one being read, in visible list order and never
+    // the ones above it. Only unread stories count, except in Saved Stories and Read Stories,
+    // where everything is read and the list order stands as is. Stories already in Up Next are
+    // left out, since they play from there. The iOS and Android players follow the same order.
     listen_next_stories: function (story_hash, limit) {
         var stories = NEWSBLUR.assets.stories;
         if (!stories || !story_hash) return [];
@@ -2080,16 +2098,53 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         var queued = _.pluck(_.filter(this.queue, function (item) {
             return item.media_type === 'listen';
         }), 'story_hash');
-        var candidates = _.filter(visible.slice(anchor + 1).concat(visible.slice(0, Math.max(0, anchor))), function (story) {
+        var ignore_read_status = this.listen_list_is_all_read();
+        var candidates = _.filter(visible.slice(anchor + 1), function (story) {
             var hash = story.get('story_hash');
-            return !story.get('read_status') && hash !== story_hash && !_.contains(queued, hash);
+            if (hash === story_hash || _.contains(queued, hash)) return false;
+            return ignore_read_status || !story.get('read_status');
         });
         return candidates.slice(0, limit);
+    },
+
+    // media_player_view.js: Saved Stories and Read Stories hold nothing but read stories, so the
+    // unread filter would leave auto-continue nothing to play from them.
+    listen_list_is_all_read: function () {
+        var reader = NEWSBLUR.reader;
+        if (!reader) return false;
+        return !!(reader.flags && reader.flags['starred_view']) || reader.active_feed === 'read';
     },
 
     listen_upcoming_stories: function (limit) {
         if (!this.is_listen() || !this.listen_pref_enabled('listen_auto_continue')) return [];
         return this.listen_next_stories(this.current_media.story_hash, limit);
+    },
+
+    // media_player_view.js: What the Next story button and the system's next-track control play:
+    // the first Listen item in Up Next, else the story auto-continue would pick from the list.
+    listen_next_story_item: function () {
+        if (!this.is_listen()) return null;
+        var current_hash = this.current_media.story_hash;
+        var queued = _.find(this.queue, function (item) {
+            return item.media_type === 'listen' && item.story_hash !== current_hash;
+        });
+        if (queued) return queued;
+        var next = _.first(this.listen_next_stories(current_hash, 1));
+        return next ? this.make_listen_item(next) : null;
+    },
+
+    listen_play_next: function (e) {
+        if (e) e.stopPropagation();
+        var next = this.listen_next_story_item();
+        if (!next) return false;
+        this.listen_follow_into(this.current_media, next.story_hash);
+        this.play_media(next);
+        return true;
+    },
+
+    refresh_listen_upcoming: function () {
+        if (!this.is_listen() || this.$el.hasClass('NB-hidden')) return;
+        this.render_queue();
     },
 
     // media_player_view.js: When the reader was following along with the story that finished, the
@@ -2106,6 +2161,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     listen_source_title: function () {
         var reader = NEWSBLUR.reader;
+        if (reader && reader.flags && reader.flags['starred_view']) return gettext('Saved Stories');
+        if (reader && reader.active_feed === 'read') return gettext('Read Stories');
         if (reader && reader.flags && reader.flags.river_view && !reader.flags.social_view) {
             var folder = reader.active_folder;
             var folder_title = folder && folder.get && folder.get('folder_title');
@@ -2233,6 +2290,15 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         if (NEWSBLUR.ListenFollowAlong) {
             NEWSBLUR.ListenFollowAlong.set_playing(is_playing);
         }
+        this.update_listen_next_button();
+    },
+
+    // media_player_view.js: The Next story button dims when neither Up Next nor the list has
+    // another story to read aloud.
+    update_listen_next_button: function () {
+        var $next = this.$('.NB-media-player-next');
+        if (!$next.length) return;
+        $next.toggleClass('NB-disabled', !this.listen_next_story_item());
     },
 
     open_listen_settings: function (e) {

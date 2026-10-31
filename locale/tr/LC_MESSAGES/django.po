@@ -106,6 +106,11 @@ msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d saat önce"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d dakika"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d dakika önce"
@@ -3200,6 +3205,12 @@ msgstr "Web'de, iPad, iPhone ve Android'de dinleyin"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Dinle, MacBook, iPad, iPhone ve Android telefonda çalışırken"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Haftada 1 saat haberleri sesli dinleyin"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Haftada 10 saat haberleri sesli dinleyin"
+
 msgid "Listen to stories read aloud"
 msgstr "Haberleri sesli dinleyin"
 
@@ -4503,8 +4514,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive aboneliği"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive, ayda %(limit)s'a kadar haberin tamamının sesli okunmasını sağlar."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive, haftada %(limit)s kadar haberi sesli dinlemenizi sağlar."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7255,15 +7266,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Bu ay %(limit)s haber dinlediniz. Dinleme hakkınız %(date)s tarihinde sıfırlanır veya ayda %(pro_limit)s "
-"karşılığında Premium Pro'ya yükseltin."
+"Bu hafta %(limit)s haber dinlediniz. Dinleme süreniz %(day)s tarihinde sıfırlanır veya haftada "
+"%(pro_limit)s karşılığında Premium Pro'ya yükseltin."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Bu ay haberlerin %(limit)s kadarını dinlediniz. Dinleme hakkınız %(date)s tarihinde yenilenir."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Bu hafta %(limit)s haber dinlediniz. Dinleme süreniz %(day)s tarihinde sıfırlanır."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Bugün tüm ses önizlemelerinizi kullandınız. Önizleme hakkınız gece yarısı sıfırlanır."

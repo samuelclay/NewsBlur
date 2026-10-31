@@ -1,7 +1,8 @@
 """Listen limits by plan (apps/listen/usage.py).
 
-Premium Pro and Premium Archive users get full stories up to a monthly cap of estimated audio time, counting
-only audio generated fresh for them (cached segments are free). Everyone else gets a 30 second sample of up to
+Premium Pro and Premium Archive users get full stories up to a weekly cap of estimated audio time, counting
+only audio generated fresh for them (cached segments are free). Weeks start on Sunday at midnight in the
+account's timezone. Everyone else gets a 30 second sample of up to
 three different stories a day, and a daily budget of fresh preview audio so rebuilding a story with other voices
 can't generate without end. Voice previews have a separate daily allowance.
 """
@@ -14,8 +15,10 @@ from django.utils.translation import gettext, ngettext
 
 from .models import MListenUsage
 
-PRO_MONTHLY_SECONDS = 10 * 60 * 60
-ARCHIVE_MONTHLY_SECONDS = 2 * 60 * 60
+PRO_WEEKLY_SECONDS = 10 * 60 * 60
+ARCHIVE_WEEKLY_SECONDS = 1 * 60 * 60
+# Python's weekday() counts Monday as 0; Listen's week starts on Sunday (6).
+WEEK_START_WEEKDAY = 6
 SAMPLE_STORIES_PER_DAY = 3
 SAMPLE_SECONDS = 30
 # Fresh preview audio a non-Archive user can cause in a day: their three samples, plus room to try other voices.
@@ -45,8 +48,8 @@ class ListenUsageTracker:
         return self.tier in ("pro", "archive")
 
     @property
-    def monthly_limit(self):
-        return {"pro": PRO_MONTHLY_SECONDS, "archive": ARCHIVE_MONTHLY_SECONDS}.get(self.tier)
+    def weekly_limit(self):
+        return {"pro": PRO_WEEKLY_SECONDS, "archive": ARCHIVE_WEEKLY_SECONDS}.get(self.tier)
 
     @property
     def previews_limit(self):
@@ -75,15 +78,18 @@ class ListenUsageTracker:
         end = self._local_midnight(today + datetime.timedelta(days=1))
         return self._to_utc(start), self._to_utc(end)
 
-    def month_window(self, now=None):
-        first = self._local_now(now).date().replace(day=1)
-        start = self._local_midnight(first)
-        end = self._local_midnight((first + datetime.timedelta(days=32)).replace(day=1))
+    def week_window(self, now=None):
+        """(start_utc, end_utc, reset_local): the week containing `now`, Sunday to Sunday at the user's midnight."""
+        today = self._local_now(now).date()
+        days_since_sunday = (today.weekday() - WEEK_START_WEEKDAY) % 7
+        sunday = today - datetime.timedelta(days=days_since_sunday)
+        start = self._local_midnight(sunday)
+        end = self._local_midnight(sunday + datetime.timedelta(days=7))
         return self._to_utc(start), self._to_utc(end), end
 
     # Counters -----------------------------------------------------------------
     def seconds_used(self):
-        start, end, _ = self.month_window()
+        start, end, _ = self.week_window()
         result = MListenUsage._get_collection().aggregate(
             [
                 {
@@ -144,7 +150,7 @@ class ListenUsageTracker:
     def check_story(self, story_hash):
         """(allowed, reason, message) for starting to listen to a story.
 
-        Premium Archive and Pro users can always open a story. Their monthly cap only limits fresh audio, so
+        Premium Archive and Pro users can always open a story. Their weekly cap only limits fresh audio, so
         check_segment() enforces it on each uncached segment and stories already cached keep playing past it.
         """
         if self.is_archive_tier:
@@ -158,7 +164,7 @@ class ListenUsageTracker:
         """(allowed, reason, message) for one segment. Checked again here, not just when the manifest was made,
         because manifests can be made for many stories before any of them is played."""
         if self.is_archive_tier:
-            if not cached and self.seconds_used() >= self.monthly_limit:
+            if not cached and self.seconds_used() >= self.weekly_limit:
                 return False, "cap_reached", self.cap_message()
             return True, None, None
         allowed, reason, message = self.check_story(story_hash)
@@ -222,29 +228,37 @@ class ListenUsageTracker:
         ).save()
 
     # Messages -----------------------------------------------------------------
-    def _hours(self, seconds):
-        hours = seconds // 3600
-        return ngettext("%(count)d hour", "%(count)d hours", hours) % {"count": hours}
+    def format_duration(self, seconds):
+        """ "30 minutes", "1 hour", "1 hour 30 minutes": whole hours and minutes, dropping a zero part."""
+        hours, remainder = divmod(int(seconds), 3600)
+        minutes = remainder // 60
+        parts = []
+        if hours:
+            parts.append(ngettext("%(count)d hour", "%(count)d hours", hours) % {"count": hours})
+        if minutes or not hours:
+            parts.append(ngettext("%(count)d minute", "%(count)d minutes", minutes) % {"count": minutes})
+        return " ".join(parts)
 
-    def _reset_date(self):
-        _, _, reset_local = self.month_window()
-        return formats.date_format(reset_local.date(), "MONTH_DAY_FORMAT")
+    def _reset_day(self):
+        """The weekday the allowance comes back, e.g. "Sunday", in the user's language."""
+        _, _, reset_local = self.week_window()
+        return formats.date_format(reset_local.date(), "l")
 
     def cap_message(self):
         if self.tier == "pro":
             return gettext(
-                "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
+                "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
             ) % {
-                "limit": self._hours(PRO_MONTHLY_SECONDS),
-                "date": self._reset_date(),
+                "limit": self.format_duration(PRO_WEEKLY_SECONDS),
+                "day": self._reset_day(),
             }
         return gettext(
-            "You've listened to %(limit)s of stories this month. Listening resets on %(date)s, "
-            "or upgrade to Premium Pro for %(pro_limit)s a month."
+            "You've listened to %(limit)s of stories this week. Listening resets on %(day)s, "
+            "or upgrade to Premium Pro for %(pro_limit)s a week."
         ) % {
-            "limit": self._hours(ARCHIVE_MONTHLY_SECONDS),
-            "date": self._reset_date(),
-            "pro_limit": self._hours(PRO_MONTHLY_SECONDS),
+            "limit": self.format_duration(ARCHIVE_WEEKLY_SECONDS),
+            "day": self._reset_day(),
+            "pro_limit": self.format_duration(PRO_WEEKLY_SECONDS),
         }
 
     def sample_limit_message(self):
@@ -257,15 +271,15 @@ class ListenUsageTracker:
     def upgrade_message(self):
         if self.is_archive_tier:
             return None
-        return gettext("Premium Archive unlocks full stories read aloud, up to %(limit)s a month.") % {
-            "limit": self._hours(ARCHIVE_MONTHLY_SECONDS)
+        return gettext("Premium Archive unlocks full stories read aloud, up to %(limit)s a week.") % {
+            "limit": self.format_duration(ARCHIVE_WEEKLY_SECONDS)
         }
 
     # Snapshot -----------------------------------------------------------------
     def snapshot(self):
-        limit = self.monthly_limit
+        limit = self.weekly_limit
         used = self.seconds_used() if limit else 0
-        _, _, reset_local = self.month_window()
+        _, _, reset_local = self.week_window()
         samples_used = 0 if self.is_archive_tier else len(self.sampled_story_hashes())
         return {
             "tier": self.tier,
@@ -273,6 +287,8 @@ class ListenUsageTracker:
             "seconds_used": used,
             "seconds_limit": limit,
             "seconds_remaining": max(0, limit - used) if limit else None,
+            # The allowance window. Clients word the footer ("left this week") and the reset day from these.
+            "period": "week" if limit else None,
             "resets_at": reset_local.isoformat() if limit else None,
             "samples_used": samples_used,
             "samples_limit": None if self.is_archive_tier else SAMPLE_STORIES_PER_DAY,

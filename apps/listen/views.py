@@ -251,7 +251,7 @@ def _serve_segment(user, manifest, index, tracker):
     key = segment["cache_key"]
     already_charged = was_charged(user.pk, key)
     # Asked now rather than read from the manifest: audio cached since the manifest was built (this player's
-    # first pass, another listener) plays free, even past the monthly cap.
+    # first pass, another listener) plays free, even past the weekly cap.
     cached_now = bool(cached_segment(key))
     allowed, reason, message = tracker.check_segment(
         manifest["story_hash"], cached=cached_now or already_charged

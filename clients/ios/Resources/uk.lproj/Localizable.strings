@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Папка %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, згорнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ тепер стежить за %2$@.";
-"%1$@ of %2$@ of listening left this month" = "Залишилося %1$@ із %2$@ прослуховування";
+"%1$@ of %2$@ of listening left this week" = "Залишилося %1$@ із %2$@ прослуховування на цей тиждень";
 "%1$@ of %2$@ sites indexed" = "Проіндексовано сайтів: %1$@ із %2$@";
 "%1$@ of %2$@ story previews used today" = "Сьогодні використано попередніх прослуховувань статей: %1$@ із %2$@";
 "%1$@ re-shared %2$@." = "%1$@ повторно поширює %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "Сьогодні залишилося безкоштовних попередніх прослуховувань статей: %@";
 "%@ is now following you." = "Тепер %@ стежить за вами.";
 "%@ left in this preview" = "У попередньому прослуховуванні залишилося %@";
+"%@ left this week" = "Цього тижня залишилося %@";
 "%@ match" = "%@ збіг";
-"%@ minutes left this month" = "%@ хвилин залишилося цього місяця";
 "%@ opens" = "%@ відкриттів";
 "%@ or search" = "%@ або пошук";
 "%@ public comments" = "%@ публічних коментарів";
@@ -496,7 +496,8 @@
 "List style" = "Стиль списку";
 "Listen" = "Слухати";
 "Listen Settings" = "Налаштування прослуховування";
-"Listen to stories read aloud" = "Слухати статті вголос";
+"Listen to 1 hour of stories read aloud a week" = "Слухайте озвучення статей до 1 години на тиждень";
+"Listen to 10 hours of stories read aloud a week" = "Слухайте озвучення статей до 10 годин на тиждень";
 "Listen to story" = "Прослухати статтю";
 "Listening isn't available right now." = "Прослуховування зараз недоступне.";
 "Loading Google News topics..." = "Завантаження тем Google News...";

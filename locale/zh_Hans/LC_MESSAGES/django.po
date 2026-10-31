@@ -104,6 +104,11 @@ msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d 小时前"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d 分钟"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d 分钟前"
@@ -2954,6 +2959,12 @@ msgstr "在网页、iPad、iPhone 和 Android 上使用收听功能"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "收听功能正在 MacBook、iPad、iPhone 和 Android 手机上播放"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "每周可收听 1 小时文章朗读"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "每周可收听 10 小时文章朗读"
+
 msgid "Listen to stories read aloud"
 msgstr "收听朗读的文章"
 
@@ -4115,8 +4126,8 @@ msgid "Premium Archive subscription"
 msgstr "高级归档版订阅"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "高级归档版可解锁完整文章朗读，每月最多 %(limit)s。"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "高级归档版可解锁文章全文朗读，每周最多 %(limit)s。"
 
 msgid "Premium Pro"
 msgstr "高级专业版"
@@ -6626,13 +6637,13 @@ msgstr "感谢你帮忙宣传 NewsBlur，你获得了 <b>%(credit_text)s</b> 的
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
-msgstr "本月你已收听 %(limit)s 篇文章。收听次数将于 %(date)s 重置，或升级到高级专业版，每月 %(pro_limit)s。"
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
+msgstr "你本周已收听 %(limit)s 的文章。收听时长将在 %(day)s 重置，或升级到高级专业版，每周仅需 %(pro_limit)s。"
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "本月你已收听 %(limit)s 篇文章。收听次数将于 %(date)s 重置。"
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "你本周已收听 %(limit)s 的文章。收听时长将在 %(day)s 重置。"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "你今天已用完所有语音试听次数。次数将在午夜重置。"

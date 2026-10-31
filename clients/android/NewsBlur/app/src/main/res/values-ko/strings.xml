@@ -1255,9 +1255,14 @@
     <string name="listen_style_summary">음성 스타일을 과장합니다</string>
     <string name="listen_speaker_boost_summary">더 선명하고 가까운 소리</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">이번 달 남은 시간: %1$d분</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d시간</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d분</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">이번 주에 %1$s 남음</string>
     <string name="listen_resets_on">%1$s에 초기화</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">오늘 무료 스토리 미리보기가 %1$d회 남았습니다</item>
@@ -1279,5 +1284,6 @@
     <string name="settings_listen_voices_summary">언어별 음성과 읽기 방식을 선택하세요</string>
     <string name="settings_listen_delivery">전달 방식</string>
     <string name="settings_listen_speed">재생 속도</string>
-    <string name="archive_listen">스토리를 소리 내어 읽어 주기</string>
+    <string name="archive_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용</string>
+    <string name="pro_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용</string>
 </resources>

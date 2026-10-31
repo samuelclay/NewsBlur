@@ -1327,12 +1327,20 @@
     <string name="listen_style_summary">Підкреслює особливості стилю голосу</string>
     <string name="listen_speaker_boost_summary">Чіткіше й об’ємніше звучання</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">Залишилося хвилин на цей місяць: %1$d</item>
-        <item quantity="many">Залишилося %1$d хвилин цього місяця</item>
-        <item quantity="one">%1$d хвилину залишилося цього місяця</item>
-        <item quantity="other">Цього місяця залишилося %1$d хвилин</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d години</item>
+        <item quantity="many">%1$d годин</item>
+        <item quantity="one">%1$d година</item>
+        <item quantity="other">%1$d годин</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d хвилини</item>
+        <item quantity="many">%1$d хвилин</item>
+        <item quantity="one">%1$d хвилина</item>
+        <item quantity="other">%1$d хвилин</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Залишилося на цей тиждень: %1$s</string>
     <string name="listen_resets_on">Скидається %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Сьогодні залишилося безкоштовних попередніх переглядів статей: %1$d</item>
@@ -1360,5 +1368,6 @@
     <string name="settings_listen_voices_summary">Виберіть голос для кожної мови та спосіб читання</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Швидкість відтворення</string>
-    <string name="archive_listen">Слухати статті вголос</string>
+    <string name="archive_listen">Слухайте озвучення статей до 1 години на тиждень</string>
+    <string name="pro_listen">Слухайте озвучення статей до 10 годин на тиждень</string>
 </resources>

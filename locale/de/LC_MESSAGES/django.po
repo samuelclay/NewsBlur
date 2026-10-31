@@ -111,6 +111,12 @@ msgstr[0] "vor %(count)d Stunde"
 msgstr[1] "vor %(count)d Stunden"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d Minute"
+msgstr[1] "%(count)d Minuten"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "vor %(count)d Minute"
@@ -3257,6 +3263,12 @@ msgstr "„Vorlesen“ im Web, auf iPad, iPhone und Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "„Vorlesen“ läuft auf einem MacBook, iPad, iPhone und Android-Smartphone."
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Pro Woche 1 Stunde lang Artikel vorlesen lassen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Pro Woche 10 Stunden lang Artikel vorlesen lassen"
+
 msgid "Listen to stories read aloud"
 msgstr "Artikel vorlesen lassen"
 
@@ -4576,8 +4588,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium-Archive-Abonnement"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Mit Premium Archive kannst du dir pro Monat bis zu %(limit)s vollständige Artikel vorlesen lassen."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Mit Premium Archive kannst du vollständige Artikel vorlesen lassen, bis zu %(limit)s pro Woche."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7371,15 +7383,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Du hast diesen Monat %(limit)s Artikel angehört. Dein Hörkontingent wird am %(date)s zurückgesetzt. Oder "
-"upgrade für %(pro_limit)s pro Monat auf Premium Pro."
+"Du hast diese Woche %(limit)s Artikel angehört. Dein Hörkontingent wird am %(day)s zurückgesetzt. Oder "
+"upgrade auf Premium Pro für %(pro_limit)s pro Woche."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Du hast diesen Monat %(limit)s der Artikel angehört. Dein Kontingent wird am %(date)s zurückgesetzt."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Du hast diese Woche %(limit)s Artikel angehört. Dein Hörkontingent wird am %(day)s zurückgesetzt."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Du hast alle Sprachvorschauen für heute abgespielt. Sie werden um Mitternacht zurückgesetzt."

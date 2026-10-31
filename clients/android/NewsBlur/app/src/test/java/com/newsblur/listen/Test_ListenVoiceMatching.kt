@@ -2,11 +2,8 @@ package com.newsblur.listen
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.Locale
-import java.util.TimeZone
 
 /** Test_ListenVoiceMatching.kt covers the voice picker's client-side filters and its one combined list. */
 class Test_ListenVoiceMatching {
@@ -66,34 +63,5 @@ class Test_ListenVoiceMatching {
         assertEquals(listOf("d"), state.recommended.map { it.voiceId })
         assertEquals(listOf("l"), state.moreVoices.map { it.voiceId })
         assertTrue(state.hasFilters)
-    }
-
-    // android.text.format.DateFormat picks these per locale on a device; here they're given directly.
-    private val usMonthDay = "MMM d"
-
-    @Test
-    fun test_reset_dates_read_iso_timestamps() {
-        assertEquals("Nov 1", listenResetDate("2026-11-01T00:00:00+00:00", Locale.US, usMonthDay))
-        assertEquals("Nov 1", listenResetDate("2026-11-01T00:00:00Z", Locale.US, usMonthDay))
-        assertNull(listenResetDate("soon", Locale.US, usMonthDay))
-        assertNull(listenResetDate(null, Locale.US, usMonthDay))
-    }
-
-    @Test
-    fun test_reset_dates_follow_the_locales_date_order() {
-        assertEquals("1. Nov.", listenResetDate("2026-11-01T00:00:00Z", Locale.GERMANY, "d. MMM"))
-    }
-
-    @Test
-    fun test_reset_date_is_the_accounts_date_not_the_devices() {
-        // The allowance resets at midnight in the account's timezone (apps/listen/usage.py), so an Eastern
-        // account shows Nov 1 whatever timezone the phone is in, like the web does.
-        val deviceZone = TimeZone.getDefault()
-        try {
-            TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"))
-            assertEquals("Nov 1", listenResetDate("2026-11-01T00:00:00-04:00", Locale.US, usMonthDay))
-        } finally {
-            TimeZone.setDefault(deviceZone)
-        }
     }
 }

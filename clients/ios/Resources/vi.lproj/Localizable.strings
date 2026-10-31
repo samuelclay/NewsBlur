@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Thư mục %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Thư mục %1$@, đã thu gọn, %2$@";
 "%1$@ followed %2$@." = "%1$@ đã theo dõi %2$@.";
-"%1$@ of %2$@ of listening left this month" = "Còn %1$@ trên tổng %2$@ thời lượng nghe trong tháng này";
+"%1$@ of %2$@ of listening left this week" = "Còn %1$@ trong tổng số %2$@ thời lượng nghe của tuần này";
 "%1$@ of %2$@ sites indexed" = "Đã lập chỉ mục %1$@ trên %2$@ trang web";
 "%1$@ of %2$@ story previews used today" = "Đã dùng %1$@ trên %2$@ lượt nghe thử bài viết hôm nay";
 "%1$@ re-shared %2$@." = "%1$@ đã chia sẻ lại %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "Hôm nay bạn còn %@ lượt nghe thử bài viết miễn phí";
 "%@ is now following you." = "%@ hiện đang theo dõi bạn.";
 "%@ left in this preview" = "Còn %@ trong bản xem trước này";
+"%@ left this week" = "Còn %@ trong tuần này";
 "%@ match" = "%@ kết quả phù hợp";
-"%@ minutes left this month" = "Còn %@ phút trong tháng này";
 "%@ opens" = "%@ lượt mở";
 "%@ or search" = "%@ hoặc tìm kiếm";
 "%@ public comments" = "%@ bình luận công khai";
@@ -496,7 +496,8 @@
 "List style" = "Kiểu danh sách";
 "Listen" = "Nghe";
 "Listen Settings" = "Cài đặt nghe";
-"Listen to stories read aloud" = "Nghe đọc bài viết thành tiếng";
+"Listen to 1 hour of stories read aloud a week" = "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần";
+"Listen to 10 hours of stories read aloud a week" = "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần";
 "Listen to story" = "Nghe bài viết";
 "Listening isn't available right now." = "Hiện không thể nghe.";
 "Loading Google News topics..." = "Đang tải các chủ đề Google News...";

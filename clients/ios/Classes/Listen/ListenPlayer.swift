@@ -77,7 +77,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var isLoadingManifest = false
     private var pendingJumpParagraph: Int?
     /// Scrubbing and skips wait for the position to settle before asking for audio, since each segment requested
-    /// counts against the monthly allowance.
+    /// counts against the weekly allowance (apps/listen/usage.py).
     private var seekSettleWork: DispatchWorkItem?
     private var isSettlingSeek = false
     private var generation = 0
@@ -450,18 +450,28 @@ final class ListenPlayer: NSObject, ObservableObject {
         }
     }
 
-    /// The unread stories after this one in the story list being read.
+    /// The stories auto-continue and Next story move on to: the ones after this one in the story list being read,
+    /// in the list's own order. Feeds and folders keep only their unread stories; Saved Stories and Read Stories
+    /// hold stories that are already read, so there every following story counts. Nothing before the current
+    /// story is ever played.
     func upNextStories(limit: Int) -> [[String: Any]] {
         guard let hash = storyHash, let collection = appDelegate?.storiesCollection else { return [] }
+        return Self.upNextStories(after: hash, in: collection, limit: limit)
+    }
+
+    /// ListenPlayer.swift: `collection.isSavedView` covers Saved Stories, a saved tag and saved searches
+    /// (NewsBlurAppDelegate.m), `isReadView` Read Stories; those follow the visible list without the unread filter.
+    static func upNextStories(after hash: String, in collection: StoriesCollection, limit: Int) -> [[String: Any]] {
         let location = collection.location(ofStoryId: hash)
         let locations = (collection.activeFeedStoryLocations as NSArray?) as? [NSNumber] ?? []
         let stories = collection.activeFeedStories ?? []
-        guard location >= 0, location < locations.count else { return [] }
+        guard location >= 0, location < locations.count, limit > 0 else { return [] }
+        let followsListOrder = collection.isSavedView || collection.isReadView
         var result: [[String: Any]] = []
         for position in (location + 1)..<locations.count {
             let index = locations[position].intValue
             guard index >= 0, index < stories.count, let story = stories[index] as? [AnyHashable: Any] else { continue }
-            if !collection.isStoryUnread(story) {
+            if !followsListOrder && !collection.isStoryUnread(story) {
                 continue
             }
             result.append(Self.stringKeyed(story))

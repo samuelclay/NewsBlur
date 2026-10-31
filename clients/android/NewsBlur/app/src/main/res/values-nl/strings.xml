@@ -1279,10 +1279,16 @@ om over de wereld te praten.</string>
     <string name="listen_style_summary">Overdrijft de stijl van de stem</string>
     <string name="listen_speaker_boost_summary">Een helderder, voller geluid</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">Nog %1$d minuut deze maand</item>
-        <item quantity="other">Deze maand nog %1$d minuten</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d uur</item>
+        <item quantity="other">%1$d uur</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d minuut</item>
+        <item quantity="other">%1$d minuten</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Nog %1$s over deze week</string>
     <string name="listen_resets_on">Wordt opnieuw ingesteld op %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">Je hebt vandaag nog %1$d gratis artikelvoorbeeld over</item>
@@ -1306,5 +1312,6 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
-    <string name="archive_listen">Artikelen laten voorlezen</string>
+    <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
+    <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
 </resources>

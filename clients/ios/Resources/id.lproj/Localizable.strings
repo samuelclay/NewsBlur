@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Folder %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Folder %1$@, diciutkan, %2$@";
 "%1$@ followed %2$@." = "%1$@ mengikuti %2$@.";
-"%1$@ of %2$@ of listening left this month" = "%1$@ dari %2$@ waktu mendengarkan tersisa bulan ini";
+"%1$@ of %2$@ of listening left this week" = "Sisa waktu mendengarkan minggu ini: %1$@ dari %2$@";
 "%1$@ of %2$@ sites indexed" = "%1$@ dari %2$@ situs telah diindeks";
 "%1$@ of %2$@ story previews used today" = "%1$@ dari %2$@ pratinjau artikel digunakan hari ini";
 "%1$@ re-shared %2$@." = "%1$@ membagikan ulang %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "Sisa pratinjau artikel gratis hari ini: %@";
 "%@ is now following you." = "%@ kini mengikuti Anda.";
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
+"%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
-"%@ minutes left this month" = "Sisa %@ menit bulan ini";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
 "%@ public comments" = "%@ komentar publik";
@@ -496,7 +496,8 @@
 "List style" = "Gaya daftar";
 "Listen" = "Dengarkan";
 "Listen Settings" = "Pengaturan Dengarkan";
-"Listen to stories read aloud" = "Dengarkan artikel yang dibacakan";
+"Listen to 1 hour of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 1 jam per minggu";
+"Listen to 10 hours of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 10 jam per minggu";
 "Listen to story" = "Dengarkan artikel";
 "Listening isn't available right now." = "Fitur mendengarkan sedang tidak tersedia.";
 "Loading Google News topics..." = "Memuat topik Google News...";

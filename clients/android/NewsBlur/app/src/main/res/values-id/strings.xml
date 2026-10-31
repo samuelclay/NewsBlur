@@ -1255,9 +1255,14 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_style_summary">Melebih-lebihkan gaya suara</string>
     <string name="listen_speaker_boost_summary">Suara yang lebih jernih dan dekat</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">Sisa %1$d menit bulan ini</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d jam</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d menit</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Sisa %1$s minggu ini</string>
     <string name="listen_resets_on">Diatur ulang %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">Sisa %1$d pratinjau artikel gratis hari ini</item>
@@ -1279,5 +1284,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_voices_summary">Pilih suara untuk setiap bahasa dan cara membacakannya</string>
     <string name="settings_listen_delivery">Penyampaian</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
-    <string name="archive_listen">Dengarkan artikel dibacakan</string>
+    <string name="archive_listen">Dengarkan artikel yang dibacakan hingga 1 jam per minggu</string>
+    <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
 </resources>

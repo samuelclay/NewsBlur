@@ -317,6 +317,13 @@ msgstr[1] "%(count)s об’єднання (%(categories)s категорії у
 msgstr[2] "%(count)s об’єднань (%(categories)s категорій у %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s хвилина"
+msgstr[1] "%(count)s хвилини"
+msgstr[2] "%(count)s хвилин"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s хвилину тому"
@@ -586,6 +593,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Цього тижня залишилося %(duration)s"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Сповіщення %(feed_title)s налаштовано"
 
@@ -622,13 +633,6 @@ msgstr[2] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Перейдіть на платний план, щоб бачити пов’язані статті з усього архіву."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Залишилася %(minutes)s хвилина цього місяця"
-msgstr[1] "Залишилося %(minutes)s хвилини цього місяця"
-msgstr[2] "Залишилося %(minutes)s хвилин цього місяця"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3971,8 +3975,11 @@ msgstr "Прослухати"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Час очікування прослуховування вичерпано. Спробуйте ще раз трохи пізніше."
 
-msgid "Listen to stories read aloud"
-msgstr "Слухати статті вголос"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Слухайте озвучення статей до 1 години на тиждень"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Слухайте озвучення статей до 10 годин на тиждень"
 
 msgid "Listen to story"
 msgstr "Прослухати статтю"
@@ -5748,8 +5755,8 @@ msgid "Reset to original favicon"
 msgstr "Відновити оригінальну іконку сайту"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Скидається %(date)s"
+msgid "Resets %(day)s"
+msgstr "Скидання %(day)s"
 
 msgid "Resetting..."
 msgstr "Скидання..."

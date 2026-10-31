@@ -293,6 +293,12 @@ msgstr[0] "%(count)s samenvoeging (%(categories)s categorieën in %(count)s)"
 msgstr[1] "%(count)s samenvoegingen (%(categories)s categorieën naar %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuut"
+msgstr[1] "%(count)s minuten"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s minuut geleden"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Nog %(duration)s over deze week"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s-meldingen zijn ingesteld"
 
@@ -557,12 +567,6 @@ msgstr[1] "%(indexed)s van de %(count)s sites geïndexeerd. Indexeer de resteren
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Upgrade om verwante artikelen uit je volledige archief te bekijken."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "%(minutes)s minuut deze maand over"
-msgstr[1] "%(minutes)s minuten deze maand over"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3870,8 +3874,11 @@ msgstr "Luisteren"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Luisteren duurde te lang. Probeer het zo opnieuw."
 
-msgid "Listen to stories read aloud"
-msgstr "Artikelen laten voorlezen"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
 
 msgid "Listen to story"
 msgstr "Artikel voorlezen"
@@ -5632,8 +5639,8 @@ msgid "Reset to original favicon"
 msgstr "Terugzetten naar het oorspronkelijke favicon"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Wordt gereset op %(date)s"
+msgid "Resets %(day)s"
+msgstr "Wordt opnieuw ingesteld %(day)s"
 
 msgid "Resetting..."
 msgstr "Wordt gereset..."

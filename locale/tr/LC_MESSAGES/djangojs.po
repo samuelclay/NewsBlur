@@ -268,6 +268,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s birleştirme (%(categories)s kategori → %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s dakika"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s dakika önce"
@@ -467,6 +472,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Bu hafta %(duration)s kaldı"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s bildirimleri ayarlandı"
 
@@ -497,11 +506,6 @@ msgstr[0] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Arşivinizdeki ilgili haberleri görmek için yükseltin."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Bu ay %(minutes)s dakika kaldı"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3795,8 +3799,11 @@ msgstr "Dinle"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Dinleme zaman aşımına uğradı. Birazdan yeniden deneyin."
 
-msgid "Listen to stories read aloud"
-msgstr "Haberleri sesli dinleyin"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Haftada 1 saat haberleri sesli dinleyin"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Haftada 10 saat haberleri sesli dinleyin"
 
 msgid "Listen to story"
 msgstr "Haberi dinle"
@@ -5530,8 +5537,8 @@ msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "%(date)s sıfırlanıyor"
+msgid "Resets %(day)s"
+msgstr "%(day)s tarihinde sıfırlanır"
 
 msgid "Resetting..."
 msgstr "Sıfırlanıyor..."

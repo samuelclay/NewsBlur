@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "Cartella %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Cartella %1$@, compressa, %2$@";
 "%1$@ followed %2$@." = "%1$@ ha iniziato a seguire %2$@.";
-"%1$@ of %2$@ of listening left this month" = "Sono rimasti %1$@ su %2$@ di ascolto questo mese";
+"%1$@ of %2$@ of listening left this week" = "Ti restano %1$@ di %2$@ di ascolto questa settimana";
 "%1$@ of %2$@ sites indexed" = "%1$@ siti indicizzati su %2$@";
 "%1$@ of %2$@ story previews used today" = "%1$@ di %2$@ anteprime di articoli utilizzate oggi";
 "%1$@ re-shared %2$@." = "%1$@ ha ricondiviso %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "Ti restano %@ anteprime gratuite degli articoli per oggi";
 "%@ is now following you." = "%@ ora ti segue.";
 "%@ left in this preview" = "Ti restano %@ in questa anteprima";
+"%@ left this week" = "%@ rimanenti questa settimana";
 "%@ match" = "corrispondenza %@";
-"%@ minutes left this month" = "Ti restano %@ minuti questo mese";
 "%@ opens" = "%@ aperture";
 "%@ or search" = "%@ o cerca";
 "%@ public comments" = "%@ commenti pubblici";
@@ -496,7 +496,8 @@
 "List style" = "Stile elenco";
 "Listen" = "Ascolta";
 "Listen Settings" = "Impostazioni di ascolto";
-"Listen to stories read aloud" = "Ascolta gli articoli letti ad alta voce";
+"Listen to 1 hour of stories read aloud a week" = "Ascolta 1 ora di articoli letti ad alta voce a settimana";
+"Listen to 10 hours of stories read aloud a week" = "Ascolta 10 ore di articoli letti ad alta voce a settimana";
 "Listen to story" = "Ascolta l’articolo";
 "Listening isn't available right now." = "L’ascolto non è disponibile al momento.";
 "Loading Google News topics..." = "Caricamento degli argomenti di Google News...";

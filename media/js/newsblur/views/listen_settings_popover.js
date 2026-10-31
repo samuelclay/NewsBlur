@@ -581,6 +581,22 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         return Math.round(parseFloat(value) * 100) + '%';
     },
 
+    // listen_settings_popover.js: "9 hours 58 minutes", "45 minutes" or "1 hour". A zero part is
+    // dropped, except that nothing left still reads "0 minutes".
+    format_allowance: function (seconds) {
+        var total_minutes = Math.floor(Math.max(0, seconds) / 60);
+        var hours = Math.floor(total_minutes / 60);
+        var minutes = total_minutes % 60;
+        var pieces = [];
+        if (hours > 0) {
+            pieces.push(interpolate(ngettext('%(count)s hour', '%(count)s hours', hours), { count: hours }, true));
+        }
+        if (minutes > 0 || !pieces.length) {
+            pieces.push(interpolate(ngettext('%(count)s minute', '%(count)s minutes', minutes), { count: minutes }, true));
+        }
+        return pieces.join(' ');
+    },
+
     render_usage: function () {
         var usage = this.media_player.listen_usage || (this.voices_data && this.voices_data.usage);
         var $usage = this.$('.NB-listen-usage');
@@ -590,13 +606,15 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         var parts = [];
         if (usage.is_archive_tier) {
             if (_.isNumber(usage.seconds_remaining)) {
-                var minutes = Math.floor(usage.seconds_remaining / 60);
-                parts.push(interpolate(ngettext('%(minutes)s minute left this month',
-                    '%(minutes)s minutes left this month', minutes), { minutes: Inflector.commas(minutes) }, true));
+                parts.push(interpolate(gettext('%(duration)s left this week'), {
+                    duration: this.format_allowance(usage.seconds_remaining)
+                }, true));
+                // listen_settings_popover.js: The allowance comes back on Sunday (apps/listen/usage.py
+                // sends resets_at), so the footer names the weekday rather than a date.
                 var resets = usage.resets_at && new Date(usage.resets_at);
                 if (resets && !isNaN(resets.getTime())) {
-                    parts.push(interpolate(gettext('Resets %(date)s'), {
-                        date: resets.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                    parts.push(interpolate(gettext('Resets %(day)s'), {
+                        day: resets.toLocaleDateString(undefined, { weekday: 'long' })
                     }, true));
                 }
             }

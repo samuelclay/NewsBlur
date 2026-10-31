@@ -84,7 +84,7 @@ enum ListenFormat {
         return String(format: "%d:%02d", minutes, remainder)
     }
 
-    /// "2 hr 5 min" in the interface language, for monthly allowances.
+    /// "2 hr, 5 min" in the interface language, for the weekly allowance (apps/listen/usage.py).
     static func allowance(_ seconds: Double) -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = seconds >= 3600 ? [.hour, .minute] : [.minute]

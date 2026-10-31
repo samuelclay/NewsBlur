@@ -1327,12 +1327,20 @@
     <string name="listen_style_summary">Подчёркивает особенности стиля голоса</string>
     <string name="listen_speaker_boost_summary">Более чёткое и близкое звучание</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">Осталось минут в этом месяце: %1$d</item>
-        <item quantity="many">В этом месяце осталось %1$d минут</item>
-        <item quantity="one">В этом месяце осталась %1$d минута</item>
-        <item quantity="other">В этом месяце осталось %1$d минут</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d часа</item>
+        <item quantity="many">%1$d часов</item>
+        <item quantity="one">%1$d час</item>
+        <item quantity="other">%1$d часов</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d минуты</item>
+        <item quantity="many">%1$d минут</item>
+        <item quantity="one">%1$d минуту</item>
+        <item quantity="other">%1$d минут</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Осталось %1$s на этой неделе</string>
     <string name="listen_resets_on">Сброс: %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Сегодня осталось бесплатных предпрослушиваний статей: %1$d</item>
@@ -1360,5 +1368,6 @@
     <string name="settings_listen_voices_summary">Выберите голос для каждого языка и способ чтения</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Скорость воспроизведения</string>
-    <string name="archive_listen">Слушать статьи вслух</string>
+    <string name="archive_listen">Слушайте озвученные статьи до 1 часа в неделю</string>
+    <string name="pro_listen">Слушайте озвученные статьи до 10 часов в неделю</string>
 </resources>

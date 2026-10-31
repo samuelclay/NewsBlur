@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ folder, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ folder, collapsed, %2$@";
 "%1$@ followed %2$@." = "%1$@ followed %2$@.";
-"%1$@ of %2$@ of listening left this month" = "%1$@ of %2$@ of listening left this month";
+"%1$@ of %2$@ of listening left this week" = "%1$@ of %2$@ of listening left this week";
 "%1$@ of %2$@ sites indexed" = "%1$@ of %2$@ sites indexed";
 "%1$@ of %2$@ story previews used today" = "%1$@ of %2$@ story previews used today";
 "%1$@ re-shared %2$@." = "%1$@ re-shared %2$@.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "%@ free story previews left today";
 "%@ is now following you." = "%@ is now following you.";
 "%@ left in this preview" = "%@ left in this preview";
+"%@ left this week" = "%@ left this week";
 "%@ match" = "%@ match";
-"%@ minutes left this month" = "%@ minutes left this month";
 "%@ opens" = "%@ opens";
 "%@ or search" = "%@ or search";
 "%@ public comments" = "%@ public comments";
@@ -496,7 +496,8 @@
 "List style" = "List style";
 "Listen" = "Listen";
 "Listen Settings" = "Listen Settings";
-"Listen to stories read aloud" = "Listen to stories read aloud";
+"Listen to 1 hour of stories read aloud a week" = "Listen to 1 hour of stories read aloud a week";
+"Listen to 10 hours of stories read aloud a week" = "Listen to 10 hours of stories read aloud a week";
 "Listen to story" = "Listen to story";
 "Listening isn't available right now." = "Listening isn't available right now.";
 "Loading Google News topics..." = "Loading Google News topics...";

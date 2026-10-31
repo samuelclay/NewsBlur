@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@-map, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@-map, ingeklapt, %2$@";
 "%1$@ followed %2$@." = "%1$@ is %2$@ gaan volgen.";
-"%1$@ of %2$@ of listening left this month" = "%1$@ van %2$@ luisterminuten resterend deze maand";
+"%1$@ of %2$@ of listening left this week" = "Je hebt deze week nog %1$@ van de %2$@ luistertijd over";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
 "%1$@ re-shared %2$@." = "%1$@ heeft %2$@ opnieuw gedeeld.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "Vandaag nog %@ gratis artikelvoorbeelden";
 "%@ is now following you." = "%@ volgt je nu.";
 "%@ left in this preview" = "%@ over in deze preview";
+"%@ left this week" = "Nog %@ over deze week";
 "%@ match" = "%@ overeenkomst";
-"%@ minutes left this month" = "%@ minuten over deze maand";
 "%@ opens" = "%@ keer geopend";
 "%@ or search" = "%@ of zoeken";
 "%@ public comments" = "%@ openbare reacties";
@@ -496,7 +496,8 @@
 "List style" = "Lijststijl";
 "Listen" = "Luisteren";
 "Listen Settings" = "Luisterinstellingen";
-"Listen to stories read aloud" = "Laat artikelen voorlezen";
+"Listen to 1 hour of stories read aloud a week" = "Luister elke week 1 uur naar artikelen die worden voorgelezen";
+"Listen to 10 hours of stories read aloud a week" = "Luister elke week 10 uur naar artikelen die worden voorgelezen";
 "Listen to story" = "Artikel beluisteren";
 "Listening isn't available right now." = "Luisteren is nu niet beschikbaar.";
 "Loading Google News topics..." = "Google News-onderwerpen laden...";

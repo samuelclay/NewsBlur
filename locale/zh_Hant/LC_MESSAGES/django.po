@@ -104,6 +104,11 @@ msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d 小時前"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d 分鐘"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d 分鐘前"
@@ -2957,6 +2962,12 @@ msgstr "在網頁、iPad、iPhone 和 Android 上使用「聆聽」"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "「聆聽」正在 MacBook、iPad、iPhone 和 Android 手機上播放"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "每週聆聽朗讀文章最多 1 小時"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "每週聆聽朗讀文章最多 10 小時"
+
 msgid "Listen to stories read aloud"
 msgstr "聆聽語音朗讀的文章"
 
@@ -4114,8 +4125,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive 訂閱"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive 可解鎖完整文章朗讀，每月最多 %(limit)s。"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive 可解鎖完整文章朗讀，每週最多 %(limit)s。"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -6620,13 +6631,13 @@ msgstr "為了感謝你向他人推薦 NewsBlur，你獲得了 <b>%(credit_text)
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
-msgstr "你本月已聆聽 %(limit)s 篇文章。聆聽額度將於 %(date)s 重設，或升級至 Premium Pro，每月只需 %(pro_limit)s。"
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
+msgstr "你本週已聆聽 %(limit)s 篇文章。聆聽時間將於 %(day)s 重設，或升級至 Premium Pro，每週可聆聽 %(pro_limit)s。"
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "你這個月已聆聽 %(limit)s 篇文章。聆聽次數將於 %(date)s 重設。"
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "你本週已聆聽 %(limit)s 篇文章。聆聽時間將於 %(day)s 重設。"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "你今天已用完所有語音預覽次數。次數會在午夜重設。"

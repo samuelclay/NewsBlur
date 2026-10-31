@@ -109,6 +109,12 @@ msgstr[0] "לפני %(count)d שעה"
 msgstr[1] "לפני %(count)d שעות"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d דקה"
+msgstr[1] "%(count)d דקות"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "לפני %(count)d דקה"
@@ -3127,6 +3133,12 @@ msgstr "האזנה באינטרנט, ב־iPad, ב־iPhone וב־Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "האזנה פועלת ב־MacBook, ב־iPad, ב־iPhone ובטלפון Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "האזנה להקראה של כתבות במשך שעה בשבוע"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "האזנה להקראה של כתבות במשך 10 שעות בשבוע"
+
 msgid "Listen to stories read aloud"
 msgstr "האזנה לכתבות בהקראה"
 
@@ -4375,8 +4387,8 @@ msgid "Premium Archive subscription"
 msgstr "מינוי Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive מאפשר להאזין לכתבות המלאות, עד %(limit)s בחודש."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive מאפשר להאזין להקראה של כתבות מלאות, עד %(limit)s בשבוע."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7019,15 +7031,15 @@ msgstr "הרווחת <b>%(credit_text)s</b> של %(tier_name)s בחינם, כת�
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"האזנת ל־%(limit)s כתבות החודש. ההאזנה מתאפסת ב־%(date)s, או שאפשר לשדרג ל־Premium Pro תמורת %(pro_limit)s "
-"לחודש."
+"האזנת ל־%(limit)s מתוך מכסת הכתבות השבועית. המכסה מתאפסת ב־%(day)s, או לשדרג ל־Premium Pro תמורת "
+"%(pro_limit)s לשבוע."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "האזנת ל־%(limit)s מתוך הכתבות החודש. ההאזנה תתאפס ב־%(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "האזנת ל־%(limit)s מתוך מכסת הכתבות השבועית. המכסה מתאפסת ב־%(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "ניצלת את כל תצוגות הקול המקדימות להיום. הן מתאפסות בחצות."

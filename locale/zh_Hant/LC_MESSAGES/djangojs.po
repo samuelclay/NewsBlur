@@ -266,6 +266,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "%(count)s 個合併（將 %(categories)s 個分類合併至 %(count)s）"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s 分鐘"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s 分鐘前"
@@ -465,6 +470,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "本週剩餘 %(duration)s"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "已設定 %(feed_title)s 通知"
 
@@ -493,11 +502,6 @@ msgstr[0] "已索引 %(indexed)s / %(count)s 個網站。索引剩餘的訂閱�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s 升級即可查看整個封存中的相關文章。"
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "本月還剩 %(minutes)s 分鐘"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3729,8 +3733,11 @@ msgstr "聆聽"
 msgid "Listen timed out. Try again in a moment."
 msgstr "聆聽逾時。請稍後再試。"
 
-msgid "Listen to stories read aloud"
-msgstr "聆聽朗讀文章"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "每週聆聽朗讀文章最多 1 小時"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "每週聆聽朗讀文章最多 10 小時"
 
 msgid "Listen to story"
 msgstr "聆聽文章"
@@ -5438,8 +5445,8 @@ msgid "Reset to original favicon"
 msgstr "還原為原始網站圖示"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "重設時間：%(date)s"
+msgid "Resets %(day)s"
+msgstr "於 %(day)s 重設"
 
 msgid "Resetting..."
 msgstr "正在重設…"

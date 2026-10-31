@@ -10,7 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 폴더, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 폴더, 접힘, %2$@";
 "%1$@ followed %2$@." = "%1$@님이 %2$@님을 팔로우했습니다.";
-"%1$@ of %2$@ of listening left this month" = "이번 달 남은 듣기 시간 %1$@ / %2$@";
+"%1$@ of %2$@ of listening left this week" = "이번 주 청취 가능 시간 %1$@ 중 %2$@ 남음";
 "%1$@ of %2$@ sites indexed" = "%1$@ / %2$@개 사이트 색인 완료";
 "%1$@ of %2$@ story previews used today" = "오늘 사용한 스토리 미리보기 %1$@/%2$@회";
 "%1$@ re-shared %2$@." = "%1$@님이 %2$@을(를) 다시 공유했습니다.";
@@ -38,8 +38,8 @@
 "%@ free story previews left today" = "오늘 무료로 미리 들을 수 있는 스토리가 %@개 남았습니다";
 "%@ is now following you." = "%@님이 회원님을 팔로우하기 시작했습니다.";
 "%@ left in this preview" = "미리 보기에서 %@ 남음";
+"%@ left this week" = "이번 주에 %@ 남음";
 "%@ match" = "%@개 일치";
-"%@ minutes left this month" = "이번 달 남은 시간: %@분";
 "%@ opens" = "%@회 열림";
 "%@ or search" = "%@ 또는 검색";
 "%@ public comments" = "공개 댓글 %@개";
@@ -496,7 +496,8 @@
 "List style" = "목록 스타일";
 "Listen" = "듣기";
 "Listen Settings" = "듣기 설정";
-"Listen to stories read aloud" = "스토리를 소리 내어 들어 보세요";
+"Listen to 1 hour of stories read aloud a week" = "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용";
+"Listen to 10 hours of stories read aloud a week" = "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용";
 "Listen to story" = "스토리 듣기";
 "Listening isn't available right now." = "현재 듣기 기능을 사용할 수 없습니다.";
 "Loading Google News topics..." = "Google 뉴스 주제 불러오는 중...";

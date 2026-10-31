@@ -293,6 +293,12 @@ msgstr[0] "%(count)s combinación (%(categories)s categorías en %(count)s)"
 msgstr[1] "%(count)s combinaciones (%(categories)s categorías en %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuto"
+msgstr[1] "%(count)s minutos"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "Hace %(count)s minuto"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Te queda %(duration)s esta semana"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Se han configurado las notificaciones de %(feed_title)s"
 
@@ -557,12 +567,6 @@ msgstr[1] "%(indexed)s de %(count)s sitios indexados. Indexa los feeds restantes
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Mejora tu plan para ver artículos relacionados de todo tu archivo."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Queda %(minutes)s minuto este mes"
-msgstr[1] "Quedan %(minutes)s minutos este mes"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3887,8 +3891,11 @@ msgstr "Escuchar"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Se agotó el tiempo de espera al intentar escuchar. Vuelve a intentarlo en un momento."
 
-msgid "Listen to stories read aloud"
-msgstr "Escucha artículos en voz alta"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Escucha 1 hora de artículos en voz alta a la semana"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Escucha 10 horas de artículos en voz alta a la semana"
 
 msgid "Listen to story"
 msgstr "Escuchar artículo"
@@ -5651,8 +5658,8 @@ msgid "Reset to original favicon"
 msgstr "Restaurar favicon original"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Se restablece %(date)s"
+msgid "Resets %(day)s"
+msgstr "Se restablece %(day)s"
 
 msgid "Resetting..."
 msgstr "Restableciendo..."

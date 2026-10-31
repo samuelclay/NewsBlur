@@ -291,6 +291,12 @@ msgstr[0] "%(count)s מיזוג (%(categories)s קטגוריות לתוך %(coun
 msgstr[1] "%(count)s מיזוגים (%(categories)s קטגוריות לתוך %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s דקה"
+msgstr[1] "%(count)s דקות"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "לפני %(count)s דקה"
@@ -525,6 +531,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "נותרו %(duration)s השבוע"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "ההתראות של %(feed_title)s הוגדרו"
 
@@ -555,12 +565,6 @@ msgstr[1] "אינדקסנו %(indexed)s מתוך %(count)s אתרים. כדאי 
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s שדרגו כדי לראות כתבות קשורות מכל הארכיון שלכם."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "נותרה %(minutes)s דקת האזנה החודש"
-msgstr[1] "נותרו %(minutes)s דקות האזנה החודש"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3853,8 +3857,11 @@ msgstr "האזנה"
 msgid "Listen timed out. Try again in a moment."
 msgstr "תם הזמן להאזנה. כדאי לנסות שוב בעוד רגע."
 
-msgid "Listen to stories read aloud"
-msgstr "האזנה לכתבות בהקראה"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "האזנה להקראה של כתבות במשך שעה בשבוע"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "האזנה להקראה של כתבות במשך 10 שעות בשבוע"
 
 msgid "Listen to story"
 msgstr "האזנה לכתבה"
@@ -5593,8 +5600,8 @@ msgid "Reset to original favicon"
 msgstr "איפוס לסמל האתר המקורי"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "מאפס את %(date)s"
+msgid "Resets %(day)s"
+msgstr "מתאפס ב־%(day)s"
 
 msgid "Resetting..."
 msgstr "מתאפס..."

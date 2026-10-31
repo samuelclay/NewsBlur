@@ -266,6 +266,11 @@ msgid_plural "%(count)s merges (%(categories)s categories into %(count)s)"
 msgstr[0] "รวม %(count)s รายการ (หมวดหมู่ %(categories)s รายการเข้าใน %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s นาที"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s นาทีที่แล้ว"
@@ -465,6 +470,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "เหลือ %(duration)s ในสัปดาห์นี้"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "ตั้งค่าการแจ้งเตือน %(feed_title)s แล้ว"
 
@@ -493,11 +502,6 @@ msgstr[0] "จัดทำดัชนีแล้ว %(indexed)s จาก %(co
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s อัปเกรดเพื่อดูบทความที่เกี่ยวข้องจากคลังทั้งหมดของคุณ"
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "เหลือ %(minutes)s นาทีในเดือนนี้"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3765,8 +3769,11 @@ msgstr "ฟัง"
 msgid "Listen timed out. Try again in a moment."
 msgstr "หมดเวลาในการฟัง โปรดลองอีกครั้งในอีกสักครู่"
 
-msgid "Listen to stories read aloud"
-msgstr "ฟังบทความที่อ่านออกเสียง"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
 
 msgid "Listen to story"
 msgstr "ฟังบทความ"
@@ -5484,8 +5491,8 @@ msgid "Reset to original favicon"
 msgstr "รีเซ็ตเป็นไอคอนเว็บไซต์เดิม"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "รีเซ็ต %(date)s"
+msgid "Resets %(day)s"
+msgstr "รีเซ็ต %(day)s"
 
 msgid "Resetting..."
 msgstr "กำลังรีเซ็ต..."

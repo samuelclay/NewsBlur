@@ -104,6 +104,11 @@ msgid_plural "%(count)d hours ago"
 msgstr[0] "%(count)d時間前"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d分"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d分前"
@@ -2942,6 +2947,12 @@ msgstr "ウェブ、iPad、iPhone、Androidで読み上げ"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "MacBook、iPad、iPhone、Androidスマートフォンで読み上げを再生"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "読み上げ記事を週1時間聴取"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "読み上げ記事を週10時間聴取"
+
 msgid "Listen to stories read aloud"
 msgstr "記事の読み上げを聴く"
 
@@ -4068,8 +4079,8 @@ msgid "Premium Archive subscription"
 msgstr "プレミアムアーカイブのサブスクリプション"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "プレミアムアーカイブでは、記事全文の読み上げを月%(limit)sまで利用できます。"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "プレミアムアーカイブでは、週%(limit)sまで記事全文の読み上げを利用できます。"
 
 msgid "Premium Pro"
 msgstr "プレミアム Pro"
@@ -6572,13 +6583,13 @@ msgstr "NewsBlurを広めていただいたお礼として、無料の%(tier_nam
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
-msgstr "今月は記事を%(limit)s件読み上げました。読み上げ回数は%(date)sにリセットされます。または、月額%(pro_limit)sでプレミアム Proにアップグレードできます。"
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
+msgstr "今週は記事を%(limit)s聴きました。聴取時間は%(day)sにリセットされます。週%(pro_limit)s利用するには、プレミアム Pro にアップグレードしてください。"
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "今月は記事を%(limit)s件聴きました。聴取回数は%(date)sにリセットされます。"
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "今週は記事を%(limit)s聴きました。聴取時間は%(day)sにリセットされます。"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "今日の音声試聴回数をすべて使い切りました。午前0時にリセットされます。"

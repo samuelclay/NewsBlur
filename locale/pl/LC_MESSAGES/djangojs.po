@@ -318,6 +318,13 @@ msgstr[1] "%(count)s scalenia (%(categories)s kategorii w %(count)s)"
 msgstr[2] "%(count)s scaleń (%(categories)s kategorii w %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minutę"
+msgstr[1] "%(count)s minuty"
+msgstr[2] "%(count)s minut"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s minutę temu"
@@ -587,6 +594,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Pozostało %(duration)s w tym tygodniu"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Skonfigurowano powiadomienia dla %(feed_title)s"
 
@@ -619,13 +630,6 @@ msgstr[2] "Zindeksowano %(indexed)s z %(count)s witryn. Zindeksuj pozostałe kan
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Przejdź na wyższy plan, aby zobaczyć powiązane artykuły z całego archiwum."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Pozostała %(minutes)s minuta w tym miesiącu"
-msgstr[1] "Pozostały %(minutes)s minuty w tym miesiącu"
-msgstr[2] "Pozostało %(minutes)s minut w tym miesiącu"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3971,8 +3975,11 @@ msgstr "Odsłuchaj"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Przekroczono limit czasu słuchania. Spróbuj ponownie za chwilę."
 
-msgid "Listen to stories read aloud"
-msgstr "Słuchaj artykułów czytanych na głos"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Słuchaj artykułów czytanych na głos przez 1 godzinę tygodniowo"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Słuchaj artykułów czytanych na głos przez 10 godzin tygodniowo"
 
 msgid "Listen to story"
 msgstr "Słuchaj artykułu"
@@ -5758,8 +5765,8 @@ msgid "Reset to original favicon"
 msgstr "Przywróć oryginalną ikonę favicon"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Resetuje %(date)s"
+msgid "Resets %(day)s"
+msgstr "Odnowi się %(day)s"
 
 msgid "Resetting..."
 msgstr "Resetowanie..."

@@ -1375,14 +1375,24 @@
     <string name="listen_style_summary">يبالغ في أسلوب الصوت</string>
     <string name="listen_speaker_boost_summary">صوت أوضح وأقرب</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="few">تبقّت %1$d دقائق هذا الشهر</item>
-        <item quantity="many">تبقّى %1$d دقيقة هذا الشهر</item>
-        <item quantity="one">يتبقى %1$d دقيقة هذا الشهر</item>
-        <item quantity="other">تبقّت %1$d دقائق هذا الشهر</item>
-        <item quantity="two">تبقّى %1$d دقيقة هذا الشهر</item>
-        <item quantity="zero">تبقّى %1$d دقيقة هذا الشهر</item>
+    <plurals name="listen_hours">
+        <item quantity="few">%1$d ساعات</item>
+        <item quantity="many">%1$d ساعة</item>
+        <item quantity="one">%1$d ساعة</item>
+        <item quantity="other">%1$d ساعة</item>
+        <item quantity="two">%1$d ساعتان</item>
+        <item quantity="zero">%1$d ساعة</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="few">%1$d دقائق</item>
+        <item quantity="many">%1$d دقيقة</item>
+        <item quantity="one">%1$d دقيقة</item>
+        <item quantity="other">%1$d دقيقة</item>
+        <item quantity="two">%1$d دقيقة</item>
+        <item quantity="zero">%1$d دقيقة</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">%1$s متبقٍ هذا الأسبوع</string>
     <string name="listen_resets_on">تُعاد الضبط في %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">تبقّى %1$d معاينات مجانية للقصص اليوم</item>
@@ -1414,5 +1424,6 @@
     <string name="settings_listen_voices_summary">اختر صوتًا لكل لغة وطريقة قراءته</string>
     <string name="settings_listen_delivery">طريقة العرض</string>
     <string name="settings_listen_speed">سرعة التشغيل</string>
-    <string name="archive_listen">الاستماع إلى القصص بصوت عالٍ</string>
+    <string name="archive_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا</string>
+    <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
 </resources>

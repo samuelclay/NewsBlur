@@ -23,7 +23,7 @@ class MListenUsage(mongo.Document):
     """One served Listen segment or voice preview, or a refused request, for caps, daily samples and analytics.
 
     `seconds` is the estimated audio length. Only freshly generated segments (`cached=False`) count against the
-    monthly cap; samples count stories, cached or not. Refusals (`kind="denied"`) record which limit was hit in
+    weekly cap; samples count stories, cached or not. Refusals (`kind="denied"`) record which limit was hit in
     `reason` and never count toward anything. See apps/listen/usage.py.
     """
 

@@ -293,6 +293,12 @@ msgstr[0] "%(count)s mesclagem (%(categories)s categorias em %(count)s)"
 msgstr[1] "%(count)s mesclagens (%(categories)s categorias em %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s minuto"
+msgstr[1] "%(count)s minutos"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "Há %(count)s minuto"
@@ -527,6 +533,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Restam %(duration)s nesta semana"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "As notificações de %(feed_title)s estão configuradas"
 
@@ -557,12 +567,6 @@ msgstr[1] "%(indexed)s de %(count)s sites indexados. Indexe os feeds restantes p
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Faça upgrade para ver artigos relacionados de todo o seu arquivo."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "Falta %(minutes)s minuto neste mês"
-msgstr[1] "Faltam %(minutes)s minutos neste mês"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3877,8 +3881,11 @@ msgstr "Ouvir"
 msgid "Listen timed out. Try again in a moment."
 msgstr "A escuta expirou. Tente novamente em instantes."
 
-msgid "Listen to stories read aloud"
-msgstr "Ouvir artigos em voz alta"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Ouça artigos narrados por até 1 hora por semana"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Ouça artigos narrados por até 10 horas por semana"
 
 msgid "Listen to story"
 msgstr "Ouvir artigo"
@@ -5639,8 +5646,8 @@ msgid "Reset to original favicon"
 msgstr "Restaurar favicon original"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Redefine %(date)s"
+msgid "Resets %(day)s"
+msgstr "Redefine em %(day)s"
 
 msgid "Resetting..."
 msgstr "Redefinindo..."

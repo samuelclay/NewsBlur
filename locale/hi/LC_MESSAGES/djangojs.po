@@ -291,6 +291,12 @@ msgstr[0] "%(count)s मर्ज (%(categories)s श्रेणियाँ %(
 msgstr[1] "%(count)s मर्ज (%(categories)s श्रेणियाँ %(count)s में)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s मिनट"
+msgstr[1] "%(count)s मिनट"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s मिनट पहले"
@@ -525,6 +531,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "इस सप्ताह %(duration)s शेष"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "%(feed_title)s की सूचनाएँ सेट अप हो गई हैं"
 
@@ -555,12 +565,6 @@ msgstr[1] "%(count)s में से %(indexed)s साइटें अनु�
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s अपने पूरे संग्रह से संबंधित लेख देखने के लिए अपग्रेड करें।"
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "इस महीने %(minutes)s मिनट बाकी"
-msgstr[1] "इस महीने %(minutes)s मिनट बाकी"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3865,8 +3869,11 @@ msgstr "सुनें"
 msgid "Listen timed out. Try again in a moment."
 msgstr "सुनने का समय समाप्त हो गया। थोड़ी देर में फिर से कोशिश करें।"
 
-msgid "Listen to stories read aloud"
-msgstr "लेखों को ज़ोर से पढ़कर सुनें"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
 
 msgid "Listen to story"
 msgstr "लेख सुनें"
@@ -5617,8 +5624,8 @@ msgid "Reset to original favicon"
 msgstr "मूल फ़ेविकॉन पर रीसेट करें"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "%(date)s रीसेट होता है"
+msgid "Resets %(day)s"
+msgstr "%(day)s रीसेट होता है"
 
 msgid "Resetting..."
 msgstr "रीसेट किया जा रहा है..."

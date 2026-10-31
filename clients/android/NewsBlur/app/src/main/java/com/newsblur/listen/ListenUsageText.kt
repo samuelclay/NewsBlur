@@ -27,8 +27,9 @@ import kotlin.math.floor
 import kotlin.math.max
 
 /**
- * ListenUsageText.kt words the usage line the same way as the web player: minutes of new audio left this month for
- * Premium Archive and Pro, or the free story and voice previews left today for everyone else.
+ * ListenUsageText.kt words the usage line the same way as the web player: the hours and minutes of new audio left
+ * this week for Premium Archive and Pro (the allowance resets on Sunday, apps/listen/usage.py), or the free story
+ * and voice previews left today for everyone else.
  */
 @Composable
 fun listenUsageSummary(usage: ListenUsage?): String? {
@@ -36,8 +37,8 @@ fun listenUsageSummary(usage: ListenUsage?): String? {
     val parts = mutableListOf<String>()
     if (usage.isArchiveTier) {
         val remaining = usage.secondsRemaining ?: return null
-        val minutes = floor(max(0.0, remaining) / 60.0).toInt()
-        parts += pluralStringResource(R.plurals.listen_minutes_left, minutes, minutes)
+        val timeLeft = listenDurationText(listenHoursAndMinutes(remaining))
+        parts += stringResource(R.string.listen_time_left_this_week, timeLeft)
         listenResetDate(usage.resetsAt)?.let { parts += stringResource(R.string.listen_resets_on, it) }
     } else {
         usage.samplesLimit?.let { limit ->
@@ -76,15 +77,34 @@ fun ListenUsageFooter(
     }
 }
 
+/** Whole hours and the minutes left over in a number of seconds, never negative: 35,880 seconds is 9 hours 58 minutes. */
+internal fun listenHoursAndMinutes(seconds: Double): Pair<Int, Int> {
+    val minutes = floor(max(0.0, seconds) / 60.0).toInt()
+    return minutes / 60 to minutes % 60
+}
+
+/** "9 hours 58 minutes", "1 hour" or "45 minutes": a zero part is left out, and nothing left reads "0 minutes". */
+@Composable
+private fun listenDurationText(hoursAndMinutes: Pair<Int, Int>): String {
+    val (hours, minutes) = hoursAndMinutes
+    val hoursText = pluralStringResource(R.plurals.listen_hours, hours, hours)
+    val minutesText = pluralStringResource(R.plurals.listen_minutes, minutes, minutes)
+    return when {
+        hours > 0 && minutes > 0 -> stringResource(R.string.listen_hours_and_minutes, hoursText, minutesText)
+        hours > 0 -> hoursText
+        else -> minutesText
+    }
+}
+
 /**
- * "Nov 1" (or "1. Nov." in German) for the date the monthly allowance resets, in the reader's own date order.
- * The server sends midnight in the account's timezone (apps/listen/usage.py), so the date is read in that offset
+ * "Sunday" (or "Sonntag" in German) for the day the weekly allowance resets, in the reader's own language. The
+ * server sends midnight in the account's timezone (apps/listen/usage.py), so the day is read in that offset
  * rather than the device's, matching the web.
  */
 internal fun listenResetDate(
     resetsAt: String?,
     locale: Locale = Locale.getDefault(),
-    pattern: String = DateFormat.getBestDateTimePattern(locale, MONTH_DAY_SKELETON),
+    pattern: String = DateFormat.getBestDateTimePattern(locale, WEEKDAY_SKELETON),
 ): String? {
     if (resetsAt.isNullOrBlank()) return null
     val resetsAtTime =
@@ -96,4 +116,4 @@ internal fun listenResetDate(
     return DateTimeFormatter.ofPattern(pattern, locale).format(resetsAtTime)
 }
 
-private const val MONTH_DAY_SKELETON = "MMMd"
+private const val WEEKDAY_SKELETON = "EEEE"

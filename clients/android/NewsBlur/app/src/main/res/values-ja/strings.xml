@@ -1255,9 +1255,14 @@
     <string name="listen_style_summary">音声のスタイルを強調</string>
     <string name="listen_speaker_boost_summary">よりクリアで近くに聞こえる音</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="other">今月残り%1$d分</item>
+    <plurals name="listen_hours">
+        <item quantity="other">%1$d時間</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="other">%1$d分</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">今週の残り%1$s</string>
     <string name="listen_resets_on">%1$sにリセット</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今日利用できる無料記事プレビューは残り%1$d件です</item>
@@ -1279,5 +1284,6 @@
     <string name="settings_listen_voices_summary">言語ごとに音声と読み上げ方を選択</string>
     <string name="settings_listen_delivery">話し方</string>
     <string name="settings_listen_speed">再生速度</string>
-    <string name="archive_listen">記事を音声で読み上げる</string>
+    <string name="archive_listen">読み上げ記事を週1時間聴取</string>
+    <string name="pro_listen">読み上げ記事を週10時間聴取</string>
 </resources>

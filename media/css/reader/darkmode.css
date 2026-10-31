@@ -1919,7 +1919,8 @@ color: #a85b40;
 
 .NB-dark .NB-media-player-play-pause svg,
 .NB-dark .NB-media-player-skip-back svg,
-.NB-dark .NB-media-player-skip-forward svg {
+.NB-dark .NB-media-player-skip-forward svg,
+.NB-dark .NB-media-player-next svg {
     fill: #ccc;
 }
 
@@ -1937,10 +1938,15 @@ color: #a85b40;
 .NB-dark .NB-media-player-play-pause:hover,
 .NB-dark .NB-media-player-skip-back:hover,
 .NB-dark .NB-media-player-skip-forward:hover,
+.NB-dark .NB-media-player-next:hover,
 .NB-dark .NB-media-player-settings:hover,
 .NB-dark .NB-media-player-close:hover,
 .NB-dark .NB-media-player-fullscreen:hover {
     background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-media-player-next.NB-disabled:hover {
+    background-color: transparent;
 }
 
 .NB-dark .NB-media-settings-popover .NB-popover-section {

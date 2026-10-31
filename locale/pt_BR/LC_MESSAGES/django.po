@@ -109,6 +109,12 @@ msgstr[0] "há %(count)d hora"
 msgstr[1] "há %(count)d horas"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d minuto"
+msgstr[1] "%(count)d minutos"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "há %(count)d minuto"
@@ -3225,6 +3231,12 @@ msgstr "Ouça na web, no iPad, iPhone e Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Recurso Ouvir em execução em um MacBook, iPad, iPhone e celular Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Ouça artigos narrados por até 1 hora por semana"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Ouça artigos narrados por até 10 horas por semana"
+
 msgid "Listen to stories read aloud"
 msgstr "Ouça artigos em voz alta"
 
@@ -4536,8 +4548,8 @@ msgid "Premium Archive subscription"
 msgstr "Assinatura Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "O Premium Archive libera a leitura em voz alta dos artigos completos, até %(limit)s por mês."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "O Premium Archive desbloqueia a narração completa dos artigos, por até %(limit)s por semana."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7293,15 +7305,15 @@ msgstr "Você ganhou <b>%(credit_text)s</b> de %(tier_name)s grátis como agrade
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Você ouviu %(limit)s de artigos neste mês. O tempo de escuta será redefinido em %(date)s, ou faça upgrade "
-"para o Premium Pro por %(pro_limit)s por mês."
+"Você ouviu %(limit)s de artigos nesta semana. O tempo de escuta é redefinido em %(day)s, ou faça upgrade "
+"para o Premium Pro por %(pro_limit)s por semana."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Você ouviu %(limit)s dos artigos deste mês. Seu tempo de escuta será renovado em %(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Você ouviu %(limit)s de artigos nesta semana. O tempo de escuta é redefinido em %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Você usou todas as prévias de voz de hoje. Elas serão redefinidas à meia-noite."

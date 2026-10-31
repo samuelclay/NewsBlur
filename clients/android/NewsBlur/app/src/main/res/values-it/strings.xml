@@ -1303,11 +1303,18 @@ le persone per parlare del mondo.</string>
     <string name="listen_style_summary">Esagera lo stile della voce</string>
     <string name="listen_speaker_boost_summary">Un suono più chiaro e avvolgente</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="many">%1$d minuti rimanenti questo mese</item>
-        <item quantity="one">Ti resta %1$d minuto questo mese</item>
-        <item quantity="other">Ti restano %1$d minuti questo mese</item>
+    <plurals name="listen_hours">
+        <item quantity="many">%1$d ore</item>
+        <item quantity="one">%1$d ora</item>
+        <item quantity="other">%1$d ore</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="many">%1$d minuti</item>
+        <item quantity="one">%1$d minuto</item>
+        <item quantity="other">%1$d minuti</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">%1$s rimanenti questa settimana</string>
     <string name="listen_resets_on">Si azzera %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="many">Ti restano %1$d anteprime gratuite degli articoli per oggi</item>
@@ -1333,5 +1340,6 @@ le persone per parlare del mondo.</string>
     <string name="settings_listen_voices_summary">Scegli una voce per ogni lingua e il modo in cui legge</string>
     <string name="settings_listen_delivery">Riproduzione</string>
     <string name="settings_listen_speed">Velocità di riproduzione</string>
-    <string name="archive_listen">Ascolta gli articoli letti ad alta voce</string>
+    <string name="archive_listen">Ascolta 1 ora di articoli letti ad alta voce a settimana</string>
+    <string name="pro_listen">Ascolta 10 ore di articoli letti ad alta voce a settimana</string>
 </resources>

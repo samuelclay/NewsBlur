@@ -111,6 +111,12 @@ msgstr[0] "%(count)d ora fa"
 msgstr[1] "%(count)d ore fa"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d minuto"
+msgstr[1] "%(count)d minuti"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d minuto fa"
@@ -3247,6 +3253,12 @@ msgstr "Ascolta sul web, iPad, iPhone e Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Ascolta in riproduzione su un MacBook, un iPad, un iPhone e un telefono Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Ascolta 1 ora di articoli letti ad alta voce a settimana"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Ascolta 10 ore di articoli letti ad alta voce a settimana"
+
 msgid "Listen to stories read aloud"
 msgstr "Ascolta gli articoli letti ad alta voce"
 
@@ -4557,8 +4569,8 @@ msgid "Premium Archive subscription"
 msgstr "Abbonamento Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive sblocca la lettura ad alta voce degli articoli completi, fino a %(limit)s al mese."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive sblocca la lettura ad alta voce degli articoli completi, fino a %(limit)s a settimana."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7322,15 +7334,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Questo mese hai ascoltato %(limit)s articoli. L'ascolto si azzera il %(date)s, oppure passa a Premium Pro "
-"per %(pro_limit)s al mese."
+"Hai ascoltato %(limit)s di articoli questa settimana. Il tempo di ascolto si azzera il %(day)s, oppure "
+"passa a Premium Pro per %(pro_limit)s a settimana."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Questo mese hai ascoltato %(limit)s di articoli. Il conteggio si azzera il %(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Hai ascoltato %(limit)s di articoli questa settimana. Il tempo di ascolto si azzera il %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Hai esaurito tutte le anteprime vocali di oggi. Si azzerano a mezzanotte."

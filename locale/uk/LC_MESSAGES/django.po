@@ -117,6 +117,13 @@ msgstr[1] "%(count)d години тому"
 msgstr[2] "%(count)d годин тому"
 
 #, python-format
+msgid "%(count)d minute"
+msgid_plural "%(count)d minutes"
+msgstr[0] "%(count)d хвилина"
+msgstr[1] "%(count)d хвилини"
+msgstr[2] "%(count)d хвилин"
+
+#, python-format
 msgid "%(count)d minute ago"
 msgid_plural "%(count)d minutes ago"
 msgstr[0] "%(count)d хвилину тому"
@@ -3273,6 +3280,12 @@ msgstr "Слухати у вебверсії, на iPad, iPhone та Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Функція «Слухати» працює на MacBook, iPad, iPhone та телефоні Android"
 
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Слухайте озвучення статей до 1 години на тиждень"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Слухайте озвучення статей до 10 годин на тиждень"
+
 msgid "Listen to stories read aloud"
 msgstr "Слухати статті вголос"
 
@@ -4578,8 +4591,8 @@ msgid "Premium Archive subscription"
 msgstr "Підписка Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
-msgstr "Premium Archive дає змогу слухати повні версії статей — до %(limit)s на місяць."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
+msgstr "Premium Archive відкриває повне озвучення статей — до %(limit)s на тиждень."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7350,15 +7363,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this month. Listening resets on %(date)s, or upgrade to Premium Pro"
-" for %(pro_limit)s a month."
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"for %(pro_limit)s a week."
 msgstr ""
-"Цього місяця ви прослухали %(limit)s статей. Ліміт прослуховування оновиться %(date)s, або перейдіть на "
-"Premium Pro за %(pro_limit)s на місяць."
+"Цього тижня ви прослухали %(limit)s статей. Ліміт прослуховування буде скинуто %(day)s або перейдіть на "
+"Premium Pro, щоб отримати %(pro_limit)s на тиждень."
 
 #, python-format
-msgid "You've listened to %(limit)s of stories this month. Listening resets on %(date)s."
-msgstr "Цього місяця ви прослухали %(limit)s статей. Ліміт прослуховувань скинеться %(date)s."
+msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
+msgstr "Цього тижня ви прослухали %(limit)s статей. Ліміт прослуховування буде скинуто %(day)s."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Ви використали всі попередні перегляди голосів на сьогодні. Вони скинуться опівночі."

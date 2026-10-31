@@ -1279,10 +1279,16 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_style_summary">Sesin tarzını abartır</string>
     <string name="listen_speaker_boost_summary">Daha net ve yakından gelen bir ses</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">Bu ay %1$d dakika kaldı</item>
-        <item quantity="other">Bu ay %1$d dakika kaldı</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d saat</item>
+        <item quantity="other">%1$d saat</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d dakika</item>
+        <item quantity="other">%1$d dakika</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">Bu hafta %1$s kaldı</string>
     <string name="listen_resets_on">Sıfırlanma tarihi: %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">Bugün %1$d ücretsiz haber önizleme hakkınız kaldı</item>
@@ -1306,5 +1312,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_listen_voices_summary">Her dil için bir ses ve okuma biçimini seçin</string>
     <string name="settings_listen_delivery">Sunum</string>
     <string name="settings_listen_speed">Oynatma hızı</string>
-    <string name="archive_listen">Haberleri sesli dinle</string>
+    <string name="archive_listen">Haftada 1 saat haberleri sesli dinleyin</string>
+    <string name="pro_listen">Haftada 10 saat haberleri sesli dinleyin</string>
 </resources>

@@ -1279,10 +1279,16 @@
     <string name="listen_style_summary">आवाज़ की शैली को बढ़ा-चढ़ाकर प्रस्तुत करता है</string>
     <string name="listen_speaker_boost_summary">अधिक स्पष्ट और पास की आवाज़</string>
     <string name="listen_percent">%1$d%%</string>
-    <plurals name="listen_minutes_left">
-        <item quantity="one">इस महीने %1$d मिनट बाकी</item>
-        <item quantity="other">इस महीने %1$d मिनट बाकी</item>
+    <plurals name="listen_hours">
+        <item quantity="one">%1$d घंटा</item>
+        <item quantity="other">%1$d घंटे</item>
     </plurals>
+    <plurals name="listen_minutes">
+        <item quantity="one">%1$d मिनट</item>
+        <item quantity="other">%1$d मिनट</item>
+    </plurals>
+    <string name="listen_hours_and_minutes">%1$s %2$s</string>
+    <string name="listen_time_left_this_week">इस सप्ताह सुनने का %1$s समय शेष</string>
     <string name="listen_resets_on">%1$s को रीसेट होगा</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">आज %1$d मुफ़्त लेख पूर्वावलोकन बाकी</item>
@@ -1306,5 +1312,6 @@
     <string name="settings_listen_voices_summary">हर भाषा के लिए आवाज़ चुनें और तय करें कि वह कैसे पढ़े</string>
     <string name="settings_listen_delivery">डिलीवरी</string>
     <string name="settings_listen_speed">प्लेबैक गति</string>
-    <string name="archive_listen">लेखों को ज़ोर से पढ़कर सुनें</string>
+    <string name="archive_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें</string>
+    <string name="pro_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें</string>
 </resources>

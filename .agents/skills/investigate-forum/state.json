@@ -3,15 +3,15 @@
     "13907": {
       "title": "Global Classifiers Input Button",
       "url": "https://forum.newsblur.com/t/global-classifiers-input-button/13907",
-      "status": "pr-open",
+      "status": "merged",
       "tier": 2,
-      "handled_at": "2026-10-22T05:29:44.410Z",
+      "handled_at": "2026-10-31T18:23:16.245Z",
       "last_posted_at": "2026-10-22T04:21:45.205Z",
       "pr": "https://github.com/samuelclay/NewsBlur/pull/2184",
       "branch": "forum-13907-add-classifier-input",
       "worktree": ".worktree/forum-13907-add-classifier-input",
-      "note": "Feature request, not a bug: nothing shipped let a reader type a classifier without a story. drabconcrete is Premium Archive (joined 2026-10-21) and already has scoped classifiers. Sam chose: build an add row in Manage Training (web only), save immediately, scopes global/folder/site, types title/author/tag/text/url plus regex for Pro; skip the classifier-weights idea in the reply. Review round 1 surfaced a pre-existing /classifier/save legacy fallback that merged same-value classifiers across scopes (folder save flipped the global one); fixed in the PR. Prod tag/author unique indexes ignore scope, so a tag/author can live in only one global/folder scope; Sam chose a clear error over an index migration. Reply assumes make deploy + make deploy_static.",
-      "reply": "You weren't missing anything, there was no way to do this until now. Open the Intelligence Trainer and switch to Manage Training. There's a new row at the top: pick the type (title, author, tag, text, or URL), type what you want to match, choose All sites, a folder, or a single site, then hit Enter. It saves right away and clears the box so you can type the next one.",
+      "note": "Feature request, not a bug: nothing shipped let a reader type a classifier without a story. drabconcrete is Premium Archive (joined 2026-10-21) and already has scoped classifiers. Sam chose: build an add row in Manage Training (web only), save immediately, scopes global/folder/site, types title/author/tag/text/url plus regex for Pro; skip the classifier-weights idea in the reply. Review round 1 surfaced a pre-existing /classifier/save legacy fallback that merged same-value classifiers across scopes (folder save flipped the global one); fixed in the PR. Prod tag/author unique indexes ignore scope, so a tag/author can live in only one global/folder scope; Sam chose a clear error over an index migration. Reply assumes make deploy + make deploy_static. Merged 2026-10-31 as c54f8f2603 and deployed to web (make deploy + make deploy_static; all app hosts failed=0; prod verified on c54f8f2603). Blog post 2026-11-01-type-a-classifier-into-the-trainer is on main but NOT deployed: Sam is testing for a couple of days and will run make blog himself (future: true, so it goes live whenever make blog runs). Forum reply not posted yet.",
+      "reply": "You weren't missing anything, there was no way to do this until now. Open the Intelligence Trainer and switch to Manage Training. There's a new panel at the top: pick the type (title, author, tag, text, or URL), type what you want to match, choose All sites, a folder, or a single site, pick Like, Dislike, or Hide, then hit Enter. It saves right away and clears the box so you can type the next one.",
       "question": null
     },
     "13905": {

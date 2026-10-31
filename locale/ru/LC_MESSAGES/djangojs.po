@@ -317,6 +317,13 @@ msgstr[1] "%(count)s объединения (%(categories)s категорий �
 msgstr[2] "%(count)s объединений (%(categories)s категорий в %(count)s)"
 
 #, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s минута"
+msgstr[1] "%(count)s минуты"
+msgstr[2] "%(count)s минут"
+
+#, python-format
 msgid "%(count)s minute ago"
 msgid_plural "%(count)s minutes ago"
 msgstr[0] "%(count)s минуту назад"
@@ -586,6 +593,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this week"
+msgstr "Осталось %(duration)s на этой неделе"
+
+#, python-format
 msgid "%(feed_title)s notifications are set up"
 msgstr "Уведомления %(feed_title)s настроены"
 
@@ -624,13 +635,6 @@ msgstr[2] ""
 #, python-format
 msgid "%(message)s Upgrade to see related stories from your entire archive."
 msgstr "%(message)s Перейдите на платный тариф, чтобы видеть похожие статьи из всего архива."
-
-#, python-format
-msgid "%(minutes)s minute left this month"
-msgid_plural "%(minutes)s minutes left this month"
-msgstr[0] "В этом месяце осталась %(minutes)s минута"
-msgstr[1] "В этом месяце осталось %(minutes)s минуты"
-msgstr[2] "В этом месяце осталось %(minutes)s минут"
 
 #, python-format
 msgid "%(name)s is sharing a story: %(title)s"
@@ -3975,8 +3979,11 @@ msgstr "Слушать"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Истекло время ожидания. Попробуйте ещё раз через минуту."
 
-msgid "Listen to stories read aloud"
-msgstr "Слушать статьи в озвучке"
+msgid "Listen to 1 hour of stories read aloud a week"
+msgstr "Слушайте озвученные статьи до 1 часа в неделю"
+
+msgid "Listen to 10 hours of stories read aloud a week"
+msgstr "Слушайте озвученные статьи до 10 часов в неделю"
 
 msgid "Listen to story"
 msgstr "Слушать статью"
@@ -5758,8 +5765,8 @@ msgid "Reset to original favicon"
 msgstr "Восстановить исходный значок сайта"
 
 #, python-format
-msgid "Resets %(date)s"
-msgstr "Сброс через %(date)s"
+msgid "Resets %(day)s"
+msgstr "Обновится %(day)s"
 
 msgid "Resetting..."
 msgstr "Сброс…"
