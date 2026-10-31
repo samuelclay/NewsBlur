@@ -5930,6 +5930,9 @@
             if (mobile_sheet) inverse = false;
             $manage_menu_container.toggleClass('NB-mobile-sheet', mobile_sheet);
             this.$s.$body.toggleClass('NB-mobile-sheet-open', mobile_sheet);
+            // reader.js: .NB-layout is position fixed, a stacking context of its own beneath the
+            // sheet's shade, so the sheet moves to body to sit above the shade and the Listen player.
+            if (mobile_sheet) $manage_menu_container.appendTo(this.$s.$body);
             // reader.js: remembers what the menu is aligned to, so RTL can mirror it around that anchor.
             var $menu_anchor = $item;
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);

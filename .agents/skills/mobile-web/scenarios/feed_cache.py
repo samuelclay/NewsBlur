@@ -83,6 +83,37 @@ def run(ctx):
     )
     ctx.check("the Listen player restores from the server's state", after["player"], after)
 
+    # A reload into a feed showed an empty story list while its stories loaded, and the desktop
+    # layout flashed before the phone layout took over.
+    ctx.open_feed(feed_id)
+    path = ctx.evaluate("location.pathname")
+    held_stories = []
+    page.route("**/reader/feed/**", lambda route: held_stories.append(route))
+    page.goto("https://localhost" + path, wait_until="load")
+    ctx.wait(2000)
+    loading = ctx.evaluate(
+        "(() => { var line = document.querySelector('#story_titles .NB-load-line'); "
+        "var r = line && line.getBoundingClientRect(); "
+        "return {screen: NEWSBLUR.app.mobile.screen, spinner: !!line && r.height >= 100 && "
+        "getComputedStyle(line, '::before').animationName === 'NB-mobile-spin', "
+        "booting: document.body.classList.contains('NB-mobile-booting'), "
+        "mobile: document.body.classList.contains('NB-mobile')}; })()"
+    )
+    ctx.shot("reload-into-feed")
+    for route in held_stories:
+        route.continue_()
+    page.unroute("**/reader/feed/**")
+    ctx.check(
+        "a reload into a feed shows a spinner while its stories load",
+        held_stories and loading["screen"] == "titles" and loading["spinner"],
+        loading,
+    )
+    ctx.check(
+        "the phone layout is up and the page no longer hidden for boot",
+        loading["mobile"] and not loading["booting"],
+        loading,
+    )
+
     page.goto("https://localhost/reader/logout", wait_until="load")
     ctx.wait(1000)
     ctx.check("signing out clears the kept feed list", not ctx.evaluate(STORED)["keys"])

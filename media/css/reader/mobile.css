@@ -1080,6 +1080,12 @@ body.NB-mobile .right-pane .NB-story-titles-header .NB-story-title-indicator .fe
     margin: 0;
 }
 
+/* Only an inline list shows them; a full-screen list and a grid open stories on the story
+   screen, which has its own (mobile_layout_view.js update_titles_bar). */
+body.NB-mobile .right-pane:not(.NB-mobile-layout-list) > .content-north > .NB-taskbar-nav {
+    display: none !important;
+}
+
 /* Previous and Next unread, the reader's own story buttons (feeds_skeleton.xhtml NB-taskbar-nav),
    on the trailing edge. A full-screen list or grid opens the story they pick on the story screen
    (mobile_layout_view.js story_selected). */
@@ -1576,6 +1582,44 @@ body.NB-mobile .content-pane > #story_titles {
 @keyframes NB-mobile-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* mobile.css: a loading story list (story_titles_view.js show_loading) shows the pull to refresh
+   spinner instead of desktop's pulsing line, and a list with nothing in it yet a taller one, so
+   a reload into a feed doesn't look empty. */
+body.NB-mobile #story_titles .NB-end-line.NB-load-line {
+    position: relative;
+    grid-column: 1 / -1;
+    height: 72px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    animation: none;
+}
+
+body.NB-mobile #story_titles .NB-story-titles > .NB-end-line.NB-load-line:first-child {
+    height: 180px !important;
+}
+
+body.NB-mobile #story_titles .NB-end-line.NB-load-line::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 3px solid var(--nb-mobile-bar-border);
+    border-top-color: var(--nb-mobile-tint);
+    animation: NB-mobile-spin 800ms linear infinite;
+}
+
+/* mobile.css: a phone hides the reader page until views/mobile_layout_view.js has laid out its
+   screens (templates/reader/dashboard.xhtml), so the desktop layout never flashes on load. */
+body.NB-mobile-booting > * {
+    visibility: hidden !important;
 }
 
 body.NB-mobile .NB-mobile-icon-share {
@@ -2136,4 +2180,24 @@ body.NB-mobile.NB-mobile-has-player #NB-splash > .NB-splash-modules {
 
 body.NB-mobile.NB-mobile-has-player .content-pane > #story_titles {
     padding-bottom: calc(88px + var(--nb-mobile-titles-bar-space)) !important;
+}
+
+/* ====================== */
+/* = Sheet dismissal    = */
+/* ====================== */
+
+/* mobile.css: the manage menu's sheet catches touches on its handle and padding too, so a drag
+   can start anywhere on it rather than falling through to the shade behind. */
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet {
+    pointer-events: auto;
+}
+
+/* mobile.css: a sheet follows the finger while it's dragged down
+   (mobile_layout_view.js handle_sheet_touchmove), so its own slide pauses. */
+body.NB-mobile .NB-popover.popover.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-menu-manage-container.NB-mobile-sheet.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-menu-ask-ai-container.NB-mobile-sheet-dragging,
+body.NB-mobile #simplemodal-container.NB-mobile-sheet-dragging,
+body.NB-mobile .NB-media-player.NB-mobile-player.NB-mobile-sheet-dragging {
+    transition: none !important;
 }

@@ -91,6 +91,8 @@ def check_regressions(ctx, feed_id):
     check_layout_menu(ctx, feed_id)
     check_inline_scrolls_to_story(ctx)
     check_story_buttons(ctx)
+    check_list_follows_pager(ctx)
+    check_sheet_swipe(ctx)
     check_stale_story_button(ctx)
     check_next_unread_into_full_screen(ctx, feed_id)
     check_story_list_pills(ctx)
@@ -634,34 +636,32 @@ def check_mark_read_menu(ctx, feed_id):
 
 
 def check_story_buttons(ctx):
-    """The bar's Previous selects the story before the open one. A full-screen list opens it on
-    the story screen. Expects to be on the story list."""
+    """The bar's Previous and Next unread belong to an inline list: a full-screen list and a grid
+    open stories on the story screen, which has its own. In an inline list, Previous expands the
+    story before the open one in place. Expects to be on the story list."""
     page = ctx.page
-    ctx.set_layout("page")
+    shown = {}
+    for layout in ("page", "grid", "list"):
+        ctx.set_layout(layout)
+        shown[layout] = ctx.evaluate("$('.right-pane .NB-taskbar-nav:visible').length")
+    ctx.check(
+        "Previous and Next unread show only in an inline list",
+        shown == {"page": 0, "grid": 0, "list": 1},
+        shown,
+    )
     ctx.tap_story(3)
     third = ctx.state()["story"]
-    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
-    ctx.wait(900)
     page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
     ctx.wait(1300)
     state = ctx.state()
     ctx.check(
-        "Previous in a full-screen list opens the previous story on the story screen",
-        state["screen"] == "story" and state["story"] and state["story"] != third,
-        state,
-    )
-    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
-    ctx.wait(900)
-    ctx.set_layout("list")
-    page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
-    ctx.wait(1300)
-    ctx.check(
         "Previous in an inline list expands the previous story in place",
-        ctx.state()["screen"] == "titles"
+        state["screen"] == "titles"
+        and state["story"] != third
         and ctx.evaluate(
             "$('#story_titles .NB-selected .NB-story-detail .NB-feed-story-content').length == 1"
         ),
-        ctx.state(),
+        state,
     )
 
 
@@ -737,21 +737,144 @@ def check_next_unread_into_full_screen(ctx, feed_id):
 
 
 def check_stale_story_button(ctx):
-    """A Previous that selected nothing left its request standing, so tapping a story in an
-    inline list soon after opened it on the story screen. Expects the story list."""
+    """A Previous that selected nothing left its request standing, so a story tapped soon after
+    could open on the story screen. Expects the story list."""
     page = ctx.page
-    ctx.set_layout("grid")
+    ctx.set_layout("list")
+    ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
     ctx.tap_story(0)
-    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
-    ctx.wait(900)
     page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
     ctx.wait(600)
-    ctx.set_layout("list")
     ctx.tap_story(2)
     ctx.check(
         "a Previous that selected nothing doesn't open the next tapped story full screen",
         ctx.state()["screen"] == "titles",
         ctx.state(),
+    )
+
+
+def check_list_follows_pager(ctx):
+    """Swiping through stories on the story screen left the list underneath on the story it was
+    opened from, so a swipe back showed that one and then jumped. The list now keeps up, in a
+    grid and in a full-screen list. Expects the story list."""
+    page = ctx.page
+    width = ctx.viewport["width"]
+    for layout in ("grid", "page"):
+        ctx.set_layout(layout)
+        ctx.evaluate("(() => { document.querySelector('#story_titles').scrollTop = 0; })()")
+        ctx.wait(300)
+        ctx.tap_story(0)
+        for _ in range(5):
+            ctx.touch.swipe(width - 60, 600, 60, 610, steps=10)
+            ctx.wait(800)
+        place = ctx.evaluate(
+            "(() => { var story = NEWSBLUR.reader.active_story; var list = document.querySelector('#story_titles'); "
+            "var row = story.story_title_view.$el[0].getBoundingClientRect(); "
+            "return {offset: Math.round(row.top - list.getBoundingClientRect().top), scroll: list.scrollTop, "
+            "index: NEWSBLUR.assets.stories.indexOf(story)}; })()"
+        )
+        ctx.check(
+            f"the list under the story screen is already on the story being read ({layout})",
+            place["index"] >= 4 and abs(place["offset"]) <= 2 and place["scroll"] > 0,
+            place,
+        )
+        page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+        ctx.wait(900)
+    ctx.set_layout("list")
+
+
+def drag_sheet(ctx, selector, distance):
+    """Drags the sheet down by distance from just inside its top edge, then lifts."""
+    box = ctx.page.locator(selector).first.bounding_box()
+    x, y = box["x"] + box["width"] / 2, box["y"] + 14
+    ctx.touch.swipe(x, y, x, y + distance, steps=12, step_ms=16)
+    ctx.wait(700)
+
+
+def check_sheet_swipe(ctx):
+    """Sheets only closed from a tap above them. They now follow a downward drag that starts at
+    the top of their content and go away when it's far or fast enough, like iOS sheets.
+    Expects the story list."""
+    page = ctx.page
+    page.locator(".right-pane .NB-feedbar-options").first.tap()
+    ctx.wait(700)
+    drag_sheet(ctx, ".NB-popover.popover", 40)
+    snapped = ctx.evaluate(
+        "(() => { var p = document.querySelector('.NB-popover.popover'); "
+        "return {open: NEWSBLUR.ReaderPopover.is_open(), transform: p && p.style.transform}; })()"
+    )
+    ctx.check(
+        "a short drag snaps the options sheet back", snapped["open"] and not snapped["transform"], snapped
+    )
+    drag_sheet(ctx, ".NB-popover.popover", 420)
+    ctx.check(
+        "dragging the options sheet down closes it", not ctx.evaluate("NEWSBLUR.ReaderPopover.is_open()")
+    )
+
+    titles = page.locator("#story_titles .NB-story-title")
+    ctx.long_press(titles.nth(2))
+    ctx.wait(600)
+    # The story menu lived inside .NB-layout, a fixed stacking context beneath the sheet's shade,
+    # so it showed dimmed under the shade and every tap on it closed it instead.
+    on_top = ctx.evaluate(
+        "(() => { var item = $('.NB-menu-manage-container .NB-menu-item:visible').get(1).getBoundingClientRect(); "
+        "var hit = document.elementFromPoint(item.left + item.width / 2, item.top + item.height / 2); "
+        "return !!(hit && hit.closest('.NB-menu-manage-container')); })()"
+    )
+    ctx.check("the story menu sits above its shade, so its items take taps", on_top)
+    drag_sheet(ctx, ".NB-menu-manage-container.NB-mobile-sheet", 420)
+    closed = ctx.evaluate(
+        "(() => ({visible: $('.NB-menu-manage-container:visible').length, "
+        "open: document.body.classList.contains('NB-mobile-sheet-open')}))()"
+    )
+    ctx.check("dragging the story menu down closes it", not closed["visible"] and not closed["open"], closed)
+    ctx.long_press(titles.nth(3))
+    ctx.wait(600)
+    reopened = ctx.evaluate(
+        "(() => { var m = document.querySelector('.NB-menu-manage-container'); "
+        "return {visible: $(m).is(':visible'), transform: m.style.transform, bottom: Math.round(m.getBoundingClientRect().bottom), "
+        "height: innerHeight}; })()"
+    )
+    ctx.check(
+        "the story menu opens fully again after a drag closed it",
+        reopened["visible"]
+        and not reopened["transform"]
+        and abs(reopened["bottom"] - reopened["height"]) <= 2,
+        reopened,
+    )
+    page.locator(".NB-mobile-sheet-shade").tap(position={"x": 200, "y": 100})
+    ctx.wait(500)
+
+    ctx.evaluate("NEWSBLUR.reader.open_preferences_modal()")
+    ctx.wait(1800)
+    # A modal scrolled down scrolls back up under a downward drag rather than closing.
+    scroller = ctx.evaluate(
+        "(() => { var c = document.querySelector('#simplemodal-container'); "
+        "var all = [c].concat(Array.from(c.querySelectorAll('*'))); "
+        "var s = all.find(function (n) { return n.scrollHeight > n.clientHeight + 40 && "
+        "/(auto|scroll)/.test(getComputedStyle(n).overflowY); }); "
+        "if (!s) return null; s.scrollTop = 300; return s.scrollTop; })()"
+    )
+    if scroller:
+        box = page.locator("#simplemodal-container").bounding_box()
+        ctx.touch.swipe(
+            box["width"] / 2, box["y"] + 300, box["width"] / 2, box["y"] + 650, steps=12, step_ms=16
+        )
+        ctx.wait(700)
+        ctx.check(
+            "dragging down a scrolled modal scrolls it instead of closing it",
+            ctx.evaluate("!!document.querySelector('#simplemodal-container')"),
+        )
+        ctx.evaluate(
+            "(() => { var c = document.querySelector('#simplemodal-container'); "
+            "[c].concat(Array.from(c.querySelectorAll('*'))).forEach(function (n) { n.scrollTop = 0; }); })()"
+        )
+        ctx.wait(300)
+    drag_sheet(ctx, "#simplemodal-container", 520)
+    ctx.wait(500)
+    ctx.check(
+        "dragging a modal down closes it",
+        not ctx.evaluate("!!document.querySelector('#simplemodal-container')"),
     )
 
 

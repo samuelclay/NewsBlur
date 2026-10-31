@@ -21,7 +21,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         _.bindAll(this, 'check_mode', 'handle_popstate', 'handle_touchstart', 'handle_touchmove',
             'handle_touchend', 'handle_touchcancel', 'handle_long_press_start', 'handle_long_press_cancel',
             'handle_long_press_click', 'fit_pills', 'handle_search_close', 'update_titles_actions',
-            'handle_story_button');
+            'handle_story_button', 'handle_sheet_touchstart', 'handle_sheet_touchmove', 'handle_sheet_touchend');
         this.utils = NEWSBLUR.mobile_utils;
         this.active = false;
         this.screen = null;
@@ -66,6 +66,10 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         window.addEventListener('popstate', this.handle_popstate);
         window.addEventListener('resize', _.debounce(this.fit_pills, 100));
         document.addEventListener('touchstart', this.handle_touchstart, { passive: true });
+        document.addEventListener('touchstart', this.handle_sheet_touchstart, { passive: true });
+        document.addEventListener('touchmove', this.handle_sheet_touchmove, { passive: false });
+        document.addEventListener('touchend', this.handle_sheet_touchend, { passive: true });
+        document.addEventListener('touchcancel', this.handle_sheet_touchend, { passive: true });
         document.addEventListener('touchmove', this.handle_touchmove, { passive: false });
         document.addEventListener('touchend', this.handle_touchend, { passive: true });
         document.addEventListener('touchcancel', this.handle_touchcancel, { passive: true });
@@ -91,6 +95,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         } else if (!should_be_active && this.active) {
             this.deactivate();
         }
+        // templates/reader/dashboard.xhtml hid the page until the layout knew which it would be.
+        this.$body.removeClass('NB-mobile-booting');
     },
 
     activate: function () {
@@ -693,6 +699,9 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             .find('.NB-mobile-icon')
             .removeClass('NB-mobile-icon-layout-list NB-mobile-icon-layout-page NB-mobile-icon-layout-grid')
             .addClass('NB-mobile-icon-layout-' + (this.layout() || 'list'));
+        // mobile.css shows the bar's Previous and Next unread only in an inline list.
+        this.$screens.titles.removeClass('NB-mobile-layout-list NB-mobile-layout-page NB-mobile-layout-grid')
+            .addClass('NB-mobile-layout-' + (this.layout() || 'list'));
     },
 
     // views/mobile_layout_popover.js: the layout button opens a menu of the three phone layouts.
@@ -1155,6 +1164,111 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         if (!this.active || this.screen !== 'titles') return;
         if (!$(e.target).closest('.right-pane .NB-taskbar-nav .NB-taskbar-button').length) return;
         this.open_on_select = Date.now();
+    },
+
+    // ======================
+    // = Sheet dismissal    =
+    // ======================
+
+    // Every phone sheet follows a downward drag that starts while its content is scrolled to the
+    // top, and a far or fast enough drag sends it away, like an iOS sheet. Reused sheets (the
+    // manage menu, the Listen player) drop the drag's inline styles once closed.
+    SHEETS: [
+        { selector: '.NB-popover.popover.in', overlay: '.NB-overlay', close: function () { NEWSBLUR.ReaderPopover.close(); } },
+        { selector: '.NB-menu-manage-container.NB-mobile-sheet', overlay: '.NB-mobile-sheet-shade', reused: true, close: function () { NEWSBLUR.reader.hide_manage_menu(); } },
+        { selector: '.NB-menu-ask-ai-container', close: function () { $(document).trigger('click.ask_ai_menu'); } },
+        { selector: '#simplemodal-container', overlay: '#simplemodal-overlay', close: function () { $.modal.close(); } },
+        { selector: '.NB-media-player.NB-mobile-player-expanded', overlay: '.NB-mobile-player-shade', reused: true, close: function () { NEWSBLUR.app.mobile.collapse_player(); } }
+    ],
+
+    // A drag inside anything scrolled down scrolls it back up instead.
+    scrolled_below_top: function (node, sheet) {
+        for (; node && node !== sheet.parentNode; node = node.parentNode) {
+            if (node.scrollTop > 0 && node.scrollHeight > node.clientHeight) return true;
+        }
+        return false;
+    },
+
+    handle_sheet_touchstart: function (e) {
+        this.sheet_drag = null;
+        if (!this.active || e.touches.length !== 1) return;
+        var $target = $(e.target);
+        var sheet = _.find(this.SHEETS, function (sheet) {
+            return $target.closest(sheet.selector).length;
+        });
+        if (!sheet) return;
+        var $sheet = $target.closest(sheet.selector);
+        // Text fields and sliders keep their own drags.
+        if ($target.closest('input, textarea, select, [contenteditable="true"]').length) return;
+        if (this.scrolled_below_top(e.target, $sheet[0])) return;
+        var touch = e.touches[0];
+        this.sheet_drag = {
+            sheet: sheet,
+            $sheet: $sheet,
+            $overlay: sheet.overlay ? $(sheet.overlay) : $(),
+            start_x: touch.clientX,
+            start_y: touch.clientY,
+            axis: null,
+            dy: 0,
+            samples: [{ y: touch.clientY, t: e.timeStamp }]
+        };
+    },
+
+    handle_sheet_touchmove: function (e) {
+        var drag = this.sheet_drag;
+        if (!drag) return;
+        var touch = e.touches[0];
+        var dy = touch.clientY - drag.start_y;
+        if (!drag.axis) {
+            drag.axis = this.utils.gesture_axis(touch.clientX - drag.start_x, dy);
+            if (!drag.axis) return;
+            if (drag.axis !== 'vertical' || dy <= 0) {
+                this.sheet_drag = null;
+                return;
+            }
+            drag.height = drag.$sheet[0].getBoundingClientRect().height;
+            drag.$sheet.addClass('NB-mobile-sheet-dragging');
+        }
+        e.preventDefault();
+        drag.dy = Math.max(0, dy);
+        drag.samples.push({ y: touch.clientY, t: e.timeStamp });
+        if (drag.samples.length > 5) drag.samples.shift();
+        drag.$sheet[0].style.transform = 'translate3d(0, ' + drag.dy + 'px, 0)';
+        drag.$overlay.css('opacity', Math.max(0, 1 - drag.dy / drag.height));
+    },
+
+    handle_sheet_touchend: function () {
+        var drag = this.sheet_drag;
+        this.sheet_drag = null;
+        if (!drag || !drag.axis) return;
+        var el = drag.$sheet[0];
+        var first = drag.samples[0];
+        var last = drag.samples[drag.samples.length - 1];
+        var velocity = (last.y - first.y) / Math.max(1, last.t - first.t);
+        drag.$sheet.removeClass('NB-mobile-sheet-dragging');
+        var settle = function () {
+            el.style.transition = '';
+            el.style.transform = '';
+            drag.$overlay.css('opacity', '');
+        };
+        if (!this.utils.swipe_completes(drag.dy, velocity, drag.height)) {
+            el.style.transition = 'transform 260ms cubic-bezier(0.2, 0.85, 0.25, 1)';
+            el.style.transform = 'translate3d(0, 0, 0)';
+            drag.$overlay.css('opacity', '');
+            _.delay(settle, 280);
+            return;
+        }
+        // A fling keeps its speed for the rest of the way down.
+        var remaining = drag.height - drag.dy;
+        var duration = Math.round(Math.min(320, Math.max(120, remaining / Math.max(velocity, 1.2))));
+        el.style.transition = 'transform ' + duration + 'ms cubic-bezier(0.25, 0.7, 0.35, 1)';
+        el.style.transform = 'translate3d(0, ' + Math.round(drag.height + 24) + 'px, 0)';
+        drag.$overlay.css({ transition: 'opacity ' + duration + 'ms', opacity: 0 });
+        _.delay(function () {
+            drag.sheet.close();
+            drag.$overlay.css('transition', '');
+            if (drag.sheet.reused) settle();
+        }, duration);
     },
 
     // The feed, folder and story views already open their manage menu on contextmenu. The
