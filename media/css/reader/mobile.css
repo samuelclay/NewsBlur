@@ -2360,6 +2360,24 @@ body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-playe
     grid-area: close;
 }
 
+/* mobile.css: a story read aloud adds Next story beside play/pause, as the iOS and Android mini
+   players do (media_player_view.js listen_play_next). */
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-mini:has(.NB-media-player-next) {
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "art info play next close";
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-next {
+    grid-area: next;
+    width: 36px;
+    height: 36px;
+}
+
+body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-next svg {
+    width: 18px;
+    height: 18px;
+}
+
 body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice,
 body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-listen-voice-settings,
 body.NB-mobile .NB-mobile-player:not(.NB-mobile-player-expanded) .NB-media-player-settings,
