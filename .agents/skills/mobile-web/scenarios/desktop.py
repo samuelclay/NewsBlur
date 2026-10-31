@@ -38,9 +38,14 @@ def run(ctx):
         "window.NEWSBLUR && NEWSBLUR.assets && NEWSBLUR.assets.folders.length", timeout=30000
     )
     ctx.wait(1000)
-    rows = ctx.evaluate("$('.NB-feedlist .feed:visible').length")
+    drawn = ctx.evaluate(
+        "(() => ({rows: $('.NB-feedlist .feed:visible').length, counts: $('.NB-feedlist .unread_count:visible').length, "
+        "filter: $('.NB-intelligence-slider .NB-active').length}))()"
+    )
     ctx.check(
-        "desktop draws the kept feed list before /reader/feeds answers", held and rows > 0, (len(held), rows)
+        "desktop draws the kept feed list, with counts and filter, before /reader/feeds answers",
+        held and drawn["rows"] > 0 and drawn["counts"] > 0 and drawn["filter"],
+        (len(held), drawn),
     )
     for route in held:
         route.continue_()

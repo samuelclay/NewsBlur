@@ -37,11 +37,20 @@ def run(ctx):
     ctx.wait(1500)
     early = ctx.evaluate(
         "(() => ({rows: $('.NB-feedlist .feed:visible').length, held: !NEWSBLUR.assets.feed_list_subscriptions.share_ext_token, "
-        "counts: $('.NB-feedlist .feed .unread_count:visible').length}))()"
+        "counts: $('.NB-feedlist .unread_count:visible').length, "
+        "filter: $('.NB-intelligence-slider .NB-active').length, "
+        "unread_view: /unread_view_/.test($('.NB-feedlists').attr('class'))}))()"
     )
+    # The cached draw once ran before reader.js bound its own feed list handlers, so the
+    # intelligence filter never loaded: no counts, no feeds inside folders, no filter selected.
     ctx.check(
-        "the feed list draws, with its counts, before /reader/feeds answers",
-        len(held) >= 1 and early["rows"] > 0 and early["held"],
+        "the feed list draws, with its counts and filter, before /reader/feeds answers",
+        len(held) >= 1
+        and early["rows"] > 0
+        and early["held"]
+        and early["counts"] > 0
+        and early["filter"]
+        and early["unread_view"],
         {"held_requests": len(held), **early},
     )
     ctx.shot("drawn-from-cache")

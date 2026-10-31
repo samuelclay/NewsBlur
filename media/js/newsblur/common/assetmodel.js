@@ -769,14 +769,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             return;
         }
 
-        this.feed_list_subscriptions = cached;
-        this.feeds.set(cached, { parse: true, silent: true });
-        this.flags['feed_list_from_cache'] = true;
-        try {
-            apply_subscriptions(cached);
-        } finally {
-            this.flags['feed_list_from_cache'] = false;
-        }
+        // views/feed_list_view.js asks while reader.js init is still running, before the reader
+        // binds its own feed list handlers (the intelligence filter, dashboard rivers), so the
+        // cached list draws once init returns, as a server's answer always has.
+        _.defer(function () {
+            self.feed_list_subscriptions = cached;
+            self.feeds.set(cached, { parse: true, silent: true });
+            self.flags['feed_list_from_cache'] = true;
+            try {
+                apply_subscriptions(cached);
+            } finally {
+                self.flags['feed_list_from_cache'] = false;
+            }
+        });
         // Requested directly rather than with feeds.fetch, which would merge the server's stored
         // counts over newer ones, and alongside refresh_feeds rather than queued ahead of it.
         // A failed refresh leaves the cached list up instead of the feed list's load error.
