@@ -91,12 +91,15 @@ def check_regressions(ctx, feed_id):
     check_layout_menu(ctx, feed_id)
     check_inline_scrolls_to_story(ctx)
     check_story_buttons(ctx)
+    check_stale_story_button(ctx)
+    check_next_unread_into_full_screen(ctx, feed_id)
     check_story_list_pills(ctx)
     check_story_iframe_sandbox(ctx, feed_id)
     check_story_toolbar_fits(ctx)
     check_cross_feed_back(ctx, feed_id)
     check_touch_hover(ctx, feed_id)
     check_mark_read_menu(ctx, feed_id)
+    check_mark_read_confirm_sheet(ctx, feed_id)
     check_discovery_back(ctx)
     check_folder_pills(ctx)
     check_dashboard_edge_to_edge(ctx)
@@ -658,6 +661,96 @@ def check_story_buttons(ctx):
         and ctx.evaluate(
             "$('#story_titles .NB-selected .NB-story-detail .NB-feed-story-content').length == 1"
         ),
+        ctx.state(),
+    )
+
+
+def check_mark_read_confirm_sheet(ctx, feed_id):
+    """Moving mark read to the nav bar hid the feed bar's mark read controls, which every other
+    bulk mark read confirms in, so a long-pressed "Mark newer stories as read" marked read
+    without asking. A phone now asks in a sheet. reader.js mark_feed_as_read is stubbed so the
+    dev account keeps its unread stories. Expects to be on the story list."""
+    page = ctx.page
+    ctx.evaluate(
+        "(() => { NEWSBLUR.Preferences.mark_read_river_confirm = 'feeds_folders'; window.__nb_marked = []; "
+        "NEWSBLUR.reader.mark_feed_as_read = function (feed_id, days) { window.__nb_marked.push(feed_id); }; })()"
+    )
+    asked = []
+    for answer in (".NB-mobile-confirm-no", ".NB-mobile-confirm-yes"):
+        # Pressed the way the reader's other callers reach it, without the nav menu's confirmation.
+        ctx.evaluate("(() => { $('.right-pane .NB-feedbar-mark-feed-read').first().trigger('click'); })()")
+        ctx.wait(600)
+        asked.append(
+            ctx.evaluate(
+                "(() => ({sheet: $('.NB-mobile-confirm-popover:visible').length, marked: window.__nb_marked.length}))()"
+            )
+        )
+        page.locator(answer).tap()
+        ctx.wait(600)
+    marked = ctx.evaluate("window.__nb_marked")
+    ctx.check(
+        "marking read outside the nav menu asks first in a sheet, and Cancel marks nothing",
+        all(a["sheet"] == 1 and a["marked"] == 0 for a in asked) and marked == [feed_id],
+        (asked, marked),
+    )
+
+
+def check_next_unread_into_full_screen(ctx, feed_id):
+    """Next unread from an inline list into a feed that opens stories full screen selected the
+    story there, but never showed it. Opening the next feed is what the reader does when this
+    feed runs out, done here directly so no stories are marked read. Expects an inline story list."""
+    page = ctx.page
+    others = [
+        feed
+        for feed in ctx.visible_feeds()
+        if feed["id"] != feed_id and (feed["unread"] or feed["shows_read"])
+    ]
+    if not others:
+        ctx.check("Next unread into a full-screen feed has a second feed to test with", False)
+        return
+    other = others[0]["id"]
+    ctx.evaluate(
+        "(() => { NEWSBLUR.assets.save_phone_layout(%d, 'page'); window.__nb_next = "
+        "NEWSBLUR.reader.open_next_unread_story_across_feeds; NEWSBLUR.reader.open_next_unread_story_across_feeds = "
+        "function () { NEWSBLUR.reader.open_feed(%d); }; })()" % (other, other)
+    )
+    page.locator(".right-pane .NB-taskbar-nav .NB-task-story-next-unread").tap()
+    page.wait_for_function(
+        f"NEWSBLUR.reader.active_feed == {other} && NEWSBLUR.assets.stories.length > 0", timeout=30000
+    )
+    ctx.evaluate("(() => { NEWSBLUR.assets.stories.at(0).set('selected', true); })()")
+    ctx.wait(1300)
+    state = ctx.state()
+    ctx.evaluate("(() => { NEWSBLUR.reader.open_next_unread_story_across_feeds = window.__nb_next; })()")
+    ctx.check(
+        "Next unread from an inline list opens a full-screen feed's story on the story screen",
+        state["screen"] == "story" and state["story"],
+        state,
+    )
+    if state["screen"] == "story":
+        page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+        ctx.wait(900)
+    page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+    ctx.wait(1200)
+    ctx.open_feed(feed_id)
+    ctx.set_layout("list")
+
+
+def check_stale_story_button(ctx):
+    """A Previous that selected nothing left its request standing, so tapping a story in an
+    inline list soon after opened it on the story screen. Expects the story list."""
+    page = ctx.page
+    ctx.set_layout("grid")
+    ctx.tap_story(0)
+    page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    page.locator(".right-pane .NB-taskbar-nav .NB-task-story-previous").tap()
+    ctx.wait(600)
+    ctx.set_layout("list")
+    ctx.tap_story(2)
+    ctx.check(
+        "a Previous that selected nothing doesn't open the next tapped story full screen",
+        ctx.state()["screen"] == "titles",
         ctx.state(),
     )
 

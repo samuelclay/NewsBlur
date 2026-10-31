@@ -506,6 +506,8 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         this.titles_parent = this.screen === 'dashboard' ? 'dashboard' : 'feeds';
         this.titles_parent_depth = this.depth;
+        // A Previous or Next unread that selected nothing doesn't carry over to a new list.
+        this.open_on_select = null;
         this.expect_entry('titles');
         this.show_screen('titles', { direction: 'push' });
     },
@@ -585,7 +587,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         // handle_story_button: Next unread may load the next feed first, hence the long wait.
         var open_on_select = this.open_on_select && Date.now() - this.open_on_select < 20000;
         this.open_on_select = null;
-        if (open_on_select && this.screen === 'titles') {
+        if (open_on_select && this.screen === 'titles' && this.opens_story_page()) {
             this.open_story(story);
             return;
         }
@@ -1146,10 +1148,11 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
     },
 
-    // The bar's Previous and Next unread select a story with the reader's own buttons. A list
-    // that opens stories full screen, or a grid, then shows it on the story screen.
+    // The bar's Previous and Next unread select a story with the reader's own buttons. Next unread
+    // may carry on into another feed, so story_selected decides by the layout of the list the
+    // story lands in: full screen or grid shows it on the story screen, inline expands it there.
     handle_story_button: function (e) {
-        if (!this.active || this.screen !== 'titles' || !this.opens_story_page()) return;
+        if (!this.active || this.screen !== 'titles') return;
         if (!$(e.target).closest('.right-pane .NB-taskbar-nav .NB-taskbar-button').length) return;
         this.open_on_select = Date.now();
     },

@@ -3794,11 +3794,6 @@
         },
 
         show_mark_read_confirm: function ($container, callback, options) {
-            if (!$container || !$container.length) {
-                callback();
-                return;
-            }
-
             options = options || {};
             if (typeof options === 'string') options = { message: options };
 
@@ -3809,6 +3804,22 @@
                 message = interpolate(ngettext("Mark older than %(count)s day as read?", "Mark older than %(count)s days as read?", options.days), {count: options.days}, true);
             } else {
                 message = gettext('Mark all as read?');
+            }
+
+            // reader.js: a phone hides the feed bar this confirms in, so it asks in a bottom sheet
+            // (views/mobile_confirm_popover.js) instead of marking read unasked.
+            if (NEWSBLUR.app.mobile && NEWSBLUR.app.mobile.is_active()) {
+                NEWSBLUR.MobileConfirmPopover.create({
+                    message: message,
+                    confirm_label: gettext('Mark as read'),
+                    on_confirm: callback
+                });
+                return;
+            }
+
+            if (!$container || !$container.length) {
+                callback();
+                return;
             }
 
             // Remove any existing confirmation
