@@ -158,8 +158,10 @@
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
-                // Restore media player state from server (only on initial load)
-                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
+                // Restore media player state from server (only on initial load). A feed list drawn
+                // from its cache (common/assetmodel.js load_feeds) waits for the server's state.
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored &&
+                    !NEWSBLUR.assets.flags['feed_list_from_cache']) {
                     NEWSBLUR.app.media_player.restore_state();
                     NEWSBLUR.app.media_player.setup_beforeunload();
                 }
@@ -168,6 +170,20 @@
                     NEWSBLUR.growth_prompts.check_on_load();
                 }
             }, this));
+
+            NEWSBLUR.assets.feeds.bind('loaded_from_server', function () {
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
+                    NEWSBLUR.app.media_player.restore_state();
+                    NEWSBLUR.app.media_player.setup_beforeunload();
+                }
+            });
+            // reader.js: the next page load draws the feed list with the unread counts on screen.
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') NEWSBLUR.assets.save_feed_list_counts();
+            });
+            window.addEventListener('pagehide', function () {
+                NEWSBLUR.assets.save_feed_list_counts();
+            });
 
             this.handle_mouse_indicator_hover();
             this.handle_login_and_signup_forms();
@@ -231,6 +247,9 @@
 
         logout: function () {
             console.log(['Logout']);
+            // reader.js: nothing is written back as the page hides once signed out.
+            NEWSBLUR.assets.feed_list_subscriptions = null;
+            if (NEWSBLUR.feed_list_cache) NEWSBLUR.feed_list_cache.clear();
             window.location.href = "/reader/logout";
         },
 

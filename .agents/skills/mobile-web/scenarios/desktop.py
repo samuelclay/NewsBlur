@@ -27,4 +27,26 @@ def run(ctx):
     )
     ctx.check("history entries are left untagged", not (ctx.state()["entry"]))
     ctx.shot("02-feed")
+
+    # common/feed_list_cache.js: desktop draws the kept feed list before /reader/feeds answers too.
+    page = ctx.page
+    page.wait_for_function("NEWSBLUR.assets.feed_list_subscriptions", timeout=30000)
+    held = []
+    page.route("**/reader/feeds?**", lambda route: held.append(route))
+    page.goto("https://localhost/", wait_until="load")
+    page.wait_for_function(
+        "window.NEWSBLUR && NEWSBLUR.assets && NEWSBLUR.assets.folders.length", timeout=30000
+    )
+    ctx.wait(1000)
+    rows = ctx.evaluate("$('.NB-feedlist .feed:visible').length")
+    ctx.check(
+        "desktop draws the kept feed list before /reader/feeds answers", held and rows > 0, (len(held), rows)
+    )
+    for route in held:
+        route.continue_()
+    page.unroute("**/reader/feeds?**")
+    page.wait_for_function(
+        "NEWSBLUR.assets.feed_list_subscriptions && NEWSBLUR.assets.feed_list_subscriptions.share_ext_token",
+        timeout=30000,
+    )
     ctx.check_no_page_errors()
