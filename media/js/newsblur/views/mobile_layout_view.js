@@ -768,15 +768,20 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         this.swipe = null;
         this.browser_edge_touch_at = null;
         if (!this.active || e.touches.length !== 1) return;
-        if (this.browser_owns_edge_swipe()) {
-            if (this.is_browser_edge_touch(e.touches[0].clientX)) this.browser_edge_touch_at = Date.now();
+        var touch = e.touches[0];
+        var browser_edge = this.browser_owns_edge_swipe() && this.is_browser_edge_touch(touch.clientX);
+        if (browser_edge) {
+            this.browser_edge_touch_at = Date.now();
             return;
         }
         if (this.transition) return;
         if (this.screen === 'feeds' || this.is_overlay_open()) return;
         if ($(e.target).closest('.NB-media-player').length) return;
-        var touch = e.touches[0];
-        if (!this.is_edge_touch(touch.clientX)) return;
+        // The story list and dashboard go back from a swipe anywhere on them, as in the iOS and
+        // Android apps. The story screen's own swipe pages stories, so it goes back from the edge.
+        // In an iOS browser the edges are the browser's own swipe, so only the rest is the layout's.
+        var from_anywhere = _.contains(['titles', 'dashboard'], this.screen) && this.swipes_from_anywhere(e.target);
+        if (this.browser_owns_edge_swipe() ? !from_anywhere : !(from_anywhere || this.is_edge_touch(touch.clientX))) return;
         this.swipe = {
             start_x: touch.clientX,
             start_y: touch.clientY,
@@ -784,6 +789,19 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             dx: 0,
             samples: [{ x: touch.clientX, t: e.timeStamp }]
         };
+    },
+
+    // Anywhere except text fields, sliders and things that scroll sideways, such as a wide table
+    // in a story opened inline or Add + Discover's tabs.
+    swipes_from_anywhere: function (target) {
+        if ($(target).closest('input, textarea, select, [contenteditable="true"]').length) return false;
+        for (var node = target; node && node !== document.body; node = node.parentNode) {
+            if (node.scrollWidth > node.clientWidth + 2) {
+                var overflow_x = getComputedStyle(node).overflowX;
+                if (overflow_x === 'auto' || overflow_x === 'scroll') return false;
+            }
+        }
+        return true;
     },
 
     handle_touchmove: function (e) {

@@ -92,4 +92,12 @@ def run(ctx):
         slid and ctx.state()["screen"] == "feeds",
         {"slid": slid, "state": ctx.state()},
     )
+    # Only the edges are Safari's. A swipe from the middle of the story list is the layout's own.
+    ctx.open_feed(feed_id)
+    ctx.touch.swipe(120, 420, ctx.viewport["width"] - 20, 425, steps=12)
+    ctx.wait(900)
+    ctx.check(
+        "a swipe from the middle of the story list still goes back in Safari",
+        ctx.state()["screen"] == "feeds",
+    )
     ctx.check_no_page_errors()

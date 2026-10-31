@@ -93,6 +93,9 @@ def check_regressions(ctx, feed_id):
     check_story_buttons(ctx)
     check_list_follows_pager(ctx)
     check_sheet_swipe(ctx)
+    check_swipe_back_anywhere(ctx)
+    ctx.open_feed(feed_id)
+    ctx.set_layout("list")
     check_stale_story_button(ctx)
     check_next_unread_into_full_screen(ctx, feed_id)
     check_story_list_pills(ctx)
@@ -875,6 +878,30 @@ def check_sheet_swipe(ctx):
     ctx.check(
         "dragging a modal down closes it",
         not ctx.evaluate("!!document.querySelector('#simplemodal-container')"),
+    )
+
+
+def check_swipe_back_anywhere(ctx):
+    """The story list only went back from a swipe at the screen's edge. Like the iOS and Android
+    apps, a swipe right anywhere on it goes back now, while a short one snaps back and a vertical
+    one scrolls. Expects the story list and leaves it on the feed list."""
+    width = ctx.viewport["width"]
+    ctx.touch.swipe(140, 420, 200, 425, steps=6)
+    ctx.wait(700)
+    short = ctx.state()
+    ctx.touch.swipe(200, 600, 205, 300, steps=8)
+    ctx.wait(700)
+    vertical = ctx.state()
+    ctx.touch.swipe(120, 420, width - 20, 425, steps=12)
+    ctx.wait(900)
+    full = ctx.state()
+    ctx.check(
+        "a swipe right from the middle of the story list goes back, a short or vertical one doesn't",
+        short["screen"] == "titles"
+        and not short["transitioning"]
+        and vertical["screen"] == "titles"
+        and full["screen"] == "feeds",
+        (short["screen"], vertical["screen"], full["screen"]),
     )
 
 

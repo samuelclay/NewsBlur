@@ -672,6 +672,13 @@ body.NB-mobile .right-pane > .content-pane {
     z-index: 1 !important;
 }
 
+/* mobile.css: the story list and dashboard leave sideways drags to the page, which goes back
+   from a swipe anywhere on them (mobile_layout_view.js swipes_from_anywhere). */
+body.NB-mobile .content-pane > #story_titles,
+body.NB-mobile #NB-splash > .NB-splash-modules {
+    touch-action: pan-y pinch-zoom;
+}
+
 body.NB-mobile .content-pane > #story_titles {
     position: absolute !important;
     top: 0 !important;
