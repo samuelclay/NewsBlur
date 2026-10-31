@@ -434,6 +434,8 @@
 "Hide Changes" = "Hide Changes";
 "Hide Sidebar" = "Hide Sidebar";
 "Hide Story Titles" = "Hide Story Titles";
+"Hide [training level]" = "Hide";
+"Hide beats any number of likes:" = "Hide beats any number of likes:";
 "Hide hidden stories" = "Hide hidden stories";
 "Hide status bar" = "Hide status bar";
 "Hide toolbars when reading" = "Hide toolbars when reading";
@@ -992,7 +994,7 @@
 "Story count" = "Story count";
 "Story detail" = "Story detail";
 "Story image" = "Story image";
-"Story is hidden (super dislike wins)" = "Story is hidden (super dislike wins)";
+"Story is always hidden" = "Story is always hidden";
 "Story is shown (like wins)" = "Story is shown (like wins)";
 "Story language" = "Story language";
 "Story list toolbar position" = "Story list toolbar position";
@@ -1015,8 +1017,6 @@
 "Summarize" = "Summarize";
 "Sunday" = "Sunday";
 "Sunrise Gold" = "Sunrise Gold";
-"Super dislike" = "Super dislike";
-"Super dislike beats any number of likes:" = "Super dislike beats any number of likes:";
 "Support Forum" = "Support Forum";
 "Swipe from left edge" = "Swipe from left edge";
 "Swipe from the left edge while reading" = "Swipe from the left edge while reading";

@@ -24,6 +24,14 @@ msgstr " - Klasör: Tüm Sitelerin Haberleri"
 msgid " - Folder: Top Level"
 msgstr " - Klasör: En üst düzey"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr ""
+"\"%(value)s\" tüm siteler için veya başka bir klasörde zaten eğitilmiş. Bunun yerine o sınıflandırıcının "
+"kapsamını değiştirin."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100 ABD doları/yıl (Pro: sınırsız kaynak)"
 

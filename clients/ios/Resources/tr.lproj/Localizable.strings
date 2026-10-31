@@ -434,6 +434,8 @@
 "Hide Changes" = "Değişiklikleri gizle";
 "Hide Sidebar" = "Kenar çubuğunu gizle";
 "Hide Story Titles" = "Haber başlıklarını gizle";
+"Hide [training level]" = "Gizle";
+"Hide beats any number of likes:" = "“Gizle”, istediğiniz sayıda beğeninin önüne geçer:";
 "Hide hidden stories" = "Gizli haberleri gizle";
 "Hide status bar" = "Durum çubuğunu gizle";
 "Hide toolbars when reading" = "Okurken araç çubuklarını gizle";
@@ -992,7 +994,7 @@
 "Story count" = "Haber sayısı";
 "Story detail" = "Haber ayrıntısı";
 "Story image" = "Haber görseli";
-"Story is hidden (super dislike wins)" = "Haber gizlenir (“Hiç beğenme” baskın)";
+"Story is always hidden" = "Haber her zaman gizli";
 "Story is shown (like wins)" = "Haber gösterilir (beğeni baskın)";
 "Story language" = "Haberin dili";
 "Story list toolbar position" = "Haber listesi araç çubuğu konumu";
@@ -1015,8 +1017,6 @@
 "Summarize" = "Özetle";
 "Sunday" = "Pazar";
 "Sunrise Gold" = "Gün Doğumu Altını";
-"Super dislike" = "Hiç beğenme";
-"Super dislike beats any number of likes:" = "“Hiç beğenme”, istediğiniz sayıda beğeninin önüne geçer:";
 "Support Forum" = "Destek Forumu";
 "Swipe from left edge" = "Sol kenardan kaydır";
 "Swipe from the left edge while reading" = "Okurken sol kenardan kaydırın";

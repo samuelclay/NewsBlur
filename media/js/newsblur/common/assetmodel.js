@@ -1545,9 +1545,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return user;
     },
 
-    save_classifier: function (data, callback) {
+    save_classifier: function (data, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.make_request('/classifier/save', data, callback);
+            this.make_request('/classifier/save', data, callback, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
         }

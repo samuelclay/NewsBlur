@@ -728,14 +728,14 @@
     <string name="intel_author_header">Авторы статьи</string>
     <string name="feed_intel_author_header">Авторы</string>
     <string name="intel_feed_header">Всё от издателя</string>
-    <string name="intel_super_dislike">Очень не нравится</string>
-    <string name="explainer_super_dislike">Очень не нравится</string>
+    <string name="intel_super_dislike">Скрывать подходящие статьи</string>
+    <string name="explainer_super_dislike">Скрыть</string>
     <string name="explainer_like">Нравится</string>
     <string name="explainer_dislike">Не нравится</string>
     <string name="explainer_beats">сильнее</string>
     <string name="explainer_example1_header">Один лайк перевешивает любое количество дизлайков</string>
     <string name="explainer_example1_result">Статья отображается в режиме «Фокус»</string>
-    <string name="explainer_example2_header">Один супердизлайк отменяет всё</string>
+    <string name="explainer_example2_header">«Скрыть» важнее всего, даже отметок «Нравится»</string>
     <string name="explainer_example2_result">Статья всегда скрыта</string>
     <string name="auto">Авто</string>
     <string name="light">Светлая</string>

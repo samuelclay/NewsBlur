@@ -8746,12 +8746,17 @@ body {
 /* media/css/reader/reader.css — compact filter toolbar shown above story
    titles by media/js/newsblur/views/classifier_filter_banner_view.js. */
 
+/* The tools row spans under the actions as well, so "Back to trainer" only
+   shares the heading's row and never narrows the train and notify box. */
 .NB-classifier-filter-banner {
     --classifier-accent: #75628E;
     --classifier-tint: #F4F1F7;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "icon content actions"
+        "icon tools tools";
+    align-items: start;
     padding: 12px;
     border-bottom: 1px solid rgba(57, 51, 65, 0.16);
     box-shadow: inset 3px 0 0 var(--classifier-accent);
@@ -8791,11 +8796,13 @@ body {
 }
 
 .NB-classifier-filter-banner-icon {
+    grid-area: icon;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 30px;
     height: 30px;
+    margin-right: 10px;
     flex-shrink: 0;
     color: var(--classifier-accent);
     background: rgba(255, 255, 255, 0.58);
@@ -8809,7 +8816,7 @@ body {
 }
 
 .NB-classifier-filter-banner-content {
-    flex: 1;
+    grid-area: content;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -8855,11 +8862,13 @@ body {
 }
 
 .NB-classifier-filter-banner-tools {
+    grid-area: tools;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 7px;
-    margin-top: 4px;
+    margin-top: 7px;
     opacity: 1;
 }
 .NB-classifier-filter-view-section,
@@ -8898,8 +8907,12 @@ body {
     letter-spacing: 0.055em;
     text-transform: uppercase;
 }
+/* Wraps only as a last resort, when a pane or a translation is too narrow for
+   the container queries below, so no button ever hangs outside its box. */
 .NB-classifier-filter-segmented {
     display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
     overflow: hidden;
     padding: 1px;
     border: 0;
@@ -9075,10 +9088,14 @@ body {
     outline: 0;
 }
 
+/* The negative margins center the 32px buttons on the heading's first line
+   without making the heading row any taller. */
 .NB-classifier-filter-banner-actions {
+    grid-area: actions;
     display: flex;
     align-items: center;
     gap: 4px;
+    margin: -7px 0 -7px 10px;
     flex-shrink: 0;
 }
 
@@ -9312,10 +9329,13 @@ body {
     .NB-classifier-filter-narrow-hint {
         display: block;
     }
+    /* No grid area, so the banner's padding box places it rather than the area */
     .NB-classifier-filter-banner-actions {
+        grid-area: auto;
         position: absolute;
         top: 6px;
         right: 4px;
+        margin: 0;
     }
     .NB-classifier-filter-banner-clear {
         width: 26px;
@@ -10706,7 +10726,7 @@ form.opml_import_form input {
 
 .NB-modal-classifiers .NB-classifier-container .NB-classifier-filter-view-btn {
     position: static;
-    margin: 0 0 0 2px;
+    margin: 0 4px 0 2px;
 }
 
 .NB-classifier-container .NB-classifier-count {
@@ -10933,6 +10953,770 @@ form.opml_import_form input {
 
 .NB-manage-training-content .NB-modal-submit-bottom {
     flex-shrink: 0;
+}
+
+.NB-manage-training-empty-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Manage tab add panel: type a classifier without finding it in a story (reader_classifier.js).
+   Row one is what to match (type, phrase, regex) fused into one field; row two is where it
+   applies and the Like / Dislike buttons that save it. */
+.NB-manage-add {
+    margin: 0 12px 14px;
+    padding: 10px 12px 12px;
+    background-color: #F7F6F1;
+    border: 1px solid #E4E2D8;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+/* Site by Site pages put the panel right under the site's title bar */
+.NB-tab-sitebyside .NB-manage-add {
+    margin-top: 12px;
+}
+
+.NB-manage-add-heading {
+    margin: 0 0 8px 2px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-manage-add-match {
+    display: flex;
+    align-items: stretch;
+    height: 34px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.NB-manage-add-match:focus-within {
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+/* Regex on: the story trainer's regex input look (.NB-classifier-input-regex-mode) */
+.NB-manage-add-match.NB-regex-mode {
+    background-color: #fdfcff;
+    border-color: #b8b0ff;
+}
+
+.NB-manage-add-match.NB-regex-mode:focus-within {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+}
+
+.NB-manage-add-regex-badge {
+    display: none;
+    align-self: center;
+    margin-left: 10px;
+    padding: 3px 6px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: white;
+    background-color: #7B68EE;
+    border-radius: 3px;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-regex-badge {
+    display: inline-block;
+}
+
+.NB-manage-add-match.NB-regex-mode .NB-manage-add-input {
+    padding-left: 8px;
+}
+
+.NB-manage-add-type {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.NB-manage-add-type {
+    flex: 0 0 auto;
+    padding: 0 28px 0 12px;
+    font-weight: 600;
+    color: #505050;
+    background-color: #FAFAF7;
+    border: none;
+    border-right: 1px solid #E4E2D8;
+}
+
+.NB-manage-add-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 12px;
+    font-size: 13px;
+    color: #303030;
+    background: transparent;
+    border: none;
+}
+
+.NB-manage-add-type:focus,
+.NB-manage-add-input:focus {
+    outline: none;
+}
+
+.NB-manage-add-type:focus-visible {
+    background-color: #F0EFE8;
+}
+
+.NB-manage-add-input::placeholder {
+    color: #A8A69C;
+}
+
+.NB-manage-add-regex {
+    flex: 0 0 auto;
+    width: 40px;
+    padding: 0;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
+    cursor: pointer;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.NB-manage-add-regex:hover {
+    color: #5C6BC0;
+    background-color: #F3F4FB;
+}
+
+.NB-manage-add-regex.NB-active {
+    color: white;
+    background-color: #7B68EE;
+    border-left-color: #7B68EE;
+}
+
+.NB-manage-add-regex:focus-visible {
+    outline: 2px solid #7986CB;
+    outline-offset: -2px;
+}
+
+.NB-manage-add-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 10px;
+}
+
+.NB-manage-add-scope-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.NB-manage-add-scope-label {
+    font-size: 12px;
+    color: #8C8A80;
+    white-space: nowrap;
+}
+
+.NB-manage-add-notice {
+    flex: 1 1 120px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+/* Like / Dislike / Hide toggle, in the pill colors of the classifier it makes */
+.NB-manage-add-sentiments {
+    display: inline-flex;
+    height: 30px;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.NB-manage-add-sentiment {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid #E4E2D8;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.NB-manage-add-sentiment:first-child {
+    border-left: none;
+    padding-left: 13px;
+}
+
+.NB-manage-add-sentiment:last-child {
+    padding-right: 13px;
+}
+
+.NB-manage-add-sentiment:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: -2px;
+}
+
+/* Thumbs are masks filled with the text color, so they follow every state and theme */
+.NB-manage-add-like .NB-manage-add-sentiment-icon,
+.NB-manage-add-dislike .NB-manage-add-sentiment-icon,
+.NB-manage-add-hide-icon > span {
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    -webkit-mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
+    mask: url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center / contain;
+}
+
+.NB-manage-add-like .NB-manage-add-sentiment-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+    mask-image: url('/media/embed/icons/nouns/thumbs-up.svg');
+}
+
+/* Hide is the super dislike: two stacked thumbs down, like the filter banner's Hide button */
+.NB-manage-add-hide-icon {
+    position: relative;
+    width: 17px;
+    height: 15px;
+}
+
+.NB-manage-add-hide-icon > span {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+}
+
+.NB-manage-add-hide-icon-back {
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+}
+
+.NB-manage-add-hide-icon-front {
+    right: 0;
+    bottom: 0;
+}
+
+/* The pill colors: like green, dislike red, and the super dislike's deeper crimson */
+.NB-manage-add-like {
+    color: #2E8229;
+}
+
+.NB-manage-add-dislike {
+    color: #A90103;
+}
+
+.NB-manage-add-super-dislike {
+    color: #6B0001;
+}
+
+.NB-manage-add-like:hover {
+    background-color: #EEF6EC;
+}
+
+.NB-manage-add-dislike:hover {
+    background-color: #FBEDED;
+}
+
+.NB-manage-add-super-dislike:hover {
+    background-color: #F6EAEA;
+}
+
+.NB-manage-add-sentiment.NB-active {
+    color: white;
+}
+
+.NB-manage-add-like.NB-active {
+    background-color: #34912E;
+}
+
+.NB-manage-add-dislike.NB-active {
+    background-color: #A90103;
+}
+
+.NB-manage-add-super-dislike.NB-active {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #34912E;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, opacity 0.15s;
+}
+
+.NB-manage-add-button-dislike {
+    background-color: #A90103;
+}
+
+.NB-manage-add-button-super-dislike {
+    background-color: #6B0001;
+}
+
+.NB-manage-add-button-like:hover:not(:disabled) {
+    background-color: #2E8228;
+}
+
+.NB-manage-add-button-dislike:hover:not(:disabled) {
+    background-color: #960102;
+}
+
+.NB-manage-add-button-super-dislike:hover:not(:disabled) {
+    background-color: #5A0001;
+}
+
+.NB-manage-add-button:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 2px;
+}
+
+.NB-manage-add-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+/* Shows that Enter presses Add while the phrase field has focus */
+.NB-manage-add-enter-hint {
+    display: none;
+    font-weight: normal;
+    opacity: 0.75;
+}
+
+.NB-manage-add-match:focus-within ~ .NB-manage-add-actions .NB-manage-add-button:not(:disabled) .NB-manage-add-enter-hint {
+    display: inline;
+}
+
+/* The ⓘ beside Like / Dislike / Hide opens what each one does (make_manage_add_opinions_sheet) */
+.NB-manage-add-opinions-info {
+    margin-left: -6px;
+    padding: 0 2px;
+    font-size: 15px;
+    line-height: 30px;
+    color: #A8A69C;
+    background: transparent;
+    border: none;
+    cursor: help;
+}
+
+.NB-manage-add-opinions-info:hover {
+    color: #606060;
+}
+
+.NB-manage-add-opinions-info:focus-visible {
+    outline: 2px solid #50A050;
+    outline-offset: 1px;
+    border-radius: 50%;
+}
+
+.NB-manage-add-opinion {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.NB-manage-add-opinion-name {
+    flex: 0 0 64px;
+    font-weight: bold;
+}
+
+.NB-manage-add-opinion-like .NB-manage-add-opinion-name {
+    color: #2E8229;
+}
+
+.NB-manage-add-opinion-dislike .NB-manage-add-opinion-name {
+    color: #A90103;
+}
+
+.NB-manage-add-opinion-super-dislike .NB-manage-add-opinion-name {
+    color: #6B0001;
+}
+
+.NB-manage-add-opinion-description {
+    color: #505050;
+}
+
+/* Folder and site picker (views/feed_folder_picker_view.js): a searchable list with folder
+   icons and favicons, used for every folder and site chooser. The select it wraps stays in
+   the page as the form field, hidden. */
+select.NB-feed-folder-picker-select {
+    display: none !important;
+}
+
+.NB-feed-folder-picker {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+/* A select with no width from CSS: wide enough for a folder name */
+.NB-feed-folder-picker-fit {
+    min-width: 160px;
+}
+
+.NB-manage-add .NB-feed-folder-picker {
+    width: 260px;
+}
+
+.NB-feed-folder-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 0 28px 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23909088' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid #D3D1C7;
+    border-radius: 6px;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: left;
+}
+
+.NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    outline: none;
+    border-color: #50A050;
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.15);
+}
+
+.NB-feed-folder-picker-trigger-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-feed-folder-picker-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.NB-feed-folder-picker-icon:empty {
+    display: none;
+}
+
+.NB-feed-folder-picker-icon svg,
+.NB-feed-folder-picker-icon img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border-radius: 2px;
+}
+
+.NB-feed-folder-picker-icon .NB-folder-icon-colored,
+.NB-feed-folder-picker-icon .NB-feed-icon-colored {
+    display: block;
+    width: 16px;
+    height: 16px;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.NB-feed-folder-picker-icon-global svg {
+    color: #8B5CF6;
+}
+
+.NB-feed-folder-picker-popover {
+    z-index: 100002;
+    padding: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: white;
+    border: 1px solid #D3D1C7;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+.NB-feed-folder-picker-search {
+    display: block;
+    width: 100%;
+    height: 30px;
+    margin: 0 0 6px;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #303030;
+    background-color: #FAFAF7;
+    border: 1px solid #E4E2D8;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.NB-feed-folder-picker-search:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-feed-folder-picker-search::placeholder {
+    color: #A8A69C;
+}
+
+/* Positioned so option offsetTop, used to keep the active option in view, is measured from the list */
+.NB-feed-folder-picker-list {
+    position: relative;
+    max-height: 300px;
+    overflow-y: auto;
+    outline: none;
+}
+
+.NB-feed-folder-picker-group {
+    padding: 8px 10px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8C8A80;
+}
+
+.NB-feed-folder-picker-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #303030;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.NB-feed-folder-picker-option.NB-hidden,
+.NB-feed-folder-picker-group.NB-hidden {
+    display: none;
+}
+
+.NB-feed-folder-picker-option.NB-active {
+    background-color: #EEF0E8;
+}
+
+.NB-feed-folder-picker-option[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* The title keeps its room; the parent path shown while searching gives way first */
+.NB-feed-folder-picker-option-title {
+    flex: 0 1 auto;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Parent folder, shown only while searching so same-named folders can be told apart */
+.NB-feed-folder-picker-option-path {
+    display: none;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    color: #A8A69C;
+}
+
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option-path {
+    display: inline;
+}
+
+.NB-feed-folder-picker-popover.NB-searching .NB-feed-folder-picker-option {
+    padding-inline-start: 10px !important;
+}
+
+.NB-feed-folder-picker-option[aria-selected="true"] {
+    font-weight: 600;
+}
+
+.NB-feed-folder-picker-option[aria-selected="true"]::after {
+    content: "\2713";
+    margin-left: auto;
+    padding-left: 8px;
+    font-weight: bold;
+    color: #34912E;
+}
+
+.NB-feed-folder-picker-empty {
+    padding: 10px;
+    font-size: 12px;
+    color: #8C8A80;
+}
+
+/* The picker in each place a folder or site select used to be, sized to its row.
+   Small: the add site popover, Organize Sites, Preferences and the briefing popover. */
+.NB-add-folder-row .NB-feed-folder-picker-trigger,
+.NB-modal-organizer .NB-feed-folder-picker-trigger,
+.NB-modal-preferences .NB-feed-folder-picker-trigger,
+.NB-briefing-popover .NB-feed-folder-picker-trigger,
+.NB-briefing-onboarding .NB-feed-folder-picker-trigger,
+.NB-badge-folders .NB-feed-folder-picker-trigger {
+    height: 26px;
+    gap: 6px;
+    padding: 0 24px 0 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    background-position: right 8px center;
+}
+
+.NB-add-folder-row .NB-feed-folder-picker-trigger {
+    height: 24px;
+    color: #555;
+    background-color: #FAFAFA;
+    border-color: #D8D8D8;
+}
+
+/* Add + Discover's own folder selects (views/add_site_view.js) */
+.NB-feed-folder-picker-for-NB-add-site-folder-select .NB-feed-folder-picker-trigger {
+    color: #333;
+    border-color: #D0D0D0;
+}
+
+.NB-add-site-webfeed-folder-row .NB-feed-folder-picker-trigger,
+.NB-feed-badge-actions-add-site > .NB-feed-folder-picker .NB-feed-folder-picker-trigger,
+.NB-trending-feed-card .NB-feed-badge-actions > .NB-feed-folder-picker .NB-feed-folder-picker-trigger {
+    height: 34px;
+    padding: 0 28px 0 12px;
+}
+
+.NB-add-site-google-news-input-row .NB-feed-folder-picker-trigger {
+    height: 40px;
+    padding: 0 28px 0 12px;
+    font-size: 14px;
+    border: 2px solid #D0D4D8;
+    border-radius: 8px;
+}
+
+/* Tiny: the manage menu's Move to folder row, and the folder half of Add + Discover's
+   folder-and-Add pills, which have no border of their own */
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger,
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 20px;
+    gap: 5px;
+    padding: 0 18px 0 5px;
+    font-size: 11px;
+    border-radius: 3px;
+    background-position: right 6px center;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon,
+.NB-menu-manage-confirm .NB-feed-folder-picker-icon > *,
+.NB-add-site-card-add-group .NB-feed-folder-picker-icon > *,
+.NB-badge-folder-add-group .NB-feed-folder-picker-icon > * {
+    flex-basis: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.NB-menu-manage-confirm .NB-feed-folder-picker-trigger {
+    border-color: #A0A0A0;
+}
+
+.NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    height: 22px;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* Focused and open keep their green border in every one of those places */
+.NB-feed-folder-picker .NB-feed-folder-picker-trigger:focus-visible,
+.NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    border-color: #50A050;
+}
+
+.NB-manage-add-notice .NB-classifier-scope-notice,
+.NB-manage-add-notice .NB-classifier-archive-notice,
+.NB-manage-add-notice .NB-classifier-url-notice,
+.NB-manage-add-notice .NB-classifier-pro-notice {
+    display: inline;
+    opacity: 1;
+    transform: none;
+    animation: none;
+    color: #807060;
+    white-space: normal;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-manage-add-notice .NB-classifier-url-notice a:hover {
+    text-decoration: underline;
+}
+
+.NB-manage-add-error {
+    color: #B91C1C;
+}
+
+.NB-manage-add-status {
+    color: #4a8f29;
+    font-weight: bold;
+}
+
+.NB-manage-classifier-item.NB-manage-classifier-item-added .NB-classifier,
+.NB-classifier-container.NB-classifier-container-added .NB-classifier {
+    box-shadow: 0 0 0 3px rgba(80, 160, 80, 0.45);
+    transition: box-shadow 0.3s ease-out;
 }
 
 /* Manage tab filter bar */
@@ -11284,14 +12068,18 @@ form.opml_import_form input {
     gap: 4px;
 }
 
+/* The pill's usual margins move to the item, so the matching-stories button
+   sits right beside its own pill and centered on it, with the row's spacing
+   after the button instead of between the pill and the button. */
 .NB-manage-classifier-item {
     display: inline-flex;
     align-items: center;
+    margin: 2px 6px 6px 0;
 }
 
-.NB-manage-classifier-item .NB-classifier {
+.NB-classifiers .NB-manage-classifier-item .NB-classifier {
     font-size: 12px;
-    margin-right: 0;
+    margin: 0;
 }
 
 /* Manage tab submit area */

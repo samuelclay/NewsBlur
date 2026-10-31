@@ -704,14 +704,14 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="intel_author_header">Penulis artikel</string>
     <string name="feed_intel_author_header">Penulis</string>
     <string name="intel_feed_header">Semua dari penerbit</string>
-    <string name="intel_super_dislike">Sangat tidak suka</string>
-    <string name="explainer_super_dislike">Sangat Tidak Suka</string>
+    <string name="intel_super_dislike">Sembunyikan artikel yang cocok</string>
+    <string name="explainer_super_dislike">Sembunyikan</string>
     <string name="explainer_like">Suka</string>
     <string name="explainer_dislike">Tidak suka</string>
     <string name="explainer_beats">mengalahkan</string>
     <string name="explainer_example1_header">Satu suka mengalahkan berapa pun jumlah tidak suka</string>
     <string name="explainer_example1_result">Artikel ditampilkan dalam tampilan Fokus</string>
-    <string name="explainer_example2_header">Satu Sangat Tidak Suka mengalahkan semuanya</string>
+    <string name="explainer_example2_header">Sembunyikan mengesampingkan semuanya, bahkan Suka</string>
     <string name="explainer_example2_result">Artikel selalu disembunyikan</string>
     <string name="auto">Otomatis</string>
     <string name="light">Terang</string>

@@ -893,9 +893,6 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s개 사이트 더 보기"
 
-msgid "+ New Folder..."
-msgstr "+ 새 폴더..."
-
 msgid "/day"
 msgstr "/일"
 
@@ -983,9 +980,6 @@ msgstr "두 번째 단계에서는 힌트를 사용해 페이지에서 올바른
 msgid "A single like overrides any number of dislikes"
 msgstr "좋아요 하나는 싫어요 개수와 관계없이 우선 적용됩니다"
 
-msgid "A single super dislike overrides everything"
-msgstr "매우 싫어요 하나는 다른 모든 것보다 우선합니다"
-
 msgid "A story diff with additions and deletions"
 msgstr "추가 및 삭제 내용이 표시되는 스토리 변경 비교"
 
@@ -1048,6 +1042,9 @@ msgstr "폴더 추가"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "사이트 추가 &amp; 스토리 공유 북마클릿"
 
+msgid "Add a classifier"
+msgstr "분류기 추가"
+
 msgid "Add a forwarding address"
 msgstr "전달 주소 추가"
 
@@ -1106,6 +1103,9 @@ msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
 "including past payments."
 msgstr "회사명, VAT 번호, 주소 또는 기타 내용을 추가하세요. 저장하면 이전 결제 내역을 포함한 모든 구독 청구서가 업데이트됩니다."
+
+msgid "Added"
+msgstr "추가됨"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1287,6 +1287,9 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "병합 %(count)s개 중 %(succeeded)s개 적용됨 (%(stories)s)"
 
+msgid "Applies to"
+msgstr "적용 대상"
+
 msgid "Apply"
 msgstr "적용"
 
@@ -1394,6 +1397,9 @@ msgstr "작성자 필터에 해당하는 스토리가 %(context)s에 없습니�
 
 msgid "Author filters found no stories in this view."
 msgstr "작성자 필터에 해당하는 스토리가 이 보기에서 발견되지 않았습니다."
+
+msgid "Author name"
+msgstr "작성자 이름"
 
 msgid "Author: "
 msgstr "작성자: "
@@ -1669,6 +1675,9 @@ msgstr "분류 중..."
 msgid "Category"
 msgstr "카테고리"
 
+msgid "Category or tag"
+msgstr "카테고리 또는 태그"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "카테고리: %(value_1)s"
@@ -1782,6 +1791,9 @@ msgstr "분류 필터 적용 범위"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "분류기 범위에는 %(tier_link)s이(가) 필요합니다"
+
+msgid "Classifier type"
+msgstr "분류기 유형"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr "Claude (Anthropic), GPT (OpenAI), Gemini (Google), Grok (SpaceXSI) 중에서 언제든지 전환할 수 있습니다."
@@ -1973,6 +1985,9 @@ msgstr "텍스트 복사"
 
 msgid "Copy URL"
 msgstr "URL 복사"
+
+msgid "Could not add this classifier. Try again."
+msgstr "이 분류기를 추가할 수 없습니다. 다시 시도하세요."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "계정 연결을 해제할 수 없습니다. 다시 시도해 주세요."
@@ -3333,6 +3348,9 @@ msgstr "숨은 보석"
 msgid "Hide"
 msgstr "숨기기"
 
+msgid "Hide "
+msgstr "숨기기 "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "공유, 댓글, Blurblog 기능 모두 숨기기"
 
@@ -3344,6 +3362,9 @@ msgstr "기록 숨기기"
 
 msgid "Hide matching stories"
 msgstr "일치하는 스토리 숨기기"
+
+msgid "Hide overrides everything, even likes"
+msgstr "숨기기는 좋아요를 포함한 모든 항목보다 우선합니다"
 
 msgid "Hide sites"
 msgstr "사이트 숨기기"
@@ -3925,6 +3946,15 @@ msgstr "관련 주제를 통해 일치"
 msgid "Matches story titles containing all keywords"
 msgstr "모든 키워드가 포함된 스토리 제목과 일치"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "좋아요와 일치하더라도 일치하는 스토리는 항상 숨겨집니다"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "좋아요에도 일치하는 경우를 제외하면 일치하는 스토리는 숨겨집니다"
+
+msgid "Matching stories show in Focus"
+msgstr "일치하는 스토리는 집중에 표시됩니다"
+
 msgid "May"
 msgstr "5월"
 
@@ -4319,6 +4349,9 @@ msgstr "제목에 일치 항목 없음"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "“%(value_1)s”에 해당하는 항목이 없습니다"
+
+msgid "No matching folders or sites"
+msgstr "일치하는 폴더나 사이트가 없습니다"
 
 msgid "No merge suggestions"
 msgstr "병합 제안 없음"
@@ -4774,6 +4807,9 @@ msgstr "이 RSS/XML 피드 파싱"
 msgid "Parsing..."
 msgstr "분석 중..."
 
+msgid "Part of a story URL"
+msgstr "스토리 URL의 일부"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다."
 
@@ -4825,6 +4861,12 @@ msgstr "사이트별"
 
 msgid "Per-feed notification settings"
 msgstr "피드별 알림 설정"
+
+msgid "Phrase to match in story text"
+msgstr "스토리 본문에서 일치시킬 구문"
+
+msgid "Phrase to match in story titles"
+msgstr "스토리 제목에서 일치시킬 구문"
 
 msgid "Pick a tier & pay."
 msgstr "요금제를 선택하고 결제하세요."
@@ -5614,6 +5656,9 @@ msgstr "피드 검색"
 
 msgid "Search folder"
 msgstr "폴더 검색"
+
+msgid "Search folders and sites"
+msgstr "폴더 및 사이트 검색"
 
 msgid "Search for friends"
 msgstr "친구 검색"
@@ -6469,9 +6514,6 @@ msgstr "일"
 msgid "Sunday"
 msgstr "일요일"
 
-msgid "Super Dislike "
-msgstr "매우 싫어요 "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "%(value_1)s마다 확인하여 보완"
@@ -6577,6 +6619,10 @@ msgstr "텍스트 정규식"
 
 msgid "Text View"
 msgstr "텍스트 보기"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "텍스트 분류기에는 %(tier_link)s이(가) 필요합니다."
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7077,6 +7123,10 @@ msgid "URL Regex"
 msgstr "URL 정규식"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "URL 분류기에는 %(tier_link)s이(가) 필요합니다."
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "URL 필터에 해당하는 스토리가 %(context)s에 없습니다."
 
@@ -7428,6 +7478,9 @@ msgstr "매주"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur에 오신 것을 환영합니다"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "좋아요, 싫어요, 숨기기의 기능"
 
 msgid "What are the main arguments?"
 msgstr "주요 논거는 무엇인가요?"

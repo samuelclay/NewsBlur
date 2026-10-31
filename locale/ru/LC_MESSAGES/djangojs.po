@@ -1034,9 +1034,6 @@ msgstr[0] "+ ещё %(value_1)s сайт"
 msgstr[1] "+ ещё %(value_1)s сайта"
 msgstr[2] "+ ещё %(value_1)s сайтов"
 
-msgid "+ New Folder..."
-msgstr "+ Новая папка..."
-
 msgid "/day"
 msgstr "/день"
 
@@ -1130,9 +1127,6 @@ msgstr "На втором этапе подсказка помогает най�
 msgid "A single like overrides any number of dislikes"
 msgstr "Одного лайка достаточно, чтобы перевесить любое количество дизлайков"
 
-msgid "A single super dislike overrides everything"
-msgstr "Одна отметка «Очень не нравится» перевешивает всё"
-
 msgid "A story diff with additions and deletions"
 msgstr "Сравнение версий статьи с добавлениями и удалениями"
 
@@ -1199,6 +1193,9 @@ msgstr "Добавить папку"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Букмарклет для добавления сайтов &amp; публикации статей"
 
+msgid "Add a classifier"
+msgstr "Добавить классификатор"
+
 msgid "Add a forwarding address"
 msgstr "Добавить адрес для пересылки"
 
@@ -1261,6 +1258,9 @@ msgid ""
 msgstr ""
 "Добавьте название компании, номер НДС, адрес или другой текст. Сохраните, чтобы обновить все счета за "
 "подписку, включая счета за прошлые платежи."
+
+msgid "Added"
+msgstr "Добавлено"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1464,6 +1464,9 @@ msgstr[0] "Применено объединений: %(succeeded)s из %(count
 msgstr[1] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
 msgstr[2] "Объединений применено: %(succeeded)s из %(count)s (%(stories)s)"
 
+msgid "Applies to"
+msgstr "Применяется к"
+
 msgid "Apply"
 msgstr "Применить"
 
@@ -1571,6 +1574,9 @@ msgstr "Фильтры по авторам не нашли статей в %(con
 
 msgid "Author filters found no stories in this view."
 msgstr "Фильтры по авторам не нашли статей в этом представлении."
+
+msgid "Author name"
+msgstr "Имя автора"
 
 msgid "Author: "
 msgstr "Автор: "
@@ -1856,6 +1862,9 @@ msgstr "Сортировка по категориям..."
 msgid "Category"
 msgstr "Категория"
 
+msgid "Category or tag"
+msgstr "Категория или тег"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Категория: %(value_1)s"
@@ -1973,6 +1982,9 @@ msgstr "Область действия фильтра классификато�
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "Для области действия классификатора требуется %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Тип классификатора"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
@@ -2170,6 +2182,9 @@ msgstr "Копировать текст"
 
 msgid "Copy URL"
 msgstr "Скопировать URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Не удалось добавить этот классификатор. Попробуйте ещё раз."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Не удалось отключить этот аккаунт. Попробуйте ещё раз."
@@ -3559,6 +3574,9 @@ msgstr "Скрытые жемчужины"
 msgid "Hide"
 msgstr "Скрыть"
 
+msgid "Hide "
+msgstr "Скрыть "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Скрыть все функции публикации, комментариев и Blurblog"
 
@@ -3570,6 +3588,9 @@ msgstr "Скрыть историю"
 
 msgid "Hide matching stories"
 msgstr "Скрывать подходящие статьи"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«Скрыть» важнее всего, даже отметок «Нравится»"
 
 msgid "Hide sites"
 msgstr "Скрыть сайты"
@@ -4175,6 +4196,15 @@ msgstr "Подобрано по связанным темам"
 msgid "Matches story titles containing all keywords"
 msgstr "Находит заголовки статей, содержащие все ключевые слова"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Подходящие статьи всегда скрыты, даже если совпадает правило «Нравится»"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Подходящие статьи скрыты, если не совпадает правило «Нравится»"
+
+msgid "Matching stories show in Focus"
+msgstr "Подходящие статьи отображаются в режиме «Фокус»"
+
 msgid "May"
 msgstr "Май"
 
@@ -4579,6 +4609,9 @@ msgstr "В заголовке совпадений нет"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "По запросу «%(value_1)s» ничего не найдено"
+
+msgid "No matching folders or sites"
+msgstr "Подходящих папок или сайтов нет"
 
 msgid "No merge suggestions"
 msgstr "Нет предложений по объединению"
@@ -5062,6 +5095,9 @@ msgstr "Разобрать эту RSS/XML-ленту"
 msgid "Parsing..."
 msgstr "Обработка..."
 
+msgid "Part of a story URL"
+msgstr "Часть URL статьи"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Вставьте любой URL, и NewsBlur создаст ленту из этой страницы, даже без RSS."
 
@@ -5113,6 +5149,12 @@ msgstr "Для каждого сайта"
 
 msgid "Per-feed notification settings"
 msgstr "Настройки уведомлений для каждой ленты"
+
+msgid "Phrase to match in story text"
+msgstr "Фраза для поиска в тексте статьи"
+
+msgid "Phrase to match in story titles"
+msgstr "Фраза для поиска в заголовках статей"
 
 msgid "Pick a tier & pay."
 msgstr "Выберите тариф и оплатите."
@@ -5934,6 +5976,9 @@ msgstr "Поиск по ленте"
 
 msgid "Search folder"
 msgstr "Поиск в папке"
+
+msgid "Search folders and sites"
+msgstr "Поиск по папкам и сайтам"
 
 msgid "Search for friends"
 msgstr "Найти друзей"
@@ -6813,9 +6858,6 @@ msgstr "Вс"
 msgid "Sunday"
 msgstr "Воскресенье"
 
-msgid "Super Dislike "
-msgstr "Очень не нравится "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Дополняется проверками с интервалом %(value_1)s"
@@ -6921,6 +6963,10 @@ msgstr "Регулярное выражение для текста"
 
 msgid "Text View"
 msgstr "Текстовый вид"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "Для текстовых классификаторов требуется %(tier_link)s"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7461,6 +7507,10 @@ msgid "URL Regex"
 msgstr "Регулярное выражение URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "Для классификаторов URL требуется %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "Фильтры URL не нашли статей в %(context)s."
 
@@ -7828,6 +7878,9 @@ msgstr "Еженедельно"
 
 msgid "Welcome to NewsBlur"
 msgstr "Добро пожаловать в NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Как работают «Нравится», «Не нравится» и «Скрыть»"
 
 msgid "What are the main arguments?"
 msgstr "Каковы основные аргументы?"

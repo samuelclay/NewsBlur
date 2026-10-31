@@ -434,6 +434,8 @@
 "Hide Changes" = "הסתרת שינויים";
 "Hide Sidebar" = "הסתרת סרגל הצד";
 "Hide Story Titles" = "הסתרת כותרות כתבות";
+"Hide [training level]" = "הסתרה";
+"Hide beats any number of likes:" = "״הסתרה״ גוברת על כל מספר של ״אהבתי״:";
 "Hide hidden stories" = "הסתר כתבות מוסתרות";
 "Hide status bar" = "הסתרת שורת המצב";
 "Hide toolbars when reading" = "הסתרת סרגלי כלים בזמן הקריאה";
@@ -992,7 +994,7 @@
 "Story count" = "מספר הכתבות";
 "Story detail" = "פרטי הכתבה";
 "Story image" = "תמונת הכתבה";
-"Story is hidden (super dislike wins)" = "הכתבה מוסתרת (סלידה חזקה גוברת)";
+"Story is always hidden" = "הכתבה תמיד מוסתרת";
 "Story is shown (like wins)" = "הכתבה מוצגת (אהבתי גובר)";
 "Story language" = "שפת הכתבה";
 "Story list toolbar position" = "מיקום סרגל הכלים של רשימת הכתבות";
@@ -1015,8 +1017,6 @@
 "Summarize" = "סיכום";
 "Sunday" = "יום ראשון";
 "Sunrise Gold" = "זהב זריחה";
-"Super dislike" = "מאוד לא אהבתי";
-"Super dislike beats any number of likes:" = "סלידה חזקה גוברת על כל מספר של לייקים:";
 "Support Forum" = "פורום תמיכה";
 "Swipe from left edge" = "החלקה מהקצה השמאלי";
 "Swipe from the left edge while reading" = "החליקו מהקצה השמאלי בזמן הקריאה";

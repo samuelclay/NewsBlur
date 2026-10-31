@@ -704,14 +704,14 @@
     <string name="intel_author_header">스토리 작성자</string>
     <string name="feed_intel_author_header">작성자</string>
     <string name="intel_feed_header">게시자의 모든 항목</string>
-    <string name="intel_super_dislike">매우 싫어요</string>
-    <string name="explainer_super_dislike">매우 싫어요</string>
+    <string name="intel_super_dislike">일치하는 스토리 숨기기</string>
+    <string name="explainer_super_dislike">숨기기</string>
     <string name="explainer_like">좋아요</string>
     <string name="explainer_dislike">싫어요</string>
     <string name="explainer_beats">&gt;</string>
     <string name="explainer_example1_header">좋아요 하나가 싫어요 여러 개를 무효화합니다</string>
     <string name="explainer_example1_result">집중 보기에 스토리가 표시됩니다</string>
-    <string name="explainer_example2_header">매우 싫어요 하나는 다른 모든 것보다 우선합니다</string>
+    <string name="explainer_example2_header">숨기기는 좋아요를 포함한 모든 항목보다 우선합니다</string>
     <string name="explainer_example2_result">스토리는 항상 숨김 처리됩니다</string>
     <string name="auto">자동</string>
     <string name="light">밝게</string>

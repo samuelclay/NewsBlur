@@ -1229,9 +1229,6 @@ msgstr[3] "+ %(value_1)s مواقع إضافية"
 msgstr[4] "+ %(value_1)s موقعًا إضافيًا"
 msgstr[5] "+ %(value_1)s موقع إضافي"
 
-msgid "+ New Folder..."
-msgstr "+ مجلد جديد..."
-
 msgid "/day"
 msgstr "/يوم"
 
@@ -1334,9 +1331,6 @@ msgstr "تستخدم المحاولة الثانية تلميحك للعثور �
 msgid "A single like overrides any number of dislikes"
 msgstr "إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب"
 
-msgid "A single super dislike overrides everything"
-msgstr "عدم إعجاب شديد واحد يتغلب على كل شيء"
-
 msgid "A story diff with additions and deletions"
 msgstr "مقارنة تغييرات القصة مع الإضافات والحذف"
 
@@ -1404,6 +1398,9 @@ msgstr "إضافة مجلد"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "أداة الإشارات المرجعية لإضافة موقع &amp; مشاركة قصة"
 
+msgid "Add a classifier"
+msgstr "إضافة مصنّف"
+
 msgid "Add a forwarding address"
 msgstr "إضافة عنوان لإعادة التوجيه"
 
@@ -1464,6 +1461,9 @@ msgid ""
 msgstr ""
 "أضف اسم شركتك أو رقم ضريبة القيمة المضافة أو عنوانك أو أي نص آخر. احفظ لتحديث جميع فواتير الاشتراك، بما "
 "فيها الدفعات السابقة."
+
+msgid "Added"
+msgstr "تمت الإضافة"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1686,6 +1686,9 @@ msgstr[3] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج
 msgstr[4] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج (%(stories)s)"
 msgstr[5] "تم تطبيق %(succeeded)s من أصل %(count)s عملية دمج (%(stories)s)"
 
+msgid "Applies to"
+msgstr "ينطبق على"
+
 msgid "Apply"
 msgstr "تطبيق"
 
@@ -1793,6 +1796,9 @@ msgstr "لم تعثر فلاتر المؤلفين على أي قصص في %(cont
 
 msgid "Author filters found no stories in this view."
 msgstr "لم تعثر فلاتر المؤلفين على قصص في هذا العرض."
+
+msgid "Author name"
+msgstr "اسم الكاتب"
 
 msgid "Author: "
 msgstr "المؤلف: "
@@ -2080,6 +2086,9 @@ msgstr "جارٍ التصنيف..."
 msgid "Category"
 msgstr "الفئة"
 
+msgid "Category or tag"
+msgstr "فئة أو وسم"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "الفئة: %(value_1)s"
@@ -2203,6 +2212,9 @@ msgstr "نطاق تصفية المصنّف"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "يتطلب نطاق المصنّف %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "نوع المصنّف"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr "Claude (Anthropic)، وGPT (OpenAI)، وGemini (Google)، وGrok (SpaceXSI). بدّل بينها في أي وقت."
@@ -2399,6 +2411,9 @@ msgstr "نسخ النص"
 
 msgid "Copy URL"
 msgstr "نسخ الرابط"
+
+msgid "Could not add this classifier. Try again."
+msgstr "تعذّر إضافة هذا المصنّف. حاول مرة أخرى."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "تعذّر فصل هذا الحساب. يُرجى المحاولة مرة أخرى."
@@ -3791,6 +3806,9 @@ msgstr "جواهر خفية"
 msgid "Hide"
 msgstr "إخفاء"
 
+msgid "Hide "
+msgstr "إخفاء "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "إخفاء جميع ميزات المشاركة والتعليقات وBlurblog"
 
@@ -3802,6 +3820,9 @@ msgstr "إخفاء السجل"
 
 msgid "Hide matching stories"
 msgstr "إخفاء القصص المطابقة"
+
+msgid "Hide overrides everything, even likes"
+msgstr "«إخفاء» يتفوّق على كل شيء، حتى الإعجابات"
 
 msgid "Hide sites"
 msgstr "إخفاء المواقع"
@@ -4414,6 +4435,15 @@ msgstr "تم التطابق عبر مواضيع ذات صلة"
 msgid "Matches story titles containing all keywords"
 msgstr "يطابق عناوين القصص التي تتضمن جميع الكلمات المفتاحية"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "تُخفى القصص المطابقة دائمًا، حتى مع إشارة «أعجبني»"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "تُخفى القصص المطابقة ما لم تطابقها أيضًا إشارة «أعجبني»"
+
+msgid "Matching stories show in Focus"
+msgstr "تظهر القصص المطابقة في «التركيز»"
+
 msgid "May"
 msgstr "مايو"
 
@@ -4830,6 +4860,9 @@ msgstr "لا توجد مطابقة في العنوان"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "لا توجد نتائج مطابقة لـ «%(value_1)s»"
+
+msgid "No matching folders or sites"
+msgstr "لا توجد مجلدات أو مواقع مطابقة"
 
 msgid "No merge suggestions"
 msgstr "لا توجد اقتراحات دمج"
@@ -5322,6 +5355,9 @@ msgstr "تحليل خلاصة RSS/XML هذه"
 msgid "Parsing..."
 msgstr "جارٍ التحليل..."
 
+msgid "Part of a story URL"
+msgstr "جزء من رابط القصة"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "الصق أي رابط، وسيُنشئ NewsBlur خلاصة من الصفحة حتى دون RSS."
 
@@ -5373,6 +5409,12 @@ msgstr "حسب الموقع"
 
 msgid "Per-feed notification settings"
 msgstr "إعدادات الإشعارات لكل خلاصة"
+
+msgid "Phrase to match in story text"
+msgstr "عبارة لمطابقتها في نص القصة"
+
+msgid "Phrase to match in story titles"
+msgstr "عبارة لمطابقتها في عناوين القصص"
 
 msgid "Pick a tier & pay."
 msgstr "اختر الباقة وادفع."
@@ -6203,6 +6245,9 @@ msgstr "البحث في الخلاصة"
 
 msgid "Search folder"
 msgstr "البحث في المجلد"
+
+msgid "Search folders and sites"
+msgstr "البحث في المجلدات والمواقع"
 
 msgid "Search for friends"
 msgstr "ابحث عن أصدقاء"
@@ -7090,9 +7135,6 @@ msgstr "الأحد"
 msgid "Sunday"
 msgstr "الأحد"
 
-msgid "Super Dislike "
-msgstr "عدم إعجاب شديد "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "تُستكمل بفحوصات كل %(value_1)s"
@@ -7198,6 +7240,10 @@ msgstr "تعبير نمطي للنص"
 
 msgid "Text View"
 msgstr "عرض النص"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "تتطلب مصنّفات النص %(tier_link)s"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7736,6 +7782,10 @@ msgid "URL Regex"
 msgstr "تعبير URL النمطي"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "تتطلب مصنّفات URL %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "لم تعثر مرشحات URL على أي قصص في %(context)s."
 
@@ -8119,6 +8169,9 @@ msgstr "أسبوعيًا"
 
 msgid "Welcome to NewsBlur"
 msgstr "مرحبًا بك في NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "ما الذي تفعله خيارات «أعجبني» و«لا يعجبني» و«إخفاء»"
 
 msgid "What are the main arguments?"
 msgstr "ما الحجج الرئيسية؟"

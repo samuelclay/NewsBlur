@@ -720,14 +720,14 @@ le persone per parlare del mondo.</string>
     <string name="intel_author_header">Autori degli articoli</string>
     <string name="feed_intel_author_header">Autori</string>
     <string name="intel_feed_header">Tutti gli articoli dell\'editore</string>
-    <string name="intel_super_dislike">Non mi piace per niente</string>
-    <string name="explainer_super_dislike">Non mi piace per niente</string>
+    <string name="intel_super_dislike">Nascondi gli articoli corrispondenti</string>
+    <string name="explainer_super_dislike">Nascondi</string>
     <string name="explainer_like">Mi piace</string>
     <string name="explainer_dislike">Non mi piace</string>
     <string name="explainer_beats">batte</string>
     <string name="explainer_example1_header">Un solo Mi piace prevale su un numero qualsiasi di Non mi piace</string>
     <string name="explainer_example1_result">L’articolo appare nella vista In evidenza</string>
-    <string name="explainer_example2_header">Un solo Non mi piace per niente prevale su tutto</string>
+    <string name="explainer_example2_header">Nascondi prevale su tutto, anche su Mi piace</string>
     <string name="explainer_example2_result">L’articolo è sempre nascosto</string>
     <string name="auto">Automatico</string>
     <string name="light">Chiaro</string>

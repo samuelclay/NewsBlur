@@ -704,14 +704,14 @@
     <string name="intel_author_header">ผู้เขียนบทความ</string>
     <string name="feed_intel_author_header">ผู้เขียน</string>
     <string name="intel_feed_header">ทั้งหมดจากผู้เผยแพร่</string>
-    <string name="intel_super_dislike">ไม่ชอบอย่างยิ่ง</string>
-    <string name="explainer_super_dislike">ไม่ชอบอย่างยิ่ง</string>
+    <string name="intel_super_dislike">ซ่อนบทความที่ตรงกัน</string>
+    <string name="explainer_super_dislike">ซ่อน</string>
     <string name="explainer_like">ชอบ</string>
     <string name="explainer_dislike">ไม่ชอบ</string>
     <string name="explainer_beats">ชนะ</string>
     <string name="explainer_example1_header">การกดถูกใจเพียงครั้งเดียวมีน้ำหนักมากกว่าการกดไม่ถูกใจจำนวนเท่าใดก็ได้</string>
     <string name="explainer_example1_result">บทความจะแสดงในมุมมองโฟกัส</string>
-    <string name="explainer_example2_header">การไม่ชอบขั้นสุดเพียงครั้งเดียวมีผลเหนือทุกอย่าง</string>
+    <string name="explainer_example2_header">“ซ่อน” มีผลเหนือทุกอย่าง แม้แต่ “ชอบ”</string>
     <string name="explainer_example2_result">บทความจะถูกซ่อนเสมอ</string>
     <string name="auto">อัตโนมัติ</string>
     <string name="light">สว่าง</string>

@@ -24,6 +24,12 @@ msgstr " - תיקייה: כל כתבות האתרים"
 msgid " - Folder: Top Level"
 msgstr " - תיקייה: רמה עליונה"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "״%(value)s״ כבר אומן עבור כל האתרים או בתיקייה אחרת. יש לשנות את ההיקף של המסווג הזה במקום זאת."
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "100$ לשנה (Pro: מקורות ללא הגבלה)"
 

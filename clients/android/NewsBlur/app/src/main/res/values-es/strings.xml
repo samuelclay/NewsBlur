@@ -720,14 +720,14 @@ a personas para hablar del mundo.</string>
     <string name="intel_author_header">Autores de artículos</string>
     <string name="feed_intel_author_header">Autores</string>
     <string name="intel_feed_header">Todo del editor</string>
-    <string name="intel_super_dislike">No me gusta nada</string>
-    <string name="explainer_super_dislike">No me gusta nada</string>
+    <string name="intel_super_dislike">Ocultar artículos coincidentes</string>
+    <string name="explainer_super_dislike">Ocultar</string>
     <string name="explainer_like">Me gusta</string>
     <string name="explainer_dislike">No me gusta</string>
     <string name="explainer_beats">gana a</string>
     <string name="explainer_example1_header">Un solo «Me gusta» anula cualquier cantidad de «No me gusta»</string>
     <string name="explainer_example1_result">El artículo se muestra en la vista de Enfoque</string>
-    <string name="explainer_example2_header">Un solo «No me gusta nada» lo anula todo</string>
+    <string name="explainer_example2_header">«Ocultar» gana a todo, incluso a «Me gusta»</string>
     <string name="explainer_example2_result">El artículo siempre está oculto</string>
     <string name="auto">Automático</string>
     <string name="light">Claro</string>

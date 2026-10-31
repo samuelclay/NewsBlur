@@ -962,9 +962,6 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s altro sito"
 msgstr[1] "+ %(value_1)s altri siti"
 
-msgid "+ New Folder..."
-msgstr "+ Nuova cartella..."
-
 msgid "/day"
 msgstr "/giorno"
 
@@ -1057,9 +1054,6 @@ msgstr "Un secondo passaggio usa il tuo suggerimento per trovare nella pagina lo
 msgid "A single like overrides any number of dislikes"
 msgstr "Un solo Mi piace prevale su un numero qualsiasi di Non mi piace"
 
-msgid "A single super dislike overrides everything"
-msgstr "Un solo Non mi piace per niente prevale su tutto"
-
 msgid "A story diff with additions and deletions"
 msgstr "Confronto di un articolo con aggiunte e rimozioni"
 
@@ -1123,6 +1117,9 @@ msgstr "Aggiungi cartella"
 msgid "Add Site &amp; Share Story Bookmarklet"
 msgstr "Bookmarklet Aggiungi sito &amp; Condividi articolo"
 
+msgid "Add a classifier"
+msgstr "Aggiungi un classificatore"
+
 msgid "Add a forwarding address"
 msgstr "Aggiungi un indirizzo di inoltro"
 
@@ -1185,6 +1182,9 @@ msgid ""
 msgstr ""
 "Aggiungi il nome della tua azienda, la partita IVA, l’indirizzo o altre informazioni. Salva per aggiornare "
 "tutte le fatture dell’abbonamento, comprese quelle dei pagamenti precedenti."
+
+msgid "Added"
+msgstr "Aggiunto"
 
 #, python-format
 msgid "Added %(date)s"
@@ -1381,6 +1381,9 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Applicata %(succeeded)s di %(count)s unione (%(stories)s)"
 msgstr[1] "Applicate %(succeeded)s di %(count)s unioni (%(stories)s)"
 
+msgid "Applies to"
+msgstr "Si applica a"
+
 msgid "Apply"
 msgstr "Applica"
 
@@ -1490,6 +1493,9 @@ msgstr "I filtri per autore non hanno trovato articoli in %(context)s."
 
 msgid "Author filters found no stories in this view."
 msgstr "I filtri per autore non hanno trovato articoli in questa vista."
+
+msgid "Author name"
+msgstr "Nome dell'autore"
 
 msgid "Author: "
 msgstr "Autore: "
@@ -1769,6 +1775,9 @@ msgstr "Classificazione in corso..."
 msgid "Category"
 msgstr "Categoria"
 
+msgid "Category or tag"
+msgstr "Categoria o tag"
+
 #, python-format
 msgid "Category: %(value_1)s"
 msgstr "Categoria: %(value_1)s"
@@ -1884,6 +1893,9 @@ msgstr "Ambito del filtro del classificatore"
 #, python-format
 msgid "Classifier scope requires %(tier_link)s"
 msgstr "L'ambito del classificatore richiede %(tier_link)s"
+
+msgid "Classifier type"
+msgstr "Tipo di classificatore"
 
 msgid "Claude (Anthropic), GPT (OpenAI), Gemini (Google), and Grok (SpaceXSI). Switch between them at any time."
 msgstr ""
@@ -2080,6 +2092,9 @@ msgstr "Copia testo"
 
 msgid "Copy URL"
 msgstr "Copia URL"
+
+msgid "Could not add this classifier. Try again."
+msgstr "Impossibile aggiungere questo classificatore. Riprova."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Impossibile disconnettere questo account. Riprova."
@@ -3465,6 +3480,9 @@ msgstr "Gemme nascoste"
 msgid "Hide"
 msgstr "Nascondi"
 
+msgid "Hide "
+msgstr "Nascondi "
+
 msgid "Hide all sharing, comments, and blurblog features"
 msgstr "Nascondi tutte le funzioni di condivisione, commenti e Blurblog"
 
@@ -3476,6 +3494,9 @@ msgstr "Nascondi cronologia"
 
 msgid "Hide matching stories"
 msgstr "Nascondi gli articoli corrispondenti"
+
+msgid "Hide overrides everything, even likes"
+msgstr "Nascondi prevale su tutto, anche su Mi piace"
 
 msgid "Hide sites"
 msgstr "Nascondi siti"
@@ -4078,6 +4099,15 @@ msgstr "Corrispondenza tramite argomenti correlati"
 msgid "Matches story titles containing all keywords"
 msgstr "Corrisponde ai titoli degli articoli che contengono tutte le parole chiave"
 
+msgid "Matching stories are always hidden, even with a like"
+msgstr "Gli articoli corrispondenti vengono sempre nascosti, anche se corrisponde un Mi piace"
+
+msgid "Matching stories are hidden unless a like also matches"
+msgstr "Gli articoli corrispondenti vengono nascosti, a meno che non corrisponda anche un Mi piace"
+
+msgid "Matching stories show in Focus"
+msgstr "Gli articoli corrispondenti vengono messi in evidenza"
+
 msgid "May"
 msgstr "maggio"
 
@@ -4480,6 +4510,9 @@ msgstr "Nessuna corrispondenza nel titolo"
 #, python-format
 msgid "No matches for “%(value_1)s”"
 msgstr "Nessuna corrispondenza per “%(value_1)s”"
+
+msgid "No matching folders or sites"
+msgstr "Nessuna cartella o sito corrispondente"
 
 msgid "No merge suggestions"
 msgstr "Nessun suggerimento di unione"
@@ -4958,6 +4991,9 @@ msgstr "Analizza questo feed RSS/XML"
 msgid "Parsing..."
 msgstr "Analisi in corso..."
 
+msgid "Part of a story URL"
+msgstr "Parte dell'URL di un articolo"
+
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Incolla un URL qualsiasi e NewsBlur creerà un feed dalla pagina, anche senza RSS."
 
@@ -5009,6 +5045,12 @@ msgstr "Per sito"
 
 msgid "Per-feed notification settings"
 msgstr "Impostazioni di notifica per ogni feed"
+
+msgid "Phrase to match in story text"
+msgstr "Frase da trovare nel testo dell'articolo"
+
+msgid "Phrase to match in story titles"
+msgstr "Frase da trovare nei titoli degli articoli"
 
 msgid "Pick a tier & pay."
 msgstr "Scegli un piano e paga."
@@ -5825,6 +5867,9 @@ msgstr "Cerca nel feed"
 
 msgid "Search folder"
 msgstr "Cerca nella cartella"
+
+msgid "Search folders and sites"
+msgstr "Cerca cartelle e siti"
 
 msgid "Search for friends"
 msgstr "Cerca amici"
@@ -6702,9 +6747,6 @@ msgstr "Dom"
 msgid "Sunday"
 msgstr "Domenica"
 
-msgid "Super Dislike "
-msgstr "Non mi piace per niente "
-
 #, python-format
 msgid "Supplemented by checks every %(value_1)s"
 msgstr "Integrato da controlli ogni %(value_1)s"
@@ -6810,6 +6852,10 @@ msgstr "Espressione regolare sul testo"
 
 msgid "Text View"
 msgstr "Vista testo"
+
+#, python-format
+msgid "Text classifiers require %(tier_link)s"
+msgstr "I classificatori di testo richiedono %(tier_link)s"
 
 #, python-format
 msgid "Text filters found no stories in %(context)s."
@@ -7343,6 +7389,10 @@ msgid "URL Regex"
 msgstr "Espressione regolare URL"
 
 #, python-format
+msgid "URL classifiers require %(tier_link)s"
+msgstr "I classificatori URL richiedono %(tier_link)s"
+
+#, python-format
 msgid "URL filters found no stories in %(context)s."
 msgstr "I filtri URL non hanno trovato articoli in %(context)s."
 
@@ -7706,6 +7756,9 @@ msgstr "Settimanale"
 
 msgid "Welcome to NewsBlur"
 msgstr "Benvenuto su NewsBlur"
+
+msgid "What Like, Dislike and Hide do"
+msgstr "Cosa fanno Mi piace, Non mi piace e Nascondi"
 
 msgid "What are the main arguments?"
 msgstr "Quali sono gli argomenti principali?"

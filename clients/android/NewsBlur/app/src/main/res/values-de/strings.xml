@@ -712,14 +712,14 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="intel_author_header">Autoren der Artikel</string>
     <string name="feed_intel_author_header">Autoren</string>
     <string name="intel_feed_header">Alles vom Herausgeber</string>
-    <string name="intel_super_dislike">Gefällt mir gar nicht</string>
-    <string name="explainer_super_dislike">Gefällt mir gar nicht</string>
+    <string name="intel_super_dislike">Passende Artikel ausblenden</string>
+    <string name="explainer_super_dislike">Ausblenden</string>
     <string name="explainer_like">Gefällt mir</string>
     <string name="explainer_dislike">Gefällt mir nicht</string>
     <string name="explainer_beats">schlägt</string>
     <string name="explainer_example1_header">Ein einziges „Gefällt mir“ hebt beliebig viele „Gefällt mir nicht“ auf</string>
     <string name="explainer_example1_result">Artikel wird in der Fokusansicht angezeigt</string>
-    <string name="explainer_example2_header">Ein einziges „Gefällt mir gar nicht“ setzt alles andere außer Kraft</string>
+    <string name="explainer_example2_header">„Ausblenden“ hat Vorrang vor allem, sogar vor „Gefällt mir“</string>
     <string name="explainer_example2_result">Artikel wird immer ausgeblendet</string>
     <string name="auto">Automatisch</string>
     <string name="light">Hell</string>

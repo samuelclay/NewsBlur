@@ -104,15 +104,24 @@
     },
     {
       "concept": "like / dislike (training)",
-      "en": "(?:\\b(super )?(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
-      "use": "Me gusta / No me gusta / No me gusta nada",
+      "en": "(?:\\b(dis)?lik(e|ed|es)\\b)|(?:\\btrain(er|ers|ing|ed|s)?\\b)",
+      "use": "Me gusta / No me gusta; Hide → Ocultar",
       "avoid": [
         "Dislike / Super Dislike (English)",
         "Rechazo total",
         "Me gusta mucho menos",
         "como (for the verb like)"
       ],
-      "note": "Super dislike → No me gusta nada. The trainer's 'beats' means Like outranks Dislike: gana a / tiene prioridad sobre. '(like wins)' → (gana Me gusta). Thumbs up/down in prose may stay pulgar arriba/abajo."
+      "note": "Hide is the level above Like (formerly Super dislike, then No me gusta nada): Ocultar, quoted in sentences («Ocultar» gana a todo). The trainer's 'beats' means Like outranks Dislike: gana a / tiene prioridad sobre. '(like wins)' → (gana Me gusta). Thumbs up/down in prose may stay pulgar arriba/abajo."
+    },
+    {
+      "concept": "Hide (training level)",
+      "en": "(?:^\\s*hide\\s*$)|(?:\\bhide (?:overrides|beats|wins)\\b)",
+      "use": "Ocultar",
+      "avoid": [
+        "No me gusta nada"
+      ],
+      "note": "Hide is the strongest training level, above Like and Dislike (it was called Super dislike): a story that matches it is always hidden, whatever else it matches. Use the same word as the Hide button in the training controls, and quote it in sentences like the other level names («Ocultar» gana a todo). The old Super dislike names are retired."
     },
     {
       "concept": "hide / hidden",

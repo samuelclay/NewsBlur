@@ -24,6 +24,12 @@ msgstr " - フォルダー：すべてのサイトの記事"
 msgid " - Folder: Top Level"
 msgstr " - フォルダー：最上位"
 
+#, python-format
+msgid ""
+"\"%(value)s\" is already trained for all sites or in another folder. Change the scope on that classifier "
+"instead."
+msgstr "「%(value)s」は、すでにすべてのサイトまたは別のフォルダーで学習済みです。代わりに、その分類器の適用範囲を変更してください。"
+
 msgid "$100/year (Pro: unlimited sources)"
 msgstr "年額100ドル（Pro：ソース数無制限）"
 
