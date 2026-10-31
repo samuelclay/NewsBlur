@@ -28,6 +28,23 @@ def run(ctx):
         stored,
     )
 
+    # The kept copy says one fetched feed was never fetched, as when a site was added just before
+    # the page closed. Written into the copy in memory too, which the page saves as it hides.
+    stale_feed = ctx.evaluate(
+        """(() => {
+      var feed = NEWSBLUR.assets.feeds.find(function (f) {
+        return f.get('fetched_once') && !f.get('has_exception') && $('.NB-feedlist .feed[data-id="' + f.id + '"]:visible').length;
+      });
+      if (!feed) return null;
+      var mark = function (data) { data.feeds.forEach(function (f) { if (f.id == feed.id) f.fetched_once = false; }); };
+      mark(NEWSBLUR.assets.feed_list_subscriptions);
+      var key = NEWSBLUR.feed_list_cache.cache_key(NEWSBLUR.Globals.user_id);
+      var data = JSON.parse(localStorage.getItem(key)); mark(data); localStorage.setItem(key, JSON.stringify(data));
+      return feed.id;
+    })()"""
+    )
+    stale_row = f".NB-feedlist .feed[data-id='{stale_feed}']"
+
     held = []
     page.route("**/reader/feeds?**", lambda route: held.append(route))
     page.reload(wait_until="load")
@@ -61,8 +78,20 @@ def run(ctx):
     ctx.check("a feed opens before the feed list request answers", ctx.state()["screen"] == "titles")
     ctx.page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
     ctx.wait(900)
+    # A blurblog opened before the server answers stays selected once its answer merges in.
+    social_id = ctx.evaluate(
+        "(() => { var f = NEWSBLUR.assets.social_feeds.first(); if (!f) return null; "
+        "NEWSBLUR.reader.open_social_stories(f.id); return f.id; })()"
+    )
+    if social_id:
+        ctx.wait(1500)
+        ctx.page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+        ctx.wait(900)
+    unfetched_early = ctx.evaluate(f"$(\"{stale_row}\").first().hasClass('NB-feed-unfetched')")
 
-    ctx.evaluate("(() => { window.__nb_first_row = document.querySelector('.NB-feedlist .feed'); })()")
+    ctx.evaluate(
+        "(() => { window.__nb_list_root = document.querySelector('.NB-feedlist').firstElementChild; })()"
+    )
     rows_before = ctx.evaluate("$('.NB-feedlist .feed:visible').length")
     for route in held:
         route.continue_()
@@ -73,14 +102,27 @@ def run(ctx):
     )
     ctx.wait(800)
     after = ctx.evaluate(
-        "(() => ({same_rows: window.__nb_first_row === document.querySelector('.NB-feedlist .feed'), "
+        "(() => ({same_list: window.__nb_list_root === document.querySelector('.NB-feedlist').firstElementChild, "
         "rows: $('.NB-feedlist .feed:visible').length, player: !!NEWSBLUR.app.media_player.state_restored}))()"
     )
     ctx.check(
         "the server's list merges in without redrawing the feed list",
-        after["same_rows"] and after["rows"] == rows_before,
+        after["same_list"] and after["rows"] == rows_before,
         after,
     )
+    # A merge that left the rows alone kept the copy's stale styling for the whole session.
+    unfetched_after = ctx.evaluate(f"$(\"{stale_row}\").first().hasClass('NB-feed-unfetched')")
+    ctx.check(
+        "a feed row the server's list changed redraws itself, here no longer unfetched",
+        stale_feed and unfetched_early and not unfetched_after,
+        {"feed": stale_feed, "early": unfetched_early, "after": unfetched_after},
+    )
+    if social_id:
+        selected = ctx.evaluate(f"!!NEWSBLUR.assets.social_feeds.get('{social_id}').get('selected')")
+        ctx.check("a blurblog opened before the server answered stays selected", selected)
+    # On / the dashboard rivers load after a cached draw too.
+    rivers = ctx.evaluate("$('#NB-splash .NB-module-river .NB-story-title').length")
+    ctx.check("the dashboard's rivers load after a cached draw", rivers > 0, rivers)
     ctx.check("the Listen player restores from the server's state", after["player"], after)
 
     # A reload into a feed showed an empty story list while its stories loaded, and the desktop

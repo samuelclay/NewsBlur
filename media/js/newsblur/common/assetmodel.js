@@ -712,16 +712,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.feeds.trigger('reset');
         };
 
-        // The server's list draws the same as the cached one, so only the models catch up. Unread
-        // counts and the selected feed stay as they are, since refresh_feeds may already have
-        // brought newer counts. The saved and search sections redraw on their own, cheaply.
+        // The server's list draws the same as the cached one, so only the models catch up, and a
+        // row whose own data changed (a feed now fetched, a new favicon) redraws itself. Unread
+        // counts and the selected feed stay as they are: refresh_feeds may already have brought
+        // newer counts, and parsing either collection would mark every feed unselected. The saved
+        // and search sections redraw on their own, cheaply.
         var merge_subscriptions = function (subscriptions) {
-            self.feeds.set(cache.without_counts(subscriptions.feeds), { remove: false, silent: true });
-            self.social_feeds.set(cache.without_counts(subscriptions.social_feeds), {
-                remove: false,
-                silent: true,
-                parse: true
-            });
+            self.feeds.set(cache.without_counts(subscriptions.feeds), { remove: false });
+            self.social_feeds.set(cache.without_counts(subscriptions.social_feeds), { remove: false });
             self.starred_count = subscriptions.starred_count;
             self.starred_feeds.reset(subscriptions.starred_counts, { parse: true });
             self.searches_feeds.reset(subscriptions.saved_searches, { parse: true });
