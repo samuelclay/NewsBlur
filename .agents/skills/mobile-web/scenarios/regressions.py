@@ -101,6 +101,7 @@ def check_regressions(ctx, feed_id):
     check_story_list_pills(ctx)
     check_story_iframe_sandbox(ctx, feed_id)
     check_story_toolbar_fits(ctx)
+    check_share_badge_opens_story(ctx)
     check_cross_feed_back(ctx, feed_id)
     check_touch_hover(ctx, feed_id)
     check_mark_read_menu(ctx, feed_id)
@@ -239,6 +240,36 @@ def cross_into_next_feed(ctx, feed_id, other):
     return story_a
 
 
+def check_share_badge_opens_story(ctx):
+    """A tap on a story's share count in a grid selected the story and marked it read but
+    opened nothing, since its handler stops the tap before the card's. It opens the story screen
+    at the comments now. The count shows only for stories friends commented on, as their
+    avatars, so one is given the reader's own here. Expects the story list and leaves it in grid
+    layout."""
+    ctx.set_layout("grid")
+    ctx.evaluate(
+        "(() => { document.querySelector('#story_titles').scrollTop = 0; "
+        "var profiles = NEWSBLUR.assets.user_profiles; "
+        "var me = NEWSBLUR.assets.user_profile; "
+        "if (!profiles.find(me.get('user_id'))) profiles.add(me.toJSON()); "
+        "var story = NEWSBLUR.assets.stories.at(1); "
+        "story.set({comment_count_friends: 1, commented_by_friends: [me.get('user_id')]}); "
+        "story.story_title_view.render(); })()"
+    )
+    ctx.wait(300)
+    badge = ctx.page.locator("#story_titles .NB-storytitles-shares >> visible=true").first
+    badge.tap()
+    ctx.wait(1200)
+    state = ctx.state()
+    ctx.check(
+        "a tap on a grid story's share count opens the story",
+        state["screen"] == "story" and state["story"] == ctx.evaluate("NEWSBLUR.assets.stories.at(1).get('story_hash')"),
+        state,
+    )
+    ctx.page.locator(".NB-mobile-story-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+
+
 def check_cross_feed_back(ctx, feed_id):
     """Next unread can carry the story screen into the next feed. Back from there to the first
     feed's story entry found its story missing from the next feed's stories, still loaded at
@@ -288,6 +319,29 @@ def check_cross_feed_back(ctx, feed_id):
         ctx.page.unroute(route)
     ctx.check(
         "a failed load while reopening a story falls back to the list",
+        state["screen"] == "titles" and state["entry"]["screen"] == "titles",
+        state,
+    )
+
+    # Next unread crossing into a feed whose stories then failed to load sat on its loading
+    # message for good, since no story was waiting on that list, only Next unread.
+    ctx.evaluate("(() => { NEWSBLUR.reader.open_feed(%d); })()" % feed_id)
+    ctx.page.wait_for_function("NEWSBLUR.assets.stories.length > 0", timeout=30000)
+    ctx.wait(1200)
+    ctx.set_layout("grid")
+    ctx.tap_story(1)
+    route = f"**/reader/feed/{other}**"
+    ctx.page.route(route, lambda request: request.fulfill(status=500, body="error"))
+    try:
+        ctx.evaluate(
+            f"(() => {{ NEWSBLUR.app.mobile.follow_next_unread(); NEWSBLUR.reader.open_feed({other}); }})()"
+        )
+        ctx.wait(3000)
+        state = ctx.state()
+    finally:
+        ctx.page.unroute(route)
+    ctx.check(
+        "a failed load during Next unread into the next feed falls back to its list",
         state["screen"] == "titles" and state["entry"]["screen"] == "titles",
         state,
     )
@@ -880,13 +934,37 @@ def check_sheet_swipe(ctx):
         not ctx.evaluate("!!document.querySelector('#simplemodal-container')"),
     )
 
+    # The same drag threw away whatever had been changed in a modal that saves from its button.
+    # Once something changes it holds still. Nothing is saved: the modal closes without Save.
+    ctx.evaluate("NEWSBLUR.reader.open_preferences_modal()")
+    ctx.wait(1800)
+    choice = page.locator(
+        "#simplemodal-container input[type=radio]:not(:checked) >> visible=true"
+    ).first
+    choice.tap()
+    ctx.wait(300)
+    drag_sheet(ctx, "#simplemodal-container", 520)
+    ctx.wait(500)
+    held = ctx.evaluate(
+        "(() => { var c = document.querySelector('#simplemodal-container'); "
+        "return {open: !!c, edited: !!c && c.classList.contains('NB-mobile-sheet-edited'), "
+        "transform: c && c.style.transform}; })()"
+    )
+    ctx.check(
+        "a modal with a change holds still under a drag down",
+        held["open"] and held["edited"] and not held["transform"],
+        held,
+    )
+    ctx.close_overlays()
+
 
 def check_swipe_back_anywhere(ctx):
     """The story list only went back from a swipe at the screen's edge. Like the iOS and Android
     apps, a swipe right anywhere on it goes back now, while a short one snaps back and a vertical
     one scrolls. Expects the story list and leaves it on the feed list."""
     width = ctx.viewport["width"]
-    ctx.touch.swipe(140, 420, 200, 425, steps=6)
+    # Slow enough (60px over 240ms) to stay under swipe_completes' fling speed on any runner.
+    ctx.touch.swipe(140, 420, 200, 425, steps=6, step_ms=40)
     ctx.wait(700)
     short = ctx.state()
     ctx.touch.swipe(200, 600, 205, 300, steps=8)

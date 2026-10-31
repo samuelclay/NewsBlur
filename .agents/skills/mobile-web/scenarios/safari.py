@@ -200,3 +200,29 @@ def check_under_toolbar(ctx, feed_id):
         modal_bottom,
     )
     ctx.close_overlays()
+
+    # Add + Discover scrolls in its own tab panes, which kept their desktop padding and left the
+    # last results under the toolbar.
+    page.locator(".NB-mobile-titles-bar .NB-mobile-bar-back").tap()
+    ctx.wait(900)
+    page.locator(".NB-feeds-header-add-site").tap()
+    ctx.wait(2500)
+    discover = ctx.evaluate(
+        """(() => {
+      var pane = document.querySelector('.NB-add-site-tab-pane.NB-active');
+      pane.scrollTop = pane.scrollHeight;
+      var bottoms = Array.prototype.filter.call(pane.querySelectorAll('*'), function (el) {
+        return el.offsetParent && el.getBoundingClientRect().height;
+      }).map(function (el) { return el.getBoundingClientRect().bottom; });
+      return {window: innerHeight, pane: Math.round(pane.getBoundingClientRect().bottom),
+              last: Math.round(Math.max.apply(null, bottoms))};
+    })()"""
+    )
+    ctx.shot("under-toolbar-discover")
+    ctx.check(
+        "Add + Discover reaches under the toolbar and scrolls its last result clear of it",
+        discover["pane"] == discover["window"] + SAFARI_CHROME and discover["last"] <= discover["window"],
+        discover,
+    )
+    page.go_back()
+    ctx.wait(900)

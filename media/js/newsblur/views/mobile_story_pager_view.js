@@ -137,6 +137,16 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.$track.removeClass('NB-mobile-animating').css('transform', '');
     },
 
+    // views/mobile_layout_view.js open_story: the story opened from its share count shows its
+    // comments, just below the top of the page.
+    scroll_to_comments: function () {
+        var page = this.pages.current.$el[0];
+        var comments = page.querySelector('.NB-feed-story-comments-container');
+        if (!comments) return;
+        var offset = comments.getBoundingClientRect().top - page.getBoundingClientRect().top;
+        page.scrollTop += offset - 50;
+    },
+
     // Shown while Next unread opens another feed.
     show_loading: function (message) {
         this.cancel_page_turn();
@@ -436,7 +446,7 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         this.drag = null;
         if (e.pointerType === 'mouse' || this.animating || !this.story) return;
         if (this.mobile.is_edge_touch(e.clientX)) return;
-        if (this.inside_horizontal_scroller(e.target)) return;
+        if (this.utils.inside_horizontal_scroller(e.target, this.$pager[0])) return;
         this.drag = {
             id: e.pointerId,
             start_x: e.clientX,
@@ -495,19 +505,6 @@ NEWSBLUR.Views.MobileStoryPager = Backbone.View.extend({
         } else {
             this.page_to(step);
         }
-    },
-
-    // Wide tables and code blocks scroll sideways themselves; leave those swipes to them.
-    inside_horizontal_scroller: function (target) {
-        var node = target;
-        while (node && node !== this.$pager[0]) {
-            if (node.scrollWidth > node.clientWidth + 2) {
-                var overflow_x = getComputedStyle(node).overflowX;
-                if (overflow_x === 'auto' || overflow_x === 'scroll') return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
     },
 
     // ============

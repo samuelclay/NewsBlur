@@ -177,6 +177,18 @@
                     NEWSBLUR.app.media_player.setup_beforeunload();
                 }
             });
+            // reader.js: a cached feed list whose refresh failed brings no playback state, so the
+            // player asks for its own and restores from that, or with nothing if that fails too.
+            NEWSBLUR.assets.feeds.bind('refresh_failed', function () {
+                var player = NEWSBLUR.app.media_player;
+                if (!player || player.state_restored) return;
+                var restore = function () {
+                    if (player.state_restored) return;
+                    player.restore_state();
+                    player.setup_beforeunload();
+                };
+                NEWSBLUR.assets.fetch_playback_state(restore, restore);
+            });
             // reader.js: the next page load draws the feed list with the unread counts on screen.
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'hidden') NEWSBLUR.assets.save_feed_list_counts();

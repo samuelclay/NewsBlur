@@ -920,6 +920,12 @@ body.NB-mobile .content-pane > #story_titles {
     box-sizing: border-box;
 }
 
+/* mobile.css: Add + Discover replaces the story list and its pills with tab panes that scroll
+   themselves, so they end clear of the Listen player and Safari's toolbar the same way. */
+body.NB-mobile .NB-add-site-tab-pane {
+    padding-bottom: calc(48px + var(--nb-mobile-player-space) + var(--nb-mobile-screen-bottom));
+}
+
 /* mobile.css: phones never show the side-by-side story pane. List layout expands stories inside
    #story_titles and grid pushes .NB-mobile-story-screen instead. */
 body.NB-mobile .content-pane > #story_pane,

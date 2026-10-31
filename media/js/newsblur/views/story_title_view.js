@@ -821,6 +821,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
+        // story_title_view.js: a phone grid or full-screen list opens the story on its own
+        // screen (views/mobile_layout_view.js), so it opens there at the comments.
+        if (this.opens_mobile_story_page()) {
+            NEWSBLUR.app.mobile.open_story(this.model, { scroll_to_comments: true });
+            return;
+        }
+
         this.model.set('selected', true, { 'click_on_story_title': true });
         if (NEWSBLUR.reader.story_view == 'page') {
             NEWSBLUR.reader.switch_taskbar_view('feed', { skip_save_type: 'page' });

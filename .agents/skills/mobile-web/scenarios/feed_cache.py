@@ -156,6 +156,32 @@ def run(ctx):
         loading,
     )
 
+    # A refresh that failed was only logged: the Listen player, which waits for the refresh's
+    # playback state, never came back and the kept list stayed for the session. It now tries
+    # again after 5 seconds, and the player restores from its own request meanwhile.
+    attempts = []
+
+    def fail(route):
+        attempts.append(route.request.url)
+        route.fulfill(status=500, body="error")
+
+    page.route("**/reader/feeds?**", fail)
+    page.goto("https://localhost/", wait_until="load")
+    page.wait_for_function(
+        "window.NEWSBLUR && NEWSBLUR.assets && NEWSBLUR.assets.folders.length", timeout=30000
+    )
+    ctx.wait(7000)
+    failed = ctx.evaluate(
+        "({rows: $('.NB-feedlist .feed:visible').length, "
+        "player: !!NEWSBLUR.app.media_player.state_restored})"
+    )
+    page.unroute("**/reader/feeds?**")
+    ctx.check(
+        "a failed refresh keeps the kept list, tries again and still restores the Listen player",
+        failed["rows"] > 0 and failed["player"] and len(attempts) >= 2,
+        {"attempts": len(attempts), **failed},
+    )
+
     page.goto("https://localhost/reader/logout", wait_until="load")
     ctx.wait(1000)
     ctx.check("signing out clears the kept feed list", not ctx.evaluate(STORED)["keys"])

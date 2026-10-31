@@ -180,6 +180,17 @@
         return abs_x > abs_y * 1.2 ? 'horizontal' : 'vertical';
     }
 
+    // Wide tables, code blocks and tab strips scroll sideways themselves, so a horizontal swipe
+    // that starts inside one, below stop_node, is theirs rather than a page turn or a swipe back.
+    function inside_horizontal_scroller(target, stop_node) {
+        for (var node = target; node && node !== stop_node; node = node.parentNode) {
+            if (node.nodeType !== 1 || node.scrollWidth <= node.clientWidth + 2) continue;
+            var overflow_x = getComputedStyle(node).overflowX;
+            if (overflow_x === 'auto' || overflow_x === 'scroll') return true;
+        }
+        return false;
+    }
+
     return {
         MOBILE_LAYOUTS: MOBILE_LAYOUTS,
         PHONE_LAYOUTS: PHONE_LAYOUTS,
@@ -199,6 +210,7 @@
         swipe_completes: swipe_completes,
         pager_step: pager_step,
         rubber_band: rubber_band,
-        gesture_axis: gesture_axis
+        gesture_axis: gesture_axis,
+        inside_horizontal_scroller: inside_horizontal_scroller
     };
 });

@@ -80,6 +80,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         document.addEventListener('touchend', this.handle_touchend, { passive: true });
         document.addEventListener('touchcancel', this.handle_touchcancel, { passive: true });
         this.setup_long_press();
+        this.setup_sheet_edits();
         this.setup_pull_to_refresh();
         this.setup_player();
 
@@ -432,12 +433,15 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     },
 
     // reader_taskbar_info.js show_stories_error: the story list failed to load. A story waiting
-    // on it gives up after 15 seconds too, offline requests can take that long to fail.
+    // on it gives up after 15 seconds too, offline requests can take that long to fail, and so
+    // does a Next unread waiting on the next feed's list.
     stories_failed: function () {
-        if (!this.awaiting_story) return;
+        var waiting = !!this.awaiting_story || this.is_following_unread();
         this.awaiting_story = null;
+        this.following_unread = null;
         clearTimeout(this.awaiting_story_timer);
-        if (!this.active || this.screen !== 'story') return;
+        clearTimeout(this.following_unread_timer);
+        if (!waiting || !this.active || this.screen !== 'story') return;
         this.show_list_for_story();
     },
 
@@ -566,10 +570,14 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         return true;
     },
 
-    // story_title_view.js: tapping a grid card pushes the full-screen story.
-    open_story: function (story) {
+    // story_title_view.js: tapping a grid card pushes the full-screen story, and tapping its
+    // share count opens it at the comments.
+    open_story: function (story, options) {
         if (!this.active || !story) return;
         this.story_pager.open(story);
+        if (options && options.scroll_to_comments) {
+            _.defer(_.bind(this.story_pager.scroll_to_comments, this.story_pager));
+        }
         if (this.screen === 'story') {
             this.tag_entry('story', story.get('story_hash'));
             return;
@@ -590,6 +598,17 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // story screen up until that next unread story is selected.
     follow_next_unread: function () {
         this.following_unread = Date.now();
+        clearTimeout(this.following_unread_timer);
+        this.following_unread_timer = setTimeout(_.bind(this.next_unread_timed_out, this), 20000);
+    },
+
+    // Nothing was selected in time. The story screen is only left when it is still showing the
+    // loading message, not a story Next unread came back to.
+    next_unread_timed_out: function () {
+        if (!this.following_unread) return;
+        this.following_unread = null;
+        if (!this.active || this.screen !== 'story' || this.story_pager.story) return;
+        this.show_list_for_story();
     },
 
     is_following_unread: function () {
@@ -607,6 +626,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
         }
         if (!this.is_following_unread()) return;
         this.following_unread = null;
+        clearTimeout(this.following_unread_timer);
         if (this.screen !== 'story') return;
         // Reading continues on the story screen even when the next feed is a list, whose own
         // list expands the same story underneath for when you go back.
@@ -838,13 +858,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
     // in a story opened inline or Add + Discover's tabs.
     swipes_from_anywhere: function (target) {
         if ($(target).closest('input, textarea, select, [contenteditable="true"]').length) return false;
-        for (var node = target; node && node !== document.body; node = node.parentNode) {
-            if (node.scrollWidth > node.clientWidth + 2) {
-                var overflow_x = getComputedStyle(node).overflowX;
-                if (overflow_x === 'auto' || overflow_x === 'scroll') return false;
-            }
-        }
-        return true;
+        return !this.utils.inside_horizontal_scroller(target, document.body);
     },
 
     handle_touchmove: function (e) {
@@ -1233,14 +1247,27 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
 
     // Every phone sheet follows a downward drag that starts while its content is scrolled to the
     // top, and a far or fast enough drag sends it away, like an iOS sheet. Reused sheets (the
-    // manage menu, the Listen player) drop the drag's inline styles once closed.
+    // manage menu, the Listen player) drop the drag's inline styles once closed. A sheet that
+    // holds_edits stays put once something in it has changed (setup_sheet_edits).
     SHEETS: [
         { selector: '.NB-popover.popover.in', overlay: '.NB-overlay', close: function () { NEWSBLUR.ReaderPopover.close(); } },
         { selector: '.NB-menu-manage-container.NB-mobile-sheet', overlay: '.NB-mobile-sheet-shade', reused: true, close: function () { NEWSBLUR.reader.hide_manage_menu(); } },
         { selector: '.NB-menu-ask-ai-container', close: function () { $(document).trigger('click.ask_ai_menu'); } },
-        { selector: '#simplemodal-container', overlay: '#simplemodal-overlay', close: function () { $.modal.close(); } },
+        { selector: '#simplemodal-container', overlay: '#simplemodal-overlay', holds_edits: true, close: function () { $.modal.close(); } },
         { selector: '.NB-media-player.NB-mobile-player-expanded', overlay: '.NB-mobile-player-shade', reused: true, close: function () { NEWSBLUR.app.mobile.collapse_player(); } }
     ],
+
+    // Preferences, Account, Site Settings and the trainer save only from their Save button, so
+    // once someone changes something in a modal, a swipe down would throw it away. Like an iOS
+    // sheet with changes, the modal then only gives a little under the finger and springs back.
+    // Only a person's own edits count, not a modal setting its controls as it opens.
+    setup_sheet_edits: function () {
+        $(document).on('input change click', '#simplemodal-container', function (e) {
+            if (!e.originalEvent || !e.originalEvent.isTrusted) return;
+            if (e.type === 'click' && !$(e.target).closest('.NB-classifier').length) return;
+            $(e.currentTarget).addClass('NB-mobile-sheet-edited');
+        });
+    },
 
     // A drag inside anything scrolled down scrolls it back up instead.
     scrolled_below_top: function (node, sheet) {
@@ -1269,6 +1296,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             $overlay: sheet.overlay ? $(sheet.overlay) : $(),
             start_x: touch.clientX,
             start_y: touch.clientY,
+            held: !!sheet.holds_edits && $sheet.hasClass('NB-mobile-sheet-edited'),
             axis: null,
             dy: 0,
             samples: [{ y: touch.clientY, t: e.timeStamp }]
@@ -1291,11 +1319,11 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             drag.$sheet.addClass('NB-mobile-sheet-dragging');
         }
         e.preventDefault();
-        drag.dy = Math.max(0, dy);
+        drag.dy = drag.held ? this.utils.rubber_band(Math.max(0, dy), 240) : Math.max(0, dy);
         drag.samples.push({ y: touch.clientY, t: e.timeStamp });
         if (drag.samples.length > 5) drag.samples.shift();
         drag.$sheet[0].style.transform = 'translate3d(0, ' + drag.dy + 'px, 0)';
-        drag.$overlay.css('opacity', Math.max(0, 1 - drag.dy / drag.height));
+        if (!drag.held) drag.$overlay.css('opacity', Math.max(0, 1 - drag.dy / drag.height));
     },
 
     handle_sheet_touchend: function () {
@@ -1312,7 +1340,7 @@ NEWSBLUR.Views.MobileLayout = Backbone.View.extend({
             el.style.transform = '';
             drag.$overlay.css('opacity', '');
         };
-        if (!this.utils.swipe_completes(drag.dy, velocity, drag.height)) {
+        if (drag.held || !this.utils.swipe_completes(drag.dy, velocity, drag.height)) {
             el.style.transition = 'transform 260ms cubic-bezier(0.2, 0.85, 0.25, 1)';
             el.style.transform = 'translate3d(0, 0, 0)';
             drag.$overlay.css('opacity', '');

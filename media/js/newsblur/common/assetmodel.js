@@ -782,14 +782,27 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
         // Requested directly rather than with feeds.fetch, which would merge the server's stored
         // counts over newer ones, and alongside refresh_feeds rather than queued ahead of it.
-        // A failed refresh leaves the cached list up instead of the feed list's load error.
-        this.make_request('/reader/feeds', { 'v': 2, 'update_counts': false }, loaded, function (error) {
-            NEWSBLUR.log(['Feed list refresh failed, keeping the cached list', error]);
-        }, {
-            request_type: 'GET',
-            ajax_group: 'rapid',
-            timeout: 60000
-        });
+        // A failed refresh leaves the cached list up instead of the feed list's load error and
+        // tries again a little later. Its first failure triggers refresh_failed, so reader.js
+        // restores the Listen player, which waits for this answer, from its own request.
+        var retry_delays = [5000, 30000];
+        var refresh_failed = false;
+        var request_feeds = function () {
+            self.make_request('/reader/feeds', { 'v': 2, 'update_counts': false }, loaded, function (error) {
+                NEWSBLUR.log(['Feed list refresh failed, keeping the cached list', error]);
+                if (!refresh_failed) {
+                    refresh_failed = true;
+                    self.feeds.trigger('refresh_failed');
+                }
+                var delay = retry_delays.shift();
+                if (delay) _.delay(request_feeds, delay);
+            }, {
+                request_type: 'GET',
+                ajax_group: 'rapid',
+                timeout: 60000
+            });
+        };
+        request_feeds();
     },
 
     // assetmodel.js: writes the unread counts on screen into the cached feed list as the page
